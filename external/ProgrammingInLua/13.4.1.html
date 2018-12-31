@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 13.4.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="13.4.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="13.4.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#13">Chapter 13. Metatables and Metamethods</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>13.4.1 - The <code>__index</code> Metamethod</h3>
+
+<p>I said earlier that,
+when we access an absent field in a table,
+the result is <B>nil</B>.
+This is true, but it is not the whole truth.
+Actually, such access triggers the interpreter to look
+for an <code>__index</code> metamethod:
+If there is no such method, as usually happens,
+then the access results in <B>nil</B>;
+otherwise, the metamethod will provide the result.
+
+<p>The archetypal example here is inheritance.
+Suppose we want to create
+several tables describing windows.
+Each table must describe several window parameters,
+such as position, size, color scheme, and the like.
+All these parameters have default values
+and so we want to build window objects
+giving only the non-default parameters.
+A first alternative is to provide a constructor that fills in
+the absent fields.
+A second alternative is to arrange for the new windows to <em>inherit</em>
+any absent field from a prototype window.
+First, we declare the prototype and a constructor function,
+which creates new windows sharing a metatable:
+<pre>
+    -- create a namespace
+    Window = {}
+    -- create the prototype with default values
+    Window.prototype = {x=0, y=0, width=100, height=100, }
+    -- create a metatable
+    Window.mt = {}
+    -- declare the constructor function
+    function Window.new (o)
+      setmetatable(o, Window.mt)
+      return o
+    end
+</pre>
+Now, we define the <code>__index</code> metamethod:
+<pre>
+    Window.mt.__index = function (table, key)
+      return Window.prototype[key]
+    end
+</pre>
+After that code, we create a new window and query it for
+an absent field:
+<pre>
+    w = Window.new{x=10, y=20}
+    print(w.width)    --> 100
+</pre>
+When Lua detects that <code>w</code> does not have the requested field,
+but has a metatable with an <code>__index</code> field,
+Lua calls this <code>__index</code> metamethod,
+with arguments <code>w</code> (the table) and <code>"width"</code> (the absent key).
+The metamethod then indexes the prototype with the given key
+and returns the result.
+
+<p>The use of the <code>__index</code> metamethod for inheritance is so common
+that Lua provides a shortcut.
+Despite the name,
+the <code>__index</code> metamethod does not need to be a function:
+It can be a table, instead.
+When it is a function,
+Lua calls it with the table and the absent key as its arguments.
+When it is a table, Lua redoes the access in that table.
+Therefore,
+in our previous example,
+we could declare <code>__index</code> simply as
+<pre>
+    Window.mt.__index = Window.prototype
+</pre>
+Now, when Lua looks for the metatable's <code>__index</code> field,
+it finds the value of <code>Window.prototype</code>, which is a table.
+Consequently, Lua repeats the access in this table, that is,
+it executes the equivalent of
+<pre>
+    Window.prototype["width"]
+</pre>
+which gives the desired result.
+
+<p>The use of a table as an <code>__index</code> metamethod provides
+a cheap and simple way of implementing single inheritance.
+A function, although more expensive, provides more flexibility:
+We can implement multiple inheritance,
+caching, and several other variations.
+We will discuss those forms of inheritance in <a href="16.html#ObjectSec">Chapter 16</a>.
+
+<p>When we want to access a table without
+invoking its <code>__index</code> metamethod,
+we use the <code>rawget</code> function.
+The call <code>rawget(t,i)</code> does a <em>raw</em> access to table <code>t</code>.
+Doing a raw access will not speed up your code
+(the overhead of a function call kills any gain you could have),
+but sometimes you need it, as we will see later.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="13.4.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

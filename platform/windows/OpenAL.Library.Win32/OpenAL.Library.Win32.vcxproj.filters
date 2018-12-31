@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="OpenAL32">
+      <UniqueIdentifier>{0c458ae2-0f34-4507-b5e1-d548af7e0acf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenAL32\Include">
+      <UniqueIdentifier>{382d99b9-59f8-4528-868c-7edf653a264c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{b102df3f-81a3-430d-8608-3ed54ca6d0db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\AL">
+      <UniqueIdentifier>{85195c3c-b6b1-425e-9c2f-98424a71b04b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Alc">
+      <UniqueIdentifier>{275c7f64-04ab-48a6-b8f1-30933e56d0d2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alState.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alThunk.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alAuxEffectSlot.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alBuffer.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alDatabuffer.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alEffect.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alError.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alExtension.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alFilter.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alListener.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\alSource.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\alcReverb.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\alcRing.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\alcThread.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\dsound.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\ALc.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\alcConfig.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\alcEcho.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\wave.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\bs2b.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\openal-soft-1.12.854\Alc\ALu.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alThunk.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alu.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\bs2b.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alAuxEffectSlot.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alBuffer.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alDatabuffer.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alEffect.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alError.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alFilter.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alListener.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alMain.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alSource.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\OpenAL32\Include\alState.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\include\AL\efx.h">
+      <Filter>include\AL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\include\AL\al.h">
+      <Filter>include\AL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\include\AL\alc.h">
+      <Filter>include\AL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\openal-soft-1.12.854\include\AL\alext.h">
+      <Filter>include\AL</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h" />
+  </ItemGroup>
+</Project>

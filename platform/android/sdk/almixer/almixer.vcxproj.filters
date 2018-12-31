@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\external\ALmixer\CircularQueue.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\LinkedList.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\ALmixer.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\SimpleMutex.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\SoundDecoder.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\tErrorLib.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\ALmixer_RWops.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\LGPL\mpg123.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\LGPL\oggtremor.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\LGPL\SDL_sound_minimal.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\LGPL\wav.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\floor0.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\floor1.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\framing.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\info.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\mapping0.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\mdct.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\misc.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\res012.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\vorbisfile.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\bitwise.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\codebook.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\dsp.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\floor_lookup.c">
+      <Filter>tremor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\SimpleThreadPosix.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\external\ALmixer\CircularQueue.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\LinkedList.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\ALmixer.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\Isolated\ALmixer_RWops.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\Isolated\SimpleMutex.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\Isolated\SoundDecoder.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\Isolated\tErrorLib.h" />
+    <ClInclude Include="..\..\..\..\external\tremor\Tremor\mdct.h">
+      <Filter>tremor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\tremor\Tremor\misc.h">
+      <Filter>tremor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\tremor\Tremor\codebook.h">
+      <Filter>tremor</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="tremor">
+      <UniqueIdentifier>{d9729f64-1fa5-4f79-8f4e-b11a1cfd116a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

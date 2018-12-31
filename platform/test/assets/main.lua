@@ -1,0 +1,16 @@
+--[[ 
+-- DO NOT CHECK IN THIS FILE.
+--
+-- You may put Corona projects in this directory (assets) 
+-- for local testing on iOS. But this file should not be checked 
+-- in if modified.
+-- However, because this file is under revision control, we now have an
+-- alternative directory which is looked at first which is not under revision
+-- control.
+-- Create the directory assets2 (next to this directory) to use this 
+-- alternative directory. If there is no main.lua in asset2, the build 
+-- scripts fallback to this directory.
+--
+-- DO NOT CHECK IN assets2.
+--]]
+

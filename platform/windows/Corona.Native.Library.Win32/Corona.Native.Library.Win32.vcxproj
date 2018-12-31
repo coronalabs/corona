@@ -1,0 +1,405 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug.App|Win32">
+      <Configuration>Debug.App</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug.Simulator|Win32">
+      <Configuration>Debug.Simulator</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release.App|Win32">
+      <Configuration>Release.App</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release.Simulator|Win32">
+      <Configuration>Release.Simulator</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F9419803-1375-4F35-B198-272C89CCA8F9}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>CoronaNativeLibraryWin32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Debug.Definitions.props" />
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="Corona.Native.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Debug.Definitions.props" />
+    <Import Project="Corona.Native.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="Corona.Native.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Corona.Native.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\winutil\XMessageBox.h" />
+    <ClInclude Include="Corona\CoronaWin32.h" />
+    <ClInclude Include="Interop\ApplicationServices.h" />
+    <ClInclude Include="Interop\BaseEvent.h" />
+    <ClInclude Include="Interop\DateTime.h" />
+    <ClInclude Include="Interop\Event.h" />
+    <ClInclude Include="Interop\EventArgs.h" />
+    <ClInclude Include="Interop\Graphics\CoronaFontServices.h" />
+    <ClInclude Include="Interop\Graphics\Font.h" />
+    <ClInclude Include="Interop\Graphics\FontServices.h" />
+    <ClInclude Include="Interop\Graphics\FontSettings.h" />
+    <ClInclude Include="Interop\Graphics\FontSizeConverter.h" />
+    <ClInclude Include="Interop\Graphics\HorizontalAlignment.h" />
+    <ClInclude Include="Interop\Graphics\MFontLoader.h" />
+    <ClInclude Include="Interop\HandledEventArgs.h" />
+    <ClInclude Include="Interop\Input\DirectInputDeviceHandler.h" />
+    <ClInclude Include="Interop\Input\DirectInputDeviceStateData.h" />
+    <ClInclude Include="Interop\Input\InputAxisDataEventArgs.h" />
+    <ClInclude Include="Interop\Input\InputAxisInfo.h" />
+    <ClInclude Include="Interop\Input\InputAxisSettings.h" />
+    <ClInclude Include="Interop\Input\InputDeviceInterface.h" />
+    <ClInclude Include="Interop\Input\InputDeviceContext.h" />
+    <ClInclude Include="Interop\Input\InputDeviceDriverType.h" />
+    <ClInclude Include="Interop\Input\InputDeviceInfo.h" />
+    <ClInclude Include="Interop\Input\InputDeviceInterfaceEventArgs.h" />
+    <ClInclude Include="Interop\Input\InputDeviceSettings.h" />
+    <ClInclude Include="Interop\Input\InputDeviceStatusChangedEventArgs.h" />
+    <ClInclude Include="Interop\Input\InputDeviceMonitor.h" />
+    <ClInclude Include="Interop\Input\Key.h" />
+    <ClInclude Include="Interop\Input\KeyEventArgs.h" />
+    <ClInclude Include="Interop\Input\MInputDeviceHandler.h" />
+    <ClInclude Include="Interop\Input\ModifierKeyStates.h" />
+    <ClInclude Include="Interop\Input\TapTracker.h" />
+    <ClInclude Include="Interop\Input\VibrationRequestManager.h" />
+    <ClInclude Include="Interop\Input\XInputDeviceHandler.h" />
+    <ClInclude Include="Interop\Input\XInputInterface.h" />
+    <ClInclude Include="Interop\Ipc\AsyncPipeReader.h" />
+    <ClInclude Include="Interop\Ipc\CommandLine.h" />
+    <ClInclude Include="Interop\Ipc\CommandLineRunner.h" />
+    <ClInclude Include="Interop\Ipc\CommandLineRunResult.h" />
+    <ClInclude Include="Interop\Ipc\IODataEventArgs.h" />
+    <ClInclude Include="Interop\Ipc\Process.h" />
+    <ClInclude Include="Interop\LuaMethodCallback.h" />
+    <ClInclude Include="Interop\MDeviceSimulatorServices.h" />
+    <ClInclude Include="Interop\Nullable.h" />
+    <ClInclude Include="Interop\OperationResult.h" />
+    <ClInclude Include="Interop\PointerResult.h" />
+    <ClInclude Include="Interop\RuntimeEnvironment.h" />
+    <ClInclude Include="Interop\RuntimeState.h" />
+    <ClInclude Include="Interop\ScopedComInitializer.h" />
+    <ClInclude Include="Interop\ScopedOleInitializer.h" />
+    <ClInclude Include="Interop\StaticFinalizer.h" />
+    <ClInclude Include="Interop\StaticInitializer.h" />
+    <ClInclude Include="Interop\Storage\MStoredPreferences.h" />
+    <ClInclude Include="Interop\Storage\RegistryStoredPreferences.h" />
+    <ClInclude Include="Interop\Storage\SQLiteStoredPreferences.h" />
+    <ClInclude Include="Interop\Storage\StoredPreferencesChain.h" />
+    <ClInclude Include="Interop\Storage\StoredPreferencesProxy.h" />
+    <ClInclude Include="Interop\Ticks.h" />
+    <ClInclude Include="Interop\UI\Control.h" />
+    <ClInclude Include="Interop\UI\CoronaTaskDialogHandler.h" />
+    <ClInclude Include="Interop\UI\HandleMessageEventArgs.h" />
+    <ClInclude Include="Interop\UI\TaskDialog.h" />
+    <ClInclude Include="Interop\UI\MessageOnlyWindow.h" />
+    <ClInclude Include="Interop\UI\MessageSettings.h" />
+    <ClInclude Include="Interop\UI\ReadOnlyUIComponentCollection.h" />
+    <ClInclude Include="Interop\UI\RenderSurfaceControl.h" />
+    <ClInclude Include="Interop\UI\TaskDialogSettings.h" />
+    <ClInclude Include="Interop\UI\TextBox.h" />
+    <ClInclude Include="Interop\UI\UIComponent.h" />
+    <ClInclude Include="Interop\UI\UIComponentCollection.h" />
+    <ClInclude Include="Interop\UI\UITextChangedEventArgs.h" />
+    <ClInclude Include="Interop\UI\WebBrowserNavigatedEventArgs.h" />
+    <ClInclude Include="Interop\UI\WebBrowser.h" />
+    <ClInclude Include="Interop\UI\WebBrowserNavigatingEventArgs.h" />
+    <ClInclude Include="Interop\UI\WebBrowserNavigationFailedEventArgs.h" />
+    <ClInclude Include="Interop\UI\Window.h" />
+    <ClInclude Include="Interop\ValueChangedEventArgs.h" />
+    <ClInclude Include="Interop\ValueResult.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Rtt\Rtt_WinAudioPlayer.h" />
+    <ClInclude Include="Rtt\Rtt_WinAudioRecorder.h" />
+    <ClInclude Include="Rtt\Rtt_WinBitmap.h" />
+    <ClInclude Include="Rtt\Rtt_WinCrypto.h" />
+    <ClInclude Include="Rtt\Rtt_WinData.h" />
+    <ClInclude Include="Rtt\Rtt_WinDevice.h" />
+    <ClInclude Include="Rtt\Rtt_WinDisplayObject.h" />
+    <ClInclude Include="Rtt\Rtt_WinEventSound.h" />
+    <ClInclude Include="Rtt\Rtt_WinExitCallback.h" />
+    <ClInclude Include="Rtt\Rtt_WinFBConnect.h" />
+    <ClInclude Include="Rtt\Rtt_WinFont.h" />
+    <ClInclude Include="Rtt\Rtt_WinImageProvider.h" />
+    <ClInclude Include="Rtt\Rtt_WinInputDevice.h" />
+    <ClInclude Include="Rtt\Rtt_WinInputDeviceManager.h" />
+    <ClInclude Include="Rtt\Rtt_WinLocation.h" />
+    <ClInclude Include="Rtt\Rtt_WinModalInteraction.h" />
+    <ClInclude Include="Rtt\Rtt_WinPlatform.h" />
+    <ClInclude Include="Rtt\Rtt_WinProjectSettings.h" />
+    <ClInclude Include="Rtt\Rtt_WinScreenSurface.h" />
+    <ClInclude Include="Rtt\Rtt_WinTextBoxObject.h" />
+    <ClInclude Include="Rtt\Rtt_WinTimer.h" />
+    <ClInclude Include="Rtt\Rtt_WinVideoObject.h" />
+    <ClInclude Include="Rtt\Rtt_WinVideoPlayer.h" />
+    <ClInclude Include="Rtt\Rtt_WinVideoProvider.h" />
+    <ClInclude Include="Rtt\Rtt_WinWebPopup.h" />
+    <ClInclude Include="Rtt\Rtt_WinWebViewObject.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="WinFile.h" />
+    <ClInclude Include="WinSound.h" />
+    <ClInclude Include="WinString.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\winutil\XMessageBox.cpp" />
+    <ClCompile Include="Corona\CoronaWin32.cpp" />
+    <ClCompile Include="dllmain.cpp">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">
+      </PrecompiledHeader>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Interop\ApplicationServices.cpp" />
+    <ClCompile Include="Interop\BaseEvent.cpp" />
+    <ClCompile Include="Interop\DateTime.cpp" />
+    <ClCompile Include="Interop\EventArgs.cpp" />
+    <ClCompile Include="Interop\Graphics\CoronaFontServices.cpp" />
+    <ClCompile Include="Interop\Graphics\Font.cpp" />
+    <ClCompile Include="Interop\Graphics\FontServices.cpp" />
+    <ClCompile Include="Interop\Graphics\FontSettings.cpp" />
+    <ClCompile Include="Interop\Graphics\FontSizeConverter.cpp" />
+    <ClCompile Include="Interop\Graphics\HorizontalAlignment.cpp" />
+    <ClCompile Include="Interop\HandledEventArgs.cpp" />
+    <ClCompile Include="Interop\Input\DirectInputDeviceHandler.cpp" />
+    <ClCompile Include="Interop\Input\DirectInputDeviceStateData.cpp" />
+    <ClCompile Include="Interop\Input\InputAxisDataEventArgs.cpp" />
+    <ClCompile Include="Interop\Input\InputAxisInfo.cpp" />
+    <ClCompile Include="Interop\Input\InputAxisSettings.cpp" />
+    <ClCompile Include="Interop\Input\InputDeviceInterface.cpp" />
+    <ClCompile Include="Interop\Input\InputDeviceContext.cpp" />
+    <ClCompile Include="Interop\Input\InputDeviceDriverType.cpp" />
+    <ClCompile Include="Interop\Input\InputDeviceInfo.cpp" />
+    <ClCompile Include="Interop\Input\InputDeviceInterfaceEventArgs.cpp" />
+    <ClCompile Include="Interop\Input\InputDeviceSettings.cpp" />
+    <ClCompile Include="Interop\Input\InputDeviceStatusChangedEventArgs.cpp" />
+    <ClCompile Include="Interop\Input\InputDeviceMonitor.cpp" />
+    <ClCompile Include="Interop\Input\Key.cpp" />
+    <ClCompile Include="Interop\Input\KeyEventArgs.cpp" />
+    <ClCompile Include="Interop\Input\ModifierKeyStates.cpp" />
+    <ClCompile Include="Interop\Input\TapTracker.cpp" />
+    <ClCompile Include="Interop\Input\VibrationRequestManager.cpp" />
+    <ClCompile Include="Interop\Input\XInputDeviceHandler.cpp" />
+    <ClCompile Include="Interop\Input\XInputInterface.cpp" />
+    <ClCompile Include="Interop\Ipc\AsyncPipeReader.cpp" />
+    <ClCompile Include="Interop\Ipc\CommandLine.cpp" />
+    <ClCompile Include="Interop\Ipc\CommandLineRunner.cpp" />
+    <ClCompile Include="Interop\Ipc\CommandLineRunResult.cpp" />
+    <ClCompile Include="Interop\Ipc\IODataEventArgs.cpp" />
+    <ClCompile Include="Interop\Ipc\Process.cpp" />
+    <ClCompile Include="Interop\OperationResult.cpp" />
+    <ClCompile Include="Interop\RuntimeEnvironment.cpp" />
+    <ClCompile Include="Interop\ScopedComInitializer.cpp" />
+    <ClCompile Include="Interop\ScopedOleInitializer.cpp" />
+    <ClCompile Include="Interop\StaticFinalizer.cpp" />
+    <ClCompile Include="Interop\Storage\RegistryStoredPreferences.cpp" />
+    <ClCompile Include="Interop\Storage\SQLiteStoredPreferences.cpp" />
+    <ClCompile Include="Interop\Storage\StoredPreferencesChain.cpp" />
+    <ClCompile Include="Interop\Storage\StoredPreferencesProxy.cpp" />
+    <ClCompile Include="Interop\Ticks.cpp" />
+    <ClCompile Include="Interop\UI\Control.cpp" />
+    <ClCompile Include="Interop\UI\CoronaTaskDialogHandler.cpp" />
+    <ClCompile Include="Interop\UI\HandleMessageEventArgs.cpp" />
+    <ClCompile Include="Interop\UI\TaskDialog.cpp" />
+    <ClCompile Include="Interop\UI\MessageOnlyWindow.cpp" />
+    <ClCompile Include="Interop\UI\ReadOnlyUIComponentCollection.cpp" />
+    <ClCompile Include="Interop\UI\RenderSurfaceControl.cpp" />
+    <ClCompile Include="Interop\UI\TaskDialogSettings.cpp" />
+    <ClCompile Include="Interop\UI\TextBox.cpp" />
+    <ClCompile Include="Interop\UI\UIComponent.cpp" />
+    <ClCompile Include="Interop\UI\UIComponentCollection.cpp" />
+    <ClCompile Include="Interop\UI\UITextChangedEventArgs.cpp" />
+    <ClCompile Include="Interop\UI\WebBrowserNavigatedEventArgs.cpp" />
+    <ClCompile Include="Interop\UI\WebBrowser.cpp" />
+    <ClCompile Include="Interop\UI\WebBrowserNavigatingEventArgs.cpp" />
+    <ClCompile Include="Interop\UI\WebBrowserNavigationFailedEventArgs.cpp" />
+    <ClCompile Include="Interop\UI\Window.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinAudioPlayer.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinAudioRecorder.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinBitmap.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinCrypto.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinData.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinDevice.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinDisplayObject.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinEventSound.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinExitCallback.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinFBConnect.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinFont.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinImageProvider.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinInputDevice.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinInputDeviceManager.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinLocation.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinModalInteraction.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinPlatform.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinProjectSettings.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinScreenSurface.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinTextBoxObject.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinTimer.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinVideoObject.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinVideoPlayer.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinVideoProvider.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinWebPopup.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinWebViewObject.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="WinFile.cpp" />
+    <ClCompile Include="WinSound.cpp" />
+    <ClCompile Include="WinString.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Corona.Rtt.Library\Corona.Rtt.Library.Win32.vcxproj">
+      <Project>{e72e2b71-de9d-4eb2-bf3f-36678b7096ae}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="shell.lua">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">true</ExcludedFromBuild>
+    </LuaToCpp>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\Build.Tools\LuaToCppTask.targets" />
+  </ImportGroup>
+</Project>

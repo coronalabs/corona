@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 23.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="23.1.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="23.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#23">Chapter 23. The Debug Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>23.2 - Hooks</h2>
+
+<p>
+
+<p>The hook mechanism of the debug library allows us
+to register a function that will be called at
+specific events as your program runs.
+There are four kinds of events that can trigger a hook:
+<em>call</em> events happen every time Lua calls a function;
+<em>return</em> events happen every time a function returns;
+<em>line</em> events happen when Lua starts executing a new line of code;
+and <em>count</em> events happen after a given number of instructions.
+Lua calls hooks with a single argument,
+a string describing the event that generated the call:
+<code>"call"</code>, <code>"return"</code>, <code>"line"</code>, or <code>"count"</code>.
+Moreover, for line events, it also passes a second argument,
+the new line number.
+We can always use <code>debug.getinfo</code> to get more information
+inside a hook.
+
+<p>To register a hook,
+we call <code>debug.sethook</code> with two or three arguments:
+The first argument is the hook function;
+the second argument is a string that
+describes the events we want to monitor;
+and an optional third argument is a number
+that describes at what frequency we want to get count events.
+To monitor the call, return, and line events,
+we add their first letters (`<code>c</code>&acute;, `<code>r</code>&acute;, or `<code>l</code>&acute;)
+in the mask string.
+To monitor the count event,
+we simply supply a counter as the third argument.
+To turn off hooks,
+we call <code>sethook</code> with no arguments.
+
+<p>As a simple example,
+the following code installs a primitive tracer,
+which prints the number of each new line the interpreter executes:
+<pre>
+    debug.sethook(print, "l")
+</pre>
+It simply installs <code>print</code> as the hook function
+and instructs Lua to call it only at line events.
+A more elaborated tracer can use <code>getinfo</code> to
+add the current file name to the trace:
+<pre>
+    function trace (event, line)
+      local s = debug.getinfo(2).short_src
+      print(s .. ":" .. line)
+    end
+    
+    debug.sethook(trace, "l")
+</pre>
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="23.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

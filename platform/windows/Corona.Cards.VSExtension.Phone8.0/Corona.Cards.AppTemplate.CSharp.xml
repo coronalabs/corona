@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VSProjectTemplateBuilder xmlns="http://schemas.coronalabs.com/VSTemplateBuilder">
+	<Output FileName="CoronaLabs.Corona.Cards.App.CSharp.WindowsPhone.zip" IntermediateFolderPath="obj">
+		<Folder Path="Bin\VSIX\ProjectTemplates"/>
+		<Folder Path="Bin\VSIX\ProjectTemplates\Corona"/>
+	</Output>
+	<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+		<TemplateData>
+			<Name>CoronaCards App (Windows Phone Silverlight)</Name>
+			<Description>Creates a Windows Phone application project using a Corona XAML control to easily render 2D visualizations in DirectX using Lua scripts.</Description>
+			<ProjectType>CSharp</ProjectType>
+			<SortOrder>1000</SortOrder>
+			<CreateNewFolder>true</CreateNewFolder>
+			<DefaultName>CoronaCardsApp</DefaultName>
+			<ProvideDefaultName>true</ProvideDefaultName>
+			<LocationField>Enabled</LocationField>
+			<EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+			<Icon>VSIX\ExtensionIcon32x32.png</Icon>
+			<PreviewImage>VSIX\ExtensionPreview200x200.png</PreviewImage>
+		</TemplateData>
+		<TemplateContent>
+			<Project File="..\Corona.Cards.AppTemplate.CSharp.Phone8.0\Corona.Cards.AppTemplate.CSharp.Phone8.0.csproj" ReplaceParameters="true"/>
+		</TemplateContent>
+	</VSTemplate>
+</VSProjectTemplateBuilder>

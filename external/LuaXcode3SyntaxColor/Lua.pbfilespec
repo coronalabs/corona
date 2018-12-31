@@ -1,0 +1,17 @@
+/**
+    Lua.pbfilespec
+	Lua source file specs for Xcode 3 editor
+ */
+(
+{
+	Identifier = sourcecode.lua;
+	BasedOn = sourcecode;
+	Name = "Lua Files";
+	Extensions = ("lua");
+	MIMETypes = ("text/lua");
+	ComputerLanguage = lua;
+	Language = "xcode.lang.lua";
+	IsTextFile = YES; 
+}
+)
+

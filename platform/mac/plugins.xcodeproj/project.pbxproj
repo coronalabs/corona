@@ -1,0 +1,844 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A44308B1164C73B100B9117B /* CoronaLuaLibraryMetadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47B5C6F15FAAA05001D60AB /* CoronaLuaLibraryMetadata.cpp */; };
+		A44308B2164C73B400B9117B /* CoronaLuaLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47B5C6D15FAAA05001D60AB /* CoronaLuaLibrary.cpp */; };
+		A47B5B8315F9BB7D001D60AB /* ads.lua in Sources */ = {isa = PBXBuildFile; fileRef = A47B5B7A15F9BAE2001D60AB /* ads.lua */; };
+		A47B5B8415F9BB7D001D60AB /* CoronaProvider.ads.lua in Sources */ = {isa = PBXBuildFile; fileRef = A47B5B7B15F9BAE2001D60AB /* CoronaProvider.ads.lua */; };
+		A47B5C6B15FAA9F6001D60AB /* CoronaAdsLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47B5C6915FAA9F5001D60AB /* CoronaAdsLibrary.cpp */; };
+		A47B5C6C15FAA9F6001D60AB /* CoronaAdsLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A47B5C6A15FAA9F5001D60AB /* CoronaAdsLibrary.h */; };
+		A47B5C7115FAAA05001D60AB /* CoronaLuaLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47B5C6D15FAAA05001D60AB /* CoronaLuaLibrary.cpp */; };
+		A47B5C7215FAAA05001D60AB /* CoronaLuaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A47B5C6E15FAAA05001D60AB /* CoronaLuaLibrary.h */; };
+		A47B5C7315FAAA05001D60AB /* CoronaLuaLibraryMetadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47B5C6F15FAAA05001D60AB /* CoronaLuaLibraryMetadata.cpp */; };
+		A47B5C7415FAAA05001D60AB /* CoronaLuaLibraryMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = A47B5C7015FAAA05001D60AB /* CoronaLuaLibraryMetadata.h */; };
+		A491863B1641DDB800A39286 /* CoronaAdsLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A47B5C6A15FAA9F5001D60AB /* CoronaAdsLibrary.h */; };
+		A49186471641DDEB00A39286 /* CoronaAnalyticsLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A49186441641DDEB00A39286 /* CoronaAnalyticsLibrary.cpp */; };
+		A49186481641DDEB00A39286 /* CoronaAnalyticsLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A49186451641DDEB00A39286 /* CoronaAnalyticsLibrary.h */; };
+		A491864B1641DE2200A39286 /* analytics.lua in Sources */ = {isa = PBXBuildFile; fileRef = A49186431641DDEB00A39286 /* analytics.lua */; };
+		A491864C1641DE2200A39286 /* CoronaProvider.analytics.lua in Sources */ = {isa = PBXBuildFile; fileRef = A49186461641DDEB00A39286 /* CoronaProvider.analytics.lua */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		A47B5B8515F9BB80001D60AB /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.lua";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+			);
+			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $BUILT_PRODUCTS_DIR";
+		};
+		A47B5BA315F9BE38001D60AB /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.lua";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+			);
+			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION";
+		};
+		A491863C1641DDB800A39286 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.lua";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+			);
+			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $BUILT_PRODUCTS_DIR";
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXContainerItemProxy section */
+		A44308B3164C744D00B9117B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A482DA7A15F9B7E70084DC42 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A47B5B6715F9BA95001D60AB;
+			remoteInfo = ads;
+		};
+		A44308B5164C744D00B9117B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A482DA7A15F9B7E70084DC42 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A49186331641DDB800A39286;
+			remoteInfo = analytics;
+		};
+		A47B5BA815F9BF33001D60AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A482DA7A15F9B7E70084DC42 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A47B5B6715F9BA95001D60AB;
+			remoteInfo = ads;
+		};
+		A49186491641DE0100A39286 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A482DA7A15F9B7E70084DC42 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A49186331641DDB800A39286;
+			remoteInfo = analytics;
+		};
+		A4C243891683AF4900C395D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 004CED1D1339784D006ACF35;
+			remoteInfo = lua;
+		};
+		A4C2438B1683AF4900C395D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 004CED2A13397858006ACF35;
+			remoteInfo = luac;
+		};
+		A4C2438D1683AF4900C395D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 004CEC2F1339724E006ACF35;
+			remoteInfo = "liblua-universal";
+		};
+		A4C2438F1683AF4900C395D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 004CED3713397862006ACF35;
+			remoteInfo = lstrip;
+		};
+		A4C243911683AF4900C395D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 004CED441339786A006ACF35;
+			remoteInfo = debugger;
+		};
+		A4C243931683AF4900C395D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 004CED5D13397ABD006ACF35;
+			remoteInfo = "lua-tool";
+		};
+		A4C243961683AF5300C395D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 004CED1C1339784D006ACF35;
+			remoteInfo = lua;
+		};
+		A4C243981683AF5C00C395D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 004CED1C1339784D006ACF35;
+			remoteInfo = lua;
+		};
+		C2AF1E4D1DA5B3D200907A65 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C24216D71CCACB6600D8E4BE;
+			remoteInfo = libluasocket;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A4430897164C70D800B9117B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A443089B164C70D800B9117B /* plugins-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plugins-Prefix.pch"; sourceTree = "<group>"; };
+		A443089C164C70D800B9117B /* plugins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = plugins.h; sourceTree = "<group>"; };
+		A443089E164C70D800B9117B /* plugins.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = plugins.m; sourceTree = "<group>"; };
+		A44308AD164C733E00B9117B /* libplugins.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libplugins.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A47B5B6815F9BA95001D60AB /* ads.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ads.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		A47B5B7A15F9BAE2001D60AB /* ads.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ads.lua; path = ../../plugins/ads/shared/ads.lua; sourceTree = "<group>"; };
+		A47B5B7B15F9BAE2001D60AB /* CoronaProvider.ads.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaProvider.ads.lua; path = ../../plugins/ads/shared/CoronaProvider.ads.lua; sourceTree = "<group>"; };
+		A47B5B8615F9BBCA001D60AB /* CoronaAssert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaAssert.h; path = ../../librtt/Corona/CoronaAssert.h; sourceTree = "<group>"; };
+		A47B5B8715F9BBCA001D60AB /* CoronaEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaEvent.h; path = ../../librtt/Corona/CoronaEvent.h; sourceTree = "<group>"; };
+		A47B5B8815F9BBCA001D60AB /* CoronaLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaLibrary.h; path = ../../librtt/Corona/CoronaLibrary.h; sourceTree = "<group>"; };
+		A47B5B8915F9BBCA001D60AB /* CoronaLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaLog.h; path = ../../librtt/Corona/CoronaLog.h; sourceTree = "<group>"; };
+		A47B5B8A15F9BBCA001D60AB /* CoronaLua.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaLua.h; path = ../../librtt/Corona/CoronaLua.h; sourceTree = "<group>"; };
+		A47B5B8B15F9BBCA001D60AB /* CoronaMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaMacros.h; path = ../../librtt/Corona/CoronaMacros.h; sourceTree = "<group>"; };
+		A47B5B8C15F9BBCA001D60AB /* CoronaRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaRuntime.h; path = ../iphone/Corona/CoronaRuntime.h; sourceTree = "<group>"; };
+		A47B5BA715F9BE38001D60AB /* plugins.old.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = plugins.old.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		A47B5C6915FAA9F5001D60AB /* CoronaAdsLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaAdsLibrary.cpp; path = ../../plugins/ads/shared/CoronaAdsLibrary.cpp; sourceTree = "<group>"; };
+		A47B5C6A15FAA9F5001D60AB /* CoronaAdsLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaAdsLibrary.h; path = ../../plugins/ads/shared/CoronaAdsLibrary.h; sourceTree = "<group>"; };
+		A47B5C6D15FAAA05001D60AB /* CoronaLuaLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaLuaLibrary.cpp; path = ../../plugins/shared/CoronaLuaLibrary.cpp; sourceTree = "<group>"; };
+		A47B5C6E15FAAA05001D60AB /* CoronaLuaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaLibrary.h; path = ../../plugins/shared/CoronaLuaLibrary.h; sourceTree = "<group>"; };
+		A47B5C6F15FAAA05001D60AB /* CoronaLuaLibraryMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaLuaLibraryMetadata.cpp; path = ../../plugins/shared/CoronaLuaLibraryMetadata.cpp; sourceTree = "<group>"; };
+		A47B5C7015FAAA05001D60AB /* CoronaLuaLibraryMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaLibraryMetadata.h; path = ../../plugins/shared/CoronaLuaLibraryMetadata.h; sourceTree = "<group>"; };
+		A482DAA715F9B91B0084DC42 /* plugins-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "plugins-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		A49186401641DDB800A39286 /* analytics.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = analytics.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		A49186431641DDEB00A39286 /* analytics.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = analytics.lua; path = ../../plugins/analytics/shared/analytics.lua; sourceTree = "<group>"; };
+		A49186441641DDEB00A39286 /* CoronaAnalyticsLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaAnalyticsLibrary.cpp; path = ../../plugins/analytics/shared/CoronaAnalyticsLibrary.cpp; sourceTree = "<group>"; };
+		A49186451641DDEB00A39286 /* CoronaAnalyticsLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaAnalyticsLibrary.h; path = ../../plugins/analytics/shared/CoronaAnalyticsLibrary.h; sourceTree = "<group>"; };
+		A49186461641DDEB00A39286 /* CoronaProvider.analytics.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaProvider.analytics.lua; path = ../../plugins/analytics/shared/CoronaProvider.analytics.lua; sourceTree = "<group>"; };
+		A4C243801683AF4900C395D1 /* lua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = lua.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A44308AA164C733E00B9117B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A47B5B6515F9BA95001D60AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A47B5BA015F9BE38001D60AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A49186381641DDB800A39286 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A4430899164C70D800B9117B /* plugins */ = {
+			isa = PBXGroup;
+			children = (
+				A443089C164C70D800B9117B /* plugins.h */,
+				A443089E164C70D800B9117B /* plugins.m */,
+				A443089A164C70D800B9117B /* Supporting Files */,
+			);
+			path = plugins;
+			sourceTree = "<group>";
+		};
+		A443089A164C70D800B9117B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A443089B164C70D800B9117B /* plugins-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A47B5B8015F9BAF2001D60AB /* ads */ = {
+			isa = PBXGroup;
+			children = (
+				A47B5B7A15F9BAE2001D60AB /* ads.lua */,
+				A47B5B7B15F9BAE2001D60AB /* CoronaProvider.ads.lua */,
+				A47B5C6915FAA9F5001D60AB /* CoronaAdsLibrary.cpp */,
+				A47B5C6A15FAA9F5001D60AB /* CoronaAdsLibrary.h */,
+			);
+			name = ads;
+			sourceTree = SOURCE_ROOT;
+		};
+		A47B5B8215F9BB34001D60AB /* plugins */ = {
+			isa = PBXGroup;
+			children = (
+				A482DAA715F9B91B0084DC42 /* plugins-Prefix.pch */,
+				A47B5C6D15FAAA05001D60AB /* CoronaLuaLibrary.cpp */,
+				A47B5C6E15FAAA05001D60AB /* CoronaLuaLibrary.h */,
+				A47B5C6F15FAAA05001D60AB /* CoronaLuaLibraryMetadata.cpp */,
+				A47B5C7015FAAA05001D60AB /* CoronaLuaLibraryMetadata.h */,
+			);
+			name = plugins;
+			sourceTree = "<group>";
+		};
+		A47B5B8D15F9BBD2001D60AB /* Corona */ = {
+			isa = PBXGroup;
+			children = (
+				A47B5B8615F9BBCA001D60AB /* CoronaAssert.h */,
+				A47B5B8715F9BBCA001D60AB /* CoronaEvent.h */,
+				A47B5B8815F9BBCA001D60AB /* CoronaLibrary.h */,
+				A47B5B8915F9BBCA001D60AB /* CoronaLog.h */,
+				A47B5B8A15F9BBCA001D60AB /* CoronaLua.h */,
+				A47B5B8B15F9BBCA001D60AB /* CoronaMacros.h */,
+				A47B5B8C15F9BBCA001D60AB /* CoronaRuntime.h */,
+			);
+			name = Corona;
+			sourceTree = SOURCE_ROOT;
+		};
+		A482DA7815F9B7E70084DC42 = {
+			isa = PBXGroup;
+			children = (
+				A4C243801683AF4900C395D1 /* lua.xcodeproj */,
+				A47B5B8D15F9BBD2001D60AB /* Corona */,
+				A47B5B8215F9BB34001D60AB /* plugins */,
+				A47B5B8015F9BAF2001D60AB /* ads */,
+				A49186421641DDD100A39286 /* analytics */,
+				A4430899164C70D800B9117B /* plugins */,
+				A482DA8615F9B7E70084DC42 /* Frameworks */,
+				A482DA8515F9B7E70084DC42 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A482DA8515F9B7E70084DC42 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A47B5B6815F9BA95001D60AB /* ads.dylib */,
+				A47B5BA715F9BE38001D60AB /* plugins.old.dylib */,
+				A49186401641DDB800A39286 /* analytics.dylib */,
+				A44308AD164C733E00B9117B /* libplugins.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A482DA8615F9B7E70084DC42 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A4430897164C70D800B9117B /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A49186421641DDD100A39286 /* analytics */ = {
+			isa = PBXGroup;
+			children = (
+				A49186431641DDEB00A39286 /* analytics.lua */,
+				A49186461641DDEB00A39286 /* CoronaProvider.analytics.lua */,
+				A49186441641DDEB00A39286 /* CoronaAnalyticsLibrary.cpp */,
+				A49186451641DDEB00A39286 /* CoronaAnalyticsLibrary.h */,
+			);
+			name = analytics;
+			sourceTree = SOURCE_ROOT;
+		};
+		A4C243811683AF4900C395D1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A4C2438A1683AF4900C395D1 /* lua */,
+				A4C2438C1683AF4900C395D1 /* luac */,
+				A4C2438E1683AF4900C395D1 /* liblua-universal.a */,
+				A4C243901683AF4900C395D1 /* lstrip */,
+				A4C243921683AF4900C395D1 /* debugger */,
+				A4C243941683AF4900C395D1 /* liblua-tool.a */,
+				C2AF1E4E1DA5B3D200907A65 /* libluasocket.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A44308AB164C733E00B9117B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A47B5B6615F9BA95001D60AB /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A47B5C6C15FAA9F6001D60AB /* CoronaAdsLibrary.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A47B5BA115F9BE38001D60AB /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A47B5C7215FAAA05001D60AB /* CoronaLuaLibrary.h in Headers */,
+				A47B5C7415FAAA05001D60AB /* CoronaLuaLibraryMetadata.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A491863A1641DDB800A39286 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A491863B1641DDB800A39286 /* CoronaAdsLibrary.h in Headers */,
+				A49186481641DDEB00A39286 /* CoronaAnalyticsLibrary.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A44308AC164C733E00B9117B /* plugins */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A44308AE164C733E00B9117B /* Build configuration list for PBXNativeTarget "plugins" */;
+			buildPhases = (
+				A44308A9164C733E00B9117B /* Sources */,
+				A44308AA164C733E00B9117B /* Frameworks */,
+				A44308AB164C733E00B9117B /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A44308B4164C744D00B9117B /* PBXTargetDependency */,
+				A44308B6164C744D00B9117B /* PBXTargetDependency */,
+			);
+			name = plugins;
+			productName = plugins;
+			productReference = A44308AD164C733E00B9117B /* libplugins.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		A47B5B6715F9BA95001D60AB /* ads */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A47B5B7115F9BA95001D60AB /* Build configuration list for PBXNativeTarget "ads" */;
+			buildPhases = (
+				A47B5B6415F9BA95001D60AB /* Sources */,
+				A47B5B6515F9BA95001D60AB /* Frameworks */,
+				A47B5B6615F9BA95001D60AB /* Headers */,
+			);
+			buildRules = (
+				A47B5B8515F9BB80001D60AB /* PBXBuildRule */,
+			);
+			dependencies = (
+				A4C243971683AF5300C395D1 /* PBXTargetDependency */,
+			);
+			name = ads;
+			productName = ads;
+			productReference = A47B5B6815F9BA95001D60AB /* ads.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		A47B5B9B15F9BE38001D60AB /* plugins.old */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A47B5BA415F9BE38001D60AB /* Build configuration list for PBXNativeTarget "plugins.old" */;
+			buildPhases = (
+				A47B5B9C15F9BE38001D60AB /* Sources */,
+				A47B5BA015F9BE38001D60AB /* Frameworks */,
+				A47B5BA115F9BE38001D60AB /* Headers */,
+			);
+			buildRules = (
+				A47B5BA315F9BE38001D60AB /* PBXBuildRule */,
+			);
+			dependencies = (
+				A47B5BA915F9BF33001D60AB /* PBXTargetDependency */,
+				A491864A1641DE0100A39286 /* PBXTargetDependency */,
+			);
+			name = plugins.old;
+			productName = ads;
+			productReference = A47B5BA715F9BE38001D60AB /* plugins.old.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		A49186331641DDB800A39286 /* analytics */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A491863D1641DDB800A39286 /* Build configuration list for PBXNativeTarget "analytics" */;
+			buildPhases = (
+				A49186341641DDB800A39286 /* Sources */,
+				A49186381641DDB800A39286 /* Frameworks */,
+				A491863A1641DDB800A39286 /* Headers */,
+			);
+			buildRules = (
+				A491863C1641DDB800A39286 /* PBXBuildRule */,
+			);
+			dependencies = (
+				A4C243991683AF5C00C395D1 /* PBXTargetDependency */,
+			);
+			name = analytics;
+			productName = ads;
+			productReference = A49186401641DDB800A39286 /* analytics.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A482DA7A15F9B7E70084DC42 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0800;
+			};
+			buildConfigurationList = A482DA7D15F9B7E70084DC42 /* Build configuration list for PBXProject "plugins" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A482DA7815F9B7E70084DC42;
+			productRefGroup = A482DA8515F9B7E70084DC42 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A4C243811683AF4900C395D1 /* Products */;
+					ProjectRef = A4C243801683AF4900C395D1 /* lua.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				A44308AC164C733E00B9117B /* plugins */,
+				A47B5B9B15F9BE38001D60AB /* plugins.old */,
+				A47B5B6715F9BA95001D60AB /* ads */,
+				A49186331641DDB800A39286 /* analytics */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A4C2438A1683AF4900C395D1 /* lua */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = lua;
+			remoteRef = A4C243891683AF4900C395D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A4C2438C1683AF4900C395D1 /* luac */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = luac;
+			remoteRef = A4C2438B1683AF4900C395D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A4C2438E1683AF4900C395D1 /* liblua-universal.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "liblua-universal.a";
+			remoteRef = A4C2438D1683AF4900C395D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A4C243901683AF4900C395D1 /* lstrip */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = lstrip;
+			remoteRef = A4C2438F1683AF4900C395D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A4C243921683AF4900C395D1 /* debugger */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = debugger;
+			remoteRef = A4C243911683AF4900C395D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A4C243941683AF4900C395D1 /* liblua-tool.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "liblua-tool.a";
+			remoteRef = A4C243931683AF4900C395D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C2AF1E4E1DA5B3D200907A65 /* libluasocket.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libluasocket.a;
+			remoteRef = C2AF1E4D1DA5B3D200907A65 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A44308A9164C733E00B9117B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A44308B1164C73B100B9117B /* CoronaLuaLibraryMetadata.cpp in Sources */,
+				A44308B2164C73B400B9117B /* CoronaLuaLibrary.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A47B5B6415F9BA95001D60AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A47B5B8315F9BB7D001D60AB /* ads.lua in Sources */,
+				A47B5B8415F9BB7D001D60AB /* CoronaProvider.ads.lua in Sources */,
+				A47B5C6B15FAA9F6001D60AB /* CoronaAdsLibrary.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A47B5B9C15F9BE38001D60AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A47B5C7115FAAA05001D60AB /* CoronaLuaLibrary.cpp in Sources */,
+				A47B5C7315FAAA05001D60AB /* CoronaLuaLibraryMetadata.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A49186341641DDB800A39286 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A491864B1641DE2200A39286 /* analytics.lua in Sources */,
+				A491864C1641DE2200A39286 /* CoronaProvider.analytics.lua in Sources */,
+				A49186471641DDEB00A39286 /* CoronaAnalyticsLibrary.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A44308B4164C744D00B9117B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A47B5B6715F9BA95001D60AB /* ads */;
+			targetProxy = A44308B3164C744D00B9117B /* PBXContainerItemProxy */;
+		};
+		A44308B6164C744D00B9117B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A49186331641DDB800A39286 /* analytics */;
+			targetProxy = A44308B5164C744D00B9117B /* PBXContainerItemProxy */;
+		};
+		A47B5BA915F9BF33001D60AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A47B5B6715F9BA95001D60AB /* ads */;
+			targetProxy = A47B5BA815F9BF33001D60AB /* PBXContainerItemProxy */;
+		};
+		A491864A1641DE0100A39286 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A49186331641DDB800A39286 /* analytics */;
+			targetProxy = A49186491641DE0100A39286 /* PBXContainerItemProxy */;
+		};
+		A4C243971683AF5300C395D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = lua;
+			targetProxy = A4C243961683AF5300C395D1 /* PBXContainerItemProxy */;
+		};
+		A4C243991683AF5C00C395D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = lua;
+			targetProxy = A4C243981683AF5C00C395D1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A44308AF164C733E00B9117B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "plugins-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A44308B0164C733E00B9117B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "plugins-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		A47B5B7215F9BA95001D60AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INSTALL_PATH = "@rpath";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		A47B5B7315F9BA95001D60AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INSTALL_PATH = "@rpath";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		A47B5BA515F9BE38001D60AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "plugins-Prefix.pch";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = plugins.old;
+			};
+			name = Debug;
+		};
+		A47B5BA615F9BE38001D60AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "plugins-Prefix.pch";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = plugins.old;
+			};
+			name = Release;
+		};
+		A482DA9715F9B7E70084DC42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					CORONA_DEBUG,
+					LUA_USE_MODERN_MACOSX,
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../external/lua-5.1.3/src\"";
+			};
+			name = Debug;
+		};
+		A482DA9815F9B7E70084DC42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../external/lua-5.1.3/src\"";
+			};
+			name = Release;
+		};
+		A491863E1641DDB800A39286 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INSTALL_PATH = "@rpath";
+				PRODUCT_NAME = analytics;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		A491863F1641DDB800A39286 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INSTALL_PATH = "@rpath";
+				PRODUCT_NAME = analytics;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A44308AE164C733E00B9117B /* Build configuration list for PBXNativeTarget "plugins" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A44308AF164C733E00B9117B /* Debug */,
+				A44308B0164C733E00B9117B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A47B5B7115F9BA95001D60AB /* Build configuration list for PBXNativeTarget "ads" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A47B5B7215F9BA95001D60AB /* Debug */,
+				A47B5B7315F9BA95001D60AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A47B5BA415F9BE38001D60AB /* Build configuration list for PBXNativeTarget "plugins.old" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A47B5BA515F9BE38001D60AB /* Debug */,
+				A47B5BA615F9BE38001D60AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A482DA7D15F9B7E70084DC42 /* Build configuration list for PBXProject "plugins" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A482DA9715F9B7E70084DC42 /* Debug */,
+				A482DA9815F9B7E70084DC42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A491863D1641DDB800A39286 /* Build configuration list for PBXNativeTarget "analytics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A491863E1641DDB800A39286 /* Debug */,
+				A491863F1641DDB800A39286 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A482DA7A15F9B7E70084DC42 /* Project object */;
+}

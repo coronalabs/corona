@@ -1,0 +1,3 @@
+#define IDS_FUNCTION_s_IN_s	1000
+#define IDS_COULDNOTLOAD_s_ERR_d   1001
+

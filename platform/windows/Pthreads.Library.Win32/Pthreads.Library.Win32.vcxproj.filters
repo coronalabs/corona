@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\attr.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\barrier.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\cancel.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\cleanup.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\condvar.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\create.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\dll.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\errno.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\exit.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\fork.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\global.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\misc.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\mutex.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\nonportable.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\private.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\rwlock.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\sched.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\semaphore.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\signal.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\spin.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\sync.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\tsd.c" />
+  </ItemGroup>
+</Project>

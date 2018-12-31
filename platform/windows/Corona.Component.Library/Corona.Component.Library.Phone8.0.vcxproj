@@ -1,0 +1,381 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{049a444a-bcd8-4cbf-b6bf-b2d9b576283b}</ProjectGuid>
+    <RootNamespace>CoronaLabs</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <WinMDAssembly>true</WinMDAssembly>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Debug.Definitions.props" />
+    <Import Project="Corona.Component.Library.Phone8.0.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Debug.Definitions.props" />
+    <Import Project="Corona.Component.Library.Phone8.0.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Corona.Component.Library.Phone8.0.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Corona.Component.Library.Phone8.0.Internals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Reference Include="platform.winmd">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedList.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedBoolean.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedData.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedNumber.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedString.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedTable.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaLuaEventArgs.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaLuaEventHandler.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaLuaEventProperties.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntime.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntimeEnvironment.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntimeEventArgs.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntimeLaunchSettings.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntimeState.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\DispatchCoronaLuaEventResult.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\ICoronaBoxedData.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\ICoronaBoxedComparableData.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\CoronaInteropSettings.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\Bitmap.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapConverter.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapInfo.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapInfoResult.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapResult.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapSettings.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\FontSettings.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\HorizontalAlignment.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\IBitmap.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\IImageDecoder.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\IImageServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\ImageDecoderSettings.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\IRenderSurface.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\ITextRenderer.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\PixelFormat.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\PixelFormatSet.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\RenderFrameHandler.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\RenderSurfaceProxy.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\TextRendererSettings.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\IApplicationServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\IInputDeviceServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\Key.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\KeyEventArgs.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TapEventArgs.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchEventArgs.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchPhase.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchPoint.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchTracker.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchTrackerCollection.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\InteropServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\ITimer.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\ITimerServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\IReadOnlyWeakReference.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Logging\ILogger.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Logging\LoggingServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Logging\NativeDebuggerLogger.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\CoronaHttpRequestOperation.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpProgressEventArgs.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpRequestSettings.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpResponseEventArgs.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\IHttpRequestOperation.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\INetworkServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\NativeCoronaNetworkLibraryHandler.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\NetworkConnectionStatus.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\RelativeOrientation2D.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Sensors\AccelerometerMonitor.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Sensors\CoronaAccelerometerHandler.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Sensors\CoronaGyroscopeHandler.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Sensors\GyroscopeMonitor.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Storage\IResourceServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\CoronaMessageBoxHandler.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IControlAdapter.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\ICoronaControlAdapter.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IDispatcher.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IMessageBox.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IPage.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IUserInterfaceServices.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\MessageBoxSettings.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\PageOrientationEventArgs.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\PageOrientation.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\PageProxy.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Phone\Interop\Graphics\Direct3DSurfaceAdapter.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Phone\Interop\Graphics\IXamlRenderSurfaceAdapter.h" />
+    <ClInclude Include="CoronaLabs\Corona\WinRT\ReadOnlyCoronaLuaEventProperties.h" />
+    <ClInclude Include="CoronaLabs\WinRT\BoxedString.h" />
+    <ClInclude Include="CoronaLabs\WinRT\CancelEventArgs.h" />
+    <ClInclude Include="CoronaLabs\WinRT\EmptyEventArgs.h" />
+    <ClInclude Include="CoronaLabs\WinRT\HandledEventArgs.h" />
+    <ClInclude Include="CoronaLabs\WinRT\ImmutableByteBuffer.h" />
+    <ClInclude Include="CoronaLabs\WinRT\IOperationResult.h" />
+    <ClInclude Include="CoronaLabs\WinRT\MessageEventArgs.h" />
+    <ClInclude Include="CoronaLabs\WinRT\NativeStringServices.h" />
+    <ClInclude Include="CoronaLabs\WinRT\NativeThreadBlocker.h" />
+    <ClInclude Include="CoronaLabs\WinRT\OperationResult.h" />
+    <ClInclude Include="CoronaLabs\WinRT\Utf8String.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTAudioPlayer.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTAudioRecorder.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTBitmap.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTCallback.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTCrypto.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTData.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTDevice.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTDisplayObject.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTEventSound.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTFBConnect.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTFont.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTImageProvider.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTMapViewObject.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTPlatform.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTRuntimeDelegate.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTScreenSurface.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTStore.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTStoreProvider.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTStoreTransaction.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTTextBoxObject.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTTimer.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTVideoObject.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTVideoPlayer.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTVideoProvider.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTWebPopup.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTWebViewObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedList.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedBoolean.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedData.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedNumber.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedString.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedTable.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaLuaEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaLuaEventProperties.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaRuntime.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaRuntimeEnvironment.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaRuntimeEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaRuntimeLaunchSettings.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\DispatchCoronaLuaEventResult.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\CoronaInteropSettings.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\Bitmap.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapConverter.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapInfo.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapInfoResult.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapResult.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapSettings.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\FontSettings.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\HorizontalAlignment.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\ImageDecoderSettings.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\PixelFormat.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\PixelFormatSet.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\RenderSurfaceProxy.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\TextRendererSettings.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\Key.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\KeyEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TapEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchPhase.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchTracker.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchTrackerCollection.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\InteropServices.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Logging\LoggingServices.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Logging\NativeDebuggerLogger.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\CoronaHttpRequestOperation.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpProgressEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpRequestSettings.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpResponseEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\NativeCoronaNetworkLibraryHandler.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\NetworkConnectionStatus.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\RelativeOrientation2D.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Sensors\AccelerometerMonitor.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Sensors\CoronaAccelerometerHandler.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Sensors\CoronaGyroscopeHandler.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Sensors\GyroscopeMonitor.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\CoronaMessageBoxHandler.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\MessageBoxSettings.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\PageOrientationEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\PageOrientation.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\PageProxy.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Phone\Interop\Graphics\Direct3DSurfaceAdapter.cpp" />
+    <ClCompile Include="CoronaLabs\Corona\WinRT\ReadOnlyCoronaLuaEventProperties.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\BoxedString.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\CancelEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\EmptyEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\HandledEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\ImmutableByteBuffer.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\MessageEventArgs.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\NativeStringServices.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\NativeThreadBlocker.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\OperationResult.cpp" />
+    <ClCompile Include="CoronaLabs\WinRT\Utf8String.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTAudioPlayer.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTAudioRecorder.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTBitmap.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTCrypto.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTData.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTDevice.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTDisplayObject.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTEventSound.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTFBConnect.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTFont.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTImageProvider.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTMapViewObject.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTPlatform.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTRuntimeDelegate.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTScreenSurface.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTStore.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTStoreProvider.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTStoreTransaction.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTTextBoxObject.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTTimer.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTVideoObject.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTVideoPlayer.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTVideoProvider.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTWebPopup.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTWebViewObject.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Corona.Rtt.Library\Corona.Rtt.Library.Phone8.0.vcxproj">
+      <Project>{a49f45c7-3aed-44a2-bde1-d6d0cb991790}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\Build.Tools\LuaToCppTask.targets" />
+  </ImportGroup>
+</Project>

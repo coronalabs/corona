@@ -1,0 +1,13 @@
+TODO
+
+Bugs:
+Why doesn't QC layer animate when built in release mode?
+
+Nice-to-haves:
+Make it not drop frames when resizing, etc
+* have it keep a record of drawn frames, and when it draws, if it notices it missed one, draw it
+
+Do more sampling with Shark
+* this background-color method might be too slow?
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

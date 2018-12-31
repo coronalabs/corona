@@ -1,0 +1,2924 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\ndk\generated\ads.c">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\analytics.c">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\composer.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\composer_scene.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\CoronaPrototype.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\CoronaProvider.ads.c">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\CoronaProvider.analytics.c">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\CoronaProvider.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\dkjson.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\easing.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\ftp.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\headers.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\http.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\init.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\json.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_add_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_average_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_color_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_colorBurn_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_colorDodge_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_darken_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_difference_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_exclusion_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_glow_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_hardLight_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_hardMix_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_hue_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_lighten_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_linearLight_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_luminosity_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_multiply_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_negation_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_normalMapWith1DirLight_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_normalMapWith1PointLight_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_overlay_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_phoenix_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_pinLight_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_reflect_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_saturation_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_screen_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_softLight_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_subtract_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_vividLight_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_composite_yuv420f_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_default_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_bloom_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_blur_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_blurGaussian_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_blurHorizontal_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_blurVertical_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_brightness_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_bulge_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_chromaKey_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_color_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_colorChannelOffset_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_colorMatrix_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_colorPolynomial_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_contrast_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_crosshatch_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_crystallize_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_desaturate_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_dissolve_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_duotone_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_emboss_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_exposure_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_frostedGlass_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_grayscale_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_hue_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_invert_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_iris_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_levels_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_linearWipe_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_median_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_monotone_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_opTile_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_pixelate_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_polkaDots_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_posterize_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_radialWipe_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_saturate_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_scatter_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_sepia_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_sharpenLuminance_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_sobel_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_step_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_straighten_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_swirl_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_vignette_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_vignetteMask_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_water_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_wobble_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_woodCut_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_filter_zoomBlur_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_checkerboard_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_lenticularHalo_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_linearGradient_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_marchingAnts_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_perlinNoise_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_radialGradient_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_random_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_stripes_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\kernel_generator_sunbeams_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\launchpad.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\loader_callback.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\loader_ccdata.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\ltn12.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\mbox.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\re.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\runtime.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\shell.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\shell_default_gl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\smtp.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\socket.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\ssl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\timer.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\tp.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\transition.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\transition_v1.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\url.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_button.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_momentumScrolling.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_pickerWheel.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_progressView.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_scrollview.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_searchField.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_segmentedControl.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_slider.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_spinner.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_stepper.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_switch.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_tabbar.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_tableview.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_android.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_android_holo_dark.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_android_holo_dark_sheet.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_android_holo_light.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_android_holo_light_sheet.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_android_sheet.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_ios.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_ios_sheet.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_ios7.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\widget_theme_ios7_sheet.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\rsa\prime.cpp">
+      <Filter>rsa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\rsa\rsa.cpp">
+      <Filter>rsa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\rsa\vlong.cpp">
+      <Filter>rsa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\rsa\vlong_io.cpp">
+      <Filter>rsa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\tcp.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\timeout.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\udp.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\unix.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\usocket.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\auxiliar.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\buffer.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\compat.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\except.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\inet.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\io.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\luasocket.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\options.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\select.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Fixed.c">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_FixedMath.c">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Math.c">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_MD4.c">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Time.c">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_VersionTimestamp.c">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Allocator.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Array.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_ArrayTuple.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_ArrayTupleStruct.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_AutoResource.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_FileSystem.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_FixedBlockAllocator.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_MessageDigest.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_OperationResult.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_RefCount.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_ResourceHandle.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_SharedCount.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_String.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_StringHash.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_UseCount.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_WeakCount.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Assert.c">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TesselatorRoundedRect.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TesselatorShape.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureFactory.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureResource.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureResourceAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureResourceBitmap.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureResourceCanvas.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureResourceExternal.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_VertexCache.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_BitmapMask.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_BitmapPaint.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_BitmapPaintAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_BufferBitmap.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_CameraPaint.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ClosedPath.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_CompositeObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_CompositePaint.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ContainerObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_CPUResourcePool.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_Display.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_DisplayDefaults.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_DisplayObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_DisplayPath.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_DisplayV2.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_EmbossedTextObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_EmitterObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_GradientPaint.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_GradientPaintAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_GroupObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ImageFrame.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ImageSheet.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ImageSheetPaint.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ImageSheetPaintAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ImageSheetUserdata.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_LineObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_LuaLibDisplay.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_LuaLibGraphics.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_OpenPath.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_Paint.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_PaintAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_PlatformBitmap.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_PlatformBitmapTexture.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_RectObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_RectPath.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_Scene.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_Shader.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderBuiltin.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderCache.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderComposite.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderCompositeAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderData.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderDataAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderFactory.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderInput.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderName.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderProxy.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderResource.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShaderTypes.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapter.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterCircle.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterMesh.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterPolygon.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterRect.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterRoundedRect.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShapeObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_ShapePath.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_SnapshotObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_SpriteObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_SpritePlayer.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_SpriteSourceFrame.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_StageObject.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_Tesselator.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TesselatorCircle.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TesselatorLine.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TesselatorMesh.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TesselatorPolygon.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Display\Rtt_TesselatorRect.cpp">
+      <Filter>rtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_InputAxisDescriptor.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_InputAxisType.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_InputDeviceCollection.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_InputDeviceConnectionState.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_InputDeviceDescriptor.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_InputDeviceType.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_PlatformInputAxis.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_PlatformInputDevice.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_ReadOnlyInputAxisCollection.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Input\Rtt_InputAxisCollection.cpp">
+      <Filter>rtt\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformReachability.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformSurface.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformTimer.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformVideoPlayer.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformVideoProvider.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformWebPopup.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Preference.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PreferenceCollection.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PreferenceValue.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Rendering.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_RenderingStream.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Resource.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Runtime.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Archive.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_CachedPath.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_CKWorkflow.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_DeviceOrientation.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_DisplayObjectExtensions.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_EllipsePath.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Event.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_ExplicitTemplates.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_FilePath.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_FillTesselatorStream.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_GPUStream.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_HitTestObject.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_ImageGroupObject.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_JavaHost.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_KeyName.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Lua.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaAssert.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaAux.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaContainer.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaContext.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaCoronaBaseLib.c">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaData.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibCrypto.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibFacebook.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibFlurry.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibGameNetwork.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibInAppStore.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibMedia.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibNative.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibPhysics.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibSQLite.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibSystem.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaProxy.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaProxyVTable.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaResource.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaResourceOwner.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaTableIterator.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaUserdataProxy.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Matrix.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Message.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_ParticleSystemObject.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PhysicsContact.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PhysicsContactListener.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PhysicsJoint.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PhysicsWorld.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformAudioPlayer.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformAudioRecorder.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformAudioSessionManager.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformData.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformDisplayObject.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformEventSound.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformExitCallback.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformFBConnect.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformFont.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformImageProvider.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformInAppStore.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformLocation.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformModalInteraction.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformNotifier.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GLCommandBuffer.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GLFrameBufferObject.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GLProgram.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GLRenderer.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GLTexture.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GPUResource.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_HighPrecisionTime.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_Program.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_ProgramFactory.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_RenderData.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_Renderer.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_RenderTypes.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_ShaderBinary.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_ShaderBinaryVersions.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_Texture.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_TextureBitmap.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_TextureVolatile.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_Uniform.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_VideoTexture.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_CommandBuffer.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_CPUResource.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_FrameBufferObject.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GeometryPool.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GL.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\plugins\shared\CoronaLuaLibraryMetadata.cpp">
+      <Filter>plugins-shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\shared\Rtt_DependencyLoader.cpp">
+      <Filter>plugins-shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\shared\Rtt_DependencyUtilsAndroid.cpp">
+      <Filter>plugins-shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngerror.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pnggccrd.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngget.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngmem.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngpread.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngread.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngrio.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngrtran.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngrutil.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngset.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngtrans.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngvcrd.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngwio.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngwrite.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngwtran.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\pngwutil.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpng1256\png.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luafilesystem\src\lfs.c">
+      <Filter>lfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\LuaHashMap\LuaHashMap.c">
+      <Filter>haskmap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_RuntimeDelegate.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_RuntimeDelegatePlayer.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Scheduler.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_SimpleCachedPath.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_StrokeTesselatorStream.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_TesselatorStream.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Transform.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_Verifier.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Corona\CoronaLua.cpp">
+      <Filter>rtt\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Corona\CoronaLibrary.cpp">
+      <Filter>rtt\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Corona\CoronaGraphics.cpp">
+      <Filter>rtt\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Corona\CoronaEvent.cpp">
+      <Filter>rtt\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Corona\CoronaVersion.c">
+      <Filter>rtt\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Corona\CoronaLog.c">
+      <Filter>rtt\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Corona\CoronaAssert.c">
+      <Filter>rtt\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\shared\Rtt_PlatformConnection.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\jni\importgl.c">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\jni\JavaToNativeBridge.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\jni\JavaToNativeShim.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\jni\NativeToJavaBridge.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\CoronaLibraryGenerated.cpp">
+      <Filter>generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Geometry.cpp">
+      <Filter>rtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_Matrix_Renderer.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lpeg\lpeg.c">
+      <Filter>lpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcapimin.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcapistd.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jccoefct.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jccolor.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcdctmgr.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jchuff.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcinit.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcmainct.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcmarker.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcmaster.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcomapi.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcparam.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcphuff.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcprepct.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jcsample.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jctrans.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdapimin.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdapistd.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdatadst.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdatasrc.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdcoefct.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdcolor.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdhuff.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdinput.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdmainct.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdmarker.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdmerge.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdphuff.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdpostct.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdsample.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdtrans.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jerror.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jfdctflt.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jfdctfst.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jfdctint.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jidctflt.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jidctred.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jmem-android.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jmemmgr.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jutils.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jdmaster.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jquant1.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jquant2.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jddctmgr.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jidctint.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\libjpeg\jidctfst.c">
+      <Filter>libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\luasocket\src\mime.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\plugins\shared\CoronaLuaLibraryShared.cpp">
+      <Filter>plugins-shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2BlockAllocator.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/b2Body.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/b2BroadPhase.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2ChainAndCircleContact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2ChainAndPolygonContact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/Shapes/b2ChainShape.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2CircleContact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/Shapes/b2CircleShape.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/b2CollideCircle.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/b2CollideEdge.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/b2CollidePolygon.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/b2Collision.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2Contact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/b2ContactManager.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2ContactSolver.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/b2Distance.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2DistanceJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2Draw.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/b2DynamicTree.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2EdgeAndCircleContact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2EdgeAndPolygonContact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/Shapes/b2EdgeShape.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/b2Fixture.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2FreeList.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2FrictionJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2GearJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/b2Island.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2Joint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2Math.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2MotorJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2MouseJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Particle/b2Particle.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Particle/b2ParticleAssembly.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Particle/b2ParticleGroup.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Particle/b2ParticleSystem.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2PolygonAndCircleContact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Contacts/b2PolygonContact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/Shapes/b2PolygonShape.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2PrismaticJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2PulleyJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2RevoluteJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2RopeJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\b2Separator-cpp\b2Separator.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2Settings.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2StackAllocator.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2Stat.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Collision/b2TimeOfImpact.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2Timer.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Common/b2TrackedBlock.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Particle/b2VoronoiDiagram.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2WeldJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/Joints/b2WheelJoint.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/b2World.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Dynamics/b2WorldCallbacks.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Renderer\Rtt_GLGeometry.cpp">
+      <Filter>rtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\b2GLESDebugDraw.cpp">
+      <Filter>box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidBaseImageDecoder.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidBaseNativeImageDecoder.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidBinaryReader.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidBinaryReadResult.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidDisplayObjectRegistry.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidFileReader.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidFontSettings.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidGLView.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidImageData.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidImageDecoder.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidJavaImageDecoder.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidKeyServices.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidNativePngDecoder.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidOperationResult.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\AndroidZipFileEntry.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidAudioPlayer.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidAudioRecorder.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidBitmap.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidConnection.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidCrypto.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidData.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidDevice.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidDisplayObject.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidEventSound.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidFont.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidImageProvider.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidInputDevice.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidInputDeviceManager.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidLocation.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidMapViewObject.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidModalInteraction.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidPlatform.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidRuntimeDelegate.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidScreenSurface.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidStore.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidStoreProvider.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidStoreTransaction.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidSurface.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidSystemOpenEvent.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidTextFieldObject.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidTimer.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidVideoObject.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidVideoPlayer.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidVideoProvider.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidWebPopup.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_AndroidWebViewObject.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\lsqlite3-7\lsqlite3.c">
+      <Filter>sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\sqlite3\sqlite3.c">
+      <Filter>sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\smoothpolygon\SmoothPolygon.cpp">
+      <Filter>others</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\generated\mime_generated.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_PlatformOpenSLESPlayer.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ndk\Rtt_LuaLibOpenSLES.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_PlatformOpenALPlayer.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\librtt\Rtt_LuaLibOpenAL.cpp">
+      <Filter>rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\external\ALmixer\luaal.c">
+      <Filter>almixer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\NVPACK\android-ndk-r12b\sources\android\cpufeatures\cpu-features.c">
+      <Filter>cpufeatures</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ndk\generated\ads.lu">
+      <Filter>generated</Filter>
+    </None>
+    <None Include="..\..\ndk\generated\analytics.lu">
+      <Filter>generated</Filter>
+    </None>
+    <None Include="..\..\ndk\generated\CoronaProvider.ads.lu">
+      <Filter>generated</Filter>
+    </None>
+    <None Include="..\..\ndk\generated\CoronaProvider.analytics.lu">
+      <Filter>generated</Filter>
+    </None>
+    <None Include="..\..\..\..\librtt\Core\Rtt_Assert.m">
+      <Filter>rtt\Core</Filter>
+    </None>
+    <None Include="..\..\..\..\librtt\Rtt_LuaCoronaBaseLib.m">
+      <Filter>rtt</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="generated">
+      <UniqueIdentifier>{4466c7ce-81c6-4587-9f38-6b90aa859690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rsa">
+      <UniqueIdentifier>{ba1d3f4a-5faf-465d-a663-a40c523a5b3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket">
+      <UniqueIdentifier>{e7792e8f-03f3-47a9-97ba-97228096f3b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rtt">
+      <UniqueIdentifier>{433312b9-ea21-42e9-ab5d-e6261ccbd680}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rtt\Core">
+      <UniqueIdentifier>{1031c688-b180-40e2-89eb-f46544878fa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rtt\input">
+      <UniqueIdentifier>{bd22fe19-fe4a-48c4-985a-a33c88d010d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="plugins-shared">
+      <UniqueIdentifier>{6e28406e-3c49-4012-9dfc-ad0e9c7f73fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="png">
+      <UniqueIdentifier>{af4d575f-22c9-456a-a281-af7d8d8a2c78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lfs">
+      <UniqueIdentifier>{c327d078-4009-4184-ac95-05e8f72f4ec8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="haskmap">
+      <UniqueIdentifier>{7b45828b-9036-471b-a05f-7e9a7b797c61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rtt\Corona">
+      <UniqueIdentifier>{1f238325-6d2a-49a6-a155-4efc14f5cc6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jni">
+      <UniqueIdentifier>{bbc9a201-adeb-4611-a157-52bc1742bc73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lpeg">
+      <UniqueIdentifier>{445ccc1f-fd95-4aa3-a00a-a608a341a80a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libjpeg">
+      <UniqueIdentifier>{9221fe31-bb64-4402-a014-80bb51e7fa57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="box2D">
+      <UniqueIdentifier>{43ea43c2-f20e-42e5-b1a9-65252166490b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rtt\Renderer">
+      <UniqueIdentifier>{1c226d06-2dba-4aca-b1f7-3974e64c9ac6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rtt\Display">
+      <UniqueIdentifier>{136ead51-484b-4422-9504-5c466b37b39e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Android">
+      <UniqueIdentifier>{c19058ed-167a-4602-99ab-f7fddc20d4f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sqlite">
+      <UniqueIdentifier>{61bc31cf-acd1-4219-b463-1c4304254246}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="others">
+      <UniqueIdentifier>{1a796ac5-516e-40b0-a3ce-1c2e456b3fac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpufeatures">
+      <UniqueIdentifier>{ac878292-2d8b-4d67-844e-0dff49620ff0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="almixer">
+      <UniqueIdentifier>{dcc6e70e-6a42-450c-8b2d-9c3a418b9df8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\external\rsa\vlong.hpp">
+      <Filter>rsa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\rsa\vlong_io.h">
+      <Filter>rsa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\rsa\prime.hpp">
+      <Filter>rsa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\rsa\rsa.hpp">
+      <Filter>rsa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\select.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\tcp.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\timeout.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\udp.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\unix.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\usocket.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\auxiliar.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\buffer.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\compat.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\except.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\inet.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\io.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\luasocket.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\options.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Allocator.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Array.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_ArrayTuple.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_ArrayTupleStruct.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Assert.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_AutoPtr.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_AutoResource.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Build.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Config.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Data.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_FileSystem.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Finalizer.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Fixed.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_FixedBlockAllocator.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_List.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Macros.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Math.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Matrix.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_MD4.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_MessageDigest.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_New.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_OperationResult.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Real.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_RefCount.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_ResourceHandle.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_SharedCount.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_SharedCountImpl.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_SharedPtr.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_SharedStringPtr.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_String.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_StringHash.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Time.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Traits.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Types.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_UseCount.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_ValueResult.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Version.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_VersionTimestamp.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_WeakCount.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_WeakPtr.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TesselatorRect.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TesselatorRoundedRect.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TesselatorShape.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureFactory.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureResource.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureResourceAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureResourceBitmap.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureResourceCanvas.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureResourceExternal.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_VertexCache.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\LuaReader.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_BitmapMask.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_BitmapPaint.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_BitmapPaintAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_BufferBitmap.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_CameraPaint.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ClosedPath.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_CompositeObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_CompositePaint.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ContainerObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_CPUResourcePool.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_Display.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_DisplayDefaults.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_DisplayObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_DisplayPath.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_DisplayTypes.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_DisplayV2.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_EmbossedTextObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_EmitterObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_GradientPaint.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_GradientPaintAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_GroupObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ImageFrame.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ImageSheet.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ImageSheetPaint.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ImageSheetPaintAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ImageSheetUserdata.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_LineObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_LuaLibDisplay.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_LuaLibGraphics.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_MDisplayDelegate.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_MDrawable.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_OpenPath.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_Paint.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_PaintAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_PlatformBitmap.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_PlatformBitmapTexture.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_RectObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_RectPath.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_Scene.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_Shader.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderBuiltin.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderCache.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderComposite.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderCompositeAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderData.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderDataAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderFactory.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderInput.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderName.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderProxy.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderResource.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShaderTypes.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapter.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterCircle.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterMesh.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterPolygon.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterRect.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShapeAdapterRoundedRect.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShapeObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_ShapePath.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_SnapshotObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_SpriteObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_SpritePlayer.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_SpriteSourceFrame.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_StageObject.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_Tesselator.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TesselatorCircle.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TesselatorLine.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TesselatorMesh.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Display\Rtt_TesselatorPolygon.h">
+      <Filter>rtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_InputAxisCollection.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_InputAxisDescriptor.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_InputAxisType.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_InputDeviceCollection.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_InputDeviceConnectionState.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_InputDeviceDescriptor.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_InputDeviceType.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_PlatformInputAxis.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_PlatformInputDevice.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_ReadOnlyInputAxisCollection.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.h">
+      <Filter>rtt\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformReachability.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformSurface.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformTimer.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformVideoPlayer.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformVideoProvider.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformWebPopup.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Preference.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PreferenceCollection.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PreferenceValue.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Rendering.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_RenderingStream.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Resource.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Archive.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_CachedPath.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Callback.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_CKWorkflow.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_CKWorkFlowConstants.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_DeviceOrientation.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_DisplayObjectExtensions.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_EllipsePath.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Event.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_FilePath.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_FillTesselatorStream.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_GPU.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_GPUStream.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_HitTestObject.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_ImageGroupObject.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_JavaHost.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_KeyName.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Lua.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaAssert.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaAux.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaContainer.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaContext.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaCoronaBaseLib.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaData.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaFile.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaFrameworks.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaGCInhibitor.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibCrypto.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibFacebook.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibFlurry.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibGameNetwork.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibInAppStore.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibMedia.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibNative.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibPhysics.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibSocket.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibSQLite.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibSystem.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaProxy.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaProxyVTable.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaResource.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaResourceOwner.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaTableIterator.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaUserdataProxy.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Matrix.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MCallback.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MCriticalSection.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MCrypto.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Message.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MIterable.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MKeyValueIterable.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MLuaProxyable.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MLuaTableBridge.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MPlatform.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MPlatformDevice.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MReloadableResource.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MRuntimeDelegate.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_MUpdatable.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_ParticleSystemObject.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PhysicsContact.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PhysicsContactListener.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PhysicsJoint.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PhysicsTypes.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PhysicsWorld.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformAudioPlayer.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformAudioRecorder.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformAudioSessionManager.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformData.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformDisplayObject.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformEventSound.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformExitCallback.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformFBConnect.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformFont.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformImageProvider.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformInAppStore.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformLocation.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformMediaProviderBase.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformModalInteraction.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformNotifier.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_CommandBuffer.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_CPUResource.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_FrameBufferObject.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GeometryPool.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GL.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GLCommandBuffer.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GLFrameBufferObject.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GLProgram.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GLRenderer.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GLTexture.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GPUResource.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_HighPrecisionTime.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_MCPUResourceObserver.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_Program.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_ProgramFactory.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_RenderData.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_Renderer.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_RenderTypes.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_ShaderBinary.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_ShaderBinaryVersions.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_Texture.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_TextureBitmap.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_TextureVolatile.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_Uniform.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_VideoSource.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_VideoTexture.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\plugins\shared\CoronaLuaLibraryMetadata.h">
+      <Filter>plugins-shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\shared\Rtt_DependencyLoader.h">
+      <Filter>plugins-shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\lpng1256\png.h">
+      <Filter>png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luafilesystem\src\lfs.h">
+      <Filter>lfs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\LuaHashMap\lua_hash_map.hpp">
+      <Filter>haskmap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\LuaHashMap\LuaHashMap.h">
+      <Filter>haskmap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_RuntimeDelegate.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_RuntimeDelegatePlayer.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Scheduler.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_SimpleCachedPath.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_StrokeTesselatorStream.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_SurfaceInfo.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_TesselatorStream.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Transform.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Verifier.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_VerifierData.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_WorkFlowConstants.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_Runtime.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Corona\CoronaVersion.h">
+      <Filter>rtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Corona\CoronaMacros.h">
+      <Filter>rtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Corona\CoronaLua.h">
+      <Filter>rtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Corona\CoronaLog.h">
+      <Filter>rtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Corona\CoronaLibrary.h">
+      <Filter>rtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Corona\CoronaGraphics.h">
+      <Filter>rtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Corona\CoronaEvent.h">
+      <Filter>rtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Corona\CoronaAssert.h">
+      <Filter>rtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\shared\Rtt_PlatformConnection.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\jni\com_ansca_corona_JavaToNativeShim.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\jni\importgl.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\jni\JavaToNativeBridge.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\jni\NativeToJavaBridge.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Geometry.h">
+      <Filter>rtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_Matrix_Renderer.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\lpeg\lpeg.h">
+      <Filter>lpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\luasocket\src\mime.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\plugins\shared\CoronaLuaLibraryShared.h">
+      <Filter>plugins-shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Renderer\Rtt_GLGeometry.h">
+      <Filter>rtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\b2GLESDebugDraw.h">
+      <Filter>box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidBaseImageDecoder.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidBaseNativeImageDecoder.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidBinaryReader.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidBinaryReadResult.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidDisplayObjectRegistry.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidFileReader.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidFontSettings.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidGLView.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidImageData.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidImageDecoder.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidJavaImageDecoder.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidKeyServices.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidNativePngDecoder.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidOperationResult.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\AndroidZipFileEntry.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidAudioPlayer.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidAudioRecorder.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidBitmap.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidConnection.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidCrypto.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidData.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidDevice.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidDisplayObject.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidEventSound.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidFont.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidImageProvider.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidInputDevice.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidInputDeviceManager.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidLocation.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidMapViewObject.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidModalInteraction.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidPlatform.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidRuntimeDelegate.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidScreenSurface.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidStore.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidStoreProvider.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidStoreTransaction.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidSurface.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidSystemOpenEvent.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidTextFieldObject.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidTimer.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidVideoObject.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidVideoPlayer.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidVideoProvider.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidWebPopup.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_AndroidWebViewObject.h">
+      <Filter>Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_PlatformOpenSLESPlayer.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ndk\Rtt_LuaLibOpenSLES.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_PlatformOpenALPlayer.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\librtt\Rtt_LuaLibOpenAL.h">
+      <Filter>rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\external\ALmixer\luaal.h">
+      <Filter>almixer</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\NVPACK\android-ndk-r12b\sources\android\cpufeatures\cpu-features.h">
+      <Filter>cpufeatures</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

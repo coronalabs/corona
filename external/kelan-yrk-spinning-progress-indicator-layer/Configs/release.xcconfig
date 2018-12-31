@@ -1,0 +1,89 @@
+//
+//  release.xcconfig
+//
+// All the shared build settings go in this file.  Then the other .xcconfig files can 
+// #import this and override settings as necessary.
+//
+// There shouldn't be anything set at the Project level in the Xcode UI, except:
+//      * Info.plist
+//      * Product Name
+//
+
+// Architectures
+ARCHS = $(ARCHS_STANDARD_32_64_BIT)
+SDKROOT = macosx  // latest Mac OS
+ONLY_ACTIVE_ARCH = NO
+
+
+// Build Options
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+
+
+// Compiler Version
+GCC_VERSION = com.apple.compilers.llvm.clang.1_0
+
+
+// Code Generation
+GCC_DYNAMIC_NO_PIC = YES
+GCC_ENABLE_FIX_AND_CONTINUE = NO
+GCC_GENERATE_DEBUGGING_SYMBOLS = NO
+GCC_OPTIMIZATION_LEVEL = s
+GCC_SYMBOLS_PRIVATE_EXTERN = YES  // "Symbols Hidden by Default" in the GUI
+LLVM_LTO = NO
+
+
+// Deployment
+COPY_PHASE_STRIP = YES
+MACOSX_DEPLOYMENT_TARGET = 10.5
+STRIP_INSTALLED_PRODUCT = YES
+
+
+// Language
+GCC_C_LANGUAGE_STANDARD = gnu99
+GCC_PRECOMPILE_PREFIX_HEADER = YES
+OTHER_CPLUSPLUSFLAGS = $(OTHER_CFLAGS)
+
+
+// Preprocessing
+GCC_PREPROCESSOR_DEFINITIONS = NS_BLOCK_ASSERTIONS
+
+
+// Linking
+OTHER_LDFLAGS = -ObjC
+DEAD_CODE_STRIPPING = YES
+STRIP_STYLE = all
+
+
+// Search Paths
+ALWAYS_SEARCH_USER_PATHS = NO
+
+
+// Warnings
+GCC_TREAT_WARNINGS_AS_ERRORS = YES
+// We have to add -Wno-unused-parameter here, because this flag gets added
+// after the specific GCC_WARN_* warnings below, so the -Wall overrides
+// any GCC_WARN_UNUSED_PARAMETER value.
+WARNING_CFLAGS = -Wall -Wextra -Wno-unused-parameter
+
+// Some advice from: http://boredzo.org/blog/archives/2009-11-07/warnings
+GCC_WARN_64_TO_32_BIT_CONVERSION = YES
+GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES
+GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES
+GCC_WARN_ABOUT_MISSING_NEWLINE = YES
+GCC_WARN_ABOUT_RETURN_TYPE = YES
+GCC_WARN_CHECK_SWITCH_STATEMENTS = YES
+GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES
+GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES
+GCC_WARN_MISSING_PARENTHESES = YES
+GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES
+GCC_WARN_SHADOW = YES
+GCC_WARN_SIGN_COMPARE = YES
+GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES
+GCC_WARN_UNDECLARED_SELECTOR = YES
+GCC_WARN_UNUSED_FUNCTION = YES
+GCC_WARN_UNUSED_LABEL = YES
+GCC_WARN_UNUSED_PARAMETER = NO
+GCC_WARN_UNUSED_VALUE = YES
+GCC_WARN_UNUSED_VARIABLE = YES
+
+

@@ -1,0 +1,11 @@
+ALmixer copyright belongs to Eric Wing/PlayControl Software LLC and is under the LGPL. However, his contract with Corona Labs Inc. grants Corona Labs Inc. a separate license to use this code that is not bound by the LGPL.
+
+
+ALmixer depends normally on SDL and SDL_sound. To get around those LGPL dependencies, Eric Wing has reimplemented a basic shim to bypass those libraries. For iOS, all the essential logic is contained in the coreaudio.c implementation of SDL_sound. Since Eric Wing also owns the copyright to that, he can grant Corona Labs Inc. another separate license for that too. The shim basically is to stand-in for the SDL_sound interface and then call the underlying CoreAudio decoder. Other management functionality was reimplemented, also utilizing Eric Wing's LinkedList and tErrorLib libraries.
+
+Android, we had the option of compiling with SDL & SDL_sound or without. We decided to go without because compiling SDL for Android at the time was too much effort. However, we bring over SDL_sound's Ogg Tremor, mpg123, and wav decoders which are under the LGPL. Since Android permits dynamic linking (unlike iOS), this is less of an issue. However, because we currently compile most of the audio stuff into a big blob which becomes the libALmixer.so, all the files compiled into the blob are bound by the LGPL and must be publicly available.
+
+
+luaal is a small open source library that implements Lua bindings for OpenAL. It is MIT licensed. ALmixer does not require it, but it was placed in this directory for conveninece.
+
+

@@ -1,0 +1,8 @@
+WARNING
+-------
+
+TimXmlRpc.cpp and TimXmlRpc.h are licensed under the Lesser GNU Public License.
+Only use this code by linking with winxmlrpc.lib and calling winxmlrpc.dll.
+It is permitted to include TimXmlRpc.h in the calling code.
+
+The source code was downloaded from http://sourceforge.net/projects/xmlrpcc4win/ .

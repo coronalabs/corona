@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibSocket.h">
+      <Filter>librtt</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Corona.Debugger.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="external">
+      <UniqueIdentifier>{d809ce37-b6fc-49f8-899b-1cc7cfb2aabd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\remdebug-1.0">
+      <UniqueIdentifier>{17486c2b-f034-4bdc-b13a-068a654d47d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\remdebug-1.0\src">
+      <UniqueIdentifier>{29cb027b-7fe5-49fa-a4cc-6a2d9089b11a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="librtt">
+      <UniqueIdentifier>{f0c00a97-e4be-400e-b777-66f8ec49cd29}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\..\external\remdebug-1.0\src\controller.lua">
+      <Filter>external\remdebug-1.0\src</Filter>
+    </LuaToCpp>
+  </ItemGroup>
+</Project>

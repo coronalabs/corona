@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 28.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="28.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="28.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#28">Chapter 28. User-Defined Types in C</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="oo-array"><h2>28.3 - Object-Oriented Access</h2></a>
+
+<p>Our next step is to transform our new type into an object,
+so that we can operate on its instances
+using the usual object-oriented syntax,
+such as
+<pre>
+    a = array.new(1000)
+    print(a:size())     --> 1000
+    a:set(10, 3.4)
+    print(a:get(10))    --> 3.4
+</pre>
+
+<p>Remember that <code>a:size()</code> is equivalent to <code>a.size(a)</code>.
+Therefore, we have to arrange for the expression <code>a.size</code> to return our
+<code>getsize</code> function.
+The key mechanism here is the <code>__index</code> metamethod.
+For tables, this metamethod is called whenever Lua cannot find
+a value for a given key.
+For userdata, it is called in every access,
+because userdata have no keys at all.
+
+<p>Assume that we run the following code:
+<pre>
+    local metaarray = getmetatable(array.new(1))
+    metaarray.__index = metaarray
+    metaarray.set = array.set
+    metaarray.get = array.get
+    metaarray.size = array.size
+</pre>
+In the first line,
+we create an array only to get its metatable,
+which we assign to <code>metaarray</code>.
+(We cannot set the metatable of a userdata from Lua,
+but we can get its metatable without restrictions.)
+Then we set <code>metaarray.__index</code> to <code>metaarray</code>.
+When we evaluate <code>a.size</code>,
+Lua cannot find the key <code>"size"</code> in object <code>a</code>,
+because the object is a userdatum.
+Therefore, Lua will try to get this value from
+the field <code>__index</code> of the metatable of <code>a</code>,
+which happens to be <code>metaarray</code> itself.
+But <code>metaarray.size</code> is <code>array.size</code>,
+so <code>a.size(a)</code> results in <code>array.size(a)</code>,
+as we wanted.
+
+<p>Of course, we can write the same thing in C.
+We can do even better:
+Now that arrays are objects,
+with their own operations,
+we do not need to have those operations in the table
+<code>array</code> anymore.
+The only function that our library still has to export is <code>new</code>,
+to create new arrays.
+All other operations come only as methods.
+The C code can register them directly as such.
+
+<p>The operations <code>getsize</code>, <code>getarray</code>, and <code>setarray</code>
+do not change from our previous approach.
+What will change is how we register them.
+That is, we have to change the function that opens the library.
+First, we need two separate function lists,
+one for regular functions and one for methods:
+<pre>
+    static const struct luaL_reg arraylib_f [] = {
+      {"new", newarray},
+      {NULL, NULL}
+    };
+    
+    static const struct luaL_reg arraylib_m [] = {
+      {"set", setarray},
+      {"get", getarray},
+      {"size", getsize},
+      {NULL, NULL}
+    };
+</pre>
+The new version of <code>luaopen_array</code>,
+the function that opens the library,
+has to create the metatable,
+to assign it to its own <code>__index</code> field,
+to register all methods there,
+and to create and fill the <code>array</code> table:
+<pre>
+    int luaopen_array (lua_State *L) {
+      luaL_newmetatable(L, "LuaBook.array");
+    
+      lua_pushstring(L, "__index");
+      lua_pushvalue(L, -2);  /* pushes the metatable */
+      lua_settable(L, -3);  /* metatable.__index = metatable */
+    
+      luaL_openlib(L, NULL, arraylib_m, 0);
+    
+      luaL_openlib(L, "array", arraylib_f, 0);
+      return 1;
+    }
+</pre>
+Here we use another feature from <code>luaL_openlib</code>.
+In the first call, when we pass <code>NULL</code> as the library name,
+<code>luaL_openlib</code> does not create any table to pack the functions;
+instead, it assumes that the package table is on the stack,
+below any occasional upvalues.
+In this example, the package table is the metatable itself,
+which is where <code>luaL_openlib</code> will put the methods.
+The next call to <code>luaL_openlib</code> works regularly:
+It creates a new table with the given name (<code>array</code>)
+and registers the given functions there
+(only <code>new</code>, in this case).
+
+<p>As a final touch,
+we will add a <code>__tostring</code> method to our new type,
+so that <code>print(a)</code> prints <code>array</code> plus the size of
+the array inside parentheses (for instance, <code>array(1000)</code>).
+The function itself is here:
+<pre>
+    int array2string (lua_State *L) {
+      NumArray *a = checkarray(L);
+      lua_pushfstring(L, "array(%d)", a->size);
+      return 1;
+    }
+</pre>
+The <code>lua_pushfstring</code> function formats the string
+and leaves it on the stack top.
+We also have to add <code>array2string</code> to the list <code>arraylib_m</code>,
+to include it in the metatable of array objects:
+<pre>
+    static const struct luaL_reg arraylib_m [] = {
+      {"__tostring", array2string},
+      {"set", setarray},
+      ...
+    };
+</pre>
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="28.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

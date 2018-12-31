@@ -1,0 +1,122 @@
+CoronaBuilder
+=============
+
+Overview
+--------
+
+CoronaBuilder is a command line tool for automated builds.
+
+The tool is packaged in a Mac .app bundle because of various resource files it needs. You can type the following in Terminal to get a list of commands:
+
+	/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder
+
+
+Getting Started
+---------------
+
+### Activation ###
+
+You must purchase an **Enterprise Automated Build** subscription to activate this product. Contact sales via our [web form](http://www.coronalabs.com/products/contact) for more information.
+
+To activate, type the following:
+
+	/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder authorize email password
+
+where `email` and `password` are associated with the Enterprise account subscription.
+
+This will activate a computer to use CoronaBuilder. Every account is allowed one computer. 
+
+If you wish to activate CoronaBuilder on a different computer for the same account, you must first deactivate the original computer before activating on another one (or purchase additional subscriptions):
+
+	/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder deauthorize
+
+
+### Building ###
+
+To build you must supply a file in Lua or JSON formats that contain the build arguments.
+
+Here's an example Lua file for iOS (fishies.ios.lua):
+
+	local params =
+	{
+		platform='iOS',
+		appName='Fishies',
+		appVersion='1.0',
+		dstPath='/Users/JohnSmith/Desktop',
+		sdkPath='/Developer',
+		certificatePath='/path/to/Dev.mobileprovision',
+		projectPath='/Applications/CoronaSDK/SampleCode/Graphics/Fishies',
+
+		-- Following are optional:
+		--[[
+		platformVersion='iOS6.0', -- allows targeting iOS beta builds
+		--]]
+	}
+	return params
+
+And here's an example of a Lua file for Android (fishies.android.lua):
+
+	local params =
+	{
+		platform='Android',
+		appName='Fishies',
+		appVersion='1.0',
+		dstPath='/Users/wluh/Desktop',
+		sdkPath='/Developer',
+		projectPath='/Applications/CoronaSDK/SampleCode/Graphics/Fishies',
+		androidAppPackage='com.coronalabs.Fishies',
+		
+		-- Following are optional:
+		--[[
+		certificatePath='/path/to/cert.keystore',
+		keystorePassword='',
+		keystoreAlias='',
+		keystoreAliasPassword='',
+		androidVersionCode=1,
+		--]]
+	}
+	return params
+
+Note that in both Lua file, the `params` table is returned at the end of the file.
+
+To kick off the build process using these Lua files, type the following:
+
+	/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.ios.lua
+
+	/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.android.lua
+
+
+SSH Sessions
+------------
+
+### iOS ###
+
+If you wish to build on iOS and invoke CoronaBuilder in a SSH session, you must unlock the keychain corresponding to the developer certificate. Otherwise your app will not get signed properly. Typically, this is `login.keychain`
+
+In the SSH session, you can type the following:
+
+	security unlock-keychain -p userpassword /Users/[yourusername]/Library/Keychains/login.keychain. 
+
+where `userpassword` is the password corresponding to the user `[yourusername]`.
+
+
+Daily Builds
+------------
+
+You can build against a specific daily build number by adding the corresponding custom build id string in the `build.settings` file. A list of custom build ids is available [here](https://developer.coronalabs.com/downloads/daily-build-ids).
+
+	settings =
+	{
+		build =
+		{
+			-- Replace $CUSTOM_BUILD_ID with a build id from https://developer.coronalabs.com/downloads/daily-build-ids
+			-- For example, to get 2012.1076, use "4a7c9b5c0a38bf8dae750d1ec902c08f"
+			custom = "$CUSTOM_BUILD_ID",
+		}
+	}
+
+
+Known Issues
+------------
++ JSON format is not supported yet
++ stdin mode for build is not working yet.

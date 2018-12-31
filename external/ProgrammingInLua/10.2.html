@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 10.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="10.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="11.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#10">Chapter 10. Complete Examples</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="Markov"><h2>10.2 - Markov Chain Algorithm</h2></a>
+
+<p>Our second example is an implementation of the <em>Markov chain algorithm</em>.
+The program generates random text,
+based on what words may follow
+a sequence of <em>n</em> previous words in a base text.
+For this implementation, we will use <em>n=2</em>.
+
+<p>The first part of the program reads the base text and
+builds a table that, for each prefix of two words,
+gives a list with the words that follow that prefix in the text.
+After building the table,
+the program uses the table to generate random text,
+wherein each word follows two previous words with the same
+probability of the base text.
+As a result, we have text that is very, but not quite, random.
+For instance,
+when applied over this book,
+the output of the program has pieces like
+"<em>Constructors can also traverse a table constructor,
+then the parentheses in the following
+line does the whole file in a field <code>n</code>
+to store the contents of each function,
+but to show its only argument.
+If you want to find the maximum element in an array can return both the
+maximum value and continues showing the prompt and running the code.
+The following words are reserved and cannot be used
+to convert between degrees and radians.</em>"
+
+<p>We will code each prefix by its two words concatenated
+with spaces in between:
+<pre>
+    function prefix (w1, w2)
+      return w1 .. ' ' .. w2
+    end
+</pre>
+We use the string <code>NOWORD</code> (<code>"\n"</code>) to initialize the
+prefix words and to mark the end of the text.
+For instance, for the following text
+<pre>
+    the more we try the more we do
+</pre>
+the table of following words would be
+<pre>
+    { ["\n \n"] = {"the"},
+      ["\n the"] = {"more"},
+      ["the more"] = {"we", "we"},
+      ["more we"] = {"try", "do"},
+      ["we try"] = {"the"},
+      ["try the"] = {"more"},
+      ["we do"] = {"\n"},
+    }
+</pre>
+
+<p>The program keeps its table in the global variable <code>statetab</code>.
+To insert a new word in a prefix list of this table,
+we use the following function:
+<pre>
+    function insert (index, value)
+      if not statetab[index] then
+        statetab[index] = {value}
+      else
+        table.insert(statetab[index], value)
+      end
+    end
+</pre>
+It first checks whether that prefix already has a list;
+if not, it creates a new one with the new value.
+Otherwise, it uses the predefined function <code>table.insert</code> to insert
+the new value at the end of the existing list.
+
+<p>To build the <code>statetab</code> table, we keep two variables,
+<code>w1</code> and <code>w2</code>, with the last two words read.
+For each prefix, we keep a list of all words that follow it.
+
+<p>After building the table,
+the program starts to generate a text with <code>MAXGEN</code> words.
+First, it re-initializes variables <code>w1</code> and <code>w2</code>.
+Then, for each prefix, it chooses randomly a next word
+from the list of valid next words,
+prints that word, and updates <code>w1</code> and <code>w2</code>.
+Next we show the complete program.
+
+<pre>
+    -- Markov Chain Program in Lua
+    
+    function allwords ()
+      local line = io.read()    -- current line
+      local pos = 1             -- current position in the line
+      return function ()        -- iterator function
+        while line do           -- repeat while there are lines
+          local s, e = string.find(line, "%w+", pos)
+          if s then      -- found a word?
+            pos = e + 1  -- update next position
+            return string.sub(line, s, e)   -- return the word
+          else
+            line = io.read()    -- word not found; try next line
+            pos = 1             -- restart from first position
+          end
+        end
+        return nil            -- no more lines: end of traversal
+      end
+    end
+    
+    function prefix (w1, w2)
+      return w1 .. ' ' .. w2
+    end
+    
+    local statetab
+    
+    function insert (index, value)
+      if not statetab[index] then
+        statetab[index] = {n=0}
+      end
+      table.insert(statetab[index], value)
+    end
+    
+    local N  = 2
+    local MAXGEN = 10000
+    local NOWORD = "\n"
+    
+    -- build table
+    statetab = {}
+    local w1, w2 = NOWORD, NOWORD
+    for w in allwords() do
+      insert(prefix(w1, w2), w)
+      w1 = w2; w2 = w;
+    end
+    insert(prefix(w1, w2), NOWORD)
+</pre>
+<pre>
+    -- generate text
+    w1 = NOWORD; w2 = NOWORD     -- reinitialize
+    for i=1,MAXGEN do
+      local list = statetab[prefix(w1, w2)]
+      -- choose a random item from list
+      local r = math.random(table.getn(list))
+      local nextword = list[r]
+      if nextword == NOWORD then return end
+      io.write(nextword, " ")
+      w1 = w2; w2 = nextword
+    end
+</pre>
+
+<p>
+<a name="tables"></a>
+
+
+<p>
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="11.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

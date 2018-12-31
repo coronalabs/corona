@@ -1,0 +1,13 @@
+include config.darwin
+
+OBJS= src/clocks.o src/core_profiler.o src/function_meter.o src/stack.o src/lua50_profiler.o
+
+profiler: $(OBJS)
+	export MACOSX_DEPLOYMENT_TARGET=10.3 && mkdir -p bin && gcc -bundle -undefined dynamic_lookup -o $(PROFILER_OUTPUT) $(OBJS)
+
+clean:
+	rm -f $(PROFILER_OUTPUT) src/*.o
+
+install:
+	install -m 0755 $(PROFILER_OUTPUT) /usr/local/lib/lua/5.1
+

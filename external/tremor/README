@@ -1,0 +1,7 @@
+This version of Tremor is derived from xiph.org's lowmem branch.  It has been
+patched against publicly known vulnerabilities with sample files available
+here:
+
+ http://static.dataspill.org/releases/ogg/examples/
+
+When syncing with svn, please ensure that these defects are not reintroduced.

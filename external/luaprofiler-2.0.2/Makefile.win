@@ -1,0 +1,23 @@
+# $Id: Makefile.win,v 1.8 2007/08/22 17:45:56 carregal Exp $
+
+T= profiler
+V= 2.0.1
+
+include config.win
+
+OBJS= src\clocks.obj src\core_profiler.obj src\function_meter.obj src\stack.obj src\lua50_profiler.obj
+
+lib: src\$(LIBNAME)
+
+.c.obj:
+	$(CC) /c /Fo$@ $(CFLAGS) $<
+
+src\$(LIBNAME): $(OBJS)
+	link /dll /def:src\$T.def /out:src\$(LIBNAME) $(OBJS) $(LUA_LIB)
+
+install: src\$(LIBNAME)
+	IF NOT EXIST $(LUA_LIBDIR) mkdir $(LUA_LIBDIR)
+	copy src\$(LIBNAME) $(LUA_LIBDIR)
+
+clean:
+	del src\$(LIBNAME) $(OBJS) src\$T.lib src\$T.exp

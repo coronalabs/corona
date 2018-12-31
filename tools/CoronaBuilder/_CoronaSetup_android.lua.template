@@ -1,0 +1,29 @@
+M = {}
+
+function M.validateSplashScreen()
+	local splashFileName = nil
+	local splashFilesize = -1
+
+	local function validationListener()
+		native.requestExit()
+	end
+
+	local function showAlert()
+		native.showAlert("Application Validation Error", "Incorrect splash screen - the splash screen built into the app is not the one that shipped with build "..system.getInfo("build").." of Corona.\n\nActivate the Corona Splash Screen Control plugin in the Marketplace if you want to customize it.", {"OK"}, validationListener)
+	end
+
+	splashFileName = "drawable/_corona_splash_screen.png"
+	splashFilesize = DEFAULT_ANDROID_SPLASH_IMAGE_FILE_SIZE
+
+	-- print( "validateSplashScreen: splashFileName: "..tostring(splashFileName).."; splashFilesize: "..tostring(splashFilesize).."; platform: ",system.getInfo( "platform"))
+	if splashFileName then
+		if not system.request( "validateResourceFile", { filename = splashFileName, size = splashFilesize }) then
+			showAlert()
+			return false
+		end
+	else
+		return true
+	end
+end
+
+return M

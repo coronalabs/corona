@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\..\..\external\sqlite3\sqlite3.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\..\external\sqlite3\sqlite3.h" />
+    <ClInclude Include="..\..\..\external\sqlite3\sqlite3ext.h" />
+  </ItemGroup>
+</Project>

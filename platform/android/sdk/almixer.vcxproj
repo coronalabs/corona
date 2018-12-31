@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="NsightTegraProject">
+    <NsightTegraProjectRevisionNumber>11</NsightTegraProjectRevisionNumber>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Tegra-Android">
+      <Configuration>Debug</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Tegra-Android">
+      <Configuration>Release</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Tegra-Android">
+      <Configuration>Shipping</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Rtt_AndroidAppPackager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Rtt_AndroidAppPackager.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{96519700-B575-42C0-B497-CC22A81E43F1}</ProjectGuid>
+    <RootNamespace>Android1</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
+    <AndroidTargetAPI>android-24</AndroidTargetAPI>
+    <AndroidMinAPI>android-15</AndroidMinAPI>
+    <AndroidStlType>stlport_static</AndroidStlType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
+    <AndroidTargetAPI>android-15</AndroidTargetAPI>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Shipping|Tegra-Android'">
+    <AndroidTargetAPI>android-15</AndroidTargetAPI>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <AdditionalIncludeDirectories>Z:\corona\main\external/ALmixer;Z:\corona\main\external/ALmixer/Isolated/LGPL;Z:\corona\main\external/ALmixer/Isolated;Z:\corona\main\external/mpg123-1.13.1/src/libmpg123;Z:\corona\main\external/tremor/Tremor;Z:\corona\main\external\openal-soft_apportable\jni\OpenAL\include\AL</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>
+      </PreprocessorDefinitions>
+      <AdditionalOptions>-DSOUND_SUPPORTS_WAV -DSOUND_SUPPORTS_OGG -DANDROID_NDK -DENABLE_ALMIXER_THREADS -DALMIXER_COMPILE_WITHOUT_SDL -ALMIXER_USE_APPORTABLE_OPENAL_EXTENSIONS -DOPENAL_FIXED_POINT -DOPENAL_FIXED_POINT_SHIFT=16 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <AntBuild>
+      <JarDirectories>
+      </JarDirectories>
+    </AntBuild>
+    <AntBuild>
+      <JarDependencies>
+      </JarDependencies>
+      <AndroidManifestLocation>Z:\corona\main\platform\android\sdk\AndroidManifest.xml</AndroidManifestLocation>
+      <NativeLibDirectories>
+      </NativeLibDirectories>
+      <NativeLibDependencies>
+      </NativeLibDependencies>
+    </AntBuild>
+    <Link>
+      <AdditionalOptions>-llog -ldl -lOpenSLES %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>Z:\corona\main\platform\android\sdk\Tegra-Android\Debug\libalmixer.so</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 17.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="17.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="18.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#17">Chapter 17. Weak Tables</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>17.3 - Revisiting Tables with Default Values</h2>
+
+<p>In <a href="13.4.3.html#def-values">Section 13.4.3</a>, we discussed how to implement tables with
+non-nil default values.
+We saw one particular technique and commented that two other
+techniques need weak tables so we postponed them.
+Now it is time to revisit the subject.
+As we will see, those two techniques for default values
+are actually particular applications of the two general
+techniques that we have seen here:
+object attributes and memoizing.
+
+<p>In the first solution,
+we use a weak table to associate to each table its default value:
+<pre>
+    local defaults = {}
+    setmetatable(defaults, {__mode = "k"})
+    local mt = {__index = function (t) return defaults[t] end}
+    function setDefault (t, d)
+      defaults[t] = d
+      setmetatable(t, mt)
+    end
+</pre>
+If <code>defaults</code> had not weak keys,
+it would anchor all tables with default values into permanent existence.
+
+<p>In the second solution,
+we use distinct metatables for distinct default values,
+but we reuse the same metatable whenever we repeat a default value.
+This is a typical use of memoizing:
+<pre>
+    local metas = {}
+    setmetatable(metas, {__mode = "v"})
+    function setDefault (t, d)
+      local mt = metas[d]
+      if mt == nil then
+        mt = {__index = function () return d end}
+        metas[d] = mt     -- memoize
+      end
+      setmetatable(t, mt)
+    end
+</pre>
+We use weak values, in this case,
+to allow the collection of metatables that are not
+being used anymore.
+
+<p>Given these two implementations for default values,
+which is best?
+As usual, it depends.
+Both have similar complexity and similar performance.
+The first implementation needs a few words for each
+table with a default value (an entry in <code>defaults</code>).
+The second implementation needs a few dozen words for
+each distinct default value
+(a new table, a new closure, plus an entry in <code>metas</code>).
+So, if your application has thousands of tables with a
+few distinct default values,
+the second implementation is clearly superior.
+On the other hand, if few tables share common defaults,
+then you should use the first one.
+
+<p>
+
+
+
+<p>
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="18.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

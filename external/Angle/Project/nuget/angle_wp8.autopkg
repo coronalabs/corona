@@ -1,0 +1,103 @@
+nuget {
+	nuspec {
+		id = angle_wp8;
+		version : 0.0.0.1;
+		title: ANGLE for Windows Phone 8.0;
+		authors: {Microsoft Open Technologies, Inc.};
+		owners: {Microsoft Open Technologies, Inc.};
+		licenseUrl: "https://github.com/MSOpenTech/angle/blob/winrt/LICENSE";
+		projectUrl: "https://github.com/MSOpenTech/angle";
+		iconUrl: "https://secure.gravatar.com/avatar/75752e740f4383e6f3eda0767789a815?s=32&r=g&d=retro";
+		requireLicenseAcceptance:false;
+		summary: ANGLE for Windows Phone 8.0;
+		
+		// if you need to span several lines you can prefix a string with an @ symbol (exactly like c# does).
+		description: @"prebuilt libaries for Windows Phone 8.0 version of ANGLE";
+		releaseNotes: "prebuilt libaries for Windows Phone 8.0 version of ANGLE";
+		copyright: "Copyright Microsoft Open Technologies, Inc";
+		tags: { native, angle, angleproject, WP8, opengl, Windows Phone 8.0, opengles, directx };
+	};
+
+	// the files that go into the content folders
+	files {
+	
+		#defines 
+		{
+			PATH	=  ..\src\WP8\redist\vs2012;
+			INCLUDE	=  ..\include;
+			SRC	=  ..\src;
+			LIBJPEG	=  libjpeg.lib;
+		}
+	
+		include: 
+		{ 
+			".\${INCLUDE}\**\*";
+			"..\src\common\winrtangle.h";
+			"..\samples\gles2_book\Common\esUtil.h";
+		}
+					
+		[win32,v110,debug] 
+		{
+			lib:
+			{
+				${PATH}\Win32\Debug\esUtil_phone\esUtil_phone.lib;
+				${PATH}\Win32\Debug\libEGL_phone\libEGL_phone.lib;
+				${PATH}\Win32\Debug\libGLESv2_phone\libGLESv2_phone.lib;
+			}
+
+			bin: 
+			{
+				${PATH}\Win32\Debug\libEGL_phone\libEGL_phone.dll;
+				${PATH}\Win32\Debug\libGLESv2_phone\libGLESv2_phone.dll;
+			}
+		};
+
+		[win32,v110,release] 
+		{
+			lib:
+			{
+				${PATH}\Win32\Release\esUtil_phone\esUtil_phone.lib;
+				${PATH}\Win32\Release\libEGL_phone\libEGL_phone.lib;
+				${PATH}\Win32\Release\libGLESv2_phone\libGLESv2_phone.lib;
+			}
+
+			bin: 
+			{
+				${PATH}\Win32\Release\libEGL_phone\libEGL_phone.dll;
+				${PATH}\Win32\Release\libGLESv2_phone\libGLESv2_phone.dll;
+			}
+		};
+		
+		[arm,v110,debug] 
+		{
+			lib:
+			{
+				${PATH}\ARM\Debug\esUtil_phone\esUtil_phone.lib;
+				${PATH}\ARM\Debug\libEGL_phone\libEGL_phone.lib;
+				${PATH}\ARM\Debug\libGLESv2_phone\libGLESv2_phone.lib;
+			}
+
+			bin: 
+			{
+				${PATH}\ARM\Debug\libEGL_phone\libEGL_phone.dll;
+				${PATH}\ARM\Debug\libGLESv2_phone\libGLESv2_phone.dll;
+			}
+		};
+		
+		[arm,v110,release] 
+		{
+			lib:
+			{
+				${PATH}\ARM\Release\esUtil_phone\esUtil_phone.lib;
+				${PATH}\ARM\Release\libEGL_phone\libEGL_phone.lib;
+				${PATH}\ARM\Release\libGLESv2_phone\libGLESv2_phone.lib;
+			}
+
+			bin: 
+			{
+				${PATH}\ARM\Release\libEGL_phone\libEGL_phone.dll;
+				${PATH}\ARM\Release\libGLESv2_phone\libGLESv2_phone.dll;
+			}
+		};
+	};
+}

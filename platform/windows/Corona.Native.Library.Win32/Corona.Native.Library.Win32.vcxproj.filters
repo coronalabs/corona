@@ -1,0 +1,650 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="Rtt\Rtt_WinAudioPlayer.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinAudioRecorder.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinBitmap.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinCrypto.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinData.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinDevice.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinDisplayObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinEventSound.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinFBConnect.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinFont.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinImageProvider.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinLocation.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinModalInteraction.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinPlatform.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinScreenSurface.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinTextBoxObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinTimer.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinVideoObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinVideoPlayer.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinVideoProvider.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinWebPopup.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinWebViewObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="WinSound.h" />
+    <ClInclude Include="WinString.h" />
+    <ClInclude Include="WinFile.h" />
+    <ClInclude Include="Interop\RuntimeEnvironment.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\MDeviceSimulatorServices.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\EventArgs.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\BaseEvent.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Event.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\OperationResult.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\PointerResult.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\HandledEventArgs.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\MessageOnlyWindow.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\HandleMessageEventArgs.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\MessageSettings.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\UIComponent.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\Control.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\RenderSurfaceControl.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinInputDeviceManager.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Corona\CoronaWin32.h">
+      <Filter>Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Interop\Graphics\FontServices.h">
+      <Filter>Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\UIComponentCollection.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\ReadOnlyUIComponentCollection.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\Window.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinExitCallback.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\ApplicationServices.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\TaskDialog.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\CoronaTaskDialogHandler.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\RuntimeState.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\TaskDialogSettings.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\StaticFinalizer.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\ValueResult.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\winutil\XMessageBox.h">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\StaticInitializer.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\TextBox.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Graphics\FontSettings.h">
+      <Filter>Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Graphics\HorizontalAlignment.h">
+      <Filter>Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Graphics\Font.h">
+      <Filter>Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Graphics\CoronaFontServices.h">
+      <Filter>Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Graphics\MFontLoader.h">
+      <Filter>Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Graphics\FontSizeConverter.h">
+      <Filter>Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\ValueChangedEventArgs.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\UITextChangedEventArgs.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputDeviceSettings.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputAxisSettings.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputAxisInfo.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinInputDevice.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputDeviceInfo.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\ScopedComInitializer.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputDeviceContext.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\Key.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\KeyEventArgs.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\ModifierKeyStates.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputDeviceStatusChangedEventArgs.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputAxisDataEventArgs.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputDeviceDriverType.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\XInputInterface.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputDeviceMonitor.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\DirectInputDeviceStateData.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputDeviceInterface.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\InputDeviceInterfaceEventArgs.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\MInputDeviceHandler.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\XInputDeviceHandler.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\DirectInputDeviceHandler.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Ticks.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\VibrationRequestManager.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\DateTime.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Ipc\AsyncPipeReader.h">
+      <Filter>Interop\Ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Ipc\Process.h">
+      <Filter>Interop\Ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Ipc\IODataEventArgs.h">
+      <Filter>Interop\Ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Ipc\CommandLineRunner.h">
+      <Filter>Interop\Ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Ipc\CommandLineRunResult.h">
+      <Filter>Interop\Ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Ipc\CommandLine.h">
+      <Filter>Interop\Ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Storage\MStoredPreferences.h">
+      <Filter>Interop\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Storage\SQLiteStoredPreferences.h">
+      <Filter>Interop\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Storage\RegistryStoredPreferences.h">
+      <Filter>Interop\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Storage\StoredPreferencesProxy.h">
+      <Filter>Interop\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Storage\StoredPreferencesChain.h">
+      <Filter>Interop\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinProjectSettings.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\LuaMethodCallback.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\ScopedOleInitializer.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\WebBrowser.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\WebBrowserNavigatedEventArgs.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\WebBrowserNavigatingEventArgs.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\UI\WebBrowserNavigationFailedEventArgs.h">
+      <Filter>Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Input\TapTracker.h">
+      <Filter>Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\Nullable.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinAudioPlayer.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinAudioRecorder.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinBitmap.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinCrypto.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinData.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinDevice.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinDisplayObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinEventSound.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinFBConnect.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinFont.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinImageProvider.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinLocation.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinModalInteraction.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinPlatform.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinScreenSurface.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinTextBoxObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinTimer.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinVideoObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinVideoPlayer.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinVideoProvider.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinWebPopup.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinWebViewObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="WinSound.cpp" />
+    <ClCompile Include="WinString.cpp" />
+    <ClCompile Include="WinFile.cpp" />
+    <ClCompile Include="Interop\RuntimeEnvironment.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\EventArgs.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\BaseEvent.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\OperationResult.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\HandledEventArgs.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\MessageOnlyWindow.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\HandleMessageEventArgs.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\UIComponent.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\Control.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\RenderSurfaceControl.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinInputDeviceManager.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Corona\CoronaWin32.cpp">
+      <Filter>Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Graphics\FontServices.cpp">
+      <Filter>Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\UIComponentCollection.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\ReadOnlyUIComponentCollection.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\Window.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinExitCallback.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\ApplicationServices.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\TaskDialog.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\CoronaTaskDialogHandler.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\TaskDialogSettings.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\StaticFinalizer.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\winutil\XMessageBox.cpp">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\TextBox.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Graphics\FontSettings.cpp">
+      <Filter>Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Graphics\HorizontalAlignment.cpp">
+      <Filter>Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Graphics\Font.cpp">
+      <Filter>Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Graphics\CoronaFontServices.cpp">
+      <Filter>Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Graphics\FontSizeConverter.cpp">
+      <Filter>Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\UITextChangedEventArgs.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputDeviceSettings.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputAxisSettings.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputAxisInfo.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinInputDevice.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputDeviceInfo.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\ScopedComInitializer.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputDeviceContext.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\Key.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\KeyEventArgs.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\ModifierKeyStates.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputDeviceStatusChangedEventArgs.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputAxisDataEventArgs.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputDeviceDriverType.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\XInputInterface.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputDeviceMonitor.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\DirectInputDeviceStateData.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputDeviceInterface.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\InputDeviceInterfaceEventArgs.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\XInputDeviceHandler.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\DirectInputDeviceHandler.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Ticks.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\VibrationRequestManager.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\DateTime.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Ipc\AsyncPipeReader.cpp">
+      <Filter>Interop\Ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Ipc\Process.cpp">
+      <Filter>Interop\Ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Ipc\IODataEventArgs.cpp">
+      <Filter>Interop\Ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Ipc\CommandLineRunner.cpp">
+      <Filter>Interop\Ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Ipc\CommandLineRunResult.cpp">
+      <Filter>Interop\Ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Ipc\CommandLine.cpp">
+      <Filter>Interop\Ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Storage\SQLiteStoredPreferences.cpp">
+      <Filter>Interop\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Storage\RegistryStoredPreferences.cpp">
+      <Filter>Interop\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Storage\StoredPreferencesProxy.cpp">
+      <Filter>Interop\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Storage\StoredPreferencesChain.cpp">
+      <Filter>Interop\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinProjectSettings.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\ScopedOleInitializer.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\WebBrowser.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\WebBrowserNavigatedEventArgs.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\WebBrowserNavigatingEventArgs.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\UI\WebBrowserNavigationFailedEventArgs.cpp">
+      <Filter>Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\Input\TapTracker.cpp">
+      <Filter>Interop\Input</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Rtt">
+      <UniqueIdentifier>{733d0d99-f5ae-4bc1-943c-c01c90e43d61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interop">
+      <UniqueIdentifier>{84f98a7b-779b-4c1a-b0d4-f130183e4082}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interop\UI">
+      <UniqueIdentifier>{7008ca6b-f5d3-4527-a205-7b2ac8754ca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Corona">
+      <UniqueIdentifier>{ba97b1af-30cd-412e-84d7-7079592ecec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interop\Graphics">
+      <UniqueIdentifier>{ca375e21-9a81-4c14-b621-e76942e3142d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29">
+      <UniqueIdentifier>{176f485a-30af-464d-bc5c-50ab48569710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\external">
+      <UniqueIdentifier>{540796d9-a5ae-4537-b0e7-e8b1ed8abb57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\external\winutil">
+      <UniqueIdentifier>{fd0b9d50-2513-43c7-9799-f72b0b4a0e0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interop\Input">
+      <UniqueIdentifier>{c46ec4ae-5d00-4967-8d26-92577c49ef15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interop\Ipc">
+      <UniqueIdentifier>{3dd8905d-94bf-41c5-a9ed-746dce8f853b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interop\Storage">
+      <UniqueIdentifier>{243f9565-6f81-487c-b16a-b5f3c6184223}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="shell.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+</Project>

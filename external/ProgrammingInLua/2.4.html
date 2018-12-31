@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 2.4</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="2.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="2.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#2">Chapter 2. Types and Values</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>2.4 - Strings</h2>
+
+<p>
+
+<p>Strings have the usual meaning:
+a sequence of characters.
+Lua is eight-bit clean
+and so strings may contain characters with any numeric value,
+including embedded zeros.
+That means that you can store any binary data into a string.
+Strings in Lua are immutable values.
+You cannot change a character inside a string,
+as you may in C;
+instead, you create a new string with the desired modifications,
+as in the next example:
+<pre>
+    a = "one string"
+    b = string.gsub(a, "one", "another")  -- change string parts
+    print(a)       --> one string
+    print(b)       --> another string
+</pre>
+
+<p>Strings in Lua are subject to automatic memory management,
+like all Lua objects.
+That means that you do not have to worry about allocation and
+deallocation of strings; Lua handles this for you.
+A string may contain a single letter or an entire book.
+Lua handles long strings quite efficiently.
+Programs that manipulate strings with 100K or 1M characters
+are not unusual in Lua.
+
+<p>We can delimit literal strings by
+matching single or double quotes:
+<pre>
+    a = "a line"
+    b = 'another line'
+</pre>
+As a matter of style,
+you should use always the same kind of quotes
+(single or double) in a program,
+unless the string itself has quotes;
+then you use the other quote,
+or escape those quotes with backslashes.
+Strings in Lua can contain the following C-like escape sequences:
+<p><table align="center" border=1>
+<tr><td><code>\a</code></td><td>bell</td></tr>
+<tr><td><code>\b</code></td><td>back space</td></tr>
+<tr><td><code>\f</code></td><td>form feed</td></tr>
+<tr><td><code>\n</code></td><td>newline</td></tr>
+<tr><td><code>\r</code></td><td>carriage return</td></tr>
+<tr><td><code>\t</code></td><td>horizontal tab</td></tr>
+<tr><td><code>\v</code></td><td>vertical tab</td></tr>
+<tr><td><code>\\</code></td><td>backslash</td></tr>
+<tr><td><code>\"</code></td><td>double quote</td></tr>
+<tr><td><code>\'</code></td><td>single quote</td></tr>
+<tr><td><code>\[</code></td><td>left square bracket</td></tr>
+<tr><td><code>\]</code></td><td>right square bracket</td></tr>
+</table><p>
+We illustrate their use in the following examples:
+<pre>
+    > print("one line\nnext line\n\"in quotes\", 'in quotes'")
+    one line
+    next line
+    "in quotes", 'in quotes'
+    > print('a backslash inside quotes: \'\\\'')
+    a backslash inside quotes: '\'
+    > print("a simpler way: '\\'")
+    a simpler way: '\'
+</pre>
+
+<p>We can specify a character in a string also by its numeric value
+through the escape sequence <code>\ddd</code>,
+where <code>ddd</code> is a sequence of up to three <em>decimal</em> digits.
+As a somewhat complex example,
+the two literals <code>"alo\n123\""</code> and
+<code>'\97lo\10\04923"'</code> have the same value,
+in a system using ASCII:
+97 is the ASCII code for <code>a</code>,
+10 is the code for newline,
+and 49 (<code>\049</code> in the example) is the code for the digit <code>1</code>.
+
+<p>We can delimit literal strings also by matching double
+square brackets <code>[[...]]</code>.
+Literals in this bracketed form may run for several lines,
+may nest, and do not interpret escape sequences.
+Moreover, this form ignores the first character of the string
+when this character is a newline.
+This form is especially convenient for
+writing strings that contain program pieces;
+for instance,
+<pre>
+    page = [[
+    &lt;HTML>
+    &lt;HEAD>
+    &lt;TITLE>An HTML Page&lt;/TITLE>
+    &lt;/HEAD>
+    &lt;BODY>
+     &lt;A HREF="http://www.lua.org">Lua&lt;/A>
+     [[a text between double brackets]]
+    &lt;/BODY>
+    &lt;/HTML>
+    ]]
+    
+    write(page)
+</pre>
+
+<p>Lua provides automatic conversions between numbers and strings at run time.
+Any numeric operation applied to a string tries to convert
+the string to a number:
+<pre>
+    print("10" + 1)           --> 11
+    print("10 + 1")           --> 10 + 1
+    print("-5.3e-10"*"2")     --> -1.06e-09
+    print("hello" + 1)        -- ERROR (cannot convert "hello")
+</pre>
+Lua applies such coercions not only in arithmetic operators,
+but also in other places that expect a number.
+Conversely, whenever it finds a number where it expects a string,
+Lua converts the number to a string:
+<pre>
+    print(10 .. 20)        --> 1020
+</pre>
+(The <code>..</code> is the string concatenation operator in Lua.
+When you write it right after a numeral,
+you must separate them with a space;
+otherwise, Lua thinks that the first dot is a decimal point.)
+
+<p>Despite those automatic conversions,
+strings and numbers are different things.
+A comparison like <code>10 == "10"</code> is always false,
+because 10 is a number and <code>"10"</code> is a string.
+If you need to convert a string to a number explicitly,
+you can use the function <code>tonumber</code>,
+which returns <B>nil</B> if the string does not denote a proper number:
+
+<pre>
+    line = io.read()     -- read a line
+    n = tonumber(line)   -- try to convert it to a number
+    if n == nil then
+      error(line .. " is not a valid number")
+    else
+      print(n*2)
+    end
+</pre>
+
+<p>To convert a number to a string,
+you can call the function <code>tostring</code>
+or concatenate the number with the empty string:
+<pre>
+    print(tostring(10) == "10")   --> true
+    print(10 .. "" == "10")       --> true
+</pre>
+Such conversions are always valid.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="2.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

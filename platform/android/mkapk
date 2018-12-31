@@ -1,0 +1,28 @@
+#!/bin/bash
+
+INSTALL_AND_RUN=no
+if [ "$1" == "-r" ]
+then
+	INSTALL_AND_RUN=yes
+	shift
+fi
+
+CLEAN_BUILD=
+if [ "$1" == "-c" ]
+then
+	CLEAN_BUILD=--clean
+	shift
+fi
+
+APP="$1"
+APPNAME="$(basename "$APP")"
+
+./build_app.sh $CLEAN_BUILD "$APP" && mv "$APP"/"$APPNAME".apk .
+
+if [ "$?" == 0 -a "$INSTALL_AND_RUN" == "yes" ]
+then
+	apk-install -r "$APPNAME".apk
+	adb logcat
+fi
+
+exit "$?"

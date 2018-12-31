@@ -1,0 +1,14 @@
+{
+  "console": {
+	"fontName":         "Monaco",
+	"fontSize":         10,
+    "errorBgColor":     "#FB1910",
+    "errorFgColor":     "#FCD208",
+    "textBgColor":      "#2D62B6",
+    "textFgColor":      "#F0F5FA",
+    "timestampBgColor": "#2D62B6",
+    "timestampFgColor": "#56A5E1",
+    "warningBgColor":   "#DDED6924",
+    "warningFgColor":   "#303030"
+  }
+}

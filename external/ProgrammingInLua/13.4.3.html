@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 13.4.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="13.4.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="13.4.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#13">Chapter 13. Metatables and Metamethods</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="def-values"><h3>13.4.3 - Tables with Default Values</h3></a>
+
+<p>The default value of any field in a regular table is <B>nil</B>.
+It is easy to change this default value with metatables:
+<pre>
+    function setDefault (t, d)
+      local mt = {__index = function () return d end}
+      setmetatable(t, mt)
+    end
+    
+    tab = {x=10, y=20}
+    print(tab.x, tab.z)     --> 10   nil
+    setDefault(tab, 0)
+    print(tab.x, tab.z)     --> 10   0
+</pre>
+Now, whenever we access an absent field in <code>tab</code>,
+its <code>__index</code> metamethod is called and returns zero,
+which is the value of <code>d</code> for that metamethod.
+
+<p>The <code>setDefault</code> function creates a new metatable
+for each table that needs a default value.
+This may be expensive if we have many tables that need default values.
+However, the metatable has the default value <code>d</code> wired into itself,
+so the function cannot use a single metatable for all tables.
+To allow the use of a single metatable
+for tables with different default values,
+we can store the default value of each table in the table itself,
+using an exclusive field.
+If we are not worried about name clashes,
+we can use a key like <code>"___"</code> for our exclusive field:
+<pre>
+    local mt = {__index = function (t) return t.___ end}
+    function setDefault (t, d)
+      t.___ = d
+      setmetatable(t, mt)
+    end
+</pre>
+If we are worried about name clashes,
+it is easy to ensure the uniqueness of this special key.
+All we need is to create a new table and use it as the key:
+<pre>
+    local key = {}    -- unique key
+    local mt = {__index = function (t) return t[key] end}
+    function setDefault (t, d)
+      t[key] = d
+      setmetatable(t, mt)
+    end
+</pre>
+
+<p>An alternative approach to associating each table with its
+default value is to use a separate table,
+where the indices are the tables and the values are their default values.
+However, for the correct implementation of this
+approach we need a special breed of table,
+called <em>weak tables</em>,
+and so we will not use it here;
+we will return to the subject in <a href="17.html#weaktables">Chapter 17</a>.
+
+<p>Another alternative is to <em>memoize</em> metatables
+in order to reuse the same metatable for tables with the same default.
+However, that needs weak tables too,
+so that again we will have to wait until <a href="17.html#weaktables">Chapter 17</a>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="13.4.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

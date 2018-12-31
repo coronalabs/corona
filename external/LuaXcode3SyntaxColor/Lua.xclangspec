@@ -1,0 +1,650 @@
+// Lua
+//  Lua.xclangspec v3.0.1
+
+//	Lua language specification for Xcode 1.5. */
+//	Bret Victor, 4/24/2005
+	
+//	Based on SubEthaEdit's Lua mode, and the built-in Xcode language specs at:
+//	/System/Library/PrivateFrameworks/DevToolsCore.framework/Versions/A/Resources/Built-in languages.pblangspec
+	
+//	Up dated to Lua 5.1 syntax by Graham Henstridge, 24/10/2006 and confirmed
+//  operational with Xcode 2.4.
+
+//  Updated 1/12/07 to Xcode3 by Graham Henstridge, with a  little help from
+//  David Ewing at Apple     
+//  Uses the new .xclangspec format, the definition of which is not available,
+//  however using various files at:
+//  /Developer/Library/PrivateFrameworks/XcodeEdit.framework/Versions/A/Resources/
+//  assists in understanding the language.
+
+//  Place this file Lua.xclangspec and Lua.pbfilespec in directory:
+//  ~/Library/Application Support/Developer/Shared/Xcode/Specifications/
+
+(
+
+/****************************************************************************/
+// MARK: Lua keywords
+/****************************************************************************/
+	{
+		Identifier = "xcode.lang.lua.identifier";
+		Syntax = {
+            StartChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_[";
+            Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_?[]";
+            Words = (
+		        "and",
+                "break",
+                "do", 
+                "else",
+                "elseif",
+                "end",
+                "for",
+                "function",
+                "if",
+                "in",
+                "local",
+                "not",
+                "or",
+                "repeat",
+                "return",
+                "then",
+                "until",
+                "while",
+
+                "assert",
+                "collectgarbage",
+                "dofile",
+                "error",
+                "getfenv",
+                "getmetatable",
+                "ipairs",
+                "load",
+                "loadfile",
+                "loadstring",
+                "module",
+                "next",
+                "pairs",
+                "pcall",
+                "print",
+                "rawequal",
+                "rawget",
+                "rawset",
+                "require",
+                "select",
+                "setfenv",
+                "setmetatable",
+                "tonumber",
+                "tostring",
+                "type",
+                "unpack",
+                "xpcall",
+                "_G",
+                "_VERSION",
+
+// there is now probably a better way of highlighting the following
+
+                "__add",
+                "__concat",
+                "__div",
+                "__eq",
+                "__gc",
+                "__index",
+                "__le",
+                "__lt",
+                "__metatable",
+                "__mode",
+                "__mul",
+                "__newindex",
+                "__pow",
+                "__sub",
+                "__tostring",
+                "__unm",
+
+                "package",
+                "package.cpath",
+                "package.loaded",
+                "package.loadlib",
+                "package.path",
+                "package.preload",
+                "package.seeall",
+
+                "coroutine",
+                "coroutine.create",
+                "coroutine.resume",
+                "coroutine.running",
+                "coroutine.status",
+                "coroutine.wrap",
+                "coroutine.yield",
+
+                "string",
+                "string.byte",
+                "string.char",
+                "string.dump",
+                "string.find",
+                "string.format",
+                "string.gmatch",
+                "string.gsub",
+                "string.len",
+                "string.lower",
+                "string.match",
+                "string.rep",
+                "string.sub",
+                "string.upper",
+                
+                "table",
+                "table.concat",
+                "table.insert",
+                "table.maxn",
+                "table.remove",
+                "table.sort",
+
+                "math",
+                "math.abs",
+                "math.acos",
+                "math.asin",
+                "math.atan",
+                "math.atan2",
+                "math.ceil",
+                "math.cos",
+                "math.cosh",
+                "math.deg",
+                "math.exp",
+                "math.floor",
+                "math.fmod",
+                "math.frexp",
+                "math.huge",
+                "math.ldexp",
+                "math.log",
+                "math.log10",
+                "math.max",
+                "math.min",
+                "math.modf",
+                "math.pi",
+                "math.pow",
+                "math.rad",
+                "math.random",
+                "math.randomseed",
+                "math.sin",
+                "math.sinh",
+                "math.sqrt",
+                "math.tan",
+                "math.tanh",
+
+                "io",
+                "io.close",
+                "io.flush",
+                "io.input",
+                "io.lines",
+                "io.open",
+                "io.popen",
+                "io.output",
+                "io.read",
+                "io.tmpfile",
+                "io.type",
+                "io.write",
+                
+                "file:close",
+                "file:flush",
+                "file:lines",
+                "file:read",
+                "file:seek",
+                "file:setvbuf",
+                "file:write",
+
+                "os",
+                "os.clock",
+                "os.date",
+                "os.difftime",
+                "os.execute",
+                "os.exit",
+                "os.getenv",
+                "os.remove",
+                "os.rename",
+                "os.setlocale",
+                "os.time",
+                "os.tmpname",
+                 
+                "debug",
+                "debug.debug",
+                "debug.getfenv",
+                "debug.gethook",
+                "debug.getinfo",
+                "debug.getlocal",
+                "debug.getmetatable",
+                "debug.getregistry",
+                "debug.getupvalue",
+                "debug.setfenv",
+                "debug.sethook",
+                "debug.setlocal",
+                "debug.setmetatable",
+                "debug.setupvalue",
+                "debug.traceback",
+            );
+            Type = "xcode.syntax.keyword";
+            AltType = "xcode.syntax.identifier";    // non-keywords are identifiers
+		};
+    },
+        
+    {
+        Identifier = "xcode.lang.lau.interestingOperators";
+        Syntax = {
+            Words = (
+                "..",
+                ".",
+                ":",
+             );
+            Type = "xcode.syntax.plain";
+        };
+    },
+
+
+    
+/****************************************************************************/
+// MARK: Lua Syntax Coloring
+/****************************************************************************/
+
+    {
+        Identifier = "xcode.lang.lua";
+        Description = "Lua Coloring";
+        BasedOn = "xcode.lang.simpleColoring";
+        IncludeInMenu = YES;
+        Name = "Lua";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer.toplevel";
+            IncludeRules = (
+                "xcode.lang.lua.module",
+                "xcode.lang.lua.class",
+                "xcode.lang.lua.function",
+                "xcode.lang.lua.block",
+                "xcode.lang.lua.block.if",
+                "xcode.lang.lua.block.while",
+                "xcode.lang.lua.block.repeat",
+                "xcode.lang.lua.block.for",
+                "xcode.lang.lua.bracketexpr",
+                "xcode.lang.lua.parenexpr",
+            );
+            Type = "xcode.syntax.plain";
+        };
+    },
+    
+    // The following rule returns tokens to the other rules
+    {
+        Identifier = "xcode.lang.lua.lexer";
+        Syntax = {
+            IncludeRules = (
+                "xcode.lang.lua.comment",
+                "xcode.lang.lua.comment.singleline",
+                "xcode.lang.string",
+                "xcode.lang.string.lua0",
+                "xcode.lang.string.lua1",
+                "xcode.lang.string.lua2",
+                "xcode.lang.string.lua3",
+                "xcode.lang.string.lua4",
+                "xcode.lang.string.lua5",
+                "xcode.lang.character",
+                "xcode.lang.lua.identifier",
+                "xcode.lang.number",
+                "xcode.lang.lau.interestingOperators",
+            );
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.lexer.toplevel";
+        Syntax = {
+            IncludeRules = (
+                "xcode.lang.lua.comment",
+                "xcode.lang.lua.comment.singleline",
+                "xcode.lang.string",
+                "xcode.lang.string.lua0",
+                "xcode.lang.string.lua1",
+                "xcode.lang.string.lua2",
+                "xcode.lang.string.lua3",
+                "xcode.lang.string.lua4",
+                "xcode.lang.string.lua5",
+                "xcode.lang.character",
+                "xcode.lang.lua.module.declarator",
+                "xcode.lang.lua.class.declarator",
+                "xcode.lang.lua.function.declarator",
+                "xcode.lang.lua.identifier",
+                "xcode.lang.number",
+            );
+        };
+    },
+
+    {
+        Identifier = "xcode.lang.string.lua0";
+        Syntax = {
+            Start = "[[";
+            End = "]]";
+            Type = "xcode.syntax.string";
+        };
+    },
+  
+    {
+        Identifier = "xcode.lang.string.lua1";
+        Syntax = {
+            Start = "[=[";
+            End = "]=]";
+            Type = "xcode.syntax.string";
+        };
+    },
+  
+    {
+        Identifier = "xcode.lang.string.lua2";
+        Syntax = {
+            Start = "[==[";
+            End = "]==]";
+            Type = "xcode.syntax.string";
+        };
+    },
+  
+    {
+        Identifier = "xcode.lang.string.lua3";
+        Syntax = {
+            Start = "[===[";
+            End = "]===]";
+            Type = "xcode.syntax.string";
+        };
+    },
+  
+    {
+        Identifier = "xcode.lang.string.lua4";
+        Syntax = {
+            Start = "[====[";
+            End = "]====]";
+            Type = "xcode.syntax.string";
+        };
+    },
+  
+    {
+        Identifier = "xcode.lang.string.lua5";
+        Syntax = {
+            Start = "[=====[";
+            End = "]=====]";
+            Type = "xcode.syntax.string";
+        };
+    },
+  
+    {
+        Identifier = "xcode.lang.lua.module";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer.toplevel";
+            Start = "xcode.lang.lua.module.declarator";
+            End = "end";
+            Foldable = YES;
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.lua.class",
+                "xcode.lang.lua.function",
+            );
+            Type = "xcode.syntax.definition.class";
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.module.declarator";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Rules = (
+                "require",
+                "xcode.lang.lua.identifier",
+            );
+            Type = "xcode.syntax.name.partial";
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.class";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer.toplevel";
+            Start = "xcode.lang.lua.class.declarator";
+            End = "end";
+            Foldable = YES;
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.lua.function",
+            );
+            Type = "xcode.syntax.definition.class";
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.class.declarator";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Rules = (
+                "class",
+                "xcode.lang.lua.identifier",
+                "xcode.lang.lua.superclass?"
+            );
+            Type = "xcode.syntax.name.partial";
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.superclass";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Rules = (
+                "->",
+                "xcode.lang.lua.identifier",
+            );
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.function";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer.toplevel";
+            Start = "xcode.lang.lua.function.declarator";
+            End = "end";
+            Foldable = YES;
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.lua.block",
+                "xcode.lang.lua.block.if",
+                "xcode.lang.lua.block.while",
+                "xcode.lang.lua.block.repeat",
+                "xcode.lang.lua.block.for",
+                "xcode.lang.lua.bracketexpr",
+                "xcode.lang.lua.parenexpr",
+            );
+            Type = "xcode.syntax.definition.function";
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.function.declarator";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Rules = (
+                "function",
+                "xcode.lang.lua.function.name",
+            );
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.function.name";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Rules = (
+                "xcode.lang.lua.identifier",
+                "xcode.lang.lua.function.name.more?",
+            );
+            Type = "xcode.syntax.name.partial";
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.function.name.more";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Rules = (
+                ".",
+                "xcode.lang.lua.identifier",
+            );
+            Type = "xcode.syntax.name.partial";
+        };
+    },
+    
+
+/****************************************************************************/
+// MARK: Lua blocks
+/****************************************************************************/
+ {
+        Identifier = "xcode.lang.lua.block";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Start = "{";
+            End = "}";
+            Foldable = YES;
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.lua.block.if",
+                "xcode.lang.lua.block.while",
+                "xcode.lang.lua.block.repeat",
+                "xcode.lang.lua.block.for",
+                "xcode.lang.lua.bracketexpr",
+                "xcode.lang.lua.parenexpr",
+            );
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.block.if";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Start = "if";
+            End = "end";
+            Foldable = YES;
+            Recursive = YES;
+            StartAtBOL = YES;
+            IncludeRules = (
+                "xcode.lang.lua.block",
+                "xcode.lang.lua.block.while",
+                "xcode.lang.lua.block.repeat",
+                "xcode.lang.lua.block.for",
+                "xcode.lang.lua.bracketexpr",
+                "xcode.lang.lua.parenexpr",
+            );
+        };
+    },
+
+    {
+        Identifier = "xcode.lang.lua.block.while";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Start = "while";
+            End = "end";
+            Foldable = YES;
+            Recursive = YES;
+            StartAtBOL = YES;
+            IncludeRules = (
+                "xcode.lang.lua.block",
+                "xcode.lang.lua.block.if",
+                "xcode.lang.lua.block.repeat",
+                "xcode.lang.lua.block.for",
+                "xcode.lang.lua.bracketexpr",
+                "xcode.lang.lua.parenexpr",
+            );
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.block.repeat";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Start = "repeat";
+            End = "until";
+            Foldable = YES;
+            Recursive = YES;
+            StartAtBOL = YES;
+            IncludeRules = (
+                "xcode.lang.lua.block",
+                "xcode.lang.lua.block.if",
+                "xcode.lang.lua.block.while",
+                "xcode.lang.lua.block.for",
+                "xcode.lang.lua.bracketexpr",
+                "xcode.lang.lua.parenexpr",
+            );
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.block.for";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Start = "for";
+            End = "end";
+            Foldable = YES;
+            Recursive = YES;
+            StartAtBOL = YES;
+            IncludeRules = (
+                "xcode.lang.lua.block",
+                "xcode.lang.lua.block.if",
+                "xcode.lang.lua.block.while",
+                "xcode.lang.lua.block.repeat",
+                "xcode.lang.lua.bracketexpr",
+                "xcode.lang.lua.parenexpr",
+            );
+        };
+    },
+
+    {
+        Identifier = "xcode.lang.lua.parenexpr";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Start = "(";
+            End = ")";
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.lua.bracketexpr",
+            );
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.bracketexpr";
+        Syntax = {
+            Tokenizer = "xcode.lang.lua.lexer";
+            Start = "[";
+            End = "]";
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.lua.parenexpr",
+            );
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.comment";
+        Syntax = {
+            Start = "--[[";
+            End = "]]";
+            Foldable = YES;
+            IncludeRules = ( 
+                "xcode.lang.url", 
+                "xcode.lang.url.mail", 
+                "xcode.lang.comment.mark"
+            );
+            Type = "xcode.syntax.comment";
+        };
+    },
+    
+    {
+        Identifier = "xcode.lang.lua.comment.singleline";
+        Syntax = {
+            Start = "--";
+            End = "\n";
+            IncludeRules = ( 
+                "xcode.lang.url", 
+                "xcode.lang.url.mail", 
+                "xcode.lang.comment.mark"
+            );
+            Type = "xcode.syntax.comment";
+        };
+    },
+
+)
+

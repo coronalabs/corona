@@ -1,0 +1,28 @@
+﻿<phone:PhoneApplicationPage
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:UI="clr-namespace:Microsoft.Advertising.Mobile.UI;assembly=Microsoft.Advertising.Mobile.UI"
+    xmlns:corona="clr-namespace:CoronaLabs.Corona.WinRT.Phone;assembly=CoronaLabs.Corona.Controls.DotNet"
+    x:Class="CoronaLabs.Corona.AppTemplate.MainPage"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="False">
+
+	<DrawingSurfaceBackgroundGrid x:Name="fDrawingSurfaceBackgroundGrid">
+		<corona:CoronaPanel x:Name="fCoronaPanel"/>
+	</DrawingSurfaceBackgroundGrid>
+
+<!--
+    SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
+    SupportedOrientations="Landscape" Orientation="Landscape"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+-->
+
+</phone:PhoneApplicationPage>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 21.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="21.2.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="22.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#21">Chapter 21. The I/O Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>21.3 - Other Operations on Files</h2>
+
+<p>The <code>tmpfile</code> function returns a handle for a temporary file,
+open in read/write mode.
+That file is automatically removed (deleted) when your program ends.
+The <code>flush</code> function executes all pending writes to a file.
+Like the <code>write</code> function,
+you can call it as a function, <code>io.flush()</code>,
+to flush the current output file;
+or as a method, <code>f:flush()</code>, to flush file <code>f</code>.
+
+<p>The <code>seek</code> function can be used both to get and to
+set the current position of a file.
+Its general form is <code>filehandle:seek(whence, offset)</code>.
+The <code>whence</code> parameter is a string that specifies how the
+offset will be interpreted.
+Its valid values are <code>"set"</code>,
+when offsets are interpreted from the beginning of the file;
+<code>"cur"</code>,
+when offsets are interpreted from the current position of the file;
+and <code>"end"</code>,
+when offsets are interpreted from the end of the file.
+Independently of the value of <code>whence</code>,
+the call returns the final current position of the file,
+measured in bytes from the beginning of the file.
+
+<p>The default value for <code>whence</code> is <code>"cur"</code>
+and for <code>offset</code> is zero.
+Therefore, the call <code>file:seek()</code> returns the current
+file position,
+without changing it;
+the call <code>file:seek("set")</code> resets the position to the
+beginning of the file (and returns zero);
+and the call <code>file:seek("end")</code> sets the position to the
+end of the file, and returns its size.
+The following function gets the file size
+without changing its current position:
+<pre>
+    function fsize (file)
+      local current = file:seek()      -- get current position
+      local size = file:seek("end")    -- get file size
+      file:seek("set", current)        -- restore position
+      return size
+    end
+</pre>
+
+<p>All the previous functions return <B>nil</B> plus
+an error message in case of errors.
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="22.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

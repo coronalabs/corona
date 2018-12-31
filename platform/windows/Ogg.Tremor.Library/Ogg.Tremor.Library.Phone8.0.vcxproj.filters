@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\floor_lookup.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\floor0.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\floor1.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\framing.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\info.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\mapping0.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\mdct.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\misc.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\res012.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\vorbisfile.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\bitwise.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\codebook.c" />
+    <ClCompile Include="..\..\..\external\tremor\Tremor\dsp.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\asm_arm.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\codebook.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\codec_internal.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\config_types.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\ivorbiscodec.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\ivorbisfile.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\lsp_lookup.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\mdct.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\mdct_lookup.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\misc.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\ogg.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\os.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\os_types.h" />
+    <ClInclude Include="..\..\..\external\tremor\Tremor\window_lookup.h" />
+  </ItemGroup>
+</Project>

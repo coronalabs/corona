@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 29.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="29.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="29.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#29">Chapter 29. Managing Resources</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>29.1 - A Directory Iterator</h2>
+
+<p>
+
+<p>Previously, we implemented a <code>dir</code> function that
+returned a table with all files from a given directory.
+Our new implementation will return an iterator that returns
+a new entry each time it is called.
+With this new implementation,
+we will be able to traverse a directory with a loop like this one:
+<pre>
+    for fname in dir(".") do  print(fname)  end
+</pre>
+
+<p>To iterate over a directory, in C,
+we need a <code>DIR</code> structure.
+Instances of <code>DIR</code> are created by <code>opendir</code>
+and must be explicitly released by a call to <code>closedir</code>.
+Our previous implementation of <code>dir</code> kept its <code>DIR</code> instance
+as a local variable
+and closed that instance after retrieving the last file name.
+Our new implementation cannot keep this <code>DIR</code> instance in a local variable,
+because it must query this value over several calls.
+Moreover, it cannot close the directory only after retrieving the last name;
+if the program breaks the loop,
+the iterator will never retrieve this last name.
+Therefore, to make sure that the <code>DIR</code> instance is always released,
+we store its address in a userdatum
+and use the <code>__gc</code> metamethod of this userdatum to release the
+directory structure.
+
+<p>Despite its central role in our implementation,
+this userdatum representing a directory
+does not need to be visible from Lua.
+The <code>dir</code> function returns an iterator function;
+this is what Lua sees.
+The directory may be an upvalue of the iterator function.
+As such, the iterator function has direct access to this structure,
+but Lua code has not (and does not need to).
+
+<p>In all, we need three C functions.
+First, we need the <code>dir</code> function,
+a factory that Lua calls to create iterators;
+it must open a <code>DIR</code> structure and put it as
+an upvalue of the iterator function.
+Second, we need the iterator function.
+Third, we need the <code>__gc</code> metamethod, which closes a <code>DIR</code> structure.
+As usual, we also need an extra function to make initial arrangements,
+such as to create a metatable for directories
+and to initialize this metatable.
+
+<p>Let us start our code with the <code>dir</code> function:
+<pre>
+    #include &lt;dirent.h>
+    #include &lt;errno.h>
+    
+    /* forward declaration for the iterator function */
+    static int dir_iter (lua_State *L);
+    
+    static int l_dir (lua_State *L) {
+      const char *path = luaL_checkstring(L, 1);
+    
+      /* create a userdatum to store a DIR address */
+      DIR **d = (DIR **)lua_newuserdata(L, sizeof(DIR *));
+    
+      /* set its metatable */
+      luaL_getmetatable(L, "LuaBook.dir");
+      lua_setmetatable(L, -2);
+    
+      /* try to open the given directory */
+      *d = opendir(path);
+      if (*d == NULL)  /* error opening the directory? */
+        luaL_error(L, "cannot open %s: %s", path,
+                                            strerror(errno));
+    
+      /* creates and returns the iterator function
+         (its sole upvalue, the directory userdatum,
+         is already on the stack top */
+      lua_pushcclosure(L, dir_iter, 1);
+      return 1;
+    }
+</pre>
+A subtle point here is that we must create the userdatum before
+opening the directory.
+If we first open the directory,
+and then the call to <code>lua_newuserdata</code> raises an error,
+we lose the <code>DIR</code> structure.
+With the correct order,
+the <code>DIR</code> structure, once created,
+is immediately associated with the userdatum;
+whatever happens after that,
+the <code>__gc</code> metamethod will eventually release the structure.
+
+<p>The next function is the iterator itself:
+<pre>
+    static int dir_iter (lua_State *L) {
+      DIR *d = *(DIR **)lua_touserdata(L, lua_upvalueindex(1));
+      struct dirent *entry;
+      if ((entry = readdir(d)) != NULL) {
+        lua_pushstring(L, entry->d_name);
+        return 1;
+      }
+      else return 0;  /* no more values to return */
+    }
+</pre>
+
+<p>The <code>__gc</code> metamethod closes a directory,
+but it must take one precaution:
+Because we create the userdatum before opening the directory,
+this userdatum will be collected
+whatever the result of <code>opendir</code>.
+If <code>opendir</code> fails, there will be nothing to close.
+<pre>
+    static int dir_gc (lua_State *L) {
+      DIR *d = *(DIR **)lua_touserdata(L, 1);
+      if (d) closedir(d);
+      return 0;
+    }
+</pre>
+
+<p>Finally, there is the function that opens this one-function library:
+<pre>
+    int luaopen_dir (lua_State *L) {
+      luaL_newmetatable(L, "LuaBook.dir");
+    
+      /* set its __gc field */
+      lua_pushstring(L, "__gc");
+      lua_pushcfunction(L, dir_gc);
+      lua_settable(L, -3);
+    
+      /* register the `dir' function */
+      lua_pushcfunction(L, l_dir);
+      lua_setglobal(L, "dir");
+    
+      return 0;
+    }
+</pre>
+
+<p>This whole example has an interesting subtlety.
+At first, it may seem that <code>dir_gc</code> should check
+whether its argument is a directory.
+Otherwise, a malicious user could call it with another kind of userdata
+(a file, for instance), with disastrous consequences.
+However, there is no way for a Lua program to access this function:
+It is stored only in the metatable of directories
+and Lua programs never access those directories.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="29.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

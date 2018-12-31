@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="JNLua" default="help" basedir=".">
+	<!-- Deletes all files in the "bin" directory. -->
+	<target name="clean">
+		<delete dir="bin"/>
+	</target>
+	
+	<!-- Compiles all Java code to byte code. Must be done before creating the JAR file. -->
+	<target name="compile">
+		<mkdir dir="bin/classes"/>
+		<javac srcdir="src/main/java" destdir="bin/classes" />
+	</target>
+	
+	<!-- Create the JNLua JAR file. Must be done after an "ant compile". -->
+	<target name="jar">
+		<jar jarfile="bin/JNLua.jar" basedir="bin/classes" />
+	</target>
+</project>

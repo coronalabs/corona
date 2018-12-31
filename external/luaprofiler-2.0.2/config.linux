@@ -1,0 +1,10 @@
+
+LUA_INCLUDE= /usr/local/include/lua51
+
+PROFILER_OUTPUT= bin/profiler.so
+
+INCS= -I$(LUA_INCLUDE)
+CC= gcc
+WARN= -ansi -W -Wall
+EXTRA_LIBS=
+CFLAGS= -O2 -DTESTS $(WARN) $(INCS) -I./src

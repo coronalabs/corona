@@ -1,0 +1,16 @@
+2.1
+
+NOTES:
+The dkjson library is pre-compiled into bytecodes and placed in a constant
+of an actual C++ source file.
+
+To generate the bytecodes and C++ file, use the following 2 commands, respectively:
+$BUILT_PRODUCTS_DIR/lua $SRCROOT/../../bin/rcc.lua -c $BUILT_PRODUCTS_DIR -O$BUILD_STYLE -o $TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH
+$BUILT_PRODUCTS_DIR/lua -epackage.path=[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]] $SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua -d $TARGET_TEMP_DIR -o $INPUT_FILE_BASE -l $TARGET_TEMP_DIR/?.lu -n $INPUT_FILE_BASE
+
+For example:
+If 'lua' and 'luac' are in ../../bin/mac and your pwd is the same 
+as this file's, then you would type the following two commands
+
+../../bin/mac/lua ../../bin/rcc.lua -c ../../bin/mac -Orelease -o json.lu external/dkjson.lua
+../../bin/mac/lua -epackage.path=[[../../external/loop-2.3-beta/lua/?.lua]] ../../external/loop-2.3-beta/lua/precompiler.constant.lua -d . -o json -l ?.lu -n json

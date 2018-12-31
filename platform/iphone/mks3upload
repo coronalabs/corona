@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# mks3upload
+#
+# Create a template archive suitable for uploading to S3 for use in Simulator device builds
+#
+
+AS2BACKUP=$(mktemp)
+ASSETS2="$(pwd)/../test/assets2"
+
+if [ -d $ASSETS2 ]
+then
+	rm $AS2BACKUP
+	mv $ASSETS2 $AS2BACKUP
+fi
+
+if [ "$1" == "--clean" ] || [ "$1" == "-c" ]
+then
+	rm -rf template build
+	shift
+
+	if [ "$1" == "--upload" ] || [ "$1" == "-u" ]
+	then
+		# if asked to clean then upload, be sure to build
+		./build_templates.sh "$(xcrun --sdk iphoneos --show-sdk-version)" 2100.9999
+	fi
+fi
+
+if [ "$1" == "--build" ] || [ "$1" == "-b" ]
+then
+	rm -rf template/*
+	./build_templates.sh "$(xcrun --sdk iphoneos --show-sdk-version)" 2100.9999
+	shift
+fi
+
+UPLOADS=""
+
+for PLATFORM in iphone iphone-sim
+do
+	echo "Creating $PLATFORM template ..."
+
+	# remove symbolic link which confuses things
+	rm -f template/$PLATFORM/$PLATFORM
+
+	for IOS_VER in template/${PLATFORM}/*
+	do
+
+		IOS_VER=$(basename "${IOS_VER}")
+
+		ARCHIVE="$(pwd)/2100.9999_template_${PLATFORM}_${IOS_VER}_basic.tar.bz"
+
+		cp -X ../resources/config_require.lua "template/${PLATFORM}/${IOS_VER}/basic/"
+		cp -X license.ccdata "template/${PLATFORM}/${IOS_VER}/basic/template.app/" || true
+
+		(
+		cd "template/${PLATFORM}/${IOS_VER}/basic/" || exit
+
+		tar cvjf "${ARCHIVE}" --exclude='CoronaSimLogo-256.png' --exclude='world.jpg' --exclude='Icon*.png' ./{libtemplate,template.app} ./config_require.lua
+
+		rm -f config_require.lua basic/template.app/license.ccdata
+
+		echo "Built ${ARCHIVE}"
+		)
+
+		UPLOADS="$UPLOADS $ARCHIVE"
+	done
+done
+
+
+if [ "$1" == "--upload" ] || [ "$1" == "-u" ]
+then
+	echo "Uploading: "
+	ACTION=eval
+else
+	echo "Upload with: "
+	ACTION=echo
+fi
+
+for UPL in $UPLOADS
+do
+	$ACTION aws s3 cp "$UPL" s3://ansca-templates/2100.9999/
+done
+
+if [ -d $AS2BACKUP ]
+then
+	mv $AS2BACKUP $ASSETS2 
+fi

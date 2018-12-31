@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="Lua.Library.Externals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(Configuration)\$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <TargetName>lua</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>
+   REM Digitally sign the application.
+   if $(ConfigurationName) == Release (
+      call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"
+   )
+
+   if not "$(CanReferenceWinRT)" == "true" (
+   mkdir "$(SolutionDir)Bin\Lua"
+   copy /y "$(TargetPath)" "$(SolutionDir)Bin\Lua"
+
+   mkdir "$(SolutionDir)Bin\Corona"
+   copy /y "$(TargetPath)" "$(SolutionDir)Bin\Corona"
+
+   if $(ConfigurationName) == Release (
+      mkdir "$(SolutionDir)Bin\Corona.Enterprise\lib"
+      copy /y "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Bin\Corona.Enterprise\lib"
+   )
+   if $(ConfigurationName) == Release (
+      mkdir "$(SolutionDir)Bin\Corona\Native\Corona\win\lib"
+      copy /y "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Bin\Corona\Native\Corona\win\lib"
+   )
+)
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

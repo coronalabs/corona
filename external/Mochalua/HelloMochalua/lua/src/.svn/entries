@@ -1,0 +1,40 @@
+8
+
+dir
+4
+http://mochalua.googlecode.com/svn/trunk/HelloMochalua/lua/src
+http://mochalua.googlecode.com/svn
+
+
+
+2008-11-13T20:53:30.130789Z
+2
+pcmeehan
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+17e1636c-a753-0410-8a7a-5f2974b5f328
+
+hello.lua
+file
+
+
+
+
+2008-11-17T23:39:46.000000Z
+c70e3760c1782a4baffb41aa5333bd1c
+2008-11-13T20:53:30.130789Z
+2
+pcmeehan
+

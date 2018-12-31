@@ -1,0 +1,112 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2018 Corona Labs Inc.
+// Contact: support@coronalabs.com
+//
+// This file is part of the Corona game engine.
+//
+// Commercial License Usage
+// Licensees holding valid commercial Corona licenses may use this file in
+// accordance with the commercial license agreement between you and 
+// Corona Labs Inc. For licensing terms and conditions please contact
+// support@coronalabs.com or visit https://coronalabs.com/com-license
+//
+// GNU General Public License Usage
+// Alternatively, this file may be used under the terms of the GNU General
+// Public license version 3. The license is as published by the Free Software
+// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
+// of this file. Please review the following information to ensure the GNU 
+// General Public License requirements will
+// be met: https://www.gnu.org/licenses/gpl-3.0.html
+//
+// For overview and more information on licensing please refer to README.md
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#import <UIKit/UIKit.h>
+#import <GLKit/GLKit.h>
+#include <math.h>
+
+//Must include this for isinf usage in mapkit
+using namespace std;
+#import <MapKit/MapKit.h>
+#import "Rtt_IPhoneMapViewObject.h"
+
+#import "CoronaRuntime.h"
+#import "CoronaViewPrivate.h"
+#import "CoronaViewControllerPrivate.h"
+
+// ----------------------------------------------------------------------------
+
+namespace Rtt
+{
+	class IPhonePlatform;
+	class Runtime;
+}
+
+// ----------------------------------------------------------------------------
+
+@class AddressAnnotationWithCallout;
+@class CoronaView;
+@class UIViewController;
+@protocol CoronaDelegate;
+@protocol CoronaViewLaunchDelegate;
+
+// ----------------------------------------------------------------------------
+
+@interface AppViewController : CoronaViewController
+{
+	UIResponder *fNextResponder;
+}
+
+- (void)setNextResponder:(UIResponder *)responder;
+
+- (BOOL)prefersStatusBarHidden;
+
+- (UIStatusBarStyle) preferredStatusBarStyle;
+
+@property (nonatomic, assign) BOOL prefersHomeIndicatorAutoHidden;
+@property (nonatomic, assign) UIRectEdge preferredScreenEdgesDeferringSystemGestures;
+@property (nonatomic, assign) bool prefersStatusBarhidden;
+@property (nonatomic, assign) UIStatusBarStyle preferredStatusBarStyle;
+
+@end
+
+// ----------------------------------------------------------------------------
+
+@interface AppDelegate : NSObject<
+							CoronaRuntime,
+							UIApplicationDelegate,
+							UIAccelerometerDelegate,
+							MKMapViewDelegate,
+							CoronaViewLaunchDelegate >
+{
+	UIWindow *window;
+	CoronaView *view;
+	AppViewController *viewController;
+	id<CoronaDelegate> fCoronaDelegate;
+	int fSuspendCount;
+	UIAccelerationValue fGravityAccel[3];
+	UIAccelerationValue fInstantAccel[3];
+	CFTimeInterval fPreviousShakeTime;
+	BOOL fIsAppStarted;
+	BOOL appEnteredBackground;
+	NSTimeInterval lastAccelerometerTimeStamp;
+	UIView *splashView;
+	NSTimeInterval fAppLaunchTime;
+}
+
+@property (nonatomic, retain) IBOutlet UIWindow *window;
+@property (nonatomic, readonly) UIView *view;
+@property (nonatomic, retain) IBOutlet UIViewController *viewController;
+
+@property (nonatomic, assign) NSTimeInterval lastAccelerometerTimeStamp; // Needed a public variable to initialize the variable from the caller to 0 when the accelerometer starts.
+
+- (Rtt::Runtime *)runtime;
+
+- (id<CoronaDelegate>)coronaDelegate;
+
+- (void)didLoadMain:(id<CoronaRuntime>)runtime;
+
+@end
+

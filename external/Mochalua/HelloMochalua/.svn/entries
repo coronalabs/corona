@@ -1,0 +1,49 @@
+8
+
+dir
+4
+http://mochalua.googlecode.com/svn/trunk/HelloMochalua
+http://mochalua.googlecode.com/svn
+
+
+
+2008-11-14T19:55:17.413121Z
+4
+joshlytle
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+17e1636c-a753-0410-8a7a-5f2974b5f328
+
+lua
+dir
+
+nbproject
+dir
+
+src
+dir
+
+build.xml
+file
+
+
+
+
+2008-11-17T23:39:46.000000Z
+0c1b84272ba0c70b3e7578c76645a936
+2008-11-13T20:53:30.130789Z
+2
+pcmeehan
+

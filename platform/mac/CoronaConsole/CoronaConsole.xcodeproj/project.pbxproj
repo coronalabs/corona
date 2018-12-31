@@ -1,0 +1,370 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C225D52B1C4766A300D6DEBD /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = C225D5291C4766A300D6DEBD /* Theme.m */; };
+		C225D5301C47691500D6DEBD /* Dark.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = C225D52C1C4768D800D6DEBD /* Dark.json */; };
+		C225D5321C47743C00D6DEBD /* Blue.json in Resources */ = {isa = PBXBuildFile; fileRef = C225D5311C47743C00D6DEBD /* Blue.json */; };
+		C225D5331C47744800D6DEBD /* Blue.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = C225D5311C47743C00D6DEBD /* Blue.json */; };
+		C225D53A1C48584B00D6DEBD /* Default.json in Resources */ = {isa = PBXBuildFile; fileRef = C225D5391C48584B00D6DEBD /* Default.json */; };
+		C225D53B1C48585300D6DEBD /* Default.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = C225D5391C48584B00D6DEBD /* Default.json */; };
+		C225D53D1C487CF000D6DEBD /* Green.json in Resources */ = {isa = PBXBuildFile; fileRef = C225D53C1C487CF000D6DEBD /* Green.json */; };
+		C225D53E1C487D1500D6DEBD /* Green.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = C225D53C1C487CF000D6DEBD /* Green.json */; };
+		C225D5401C497D8100D6DEBD /* NSColor+HexString.m in Sources */ = {isa = PBXBuildFile; fileRef = C225D53F1C497D8100D6DEBD /* NSColor+HexString.m */; };
+		C24219DD1D26238600A05BD0 /* NSString+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C24219DC1D26238600A05BD0 /* NSString+Extensions.m */; };
+		C25D62CF1C4ED8D000B591D1 /* ThemeConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = C25D62CE1C4ED8D000B591D1 /* ThemeConsole.m */; };
+		C26DD0DA1BD6B94700EC4F44 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C26DD0D91BD6B94700EC4F44 /* AppDelegate.m */; };
+		C26DD0DD1BD6B94700EC4F44 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C26DD0DC1BD6B94700EC4F44 /* main.m */; };
+		C26DD0E21BD6B94700EC4F44 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C26DD0E01BD6B94700EC4F44 /* MainMenu.xib */; };
+		C26DD0EB1BD6B96400EC4F44 /* ConsoleWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C26DD0EA1BD6B96400EC4F44 /* ConsoleWindowController.mm */; };
+		C26DD1091BD94C7800EC4F44 /* CoronaConsole-Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = C26DD1081BD94C7800EC4F44 /* CoronaConsole-Icon.icns */; };
+		C26DD1111BD9510D00EC4F44 /* ConsoleWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = C26DD1101BD9510D00EC4F44 /* ConsoleWindow.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C225D52F1C47690A00D6DEBD /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Themes;
+			dstSubfolderSpec = 7;
+			files = (
+				C225D5301C47691500D6DEBD /* Dark.json in CopyFiles */,
+				C225D5331C47744800D6DEBD /* Blue.json in CopyFiles */,
+				C225D53B1C48585300D6DEBD /* Default.json in CopyFiles */,
+				C225D53E1C487D1500D6DEBD /* Green.json in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		C225D5281C4766A300D6DEBD /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
+		C225D5291C4766A300D6DEBD /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
+		C225D52C1C4768D800D6DEBD /* Dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = Dark.json; path = ../../resources/Themes/Dark.json; sourceTree = "<group>"; };
+		C225D5311C47743C00D6DEBD /* Blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = Blue.json; path = ../../resources/Themes/Blue.json; sourceTree = "<group>"; };
+		C225D5391C48584B00D6DEBD /* Default.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = Default.json; path = ../../resources/Themes/Default.json; sourceTree = "<group>"; };
+		C225D53C1C487CF000D6DEBD /* Green.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = Green.json; path = ../../resources/Themes/Green.json; sourceTree = "<group>"; };
+		C225D53F1C497D8100D6DEBD /* NSColor+HexString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+HexString.m"; sourceTree = "<group>"; };
+		C225D5411C497E6500D6DEBD /* NSColor+HexString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSColor+HexString.h"; sourceTree = "<group>"; };
+		C24219DC1D26238600A05BD0 /* NSString+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+Extensions.m"; path = "../../../apple/NSString+Extensions.m"; sourceTree = "<group>"; };
+		C24219DE1D2623FC00A05BD0 /* NSString+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Extensions.h"; path = "../../../apple/NSString+Extensions.h"; sourceTree = "<group>"; };
+		C25D62CD1C4ED8D000B591D1 /* ThemeConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeConsole.h; sourceTree = "<group>"; };
+		C25D62CE1C4ED8D000B591D1 /* ThemeConsole.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeConsole.m; sourceTree = "<group>"; };
+		C26DD0D51BD6B94700EC4F44 /* CoronaConsole.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoronaConsole.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C26DD0D81BD6B94700EC4F44 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C26DD0D91BD6B94700EC4F44 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C26DD0DC1BD6B94700EC4F44 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C26DD0E11BD6B94700EC4F44 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		C26DD0E31BD6B94700EC4F44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C26DD0E91BD6B96400EC4F44 /* ConsoleWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleWindowController.h; sourceTree = "<group>"; };
+		C26DD0EA1BD6B96400EC4F44 /* ConsoleWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ConsoleWindowController.mm; sourceTree = "<group>"; };
+		C26DD1081BD94C7800EC4F44 /* CoronaConsole-Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "CoronaConsole-Icon.icns"; path = "CoronaConsole/CoronaConsole-Icon.icns"; sourceTree = "<group>"; };
+		C26DD1101BD9510D00EC4F44 /* ConsoleWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConsoleWindow.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C26DD0D21BD6B94700EC4F44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C225D52E1C4768EF00D6DEBD /* Themes */ = {
+			isa = PBXGroup;
+			children = (
+				C225D5311C47743C00D6DEBD /* Blue.json */,
+				C225D52C1C4768D800D6DEBD /* Dark.json */,
+				C225D5391C48584B00D6DEBD /* Default.json */,
+				C225D53C1C487CF000D6DEBD /* Green.json */,
+			);
+			name = Themes;
+			sourceTree = "<group>";
+		};
+		C26DD0CC1BD6B94700EC4F44 = {
+			isa = PBXGroup;
+			children = (
+				C225D52E1C4768EF00D6DEBD /* Themes */,
+				C26DD1081BD94C7800EC4F44 /* CoronaConsole-Icon.icns */,
+				C26DD0D71BD6B94700EC4F44 /* CoronaConsole */,
+				C26DD0D61BD6B94700EC4F44 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C26DD0D61BD6B94700EC4F44 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C26DD0D51BD6B94700EC4F44 /* CoronaConsole.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C26DD0D71BD6B94700EC4F44 /* CoronaConsole */ = {
+			isa = PBXGroup;
+			children = (
+				C24219DC1D26238600A05BD0 /* NSString+Extensions.m */,
+				C24219DE1D2623FC00A05BD0 /* NSString+Extensions.h */,
+				C26DD0D81BD6B94700EC4F44 /* AppDelegate.h */,
+				C26DD0D91BD6B94700EC4F44 /* AppDelegate.m */,
+				C26DD0E91BD6B96400EC4F44 /* ConsoleWindowController.h */,
+				C26DD0EA1BD6B96400EC4F44 /* ConsoleWindowController.mm */,
+				C26DD1101BD9510D00EC4F44 /* ConsoleWindow.xib */,
+				C26DD0E01BD6B94700EC4F44 /* MainMenu.xib */,
+				C26DD0E31BD6B94700EC4F44 /* Info.plist */,
+				C225D5411C497E6500D6DEBD /* NSColor+HexString.h */,
+				C225D5281C4766A300D6DEBD /* Theme.h */,
+				C225D5291C4766A300D6DEBD /* Theme.m */,
+				C25D62CD1C4ED8D000B591D1 /* ThemeConsole.h */,
+				C25D62CE1C4ED8D000B591D1 /* ThemeConsole.m */,
+				C26DD0DB1BD6B94700EC4F44 /* Supporting Files */,
+				C225D53F1C497D8100D6DEBD /* NSColor+HexString.m */,
+			);
+			path = CoronaConsole;
+			sourceTree = "<group>";
+		};
+		C26DD0DB1BD6B94700EC4F44 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C26DD0DC1BD6B94700EC4F44 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C26DD0D41BD6B94700EC4F44 /* CoronaConsole */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C26DD0E61BD6B94700EC4F44 /* Build configuration list for PBXNativeTarget "CoronaConsole" */;
+			buildPhases = (
+				C26DD0D11BD6B94700EC4F44 /* Sources */,
+				C26DD0D21BD6B94700EC4F44 /* Frameworks */,
+				C26DD0D31BD6B94700EC4F44 /* Resources */,
+				C225D52F1C47690A00D6DEBD /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CoronaConsole;
+			productName = CoronaConsole;
+			productReference = C26DD0D51BD6B94700EC4F44 /* CoronaConsole.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C26DD0CD1BD6B94700EC4F44 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0800;
+				ORGANIZATIONNAME = "Perry Clarke";
+				TargetAttributes = {
+					C26DD0D41BD6B94700EC4F44 = {
+						CreatedOnToolsVersion = 7.0.1;
+					};
+				};
+			};
+			buildConfigurationList = C26DD0D01BD6B94700EC4F44 /* Build configuration list for PBXProject "CoronaConsole" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C26DD0CC1BD6B94700EC4F44;
+			productRefGroup = C26DD0D61BD6B94700EC4F44 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C26DD0D41BD6B94700EC4F44 /* CoronaConsole */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C26DD0D31BD6B94700EC4F44 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C225D53A1C48584B00D6DEBD /* Default.json in Resources */,
+				C225D53D1C487CF000D6DEBD /* Green.json in Resources */,
+				C26DD1091BD94C7800EC4F44 /* CoronaConsole-Icon.icns in Resources */,
+				C225D5321C47743C00D6DEBD /* Blue.json in Resources */,
+				C26DD1111BD9510D00EC4F44 /* ConsoleWindow.xib in Resources */,
+				C26DD0E21BD6B94700EC4F44 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C26DD0D11BD6B94700EC4F44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C24219DD1D26238600A05BD0 /* NSString+Extensions.m in Sources */,
+				C26DD0DD1BD6B94700EC4F44 /* main.m in Sources */,
+				C225D5401C497D8100D6DEBD /* NSColor+HexString.m in Sources */,
+				C26DD0DA1BD6B94700EC4F44 /* AppDelegate.m in Sources */,
+				C26DD0EB1BD6B96400EC4F44 /* ConsoleWindowController.mm in Sources */,
+				C225D52B1C4766A300D6DEBD /* Theme.m in Sources */,
+				C25D62CF1C4ED8D000B591D1 /* ThemeConsole.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		C26DD0E01BD6B94700EC4F44 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C26DD0E11BD6B94700EC4F44 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C26DD0E41BD6B94700EC4F44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C26DD0E51BD6B94700EC4F44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C26DD0E71BD6B94700EC4F44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = CoronaConsole/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaConsole;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C26DD0E81BD6B94700EC4F44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = CoronaConsole/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaConsole;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C26DD0D01BD6B94700EC4F44 /* Build configuration list for PBXProject "CoronaConsole" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C26DD0E41BD6B94700EC4F44 /* Debug */,
+				C26DD0E51BD6B94700EC4F44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C26DD0E61BD6B94700EC4F44 /* Build configuration list for PBXNativeTarget "CoronaConsole" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C26DD0E71BD6B94700EC4F44 /* Debug */,
+				C26DD0E81BD6B94700EC4F44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C26DD0CD1BD6B94700EC4F44 /* Project object */;
+}

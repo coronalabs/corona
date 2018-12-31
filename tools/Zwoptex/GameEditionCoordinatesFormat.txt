@@ -1,0 +1,33 @@
+module(...)
+
+
+-- This file is for use with Corona Game Edition
+--
+-- The function getSpriteSheetData() returns a table suitable for importing using sprite.newSpriteSheetFromData()
+--
+-- Usage example:
+--			local zwoptexData = require "ThisFile.lua"
+-- 			local data = zwoptexData.getSpriteSheetData()
+--			local spriteSheet = sprite.newSpriteSheetFromData( "Untitled.png", data )
+--
+-- For more details, see http://developer.anscamobile.com/content/game-edition-sprite-sheets
+
+function getSpriteSheetData()
+
+	local sheet = {
+		frames = {
+		{% for sprite in sprites %}
+			{
+				name = "{{ sprite.name }}",
+				spriteColorRect = { x = {{ sprite.sourceColorRectX }}, y = {{ sprite.sourceColorRectY }}, width = {{ sprite.sourceColorRectWidth }}, height = {{ sprite.sourceColorRectHeight }} }, 
+				textureRect = { x = {{ sprite.textureRectX }}, y = {{ sprite.textureRectY }}, width = {{ sprite.textureRectWidth }}, height = {{ sprite.textureRectHeight }} }, 
+				spriteSourceSize = { width = {{ sprite.sourceSizeWidth }}, height = {{ sprite.sourceSizeHeight }} }, 
+				spriteTrimmed = {% if sprite.isTrimmed %}true{% else %}false{% /if %},
+				textureRotated = {% if sprite.isRotated %}true{% else %}false{% /if %}
+			},
+		{% /for %}
+		}
+	}
+
+	return sheet
+end

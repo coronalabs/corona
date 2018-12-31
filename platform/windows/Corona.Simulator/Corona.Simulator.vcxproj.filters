@@ -1,0 +1,510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="BuildProgressDlg.h" />
+    <ClInclude Include="BuildResult.h" />
+    <ClInclude Include="BuildWebDlg.h" />
+    <ClInclude Include="CoronaInterface.h" />
+    <ClInclude Include="CoronaProject.h" />
+    <ClInclude Include="CustomDeviceDlg.h" />
+    <ClInclude Include="DevPasswordDlg.h" />
+    <ClInclude Include="LicenseDlg.h" />
+    <ClInclude Include="LoginDlg.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MessageDlg.h" />
+    <ClInclude Include="NewProjectDlg.h" />
+    <ClInclude Include="PasswordDlg.h" />
+    <ClInclude Include="PreferencesDlg.h" />
+    <ClInclude Include="ProgressWnd.h" />
+    <ClInclude Include="RelaunchPrefDlg.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="SelectSampleProjectDlg.h" />
+    <ClInclude Include="Simulator.h" />
+    <ClInclude Include="SimulatorDoc.h" />
+    <ClInclude Include="SimulatorView.h" />
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="BuildAndroidDlg.h" />
+    <ClInclude Include="..\..\shared\jniUtils.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ListKeyStore.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\AntHost.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\android\Rtt_AndroidAppPackager.h">
+      <Filter>%28root%29\platform\android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_PlatformDictionaryWrapper.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_PlatformObjectWrapper.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_AndroidSupportTools.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_Authorization.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_AuthorizationTicket.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_MAuthorizationDelegate.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_PlatformConnection.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_TargetAndroidAppStore.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_TargetDevice.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_WebAppPackager.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_WebServicesSession.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_PlatformPlayer.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_PlatformSimulator.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Rtt_SimulatorAnalytics.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Rtt_JavaHost.h">
+      <Filter>%28root%29\librtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\modules\simulator\Rtt_MSimulatorServices.h">
+      <Filter>%28root%29\modules\simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\modules\simulator\Rtt_SimulatorRecents.h">
+      <Filter>%28root%29\modules\simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\modules\simulator\Rtt_LuaLibSimulator.h">
+      <Filter>%28root%29\modules\simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="WinGlobalProperties.h" />
+    <ClInclude Include="Rtt\Rtt_WinSimulatorServices.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinAuthorizationDelegate.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinConnection.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinDictionaryWrapper.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinPlatformServices.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Interop\SimulatorRuntimeEnvironment.h">
+      <Filter>Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\winutil\BtnST.h">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\winutil\DirDialog.h">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\winutil\dirent.h">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildWin32AppDlg.h" />
+    <ClInclude Include="Rtt\Rtt_Win32AppPackager.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\rcedit\Project\src\rescle.h">
+      <Filter>%28root%29\external\rcedit\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_Win32AppPackagerParams.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulatorDocTemplate.h" />
+    <ClInclude Include="HtmlMessageDlg.h" />
+    <ClInclude Include="..\..\..\external\winutil\SimpleBrowser.h">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\markdown.h">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\stack.h">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\autolink.h">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\buffer.h">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\houdini.h">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\html.h">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\html_blocks.h">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClInclude>
+    <ClInclude Include="AnalyticsProvider.h" />
+    <ClInclude Include="..\..\shared\Rtt_LinuxAppPackager.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildLinuxDlg.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="BuildProgressDlg.cpp" />
+    <ClCompile Include="BuildResult.cpp" />
+    <ClCompile Include="BuildWebDlg.cpp" />
+    <ClCompile Include="CoronaInterface.cpp" />
+    <ClCompile Include="CoronaProject.cpp" />
+    <ClCompile Include="CustomDeviceDlg.cpp" />
+    <ClCompile Include="DevPasswordDlg.cpp" />
+    <ClCompile Include="LicenseDlg.cpp" />
+    <ClCompile Include="LoginDlg.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MessageDlg.cpp" />
+    <ClCompile Include="NewProjectDlg.cpp" />
+    <ClCompile Include="PasswordDlg.cpp" />
+    <ClCompile Include="PreferencesDlg.cpp" />
+    <ClCompile Include="ProgressWnd.cpp" />
+    <ClCompile Include="RelaunchPrefDlg.cpp" />
+    <ClCompile Include="SelectSampleProjectDlg.cpp" />
+    <ClCompile Include="Simulator.cpp" />
+    <ClCompile Include="SimulatorDoc.cpp" />
+    <ClCompile Include="SimulatorView.cpp" />
+    <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="BuildAndroidDlg.cpp" />
+    <ClCompile Include="..\..\shared\ListKeyStore.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\AntHost.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\android\Rtt_AndroidAppPackager.cpp">
+      <Filter>%28root%29\platform\android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_PlatformDictionaryWrapper.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_PlatformObjectWrapper.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_Authorization.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_AuthorizationTicket.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_PlatformConnection.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_TargetDevice.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_WebAppPackager.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_WebServicesSession.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_PlatformPlayer.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_PlatformSimulator.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_SimulatorAnalytics.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Rtt_TargetAndroidAppStore.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Rtt_JavaHost.cpp">
+      <Filter>%28root%29\librtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\modules\simulator\Rtt_LuaLibSimulator.cpp">
+      <Filter>%28root%29\modules\simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="WinGlobalProperties.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinSimulatorServices.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinAuthorizationDelegate.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinConnection.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinDictionaryWrapper.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinPlatformServices.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop\SimulatorRuntimeEnvironment.cpp">
+      <Filter>Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\winutil\BtnST.cpp">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildWin32AppDlg.cpp" />
+    <ClCompile Include="Rtt\Rtt_Win32AppPackager.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\rcedit\Project\src\rescle.cc">
+      <Filter>%28root%29\external\rcedit\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_Win32AppPackagerParams.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulatorDocTemplate.cpp" />
+    <ClCompile Include="HtmlMessageDlg.cpp" />
+    <ClCompile Include="..\..\..\external\winutil\SimpleBrowser.cpp">
+      <Filter>%28root%29\external\winutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\html_smartypants.c">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\markdown.c">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\stack.c">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\autolink.c">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\buffer.c">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\houdini_href_e.c">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\houdini_html_e.c">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\html.c">
+      <Filter>%28root%29\external\sundown</Filter>
+    </ClCompile>
+    <ClCompile Include="AnalyticsProvider.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_LinuxAppPackager.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildLinuxDlg.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="res">
+      <UniqueIdentifier>{aa41227f-2a0a-4a98-a030-f8d61fe14afb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29">
+      <UniqueIdentifier>{7fbc2e32-fbde-43fa-84d1-74fd12385fd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\external">
+      <UniqueIdentifier>{64696a94-3221-49f4-a14e-59befcc66a1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\external\winutil">
+      <UniqueIdentifier>{91769ba5-a9af-400f-a417-5e864770b8d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\platform">
+      <UniqueIdentifier>{a4c6cdb8-f3eb-4da4-a53a-98a0afe12497}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\platform\shared">
+      <UniqueIdentifier>{bab6c157-27db-491b-827a-b3dc41580654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\platform\android">
+      <UniqueIdentifier>{a39f2d63-9aba-4f90-8b65-72b82ce6f706}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\librtt">
+      <UniqueIdentifier>{0477e90a-ea8b-464f-8754-cc9a5305da5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\modules">
+      <UniqueIdentifier>{bc4b6c38-8d30-41ce-8ce1-a6f431d8a80c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\modules\simulator">
+      <UniqueIdentifier>{90fe7d76-1dc6-4a1d-be15-74e62a087ac3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\platform\resources">
+      <UniqueIdentifier>{9243bb47-2a89-4f5d-bebd-8c464dc40021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rtt">
+      <UniqueIdentifier>{5ccb6c77-76dc-4b5f-bfae-d12dbd5fb9dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interop">
+      <UniqueIdentifier>{1c3c8cef-6d13-45db-9ba2-e910f23b8812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\external\rcedit">
+      <UniqueIdentifier>{4f24b871-2ae8-4490-b023-0a9f244210c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\external\rcedit\src">
+      <UniqueIdentifier>{ed043c10-6e2d-426f-9634-9e56f5a80a2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\external\sundown">
+      <UniqueIdentifier>{260bec18-9ab4-496f-9d0f-94181a059933}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Simulator.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Simulator.rc2">
+      <Filter>res</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\android\create_build_properties.lua">
+      <Filter>%28root%29\platform\android</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\simulatorAnalytics.lua">
+      <Filter>%28root%29\platform\resources</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\shell.lua">
+      <Filter>%28root%29\platform\resources</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\webPackageApp.lua">
+      <Filter>%28root%29\platform\resources</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\CoronaPListSupport.lua">
+      <Filter>%28root%29\platform\resources</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\linuxPackageApp.lua">
+      <Filter>%28root%29\platform\resources</Filter>
+    </LuaToCpp>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\exampleActivityIndicator.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleAlert.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleAnimationTime.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleAudio.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleBalloon.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleBridge.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleButtonEvents.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleCamera.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleCan.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleChains.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleCompass.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleCrate.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleEggBreaker.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleFacebook.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleFishies.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleFruit.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleGlobe.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleGPS.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleInneractive.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleInternet.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleJungleScene.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleMail.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleMicrophone.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleMovieClip.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleMultipuck.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleMultitouch.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleNativeInput.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleOpenFeint.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\examplePlatform.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\examplePolyLines.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleSimplePool.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleSpotlight.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\exampleTwitter.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\Simulator.ico">
+      <Filter>res</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

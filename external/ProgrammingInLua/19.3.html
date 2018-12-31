@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 19.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="19.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="20.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#19">Chapter 19. The Table Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>19.3 - Sort</h2>
+
+<p>
+
+<p>Another useful function on arrays is <code>table.sort</code>,
+which we have seen before.
+It receives the array to be sorted,
+plus an optional order function.
+This order function receives two arguments and must return true if
+the first argument should come first in the sorted array.
+If this function is not provided,
+<code>sort</code> uses the default less-than operation
+(corresponding to the `<code>&lt;</code>&acute; operator).
+
+<p>A common mistake is to try to order the indices of a table.
+In a table, the indices form a set, and have no order whatsoever.
+If you want to order them, you have to copy them to an array
+and then sort the array.
+Let us see an example.
+Suppose that you read a source file
+and build a table that gives, for each function name,
+the line where that function is defined;
+something like this:
+<pre>
+    lines = {
+      luaH_set = 10,
+      luaH_get = 24,
+      luaH_present = 48,
+    }
+</pre>
+Now you want to print these function names in alphabetical order.
+If you traverse this table with <code>pairs</code>,
+the names appear in an arbitrary order.
+However, you cannot sort them directly,
+because these names are keys of the table.
+However, when you put these names into an array,
+then you can sort them.
+First, you must create an array with those names, then sort it,
+and finally print the result:
+<pre>
+    a = {}
+    for n in pairs(lines) do table.insert(a, n) end
+    table.sort(a)
+    for i,n in ipairs(a) do print(n) end
+</pre>
+
+<p>Note that, for Lua, arrays also have no order.
+But we know how to count, so we get ordered values
+as long as we access the array with ordered indices.
+That is why you should always traverse arrays
+with <code>ipairs</code>, rather than <code>pairs</code>.
+The first imposes the key order 1, 2, ...,
+whereas the latter uses the natural arbitrary order of the table.
+
+<p>As a more advanced solution,
+we can write an iterator that traverses a table
+following the order of its keys.
+An optional parameter <code>f</code> allows the specification of an
+alternative order.
+It first sorts the keys into an array,
+and then iterates on the array.
+At each step, it returns the key and value from the original table:
+<pre>
+    function pairsByKeys (t, f)
+      local a = {}
+      for n in pairs(t) do table.insert(a, n) end
+      table.sort(a, f)
+      local i = 0      -- iterator variable
+      local iter = function ()   -- iterator function
+        i = i + 1
+        if a[i] == nil then return nil
+        else return a[i], t[a[i]]
+        end
+      end
+      return iter
+    end
+</pre>
+With this function, it is easy to print those function names in
+alphabetical order.
+The loop
+<pre>
+    for name, line in pairsByKeys(lines) do
+      print(name, line)
+    end
+</pre>
+will print
+<pre>
+    luaH_get        24
+    luaH_present    48
+    luaH_set        10
+</pre>
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="20.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

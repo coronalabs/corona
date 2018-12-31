@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 21.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="21.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="21.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#21">Chapter 21. The I/O Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>21.1 - The Simple I/O Model</h2>
+
+<p>The simple model does all of its operations on two current files.
+The library initializes the current input file as
+the process's standard input (<code>stdin</code>)
+and the current output file as
+the process's standard output (<code>stdout</code>).
+Therefore, when we execute something like <code>io.read()</code>,
+we read a line from the standard input.
+
+<p>We can change those current files with the <code>io.input</code>
+and <code>io.output</code> functions.
+A call like <code>io.input(filename)</code> opens the given file (in read mode)
+and sets it as the current input file.
+From this point on, all input will come from this file,
+until another call to <code>io.input</code>;
+<code>io.output</code> does a similar job for output.
+In case of errors, both functions raise the error.
+If you want to handle errors directly,
+you must use <code>io.open</code>, from the complete model.
+
+<p>As <code>write</code> is simpler than <code>read</code>,
+we will look at it first.
+The <code>io.write</code> function simply gets an arbitrary number
+of string arguments
+and writes them to the current output file.
+Numbers are converted to strings following the usual conversion rules;
+for full control over this conversion, you should use
+the <code>format</code> function, from the <code>string</code> library:
+<pre>
+    > io.write("sin (3) = ", math.sin(3), "\n")
+      --> sin (3) = 0.1411200080598672
+    > io.write(string.format("sin (3) = %.4f\n", math.sin(3)))
+      --> sin (3) = 0.1411
+</pre>
+Avoid code like <code>io.write(a..b..c)</code>;
+the call <code>io.write(a,b,c)</code> accomplishes the same effect with
+fewer resources, as it avoids the concatenations.
+
+<p>As a rule, you should use <code>print</code>
+for quick-and-dirty programs, or for debugging,
+and <code>write</code> when you need full control over your output:
+<pre>
+    > print("hello", "Lua"); print("Hi")
+      --> hello   Lua
+      --> Hi
+    
+    > io.write("hello", "Lua"); io.write("Hi", "\n")
+      --> helloLuaHi
+</pre>
+Unlike <code>print</code>, <code>write</code> adds no extra characters
+to the output, such as tabs or newlines.
+Moreover, <code>write</code> uses the current output file,
+whereas <code>print</code> always uses the standard output.
+Finally, <code>print</code> automatically applies <code>tostring</code>
+to its arguments,
+so it can also show tables, functions, and <B>nil</B>.
+
+<p>The <code>read</code> function reads strings from the current input file.
+Its arguments control what is read:
+<p><table align="center" border=1>
+<tr><td><code>"*all"</code></td><td>reads the whole file</td></tr>
+<tr><td><code>"*line"</code></td><td>reads the next line</td></tr>
+<tr><td><code>"*number"</code></td><td>reads a number</td></tr>
+<tr><td><em>num</em></td><td>reads a string with up to <em>num</em> characters</td></tr>
+</table><p>
+
+<p>The call <code>io.read("*all")</code> reads the whole current input file,
+starting at its current position.
+If we are at the end of file, or if the file is empty,
+the call returns an empty string.
+
+<p>Because Lua handles long strings efficiently,
+a simple technique for writing filters in Lua is
+to read the whole file into a string,
+do the processing to the string (typically with <code>gsub</code>),
+and then write the string to the output:
+<pre>
+    t = io.read("*all")         -- read the whole file
+    t = string.gsub(t, ...)     -- do the job
+    io.write(t)                 -- write the file
+</pre>
+As an example, the following code is a complete program to
+code a file's content using the <em>quoted-printable</em> encoding
+of MIME.
+In this encoding, non-ASCII characters are coded as <code>=</code><em>XX</em>,
+where <em>XX</em> is the numeric code of the character in hexadecimal.
+To keep the consistency of the encoding, the `<code>=</code>&acute; character
+must be encoded as well.
+The pattern used in the <code>gsub</code> captures all characters
+with codes from 128 to 255, plus the equal sign.
+<pre>
+    t = io.read("*all")
+    t = string.gsub(t, "([\128-\255=])", function (c)
+          return string.format("=%02X", string.byte(c))
+        end)
+    io.write(t)
+</pre>
+On a Pentium 333MHz, this program takes 0.2 seconds
+to convert a file with 200K characters.
+
+<p>The call <code>io.read("*line")</code> returns the
+next line from the current input file, without the newline character.
+When we reach the end of file, the call returns <B>nil</B>
+(as there is no next line to return).
+This pattern is the default for <code>read</code>,
+so <code>io.read()</code> has the same effect as <code>io.read("*line")</code>.
+Usually, we use this pattern only when our algorithm naturally
+handles the file line by line;
+otherwise, we favor reading the whole file at once, with <code>*all</code>,
+or in blocks, as we will see later.
+As a simple example of the use of this pattern,
+the following program copies its current input to the current output,
+numbering each line:
+<pre>
+    local count = 1
+    while true do
+      local line = io.read()
+      if line == nil then break end
+      io.write(string.format("%6d  ", count), line, "\n")
+      count = count + 1
+    end
+</pre>
+However, to iterate on a whole file line by line,
+we do better to use the <code>io.lines</code> iterator.
+For instance,
+we can write a complete program to sort the lines of a file as follows:
+<pre>
+    local lines = {}
+    -- read the lines in table 'lines'
+    for line in io.lines() do
+      table.insert(lines, line)
+    end
+    -- sort
+    table.sort(lines)
+    -- write all the lines
+    for i, l in ipairs(lines) do io.write(l, "\n") end
+</pre>
+This program sorts a file with 4.5 MB (32K lines)
+in 1.8 seconds (on a Pentium 333MHz),
+against 0.6 seconds spent by the system <code>sort</code> program,
+which is written in C and highly optimized.
+
+<p>The call <code>io.read("*number")</code>
+reads a number from the current input file.
+This is the only case where <code>read</code> returns a number,
+instead of a string.
+When you need to read many numbers from a file,
+the absence of the intermediate strings can make a significant
+performance improvement.
+The <code>*number</code> option skips any spaces before the number
+and accepts number formats like <code>-3</code>, <code>+5.2</code>,
+<code>1000</code>, and <code>-3.4e-23</code>.
+If it cannot find a number at the current file position
+(because of bad format or end of file),
+it returns <B>nil</B>.
+
+<p>You can call <code>read</code> with multiple options;
+for each argument, the function will return the respective result.
+Suppose you have a file with three numbers per line:
+
+<pre>
+    6.0       -3.23     15e12
+    4.3       234       1000001
+    ...
+</pre>
+Now you want to print the maximum of each line.
+You can read all three numbers in a single call to <code>read</code>:
+<pre>
+    while true do
+      local n1, n2, n3 = io.read("*number", "*number",
+                                 "*number")
+      if not n1 then break end
+      print(math.max(n1, n2, n3))
+    end
+</pre>
+In any case,
+you should always consider the alternative of reading the whole
+file with option <code>"*all"</code> from <code>io.read</code>
+and then using <code>gfind</code> to break it up:
+<pre>
+    local pat = "(%S+)%s+(%S+)%s+(%S+)%s+"
+    for n1, n2, n3 in string.gfind(io.read("*all"), pat) do
+      print(math.max(n1, n2, n3))
+    end
+</pre>
+
+<p>Besides the basic read patterns,
+you can call <code>read</code> with a number <em>n</em> as argument:
+In this case, <code>read</code> tries to read <em>n</em> characters
+from the input file.
+If it cannot read any character (end of file),
+<code>read</code> returns <B>nil</B>;
+otherwise, it returns a string with at most <em>n</em> characters.
+As an example of this read pattern,
+the following program is an efficient way (in Lua, of course)
+to copy a file from <code>stdin</code> to <code>stdout</code>:
+<pre>
+    local size = 2^13      -- good buffer size (8K)
+    while true do
+      local block = io.read(size)
+      if not block then break end
+      io.write(block)
+    end
+</pre>
+
+<p>As a special case, <code>io.read(0)</code> works as a test for end of file:
+It returns an empty string if there is more to be read
+or <B>nil</B> otherwise.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="21.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

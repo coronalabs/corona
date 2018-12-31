@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 1.4</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="1.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#1">Chapter 1. Getting Started</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>1.4 - The Stand-Alone Interpreter</h2>
+
+<p>The stand-alone interpreter
+(also called <code>lua.c</code> due to its source file,
+or simply <code>lua</code> due to its executable)
+is a small program that allows the direct use of Lua.
+This section presents its main options.
+
+<p>When the interpreter loads a file,
+it ignores its first line if that line starts with a number sign (`<code>#</code>&acute;).
+That feature allows the use of Lua as a script interpreter
+in Unix systems.
+If you start your program with something like
+<pre>
+    #!/usr/local/bin/lua
+</pre>
+(assuming that the stand-alone interpreter is located
+at <code>/usr/local/bin</code>), or
+<pre>
+    #!/usr/bin/env lua
+</pre>
+then you can call the program directly,
+without explicitly calling the Lua interpreter.
+
+<p>The usage of <code>lua</code> is
+<pre>
+    lua [options] [script [args]]
+</pre>
+Everything is optional.
+As we have seen already, when we call <code>lua</code> without arguments
+the interpreter enters in interactive mode.
+
+<p>The <code>-e</code> option allows us to enter
+code directly into the command line.
+For instance,
+<pre>
+    prompt> lua -e "print(math.sin(12))"   --> -0.53657291800043
+</pre>
+(Unix needs the double quotes to stop the shell from
+interpreting the parentheses.)
+As we previously saw, <code>-l</code> loads a file
+and <code>-i</code> enters interactive mode after running the other arguments.
+So, for instance, the call
+<pre>
+    prompt> lua -i -l a.lua -e "x = 10"
+</pre>
+will load the file <code>a.lua</code>,
+then execute the assignment <code>x = 10</code>,
+and finally present a prompt for interaction.
+
+<p>Whenever the global variable <code>_PROMPT</code> is defined,
+<code>lua</code> uses its value as the prompt when interacting.
+So, you can change the prompt with a call like this:
+<pre>
+    prompt> lua -i -e "_PROMPT=' lua> '"
+     lua>
+</pre>
+We are assuming that <code>"prompt"</code> is the system's prompt.
+In the example, the outer quotes stop the shell
+from interpreting the inner quotes,
+which are interpreted by Lua.
+More exactly, Lua receives the following command to run:
+<pre>
+    _PROMPT=' lua> '
+</pre>
+which assigns the string <code>" lua> "</code> to the global variable <code>_PROMPT</code>.
+
+<p>Before it starts running arguments,
+<code>lua</code> looks for an environment variable called <code>LUA_INIT</code>.
+If there is such a variable and its content is <code>@</code><em>filename</em>,
+then <code>lua</code> loads the given file.
+If <code>LUA_INIT</code> is defined but does not start with `<code>@</code>&acute;,
+then <code>lua</code> assumes that it contains Lua code and runs it.
+This variable gives you great power when configuring the
+stand-alone interpreter,
+because you have the full power of Lua in the configuration.
+You can pre-load packages,
+change the prompt and the path,
+define your own functions,
+rename or delete functions, and so on.
+
+<p>A main script can retrieve its arguments in the global variable <code>arg</code>.
+In a call like
+<pre>
+    prompt> lua script a b c
+</pre>
+<code>lua</code> creates the table <code>arg</code> with all the
+command-line arguments,
+before running the script.
+The script name goes into index 0;
+its first argument (<code>a</code> in the example),
+goes to index 1, and so on.
+Eventual options go to negative indices,
+as they appear before the script.
+For instance, in the call
+<pre>
+    prompt> lua -e "sin=math.sin" script a b
+</pre>
+<code>lua</code> collects the arguments as follows:
+<pre>
+    arg[-3] = "lua"
+    arg[-2] = "-e"
+    arg[-1] = "sin=math.sin"
+    arg[0] = "script"
+    arg[1] = "a"
+    arg[2] = "b"
+</pre>
+More often than not, the script only uses the positive indices
+(<code>arg[1]</code> and <code>arg[2]</code>, in the example).
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+BASEDIR=$(dirname "$0")
+
+# Utility to run is first arg
+UTIL="$1"
+shift
+
+exec "$BASEDIR/$UTIL" "$@"

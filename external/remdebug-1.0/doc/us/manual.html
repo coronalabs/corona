@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>RemDebug - Remote Debugger for the Lua programming language</title>
+    <link rel="stylesheet" href="http://www.keplerproject.org/doc.css" type="text/css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+
+<div id="container">
+	
+<div id="product">
+	<div id="product_logo"><a href="http://www.keplerproject.org/remdebug">
+		<img alt="RemDebug logo" src="remdebug.png" />
+	</a></div>
+	<div id="product_name"><big><strong>RemDebug</strong></big></div>
+	<div id="product_description">Remote Debugger for the Lua programming language</div>
+</div> <!-- id="product" -->
+
+<div id="main">
+
+<div id="navigation">
+
+<h1>RemDebug</h1>
+
+<ul>
+    <li><a href="index.html">Home</a>
+        <ul>
+            <li> <a href="index.html#over">Overview</a></li>
+            <li> <a href="index.html#status">Status</a></li>
+            <li> <a href="index.html#download">Download</a></li>
+            <li> <a href="index.html#dependencies">Dependencies</a></li>
+            <li> <a href="index.html#history">History</a></li>
+            <li> <a href="index.html#credits">Credits</a></li>
+            <li> <a href="index.html#contact">Contact</a></li>
+        </ul>
+    </li>
+    <li><strong>Manual</strong>
+        <ul>
+            <li> <a href="manual.html#over">Introduction</a></li>
+            <li> <a href="manual.html#installation">Installation</a></li>
+            <li> <a href="manual.html#running">Running</a></li>
+            <li> <a href="manual.html#commands">Commands</a></li>
+        </ul>
+    </li>
+    <li><a href="example.html">Example</a></li>
+    <li><a href="http://luaforge.net/projects/remdebug/">Project</a>
+        <ul>
+            <li><a href="http://luaforge.net/tracker/?group_id=11">Bug Tracker</a></li>
+            <li><a href="http://luaforge.net/scm/?group_id=11">CVS</a></li>
+        </ul>
+    </li>
+    <li><a href="license.html">License</a></li>
+</ul>
+
+</div> <!-- id="navigation" -->
+
+<div id="content">
+
+<h2><a name="over"></a>Introduction</h2>
+
+<p>
+RemDebug is a remote debugger for <a href="http://www.lua.org">Lua 5.0 and 5.1</a>.
+It lets you control the execution of another Lua program remotely, setting breakpoints
+and inspecting the current state of the program.
+</p>
+
+<p>
+RemDebug is free software and uses the same <a href="license.html">license</a> as Lua.
+</p>
+
+<h2><a name="installation"></a>Installation</h2>
+
+<p>
+RemDebug uses <a href="http://www.cs.princeton.edu/~diego/professional/luasocket">LuaSocket 2.0</a> and
+<a href="http://www.keplerproject.org/luafilesystem">LuaFileSystem 1.2</a>, so first check if these libraries
+are installed in your system. Download and install LuaSocket and LuaFileSystem if they are not installed. 
+RemDebug also uses the new package proposal for Lua 5.1, so if you use Lua 5.0 then 
+download and install <a href="http://luaforge.net/projects/compat/files/">Compat-5.1 R5</a>.
+</p>
+
+<p>
+To install RemDebug, create a <code>remdebug</code> folder in your <code>package.path</code> and copy
+<code>engine.lua</code> to this folder. The <code>controller.lua</code> file is a standalone application,
+so it can be anywhere in your system.
+</p>
+
+<p>
+RemDebug uses the new package proposal, so if you are using Lua 5.0
+you should load <code>compat-5.1.lua</code> through your <code>LUA_INIT</code> environment variable.
+</p>
+
+<h2><a name="running"></a>Running</h2>
+
+<p>
+You should run the controller first, as in:
+</p>
+
+<pre class="example">
+  lua50 controller.lua
+</pre>
+
+<p>
+The controller will block, waiting for you to run the application. It should have the following lines added:
+</p>
+
+<pre class="example">
+  require"remdebug.engine"
+  remdebug.engine.start()
+</pre>
+
+<p>
+Now run the application. A sample one, <code>test.lua</code>, is provided with the source files. Just do</p>
+
+<pre class="example">
+  lua50 test.lua
+</pre>
+
+<p>
+If the application is a CGI script, or Lua page (<code>.lp</code> file), point to it using a browser.
+</p>
+
+<p>
+The application should block on the first statement after <code>remdebug.engine.start()</code>, and the
+controller will wait for further commands. Type <code>help</code> to see the available commands.</p>
+
+<h2><a name="commands"></a>Controller Commands</h2>
+
+<dl class="reference">
+    <dt><strong><code>setb &lt;file&gt; &lt;line&gt;</code></strong></dt>
+    <dd>Sets a breakpoint for the Lua script <code>&lt;file&gt;</code> at line <code>&lt;line&gt;</code>. <code>&lt;file&gt;</code>
+    should be the name of the script relative to the base path you set.</dd>
+
+    <dt><strong><code>delb &lt;file&gt; &lt;line&gt;</code></strong></dt>
+    <dd>Removes a previously set breakpoint.</dd>
+    
+    <dt><strong><code>delallb</code></strong></dt>
+    <dd>Removes all breakpoints.</dd>
+    
+    <dt><strong><code>setw &lt;exp&gt;</code></strong></dt>
+    <dd>Adds a new watch expression. The application will pause when it evaluates as true. The command will return the index of
+    the watch expression. You need the index to remove it later.</dd>
+    
+    <dt><strong><code>delw &lt;index&gt;</code></strong></dt>
+    <dd>Removes the watch expression with this index.</dd>
+    
+    <dt><strong><code>delallw</code></strong></dt>
+    <dd>Removes all watch expressions.</dd>
+    
+    <dt><strong><code>eval &lt;exp&gt;</code></strong></dt>
+    <dd>Evaluates <code>&lt;exp&gt;</code>, which should be a Lua expression, in the context where
+    where the program stopped (including any local variables and upvalues), and returns the value.</dd>
+      
+    <dt><strong><code>exec &lt;stmt&gt;</code></strong></dt>
+    <dd>Executes <code>&lt;stmt&gt;</code>, which should be a Lua chunk, in the context where
+    where the program stopped (including any local variables and upvalues).</dd>
+    
+    <dt><strong><code>run</code></strong></dt>
+    <dd>Run the program, blocking the controller again, until the next breakpoint.</dd>
+    
+    <dt><strong><code>step</code></strong></dt>
+    <dd>Run the program, blocking the controller again, until the next line (stepping into functions).</dd>
+    
+    <dt><strong><code>over</code></strong></dt>
+    <dd>Run the program, blocking the controller again, until the next line (stepping over functions).</dd>
+    
+    <dt><strong><code>listb</code></strong></dt>
+    <dd>Lists current breakpoints</dd>
+    
+    <dt><strong><code>listw</code></strong></dt>
+    <dd>Lists current watch expressions</dd>
+    
+    <dt><strong><code>basedir [path]</code></strong></dt>
+    <dd>Sets the base path of the remote application, or shows the current one.</dd>
+    
+    <dt><strong><code>help</code></strong></dt>
+    <dd>Lists the commands.</dd>
+</dl>
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+
+<div id="about">
+	<p><a href="http://validator.w3.org/check?uri=referer">
+    <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+	<p><small>$Id: manual.html,v 1.9 2006/07/27 20:15:54 carregal Exp $</small></p>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

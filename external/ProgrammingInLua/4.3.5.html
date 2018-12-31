@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 4.3.5</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="4.3.4.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="4.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#4">Chapter 4. Statements</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>4.3.5 - Generic <b>for</b></h3>
+
+<p>The generic <b>for</b> loop allows you to traverse all values
+returned by an iterator function.
+We have already seen examples of the generic <b>for</b>:
+<pre>
+    -- print all values of array `a'
+    for i,v in ipairs(a) do print(v) end
+</pre>
+For each step in that code, <code>i</code> gets an index,
+while <code>v</code> gets the value associated with that index.
+A similar example shows how we traverse all keys of a table:
+<pre>
+    -- print all keys of table `t'
+    for k in pairs(t) do print(k) end
+</pre>
+Despite its apparent simplicity,
+the generic <b>for</b> is powerful.
+With proper iterators,
+we can traverse almost anything,
+and do it in a readable fashion.
+The standard libraries provide several iterators,
+which allow us to iterate over the lines of a file
+(<code>io.lines</code>),
+the pairs in a table (<code>pairs</code>),
+the words of a string
+(<code>string.gfind</code>, which we will see in <a href="20.html#StringLib">Chapter 20</a>),
+and so on.
+Of course, we can write our own iterators.
+Although the use of the generic <b>for</b> is easy,
+the task of writing iterator functions has its subtleties.
+We will cover this topic later, in <a href="7.html#GenericFor">Chapter 7</a>.
+
+<p>The generic loop shares two properties with the numeric loop:
+The loop variables are local to the loop body
+and you should never assign any value to the loop variables.
+
+<p>Let us see a more concrete example of the use
+of a generic <b>for</b>.
+Suppose you have a table with the names of the days of the week:
+<pre>
+    days = {"Sunday", "Monday", "Tuesday", "Wednesday",
+            "Thursday", "Friday", "Saturday"}
+</pre>
+Now you want to translate a name into its position in the week.
+You can search the table, looking for the given name.
+Frequently, however,
+a more efficient approach in Lua is to build a <em>reverse table</em>,
+say <code>revDays</code>,
+that has the names as indices and the numbers as values.
+That table would look like this:
+<pre>
+    revDays = {["Sunday"] = 1, ["Monday"] = 2,
+                ["Tuesday"] = 3, ["Wednesday"] = 4,
+                ["Thursday"] = 5, ["Friday"] = 6,
+                ["Saturday"] = 7}
+</pre>
+Then, all you have to do to find the order of a name
+is to index this reverse table:
+<pre>
+    x = "Tuesday"
+    print(revDays[x])    --> 3
+</pre>
+Of course, we do not need to manually declare the reverse table.
+We can build it automatically from the original one:
+<pre>
+    revDays = {}
+    for i,v in ipairs(days) do
+      revDays[v] = i
+    end
+</pre>
+The loop will do the assignment for each element of <code>days</code>,
+with the variable <code>i</code> getting the index (1, 2, ...) and
+<code>v</code> the value (<code>"Sunday"</code>, <code>"Monday"</code>, ...).
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="4.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

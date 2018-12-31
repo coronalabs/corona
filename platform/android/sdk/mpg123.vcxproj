@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="NsightTegraProject">
+    <NsightTegraProjectRevisionNumber>11</NsightTegraProjectRevisionNumber>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Tegra-Android">
+      <Configuration>Debug</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Tegra-Android">
+      <Configuration>Release</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Tegra-Android">
+      <Configuration>Shipping</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\compat.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\config.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\frame.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\icy.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\icy2utf8.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\id3.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\index.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\optimize.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\parse.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\reader.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\synth.h" />
+    <ClInclude Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\synth_8bit.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\compat.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\dct64.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\equalizer.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\feature.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\format.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\frame.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\icy.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\icy2utf8.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\id3.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\index.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\layer1.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\layer2.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\layer3.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\libmpg123.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\ntom.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\optimize.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\parse.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\readers.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\stringbuf.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\synth.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\synth_8bit.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\synth_arm.S">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">CompileAsAsmWithCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\synth_s32.c" />
+    <ClCompile Include="..\..\..\external\mpg123-1.13.1\src\libmpg123\tabinit.c" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{97409E83-5B08-4027-8610-18531672AA0E}</ProjectGuid>
+    <RootNamespace>Android1</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
+    <AndroidTargetAPI>android-26</AndroidTargetAPI>
+    <AndroidMinAPI>android-17</AndroidMinAPI>
+    <AndroidStlType>stlport_static</AndroidStlType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <NdkToolchainVersion>Default</NdkToolchainVersion>
+    <AndroidStripLibrary>true</AndroidStripLibrary>
+    <ForceIncrediBuildExecution>false</ForceIncrediBuildExecution>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
+    <AndroidTargetAPI>android-15</AndroidTargetAPI>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Shipping|Tegra-Android'">
+    <AndroidTargetAPI>android-15</AndroidTargetAPI>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG</PreprocessorDefinitions>
+      <AdditionalOptions>-DMPG123_NO_CONFIGURE -DHAVE_STDLIB_H -DHAVE_STRERROR -DHAVE_SYS_TYPES_H -DFPM_ARM -DFIXED_POINT -DANDROID_NDK -D_ARM_ASSEM_ -DMPG123_NO_LARGENAME -DNO_REAL -DOPT_GENERIC </AdditionalOptions>
+      <FpuNeon>true</FpuNeon>
+      <CompileAs>Default</CompileAs>
+      <FloatAbi>soft</FloatAbi>
+    </ClCompile>
+    <AntBuild>
+      <JarDirectories>
+      </JarDirectories>
+    </AntBuild>
+    <AntBuild>
+      <JarDependencies>
+      </JarDependencies>
+      <AndroidManifestLocation>Z:\corona\main\platform\android\sdk\AndroidManifest.xml</AndroidManifestLocation>
+      <NativeLibDirectories>
+      </NativeLibDirectories>
+      <NativeLibDependencies>
+      </NativeLibDependencies>
+    </AntBuild>
+    <Link>
+      <AdditionalOptions>-llog -ldl %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>Z:\corona\main\platform\android\sdk\Tegra-Android\Debug\libmpg123.so</OutputFile>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>Z:\corona\main\platform\android\libs</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,3 @@
+Corona Labs Inc. does not provide source code for this library project.
+
+However, this empty "src" directory is needed so that the Android build for this library project can succeed.  This file was placed here so that version control systems and zip utilities will not attempt to remove this empty directory.

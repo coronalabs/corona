@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 28.5</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="28.4.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="29.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#28">Chapter 28. User-Defined Types in C</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="lightudata"><h2>28.5 - Light Userdata</h2></a>
+
+<p>The userdata that we have been using until now is called
+full userdata.
+Lua offers another kind of userdata,
+called <em>light userdata</em>.
+
+<p>A light userdatum is a value that represents a C pointer
+(that is, a <code>void *</code> value).
+Because it is a value,
+we do not create them
+(in the same way that we do not create numbers).
+To put a light userdatum into the stack,
+we use <code>lua_pushlightuserdata</code>:
+<pre>
+    void lua_pushlightuserdata (lua_State *L, void *p);
+</pre>
+
+<p>Despite their common name,
+light userdata are quite different from full userdata.
+Light userdata are not buffers, but single pointers.
+They have no metatables.
+Like numbers, light userdata do not need to be
+managed by the garbage collector (and are not).
+
+<p>Some people use light userdata as a
+cheap alternative to full userdata.
+This is not a typical use, however.
+First, with light userdata you have to manage memory by yourself,
+because they are not subject to garbage collection.
+Second, despite the name, full userdata are inexpensive, too.
+They add little overhead compared to a <code>malloc</code>
+for the given memory size.
+
+<p>The real use of light userdata comes from equality.
+As a full userdata is an object,
+it is only equal to itself.
+A light userdata, on the other hand, represents a C pointer value.
+As such, it is equal to any userdata that represents the same pointer.
+Therefore, we can use light userdata to find C objects inside Lua.
+
+<p>As a typical example,
+suppose we are implementing a binding between Lua and a Window system.
+In this binding, we use full userdata to represent windows.
+(Each userdatum may contain the whole window structure or
+only a pointer to a window created by the system.)
+When there is an event inside a window (e.g., a mouse click),
+the system calls a specific callback,
+identifying the window by its address.
+To pass the callback to Lua,
+we must find the userdata that represents the given window.
+To find this userdata,
+we can keep a table where the indices are light userdata
+with the window addresses
+and the values are the full userdata that represent the windows in Lua.
+Once we have a window address,
+we push it into the API stack as a light userdata and use the userdata
+as an index into that table.
+(Note that the table should have weak values.
+Otherwise, those full userdata would never be collected.)
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="29.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

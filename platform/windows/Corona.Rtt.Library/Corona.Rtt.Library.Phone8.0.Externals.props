@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="..\Lua.Library\Lua.Library.Externals.props" />
+    <Import Project="..\Lua.Socket.Library\Lua.Socket.Library.Externals.props" />
+    <Import Project="..\Pthreads.Library.WinRT\Pthreads.Library.WinRT.Externals.props" />
+    <Import Project="..\OpenAL.Library.WinRT\OpenAL.Library.WinRT.Externals.props" />
+    <Import Project="..\CryptoPP.Library\CryptoPP.Library.Externals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\librtt;..\..\..\librtt\Core;..\..\..\librtt\Corona;..\..\shared;..\..\..\external\Angle\Project\include;..\..\..\external\Angle\Project\include\EGL;..\..\..\external\Angle\Project\include\GLES2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>Rtt_WIN_ENV;Rtt_WIN_PHONE_ENV;Rtt_USE_PRECOMPILED_SHADERS;CORONA_API_EXPORT_ENABLED;GL_GLEXT_PROTOTYPES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3d11.lib;..\..\..\external\Angle\bin\Phone8.0\$(Platform)\libEGL_phone.lib;..\..\..\external\Angle\bin\Phone8.0\$(Platform)\libGLESv2_phone.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

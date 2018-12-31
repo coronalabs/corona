@@ -1,0 +1,385 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0076A7F516095B3500A9757B /* Rtt_Assert.m in Sources */ = {isa = PBXBuildFile; fileRef = 0076A7F416095B3500A9757B /* Rtt_Assert.m */; };
+		8DD76FAC0486AB0100D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
+		A43DB12918C3E86000F76FB6 /* Rtt_AppSign.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A43DB12818C3E86000F76FB6 /* Rtt_AppSign.cpp */; };
+		A492D86E108912E90032243A /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A492D86D108912E90032243A /* libcrypto.dylib */; };
+		A492D935108C5D840032243A /* Rtt_Assert.c in Sources */ = {isa = PBXBuildFile; fileRef = A492D92B108C5D840032243A /* Rtt_Assert.c */; };
+		A492D936108C5D840032243A /* Rtt_MD4.c in Sources */ = {isa = PBXBuildFile; fileRef = A492D92F108C5D840032243A /* Rtt_MD4.c */; };
+		A492D937108C5D840032243A /* Rtt_MessageDigest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A492D931108C5D840032243A /* Rtt_MessageDigest.cpp */; };
+		A492D93B108C5D990032243A /* Rtt_Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A492D938108C5D990032243A /* Rtt_Message.cpp */; };
+		A492D948108C5DC50032243A /* prime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A492D942108C5DC50032243A /* prime.cpp */; };
+		A492D949108C5DC50032243A /* rsa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A492D944108C5DC50032243A /* rsa.cpp */; };
+		A492D94A108C5DC50032243A /* vlong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A492D946108C5DC50032243A /* vlong.cpp */; };
+		A4B03B5D109FB57C00891770 /* vlong_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B03B5C109FB57C00891770 /* vlong_io.cpp */; };
+		A4B03B95109FB93600891770 /* Rtt_AuthorizationTicket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B03B94109FB93600891770 /* Rtt_AuthorizationTicket.cpp */; };
+		A4B3F91510ACBA6000C38B0A /* Rtt_VersionTimestamp.c in Sources */ = {isa = PBXBuildFile; fileRef = A4B3F91310ACBA6000C38B0A /* Rtt_VersionTimestamp.c */; };
+		C221F55A1D4BE07900F45E77 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F5581D4BE07900F45E77 /* Rtt_FileSystem.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76FAF0486AB0100D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0076A7F416095B3500A9757B /* Rtt_Assert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Rtt_Assert.m; path = ../../librtt/Core/Rtt_Assert.m; sourceTree = "<group>"; };
+		08FB7796FE84155DC02AAC07 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../tools/app_sign/main.cpp; sourceTree = SOURCE_ROOT; };
+		8DD76FB20486AB0100D96B5E /* app_sign */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = app_sign; sourceTree = BUILT_PRODUCTS_DIR; };
+		A43DB12818C3E86000F76FB6 /* Rtt_AppSign.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_AppSign.cpp; path = ../../tools/app_sign/Rtt_AppSign.cpp; sourceTree = "<group>"; };
+		A492D86D108912E90032243A /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = usr/lib/libcrypto.dylib; sourceTree = SDKROOT; };
+		A492D92B108C5D840032243A /* Rtt_Assert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_Assert.c; path = ../../librtt/Core/Rtt_Assert.c; sourceTree = SOURCE_ROOT; };
+		A492D92C108C5D840032243A /* Rtt_Assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Assert.h; path = ../../librtt/Core/Rtt_Assert.h; sourceTree = SOURCE_ROOT; };
+		A492D92D108C5D840032243A /* Rtt_Build.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Build.h; path = ../../librtt/Core/Rtt_Build.h; sourceTree = SOURCE_ROOT; };
+		A492D92E108C5D840032243A /* Rtt_Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Config.h; path = ../../librtt/Core/Rtt_Config.h; sourceTree = SOURCE_ROOT; };
+		A492D92F108C5D840032243A /* Rtt_MD4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_MD4.c; path = ../../librtt/Core/Rtt_MD4.c; sourceTree = SOURCE_ROOT; };
+		A492D930108C5D840032243A /* Rtt_MD4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MD4.h; path = ../../librtt/Core/Rtt_MD4.h; sourceTree = SOURCE_ROOT; };
+		A492D931108C5D840032243A /* Rtt_MessageDigest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_MessageDigest.cpp; path = ../../librtt/Core/Rtt_MessageDigest.cpp; sourceTree = SOURCE_ROOT; };
+		A492D932108C5D840032243A /* Rtt_MessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MessageDigest.h; path = ../../librtt/Core/Rtt_MessageDigest.h; sourceTree = SOURCE_ROOT; };
+		A492D933108C5D840032243A /* Rtt_Traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Traits.h; path = ../../librtt/Core/Rtt_Traits.h; sourceTree = SOURCE_ROOT; };
+		A492D934108C5D840032243A /* Rtt_Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Types.h; path = ../../librtt/Core/Rtt_Types.h; sourceTree = SOURCE_ROOT; };
+		A492D938108C5D990032243A /* Rtt_Message.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Message.cpp; path = ../../librtt/Rtt_Message.cpp; sourceTree = SOURCE_ROOT; };
+		A492D939108C5D990032243A /* Rtt_Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Message.h; path = ../../librtt/Rtt_Message.h; sourceTree = SOURCE_ROOT; };
+		A492D93A108C5D990032243A /* Rtt_VerifierData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_VerifierData.h; path = ../../librtt/Rtt_VerifierData.h; sourceTree = SOURCE_ROOT; };
+		A492D942108C5DC50032243A /* prime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = prime.cpp; path = ../../external/rsa/prime.cpp; sourceTree = SOURCE_ROOT; };
+		A492D943108C5DC50032243A /* prime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = prime.hpp; path = ../../external/rsa/prime.hpp; sourceTree = SOURCE_ROOT; };
+		A492D944108C5DC50032243A /* rsa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rsa.cpp; path = ../../external/rsa/rsa.cpp; sourceTree = SOURCE_ROOT; };
+		A492D945108C5DC50032243A /* rsa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = rsa.hpp; path = ../../external/rsa/rsa.hpp; sourceTree = SOURCE_ROOT; };
+		A492D946108C5DC50032243A /* vlong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vlong.cpp; path = ../../external/rsa/vlong.cpp; sourceTree = SOURCE_ROOT; };
+		A492D947108C5DC50032243A /* vlong.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = vlong.hpp; path = ../../external/rsa/vlong.hpp; sourceTree = SOURCE_ROOT; };
+		A4B03B5B109FB57C00891770 /* vlong_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vlong_io.h; path = ../../external/rsa/vlong_io.h; sourceTree = SOURCE_ROOT; };
+		A4B03B5C109FB57C00891770 /* vlong_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vlong_io.cpp; path = ../../external/rsa/vlong_io.cpp; sourceTree = SOURCE_ROOT; };
+		A4B03B6B109FB7EA00891770 /* Rtt_AuthorizationTicket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AuthorizationTicket.h; path = ../shared/Rtt_AuthorizationTicket.h; sourceTree = SOURCE_ROOT; };
+		A4B03B94109FB93600891770 /* Rtt_AuthorizationTicket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_AuthorizationTicket.cpp; path = ../shared/Rtt_AuthorizationTicket.cpp; sourceTree = SOURCE_ROOT; };
+		A4B3F91210ACBA6000C38B0A /* Rtt_Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Version.h; path = ../../librtt/Core/Rtt_Version.h; sourceTree = SOURCE_ROOT; };
+		A4B3F91310ACBA6000C38B0A /* Rtt_VersionTimestamp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_VersionTimestamp.c; path = ../../librtt/Core/Rtt_VersionTimestamp.c; sourceTree = SOURCE_ROOT; };
+		A4B3F91410ACBA6000C38B0A /* Rtt_VersionTimestamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_VersionTimestamp.h; path = ../../librtt/Core/Rtt_VersionTimestamp.h; sourceTree = SOURCE_ROOT; };
+		C221F5581D4BE07900F45E77 /* Rtt_FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FileSystem.cpp; path = ../../librtt/Core/Rtt_FileSystem.cpp; sourceTree = "<group>"; };
+		C221F5591D4BE07900F45E77 /* Rtt_FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FileSystem.h; path = ../../librtt/Core/Rtt_FileSystem.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76FAD0486AB0100D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A492D86E108912E90032243A /* libcrypto.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* app_sign */ = {
+			isa = PBXGroup;
+			children = (
+				A43DB12818C3E86000F76FB6 /* Rtt_AppSign.cpp */,
+				08FB7796FE84155DC02AAC07 /* main.cpp */,
+				A492D93D108C5DA60032243A /* librtt */,
+				A46B732C100F03E000C00613 /* rsa */,
+				A4B03B6A109FB7DB00891770 /* shared */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				A492D86D108912E90032243A /* libcrypto.dylib */,
+			);
+			name = app_sign;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A492D92B108C5D840032243A /* Rtt_Assert.c */,
+				0076A7F416095B3500A9757B /* Rtt_Assert.m */,
+				A492D92C108C5D840032243A /* Rtt_Assert.h */,
+				A492D92D108C5D840032243A /* Rtt_Build.h */,
+				A492D92E108C5D840032243A /* Rtt_Config.h */,
+				C221F5581D4BE07900F45E77 /* Rtt_FileSystem.cpp */,
+				C221F5591D4BE07900F45E77 /* Rtt_FileSystem.h */,
+				A492D92F108C5D840032243A /* Rtt_MD4.c */,
+				A492D930108C5D840032243A /* Rtt_MD4.h */,
+				A492D931108C5D840032243A /* Rtt_MessageDigest.cpp */,
+				A492D932108C5D840032243A /* Rtt_MessageDigest.h */,
+				A492D933108C5D840032243A /* Rtt_Traits.h */,
+				A492D934108C5D840032243A /* Rtt_Types.h */,
+				A4B3F91210ACBA6000C38B0A /* Rtt_Version.h */,
+				A4B3F91310ACBA6000C38B0A /* Rtt_VersionTimestamp.c */,
+				A4B3F91410ACBA6000C38B0A /* Rtt_VersionTimestamp.h */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76FB20486AB0100D96B5E /* app_sign */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A46B732C100F03E000C00613 /* rsa */ = {
+			isa = PBXGroup;
+			children = (
+				A492D942108C5DC50032243A /* prime.cpp */,
+				A492D943108C5DC50032243A /* prime.hpp */,
+				A492D944108C5DC50032243A /* rsa.cpp */,
+				A492D945108C5DC50032243A /* rsa.hpp */,
+				A4B03B5C109FB57C00891770 /* vlong_io.cpp */,
+				A4B03B5B109FB57C00891770 /* vlong_io.h */,
+				A492D946108C5DC50032243A /* vlong.cpp */,
+				A492D947108C5DC50032243A /* vlong.hpp */,
+			);
+			name = rsa;
+			sourceTree = "<group>";
+		};
+		A492D93D108C5DA60032243A /* librtt */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Core */,
+				A492D938108C5D990032243A /* Rtt_Message.cpp */,
+				A492D939108C5D990032243A /* Rtt_Message.h */,
+				A492D93A108C5D990032243A /* Rtt_VerifierData.h */,
+			);
+			name = librtt;
+			sourceTree = "<group>";
+		};
+		A4B03B6A109FB7DB00891770 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				A4B03B6B109FB7EA00891770 /* Rtt_AuthorizationTicket.h */,
+				A4B03B94109FB93600891770 /* Rtt_AuthorizationTicket.cpp */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76FA90486AB0100D96B5E /* app_sign */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "app_sign" */;
+			buildPhases = (
+				8DD76FAB0486AB0100D96B5E /* Sources */,
+				8DD76FAD0486AB0100D96B5E /* Frameworks */,
+				8DD76FAF0486AB0100D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = app_sign;
+			productInstallPath = "$(HOME)/bin";
+			productName = app_sign;
+			productReference = 8DD76FB20486AB0100D96B5E /* app_sign */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+			};
+			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "app_sign" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* app_sign */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76FA90486AB0100D96B5E /* app_sign */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76FAB0486AB0100D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8DD76FAC0486AB0100D96B5E /* main.cpp in Sources */,
+				A492D935108C5D840032243A /* Rtt_Assert.c in Sources */,
+				A43DB12918C3E86000F76FB6 /* Rtt_AppSign.cpp in Sources */,
+				A492D936108C5D840032243A /* Rtt_MD4.c in Sources */,
+				A492D937108C5D840032243A /* Rtt_MessageDigest.cpp in Sources */,
+				A492D93B108C5D990032243A /* Rtt_Message.cpp in Sources */,
+				A492D948108C5DC50032243A /* prime.cpp in Sources */,
+				A492D949108C5DC50032243A /* rsa.cpp in Sources */,
+				A492D94A108C5DC50032243A /* vlong.cpp in Sources */,
+				A4B03B5D109FB57C00891770 /* vlong_io.cpp in Sources */,
+				A4B03B95109FB93600891770 /* Rtt_AuthorizationTicket.cpp in Sources */,
+				A4B3F91510ACBA6000C38B0A /* Rtt_VersionTimestamp.c in Sources */,
+				0076A7F516095B3500A9757B /* Rtt_Assert.m in Sources */,
+				C221F55A1D4BE07900F45E77 /* Rtt_FileSystem.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB928608733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /;
+				PRODUCT_NAME = app_sign;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Debug;
+		};
+		1DEB928708733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /;
+				PRODUCT_NAME = app_sign;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Release;
+		};
+		1DEB928A08733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_MAC_ENV,
+					Rtt_SHELL_TOOLS,
+					Rtt_DEBUG,
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DRtt_MAC_ENV";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fno-operator-names",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external ../../tools/app_sign";
+			};
+			name = Debug;
+		};
+		1DEB928B08733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_MAC_ENV,
+					Rtt_SHELL_TOOLS,
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CFLAGS = "-DRtt_MAC_ENV";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fno-operator-names",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external ../../tools/app_sign";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "app_sign" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928608733DD80010E9CD /* Debug */,
+				1DEB928708733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "app_sign" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928A08733DD80010E9CD /* Debug */,
+				1DEB928B08733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

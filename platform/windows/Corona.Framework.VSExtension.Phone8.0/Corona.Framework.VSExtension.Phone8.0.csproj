@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{637517F0-1AEF-4B1F-B6B1-EF2C5D3BAA65}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Corona.Framework.VSExtension.Builder</RootNamespace>
+    <AssemblyName>Builder</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Corona.Framework.VSExtension.Builder.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\sdk\dmg\Corona_License.rtf">
+      <Link>VSIX\Corona_License.rtf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Corona.Component.Library\Release\Win32\Corona.Component.Library.Phone8.0\CoronaLabs.winmd">
+      <Link>VSIX\References\CommonConfiguration\neutral\CoronaLabs.winmd</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\OpenAL.Library.WinRT\Release\ARM\OpenAL.Library.Phone8.0\OpenAL.winmd">
+      <Link>VSIX\References\CommonConfiguration\neutral\OpenAL.winmd</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="..\..\..\external\Angle\bin\Phone8.0\ARM\libEGL_phone.dll">
+      <Link>VSIX\Redist\CommonConfiguration\Arm\libEGL_phone.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\external\Angle\bin\Phone8.0\ARM\libGLESv2_phone.dll">
+      <Link>VSIX\Redist\CommonConfiguration\Arm\libGLESv2_phone.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\external\Angle\bin\Phone8.0\Win32\libEGL_phone.dll">
+      <Link>VSIX\Redist\CommonConfiguration\x86\libEGL_phone.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\external\Angle\bin\Phone8.0\Win32\libGLESv2_phone.dll">
+      <Link>VSIX\Redist\CommonConfiguration\x86\libGLESv2_phone.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ALmixer.Library\Release\ARM\ALmixer.Library.Phone8.0\almixer.dll">
+      <Link>VSIX\Redist\CommonConfiguration\Arm\almixer.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ALmixer.Library\Release\Win32\ALmixer.Library.Phone8.0\almixer.dll">
+      <Link>VSIX\Redist\CommonConfiguration\x86\almixer.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Corona.Component.Library\Release\ARM\Corona.Component.Library.Phone8.0\CoronaLabs.Corona.Component.dll">
+      <Link>VSIX\Redist\CommonConfiguration\Arm\CoronaLabs.Corona.Component.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Corona.Component.Library\Release\Win32\Corona.Component.Library.Phone8.0\CoronaLabs.Corona.Component.dll">
+      <Link>VSIX\Redist\CommonConfiguration\x86\CoronaLabs.Corona.Component.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Corona.Controls.DotNet.Library.Phone8.0\Bin\ARM\Release\CoronaLabs.Corona.Controls.DotNet.dll">
+      <Link>VSIX\References\CommonConfiguration\neutral\CoronaLabs.Corona.Controls.DotNet.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Corona.Documentation.Phone8.0\Bin\Intellisense\CoronaLabs.Corona.Controls.DotNet.xml">
+      <Link>VSIX\References\CommonConfiguration\neutral\CoronaLabs.Corona.Controls.DotNet.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Corona.Documentation.Phone8.0\Bin\Intellisense\CoronaLabs.xml">
+      <Link>VSIX\References\CommonConfiguration\neutral\CoronaLabs.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Corona.DotNet.Library\Bin\ARM\Release\CoronaLabs.Corona.DotNet.dll">
+      <Link>VSIX\References\CommonConfiguration\neutral\CoronaLabs.Corona.DotNet.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Lua.Library\Release\ARM\Lua.Library.Phone8.0\lua.dll">
+      <Link>VSIX\Redist\CommonConfiguration\Arm\lua.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Lua.Library\Release\Win32\Lua.Library.Phone8.0\lua.dll">
+      <Link>VSIX\Redist\CommonConfiguration\x86\lua.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\OpenAL.Library.WinRT\Release\ARM\OpenAL.Library.Phone8.0\OpenAL.dll">
+      <Link>VSIX\Redist\CommonConfiguration\Arm\OpenAL.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\OpenAL.Library.WinRT\Release\Win32\OpenAL.Library.Phone8.0\OpenAL.dll">
+      <Link>VSIX\Redist\CommonConfiguration\x86\OpenAL.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Pthreads.Library.WinRT\Release\ARM\Pthreads.Library.Phone8.0\pthreads.dll">
+      <Link>VSIX\Redist\CommonConfiguration\Arm\pthreads.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Pthreads.Library.WinRT\Release\Win32\Pthreads.Library.Phone8.0\pthreads.dll">
+      <Link>VSIX\Redist\CommonConfiguration\x86\pthreads.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\CoronaLogo200x200.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\CoronaLogo32x32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\extension.vsixmanifest">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\SDKManifest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\[Content_Types].xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>del /q "$(TargetDir)*.*"
+rmdir /q /s "$(TargetDir)VSIX"
+
+REM Build Corona's libraries for the x86 and ARM architectures.
+"$(DevEnvDir)devenv" "$(SolutionDir)Corona.AppTemplate.Phone8.0.sln" /build "Release|Mixed Platforms"
+"$(DevEnvDir)devenv" "$(SolutionDir)Corona.AppTemplate.Phone8.0.sln" /build "Release|ARM"
+</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>REM Zip up and digitally sign the Extension SDK.
+"$(SolutionDir)Build.Tools\7za" a -tzip -r -y "$(TargetDir)CoronaLabs.Corona.Framework.WindowsPhone.vsix" "$(TargetDir)VSIX\*.*"
+"$(SolutionDir)VsixSigner\Bin\VsixSigner" "$(SolutionDir)Build.Tools\CoronaLabsInc.pfx" "zxcvbnm,./" "$(TargetDir)CoronaLabs.Corona.Framework.WindowsPhone.vsix"
+
+REM Copy the Extension SDK directory to the following directory so that our app templates can use this SDK
+REM without having to install it into Visual Studio. This allows automated builds to work.
+cscript "$(SolutionDir)Build.Tools\CreateSDKReferenceDirectory.vbs" "$(TargetDir)VSIX" "$(SolutionDir)Bin\SDKReferenceDirectoryRoot"
+
+REM Delete this project's compiled "Builder.exe" to force Visual Studio to re-run this project's pre-build and post-build steps.
+del /q "$(TargetPath)"
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 9</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="8.5.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="9.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#9">Chapter 9. Coroutines</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<a name="CoroutineSec"><h1>9 - Coroutines</h1></a>
+
+<p>A <em>coroutine</em> is similar to a thread
+(in the sense of multithreading):
+a line of execution,
+with its own stack, its own local variables,
+and its own instruction pointer;
+but sharing global variables and mostly
+anything else with other coroutines.
+The main difference between threads and coroutines is that,
+conceptually (or literally, in a multiprocessor machine),
+a program with threads runs several threads concurrently.
+Coroutines, on the other hand, are collaborative:
+A program with coroutines is, at any given time,
+running only one of its coroutines
+and this running coroutine only suspends its execution when
+it explicitly requests to be suspended.
+
+<p>Coroutine is a powerful concept.
+As such, several of its main uses are complex.
+Do not worry if you do not understand
+some of the examples in this chapter on your first reading.
+You can read the rest of the book
+and come back here later.
+But please come back.
+It will be time well spent.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="9.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

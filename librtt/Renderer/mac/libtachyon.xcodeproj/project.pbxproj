@@ -1,0 +1,448 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07CFCF8D17DAA95E0039EF04 /* Rtt_MCPUResourceObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 07CFCF8C17DAA95E0039EF04 /* Rtt_MCPUResourceObserver.h */; };
+		A47359EC17D86C3E00D39BAE /* Rtt_VideoTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47359EA17D86C3E00D39BAE /* Rtt_VideoTexture.cpp */; };
+		A47359ED17D86C3E00D39BAE /* Rtt_VideoTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = A47359EB17D86C3E00D39BAE /* Rtt_VideoTexture.h */; };
+		A48B91B2178A86A20072EAF7 /* Rtt_TextureVolatile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A48B91B0178A86A20072EAF7 /* Rtt_TextureVolatile.cpp */; };
+		A48B91B3178A86A20072EAF7 /* Rtt_TextureVolatile.h in Headers */ = {isa = PBXBuildFile; fileRef = A48B91B1178A86A20072EAF7 /* Rtt_TextureVolatile.h */; };
+		A4B66A6B176A77730077B2BF /* Rtt_CommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A3F176A77730077B2BF /* Rtt_CommandBuffer.cpp */; };
+		A4B66A6C176A77730077B2BF /* Rtt_CommandBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A40176A77730077B2BF /* Rtt_CommandBuffer.h */; };
+		A4B66A6D176A77730077B2BF /* Rtt_CPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A41176A77730077B2BF /* Rtt_CPUResource.cpp */; };
+		A4B66A6E176A77730077B2BF /* Rtt_CPUResource.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A42176A77730077B2BF /* Rtt_CPUResource.h */; };
+		A4B66A6F176A77730077B2BF /* Rtt_FrameBufferObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A43176A77730077B2BF /* Rtt_FrameBufferObject.cpp */; };
+		A4B66A70176A77730077B2BF /* Rtt_FrameBufferObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A44176A77730077B2BF /* Rtt_FrameBufferObject.h */; };
+		A4B66A71176A77730077B2BF /* Rtt_Geometry_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A45176A77730077B2BF /* Rtt_Geometry_Renderer.cpp */; };
+		A4B66A72176A77730077B2BF /* Rtt_Geometry_Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A46176A77730077B2BF /* Rtt_Geometry_Renderer.h */; };
+		A4B66A73176A77730077B2BF /* Rtt_GL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A47176A77730077B2BF /* Rtt_GL.cpp */; };
+		A4B66A74176A77730077B2BF /* Rtt_GL.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A48176A77730077B2BF /* Rtt_GL.h */; };
+		A4B66A75176A77730077B2BF /* Rtt_GLCommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A49176A77730077B2BF /* Rtt_GLCommandBuffer.cpp */; };
+		A4B66A76176A77730077B2BF /* Rtt_GLCommandBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A4A176A77730077B2BF /* Rtt_GLCommandBuffer.h */; };
+		A4B66A77176A77730077B2BF /* Rtt_GLFrameBufferObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A4B176A77730077B2BF /* Rtt_GLFrameBufferObject.cpp */; };
+		A4B66A78176A77730077B2BF /* Rtt_GLFrameBufferObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A4C176A77730077B2BF /* Rtt_GLFrameBufferObject.h */; };
+		A4B66A79176A77730077B2BF /* Rtt_GLGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A4D176A77730077B2BF /* Rtt_GLGeometry.cpp */; };
+		A4B66A7A176A77730077B2BF /* Rtt_GLGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A4E176A77730077B2BF /* Rtt_GLGeometry.h */; };
+		A4B66A7B176A77730077B2BF /* Rtt_GLProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A4F176A77730077B2BF /* Rtt_GLProgram.cpp */; };
+		A4B66A7C176A77730077B2BF /* Rtt_GLProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A50176A77730077B2BF /* Rtt_GLProgram.h */; };
+		A4B66A7D176A77730077B2BF /* Rtt_GLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A51176A77730077B2BF /* Rtt_GLRenderer.cpp */; };
+		A4B66A7E176A77730077B2BF /* Rtt_GLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A52176A77730077B2BF /* Rtt_GLRenderer.h */; };
+		A4B66A7F176A77730077B2BF /* Rtt_GLTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A53176A77730077B2BF /* Rtt_GLTexture.cpp */; };
+		A4B66A80176A77730077B2BF /* Rtt_GLTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A54176A77730077B2BF /* Rtt_GLTexture.h */; };
+		A4B66A81176A77730077B2BF /* Rtt_GPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A55176A77730077B2BF /* Rtt_GPUResource.cpp */; };
+		A4B66A82176A77730077B2BF /* Rtt_GPUResource.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A56176A77730077B2BF /* Rtt_GPUResource.h */; };
+		A4B66A83176A77730077B2BF /* Rtt_HighPrecisionTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A57176A77730077B2BF /* Rtt_HighPrecisionTime.cpp */; };
+		A4B66A84176A77730077B2BF /* Rtt_HighPrecisionTime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A58176A77730077B2BF /* Rtt_HighPrecisionTime.h */; };
+		A4B66A85176A77730077B2BF /* Rtt_Matrix_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A59176A77730077B2BF /* Rtt_Matrix_Renderer.cpp */; };
+		A4B66A86176A77730077B2BF /* Rtt_Matrix_Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A5A176A77730077B2BF /* Rtt_Matrix_Renderer.h */; };
+		A4B66A87176A77730077B2BF /* Rtt_Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A5B176A77730077B2BF /* Rtt_Program.cpp */; };
+		A4B66A88176A77730077B2BF /* Rtt_Program.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A5C176A77730077B2BF /* Rtt_Program.h */; };
+		A4B66A89176A77730077B2BF /* Rtt_ProgramFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A5D176A77730077B2BF /* Rtt_ProgramFactory.cpp */; };
+		A4B66A8A176A77730077B2BF /* Rtt_ProgramFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A5E176A77730077B2BF /* Rtt_ProgramFactory.h */; };
+		A4B66A8B176A77730077B2BF /* Rtt_RenderData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A5F176A77730077B2BF /* Rtt_RenderData.cpp */; };
+		A4B66A8C176A77730077B2BF /* Rtt_RenderData.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A60176A77730077B2BF /* Rtt_RenderData.h */; };
+		A4B66A8D176A77730077B2BF /* Rtt_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A61176A77730077B2BF /* Rtt_Renderer.cpp */; };
+		A4B66A8E176A77730077B2BF /* Rtt_Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A62176A77730077B2BF /* Rtt_Renderer.h */; };
+		A4B66A8F176A77730077B2BF /* Rtt_RenderTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A63176A77730077B2BF /* Rtt_RenderTypes.cpp */; };
+		A4B66A90176A77730077B2BF /* Rtt_RenderTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A64176A77730077B2BF /* Rtt_RenderTypes.h */; };
+		A4B66A91176A77730077B2BF /* Rtt_Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A65176A77730077B2BF /* Rtt_Texture.cpp */; };
+		A4B66A92176A77730077B2BF /* Rtt_Texture.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A66176A77730077B2BF /* Rtt_Texture.h */; };
+		A4B66A93176A77730077B2BF /* Rtt_TextureBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A67176A77730077B2BF /* Rtt_TextureBitmap.cpp */; };
+		A4B66A94176A77730077B2BF /* Rtt_TextureBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A68176A77730077B2BF /* Rtt_TextureBitmap.h */; };
+		A4B66A95176A77730077B2BF /* Rtt_Uniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66A69176A77730077B2BF /* Rtt_Uniform.cpp */; };
+		A4B66A96176A77730077B2BF /* Rtt_Uniform.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A6A176A77730077B2BF /* Rtt_Uniform.h */; };
+		A4DCC6F21774EE0E00C29C87 /* Rtt_GeometryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4DCC6F01774EE0E00C29C87 /* Rtt_GeometryPool.cpp */; };
+		A4DCC6F31774EE0E00C29C87 /* Rtt_GeometryPool.h in Headers */ = {isa = PBXBuildFile; fileRef = A4DCC6F11774EE0E00C29C87 /* Rtt_GeometryPool.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		07CFCF8C17DAA95E0039EF04 /* Rtt_MCPUResourceObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MCPUResourceObserver.h; path = ../Rtt_MCPUResourceObserver.h; sourceTree = "<group>"; };
+		A43287DA176A610100ACB6FF /* libtachyon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtachyon.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A47359EA17D86C3E00D39BAE /* Rtt_VideoTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_VideoTexture.cpp; path = ../Rtt_VideoTexture.cpp; sourceTree = "<group>"; };
+		A47359EB17D86C3E00D39BAE /* Rtt_VideoTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_VideoTexture.h; path = ../Rtt_VideoTexture.h; sourceTree = "<group>"; };
+		A48B91B0178A86A20072EAF7 /* Rtt_TextureVolatile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureVolatile.cpp; path = ../Rtt_TextureVolatile.cpp; sourceTree = "<group>"; };
+		A48B91B1178A86A20072EAF7 /* Rtt_TextureVolatile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureVolatile.h; path = ../Rtt_TextureVolatile.h; sourceTree = "<group>"; };
+		A4B66A3F176A77730077B2BF /* Rtt_CommandBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CommandBuffer.cpp; path = ../Rtt_CommandBuffer.cpp; sourceTree = "<group>"; };
+		A4B66A40176A77730077B2BF /* Rtt_CommandBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CommandBuffer.h; path = ../Rtt_CommandBuffer.h; sourceTree = "<group>"; };
+		A4B66A41176A77730077B2BF /* Rtt_CPUResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CPUResource.cpp; path = ../Rtt_CPUResource.cpp; sourceTree = "<group>"; };
+		A4B66A42176A77730077B2BF /* Rtt_CPUResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CPUResource.h; path = ../Rtt_CPUResource.h; sourceTree = "<group>"; };
+		A4B66A43176A77730077B2BF /* Rtt_FrameBufferObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FrameBufferObject.cpp; path = ../Rtt_FrameBufferObject.cpp; sourceTree = "<group>"; };
+		A4B66A44176A77730077B2BF /* Rtt_FrameBufferObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FrameBufferObject.h; path = ../Rtt_FrameBufferObject.h; sourceTree = "<group>"; };
+		A4B66A45176A77730077B2BF /* Rtt_Geometry_Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Geometry_Renderer.cpp; path = ../Rtt_Geometry_Renderer.cpp; sourceTree = "<group>"; };
+		A4B66A46176A77730077B2BF /* Rtt_Geometry_Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Geometry_Renderer.h; path = ../Rtt_Geometry_Renderer.h; sourceTree = "<group>"; };
+		A4B66A47176A77730077B2BF /* Rtt_GL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GL.cpp; path = ../Rtt_GL.cpp; sourceTree = "<group>"; };
+		A4B66A48176A77730077B2BF /* Rtt_GL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GL.h; path = ../Rtt_GL.h; sourceTree = "<group>"; };
+		A4B66A49176A77730077B2BF /* Rtt_GLCommandBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLCommandBuffer.cpp; path = ../Rtt_GLCommandBuffer.cpp; sourceTree = "<group>"; };
+		A4B66A4A176A77730077B2BF /* Rtt_GLCommandBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLCommandBuffer.h; path = ../Rtt_GLCommandBuffer.h; sourceTree = "<group>"; };
+		A4B66A4B176A77730077B2BF /* Rtt_GLFrameBufferObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLFrameBufferObject.cpp; path = ../Rtt_GLFrameBufferObject.cpp; sourceTree = "<group>"; };
+		A4B66A4C176A77730077B2BF /* Rtt_GLFrameBufferObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLFrameBufferObject.h; path = ../Rtt_GLFrameBufferObject.h; sourceTree = "<group>"; };
+		A4B66A4D176A77730077B2BF /* Rtt_GLGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLGeometry.cpp; path = ../Rtt_GLGeometry.cpp; sourceTree = "<group>"; };
+		A4B66A4E176A77730077B2BF /* Rtt_GLGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLGeometry.h; path = ../Rtt_GLGeometry.h; sourceTree = "<group>"; };
+		A4B66A4F176A77730077B2BF /* Rtt_GLProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLProgram.cpp; path = ../Rtt_GLProgram.cpp; sourceTree = "<group>"; };
+		A4B66A50176A77730077B2BF /* Rtt_GLProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLProgram.h; path = ../Rtt_GLProgram.h; sourceTree = "<group>"; };
+		A4B66A51176A77730077B2BF /* Rtt_GLRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLRenderer.cpp; path = ../Rtt_GLRenderer.cpp; sourceTree = "<group>"; };
+		A4B66A52176A77730077B2BF /* Rtt_GLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLRenderer.h; path = ../Rtt_GLRenderer.h; sourceTree = "<group>"; };
+		A4B66A53176A77730077B2BF /* Rtt_GLTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLTexture.cpp; path = ../Rtt_GLTexture.cpp; sourceTree = "<group>"; };
+		A4B66A54176A77730077B2BF /* Rtt_GLTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLTexture.h; path = ../Rtt_GLTexture.h; sourceTree = "<group>"; };
+		A4B66A55176A77730077B2BF /* Rtt_GPUResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GPUResource.cpp; path = ../Rtt_GPUResource.cpp; sourceTree = "<group>"; };
+		A4B66A56176A77730077B2BF /* Rtt_GPUResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GPUResource.h; path = ../Rtt_GPUResource.h; sourceTree = "<group>"; };
+		A4B66A57176A77730077B2BF /* Rtt_HighPrecisionTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_HighPrecisionTime.cpp; path = ../Rtt_HighPrecisionTime.cpp; sourceTree = "<group>"; };
+		A4B66A58176A77730077B2BF /* Rtt_HighPrecisionTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_HighPrecisionTime.h; path = ../Rtt_HighPrecisionTime.h; sourceTree = "<group>"; };
+		A4B66A59176A77730077B2BF /* Rtt_Matrix_Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Matrix_Renderer.cpp; path = ../Rtt_Matrix_Renderer.cpp; sourceTree = "<group>"; };
+		A4B66A5A176A77730077B2BF /* Rtt_Matrix_Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Matrix_Renderer.h; path = ../Rtt_Matrix_Renderer.h; sourceTree = "<group>"; };
+		A4B66A5B176A77730077B2BF /* Rtt_Program.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Program.cpp; path = ../Rtt_Program.cpp; sourceTree = "<group>"; };
+		A4B66A5C176A77730077B2BF /* Rtt_Program.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Program.h; path = ../Rtt_Program.h; sourceTree = "<group>"; };
+		A4B66A5D176A77730077B2BF /* Rtt_ProgramFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ProgramFactory.cpp; path = ../Rtt_ProgramFactory.cpp; sourceTree = "<group>"; };
+		A4B66A5E176A77730077B2BF /* Rtt_ProgramFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ProgramFactory.h; path = ../Rtt_ProgramFactory.h; sourceTree = "<group>"; };
+		A4B66A5F176A77730077B2BF /* Rtt_RenderData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_RenderData.cpp; path = ../Rtt_RenderData.cpp; sourceTree = "<group>"; };
+		A4B66A60176A77730077B2BF /* Rtt_RenderData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_RenderData.h; path = ../Rtt_RenderData.h; sourceTree = "<group>"; };
+		A4B66A61176A77730077B2BF /* Rtt_Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Renderer.cpp; path = ../Rtt_Renderer.cpp; sourceTree = "<group>"; };
+		A4B66A62176A77730077B2BF /* Rtt_Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Renderer.h; path = ../Rtt_Renderer.h; sourceTree = "<group>"; };
+		A4B66A63176A77730077B2BF /* Rtt_RenderTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_RenderTypes.cpp; path = ../Rtt_RenderTypes.cpp; sourceTree = "<group>"; };
+		A4B66A64176A77730077B2BF /* Rtt_RenderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_RenderTypes.h; path = ../Rtt_RenderTypes.h; sourceTree = "<group>"; };
+		A4B66A65176A77730077B2BF /* Rtt_Texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Texture.cpp; path = ../Rtt_Texture.cpp; sourceTree = "<group>"; };
+		A4B66A66176A77730077B2BF /* Rtt_Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Texture.h; path = ../Rtt_Texture.h; sourceTree = "<group>"; };
+		A4B66A67176A77730077B2BF /* Rtt_TextureBitmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureBitmap.cpp; path = ../Rtt_TextureBitmap.cpp; sourceTree = "<group>"; };
+		A4B66A68176A77730077B2BF /* Rtt_TextureBitmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureBitmap.h; path = ../Rtt_TextureBitmap.h; sourceTree = "<group>"; };
+		A4B66A69176A77730077B2BF /* Rtt_Uniform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Uniform.cpp; path = ../Rtt_Uniform.cpp; sourceTree = "<group>"; };
+		A4B66A6A176A77730077B2BF /* Rtt_Uniform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Uniform.h; path = ../Rtt_Uniform.h; sourceTree = "<group>"; };
+		A4DCC6F01774EE0E00C29C87 /* Rtt_GeometryPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GeometryPool.cpp; path = ../Rtt_GeometryPool.cpp; sourceTree = "<group>"; };
+		A4DCC6F11774EE0E00C29C87 /* Rtt_GeometryPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GeometryPool.h; path = ../Rtt_GeometryPool.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A43287D7176A610100ACB6FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A43287D1176A610100ACB6FF = {
+			isa = PBXGroup;
+			children = (
+				A4B669E6176A76E00077B2BF /* Renderer */,
+				A43287DB176A610100ACB6FF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A43287DB176A610100ACB6FF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A43287DA176A610100ACB6FF /* libtachyon.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A4B669E6176A76E00077B2BF /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				07CFCF8C17DAA95E0039EF04 /* Rtt_MCPUResourceObserver.h */,
+				A4B66A3F176A77730077B2BF /* Rtt_CommandBuffer.cpp */,
+				A4B66A40176A77730077B2BF /* Rtt_CommandBuffer.h */,
+				A4B66A41176A77730077B2BF /* Rtt_CPUResource.cpp */,
+				A4B66A42176A77730077B2BF /* Rtt_CPUResource.h */,
+				A4B66A43176A77730077B2BF /* Rtt_FrameBufferObject.cpp */,
+				A4B66A44176A77730077B2BF /* Rtt_FrameBufferObject.h */,
+				A4B66A45176A77730077B2BF /* Rtt_Geometry_Renderer.cpp */,
+				A4B66A46176A77730077B2BF /* Rtt_Geometry_Renderer.h */,
+				A4DCC6F01774EE0E00C29C87 /* Rtt_GeometryPool.cpp */,
+				A4DCC6F11774EE0E00C29C87 /* Rtt_GeometryPool.h */,
+				A4B66A47176A77730077B2BF /* Rtt_GL.cpp */,
+				A4B66A48176A77730077B2BF /* Rtt_GL.h */,
+				A4B66A49176A77730077B2BF /* Rtt_GLCommandBuffer.cpp */,
+				A4B66A4A176A77730077B2BF /* Rtt_GLCommandBuffer.h */,
+				A4B66A4B176A77730077B2BF /* Rtt_GLFrameBufferObject.cpp */,
+				A4B66A4C176A77730077B2BF /* Rtt_GLFrameBufferObject.h */,
+				A4B66A4D176A77730077B2BF /* Rtt_GLGeometry.cpp */,
+				A4B66A4E176A77730077B2BF /* Rtt_GLGeometry.h */,
+				A4B66A4F176A77730077B2BF /* Rtt_GLProgram.cpp */,
+				A4B66A50176A77730077B2BF /* Rtt_GLProgram.h */,
+				A4B66A51176A77730077B2BF /* Rtt_GLRenderer.cpp */,
+				A4B66A52176A77730077B2BF /* Rtt_GLRenderer.h */,
+				A4B66A53176A77730077B2BF /* Rtt_GLTexture.cpp */,
+				A4B66A54176A77730077B2BF /* Rtt_GLTexture.h */,
+				A4B66A55176A77730077B2BF /* Rtt_GPUResource.cpp */,
+				A4B66A56176A77730077B2BF /* Rtt_GPUResource.h */,
+				A4B66A57176A77730077B2BF /* Rtt_HighPrecisionTime.cpp */,
+				A4B66A58176A77730077B2BF /* Rtt_HighPrecisionTime.h */,
+				A4B66A59176A77730077B2BF /* Rtt_Matrix_Renderer.cpp */,
+				A4B66A5A176A77730077B2BF /* Rtt_Matrix_Renderer.h */,
+				A4B66A5B176A77730077B2BF /* Rtt_Program.cpp */,
+				A4B66A5C176A77730077B2BF /* Rtt_Program.h */,
+				A4B66A5D176A77730077B2BF /* Rtt_ProgramFactory.cpp */,
+				A4B66A5E176A77730077B2BF /* Rtt_ProgramFactory.h */,
+				A4B66A5F176A77730077B2BF /* Rtt_RenderData.cpp */,
+				A4B66A60176A77730077B2BF /* Rtt_RenderData.h */,
+				A4B66A61176A77730077B2BF /* Rtt_Renderer.cpp */,
+				A4B66A62176A77730077B2BF /* Rtt_Renderer.h */,
+				A4B66A63176A77730077B2BF /* Rtt_RenderTypes.cpp */,
+				A4B66A64176A77730077B2BF /* Rtt_RenderTypes.h */,
+				A4B66A65176A77730077B2BF /* Rtt_Texture.cpp */,
+				A4B66A66176A77730077B2BF /* Rtt_Texture.h */,
+				A4B66A67176A77730077B2BF /* Rtt_TextureBitmap.cpp */,
+				A4B66A68176A77730077B2BF /* Rtt_TextureBitmap.h */,
+				A48B91B0178A86A20072EAF7 /* Rtt_TextureVolatile.cpp */,
+				A48B91B1178A86A20072EAF7 /* Rtt_TextureVolatile.h */,
+				A4B66A69176A77730077B2BF /* Rtt_Uniform.cpp */,
+				A4B66A6A176A77730077B2BF /* Rtt_Uniform.h */,
+				A47359EA17D86C3E00D39BAE /* Rtt_VideoTexture.cpp */,
+				A47359EB17D86C3E00D39BAE /* Rtt_VideoTexture.h */,
+			);
+			name = Renderer;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A43287D8176A610100ACB6FF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4B66A6C176A77730077B2BF /* Rtt_CommandBuffer.h in Headers */,
+				A4B66A6E176A77730077B2BF /* Rtt_CPUResource.h in Headers */,
+				A4B66A70176A77730077B2BF /* Rtt_FrameBufferObject.h in Headers */,
+				A4B66A72176A77730077B2BF /* Rtt_Geometry_Renderer.h in Headers */,
+				A4B66A74176A77730077B2BF /* Rtt_GL.h in Headers */,
+				A4B66A76176A77730077B2BF /* Rtt_GLCommandBuffer.h in Headers */,
+				A4B66A78176A77730077B2BF /* Rtt_GLFrameBufferObject.h in Headers */,
+				A4B66A7A176A77730077B2BF /* Rtt_GLGeometry.h in Headers */,
+				A4B66A7C176A77730077B2BF /* Rtt_GLProgram.h in Headers */,
+				A4B66A7E176A77730077B2BF /* Rtt_GLRenderer.h in Headers */,
+				A4B66A80176A77730077B2BF /* Rtt_GLTexture.h in Headers */,
+				A4B66A82176A77730077B2BF /* Rtt_GPUResource.h in Headers */,
+				A4B66A84176A77730077B2BF /* Rtt_HighPrecisionTime.h in Headers */,
+				A4B66A86176A77730077B2BF /* Rtt_Matrix_Renderer.h in Headers */,
+				A4B66A88176A77730077B2BF /* Rtt_Program.h in Headers */,
+				A4B66A8A176A77730077B2BF /* Rtt_ProgramFactory.h in Headers */,
+				A4B66A8C176A77730077B2BF /* Rtt_RenderData.h in Headers */,
+				A4B66A8E176A77730077B2BF /* Rtt_Renderer.h in Headers */,
+				A4B66A90176A77730077B2BF /* Rtt_RenderTypes.h in Headers */,
+				A4B66A92176A77730077B2BF /* Rtt_Texture.h in Headers */,
+				A4B66A94176A77730077B2BF /* Rtt_TextureBitmap.h in Headers */,
+				A4B66A96176A77730077B2BF /* Rtt_Uniform.h in Headers */,
+				A4DCC6F31774EE0E00C29C87 /* Rtt_GeometryPool.h in Headers */,
+				A48B91B3178A86A20072EAF7 /* Rtt_TextureVolatile.h in Headers */,
+				07CFCF8D17DAA95E0039EF04 /* Rtt_MCPUResourceObserver.h in Headers */,
+				A47359ED17D86C3E00D39BAE /* Rtt_VideoTexture.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A43287D9176A610100ACB6FF /* tachyon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A43287DE176A610100ACB6FF /* Build configuration list for PBXNativeTarget "tachyon" */;
+			buildPhases = (
+				A43287D6176A610100ACB6FF /* Sources */,
+				A43287D7176A610100ACB6FF /* Frameworks */,
+				A43287D8176A610100ACB6FF /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = tachyon;
+			productName = libtachyon;
+			productReference = A43287DA176A610100ACB6FF /* libtachyon.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A43287D2176A610100ACB6FF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0800;
+				ORGANIZATIONNAME = "Corona Labs Inc";
+			};
+			buildConfigurationList = A43287D5176A610100ACB6FF /* Build configuration list for PBXProject "libtachyon" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A43287D1176A610100ACB6FF;
+			productRefGroup = A43287DB176A610100ACB6FF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A43287D9176A610100ACB6FF /* tachyon */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A43287D6176A610100ACB6FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4B66A6B176A77730077B2BF /* Rtt_CommandBuffer.cpp in Sources */,
+				A4B66A6D176A77730077B2BF /* Rtt_CPUResource.cpp in Sources */,
+				A4B66A6F176A77730077B2BF /* Rtt_FrameBufferObject.cpp in Sources */,
+				A4B66A71176A77730077B2BF /* Rtt_Geometry_Renderer.cpp in Sources */,
+				A4B66A73176A77730077B2BF /* Rtt_GL.cpp in Sources */,
+				A4B66A75176A77730077B2BF /* Rtt_GLCommandBuffer.cpp in Sources */,
+				A4B66A77176A77730077B2BF /* Rtt_GLFrameBufferObject.cpp in Sources */,
+				A4B66A79176A77730077B2BF /* Rtt_GLGeometry.cpp in Sources */,
+				A4B66A7B176A77730077B2BF /* Rtt_GLProgram.cpp in Sources */,
+				A4B66A7D176A77730077B2BF /* Rtt_GLRenderer.cpp in Sources */,
+				A4B66A7F176A77730077B2BF /* Rtt_GLTexture.cpp in Sources */,
+				A4B66A81176A77730077B2BF /* Rtt_GPUResource.cpp in Sources */,
+				A4B66A83176A77730077B2BF /* Rtt_HighPrecisionTime.cpp in Sources */,
+				A4B66A85176A77730077B2BF /* Rtt_Matrix_Renderer.cpp in Sources */,
+				A4B66A87176A77730077B2BF /* Rtt_Program.cpp in Sources */,
+				A4B66A89176A77730077B2BF /* Rtt_ProgramFactory.cpp in Sources */,
+				A4B66A8B176A77730077B2BF /* Rtt_RenderData.cpp in Sources */,
+				A4B66A8D176A77730077B2BF /* Rtt_Renderer.cpp in Sources */,
+				A4B66A8F176A77730077B2BF /* Rtt_RenderTypes.cpp in Sources */,
+				A4B66A91176A77730077B2BF /* Rtt_Texture.cpp in Sources */,
+				A4B66A93176A77730077B2BF /* Rtt_TextureBitmap.cpp in Sources */,
+				A4B66A95176A77730077B2BF /* Rtt_Uniform.cpp in Sources */,
+				A4DCC6F21774EE0E00C29C87 /* Rtt_GeometryPool.cpp in Sources */,
+				A48B91B2178A86A20072EAF7 /* Rtt_TextureVolatile.cpp in Sources */,
+				A47359EC17D86C3E00D39BAE /* Rtt_VideoTexture.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A43287DC176A610100ACB6FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_MAC_ENV,
+					Rtt_DEBUG,
+					LUA_USE_OBJC_EXCEPTIONS,
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../..;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SKIP_INSTALL = NO;
+				USER_HEADER_SEARCH_PATHS = ../..;
+			};
+			name = Debug;
+		};
+		A43287DD176A610100ACB6FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_MAC_ENV,
+					NDEBUG,
+					LUA_USE_OBJC_EXCEPTIONS,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../..;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+				SKIP_INSTALL = NO;
+				USER_HEADER_SEARCH_PATHS = ../..;
+			};
+			name = Release;
+		};
+		A43287DF176A610100ACB6FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+			};
+			name = Debug;
+		};
+		A43287E0176A610100ACB6FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A43287D5176A610100ACB6FF /* Build configuration list for PBXProject "libtachyon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A43287DC176A610100ACB6FF /* Debug */,
+				A43287DD176A610100ACB6FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A43287DE176A610100ACB6FF /* Build configuration list for PBXNativeTarget "tachyon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A43287DF176A610100ACB6FF /* Debug */,
+				A43287E0176A610100ACB6FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A43287D2176A610100ACB6FF /* Project object */;
+}

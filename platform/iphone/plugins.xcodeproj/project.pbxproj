@@ -1,0 +1,765 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07071E0B18C0045400BC657C /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 07071E0918C0045400BC657C /* NSData+Base64.h */; };
+		07071E0C18C0045400BC657C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 07071E0A18C0045400BC657C /* NSData+Base64.m */; };
+		070F38D818CA5AAA00BC2BEE /* Rtt_CKWorkFlowConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 070F38D718CA5AAA00BC2BEE /* Rtt_CKWorkFlowConstants.h */; };
+		A45F9A6D15ED6C250093646B /* CoronaProvider.ads.lua in Sources */ = {isa = PBXBuildFile; fileRef = A45F9A6915EC35830093646B /* CoronaProvider.ads.lua */; };
+		A4607544162E71CD00DFDF97 /* CoronaNativeObjectAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = A4607543162E71CD00DFDF97 /* CoronaNativeObjectAdapter.h */; };
+		A47B5C6415FAA980001D60AB /* CoronaLuaLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47B5C6015FAA97F001D60AB /* CoronaLuaLibrary.cpp */; };
+		A47B5C6515FAA980001D60AB /* CoronaLuaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A47B5C6115FAA980001D60AB /* CoronaLuaLibrary.h */; };
+		A47B5C6615FAA980001D60AB /* CoronaLuaLibraryMetadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47B5C6215FAA980001D60AB /* CoronaLuaLibraryMetadata.cpp */; };
+		A47B5C6715FAA980001D60AB /* CoronaLuaLibraryMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = A47B5C6315FAA980001D60AB /* CoronaLuaLibraryMetadata.h */; };
+		A481B87015DDA6CC009FFE54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4FDBF2D15DC232600E5001C /* Foundation.framework */; };
+		A481B88015DDA6E6009FFE54 /* CoronaAdsLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A481B87E15DDA6E6009FFE54 /* CoronaAdsLibrary.cpp */; };
+		A481B88C15DDC5F8009FFE54 /* libads.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A481B86F15DDA6CC009FFE54 /* libads.a */; };
+		A484DB7A15EF470600BDE27A /* ads.lua in Sources */ = {isa = PBXBuildFile; fileRef = A484DB6D15EF37DE00BDE27A /* ads.lua */; };
+		A484DB8115EF595500BDE27A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4FDBF2D15DC232600E5001C /* Foundation.framework */; };
+		A484DB9215EF59BC00BDE27A /* CoronaAnalyticsLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A484DB9015EF59BC00BDE27A /* CoronaAnalyticsLibrary.cpp */; };
+		A484DB9315EF59DF00BDE27A /* analytics.lua in Sources */ = {isa = PBXBuildFile; fileRef = A484DB8E15EF59BC00BDE27A /* analytics.lua */; };
+		A484DB9415EF59DF00BDE27A /* CoronaProvider.analytics.lua in Sources */ = {isa = PBXBuildFile; fileRef = A484DB8F15EF59BC00BDE27A /* CoronaProvider.analytics.lua */; };
+		A484DB9715EF5B3E00BDE27A /* libanalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A484DB8015EF595500BDE27A /* libanalytics.a */; };
+		A491870B1642201900A39286 /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A49187091642201900A39286 /* CoronaIOSLoader.h */; };
+		A491870C1642201900A39286 /* CoronaIOSLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = A491870A1642201900A39286 /* CoronaIOSLoader.mm */; };
+		A4FDBF2E15DC232600E5001C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4FDBF2D15DC232600E5001C /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		A45F9A6E15ED70220093646B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.lua";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+			);
+			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"";
+		};
+		A484DB8C15EF597E00BDE27A /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.lua";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+			);
+			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"";
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXContainerItemProxy section */
+		A481B88A15DDC5F3009FFE54 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4FDBF2115DC232600E5001C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A481B86E15DDA6CC009FFE54;
+			remoteInfo = ads;
+		};
+		A484DB9515EF5B3400BDE27A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4FDBF2115DC232600E5001C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A484DB7F15EF595500BDE27A;
+			remoteInfo = analytics;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A484DB7E15EF595500BDE27A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/${PRODUCT_NAME}";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		07071E0918C0045400BC657C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+Base64.h"; path = "../../plugins/ios/NSData+Base64.h"; sourceTree = "<group>"; };
+		07071E0A18C0045400BC657C /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+Base64.m"; path = "../../plugins/ios/NSData+Base64.m"; sourceTree = "<group>"; };
+		070F38D718CA5AAA00BC2BEE /* Rtt_CKWorkFlowConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CKWorkFlowConstants.h; path = ../../librtt/Rtt_CKWorkFlowConstants.h; sourceTree = "<group>"; };
+		A45F9A6915EC35830093646B /* CoronaProvider.ads.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaProvider.ads.lua; path = ../../plugins/ads/shared/CoronaProvider.ads.lua; sourceTree = "<group>"; };
+		A4607543162E71CD00DFDF97 /* CoronaNativeObjectAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaNativeObjectAdapter.h; path = Corona/CoronaNativeObjectAdapter.h; sourceTree = "<group>"; };
+		A47B5C6015FAA97F001D60AB /* CoronaLuaLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaLuaLibrary.cpp; path = ../../plugins/shared/CoronaLuaLibrary.cpp; sourceTree = "<group>"; };
+		A47B5C6115FAA980001D60AB /* CoronaLuaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaLibrary.h; path = ../../plugins/shared/CoronaLuaLibrary.h; sourceTree = "<group>"; };
+		A47B5C6215FAA980001D60AB /* CoronaLuaLibraryMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaLuaLibraryMetadata.cpp; path = ../../plugins/shared/CoronaLuaLibraryMetadata.cpp; sourceTree = "<group>"; };
+		A47B5C6315FAA980001D60AB /* CoronaLuaLibraryMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaLibraryMetadata.h; path = ../../plugins/shared/CoronaLuaLibraryMetadata.h; sourceTree = "<group>"; };
+		A481B82715DC6A79009FFE54 /* pluginsPrefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pluginsPrefix.pch; sourceTree = SOURCE_ROOT; };
+		A481B82815DC6F3F009FFE54 /* CoronaRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaRuntime.h; path = Corona/CoronaRuntime.h; sourceTree = "<group>"; };
+		A481B86F15DDA6CC009FFE54 /* libads.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libads.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A481B87E15DDA6E6009FFE54 /* CoronaAdsLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaAdsLibrary.cpp; path = ../../plugins/ads/shared/CoronaAdsLibrary.cpp; sourceTree = "<group>"; };
+		A481B87F15DDA6E6009FFE54 /* CoronaAdsLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaAdsLibrary.h; path = ../../plugins/ads/shared/CoronaAdsLibrary.h; sourceTree = "<group>"; };
+		A484DB6D15EF37DE00BDE27A /* ads.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ads.lua; path = ../../plugins/ads/shared/ads.lua; sourceTree = "<group>"; };
+		A484DB8015EF595500BDE27A /* libanalytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libanalytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A484DB8E15EF59BC00BDE27A /* analytics.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = analytics.lua; path = ../../plugins/analytics/shared/analytics.lua; sourceTree = "<group>"; };
+		A484DB8F15EF59BC00BDE27A /* CoronaProvider.analytics.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaProvider.analytics.lua; path = ../../plugins/analytics/shared/CoronaProvider.analytics.lua; sourceTree = "<group>"; };
+		A484DB9015EF59BC00BDE27A /* CoronaAnalyticsLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaAnalyticsLibrary.cpp; path = ../../plugins/analytics/shared/CoronaAnalyticsLibrary.cpp; sourceTree = "<group>"; };
+		A484DB9115EF59BC00BDE27A /* CoronaAnalyticsLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaAnalyticsLibrary.h; path = ../../plugins/analytics/shared/CoronaAnalyticsLibrary.h; sourceTree = "<group>"; };
+		A48DA985185803C4009D1F93 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A48DA987185803C4009D1F93 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A48DA9A8185803C4009D1F93 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		A49187091642201900A39286 /* CoronaIOSLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaIOSLoader.h; path = ../../plugins/ios/CoronaIOSLoader.h; sourceTree = "<group>"; };
+		A491870A1642201900A39286 /* CoronaIOSLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaIOSLoader.mm; path = ../../plugins/ios/CoronaIOSLoader.mm; sourceTree = "<group>"; };
+		A4D876B715DEDC6B0067B06E /* CoronaEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaEvent.h; path = ../../librtt/Corona/CoronaEvent.h; sourceTree = "<group>"; };
+		A4FDBF2A15DC232600E5001C /* libplugins.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libplugins.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4FDBF2D15DC232600E5001C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A4FDBF5315DC23E700E5001C /* CoronaAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaAssert.h; path = ../../librtt/Corona/CoronaAssert.h; sourceTree = "<group>"; };
+		A4FDBF5415DC23E700E5001C /* CoronaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLibrary.h; path = ../../librtt/Corona/CoronaLibrary.h; sourceTree = "<group>"; };
+		A4FDBF5515DC23E700E5001C /* CoronaLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLog.h; path = ../../librtt/Corona/CoronaLog.h; sourceTree = "<group>"; };
+		A4FDBF5615DC23E700E5001C /* CoronaLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLua.h; path = ../../librtt/Corona/CoronaLua.h; sourceTree = "<group>"; };
+		A4FDBF5715DC23E700E5001C /* CoronaMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMacros.h; path = ../../librtt/Corona/CoronaMacros.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A481B86C15DDA6CC009FFE54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A481B87015DDA6CC009FFE54 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A484DB7D15EF595500BDE27A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A484DB8115EF595500BDE27A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4FDBF2715DC232600E5001C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A481B88C15DDC5F8009FFE54 /* libads.a in Frameworks */,
+				A484DB9715EF5B3E00BDE27A /* libanalytics.a in Frameworks */,
+				A4FDBF2E15DC232600E5001C /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A4607546162E71EB00DFDF97 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				A4607543162E71CD00DFDF97 /* CoronaNativeObjectAdapter.h */,
+				A481B82815DC6F3F009FFE54 /* CoronaRuntime.h */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		A47B5B8F15F9BC17001D60AB /* plugins */ = {
+			isa = PBXGroup;
+			children = (
+				A49187081642200200A39286 /* ios */,
+				A481B82715DC6A79009FFE54 /* pluginsPrefix.pch */,
+				A47B5C6015FAA97F001D60AB /* CoronaLuaLibrary.cpp */,
+				A47B5C6115FAA980001D60AB /* CoronaLuaLibrary.h */,
+				A47B5C6215FAA980001D60AB /* CoronaLuaLibraryMetadata.cpp */,
+				A47B5C6315FAA980001D60AB /* CoronaLuaLibraryMetadata.h */,
+			);
+			name = plugins;
+			sourceTree = SOURCE_ROOT;
+		};
+		A47B5B9215F9BCBD001D60AB /* analytics */ = {
+			isa = PBXGroup;
+			children = (
+				A484DB8E15EF59BC00BDE27A /* analytics.lua */,
+				A484DB8F15EF59BC00BDE27A /* CoronaProvider.analytics.lua */,
+				A484DB9015EF59BC00BDE27A /* CoronaAnalyticsLibrary.cpp */,
+				A484DB9115EF59BC00BDE27A /* CoronaAnalyticsLibrary.h */,
+			);
+			name = analytics;
+			sourceTree = SOURCE_ROOT;
+		};
+		A481B86A15DDA6B4009FFE54 /* ads */ = {
+			isa = PBXGroup;
+			children = (
+				A484DB6D15EF37DE00BDE27A /* ads.lua */,
+				A45F9A6915EC35830093646B /* CoronaProvider.ads.lua */,
+				A481B87E15DDA6E6009FFE54 /* CoronaAdsLibrary.cpp */,
+				A481B87F15DDA6E6009FFE54 /* CoronaAdsLibrary.h */,
+			);
+			name = ads;
+			sourceTree = SOURCE_ROOT;
+		};
+		A49187081642200200A39286 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				070F38D718CA5AAA00BC2BEE /* Rtt_CKWorkFlowConstants.h */,
+				07071E0918C0045400BC657C /* NSData+Base64.h */,
+				07071E0A18C0045400BC657C /* NSData+Base64.m */,
+				A49187091642201900A39286 /* CoronaIOSLoader.h */,
+				A491870A1642201900A39286 /* CoronaIOSLoader.mm */,
+			);
+			name = ios;
+			sourceTree = SOURCE_ROOT;
+		};
+		A4FDBF1F15DC232600E5001C = {
+			isa = PBXGroup;
+			children = (
+				A4FDBF4815DC23C700E5001C /* Corona */,
+				A47B5B8F15F9BC17001D60AB /* plugins */,
+				A481B86A15DDA6B4009FFE54 /* ads */,
+				A47B5B9215F9BCBD001D60AB /* analytics */,
+				A4FDBF2C15DC232600E5001C /* Frameworks */,
+				A4FDBF2B15DC232600E5001C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A4FDBF2B15DC232600E5001C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A4FDBF2A15DC232600E5001C /* libplugins.a */,
+				A481B86F15DDA6CC009FFE54 /* libads.a */,
+				A484DB8015EF595500BDE27A /* libanalytics.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A4FDBF2C15DC232600E5001C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A4FDBF2D15DC232600E5001C /* Foundation.framework */,
+				A48DA985185803C4009D1F93 /* CoreGraphics.framework */,
+				A48DA987185803C4009D1F93 /* UIKit.framework */,
+				A48DA9A8185803C4009D1F93 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A4FDBF4815DC23C700E5001C /* Corona */ = {
+			isa = PBXGroup;
+			children = (
+				A4FDBF5315DC23E700E5001C /* CoronaAssert.h */,
+				A4D876B715DEDC6B0067B06E /* CoronaEvent.h */,
+				A4FDBF5415DC23E700E5001C /* CoronaLibrary.h */,
+				A4FDBF5515DC23E700E5001C /* CoronaLog.h */,
+				A4FDBF5615DC23E700E5001C /* CoronaLua.h */,
+				A4FDBF5715DC23E700E5001C /* CoronaMacros.h */,
+				A4607546162E71EB00DFDF97 /* iOS */,
+			);
+			name = Corona;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A481B86D15DDA6CC009FFE54 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4FDBF2815DC232600E5001C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				070F38D818CA5AAA00BC2BEE /* Rtt_CKWorkFlowConstants.h in Headers */,
+				A47B5C6515FAA980001D60AB /* CoronaLuaLibrary.h in Headers */,
+				A47B5C6715FAA980001D60AB /* CoronaLuaLibraryMetadata.h in Headers */,
+				07071E0B18C0045400BC657C /* NSData+Base64.h in Headers */,
+				A4607544162E71CD00DFDF97 /* CoronaNativeObjectAdapter.h in Headers */,
+				A491870B1642201900A39286 /* CoronaIOSLoader.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A481B86E15DDA6CC009FFE54 /* ads */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A481B87715DDA6CC009FFE54 /* Build configuration list for PBXNativeTarget "ads" */;
+			buildPhases = (
+				A481B86B15DDA6CC009FFE54 /* Sources */,
+				A481B86C15DDA6CC009FFE54 /* Frameworks */,
+				A481B86D15DDA6CC009FFE54 /* Headers */,
+			);
+			buildRules = (
+				A45F9A6E15ED70220093646B /* PBXBuildRule */,
+			);
+			dependencies = (
+			);
+			name = ads;
+			productName = ads;
+			productReference = A481B86F15DDA6CC009FFE54 /* libads.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		A484DB7F15EF595500BDE27A /* analytics */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A484DB8915EF595500BDE27A /* Build configuration list for PBXNativeTarget "analytics" */;
+			buildPhases = (
+				A484DB7C15EF595500BDE27A /* Sources */,
+				A484DB7D15EF595500BDE27A /* Frameworks */,
+				A484DB7E15EF595500BDE27A /* CopyFiles */,
+			);
+			buildRules = (
+				A484DB8C15EF597E00BDE27A /* PBXBuildRule */,
+			);
+			dependencies = (
+			);
+			name = analytics;
+			productName = analytics;
+			productReference = A484DB8015EF595500BDE27A /* libanalytics.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		A4FDBF2915DC232600E5001C /* plugins */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A4FDBF3715DC232600E5001C /* Build configuration list for PBXNativeTarget "plugins" */;
+			buildPhases = (
+				A4FDBF2615DC232600E5001C /* Sources */,
+				A4FDBF2715DC232600E5001C /* Frameworks */,
+				A4FDBF2815DC232600E5001C /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A481B88B15DDC5F3009FFE54 /* PBXTargetDependency */,
+				A484DB9615EF5B3400BDE27A /* PBXTargetDependency */,
+			);
+			name = plugins;
+			productName = plugins;
+			productReference = A4FDBF2A15DC232600E5001C /* libplugins.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A4FDBF2115DC232600E5001C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				TargetAttributes = {
+					A481B86E15DDA6CC009FFE54 = {
+						LastSwiftMigration = 0820;
+					};
+					A484DB7F15EF595500BDE27A = {
+						LastSwiftMigration = 0820;
+					};
+					A4FDBF2915DC232600E5001C = {
+						LastSwiftMigration = 0820;
+					};
+				};
+			};
+			buildConfigurationList = A4FDBF2415DC232600E5001C /* Build configuration list for PBXProject "plugins" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A4FDBF1F15DC232600E5001C;
+			productRefGroup = A4FDBF2B15DC232600E5001C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A4FDBF2915DC232600E5001C /* plugins */,
+				A481B86E15DDA6CC009FFE54 /* ads */,
+				A484DB7F15EF595500BDE27A /* analytics */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A481B86B15DDA6CC009FFE54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A484DB7A15EF470600BDE27A /* ads.lua in Sources */,
+				A45F9A6D15ED6C250093646B /* CoronaProvider.ads.lua in Sources */,
+				A481B88015DDA6E6009FFE54 /* CoronaAdsLibrary.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A484DB7C15EF595500BDE27A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A484DB9315EF59DF00BDE27A /* analytics.lua in Sources */,
+				A484DB9415EF59DF00BDE27A /* CoronaProvider.analytics.lua in Sources */,
+				A484DB9215EF59BC00BDE27A /* CoronaAnalyticsLibrary.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4FDBF2615DC232600E5001C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A47B5C6415FAA980001D60AB /* CoronaLuaLibrary.cpp in Sources */,
+				07071E0C18C0045400BC657C /* NSData+Base64.m in Sources */,
+				A47B5C6615FAA980001D60AB /* CoronaLuaLibraryMetadata.cpp in Sources */,
+				A491870C1642201900A39286 /* CoronaIOSLoader.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A481B88B15DDC5F3009FFE54 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A481B86E15DDA6CC009FFE54 /* ads */;
+			targetProxy = A481B88A15DDC5F3009FFE54 /* PBXContainerItemProxy */;
+		};
+		A484DB9615EF5B3400BDE27A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A484DB7F15EF595500BDE27A /* analytics */;
+			targetProxy = A484DB9515EF5B3400BDE27A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A44D4300164ACDCC00CFE7B3 /* Release-template */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../../external/lua-5.1.3/src";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-template";
+		};
+		A44D4301164ACDCC00CFE7B3 /* Release-template */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/plugins.dst;
+				ENABLE_BITCODE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../plugins/build/analytics-flurry/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = "Release-template";
+		};
+		A44D4302164ACDCC00CFE7B3 /* Release-template */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/ads.dst;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = "Release-template";
+		};
+		A44D4306164ACDCC00CFE7B3 /* Release-template */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DSTROOT = /tmp/analytics.dst;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = "Release-template";
+		};
+		A44D431C164ACE0200CFE7B3 /* Release-template-trial */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../../external/lua-5.1.3/src";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-template-trial";
+		};
+		A44D431D164ACE0200CFE7B3 /* Release-template-trial */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/plugins.dst;
+				ENABLE_BITCODE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../plugins/build/analytics-flurry/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = "Release-template-trial";
+		};
+		A44D431E164ACE0200CFE7B3 /* Release-template-trial */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/ads.dst;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = "Release-template-trial";
+		};
+		A44D4322164ACE0200CFE7B3 /* Release-template-trial */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DSTROOT = /tmp/analytics.dst;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = "Release-template-trial";
+		};
+		A481B87815DDA6CC009FFE54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/ads.dst;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		A481B87915DDA6CC009FFE54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/ads.dst;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		A484DB8A15EF595500BDE27A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DSTROOT = /tmp/analytics.dst;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		A484DB8B15EF595500BDE27A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DSTROOT = /tmp/analytics.dst;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		A4FDBF3515DC232600E5001C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					CORONA_DEBUG,
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_CFLAGS[arch=arm64]" = "-fexceptions";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../../external/lua-5.1.3/src";
+			};
+			name = Debug;
+		};
+		A4FDBF3615DC232600E5001C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				"OTHER_CFLAGS[arch=arm64]" = "-fexceptions";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../../external/lua-5.1.3/src";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A4FDBF3815DC232600E5001C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/plugins.dst;
+				ENABLE_BITCODE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../plugins/build/analytics-flurry/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		A4FDBF3915DC232600E5001C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/plugins.dst;
+				ENABLE_BITCODE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../plugins/build/analytics-flurry/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A481B87715DDA6CC009FFE54 /* Build configuration list for PBXNativeTarget "ads" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A481B87815DDA6CC009FFE54 /* Debug */,
+				A481B87915DDA6CC009FFE54 /* Release */,
+				A44D4302164ACDCC00CFE7B3 /* Release-template */,
+				A44D431E164ACE0200CFE7B3 /* Release-template-trial */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A484DB8915EF595500BDE27A /* Build configuration list for PBXNativeTarget "analytics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A484DB8A15EF595500BDE27A /* Debug */,
+				A484DB8B15EF595500BDE27A /* Release */,
+				A44D4306164ACDCC00CFE7B3 /* Release-template */,
+				A44D4322164ACE0200CFE7B3 /* Release-template-trial */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A4FDBF2415DC232600E5001C /* Build configuration list for PBXProject "plugins" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4FDBF3515DC232600E5001C /* Debug */,
+				A4FDBF3615DC232600E5001C /* Release */,
+				A44D4300164ACDCC00CFE7B3 /* Release-template */,
+				A44D431C164ACE0200CFE7B3 /* Release-template-trial */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A4FDBF3715DC232600E5001C /* Build configuration list for PBXNativeTarget "plugins" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4FDBF3815DC232600E5001C /* Debug */,
+				A4FDBF3915DC232600E5001C /* Release */,
+				A44D4301164ACDCC00CFE7B3 /* Release-template */,
+				A44D431D164ACE0200CFE7B3 /* Release-template-trial */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A4FDBF2115DC232600E5001C /* Project object */;
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 4.4</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="4.3.5.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#4">Chapter 4. Statements</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>4.4 - <b>break</b> and <b>return</b></h2>
+
+<p>The <b>break</b> and <b>return</b> statements allow us to
+jump out from an inner block.
+
+<p>You use the <b>break</b> statement to finish a loop.
+This statement breaks the inner loop
+(<b>for</b>, <b>repeat</b>, or <b>while</b>)
+that contains it;
+it cannot be used outside a loop.
+After the break,
+the program continues running from the point
+immediately after the broken loop.
+
+<p>A <b>return</b> statement
+returns occasional results from a function
+or simply finishes a function.
+There is an implicit return at the end of any function,
+so you do not need to use one if your function ends naturally,
+without returning any value.
+
+<p>For syntactic reasons,
+a <b>break</b> or <b>return</b> can appear only as
+the last statement of a block
+(in other words, as the last statement in your chunk
+or just before an <b>end</b>, an <b>else</b>, or an <b>until</b>).
+For instance, in the next example,
+<b>break</b> is the last statement of the <b>then</b> block.
+<pre>
+    local i = 1
+    while a[i] do
+      if a[i] == v then break end
+      i = i + 1
+    end
+</pre>
+Usually, these are the places where we use these statements,
+because any other statement following them is unreachable.
+Sometimes, however, it may be useful to write a <b>return</b>
+(or a <b>break</b>) in the middle of a block;
+for instance, if you are debugging a function and
+want to avoid its execution.
+In such cases, you can use an explicit <b>do</b> block around the statement:
+<pre>
+    function foo ()
+      return          --&lt;&lt; SYNTAX ERROR
+      -- `return' is the last statement in the next block
+      do return end   -- OK
+      ...             -- statements not reached
+    end
+</pre>
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

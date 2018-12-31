@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 5</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="4.4.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="5.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#5">Chapter 5. Functions</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<a name="functions"><h1>5 - Functions</h1></a>
+
+<p>
+
+<p>Functions are the main mechanism for abstraction of statements
+and expressions in Lua.
+Functions can both carry out a specific task
+(what is sometimes called <em>procedure</em>
+or <em>subroutine</em> in other languages)
+or compute and return values.
+In the first case, we use a function call as a statement;
+in the second case, we use it as an expression:
+<pre>
+    print(8*9, 9/8)
+    a = math.sin(3) + math.cos(10)
+    print(os.date())
+</pre>
+In both cases, we write a list of arguments enclosed
+in parentheses.
+If the function call has no arguments,
+we must write an empty list <code>()</code> to indicate the call.
+There is a special case to this rule:
+If the function has one single argument
+and this argument is either a literal string or
+a table constructor,
+then the parentheses are optional:
+<pre>
+    print "Hello World"     &lt;-->     print("Hello World")
+    dofile 'a.lua'          &lt;-->     dofile ('a.lua')
+    print [[a multi-line    &lt;-->     print([[a multi-line
+     message]]                        message]])
+    f{x=10, y=20}           &lt;-->     f({x=10, y=20})
+    type{}                  &lt;-->     type({})
+</pre>
+
+<p>Lua also offers a special syntax for object-oriented calls,
+the colon operator.
+An expression like <code>o:foo(x)</code>
+is just another way to write <code>o.foo(o, x)</code>,
+that is, to call <code>o.foo</code> adding <code>o</code> as a first extra argument.
+In <a href="16.html#ObjectSec">Chapter 16</a> we will discuss such calls
+(and object-oriented programming) in more detail.
+
+<p>Functions used by a Lua program can be defined both in Lua and
+in C (or in any other language used by the host application).
+For instance, all library functions are written in C;
+but this fact has no relevance to Lua programmers.
+When calling a function,
+there is no difference between functions defined
+in Lua and functions defined in C.
+
+<p>As we have seen in other examples,
+a function definition has a conventional syntax;
+for instance
+<pre>
+    -- add all elements of array `a'
+    function add (a)
+      local sum = 0
+      for i,v in ipairs(a) do
+        sum = sum + v
+      end
+      return sum
+    end
+</pre>
+In that syntax, a function definition has a <em>name</em>
+(<code>add</code>, in the previous example),
+a list of <em>parameters</em>,
+and a <em>body</em>, which is a list of statements.
+
+<p>Parameters work exactly as local variables,
+initialized with the actual arguments given in the function call.
+You can call a function with a number of arguments different from
+its number of parameters.
+Lua adjusts the number of arguments to the number of parameters,
+as it does in a multiple assignment:
+Extra arguments are thrown away;
+extra parameters get <B>nil</B>.
+For instance, if we have a function like
+<pre>
+    function f(a, b) return a or b end
+</pre>
+we will have the following mapping from arguments to parameters:
+<pre>
+    CALL             PARAMETERS
+       
+    f(3)             a=3, b=nil
+    f(3, 4)          a=3, b=4
+    f(3, 4, 5)       a=3, b=4   (5 is discarded)
+</pre>
+Although this behavior can lead to programming errors
+(easily spotted at run time),
+it is also useful, especially for default arguments.
+For instance, consider the following function,
+to increment a global counter.
+<pre>
+    function incCount (n)
+      n = n or 1
+      count = count + n
+    end
+</pre>
+This function has 1 as its default argument;
+that is, the call <code>incCount()</code>, without arguments,
+increments <code>count</code> by one.
+When you call <code>incCount()</code>,
+Lua first initializes <code>n</code> with <B>nil</B>;
+the <code>or</code> results in its second operand;
+and as a result Lua assigns a default 1 to <code>n</code>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="5.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

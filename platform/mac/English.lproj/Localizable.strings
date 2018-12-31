@@ -1,0 +1,14 @@
+"Dismiss" = "Dismiss";
+"Show in Finder..." = "Show in Finder...";
+
+"AndroidCannontBuildBecauseOfFileNameRules" = "Android build failed because the project contains files with names that are forbidden by Android.";
+"AndroidCannontBuildFileNameRulesInformative" = "Files placed in Android \"res\" directories (e.g. sound & video) must not contain Java keywords and must conform to the character set [A-Z, a-z, 0-9, _]. These files also may not begin with numbers. Please rename your files and try again.";
+
+"AndroidCannontBuildBecauseOfResFilesInSubdirectoriesRules" = "Android build failed because the project contains \"res\" files in subdirectories.";
+"AndroidCannontBuildBecauseOfResFilesInSubdirectoriesRulesInformative" = "Files placed in Android \"res\" directories (e.g. sound & video) must be in the project root directory. Please move your files and try again.";
+
+"AndroidCannontBuildBecauseOfDuplicateBaseFileNameRules" = "Android build failed because the project contains \"res\" files with identical base names.";
+"AndroidCannontBuildBecauseOfDuplicateBaseFileNameRulesInformative" = "Files placed in Android \"res\" directories (e.g. sound & video) must have unique base names because extensions are ignored. Please rename your files and try again.";
+
+"CannontBuildBecauseOfLuaFilesInSubdirectoriesRules" = "The build failed because the project contains .lua files in subdirectories.";
+"CannontBuildBecauseOfLuaFilesInSubdirectoriesRulesInformative" = "Lua files must be in the project root directory. Please move your files and try again.";

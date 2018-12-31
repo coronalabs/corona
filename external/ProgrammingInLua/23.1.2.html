@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 23.1.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="23.1.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="23.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#23">Chapter 23. The Debug Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>23.1.2 - Accessing Upvalues</h3>
+
+<p>The <code>debug</code> library also allows us to
+access the upvalues that a Lua function uses,
+with <code>getupvalue</code>.
+Unlike local variables, however,
+a function has its upvalues even when it is not active
+(this is what closures are about, after all).
+Therefore, the first argument for <code>getupvalue</code> is not a stack level,
+but a function (a closure, more precisely).
+The second argument is the upvalue index.
+Lua numbers upvalues in the order they are first referred in a function,
+but this order is not relevant,
+because a function cannot have two upvalues with the same name.
+
+<p>You can also update upvalues,
+with <code>debug.setupvalue</code>.
+As you might expect, it has three parameters:
+a closure, an upvalue index, and the new value.
+Like <code>setlocal</code>, it returns the name of the upvalue,
+or <B>nil</B> if the upvalue index is out of range.
+
+<p>The following code shows how we can access the value
+of any given variable of a calling function,
+given the variable name:
+<pre>
+    function getvarvalue (name)
+      local value, found
+    
+      -- try local variables
+      local i = 1
+      while true do
+        local n, v = debug.getlocal(2, i)
+        if not n then break end
+        if n == name then
+          value = v
+          found = true
+        end
+        i = i + 1
+      end
+      if found then return value end
+    
+      -- try upvalues
+      local func = debug.getinfo(2).func
+      i = 1
+      while true do
+        local n, v = debug.getupvalue(func, i)
+        if not n then break end
+        if n == name then return v end
+        i = i + 1
+      end
+    
+      -- not found; get global
+      return getfenv(func)[name]
+    end
+</pre>
+First, we try a local variable.
+If there is more than one variable with the given name,
+we must get the one with the highest index;
+so we must always go through the whole loop.
+If we cannot find any local variable with that name,
+then we try upvalues.
+First, we get the calling function,
+with <code>debug.getinfo(2).func</code>,
+and then we traverse its upvalues.
+Finally, if we cannot find an upvalue with that name,
+then we get a global variable.
+Notice the use of the argument 2 in the calls
+to <code>debug.getlocal</code> and <code>debug.getinfo</code>
+to access the calling function.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="23.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

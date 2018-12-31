@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 2.5</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="2.4.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="2.6.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#2">Chapter 2. Types and Values</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>2.5 - Tables</h2>
+
+<p>The table type implements associative arrays.
+An associative array is an array
+that can be indexed not only with numbers,
+but also with strings or any other value of the language,
+except <B>nil</B>.
+Moreover, tables have no fixed size;
+you can add as many elements as you want to a table dynamically.
+Tables are the main (in fact, the only) data structuring mechanism in Lua,
+and a powerful one.
+We use tables to represent ordinary arrays,
+symbol tables, sets, records, queues, and other data structures,
+in a simple, uniform, and efficient way.
+Lua uses tables to represent packages as well.
+When we write <code>io.read</code>,
+we mean "the <code>read</code> entry from the <code>io</code> package".
+For Lua, that means
+"index the table <code>io</code> using the string <code>"read"</code> as the key".
+
+<p>Tables in Lua are neither values nor variables;
+they are <em>objects</em>.
+If you are familiar with arrays in Java or Scheme,
+then you have a fair idea of what we mean.
+However, if your idea of an array comes from C or Pascal,
+you have to open your mind a bit.
+You may think of a table as a dynamically allocated object;
+your program only manipulates references (or pointers) to them.
+There are no hidden copies or creation of new tables
+behind the scenes.
+Moreover, you do not have to declare a table in Lua;
+in fact, there is no way to declare one.
+You create tables by means of a <em>constructor expression</em>,
+which in its simplest form is written as <code>{}</code>:
+<pre>
+    a = {}     -- create a table and store its reference in `a'
+    k = "x"
+    a[k] = 10        -- new entry, with key="x" and value=10
+    a[20] = "great"  -- new entry, with key=20 and value="great"
+    print(a["x"])    --> 10
+    k = 20
+    print(a[k])      --> "great"
+    a["x"] = a["x"] + 1     -- increments entry "x"
+    print(a["x"])    --> 11
+</pre>
+A table is always anonymous.
+There is no fixed relationship between a variable that holds a table
+and the table itself:
+<pre>
+    a = {}
+    a["x"] = 10
+    b = a      -- `b' refers to the same table as `a'
+    print(b["x"])  --> 10
+    b["x"] = 20
+    print(a["x"])  --> 20
+    a = nil    -- now only `b' still refers to the table
+    b = nil    -- now there are no references left to the table
+</pre>
+When a program has no references to a table left,
+Lua memory management will eventually delete the table
+and reuse its memory.
+
+<p>Each table may store values with different types of indices
+and it grows as it needs to accommodate new entries:
+<pre>
+    a = {}     -- empty table
+    -- create 1000 new entries
+    for i=1,1000 do a[i] = i*2 end
+    print(a[9])    --> 18
+    a["x"] = 10
+    print(a["x"])  --> 10
+    print(a["y"])  --> nil
+</pre>
+Notice the last line:
+Like global variables,
+table fields evaluate to <B>nil</B> if they are not initialized.
+Also like global variables,
+you can assign <B>nil</B> to a table field to delete it.
+That is not a coincidence:
+Lua stores global variables in ordinary tables.
+More about this subject in <a href="14.html#EnvironmentSec">Chapter 14</a>.
+
+<p>To represent records, you use the field name as an index.
+Lua supports this representation by
+providing <code>a.name</code> as syntactic sugar for <code>a["name"]</code>.
+So, we could write the last lines of the previous example
+in a cleanlier manner as
+<pre>
+    a.x = 10                    -- same as a["x"] = 10
+    print(a.x)                  -- same as print(a["x"])
+    print(a.y)                  -- same as print(a["y"])
+</pre>
+For Lua, the two forms are equivalent
+and can be intermixed freely;
+but for a human reader,
+each form may signal a different intention.
+
+<p>A common mistake for beginners is to confuse <code>a.x</code> with <code>a[x]</code>.
+The first form represents <code>a["x"]</code>, that is, a table indexed by
+the string <code>"x"</code>.
+The second form is a table indexed by the value of the variable <code>x</code>.
+See the difference:
+<pre>
+    a = {}
+    x = "y"
+    a[x] = 10                 -- put 10 in field "y"
+    print(a[x])   --> 10      -- value of field "y"
+    print(a.x)    --> nil     -- value of field "x" (undefined)
+    print(a.y)    --> 10      -- value of field "y"
+</pre>
+
+<p>To represent a conventional array,
+you simply use a table with integer keys.
+There is no way to declare its size;
+you just initialize the elements you need:
+<pre>
+    -- read 10 lines storing them in a table
+    a = {}
+    for i=1,10 do
+      a[i] = io.read()
+    end
+</pre>
+When you iterate over the elements of the array,
+the first non-initialized index will result in <B>nil</B>;
+you can use this value as a sentinel to represent the end of the array.
+For instance, you could print the lines read in the last example
+with the following code:
+<pre>
+    -- print the lines
+    for i,line in ipairs(a) do
+      print(line)
+    end
+</pre>
+The basic Lua library provides <code>ipairs</code>,
+a handy function that allows you to iterate over the elements of an array,
+following the convention that the array ends at its first nil element.
+
+<p>Since you can index a table with any value,
+you can start the indices of an array with
+any number that pleases you.
+However, it is customary in Lua to start arrays with one
+(and not with zero, as in C)
+and the standard libraries stick to this convention.
+
+<p>Because we can index a table with any type,
+when indexing a table
+we have the same subtleties that arise in equality.
+Although we can index a table both with the
+number <code>0</code> and with the string <code>"0"</code>,
+these two values are different (according to equality)
+and therefore denote different positions in a table.
+By the same token, the strings <code>"+1"</code>, <code>"01"</code>,
+and <code>"1"</code> all denote different positions.
+When in doubt about the actual types of your indices,
+use an explicit conversion to be sure:
+<pre>
+    i = 10; j = "10"; k = "+10"
+    a = {}
+    a[i] = "one value"
+    a[j] = "another value"
+    a[k] = "yet another value"
+    print(a[j])            --> another value
+    print(a[k])            --> yet another value
+    print(a[tonumber(j)])  --> one value
+    print(a[tonumber(k)])  --> one value
+</pre>
+You can introduce subtle bugs in your program
+if you do not pay attention to this point.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="2.6.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

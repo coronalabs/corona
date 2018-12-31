@@ -1,0 +1,1124 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\Simulator.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Simulator.ico"
+IDI_ANIMATION           ICON                    "res\\exampleAnimationTime.ico"
+IDI_BUTTONS             ICON                    "res\\exampleButtonEvents.ico"
+IDI_GPS                 ICON                    "res\\exampleGPS.ico"
+IDI_MOVIECLIP           ICON                    "res\\exampleMovieClip.ico"
+IDI_POLYLINES           ICON                    "res\\examplePolyLines.ico"
+IDI_BRIDGE              ICON                    "res\\exampleBridge.ico"
+IDI_CHAINS              ICON                    "res\\exampleChains.ico"
+IDI_EGGBREAKER          ICON                    "res\\exampleEggBreaker.ico"
+IDI_JUNGLESCENE         ICON                    "res\\exampleJungleScene.ico"
+IDI_SIMPLEPOOL          ICON                    "res\\exampleSimplePool.ico"
+IDI_FACEBOOK            ICON                    "res\\exampleFacebook.ico"
+IDI_OPEN_FEINT          ICON                    "res\\exampleOpenFeint.ico"
+IDI_MULTITOUCH          ICON                    "res\\exampleMultitouch.ico"
+IDI_ALERT               ICON                    "res\\exampleAlert.ico"
+IDI_CAMERA              ICON                    "res\\exampleCamera.ico"
+IDI_TEXT_INPUT          ICON                    "res\\exampleNativeInput.ico"
+IDI_FISHIES             ICON                    "res\\exampleFishies.ico"
+IDI_COMPASS             ICON                    "res\\exampleCompass.ico"
+IDI_AUDIO               ICON                    "res\\exampleAudio.ico"
+IDI_FRUIT               ICON                    "res\\exampleFruit.ico"
+IDI_MULTIPUCK           ICON                    "res\\exampleMultipuck.ico"
+IDI_CRATE               ICON                    "res\\exampleCrate.ico"
+IDI_BALLOON             ICON                    "res\\exampleBalloon.ico"
+IDI_PLATFORM            ICON                    "res\\examplePlatform.ico"
+IDI_CAN                 ICON                    "res\\exampleCan.ico"
+IDI_INTERNET            ICON                    "res\\exampleInternet.ico"
+IDI_SPOTLIGHT           ICON                    "res\\exampleSpotlight.ico"
+IDI_GLOBE               ICON                    "res\\exampleGlobe.ico"
+IDI_ACTIVITY_INDICATOR  ICON                    "res\\exampleActivityIndicator.ico"
+IDI_MICROPHONE          ICON                    "res\\exampleMicrophone.ico"
+IDI_INNERACTIVE         ICON                    "res\\exampleInneractive.ico"
+IDI_TWITTER             ICON                    "res\\exampleTwitter.ico"
+IDI_MAIL                ICON                    "res\\exampleMail.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_SIMULATOR_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New Project...\tCtrl+N",     ID_FILE_NEW
+        MENUITEM "&Open Project...\tCtrl+O",    ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        POPUP "&Build"
+        BEGIN
+            MENUITEM "&Android...\tCtrl+B",         ID_BUILD_FOR_ANDROID
+            MENUITEM "&HTML5 (beta)...\tCtrl+Alt+B",       ID_BUILD_FOR_WEB
+            MENUITEM "&Windows...\tCtrl+Shift+B",   ID_BUILD_FOR_WIN32
+            MENUITEM "&Linux (beta)...\tCtrl+Shift+Alt+B",   ID_BUILD_FOR_LINUX
+        END
+        MENUITEM "Open in &Editor\tCtrl+Shift+O", ID_FILE_OPENINEDITOR
+        MENUITEM "Show Project &Files",         ID_FILE_SHOW_PROJECT_FILES
+        MENUITEM "Show Project &Sandbox",       ID_FILE_SHOWPROJECTSANDBOX
+        MENUITEM SEPARATOR
+        MENUITEM "Clear Project Sandbox",       ID_FILE_CLEARPROJECTSANDBOX
+        MENUITEM SEPARATOR
+        MENUITEM "&Relaunch\tCtrl+R",           ID_FILE_RELAUNCH
+        MENUITEM "&Close Project\tCtrl+W",      ID_FILE_CLOSE
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1
+        MENUITEM SEPARATOR
+        MENUITEM "&Preferences...",             ID_FILE_PREFERENCES
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "H&ardware"
+    BEGIN
+        MENUITEM "Rotate &Left\tCtrl+Left Arrow", ID_VIEW_ROTATELEFT
+        MENUITEM "Rotate &Right\tCtrl+Right Arrow", ID_VIEW_ROTATERIGHT
+        MENUITEM "Shake\tCtrl+Up Arrow",        ID_VIEW_SHAKE
+        MENUITEM SEPARATOR
+        MENUITEM "&Back\tAlt+Left",             ID_VIEW_NAVIGATE_BACK
+        MENUITEM SEPARATOR
+        MENUITEM "Suspend\tCtrl+Down Arrow",    ID_VIEW_SUSPEND
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Zoom &In\tCtrl +",            ID_WINDOW_ZOOMIN
+        MENUITEM "Zoom &Out\tCtrl -",           ID_WINDOW_ZOOMOUT
+        MENUITEM SEPARATOR
+        POPUP "View &As"
+        BEGIN
+            MENUITEM "Placeholder",                 ID_VIEWAS_BEGIN
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Welcome Screen",             ID_VIEW_HOME_SCREEN
+        MENUITEM "&Console",                    ID_VIEW_CONSOLE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Online &Documentation...",    ID_HELP
+        MENUITEM "&Sample Projects...",         ID_FILE_OPEN_SAMPLE_PROJECT
+        MENUITEM SEPARATOR
+        MENUITEM "&About Simulator...",         ID_APP_ABOUT
+    END
+END
+
+IDR_HOME_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New Project...\tCtrl+N",     ID_FILE_NEW
+        MENUITEM "&Open Project...\tCtrl+O",    ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Relaunch Last Project\tCtrl+R", ID_FILE_RELAUNCH
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1
+        MENUITEM SEPARATOR
+        MENUITEM "&Preferences...",             ID_FILE_PREFERENCES
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Online &Documentation...",    ID_HELP
+        MENUITEM "&Sample Projects...",         ID_FILE_OPEN_SAMPLE_PROJECT
+        MENUITEM SEPARATOR
+        MENUITEM "&About Simulator...",         ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "B",            ID_BUILD_FOR_ANDROID,   VIRTKEY, CONTROL, NOINVERT
+    "B",            ID_BUILD_FOR_WIN32,     VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, ALT, CONTROL, NOINVERT
+    "B",            ID_BUILD_FOR_LINUX,     VIRTKEY, SHIFT, CONTROL, ALT, NOINVERT
+    "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPENINEDITOR,   VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "R",            ID_FILE_RELAUNCH,       VIRTKEY, CONTROL, NOINVERT
+    VK_LEFT,        ID_VIEW_ROTATELEFT,     VIRTKEY, CONTROL, NOINVERT
+    VK_RIGHT,       ID_VIEW_ROTATERIGHT,    VIRTKEY, CONTROL, NOINVERT
+    VK_UP,          ID_VIEW_SHAKE,          VIRTKEY, CONTROL, NOINVERT
+    VK_DOWN,        ID_VIEW_SUSPEND,        VIRTKEY, CONTROL, NOINVERT
+    VK_DOWN,        ID_VIEW_SUSPEND,        VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_ADD,         ID_WINDOW_ZOOMIN,       VIRTKEY, CONTROL, NOINVERT
+    VK_OEM_PLUS,    ID_WINDOW_ZOOMIN,       VIRTKEY, CONTROL, NOINVERT
+    VK_OEM_MINUS,   ID_WINDOW_ZOOMOUT,      VIRTKEY, CONTROL, NOINVERT
+    VK_SUBTRACT,    ID_WINDOW_ZOOMOUT,      VIRTKEY, CONTROL, NOINVERT
+    VK_LEFT,        ID_VIEW_NAVIGATE_BACK,  VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 221, 85
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Corona Simulator"
+FONT 9, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,20,20
+    LTEXT           "Corona Simulator",IDC_STATIC,39,14,149,8,SS_NOPREFIX
+    LTEXT           "<Copyright>",IDC_COPYRIGHT,39,39,175,16
+    DEFPUSHBUTTON   "OK",IDOK,164,64,50,14,WS_GROUP
+    CONTROL         "<a href=""https://coronalabs.com"">https://coronalabs.com</a>",IDC_LINK_ANSCAMOBILE,
+                    "SysLink",WS_TABSTOP,39,52,132,10
+    LTEXT           "<Version>",IDC_ABOUT_VERSION,39,26,160,8
+END
+
+IDD_BUILD_DROID DIALOGEX 0, 0, 313, 218
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Android Build Setup"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Application Name:",IDC_STATIC,6,6,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_APPNAME,90,6,216,14,ES_AUTOHSCROLL
+    LTEXT           "Version Code:",IDC_STATIC,6,24,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_VERSION_CODE,90,24,216,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Version Name:",IDC_STATIC,6,42,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_VERSION_NAME,90,42,216,14,ES_AUTOHSCROLL
+    LTEXT           "Package:",IDC_STATIC,6,60,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_PACKAGE,90,60,216,14,ES_AUTOHSCROLL
+    LTEXT           "A unique Java-style package identifier for your app\n(e.g. com.acme.games.myfarmgame)",IDC_STATIC,90,78,216,19
+    LTEXT           "Project Path:",IDC_STATIC,6,102,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_PROJECTPATH,90,102,216,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Target App Store:",IDC_STATIC,6,120,78,12,0,WS_EX_RIGHT
+    COMBOBOX        IDC_BUILD_TARGET_APP_STORE,90,120,216,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Keystore:",IDC_STATIC,6,136,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_KEYSTORE,90,136,156,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_KEYSTORE,252,136,54,14
+    LTEXT           "Key Alias:",IDC_STATIC,6,154,78,10,0,WS_EX_RIGHT
+    COMBOBOX        IDC_BUILD_KEYALIAS,90,154,216,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Save to Folder:",IDC_STATIC,6,170,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_SAVETO,90,170,156,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,170,54,14
+    CONTROL         "Create &Live Build",IDC_CREATE_LIVE_BUILD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,187,81,10
+    CONTROL         "Enable Monetization",IDC_ENABLE_MONETIZATION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,199,81,10
+    DEFPUSHBUTTON   "Build",IDOK,204,197,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,258,197,48,14
+END
+
+IDD_PASSWORD DIALOGEX 0, 0, 169, 106
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Password"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Please enter the password for",IDC_STATIC,7,10,102,8
+    LTEXT           "key",IDC_KEY,7,21,155,16
+    EDITTEXT        IDC_PASSWORD,7,41,135,14,ES_PASSWORD | ES_AUTOHSCROLL
+    CONTROL         "Save Password",IDC_SAVEPASSWORD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,65,66,10
+    DEFPUSHBUTTON   "OK",IDOK,54,85,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,112,85,50,14
+END
+
+IDD_LOGIN DIALOGEX 0, 0, 307, 87
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Corona Developer Login"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    RTEXT           "Email:",IDC_STATIC,6,24,42,10
+    EDITTEXT        IDC_LOGIN_EMAIL,54,24,132,15,ES_AUTOHSCROLL
+    RTEXT           "Password:",IDC_STATIC,6,42,42,10
+    EDITTEXT        IDC_LOGIN_PASSWORD,54,42,132,15,ES_PASSWORD | ES_AUTOHSCROLL
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKRECT | SS_SUNKEN,196,6,4,74
+    LTEXT           "Not Registered?",IDC_STATIC,210,6,66,12
+    LTEXT           "Sign up now to:\n- Build for devices\n- Receive tips and tutorials\n- Post to our forums",IDC_STATIC,210,22,96,37
+    DEFPUSHBUTTON   "Login",IDOK,72,66,54,14
+    PUSHBUTTON      "Cancel",IDCANCEL,132,66,54,14
+    PUSHBUTTON      "Register",IDC_LOGIN_REGISTER,210,66,54,14
+    RTEXT           "Sign In",IDC_STATIC,124,6,60,12
+END
+
+IDD_LICENSE DIALOGEX 0, 0, 302, 183
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Corona License Agreement"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Agree",IDOK,187,162,50,14
+    PUSHBUTTON      "Disagree",IDCANCEL,245,162,50,14
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
+    LTEXT           "Corona License Agreement",IDC_STATIC,95,13,107,10
+    LTEXT           "To use this software you must agree to the terms of the Corona license agreement.  Click Agree to continue or click Disagree to quit.",IDC_STATIC,7,30,288,18
+    CONTROL         "",IDC_LICENSE,"RichEdit20W",WS_BORDER | WS_VSCROLL | 0x804,7,51,288,107
+END
+
+IDD_PROGRESSMSG DIALOGEX 0, 0, 132, 49
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP
+EXSTYLE WS_EX_WINDOWEDGE
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,7,32,118,10
+    LTEXT           "Connecting to server...",IDC_PROGRESSWND_TEXT,24,15,84,11
+END
+
+IDD_MESSAGE DIALOGEX 0, 0, 253, 71
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Corona Simulator"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,166,50,80,14
+    ICON            "",IDC_MSG_ICON,7,7,20,20
+    LTEXT           "Static",IDC_MSG_TEXT,53,5,193,40
+    PUSHBUTTON      "Button3",ID_MSG_BUTTON3,7,50,58,14
+    PUSHBUTTON      "Alt",ID_MSG_BUTTON2,75,50,80,14
+END
+
+IDD_PREFERENCES DIALOGEX 0, 0, 272, 168
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Corona Simulator Preferences"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,215,146,50,14
+    LTEXT           "User Account:",IDC_STATIC,7,9,47,8,0,WS_EX_RIGHT
+    LTEXT           "Static",IDC_USER_ACCOUNT,66,9,188,8
+    LTEXT           "To use this product on another computer, you must deauthorize this computer.",IDC_STATIC,7,20,136,17
+    PUSHBUTTON      "Deauthorize and Quit",IDC_DEAUTHORIZE,157,21,102,14
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,7,40,258,2,WS_EX_CLIENTEDGE | WS_EX_STATICEDGE
+    CONTROL         "Don't show the Welcome screen",IDC_NOWELCOME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,47,252,10
+    CONTROL         "Show Runtime Errors",IDC_SHOW_RUNTIME_ERRORS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,62,252,10
+    CONTROL         "Automatically open last project",IDC_AUTO_OPEN_LAST_PROJECT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,77,252,10
+    LTEXT           "Relaunch Simulator when project is modified?",IDC_STATIC,7,92,251,8
+    CONTROL         "Always",IDC_SIM_RELAUNCH_ALWAYS,"Button",BS_AUTORADIOBUTTON,17,103,79,10
+    CONTROL         "Never",IDC_SIM_RELAUNCH_NEVER,"Button",BS_AUTORADIOBUTTON,17,117,79,10
+    CONTROL         "Ask Every Time",IDC_SIM_RELAUNCH_ASK,"Button",BS_AUTORADIOBUTTON,17,131,79,10
+    DEFPUSHBUTTON   "OK",IDOK,158,146,50,14
+    LTEXT           "User Account:",IDC_STATIC,7,9,47,8,0,WS_EX_RIGHT
+END
+
+IDD_DEVPASSWORD DIALOGEX 0, 0, 200, 109
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Corona Developer Password"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_LOGIN_PASSWORD,55,67,138,15,ES_PASSWORD | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Login",IDOK,85,88,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,143,88,50,14
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20,SS_REALSIZEIMAGE
+    LTEXT           "Corona Developer Password",IDC_STATIC,42,12,98,10
+    LTEXT           "Please enter your password to continue.",IDC_STATIC,43,25,150,10
+    RTEXT           "Email:",IDC_STATIC,12,51,39,10
+    LTEXT           "Email.",IDC_LOGIN_EMAIL,55,51,138,10
+    RTEXT           "Password:",IDC_STATIC,11,70,39,10
+END
+
+IDD_BUILD_PROGRESS DIALOGEX 0, 0, 335, 27
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Build Progress"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,140,7,151,10
+    LTEXT           "Communicating with build server...",IDC_STATUS_MESSAGE,7,7,130,10,SS_ENDELLIPSIS
+    PUSHBUTTON      "Stop",IDC_STOP_BUILD,293,5,35,14
+END
+
+IDD_NEW_PROJECT DIALOGEX 0, 0, 339, 243
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "New Project"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Application Name :",IDC_APP_NAME_LABEL,6,6,66,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_APP_NAME_EDIT_BOX,78,6,198,14,ES_AUTOHSCROLL
+    LTEXT           "Project Folder :",IDC_APP_LOCATION_LABEL,6,24,66,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_APP_LOCATION_EDIT_BOX,78,24,198,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "&Browse...",IDC_BROWSE_BUTTON,282,24,50,14
+    GROUPBOX        "Project Template",IDC_TEMPLATE_GROUP_BOX,6,48,204,162,WS_GROUP
+    CONTROL         "Blank",IDC_TEMPLATE_BLANK,"Button",BS_AUTORADIOBUTTON,12,60,108,10
+    CONTROL         "Tab Bar Application",IDC_TEMPLATE_TAB_BAR,"Button",BS_AUTORADIOBUTTON,12,96,108,10
+    CONTROL         "Physics Based Game",IDC_TEMPLATE_GAME,"Button",BS_AUTORADIOBUTTON,12,132,108,10
+    CONTROL         "eBook",IDC_TEMPLATE_EBOOK,"Button",BS_AUTORADIOBUTTON,12,168,108,10
+    LTEXT           "Creates a project folder with an empty ""main.lua"" file.",IDC_TEMPLATE_BLANK_LABEL,24,74,173,8,NOT WS_GROUP
+    LTEXT           "Multiscreen application using a Tab Bar for navigation.",IDC_TEMPLATE_TAB_BAR_LABEL,24,110,174,8,NOT WS_GROUP
+    LTEXT           "Application using the physics and composer APIs.",IDC_TEMPLATE_GAME_LABEL,24,146,158,8,NOT WS_GROUP
+    LTEXT           "Multi-page interface using the composer API.",IDC_TEMPLATE_EBOOK_LABEL,24,182,145,8,NOT WS_GROUP
+    GROUPBOX        "Upright Screen Size",IDC_SCREEN_SIZE_GROUP_BOX,216,48,114,66
+    COMBOBOX        IDC_SCREEN_SIZE_COMBO_BOX,222,60,102,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Width :",IDC_SCREEN_WIDTH_LABEL,222,78,42,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_SCREEN_WIDTH_EDIT_BOX,270,78,54,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "Height :",IDC_SCREEN_HEIGHT_LABEL,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,222,96,42,8,WS_EX_RIGHT
+    EDITTEXT        IDC_SCREEN_HEIGHT_EDIT_BOX,270,96,54,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    GROUPBOX        "Default Orientation",IDC_ORIENTATION_GROUP_BOX,216,120,114,30,WS_GROUP
+    CONTROL         "Upright",IDC_ORIENTATION_UPRIGHT,"Button",BS_AUTORADIOBUTTON,222,132,48,10
+    CONTROL         "Sideways",IDC_ORIENTATION_SIDEWAYS,"Button",BS_AUTORADIOBUTTON,276,132,48,10
+    LTEXT           "",IDC_DIVIDING_LINE,6,216,324,2,0,WS_EX_STATICEDGE
+    DEFPUSHBUTTON   "OK",IDOK,228,222,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,282,222,50,14
+END
+
+IDD_SELECT_SAMPLE_PROJECT DIALOGEX 0, 0, 465, 279
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Select Sample Project"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_SAMPLE_LIST,"SysListView32",LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_AUTOARRANGE | WS_BORDER | WS_TABSTOP,7,24,449,222
+    DEFPUSHBUTTON   "OK",IDOK,354,258,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,408,258,50,14
+    LTEXT           "Show :",IDC_STATIC,300,6,23,8
+    COMBOBOX        IDC_FILTER_COMBO_BOX,330,6,126,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_RELAUNCH_PREF DIALOGEX 0, 0, 245, 86
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Corona Simulator"
+FONT 8, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "Relaunch Simulator",IDOK,101,65,72,14
+    PUSHBUTTON      "Ignore",IDCANCEL,188,65,50,14
+    CONTROL         "Remember my preference",IDC_REMEMBER_PREF,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,49,46,99,10
+    LTEXT           "Corona project has been modified",IDC_STATIC,49,7,109,11
+    LTEXT           "Would you like to relaunch the Simulator?",IDC_STATIC,49,26,132,8
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20,SS_REALSIZEIMAGE
+END
+
+IDD_BUILD_WEB DIALOGEX 0, 0, 313, 150
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "HTML5 Build Setup (beta)"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Application Name :",IDC_STATIC,6,11,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_APPNAME,90,11,216,14,ES_AUTOHSCROLL
+    LTEXT           "Version Code :",IDC_STATIC,6,29,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_VERSION_CODE,90,29,216,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Project Path :",IDC_STATIC,6,47,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_PROJECTPATH,90,47,216,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    CONTROL         "Create FB Instant archive", IDC_CREATE_FB_INSTANT_ARCHIVE, "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,100,181,10
+    DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
+END
+
+IDD_BUILD_LINUX DIALOGEX 0, 0, 313, 150
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "LINUX Build Setup (beta)"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Application Name :",IDC_STATIC,6,11,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_APPNAME,90,11,216,14,ES_AUTOHSCROLL
+    LTEXT           "Version Code :",IDC_STATIC,6,29,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_VERSION_CODE,90,29,216,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Project Path :",IDC_STATIC,6,47,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_PROJECTPATH,90,47,216,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
+END
+
+IDD_CUSTOM_DEVICE DIALOGEX 0, 0, 293, 101
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Custom Device"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,171,80,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,237,80,50,14
+    EDITTEXT        IDC_CD_DEVICE_NAME,62,7,224,14,ES_AUTOHSCROLL
+    RTEXT           "Device Name:",IDC_STATIC,13,10,45,8
+    RTEXT           "Screen Width:",IDC_STATIC,10,27,48,8
+    RTEXT           "Screen Height:",IDC_STATIC,8,45,50,8
+    EDITTEXT        IDC_CD_SCREEN_WIDTH,62,24,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_CD_SCREEN_HEIGHT,62,42,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Platform:",IDC_STATIC,7,62,50,8
+    COMBOBOX        IDC_CD_PLATFORM,62,60,71,34,CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_BUILD_WIN32_APP DIALOGEX 0, 0, 315, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Windows Build Setup"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Application Name:",IDC_STATIC,6,6,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_APPNAME,90,6,216,14,ES_AUTOHSCROLL
+    LTEXT           "EXE File Name:",IDC_STATIC,6,24,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_EXE_FILE_NAME,90,24,216,14,ES_AUTOHSCROLL
+    LTEXT           "Version:",IDC_STATIC,6,42,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_VERSION_NAME,90,42,216,14,ES_AUTOHSCROLL
+    LTEXT           "Copyright:",IDC_STATIC,6,60,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_COPYRIGHT,90,60,216,14,ES_AUTOHSCROLL
+    LTEXT           "Company Name:",IDC_STATIC,6,78,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_COMPANY_NAME,90,78,216,14,ES_AUTOHSCROLL
+    LTEXT           "Description:",IDC_STATIC,6,96,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_APP_DESCRIPTION,90,96,216,14,ES_AUTOHSCROLL
+    LTEXT           "Project Path:",IDC_STATIC,6,114,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_PROJECTPATH,90,114,216,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Save to Folder:",IDC_STATIC,6,132,78,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_SAVETO,90,132,156,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,132,54,14
+    DEFPUSHBUTTON   "Build",IDOK,204,156,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,258,156,48,14
+END
+
+IDD_HTML_MESSAGE DIALOGEX 0, 0, 319, 194
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,264,174,50,14
+    LTEXT           "Static",IDC_WEB_BROWSER,6,6,306,156
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x37L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "Corona Labs Inc."
+            VALUE "FileDescription", "Corona Simulator"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "Corona Simulator"
+            VALUE "LegalCopyright", "Copyright © 2009-2018 Corona Labs Inc."
+            VALUE "OriginalFilename", "Corona Simulator"
+            VALUE "ProductName", "Corona Simulator"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 214
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 78
+    END
+
+    IDD_BUILD_DROID, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 306
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 211
+    END
+
+    IDD_PASSWORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 162
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 99
+    END
+
+    IDD_LOGIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 300
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 80
+    END
+
+    IDD_LICENSE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 295
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 176
+    END
+
+    IDD_PROGRESSMSG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 125
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 42
+    END
+
+    IDD_MESSAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 246
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 64
+    END
+
+    IDD_PREFERENCES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 265
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 161
+    END
+
+    IDD_DEVPASSWORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 193
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 102
+    END
+
+    IDD_BUILD_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 328
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 20
+    END
+
+    IDD_NEW_PROJECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 332
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 236
+    END
+
+    IDD_SELECT_SAMPLE_PROJECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 458
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 272
+    END
+
+    IDD_RELAUNCH_PREF, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 238
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 79
+    END
+
+    IDD_BUILD_WEB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 306
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 109
+    END
+
+		IDD_BUILD_LINUX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 306
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 109
+    END
+
+    IDD_CUSTOM_DEVICE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 286
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 94
+    END
+
+    IDD_BUILD_WIN32_APP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 308
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
+
+    IDD_HTML_MESSAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 312
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 187
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "Corona Simulator"
+    IDS_BUILDWEBUPSELL      "Your subscription restricts %s builds to Trial mode.  Upgrade your subscription to remove restrictions."
+    IDS_INVALID_WEB_APP_VERSION_NUMBER 
+                            "Your version code is invalid.\r\n\r\n It must be a single number and may not contain dots. This version number cannot be less than 1."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SUBSCRIPTION_EXPIRING_SOON 
+                            "Your ""%s"" subscription is about to expire."
+    IDS_SUBSCRIPTION_EXPIRING_DAYS 
+                            "Your ""%s"" subscription will expire in %d days."
+    IDS_SUBSCRIPTION_EXPIRED_MODE "Your ""%s"" subscription has expired."
+    IDS_BUILD_PATH_INVALID  "You must provide a destination path which is different from the project path."
+    IDS_LOGIN               "Login"
+    IDS_NOT_LOGGED_IN       "You are not currently logged in."
+    IDS_LOGGED_IN_AS        "You are currently logged in as: "
+    IDS_SUSPENDED           "Suspended"
+    IDS_OPENGL21_VERSION_WARNING 
+                            "WARNING: This machine does not meet the Corona Simulator's minimum supported video hardware requirements for premium Graphics 2.0 features.\n\nMinimum OpenGL version required:  %s\nYour machine's OpenGL version:  %s"
+    IDS_MONETIZATION_WARNING 
+                            "Important!\n\nDisabling ad serving will limit your revenue potential. We encourage you to enable monetization to control which players see ads and IAP offers with the advanced segmentation tools in your free Fuse Powered dashboard.\n\nAre you sure you want to disable monetization?"
+    IDS_ENABLE_MONETIZATION "Enable Monetization"
+    IDS_BUILD_EXE_FILE_NAME_NOT_PROVIDED 
+                            "You must provide a name for the EXE file to be built."
+    IDS_BUILD_EXE_FILE_NAME_CHARS_INVALID 
+                            "The EXE file name is invalid. It cannot contain the following characters:"
+    IDS_BUILD_WIN32_VERSION_STRING_INVALID 
+                            "The given version string is invalid. It may only contain numbers and periods. It also must be formatted as follows:\n\n      <Major>.<Minor>.<Build>.<SpecialBuild>\n\nYou do not have to provide all 4 parts of the version string. Any version number components not provided will be set to zero on the built EXE. "
+    IDS_BUILD_VERSION_STRING_NOT_PROVIDED "You must provide a version string."
+    IDS_CANNOT_BUILD_WITHOUT_PLUGINS 
+                            "You cannot do a build until all of the plugins referenced in your Corona project's ""build.settings"" file have been successfully acquired.\n\n%sThis can happen for the following reasons:\n- The plugin is not supported on Windows.\n- The plugin name was mistyped or does not exist.\n- Corona failed to download the plugin. (Internet connection issue.)\n\nIf the plugin is not supported on Windows (the most likely case), then you'll need to use the ""supportedPlatforms"" setting in your ""build.settings"" file to indicate which platforms the plugin will be included in."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_CREATE_LIVE_BUILD   "Create Live Build"
+    IDS_CREATE_LIVE_BUILD_WARNING 
+                            "You must have the Debug keystore selected to create a Live Build.\n\nDo you want to select it now?"
+    IDS_OPEN_URL_HTML       "Open in Browser"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_OPENFORBUILD_s      "Device Builds for %s are only available on Mac OS X.  Please choose a Droid device from the Window - View As... menu."
+    IDS_OPENMAINLUA         "Select a main.lua"
+    IDS_ONLYMAINLUA         "Only main.lua can be opened"
+    IDS_EXPIRE              "This version of the Corona Simulator has expired. Please visit https://coronalabs.com."
+    IDS_HARDWARE_SUSPEND    "Suspend\tCtrl+down arrow"
+    IDS_HARDWARE_RESUME     "Resume\tCtrl+down arrow"
+    IDS_VALID_PACKAGE       "Valid package names can have one or more letters, numbers or underscores separated by a dot, for example 'com.acme_co.games3'.  There must be at least two strings separated by dots, and each string can't start with a number.  Java language reserved words (for, interface, etc.) are not permitted.  See http://download.oracle.com/javase/tutorial/java/package/namingpkgs.html."
+    IDS_INVALID_KEYSTORE_s  "The password for the Key Store located at %s was not valid, or the Key Store was not valid."
+    IDS_CHOOSEFOLLOWING     "(Choose from the following)"
+    IDS_LOGINSUCCESSFUL     "Congratulations!  The Corona is now ready for use on this computer."
+    IDS_LOGINFAILED         "Incorrect email and/or password."
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "Corona Simulator"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing app\nOpen"
+    ID_FILE_CLOSE           "Close the active app\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this app"
+    ID_FILE_MRU_FILE2       "Open this app"
+    ID_FILE_MRU_FILE3       "Open this app"
+    ID_FILE_MRU_FILE4       "Open this app"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_OPENFORBUILD    "Open an existing document for Device Build"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LOGINBLACKLISTED    "This computer was already used for a trial. Support our efforts to make great products by clicking Purchase."
+    IDS_LOGINUNVERIFIED     "Your account has not been verified yet. A verification e-mail has been sent to you with further instructions on how to validate your account."
+    IDS_TRIALEXPIRED        "Your starter subscription has expired. To continue using, click Purchase and support our efforts to make great products."
+    IDS_BASICEXPIRED        "To use the latest updates, you must have an active subscription. Click Renew now to continue making great Droid applications."
+    IDS_QUOTALIMIT          "You are already using this software on two other computers. Please deauthorize one of your other computers before logging in on this computer.\r\nOn the other computer, go to File / Preferences... / Deauthorize and Quit"
+    IDS_PLATFORMMISMATCH    "You purchased a product for a different platform. You can click Purchase for an additional license for this computer."
+    IDS_APIKEYINVALID       "This version is no longer supported. Please click Download to obtain a supported version of this product."
+    IDS_TOKENEXPIRED        "Your computer's clock has the incorrect date and/or time. Please update with the correct time and try again."
+    IDS_PWDNOTSAVED         "Login succeeded, but we were unable to store your Corona password. You may have to login again in the future."
+    IDS_AGREEMENTCHANGED    "The Corona Connect terms and conditions have changed. Click OK to read and agree to the new terms."
+    IDS_LOGINERROR          "Could not verify account information."
+    IDS_DEAUTHORIZED        "Application successfully deauthorized."
+    IDS_DEAUTHERROR         "Could not deauthorize application.  Please try again."
+    IDS_DEAUTH_CONFIRM      "Are you sure you want to deauthorize this application and exit?"
+    IDS_BUILD_SUCCEEDED     "Your application was built successfully."
+    IDS_BUILD_NOT_AUTH      "Not authorized to build."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LOGIN_INVALID       "Invalid registration.  Please check your login name and password."
+    IDS_BUILD_FAILED        "Build failed.  Check the console window for errors."
+    IDS_CONSOLE_FREE        "Could not free console."
+    IDS_DIR_s_NOTFOUND_INSTALL 
+                            "Corona Simulator cannot find the directory %s.\nPlease re-run the installer."
+    IDS_FILE_s_NOTFOUND_INSTALL 
+                            "Corona Simulator cannot find the file %s.\nPlease re-run the installer."
+    IDS_INVALID_ALIAS       "The password for the alias was not valid, or the Java JDK was not found."
+    IDS_QUIT                "Quit"
+    IDS_CONTINUE            "Continue"
+    IDS_PURCHASE            "Purchase"
+    IDS_OK                  "OK"
+    IDS_RENEW               "Renew"
+    IDS_DOWNLOAD            "Download"
+    IDS_CANCEL              "Cancel"
+    IDS_STORED_PASSWORD_INVALID 
+                            "Stored password is invalid.  Please reenter your login information."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ANIMATION_NOTE      "Time-based animation"
+    IDS_BUTTONS_NOTE        "Graphical buttons"
+    IDS_MOVIECLIP_NOTE      "Animate a series of images"
+    IDS_GPS_NOTE            "Location event properties"
+    IDS_POLYLINES_NOTE      "Draw line segments"
+    IDS_CONNECTINGTOSERVER  "Communicating with server..."
+    IDS_CONSOLE_CREATE      "Failed to create console."
+    IDS_NO_INTERNET         "Could not connect to server. Please check your Internet connection."
+    IDS_UNKNOWNERROR        "An unexpected account configuration error occurred.  Please contact Corona Labs customer service at support@coronalabs.com"
+    IDS_STILLTRIAL          "Our records show you have not purchased the product yet. The account status is currently set to a starter account."
+    IDS_THANKSPURCHASE      "Thank you for your purchase! The purchased version of Corona is now ready for use on this computer."
+    IDS_SET_JAVAHOME_s      "Jarsigner.exe not found.  To enable Builds:\n(1) Set the JAVA_HOME environment variable to '%s' (without the quotes)\n(2) Add ';%%JAVA_HOME%%\\bin' (without the quotes) to the end of your PATH environment variable.\n(3) Exit and relaunch Corona Simulator\n\nClick Yes to open the System Properties dialog to edit your environment variables.  (This message will close.)"
+    IDS_ASSOCLUA            "Please associate .lua files with an editor in Control Panel File Associations, then try again.  Click Yes to open the Control Panel File Associations applet."
+    IDS_OPENPROJECTINEDITOR "Open Project in Editor"
+    IDS_TRIALBUILDSONLY     "Trial Builds Only"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BUILDUPSELL         "Your subscription restricts device builds on %s to Trial mode.  Upgrade your subscription to get access to priority device builds."
+    IDS_TRIALBUILD          "Do you want to build more powerful apps? Upgrade to Pro and get access to Daily Builds, analytics, in-app purchases and more."
+    IDS_ANDROIDBUILD        "Build for Android"
+    IDS_KEYSTORE_ATLEASTONE "Please choose a keystore with at least one valid key alias."
+    IDS_OPENGL_VERSION_WARNING 
+                            "This machine does not meet the Corona Simulator's minimum video hardware requirements.\n\nMinimum OpenGL version required:  %s\nYour machine's OpenGL version:  %s"
+    IDS_WARNING             "Warning"
+    IDS_UNKNOWN             "Unknown"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DONE                "Done"
+    IDS_VIEW_EXPLORER       "View in E&xplorer"
+    IDS_JDKNOTFOUND         "Could not find the Java Development Kit (JDK).  This is required in order to build for Android.\n\nWould you like to download it now?"
+    IDS_INSTALLNOW          "Install now"
+    IDS_COULDNOTLOAD_s_ERR_d "Could not load %s, error %ld"
+    IDS_FUNCTION_s_IN_s     "Could not find %s in %s."
+    IDS_APPCORRUPTED        "This application has been corrupted.  Please download and reinstall."
+    IDS_CLICKBUYNOW         "Your trial evaluation has expired. To continue using, please click Buy Now to purchase the Corona."
+    IDS_BUYNOW              "Upgrade Now"
+    IDS_VERIFY_PURCHASE     "Verify Purchase"
+    IDS_SUBSCRIPTION_EXPIRED "Corona Subscription Expired"
+    IDS_NEEDTORENEW         "You cannot use the latest updates without an active subscription.  To qualify for the latest updates, you need to renew your subscription."
+    IDS_ALREADYRENEWED      "Already Renewed"
+    IDS_TRIAL_EXPIRED       "Corona Trial Expired"
+    IDS_OPEN_NOTE           "Choose a project to run in the simulator and build for devices."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STARTED_NOTE        "A tutorial to quickly get started with Corona."
+    IDS_PROGRAMMING_NOTE    "Create a project, build a project, and more."
+    IDS_CORONAGETRIAL       "Corona Game Edition Trial"
+    IDS_UPGRADE             "Upgrade"
+    IDS_ALREADYUPGRADED     "Already Upgraded"
+    IDS_SUBSCRIBERGETRIAL   "As a Corona subscriber, we'd like to invite you to take Corona Game Edition for a limited test drive.  Please click Upgrade or Already Upgraded."
+    IDS_SUBSCRIBERGERENEW   "Your Corona subscription is about to expire. Please click Upgrade to extend your trial to Corona Game Edition, or Already Upgraded if you already did."
+    IDS_CONTINUETRIAL       "Continue"
+    IDS_CORONATRIAL         "Corona Trial"
+    IDS_TRIALTHANKS_d       "Thanks for downloading Corona.  You have been using the trial for %d day(s).  Click Buy Now to share your app with the world.  If you already bought, click Already Purchased."
+    IDS_TRIALFUN_d          "We hope you’re having a blast with Corona! Upgrade to Pro and build apps with features like analytics and in-app purchases. Take your apps to the next level."
+    IDS_BRIDGE_NOTE         "Joints and damping"
+    IDS_CHAINS_NOTE         "Joints chained together"
+    IDS_EGGBREAKER_NOTE     "Collisions"
+    IDS_JUNGLESCENE_NOTE    "Spritesheets at different rates"
+    IDS_SIMPLEPOOL_NOTE     "The classic physics game"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_APP_NEEDS_REAUTHORIZATION 
+                            "This application needs to be reauthorized. Please make sure that you have an active Internet connection and then click ""OK"" to continue."
+    IDS_SUBSCRIPTION_EXPIRED_FOR_BUILD 
+                            "Your subscription to the Corona Developer Program has expired. You must renew to continue building for devices."
+    IDS_BUILD_VERSION_MISMATCH_ERROR 
+                            "Failed to build with the server because the installed Corona is too old. Please download the newest Corona and try again."
+    IDS_BUILD_ERROR_FORMAT_MESSAGE "[Build Error #%d]\r\n%s"
+    IDS_BUILD_APP_NAME_NOT_PROVIDED "You must provide an application name."
+    IDS_BUILD_VERSION_NUMBER_NOT_PROVIDED 
+                            "You must provide a version code for your application."
+    IDS_BUILD_PACKAGE_NAME_NOT_PROVIDED 
+                            "You must provide a unique package name."
+    IDS_INVALID_ANDROID_APP_VERSION_NUMBER 
+                            "Your version code is invalid.\r\n\r\nThis number represents the ""android:versionCode"" for your application. It must be a single number and may not contain dots. This version number cannot be less than 1."
+    IDS_ANDROID_KEYSTORE_FILE_NOT_PROVIDED 
+                            "You must select a keystore file to be used to digitally sign your application."
+    IDS_BUILD_TARGET_OS_NOT_SELECTED 
+                            "You must select a minimum OS version to build for."
+    IDS_ANDROID_KEYALIAS_NOT_SELECTED 
+                            "You must select a key alias that you want to sign your application with."
+    IDS_BUILD_PATH_NOT_PROVIDED 
+                            "You must provide a destination path to where the built application will be saved to."
+    IDS_ANDROID_KEYSTORE_FILE_NOT_FOUND 
+                            "The keystore file was not found. Please verify that the path and file name are correct."
+    IDS_BUILD_PATH_CREATION_FAILED 
+                            "The ""Save to Folder"" directory could not be created. This can happen for the following reasons:\r\n1) The provided path contains invalid characters.\r\n2) You do not have permission to create a folder at that location."
+    IDS_INVALID_ANDROID_PROJECT_FILES 
+                            "Your project files did not pass Android validation.\nPlease see the console window for all errors detected."
+    IDS_IGNORE              "Ignore"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DAILY_BUILD_AVAILABLE_TO_SUBSCRIBERS_ONLY 
+                            "Daily Builds are only available to active Pro (or above) subscribers.\nSubscribe now to get access to the latest and greatest of Corona!"
+    IDS_TITLE_UPGRADE_CORONA "Upgrade Today!"
+    IDS_DEVICE_NOT_AVAILABLE_TO_TRIAL_USERS 
+                            "The %s device is not available for Trial developers. Buy a subscription to get access to full functionality."
+    IDS_DEVICE_NOT_AVAILABLE_TO_X_SUBSCRIBERS 
+                            "The %s device is not available for %s subscribers. Upgrade your subscription to get access to full functionality."
+    IDS_TITLE_BUY_CORONA    "Corona"
+    IDS_TRIAL_BUILD_COUNTDOWN 
+                            "Upgrade to skip the queue. Your build begins in %d seconds..."
+    IDS_TITLE_SIMULATOR_OUTPUT "Corona Simulator Console"
+    IDS_ANDROID             "Android"
+    IDS_AMAZON_SLASH_KINDLE "Amazon/Kindle"
+    IDS_SCREEN_SIZE_PHONE   "Phone Preset"
+    IDS_SCREEN_SIZE_TABLET  "Tablet Preset"
+    IDS_SCREEN_SIZE_CUSTOM  "Custom"
+    IDS_PROJECT_PATH_NOT_PROVIDED 
+                            "You must provide a destination path that the new project will be saved to."
+    IDS_PROJECT_PATH_CREATION_FAILED 
+                            "The ""Project Folder"" directory could not be created. This can happen for the following reasons:\r\n1) The provided path contains invalid characters.\r\n2) You do not have permission to create a folder at that location."
+    IDS_PROJECT_SCREEN_WIDTH_IS_INVALID 
+                            "You must provide a valid screen width value."
+    IDS_PROJECT_SCREEN_HEIGHT_IS_INVALID 
+                            "You must provide a valid screen height value."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PROJECT_PATH_ALREADY_TAKEN 
+                            "The project path that you have selected already contains a Corona project. Please choose another location."
+    IDS_PROJECT_FILES_CREATION_FAILED "Failed to create project files."
+    IDS_PROJECT_APPLICATION_NAME_INVALID 
+                            "The application name is invalid. It cannot include the following characters:\n     %s"
+    IDS_SELECT_ROOT_PROJECT_FOLDER_DESCRIPTION 
+                            "Select the root folder that your Corona project folder will be created under."
+    IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION 
+                            "Select where you want to output the built application to."
+    IDS_BUILD_VERSION_NAME_NOT_PROVIDED 
+                            "You must provide a version name for your application."
+    IDS_FILTER_ALL_PROJECTS "- All Projects -"
+    IDS_MUST_SELECT_SAMPLE_PROJECT 
+                            "Please select a sample project from the list."
+    IDS_UNABLE_TO_FIND_SAMPLE_PROJECTS_DIRECTORY 
+                            "Unable to find the Corona's sample projects directory."
+    IDS_NOOK                "Nook"
+    IDS_SIMULATOR_FILES     "Simulator Files"
+    IDS_BUILD_SETTINGS_FILE_ERROR 
+                            "There is an error in your ""build.settings"" file. Please see the console output for more details."
+    IDS_BUILD_TARGET_APP_STORE_NOT_SELECTED 
+                            "You must select an app store to build for."
+    IDS_SUBSCRIPTION_EXPIRING "Corona Subscription Expiring Soon"
+    IDS_RENEW_NOW           "Renew Now"
+    IDS_REMIND_ME_LATER     "Remind me Later"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\Simulator.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

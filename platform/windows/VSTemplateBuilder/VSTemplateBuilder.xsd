@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema
+		elementFormDefault="qualified"
+		targetNamespace="http://schemas.coronalabs.com/VSTemplateBuilder"
+		xmlns="http://schemas.coronalabs.com/VSTemplateBuilder"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:vstemplate="http://schemas.microsoft.com/developer/vstemplate/2005">
+	<xs:import namespace="http://schemas.microsoft.com/developer/vstemplate/2005"/>
+	<xs:element name="VSProjectTemplateBuilder">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Output" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence minOccurs="1" maxOccurs="unbounded">
+							<xs:element name="Folder">
+								<xs:complexType>
+									<xs:attribute name="Path" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="FileName" type="xs:string" use="required"/>
+						<xs:attribute name="IntermediateFolderPath" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="vstemplate:VSTemplate" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

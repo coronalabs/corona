@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 9.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="9.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="9.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#9">Chapter 9. Coroutines</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>9.3 - Coroutines as Iterators</h2>
+
+<p>We can see loop iterators as
+a quite specific example of the producer-consumer pattern.
+An iterator produces items to be consumed by the loop body.
+Therefore, it seems appropriate to use coroutines to write iterators.
+Actually, coroutines provide a powerful tool for this task.
+Again, the key feature is their ability to turn upside-down
+the relationship between caller and callee.
+With this feature, we can write iterators without worrying about
+how to keep state between successive calls to the iterator.
+
+<p>To illustrate this kind of use,
+let us write an iterator to traverse all permutations
+of a given array.
+It is not an easy task to write directly such iterator,
+but it is not so difficult to write a recursive function that generates
+all those permutations.
+The idea is simple:
+Put each array element in the last position, in turn,
+and recursively generate all permutations of the remaining elements.
+The code is as follows:
+<pre>
+    function permgen (a, n)
+      if n == 0 then
+        printResult(a)
+      else
+        for i=1,n do
+    
+          -- put i-th element as the last one
+          a[n], a[i] = a[i], a[n]
+    
+          -- generate all permutations of the other elements
+          permgen(a, n - 1)
+    
+          -- restore i-th element
+          a[n], a[i] = a[i], a[n]
+    
+        end
+      end
+    end
+</pre>
+To see it working, we should define an appropriate <code>printResult</code>
+function and call <code>permgen</code> with proper arguments:
+<pre>
+    function printResult (a)
+      for i,v in ipairs(a) do
+        io.write(v, " ")
+      end
+      io.write("\n")
+    end
+    
+    permgen ({1,2,3,4}, 4)
+</pre>
+
+<p>After we have the generator ready,
+it is an automatic task to convert it to an iterator.
+First, we change <code>printResult</code> to <code>yield</code>:
+<pre>
+    function permgen (a, n)
+      if n == 0 then
+        coroutine.yield(a)
+      else
+      ...
+</pre>
+Then, we define a factory that arranges
+for the generator to run inside a coroutine,
+and then create the iterator function.
+The iterator simply resumes the coroutine to produce
+the next permutation:
+<pre>
+    function perm (a)
+      local n = table.getn(a)
+      local co = coroutine.create(function () permgen(a, n) end)
+      return function ()   -- iterator
+        local code, res = coroutine.resume(co)
+        return res
+      end
+    end
+</pre>
+With that machinery in place,
+it is trivial to iterate over all permutations of an array with
+a <b>for</b> statement:
+<pre>
+    for p in perm{"a", "b", "c"} do
+      printResult(p)
+    end
+      --> b c a
+      --> c b a
+      --> c a b
+      --> a c b
+      --> b a c
+      --> a b c
+</pre>
+
+<p>The <code>perm</code> function uses a common pattern in Lua,
+which packs a call to resume with its corresponding coroutine
+inside a function.
+This pattern is so common that Lua provides a special function for it:
+<code>coroutine.wrap</code>.
+Like <code>create</code>, <code>wrap</code> creates a new coroutine.
+Unlike <code>create</code>, <code>wrap</code> does not return the coroutine itself;
+instead, it returns a function that, when called,
+resumes the coroutine.
+Unlike the original <code>resume</code>,
+that function does not return an error code as its first result;
+instead, it raises the error in case of errors.
+Using <code>wrap</code>, we can write <code>perm</code> as follows:
+<pre>
+    function perm (a)
+      local n = table.getn(a)
+      return coroutine.wrap(function () permgen(a, n) end)
+    end
+</pre>
+
+<p>Usually, <code>coroutine.wrap</code> is simpler
+to use than <code>coroutine.create</code>.
+It gives us exactly what we need from a coroutine:
+a function to resume it.
+However, it is also less flexible.
+There is no way to check the status of a
+coroutine created with <code>wrap</code>.
+Moreover, we cannot check for errors.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="9.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

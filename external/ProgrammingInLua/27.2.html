@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 27.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="27.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="27.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#27">Chapter 27. Techniques for Writing C Functions</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>27.2 - String Manipulation</h2>
+
+<p>
+
+<p>When a C function receives a string argument from Lua,
+there are only two rules that it must observe:
+Not to pop the string from the stack while accessing it
+and never to modify the string.
+
+<p>Things get more demanding when a C function
+needs to create a string to return to Lua.
+Now, it is up to the C code to take care of
+buffer allocation/deallocation, buffer overflow, and the like.
+Nevertheless, the Lua API provides some functions
+to help with those tasks.
+
+<p>The standard API provides support for two of the most basic string operations:
+substring extraction and string concatenation.
+To extract a substring,
+remember that the basic operation <code>lua_pushlstring</code>
+gets the string length as an extra argument.
+Therefore, if you want to pass to Lua a substring of a string <code>s</code>
+ranging from position <code>i</code> to <code>j</code> (inclusive),
+all you have to do is
+<pre>
+    lua_pushlstring(L, s+i, j-i+1);
+</pre>
+As an example, suppose you want a function
+that splits a string according
+to a given separator (a single character)
+and returns a table with the substrings.
+For instance, the call
+<pre>
+    split("hi,,there", ",")
+</pre>
+should return the table <code>{"hi", "", "there"}</code>.
+We could write a simple implementation as follows.
+It needs no extra buffers
+and puts no constraints on the size of the strings it can handle.
+<pre>
+    static int l_split (lua_State *L) {
+      const char *s = luaL_checkstring(L, 1);
+      const char *sep = luaL_checkstring(L, 2);
+      const char *e;
+      int i = 1;
+    
+      lua_newtable(L);  /* result */
+    
+      /* repeat for each separator */
+      while ((e = strchr(s, *sep)) != NULL) {
+        lua_pushlstring(L, s, e-s);  /* push substring */
+        lua_rawseti(L, -2, i++);
+        s = e + 1;  /* skip separator */
+      }
+    
+      /* push last substring */
+      lua_pushstring(L, s);
+      lua_rawseti(L, -2, i);
+    
+      return 1;  /* return the table */
+    }
+</pre>
+
+<p>To concatenate strings,
+Lua provides a specific function in its API,
+called <code>lua_concat</code>.
+It is equivalent to the <code>..</code> operator in Lua:
+It converts numbers to strings and triggers metamethods
+when necessary.
+Moreover, it can concatenate more than two strings at once.
+The call <code>lua_concat(L, n)</code> will concatenate (and pop) the
+<code>n</code> values at the top of the stack
+and leave the result on the top.
+
+<p>Another helpful function is <code>lua_pushfstring</code>:
+<pre>
+    const char *lua_pushfstring (lua_State *L,
+                                 const char *fmt, ...);
+</pre>
+It is somewhat similar to the C function <code>sprintf</code>,
+in that it creates a string according to a format string
+and some extra arguments.
+Unlike <code>sprintf</code>, however, you do not need to provide a buffer.
+Lua dynamically creates the string for you,
+as large as it needs to be.
+There are no worries about buffer overflow and the like.
+The function pushes the resulting string on the stack
+and returns a pointer to it.
+Currently, this function accepts only the
+directives <code>%%</code> (for the character `<code>%</code>&acute;),
+<code>%s</code> (for strings), <code>%d</code> (for integers),
+<code>%f</code> (for Lua numbers, that is, doubles),
+and <code>%c</code> (accepts an integer and formats it as a character).
+It does not accept any options (such as width or precision).
+
+<p>Both <code>lua_concat</code> and <code>lua_pushfstring</code>
+are useful when we want to concatenate only a few strings.
+However,
+if we need to concatenate many strings (or characters) together,
+a one-by-one approach can be quite inefficient,
+as we saw in <a href="11.6.html#StringBuffer">Section 11.6</a>.
+Instead,
+we can use the buffer facilities provided by the auxiliary library.
+Auxlib implements these buffers in two levels.
+The first level is similar to buffers in I/O operations:
+It collects small strings (or individual characters) in a local buffer
+and passes them to Lua (with <code>lua_pushlstring</code>)
+when the buffer fills up.
+The second level uses <code>lua_concat</code> and a variant
+of the stack algorithm that we saw in <a href="11.6.html#StringBuffer">Section 11.6</a> to
+concatenate the results of multiple buffer flushes.
+
+<p>To describe the buffer facilities from auxlib in more detail,
+let us see a simple example of its use.
+The next code shows the implementation of <code>string.upper</code>,
+right from the file <code>lstrlib.c</code>:
+<pre>
+    static int str_upper (lua_State *L) {
+      size_t l;
+      size_t i;
+      luaL_Buffer b;
+      const char *s = luaL_checklstr(L, 1, &amp;l);
+      luaL_buffinit(L, &amp;b);
+      for (i=0; i&lt;l; i++)
+        luaL_putchar(&amp;b, toupper((unsigned char)(s[i])));
+      luaL_pushresult(&amp;b);
+      return 1;
+    }
+</pre>
+The first step for using a buffer from auxlib is to declare a
+variable with type <code>luaL_Buffer</code>,
+and then to initialize it with a call to <code>luaL_buffinit</code>.
+After the initialization, the buffer keeps a copy of the state <code>L</code>,
+so we do not need to pass it when calling other functions that
+manipulate the buffer.
+The macro <code>luaL_putchar</code> puts a single character into the buffer.
+Auxlib also offers <code>luaL_addlstring</code>,
+to put a string with an explicit length into the buffer,
+and <code>luaL_addstring</code>, to put a zero-terminated string.
+Finally, <code>luaL_pushresult</code> flushes the buffer and leaves the
+final string on the top of the stack.
+The prototypes of those functions are as follows:
+<pre>
+    void luaL_buffinit (lua_State *L, luaL_Buffer *B);
+    void luaL_putchar (luaL_Buffer *B, char c);
+    void luaL_addlstring (luaL_Buffer *B, const char *s,
+                                          size_t l);
+    void luaL_addstring (luaL_Buffer *B, const char *s);
+    void luaL_pushresult (luaL_Buffer *B);
+</pre>
+
+<p>Using these functions,
+we do not have to worry about buffer allocation, overflows,
+and other such details.
+As we saw, the concatenation algorithm is quite efficient.
+The <code>str_upper</code> function handles huge strings
+(more than 1 MB) without any problem.
+
+<p>When you use the auxlib buffer,
+you have to worry about one detail.
+As you put things into the buffer,
+it keeps some intermediate results in the Lua stack.
+Therefore, you cannot assume that the stack top will remain
+where it was before you started using the buffer.
+Moreover, although you can use the stack for other tasks while
+using a buffer (even to build another buffer),
+the push/pop count for these uses must be balanced
+every time you access the buffer.
+There is one obvious situation where
+this restriction is too severe,
+namely when you want to put into the buffer a string
+returned from Lua.
+In such cases, you cannot pop the string before adding it to the buffer,
+because you should never use a string from Lua
+after popping it from the stack;
+but also you cannot add the string to the buffer before popping it,
+because then the stack would be in the wrong level.
+In other words, you cannot do something like this:
+<pre>
+    luaL_addstring(&amp;b, lua_tostring(L, 1));   /* BAD CODE */
+</pre>
+Because this is a common situation,
+auxlib provides a special function to
+add the value on the top of the
+stack into the buffer:
+<pre>
+    void luaL_addvalue (luaL_Buffer *B);
+</pre>
+Of course, it is an error to call this function if the value on the
+top is not a string or a number.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="27.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

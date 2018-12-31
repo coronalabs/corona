@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BDF7F0F3-06A9-46F2-8F59-4A0A48B86FAB}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Corona.Cards.VSExtension.Builder</RootNamespace>
+    <AssemblyName>Builder</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Corona.Cards.VSExtension.Builder.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\sdk\dmg\Corona_License.rtf">
+      <Link>VSIX\Corona_License.rtf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Corona.Framework.VSExtension.Phone8.0\bin\CoronaLabs.Corona.Framework.WindowsPhone.vsix">
+      <Link>VSIX\CoronaLabs.Corona.Framework.WindowsPhone.vsix</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Corona.Cards.AppTemplate.CSharp.xml" />
+    <None Include="Corona.Cards.AppTemplate.VB.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Get Started.html" />
+    <Content Include="VSIX\extension.pkgdef">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\extension.vsixmanifest">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\ExtensionIcon32x32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\ExtensionPreview200x200.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VSIX\[Content_Types].xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>del /q "$(TargetDir)*.*"
+rmdir /q /s "$(TargetDir)VSIX"
+
+"$(SolutionDir)\VSTemplateBuilder\bin\VSTemplateBuilder" "$(ProjectDir)Corona.Cards.AppTemplate.CSharp.xml"
+"$(SolutionDir)\VSTemplateBuilder\bin\VSTemplateBuilder" "$(ProjectDir)Corona.Cards.AppTemplate.VB.xml"
+</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>REM Create the *.vsix file, which is just a zip file containing the contents of the VSIX folder.
+"$(SolutionDir)Build.Tools\7za" a -tzip -r -y "$(TargetDir)CoronaLabs.Corona.Cards.WindowsPhone.vsix" "$(TargetDir)VSIX\*.*"
+"$(SolutionDir)VsixSigner\Bin\VsixSigner" "$(SolutionDir)Build.Tools\CoronaLabsInc.pfx" "zxcvbnm,./" "$(TargetDir)CoronaLabs.Corona.Cards.WindowsPhone.vsix"
+
+REM Create a "CoronaCards.WindowsPhone.zip" in the "Bin" directory. This is needed by the daily build machine.
+mkdir "$(SolutionDir)Bin\CoronaCards\CoronaCards.WindowsPhone"
+copy /y "$(TargetDir)CoronaLabs.Corona.Cards.WindowsPhone.vsix" "$(SolutionDir)Bin\CoronaCards\CoronaCards.WindowsPhone"
+copy /y "$(SolutionDir)Corona.Documentation.Phone8.0\Bin\Documentation\CoronaLabs.Corona.WindowsPhone.chm" "$(SolutionDir)Bin\CoronaCards\CoronaCards.WindowsPhone"
+copy /y "$(ProjectDir)Get Started.html" "$(SolutionDir)Bin\CoronaCards\CoronaCards.WindowsPhone"
+"$(SolutionDir)Build.Tools\7za" a -tzip -r -y "$(SolutionDir)Bin\CoronaCards\CoronaCards.WindowsPhone.zip" "$(SolutionDir)Bin\CoronaCards\CoronaCards.WindowsPhone\*.*"
+
+REM Delete this project's compiled "Builder.exe" to force Visual Studio to re-run this project's pre-build and post-build steps.
+del /q "$(TargetPath)"
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

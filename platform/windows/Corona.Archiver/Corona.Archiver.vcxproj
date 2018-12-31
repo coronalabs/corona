@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Assert.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_FileSystem.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Fixed.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Math.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_String.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Archive.cpp" />
+    <ClCompile Include="..\..\..\tools\car\main.cpp" />
+    <ClCompile Include="..\..\..\tools\car\Rtt_Car.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\Corona.Native.Library.Win32\WinFile.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Assert.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Build.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Config.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_FileSystem.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Fixed.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Macros.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Math.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Real.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Traits.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Types.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Version.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Archive.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaFile.h" />
+    <ClInclude Include="..\..\..\tools\car\Rtt_Car.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\WinFile.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\WinString.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>Corona.Archiver</ProjectName>
+    <ProjectGuid>{7D790153-1892-4007-8FA5-E3B57CF1F7E2}</ProjectGuid>
+    <RootNamespace>car</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Debug.Definitions.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\librtt;..\..\..\librtt\Core;..\Corona.Native.Library.Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PreprocessorDefinitions>Rtt_WIN_ENV;Rtt_WIN_DESKTOP_ENV;Rtt_NO_ARCHIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>if $(ConfigurationName) == Release (
+   call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"
+)
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\..\librtt;..\..\..\librtt\Core;..\Corona.Native.Library.Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PreprocessorDefinitions>Rtt_WIN_ENV;Rtt_WIN_DESKTOP_ENV;Rtt_NO_ARCHIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>if $(ConfigurationName) == Release (
+   call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"
+)
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

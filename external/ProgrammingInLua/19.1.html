@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 19.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="19.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="19.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#19">Chapter 19. The Table Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>19.1 - Array Size</h2>
+
+<p>
+
+<p>Frequently, in Lua,
+we assume that an array ends just before its first nil element.
+This convention has one drawback:
+We cannot have a <B>nil</B> inside an array.
+For several applications this restriction is not a hindrance,
+such as when all elements in the array have a fixed type.
+But sometimes we must allow <B>nil</B>s inside an array.
+In such cases, we need a method to keep an explicit size for an array.
+
+<p>The table library defines two functions to
+manipulate array sizes:
+<code>getn</code>, which returns the size of an array,
+and <code>setn</code>, which sets the size of an array.
+As we saw earlier, there are two methods to
+associate an attribute to a table:
+Either we store the attribute in a field of the table,
+or we use a separate (weak) table to do the association.
+Both methods have pros and cons;
+for that reason, the <code>table</code> library uses both.
+
+<p>Usually, a call <code>table.setn(t, n)</code>
+associates <code>t</code> with <code>n</code> in an internal (weak) table
+and a call <code>table.getn(t)</code> retrieves the value associated with <code>t</code>
+in that internal table.
+However, if the table <code>t</code> has a field <code>"n"</code> with a numeric value,
+<code>setn</code> updates this value and <code>getn</code> returns it.
+The <code>getn</code> function still has a last option:
+If it cannot get an array size with any of those options,
+it uses the naive approach:
+to traverse the array looking for its first nil element.
+So, you can always use <code>table.getn(t)</code> in an array
+and get a reasonable result.
+See the examples:
+<pre>
+    print(table.getn{10,2,4})          --> 3
+    print(table.getn{10,2,nil})        --> 2
+    print(table.getn{10,2,nil; n=3})   --> 3
+    print(table.getn{n=1000})          --> 1000
+    
+    a = {}
+    print(table.getn(a))               --> 0
+    table.setn(a, 10000)
+    print(table.getn(a))               --> 10000
+    
+    a = {n=10}
+    print(table.getn(a))               --> 10
+    table.setn(a, 10000)
+    print(table.getn(a))               --> 10000
+</pre>
+
+<p>By default, <code>setn</code> and <code>getn</code>
+use the internal table to store a size.
+This is the cleanest option,
+as it does not pollute the array with an extra element.
+However, the <code>n</code>-field option has some advantages too.
+The Lua core uses this option to set the size of the <code>arg</code> array,
+in functions with variable number of arguments;
+because the core cannot depend on a library,
+it cannot use <code>setn</code>.
+Another advantage of this option is that we can set the size
+of an array directly in its constructor, as we saw in the examples.
+
+<p>It is a good practice to use both <code>setn</code> and <code>getn</code> to
+manipulate array sizes, even when you know that the size is
+at field <code>n</code>.
+All functions from the <code>table</code> library
+(<code>sort</code>, <code>concat</code>, <code>insert</code>, etc.)
+follow this practice.
+Actually,
+the possibility of <code>setn</code> to change the value of the field <code>n</code>
+is provided only for compatibility with older versions of Lua.
+This behavior may change in future versions of the language.
+To play safe, do not assume this behavior.
+Always use <code>getn</code> to get a size set by <code>setn</code>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="19.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

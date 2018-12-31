@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 17</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="16.5.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="17.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#17">Chapter 17. Weak Tables</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<a name="weaktables"><h1>17 - Weak Tables</h1></a>
+
+<p>Lua does automatic memory management.
+A program only creates objects (tables, functions, etc.);
+there is no function to delete objects.
+Lua automatically deletes objects that become garbage,
+using <em>garbage collection</em>.
+That frees you from most of the burden of memory management and,
+more important,
+frees you from most of the bugs related to that activity,
+such as dangling pointers and memory leaks.
+
+<p>Unlike some other collectors,
+Lua's garbage collector has no problems with cycles.
+You do not need to take any special action
+when using cyclic data structures;
+they are collected like any other data.
+Nevertheless, sometimes even the smarter collector needs your help.
+No garbage collector allows you to forget all worries about
+memory management.
+
+<p>A garbage collector
+can collect only what it can be sure is garbage;
+it cannot know what you consider garbage.
+A typical example is a stack,
+implemented with an array and an index to the top.
+You know that the valid part of the array goes only up to the top,
+but Lua does not.
+If you pop an element by simply decrementing the top,
+the object left in the array is not garbage for Lua.
+Similarly,
+any object stored in a global variable is not garbage for Lua,
+even if your program will never use it again.
+In both cases, it is up to you (i.e., your program) to
+assign <B>nil</B> to these positions so that they do not lock
+an otherwise free object.
+
+<p>However, simply cleaning your references is not always enough.
+Some constructions need extra collaboration
+between you and the collector.
+A typical example happens when you want to keep a collection of all
+live objects of some kind (e.g., files) in your program.
+That seems a simple task:
+All you have to do is to insert each new object into the collection.
+However, once the object is inside the collection,
+it will never be collected!
+Even if no one else points to it,
+the collection does.
+Lua cannot know that this reference should not prevent the
+reclamation of the object,
+unless you tell Lua about that.
+
+<p>Weak tables are the mechanism that you use to tell Lua
+that a reference should not prevent the reclamation of an object.
+A <em>weak reference</em> is a reference to an object that is not
+considered by the garbage collector.
+If all references pointing to an object are weak,
+the object is collected
+and somehow these weak references are deleted.
+Lua implements weak references as weak tables:
+A <em>weak table</em> is a table where all references are weak.
+That means that, if an object is only held inside weak tables,
+Lua will collect the object eventually.
+
+<p>Tables have keys and values
+and both may contain any kind of object.
+Under normal circumstances,
+the garbage collector does not collect objects that
+appear as keys or as values of an accessible table.
+That is, both keys and values are <em>strong</em> references,
+as they prevent the reclamation of objects to which they refer.
+In a weak table, keys and values may be weak.
+That means that there are three kinds of
+weak tables:
+tables with weak keys, tables with weak values,
+and fully weak tables, where both keys and values are weak.
+Irrespective of the table kind,
+when a key or a value is collected the whole entry
+disappears from the table.
+
+<p>The weakness of a table is given by the field <code>__mode</code>
+of its metatable.
+The value of this field, when present,
+should be a string:
+If the string contains the letter `<code>k</code>&acute; (lower case),
+the keys in the table are weak;
+if the string contains the letter `<code>v</code>&acute; (lower case),
+the values in the table are weak.
+The following example, although artificial,
+illustrates the basic behavior of weak tables:
+<pre>
+    a = {}
+    b = {}
+    setmetatable(a, b)
+    b.__mode = "k"         -- now `a' has weak keys
+    key = {}               -- creates first key
+    a[key] = 1
+    key = {}               -- creates second key
+    a[key] = 2
+    collectgarbage()       -- forces a garbage collection cycle
+    for k, v in pairs(a) do print(v) end
+      --> 2
+</pre>
+In this example,
+the second assignment <code>key = {}</code> overwrites the first key.
+When the collector runs,
+there is no other reference to the first key,
+so it is collected
+and the corresponding entry in the table is removed.
+The second key, however, is still anchored in variable <code>key</code>,
+so it is not collected.
+
+<p>Notice that only objects can be collected from a
+weak table.
+Values, such as numbers and booleans,
+are not collectible.
+For instance, if we insert a numeric key in table <code>a</code>
+(from our previous example),
+it will never be removed by the collector.
+Of course,
+if the value corresponding to a numeric key is collected,
+then the whole entry is removed from the weak table.
+
+<p>Strings present a subtlety here:
+Although strings are collectible,
+from an implementation point of view,
+they are not like other collectible objects.
+Other objects, such as tables and functions,
+are created explicitly.
+For instance,
+whenever Lua evaluates <code>{}</code>, it creates a new table.
+Whenever it evaluates <code>function () ... end</code>,
+it creates a new function (a closure, actually).
+However, does Lua create a new string when it
+evaluates <code>"a".."b"</code>?
+What if there is already a string <code>"ab"</code> in the system?
+Does Lua create a new one?
+Can the compiler create that string before running the program?
+It does not matter:
+These are implementation details.
+Thus, from the programmer's point of view,
+strings are values, not objects.
+Therefore, like a number or a boolean,
+a string is not removed from weak tables
+(unless its associated value is collected).
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="17.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

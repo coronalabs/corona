@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FF5D1A03-D42F-4C96-BDDD-3DCF272A1BAB}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CoronaLabs.Corona</RootNamespace>
+    <AssemblyName>CoronaLabs.Corona.DotNet</AssemblyName>
+    <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\Debug\CoronaLabs.Corona.DotNet.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\Release\CoronaLabs.Corona.DotNet.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\x86\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\x86\Debug\CoronaLabs.Corona.DotNet.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\x86\Release\CoronaLabs.Corona.DotNet.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|ARM' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\ARM\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\ARM\Debug\CoronaLabs.Corona.DotNet.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|ARM' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\ARM\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\ARM\Release\CoronaLabs.Corona.DotNet.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="WinRT\Interop\DotNetReadOnlyWeakReference.cs" />
+    <Compile Include="WinRT\Interop\Logging\DotNetDebuggerLogger.cs" />
+    <Compile Include="WinRT\Interop\Networking\DotNetHttpRequestOperation.cs" />
+    <Compile Include="WinRT\Interop\Storage\DotNetResourceServices.cs" />
+    <Compile Include="WinRT\Phone\CoronaMessageBox.cs" />
+    <Compile Include="WinRT\Phone\Interop\DotNetApplicationServices.cs" />
+    <Compile Include="WinRT\Phone\Interop\DotNetTimer.cs" />
+    <Compile Include="WinRT\Phone\Interop\DotNetTimerServices.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WinRT\Phone\Interop\Graphics\DotNetBitmap.cs" />
+    <Compile Include="WinRT\Phone\Interop\Graphics\DotNetDrawingSurfaceAdapter.cs" />
+    <Compile Include="WinRT\Phone\Interop\Graphics\DotNetBackgroundSurfaceAdapter.cs" />
+    <Compile Include="WinRT\Phone\Interop\Graphics\DotNetImageDecoder.cs" />
+    <Compile Include="WinRT\Phone\Interop\Graphics\DotNetImageServices.cs" />
+    <Compile Include="WinRT\Phone\Interop\Graphics\DotNetTextRenderer.cs" />
+    <Compile Include="WinRT\Phone\Interop\Graphics\DotNetTextRendererEventArgs.cs" />
+    <Compile Include="WinRT\Phone\Interop\Graphics\DotNetWriteableBitmapEventArgs.cs" />
+    <Compile Include="WinRT\Phone\Interop\Input\DotNetInputDeviceServices.cs" />
+    <Compile Include="WinRT\Phone\Interop\Networking\DotNetNetworkServices.cs" />
+    <Compile Include="WinRT\Phone\Interop\UI\DotNetControlAdapter.cs" />
+    <Compile Include="WinRT\Phone\Interop\UI\DotNetCoronaControlAdapter.cs" />
+    <Compile Include="WinRT\Phone\Interop\UI\DotNetDispatcher.cs" />
+    <Compile Include="WinRT\Phone\Interop\UI\DotNetPageAdapter.cs" />
+    <Compile Include="WinRT\Phone\Interop\UI\DotNetPageServices.cs" />
+    <Compile Include="WinRT\Phone\Interop\UI\DotNetUserInterfaceServices.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Corona.Component.Library\Corona.Component.Library.Phone8.0.vcxproj">
+      <Project>{049A444A-BCD8-4CBF-B6BF-B2D9B576283B}</Project>
+      <Name>Corona.Component.Library.Phone8.0</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_android%402x.png">
+      <Link>EmbeddedResources\widget_theme_android%402x.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_android.png">
+      <Link>EmbeddedResources\widget_theme_android.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_android_holo_dark%402x.png">
+      <Link>EmbeddedResources\widget_theme_android_holo_dark%402x.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_android_holo_dark%404x.png">
+      <Link>EmbeddedResources\widget_theme_android_holo_dark%404x.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_android_holo_dark.png">
+      <Link>EmbeddedResources\widget_theme_android_holo_dark.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_android_holo_light%402x.png">
+      <Link>EmbeddedResources\widget_theme_android_holo_light%402x.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_android_holo_light%404x.png">
+      <Link>EmbeddedResources\widget_theme_android_holo_light%404x.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_android_holo_light.png">
+      <Link>EmbeddedResources\widget_theme_android_holo_light.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_ios%402x.png">
+      <Link>EmbeddedResources\widget_theme_ios%402x.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_ios.png">
+      <Link>EmbeddedResources\widget_theme_ios.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_onOff_mask_android_holo.png">
+      <Link>EmbeddedResources\widget_theme_onOff_mask_android_holo.png</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_ios7%402x.png">
+      <Link>EmbeddedResources\widget_theme_ios7%402x.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_ios7.png">
+      <Link>EmbeddedResources\widget_theme_ios7.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_onOff_mask.png">
+      <Link>EmbeddedResources\widget_theme_onOff_mask.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\subrepos\widget\widget_theme_pickerWheel_mask.png">
+      <Link>EmbeddedResources\widget_theme_pickerWheel_mask.png</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
+  <ProjectExtensions />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

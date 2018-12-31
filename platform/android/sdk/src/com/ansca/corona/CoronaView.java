@@ -1,0 +1,435 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2018 Corona Labs Inc.
+// Contact: support@coronalabs.com
+//
+// This file is part of the Corona game engine.
+//
+// Commercial License Usage
+// Licensees holding valid commercial Corona licenses may use this file in
+// accordance with the commercial license agreement between you and 
+// Corona Labs Inc. For licensing terms and conditions please contact
+// support@coronalabs.com or visit https://coronalabs.com/com-license
+//
+// GNU General Public License Usage
+// Alternatively, this file may be used under the terms of the GNU General
+// Public license version 3. The license is as published by the Free Software
+// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
+// of this file. Please review the following information to ensure the GNU 
+// General Public License requirements will
+// be met: https://www.gnu.org/licenses/gpl-3.0.html
+//
+// For overview and more information on licensing please refer to README.md
+//
+//////////////////////////////////////////////////////////////////////////////
+
+package com.ansca.corona;
+
+import java.util.Hashtable;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import com.ansca.corona.input.ViewInputHandler;
+
+import com.naef.jnlua.LuaState;
+import com.naef.jnlua.JavaFunction;
+
+/** 
+ * The <a href="http://developer.android.com/reference/android/view/View.html">view</a> the that will display the Corona content.
+ * @see <a href="http://developer.android.com/reference/android/widget/FrameLayout.html">FrameLayout</a>
+ */
+public class CoronaView extends FrameLayout {
+	/** The callback from calls to {@link com.ansca.corona.CoronaView#sendEvent(java.util.Hashtable) sendEvent()}. */
+	public interface SendEventListener {
+		/**
+		 * Method thats called when we get a return value from 
+		 * {@link com.ansca.corona.CoronaView#sendEvent(java.util.Hashtable) sendEvent()}.
+		 * @param result The result passed back from lua. This is called back in the thread which called 
+		 * {@link com.ansca.corona.CoronaView#init() CoronaView.init()}.
+		 */
+		public void sendEventResult(Object result);
+	}
+
+	/** 
+	 * The object that will be called when an <a href="http://docs.coronalabs.com/daily/api/type/Event.html">event</a>
+	 * is sent from lua to a {@link com.ansca.corona.CoronaView CoronaView}. 
+	 */
+	public interface CoronaEventListener {
+		/**
+		 * Method thats called when an <a href="http://docs.coronalabs.com/daily/api/type/Event.html">event</a> is sent from lua.
+		 * @param view The {@link com.ansca.corona.CoronaView CoronaView} this 
+		 *             <a href="http://docs.coronalabs.com/daily/api/type/Event.html">event</a> is sent to.
+		 * @param table A {@link java.util.Hashtable Hashtable} representing the value sent from lua.
+		 */
+		public Object onReceivedCoronaEvent(CoronaView view, Hashtable<Object, Object> table);
+	}
+
+	/** The CoronaEventListener that will be called when there is a lua event.  This is a single object instead of a collection 
+		because we want to pass back to lua a value.  If it were a collection we wouldn't know which function's return value 
+		to return to the lua side.
+	*/
+	private CoronaEventListener fCoronaEventListener;
+
+	private CoronaRuntime fCoronaRuntime;
+
+	ViewInputHandler fInputHandler;
+
+	private Handler fHandler;
+
+	private boolean fSavedInstanceState;
+
+	private final static String INSTANCE_STATE = "instanceState";
+	private final static String ADDRESS = "address";
+
+	public CoronaView(Context context) {
+		super(context);
+		internalInit();
+	}
+
+	public CoronaView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// This is so that a IDE GUI editor will show something for the Corona View instead of just a white area
+		// which can't be differentiated from a background with nothing.
+		if (isInEditMode()) {
+			TextView textView = new TextView(context, attrs);
+			textView.setBackgroundColor(Color.GRAY);
+			textView.setText("CoronaView");
+			addView(textView);
+			return;
+		}
+		internalInit();
+	}
+
+	private void internalInit() {
+		fSavedInstanceState = false;
+		if (Looper.myLooper() == null) {
+			Looper.prepare();
+		}
+		fHandler = new Handler();
+
+		if (CoronaEnvironment.isNewInstall(getContext())) {
+			CoronaEnvironment.onNewInstall(getContext());
+		}
+		CoronaEnvironment.deleteTempDirectory(getContext());
+	}
+
+	/**
+	 * Hook allowing a <a href="http://developer.android.com/reference/android/view/View.html">view</a> to re-apply a representation of
+	 * its internal state that had previously been generated by 
+	 * {@link com.ansca.corona.CoronaView#onSaveInstanceState() onSaveInstanceState()}.
+	 * <p>
+	 * This function will never be called with a null state.
+	 * @param state The frozen state that had previously been returned by 
+	 *              {@link com.ansca.corona.CoronaView#onSaveInstanceState() onSaveInstanceState()}.
+	 */
+	@Override
+	protected void onRestoreInstanceState(Parcelable state) {
+		if (fCoronaRuntime != null) {
+			// Remove the view first so we don't get double views
+			removeView(fCoronaRuntime.getViewManager().getContentView());
+		}
+		Bundle bundle = (Bundle)state;
+		Parcelable parcelable = bundle.getParcelable(INSTANCE_STATE);
+		super.onRestoreInstanceState(parcelable);
+
+		// Verify that we've saved a valid address to the CoronaRuntime and recreate the CoronaView appropriately.
+		long bridgeAddress = bundle.getLong(ADDRESS);
+		if (bridgeAddress != 0x0) {
+			fCoronaRuntime = JavaToNativeShim.getCoronaRuntimeFromBridge(bridgeAddress);
+			fCoronaRuntime.reset(getContext());
+		} else {
+			// We didn't save a valid address, so we need a new CoronaRuntime
+			fCoronaRuntime = new CoronaRuntime(getContext(), true);
+		}
+		fInputHandler.setView(fCoronaRuntime.getViewManager().getContentView());
+		fInputHandler.setDispatcher(fCoronaRuntime.getTaskDispatcher());
+		
+		addView(fCoronaRuntime.getViewManager().getContentView(), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+	}
+
+	/**
+	 * Hook allowing a <a href="http://developer.android.com/reference/android/view/View.html">view</a> to generate a representation of
+	 * its internal state that can later be used to create a new instance with that same state. This state should only contain 
+	 * information that is not persistent or can not be reconstructed later. For example, you will never store your current position on
+	 * screen because that will be computed again when a new instance of the 
+	 * <a href="http://developer.android.com/reference/android/view/View.html">view</a> is placed in its view hierarchy. 
+	 * <p>
+	 * Some examples of things you may store here: the current cursor position in a 
+	 * <a href="http://developer.android.com/reference/android/widget/TextView.html">TextView</a> (but usually not the text itself since
+	 * that is stored in a <a href="http://developer.android.com/reference/android/content/ContentProvider.html">ContentProvider</a> or
+	 * other <a href="http://developer.android.com/guide/topics/data/data-storage.html">persistent storage</a>), the currently selected
+	 * item in a <a href="http://developer.android.com/guide/topics/ui/layout/listview.html">list view</a>.
+	 * @return Returns a <a href="http://developer.android.com/reference/android/os/Parcelable.html">Parcelable</a> object containing the
+	 *         <a href="http://developer.android.com/reference/android/view/View.html">view's</a> current dynamic state, or null if there
+	 *         is nothing interesting to save. The default implementation returns null.
+	 */
+	@Override
+	protected Parcelable onSaveInstanceState() {
+		fSavedInstanceState = true;
+		Bundle bundle = new Bundle();
+		bundle.putParcelable(INSTANCE_STATE, super.onSaveInstanceState());
+		// Only store the address if it exists.
+		// The runtime may already be gone by the time we get here if the app were suspended before the CoronaView was init'd
+		// or the user called CoronaView.destroy() pre-maturely. The first case can occur in an app that immediately requests 
+		// a dangerous permission.
+		long javaToNativeBridgeAddress = (fCoronaRuntime != null) ? fCoronaRuntime.getJavaToNativeBridgeAddress() : 0x0;
+		bundle.putLong(ADDRESS, javaToNativeBridgeAddress);
+		return bundle;
+	}
+
+	/**
+	 * Initalizes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used. Uses the base "assets" directory as the base
+	 * Corona project directory.
+	 * <p>
+	 * <b>This must be the first function you call!</b>
+	 */
+	public void init() {
+		init("");
+	}
+
+	/**
+	 * Initalizes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used.
+	 * <p>
+	 * <b>This must be the first function you call!</b>
+	 * @param baseDir The directory of the Corona project relative to the "assests" directory.
+	 */
+	public void init(String baseDir) {
+		if (Looper.myLooper() == null) {
+			Looper.prepare();
+		}
+
+		fCoronaRuntime = new CoronaRuntime(getContext(), true);
+
+		if (!baseDir.endsWith("/")) {
+			baseDir = baseDir + "/";
+		}
+		fCoronaRuntime.setPath(baseDir);
+
+		CoronaRuntime.addWillLoadMainListener(new CoronaViewEventRegister());
+
+		// Set up the input handler used to dispatch key events, touch events, etc. to Corona's Lua listeners.
+		fInputHandler = new ViewInputHandler(fCoronaRuntime.getController());
+		fInputHandler.setDispatcher(fCoronaRuntime.getTaskDispatcher());
+		fInputHandler.setView(fCoronaRuntime.getViewManager().getContentView());
+
+		fHandler.post(new Runnable() {
+			public void run() {
+				// Remove the view first so we don't get double views
+				removeView(fCoronaRuntime.getViewManager().getContentView());
+				addView(fCoronaRuntime.getViewManager().getContentView(), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+			}
+		});
+	}
+
+	/**
+	 * Register a callback to be invoked when a hardware key is pressed in this {@link com.ansca.corona.CoronaView CoronaView}. Key 
+	 * presses in software input methods will generally not trigger the methods of this listener.
+	 * @param listener The <a href="http://developer.android.com/reference/android/view/View.OnKeyListener.html">key listener</a> to 
+	 *                 attach to this {@link com.ansca.corona.CoronaView CoronaView}.
+	 */
+	@Override
+	public void setOnKeyListener(View.OnKeyListener listener) {
+		fCoronaRuntime.getViewManager().getContentView().setOnKeyListener(listener);
+	}
+
+	/**
+	 * Starts rendering the {@link com.ansca.corona.CoronaView CoronaView}.
+	 */
+	public void resume() {
+		fCoronaRuntime.onResume();
+	}
+
+	/**
+	 * Pauses the {@link com.ansca.corona.CoronaView CoronaView}, stopping rendering.
+	 * <p>
+	 * <b>Do not call before calling {@link com.ansca.corona.CoronaView#init() init()}!</b>
+	 */
+	public void pause() {
+		fCoronaRuntime.onPause();
+	}
+
+	/**
+	 * Control whether the <a href="http://developer.android.com/reference/android/opengl/GLSurfaceView.html">GLSurfaceView's</a> surface
+	 * is placed on top of another regular <a href="http://developer.android.com/reference/android/view/SurfaceView.html">SurfaceView</a>
+	 * in the <a href="http://developer.android.com/reference/android/view/Window.html">Window</a> (but still behind the 
+	 * <a href="http://developer.android.com/reference/android/view/Window.html">Window</a> itself). This is typically used to place 
+	 * overlays on top of an underlying media 
+	 * <a href="http://developer.android.com/reference/android/view/SurfaceView.html">SurfaceView</a>.
+	 * <p>
+	 * <b>Note</b>: This must be set before the 
+	 * <a href="http://developer.android.com/reference/android/opengl/GLSurfaceView.html">GLSurfaceView's</a> containing 
+	 * <a href="http://developer.android.com/reference/android/view/Window.html">Window</a> is attached to the 
+	 * <a href="http://developer.android.com/reference/android/view/WindowManager.html">WindowManager</a>.
+	 */
+	public void setZOrderMediaOverlay(boolean isMediaOverlay) {
+		fCoronaRuntime.getGLView().setZOrderMediaOverlay(isMediaOverlay);
+	}
+
+	/**
+	 * Deinitializes the {@link com.ansca.corona.CoronaView CoronaView} and releases the resources associated with the 
+	 * {@link com.ansca.corona.CoronaView CoronaView}.
+	 */
+	public void destroy() {
+		fInputHandler.setView(null);
+		if (fSavedInstanceState) {
+			return;
+		}
+		fCoronaRuntime.dispose();
+		fCoronaRuntime = null;
+		fCoronaEventListener = null;
+	}
+
+	/**
+	 * Registers a {@link com.ansca.corona.CoronaView.CoronaEventListener CoronaEventListener} to be called when 
+	 * <font face="Courier New" color="black">coronaView</font> 
+	 * <a href="http://docs.coronalabs.com/daily/api/type/Event.html">events</a> are fired from lua.
+	 * @see <a href="http://docs.coronalabs.com/daily/coronacards/android/communication.html">Native/Lua Communication</a>
+	 * @param listener The {@link com.ansca.corona.CoronaView.CoronaEventListener CoronaEventListener} to invoke for 
+	 *                 <font face="Courier New" color="black">coronaView</font> 
+	 *                 <a href="http://docs.coronalabs.com/daily/api/type/Event.html">events</a>.
+	 */
+	public void setCoronaEventListener(CoronaEventListener listener) {
+		fCoronaEventListener = listener;
+	}
+
+	/**
+	 * Dispatches the given hash table as a Lua
+	 * <a href="http://docs.coronalabs.com/daily/api/type/Runtime/index.html">runtime</a>
+	 * <a href="http://docs.coronalabs.com/daily/api/type/Event.html">event</a>,
+	 * to be received by Lua listeners that have been registered via the
+	 * <a href="http://docs.coronalabs.com/daily/api/type/EventDispatcher/addEventListener.html">Runtime:addEventListener()</a>
+	 * function.
+	 * @see <a href="http://docs.coronalabs.com/daily/coronacards/android/communication.html">Native/Lua Communication</a>
+	 * @param hashtable A {@link java.util.Hashtable Hashtable} which will be converted to a 
+	 *                  <a href="http://docs.coronalabs.com/daily/api/type/Table.html">lua table</a> and dispatched.
+	 *                  <p>
+	 *                  Must contain an entry with a key set to "name" and value set to the unique name of the event
+	 *                  to be received by a Lua listener.
+	 */
+	public void sendEvent(Hashtable<Object, Object> hashtable) {
+		sendEvent(hashtable, null);
+	}
+
+	/**
+	 * Dispatches the given hash table as a Lua
+	 * <a href="http://docs.coronalabs.com/daily/api/type/Runtime/index.html">runtime</a>
+	 * <a href="http://docs.coronalabs.com/daily/api/type/Event.html">event</a>,
+	 * to be received by Lua listeners that have been registered via the
+	 * <a href="http://docs.coronalabs.com/daily/api/type/EventDispatcher/addEventListener.html">Runtime:addEventListener()</a>
+	 * function.
+	 * @see <a href="http://docs.coronalabs.com/daily/coronacards/android/communication.html">Native/Lua Communication</a>
+	 * @param hashtable A {@link java.util.Hashtable Hashtable} which will be converted to a 
+	 *                  <a href="http://docs.coronalabs.com/daily/api/type/Table.html">lua table</a> and dispatched.
+	 *                  <p>
+	 *                  Must contain an entry with a key set to "name" and value set to the unique name of the event
+	 *                  to be received by a Lua listener.
+	 * @param listener {@link com.ansca.corona.CoronaView.SendEventListener SendEventListener} where the result of 
+	 *				   {@link com.ansca.corona.CoronaView#sendEvent(java.util.Hashtable) sendEvent()} will be sent. 
+	 *                 <p>
+	 *                 The result will be send on the thread which called {@link com.ansca.corona.CoronaView#init() CoronaView.init()}.
+	 */
+	public void sendEvent(final Hashtable<Object, Object> hashtable, final SendEventListener listener) {
+		Object nameKey = hashtable.get("name");
+
+		if (nameKey == null || !(nameKey instanceof String) || ((String)nameKey).isEmpty()) {
+			return;
+		}
+
+		CoronaRuntimeTaskDispatcher dispatcher = fCoronaRuntime.getTaskDispatcher();
+		if (dispatcher != null) {
+			dispatcher.send(new CoronaRuntimeTask() {
+				@Override
+				public void executeUsing(CoronaRuntime runtime) {
+					LuaState L = runtime.getLuaState();
+					CoronaLua.pushHashtable(L, hashtable);
+					CoronaLua.dispatchRuntimeEvent(L, 1);
+
+					Object returnValue = CoronaLua.toValue(L, -1);
+					L.pop(1);
+
+					// NOTE: In the EventDispatcher:dispatchEvent code, the default result
+					// is 'false'. For Obj-C, we'd prefer the default to be 'nil'.
+					// Thus, if we get 'false', we skip the conversion. In Lua, these are
+					// morally equivalent and we probably should have set the default to be
+					// nil to begin with.
+					if (returnValue instanceof Boolean) {
+						returnValue = null;
+					}
+
+					final Object finalReturnValue = returnValue;
+					// Return the result to the listener on the thread where the corona view was initiated.
+					fHandler.post(new Runnable() {
+						public void run() {
+							if (listener != null) {
+								listener.sendEventResult(finalReturnValue);
+							}
+						}
+					});
+				}
+			});
+		}
+	}
+	
+	private CoronaView getCoronaView() {
+		return this;
+	}
+
+	private class CoronaViewEventRegister implements CoronaRuntimeWillLoadMainListener {
+		/**
+		 * This will be called right before main is loaded and init.lua has been called.  init.lua is where the global Runtime object is created.
+		 */
+		@Override
+		public void onWillLoadMain(CoronaRuntime runtime) {
+			// The following code the the equivlant of:
+			// Runtime.addEventListener("coronaView", CoronaViewEventLuaObject)
+			// which will call CoronaViewEventLuaObject with any dispatched event which
+			// has a name property of "coronaView".
+			LuaState L = runtime.getLuaState();
+			L.getGlobal("Runtime");
+			L.getField(-1, "addEventListener");
+			L.insert(-2);
+			L.pushString("coronaView");
+			L.pushJavaFunction(new CoronaViewEventLuaObject());
+			L.call(3, 0);
+
+			// After the CoronaViewEventLuaObject is registered, we no long care about willLoadMain
+			CoronaRuntime.removeWillLoadMainListener(this);
+		}
+	}
+
+	/**
+	 * This object is called when the Runtime dispatches an event with the name "coronaView"
+	 */
+	private class CoronaViewEventLuaObject implements JavaFunction {
+		@Override
+		public int invoke(LuaState L) {
+			if (fCoronaEventListener == null) {
+				return 0;
+			}
+
+			// This will convert the lua table at the top fo the stack into a hash table
+			Hashtable<Object, Object> table = CoronaLua.toHashtable(L, -1);
+			// The hash table is sent to the registered listener.  The listener can then return another hashtable
+			// with the values that they want to return to the lua side.
+			Object result = fCoronaEventListener.onReceivedCoronaEvent(getCoronaView(), table);
+			if (result == null) {
+				return 0;
+			}
+
+			// Pushes a hash table on to the top of the lua stack.
+			CoronaLua.pushValue(L, result);
+			return 1;
+		}
+	}
+}

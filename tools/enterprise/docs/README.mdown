@@ -1,0 +1,196 @@
+Corona^~^®^~^ Enterprise
+======================
+
+Overview
+--------
+
+Corona Enterprise allows you to extend the standard Corona APIs by adding your custom native extensions.
+
+Lua already supports the creation of new libraries via the module/require mechanism. With Corona Enterprise, you can also add libraries that are implemented as native code. In other words, you can wrap native code behind a Lua interface so it looks just like any other Corona API (e.g. the 'display' library).
+
+
+Prerequisites
+-------------
+
+You should have Mac OS X 10.7.x (Lion) installed on your computer. 
+
+In addition, for each target platform you will need the following installed:
+
+* Android: Android SDK revision 20.0.1 or higher, supporting Android platform 4.1 (API Level 16) or higher
+* iOS: XCode 4.3
+
+
+Installation
+---------------
+
+Installation is fairly simple. You will need to complete 3 basic steps:
+
+* Copy the `CoronaEnterprise` folder in the desired location.
+* Copy `CoronaBuilder.app` into `/Applications` (see below)
+* Activate `CoronaBuilder.app` (see below)
+
+
+### CoronaBuilder.app
+
+CoronaBuilder.app is a command line tool. It is a key tool used to complete the build of your iOS or Android project. 
+
+It is located at `CoronaEnterprise/CoronaBuilder.app`. You should copy this app into `/Applications`. 
+
+If you wish to put `CoronaBuilder.app` into another folder then you must also set the defaults for your user via the following:
+
+	# $PATH_TO_CORONA_BUILDER is the path to CoronaBuilder.app
+	defaults write com.anscamobile.CoronaBuilder $PATH_TO_CORONA_BUILDER
+
+
+### Activation
+
+You must purchase an **Enterprise Native Extension** subscription to activate this product. Contact sales via our [web form](http://developer.anscamobile.com/forms/enterprise-solutions-support) for more information.
+
+To activate, type the following:
+
+	/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder authorize email password
+
+where `email` and `password` are associated with the Enterprise account subscription.
+
+This will activate a computer to use CoronaBuilder. Every account is allowed one computer. 
+
+If you wish to activate CoronaBuilder on a different computer for the same account, you must first deactivate the original computer before activating on another one (or purchase additional subscriptions):
+
+	/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder deauthorize
+
+### Daily builds
+
+When downloading a newer version of CoronaEnterprise, you should replace:
+
+* CoronaBuilder.app
+* For iOS, update the `Libraries` sub-directory in your project folder with the newer version `CoronaEnterprise/iOS/CoronaSampleApp/Libraries`.
+* For Android (Details TBD)
+
+
+Android
+-------
+
+### Getting Started
+
+The `ExtendingLua` sample demonstrates how to add your own Lua library with functions implemented in Java. It can be found in directory `CoronaEnterprise/Android/SampleProjects/ExtendingLua`.
+
+This sample contains the following files that are relevant to you:
+
+* `ExtendingLua/AndroidManifest.xml` This is where you set up application settings such as name, version, permissions, etc.
+* `ExtendingLua/project.properties` This is where you include the Corona library and optionally 3rd party libraries such as InMobi, inneractive, OpenFeint, etc.
+* `ExtendingLua/src/com/coronalabs/corona/sample/extendinglua/CoronaApplication.java` This is where you can write Java code to manipulate the Lua state and add your own custom Lua libraries that are implemented in Java.
+* `ExtendingLua/corona` This is where your Corona project files reside, including Lua files (e.g. `main.lua`) and other assets files (e.g. images, sounds, etc.).
+
+
+### Sample Walkthough
+
+The `ExtendingLua` sample project shows you how to set up the `AndroidManifest.xml` and `project.properties` files.  See the sample project's `CoronaApplication.java` file on how to set up a listener to the `CoronaRuntime`, detect when it has been loaded, and how to extend its Lua API. The `onLoaded()` method is where you extend the Lua API and register Lua functions. Lua functions are implemented in Java by implementing the `com.naef.jnlua.NamedJavaFunction` interface. See all source files ending with `*LuaFunction.java` for examples on how to use a LuaState object in Java to retreive function arguments, return values, and to call other Lua functions.
+
+The Corona project's Lua files and asset files reside in the Android project's `corona` directory.
+
+
+### Building the "ExtendingLua" Sample Project with Ant
+
+Ant is a command line tool that is included with the JDK (Java Development Kit).  It allows you to build your app via the command line.  Follow the below steps to build the "ExtendingLua" sample app from the command line.
+
+1. On a Mac, open a Finder window.
+2. Go to the "Applications/Utilities" directory.
+3. Double click on the "Terminal" application.
+4. In the Terminal, change to the "./CoronaEnterprise/Android/SampleProjects/ExtendingLua" directory via the `cd` command.
+5. Build the app by typing in `./build.sh <PathToAndroidSdkDirectory>` where you would replace `<PathToAndroidSdkDirectory>` with the path to where you've downloaded the Android SDK to.
+
+Here is an example of what you would type at the command line for the above:
+	
+	cd "~/CoronaEnterprise/Android/SampleProjects/ExtendingLua"
+	./build.sh "~/android-sdk"
+
+The "build.sh" script file will automatically update all Android project directories to use the Android SDK on your local machine via the `android update project` and `android update lib-project` command before building the project via the `ant` command line tool.  This is a necessary step because `ant` cannot build the sample project until the project directory and all of its library project directories have been assigned a "local.properties" file by the `android update` command line tool.
+
+The above will generate an unsigned APK in the `ExtendingLua/bin` directory. You will need to sign this APK file before you can install it on a device. Please consult the Android documentation to learn more.
+
+
+### Building the "ExtendingLua" Sample Project with the Eclipse IDE
+
+*Has not been tested yet.  To be addressed later.*
+
+
+### Bridging Lua and Java
+
+To bridge Lua and Java code, you will use functionality made available by [JNLua](http://code.google.com/p/jnlua/). This will allow you to add libraries and functions in Lua that call directly into Java.
+
+### Documentation
+
+More documentation is available [online](http://docs.coronalabs.com/native/enterprise/android/index.html) including the API reference for Java.
+
+### Additional References
+
+The `CoronaEnterprise/Android/API Documentation` directory provides (1) Corona's Java API and (2) JNLua API. Just double click on the `index.html` file to view it.
+
+More information on using the JNLua API is available online:
+
+* [JNLua (Java Native Lua) Wiki](http://code.google.com/p/jnlua/wiki/TableOfContents)
+
+
+
+iOS
+-------
+
+### Getting Started
+
+For now, the easiest way to get started is to duplicate the sample project `CoronaEnterprise/iOS/CoronaSampleApp`
+
+To do so, just **copy** the "CoronaSampleApp" folder into your desired location. From the duplicated folder, open the "CoronaSampleApp.xcodeproj" in XCode. You can rename the app as needed via the XCode interface.
+
+This sample demonstrates how to invoke iOS5's built-in Twitter framework from Lua code. 
+
+It contains the following files that are relevant to you:
+
+* `MyCoronaDelegate.h` and `MyCoronaDelegate.mm`:  This contains the entry point where your custom libraries are registered with the Lua state. It conforms to the `CoronaDelegate` protocol.
+* `MyLibraryModule.h` and `MyLibraryModule.mm`:  These are stub implementations that bridge Lua with Objective-C code.
+* `assets/`: This is the folder where you should place all your Corona project assets, e.g. Lua code, images, sounds, etc.
+* `assets/main.lua`: This is the lua code that gets invoked at launch time. 
+
+
+### Bridging Lua and C
+
+To bridge Lua and C code, you must use the C API offered by Lua. This will allow you to add libraries and functions in Lua that call directly into C. (See References below for more information)
+
+
+### Documentation
+
+Documentation is available [online](http://docs.coronalabs.com/native/enterprise/ios/index.html) including the API reference for iOS.
+
+
+### CoronaSampleApp Walkthrough
+
+We briefly outline the flow of the sample so you get a sense for how the pieces fit together:
+
+#### main.mm
+* At launch time, `MyCoronaDelegate` is registered as the class implementing the `CoronaDelegate` interface. 
+* Corona will instantiate an instance of this class. It assumes the designated initialier is `init`.
+
+#### MyCoronaDelegate.mm
+* Right before `main.lua` is invoked, the `willLoadMain:` method is invoked.
+* This is where all custom Lua libraries are registered with Lua. At this point, OpenGL is setup and all Corona frameworks are available.
+* Specifically, the library `mylibrary` is registered with Lua
+
+#### main.lua
+* In the Lua code, `mylibrary` is `require`'d, so this causes the C loader method `MyLibraryModule::Open` to get invoked
+
+#### MyLibraryModule.mm
+* When `MyLibraryModule::Open` is invoked, it registers the Lua methods `mylibrary.canSendTweet()` and `mylibrary.sendTweet()`.
+
+### References
+
+We highly recommend getting the following book (especially Part IV on the C API):
+
+* [Programming in Lua, 2nd Edition](http://www.inf.puc-rio.br/~roberto/pil2/)
+
+For bridging between C and Lua, there are also a couple of resources online:
+
+* [Lua C API, Ch. 3 of Reference](http://www.lua.org/manual/5.1/manual.html#3)
+* [C API and auxiliary library](http://www.lua.org/manual/5.1/#index)
+
+
+Known Issues
+------------

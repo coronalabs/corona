@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="AL\al.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioContext.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioBuffer.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioSource.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioListener.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\EventArgs.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioFormatSettings.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioDataType.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioFormatInfo.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioBufferManager.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioPlaybackState.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\XAudio2VoiceFactory.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioSourceManager.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\BaseEvent.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioBufferQueue.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioEnvironment.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\alc.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioContextCollection.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\Vector.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\Position.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+    <ClCompile Include="AL\AudioPlaybackPosition.cpp">
+      <Filter>AL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="AL\al.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioContext.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioBuffer.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioSource.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioListener.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\Event.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\EventArgs.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioFormatSettings.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioDataType.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioFormatInfo.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioBufferManager.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioPlaybackState.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\XAudio2VoiceFactory.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioSourceManager.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\BaseEvent.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioBufferQueue.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioEnvironment.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\alc.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioContextCollection.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\Vector.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\Position.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\AudioPlaybackPosition.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+    <ClInclude Include="AL\alext.h">
+      <Filter>AL</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="AL">
+      <UniqueIdentifier>{a35e6399-052c-4f86-9da8-2f98293edf07}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

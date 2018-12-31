@@ -1,0 +1,38 @@
+// ----------------------------------------------------------------------------
+// 
+// Rtt_Player.pch
+// Copyright (c) 2008 Ansca, Inc. All rights reserved.
+// 
+// Reviewers:
+// 		Walter
+//
+// ----------------------------------------------------------------------------
+
+//
+// Prefix header for all rtt_player.app source files 
+//
+
+#ifdef __OBJC__
+	#import <AppKit/AppKit.h>
+	#import "NSString+Extensions.h"
+#endif
+
+// Detect use of APIs (and certain constants) that are defined only for OS versions higher than the one we're targetting.
+// The MacOSX version numbers mentioned should be incremented if we change the base level OS we support.
+#ifdef __OBJC__
+  #import <Foundation/NSObjCRuntime.h>
+  #if MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_7
+    #undef  AVAILABLE_MAC_OS_X_VERSION_10_8_AND_LATER
+    #ifdef __clang__
+      #define AVAILABLE_MAC_OS_X_VERSION_10_8_AND_LATER __attribute__((weak_import,deprecated("API is newer than Deployment Target.")))
+    #else
+      #define AVAILABLE_MAC_OS_X_VERSION_10_8_AND_LATER __attribute__((weak_import,deprecated))
+    #endif
+  #endif
+  // FIXME: for some reason this doesn't work in Xcode 6
+  //#undef  NS_CLASS_AVAILABLE
+  //#define NS_CLASS_AVAILABLE(_mac, _ios) AVAILABLE_MAC_OS_X_VERSION_##_mac##_AND_LATER
+
+  #import <Cocoa/Cocoa.h>
+#endif
+

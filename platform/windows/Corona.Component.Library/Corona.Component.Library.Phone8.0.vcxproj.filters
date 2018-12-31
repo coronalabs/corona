@@ -1,0 +1,686 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinRTAudioPlayer.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTFont.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTTimer.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTAudioRecorder.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTBitmap.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTCrypto.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTData.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTDevice.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTDisplayObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTEventSound.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTFBConnect.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTImageProvider.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTMapViewObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTRuntimeDelegate.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTScreenSurface.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTVideoObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTVideoPlayer.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTVideoProvider.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTWebPopup.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTWebViewObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTTextBoxObject.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTStore.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTStoreTransaction.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTStoreProvider.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt\Rtt_WinRTPlatform.cpp">
+      <Filter>Rtt</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\Utf8String.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\NativeStringServices.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaRuntime.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\EmptyEventArgs.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\PixelFormat.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapSettings.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\RelativeOrientation2D.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapInfo.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\Bitmap.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\OperationResult.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapResult.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapInfoResult.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapConverter.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\PixelFormatSet.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\ImageDecoderSettings.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\HorizontalAlignment.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\FontSettings.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\TextRendererSettings.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchPhase.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TapEventArgs.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\KeyEventArgs.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\Key.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\HandledEventArgs.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\CancelEventArgs.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchEventArgs.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchTracker.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchTrackerCollection.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\PageProxy.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Phone\Interop\Graphics\Direct3DSurfaceAdapter.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Phone\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Graphics\RenderSurfaceProxy.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\PageOrientation.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\PageOrientationEventArgs.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaRuntimeLaunchSettings.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\CoronaInteropSettings.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\InteropServices.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaRuntimeEnvironment.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Sensors\AccelerometerMonitor.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Sensors\CoronaAccelerometerHandler.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Sensors\GyroscopeMonitor.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Sensors\CoronaGyroscopeHandler.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\NativeThreadBlocker.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaRuntimeEventArgs.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaLuaEventArgs.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaLuaEventProperties.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\ReadOnlyCoronaLuaEventProperties.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\DispatchCoronaLuaEventResult.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedBoolean.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedString.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedTable.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedData.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedList.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\CoronaBoxedNumber.cpp">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Logging\LoggingServices.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Logging\NativeDebuggerLogger.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\ImmutableByteBuffer.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpRequestSettings.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpProgressEventArgs.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpResponseEventArgs.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\BoxedString.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\WinRT\MessageEventArgs.cpp">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\NativeCoronaNetworkLibraryHandler.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\NetworkConnectionStatus.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\Networking\CoronaHttpRequestOperation.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\MessageBoxSettings.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CoronaLabs\Corona\WinRT\Interop\UI\CoronaMessageBoxHandler.cpp">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Rtt\Rtt_WinRTAudioPlayer.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTFont.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTTimer.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTAudioRecorder.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTBitmap.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTCrypto.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTData.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTDevice.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTDisplayObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTEventSound.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTFBConnect.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTImageProvider.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTMapViewObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTRuntimeDelegate.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTScreenSurface.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTVideoObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTVideoPlayer.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTVideoProvider.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTWebPopup.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTWebViewObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTTextBoxObject.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTStore.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTStoreTransaction.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTStoreProvider.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTPlatform.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\Utf8String.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\NativeStringServices.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntime.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\ITimer.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IDispatcher.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtt\Rtt_WinRTCallback.h">
+      <Filter>Rtt</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\EmptyEventArgs.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntimeState.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\PixelFormat.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapSettings.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\RelativeOrientation2D.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapInfo.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\Bitmap.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\OperationResult.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\IOperationResult.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\IBitmap.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\IImageDecoder.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapResult.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapInfoResult.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\IImageServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\BitmapConverter.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\PixelFormatSet.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\ImageDecoderSettings.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\HorizontalAlignment.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\FontSettings.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\ITextRenderer.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\TextRendererSettings.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchPhase.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchPoint.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TapEventArgs.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\IInputDeviceServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\KeyEventArgs.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\Key.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\HandledEventArgs.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\CancelEventArgs.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchEventArgs.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchTracker.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Input\TouchTrackerCollection.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IPage.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\PageProxy.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\IRenderSurface.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\ITimerServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Phone\Interop\Graphics\IXamlRenderSurfaceAdapter.h">
+      <Filter>CoronaLabs\Corona\WinRT\Phone\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Phone\Interop\Graphics\Direct3DSurfaceAdapter.h">
+      <Filter>CoronaLabs\Corona\WinRT\Phone\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\RenderSurfaceProxy.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\PageOrientation.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\PageOrientationEventArgs.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntimeLaunchSettings.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\CoronaInteropSettings.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\InteropServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntimeEnvironment.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IControlAdapter.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\ICoronaControlAdapter.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Graphics\RenderFrameHandler.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IUserInterfaceServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\IReadOnlyWeakReference.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Sensors\AccelerometerMonitor.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Sensors\CoronaAccelerometerHandler.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Sensors\GyroscopeMonitor.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Sensors\CoronaGyroscopeHandler.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\NativeThreadBlocker.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaRuntimeEventArgs.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaLuaEventArgs.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaLuaEventProperties.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaLuaEventHandler.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\ReadOnlyCoronaLuaEventProperties.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\DispatchCoronaLuaEventResult.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\ICoronaBoxedData.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedBoolean.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedString.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedTable.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedData.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedList.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\CoronaBoxedNumber.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\ICoronaBoxedComparableData.h">
+      <Filter>CoronaLabs\Corona\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Logging\LoggingServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Logging\ILogger.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Logging\NativeDebuggerLogger.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\IApplicationServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Storage\IResourceServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\ImmutableByteBuffer.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\INetworkServices.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\IHttpRequestOperation.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpRequestSettings.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpProgressEventArgs.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\HttpResponseEventArgs.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\BoxedString.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\WinRT\MessageEventArgs.h">
+      <Filter>CoronaLabs\WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\NativeCoronaNetworkLibraryHandler.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\NetworkConnectionStatus.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\Networking\CoronaHttpRequestOperation.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\MessageBoxSettings.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\IMessageBox.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CoronaLabs\Corona\WinRT\Interop\UI\CoronaMessageBoxHandler.h">
+      <Filter>CoronaLabs\Corona\WinRT\Interop\UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Rtt">
+      <UniqueIdentifier>{98250861-c1b7-4e74-b8c4-516c8292becb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs">
+      <UniqueIdentifier>{3a66e984-07bb-484d-ade8-3414222e97e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona">
+      <UniqueIdentifier>{d8b3c31f-37c9-48c3-9dad-34b523088d99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\WinRT">
+      <UniqueIdentifier>{ded941b2-4ac5-4c59-9528-35a75245d5c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT">
+      <UniqueIdentifier>{c2d62b3c-5fcb-4969-b48a-6c7e700551ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Interop">
+      <UniqueIdentifier>{1d339b24-fee2-462c-833c-33598203c948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Interop\Graphics">
+      <UniqueIdentifier>{7748cc61-1f84-4187-9855-bd5f44376d83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Interop\UI">
+      <UniqueIdentifier>{9dbe79fe-f5c9-41a4-a3d0-bd6098347a6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Interop\Input">
+      <UniqueIdentifier>{5340bc2d-1047-4afa-a824-7e4f5ef339f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Phone">
+      <UniqueIdentifier>{cff858a3-ddc3-48d9-ae88-239d22cb4e99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Phone\Interop">
+      <UniqueIdentifier>{17925143-802f-4b36-aee0-a627901efe0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Phone\Interop\Graphics">
+      <UniqueIdentifier>{2cb6b54f-43fc-44f1-adcc-f01ca091697b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Interop\Sensors">
+      <UniqueIdentifier>{f6bc6470-8be5-4553-b3a3-73b6cbbb674b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Interop\Logging">
+      <UniqueIdentifier>{abb40b69-2434-403c-9e12-1bee08b9e7c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Interop\Storage">
+      <UniqueIdentifier>{5b6a91a6-aa80-4505-bf4f-990eb3c6bdde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoronaLabs\Corona\WinRT\Interop\Networking">
+      <UniqueIdentifier>{e0f88981-e5fe-4bc9-bebc-c99ce6ef9b62}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

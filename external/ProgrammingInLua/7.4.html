@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 7.4</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="7.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="7.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#7">Chapter 7. Iterators and the Generic <b>for</b></a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>7.4 - Iterators with Complex State</h2>
+
+<p>Frequently, an iterator needs to keep more state than fits into
+a single invariant state and a control variable.
+The simplest solution is to use closures.
+An alternative solution is to pack all it needs into a table
+and use this table as the invariant state for the iteration.
+Using a table, an iterator can keep as much data as it needs
+along the loop.
+Moreover, it can change that data as it goes.
+Although the state is always the same table
+(and therefore invariant),
+the table contents change along the loop.
+Because such iterators have all their data in the state,
+they typically discard the second argument
+provided by the generic <b>for</b>
+(the iterator variable).
+
+<p>As an example of this technique,
+we will rewrite the iterator <code>allwords</code>,
+which traverses all the words from the current input file.
+This time, we will keep its state using a table with two fields,
+<code>line</code> and <code>pos</code>.
+
+<p>The function that starts the iteration is simple.
+It must return the iterator function and the initial state:
+<pre>
+    local iterator   -- to be defined later
+    
+    function allwords ()
+      local state = {line = io.read(), pos = 1}
+      return iterator, state
+    end
+</pre>
+The <code>iterator</code> function does the real work:
+<pre>
+    function iterator (state)
+      while state.line do        -- repeat while there are lines
+        -- search for next word
+        local s, e = string.find(state.line, "%w+", state.pos)
+        if s then                -- found a word?
+          -- update next position (after this word)
+          state.pos = e + 1
+          return string.sub(state.line, s, e)
+        else    -- word not found
+          state.line = io.read() -- try next line...
+          state.pos = 1          -- ... from first position
+        end
+      end
+      return nil                 -- no more lines: end loop
+    end
+</pre>
+
+<p><pre>
+
+</pre>
+
+<p>Whenever it is possible,
+you should try to write stateless iterators,
+those that keep all their state in the <b>for</b> variables.
+With them, you do not create new objects when you start a loop.
+If you cannot fit your iteration into that model,
+then you should try closures.
+Besides being more elegant,
+typically a closure is more efficient
+than an iterator using tables:
+First, it is cheaper to create a closure than a table;
+second, access to upvalues is faster than
+access to table fields.
+Later we will see yet another way to write iterators,
+with coroutines.
+This is the most powerful solution,
+but a little more expensive.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="7.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

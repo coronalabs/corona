@@ -1,0 +1,108 @@
+# YRKSpinningProgressIndicatorLayer and SPILDemo.app
+
+Kelan Champagne (http://yeahrightkeller.com)
+
+Please feel free to send me questions or comments.
+
+
+## Version History
+
+* v1.0  2008-07-08  Initial Release.
+* v1.1  2009-02-14  Fixes from Eric Roccasecca.
+* v1.2  2011-07-17  CGFloat fix from Eloy Duran, and other cleanup.
+
+
+## Overview
+
+YRKSpinningProgressIndicatorLayer is a clone of the NSProgressIndicator
+(spinning-style) that can be set to an arbitrary size and color, and used with
+CoreAnimation layers.
+
+
+## Features
+
+* Implemented as a subclass of CALayer.
+    * Can be used with and overlaid on other CALayers.
+* Can be set to arbitrary size and color.
+    * Can even be changed while animating.
+* Has nice, subtle animation effects
+    * Upon starting animation, each "fin" appears only when it is first drawn.
+    * When animating, each fin fades from opaque to transparent.
+    * As they fade, you can see through the fins to the background.
+    * When stopped, no new fins are drawn, and the existing fins fade to transparent,
+
+
+## Code Architecture
+
+* Implemented as a subclass of CALayer.
+    * Each fin is a sub-layer made of a generic CALayer and drawn by setting the
+      bounds, corner radius, and background color.
+* Animation is done with an NSTimer.
+
+
+## Notes/Limitations
+
+* If resized really fast, some fins will not be drawn.
+* When drawn a large size (i.e. full-screen), the animation can take up
+  a pretty good chunk of CPU. But, at smaller sizes, it's not bad.
+    * The good news is that since it's Leopard-only, it won't be running
+      on anything slower than 800mhz/512MB ram.
+    * I tested it on my PPC revA Mac Mini that is 1.25Ghz/512MB (and
+      weak graphics), and it ran OK at everything except full-screen.
+    * The QC composition in the background of the demo app was a much
+      bigger culprit though, and with the solid background, it is ok.
+    * So, hopefully the performance is acceptable. If not, I have an
+      idea for caching all the fin images, instead of having
+      CoreAnimation do all the drawing on the fly. But, the way it is
+      now makes for really clean code, so I left it like that for now.
+* For some reason, the Quartz Composer background (with the clouds)
+  of the SPILDemo app sometimes doesn't animate when built in Release mode.
+  But, this appears to be fixed on 10.6.
+
+
+## Code Conventions
+
+* Instance variables are prefixed with an underscore (i.e. "_").
+* "Private" methods are declared in a Class Continuation (i.e. name-less
+  category) at the top of the .m file.
+
+
+## Contributing
+
+Please feel free to fork this project, or email any patches to me at
+kelan@yeahrightkeller.com.
+
+
+# License (BSD)
+
+Copyright (c) 2009, Kelan Champagne (http://yeahrightkeller.com)
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+* Neither the name of the Kelan Champagne nor the
+  names of its contributors may be used to endorse or promote products
+  derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+Also, I'd appreciate it if you would let me know if you find this code useful.
+

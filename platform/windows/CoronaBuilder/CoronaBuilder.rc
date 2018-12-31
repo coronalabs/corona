@@ -1,0 +1,5 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+IDR_MAINFRAME           ICON                    "res\\CoronaBuilder.ico"

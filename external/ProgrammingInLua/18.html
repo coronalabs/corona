@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 18</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="17.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="19.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#18">Chapter 18. The Mathematical Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<h1>18 - The Mathematical Library</h1>
+
+<p>In this chapter
+(and in the other chapters about the standard libraries),
+my purpose is not to give the complete specification
+of each function,
+but to show you what kind of functionality the library can provide.
+I may omit some subtle options or behaviors
+for clarity of exposition.
+The main idea is to spark your curiosity,
+which can then be satisfied by the reference manual.
+
+<p>The <code>math</code> library comprises a standard
+set of mathematical functions,
+such as trigonometric functions
+(<code>sin</code>, <code>cos</code>, <code>tan</code>, <code>asin</code>, <code>acos</code>, etc.),
+exponentiation and logarithms (<code>exp</code>,
+<code>log</code>, <code>log10</code>), rounding functions (<code>floor</code>,
+<code>ceil</code>), <code>max</code>, <code>min</code>,
+plus a variable <code>pi</code>.
+The mathematical library also defines the operator `<code>^</code>&acute;
+to work as the exponentiation operator.
+
+<p>All trigonometric functions work in radians.
+(Until Lua 4.0, they worked in degrees.)
+You can use the functions <code>deg</code> and <code>rad</code> to convert
+between degrees and radians.
+If you want to work in degrees,
+you can redefine the trigonometric functions:
+<pre>
+    local sin, asin, ... = math.sin, math.asin, ...
+    local deg, rad = math.deg, math.rad
+    math.sin = function (x) return sin(rad(x)) end
+    math.asin = function (x) return deg(asin(x)) end
+    ...
+</pre>
+
+<p>The <code>math.random</code> function generates pseudo-random numbers.
+We can call it in three ways.
+When we call it without arguments,
+it returns a pseudo-random real number
+with uniform distribution in the interval <em>[0,1)</em>.
+When we call it with only one argument,
+an integer <em>n</em>,
+it returns an integer pseudo-random
+number <em>x</em> such that <em>1 &#060;= x &#060;= n</em>.
+For instance, you can simulate the result of a
+die with <code>random(6)</code>.
+Finally, we can call <code>random</code> with two integer arguments,
+<em>l</em> and <em>u</em>,
+to get a pseudo-random integer <em>x</em> such that
+<em>l &#060;= x &#060;= u</em>.
+
+<p>You can set a seed for the pseudo-random generator with the
+<code>randomseed</code> function;
+its only numeric argument is the seed.
+Usually, when a program starts,
+it initializes the generator with a fixed seed.
+That means that, every time you run your program,
+it generates the same sequence of pseudo-random numbers.
+For debugging, that is a nice property;
+but in a game, you will have the same scenario over and over.
+A common trick to solve this problem is to use the current time
+as a seed:
+<pre>
+    math.randomseed(os.time())
+</pre>
+(The <code>os.time</code> function returns a number that
+represents the current time,
+usually as the number of seconds since some epoch.)
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="19.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

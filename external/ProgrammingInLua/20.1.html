@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 20.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="20.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="20.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#20">Chapter 20. The String Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="section-pm"><h2>20.1 - Pattern-Matching Functions</h2></a>
+
+<p>The most powerful functions in the string library are
+<code>string.find</code> (<em>string Find</em>),
+<code>string.gsub</code> (<em>Global Substitution</em>),
+and <code>string.gfind</code> (<em>Global Find</em>).
+They all are based on <em>patterns</em>.
+
+<p>Unlike several other scripting languages,
+Lua does not use POSIX regular expressions (regexp)
+for pattern matching.
+The main reason for this is size:
+A typical implementation of POSIX regexp takes more than 4,000
+lines of code.
+This is bigger than all Lua standard libraries together.
+In comparison,
+the implementation of pattern matching in Lua has less than 500 lines.
+Of course, the pattern matching in Lua cannot do all that a full
+POSIX implementation does.
+Nevertheless, pattern matching in Lua is a powerful tool
+and includes some features that are difficult to match with
+standard POSIX implementations.
+
+<p><pre>
+
+</pre>
+
+<p>The basic use of <code>string.find</code> is to search for
+a pattern inside a given string, called the <em>subject</em> string.
+The function returns the position where it found the pattern
+or <B>nil</B> if it could not find it.
+The simplest form of a pattern is a word,
+which matches only a copy of itself.
+For instance, the pattern '<code>hello</code>' will search for
+the substring <code>"hello"</code> inside the subject string.
+When <code>find</code> finds its pattern,
+it returns two values:
+the index where the match begins and the index where the match ends.
+<pre>
+    s = "hello world"
+    i, j = string.find(s, "hello")
+    print(i, j)                      --> 1    5
+    print(string.sub(s, i, j))       --> hello
+    print(string.find(s, "world"))   --> 7    11
+    i, j = string.find(s, "l")
+    print(i, j)                      --> 3    3
+    print(string.find(s, "lll"))     --> nil
+</pre>
+When a match succeeds,
+a <code>string.sub</code> of the values returned by <code>string.find</code> would
+return the part of the subject string that matched the pattern.
+(For simple patterns, this is the pattern itself.)
+
+<p>The <code>string.find</code> function has an optional third parameter:
+an index that tells where in the subject string to start the search.
+This parameter is useful when we want to process all the indices
+where a given pattern appears.
+We search for a new pattern repeatedly,
+each time starting after the position where we found the previous one.
+As an example, the following code makes a table with the positions
+of all newlines in a string:
+
+<pre>
+    local t = {}                   -- table to store the indices
+    local i = 0
+    while true do
+      i = string.find(s, "\n", i+1)    -- find 'next' newline
+      if i == nil then break end
+      table.insert(t, i)
+    end
+</pre>
+We will see later a simpler way to write such loops,
+using the <code>string.gfind</code> iterator.
+
+<p>The <code>string.gsub</code> function has three parameters:
+a subject string, a pattern, and a replacement string.
+Its basic use is to substitute
+the replacement string for all occurrences of
+the pattern inside the subject string:
+<pre>
+    s = string.gsub("Lua is cute", "cute", "great")
+    print(s)         --> Lua is great
+    s = string.gsub("all lii", "l", "x")
+    print(s)         --> axx xii
+    s = string.gsub("Lua is great", "perl", "tcl")
+    print(s)         --> Lua is great
+</pre>
+An optional fourth parameter limits the number of
+substitutions to be made:
+<pre>
+    s = string.gsub("all lii", "l", "x", 1)
+    print(s)          --> axl lii
+    s = string.gsub("all lii", "l", "x", 2)
+    print(s)          --> axx lii
+</pre>
+
+<p>The <code>string.gsub</code> function also returns as a
+second result the number of times
+it made the substitution.
+For instance,
+an easy way to count the number of spaces in a string is
+<pre>
+    _, count = string.gsub(str, " ", " ")
+</pre>
+(Remember, the <code>_</code> is just a dummy variable name.)
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="20.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

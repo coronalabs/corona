@@ -1,0 +1,67 @@
+
+AKa 17-Apr-2009:
+
+A bug in table array part handling of LNUM_INT64 mode on all platforms. 64-bit
+integer values having very low (but not all zero) values in their low 32 bits
+were treated as if that was the whole number. This seems ONLY have happened
+in part of the cases, and essentially ANYONE USING LNUM FOR 64 BITS SHOULD
+IMMEDIATELY FIX THIS.
+
+The quick fix is (in ltable.c 'luaH_getint()'):
+
+  if (cast(unsigned int, key-1) < cast(unsigned int, t->sizearray))
+    -->
+  if (cast(unsigned LUA_INTEGER, key-1) < cast(unsigned int, t->sizearray))
+
+The actual fix on LNUM svn and LuaForge will be a bit different, but both
+essentially do the same.
+
+Thanks to Aladdin Lampé for finding this anomaly, and kindly reporting it.
+
+
+AKa 10-Apr-2009:
+
+LNUM_LDOUBLE issues on x86 (32-bit if LNUM_LDOUBLE and LNUM_COMPLEX together; 
+64-bit in many modes) have been analyzed and fixed.
+
+
+AKa 6-Apr-2009:
+
+Crashes on x86 when optimized (gcc 4.x with -O2/-O3) have been solved; due to
+"strict aliasing" pointer issue. Now casting via 'char', which should
+counter-strike the optimizer enough.
+
+Thanks to Eugeny Gladkih.
+
+
+AKa 22-Oct-2008:
+
+Some 'tonumber()' cases in Roberto's 5.1 test suite (math.h) gave 'nil'. 
+
+    tonumber("+.01") == 0.01
+    tonumber("-.01") == -0.01
+    tonumber(".01") == 0.01
+    tonumber("-1.") == -1
+    tonumber("+1.") == 1
+    
+Now these work as expected.
+
+MORE IMPORTANTLY, SCIENTIFIC NOTATION MAY NOT HAVE WORKED RIGHT; the exponent
+was not applied to the integer part!
+
+    1000.00e-03 == 1    -- may have given 1000 earlier!
+    
+Fixed now.
+
+
+AKa 26-Mar-2008:
+
+LNUM_LDOUBLE issues fixed (wrong buffer sizes in lnum_config.h).
+
+
+AKa 20-Mar-2008:
+
+Integer power (a^b) results did not remain in integer realm. Fixed.
+
+Multiplication results close to the maximum integer range did not necessarily
+remain in integer realm. 

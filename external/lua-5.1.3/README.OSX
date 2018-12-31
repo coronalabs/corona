@@ -1,0 +1,162 @@
+Native Objective-C Exception Patch for Lua 5.1.
+===============================================================================
+This patch modifies Lua so it will use Objective-C's exception handling 
+mechanism instead of longjmp for pcall.
+
+This is desirable particularly for cases where you may be calling native 
+platform APIs from Lua which may throw exceptions. With normal longjmp, Lua 
+has no idea that an exception was thrown and the execution jumped out of the
+Lua VM. This may lead to memory leaks and in bad cases, crashes when trying 
+to reenter the VM.
+
+Switching to Objective-C's exception handling mechansism allows Lua to catch 
+all exceptions during a lua_pcall also gives the ability for Lua script writers
+to trap/handle Obj-C exceptions from their own pcall's.
+
+Finally, on 'modern' Objective-C runtimes where Obj-C and C++ exceptions are
+unified, this patch also gives the ability to handle C++ exceptions. And
+optionally, this patch may be compiled with additional support to provide
+more detail for C++ specific exceptions.
+
+
+===============================================================================
+Building:
+Two new files called Makefile.OSX will build the patched version for Obj-C
+execptions. On the command line, use the -f switch to specify it.
+
+make -f Makefile.OSX
+
+The original makefiles should continue to build stock Lua with no breaking 
+changes for OS X or any other platforms. (You will get 3 new #define constants
+in lua.h which will be unused.)
+
+
+If you have your own build system, remember to add lobjectivec_exceptions.m
+to the Lua core and specify the LUA_USE_OBJC_EXCEPTIONS C preprocessor flag.
+Add -framework Foundation to the link flags.
+There are #defines inside the implementation to automatically do the right 
+thing for ARC and non-ARC.
+
+You may also compile this patch to provide additional information for C++
+exceptions. To do this, compile lobjectivec_exceptions.m as Obj-C++.
+(Renaming the file extension to .mm is an easy way to do this though don't
+forget to change the Makefiles.)
+
+
+
+===============================================================================
+Modifications include:
+
+  luaconf.h - 
+Added new #defines for LUA_USE_MODERN_MACOSX and 
+LUA_USE_OBJC_EXCEPTIONS. LUA_USE_MACOSX and LUA_USE_POSIX should not be used
+as LUA_USE_MODERN_MACOSX contains all the correct settings. 
+
+LUA_USE_OBJC_EXCEPTIONS overrides the __cplusplus and LUA_USE_ULONGJMP macros
+for Lua's exception handling mechansim.
+
+Definitions for LUAI_TRY and LUAI_THROW are removed for the 
+LUA_USE_OBJC_EXCEPTIONS case because these implementations are internalized
+to isolate Obj-C from the Lua core.
+
+  lua.h - Added 3 new defines for error codes for lua_pcall to return.
+#define LUA_ERR_EXCEPTION_OBJC 6
+#define LUA_ERR_EXCEPTION_CPP 7
+#define LUA_ERR_EXCEPTION_OTHER 8
+
+  ldo.c - 
+LUA_USE_OBJC_EXCEPTIONS is used by this file to use 
+lobjectivec_exceptions conditionally.
+
+For LUA_USE_OBJC_EXCEPTIONS struct lua_longjmp is defined out and moved to 
+lobjectivec_exceptions.h because the defintion needs to be shared
+with lobjectivec_exceptions.
+
+luaD_seterrorobj adds cases for LUA_ERR_EXCEPTION_OBJC, LUA_ERR_EXCEPTION_CPP,
+and LUA_ERR_EXCEPTION_OTHER to always expect an error string on the top
+of the stack to be returned through pcall on an error condition.
+
+luaD_rawrunprotected uses a different signature for LUAI_TRY in the
+LUA_USE_OBJC_EXCEPTIONS case which is provided by
+lobjectivec_exceptions because it is no longer a macro in this case.
+
+New Files:
+  lobjectivec_exceptions.h - 
+Provides defintions for the macros LUAI_TRY and LUAI_THROW moved from
+luaconf.h. Each maps to new functions intended to hide implementation details 
+instead of using inline code.
+
+luai_jmpbuf is also moved here.
+
+The definition of struct lua_longjmp from ldo.c is also moved here.
+ 
+  lobjectivec_exceptions.m - Contains the implementation for Obj-C exception 
+handling with additional optional code for reporting more detail for
+C++ exceptions.
+
+  Makefile.OSX -
+  src/Makefile.OSX -
+Slight tweaks to the original Makefiles to handle the new 
+lobjectivec_exceptions.m and needed flags.
+
+  README.OSX - This file.
+
+
+===============================================================================
+Discussion:
+  To avoid both header contamination by Foundation.h and requiring all of Lua
+to be recompiled as Obj-C, the Obj-C specific part of the code is isolated to
+lobjceptions.m. However, this required minor changes to Lua because the
+existing Lua exception code for toggling longjmp/ulonjmp/C++ in luaconf.h were
+done as macros which contaminate everything.
+
+  The LUAI_TRY macro signature needed to be changed because to isolate the 
+the implementation into a function, the macro trick to split code into
+different parts of a try/catch block won't work. Instead, the whole function
+pointer and parameter must be passed into the function.
+
+  Lua errors will continue to return the same error codes and error strings as
+before. The new error codes will only be set if the error is found to be a 
+non-Lua error. All of these will set an error string trying to describe the
+problem.
+
+  LUA_ERR_EXCEPTION_OBJC will be returned for NSException and all id types 
+which are not normal Lua triggered errors. NSExceptions will return a string of
+name: reason
+(
+  callStackSymbols
+)
+
+NSObjects will return 
+"Unknown Objective-C exception: description" and remaining id's will return
+"Unknown Objective-C exception"
+
+  LUA_ERR_EXCEPTION_CPP will only be used if lobjcexceptions.m is compiled as
+Obj-C++. But when activated, this value will be returned for C++ 
+std::exception with the error string set to exception.what().
+
+  LUA_ERR_EXCEPTION_OTHER will be used for anything else that is not caught as
+a normal Lua error or the above two. The error string will be 
+"Unkwnown Exception".
+
+  Also note that the default Lua behavior for C++ is to return -1 with no error
+string. This patch has opted to not follow this convention as it seemed more
+useful to always return an error string and a more specific value to indicate
+what kind of error occurred.
+
+===============================================================================
+Other Notes:
+  This patch should be compatible with both Mac OS X and iOS. It was written
+on Mac OS X 10.7 (Lion) against Xcode 4.3.2 and against Lua 5.1.5. Clang and
+ARC are kind of the expectation now, though this code will probably work fine
+with much older compilers and runtimes with the caveat of not catching C++ 
+exceptions on legacy runtimes (e.g. Mac 32-bit).
+
+
+===============================================================================
+Eric Wing 
+Copyright PlayControl Software, LLC. All rights reserved.
+2012
+MIT License
+===============================================================================
+

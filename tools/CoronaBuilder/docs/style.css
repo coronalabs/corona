@@ -1,0 +1,226 @@
+* html code,* html pre {
+font-size:110%;
+}
+html {
+	margin:0;
+	padding:1em;
+}
+body{
+    -webkit-font-smoothing: antialiased;
+	font: 13.34px 'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;;
+	line-height: 1.4em;
+	color: #333;
+	border: none;
+	line-height: 1.5;
+	margin: 0 auto;
+    max-width: 900px; 
+	text-align:left;
+	color:black;
+    background:#fff;
+}
+
+img {max-width:100%}
+
+h1 {
+	margin-top:0;
+	margin-bottom:1.15em;
+	font:215% 'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
+	font-weight:400;
+	color:#000;
+}
+h2 {
+	margin-top:1.75em;
+	font-size:187%;
+	font-weight:400;
+	color:#3c4c6c;
+	padding-bottom:2px;
+	border-bottom:1px solid #8391A8;
+}
+h3 {
+	margin-top:1.5em;
+	margin-bottom:.25em;
+	font-size:145%;
+	font-weight:400;
+	color:#000;
+}
+h4 {
+	margin-top:2em;
+	margin-bottom:.5em;
+	font-size:125%;
+	font-weight:400;
+	color:#093d92;
+}
+p {
+	margin-top:0;
+	margin-bottom:.833em;
+	font:100% 'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
+}
+
+pre, code {
+    font: 92% 'Bitstream Vera Sans Mono','Courier',monospace;
+}
+pre {
+    -webkit-box-shadow: rgba(0, 0, 0, 0.0664062) 0px 1px 2px 0px inset;
+    background-color: #EEE;
+    border: #ddd 1px solid;
+    color: #444;
+    display: block;
+    margin: 12px 0;
+    overflow: auto;
+    padding: 5px;
+    white-space: pre;
+    max-width:100%;
+    overflow:auto;
+}
+code {
+    background-color: ghostWhite;
+    border: 1px solid #ededed;
+    color: #444!important;
+    padding: 0 .2em;
+}
+pre code {
+    padding: 0!important;
+    font-size: 12px!important;
+    background-color: #EEE!important;
+    border: none!important;
+    overflow:visible;
+}
+a, a code {
+	color: #3366d1; /*#4183C4;*/
+	text-decoration:none;
+}
+
+ul {
+	list-style-type: none;
+	padding-left: 12px;
+}
+
+table td {
+	border-bottom: 1px solid #DDD!important;
+	padding: .2em 1em!important;
+}
+
+.shadow{
+	-webkit-box-shadow:0 5px 15px #000;
+	-moz-box-shadow:0 5px 15px #000;
+	box-shadow:0 5px 15px #000;		
+}
+
+
+.c{color:#998;font-style:italic;}
+.err{color:#a61717;background-color:#e3d2d2;}
+.k{font-weight:bold;}
+.o{font-weight:bold;}
+.cm{color:#998;font-style:italic;}
+.cp{color:#999;font-weight:bold;}
+.c1{color:#998;font-style:italic;}
+.cs{color:#999;font-weight:bold;font-style:italic;}
+.gd{color:#000;background-color:#fdd;}
+.gd .x{color:#000;background-color:#faa;}
+.ge{font-style:italic;}
+.gr{color:#a00;}
+.gh{color:#999;}
+.gi{color:#000;background-color:#dfd;}
+.gi .x{color:#000;background-color:#afa;}
+.go{color:#888;}
+.gp{color:#555;}
+.gs{font-weight:bold;}
+.gu{color:#800080;font-weight:bold;}
+.gt{color:#a00;}
+.kc{font-weight:bold;}
+.kd{font-weight:bold;}
+.kn{font-weight:bold;}
+.kp{font-weight:bold;}
+.kr{font-weight:bold;}
+.kt{color:#458;font-weight:bold;}
+.m{color:#099;}
+.s{color:#d14;}
+.na{color:#008080;}
+.nb{color:#0086B3;}
+.nc{color:#458;font-weight:bold;}
+.no{color:#008080;}
+.ni{color:#800080;}
+.ne{color:#900;font-weight:bold;}
+.nf{color:#900;font-weight:bold;}
+.nn{color:#555;}
+.nt{color:#000080;}
+.nv{color:#008080;}
+.ow{font-weight:bold;}
+.w{color:#bbb;}
+.mf{color:#099;}
+.mh{color:#099;}
+.mi{color:#099;}
+.mo{color:#099;}
+.sb{color:#d14;}
+.sc{color:#d14;}
+.sd{color:#d14;}
+.s2{color:#d14;}
+.se{color:#d14;}
+.sh{color:#d14;}
+.si{color:#d14;}
+.sx{color:#d14;}
+.sr{color:#009926;}
+.s1{color:#d14;}
+.ss{color:#990073;}
+.bp{color:#999;}
+.vc{color:#008080;}
+.vg{color:#008080;}
+.vi{color:#008080;}
+.il{color:#099;}
+
+.poetry pre {
+    font-family:Georgia, Garamond, serif !important;
+    font-style:italic;
+    font-size:110% !important;
+    line-height:1.6em;
+    display:block;
+    margin-left:1em;
+}
+
+.poetry pre code {
+    font-family:Georgia, Garamond, serif !important;
+}
+
+sup,sub,a.footnote {
+	font-size: 1.4ex;
+	height: 0;
+	line-height: 1;
+	vertical-align: super;
+	position: relative;
+}
+sub {
+    vertical-align: sub;
+    top: -1px;
+}
+
+/* ------------------------------------------------------------
+DETAILS
+------------------------------------------------------------ */
+
+#details h2 { visibility: hidden; display: none; }
+
+#details ul {
+	list-style-type: none;
+	padding-left: 32px;
+}
+#details ul li {
+	border-bottom: 1px solid #e0e0e0;
+	line-height: 150%;
+	padding-bottom: 5px;
+	max-width: 400px;
+}
+#details ul li ul {
+	padding-left: 25px;
+}
+#details ul li ul li {
+	border: none;
+	padding-bottom: 0px;
+}
+
+/* ------------------------------------------------------------
+PARAMETER TABLES
+------------------------------------------------------------ */
+
+#parameter-tables h4 {
+	color: #df7003;
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	Copyright (c) 2013 Corona Labs Inc. All rights reserved.
+
+	Summary:
+		This is a custom build tool which will automatically compile all Lua files within a Visual Studio project.
+		
+		This tool will do the following when building a project:
+		1) Compile all Lua script files having a "*.lua" extension to "*.lu" byte code files in the intermediate directory.
+		2) Generate C++ files for each Lua file in the "Generated Files" directory containing:
+		   - An array of the compiled Lua byte code.
+			 - A standard luaload C function which pushes the compiled Lua to a lua_State object.
+		3) Include and compile all generated C++ files into the project's resulting binary.
+		
+		The generated C++ files will contain an array of the compiled Lua byte code. They will also contain a
+		standard luaload C function which will push the Lua byte code to a lua_State object. This luaload function
+		will be automatically called by the Lua library when a Lua require() function is called with a name matching
+		the Lua file.
+		
+		Note that you do not have to add the generated C++ file to the Visual Studio project. This custom build tool will
+		automatically include it in the background. You also do not have to add any pre-build steps. All files ending
+		with a "*.lua" extension in the Visual Studio project will be automatically compiled.
+		
+	Installation Instructions:
+		1) Right click on a Visual Studio C++ project in "Solution Explorer".
+		2) Click on menu item "Build Dependencies\Build Customizations".
+		3) Click the "Find Existing" button in the "Build Customization Files" dialog.
+		4) Select this file to add it the dialog.
+		5) Check the "LuaToCppTask" in the dialog's list and then click the OK button.
+ -->
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<PropertyPageSchema Include="$(MSBuildThisFileDirectory)LuaToCppSchema.xml"/>
+		<AvailableItemName Include="LuaToCpp">
+			<Targets>LuaToCpp</Targets>
+		</AvailableItemName>
+	</ItemGroup>
+	<Target Name="LuaToCpp"
+          BeforeTargets="ClCompile"
+          Inputs="%(LuaToCpp.Identity)"
+          Outputs="$(ProjectDir)Generated Files\%(LuaToCpp.Filename)_luaload.cpp;$(IntDir)%(LuaToCpp.Filename)_luaload.obj">
+		<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+			<CoronaCompileWithDebugSymbols>/debug</CoronaCompileWithDebugSymbols>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(PlatformToolset)'=='v110_wp80'">
+			<CoronaCompileToCso>/cso</CoronaCompileToCso>
+		</PropertyGroup>
+		<Exec Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Command="$(SolutionDir)Build.Tools\LuaToCppFile.bat &quot;$(SolutionDir)Bin\Lua&quot; &quot;$(ProjectDir)$(IntDir)&quot; &quot;%(LuaToCpp.FullPath)&quot; &quot;$(ProjectDir)Generated Files&quot; /functionName &quot;%(LuaToCpp.BaseFunctionName)&quot; /moduleName &quot;%(LuaToCpp.ModuleName)&quot; $(CoronaCompileWithDebugSymbols) $(CoronaCompileToCso)"/>
+		<MakeDir Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Directories="$(IntDir)Generated Files"/>
+		<ItemGroup>
+			<ClCompile Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Include="$(ProjectDir)Generated Files\%(LuaToCpp.Filename)_luaload.cpp">
+				<ObjectFileName>$(IntDir)</ObjectFileName>
+				<PrecompiledHeader>NotUsing</PrecompiledHeader>
+			</ClCompile>
+		</ItemGroup>
+	</Target>
+</Project>

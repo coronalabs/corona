@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 24.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="24.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="24.2.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#24">Chapter 24. An Overview of the C API</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="API-stack"><h2>24.2 - The Stack</h2></a>
+
+<p>
+
+<p>We face two problems when trying to exchange values between Lua and C:
+the mismatch between a dynamic and a static type system
+and the mismatch between
+automatic and manual memory management.
+
+<p>In Lua, when we write <code>a[k] = v</code>,
+both <code>k</code> and <code>v</code> can have several different types
+(even <code>a</code> may have different types,
+due to metatables).
+If we want to offer this operation in C, however,
+any <code>settable</code> function must have a fixed type.
+We would need dozens of different functions for this single operation
+(one function for each combination of types for the three arguments).
+
+<p>We could solve this problem by declaring some kind of union type in C,
+let us call it <code>lua_Value</code>,
+that could represent all Lua values.
+Then, we could declare <code>settable</code> as
+<pre>
+    void lua_settable (lua_Value a, lua_Value k, lua_Value v);
+</pre>
+This solution has two drawbacks.
+First, it can be difficult to map
+such a complex type to other languages;
+Lua has been designed to
+interface easily not only with C/C++,
+but also with Java, Fortran, and the like.
+Second, Lua does garbage collection:
+If we keep a Lua value in a C variable,
+the Lua engine has no way to know about this use;
+it may (wrongly) assume that this value is garbage
+and collect it.
+
+<p>Therefore, the Lua API does not define
+anything like a <code>lua_Value</code> type.
+Instead, it uses an abstract stack to exchange values between Lua and C.
+Each slot in this stack can hold any Lua value.
+Whenever you want to ask for a value from Lua
+(such as the value of a global variable),
+you call Lua, which pushes the required value on the stack.
+Whenever you want to pass a value to Lua,
+you first push the value on the stack,
+and then you call Lua (which will pop the value).
+We still need a different function to push each C type on the stack
+and a different function to get each value from the stack,
+but we avoid the combinatorial explosion.
+Moreover, because this stack is managed by Lua,
+the garbage collector knows which values C is using.
+
+<p>Nearly all functions in the API use the stack.
+As we saw in our first example,
+<code>luaL_loadbuffer</code> leaves its result on the stack
+(either the compiled chunk or an error message);
+<code>lua_pcall</code> gets the function to be called from the stack
+and leaves any occasional error message there.
+
+<p>Lua manipulates this stack in a strict LIFO discipline
+(Last In, First Out; that is, always through the top).
+When you call Lua, it only changes the top part of the stack.
+Your C code has more freedom;
+specifically, it can inspect any element inside the stack
+and even insert and delete elements in any arbitrary position.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="24.2.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

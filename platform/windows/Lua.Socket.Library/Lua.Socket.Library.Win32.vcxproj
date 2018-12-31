@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\luasocket\src\auxiliar.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\buffer.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\compat.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\except.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\inet.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\io.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\luasocket.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\mime.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\options.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\select.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\tcp.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\timeout.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\udp.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\wsocket.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\luasocket\src\auxiliar.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\buffer.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\compat.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\except.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\inet.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\io.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\luasocket.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\mime.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\options.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\select.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\socket.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\tcp.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\timeout.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\udp.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\wsocket.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lua.Library\Lua.Library.Win32.vcxproj">
+      <Project>{d0add46c-58ee-41af-8e62-bab080d7ce21}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\ftp.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\headers.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\http.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\ltn12.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\mbox.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\mime.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\smtp.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\socket.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\ssl.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\tp.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\url.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4BE37D68-BA9E-464A-BC28-510A8B39CCCD}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>LuaSocketLibraryWin32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="Lua.Socket.Library.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Lua.Socket.Library.Internals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\librtt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>Rtt_WIN_ENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <LuaToCpp>
+      <ModuleName>luasocket</ModuleName>
+    </LuaToCpp>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\Build.Tools\LuaToCppTask.targets" />
+  </ImportGroup>
+</Project>

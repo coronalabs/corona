@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 17.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="17.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="17.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#17">Chapter 17. Weak Tables</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>17.1 - Memoize Functions</h2>
+
+<p>A common programming technique is to trade space for time.
+You can speed up some functions by <em>memoizing</em> their results
+so that, later, when you call the function with the same arguments,
+it can reuse the result.
+
+<p>Imagine a generic server that receives
+requests containing strings with Lua code.
+Each time it gets a request,
+it runs <code>loadstring</code> on the string,
+and then calls the resulting function.
+However, <code>loadstring</code> is an expensive function
+and some commands to the server may be quite frequent.
+Instead of calling <code>loadstring</code> over and over
+each time it receives a common command like <code>"closeconnection()"</code>,
+the server can <em>memoize</em> the results from <code>loadstring</code>
+using an auxiliary table.
+Before calling <code>loadstring</code>,
+the server checks in the table whether that string
+already has a translation.
+If it cannot find the string,
+then (and only then) the server calls <code>loadstring</code>
+and stores the result into the table.
+We can pack this behavior in a new function:
+<pre>
+    local results = {}
+    function mem_loadstring (s)
+      if results[s] then      -- result available?
+        return results[s]     -- reuse it
+      else
+        local res = loadstring(s)   -- compute new result
+        results[s] = res            -- save for later reuse
+        return res
+      end
+    end
+</pre>
+
+<p>The savings with this scheme can be huge.
+However, it may also cause unsuspected wastes.
+Although some commands repeat over and over,
+many other commands happen only once.
+Gradually,
+the table <code>results</code> accumulates
+all commands the server has ever received
+plus their respective codes;
+after enough time, this will exhaust the server's memory.
+A weak table provides a simple solution to this problem.
+If the <code>results</code> table has weak values,
+each garbage-collection cycle will remove
+all translations not in use at that moment
+(which means virtually all of them):
+<pre>
+    local results = {}
+    setmetatable(results, {__mode = "v"})  -- make values weak
+    function mem_loadstring (s)
+       ...    -- as before
+</pre>
+Actually, because the indices are always strings,
+we can make that table fully weak, if we want:
+<pre>
+    setmetatable(results, {__mode = "kv"})
+</pre>
+The net result is exactly the same.
+
+<p>The memoize technique is also useful to ensure the uniqueness of
+some kind of object.
+For instance, assume a system that represents colors as tables,
+with fields <code>red</code>, <code>green</code>, and <code>blue</code> in some range.
+A naive color factory generates a new color for each new request:
+<pre>
+    function createRGB (r, g, b)
+      return {red = r, green = g, blue = b}
+    end
+</pre>
+Using the memoize technique,
+we can reuse the same table for the same color.
+To create a unique key for each color,
+we simply concatenate the color indices with a separator in between:
+<pre>
+    local results = {}
+    setmetatable(results, {__mode = "v"})  -- make values weak
+    function createRGB (r, g, b)
+      local key = r .. "-" .. g .. "-" .. b
+      if results[key] then return results[key]
+      else
+        local newcolor = {red = r, green = g, blue = b}
+        results[key] = newcolor
+        return newcolor
+      end
+    end
+</pre>
+An interesting consequence of this implementation is that
+the user can compare colors using the primitive equality operator,
+because two coexistent equal colors
+are always represented by the same table.
+Note that the same color may be represented by
+different tables at different times,
+because from time to time a garbage-collector cycle
+clears the <code>results</code> table.
+However, as long as a given color is in use,
+it is not removed from <code>results</code>.
+So, whenever a color survives long enough to be compared with a new one,
+its representation also survives long
+enough to be reused by the new color.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="17.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

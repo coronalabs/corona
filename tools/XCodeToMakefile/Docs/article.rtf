@@ -1,0 +1,269 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fmodern\fcharset77 Courier;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red255\green0\blue0;\red0\green255\blue0;\red0\green0\blue0;
+}
+\margl1440\margr1440\vieww9420\viewh14220\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\qc
+
+\f0\b\fs24 \cf0 Xcode -> Makefile\
+Jim Schimpf (7-Mar-2004)
+\f1\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+\cf0 \
+	I have  developed a number of applications that are very OS agnostic (i.e. command line apps) and would like to port them to another OS.  Originally I built them in Mac OS X using ProjectBuilder and now Xcode.  For non-trivial projects with tens or hundreds of files one of stumbling blocks is that one has a project in Xcode but on Linux or OpenBSD you need a makefile and all you have is the project file.\
+\
+	
+\f0\b pbtomake
+\f1\b0  is a  freeware program that will read a project produced on the Mac IDE and create a simple makefile for that project.  (The binary and sources are available here http://mysite.verizon.net/vze35xda/software.html). This removes a lot of busy work from the porting process and on some apps might be all that is necessary.\
+\
+
+\f0\b USE:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\b0 \cf0 	Before using the program, some steps must be taken with the project.  You must select all the source files and do a GET INFO.  In there you must set all file references to 
+\f0\b Relative To Project
+\f1\b0 . 
+\f0\b pbtomake 
+\f1\b0 cannot make sense of any other reference forms when it decodes the project.  If your project needs some other form of reference, well you have the source.... 
+\f0\b \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+\cf0 \
+	pbtomake
+\f1\b0  is quite simple to use, install the executable in your path (I usually have ~/bin) and cd to where you have a project to convert.\
+\
+	
+\f2 cd ~/Dev/TOMAKE10.3/source/PBTOMAKE
+\f1 \
+\
+then run the program on the project\
+\
+	
+\f2 pbtomake -i pbtomake -i PBTOMAKE.pbproj
+\f1 \
+\
+		:\
+		:\
+\
+	it will then list the result and all the files it found and create the makefile\
+\
+You can then run the make file and make sure it will build the app.\\\
+\
+	
+\f2\fs20 make\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720
+\cf0 /usr/bin/g++3  ../main.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o main.o\
+	:\
+	:\
+/usr/bin/g++3  ../BASE_PC/cutil.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o cutil.o\
+/usr/bin/g++3  \\\
+        main.o\\\
+        CPBPROJ.o\\\
+        CBufFile.o\\\
+        CSymbol.o\\\
+        CLexFile.o\\\
+        CpbxLexFile.o\\\
+        CTokFile.o\\\
+        CMaker.o\\\
+        cutil.o\\\
+        -o pbtomake
+\fs24 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+
+\f1 \cf0 And that's it. It has now built pbtomake (and created all the .o files) in the current directory.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\ql\qnatural
+
+\fs20 \cf0 t
+\f2 otal 360\
+  0 drwxrwxrwx  18 jim  staff    612  6 Mar 07:51 .\
+  0 drwxrwxrwx  13 jim  staff    442  6 Mar 07:06 ..\
+ 16 -rw-r--r--   1 jim  staff   4884  6 Mar 07:51 CBufFile.o\
+  8 -rw-r--r--   1 jim  staff   2316  6 Mar 07:51 CLexFile.o\
+ 32 -rw-r--r--   1 jim  staff  15920  6 Mar 07:51 CMaker.o\
+ 24 -rw-r--r--   1 jim  staff  12152  6 Mar 07:51 CPBPROJ.o\
+ 16 -rw-r--r--   1 jim  staff   6024  6 Mar 07:51 CSymbol.o\
+ 16 -rw-r--r--   1 jim  staff   4736  6 Mar 07:51 CTokFile.o\
+ 16 -rw-r--r--   1 jim  staff   5096  6 Mar 07:51 CpbxLexFile.o\
+  0 drwxrwxrwx   4 jim  staff    136  6 Mar 07:44 PBTOMAKE.pbproj\
+  0 drwxrwxrwx  10 jim  staff    340  6 Mar 07:32 build\
+  8 -rw-r--r--   1 jim  staff   1872  6 Mar 07:51 cutil.o\
+ 24 -rw-r--r--   1 jim  staff  10168  6 Mar 07:51 main.o\
+  8 -rwxrwxrwx   1 jim  wheel   1968  6 Mar 07:48 makefile\
+176 -rwxr-xr-x   1 jim  staff  87956  6 Mar 07:51 pbtomake
+\f1\fs24 \
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b \cf0 More Details
+\f1\b0 \
+The program also has other options which you can see by running it with -v\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\ql\qnatural
+
+\f2\fs20 \cf0 pbtomake PB Project -> makefile converter Ver: 3.00 Mar  6 2004 07:39:12\
+        Syntax pbtomake -i <Project.pbproj> [-o <fname>] [-cc <c compiler>] [-v]\
+                -i <fname>      Input Project (pbproj) DEF NONE\
+                -o <fname>      Output File (makefile)   DEF makefile\
+                -cc <compiler>  Compiler used DEF /usr/bin/g++3\
+                -debug          Turn on Debug output\
+                -v              Show this help\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+
+\f1\fs24 The options allow you to specify the input file, output file and the name of the c compiler in the makefile.  The debug option will dump the internal database as it reads the project file. \
+\
+
+\f0\b makefile Details\
+\
+
+\f1\b0 The makefile created by the program is very simple and has everything specified, It doesn't use rules or any other shortcuts.  Each and every file is separately specified along with all the include files.  So the file created for this run is:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\ql\qnatural
+
+\f2\fs20 \cf2 \CocoaLigature0 ###################################################\cf0 \
+\cf2 #\cf0 \
+\cf2 # Makefile for pbtomake\cf0 \
+\cf2 # Creator [Xcode -> Makefile Ver: 3.00]\cf0 \
+\cf2 # Created: [Sat Mar  6 07:48:15 2004]\cf0 \
+\cf2 #\cf0 \
+\cf2 ###################################################\cf0 \
+\cf2 #\cf0 \
+\cf2 # Macros\cf0 \
+\cf2 #\cf0 \
+CC = /usr/bin/g+\cf3 +3\cf0 \
+CC_OPTIONS = \
+LNK_OPTIONS = \
+\cf2 #\cf0 \
+\cf2 # INCLUDE directories for pbtomake\cf0 \
+\cf2 #\cf0 \
+\
+INCLUDE = \\\
+		-I../BASE_PC\\\
+		-I../BASE_PC/Dohickies\\\
+		-I..\
+\cf2 #\cf0 \
+\cf2 # Build pbtomake\cf0 \
+\cf2 #\cf0 \
+pbtomake : \\\
+		main.o\\\
+		:\
+		:\
+		cutil.o\
+\
+	$(CC) $(LNK_OPTIONS) \\\
+		main.o\\\
+		:\
+		:\
+		cutil.o\\\
+		-o pbtomake\
+\cf2 #\cf0 \
+\cf2 # Build the parts of pbtomake\cf0 \
+\cf2 #\cf0 \
+\
+\cf2 # Item # 1 -- main --\cf0 \
+main.o : ../main.cp\
+	$(CC) $(CC_OPTIONS) ../main.cp -c $(INCLUDE) -o main.o\
+\cf4 	:\
+	:\
+\cf2 # Item # 9 -- cutil --\cf0 \
+cutil.o : ../BASE_PC/cutil.cp\
+	$(CC) $(CC_OPTIONS) ../BASE_PC/cutil.cp -c $(INCLUDE) -o cutil.o\
+\cf2 ##### END RUN ####
+\f3 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2 \cf0 \CocoaLigature1 \
+
+\f0\b\fs24 Program Internals\
+\
+
+\f1\b0 	
+\f0\b Project Files\
+\
+	
+\f1\b0 The Xcode or ProjectBuilder project file is really a directory containing two files (look inside with something like BBEdit using the OpenHidden).\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\ql\qnatural
+\cf0  
+\f2\fs20 0 drwxrwxrwx   4 jim  staff    136  7 Mar 07:03 .\
+ 0 drwxrwxrwx  18 jim  staff    612  6 Mar 07:51 ..\
+40 -rwxrwxrwx   1 jim  staff  17747  7 Mar 07:03 jim.pbxuser\
+32 -rwxrwxrwx   1 jim  staff  12708  7 Mar 07:03 project.pbxproj\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+
+\f1\fs24 	The jim.pbxuser is the per user settings for the project and things like window positions.  The second file is the description of the files and how to build the application.  This is the file that 
+\f0\b pbtomake 
+\f1\b0 works on.\
+\
+	Knowledge of project.pbxproj is just by observation and trying to extract the information to build the makefile.  If someone reading this has deeper knowledge I would appreciate hearing from you.  The general form of both of these files is a hierarchal structure based on keys/values and lists.  The usual form of things are:\
+\
+    
+\f0\b key   =  value;\
+\
+
+\f1\b0 	Now value can either be a single string/name or a list and lists are written as:\
+\
+
+\f0\b 	\{\
+		thing,\
+		thing1,\
+		  :\
+	\};\
+
+\f1\b0 \
+	Where thing and thing1 can be either simple values or embedded lists.\
+\
+	
+\f0\b Project File Analysis
+\f1\b0 \
+\
+	The code modules CBPROJ,CpbxLexFile,CTokFile,CLexFile and CBufFile are used to convert the file structure into an in memory tree representation of the text structure in the file.  The form here is the conventional breaking of the input file into tokens; then CBPROJ.cp builds the tree. \
+\
+	For example reading  
+\f0\b key   =  value; 
+\f1\b0 would turn into the token list\
+\
+                
+\f0\b key            =          value        ;
+\f1\b0 \
+	<Token> <LINK> <Token> <END>\
+\
+CBPROJ reads each of these tokens, stacking them up until a trigger is found, In this case an <END> token meaning we have come to the end of an element in the file.  It then can package up the key and value as an element and attach it to the tree structure of the file it's building.  If you want to see this tree use the -debug option of 
+\f0\b pbtomake
+\f1\b0  and it will be dumped out.\
+\
+	Besides the tree structure being built, the program also needs a reference table so it can search this tree for particular keys.  A direct search of the tree might work but, from experience this is very slow.  The module CSymbol is used to create a symbol table of each of the keys found in the file.  In this way, a very quick search can find nth appearance of any key in the file.\
+\
+	
+\f0\b Makefile Construction\
+\
+
+\f1\b0 	The module CMaker is where the rubber meets the road and the actual makefile is constructed.  This module is run after the symbol table and tree representation of the project file are completed.  To build the makefile two things have to be found: a list of the .H files and a list of the .C(or CP) files.  You can see these in the product makefile:\
+\
+	The INCLUDE list comes from the path lists to the .h files\
+	The main dependency  <name> :  <Filename>.o comes from the list of C/CP files\
+	The main link list and each of the individual file builds comes from the .c list.\
+\
+	I've found in the project file the VALUE of an isa key of 
+\f0\b \cf4 \CocoaLigature0 PBXSourcesBuildPhase 
+\f1\b0 denotes the list of C files and 
+\f0\b PBXHeadersBuildPhase 
+\f1\b0 denotes the list of H files. It is then a matter of finding these lists in the in memory tree representation of the project files and building file lists.  \
+\
+	The rest of building the makefile is largely a matter of fprintf()'s of the lists of data in various forms to the output makefile.  This is also where if you want another type of makefile it's quite easy to change the output.\
+\
+
+\f0\b A final note:\
+\
+
+\f1\b0 	This version of 
+\f0\b \cf0 \CocoaLigature1 pbtomake
+\f1\b0  works for the current version of Xcode (10.3.2) but since Apple does not publicly document the internals of the project file, updates might  break this program.  I've already had to change program once due to changes in ProjectBuilder.  So enjoy but be prepared for some work on each new version of Xcode.\
+	
+\f2\fs20 \
+}

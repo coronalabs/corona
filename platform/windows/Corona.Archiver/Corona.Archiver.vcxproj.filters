@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\librtt\Rtt_Archive.cpp">
+      <Filter>librtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp">
+      <Filter>librtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Assert.c">
+      <Filter>librtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Fixed.c">
+      <Filter>librtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Math.c">
+      <Filter>librtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\tools\car\main.cpp">
+      <Filter>tools\car</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\tools\car\Rtt_Car.cpp">
+      <Filter>tools\car</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_FileSystem.cpp">
+      <Filter>librtt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp">
+      <Filter>platform\windows\Corona.Native.Library.Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Corona.Native.Library.Win32\WinFile.cpp">
+      <Filter>platform\windows\Corona.Native.Library.Win32</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\librtt\Rtt_Archive.h">
+      <Filter>librtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_FileSystem.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Build.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Config.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Real.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Traits.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Types.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Version.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Assert.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Fixed.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Macros.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Math.h">
+      <Filter>librtt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaFile.h">
+      <Filter>librtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\tools\car\Rtt_Car.h">
+      <Filter>tools\car</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Corona.Native.Library.Win32\WinFile.h">
+      <Filter>platform\windows\Corona.Native.Library.Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Corona.Native.Library.Win32\WinString.h">
+      <Filter>platform\windows\Corona.Native.Library.Win32</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="librtt">
+      <UniqueIdentifier>{9aac62f1-8e5f-4f6a-911f-fb2f06e4aaec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="librtt\Core">
+      <UniqueIdentifier>{54b2a0ee-7811-4c4d-92b3-95fbe93572b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform">
+      <UniqueIdentifier>{a682d04f-8593-43d4-9fbe-e27e7d66f1dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tools">
+      <UniqueIdentifier>{b9ed8f7e-95a8-4af9-b541-d9b3cced7b75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tools\car">
+      <UniqueIdentifier>{d0ec52d9-6c0e-4cbc-9170-0e98659e3bdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\windows">
+      <UniqueIdentifier>{b64aec58-c25a-4f27-81be-89efdb83a5de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\windows\Corona.Native.Library.Win32">
+      <UniqueIdentifier>{c5d253c3-0d92-45fe-be6e-9e982a436fe2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

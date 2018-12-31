@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 15.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="15.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="15.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#15">Chapter 15. Packages</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>15.2 - Privacy</h2>
+
+<p>Sometimes, a package <em>exports</em> all its names;
+that is, any client of the package can use them.
+Usually, however, it is useful to have private names in a package,
+that is, names that only the package itself can use.
+A convenient way to do that in Lua is
+to define those private names as local variables.
+For instance,
+let us add to our example a private function that checks whether a value
+is a valid complex number.
+Our example now looks like this:
+<pre>
+    local P = {}
+    complex = P
+    
+    local function checkComplex (c)
+      if not ((type(c) == "table") and
+         tonumber(c.r) and tonumber(c.i)) then
+        error("bad complex number", 3)
+      end
+    end
+    
+    function P.add (c1, c2)
+      checkComplex(c1);
+      checkComplex(c2);
+      return P.new(c1.r + c2.r, c1.i + c2.i)
+    end
+    
+      ...
+    
+    return P
+</pre>
+
+<p>What are the pros and cons of this approach?
+All names in a package live in a separate namespace.
+Each entity in a package is clearly marked as public or private.
+Moreover, we have real privacy:
+Private entities are inaccessible outside the package.
+A drawback of this approach is its verbosity when accessing
+other public entities inside the same package,
+as every access still needs the prefix <code>P</code>.
+A bigger problem is that we have to change the calls whenever
+we change the status of a function from private to public
+(or from public to private).
+
+<p>There is an interesting solution to both problems at once.
+We can declare all functions in our package as local
+and later put them in the final table to be exported.
+Following this approach, our <code>complex</code> package would be like this:
+<pre>
+    local function checkComplex (c)
+      if not ((type(c) == "table")
+         and tonumber(c.r) and tonumber(c.i)) then
+        error("bad complex number", 3)
+      end
+    end
+    
+    local function new (r, i) return {r=r, i=i} end
+    
+    local function add (c1, c2)
+      checkComplex(c1);
+      checkComplex(c2);
+      return new(c1.r + c2.r, c1.i + c2.i)
+    end
+    
+      ...
+    
+    complex = {
+      new = new,
+      add = add,
+      sub = sub,
+      mul = mul,
+      div = div,
+    }
+</pre>
+
+<p>Now we do not need to prefix any calls,
+so that calls to exported and private functions are equal.
+There is a simple list at the end of the package that
+defines explicitly which names to export.
+Most people find more natural to have this list at the
+beginning of the package,
+but we cannot put the list at the top,
+because we must define the local functions first.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="15.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

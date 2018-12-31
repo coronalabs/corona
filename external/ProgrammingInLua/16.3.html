@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 16.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="16.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="16.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#16">Chapter 16. Object-Oriented Programming</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>16.3 - Multiple Inheritance</h2>
+
+<p>Because objects are not primitive in Lua,
+there are several ways to do object-oriented programming in Lua.
+The method we saw previously,
+using the index metamethod,
+is probably the best combination of simplicity, performance,
+and flexibility.
+Nevertheless, there are other implementations,
+which may be more appropriate to some particular cases.
+Here we will see an alternative implementation
+that allows multiple inheritance in Lua.
+
+<p>The key for this implementation is the use
+of a function for the metafield <code>__index</code>.
+Remember that, when a table's metatable has a function in
+the field <code>__index</code>,
+Lua will call that function whenever it
+cannot find a key in the original table.
+Then, <code>__index</code> can look up for the missing
+key in how many parents it wants.
+
+<p>Multiple inheritance means that a class may have more than one superclass.
+Therefore, we cannot use a class method to create subclasses.
+Instead, we will define a specific function for that purpose,
+<code>createClass</code>, which has as arguments the superclasses of the new class.
+This function creates a table to represent the new class,
+and sets its metatable with an <code>__index</code> metamethod that does
+the multiple inheritance.
+Despite the multiple inheritance,
+each instance still belongs to one single class,
+where it looks for all its methods.
+Therefore, the relationship between classes and superclasses
+is different from the relationship between classes and instances.
+Particularly,
+a class cannot be the metatable for its instances and its own
+metatable at the same time.
+In the following implementation,
+we keep a class as the metatable for its instances
+and create another table to be the class' metatable.
+<pre>
+    -- look up for `k' in list of tables `plist'
+    local function search (k, plist)
+      for i=1, table.getn(plist) do
+        local v = plist[i][k]     -- try `i'-th superclass
+        if v then return v end
+      end
+    end
+    
+    function createClass (...)
+      local c = {}        -- new class
+    
+      -- class will search for each method in the list of its
+      -- parents (`arg' is the list of parents)
+      setmetatable(c, {__index = function (t, k)
+        return search(k, arg)
+      end})
+    
+      -- prepare `c' to be the metatable of its instances
+      c.__index = c
+    
+      -- define a new constructor for this new class
+      function c:new (o)
+        o = o or {}
+        setmetatable(o, c)
+        return o
+      end
+    
+      -- return new class
+      return c
+    end
+</pre>
+
+<p>Let us illustrate the use of <code>createClass</code> with a small example.
+Assume our previous class <code>Account</code> and another class,
+<code>Named</code>, with only two methods, <code>setname</code> and <code>getname</code>:
+<pre>
+    Named = {}
+    function Named:getname ()
+      return self.name
+    end
+    
+    function Named:setname (n)
+      self.name = n
+    end
+</pre>
+To create a new class <code>NamedAccount</code> that is a subclass of
+both <code>Account</code> and <code>Named</code>,
+we simply call <code>createClass</code>:
+<pre>
+    NamedAccount = createClass(Account, Named)
+</pre>
+To create and to use instances, we do as usual:
+<pre>
+    account = NamedAccount:new{name = "Paul"}
+    print(account:getname())     --> Paul
+</pre>
+Now let us follow what happens in the last statement.
+Lua cannot find the field <code>"getname"</code> in <code>account</code>.
+So, it looks for the field <code>__index</code> of <code>account</code>'s metatable,
+which is <code>NamedAccount</code>.
+But <code>NamedAccount</code> also cannot provide a <code>"getname"</code> field,
+so Lua looks for the field <code>__index</code> of <code>NamedAccount</code>'s metatable.
+Because this field contains a function, Lua calls it.
+This function then looks for <code>"getname"</code> first into <code>Account</code>,
+without success,
+and then into <code>Named</code>, where it finds a non-nil value,
+which is the final result of the search.
+
+<p>Of course, due to the underlying complexity of this search,
+the performance of multiple inheritance
+is not the same as single inheritance.
+A simple way to improve this performance is to copy
+inherited methods into the subclasses.
+Using this technique,
+the index metamethod for classes would be like this:
+<pre>
+      ...
+      setmetatable(c, {__index = function (t, k)
+        local v = search(k, arg)
+        t[k] = v       -- save for next access
+        return v
+      end})
+      ...
+</pre>
+With this trick,
+accesses to inherited methods are as fast as to local methods
+(except for the first access).
+The drawback is that it is difficult to change method definitions
+after the system is running,
+because these changes do not propagate down the hierarchy chain.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="16.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 27.3.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="27.3.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="27.3.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#27">Chapter 27. Techniques for Writing C Functions</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="references"><h3>27.3.2 - References</h3></a>
+
+<p>
+
+<p>You should never use numbers as keys in the registry,
+because such keys are reserved for the <em>reference system</em>.
+This system is composed by a couple of functions in the auxiliary
+library that allow you to store values in the registry without
+worrying about how to create unique names.
+(Actually, those functions can act on any table,
+but they are typically used with the registry.)
+
+<p>The call
+<pre>
+    int r = luaL_ref(L, LUA_REGISTRYINDEX);
+</pre>
+pops a value from the stack, stores it into the registry
+with a fresh integer key, and returns that key.
+We call this key a <em>reference</em>.
+
+<p>As the name implies,
+we use references mainly when we need to store a reference
+to a Lua value inside a C structure.
+As we have seen, we should never store pointers to Lua strings
+outside the C function that retrieved them.
+Moreover, Lua does not even offer pointers to other objects,
+such as tables or functions.
+So, we cannot refer to Lua objects through pointers.
+Instead, when we need such pointers,
+we create a reference and store it in C.
+
+<p>To push the value associated with a reference <code>r</code> onto the stack,
+we simply write
+<pre>
+    lua_rawgeti(L, LUA_REGISTRYINDEX, r);
+</pre>
+Finally, to release both the value and the reference,
+we call
+<pre>
+    luaL_unref(L, LUA_REGISTRYINDEX, r);
+</pre>
+After this call, <code>luaL_ref</code> may return the value
+in <code>r</code> again as a new reference.
+
+<p>The reference system treats <B>nil</B> as a special case.
+Whenever you call <code>luaL_ref</code> for a nil value,
+it does not create a new reference,
+but instead returns the constant reference <code>LUA_REFNIL</code>.
+The call
+<pre>
+    luaL_unref(L, LUA_REGISTRYINDEX, LUA_REFNIL);
+</pre>
+has no effect, whereas
+<pre>
+    lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_REFNIL);
+</pre>
+pushes a <B>nil</B>, as expected.
+
+<p>The reference system also defines the constant <code>LUA_NOREF</code>,
+which is an integer different from any valid reference.
+It is useful to mark references as invalid.
+As with <code>LUA_REFNIL</code>,
+any attempt to retrieve <code>LUA_NOREF</code> returns <B>nil</B>
+and any attempt to release it has no effect.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="27.3.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

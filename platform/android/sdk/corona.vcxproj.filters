@@ -1,0 +1,457 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="res">
+      <UniqueIdentifier>2a134896-920c-4b79-9b63-d9fd226c6eba</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4ba69226-107f-480e-ad74-f3bd5a4b4f7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\com">
+      <UniqueIdentifier>{15a04be3-dbb0-40a7-8173-42f24cdb02ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\com\ansca">
+      <UniqueIdentifier>{d0fe7494-1bc1-4146-9111-fe6dc49066f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\com\ansca\corona">
+      <UniqueIdentifier>{c45a2785-2dff-41e3-aaa0-52ee49f3f2b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jni">
+      <UniqueIdentifier>{da09a663-2d13-43c3-8225-c8cc584e0bdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable">
+      <UniqueIdentifier>{90ec39cd-25e9-43d3-a46a-6f52ca332a11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-hdpi">
+      <UniqueIdentifier>{2ebfc9af-8637-4cb4-a0dd-cf6df1b39b78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\raw">
+      <UniqueIdentifier>{60984511-a78c-4f03-9d74-e483cc5e1ebb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\mipmap-hdpi">
+      <UniqueIdentifier>{74274e8b-cf80-4942-9837-25a73c6a3bcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-hdpi-v9">
+      <UniqueIdentifier>{1fd5d819-f091-4be6-ad1c-87d7dce5313f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-hdpi-v11">
+      <UniqueIdentifier>{9c23fb03-f8d0-4d65-b2f1-4d57c2ac557a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-ldpi">
+      <UniqueIdentifier>{b09b141b-ee4b-449b-9a9d-bb5f628b7d83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-ldpi-v9">
+      <UniqueIdentifier>{53dd4b62-ef73-452e-9da3-3b09c2d7b040}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-ldpi-v11">
+      <UniqueIdentifier>{5bcd7cd2-0a2a-44c3-880f-15ab330b6716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-xhdpi">
+      <UniqueIdentifier>{355dbdc9-3ff4-4745-9d42-f04251bb17e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-xhdpi-v9">
+      <UniqueIdentifier>{d47ac52b-27df-4d43-83e7-998fc01cbd7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-xhdpi-v11">
+      <UniqueIdentifier>{c66c9d00-4985-4c3b-9fbe-9f872f365914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-xxhdpi">
+      <UniqueIdentifier>{7a5ceea9-d67b-4336-8b5a-119658db8eb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-xxhdpi-v11">
+      <UniqueIdentifier>{e1d03c5c-a901-4eff-bd56-497ea53ed1df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-xxxhdpi-v11">
+      <UniqueIdentifier>{1bb3f437-c573-4c1a-9576-7912fc2236a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\mipmap-ldpiv">
+      <UniqueIdentifier>{895229c1-5f22-45c0-a4bc-455aeb5d56ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\mipmap-mdpi">
+      <UniqueIdentifier>{8c82d99f-1f16-45e4-9334-e5afa59b4bbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\mipmap-xhdpi">
+      <UniqueIdentifier>{b223f93a-4655-48ff-9432-e1a5be6fbc8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\mipmap-xxhdpi">
+      <UniqueIdentifier>{38de5f50-35bb-4753-9f65-b558244b9c34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\mipmap-xxxhdpi">
+      <UniqueIdentifier>{0da40c63-29b9-402f-98c3-c7e6496fc683}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-mdpi">
+      <UniqueIdentifier>{191b44a7-e3ad-42af-b97b-5af2baee96b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-mdpi-v9">
+      <UniqueIdentifier>{26b7ef7a-a95d-44db-8b91-0807a1889788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-mdpi-v11">
+      <UniqueIdentifier>{8484e6a9-ba8a-40c0-b467-0426f4419a29}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\AndroidManifest.xml" />
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\ant.properties" />
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\build.xml" />
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\local.properties" />
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\project.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable\_corona_splash_screen.png">
+      <Filter>res\drawable</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_maps_indicator_current_position_anim1.png">
+      <Filter>res\drawable-hdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_maps_indicator_current_position_anim2.png">
+      <Filter>res\drawable-hdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_maps_indicator_current_position_anim3.png">
+      <Filter>res\drawable-hdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_menu_camera.png">
+      <Filter>res\drawable-hdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_menu_refresh.png">
+      <Filter>res\drawable-hdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-hdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_maps_indicator_current_position.png">
+      <Filter>res\drawable-hdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\raw\corona_map_view2.html">
+      <Filter>res\raw</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-hdpi\icon.png">
+      <Filter>res\mipmap-hdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi-v9\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-hdpi-v9</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi-v11\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-hdpi-v11</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_maps_indicator_current_position_anim1.png">
+      <Filter>res\drawable-ldpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_maps_indicator_current_position_anim2.png">
+      <Filter>res\drawable-ldpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_maps_indicator_current_position_anim3.png">
+      <Filter>res\drawable-ldpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_menu_camera.png">
+      <Filter>res\drawable-ldpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_menu_refresh.png">
+      <Filter>res\drawable-ldpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-ldpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_maps_indicator_current_position.png">
+      <Filter>res\drawable-ldpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi-v9\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-ldpi-v9</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi-v11\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-ldpi-v11</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_maps_indicator_current_position.png">
+      <Filter>res\drawable-mdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_maps_indicator_current_position_anim1.png">
+      <Filter>res\drawable-mdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_maps_indicator_current_position_anim2.png">
+      <Filter>res\drawable-mdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_maps_indicator_current_position_anim3.png">
+      <Filter>res\drawable-mdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_menu_camera.png">
+      <Filter>res\drawable-mdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_menu_refresh.png">
+      <Filter>res\drawable-mdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-mdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi-v9\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-mdpi-v9</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi-v11\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-mdpi-v11</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_maps_indicator_current_position.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_maps_indicator_current_position_anim1.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_maps_indicator_current_position_anim2.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_maps_indicator_current_position_anim3.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_menu_camera.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_menu_refresh.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ouya_icon.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ouya_xiaomi_icon.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\banner.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi-v9\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-xhdpi-v9</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi-v11\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-xhdpi-v11</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_maps_indicator_current_position_anim1.png">
+      <Filter>res\drawable-xxhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_maps_indicator_current_position_anim2.png">
+      <Filter>res\drawable-xxhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_maps_indicator_current_position_anim3.png">
+      <Filter>res\drawable-xxhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_menu_camera.png">
+      <Filter>res\drawable-xxhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_menu_refresh.png">
+      <Filter>res\drawable-xxhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_maps_indicator_current_position.png">
+      <Filter>res\drawable-xxhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi-v11\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-xxhdpi-v11</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxxhdpi-v11\corona_statusbar_icon_default.png">
+      <Filter>res\drawable-xxxhdpi-v11</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-ldpi\icon.png">
+      <Filter>res\mipmap-ldpiv</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-mdpi\icon.png">
+      <Filter>res\mipmap-mdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-xhdpi\icon.png">
+      <Filter>res\mipmap-xhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-xxhdpi\icon.png">
+      <Filter>res\mipmap-xxhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-xxxhdpi\icon.png">
+      <Filter>res\mipmap-xxxhdpi</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable\icon.png">
+      <Filter>res\drawable</Filter>
+    </None>
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable\banner.png">
+      <Filter>res\drawable</Filter>
+    </None>
+    <None Include="..\ndk\jni\Android.mk" />
+    <None Include="..\ndk\jni\Application.mk" />
+  </ItemGroup>
+  <ItemGroup>
+    <JCompile Include="src\com\ansca\corona\CoronaEnvironment.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaEditText.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaData.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaBeacon.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaApiListener.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaApiHandler.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaActivityInfo.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaActivity.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\Controller.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CameraView.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CameraServices.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CameraActivity.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\AudioRecorder.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\ApplicationContextProvider.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\ActivityIndicatorDialog.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\WindowOrientation.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\ViewManager.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\VideoActivity.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\TimeSpan.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\Ticks.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\SystemStartupBroadcastReceiver.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\SystemMonitor.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\SplashScreenBeacon.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\SmsSettings.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\package-info.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\NativeToJavaBridge.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\MessageBasedTimer.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\MediaManager.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\MailSettings.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\JavaToNativeShim.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\FileContentProvider.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\Crypto.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaWebView.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaView.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaVideoView.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaSystemApiHandler.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaStoreApiHandler.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaStatusBarSettings.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaStatusBarApiHandler.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaSplashScreenApiHandler.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaShowApiHandler.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaService.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaSensorManager.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeWillLoadMainListener.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeTaskDispatcher.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeTask.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeProvider.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeListener.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaRuntime.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaLuaEvent.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaLuaErrorHandler.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+    <JCompile Include="src\com\ansca\corona\CoronaLua.java">
+      <Filter>src\com\ansca\corona</Filter>
+    </JCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="jni\importgl.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="jni\JavaToNativeBridge.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="jni\NativeToJavaBridge.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="jni\JavaToNativeBridge.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="jni\JavaToNativeShim.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="jni\NativeToJavaBridge.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="jni\importgl.c">
+      <Filter>jni</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

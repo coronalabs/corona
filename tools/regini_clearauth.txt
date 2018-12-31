@@ -1,0 +1,3 @@
+HKEY_CURRENT_USER\Software\Ansca Corona\Corona Simulator\Preferences
+Resource = DELETE
+Username = DELETE

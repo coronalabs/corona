@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 24</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="23.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="24.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#24">Chapter 24. An Overview of the C API</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<h1>24 - An Overview of the C API</h1>
+
+<p>Lua is an <em>embedded language</em>.
+That means that Lua is not a stand-alone package,
+but a library that can be linked with other applications
+so as to incorporate Lua facilities into these applications.
+
+<p>You may be wondering:
+If Lua is not a stand-alone program,
+how come we have been using Lua stand alone through the whole book?
+The solution to this puzzle is the Lua interpreter
+(the executable <code>lua</code>).
+This interpreter is a tiny application
+(with less than five hundred lines of code)
+that uses the Lua library to implement the stand-alone interpreter.
+This program handles the interface with the user,
+taking her files and strings to feed them to the Lua library,
+which does the bulk of the work (such as actually running Lua code).
+
+<p>This ability to be used as a library to extend an application
+is what makes Lua an <em>extension language</em>.
+At the same time, a program that uses Lua can register new
+functions in the Lua environment;
+such functions are implemented in C (or another language)
+and can add facilities that cannot be
+written directly in Lua.
+This is what makes Lua an <em>extensible language</em>.
+
+<p>These two views of Lua
+(as an extension language and as an extensible language)
+correspond to two kinds of interaction between C and Lua.
+In the first kind, C has the control and Lua is the library.
+The C code in this kind of interaction
+is what we call <em>application code</em>.
+In the second kind, Lua has the control and C is the library.
+Here, the C code is called <em>library code</em>.
+Both application code and library code use
+the same API to communicate with Lua,
+the so called C API.
+
+<p>The C API is the set of functions that allow C code
+to interact with Lua.
+It comprises functions to read and write Lua global variables,
+to call Lua functions,
+to run pieces of Lua code,
+to register C functions so that they can later be called by Lua code,
+and so on.
+(Throughout this text, the term "function" actually means
+"function or macro".
+The API implements several facilities as macros.)
+
+<p>The C API follows the C <em>modus operandi</em>,
+which is quite different from Lua.
+When programming in C,
+we must care about type checking (and type errors),
+error recovery, memory-allocation errors,
+and several other sources of complexity.
+Most functions in the API do not check the correctness of their arguments;
+it is your responsibility to make sure that the arguments
+are valid before calling a function.
+If you make mistakes,
+you can get a "segmentation fault" error or something similar,
+instead of a well-behaved error message.
+Moreover, the API emphasizes flexibility and simplicity,
+sometimes at the cost of ease of use.
+Common tasks may involve several API calls.
+This may be boring,
+but it gives you full control over all details,
+such as error handling, buffer sizes, and the like.
+
+<p>As its title says,
+the goal of this chapter is to give an overview of what is
+involved when you use Lua from C.
+Do not bother understanding all the details of what is going on now.
+Later we will fill in the details.
+Nevertheless,
+do not forget that you can find more details about specific functions
+in the Lua reference manual.
+Moreover, you can find several examples of the use of the API in the
+Lua distribution itself.
+The Lua stand-alone interpreter (<code>lua.c</code>)
+provides examples of application code,
+while the standard libraries (<code>lmathlib.c</code>, <code>lstrlib.c</code>, etc.)
+provide examples of library code.
+
+<p>From now on, we are wearing a C programmers' hat.
+When we talk about "you", we mean you when programming in C,
+or you impersonated by the C code you write.
+
+<p>A major component in the communication between Lua and C is an
+omnipresent virtual <em>stack</em>.
+Almost all API calls operate on values on this stack.
+All data exchange from Lua to C and from C to Lua occurs
+through this stack.
+Moreover, you can use the stack to keep intermediate
+results too.
+The stack helps to solve two impedance mismatches between Lua and C:
+The first is caused by Lua being garbage collected,
+whereas C requires explicit deallocation;
+the second results from the shock between dynamic typing in Lua
+versus the static typing of C.
+We will discuss the stack in more detail in <a href="24.2.html#API-stack">Section 24.2</a>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="24.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{48C7494A-3A17-4E45-A61E-B4F143119148}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ALmixerLibraryWin32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="ALmixer.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="ALmixer.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent>
+      <Command>call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\ALmixer\ALmixer.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\CircularQueue.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\ALmixer_RWops.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\DirectX.cpp" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\LGPL\oggvorbis.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\LGPL\SDL_sound_minimal.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\LGPL\wav.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\SimpleMutex.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\SimpleThreadWindows.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\SoundDecoder.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\tErrorLib.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\LinkedList.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\ALmixer\ALmixer.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\CircularQueue.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\ALmixer_RWops.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\LGPL\SDL_endian_minimal.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\SimpleMutex.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\SimpleThread.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\SoundDecoder.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\SoundDecoder_Internal.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\tErrorLib.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\LinkedList.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ogg.Vorbis.Library\Ogg.Vorbis.Library.Win32.vcxproj">
+      <Project>{ea4f3624-5365-4b4a-8c38-3faad3d33d53}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenAL.Library.Win32\OpenAL.Library.Win32.vcxproj">
+      <Project>{5c72a2ce-e118-4821-8e9f-9db393119fb8}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

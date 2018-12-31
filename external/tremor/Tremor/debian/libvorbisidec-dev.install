@@ -1,0 +1,8 @@
+debian/tmp/usr/include/tremor/config_types.h
+debian/tmp/usr/include/tremor/ivorbiscodec.h
+debian/tmp/usr/include/tremor/ivorbisfile.h
+debian/tmp/usr/include/tremor/ogg.h
+debian/tmp/usr/include/tremor/os_types.h
+debian/tmp/usr/lib/libvorbisidec.a
+debian/tmp/usr/lib/libvorbisidec.la
+debian/tmp/usr/lib/libvorbisidec.so

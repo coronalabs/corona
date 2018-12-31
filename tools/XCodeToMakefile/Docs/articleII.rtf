@@ -1,0 +1,272 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 LucidaGrande-Bold;\f1\fnil\fcharset77 LucidaGrande;\f2\fswiss\fcharset77 Helvetica;
+\f3\fmodern\fcharset77 Courier;\f4\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red255\green0\blue0;\red0\green255\blue0;}
+\margl1440\margr1440\vieww11040\viewh12000\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\qc
+
+\f0\b\fs24 \cf0 Xcode -> Makefile\
+Jim Schimpf (vze35xda@verizon.net) (7-Mar-2004)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+	
+\f1\b0 When I develop on OS X I usually use X Code.  Others obviously differ about use of IDE's but I prefer it.  The problem arises when I wish to move an app from OS X to other flavors of UNIX or Linux.  In most cases I am not attempting anything exotic, these are usually CLI applications (e.g. a very specialized Lua interpreter with extensions for my company's products).  So moving to Linux or UNIX should be pretty much a slam-dunk, just recompiling the code.  Easy in theory but the app in question has over 100 files, files in many different directories and it's an X Code project so no makefile.  \
+\
+	I had hoped that X Code would have this export function but it didn't so I created a free open source version is available to you.  While the project file format for X Code isn't publicly  documented it is a text file and can be easily analyzed.\
+\
+
+\f0\b PBTOMAKE Version 3.0 Program\
+\
+
+\f1\b0 	This program is freeware with source and can be downloaded from (http://members.bellatlantic.net/~vze35xda/software.html).  It is run from the the terminal command line and as an example run on its own project you would get:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi20\ql\qnatural
+
+\f3 \cf0 [Pandoras-Computer:TOMAKE10.3/Source/PBTOMAKE] jim% pbtomake -i PBTOMAKE.pbproj\
+PRODUCT IS [pbtomake]\
+FILE [main.cp]\
+FILE [CPBPROJ.cp]\
+FILE [CBufFile.cp]\
+FILE [CSymbol.cp]\
+FILE [CLexFile.cp]\
+FILE [CpbxLexFile.cp]\
+FILE [CTokFile.cp]\
+FILE [CMaker.cp]\
+FILE [cutil.cp]\
+FILE [CBufFile.h]\
+FILE [tgtypes.h]\
+FILE [CSymbol.h]\
+FILE [CLexFile.h]\
+FILE [CpbxLexFile.h]\
+FILE [CTokFile.h]\
+FILE [CMaker.h]\
+FILE [base.h]\
+FILE [cutil.h]\
+FILE [CPBPROJ.h]\
+[Pandoras-Computer:TOMAKE10.3/Source/PBTOMAKE] jim% \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1 \cf0 This would generate the make file in a file called makefile. The makefile could be used by typing 
+\f0\b make
+\f1\b0  in this directory. This would build a new copy of pbtomake using make and the makefile.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi20\ql\qnatural
+
+\f3 \cf0 [Pandoras-Computer:TOMAKE10.3/Source/PBTOMAKE] jim% make\
+/usr/bin/g++3  ../main.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o main.o\
+/usr/bin/g++3  ../CPBPROJ.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o CPBPROJ.o\
+/usr/bin/g++3  ../BASE_PC/CBufFile.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o CBufFile.o\
+			:\
+			:\
+/usr/bin/g++3  ../CMaker.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o CMaker.o\
+/usr/bin/g++3  ../BASE_PC/cutil.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o cutil.o\
+/usr/bin/g++3  \\\
+        main.o\\\
+        CPBPROJ.o\\\
+        CBufFile.o\\\
+        CSymbol.o\\\
+        CLexFile.o\\\
+        CpbxLexFile.o\\\
+        CTokFile.o\\\
+        CMaker.o\\\
+        cutil.o\\\
+        -o pbtomake\
+[Pandoras-Computer:TOMAKE10.3/Source/PBTOMAKE] jim% 
+\f1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+	Pretty simple really, and the idea is you run 
+\f0\b pbtomake 
+\f1\b0 on your project, copy the whole development tree to the Linux/UNIX box and run make there.  You will then get the application built on the other system without having to manually build a make file with all the dependencies.  Obviously 
+\f0\b you
+\f1\b0  still have code porting to do since for example under OS X you link to frameworks while under other systems you have other ways.  There's lots of other details involved in porting the code but 
+\f0\b pbtomake
+\f1\b0  saves you initial messy task of listing all the files and their paths to manually build a makefile.\
+\
+
+\f0\b makefile Details\
+\
+
+\f1\b0 The makefile created by the program is very simple and has everything specified, It doesn't use rules or any other shortcuts.  Each and every file is separately specified along with all the include files.  So the file created for this run is:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\ql\qnatural
+
+\f3\fs20 \cf2 \CocoaLigature0 ###################################################\cf0 \
+\cf2 #\cf0 \
+\cf2 # Makefile for pbtomake\cf0 \
+\cf2 # Creator [Xcode -> Makefile Ver: 3.00]\cf0 \
+\cf2 # Created: [Sat Mar  6 07:48:15 2004]\cf0 \
+\cf2 #\cf0 \
+\cf2 ###################################################\cf0 \
+\cf2 #\cf0 \
+\cf2 # Macros\cf0 \
+\cf2 #\cf0 \
+CC = /usr/bin/g+\cf3 +3\cf0 \
+CC_OPTIONS = \
+LNK_OPTIONS = \
+\cf2 #\cf0 \
+\cf2 # INCLUDE directories for pbtomake\cf0 \
+\cf2 #\cf0 \
+\
+INCLUDE = \\\
+		-I../BASE_PC\\\
+		-I../BASE_PC/Dohickies\\\
+		-I..\
+\cf2 #\cf0 \
+\cf2 # Build pbtomake\cf0 \
+\cf2 #\cf0 \
+pbtomake : \\\
+		main.o\\\
+		:\
+		:\
+		cutil.o\
+\
+	$(CC) $(LNK_OPTIONS) \\\
+		main.o\\\
+		:\
+		:\
+		cutil.o\\\
+		-o pbtomake\
+\cf2 #\cf0 \
+\cf2 # Build the parts of pbtomake\cf0 \
+\cf2 #\cf0 \
+\
+\cf2 # Item # 1 -- main --\cf0 \
+main.o : ../main.cp\
+	$(CC) $(CC_OPTIONS) ../main.cp -c $(INCLUDE) -o main.o\
+	:\
+	:\
+\cf2 # Item # 9 -- cutil --\cf0 \
+cutil.o : ../BASE_PC/cutil.cp\
+	$(CC) $(CC_OPTIONS) ../BASE_PC/cutil.cp -c $(INCLUDE) -o cutil.o\
+\cf2 ##### END RUN ####
+\f4 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs24 \cf0 \CocoaLigature1 \
+
+\f0\b Program Internals\
+\
+
+\f1\b0 	
+\f0\b Project Files\
+\
+	
+\f1\b0 The Xcode project file 
+\f0\b PBTOMAKE.pbproj
+\f1\b0  is really a directory containing two files (do \
+
+\f0\b ls -als PBTOMAKE.pbproj
+\f1\b0 ) at the command line:
+\f2 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\ql\qnatural
+\cf0  
+\f3\fs20 0 drwxrwxrwx   4 jim  staff    136  7 Mar 07:03 .\
+ 0 drwxrwxrwx  18 jim  staff    612  6 Mar 07:51 ..\
+40 -rwxrwxrwx   1 jim  staff  17747  7 Mar 07:03 jim.pbxuser\
+32 -rwxrwxrwx   1 jim  staff  12708  7 Mar 07:03 project.pbxproj\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs24 \cf0 	The jim.pbxuser is the per user settings for the project and things like window positions.  The second file is the description of the files and how to build the application.  This is the file that 
+\f0\b pbtomake 
+\f1\b0 works on.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1 \cf0 	Knowledge of project.pbxproj is just by observation and trying to extract the information to build the makefile.  If someone reading this has deeper knowledge I would appreciate hearing from you.  The general form of both of these files is a hierarchal structure based on keys/values and lists.  The usual form of things are:\
+\
+    
+\f0\b key   =  value;\
+\
+
+\f1\b0 	Now value can either be a single string/name or a list and lists are written as:\
+\
+
+\f0\b 	\{\
+		thing,\
+		thing1,\
+		  :\
+	\};\
+
+\f1\b0 \
+	Where 
+\f0\b thing
+\f1\b0  and 
+\f0\b thing1
+\f1\b0  can be either simple values or embedded lists.\
+\
+	
+\f0\b Project File Analysis
+\f1\b0 \
+\
+	The code modules 
+\f0\b CBPROJ
+\f1\b0 , 
+\f0\b CpbxLexFile
+\f1\b0 , 
+\f0\b CTokFile
+\f1\b0 , 
+\f0\b CLexFile
+\f1\b0  and 
+\f0\b CBufFile
+\f1\b0  are used to convert the file structure into an in memory tree representation of the text structure in the file.  The form here is the conventional breaking of the input file into tokens; then CBPROJ.cp builds the tree. \
+\
+	For example reading  
+\f0\b key   =  value; 
+\f1\b0 would turn into the token list\
+\
+                
+\f0\b key            =          value        ;
+\f1\b0 \
+	<Token> <LINK> <Token> <END>\
+\
+
+\f0\b CBPROJ
+\f1\b0  reads each of these tokens, stacking them up until a trigger is found, In this case an <END> token meaning we have come to the end of an element in the file.  It then can package up the key and value as an element and attach it to the tree structure of the file it's building.  If you want to see this tree use the -debug option of 
+\f0\b pbtomake
+\f1\b0  and it will be dumped out.\
+\
+	Besides the tree structure being built, the program also needs a reference table so it can search this tree for particular keys.  A direct search of the tree might work but, from experience this is very slow.  The module 
+\f0\b CSymbol
+\f1\b0  is used to create a hashed symbol table of each of the keys found in the file.  In this way, a very quick search can find nth appearance of any key in the file.\
+\
+	
+\f0\b Makefile Construction\
+\
+
+\f1\b0 	The module 
+\f0\b CMaker
+\f1\b0  is where the rubber meets the road and the actual makefile is constructed.  This module is run after the symbol table and tree representation of the project file are completed.  To build the makefile two things have to be found: a list of the .H files and a list of the .C(or CP) files.  You can see these in the product makefile.  Once you know these then:\
+\
+	The INCLUDE list comes from the path lists to the .h files\
+	The main dependency  <name> :  <Filename>.o comes from the list of C/CP files\
+	The main link list and each of the individual file builds comes from the .c list.\
+\
+	I've found in the project file the VALUE of an 
+\f0\b isa
+\f1\b0  key of 
+\f0\b \CocoaLigature0 PBXSourcesBuildPhase 
+\f1\b0 denotes the list of C files and 
+\f0\b PBXHeadersBuildPhase 
+\f1\b0 denotes the list of H files. It is then a matter of finding these lists in the in memory tree representation of the project file and building file lists.  \
+\
+	The rest of building the makefile is largely a matter of fprintf()'s of the lists of data in various forms to the output makefile.  This is also where if you want another type of makefile it's quite easy to change the output.\
+\CocoaLigature1 \
+\
+\
+	\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2 \cf0 	}

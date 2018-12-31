@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lapi.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lauxlib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lbaselib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lcode.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\ldblib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\ldebug.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\ldo.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\ldump.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lfunc.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lgc.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\linit.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\llex.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lmathlib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lmem.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lobject.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lopcodes.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\loslib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lparser.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lstate.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lstring.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lstrlib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\ltable.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\ltablib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\ltm.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lundump.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lvm.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\lzio.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\liolib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\luaconf.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\loadlib.c" />
+    <ClCompile Include="..\..\..\external\lua-5.1.3\src\luac.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lapi.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lauxlib.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lcode.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\ldebug.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\ldo.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lfunc.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lgc.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\llex.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\llimits.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lmem.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lobject.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lopcodes.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lparser.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lstate.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lstring.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\ltable.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\ltm.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lua.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\luaconf.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lualib.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lundump.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lvm.h" />
+    <ClInclude Include="..\..\..\external\lua-5.1.3\src\lzio.h" />
+  </ItemGroup>
+</Project>

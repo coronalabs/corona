@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>LuaXMLRPC: XML-RPC interface to the Lua programming language</title>
+<style type="text/css">
+ul { list-style-type: disc };
+</style>
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<center>
+<table border="0" cellspacing="2" cellpadding="2">
+  <tr>
+    <td align="center">
+      <a href="http://www.keplerproject.org/luaxmlrpc">
+        <img border="0" alt="LuaXMLRPC logo" src="luaxmlrpc.png">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><big><b>LuaXMLRPC</b></big> </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top">XML-RPC interface to the
+      <a href="http://www.lua.org">Lua</a> programming language
+    </td>
+  </tr>
+</table>
+</center>
+
+<center><small>
+<a href="#over">overview</a> &middot;
+ <a href="#version">current version</a> &middot;
+ <a href="#download">download</a> &middot;
+ <a href="#new">news</a> &middot;
+ <a href="#installation">installation</a> &middot;
+ <a href="manual.html">manual</a> &middot;
+ <a href="license.html">license</a> &middot;
+ <a href="#credits">credits</a> &middot;
+ <a href="#contact">contact us</a>
+</small></center>
+
+<hr>
+<h2>Contents</h2>
+
+<ul>
+  <li><a href="#over">Overview</a></li>
+  <li><a href="#version">Current Version</a></li>
+  <li><a href="#download">Download</a></li>
+  <li><a href="#new">What's new</a></li>
+  <li><a href="#installation">Installation</a></li>
+  <li><a href="manual.html">User's manual</a> 
+    <ul>
+      <li><a href="manual.html#introduction">Introduction</a></li>
+      <li><a href="manual.html#data_types">Data types</a></li>
+      <li><a href="manual.html#basic">Basic support</a></li>
+      <li><a href="manual.html#client">Client side</a></li>
+      <li><a href="manual.html#server">Server side</a></li>
+      <li><a href="manual.html#examples">Examples</a></li>
+      <li><a href="manual.html#related_docs">Related documentation</a></li>
+    </ul>
+  </li>
+  <li><a href="#credits">Credits</a></li>
+  <li><a href="#contact">Contact us</a></li>
+</ul>
+
+<a name="over"></a>
+<h2>Overview</h2>
+
+<p>LuaXMLRPC is a library to make remote procedure calls using <a
+href="http://www.xmlrpc.com">XML-RPC</a>. It also offers facilities
+to develop server-side software.</p>
+
+<p>LuaXMLRPC provides a simple API and an abstraction layer over
+XML avoiding manipulation of string representation of data
+structures. It also offers ways to express everything when
+needed.</p>
+
+<p>LuaXMLRPC is free software and uses the same
+<a href="license.html">license</a> as Lua 5.0.</p>
+
+<a name="version"></a>
+<h2>Current version</h2>
+
+<p>Current version is 1.0 beta. It was developed for Lua 5.0 based on
+<a href="http://www.keplerproject.org/luaexpat">LuaExpat</a>.</p>
+
+<a name="download"></a>
+<h2>Download</h2>
+
+LuaXMLRPC can be downloaded in source code from its
+<a href="http://luaforge.net/project/showfiles.php?group_id=16">LuaForge</a>
+page.
+
+<a name="new"></a>
+<h2>What's new</h2>
+
+<ul>
+<li>[2/dec/2004] Version 1.0 beta released</li>
+<li>[10/dec/2003] Version 1.0 alpha released</li>
+</ul>
+
+<p>Version 1.0 beta follows the
+<a href="http://www.keplerproject.org/compat">package proposal</a>
+for Lua 5.1 (see section <a href="#installation">Installation</a>
+for more details).</p>
+
+
+<a name="installation"></a> 
+<h2>Installation</h2>
+
+<p>LuaXMLRPC is composed by three Lua files.
+These files should be
+copied to a directory named <code>xmlrpc</code> created in your
+<code>LUA_PATH</code>.</p>
+
+<p>
+LuaXMLRPC follows the
+<a href="http://www.keplerproject.org/compat">package proposal</a>
+for Lua 5.1, therefore this package should be "installed".
+In other words,
+if you are using Lua 5.0, the files <tt>compat-5.1.c</tt> and
+<tt>compat-5.1.h</tt> must be used in the compilation and the file
+<tt>compat-5.1.lua</tt> must be installed in the <tt>LUA_PATH</tt>.
+If you are using Lua 5.1, nothing should be done.
+</p>
+
+
+<a name="credits"></a>
+<h2>Credits</h2>
+
+<p>
+LuaXMLRPC was designed by Roberto Ierusalimschy, Andr&eacute;
+Carregal and Tom&aacute;s Guisasola as part of
+<a href="http://www.keplerproject.org">The Kepler Project</a>
+which holds its copyright.
+It was implemented by Tom&aacute;s Guisasola.</p>
+
+<p>
+LuaXMLRPC development was sponsored by
+<a href="http://www.fabricadigital.com.br">F&aacute;brica Digital</a>
+and FINEP.
+</p>
+
+<a name="contact"></a> 
+<h2>Contact us</h2>
+
+<p>
+For more information please
+<a href="mailto:info-NO-SPAM-THANKS@keplerproject.org">contact us</a>.
+Comments are welcome!
+</p>
+
+<center><small>
+<a href="#over">overview</a> &middot;
+<a href="#version">current version</a> &middot;
+<a href="#download">download</a> &middot;
+<a href="#new">news</a> &middot;
+<a href="#installation">installation</a> &middot;
+<a href="manual.html">manual</a> &middot;
+<a href="license.html">license</a> &middot;
+<a href="#credits">credits</a> &middot;
+<a href="#contact">contact us</a>
+</small></center>
+
+<hr>
+<small>$Id: index.html,v 1.17 2004/12/02 16:06:09 tomas Exp $</small>
+</body>
+</html>
+

@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 25.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="25.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="25.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#25">Chapter 25. Extending your Application</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>25.2 - Calling Lua Functions</h2>
+
+<p>
+
+<p>A great strength of Lua is that a configuration file can define
+functions to be called by the application.
+For instance, you can write an application to plot the graph
+of a function
+and use Lua to define the functions to be plotted.
+
+<p>The API protocol to call a function is simple:
+First, you push the function to be called;
+second, you push the arguments to the call;
+then you use <code>lua_pcall</code> to do the actual call;
+finally, you pop the results from the stack.
+
+<p>As an example, let us assume that our configuration file
+has a function like
+
+<pre>
+    function f (x, y)
+      return (x^2 * math.sin(y))/(1 - x)
+    end
+</pre>
+and you want to evaluate, in C,
+<code>z = f(x, y)</code> for given <code>x</code> and <code>y</code>.
+Assuming that you have already opened the Lua library and run
+the configuration file,
+you can encapsulate this call in the following C function:
+<pre>
+    /* call a function `f' defined in Lua */
+    double f (double x, double y) {
+      double z;
+    
+      /* push functions and arguments */
+      lua_getglobal(L, "f");  /* function to be called */
+      lua_pushnumber(L, x);   /* push 1st argument */
+      lua_pushnumber(L, y);   /* push 2nd argument */
+    
+      /* do the call (2 arguments, 1 result) */
+      if (lua_pcall(L, 2, 1, 0) != 0)
+        error(L, "error running function `f': %s",
+                 lua_tostring(L, -1));
+    
+      /* retrieve result */
+      if (!lua_isnumber(L, -1))
+        error(L, "function `f' must return a number");
+      z = lua_tonumber(L, -1);
+      lua_pop(L, 1);  /* pop returned value */
+      return z;
+    }
+</pre>
+
+<p>You call <code>lua_pcall</code> with the number of arguments you are passing
+and the number of results you want.
+The fourth argument indicates an error-handling function;
+we will discuss it in a moment.
+As in a Lua assignment,
+<code>lua_pcall</code> adjusts the actual number of results to what
+you have asked for, pushing <B>nil</B>s or discarding extra values as needed.
+Before pushing the results, <code>lua_pcall</code> removes from the stack
+the function and its arguments.
+If a function returns multiple results,
+the first result is pushed first;
+so, if there are <em>n</em> results,
+the first one will be at index <em>-n</em>
+and the last at index <em>-1</em>.
+
+<p>If there is any error while <code>lua_pcall</code> is running,
+<code>lua_pcall</code> returns a value different from zero;
+moreover, it pushes the error message on the stack
+(but still pops the function and its arguments).
+Before pushing the message, however,
+<code>lua_pcall</code> calls the error handler function,
+if there is one.
+To specify an error handler function,
+we use the last argument of <code>lua_pcall</code>.
+A zero means no error handler function;
+that is, the final error message is the original message.
+Otherwise, that argument should be the index in the stack where
+the error handler function is located.
+Notice that, in such cases,
+the handler must be pushed in the stack
+before the function to be called and its arguments.
+
+<p>For normal errors, <code>lua_pcall</code> returns the
+error code <code>LUA_ERRRUN</code>.
+Two special kinds of errors deserve different codes,
+because they never run the error handler.
+The first kind is a memory allocation error.
+For such errors, <code>lua_pcall</code> always returns <code>LUA_ERRMEM</code>.
+The second kind is an error while Lua is running the error handler itself.
+In that case it is of little use to call the error handler again,
+so <code>lua_pcall</code> returns immediately with a code <code>LUA_ERRERR</code>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="25.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

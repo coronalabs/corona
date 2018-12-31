@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 5.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="5.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="6.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#5">Chapter 5. Functions</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>5.3 - Named Arguments</h2>
+
+<p>
+
+<p>The parameter passing mechanism in Lua is <em>positional</em>:
+When we call a function,
+arguments match parameters by their positions.
+The first argument gives the value to the first parameter,
+and so on.
+Sometimes, however,
+it is useful to specify the arguments by name.
+To illustrate this point,
+let us consider the function <code>rename</code>
+(from the <code>os</code> library),
+which renames a file.
+Quite often, we forget which name comes first,
+the new or the old;
+therefore, we may want to redefine this function
+to receive its two arguments by name:
+<pre>
+    -- invalid code
+    rename(old="temp.lua", new="temp1.lua")
+</pre>
+Lua has no direct support for that syntax,
+but we can have the same final effect,
+with a small syntax change.
+The idea here is to pack all arguments into a table
+and use that table as the only argument to the function.
+The special syntax that Lua provides for function calls,
+with just one table constructor as argument, helps the trick:
+<pre>
+    rename{old="temp.lua", new="temp1.lua"}
+</pre>
+Accordingly, we define <code>rename</code> with only one parameter
+and get the actual arguments from this parameter:
+<pre>
+    function rename (arg)
+      return os.rename(arg.old, arg.new)
+    end
+</pre>
+
+<p>This style of parameter passing is especially helpful when the
+function has many parameters, and most of them are optional.
+For instance, a function that creates a new window in a GUI library
+may have dozens of arguments, most of them optional,
+which are best specified by names:
+<pre>
+    w = Window{ x=0, y=0, width=300, height=200,
+                title = "Lua", background="blue",
+                border = true
+              }
+</pre>
+The <code>Window</code> function then has the freedom to
+check for mandatory arguments,
+add default values, and the like.
+Assuming a primitive <code>_Window</code> function
+that actually creates the new window
+(and that needs all arguments),
+we could define <code>Window</code> as follows:
+<pre>
+    function Window (options)
+      -- check mandatory options
+      if type(options.title) ~= "string" then
+        error("no title")
+      elseif type(options.width) ~= "number" then
+        error("no width")
+      elseif type(options.height) ~= "number" then
+        error("no height")
+      end
+    
+      -- everything else is optional
+      _Window(options.title,
+              options.x or 0,    -- default value
+              options.y or 0,    -- default value
+              options.width, options.height,
+              options.background or "white",   -- default
+              options.border      -- default is false (nil)
+             )
+    end
+</pre>
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="6.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

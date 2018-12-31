@@ -1,0 +1,15 @@
+
+---
+
+2013/12/18:
+
+	This directory contains a modified version of:
+
+		https://github.com/zx9597446/smoothpolygon.git
+
+			commit ba08a7c39189b8ca3b6dd754db90156db77d3ee8
+			Date:	Wed Sep 11 13:19:53 2013 +0800
+
+	The source repo was last pulled on 2013/12/18.
+
+---

@@ -1,0 +1,28 @@
+//
+//  debug.xcconfig
+//
+// This is mostly based on the Release config, but we override some settings
+//
+
+#include "release.xcconfig"
+
+
+// Architectures
+ARCHS = $(NATIVE_ARCH_ACTUAL)
+ONLY_ACTIVE_ARCH = YES
+
+// Code Generation
+GCC_DYNAMIC_NO_PIC = NO
+GCC_GENERATE_DEBUGGING_SYMBOLS = YES
+GCC_OPTIMIZATION_LEVEL = 0
+
+
+// Deployment
+COPY_PHASE_STRIP = NO
+STRIP_INSTALLED_PRODUCT = NO
+STRIP_STYLE = all
+
+
+// Linking
+DEAD_CODE_STRIPPING = NO
+

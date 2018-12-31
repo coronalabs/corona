@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\luasocket\src\timeout.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\udp.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\wsocket.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\auxiliar.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\buffer.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\except.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\inet.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\io.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\luasocket.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\mime.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\options.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\select.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\tcp.c" />
+    <ClCompile Include="..\..\..\external\luasocket\src\compat.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\luasocket\src\timeout.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\udp.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\wsocket.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\auxiliar.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\buffer.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\except.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\inet.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\io.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\luasocket.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\mime.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\options.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\select.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\tcp.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\socket.h" />
+    <ClInclude Include="..\..\..\external\luasocket\src\compat.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\..\external\luasocket\src\headers.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\http.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\ltn12.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\mbox.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\mime.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\smtp.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\socket.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\ssl.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\tp.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\url.lua" />
+    <LuaToCpp Include="..\..\..\external\luasocket\src\ftp.lua" />
+  </ItemGroup>
+</Project>

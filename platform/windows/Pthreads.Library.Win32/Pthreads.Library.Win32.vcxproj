@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A2E5AD7E-DE8D-486B-8D92-0F29B24397CC}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>PthreadsLibraryWin32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="Pthreads.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Pthreads.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\attr.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\barrier.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\cancel.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\cleanup.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\condvar.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\create.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\dll.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\errno.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\exit.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\fork.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\global.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\misc.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\mutex.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\nonportable.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\private.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\rwlock.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\sched.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\semaphore.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\signal.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\spin.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\sync.c" />
+    <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\tsd.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

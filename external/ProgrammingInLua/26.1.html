@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 26.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="26.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="26.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#26">Chapter 26. Calling C from Lua</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>26.1 - C Functions</h2>
+
+<p>As a first example,
+let us see how to implement a simplified version of
+a function that returns the sine of a given number
+(a more professional implementation should check whether
+its argument is a number):
+<pre>
+    static int l_sin (lua_State *L) {
+      double d = lua_tonumber(L, 1);  /* get argument */
+      lua_pushnumber(L, sin(d));  /* push result */
+      return 1;  /* number of results */
+    }
+</pre>
+Any function registered with Lua must have this same prototype,
+defined as <code>lua_CFunction</code> in <code>lua.h</code>:
+<pre>
+    typedef int (*lua_CFunction) (lua_State *L);
+</pre>
+From the point of view of C,
+a C function gets as its single argument the Lua state
+and returns (in C) an integer with the number of
+values it is returning (in Lua).
+Therefore, the function does not need to clear the stack before
+pushing its results.
+After it returns,
+Lua automatically removes whatever is in the stack below the results.
+
+<p>Before we can use this function from Lua,
+we must register it.
+We do this magic with <code>lua_pushcfunction</code>:
+It gets a pointer to a C function and creates
+a value of type <code>"function"</code> to represent this function inside Lua.
+A quick-and-dirty way to test <code>l_sin</code> is to put
+its code directly into the file <code>lua.c</code>
+and add the following lines right after the call to <code>lua_open</code>:
+<pre>
+    lua_pushcfunction(l, l_sin);
+    lua_setglobal(l, "mysin");
+</pre>
+The first line pushes a value of type function.
+The second line assigns it to the global variable <code>mysin</code>.
+After these modifications,
+you rebuild your Lua executable;
+then you can use the new function
+<code>mysin</code> in your Lua programs.
+In the next section,
+we will discuss better ways to link new C functions with Lua.
+
+<p>For a more professional sine function,
+we must check the type of its argument.
+Here, the auxiliary library helps us.
+The <code>luaL_checknumber</code> function checks whether a given
+argument is a number:
+In case of errors, it throws an informative error message;
+otherwise, it returns the number.
+The modification in our function is minimal:
+<pre>
+    static int l_sin (lua_State *L) {
+      double d = luaL_checknumber(L, 1);
+      lua_pushnumber(L, sin(d));
+      return 1;  /* number of results */
+    }
+</pre>
+With the above definition,
+if you call <code>mysin('a')</code>, you get the message
+<pre>
+    bad argument #1 to `mysin' (number expected, got string)
+</pre>
+Notice how <code>luaL_checknumber</code> automatically fills the message
+with the argument number (1),
+the function name (<code>"mysin"</code>),
+the expected parameter type (<code>"number"</code>),
+and the actual parameter type (<code>"string"</code>).
+
+<p>As a more complex example,
+let us write a function that
+returns the contents of a given directory.
+Lua does not provide this function in its standard libraries,
+because ANSI C does not have functions for this job.
+Here, we will assume that we have a POSIX compliant system.
+Our function, <code>dir</code>,
+gets as argument a string with the directory path
+and returns an array with the directory entries.
+For instance, a call <code>dir("/home/lua")</code> may return
+the table <code>{".", "..", "src", "bin", "lib"}</code>.
+In case of errors, the function returns <B>nil</B>
+plus a string with the error message.
+<pre>
+    #include &lt;dirent.h>
+    #include &lt;errno.h>
+    
+    static int l_dir (lua_State *L) {
+      DIR *dir;
+      struct dirent *entry;
+      int i;
+      const char *path = luaL_checkstring(L, 1);
+    
+      /* open directory */
+      dir = opendir(path);
+      if (dir == NULL) {  /* error opening the directory? */
+        lua_pushnil(L);  /* return nil and ... */
+        lua_pushstring(L, strerror(errno));  /* error message */
+        return 2;  /* number of results */
+      }
+    
+      /* create result table */
+      lua_newtable(L);
+      i = 1;
+      while ((entry = readdir(dir)) != NULL) {
+        lua_pushnumber(L, i++);  /* push key */
+        lua_pushstring(L, entry->d_name);  /* push value */
+        lua_settable(L, -3);
+      }
+    
+      closedir(dir);
+      return 1;  /* table is already on top */
+    }
+</pre>
+The <code>luaL_checkstring</code> function, from the auxiliary library,
+is the equivalent of <code>luaL_checknumber</code> for strings.
+
+<p>(In extreme conditions,
+that implementation of <code>l_dir</code> may cause a small memory leak.
+Three of the Lua functions it calls can fail due to insufficient memory:
+<code>lua_newtable</code>, <code>lua_pushstring</code>, and <code>lua_settable</code>.
+If any of these calls fails,
+it will raise an error and interrupt <code>l_dir</code>,
+which therefore will not call <code>closedir</code>.
+As we discussed earlier,
+on most programs this is not a big problem:
+If the program runs out of memory,
+the best it can do is to shut down anyway.
+Nevertheless, in <a href="29.html#__gc">Chapter 29</a> we will see an alternative
+implementation for a directory function that avoids this problem.)
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="26.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

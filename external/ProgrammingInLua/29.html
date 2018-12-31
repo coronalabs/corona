@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 29</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="28.5.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="29.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#29">Chapter 29. Managing Resources</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<a name="__gc"><h1>29 - Managing Resources</h1></a>
+
+<p>In our implementation of arrays in the previous chapter,
+we did not need to worry about managing resources.
+They need only memory.
+Each userdatum representing an array has its own memory,
+which is managed by Lua.
+When an array becomes garbage
+(that is, inaccessible by the program),
+Lua eventually collects it and frees its memory.
+
+<p>Life is not always that easy.
+Sometimes, an object needs other resources besides raw memory,
+such as file descriptors, window handles, and the like.
+(Often these resources are just memory too,
+but managed by some other part of the system).
+In such cases, when the object becomes garbage and is collected,
+somehow those other resources must be released too.
+Several OO languages provide a specific mechanism
+(called <em>finalizer</em> or <em>destructor</em>) for that need.
+Lua provides finalizers in the form of the <code>__gc</code> metamethod.
+This metamethod only works for userdata values.
+When a userdatum is about to be collected
+and its metatable has a <code>__gc</code> field,
+Lua calls the value of this field (which should be a function),
+passing as an argument the userdatum itself.
+This function can then release any resource associated with
+that userdatum.
+
+<p>To illustrate the use of this metamethod and of the API as a whole,
+in this chapter we will develop two bindings from Lua to
+external facilities.
+The first example is another implementation
+for a function to traverse a directory.
+The second (and more substantial) example is a binding to <em>Expat</em>,
+an open source XML parser.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="29.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

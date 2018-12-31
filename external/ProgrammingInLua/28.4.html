@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 28.4</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="28.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="28.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#28">Chapter 28. User-Defined Types in C</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>28.4 - Array Access</h2>
+
+<p>An alternative to the object-oriented notation
+is to use a regular array notation to access our arrays.
+Instead of writing <code>a:get(i)</code>,
+we could simply write <code>a[i]</code>.
+For our example, this is easy to do,
+because our functions <code>setarray</code> and <code>getarray</code>
+already receive their arguments in the order that they
+are given to the respective metamethods.
+A quick solution is to define those metamethods right into our Lua code:
+<pre>
+    local metaarray = getmetatable(newarray(1))
+    metaarray.__index = array.get
+    metaarray.__newindex = array.set
+</pre>
+(We must run that code on the original implementation for arrays,
+without the modifications for object-oriented access.)
+That is all we need to use the usual syntax:
+<pre>
+    a = array.new(1000)
+    a[10] = 3.4         -- setarray
+    print(a[10])        -- getarray   --> 3.4
+</pre>
+
+<p>If we prefer, we can register those metamethods in our C code.
+For that, we change again our initialization function:
+<pre>
+    int luaopen_array (lua_State *L) {
+      luaL_newmetatable(L, "LuaBook.array");
+      luaL_openlib(L, "array", arraylib, 0);
+    
+      /* now the stack has the metatable at index 1 and
+         `array' at index 2 */
+      lua_pushstring(L, "__index");
+      lua_pushstring(L, "get");
+      lua_gettable(L, 2);  /* get array.get */
+      lua_settable(L, 1);  /* metatable.__index = array.get */
+    
+      lua_pushstring(L, "__newindex");
+      lua_pushstring(L, "set");
+      lua_gettable(L, 2); /* get array.set */
+      lua_settable(L, 1); /* metatable.__newindex = array.set */
+    
+      return 0;
+    }
+</pre>
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="28.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

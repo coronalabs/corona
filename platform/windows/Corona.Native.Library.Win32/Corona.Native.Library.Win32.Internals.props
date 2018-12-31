@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="Corona.Native.Library.Static.Win32.Externals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(Configuration)\$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <TargetName>CoronaLabs.Corona.Native</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\external\winutil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link />
+    <PostBuildEvent>
+      <Command>REM Digitally sign this library if building a release DLL.
+if $(ConfigurationName) == Release.App (
+   call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"
+)
+
+REM Copy this library's dependencies to the "Bin\Corona" directory.
+if not exist "$(SolutionDir)Bin\Corona" (
+   mkdir "$(SolutionDir)Bin\Corona"
+)
+xcopy "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC$(PlatformToolsetVersion).CRT\*.dll" "$(SolutionDir)Bin\Corona" /Y /I
+xcopy "..\..\..\subrepos\widget\*.png" "$(SolutionDir)Bin\Corona\Resources\Corona" /Y /I
+
+REM Do the following for debug and release DLL builds. (Skipped for Corona Simulator builds.)
+if $(TargetExt) == .dll (
+   REM Copy this library's DLL to the "Bin\Corona" directory. Used by the Corona Shell app.
+   copy /y "$(TargetPath)" "$(SolutionDir)Bin\Corona"
+
+   REM Copy this library's LIB file to the Corona Enterprise directory.
+   if $(ConfigurationName) == Release.App (
+      if not exist "$(SolutionDir)Bin\Corona.Enterprise\lib" (
+         mkdir "$(SolutionDir)Bin\Corona.Enterprise\lib"
+      )
+      copy /y "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Bin\Corona.Enterprise\lib"
+   )
+   REM Copy this library's LIB file to the Corona Native directory.
+   if $(ConfigurationName) == Release.App (
+      if not exist "$(SolutionDir)Bin\Corona\Native\Corona\win\lib" (
+         mkdir "$(SolutionDir)Bin\Corona\Native\Corona\win\lib"
+      )
+      copy /y "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Bin\Corona\Native\Corona\win\lib"
+   )
+)
+</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\Corona.Rtt.Library\$(Configuration)\$(Platform)\Corona.Rtt.Library.Win32\*.obj;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="..\Corona.Native.Library.Win32\Corona.Native.Library.Static.Win32.Externals.props" />
+    <Import Project="..\WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.Externals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <TargetName>Corona Simulator</TargetName>
+    <OutDir>$(SolutionDir)Bin\Corona\</OutDir>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>Rtt_LUA_COMPILER;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Rtt;..\..\..\external\JDK7\include;..\..\..\external\JDK7\include\win32;..\..\..\external\rcedit\Project\src;..\..\..\external\sundown\Project;..\..\..\external\winutil;..\..\..\modules\simulator;..\..\..\platform\android;..\..\..\platform\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>REM Digitally sign the application.
+if $(ConfigurationName) == Release (
+   call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"
+)
+
+REM Build the Corona Shell and its app template to the "Bin\Corona" directory. The simulator depends on them.
+"$(DevEnvDir)devenv" "$(SolutionDir)Corona.Shell.sln" /build "$(ConfigurationName)|$(PlatformName)"
+
+REM Copy the welcome screen's files and its project templates to the "Bin\Corona" directory.
+echo Copying homescreen files. to $(OutDir)Resources\homescreen ...
+cd
+echo .hg &gt; "$(IntDir)WelcomeScreenExcludes.txt"
+echo .hgignore &gt;&gt; "$(IntDir)WelcomeScreenExcludes.txt"
+echo build.settings &gt;&gt; "$(IntDir)WelcomeScreenExcludes.txt"
+xcopy "..\..\..\simulator-extensions\welcomescreen" "$(OutDir)Resources\homescreen" /C /R /Y /I /E /EXCLUDE:$(IntDir)WelcomeScreenExcludes.txt
+
+REM Replace the welcome screen's plain text Lua files xcopied above with the compiled versions.
+del "$(OutDir)Resources\homescreen\*.lua" /Q
+dir ..\..\..\simulator-extensions\welcomescreen\*.lua
+for %%F in ("..\..\..\simulator-extensions\welcomescreen\*.lua") do (
+echo Compiling Lua %%F to $(OutDir)Resources\homescreen\%%~nxF ...
+"$(SolutionDir)Bin\Lua\luac" -o "$(OutDir)Resources\homescreen\%%~nxF" -s "%%F"
+)
+
+REM Copy all other Corona Simulator related files to the "Bin\Corona" directory.
+xcopy "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC$(PlatformToolsetVersion).MFC\*.dll" "$(OutDir)" /Y /I
+xcopy "..\..\resources\Skins" "$(OutDir)Resources\Skins" /Y /I /E
+copy "..\Build.Tools\7za.exe" "$(OutDir)" /Y
+copy "..\Build.Tools\zipalign.exe" "$(OutDir)Resources" /Y
+copy "..\..\android\project\AntInvoke\AntInvoke.jar" "$(OutDir)Resources" /Y
+copy "..\..\android\project\ListKeyStore\ListKeyStore.jar" "$(OutDir)Resources" /Y
+copy "..\..\android\resources\_coronatest.jar" "$(OutDir)Resources" /Y
+copy "..\..\android\AntLiveManifest\AntLiveManifest.jar" "$(OutDir)Resources" /Y
+copy "..\..\android\resources\build.properties" "$(OutDir)Resources" /Y
+copy "..\..\android\resources\build.xml" "$(OutDir)Resources" /Y
+copy "..\..\android\resources\debug.keystore" "$(OutDir)Resources" /Y
+copy "..\..\resources\AndroidValidation.lua" "$(OutDir)Resources" /Y
+copy "..\..\resources\AppSettings.lua" "$(OutDir)Resources" /Y
+copy "..\..\resources\webtemplate.zip" "$(OutDir)Resources" /Y
+copy "..\..\resources\linuxtemplate.tar.gz" "$(OutDir)Resources" /Y
+copy "..\..\resources\raspbiantemplate.tar.gz" "$(OutDir)Resources" /Y
+copy "..\..\..\external\apache-ant-1.8.1\APACHE LICENSE" "$(OutDir)" /Y
+copy "..\..\..\external\apache-ant-1.8.1\APACHE NOTICE" "$(OutDir)" /Y
+copy "..\..\..\external\apache-ant-1.8.1\lib\ant.jar" "$(OutDir)Resources" /Y
+copy "..\..\..\external\apache-ant-1.8.1\lib\ant-launcher.jar" "$(OutDir)Resources" /Y
+copy "..\..\..\sdk\dmg\Corona_License.rtf" "$(OutDir)" /Y
+copy "..\..\..\sdk\dmg\Corona3rdPartyLicenses.txt" "$(OutDir)" /Y
+</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\Corona.Rtt.Library\$(Configuration).Simulator\$(Platform)\Corona.Rtt.Library.Win32\*.obj;..\Corona.Native.Library.Win32\$(Configuration).Simulator\$(Platform)\Corona.Native.Library.Win32\*.obj;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

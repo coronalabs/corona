@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 20.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="20.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="20.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#20">Chapter 20. The String Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>20.3 - Captures</h2>
+
+<p>The <em>capture</em> mechanism allows a pattern to yank parts of
+the subject string that match parts of the pattern, for further use.
+You specify a capture by writing the parts of
+the pattern that you want to capture between parentheses.
+
+<p>When you specify captures to <code>string.find</code>,
+it returns the captured values as extra results from the call.
+A typical use of this facility is to break a string into parts:
+<pre>
+    pair = "name = Anna"
+    _, _, key, value = string.find(pair, "(%a+)%s*=%s*(%a+)")
+    print(key, value)  --> name  Anna
+</pre>
+The pattern '<code>%a+</code>' specifies a non-empty sequence of letters;
+the pattern '<code>%s*</code>' specifies a possibly empty sequence of spaces.
+So, in the example above,
+the whole pattern specifies a sequence of letters,
+followed by a sequence of spaces,
+followed by `<code>=</code>&acute;, again followed by spaces plus
+another sequence of letters.
+Both sequences of letters have their patterns enclosed by parentheses,
+so that they will be captured if a match occurs.
+The <code>find</code> function always returns first the indices where
+the matching happened
+(which we store in the dummy variable <code>_</code> in the previous example)
+and then the captures made during the pattern matching.
+Below is a similar example:
+<pre>
+    date = "17/7/1990"
+    _, _, d, m, y = string.find(date, "(%d+)/(%d+)/(%d+)")
+    print(d, m, y)  --> 17  7  1990
+</pre>
+
+<p>We can also use captures in the pattern itself.
+In a pattern,
+an item like '<code>%<em>d</em></code>', where <em>d</em> is a single digit,
+matches only a copy of the <em>d</em>-th capture.
+As a typical use, suppose you want to find, inside a string,
+a substring enclosed between single or double quotes.
+You could try a pattern such as '<code>["'].-["']</code>',
+that is, a quote followed by anything followed by another quote;
+but you would have problems with strings like
+<code>"it's all right"</code>.
+To solve that problem, you can capture the first quote
+and use it to specify the second one:
+<pre>
+    s = [[then he said: "it's all right"!]]
+    a, b, c, quotedPart = string.find(s, "([\"'])(.-)%1")
+    print(quotedPart)   --> it's all right
+    print(c)            --> "
+</pre>
+The first capture is the quote character itself
+and the second capture is the contents of the quote
+(the substring matching the '<code>.-</code>').
+
+<p>The third use of captured values is in the
+replacement string of <code>gsub</code>.
+Like the pattern,
+the replacement string may contain items like '<code>%<em>d</em></code>',
+which are changed to the respective captures when the
+substitution is made.
+(By the way, because of those changes,
+a `<code>%</code>&acute; in the replacement string must be escaped as <code>"%%"</code>.)
+As an example,
+the following command duplicates every letter in a string,
+with a hyphen between the copies:
+<pre>
+    print(string.gsub("hello Lua!", "(%a)", "%1-%1"))
+      -->  h-he-el-ll-lo-o L-Lu-ua-a!
+</pre>
+This one interchanges adjacent characters:
+<pre>
+    print(string.gsub("hello Lua", "(.)(.)", "%2%1"))
+      -->  ehll ouLa
+</pre>
+
+<p>As a more useful example, let us write a primitive format converter,
+which gets a string with commands written in a LaTeX style,
+such as
+<pre>
+    \command{some text}
+</pre>
+and changes them to a format in XML style,
+<pre>
+    &lt;command>some text&lt;/command>
+</pre>
+For this specification, the following line does the job:
+<pre>
+    s = string.gsub(s, "\\(%a+){(.-)}", "&lt;%1>%2&lt;/%1>")
+</pre>
+For instance, if <code>s</code> is the string
+<pre>
+    the \quote{task} is to \em{change} that.
+</pre>
+that <code>gsub</code> call will change it to
+<pre>
+    the &lt;quote>task&lt;/quote> is to &lt;em>change&lt;/em> that.
+</pre>
+Another useful example is how to trim a string:
+<pre>
+    function trim (s)
+      return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
+    end
+</pre>
+Note the judicious use of pattern formats.
+The two anchors (`<code>^</code>&acute; and `<code>$</code>&acute;) ensure that we get the whole string.
+Because the '<code>.-</code>' tries to expand as little as possible,
+the two patterns '<code>%s*</code>' match all spaces at both extremities.
+Note also that, because <code>gsub</code> returns two values,
+we use extra parentheses to discard the extra result (the count).
+
+<p>The last use of captured values is perhaps the most powerful.
+We can call <code>string.gsub</code> with a function as
+its third argument, instead of a replacement string.
+When invoked this way, <code>string.gsub</code> calls the given
+function every time it finds a match;
+the arguments to this function are the captures,
+while the value that the function returns is used as the replacement string.
+As a first example,
+the following function does <em>variable expansion</em>:
+It substitutes the value of the global variable <code>varname</code>
+for every occurrence of <code>$varname</code> in a string:
+<pre>
+    function expand (s)
+      s = string.gsub(s, "$(%w+)", function (n)
+            return _G[n]
+          end)
+      return s
+    end
+    
+    name = "Lua"; status = "great"
+    print(expand("$name is $status, isn't it?"))
+      --> Lua is great, isn't it?
+</pre>
+If you are not sure whether the given variables have string values,
+you can apply <code>tostring</code> to their values:
+<pre>
+    function expand (s)
+      return (string.gsub(s, "$(%w+)", function (n)
+                return tostring(_G[n])
+              end))
+    end
+    
+    print(expand("print = $print; a = $a"))
+      --> print = function: 0x8050ce0; a = nil
+</pre>
+
+<p>A more powerful example uses <code>loadstring</code> to evaluate
+whole expressions that we write in the text
+enclosed by square brackets preceded by a dollar sign:
+<pre>
+    s = "sin(3) = $[math.sin(3)]; 2^5 = $[2^5]"
+    
+    print((string.gsub(s, "$(%b[])", function (x)
+             x = "return " .. string.sub(x, 2, -2)
+             local f = loadstring(x)
+             return f()
+           end)))
+      -->  sin(3) = 0.1411200080598672; 2^5 = 32
+</pre>
+The first match is the string <code>"$[math.sin(3)]"</code>,
+whose corresponding capture is <code>"[math.sin(3)]"</code>.
+The call to <code>string.sub</code> removes the brackets from the captured string,
+so the string loaded for execution will be
+<code>"return math.sin(3)"</code>.
+The same happens for the match <code>"$[2^5]"</code>.
+
+<p>Often we want a kind of <code>string.gsub</code> only
+to iterate on a string,
+without any interest in the resulting string.
+For instance, we could collect the words of a string into a table
+with the following code:
+<pre>
+    words = {}
+    string.gsub(s, "(%a+)", function (w)
+      table.insert(words, w)
+    end)
+</pre>
+If <code>s</code> were the string <code>"hello hi, again!"</code>,
+after that command the <code>word</code> table would be
+<pre>
+    {"hello", "hi", "again"}
+</pre>
+The <code>string.gfind</code> function offers
+a simpler way to write that code:
+<pre>
+    words = {}
+    for w in string.gfind(s, "(%a)") do
+      table.insert(words, w)
+    end
+</pre>
+The <code>gfind</code> function fits perfectly with the generic <b>for</b> loop.
+It returns a function that iterates on all occurrences of
+a pattern in a string.
+
+<p>We can simplify that code a little bit more.
+When we call <code>gfind</code> with a pattern without any explicit capture,
+the function will capture the whole pattern.
+Therefore, we can rewrite the previous example like this:
+<pre>
+    words = {}
+    for w in string.gfind(s, "%a") do
+      table.insert(words, w)
+    end
+</pre>
+
+<p>For our next example,
+we use <em>URL encoding</em>,
+which is the encoding used by HTTP to send parameters in a URL.
+This encoding encodes special characters
+(such as `<code>=</code>&acute;, `<code>&amp;</code>&acute;, and `<code>+</code>&acute;) as <code>"%<em>XX</em>"</code>,
+where <em>XX</em> is the hexadecimal representation of the character.
+Then, it changes spaces to `<code>+</code>&acute;.
+For instance, it encodes the string <code>"a+b = c"</code> as <code>"a%2Bb+%3D+c"</code>.
+Finally, it writes each parameter name and parameter
+value with an `<code>=</code>&acute; in between
+and appends all pairs <code>name=value</code>
+with an ampersand in-between.
+For instance, the values
+<pre>
+    name = "al";  query = "a+b = c"; q="yes or no"
+</pre>
+are encoded as
+<pre>
+    name=al&amp;query=a%2Bb+%3D+c&amp;q=yes+or+no
+</pre>
+Now, suppose we want to decode this URL
+and store each value in a table, indexed by its corresponding name.
+The following function does the basic decoding:
+<pre>
+    function unescape (s)
+      s = string.gsub(s, "+", " ")
+      s = string.gsub(s, "%%(%x%x)", function (h)
+            return string.char(tonumber(h, 16))
+          end)
+      return s
+    end
+</pre>
+The first statement changes each `<code>+</code>&acute; in the string to a space.
+The second <code>gsub</code> matches all two-digit hexadecimal numerals
+preceded by `<code>%</code>&acute; and calls an anonymous function.
+That function converts the hexadecimal numeral into a number
+(<code>tonumber</code>, with base 16)
+and returns the corresponding character (<code>string.char</code>).
+For instance,
+<pre>
+    print(unescape("a%2Bb+%3D+c"))  --> a+b = c
+</pre>
+
+<p>To decode the pairs <code>name=value</code> we use <code>gfind</code>.
+Because both names and values cannot contain either `<code>&amp;</code>&acute; or `<code>=</code>&acute;,
+we can match them with the pattern '<code>[^&amp;=]+</code>':
+<pre>
+    cgi = {}
+    function decode (s)
+      for name, value in string.gfind(s, "([^&amp;=]+)=([^&amp;=]+)") do
+        name = unescape(name)
+        value = unescape(value)
+        cgi[name] = value
+      end
+    end
+</pre>
+That call to <code>gfind</code> matches all pairs in the form <code>name=value</code>
+and, for each pair, the iterator returns the corresponding captures
+(as marked by the parentheses in the matching string)
+as the values to <code>name</code> and <code>value</code>.
+The loop body simply calls <code>unescape</code> on both strings
+and stores the pair in the <code>cgi</code> table.
+
+<p>The corresponding encoding is also easy to write.
+First, we write the <code>escape</code> function;
+this function encodes all special characters as a `<code>%</code>&acute;
+followed by the character ASCII code in hexadecimal
+(the <code>format</code> option <code>"%02X"</code> makes
+an hexadecimal number with two digits,
+using 0 for padding),
+and then changes spaces to `<code>+</code>&acute;:
+<pre>
+    function escape (s)
+      s = string.gsub(s, "([&amp;=+%c])", function (c)
+            return string.format("%%%02X", string.byte(c))
+          end)
+      s = string.gsub(s, " ", "+")
+      return s
+    end
+</pre>
+The <code>encode</code> function traverses the table to be encoded,
+building the resulting string:
+<pre>
+    function encode (t)
+      local s = ""
+      for k,v in pairs(t) do
+        s = s .. "&amp;" .. escape(k) .. "=" .. escape(v)
+      end
+      return string.sub(s, 2)     -- remove first `&amp;'
+    end
+    
+    t = {name = "al",  query = "a+b = c", q="yes or no"}
+    print(encode(t)) --> q=yes+or+no&amp;query=a%2Bb+%3D+c&amp;name=al
+</pre>
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="20.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

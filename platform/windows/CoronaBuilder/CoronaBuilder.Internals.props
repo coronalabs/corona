@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="..\WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.Externals.props" />
+    <Import Project="..\Lua.Library\Lua.Library.Externals.props" />
+    <Import Project="..\Corona.Native.Library.Win32\Corona.Native.Library.Static.Win32.Externals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <TargetName>CoronaBuilder</TargetName>
+    <OutDir>$(SolutionDir)Bin\Corona\</OutDir>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>Rtt_LUA_COMPILER;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Rtt;..\..\..\external\JDK7\include;..\..\..\external\JDK7\include\win32;..\..\..\external\rcedit\Project\src;..\..\..\external\sundown\Project;..\..\..\external\winutil;..\..\..\modules\simulator;..\..\..\platform\android;..\..\..\platform\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>REM Digitally sign the application.
+if $(ConfigurationName) == Release (
+   call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"
+)
+
+REM copy "..\..\..\sdk\dmg\Corona3rdPartyLicenses.txt" "$(OutDir)" /Y
+</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

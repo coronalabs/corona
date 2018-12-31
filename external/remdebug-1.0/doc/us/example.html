@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>RemDebug - Remote Debugger for the Lua programming language</title>
+    <link rel="stylesheet" href="http://www.keplerproject.org/doc.css" type="text/css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+
+<div id="container">
+	
+<div id="product">
+	<div id="product_logo"><a href="http://www.keplerproject.org/remdebug">
+		<img alt="RemDebug logo" src="remdebug.png" />
+	</a></div>
+	<div id="product_name"><big><strong>RemDebug</strong></big></div>
+	<div id="product_description">Remote Debugger for the Lua programming language</div>
+</div> <!-- id="product" -->
+
+<div id="main">
+
+<div id="navigation">
+
+<h1>RemDebug</h1>
+
+<ul>
+    <li><a href="index.html">Home</a>
+        <ul>
+            <li> <a href="index.html#over">Overview</a></li>
+            <li> <a href="index.html#status">Status</a></li>
+            <li> <a href="index.html#download">Download</a></li>
+            <li> <a href="index.html#dependencies">Dependencies</a></li>
+            <li> <a href="index.html#history">History</a></li>
+            <li> <a href="index.html#credits">Credits</a></li>
+            <li> <a href="index.html#contact">Contact</a></li>
+        </ul>
+    </li>
+    <li><a href="manual.html">Manual</a>
+        <ul>
+            <li> <a href="manual.html#over">Introduction</a></li>
+            <li> <a href="manual.html#installation">Installation</a></li>
+            <li> <a href="manual.html#running">Running</a></li>
+            <li> <a href="manual.html#commands">Commands</a></li>
+        </ul>
+    </li>
+    <li><strong>Example</strong></li>
+    <li><a href="http://luaforge.net/projects/remdebug/">Project</a>
+        <ul>
+            <li><a href="http://luaforge.net/tracker/?group_id=11">Bug Tracker</a></li>
+            <li><a href="http://luaforge.net/scm/?group_id=11">CVS</a></li>
+        </ul>
+    </li>
+    <li><a href="license.html">License</a></li>
+</ul>
+
+</div> <!-- id="navigation" -->
+
+<div id="content">
+
+<h2><a name="example"></a>Example of Execution</h2>
+
+<p>
+This is an example of a debugging session of the following script (<code>test.lua</code>):
+</p>
+
+<pre class="example">
+ 1    require"remdebug.engine"
+ 2
+ 3    remdebug.engine.start()
+ 4    
+ 5    local tab = {
+ 6      foo = 1,
+ 7      bar = 2
+ 8    }
+ 9
+10    print("Start")
+11
+12    function bar()
+13      print("In bar 1")
+14      print("In bar 2")
+15    end
+16
+17    for i = 1, 10 do
+18      print("Loop")
+19      bar()
+20      tab.foo = tab.foo * 2
+21    end
+22
+23    print("End")
+</pre>
+
+<p>
+First run the RemDebug controller:
+</p>
+
+<pre class="example">
+% lua50 controller.lua
+Lua Remote Debugger
+Run the program you wish to debug
+</pre>
+
+<p>
+At this moment you can run your target program (in another window):
+</p>
+
+<pre class="example">
+% lua50 test.lua
+</pre>
+
+<p>
+Now go back to the window where you ran <code>controller.lua</code> (this assumes
+you are running <code>test.lua</code> inside <code>C:\development\kepler</code> on a
+Windows system):
+</p>
+
+<pre class="example">
+Paused at file C:/development/kepler/test.lua
+Type 'help' for commands
+> basedir C:/development/kepler/
+New base directory is C:/development/kepler/
+> basedir
+C:/development/kepler/
+> step
+Paused at file C:/development/kepler/test.lua line 6
+> over
+Paused at file C:/development/kepler/test.lua line 7
+> over
+Paused at file C:/development/kepler/test.lua line 10
+> over
+Paused at file C:/development/kepler/test.lua line 15
+> setb test.lua 19
+> run
+</pre>
+
+<p>
+You can change to the application window anytime to see its output. Back to the debugger session:
+</p>
+
+<pre class="example">
+Paused at file C:/development/kepler/test.lua line 19
+> run
+Paused at file C:/development/kepler/test.lua line 19
+> eval tab.foo
+2
+> eval tab.bar
+2
+> exec old_tab = tab
+nil
+> exec tab = 2
+nil
+> eval tab
+2
+> exec tab = old_tab
+nil
+> eval tab.foo
+2
+> run
+Paused at file C:/development/kepler/test.lua line 19
+> eval tab.foo
+4
+> delb test.lua 19
+> setw tab.foo == 32
+Inserted watch exp no. 1
+> run
+Paused at file C:/development/kepler/test.lua line 17
+  (watch expression 1: [tab.foo = 32])
+> eval tab.foo
+32
+> delw 1
+> run
+Program finished
+</pre>
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+
+<div id="about">
+	<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+	<p><small>$Id: example.html,v 1.8 2006/07/27 20:43:15 carregal Exp $</small></p>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

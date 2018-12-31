@@ -1,0 +1,83 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2018 Corona Labs Inc.
+// Contact: support@coronalabs.com
+//
+// This file is part of the Corona game engine.
+//
+// Commercial License Usage
+// Licensees holding valid commercial Corona licenses may use this file in
+// accordance with the commercial license agreement between you and 
+// Corona Labs Inc. For licensing terms and conditions please contact
+// support@coronalabs.com or visit https://coronalabs.com/com-license
+//
+// GNU General Public License Usage
+// Alternatively, this file may be used under the terms of the GNU General
+// Public license version 3. The license is as published by the Free Software
+// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
+// of this file. Please review the following information to ensure the GNU 
+// General Public License requirements will
+// be met: https://www.gnu.org/licenses/gpl-3.0.html
+//
+// For overview and more information on licensing please refer to README.md
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef _Rtt_ShaderInput_H__
+#define _Rtt_ShaderInput_H__
+
+#include "Renderer/Rtt_FrameBufferObject.h"
+#include "Display/Rtt_Shader.h"
+#include "Core/Rtt_SharedPtr.h"
+#include "Renderer/Rtt_RenderData.h"
+#include "Rtt_LuaUserdataProxy.h"
+#include <map>
+#include <string>
+
+// ----------------------------------------------------------------------------
+
+namespace Rtt
+{
+
+// ----------------------------------------------------------------------------
+
+class ShaderInput : public Shader
+{
+	public:
+		typedef Shader Super;
+		typedef ShaderInput Self;
+
+	public:
+		ShaderInput( int inputChannel, std::string paintInput);
+		virtual ~ShaderInput();
+		
+		virtual Shader *Clone( Rtt_Allocator *allocator ) const;
+		
+		virtual void Log(std::string preprend, bool last);
+				
+	protected:
+		virtual void SetTextureBounds( const TextureInfo& textureInfo);
+		
+		virtual void RenderToTexture( Renderer& renderer, Geometry& cache ) const;
+
+		virtual void UpdateCache( const TextureInfo& textureInfo, const RenderData& objectData );
+
+		virtual void Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMod mod );
+		
+		virtual Texture *GetTexture() const;
+
+	private:
+		int fInputChannel;
+		std::string fPaintInput;
+		Texture *fPaint; // Does NOT own.
+
+
+};
+
+// ----------------------------------------------------------------------------
+
+} // namespace Rtt
+
+// ----------------------------------------------------------------------------
+
+#endif // _Rtt_ShaderInput_H__

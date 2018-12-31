@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="Corona.Rtt.Library.Win32.Externals.props" />
+    <Import Project="..\LPeg.Library\LPeg.Library.Externals.props" />
+    <Import Project="..\Box2D.Library\Box2D.Library.Externals.props" />
+    <Import Project="..\ALmixer.Library\ALmixer.Library.Win32.Externals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(Configuration)\$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <TargetName>CoronaLabs.Corona.Rtt</TargetName>
+    <ExtensionsToDeleteOnClean>*.lu;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link />
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

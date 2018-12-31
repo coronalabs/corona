@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 7.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="7.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="7.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#7">Chapter 7. Iterators and the Generic <b>for</b></a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="iter-closure"><h2>7.1 - Iterators and Closures</h2></a>
+
+<p>An <em>iterator</em> is any construction that allows you to
+iterate over the elements of a collection.
+In Lua, we typically represent iterators by functions:
+Each time we call that function,
+it returns a "next" element from the collection.
+
+<p>Any iterator needs to keep some state between
+successive calls,
+so that it knows where it is and how to proceed from there.
+Closures provide an excellent mechanism for that task.
+Remember that a closure is a function that accesses one or
+more local variables from its enclosing function.
+Those variables keep their values across successive calls
+to the closure,
+allowing the closure to remember where it is along a traversal.
+Of course, to create a new closure we must also create its
+external local variables.
+Therefore, a closure construction typically involves two functions:
+the closure itself;
+and a <em>factory</em>,
+the function that creates the closure.
+
+<p>As a simple example,
+let us write a simple iterator for a list.
+Unlike <code>ipairs</code>,
+this iterator does not return the index of each element,
+only the value:
+<pre>
+    function list_iter (t)
+      local i = 0
+      local n = table.getn(t)
+      return function ()
+               i = i + 1
+               if i &lt;= n then return t[i] end
+             end
+    end
+</pre>
+In this example, <code>list_iter</code> is the factory.
+Each time we call it,
+it creates a new closure (the iterator itself).
+That closure keeps its state in its external variables
+(<code>t</code>, <code>i</code>, and <code>n</code>)
+so that, each time we call it,
+it returns a next value from the list <code>t</code>.
+When there are no more values in the list,
+the iterator returns <B>nil</B>.
+
+<p>We can use such iterator with a <b>while</b>:
+<pre>
+    t = {10, 20, 30}
+    iter = list_iter(t)    -- creates the iterator
+    while true do
+      local element = iter()   -- calls the iterator
+      if element == nil then break end
+      print(element)
+    end
+</pre>
+However, it is easier to use the generic <b>for</b>.
+After all, it was designed for that kind of iteration:
+<pre>
+    t = {10, 20, 30}
+    for element in list_iter(t) do
+      print(element)
+    end
+</pre>
+The generic <b>for</b> does all the bookkeeping from an
+iteration loop:
+It calls the iterator factory;
+keeps the iterator function internally,
+so we do not need the <code>iter</code> variable;
+calls the iterator at each new iteration;
+and stops the loop when the iterator returns <B>nil</B>.
+(Later we will see that the generic <b>for</b> actually does
+more than that.)
+
+<p>As a more advanced example,
+we will write an iterator to traverse all
+the words from the current input file.
+To do this traversal, we need to keep two values:
+the current line and where we are in that line.
+With this data, we can always generate the next word.
+To keep it,
+we use two external local variables,
+<code>line</code> and <code>pos</code>:
+<pre>
+    function allwords ()
+      local line = io.read()  -- current line
+      local pos = 1           -- current position in the line
+      return function ()      -- iterator function
+        while line do         -- repeat while there are lines
+          local s, e = string.find(line, "%w+", pos)
+          if s then           -- found a word?
+            pos = e + 1       -- next position is after this word
+            return string.sub(line, s, e)     -- return the word
+          else
+            line = io.read()  -- word not found; try next line
+            pos = 1           -- restart from first position
+          end
+        end
+        return nil            -- no more lines: end of traversal
+      end
+    end
+</pre>
+The main part of the iterator function is the call to <code>string.find</code>.
+This call searches for a word in the current line,
+starting at the current position.
+It describes a "word" using the pattern '<code>%w+</code>',
+which matches one or more alphanumeric characters.
+If it finds the word,
+the function updates the current position
+to the first character after the word
+and returns that word.
+(The <code>string.sub</code> call extracts a substring from <code>line</code>
+between the given positions).
+Otherwise, the iterator reads a new line and repeats the search.
+If there are no more lines,
+it returns <B>nil</B> to signal the end of the iteration.
+
+<p>Despite its complexity, the use of <code>allwords</code> is straightforward:
+<pre>
+    for word in allwords() do
+      print(word)
+    end
+</pre>
+This is a common situation with iterators:
+They may be difficult to write, but are easy to use.
+This is not a big problem;
+more often than not,
+end users programming in Lua do not define iterators,
+but only use those provided by the application.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="7.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

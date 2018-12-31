@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 17.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="17.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="17.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#17">Chapter 17. Weak Tables</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>17.2 - Object Attributes</h2>
+
+<p>Another important use of weak tables
+is to associate attributes with objects.
+There are endless situations where we need to attach some
+attribute to an object:
+names to functions,
+default values to tables,
+sizes to arrays,
+and so on.
+
+<p>When the object is a table,
+we can store the attribute in the table itself,
+with an appropriate unique key.
+As we saw before,
+a simple and error-proof way to create a unique key is
+to create a new object (typically a table) and use it as key.
+However, if the object is not a table,
+it cannot keep its own attributes.
+Even for tables, sometimes we may not want to store the attribute
+in the original object.
+For instance, we may want to keep the attribute private,
+or we do not want the attribute to disturb a table traversal.
+In all these cases,
+we need an alternative way to associate attributes to objects.
+Of course, an external table provides an ideal way to associate
+attributes to objects
+(it is not by chance that tables are sometimes
+called <em>associative arrays</em>).
+We use the objects as keys, and their attributes as values.
+An external table can keep attributes of any type of object
+(as Lua allows us to use any type of object as a key).
+Moreover, attributes kept in an external table do not interfere
+with other objects
+and can be as private as the table itself.
+
+<p>However, this seemingly perfect solution has a huge drawback:
+Once we use an object as a key in a table,
+we lock the object into existence.
+Lua cannot collect an object that is being used as a key.
+If we use a regular table to associate functions to its names,
+none of those functions will ever be collected.
+As you might expect,
+we can avoid this drawback by using a weak table.
+This time, however, we need weak keys.
+The use of weak keys does not prevent any key from being collected,
+once there are no other references to it.
+On the other hand, the table cannot have weak values;
+otherwise, attributes of live objects could be collected.
+
+<p>Lua itself uses this technique to keep the
+size of tables used as arrays.
+As we will see later,
+the table library offers a function to set the size of an array
+and another to get this size.
+When you set the size of an array,
+Lua stores this size in a private weak table,
+where the index is the array itself and the value is its size.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="17.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

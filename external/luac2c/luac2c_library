@@ -1,0 +1,18 @@
+#!/bin/sh -e
+
+LUAC=luac
+LUA=lua
+GCC=gcc
+GCCFLAGS="-ansi -O2 -llua -lm -ldl -shared"
+export LUA_PATH="?.lua;$LUA_PATH"
+
+lua_file="$1"
+name=`basename "$lua_file" .lua`
+lasm_file="$name.lasm"
+c_file="$name.c"
+libname=`echo "$name" | tr - _`
+output_name="$libname.so"
+
+$LUAC -l -l "$lua_file" > "$lasm_file" && rm "luac.out"
+$LUA luac2c.lua "$lasm_file" -l "$libname" > "$c_file" && rm "$lasm_file"
+$GCC -o "$output_name" "$c_file" $GCCFLAGS

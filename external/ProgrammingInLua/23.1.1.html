@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 23.1.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="23.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="23.1.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#23">Chapter 23. The Debug Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>23.1.1 - Accessing Local Variables</h3>
+
+<p>You can access the local variables of any active function
+by calling <code>getlocal</code>, from the <code>debug</code> library.
+It has two parameters:
+the stack level of the function you are querying
+and a variable index.
+It returns two values:
+the name and the current value of that variable.
+If the variable index is larger than the number of active variables,
+<code>getlocal</code> returns <B>nil</B>.
+If the stack level is invalid, it raises an error.
+(You can use <code>debug.getinfo</code> to check the
+validity of a stack level.)
+
+<p>Lua numbers local variables in the
+order that they appear in a function,
+counting only the variables that are active
+in the current scope of the function.
+For instance,
+the code
+<pre>
+    function foo (a,b)
+      local x
+      do local c = a - b end
+      local a = 1
+      while true do
+        local name, value = debug.getlocal(1, a)
+        if not name then break end
+        print(name, value)
+        a = a + 1
+      end
+    end
+    
+    foo(10, 20)
+</pre>
+will print
+<pre>
+    a       10
+    b       20
+    x       nil
+    a       4
+</pre>
+The variable with index 1 is <code>a</code> (the first parameter),
+2 is <code>b</code>, 3 is <code>x</code>, and 4 is another <code>a</code>.
+At the point where <code>getlocal</code> is called,
+<code>c</code> is already out of scope,
+while <code>name</code> and <code>value</code> are not yet in scope.
+(Remember that local variables are only visible <em>after</em> their
+initialization code.)
+
+<p>You can also change the values of local variables,
+with <code>debug.setlocal</code>.
+Its first two parameters are a stack level
+and a variable index, like in <code>getlocal</code>.
+Its third parameter is the new value for that variable.
+It returns the variable name,
+or <B>nil</B> if the variable index is out of scope.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="23.1.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

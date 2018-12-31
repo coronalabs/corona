@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 7.5</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="7.4.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="8.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#7">Chapter 7. Iterators and the Generic <b>for</b></a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>7.5 - True Iterators</h2>
+
+<p>The name "iterator" is a little misleading,
+because our iterators do not iterate:
+What iterates is the <b>for</b> loop.
+Iterators only provide the successive values for the iteration.
+Maybe a better name would be "generator",
+but "iterator" is already well established in other languages,
+such as Java.
+
+<p>However, there is another way to build iterators
+wherein iterators actually do the iteration.
+When we use such iterators we do not write a loop;
+instead, we simply call the iterator with an argument
+that describes what the iterator must do at each iteration.
+More specifically,
+the iterator receives as argument a function that it calls
+inside its loop.
+
+<p>As a concrete example,
+let us rewrite once more the <code>allwords</code> iterator using this style:
+<pre>
+    function allwords (f)
+      -- repeat for each line in the file
+      for l in io.lines() do
+        -- repeat for each word in the line
+        for w in string.gfind(l, "%w+") do
+          -- call the function
+          f(w)
+        end
+      end
+    end
+</pre>
+To use such iterator, we must supply the loop body as a function.
+If we only want to print each word,
+we simply use <code>print</code>:
+<pre>
+    allwords(print)
+</pre>
+More often, we use an anonymous function as the body.
+For instance, the next code fragment counts how many times
+the word "hello" appears in the input file:
+<pre>
+    local count = 0
+    allwords(function (w)
+      if w == "hello" then count = count + 1 end
+    end)
+    print(count)
+</pre>
+The same task, written with the previous iterator style,
+
+is not very different:
+<pre>
+    local count = 0
+    for w in allwords() do
+      if w == "hello" then count = count + 1 end
+    end
+    print(count)
+</pre>
+
+<p>True iterators were popular in older versions of Lua,
+when the language did not have the <b>for</b> statement.
+How do they compare with generator-style iterators?
+Both styles have approximately the same overhead:
+one function call per iteration.
+On the one hand,
+it is easier to write the iterator with this second style
+(although we can recover this easiness with coroutines).
+On the other hand,
+the generator style is more flexible.
+First, it allows two or more parallel iterations.
+(For instance, consider the problem of iterating over two files
+comparing them word by word.)
+Second, it allows the use of <b>break</b> and <b>return</b> inside
+the iterator body.
+(With a true iterator,
+a <b>return</b> returns from the anonymous function,
+not from the function doing the iteration.)
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="8.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

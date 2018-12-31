@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="..\Corona.Native.Library.Win32\Corona.Native.Library.Dynamic.Win32.Externals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)Bin\AppTemplates\Win32\</OutDir>
+    <TargetName>Corona.App</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>REM Copy app template files to this project's intermediate directory to be zipped up.
+if exist "$(IntDir)AppTemplate" (
+   rmdir /q /s "$(IntDir)AppTemplate"
+)
+mkdir "$(IntDir)AppTemplate"
+copy "$(TargetPath)" "$(IntDir)AppTemplate" /Y
+copy "$(SolutionDir)Bin\Corona\ALmixer.dll" "$(IntDir)AppTemplate" /Y
+copy "$(SolutionDir)Bin\Corona\CoronaLabs.Corona.Native.dll" "$(IntDir)AppTemplate" /Y
+copy "$(SolutionDir)Bin\Corona\lua.dll" "$(IntDir)AppTemplate" /Y
+copy "$(SolutionDir)Bin\Corona\OpenAL32.dll" "$(IntDir)AppTemplate" /Y
+copy "$(SolutionDir)Bin\Corona\pthreads.dll" "$(IntDir)AppTemplate" /Y
+xcopy "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC$(PlatformToolsetVersion).CRT\*.dll" "$(IntDir)AppTemplate" /Y /I
+xcopy "$(SolutionDir)Bin\Corona\Resources\Corona" "$(IntDir)AppTemplate\Resources" /Y /I
+
+REM Zip up the app template and copy it into the Corona directory. Needed for local builds via the Corona Simulator.
+set coronaSdkTargetPath=$(SolutionDir)Bin\Corona\Resources\AppTemplates\Win32
+if exist "%coronaSdkTargetPath%" (
+   rmdir /q /s "%coronaSdkTargetPath%"
+)
+mkdir "%coronaSdkTargetPath%"
+"$(SolutionDir)Build.Tools\7za" a -tzip -r -y "%coronaSdkTargetPath%\Template.zip" "$(ProjectDir)$(IntDir)AppTemplate\*.*"
+
+REM Unzip the app template to the target directory. This achieves two things:
+REM (1) Ensures that we run the app template under the debugger the same way it'll work via simulator local builds.
+REM (2) Sets up the app template directory to be used by server remote builds.
+"$(SolutionDir)Build.Tools\7za" x -y "%coronaSdkTargetPath%\Template.zip" -o"$(TargetDir)."
+</Command>
+    </PostBuildEvent>
+    <Link />
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

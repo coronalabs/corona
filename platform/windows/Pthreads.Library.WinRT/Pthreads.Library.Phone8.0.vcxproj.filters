@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="pthread.cpp" />
+    <ClCompile Include="Pthreads\BaseMutex.cpp">
+      <Filter>Pthreads</Filter>
+    </ClCompile>
+    <ClCompile Include="Pthreads\Mutex.cpp">
+      <Filter>Pthreads</Filter>
+    </ClCompile>
+    <ClCompile Include="Pthreads\RecursiveMutex.cpp">
+      <Filter>Pthreads</Filter>
+    </ClCompile>
+    <ClCompile Include="Pthreads\ThreadData.cpp">
+      <Filter>Pthreads</Filter>
+    </ClCompile>
+    <ClCompile Include="Pthreads\ThreadDataManager.cpp">
+      <Filter>Pthreads</Filter>
+    </ClCompile>
+    <ClCompile Include="Pthreads\KeyDataCollection.cpp">
+      <Filter>Pthreads</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="pthread.h" />
+    <ClInclude Include="Pthreads\BaseMutex.h">
+      <Filter>Pthreads</Filter>
+    </ClInclude>
+    <ClInclude Include="Pthreads\Mutex.h">
+      <Filter>Pthreads</Filter>
+    </ClInclude>
+    <ClInclude Include="Pthreads\RecursiveMutex.h">
+      <Filter>Pthreads</Filter>
+    </ClInclude>
+    <ClInclude Include="Pthreads\ThreadData.h">
+      <Filter>Pthreads</Filter>
+    </ClInclude>
+    <ClInclude Include="Pthreads\ThreadDataManager.h">
+      <Filter>Pthreads</Filter>
+    </ClInclude>
+    <ClInclude Include="Pthreads\KeyDataCollection.h">
+      <Filter>Pthreads</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Pthreads">
+      <UniqueIdentifier>{bc44458c-4c75-46b1-a606-df72e00ffb64}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

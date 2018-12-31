@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AntLiveManifest" basedir="." default="jar">
+
+    <property name="src.dir" value="src"/>
+    <property name="classes.dir" value="classes"/>
+    <property name="gen.output" value="out.txt"/>
+
+    <target name="clean" description="Delete all generated files">
+        <delete dir="${classes.dir}" failonerror="false"/>
+        <delete file="${ant.project.name}.jar"/>
+        <delete file="${gen.output}"/>
+    </target>
+
+    <target name="compile" description="Compiles the Task">
+        <mkdir dir="${classes.dir}"/>
+        <javac target="1.6" source="1.6" srcdir="${src.dir}" destdir="${classes.dir}"/>
+    </target>
+
+    <target name="jar" description="JARs the Task" depends="compile">
+        <jar destfile="${ant.project.name}.jar" basedir="${classes.dir}"/>
+    </target>
+
+
+    <sequential>
+        <fileset dir="." id="asset.fileset">
+            <exclude name="**/*.lua" unless="live.build" />
+        </fileset>
+    </sequential>
+
+    <target name="gen" description="" depends="jar">
+        <taskdef name="livegen" classname="com.coronalabs.LiveBuildManifest" classpath="${ant.project.name}.jar"/>
+        <livegen output="${gen.output}" root="${basedir}"> 
+            <path>
+                <fileset refid="asset.fileset" />
+            </path>
+        </livegen>
+
+    </target>
+
+
+
+</project>

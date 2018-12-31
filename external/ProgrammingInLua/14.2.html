@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 14.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="14.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="14.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#14">Chapter 14. The Environment</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>14.2 - Declaring Global Variables</h2>
+
+<p>Global variables in Lua do not need declarations.
+Although this is handy for small programs,
+in larger programs a simple typo can cause bugs that are difficult to find.
+However, we can change that behavior if we like.
+Because Lua keeps its global variables in a regular table,
+we can use metatables to change its behavior
+when accessing global variables.
+
+<p>A first approach is as follows:
+<pre>
+    setmetatable(_G, {
+      __newindex = function (_, n)
+        error("attempt to write to undeclared variable "..n, 2)
+      end,
+      __index = function (_, n)
+        error("attempt to read undeclared variable "..n, 2)
+      end,
+    })
+</pre>
+After that code, any attempt to access a non-existent global
+variable will trigger an error:
+<pre>
+    > a = 1
+    stdin:1: attempt to write to undeclared variable a
+</pre>
+
+<p>But how do we declare new variables?
+With <code>rawset</code>, which bypasses the metamethod:
+<pre>
+    function declare (name, initval)
+      rawset(_G, name, initval or false)
+    end
+</pre>
+The <b>or</b> with <B>false</B> ensures that the new global always
+gets a value different from <B>nil</B>.
+Notice that you should define this function before
+installing the access control,
+otherwise you get an error:
+After all, you are trying to create a new global, <code>declare</code>.
+With that function in place,
+you have complete control over your global variables:
+<pre>
+    > a = 1
+    stdin:1: attempt to write to undeclared variable a
+    > declare"a"
+    > a = 1             -- OK
+</pre>
+
+<p>But now, to test whether a variable exists,
+we cannot simply compare it to <B>nil</B>;
+if it is <B>nil</B>, the access will throw an error.
+Instead, we use <code>rawget</code>,
+which avoids the metamethod:
+<pre>
+    if rawget(_G, var) == nil then
+      -- `var' is undeclared
+      ...
+    end
+</pre>
+
+<p>It is not difficult to change that control to allow global variables
+with <B>nil</B> value.
+All we need is an auxiliary table that keeps the names of
+declared variables.
+Whenever a metamethod is called,
+it checks in that table whether the variable is
+undeclared or not.
+The code may be like this:
+<pre>
+    local declaredNames = {}
+    function declare (name, initval)
+      rawset(_G, name, initval)
+      declaredNames[name] = true
+    end
+    setmetatable(_G, {
+      __newindex = function (t, n, v)
+        if not declaredNames[n] then
+          error("attempt to write to undeclared var. "..n, 2)
+        else
+          rawset(t, n, v)   -- do the actual set
+        end
+      end,
+      __index = function (_, n)
+        if not declaredNames[n] then
+          error("attempt to read undeclared var. "..n, 2)
+        else
+          return nil
+        end
+      end,
+    })
+</pre>
+
+<p>For both solutions, the overhead is negligible.
+With the first solution,
+the metamethods are never called during normal operation.
+In the second, they may be called, but only when the program
+accesses a variable holding a <B>nil</B>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="14.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

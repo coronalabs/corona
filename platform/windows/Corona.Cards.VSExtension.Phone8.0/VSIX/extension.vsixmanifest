@@ -1,0 +1,29 @@
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
+	<Metadata>
+		<Identity Id="CoronaLabs.Corona.Cards.WindowsPhone.a5ff5638-698f-4bcc-81b8-6737246a6046" Version="1.0" Language="en-US" Publisher="Corona Labs Inc." />
+		<DisplayName>CoronaCards for Windows Phone</DisplayName>
+		<Description xml:space="preserve">Provides Windows Phone project templates for developing apps using the Corona framework.</Description>
+		<MoreInfo>https://coronalabs.com</MoreInfo>
+		<License>Corona_License.rtf</License>
+		<Icon>ExtensionIcon32x32.png</Icon>
+		<PreviewImage>ExtensionPreview200x200.png</PreviewImage>
+		<GettingStartedGuide>https://docs.coronalabs.com/daily/coronacards/wp8/index.html</GettingStartedGuide>
+		<Tags>Corona, Windows Phone 8, Xaml, DirectX, Direct3D, Lua</Tags>
+	</Metadata>
+	<Installation AllUsers="true">
+		<InstallationTarget Id="Microsoft.VisualStudio.VPDExpress" Version="[11.0,15.0)" />
+		<InstallationTarget Id="Microsoft.VisualStudio.VSWinExpress" Version="[12.0.30501,15.0)" />
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0,15.0)" />
+		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[11.0,15.0)" />
+		<InstallationTarget Id="Microsoft.VisualStudio.Premium" Version="[11.0,15.0)" />
+		<InstallationTarget Id="Microsoft.VisualStudio.Ultimate" Version="[11.0,15.0)" />
+	</Installation>
+	<Dependencies>
+		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,5.0)" />
+		<Dependency Version="1.0" DisplayName="Corona Framework for Windows Phone" Id="CoronaLabs.Corona.Framework.WindowsPhone.36706714-9F1F-4691-969C-377BCFEA598A" Location="CoronaLabs.Corona.Framework.WindowsPhone.vsix" />
+	</Dependencies>
+	<Assets>
+		<Asset Type="Microsoft.VisualStudio.VsPackage" Path="extension.pkgdef" />
+		<Asset Type="Microsoft.VisualStudio.ProjectTemplate" Path="ProjectTemplates"/>
+	</Assets>
+</PackageManifest>

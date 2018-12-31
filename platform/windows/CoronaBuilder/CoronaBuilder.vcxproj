@@ -1,0 +1,391 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EAFC16C3-22B1-4C46-BEDE-8828226D926B}</ProjectGuid>
+    <RootNamespace>CoronaBuilder</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="CoronaBuilder.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="CoronaBuilder.Internals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>..\..\..\tools\CoronaBuilder;..\..\..\tools\app_sign;..\..\..\tools\car;..\Corona.Native.Library.Win32\Rtt;..\Corona.Native.Library.Win32;..\Corona.Simulator;..\Corona.Simulator\Rtt;..\..\..\librtt\Core;..\..\..\librtt\Corona;..\..\..\librtt;..\..\..\external\hmac;..\..\..\external\lua-5.1.3\src;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);..\..\..\external\rsa;..\..\..\external\luafilesystem\src</IncludePath>
+    <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <IncludePath>..\..\..\tools\CoronaBuilder;..\..\..\tools\app_sign;..\..\..\tools\car;..\Corona.Native.Library.Win32\Rtt;..\Corona.Native.Library.Win32;..\Corona.Simulator;..\Corona.Simulator\Rtt;..\..\..\librtt\Core;..\..\..\librtt\Corona;..\..\..\librtt;..\..\..\external\hmac;..\..\..\external\lua-5.1.3\src;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);..\..\..\external\rsa;..\..\..\external\luafilesystem\src</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>CORONABUILDER_WIN32;CORONABUILDER_HTML5;CORONABUILDER_ANDROID;CORONABUILDER_LINUX;WIN32;_CONSOLE;_LIB;Rtt_WIN_ENV;Rtt_WIN_DESKTOP_ENV;Rtt_NO_GUI;Rtt_NO_ARCHIVE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>mfc120ud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>true</ValidateAllParameters>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent />
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <PreBuildEvent>
+      <Command>../Build.Tools/TemplateToLua.bat "../../../tools/CoronaBuilder/_CoronaSetup_android.lua.template" "../../../tools/CoronaBuilder/_CoronaSetup_android.lua"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>CORONABUILDER_WIN32;CORONABUILDER_HTML5;CORONABUILDER_ANDROID;WIN32;_CONSOLE;_LIB;Rtt_WIN_ENV;Rtt_WIN_DESKTOP_ENV;Rtt_NO_GUI;Rtt_NO_ARCHIVE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>true</ValidateAllParameters>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent />
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <PostBuildEvent>
+      <Command>if $(ConfigurationName) == Release ( call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)" )</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>../Build.Tools/TemplateToLua.bat "../../../tools/CoronaBuilder/_CoronaSetup_android.lua.template" "../../../tools/CoronaBuilder/_CoronaSetup_android.lua"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\hmac\hmac_sha2.c" />
+    <ClCompile Include="..\..\..\external\hmac\sha2.c" />
+    <ClCompile Include="..\..\..\external\lpeg\lpeg.c" />
+    <ClCompile Include="..\..\..\external\luafilesystem\src\lfs.c" />
+    <ClCompile Include="..\..\..\external\rcedit\Project\src\rescle.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\rsa\prime.cpp" />
+    <ClCompile Include="..\..\..\external\rsa\rsa.cpp" />
+    <ClCompile Include="..\..\..\external\rsa\vlong.cpp" />
+    <ClCompile Include="..\..\..\external\rsa\vlong_io.cpp" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\autolink.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\buffer.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\houdini_href_e.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\houdini_html_e.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\html.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\html_smartypants.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\markdown.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\stack.c" />
+    <ClCompile Include="..\..\..\external\winutil\BtnST.cpp" />
+    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp" />
+    <ClCompile Include="..\..\..\external\winutil\SimpleBrowser.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Array.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Assert.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_AutoResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_FileSystem.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Math.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_MD4.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_MessageDigest.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_OperationResult.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_RefCount.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_ResourceHandle.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_SharedCount.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_String.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Time.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_UseCount.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_VersionTimestamp.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_WeakCount.cpp" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaLog.c" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaLua.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_PlatformBitmap.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputAxisCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputAxisDescriptor.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputAxisType.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputDeviceCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputDeviceConnectionState.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputDeviceDescriptor.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputDeviceType.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_PlatformInputAxis.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_PlatformInputDevice.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputAxisCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Archive.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_JavaHost.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Lua.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Message.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Preference.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PreferenceCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PreferenceValue.cpp" />
+    <ClCompile Include="..\..\..\tools\app_sign\Rtt_AppSign.cpp" />
+    <ClCompile Include="..\..\..\tools\car\Rtt_Car.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerAndroidFactory.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerHTML5Factory.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerLinuxFactory.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerWin32Factory.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilderSplashControl.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.cpp" />
+    <ClCompile Include="..\..\android\Rtt_AndroidAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_LinuxAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_WebAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\AntHost.cpp" />
+    <ClCompile Include="..\..\shared\ListKeyStore.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c" />
+    <ClCompile Include="..\..\shared\Rtt_Authorization.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_AuthorizationTicket.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformConnection.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformDictionaryWrapper.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformObjectWrapper.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_TargetAndroidAppStore.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_TargetDevice.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_WebServicesSession.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLine.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunner.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunResult.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\Interop\OperationResult.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\Rtt\Rtt_WinCrypto.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\WinFile.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp" />
+    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackager.cpp" />
+    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackagerParams.cpp" />
+    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinConnection.cpp" />
+    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinDictionaryWrapper.cpp" />
+    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinPlatformServices.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerFactory.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_BuildParams.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_ConsoleAuthorizationDelegate.cpp" />
+    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilder.cpp" />
+    <ClCompile Include="main.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\hmac\hmac_sha2.h" />
+    <ClInclude Include="..\..\..\external\hmac\sha2.h" />
+    <ClInclude Include="..\..\..\external\lpeg\lpeg.h" />
+    <ClInclude Include="..\..\..\external\luafilesystem\src\lfs.h" />
+    <ClInclude Include="..\..\..\external\rcedit\Project\src\rescle.h" />
+    <ClInclude Include="..\..\..\external\rsa\prime.hpp" />
+    <ClInclude Include="..\..\..\external\rsa\rsa.hpp" />
+    <ClInclude Include="..\..\..\external\rsa\vlong.hpp" />
+    <ClInclude Include="..\..\..\external\rsa\vlong_io.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\autolink.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\buffer.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\houdini.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\html.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\html_blocks.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\markdown.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\stack.h" />
+    <ClInclude Include="..\..\..\external\winutil\BtnST.h" />
+    <ClInclude Include="..\..\..\external\winutil\DirDialog.h" />
+    <ClInclude Include="..\..\..\external\winutil\dirent.h" />
+    <ClInclude Include="..\..\..\external\winutil\SimpleBrowser.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Array.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Assert.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_AutoResource.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_FileSystem.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Math.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_MD4.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_MessageDigest.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_OperationResult.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_RefCount.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_ResourceHandle.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedCount.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedCountImpl.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedPtr.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedStringPtr.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_String.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Time.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_UseCount.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_ValueResult.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_VersionTimestamp.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_WeakCount.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_WeakPtr.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaLog.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaLua.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_PlatformBitmap.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputAxisCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputAxisDescriptor.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputAxisType.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputDeviceCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputDeviceConnectionState.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputDeviceDescriptor.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputDeviceType.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_PlatformInputAxis.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_PlatformInputDevice.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputAxisCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Archive.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_JavaHost.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Lua.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Message.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MPlatformDevice.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Preference.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PreferenceValue.h" />
+    <ClInclude Include="..\..\..\tools\app_sign\Rtt_AppSign.h" />
+    <ClInclude Include="..\..\..\tools\car\Rtt_Car.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilderSplashControl.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.h" />
+    <ClInclude Include="..\..\android\Rtt_AndroidAppPackager.h" />
+    <ClInclude Include="..\..\shared\Rtt_LinuxAppPackager.h" />
+    <ClInclude Include="..\..\shared\Rtt_WebAppPackager.h" />
+    <ClInclude Include="..\..\shared\AntHost.h" />
+    <ClInclude Include="..\..\shared\jniUtils.h" />
+    <ClInclude Include="..\..\shared\ListKeyStore.h" />
+    <ClInclude Include="..\..\shared\Rtt_AndroidSupportTools.h" />
+    <ClInclude Include="..\..\shared\Rtt_Authorization.h" />
+    <ClInclude Include="..\..\shared\Rtt_AuthorizationTicket.h" />
+    <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h" />
+    <ClInclude Include="..\..\shared\Rtt_MAuthorizationDelegate.h" />
+    <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformConnection.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformDictionaryWrapper.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformObjectWrapper.h" />
+    <ClInclude Include="..\..\shared\Rtt_TargetAndroidAppStore.h" />
+    <ClInclude Include="..\..\shared\Rtt_TargetDevice.h" />
+    <ClInclude Include="..\..\shared\Rtt_WebServicesSession.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLine.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunner.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunResult.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\Interop\OperationResult.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\Rtt\Rtt_WinCrypto.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\WinFile.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\WinString.h" />
+    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackager.h" />
+    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackagerParams.h" />
+    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinPlatformServices.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinConnection.h" />
+    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinDictionaryWrapper.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerFactory.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_BuildParams.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_ConsoleAuthorizationDelegate.h" />
+    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilder.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\..\external\lpeg\re.lua" />
+    <LuaToCpp Include="..\..\..\tools\CoronaBuilder\BuilderPluginDownloader.lua" />
+    <LuaToCpp Include="..\..\..\tools\CoronaBuilder\CoronaBuilder.lua" />
+    <LuaToCpp Include="..\..\..\tools\CoronaBuilder\_CoronaSetup_android.lua" />
+    <LuaToCpp Include="..\..\android\create_build_properties.lua" />
+    <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
+    <LuaToCpp Include="..\..\resources\webPackageApp.lua" />
+    <LuaToCpp Include="..\..\resources\CoronaPListSupport.lua" />
+    <LuaToCpp Include="..\..\resources\dkjson.lua" />
+    <LuaToCpp Include="..\..\resources\json.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CryptoPP.Library\CryptoPP.Library.Win32.vcxproj">
+      <Project>{c3520d49-0731-4bcb-be0f-db3f33cd807e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lua.Library\Lua.Library.Win32.vcxproj">
+      <Project>{d0add46c-58ee-41af-8e62-bab080d7ce21}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lua.Socket.Library\Lua.Socket.Library.Win32.vcxproj">
+      <Project>{4be37d68-ba9e-464a-bc28-510a8b39cccd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.vcxproj">
+      <Project>{0f11f26d-bcf6-4e63-a255-a577bbd1ae84}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\external\luafilesystem\src\lfs.def" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\Build.Tools\LuaToCppTask.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="CoronaBuilder.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

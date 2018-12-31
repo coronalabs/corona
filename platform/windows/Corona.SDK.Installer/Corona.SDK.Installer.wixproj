@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.9</ProductVersion>
+    <ProjectGuid>81bdd598-7984-428e-a5af-4d8de538d5be</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>Corona</OutputName>
+    <OutputType>Package</OutputType>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>Bin\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;CoronaSdkDir=$(SolutionDir)Bin\Corona;SampleProjectsDir=$(SolutionDir)..\..\..\docs\SampleCode</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>Bin\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>CoronaSdkDir=$(SolutionDir)Bin\Corona;SampleProjectsDir=$(SolutionDir)..\..\..\docs\SampleCode</DefineConstants>
+    <CompilerAdditionalOptions>-dRelease=$(Release)</CompilerAdditionalOptions>
+  </PropertyGroup>
+  <Import Project="$(WixTargetsPath)" />
+  <ItemGroup>
+    <Content Include="Banner.bmp" />
+    <Content Include="DialogBackground.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Generated Files\ApplicationFiles.wxs">
+      <Link>Generated Files\ApplicationFiles.wxs</Link>
+    </Compile>
+    <Compile Include="Generated Files\PDBFile.wxs" />
+    <Compile Include="Generated Files\SampleProjectFiles.wxs">
+      <Link>Generated Files\SampleProjectFiles.wxs</Link>
+    </Compile>
+    <Compile Include="Main.wxs" />
+    <Compile Include="UI.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Generated Files" />
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixFirewallExtension">
+      <HintPath>$(WixExtDir)\WixFirewallExtension.dll</HintPath>
+      <Name>WixFirewallExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+   call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)" "Corona Setup"
+)
+
+mkdir "$(SolutionDir)Bin\$(ProjectName)"
+copy "$(TargetPath)" "$(SolutionDir)Bin\$(ProjectName)"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+		  if $(Configuration) == Release (
+   REM Delete the target directories.
+   rmdir /q /s "$(SolutionDir)Bin\$(ProjectName)"
+   rmdir /q /s "$(SolutionDir)Bin\Corona"
+   rmdir /q /s "$(SolutionDir)Bin\Corona.Enterprise"
+   rmdir /q /s "$(SolutionDir)Bin\AppTemplates\Win32"
+
+   mkdir "$(SolutionDir)Bin\Corona"
+   move /y "$(SolutionDir)Bin\Native" "$(SolutionDir)Bin\Corona\"
+
+   REM Compile all Corona related projects to the target directory.
+   "$(DevEnvDir)devenv" "$(SolutionDir)Corona.Shell.sln" /rebuild "Release|Win32"
+   "$(DevEnvDir)devenv" "$(SolutionDir)Corona.Simulator.sln" /build "Release|Win32"
+   "$(DevEnvDir)devenv" "$(SolutionDir)CoronaBuilder.sln" /build "Release|Win32"
+
+   REM Save Corona Simulator.pdb
+   copy "$(SolutionDir)Bin\Corona\Corona Simulator.pdb" %25TEMP%25
+
+   REM Delete intermediate/debugging files from the target directories.
+   del /q /s "$(SolutionDir)Bin\Corona\%2a.exp"
+   del /q /s "$(SolutionDir)Bin\Corona\%2a.ilk"
+   del /q /s "$(SolutionDir)Bin\Corona\%2a.lib"
+   del /q /s "$(SolutionDir)Bin\Corona\%2a.pdb"
+   del /q /s "$(SolutionDir)Bin\AppTemplates\Win32\%2a.exp"
+   del /q /s "$(SolutionDir)Bin\AppTemplates\Win32\%2a.ilk"
+   del /q /s "$(SolutionDir)Bin\AppTemplates\Win32\%2a.lib"
+   del /q /s "$(SolutionDir)Bin\AppTemplates\Win32\%2a.pdb"
+
+   REM copy Native libs
+   xcopy /y "$(SolutionDir)Bin\Corona.Enterprise\lib" "$(SolutionDir)Bin\Corona\Native\Corona\win\lib\"
+
+   REM copy CoronaBuilder's files
+   xcopy /y "$(SolutionDir)..\..\bin\win\CopyResources.bat" "$(SolutionDir)Bin\Corona\Native\Corona\win\bin\"
+   move /y "$(SolutionDir)Bin\Corona\lfs.dll" "$(SolutionDir)Bin\Corona\Native\Corona\win\bin\"
+   move /y "$(SolutionDir)Bin\Corona\CoronaBuilder.exe" "$(SolutionDir)Bin\Corona\Native\Corona\win\bin\"
+   xcopy /y "$(SolutionDir)..\..\bin\shared\Compile.lua" "$(SolutionDir)Bin\Corona\Native\Corona\shared\bin"
+   rem move /y "$(SolutionDir)Bin\Lua\lua.exe" "$(SolutionDir)Bin\Corona\Native\Corona\win\bin\"
+   rem move /y "$(SolutionDir)Bin\Lua\lua.dll" "$(SolutionDir)Bin\Corona\Native\Corona\win\bin\"
+   move /y "$(SolutionDir)Bin\Lua\luac.exe" "$(SolutionDir)Bin\Corona\Native\Corona\win\bin\"
+
+   REM Restore Corona Simulator.pdb
+   copy "%25TEMP%25\Corona Simulator.pdb" "$(SolutionDir)Bin\Corona\"
+)
+
+REM Generate wix files for the Corona, its PDB file and its sample projects.
+"%25WIX%25\bin\heat" dir "$(SolutionDir)Bin\Corona" -t "$(ProjectDir)ExcludePDB.xsl" -dr APP_INSTALL_FOLDER -cg ApplicationFiles -ag -scom -sreg -sfrag -srd -var "var.CoronaSdkDir" -out "$(ProjectDir)Generated Files\ApplicationFiles.wxs"
+"%25WIX%25\bin\heat" file "$(SolutionDir)Bin\Corona\Corona Simulator.pdb" -dr APP_INSTALL_FOLDER -cg PDBFile -ag -scom -sreg -sfrag -srd -var "var.CoronaSdkDir" -out "$(ProjectDir)Generated Files\PDBFile.wxs"
+"%25WIX%25\bin\heat" dir "$(SolutionDir)..\..\..\docs\SampleCode" -t "$(ProjectDir)ExcludeHG.xsl" -dr SampleProjectsInstallFolder -cg SampleProjectFiles -ag -scom -sreg -sfrag -srd -var "var.SampleProjectsDir" -out "$(ProjectDir)Generated Files\SampleProjectFiles.wxs"</PreBuildEvent>
+  </PropertyGroup>
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

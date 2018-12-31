@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 27.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="27.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="27.3.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#27">Chapter 27. Techniques for Writing C Functions</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>27.3 - Storing State in C Functions</h2>
+
+<p>Frequently, C functions need to keep some non-local data,
+that is, data that outlive their invocation.
+In C, we typically use global or static variables for that need.
+When you are programming library functions for Lua, however,
+global and static variables are not a good approach.
+First, you cannot store a generic Lua value in a C variable.
+Second, a library that uses such variables cannot be used
+in multiple Lua states.
+
+<p>An alternative approach is to store such values into Lua global variables.
+This approach solves the two previous problems.
+Lua global variables store any Lua value
+and each independent state has its own independent set of global variables.
+However, this is not always a satisfactory solution,
+because Lua code can tamper with those global variables
+and therefore compromise the integrity of C data.
+To avoid this problem, Lua offers a separate table,
+called the <em>registry</em>, that C code can freely use,
+but Lua code cannot access.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="27.3.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

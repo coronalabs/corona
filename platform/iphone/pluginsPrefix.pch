@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files in all targets in the 'plugins' project
+//
+
+#ifdef __OBJC__
+	#import <Foundation/Foundation.h>
+#endif

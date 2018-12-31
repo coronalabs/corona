@@ -1,0 +1,208 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00ADF8CC157C4ECF00AF1DD1 /* LuaHashMap.c in Sources */ = {isa = PBXBuildFile; fileRef = 00ADF8CA157C4ECF00AF1DD1 /* LuaHashMap.c */; };
+		00ADF8CD157C4ECF00AF1DD1 /* LuaHashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 00ADF8CB157C4ECF00AF1DD1 /* LuaHashMap.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		00ADF8CA157C4ECF00AF1DD1 /* LuaHashMap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LuaHashMap.c; path = ../LuaHashMap.c; sourceTree = "<group>"; };
+		00ADF8CB157C4ECF00AF1DD1 /* LuaHashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaHashMap.h; path = ../LuaHashMap.h; sourceTree = "<group>"; };
+		00B1D85D157C4D7E004A8D44 /* libLuaHashMap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLuaHashMap.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		00B1D85A157C4D7E004A8D44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00B1D852157C4D7D004A8D44 = {
+			isa = PBXGroup;
+			children = (
+				00ADF8CA157C4ECF00AF1DD1 /* LuaHashMap.c */,
+				00ADF8CB157C4ECF00AF1DD1 /* LuaHashMap.h */,
+				00B1D85F157C4D7E004A8D44 /* Frameworks */,
+				00B1D85E157C4D7E004A8D44 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		00B1D85E157C4D7E004A8D44 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00B1D85D157C4D7E004A8D44 /* libLuaHashMap.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00B1D85F157C4D7E004A8D44 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		00B1D85B157C4D7E004A8D44 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00ADF8CD157C4ECF00AF1DD1 /* LuaHashMap.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		00B1D85C157C4D7E004A8D44 /* LuaHashMap_iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00B1D86A157C4D7E004A8D44 /* Build configuration list for PBXNativeTarget "LuaHashMap_iOS" */;
+			buildPhases = (
+				00B1D859157C4D7E004A8D44 /* Sources */,
+				00B1D85A157C4D7E004A8D44 /* Frameworks */,
+				00B1D85B157C4D7E004A8D44 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LuaHashMap_iOS;
+			productName = LuaHashMap_iOS;
+			productReference = 00B1D85D157C4D7E004A8D44 /* libLuaHashMap.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		00B1D854157C4D7E004A8D44 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = "PlayControl Software, LLC";
+			};
+			buildConfigurationList = 00B1D857157C4D7E004A8D44 /* Build configuration list for PBXProject "LuaHashMap_iOS" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 00B1D852157C4D7D004A8D44;
+			productRefGroup = 00B1D85E157C4D7E004A8D44 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				00B1D85C157C4D7E004A8D44 /* LuaHashMap_iOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		00B1D859157C4D7E004A8D44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00ADF8CC157C4ECF00AF1DD1 /* LuaHashMap.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		00B1D868157C4D7E004A8D44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					LUAHASHMAP_DEBUG,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		00B1D869157C4D7E004A8D44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		00B1D86B157C4D7E004A8D44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/LuaHashMap_iOS.dst;
+				PRODUCT_NAME = LuaHashMap;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		00B1D86C157C4D7E004A8D44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/LuaHashMap_iOS.dst;
+				PRODUCT_NAME = LuaHashMap;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00B1D857157C4D7E004A8D44 /* Build configuration list for PBXProject "LuaHashMap_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00B1D868157C4D7E004A8D44 /* Debug */,
+				00B1D869157C4D7E004A8D44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		00B1D86A157C4D7E004A8D44 /* Build configuration list for PBXNativeTarget "LuaHashMap_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00B1D86B157C4D7E004A8D44 /* Debug */,
+				00B1D86C157C4D7E004A8D44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 00B1D854157C4D7E004A8D44 /* Project object */;
+}

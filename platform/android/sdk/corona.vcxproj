@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="NsightTegraProject">
+    <NsightTegraProjectRevisionNumber>11</NsightTegraProjectRevisionNumber>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Tegra-Android">
+      <Configuration>Debug</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Tegra-Android">
+      <Configuration>Release</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Tegra-Android">
+      <Configuration>Shipping</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EFEF260F-570C-4298-81A1-712E3663564A}</ProjectGuid>
+    <RootNamespace>Android1</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
+    <AndroidTargetAPI>android-24</AndroidTargetAPI>
+    <AndroidMinAPI>android-15</AndroidMinAPI>
+    <AndroidStlType>stlport_static</AndroidStlType>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
+    <AndroidTargetAPI>android-15</AndroidTargetAPI>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Shipping|Tegra-Android'">
+    <AndroidTargetAPI>android-15</AndroidTargetAPI>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <AdditionalIncludeDirectories>Z:\corona\main\platform\android\ndk\jni;Z:\corona\main\librtt;Z:\corona\main\platform\shared;Z:\corona\main\platform\android\ndk;Z:\corona\main\external\lua-5.1.3\src;Z:\corona\main;Z:\corona\main\external\LuaHashMap;Z:\corona\main\librtt\Corona;C:\NVPACK1r6\android-ndk-r12b\platforms\android-24\arch-arm\usr\include\machine;Z:\corona\main\external\Box2D;Z:\corona\main\external\smoothpolygon;Z:\corona\main\external\ALmixer;Z:\corona\main\external\b2Separator-cpp;Z:\corona\main\external\openal-soft_apportable\jni\OpenAL\include\AL;Z:\corona\main\external\ALmixer\Isolated</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>Rtt_ANDROID_ENV;Rtt_DEBUG;ALMIXER_COMPILE_WITHOUT_SDL</PreprocessorDefinitions>
+      <AdditionalOptions>-U"_WIN32" %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <AntBuild>
+      <JarDirectories>Z:\corona\main\external\apache-http-legacy;Z:\corona\main\external\JNLua\bin;Z:\corona\main\external\android-support-libs\multidex;Z:\corona\main\plugins\build\licensing-google\android\bin;Z:\corona\main\plugins\build-core\network\android</JarDirectories>
+    </AntBuild>
+    <AntBuild>
+      <JarDependencies>JNLua.jar;org.apache.http.legacy.jar;android-support-multidex.jar;classes.jar;network.jar</JarDependencies>
+      <AndroidManifestLocation>Z:\corona\main\platform\android\sdk\AndroidManifest.xml</AndroidManifestLocation>
+      <NativeLibDirectories>Z:\corona\main\platform\android\libs</NativeLibDirectories>
+      <NativeLibDependencies>almixer;</NativeLibDependencies>
+    </AntBuild>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\AndroidManifest.xml">
+      <SubType>Designer</SubType>
+    </AndroidBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\ant.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\build.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\local.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidBuild Include="Z:\corona\main\platform\android\sdk\project.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ndk\jni\Android.mk" />
+    <None Include="..\ndk\jni\Application.mk" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi-v11\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi-v9\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_maps_indicator_current_position.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_maps_indicator_current_position_anim1.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_maps_indicator_current_position_anim2.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_maps_indicator_current_position_anim3.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_menu_camera.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-hdpi\ic_menu_refresh.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi-v11\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi-v9\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_maps_indicator_current_position.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_maps_indicator_current_position_anim1.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_maps_indicator_current_position_anim2.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_maps_indicator_current_position_anim3.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_menu_camera.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-ldpi\ic_menu_refresh.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi-v11\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi-v9\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_maps_indicator_current_position.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_maps_indicator_current_position_anim1.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_maps_indicator_current_position_anim2.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_maps_indicator_current_position_anim3.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_menu_camera.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-mdpi\ic_menu_refresh.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi-v11\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi-v9\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\banner.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_maps_indicator_current_position.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_maps_indicator_current_position_anim1.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_maps_indicator_current_position_anim2.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_maps_indicator_current_position_anim3.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_menu_camera.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ic_menu_refresh.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ouya_icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xhdpi\ouya_xiaomi_icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi-v11\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_maps_indicator_current_position.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_maps_indicator_current_position_anim1.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_maps_indicator_current_position_anim2.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_maps_indicator_current_position_anim3.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_menu_camera.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxhdpi\ic_menu_refresh.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable-xxxhdpi-v11\corona_statusbar_icon_default.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable\banner.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable\icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\drawable\_corona_splash_screen.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-hdpi\icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-ldpi\icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-mdpi\icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-xhdpi\icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-xxhdpi\icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\mipmap-xxxhdpi\icon.png" />
+    <None Include="Z:\corona\main\platform\android\sdk\res\raw\corona_map_view2.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <JCompile Include="src\com\ansca\corona\ActivityIndicatorDialog.java" />
+    <JCompile Include="src\com\ansca\corona\ApplicationContextProvider.java" />
+    <JCompile Include="src\com\ansca\corona\AudioRecorder.java" />
+    <JCompile Include="src\com\ansca\corona\CameraActivity.java" />
+    <JCompile Include="src\com\ansca\corona\CameraServices.java" />
+    <JCompile Include="src\com\ansca\corona\CameraView.java" />
+    <JCompile Include="src\com\ansca\corona\Controller.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaActivity.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaActivityInfo.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaApiHandler.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaApiListener.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaBeacon.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaData.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaEditText.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaEnvironment.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaLua.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaLuaErrorHandler.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaLuaEvent.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaRuntime.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeListener.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeProvider.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeTask.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeTaskDispatcher.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaRuntimeWillLoadMainListener.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaSensorManager.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaService.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaShowApiHandler.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaSplashScreenApiHandler.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaStatusBarApiHandler.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaStatusBarSettings.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaStoreApiHandler.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaSystemApiHandler.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaVideoView.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaView.java" />
+    <JCompile Include="src\com\ansca\corona\CoronaWebView.java" />
+    <JCompile Include="src\com\ansca\corona\Crypto.java" />
+    <JCompile Include="src\com\ansca\corona\FileContentProvider.java" />
+    <JCompile Include="src\com\ansca\corona\JavaToNativeShim.java" />
+    <JCompile Include="src\com\ansca\corona\MailSettings.java" />
+    <JCompile Include="src\com\ansca\corona\MediaManager.java" />
+    <JCompile Include="src\com\ansca\corona\MessageBasedTimer.java" />
+    <JCompile Include="src\com\ansca\corona\NativeToJavaBridge.java" />
+    <JCompile Include="src\com\ansca\corona\package-info.java" />
+    <JCompile Include="src\com\ansca\corona\SmsSettings.java" />
+    <JCompile Include="src\com\ansca\corona\SplashScreenBeacon.java" />
+    <JCompile Include="src\com\ansca\corona\SystemMonitor.java" />
+    <JCompile Include="src\com\ansca\corona\SystemStartupBroadcastReceiver.java" />
+    <JCompile Include="src\com\ansca\corona\Ticks.java" />
+    <JCompile Include="src\com\ansca\corona\TimeSpan.java" />
+    <JCompile Include="src\com\ansca\corona\VideoActivity.java" />
+    <JCompile Include="src\com\ansca\corona\ViewManager.java" />
+    <JCompile Include="src\com\ansca\corona\WindowOrientation.java" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="jni\importgl.h" />
+    <ClInclude Include="jni\JavaToNativeBridge.h" />
+    <ClInclude Include="jni\NativeToJavaBridge.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="jni\importgl.c" />
+    <ClCompile Include="jni\JavaToNativeBridge.cpp" />
+    <ClCompile Include="jni\JavaToNativeShim.cpp" />
+    <ClCompile Include="jni\NativeToJavaBridge.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

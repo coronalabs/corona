@@ -1,0 +1,15 @@
+
+---
+
+2013/12/18:
+
+	This directory contains a modified version of:
+
+		https://github.com/delorenj/b2Separator-cpp.git
+
+			commit 5fb6c547cca4cc25c7ca235c4ce9bbcb2f2c3fd5
+			Date:	Sun Jan 27 18:21:46 2013 -0500
+
+	The source repo was last pulled on 2013/12/18.
+
+---

@@ -1,0 +1,388 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F50D47CA1D9B61EC00679E57 /* libevent_pthreads.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D47C81D9B61EC00679E57 /* libevent_pthreads.a */; };
+		F511E5D81D81DDCC0084406E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F511E5D71D81DDCC0084406E /* AppDelegate.m */; };
+		F511E5DB1D81DDCC0084406E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F511E5DA1D81DDCC0084406E /* main.m */; };
+		F511E5DD1D81DDCC0084406E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F511E5DC1D81DDCC0084406E /* Assets.xcassets */; };
+		F511E5E01D81DDCC0084406E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F511E5DE1D81DDCC0084406E /* MainMenu.xib */; };
+		F511E5F51D81DE120084406E /* CoronaLiveServerApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = F511E5F41D81DE120084406E /* CoronaLiveServerApple.mm */; };
+		F52F453120643FDA00EAF51F /* CoronaHTTPServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52F453020643FDA00EAF51F /* CoronaHTTPServer.cpp */; };
+		F5A698761D9D34D600C51EBA /* libevent_core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5A698741D9D34D600C51EBA /* libevent_core.a */; };
+		F5A698771D9D34D600C51EBA /* libevent_extra.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5A698751D9D34D600C51EBA /* libevent_extra.a */; };
+		F5AAFC201DB1428000EBA5D2 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5AAFC1D1DB1428000EBA5D2 /* libcrypto.a */; };
+		F5AAFC211DB1428000EBA5D2 /* libevent_openssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5AAFC1E1DB1428000EBA5D2 /* libevent_openssl.a */; };
+		F5AAFC221DB1428000EBA5D2 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5AAFC1F1DB1428000EBA5D2 /* libssl.a */; };
+		F5D111A81D9B4B7600956A62 /* CoronaLiveServerCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D111A61D9B4B7500956A62 /* CoronaLiveServerCore.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F50D47C81D9B61EC00679E57 /* libevent_pthreads.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libevent_pthreads.a; path = libs/lib/libevent_pthreads.a; sourceTree = "<group>"; };
+		F511E5D31D81DDCC0084406E /* Corona Live Server.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Corona Live Server.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F511E5D61D81DDCC0084406E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F511E5D71D81DDCC0084406E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F511E5DA1D81DDCC0084406E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F511E5DC1D81DDCC0084406E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F511E5DF1D81DDCC0084406E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F511E5E11D81DDCC0084406E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F511E5F31D81DE120084406E /* CoronaLiveServerApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoronaLiveServerApple.h; sourceTree = "<group>"; };
+		F511E5F41D81DE120084406E /* CoronaLiveServerApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CoronaLiveServerApple.mm; sourceTree = "<group>"; };
+		F52F452F20643FDA00EAF51F /* CoronaHTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaHTTPServer.h; path = ../../shared/CoronaLiveServer/CoronaHTTPServer.h; sourceTree = "<group>"; };
+		F52F453020643FDA00EAF51F /* CoronaHTTPServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaHTTPServer.cpp; path = ../../shared/CoronaLiveServer/CoronaHTTPServer.cpp; sourceTree = "<group>"; };
+		F5A698741D9D34D600C51EBA /* libevent_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libevent_core.a; path = libs/lib/libevent_core.a; sourceTree = "<group>"; };
+		F5A698751D9D34D600C51EBA /* libevent_extra.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libevent_extra.a; path = libs/lib/libevent_extra.a; sourceTree = "<group>"; };
+		F5AAFC1D1DB1428000EBA5D2 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = libs/lib/libcrypto.a; sourceTree = "<group>"; };
+		F5AAFC1E1DB1428000EBA5D2 /* libevent_openssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libevent_openssl.a; path = libs/lib/libevent_openssl.a; sourceTree = "<group>"; };
+		F5AAFC1F1DB1428000EBA5D2 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = libs/lib/libssl.a; sourceTree = "<group>"; };
+		F5D111A61D9B4B7500956A62 /* CoronaLiveServerCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaLiveServerCore.cpp; path = ../../shared/CoronaLiveServer/CoronaLiveServerCore.cpp; sourceTree = "<group>"; };
+		F5D111A71D9B4B7600956A62 /* CoronaLiveServerCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLiveServerCore.h; path = ../../shared/CoronaLiveServer/CoronaLiveServerCore.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F511E5D01D81DDCC0084406E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5AAFC201DB1428000EBA5D2 /* libcrypto.a in Frameworks */,
+				F5AAFC211DB1428000EBA5D2 /* libevent_openssl.a in Frameworks */,
+				F5AAFC221DB1428000EBA5D2 /* libssl.a in Frameworks */,
+				F5A698761D9D34D600C51EBA /* libevent_core.a in Frameworks */,
+				F5A698771D9D34D600C51EBA /* libevent_extra.a in Frameworks */,
+				F50D47CA1D9B61EC00679E57 /* libevent_pthreads.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F511E5CA1D81DDCC0084406E = {
+			isa = PBXGroup;
+			children = (
+				F511E5F21D81DE030084406E /* LiveServerSources */,
+				F511E5D51D81DDCC0084406E /* CoronaLiveServer */,
+				F511E5D41D81DDCC0084406E /* Products */,
+				F51D70A61D902E1F00E17FC4 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		F511E5D41D81DDCC0084406E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F511E5D31D81DDCC0084406E /* Corona Live Server.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F511E5D51D81DDCC0084406E /* CoronaLiveServer */ = {
+			isa = PBXGroup;
+			children = (
+				F511E5D61D81DDCC0084406E /* AppDelegate.h */,
+				F511E5D71D81DDCC0084406E /* AppDelegate.m */,
+				F511E5DC1D81DDCC0084406E /* Assets.xcassets */,
+				F511E5DE1D81DDCC0084406E /* MainMenu.xib */,
+				F511E5E11D81DDCC0084406E /* Info.plist */,
+				F511E5D91D81DDCC0084406E /* Supporting Files */,
+			);
+			path = CoronaLiveServer;
+			sourceTree = "<group>";
+		};
+		F511E5D91D81DDCC0084406E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F511E5DA1D81DDCC0084406E /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F511E5F21D81DE030084406E /* LiveServerSources */ = {
+			isa = PBXGroup;
+			children = (
+				F52F453020643FDA00EAF51F /* CoronaHTTPServer.cpp */,
+				F52F452F20643FDA00EAF51F /* CoronaHTTPServer.h */,
+				F5D111A71D9B4B7600956A62 /* CoronaLiveServerCore.h */,
+				F5D111A61D9B4B7500956A62 /* CoronaLiveServerCore.cpp */,
+				F511E5F31D81DE120084406E /* CoronaLiveServerApple.h */,
+				F511E5F41D81DE120084406E /* CoronaLiveServerApple.mm */,
+			);
+			name = LiveServerSources;
+			sourceTree = "<group>";
+		};
+		F51D70A61D902E1F00E17FC4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F5AAFC1D1DB1428000EBA5D2 /* libcrypto.a */,
+				F5AAFC1E1DB1428000EBA5D2 /* libevent_openssl.a */,
+				F5AAFC1F1DB1428000EBA5D2 /* libssl.a */,
+				F5A698741D9D34D600C51EBA /* libevent_core.a */,
+				F5A698751D9D34D600C51EBA /* libevent_extra.a */,
+				F50D47C81D9B61EC00679E57 /* libevent_pthreads.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F511E5D21D81DDCC0084406E /* CoronaLiveServer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F511E5E41D81DDCC0084406E /* Build configuration list for PBXNativeTarget "CoronaLiveServer" */;
+			buildPhases = (
+				F511E5CF1D81DDCC0084406E /* Sources */,
+				F511E5D01D81DDCC0084406E /* Frameworks */,
+				F511E5D11D81DDCC0084406E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CoronaLiveServer;
+			productName = CoronaLiveServer;
+			productReference = F511E5D31D81DDCC0084406E /* Corona Live Server.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F511E5CB1D81DDCC0084406E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "Corona Labs";
+				TargetAttributes = {
+					F511E5D21D81DDCC0084406E = {
+						CreatedOnToolsVersion = 7.3.1;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = F511E5CE1D81DDCC0084406E /* Build configuration list for PBXProject "CoronaLiveServer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F511E5CA1D81DDCC0084406E;
+			productRefGroup = F511E5D41D81DDCC0084406E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F511E5D21D81DDCC0084406E /* CoronaLiveServer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F511E5D11D81DDCC0084406E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F511E5DD1D81DDCC0084406E /* Assets.xcassets in Resources */,
+				F511E5E01D81DDCC0084406E /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F511E5CF1D81DDCC0084406E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F52F453120643FDA00EAF51F /* CoronaHTTPServer.cpp in Sources */,
+				F511E5F51D81DE120084406E /* CoronaLiveServerApple.mm in Sources */,
+				F511E5DB1D81DDCC0084406E /* main.m in Sources */,
+				F511E5D81D81DDCC0084406E /* AppDelegate.m in Sources */,
+				F5D111A81D9B4B7600956A62 /* CoronaLiveServerCore.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		F511E5DE1D81DDCC0084406E /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F511E5DF1D81DDCC0084406E /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F511E5E21D81DDCC0084406E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/usr/local/opt/openssl/include/,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F511E5E31D81DDCC0084406E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/usr/local/opt/openssl/include/,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F511E5E51D81DDCC0084406E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../external/live-libs/mac/include";
+				INFOPLIST_FILE = CoronaLiveServer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../../../external/live-libs/mac/lib/",
+					"$(SDKROOT)/usr/lib/system",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaLiveServer;
+				PRODUCT_NAME = "Corona Live Server";
+			};
+			name = Debug;
+		};
+		F511E5E61D81DDCC0084406E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../external/live-libs/mac/include";
+				INFOPLIST_FILE = CoronaLiveServer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../../../external/live-libs/mac/lib/",
+					"$(SDKROOT)/usr/lib/system",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaLiveServer;
+				PRODUCT_NAME = "Corona Live Server";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F511E5CE1D81DDCC0084406E /* Build configuration list for PBXProject "CoronaLiveServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F511E5E21D81DDCC0084406E /* Debug */,
+				F511E5E31D81DDCC0084406E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F511E5E41D81DDCC0084406E /* Build configuration list for PBXNativeTarget "CoronaLiveServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F511E5E51D81DDCC0084406E /* Debug */,
+				F511E5E61D81DDCC0084406E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F511E5CB1D81DDCC0084406E /* Project object */;
+}

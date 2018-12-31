@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 19.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="19.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="19.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#19">Chapter 19. The Table Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>19.2 - Insert and Remove</h2>
+
+<p>The <code>table</code> library provides functions to insert
+and to remove elements from arbitrary positions of a list.
+The <code>table.insert</code> function inserts an element
+in a given position of an array,
+moving up other elements to open space.
+Moreover, <code>insert</code> increments the size of the array
+(using <code>setn</code>).
+For instance,
+if <code>a</code> is the array <code>{10, 20, 30}</code>,
+after the call <code>table.insert(a, 1, 15)</code> <code>a</code> will
+be <code>{15, 10, 20, 30}</code>.
+As a special (and frequent) case,
+if we call <code>insert</code> without a position,
+it inserts the element in the last position of the array
+(and, therefore, moves no elements).
+As an example,
+the following code reads the program input line by line,
+storing all lines in an array:
+<pre>
+    a = {}
+    for line in io.lines() do
+      table.insert(a, line)
+    end
+    print(table.getn(a))         --> (number of lines read)
+</pre>
+
+<p>The <code>table.remove</code> function
+removes (and returns) an element from a given position in an array,
+moving down other elements to close space
+and decrementing the size of the array.
+When called without a position,
+it removes the last element of the array.
+
+<p>With those two functions,
+it is straightforward to implement
+stacks, queues, and double queues.
+We can initialize such structures as <code>a = {}</code>.
+A push operation is equivalent to <code>table.insert(a, x)</code>;
+a pop operation is equivalent to <code>table.remove(a)</code>.
+To insert at the other end of the structure
+we use <code>table.insert(a, 1, x)</code>;
+to remove from that end we use <code>table.remove(a, 1)</code>.
+The last two operations are not particularly efficient,
+as they must move elements up and down.
+However, because the <code>table</code> library implements these functions in C,
+these loops are not too expensive
+and this implementation is good enough for small arrays
+(up to some hundred elements, say).
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="19.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

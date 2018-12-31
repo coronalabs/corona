@@ -1,0 +1,2 @@
+Add explicit 64 bit integer support rather than relying on compiler
+Roll in optional use of bounded heap memory manager

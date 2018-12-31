@@ -1,0 +1,60 @@
+
+Libpng 1.2.43beta01 - January 27, 2010
+
+This is not intended to be a public release.  It will be replaced
+within a few weeks by a public version or by another test version.
+
+Files available for download:
+
+Source files with LF line endings (for Unix/Linux) and with a
+"configure" script
+
+   libpng-1.2.43beta01.tar.xz (LZMA-compressed, recommended)
+   libpng-1.2.43beta01.tar.gz
+   libpng-1.2.43beta01.tar.bz2
+
+Source files with LF line endings (for Unix/Linux) without the
+"configure" script
+
+   libpng-1.2.43beta01-no-config.tar.xz (LZMA-compressed, recommended)
+   libpng-1.2.43beta01-no-config.tar.gz
+   libpng-1.2.43beta01-no-config.tar.bz2
+
+Source files with CRLF line endings (for Windows), without the
+"configure" script
+
+   lp1243b01.zip
+   lp1243b01.7z
+   lp1243b01.tar.bz2
+
+Project files
+
+   libpng-1.2.43beta01-project-netware.zip
+   libpng-1.2.43beta01-project-wince.zip
+
+Other information:
+
+   libpng-1.2.43beta01-README.txt
+   libpng-1.2.43beta01-KNOWNBUGS.txt
+   libpng-1.2.43beta01-LICENSE.txt
+   libpng-1.2.43beta01-Y2K-compliance.txt
+   libpng-1.2.43beta01-[previous version]-diff.txt
+
+Changes since the last public release (1.2.42):
+
+version 1.2.43beta01 [January 27, 2010]
+  Updated CMakeLists.txt for consistent indentation and to avoid an
+    unclosed if-statement warning (Philip Lowman).
+  Removed "#ifdef PNG_1_0_X / #endif" surrounding
+    PNG_READ_16_TO_8_SUPPORTED and PNG_READ_GRAY_TO_RGB_SUPPORTED
+    in pngconf.h.  These were added in libpng-1.2.41beta08 and libpng-1.0.51,
+    which introduced a binary incompatibility with libpng-1.0.50.
+  Backported new png_decompress_chunk() algorithm from libpng-1.4.1
+
+Send comments/corrections/commendations to png-mng-implement at lists.sf.net
+
+(subscription required; visit
+https://lists.sourceforge.net/lists/listinfo/png-mng-implement
+to subscribe) or to glennrp at users.sourceforge.net
+
+Glenn R-P

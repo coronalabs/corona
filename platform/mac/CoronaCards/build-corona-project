@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# build-corona-project
+#
+# Copy contents of "Corona" directory in an Xcode project to build target "Resource" directory and
+# compile any Lua files contained within
+#
+# Copyright © 2015 Corona Labs Inc.  All rights reserved
+#
+echo "Building Corona project ..."
+set -x
+
+env | fmt -w100
+
+# Exit this script if any command it runs fails
+set -o errexit
+
+# Copy changed project files (except Lua files, see compile step below)
+TARGET_DIR="${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Corona/"
+mkdir -p "$TARGET_DIR"
+
+rsync -r --checksum --exclude 'build.settings' --exclude '*.lua' "${SOURCE_ROOT}/Corona/" "$TARGET_DIR/"
+
+# Compile Lua code in project, copying it to the app bundle
+CORONACARDS_ROOT="/Users/Shared/CoronaLabs/osx/CoronaCards.framework"
+
+if [ ! -d "$CORONACARDS_ROOT" ]
+then
+	# Try a copy in the Xcode project
+	CORONACARDS_ROOT="$SOURCE_ROOT/CoronaCards.framework"
+fi
+
+# Copy CoronaCards.framework to the application
+if [ ! -d "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/CoronaCards.framework" -o "${CORONACARDS_ROOT}/Versions/Current/CoronaCards" -nt "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/CoronaCards.framework/Versions/Current/CoronaCards" ]
+then
+	mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+	rsync -r --links --checksum "${CORONACARDS_ROOT}" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/"
+fi
+
+LUAC="$CORONACARDS_ROOT/Versions/A/bin/luac"
+
+if [ ! -x "$LUAC" ]
+then
+	echo "$(basename "$0"): cannot find 'luac' to compile Lua.  Make sure CoronaCards is installed correctly"
+	exit 1
+fi
+
+# If not building debug, strip compiled Lua
+if [ "$CONFIGURATION" == "Debug" ]
+then
+	OPTIONS=
+else
+	OPTIONS="-s"
+fi
+
+# Compile updated Lua files to target directory
+cd "${SOURCE_ROOT}/Corona/"
+
+find . -name '*.lua' | while read -r LUAFILE
+do
+	if [ "$LUAFILE" -nt "$TARGET_DIR/$LUAFILE" ]
+	then
+		echo "Compiling $LUAFILE --> <APP_BUNDLE>/Resources/Corona/$LUAFILE"
+		"${LUAC}" ${OPTIONS} -o "$TARGET_DIR/$LUAFILE" "$LUAFILE"
+	fi
+done

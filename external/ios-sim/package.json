@@ -1,0 +1,20 @@
+{
+  "name": "ios-sim",
+  "version": "3.0.0",
+  "description": "launch iOS apps into the iOS Simulator from the command line (Xcode 6.0)",
+  "main": "ios-sim",
+  "scripts": {
+    "preinstall": "rake build"
+  },
+  "bin" : "build/Release/ios-sim" ,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phonegap/ios-sim"
+  },
+  "keywords": [
+    "ios-sim",
+    "iOS Simulator"
+  ],
+  "author": "Landon Fuller, Jeff Haynie, Eloy Duran, Shazron Abdullah",
+  "license": "MIT"
+}

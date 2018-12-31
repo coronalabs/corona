@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\..\..\external\ALmixer\CircularQueue.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\LinkedList.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\ALmixer.c" />
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\tErrorLib.c">
+      <Filter>Isolated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\ALmixer_RWops.c">
+      <Filter>Isolated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\SimpleMutex.c">
+      <Filter>Isolated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\SimpleThreadPosix.c">
+      <Filter>Isolated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\SoundDecoder.c">
+      <Filter>Isolated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\LGPL\wav.c">
+      <Filter>Isolated\LGPL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\LGPL\SDL_sound_minimal.c">
+      <Filter>Isolated\LGPL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\WinRTServices.cpp">
+      <Filter>Isolated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ALmixer\Isolated\LGPL\oggtremor.c">
+      <Filter>Isolated\LGPL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\CircularQueue.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\LinkedList.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\ALmixer.h" />
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\SoundDecoder.h">
+      <Filter>Isolated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\SoundDecoder_Internal.h">
+      <Filter>Isolated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\tErrorLib.h">
+      <Filter>Isolated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\ALmixer_RWops.h">
+      <Filter>Isolated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\SimpleMutex.h">
+      <Filter>Isolated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\SimpleThread.h">
+      <Filter>Isolated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\LGPL\SDL_endian_minimal.h">
+      <Filter>Isolated\LGPL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ALmixer\Isolated\WinRTServices.h">
+      <Filter>Isolated</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Isolated">
+      <UniqueIdentifier>{f1e1dac7-1b5b-42f3-b707-2bcdcbee68f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Isolated\LGPL">
+      <UniqueIdentifier>{06945a86-6306-4884-892a-59740f363d62}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

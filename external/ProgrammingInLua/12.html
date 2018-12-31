@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 12</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="11.6.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="12.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#12">Chapter 12. Data Files and Persistence</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<h1>12 - Data Files and Persistence</h1>
+
+<p>
+
+
+
+<p>When dealing with data files,
+it is usually much easier to write the data than to read them back.
+When we write a file,
+we have full control of what is going on.
+When we read a file, on the other hand,
+we do not know what to expect.
+Besides all kinds of data that a correct file may contain,
+a robust program should also handle bad files gracefully.
+Because of that, coding robust input routines is always difficult.
+
+<p>As we saw in the example of <a href="10.1.html#DataDesc">Section 10.1</a>,
+table constructors provide an interesting alternative for file formats.
+With a little extra work when writing data,
+reading becomes trivial.
+The technique is to write our data file as Lua code that,
+when runs, builds the data into the program.
+With table constructors,
+these chunks can look remarkably like a plain data file.
+
+<p>As usual, let us see an example to make things clear.
+If our data file is in a predefined format,
+such as CSV (Comma-Separated Values),
+we have little choice.
+(In <a href="20.html#StringLib">Chapter 20</a>, we will see how to read CSV in Lua.)
+However, if we are going to create the file for later use,
+we can use Lua constructors as our format, instead of CSV.
+In this format, we represent each data record as a Lua constructor.
+Instead of writing something like
+<pre>
+    Donald E. Knuth,Literate Programming,CSLI,1992
+    Jon Bentley,More Programming Pearls,Addison-Wesley,1990
+</pre>
+in our data file, we write
+<pre>
+    Entry{"Donald E. Knuth",
+          "Literate Programming",
+          "CSLI",
+          1992}
+    
+    Entry{"Jon Bentley",
+          "More Programming Pearls",
+          "Addison-Wesley",
+          1990}
+</pre>
+Remember that <code>Entry{...}</code> is the same as
+<code>Entry({...})</code>, that is,
+a call to function <code>Entry</code> with a table as its single argument.
+Therefore, this previous piece of data is a Lua program.
+To read this file,
+we only need to run it,
+with a sensible definition for <code>Entry</code>.
+For instance, the following program counts the number
+of entries in a data file:
+<pre>
+    local count = 0
+    function Entry (b) count = count + 1 end
+    dofile("data")
+    print("number of entries: " .. count)
+</pre>
+The next program collects in a set
+the names of all authors found in the file,
+and then prints them.
+(The author's name is the first field in each entry;
+so, if <code>b</code> is an entry value,
+<code>b[1]</code> is the author.)
+<pre>
+    local authors = {}      -- a set to collect authors
+    function Entry (b) authors[b[1]] = true end
+    dofile("data")
+    for name in pairs(authors) do print(name) end
+</pre>
+Notice the event-driven approach in these program fragments:
+The <code>Entry</code> function acts as a callback function,
+which is called during the <code>dofile</code> for each entry in
+the data file.
+
+<p>When file size is not a big concern,
+we can use name-value pairs for our representation:
+<pre>
+    Entry{
+      author = "Donald E. Knuth",
+      title = "Literate Programming",
+      publisher = "CSLI",
+      year = 1992
+    }
+    
+    Entry{
+      author = "Jon Bentley",
+      title = "More Programming Pearls",
+      publisher = "Addison-Wesley",
+      year = 1990
+    }
+</pre>
+(If this format reminds you of BibTeX,
+it is not a coincidence.
+BibTeX was one of the inspirations for the constructor syntax in Lua.)
+This format is what we call a <em>self-describing data</em> format,
+because each piece of data has attached to it a
+short description of its meaning.
+Self-describing data are more readable (by humans, at least)
+than CSV or other compact notations;
+they are easy to edit by hand, when necessary;
+and they allow us to make small modifications without
+having to change the data file.
+For instance,
+if we add a new field we need only a small change in the reading program,
+so that it supplies a default value when the field is absent.
+
+<p>With the name-value format,
+our program to collect authors becomes
+<pre>
+    local authors = {}      -- a set to collect authors
+    function Entry (b) authors[b.author] = true end
+    dofile("data")
+    for name in pairs(authors) do print(name) end
+</pre>
+Now the order of fields is irrelevant.
+Even if some entries do not have an author,
+we only have to change <code>Entry</code>:
+<pre>
+    function Entry (b)
+      if b.author then authors[b.author] = true end
+    end
+</pre>
+
+<p>Lua not only runs fast, but it also compiles fast.
+For instance, the above program for listing authors runs in
+less than one second for 2 MB of data.
+Again, this is not by chance.
+Data description has been one of the main applications of Lua
+since its creation
+and we took great care to make its compiler fast for large chunks.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="12.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

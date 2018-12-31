@@ -1,0 +1,20 @@
+Source Install
+==============
+
+To install OpenAL Soft, use your favorite shell to go into the build/
+directory, and run:
+
+cmake ..
+
+Assuming configuration went well, you can then build it, typically using GNU
+Make (KDevelop, MSVC, and others are possible depending on your system setup
+and CMake configuration).
+
+Please Note: Double check that the appropriate backends were detected. Often,
+complaints of no sound, crashing, and missing devices can be solved by making
+sure the correct backends are being used. CMake's output will identify which
+backends were enabled.
+
+For most systems, you will likely want to make sure ALSA, OSS, and PulseAudio
+were detected (if your target system uses them). For Windows, make sure
+DirectSound was detected.

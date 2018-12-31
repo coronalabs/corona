@@ -1,0 +1,347 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0076A7C016094C7700A9757B /* Rtt_Assert.m in Sources */ = {isa = PBXBuildFile; fileRef = 0076A7BF16094C7700A9757B /* Rtt_Assert.m */; };
+		A492D987108C61570032243A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A492D986108C61570032243A /* main.cpp */; };
+		A492D98A108C62340032243A /* Rtt_Archive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A492D988108C62340032243A /* Rtt_Archive.cpp */; };
+		C221F53B1D482BE300F45E77 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F53A1D482BE300F45E77 /* Rtt_FileSystem.cpp */; };
+		C221F53D1D482C4700F45E77 /* Rtt_Assert.c in Sources */ = {isa = PBXBuildFile; fileRef = C221F53C1D482C4700F45E77 /* Rtt_Assert.c */; };
+		C221F5401D482C7F00F45E77 /* Rtt_String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F53E1D482C7F00F45E77 /* Rtt_String.cpp */; };
+		C28D94F31F67387C0087B940 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C28D94F21F67387C0087B940 /* CoreServices.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76FAF0486AB0100D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0076A7BF16094C7700A9757B /* Rtt_Assert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Rtt_Assert.m; path = ../../librtt/Core/Rtt_Assert.m; sourceTree = "<group>"; };
+		8DD76FB20486AB0100D96B5E /* car */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = car; sourceTree = BUILT_PRODUCTS_DIR; };
+		A492D92C108C5D840032243A /* Rtt_Assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Assert.h; path = ../../librtt/Core/Rtt_Assert.h; sourceTree = SOURCE_ROOT; };
+		A492D92D108C5D840032243A /* Rtt_Build.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Build.h; path = ../../librtt/Core/Rtt_Build.h; sourceTree = SOURCE_ROOT; };
+		A492D92E108C5D840032243A /* Rtt_Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Config.h; path = ../../librtt/Core/Rtt_Config.h; sourceTree = SOURCE_ROOT; };
+		A492D933108C5D840032243A /* Rtt_Traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Traits.h; path = ../../librtt/Core/Rtt_Traits.h; sourceTree = SOURCE_ROOT; };
+		A492D934108C5D840032243A /* Rtt_Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Types.h; path = ../../librtt/Core/Rtt_Types.h; sourceTree = SOURCE_ROOT; };
+		A492D986108C61570032243A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../tools/car/main.cpp; sourceTree = SOURCE_ROOT; };
+		A492D988108C62340032243A /* Rtt_Archive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Archive.cpp; path = ../../librtt/Rtt_Archive.cpp; sourceTree = SOURCE_ROOT; };
+		A492D989108C62340032243A /* Rtt_Archive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Archive.h; path = ../../librtt/Rtt_Archive.h; sourceTree = SOURCE_ROOT; };
+		C221F5391D482BE300F45E77 /* Rtt_FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FileSystem.h; path = ../../librtt/Core/Rtt_FileSystem.h; sourceTree = "<group>"; };
+		C221F53A1D482BE300F45E77 /* Rtt_FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FileSystem.cpp; path = ../../librtt/Core/Rtt_FileSystem.cpp; sourceTree = "<group>"; };
+		C221F53C1D482C4700F45E77 /* Rtt_Assert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_Assert.c; path = ../../librtt/Core/Rtt_Assert.c; sourceTree = "<group>"; };
+		C221F53E1D482C7F00F45E77 /* Rtt_String.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_String.cpp; path = ../../librtt/Core/Rtt_String.cpp; sourceTree = "<group>"; };
+		C221F53F1D482C7F00F45E77 /* Rtt_String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_String.h; path = ../../librtt/Core/Rtt_String.h; sourceTree = "<group>"; };
+		C2654D5B171621030022FD9A /* Rtt_Car.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Car.cpp; path = ../../tools/car/Rtt_Car.cpp; sourceTree = "<group>"; };
+		C2654D5C171621030022FD9A /* Rtt_Car.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Car.h; path = ../../tools/car/Rtt_Car.h; sourceTree = "<group>"; };
+		C28D94F01F67384B0087B940 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		C28D94F21F67387C0087B940 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		C6A0FF2C0290799A04C91782 /* app_sign.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = app_sign.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76FAD0486AB0100D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C28D94F31F67387C0087B940 /* CoreServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* app_sign */ = {
+			isa = PBXGroup;
+			children = (
+				C2654D5B171621030022FD9A /* Rtt_Car.cpp */,
+				C2654D5C171621030022FD9A /* Rtt_Car.h */,
+				A492D986108C61570032243A /* main.cpp */,
+				A492D93D108C5DA60032243A /* librtt */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				C28D94EF1F67384B0087B940 /* Frameworks */,
+			);
+			name = app_sign;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				C221F53E1D482C7F00F45E77 /* Rtt_String.cpp */,
+				C221F53F1D482C7F00F45E77 /* Rtt_String.h */,
+				C221F53C1D482C4700F45E77 /* Rtt_Assert.c */,
+				0076A7BF16094C7700A9757B /* Rtt_Assert.m */,
+				A492D92C108C5D840032243A /* Rtt_Assert.h */,
+				A492D92D108C5D840032243A /* Rtt_Build.h */,
+				A492D92E108C5D840032243A /* Rtt_Config.h */,
+				C221F5391D482BE300F45E77 /* Rtt_FileSystem.h */,
+				C221F53A1D482BE300F45E77 /* Rtt_FileSystem.cpp */,
+				A492D933108C5D840032243A /* Rtt_Traits.h */,
+				A492D934108C5D840032243A /* Rtt_Types.h */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76FB20486AB0100D96B5E /* car */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A492D93D108C5DA60032243A /* librtt */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Core */,
+				A492D988108C62340032243A /* Rtt_Archive.cpp */,
+				A492D989108C62340032243A /* Rtt_Archive.h */,
+			);
+			name = librtt;
+			sourceTree = "<group>";
+		};
+		C28D94EF1F67384B0087B940 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C28D94F21F67387C0087B940 /* CoreServices.framework */,
+				C28D94F01F67384B0087B940 /* CoreFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				C6A0FF2C0290799A04C91782 /* app_sign.1 */,
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76FA90486AB0100D96B5E /* car */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "car" */;
+			buildPhases = (
+				8DD76FAB0486AB0100D96B5E /* Sources */,
+				8DD76FAD0486AB0100D96B5E /* Frameworks */,
+				8DD76FAF0486AB0100D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = car;
+			productInstallPath = "$(HOME)/bin";
+			productName = app_sign;
+			productReference = 8DD76FB20486AB0100D96B5E /* car */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0810;
+			};
+			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "car" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* app_sign */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76FA90486AB0100D96B5E /* car */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76FAB0486AB0100D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C221F53D1D482C4700F45E77 /* Rtt_Assert.c in Sources */,
+				A492D987108C61570032243A /* main.cpp in Sources */,
+				C221F53B1D482BE300F45E77 /* Rtt_FileSystem.cpp in Sources */,
+				C221F5401D482C7F00F45E77 /* Rtt_String.cpp in Sources */,
+				A492D98A108C62340032243A /* Rtt_Archive.cpp in Sources */,
+				0076A7C016094C7700A9757B /* Rtt_Assert.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB928608733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /;
+				PRODUCT_NAME = car;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		1DEB928708733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /;
+				PRODUCT_NAME = car;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		1DEB928A08733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_MAC_ENV,
+					Rtt_DEBUG,
+					Rtt_NO_ARCHIVE,
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DRtt_MAC_ENV";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fno-operator-names",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../tools/car ../../librtt";
+			};
+			name = Debug;
+		};
+		1DEB928B08733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_MAC_ENV,
+					Rtt_NO_ARCHIVE,
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CFLAGS = "-DRtt_MAC_ENV";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fno-operator-names",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../tools/car ../../librtt";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "car" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928608733DD80010E9CD /* Debug */,
+				1DEB928708733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "car" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928A08733DD80010E9CD /* Debug */,
+				1DEB928B08733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

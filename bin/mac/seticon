@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# seticon
+#
+# Usage: seticon <target-file> <image-file>
+#
+
+TARGET="$1"
+ICONIMG="$2"
+FOLDER=NO
+
+if [ ! -e "$TARGET" -o ! -f "$ICONIMG" ]
+then
+	echo "Usage: $(basename "$0") <target-file> <image-file>"
+	exit 1
+fi
+
+# Folders are treated slightly differently
+if [ -d "$TARGET" ]
+then
+	TARGET="$TARGET/Icon"
+	FOLDER=YES
+fi
+
+IMGEXTN=$(echo "$ICONIMG" | sed -e 's/.*\.\([a-zA-Z0-9]*\)/\1/')
+TMPDIR="/tmp"
+TMPICON="$TMPDIR/tmpicon-$$.$IMGEXTN"
+TMPRSRC="$TMPDIR/tmpicon-$$.rsrc"
+
+cp "$ICONIMG" "$TMPICON"
+
+# Take an image and make the image its own icon:
+sips -i "$TMPICON"
+
+# Extract the icon to its own resource file:
+xcrun DeRez -only icns "$TMPICON" > "$TMPRSRC"
+
+# Append this resource to the file you want to icon-ize
+xcrun Rez -append "$TMPRSRC" -o "$TARGET"
+
+# Use the resource to set the icon
+xcrun SetFile -a C "$TARGET"
+
+if [ "$FOLDER" == "YES" ]
+then
+	# "Icon^M" files need to be hidden
+	xcrun SetFile -a V "$TARGET"
+	# And the actual directory needs to be set to use the custom icon
+	xcrun SetFile -a C "$(dirname "$TARGET")"
+fi
+
+
+# Clean up
+rm -f "$TMPICON" "$TMPRSRC"

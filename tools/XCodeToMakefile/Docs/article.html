@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>PBTOMAKE Article</title>
+</head>
+<body>
+<h2 style="text-align: center;">Xcode -&gt; Makefile</h2>
+<h2 style="text-align: center;">Jim Schimpf
+(vze35xda@verizon.net)(7-Mar-2004)</h2>
+<br>
+When I develop on OS X I usually use X Code.&nbsp; Others obviously
+differ about use of IDE's but I prefer it.&nbsp; I do have a problem
+when I wish to move an app from OS X to other flavors of UNIX or
+Linux.&nbsp; In most cases I am not attempting anything exotic, these
+are usually CLI applications (e.g. a very specialized Lua interpreter
+with extensions for my company's products).&nbsp; So moving to Linux or
+UNIX should be pretty much a slam-dunk, just recompiling the
+code.&nbsp; Easy in theory but the app in question has over 100 files,
+files in many different directories and it's an X Code project so no
+makefile. &nbsp;<br>
+<br>
+I had hoped that X Code would have this export function but it didn't,
+so I created a free open source version is available to you.&nbsp; <br>
+<h3>PBTOMAKE Version 3.0 Program</h3>
+&nbsp;&nbsp;&nbsp; This program is freeware with source and can be
+downloaded from (<a
+ href="http://members.bellatlantic.net/%7Evze35xda/software.html">PBTOMAKE
+Dowload page</a>).&nbsp; It is run from the the terminal command line
+and as an example run on its own project you would get:<br>
+<div style="margin-left: 40px;"><br>
+<pre>[Pandoras-Computer:TOMAKE10.3/Source/PBTOMAKE] jim% <span
+ style="font-weight: bold;">pbtomake -i PBTOMAKE.pbproj</span><br>PRODUCT IS [pbtomake]<br>FILE [main.cp]<br>FILE [CPBPROJ.cp]<br>FILE [CBufFile.cp]<br>FILE [CSymbol.cp]<br>FILE [CLexFile.cp]<br>FILE [CpbxLexFile.cp]<br>FILE [CTokFile.cp]<br>FILE [CMaker.cp]<br>FILE [cutil.cp]<br>FILE [CBufFile.h]<br>FILE [tgtypes.h]<br>FILE [CSymbol.h]<br>FILE [CLexFile.h]<br>FILE [CpbxLexFile.h]<br>FILE [CTokFile.h]<br>FILE [CMaker.h]<br>FILE [base.h]<br>FILE [cutil.h]<br>FILE [CPBPROJ.h]<br>[Pandoras-Computer:TOMAKE10.3/Source/PBTOMAKE] jim% <br><br></pre>
+</div>
+This would generate the make file in a file called makefile. The
+makefile could be used by typing make in this directory. This would
+build a new copy of pbtomake using <span style="font-weight: bold;">make</span>
+and the makefile.<br>
+<div style="margin-left: 40px;">
+<pre>[Pandoras-Computer:TOMAKE10.3/Source/PBTOMAKE] jim% <span
+ style="font-weight: bold;">make</span><br>/usr/bin/g++3  ../main.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o main.o<br>/usr/bin/g++3  ../CPBPROJ.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o CPBPROJ.o<br>/usr/bin/g++3  ../BASE_PC/CBufFile.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o CBufFile.o<br>			:<br>			:<br>/usr/bin/g++3  ../CMaker.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o CMaker.o<br>/usr/bin/g++3  ../BASE_PC/cutil.cp -c -I../BASE_PC -I../BASE_PC/Dohickies -I.. -o cutil.o<br>/usr/bin/g++3  \<br>        main.o\<br>        CPBPROJ.o\<br>        CBufFile.o\<br>        CSymbol.o\<br>        CLexFile.o\<br>        CpbxLexFile.o\<br>        CTokFile.o\<br>        CMaker.o\<br>        cutil.o\<br>        -o pbtomake<br>[Pandoras-Computer:TOMAKE10.3/Source/PBTOMAKE] jim% <br><br></pre>
+</div>
+&nbsp;&nbsp;&nbsp; Pretty simple really, and the idea is you run <span
+ style="font-weight: bold;">pbtomake</span> on your project, copy the
+whole development tree to the Linux/UNIX box and run <span
+ style="font-weight: bold;">make</span> there.&nbsp; You will then get
+the application built on the other system without having to manually
+build a make file with all the dependencies.&nbsp; Obviously you still
+have code porting to do since for example under OS X you link to
+frameworks while under other systems you have other ways.&nbsp; There's
+lots of other details involved in porting the code but pbtomake saves
+you initial messy task of listing all the files and their paths to
+manually build a makefile.<br>
+<h3>makefile Details</h3>
+The makefile created by the program is very simple and has everything
+specified, It doesn't use rules or any other shortcuts.&nbsp; Each and
+every file is separately specified along with all the include
+files.&nbsp; So the file created for this run is:<br>
+<br>
+<span style="font-family: monospace;"></span>
+<pre style="margin-left: 80px;">###################################################<br>#<br># Makefile for pbtomake<br># Creator [Xcode -&gt; Makefile Ver: 3.00]<br># Created: [Sat Mar  6 07:48:15 2004]<br>#<br>###################################################<br>#<br># Macros<br>#<br>CC = /usr/bin/g++3<br>CC_OPTIONS = <br>LNK_OPTIONS = <br>#<br># INCLUDE directories for pbtomake<br>#<br><br>INCLUDE = \<br>		-I../BASE_PC\<br>		-I../BASE_PC/Dohickies\<br>		-I..<br>#<br># Build pbtomake<br>#<br>pbtomake : \<br>		main.o\<br>		:<br>		:<br>		cutil.o<br><br>	$(CC) $(LNK_OPTIONS) \<br>		main.o\<br>		:<br>		:<br>		cutil.o\<br>		-o pbtomake<br>#<br># Build the parts of pbtomake<br>#<br><br># Item # 1 -- main --<br>main.o : ../main.cp<br>	$(CC) $(CC_OPTIONS) ../main.cp -c $(INCLUDE) -o main.o<br>	:<br>	:<br># Item # 9 -- cutil --<br>cutil.o : ../BASE_PC/cutil.cp<br>	$(CC) $(CC_OPTIONS) ../BASE_PC/cutil.cp -c $(INCLUDE) -o cutil.o<br>##### END RUN ####<br><br></pre>
+<h2><span style="font-family: monospace;"></span><span
+ style="font-family: monospace;"></span>Program Internals</h2>
+<h3>&nbsp;&nbsp; &nbsp;Project Files</h3>
+&nbsp;&nbsp;&nbsp; The Xcode project file PBTOMAKE.pbproj is really a
+directory containing two files (do <br>
+<span style="font-weight: bold;">ls -als PBTOMAKE.pbproj</span> at the
+command line):<br>
+<div style="margin-left: 40px;">
+<pre>&nbsp;0 drwxrwxrwx   4 jim  staff    136  7 Mar 07:03 .<br> 0 drwxrwxrwx  18 jim  staff    612  6 Mar 07:51 ..<br>40 -rwxrwxrwx   1 jim  staff  17747  7 Mar 07:03 jim.pbxuser<br>32 -rwxrwxrwx   1 jim  staff  12708  7 Mar 07:03 project.pbxproj<br><br></pre>
+</div>
+&nbsp;&nbsp; &nbsp;The <span style="font-weight: bold;">jim.pbxuser</span>
+is the per user settings for the project and things like window
+positions.&nbsp; The project.pbxproj is the description of the files
+and how to build the application.&nbsp; This is the file that <span
+ style="font-weight: bold;">pbtomake</span> works on.<br>
+<br>
+&nbsp;&nbsp; &nbsp;Knowledge of <span style="font-weight: bold;">project.pbxproj</span>
+is just by observation and trying to extract the information to build
+the makefile.&nbsp; If someone reading this has deeper knowledge I
+would appreciate hearing from you.&nbsp; The general form of both of
+these files is a hierarchal structure based on keys/values and
+lists.&nbsp; The usual form of things are:<br>
+<br>
+<pre>&nbsp;&nbsp;&nbsp; key&nbsp;&nbsp; =&nbsp; value;</pre>
+<br>
+&nbsp;&nbsp; &nbsp;Now value can either be a single string/name or a
+list and lists are written as:<br>
+<br>
+<pre>&nbsp;&nbsp; &nbsp;{<br>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;thing,<br>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;thing1,<br>&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; :<br>&nbsp;&nbsp; &nbsp;};</pre>
+<br>
+&nbsp;&nbsp; &nbsp;Where thing and thing1 can be either simple values
+or embedded lists.<br>
+<br>
+<h3>&nbsp;&nbsp; &nbsp;Project File Analysis</h3>
+<br>
+&nbsp;&nbsp; &nbsp;The code modules <span style="font-weight: bold;">CBPROJ</span>,
+<span style="font-weight: bold;">CpbxLexFile</span>, <span
+ style="font-weight: bold;">CTokFile</span>, <span
+ style="font-weight: bold;">CLexFile</span> and <span
+ style="font-weight: bold;">CBufFile</span> are used to convert the
+file structure into an in memory tree representation of the text
+structure in the file.&nbsp; The form here is the conventional breaking
+of the input file into tokens; then <span style="font-weight: bold;">CBPROJ.cp</span>
+builds the tree. <br>
+<br>
+&nbsp;&nbsp; &nbsp;For example reading&nbsp; key&nbsp;&nbsp; =&nbsp;
+value; would turn into the token list<br>
+<br>
+<pre>&nbsp;&nbsp;&nbsp;&nbsp; key&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp;&nbsp;&nbsp; value&nbsp;&nbsp;&nbsp; ;<br>&nbsp;&nbsp; &nbsp;&lt;Token&gt; &lt;LINK&gt; &lt;Token&gt; &lt;END&gt;</pre>
+<br>
+<span style="font-weight: bold;">CBPROJ</span> reads each of these
+tokens, stacking them up until a trigger is found, In this case an
+&lt;END&gt; token meaning we have come to the end of an element in the
+file.&nbsp; It then can package up the key and value as an element and
+attach it to the tree structure of the file it's building.&nbsp; If you
+want to see this tree use the -debug option of <span
+ style="font-weight: bold;">pbtomake</span> and it will be dumped out.<br>
+<br>
+Besides the tree structure being built, the program also needs a
+reference table so it can search this tree for particular keys.&nbsp; A
+direct search of the tree might work but, from experience this is very
+slow.&nbsp; The module <span style="font-weight: bold;">CSymbol</span>
+is used to create a hashed symbol table of each of the keys found in
+the file.&nbsp; In this way, a very quick search can find nth
+appearance of any key in the file.<br>
+<h3>&nbsp;&nbsp; &nbsp;Makefile Construction</h3>
+The module <span style="font-weight: bold;">CMaker</span> is where the
+rubber meets the road and the actual makefile is constructed.&nbsp;
+This module is run after the symbol table and tree representation of
+the project file are completed.&nbsp; To build the makefile two things
+have to be found: a list of the .H files and a list of the .C(or CP)
+files.&nbsp; You can see these in the product makefile.&nbsp; Once you
+know these then:<br>
+<br>
+&nbsp;&nbsp; &nbsp;The INCLUDE list comes from the path lists to the .h
+files<br>
+&nbsp;&nbsp; &nbsp;The main dependency&nbsp; &lt;name&gt; :&nbsp;
+&lt;Filename&gt;.o comes from the list of C/CP files<br>
+&nbsp;&nbsp; &nbsp;The main link list and each of the individual file
+builds comes from the .c list.<br>
+<br>
+I've found in the project file the VALUE of an isa key of <span
+ style="font-weight: bold;">PBXSourcesBuildPhase</span> denotes the
+list of C files and <span style="font-weight: bold;">PBXHeadersBuildPhase</span>
+denotes the list of H files. It is then a matter of finding these lists
+in the in memory tree representation of the project file and building
+file lists. &nbsp;<br>
+<br>
+The rest of building the makefile is largely a matter of fprintf()'s of
+the lists of data in various forms to the output makefile.&nbsp; This
+is also where if you want another type of makefile it's quite easy to
+change the output.<br>
+<br>
+<br>
+<br>
+&nbsp;&nbsp; &nbsp;<br>
+<br>
+&nbsp;&nbsp;&nbsp; <br>
+</body>
+</html>

@@ -1,0 +1,313 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 44;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		35948B0313D2768D00982A06 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35948B0113D2768D00982A06 /* MainMenu.xib */; };
+		761A37C50CF949C7006BD459 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 761A37C30CF949C7006BD459 /* Quartz.framework */; };
+		761A37C60CF949C7006BD459 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 761A37C40CF949C7006BD459 /* QuartzCore.framework */; };
+		763459CA0F47D3AB00C1B478 /* YRKSpinningProgressIndicatorLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 763459C80F47D3AB00C1B478 /* YRKSpinningProgressIndicatorLayer.m */; };
+		763459CF0F47D3B300C1B478 /* SPILDTopLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 763459CB0F47D3B300C1B478 /* SPILDTopLayerView.m */; };
+		763459D00F47D3B300C1B478 /* SPILDAppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 763459CD0F47D3B300C1B478 /* SPILDAppController.m */; };
+		763459D20F47D3BA00C1B478 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 763459D10F47D3BA00C1B478 /* main.m */; };
+		763459D50F47D3C600C1B478 /* Background.qtz in Resources */ = {isa = PBXBuildFile; fileRef = 763459D30F47D3C600C1B478 /* Background.qtz */; };
+		763459F20F47D42A00C1B478 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 763459F00F47D42A00C1B478 /* InfoPlist.strings */; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		35948AF513D2754300982A06 /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = Configs/debug.xcconfig; sourceTree = "<group>"; };
+		35948AF613D2754300982A06 /* release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = release.xcconfig; path = Configs/release.xcconfig; sourceTree = "<group>"; };
+		35948B0213D2768D00982A06 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		761A37C30CF949C7006BD459 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
+		761A37C40CF949C7006BD459 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
+		7630041C0E0B614B00074CE5 /* SPILDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SPILDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		763459C80F47D3AB00C1B478 /* YRKSpinningProgressIndicatorLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YRKSpinningProgressIndicatorLayer.m; path = Code/YRKSpinningProgressIndicatorLayer.m; sourceTree = "<group>"; };
+		763459C90F47D3AB00C1B478 /* YRKSpinningProgressIndicatorLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YRKSpinningProgressIndicatorLayer.h; path = Code/YRKSpinningProgressIndicatorLayer.h; sourceTree = "<group>"; };
+		763459CB0F47D3B300C1B478 /* SPILDTopLayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPILDTopLayerView.m; path = Code/SPILDTopLayerView.m; sourceTree = "<group>"; };
+		763459CC0F47D3B300C1B478 /* SPILDTopLayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPILDTopLayerView.h; path = Code/SPILDTopLayerView.h; sourceTree = "<group>"; };
+		763459CD0F47D3B300C1B478 /* SPILDAppController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPILDAppController.m; path = Code/SPILDAppController.m; sourceTree = "<group>"; };
+		763459CE0F47D3B300C1B478 /* SPILDAppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPILDAppController.h; path = Code/SPILDAppController.h; sourceTree = "<group>"; };
+		763459D10F47D3BA00C1B478 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Code/main.m; sourceTree = "<group>"; };
+		763459D30F47D3C600C1B478 /* Background.qtz */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = Background.qtz; path = Resources/Background.qtz; sourceTree = "<group>"; };
+		763459D40F47D3C600C1B478 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
+		763459F10F47D42A00C1B478 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = Resources/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				761A37C50CF949C7006BD459 /* Quartz.framework in Frameworks */,
+				761A37C60CF949C7006BD459 /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				764F1DB20E235DE300054919 /* YRKSpinningProgressIndicatorLayer */,
+				764F1DB10E235DDC00054919 /* Demo App */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				761A37C30CF949C7006BD459 /* Quartz.framework */,
+				761A37C40CF949C7006BD459 /* QuartzCore.framework */,
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7630041C0E0B614B00074CE5 /* SPILDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CATest */ = {
+			isa = PBXGroup;
+			children = (
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				35948AF313D2753100982A06 /* Configs */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = CATest;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				763459D10F47D3BA00C1B478 /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				763459D30F47D3C600C1B478 /* Background.qtz */,
+				763459D40F47D3C600C1B478 /* Info.plist */,
+				35948B0113D2768D00982A06 /* MainMenu.xib */,
+				763459F00F47D42A00C1B478 /* InfoPlist.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		35948AF313D2753100982A06 /* Configs */ = {
+			isa = PBXGroup;
+			children = (
+				35948AF513D2754300982A06 /* debug.xcconfig */,
+				35948AF613D2754300982A06 /* release.xcconfig */,
+			);
+			name = Configs;
+			sourceTree = "<group>";
+		};
+		764F1DB10E235DDC00054919 /* Demo App */ = {
+			isa = PBXGroup;
+			children = (
+				763459CB0F47D3B300C1B478 /* SPILDTopLayerView.m */,
+				763459CC0F47D3B300C1B478 /* SPILDTopLayerView.h */,
+				763459CD0F47D3B300C1B478 /* SPILDAppController.m */,
+				763459CE0F47D3B300C1B478 /* SPILDAppController.h */,
+			);
+			name = "Demo App";
+			sourceTree = "<group>";
+		};
+		764F1DB20E235DE300054919 /* YRKSpinningProgressIndicatorLayer */ = {
+			isa = PBXGroup;
+			children = (
+				763459C80F47D3AB00C1B478 /* YRKSpinningProgressIndicatorLayer.m */,
+				763459C90F47D3AB00C1B478 /* YRKSpinningProgressIndicatorLayer.h */,
+			);
+			name = YRKSpinningProgressIndicatorLayer;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* SPILDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "SPILDemo" */;
+			buildPhases = (
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SPILDemo;
+			productInstallPath = "$(HOME)/Applications";
+			productName = CATest;
+			productReference = 7630041C0E0B614B00074CE5 /* SPILDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SPILDemo" */;
+			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+				English,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CATest */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D1107260486CEB800E47090 /* SPILDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				763459D50F47D3C600C1B478 /* Background.qtz in Resources */,
+				763459F20F47D42A00C1B478 /* InfoPlist.strings in Resources */,
+				35948B0313D2768D00982A06 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				763459D20F47D3BA00C1B478 /* main.m in Sources */,
+				763459CA0F47D3AB00C1B478 /* YRKSpinningProgressIndicatorLayer.m in Sources */,
+				763459CF0F47D3B300C1B478 /* SPILDTopLayerView.m in Sources */,
+				763459D00F47D3B300C1B478 /* SPILDAppController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		35948B0113D2768D00982A06 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				35948B0213D2768D00982A06 /* English */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		763459F00F47D42A00C1B478 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				763459F10F47D42A00C1B478 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C01FCF4B08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_PREFIX_HEADER = SPILDemo_Prefix.pch;
+				INFOPLIST_FILE = Resources/Info.plist;
+				PRODUCT_NAME = SPILDemo;
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREFIX_HEADER = SPILDemo_Prefix.pch;
+				INFOPLIST_FILE = Resources/Info.plist;
+				PRODUCT_NAME = SPILDemo;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 35948AF513D2754300982A06 /* debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 35948AF613D2754300982A06 /* release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "SPILDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4B08A954540054247B /* Debug */,
+				C01FCF4C08A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SPILDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

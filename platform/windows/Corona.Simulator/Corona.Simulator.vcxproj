@@ -1,0 +1,334 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EAFC16C3-22B1-4C46-BEDE-8828226D926B}</ProjectGuid>
+    <RootNamespace>CoronaSimulator</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Debug.Definitions.props" />
+    <Import Project="Corona.Simulator.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Corona.Simulator.Internals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>mfc120ud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>true</ValidateAllParameters>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>true</ValidateAllParameters>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\rcedit\Project\src\rescle.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\autolink.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\buffer.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\houdini.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\html.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\html_blocks.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\markdown.h" />
+    <ClInclude Include="..\..\..\external\sundown\Project\sundown\stack.h" />
+    <ClInclude Include="..\..\..\external\winutil\BtnST.h" />
+    <ClInclude Include="..\..\..\external\winutil\DirDialog.h" />
+    <ClInclude Include="..\..\..\external\winutil\dirent.h" />
+    <ClInclude Include="..\..\..\external\winutil\SimpleBrowser.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_JavaHost.h" />
+    <ClInclude Include="..\..\..\modules\simulator\Rtt_LuaLibSimulator.h" />
+    <ClInclude Include="..\..\..\modules\simulator\Rtt_MSimulatorServices.h" />
+    <ClInclude Include="..\..\..\modules\simulator\Rtt_SimulatorRecents.h" />
+    <ClInclude Include="..\..\android\Rtt_AndroidAppPackager.h" />
+    <ClInclude Include="..\..\shared\AntHost.h" />
+    <ClInclude Include="..\..\shared\jniUtils.h" />
+    <ClInclude Include="..\..\shared\ListKeyStore.h" />
+    <ClInclude Include="..\..\shared\Rtt_AndroidSupportTools.h" />
+    <ClInclude Include="..\..\shared\Rtt_Authorization.h" />
+    <ClInclude Include="..\..\shared\Rtt_AuthorizationTicket.h" />
+    <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h" />
+    <ClInclude Include="..\..\shared\Rtt_LinuxAppPackager.h" />
+    <ClInclude Include="..\..\shared\Rtt_MAuthorizationDelegate.h" />
+    <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformConnection.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformDictionaryWrapper.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformObjectWrapper.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformPlayer.h" />
+    <ClInclude Include="..\..\shared\Rtt_PlatformSimulator.h" />
+    <ClInclude Include="..\..\shared\Rtt_SimulatorAnalytics.h" />
+    <ClInclude Include="..\..\shared\Rtt_TargetAndroidAppStore.h" />
+    <ClInclude Include="..\..\shared\Rtt_TargetDevice.h" />
+    <ClInclude Include="..\..\shared\Rtt_WebAppPackager.h" />
+    <ClInclude Include="..\..\shared\Rtt_WebServicesSession.h" />
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="AnalyticsProvider.h" />
+    <ClInclude Include="BuildAndroidDlg.h" />
+    <ClInclude Include="BuildLinuxDlg.h" />
+    <ClInclude Include="BuildProgressDlg.h" />
+    <ClInclude Include="BuildResult.h" />
+    <ClInclude Include="BuildWebDlg.h" />
+    <ClInclude Include="BuildWin32AppDlg.h" />
+    <ClInclude Include="CoronaInterface.h" />
+    <ClInclude Include="CoronaProject.h" />
+    <ClInclude Include="CustomDeviceDlg.h" />
+    <ClInclude Include="DevPasswordDlg.h" />
+    <ClInclude Include="HtmlMessageDlg.h" />
+    <ClInclude Include="Interop\SimulatorRuntimeEnvironment.h" />
+    <ClInclude Include="LicenseDlg.h" />
+    <ClInclude Include="LoginDlg.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MessageDlg.h" />
+    <ClInclude Include="NewProjectDlg.h" />
+    <ClInclude Include="PasswordDlg.h" />
+    <ClInclude Include="PreferencesDlg.h" />
+    <ClInclude Include="ProgressWnd.h" />
+    <ClInclude Include="RelaunchPrefDlg.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="Rtt\Rtt_Win32AppPackager.h" />
+    <ClInclude Include="Rtt\Rtt_Win32AppPackagerParams.h" />
+    <ClInclude Include="Rtt\Rtt_WinAuthorizationDelegate.h" />
+    <ClInclude Include="Rtt\Rtt_WinConnection.h" />
+    <ClInclude Include="Rtt\Rtt_WinDictionaryWrapper.h" />
+    <ClInclude Include="Rtt\Rtt_WinPlatformServices.h" />
+    <ClInclude Include="Rtt\Rtt_WinSimulatorServices.h" />
+    <ClInclude Include="SelectSampleProjectDlg.h" />
+    <ClInclude Include="Simulator.h" />
+    <ClInclude Include="SimulatorDoc.h" />
+    <ClInclude Include="SimulatorDocTemplate.h" />
+    <ClInclude Include="SimulatorView.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="WinGlobalProperties.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\rcedit\Project\src\rescle.cc" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\autolink.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\buffer.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\houdini_href_e.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\houdini_html_e.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\html.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\html_smartypants.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\markdown.c" />
+    <ClCompile Include="..\..\..\external\sundown\Project\sundown\stack.c" />
+    <ClCompile Include="..\..\..\external\winutil\BtnST.cpp" />
+    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp" />
+    <ClCompile Include="..\..\..\external\winutil\SimpleBrowser.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_JavaHost.cpp" />
+    <ClCompile Include="..\..\..\modules\simulator\Rtt_LuaLibSimulator.cpp" />
+    <ClCompile Include="..\..\android\Rtt_AndroidAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\AntHost.cpp" />
+    <ClCompile Include="..\..\shared\ListKeyStore.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c" />
+    <ClCompile Include="..\..\shared\Rtt_Authorization.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_AuthorizationTicket.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_LinuxAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformConnection.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformDictionaryWrapper.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformObjectWrapper.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformPlayer.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_PlatformSimulator.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_SimulatorAnalytics.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_TargetAndroidAppStore.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_TargetDevice.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_WebAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_WebServicesSession.cpp" />
+    <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="AnalyticsProvider.cpp" />
+    <ClCompile Include="BuildAndroidDlg.cpp" />
+    <ClCompile Include="BuildLinuxDlg.cpp" />
+    <ClCompile Include="BuildProgressDlg.cpp" />
+    <ClCompile Include="BuildResult.cpp" />
+    <ClCompile Include="BuildWebDlg.cpp" />
+    <ClCompile Include="BuildWin32AppDlg.cpp" />
+    <ClCompile Include="CoronaInterface.cpp" />
+    <ClCompile Include="CoronaProject.cpp" />
+    <ClCompile Include="CustomDeviceDlg.cpp" />
+    <ClCompile Include="DevPasswordDlg.cpp" />
+    <ClCompile Include="HtmlMessageDlg.cpp" />
+    <ClCompile Include="Interop\SimulatorRuntimeEnvironment.cpp" />
+    <ClCompile Include="LicenseDlg.cpp" />
+    <ClCompile Include="LoginDlg.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MessageDlg.cpp" />
+    <ClCompile Include="NewProjectDlg.cpp" />
+    <ClCompile Include="PasswordDlg.cpp" />
+    <ClCompile Include="PreferencesDlg.cpp" />
+    <ClCompile Include="ProgressWnd.cpp" />
+    <ClCompile Include="RelaunchPrefDlg.cpp" />
+    <ClCompile Include="Rtt\Rtt_Win32AppPackager.cpp" />
+    <ClCompile Include="Rtt\Rtt_Win32AppPackagerParams.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinAuthorizationDelegate.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinConnection.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinDictionaryWrapper.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinPlatformServices.cpp" />
+    <ClCompile Include="Rtt\Rtt_WinSimulatorServices.cpp" />
+    <ClCompile Include="SelectSampleProjectDlg.cpp" />
+    <ClCompile Include="Simulator.cpp" />
+    <ClCompile Include="SimulatorDoc.cpp" />
+    <ClCompile Include="SimulatorDocTemplate.cpp" />
+    <ClCompile Include="SimulatorView.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="WinGlobalProperties.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Simulator.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Simulator.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\android\create_build_properties.lua" />
+    <LuaToCpp Include="..\..\resources\CoronaPListSupport.lua" />
+    <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
+    <LuaToCpp Include="..\..\resources\shell.lua" />
+    <LuaToCpp Include="..\..\resources\simulatorAnalytics.lua" />
+    <LuaToCpp Include="..\..\resources\webPackageApp.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Corona.Native.Library.Win32\Corona.Native.Library.Win32.vcxproj">
+      <Project>{f9419803-1375-4f35-b198-272c89cca8f9}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.vcxproj">
+      <Project>{0f11f26d-bcf6-4e63-a255-a577bbd1ae84}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\exampleActivityIndicator.ico" />
+    <Image Include="res\exampleAlert.ico" />
+    <Image Include="res\exampleAnimationTime.ico" />
+    <Image Include="res\exampleAudio.ico" />
+    <Image Include="res\exampleBalloon.ico" />
+    <Image Include="res\exampleBridge.ico" />
+    <Image Include="res\exampleButtonEvents.ico" />
+    <Image Include="res\exampleCamera.ico" />
+    <Image Include="res\exampleCan.ico" />
+    <Image Include="res\exampleChains.ico" />
+    <Image Include="res\exampleCompass.ico" />
+    <Image Include="res\exampleCrate.ico" />
+    <Image Include="res\exampleEggBreaker.ico" />
+    <Image Include="res\exampleFacebook.ico" />
+    <Image Include="res\exampleFishies.ico" />
+    <Image Include="res\exampleFruit.ico" />
+    <Image Include="res\exampleGlobe.ico" />
+    <Image Include="res\exampleGPS.ico" />
+    <Image Include="res\exampleInneractive.ico" />
+    <Image Include="res\exampleInternet.ico" />
+    <Image Include="res\exampleJungleScene.ico" />
+    <Image Include="res\exampleMail.ico" />
+    <Image Include="res\exampleMicrophone.ico" />
+    <Image Include="res\exampleMovieClip.ico" />
+    <Image Include="res\exampleMultipuck.ico" />
+    <Image Include="res\exampleMultitouch.ico" />
+    <Image Include="res\exampleNativeInput.ico" />
+    <Image Include="res\exampleOpenFeint.ico" />
+    <Image Include="res\examplePlatform.ico" />
+    <Image Include="res\examplePolyLines.ico" />
+    <Image Include="res\exampleSimplePool.ico" />
+    <Image Include="res\exampleSpotlight.ico" />
+    <Image Include="res\exampleTwitter.ico" />
+    <Image Include="res\Simulator.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\Build.Tools\LuaToCppTask.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="Simulator.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

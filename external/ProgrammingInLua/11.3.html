@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 11.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="11.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="11.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#11">Chapter 11. Data Structures</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>11.3 - Linked Lists</h2>
+
+<p>Because tables are dynamic entities,
+it is easy to implement linked lists in Lua.
+Each node is represented by a table
+and links are simply table fields that contain references
+to other tables.
+For instance,
+to implement a basic list,
+where each node has two fields, <code>next</code> and <code>value</code>,
+we need a variable to be the list root:
+<pre>
+    list = nil
+</pre>
+To insert an element at the beginning of the list,
+with a value <code>v</code>, we do
+<pre>
+    list = {next = list, value = v}
+</pre>
+To traverse the list, we write:
+<pre>
+    local l = list
+    while l do
+      print(l.value)
+      l = l.next
+    end
+</pre>
+
+<p>Other kinds of lists,
+such as double-linked lists or circular lists,
+are also implemented easily.
+However, you seldom need those structures in Lua,
+because usually there is a simpler way to represent your data
+without using lists.
+For instance,
+we can represent a stack with an (unbounded) array,
+with a field <code>n</code> pointing to the top.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="11.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

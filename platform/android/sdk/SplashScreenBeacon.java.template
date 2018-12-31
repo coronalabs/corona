@@ -1,0 +1,91 @@
+//
+// SplashScreenBeacon
+//
+// The value of the constant DefaultSplashScreenFileSize is replaced at build time
+// with the size of the current default splash screen image file.  We then compare 
+// size of the splash screen in the current app with that to decide whether to ping
+// the Corona splash screen beacon.  See platform/android/build_template.sh
+//
+
+package com.ansca.corona;
+
+import com.naef.jnlua.LuaState;
+import com.naef.jnlua.LuaType;
+import com.naef.jnlua.JavaFunction;
+
+import android.util.Log;
+import com.ansca.corona.CoronaBeacon;
+
+class SplashScreenBeacon {
+
+	// This value is replaced at build time with the size of the current default splash screen image file
+	private static final long DefaultSplashScreenFileSize = 999;
+	private static final boolean DEBUG = false;
+
+	// Corona beacon listener
+	private static final class CoronaBeaconListener implements JavaFunction
+	{
+		// This method is executed when the Lua function is called
+		@Override
+		public int invoke(LuaState L)
+		{
+			// Listener called but the function body should be empty for public release
+			if ( DEBUG )
+			{
+				if ( L.isTable( -1 ) )
+				{
+					L.getField( -1, "response" );
+					if ( L.type( -1 ) == LuaType.STRING )
+					{
+						Log.v("Corona", "CoronaBeaconListener: " + L.toString( -1 ) );
+					}
+				}
+			}
+
+			return 0;
+		}
+	}
+
+	// Corona beacon wrapper
+	public static void sendBeacon(final CoronaRuntimeTaskDispatcher runtimeTaskDispatcher)
+	{
+		final CoronaActivity coronaActivity = CoronaEnvironment.getCoronaActivity();
+
+		if (coronaActivity != null)
+		{
+			android.content.Context context = CoronaEnvironment.getApplicationContext();
+			com.ansca.corona.storage.FileServices fileServices;
+			fileServices = new com.ansca.corona.storage.FileServices(context);
+			long splashSize = fileServices.getResourceFileSize("drawable/_corona_splash_screen.png");
+			if ( DEBUG )
+			{
+				Log.v("Corona", "SplashScreenBeacon: showCoronaSplashScreen size : " + splashSize);
+				Log.v("Corona", "SplashScreenBeacon: DefaultSplashScreenFileSize : " + DefaultSplashScreenFileSize);
+			}
+
+			// If we're showing the default splash screen, ping the beacon
+			if (splashSize == DefaultSplashScreenFileSize)
+			{
+				Runnable runnableActivity = new Runnable() {
+					public void run() {
+						try {
+							if ( DEBUG )
+							{
+								Log.v("Corona", "SplashScreenBeacon: calling: CoronaBeacon.sendDeviceDataToBeacon: runtimeTaskDispatcher: " + runtimeTaskDispatcher);
+							}
+							CoronaBeacon.sendDeviceDataToBeacon(runtimeTaskDispatcher, "plugin.CoronaSplashControl", "1.0", CoronaBeacon.IMPRESSION, null, new CoronaBeaconListener());
+						}
+						catch (Exception ex) {
+							if ( DEBUG )
+							{
+								Log.v("Corona", "SplashScreenBeacon.sendBeacon EXCEPTION: " + ex);
+							}
+						}
+					}
+				};
+
+				coronaActivity.runOnUiThread(runnableActivity);
+			}
+		}
+	}
+}

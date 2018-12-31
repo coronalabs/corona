@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 4.3.4</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="4.3.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="4.3.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#4">Chapter 4. Statements</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>4.3.4 - Numeric <b>for</b></h3>
+
+<p>The <b>for</b> statement has two variants:
+the <em>numeric</em> <b>for</b> and the <em>generic</em> <b>for</b>.
+
+<p>A numeric <b>for</b> has the following syntax:
+<pre>
+    for var=exp1,exp2,exp3 do
+      something
+    end
+</pre>
+That loop will execute <code>something</code> for each value of <code>var</code>
+from <code>exp1</code> to <code>exp2</code>, using <code>exp3</code> as the <em>step</em>
+to increment <code>var</code>.
+This third expression is optional;
+when absent, Lua assumes one as the step value.
+As typical examples of such loops, we have
+<pre>
+    for i=1,f(x) do print(i) end
+    
+    for i=10,1,-1 do print(i) end
+</pre>
+
+<p>The <b>for</b> loop has some subtleties that you should learn
+in order to make good use of it.
+First, all three expressions are evaluated once, before the loop starts.
+For instance, in the first example, <code>f(x)</code> is called only once.
+Second, the control variable is a local variable automatically
+declared by the <b>for</b> statement
+and is visible only inside the loop.
+A typical mistake is to assume that the variable still exists after
+the loop ends:
+<pre>
+    for i=1,10 do print(i) end
+    max = i      -- probably wrong! `i' here is global
+</pre>
+If you need the value of the control variable after the loop
+(usually when you break the loop),
+you must save this value into another variable:
+<pre>
+    -- find a value in a list
+    local found = nil
+    for i=1,a.n do
+      if a[i] == value then
+        found = i      -- save value of `i'
+        break
+      end
+    end
+    print(found)
+</pre>
+Third, you should never change the value of the control variable:
+The effect of such changes is unpredictable.
+If you want to break a <b>for</b> loop
+before its normal termination, use <b>break</b>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="4.3.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

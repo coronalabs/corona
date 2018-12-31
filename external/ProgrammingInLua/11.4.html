@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 11.4</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="11.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="11.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#11">Chapter 11. Data Structures</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>11.4 - Queues and Double Queues</h2>
+
+<p>Although we can implement queues trivially using
+<code>insert</code> and <code>remove</code> (from the <code>table</code> library),
+this implementation can be too slow for large structures.
+A more efficient implementation uses two indices,
+one for the first and another for the last element:
+<pre>
+    function ListNew ()
+      return {first = 0, last = -1}
+    end
+</pre>
+To avoid polluting the global space,
+we will define all list operations inside a table,
+properly called <code>List</code>.
+Therefore, we rewrite our last example like this:
+<pre>
+    List = {}
+    function List.new ()
+      return {first = 0, last = -1}
+    end
+</pre>
+Now, we can insert or remove an element at both ends in constant time:
+<pre>
+    function List.pushleft (list, value)
+      local first = list.first - 1
+      list.first = first
+      list[first] = value
+    end
+    
+    function List.pushright (list, value)
+      local last = list.last + 1
+      list.last = last
+      list[last] = value
+    end
+    
+    function List.popleft (list)
+      local first = list.first
+      if first > list.last then error("list is empty") end
+      local value = list[first]
+      list[first] = nil        -- to allow garbage collection
+      list.first = first + 1
+      return value
+    end
+    
+    function List.popright (list)
+      local last = list.last
+      if list.first > last then error("list is empty") end
+      local value = list[last]
+      list[last] = nil         -- to allow garbage collection
+      list.last = last - 1
+      return value
+    end
+</pre>
+
+<p>If you use this structure in a strict queue discipline,
+calling only <code>pushright</code> and <code>popleft</code>,
+both <code>first</code> and <code>last</code> will increase continually.
+However, because we represent arrays in Lua with tables,
+you can index them either from 1 to 20 or from 16,777,216 to 16,777,236.
+Moreover, because Lua uses double precision to represent numbers,
+your program can run for two hundred years,
+doing one million insertions per second,
+before it has problems with overflows.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="11.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

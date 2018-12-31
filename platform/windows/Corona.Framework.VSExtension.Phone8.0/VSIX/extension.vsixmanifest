@@ -1,0 +1,22 @@
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
+  <Metadata>
+    <Identity Id="CoronaLabs.Corona.Framework.WindowsPhone.36706714-9F1F-4691-969C-377BCFEA598A" Version="1.0" Language="en-US" Publisher="Corona Labs Inc." />
+    <DisplayName>Corona Framework for Windows Phone</DisplayName>
+    <Description xml:space="preserve">Corona libraries used to easily render content in a Windows Phone app via Lua scripts.</Description>
+    <MoreInfo>https://coronalabs.com</MoreInfo>
+		<License>Corona_License.rtf</License>
+		<Icon>CoronaLogo32x32.png</Icon>
+    <PreviewImage>CoronaLogo200x200.png</PreviewImage>
+		<GettingStartedGuide>https://docs.coronalabs.com/daily/coronacards/wp8/index.html</GettingStartedGuide>
+		<Tags>Corona, Windows Phone 8, Xaml, DirectX, Direct3D, Lua</Tags>
+	</Metadata>
+  <Installation Scope="Global" AllUsers="true">
+    <InstallationTarget Id="Microsoft.ExtensionSDK" TargetPlatformIdentifier="Windows Phone" TargetPlatformVersion="v8.0" SdkName="CoronaLabs.Corona.Framework" SdkVersion="1.0" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,5.0)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.ExtensionSDK" Path="SDKManifest.xml" />
+  </Assets>
+</PackageManifest>

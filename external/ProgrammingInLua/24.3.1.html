@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 24.3.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="24.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="24.3.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#24">Chapter 24. An Overview of the C API</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>24.3.1 - Error Handling in Application Code</h3>
+
+<p>Typically,
+your application code runs <em>unprotected</em>.
+Because its code is not called by Lua,
+Lua cannot set an appropriate context to catch errors
+(that is, it cannot call <code>setjmp</code>).
+In such environments, when Lua faces an error
+like "not enough memory",
+there is not much that it can do.
+It calls a panic function and, if the function returns,
+exits the application.
+(You can set your own panic function with the
+<code>lua_atpanic</code> function.)
+
+<p>Not all API functions throw exceptions.
+The functions
+<code>lua_open</code>,
+<code>lua_close</code>,
+<code>lua_pcall</code>,
+and <code>lua_load</code>
+are all safe.
+Moreover,
+most other functions can only throw an exception in
+case of memory-allocation failure:
+For instance, <code>luaL_loadfile</code> fails if there is not enough
+memory for a copy of the file name.
+Several programs have nothing to do when they run out of memory,
+so they may ignore these exceptions.
+For those programs,
+if Lua runs out of memory, it is OK to panic.
+
+<p>If you do not want your application to exit,
+even in case of a memory-allocation failure,
+then you must run your code in <em>protected mode</em>.
+Most (or all) of your Lua code typically
+runs through a call to <code>lua_pcall</code>;
+therefore, it runs in protected mode.
+Even in case of memory-allocation failure,
+<code>lua_pcall</code> returns an error code,
+leaving the interpreter in a consistent state.
+If you also want to protect all your C code that interacts with Lua,
+then you can use <code>lua_cpcall</code>.
+(See the reference manual
+for further details of this function;
+see file <code>lua.c</code> in the Lua distribution for an example
+of its use.)
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="24.3.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

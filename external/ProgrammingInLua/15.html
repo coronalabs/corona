@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 15</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="14.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="15.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#15">Chapter 15. Packages</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<h1>15 - Packages</h1>
+
+<p>Many languages provide mechanisms to organize their space of global names,
+such as <em>modules</em> in Modula,
+<em>packages</em> in Java and Perl,
+or <em>namespaces</em> in C++.
+Each of these mechanisms has different rules regarding the
+use of elements declared inside a package,
+visibility, and other details.
+Nevertheless, all of them provide a basic mechanism
+to avoid collision among names defined in different libraries.
+Each library creates its own namespace
+and names defined inside this namespace do not interfere
+with names in other namespaces.
+
+<p>Lua does not provide any explicit mechanism for packages.
+However, we can implement them easily with the basic
+mechanisms that the language provides.
+The main idea is to represent each package by a table,
+as the basic libraries do.
+
+<p>An obvious benefit of using tables to implement packages
+is that we can manipulate packages like any other table
+and use the whole power of Lua to create extra facilities.
+In most languages, packages are not first-class values
+(that is, they cannot be stored in variables,
+passed as arguments to functions, etc.),
+so these languages need special mechanisms for each extra trick
+you may do with a package.
+
+<p>In Lua, although we always represent packages as tables,
+there are several different methods to write a package.
+In this chapter, we cover some of these methods.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="15.1.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

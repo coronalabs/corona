@@ -1,0 +1,9 @@
+libvorbisidec (1.2.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Wed, 09 Oct 2002 22:00:00 -0500
+
+Local variables:
+mode: debian-changelog
+End:

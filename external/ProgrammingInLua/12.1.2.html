@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 12.1.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="12.1.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="13.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#12">Chapter 12. Data Files and Persistence</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>12.1.2 - Saving Tables with Cycles</h3>
+
+<p>To handle tables with generic topology
+(i.e., with cycles and shared sub-tables)
+we need a different approach.
+Constructors cannot represent such tables,
+so we will not use them.
+To represent cycles we need names,
+so our next function will get as arguments the
+value to be saved plus its name.
+Moreover, we must keep track of the names of the tables
+already saved,
+to reuse them when we detect a cycle.
+We will use an extra table for this tracking.
+This table will have tables as <em>indices</em>
+and their names as the associated values.
+
+<p>We will keep the restriction that the tables we want to save
+have only strings or numbers as keys.
+The following function serializes these basic types,
+returning the result:
+<pre>
+    function basicSerialize (o)
+      if type(o) == "number" then
+        return tostring(o)
+      else   -- assume it is a string
+        return string.format("%q", o)
+      end
+    end
+</pre>
+The next function does the hard work.
+The <code>saved</code> parameter is the table that keeps track of
+tables already saved:
+<pre>
+    function save (name, value, saved)
+      saved = saved or {}       -- initial value
+      io.write(name, " = ")
+      if type(value) == "number" or type(value) == "string" then
+        io.write(basicSerialize(value), "\n")
+      elseif type(value) == "table" then
+        if saved[value] then    -- value already saved?
+          io.write(saved[value], "\n")  -- use its previous name
+        else
+          saved[value] = name   -- save name for next time
+          io.write("{}\n")     -- create a new table
+          for k,v in pairs(value) do      -- save its fields
+            local fieldname = string.format("%s[%s]", name,
+                                            basicSerialize(k))
+            save(fieldname, v, saved)
+          end
+        end
+      else
+        error("cannot save a " .. type(value))
+      end
+    end
+</pre>
+As an example, if we build a table like
+<pre>
+    a = {x=1, y=2; {3,4,5}}
+    a[2] = a    -- cycle
+    a.z = a[1]  -- shared sub-table
+</pre>
+then the call <code>save('a', a)</code> will save it as follows:
+<pre>
+    a = {}
+    a[1] = {}
+    a[1][1] = 3
+    a[1][2] = 4
+    a[1][3] = 5
+    
+    a[2] = a
+    a["y"] = 2
+    a["x"] = 1
+    a["z"] = a[1]
+</pre>
+(The actual order of these assignments may vary,
+as it depends on a table traversal.
+Nevertheless, the algorithm ensures
+that any previous node needed in a new definition is already defined.)
+
+<p>If we want to save several values with shared parts,
+we can make the calls to <code>save</code> using
+the same <code>saved</code> table.
+For instance, if we create the following two tables,
+<pre>
+    a = {{"one", "two"}, 3}
+    b = {k = a[1]}
+</pre>
+and save them as follows,
+<pre>
+    save('a', a)
+    save('b', b)
+</pre>
+the result will not have common parts:
+<pre>
+    a = {}
+    a[1] = {}
+    a[1][1] = "one"
+    a[1][2] = "two"
+    a[2] = 3
+    b = {}
+    b["k"] = {}
+    b["k"][1] = "one"
+    b["k"][2] = "two"
+</pre>
+However, if we use the same <code>saved</code> table for each call to <code>save</code>,
+<pre>
+    local t = {}
+    save('a', a, t)
+    save('b', b, t)
+</pre>
+then the result will share common parts:
+<pre>
+    a = {}
+    a[1] = {}
+    a[1][1] = "one"
+    a[1][2] = "two"
+    a[2] = 3
+    b = {}
+    b["k"] = a[1]
+</pre>
+
+<p>As is usual in Lua,
+there are several other alternatives.
+Among them,
+we can save a value without giving it a global name
+(instead, the chunk builds a local value and returns it);
+we can handle functions
+(by building a table that associates each function to its name)
+etc.
+Lua gives you the power;
+you build the mechanisms.
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="13.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

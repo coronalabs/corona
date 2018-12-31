@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="template" default="build" basedir=".">
+
+    <!-- The local.properties file is created and updated by the 'android' tool.
+         It contains the path to the SDK. It should *NOT* be checked into
+         Version Control Systems. -->
+    <property file="local.properties" />
+
+	<property name="java.target" value="1.6" />
+	<property name="java.source" value="1.6" />
+
+    <!-- The ant.properties file can be created by you. It is only edited by the
+         'android' tool to add properties to it.
+         This is the place to change some Ant specific build properties.
+         Here are some properties you may want to change/update:
+
+         source.dir
+             The name of the source directory. Default is 'src'.
+         out.dir
+             The name of the output directory. Default is 'bin'.
+
+         For other overridable properties, look at the beginning of the rules
+         files in the SDK, at tools/ant/build.xml
+
+         Properties related to the SDK location or the project target should
+         be updated using the 'android' tool with the 'update' action.
+
+         This file is an integral part of the build system for your
+         application and should be checked into Version Control Systems.
+
+         -->
+    <property file="ant.properties" />
+
+    <!-- The project.properties file is created and updated by the 'android'
+         tool, as well as ADT.
+
+         This contains project specific properties such as project target, and library
+         dependencies. Lower level build properties are stored in ant.properties
+         (or in .classpath for Eclipse projects).
+
+         This file is an integral part of the build system for your
+         application and should be checked into Version Control Systems. -->
+    <loadproperties srcFile="project.properties" />
+
+    <!-- quick check on sdk.dir -->
+    <fail
+            message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through an env var"
+            unless="sdk.dir"
+    />
+
+    <!--
+        Import per project custom build rules if present at the root of the project.
+        This is the place to put custom intermediary targets such as:
+            -pre-build
+            -pre-compile
+            -post-compile (This is typically used for code obfuscation.
+                           Compiled code location: ${out.classes.absolute.dir}
+                           If this is not done in place, override ${out.dex.input.absolute.dir})
+            -post-package
+            -post-build
+            -pre-clean
+    -->
+    <import file="custom_rules.xml" optional="true" />
+
+	<!-- Properties -->
+    <property environment="env"/>
+
+	<!-- Deletes all files in the "libs" directory. Android will delete the "bin" and "gen" directories. -->
+	<target name="-pre-clean">
+		<delete dir="../ndk/libs"/>
+		<delete dir="../ndk/obj"/>
+		<delete dir="libs"/>
+	</target>
+
+    <!-- Import the actual build file.
+
+         To customize existing targets, there are two options:
+         - Customize only one target:
+             - copy/paste the target into this file, *before* the
+               <import> task.
+             - customize it to your needs.
+         - Customize the whole content of build.xml
+             - copy/paste the content of the rules files (minus the top node)
+               into this file, replacing the <import> task.
+             - customize to your needs.
+
+         ***********************
+         ****** IMPORTANT ******
+         ***********************
+         In all cases you must update the value of version-tag below to read 'custom' instead of an integer,
+         in order to avoid having your file be overridden by tools such as "android update project"
+    -->
+    <!-- version-tag: custom -->
+    <import file="${sdk.dir}/tools/ant/build.xml" />
+
+	<target name="-pre-build">
+        <!-- Build the native *.so libraries with the Android NDK, but only if the below properties were provided. -->
+		<if>
+			<condition>
+				<isset property="corona.device.type"/>
+				<isset property="corona.product.type"/>
+				<isset property="corona.build.config"/>
+				<isset property="corona.build.type"/>
+			</condition>
+			<then>
+				<exec executable="../ndk/build.sh" failonerror="true">
+					<arg value="${corona.device.type}" />
+					<arg value="${corona.product.type}" />
+					<arg value="${corona.build.config}" />
+					<arg value="${corona.build.type}" />
+				</exec>
+			</then>
+		</if>
+
+        <!-- Copy 3rd party license file to the "res/raw" directory. -->
+        <copy file="../../../sdk/dmg/Corona3rdPartyLicensesForAndroid.txt"
+              tofile="res/raw/corona_3rd_party_licenses.txt"/>
+	</target>
+
+<!--
+    // This doesn't work b/c of chicken and egg issues.
+    // We have to prebuild them before this is done.
+	<target name="-post-compile">
+        <exec executable="../build_plugins.sh" />
+	</target>
+-->
+
+    <!-- Copy 3rd party JAR libraries to this project's "libs" directory and the build templates "coreJars" directory. -->
+    <!-- Note: We can't do this as a pre-build step or else the compiler will not find these libraries. -->
+    <macrodef name="copy-libraries">
+        <sequential>
+            <mkdir dir="libs" />
+            <mkdir dir="../template/coreJars" />
+            
+            <!-- JNLua -->
+            <copy file="../../../external/JNLua/bin/JNLua.jar" todir="libs"/>
+            <copy file="./libs/JNLua.jar" todir="../template/coreJars/"/>
+
+            <!-- Legacy Apache HTTP libs -->
+            <!-- TODO: Remove deprecated Apache HTTP libraries from code base so this jar can be stripped out -->
+            <copy file="../../../external/apache-http-legacy/org.apache.http.legacy.jar" todir="libs"/>
+            <copy file="./libs/org.apache.http.legacy.jar" todir="../template/coreJars/"/>
+
+            <!-- Multi-dex support library -->
+            <copy file="../../../external/android-support-libs/multidex/android-support-multidex.jar" todir="libs"/>
+            <copy file="./libs/android-support-multidex.jar" todir="../template/coreJars/"/>
+
+            <!-- Google Licensing -->
+            <!-- TODO: Exclude from Amazon builds since there's no Google Play store to connect to. -->
+            <copy file="../../../plugins/build/licensing-google/android/bin/classes.jar" tofile="libs/licensing-google.jar" />
+            <copy file="./libs/licensing-google.jar" todir="../template/coreJars/"/>
+
+            <!-- Networking plugin -->
+            <copy file="../../../plugins/build-core/network/android/network.jar" tofile="libs/network.jar"/>
+            <copy file="./libs/network.jar" todir="../template/coreJars/"/>
+
+            <!-- Native libraries -->
+            <copy file="../../../plugins/build-core/gameNetwork/android/libgameNetwork.so" todir="libs/armeabi-v7a" />
+            <copy file="../../../plugins/build-core/licensing/android/liblicensing.so" todir="libs/armeabi-v7a" />
+            <copy file="../../../plugins/build-core/licensing/android/libcorona.so" todir="libs/armeabi-v7a" />
+            <copy file="../../../plugins/build-core/licensing/android/liblua.so" todir="libs/armeabi-v7a" />
+        </sequential>
+    </macrodef>
+    <target name="release">
+        <copy-libraries/>
+        <antcall target="android_rules.release" inheritAll="true" inheritRefs="true"/>
+    </target>
+    <target name="debug">
+        <copy-libraries/>
+        <antcall target="android_rules.debug" inheritAll="true" inheritRefs="true"/>
+    </target>
+    <target name="all">
+        <copy-libraries/>
+        <antcall target="android_rules.all" inheritAll="true" inheritRefs="true"/>
+    </target>
+
+</project>

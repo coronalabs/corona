@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -z $1 ] || [ -z $2 ]
+then
+	echo "USAGE: $0 exe address"
+	exit 0;
+fi
+
+EXE=$1
+ADDRESS=$2
+
+/Developer/usr/bin/atos -arch armv6 -o $EXE $ADDRESS

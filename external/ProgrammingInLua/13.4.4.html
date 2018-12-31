@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 13.4.4</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="13.4.3.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="13.4.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P2">Part II. Tables and Objects</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#13">Chapter 13. Metatables and Metamethods</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>13.4.4 - Tracking Table Accesses</h3>
+
+<p>Both <code>__index</code> and <code>__newindex</code> are relevant only when
+the index does not exist in the table.
+The only way to catch all accesses to a table
+is to keep it empty.
+So, if we want to monitor all accesses to a table,
+we should create a <em>proxy</em> for the real table.
+This proxy is an empty table, with proper
+<code>__index</code> and <code>__newindex</code> metamethods,
+which track all accesses and redirect them to the original table.
+Suppose that <code>t</code> is the original table we want to track.
+We can write something like this:
+<pre>
+    t = {}   -- original table (created somewhere)
+    
+    -- keep a private access to original table
+    local _t = t
+    
+    -- create proxy
+    t = {}
+    
+    -- create metatable
+    local mt = {
+      __index = function (t,k)
+        print("*access to element " .. tostring(k))
+        return _t[k]   -- access the original table
+      end,
+    
+      __newindex = function (t,k,v)
+        print("*update of element " .. tostring(k) ..
+                             " to " .. tostring(v))
+        _t[k] = v   -- update original table
+      end
+    }
+    setmetatable(t, mt)
+</pre>
+This code tracks every access to <code>t</code>:
+<pre>
+    > t[2] = 'hello'
+    *update of element 2 to hello
+    > print(t[2])
+    *access to element 2
+    hello
+</pre>
+(Notice that, unfortunately, this scheme does not allow us
+to traverse tables.
+The <code>pairs</code> function will operate on the proxy,
+not on the original table.)
+
+<p>If we want to monitor several tables,
+we do not need a different metatable for each one.
+Instead, we can somehow associate each proxy to its original table
+and share a common metatable for all proxies.
+A simple way to associate proxies to tables is to keep the
+original table in a proxy's field,
+as long as we can be sure that this
+field will not be used for other means.
+A simple way to ensure that is to create a
+private key that nobody else can access.
+Putting these ideas together results in the following code:
+<pre>
+    -- create private index
+    local index = {}
+    
+    -- create metatable
+    local mt = {
+      __index = function (t,k)
+        print("*access to element " .. tostring(k))
+        return t[index][k]   -- access the original table
+      end,
+    
+      __newindex = function (t,k,v)
+        print("*update of element " .. tostring(k) ..
+                             " to " .. tostring(v))
+        t[index][k] = v   -- update original table
+      end
+    }
+    
+    function track (t)
+      local proxy = {}
+      proxy[index] = t
+      setmetatable(proxy, mt)
+      return proxy
+    end
+</pre>
+Now, whenever we want to monitor a table <code>t</code>,
+all we have to do is <code>t = track(t)</code>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="13.4.5.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

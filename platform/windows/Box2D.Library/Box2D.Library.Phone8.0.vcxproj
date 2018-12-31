@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{d0d79c4a-1221-4765-bab7-fe69e3d3982e}</ProjectGuid>
+    <RootNamespace>Box2D_Library_Phone8_0</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="Box2D.Library.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="Box2D.Library.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Box2D.Library.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Box2D.Library.Internals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Box2D.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\b2BroadPhase.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\b2Collision.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\b2Distance.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\b2DynamicTree.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\b2TimeOfImpact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2ChainShape.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2CircleShape.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2EdgeShape.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2PolygonShape.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2Shape.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2BlockAllocator.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2Draw.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2FreeList.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2GrowableBuffer.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2GrowableStack.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2IntrusiveList.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2Math.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2Settings.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2SlabAllocator.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2StackAllocator.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2Stat.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2Timer.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Common\b2TrackedBlock.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\b2Body.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\b2ContactManager.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\b2Fixture.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\b2Island.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\b2TimeStep.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\b2World.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\b2WorldCallbacks.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2CircleContact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2Contact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2ContactSolver.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2PolygonContact.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2DistanceJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2FrictionJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2GearJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2Joint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2Particle.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleGroup.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleSystem.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2StackQueue.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2VoronoiDiagram.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Rope\b2Rope.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\b2BroadPhase.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\b2CollideCircle.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\b2CollideEdge.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\b2CollidePolygon.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\b2Collision.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\b2Distance.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\b2DynamicTree.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\b2TimeOfImpact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2ChainShape.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2CircleShape.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2EdgeShape.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Collision\Shapes\b2PolygonShape.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2BlockAllocator.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2Draw.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2FreeList.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2Math.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2Settings.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2StackAllocator.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2Stat.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2Timer.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Common\b2TrackedBlock.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\b2Body.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\b2ContactManager.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\b2Fixture.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\b2Island.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\b2World.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\b2WorldCallbacks.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2CircleContact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2Contact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2ContactSolver.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Contacts\b2PolygonContact.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2DistanceJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2FrictionJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2GearJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2Joint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2Particle.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleGroup.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleSystem.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2VoronoiDiagram.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Rope\b2Rope.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Windows">
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="platform.winmd">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

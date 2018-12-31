@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 1.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="1.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#1">Chapter 1. Getting Started</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>1.1 - Chunks</h2>
+
+<p>Each piece of code that Lua executes,
+such as a file or a single line in interactive mode,
+is a <em>chunk</em>.
+More specifically, a chunk is simply a sequence of statements.
+
+<p>A semicolon may optionally follow any statement.
+Usually, I use semicolons only to separate two or more statements
+written in the same line, but this is just a convention.
+Line breaks play no role in Lua's syntax;
+for instance, the following four chunks are all valid and equivalent:
+<pre>
+    a = 1
+    b = a*2
+    
+    a = 1;
+    b = a*2;
+    
+    a = 1 ; b = a*2
+    
+    a = 1   b = a*2    -- ugly, but valid
+</pre>
+
+<p>A chunk may be as simple as a single statement,
+such as in the "hello world" example,
+or it may be composed of a mix of statements and
+function definitions
+(which are assignments actually, as we will see later),
+such as the factorial example.
+A chunk may be as large as you wish.
+Because Lua is used also as a data-description language,
+chunks with several megabytes are not uncommon.
+The Lua interpreter has no problems at all with large sizes.
+
+<p>Instead of writing your program to a file,
+you may run the stand-alone interpreter in interactive mode.
+If you call Lua without any arguments,
+you will get its prompt:
+<pre>
+    Lua 5.0  Copyright (C) 1994-2003 Tecgraf, PUC-Rio
+    >
+</pre>
+Thereafter,
+each command that you type (such as <code>print "Hello World"</code>)
+executes immediately after you press <code>&lt;enter></code>.
+To exit the interactive mode and the interpreter,
+just type <em>end-of-file</em>
+(<code>ctrl-D</code> in Unix, <code>ctrl-Z</code> in DOS/Windows),
+or call the <code>exit</code> function,
+from the Operating System library
+(you have to type <code>os.exit()&lt;enter></code>).
+
+<p>In interactive mode, Lua usually interprets each line that you type
+as a complete chunk.
+However, if it detects that the line cannot form a complete chunk,
+it waits for more input,
+until it has a complete chunk.
+When Lua is waiting for a line continuation,
+it shows a different prompt (typically <code>>></code>).
+Therefore, you can enter a multi-line definition,
+such as the <code>factorial</code> function,
+directly in interactive mode.
+Sometimes, however,
+it is more convenient to put such definitions in a file,
+and then call Lua to run that file.
+
+<p>You can execute a sequence of chunks by giving them all as arguments
+to the stand-alone interpreter, with the <code>-l</code> option.
+For instance,
+if you have a file <code>a</code> with a single statement <code>x=1</code>
+and another file <code>b</code> with the statement <code>print(x)</code>,
+the command line
+<pre>
+    prompt> lua -la -lb
+</pre>
+will run the chunk in <code>a</code>, then the one in <code>b</code>,
+which will print the expected 1.
+(The <code>-l</code> option actually calls <code>require</code>,
+which looks for the files in a specific path.
+So, the previous example will not work
+if this path does not include the current directory.
+We will discuss the <code>require</code> function
+in more details in <a href="8.1.html#require">Section 8.1</a>.)
+
+<p>You may use the <code>-i</code> option to instruct Lua to
+start an interactive session after running the given chunks.
+A command line like
+<pre>
+    prompt> lua -i -la -lb
+</pre>
+will run the chunk in <code>a</code>, then the one in <code>b</code>,
+and then prompt you for interaction.
+This is especially useful for debugging and manual testing.
+At the end of this chapter
+we will see other options for the stand-alone interpreter.
+
+<p>Another way to link chunks is with the <code>dofile</code> function,
+which immediately executes a file.
+For instance, you may have a file <code>lib1.lua</code>:
+<pre>
+    -- file 'lib1.lua'
+    
+    function norm (x, y)
+      local n2 = x^2 + y^2
+      return math.sqrt(n2)
+    end
+    
+    function twice (x)
+      return 2*x
+    end
+</pre>
+Then, in interactive mode, you can type
+<pre>
+    > dofile("lib1.lua")   -- load your library
+    > n = norm(3.4, 1.0)
+    > print(twice(n))      --> 7.0880180586677
+</pre>
+
+<p>The <code>dofile</code> function is useful also when you are
+testing a piece of code.
+You can work with two windows:
+One of them is a text editor with your program
+(in a file <code>prog.lua</code>, say)
+and the other is a console running Lua in interactive mode.
+After saving a modification that you make to your program,
+you execute <code>dofile("prog.lua")</code> in the Lua console to
+load the new code;
+then you can exercise the new code,
+calling its functions and printing the results.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="1.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

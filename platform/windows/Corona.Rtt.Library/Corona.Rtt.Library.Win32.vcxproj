@@ -1,0 +1,952 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug.App|Win32">
+      <Configuration>Debug.App</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug.CoronaBuilder|Win32">
+      <Configuration>Debug.CoronaBuilder</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug.Simulator|Win32">
+      <Configuration>Debug.Simulator</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release.App|Win32">
+      <Configuration>Release.App</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release.Simulator|Win32">
+      <Configuration>Release.Simulator</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\ALmixer\luaal.c" />
+    <ClCompile Include="..\..\..\external\b2Separator-cpp\b2Separator.cpp" />
+    <ClCompile Include="..\..\..\external\hmac\hmac_sha2.c" />
+    <ClCompile Include="..\..\..\external\hmac\sha2.c" />
+    <ClCompile Include="..\..\..\external\lsqlite3-7\lsqlite3.c" />
+    <ClCompile Include="..\..\..\external\luafilesystem\src\lfs.c" />
+    <ClCompile Include="..\..\..\external\LuaHashMap\LuaHashMap.c" />
+    <ClCompile Include="..\..\..\external\rsa\prime.cpp" />
+    <ClCompile Include="..\..\..\external\rsa\rsa.cpp" />
+    <ClCompile Include="..\..\..\external\rsa\vlong.cpp" />
+    <ClCompile Include="..\..\..\external\rsa\vlong_io.cpp" />
+    <ClCompile Include="..\..\..\external\smoothpolygon\SmoothPolygon.cpp" />
+    <ClCompile Include="..\..\..\librtt\b2GLESDebugDraw.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Array.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_ArrayTuple.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_ArrayTupleStruct.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Assert.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_AutoResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_FileSystem.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Fixed.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_FixedBlockAllocator.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_FixedMath.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Geometry.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Math.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_MD4.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_MessageDigest.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_OperationResult.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_RefCount.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_ResourceHandle.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_SharedCount.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_String.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_StringHash.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_Time.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_UseCount.cpp" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_VersionTimestamp.c" />
+    <ClCompile Include="..\..\..\librtt\Core\Rtt_WeakCount.cpp" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaAssert.c" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaEvent.cpp" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaLibrary.cpp" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaLog.c" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaLua.cpp" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaVersion.c" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaGraphics.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_BitmapMask.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_BitmapPaint.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_BitmapPaintAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ImageSheetPaintAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_BufferBitmap.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_CameraPaint.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ClosedPath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_CompositeObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_CompositePaint.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ContainerObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_CPUResourcePool.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_Display.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_DisplayDefaults.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_DisplayObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_DisplayPath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_DisplayV2.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_EmbossedTextObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_EmitterObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_GradientPaint.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_GradientPaintAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_GroupObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ImageFrame.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ImageSheet.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ImageSheetPaint.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ImageSheetUserdata.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_LineObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_LuaLibDisplay.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_LuaLibGraphics.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_OpenPath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_Paint.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_PaintAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_PlatformBitmap.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_PlatformBitmapTexture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_RectObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_RectPath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_Scene.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_Shader.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderBuiltin.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderCache.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderComposite.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderCompositeAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderData.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderDataAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderFactory.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderInput.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderName.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderProxy.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderTypes.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShapeAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShapeAdapterCircle.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShapeAdapterMesh.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShapeAdapterPolygon.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShapeAdapterRect.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShapeAdapterRoundedRect.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShapeObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ShapePath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_SnapshotObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_SpriteObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_SpritePlayer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_SpriteSourceFrame.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_StageObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_Tesselator.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TesselatorCircle.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TesselatorLine.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TesselatorMesh.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TesselatorPolygon.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TesselatorRect.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TesselatorRoundedRect.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TesselatorShape.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureFactory.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmap.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvas.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceExternal.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_VertexCache.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputAxisCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputAxisDescriptor.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputAxisType.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputDeviceCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputDeviceConnectionState.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputDeviceDescriptor.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_InputDeviceType.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_PlatformInputAxis.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_PlatformInputDevice.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputAxisCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CPUResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_FrameBufferObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GeometryPool.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GL.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GLCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GLFrameBufferObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GLGeometry.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GLProgram.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GLRenderer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GLTexture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GPUResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_HighPrecisionTime.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Matrix_Renderer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Program.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ProgramFactory.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_RenderData.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Renderer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_RenderTypes.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderBinary.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderBinaryVersions.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Texture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_TextureBitmap.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_TextureVolatile.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Uniform.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VideoTexture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Archive.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_CachedPath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_CKWorkflow.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_DeviceOrientation.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_DisplayObjectExtensions.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_EllipsePath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Event.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_ExplicitTemplates.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_FilePath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_FillTesselatorStream.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_GPUStream.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_HitTestObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_ImageGroupObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_KeyName.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Lua.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaAux.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaContainer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaContext.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaCoronaBaseLib.c" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaData.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibCrypto.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibFacebook.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibFlurry.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibGameNetwork.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibInAppStore.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibMedia.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibNative.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibOpenAL.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibPhysics.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibSQLite.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaLibSystem.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaProxy.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaProxyVTable.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaResourceOwner.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaTableIterator.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_LuaUserdataProxy.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Matrix.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Message.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_ParticleSystemObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PhysicsContact.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PhysicsContactListener.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PhysicsJoint.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PhysicsWorld.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformAudioPlayer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformAudioRecorder.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformAudioSessionManager.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformData.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformDisplayObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformEventSound.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformExitCallback.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformFBConnect.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformFont.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformImageProvider.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformInAppStore.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformLocation.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformModalInteraction.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformNotifier.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformOpenALPlayer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformReachability.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformSurface.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformTimer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformVideoPlayer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformVideoProvider.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PlatformWebPopup.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Preference.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PreferenceCollection.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_PreferenceValue.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Rendering.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_RenderingStream.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Resource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Runtime.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegate.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegatePlayer.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">..\..\..\external\luasocket\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Rtt_Scheduler.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_SimpleCachedPath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_StrokeTesselatorStream.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_TesselatorStream.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Transform.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Verifier.cpp" />
+    <ClCompile Include="..\..\..\plugins\ads\shared\CoronaAdsLibrary.cpp" />
+    <ClCompile Include="..\..\..\plugins\analytics\shared\CoronaAnalyticsLibrary.cpp" />
+    <ClCompile Include="..\..\..\plugins\gameNetwork\shared\CoronaGameNetworkLibrary.cpp" />
+    <ClCompile Include="..\..\..\plugins\licensing\shared\CoronaLicensingLibrary.cpp" />
+    <ClCompile Include="..\..\..\plugins\network\win32\CharsetTranscoder.cpp" />
+    <ClCompile Include="..\..\..\plugins\network\win32\NetworkLibrary.cpp" />
+    <ClCompile Include="..\..\..\plugins\network\win32\WindowsNetworkSupport.cpp" />
+    <ClCompile Include="..\..\..\plugins\network\win32\WinHttpRequestManager.cpp" />
+    <ClCompile Include="..\..\..\plugins\network\win32\WinHttpRequestOperation.cpp" />
+    <ClCompile Include="..\..\..\plugins\network\win32\WinInetConnectivity.cpp" />
+    <ClCompile Include="..\..\..\plugins\network\win32\WinTimer.cpp" />
+    <ClCompile Include="..\..\..\plugins\shared\CoronaLuaLibrary.cpp" />
+    <ClCompile Include="..\..\..\plugins\shared\CoronaLuaLibraryMetadata.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_DependencyLoader.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_DependencyUtilsWin.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_NativeWindowMode.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_ProjectSettings.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_ReadOnlyProjectSettings.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\ALmixer\luaal.h" />
+    <ClInclude Include="..\..\..\external\b2Separator-cpp\b2Separator.h" />
+    <ClInclude Include="..\..\..\external\hmac\hmac_sha2.h" />
+    <ClInclude Include="..\..\..\external\hmac\sha2.h" />
+    <ClInclude Include="..\..\..\external\luafilesystem\src\lfs.h" />
+    <ClInclude Include="..\..\..\external\LuaHashMap\LuaHashMap.h" />
+    <ClInclude Include="..\..\..\external\rsa\prime.hpp" />
+    <ClInclude Include="..\..\..\external\rsa\rsa.hpp" />
+    <ClInclude Include="..\..\..\external\rsa\vlong.hpp" />
+    <ClInclude Include="..\..\..\external\rsa\vlong_io.h" />
+    <ClInclude Include="..\..\..\external\smoothpolygon\SmoothPolygon.h" />
+    <ClInclude Include="..\..\..\librtt\b2GLESDebugDraw.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Array.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_ArrayTuple.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_ArrayTupleStruct.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Assert.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_AutoPtr.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_AutoResource.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Build.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Config.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Data.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_FileSystem.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Finalizer.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Fixed.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_FixedBlockAllocator.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Geometry.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_List.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Macros.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Math.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_MD4.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_MessageDigest.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_New.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_OperationResult.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Real.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_RefCount.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_ResourceHandle.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedCount.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedCountImpl.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedPtr.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedStringPtr.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_String.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_StringHash.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Time.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Traits.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Types.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_UseCount.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_ValueResult.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_Version.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_VersionTimestamp.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_WeakCount.h" />
+    <ClInclude Include="..\..\..\librtt\Core\Rtt_WeakPtr.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaAssert.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaEvent.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaLibrary.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaLog.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaLua.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaMacros.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaVersion.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaGraphics.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_BitmapMask.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_BitmapPaint.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_BitmapPaintAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ImageSheetPaintAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_BufferBitmap.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_CameraPaint.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ClosedPath.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_CompositeObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_CompositePaint.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ContainerObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_CPUResourcePool.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_Display.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_DisplayDefaults.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_DisplayObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_DisplayPath.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_DisplayTypes.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_DisplayV2.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_EmbossedTextObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_EmitterObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_GradientPaint.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_GradientPaintAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_GroupObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ImageFrame.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ImageSheet.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ImageSheetPaint.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ImageSheetUserdata.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_LineObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_LuaLibDisplay.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_LuaLibGraphics.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_MDisplayDelegate.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_MDrawable.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_OpenPath.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_Paint.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_PaintAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_PlatformBitmap.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_PlatformBitmapTexture.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_RectObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_RectPath.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_Scene.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_Shader.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderBuiltin.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderCache.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderComposite.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderCompositeAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderData.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderDataAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderFactory.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderInput.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderName.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderProxy.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderResource.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderTypes.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShapeAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShapeAdapterCircle.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShapeAdapterMesh.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShapeAdapterPolygon.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShapeAdapterRect.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShapeAdapterRoundedRect.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShapeObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ShapePath.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_SnapshotObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_SpriteObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_SpritePlayer.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_SpriteSourceFrame.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_StageObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_Tesselator.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TesselatorCircle.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TesselatorLine.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TesselatorMesh.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TesselatorPolygon.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TesselatorRect.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TesselatorRoundedRect.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TesselatorShape.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextObject.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureFactory.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResource.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmap.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvas.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceExternal.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_VertexCache.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputAxisCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputAxisDescriptor.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputAxisType.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputDeviceCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputDeviceConnectionState.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputDeviceDescriptor.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_InputDeviceType.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_PlatformInputAxis.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_PlatformInputDevice.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputAxisCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CommandBuffer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CPUResource.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_FrameBufferObject.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GeometryPool.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GL.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GLCommandBuffer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GLFrameBufferObject.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GLGeometry.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GLProgram.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GLRenderer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GLTexture.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GPUResource.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_HighPrecisionTime.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Matrix_Renderer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_MCPUResourceObserver.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Program.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ProgramFactory.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_RenderData.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Renderer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_RenderTypes.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderBinary.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderBinaryVersions.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Texture.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_TextureBitmap.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_TextureVolatile.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Uniform.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VideoSource.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VideoTexture.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Archive.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_CachedPath.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Callback.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_CKWorkflow.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_CKWorkFlowConstants.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_DeviceOrientation.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_DisplayObjectExtensions.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_EllipsePath.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Event.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_FilePath.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_FillTesselatorStream.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_GPU.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_GPUStream.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_HitTestObject.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_ImageGroupObject.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_KeyName.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Lua.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaAux.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaContainer.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaContext.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaCoronaBaseLib.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaData.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaFile.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaFrameworks.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaGCInhibitor.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibCrypto.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibFacebook.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibFlurry.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibGameNetwork.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibInAppStore.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibMedia.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibNative.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibOpenAL.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibPhysics.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibSocket.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibSQLite.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaLibSystem.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaProxy.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaProxyVTable.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaResource.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaResourceOwner.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaTableIterator.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_LuaUserdataProxy.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Matrix.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MCallback.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MCriticalSection.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MCrypto.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Message.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MIterable.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MKeyValueIterable.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MLuaProxyable.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MLuaTableBridge.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MPlatform.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MPlatformDevice.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MReloadableResource.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MRuntimeDelegate.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_MUpdatable.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_ParticleSystemObject.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PhysicsContact.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PhysicsContactListener.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PhysicsJoint.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PhysicsTypes.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PhysicsWorld.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformAudioPlayer.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformAudioRecorder.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformAudioSessionManager.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformData.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformDisplayObject.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformEventSound.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformExitCallback.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformFBConnect.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformFont.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformImageProvider.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformInAppStore.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformLocation.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformMediaProviderBase.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformModalInteraction.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformNotifier.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformOpenALPlayer.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformReachability.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformSurface.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformTimer.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformVideoPlayer.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformVideoProvider.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PlatformWebPopup.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Preference.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_PreferenceValue.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Rendering.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_RenderingStream.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Resource.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Runtime.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegate.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegatePlayer.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Scheduler.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_SimpleCachedPath.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_StrokeTesselatorStream.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_SurfaceInfo.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_TesselatorStream.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Transform.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Verifier.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_VerifierData.h" />
+    <ClInclude Include="..\..\..\plugins\ads\shared\CoronaAdsLibrary.h" />
+    <ClInclude Include="..\..\..\plugins\analytics\shared\CoronaAnalyticsLibrary.h" />
+    <ClInclude Include="..\..\..\plugins\gameNetwork\shared\CoronaGameNetworkLibrary.h" />
+    <ClInclude Include="..\..\..\plugins\licensing\shared\CoronaLicensingLibrary.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\CharsetTranscoder.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\NetworkLibrary.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\WindowsNetworkSupport.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\WinHttpAsyncRequestSessionData.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\WinHttpRequestError.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\WinHttpRequestManager.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\WinHttpRequestOperation.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\WinHttpRequestResult.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\WinInetConnectivity.h" />
+    <ClInclude Include="..\..\..\plugins\network\win32\WinTimer.h" />
+    <ClInclude Include="..\..\..\plugins\shared\CoronaLuaLibrary.h" />
+    <ClInclude Include="..\..\..\plugins\shared\CoronaLuaLibraryMetadata.h" />
+    <ClInclude Include="..\..\shared\Rtt_DependencyLoader.h" />
+    <ClInclude Include="..\..\shared\Rtt_DependencyUtils.h" />
+    <ClInclude Include="..\..\shared\Rtt_NativeWindowMode.h" />
+    <ClInclude Include="..\..\shared\Rtt_ProjectSettings.h" />
+    <ClInclude Include="..\..\shared\Rtt_ReadOnlyProjectSettings.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\..\external\lpeg\re.lua">
+      <FileType>Document</FileType>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\ValidateSettings.lua" />
+    <LuaToCpp Include="..\..\resources\valid_build_settings.lua" />
+    <LuaToCpp Include="..\..\resources\valid_config_lua.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\..\external\remdebug-1.0\src\remdebug\engine.lua">
+      <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">remdebug_engine</BaseFunctionName>
+      <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">remdebug_engine</BaseFunctionName>
+      <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">remdebug_engine</BaseFunctionName>
+      <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">remdebug_engine</BaseFunctionName>
+      <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">remdebug_engine</BaseFunctionName>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Corona\CoronaLibrary.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Corona\CoronaPrototype.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Corona\CoronaProvider.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_add_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_average_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_colorBurn_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_colorDodge_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_color_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_darken_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_difference_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_exclusion_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_glow_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_hardLight_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_hardMix_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_hue_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_lighten_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_linearLight_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_luminosity_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_multiply_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_negation_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_normalMapWith1DirLight_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_normalMapWith1PointLight_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_overlay_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_phoenix_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_pinLight_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_reflect_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_saturation_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_screen_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_softLight_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_subtract_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_vividLight_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_yuv420f_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_default_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_bloom_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussian_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurHorizontal_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurVertical_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blur_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_brightness_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_bulge_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_chromaKey_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_colorChannelOffset_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_colorMatrix_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_colorPolynomial_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_color_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_contrast_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_crosshatch_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_crystallize_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_desaturate_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_dissolve_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_duotone_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_emboss_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_exposure_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_frostedGlass_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_grayscale_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_hue_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_invert_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_iris_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_levels_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_linearWipe_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_median_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_monotone_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_opTile_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_pixelate_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_polkaDots_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_posterize_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_radialWipe_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_saturate_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_scatter_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_sepia_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_sharpenLuminance_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_sobel_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_step_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_straighten_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_swirl_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_vignetteMask_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_vignette_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_water_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_wobble_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_woodCut_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_zoomBlur_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_checkerboard_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_lenticularHalo_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_linearGradient_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_marchingAnts_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_perlinNoise_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_radialGradient_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_random_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_stripes_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_generator_sunbeams_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\shell_default_gl.lua" />
+    <LuaToCpp Include="..\..\..\plugins\ads\shared\ads.lua" />
+    <LuaToCpp Include="..\..\..\plugins\ads\shared\CoronaProvider.ads.lua" />
+    <LuaToCpp Include="..\..\..\plugins\analytics\shared\analytics.lua" />
+    <LuaToCpp Include="..\..\..\plugins\analytics\shared\CoronaProvider.analytics.lua" />
+    <LuaToCpp Include="..\..\..\plugins\gameNetwork\shared\CoronaProvider.gameNetwork.lua" />
+    <LuaToCpp Include="..\..\..\plugins\gameNetwork\shared\gameNetwork.lua" />
+    <LuaToCpp Include="..\..\..\plugins\licensing\shared\CoronaProvider.licensing.lua" />
+    <LuaToCpp Include="..\..\..\plugins\licensing\shared\licensing.lua" />
+    <LuaToCpp Include="..\..\..\plugins\network\shared\network.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\composer\composer.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\composer\composer_scene.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\easing\easing.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\timer\timer.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\transition\transition.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\transition\transition_v1.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_button.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_momentumScrolling.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_pickerWheel.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_progressView.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_scrollview.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_searchField.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_segmentedControl.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_slider.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_spinner.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_stepper.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_switch.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_tabbar.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widgetLibrary\widget_tableview.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_android.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_android_holo_dark.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_android_holo_dark_sheet.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_android_holo_light.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_android_holo_light_sheet.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_android_sheet.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_ios.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_ios7.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_ios7_sheet.lua" />
+    <LuaToCpp Include="..\..\..\subrepos\widget\widget_theme_ios_sheet.lua" />
+    <LuaToCpp Include="..\..\resources\config_require.lua" />
+    <LuaToCpp Include="..\..\resources\dkjson.lua" />
+    <LuaToCpp Include="..\..\resources\init.lua" />
+    <LuaToCpp Include="..\..\resources\json.lua" />
+    <LuaToCpp Include="..\..\resources\loader_callback.lua" />
+    <LuaToCpp Include="..\..\resources\loader_ccdata.lua" />
+    <LuaToCpp Include="..\..\resources\runtime.lua" />
+    <LuaToCpp Include="..\..\resources\launchpad.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ALmixer.Library\ALmixer.Library.Win32.vcxproj">
+      <Project>{48c7494a-3a17-4e45-a61e-b4f143119148}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Box2D.Library\Box2D.Library.Win32.vcxproj">
+      <Project>{eb74da6f-6ebc-422e-8b7b-88a93ad5f8d6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CryptoPP.Library\CryptoPP.Library.Win32.vcxproj">
+      <Project>{c3520d49-0731-4bcb-be0f-db3f33cd807e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Glew.Library.Win32\Glew.Library.Win32.vcxproj">
+      <Project>{16c93ea1-5a41-4097-bc1d-16aa6268bfc5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\LPeg.Library\LPeg.Library.Win32.vcxproj">
+      <Project>{ec28b73d-7a9e-46ab-951d-7d528329b994}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lua.Library\Lua.Library.Win32.vcxproj">
+      <Project>{d0add46c-58ee-41af-8e62-bab080d7ce21}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lua.Socket.Library\Lua.Socket.Library.Win32.vcxproj">
+      <Project>{4be37d68-ba9e-464a-bc28-510a8b39cccd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenAL.Library.Win32\OpenAL.Library.Win32.vcxproj">
+      <Project>{5c72a2ce-e118-4821-8e9f-9db393119fb8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Pthreads.Library.Win32\Pthreads.Library.Win32.vcxproj">
+      <Project>{a2e5ad7e-de8d-486b-8d92-0f29b24397cc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLite.Library\SQLite.Library.Win32.vcxproj">
+      <Project>{ae9cfc36-7bd6-4b1e-b17a-6ec1248ee733}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E72E2B71-DE9D-4EB2-BF3F-36678B7096AE}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>CoronaRttLibraryWin32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Debug.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Debug.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Debug.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Debug.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\Build.Tools\LuaToCppTask.targets" />
+  </ImportGroup>
+</Project>

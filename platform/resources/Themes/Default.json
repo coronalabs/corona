@@ -1,0 +1,14 @@
+{
+  "console": {
+    "fontName":         "Menlo",
+    "fontSize":         12,
+    "errorBgColor":     "#DA553A",
+    "errorFgColor":     "#000000",
+    "textBgColor":      "#FFFFFF",
+    "textFgColor":      "#000000",
+    "timestampBgColor": "#FFFFFF",
+    "timestampFgColor": "#5B81FF",
+    "warningBgColor":   "#FFA200",
+    "warningFgColor":   "#000000"
+  }
+}

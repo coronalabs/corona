@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 20.2</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="20.1.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="20.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P3">Part III. The Standard Libraries</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#20">Chapter 20. The String Library</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>20.2 - Patterns</h2>
+
+<p>You can make patterns more useful with <em>character classes</em>.
+A character class is an item in a pattern that can match any
+character in a specific set.
+For instance, the class <code>%d</code> matches any digit.
+Therefore, you can search for a date in the format <code>dd/mm/yyyy</code>
+with the pattern '<code>%d%d/%d%d/%d%d%d%d</code>':
+<pre>
+    s = "Deadline is 30/05/1999, firm"
+    date = "%d%d/%d%d/%d%d%d%d"
+    print(string.sub(s, string.find(s, date)))   --> 30/05/1999
+</pre>
+The following table lists all character classes:
+<p><table align="center" border=1>
+<tr><td><code>.</code></td><td>all characters</td></tr>
+<tr><td><code>%a</code></td><td>letters</td></tr>
+<tr><td><code>%c</code></td><td>control characters</td></tr>
+<tr><td><code>%d</code></td><td>digits</td></tr>
+<tr><td><code>%l</code></td><td>lower case letters</td></tr>
+<tr><td><code>%p</code></td><td>punctuation characters</td></tr>
+<tr><td><code>%s</code></td><td>space characters</td></tr>
+<tr><td><code>%u</code></td><td>upper case letters</td></tr>
+<tr><td><code>%w</code></td><td>alphanumeric characters</td></tr>
+<tr><td><code>%x</code></td><td>hexadecimal digits</td></tr>
+<tr><td><code>%z</code></td><td>the character with representation 0</td></tr>
+</table><p>
+An upper case version of any of those classes represents
+the complement of the class.
+For instance, '<code>%A</code>' represents all non-letter characters:
+<pre>
+    print(string.gsub("hello, up-down!", "%A", "."))
+      --> hello..up.down. 4
+</pre>
+(The <code>4</code> is not part of the result string.
+It is the second result of <code>gsub</code>,
+the total number of substitutions.
+Other examples that print the result of <code>gsub</code> will
+omit this count.)
+
+<p>Some characters, called <em>magic characters</em>,
+have special meanings when used in a pattern.
+The magic characters are
+<pre>
+    ( ) . % + - * ? [ ^ $
+</pre>
+The character `<code>%</code>&acute; works as an escape for those magic characters.
+So, '<code>%.</code>' matches a dot; '<code>%%</code>' matches the character `<code>%</code>&acute; itself.
+You can use the escape `<code>%</code>&acute; not only for the magic characters,
+but also for all other non-alphanumeric characters.
+When in doubt, play safe and put an escape.
+
+<p>For Lua, patterns are regular strings.
+They have no special treatment
+and follow the same rules as other strings.
+Only inside the functions are they interpreted as patterns
+and only then does the `<code>%</code>&acute; work as an escape.
+Therefore, if you need to put a quote inside a pattern,
+you must use the same techniques that you
+use to put a quote inside other strings;
+for instance, you can escape the quote with a `<code>\</code>&acute;,
+which is the escape character for Lua.
+
+<p>A <em>char-set</em> allows you to create your own character classes,
+combining different classes and single characters
+between square brackets.
+For instance,
+the char-set '<code>[%w_]</code>' matches both alphanumeric characters
+and underscores,
+the char-set '<code>[01]</code>' matches binary digits,
+and the char-set '<code>[%[%]]</code>' matches square brackets.
+To count the number of vowels in a text,
+you can write
+<pre>
+    _, nvow = string.gsub(text, "[AEIOUaeiou]", "")
+</pre>
+You can also include character ranges in a char-set,
+by writing the first and the last characters of the range
+separated by a hyphen.
+You will seldom need this facility,
+because most useful ranges are already predefined;
+for instance, '<code>[0-9]</code>' is simpler when written as '<code>%d</code>',
+'<code>[0-9a-fA-F]</code>' is the same as '<code>%x</code>'.
+However, if you need to find an octal digit,
+then you may prefer '<code>[0-7]</code>',
+instead of an explicit enumeration ('<code>[01234567]</code>').
+You can get the complement of a char-set by starting it with `<code>^</code>&acute;:
+'<code>[^0-7]</code>' finds any character that is not an octal digit
+and '<code>[^\n]</code>' matches any character different from newline.
+But remember that you can negate simple
+classes with its upper case version:
+'<code>%S</code>' is simpler than '<code>[^%s]</code>'.
+
+<p>Character classes follow the current locale set for Lua.
+Therefore, the class '<code>[a-z]</code>' can be different from '<code>%l</code>'.
+In a proper locale,
+the latter form includes letters such as `<code>&ccedil;</code>&acute; and `<code>&atilde;</code>&acute;.
+You should always use the latter form,
+unless you have a strong reason to do otherwise:
+It is simpler, more portable, and slightly more efficient.
+
+<p>You can make patterns still more useful with modifiers for
+repetitions and optional parts.
+Patterns in Lua offer four modifiers:
+<p><table align="center" border=1>
+<tr><td><code>+</code></td><td>1 or more repetitions</td></tr>
+<tr><td><code>*</code></td><td>0 or more repetitions</td></tr>
+<tr><td><code>-</code></td><td>also 0 or more repetitions</td></tr>
+<tr><td><code>?</code></td><td>optional (0 or 1 occurrence)</td></tr>
+</table><p>
+The `<code>+</code>&acute; modifier matches one or more
+characters of the original class.
+It will always get the longest sequence that matches the pattern.
+For instance, the pattern '<code>%a+</code>' means one or more letters,
+or a word:
+<pre>
+    print(string.gsub("one, and two; and three", "%a+", "word"))
+      --> word, word word; word word
+</pre>
+The pattern '<code>%d+</code>' matches one or more digits (an integer):
+<pre>
+    i, j = string.find("the number 1298 is even", "%d+")
+    print(i,j)   --> 12  15
+</pre>
+
+<p>The modifier `<code>*</code>&acute; is similar to `<code>+</code>&acute;,
+but it also accepts zero occurrences of characters of the class.
+A typical use is to match optional spaces between parts of a pattern.
+For instance, to match an empty parenthesis pair,
+such as <code>()</code> or <code>( )</code>,
+you use the pattern '<code>%(%s*%)</code>'.
+(The pattern '<code>%s*</code>' matches zero or more spaces.
+Parentheses have a special meaning in a pattern,
+so we must escape them with a `<code>%</code>&acute;.)
+As another example, the pattern '<code>[_%a][_%w]*</code>'
+matches identifiers in a Lua program:
+a sequence that starts with a letter or an underscore,
+followed by zero or more underscores or alphanumeric characters.
+
+<p>Like `<code>*</code>&acute;,
+the modifier `<code>-</code>&acute; also matches zero or more occurrences
+of characters of the original class.
+However, instead of matching the longest sequence,
+it matches the shortest one.
+Sometimes, there is no difference between `<code>*</code>&acute; or `<code>-</code>&acute;,
+but usually they present rather different results.
+For instance, if you try to find an identifier with the
+pattern '<code>[_%a][_%w]-</code>',
+you will find only the first letter,
+because the '<code>[_%w]-</code>' will always match the empty sequence.
+On the other hand,
+suppose you want to find comments in a C program.
+Many people would first try '<code>/%*.*%*/</code>'
+(that is, a <code>"/*"</code> followed by a sequence of any
+characters followed by <code>"*/"</code>,
+written with the appropriate escapes).
+However, because the '<code>.*</code>' expands as far as it can,
+the first <code>"/*"</code> in the program would close only
+with the last <code>"*/"</code>:
+<pre>
+    test = "int x; /* x */  int y; /* y */"
+    print(string.gsub(test, "/%*.*%*/", "&lt;COMMENT>"))
+      --> int x; &lt;COMMENT>
+</pre>
+The pattern '<code>.-</code>', instead,
+will expand the least amount necessary to find the first <code>"*/"</code>,
+so that you get your desired result:
+<pre>
+    test = "int x; /* x */  int y; /* y */"
+    print(string.gsub(test, "/%*.-%*/", "&lt;COMMENT>"))
+        --> int x; &lt;COMMENT>  int y; &lt;COMMENT>
+</pre>
+
+<p>The last modifier, `<code>?</code>&acute;, matches an optional character.
+As an example, suppose we want to find an integer in a text,
+where the number may contain an optional sign.
+The pattern '<code>[+-]?%d+</code>' does the job,
+matching numerals like <code>"-12"</code>,
+<code>"23"</code> and <code>"+1009"</code>.
+The '<code>[+-]</code>' is a character class that matches
+both a `<code>+</code>&acute; or a `<code>-</code>&acute; sign;
+the following `<code>?</code>&acute; makes that sign optional.
+
+<p>Unlike some other systems, in Lua a modifier can only be
+applied to a character class;
+there is no way to group patterns under a modifier.
+For instance, there is no pattern that matches an optional
+word (unless the word has only one letter).
+Usually you can circumvent this limitation using some of the
+advanced techniques that we will see later.
+
+<p>If a pattern begins with a `<code>^</code>&acute;,
+it will match only at the beginning of the subject string.
+Similarly, if it ends with a `<code>$</code>&acute;,
+it will match only at the end of the subject string.
+These marks can be used both to restrict the patterns that you find
+and to anchor patterns.
+For instance, the test
+<pre>
+    if string.find(s, "^%d") then ...
+</pre>
+checks whether the string <code>s</code> starts with a digit
+and the test
+<pre>
+    if string.find(s, "^[+-]?%d+$") then ...
+</pre>
+checks whether that string represents an integer number,
+without other leading or trailing characters.
+
+<p>Another item in a pattern is the '<code>%b</code>',
+that matches balanced strings.
+Such item is written as '<code>%b<em>xy</em></code>',
+where <em>x</em> and <em>y</em> are any two distinct characters;
+the <em>x</em> acts as an opening character
+and the <em>y</em> as the closing one.
+For instance, the pattern '<code>%b()</code>' matches
+parts of the string that start with a
+`<code>(</code>&acute; and finish at the respective `<code>)</code>&acute;:
+<pre>
+    print(string.gsub("a (enclosed (in) parentheses) line",
+                      "%b()", ""))
+      --> a  line
+</pre>
+Typically, this pattern is used as
+'<code>%b()</code>', '<code>%b[]</code>', '<code>%b%{%}</code>', or '<code>%b&lt;></code>',
+but you can use any characters as delimiters.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="20.3.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

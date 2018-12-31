@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<h1 id="coronabuilder">CoronaBuilder</h1>
+<h2 id="overview">Overview</h2>
+<p>CoronaBuilder is a command line tool for automated builds.</p>
+<p>The tool is packaged in a Mac .app bundle because of various resource files it needs. You can type the following in Terminal to get a list of commands:</p>
+<pre><code>/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder</code></pre>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="activation">Activation</h3>
+<p>You must purchase an <strong>Enterprise Automated Build</strong> subscription to activate this product. Contact sales via our <a href="http://www.coronalabs.com/products/contact/">web form</a> for more information.</p>
+<p>To activate, type the following:</p>
+<pre><code>/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder authorize email password</code></pre>
+<p>where <code>email</code> and <code>password</code> are associated with the Enterprise account subscription.</p>
+<p>This will activate a computer to use CoronaBuilder. Every account is allowed one computer.</p>
+<p>If you wish to activate CoronaBuilder on a different computer for the same account, you must first deactivate the original computer before activating on another one (or purchase additional subscriptions):</p>
+<pre><code>/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder deauthorize email password</code></pre>
+<h3 id="building">Building</h3>
+<p>To build you must supply a file in Lua or JSON formats that contain the build arguments.</p>
+<p>Here's an example Lua file for iOS (fishies.ios.lua):</p>
+<pre><code>local params =
+{
+    platform=&#39;iOS&#39;,
+    appName=&#39;Fishies&#39;,
+    appVersion=&#39;1.0&#39;,
+    dstPath=&#39;/Users/JohnSmith/Desktop&#39;,
+    sdkPath=&#39;/Developer&#39;,
+    certificatePath=&#39;/path/to/Dev.mobileprovision&#39;,
+    projectPath=&#39;/Applications/CoronaSDK/SampleCode/Graphics/Fishies&#39;,
+
+    -- Following are optional:
+    --[[
+    platformVersion=&#39;iOS6.0&#39;, -- allows targeting iOS beta builds
+    --]]
+}
+return params</code></pre>
+<p>And here's an example of a Lua file for Android (fishies.android.lua):</p>
+<pre><code>local params =
+{
+    platform=&#39;Android&#39;,
+    appName=&#39;Fishies&#39;,
+    appVersion=&#39;1.0&#39;,
+    dstPath=&#39;/Users/wluh/Desktop&#39;,
+    sdkPath=&#39;/Developer&#39;,
+    projectPath=&#39;/Applications/CoronaSDK/SampleCode/Graphics/Fishies&#39;,
+    androidAppPackage=&#39;com.coronalabs.Fishies&#39;,
+
+    -- Following are optional:
+    --[[
+    certificatePath=&#39;/path/to/cert.keystore&#39;,
+    keystorePassword=&#39;&#39;,
+    keystoreAlias=&#39;&#39;,
+    keystoreAliasPassword=&#39;&#39;,
+    androidVersionCode=1,
+    --]]
+}
+return params</code></pre>
+<p>Note that in both Lua file, the <code>params</code> table is returned at the end of the file.</p>
+<p>To kick off the build process using these Lua files, type the following:</p>
+<pre><code>/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.ios.lua
+
+/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.android.lua</code></pre>
+<h2 id="ssh-sessions">SSH Sessions</h2>
+<h3 id="ios">iOS</h3>
+<p>If you wish to build on iOS and invoke CoronaBuilder in a SSH session, you must unlock the keychain corresponding to the developer certificate. Otherwise your app will not get signed properly. Typically, this is <code>login.keychain</code></p>
+<p>In the SSH session, you can type the following:</p>
+<pre><code>security unlock-keychain -p userpassword /Users/[yourusername]/Library/Keychains/login.keychain. </code></pre>
+<p>where <code>userpassword</code> is the password corresponding to the user <code>[yourusername]</code>.</p>
+<h2 id="daily-builds">Daily Builds</h2>
+<p>You can build against a specific daily build number by adding the corresponding custom build id string in the <code>build.settings</code> file. A list of custom build ids is available <a href="https://developer.coronalabs.com/downloads/daily-build-ids">here</a>.</p>
+<pre><code>settings =
+{
+    build =
+    {
+        -- Replace $CUSTOM_BUILD_ID with a build id from https://developer.coronalabs.com/downloads/daily-build-ids
+        -- For example, to get 2012.1076, use &quot;4a7c9b5c0a38bf8dae750d1ec902c08f&quot;
+        custom = &quot;$CUSTOM_BUILD_ID&quot;,
+    }
+}</code></pre>
+<h2 id="known-issues">Known Issues</h2>
+<ul>
+<li>JSON format is not supported yet</li>
+<li>stdin mode for build is not working yet.</li>
+</ul>
+</body>
+</html>

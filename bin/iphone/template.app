@@ -1,0 +1,1 @@
+../../platform/iphone/build/Release-template-iphoneos/template.app

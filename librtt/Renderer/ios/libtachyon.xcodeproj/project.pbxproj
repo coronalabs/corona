@@ -1,0 +1,401 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9A5AC47D1770C3D0000DA193 /* Rtt_GeometryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A5AC47C1770C3D0000DA193 /* Rtt_GeometryPool.cpp */; };
+		A48B91D4178A9CBB0072EAF7 /* Rtt_TextureVolatile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A48B91D2178A9CBB0072EAF7 /* Rtt_TextureVolatile.cpp */; };
+		A4B93EDE17596543003466CC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B93EDD17596543003466CC /* Foundation.framework */; };
+		A4B93F5E17596600003466CC /* Rtt_CommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3017596600003466CC /* Rtt_CommandBuffer.cpp */; };
+		A4B93F5F17596600003466CC /* Rtt_CPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3217596600003466CC /* Rtt_CPUResource.cpp */; };
+		A4B93F6017596600003466CC /* Rtt_FrameBufferObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3417596600003466CC /* Rtt_FrameBufferObject.cpp */; };
+		A4B93F6117596600003466CC /* Rtt_Geometry_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3617596600003466CC /* Rtt_Geometry_Renderer.cpp */; };
+		A4B93F6217596600003466CC /* Rtt_GL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3817596600003466CC /* Rtt_GL.cpp */; };
+		A4B93F6317596600003466CC /* Rtt_GLCommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3A17596600003466CC /* Rtt_GLCommandBuffer.cpp */; };
+		A4B93F6417596600003466CC /* Rtt_GLFrameBufferObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3C17596600003466CC /* Rtt_GLFrameBufferObject.cpp */; };
+		A4B93F6517596600003466CC /* Rtt_GLGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3E17596600003466CC /* Rtt_GLGeometry.cpp */; };
+		A4B93F6717596600003466CC /* Rtt_GLProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F4117596600003466CC /* Rtt_GLProgram.cpp */; };
+		A4B93F6817596600003466CC /* Rtt_GLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F4317596600003466CC /* Rtt_GLRenderer.cpp */; };
+		A4B93F6917596600003466CC /* Rtt_GLTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F4517596600003466CC /* Rtt_GLTexture.cpp */; };
+		A4B93F6A17596600003466CC /* Rtt_GPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F4717596600003466CC /* Rtt_GPUResource.cpp */; };
+		A4B93F6B17596600003466CC /* Rtt_HighPrecisionTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F4917596600003466CC /* Rtt_HighPrecisionTime.cpp */; };
+		A4B93F6C17596600003466CC /* Rtt_Matrix_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F4B17596600003466CC /* Rtt_Matrix_Renderer.cpp */; };
+		A4B93F6D17596600003466CC /* Rtt_Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F4D17596600003466CC /* Rtt_Program.cpp */; };
+		A4B93F6E17596600003466CC /* Rtt_ProgramFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F4F17596600003466CC /* Rtt_ProgramFactory.cpp */; };
+		A4B93F6F17596600003466CC /* Rtt_RenderData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F5117596600003466CC /* Rtt_RenderData.cpp */; };
+		A4B93F7017596600003466CC /* Rtt_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F5317596600003466CC /* Rtt_Renderer.cpp */; };
+		A4B93F7117596600003466CC /* Rtt_RenderTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F5617596600003466CC /* Rtt_RenderTypes.cpp */; };
+		A4B93F7217596600003466CC /* Rtt_Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F5817596600003466CC /* Rtt_Texture.cpp */; };
+		A4B93F7317596600003466CC /* Rtt_TextureBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F5A17596600003466CC /* Rtt_TextureBitmap.cpp */; };
+		A4B93F7417596600003466CC /* Rtt_Uniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F5C17596600003466CC /* Rtt_Uniform.cpp */; };
+		A4D0AF6317D1843D000C432B /* Rtt_VideoTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AF6117D1843A000C432B /* Rtt_VideoTexture.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A4B93ED817596543003466CC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/${PRODUCT_NAME}";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		9A5AC47C1770C3D0000DA193 /* Rtt_GeometryPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GeometryPool.cpp; path = ../Rtt_GeometryPool.cpp; sourceTree = "<group>"; };
+		9A5AC47E1770C3DF000DA193 /* Rtt_GeometryPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GeometryPool.h; path = ../Rtt_GeometryPool.h; sourceTree = "<group>"; };
+		A48B91D2178A9CBB0072EAF7 /* Rtt_TextureVolatile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureVolatile.cpp; path = ../Rtt_TextureVolatile.cpp; sourceTree = "<group>"; };
+		A48B91D3178A9CBB0072EAF7 /* Rtt_TextureVolatile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureVolatile.h; path = ../Rtt_TextureVolatile.h; sourceTree = "<group>"; };
+		A4B93EDA17596543003466CC /* libtachyon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtachyon.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4B93EDD17596543003466CC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A4B93F3017596600003466CC /* Rtt_CommandBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CommandBuffer.cpp; path = ../Rtt_CommandBuffer.cpp; sourceTree = "<group>"; };
+		A4B93F3117596600003466CC /* Rtt_CommandBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CommandBuffer.h; path = ../Rtt_CommandBuffer.h; sourceTree = "<group>"; };
+		A4B93F3217596600003466CC /* Rtt_CPUResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CPUResource.cpp; path = ../Rtt_CPUResource.cpp; sourceTree = "<group>"; };
+		A4B93F3317596600003466CC /* Rtt_CPUResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CPUResource.h; path = ../Rtt_CPUResource.h; sourceTree = "<group>"; };
+		A4B93F3417596600003466CC /* Rtt_FrameBufferObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FrameBufferObject.cpp; path = ../Rtt_FrameBufferObject.cpp; sourceTree = "<group>"; };
+		A4B93F3517596600003466CC /* Rtt_FrameBufferObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FrameBufferObject.h; path = ../Rtt_FrameBufferObject.h; sourceTree = "<group>"; };
+		A4B93F3617596600003466CC /* Rtt_Geometry_Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Geometry_Renderer.cpp; path = ../Rtt_Geometry_Renderer.cpp; sourceTree = "<group>"; };
+		A4B93F3717596600003466CC /* Rtt_Geometry_Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Geometry_Renderer.h; path = ../Rtt_Geometry_Renderer.h; sourceTree = "<group>"; };
+		A4B93F3817596600003466CC /* Rtt_GL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GL.cpp; path = ../Rtt_GL.cpp; sourceTree = "<group>"; };
+		A4B93F3917596600003466CC /* Rtt_GL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GL.h; path = ../Rtt_GL.h; sourceTree = "<group>"; };
+		A4B93F3A17596600003466CC /* Rtt_GLCommandBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLCommandBuffer.cpp; path = ../Rtt_GLCommandBuffer.cpp; sourceTree = "<group>"; };
+		A4B93F3B17596600003466CC /* Rtt_GLCommandBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLCommandBuffer.h; path = ../Rtt_GLCommandBuffer.h; sourceTree = "<group>"; };
+		A4B93F3C17596600003466CC /* Rtt_GLFrameBufferObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLFrameBufferObject.cpp; path = ../Rtt_GLFrameBufferObject.cpp; sourceTree = "<group>"; };
+		A4B93F3D17596600003466CC /* Rtt_GLFrameBufferObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLFrameBufferObject.h; path = ../Rtt_GLFrameBufferObject.h; sourceTree = "<group>"; };
+		A4B93F3E17596600003466CC /* Rtt_GLGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLGeometry.cpp; path = ../Rtt_GLGeometry.cpp; sourceTree = "<group>"; };
+		A4B93F3F17596600003466CC /* Rtt_GLGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLGeometry.h; path = ../Rtt_GLGeometry.h; sourceTree = "<group>"; };
+		A4B93F4117596600003466CC /* Rtt_GLProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLProgram.cpp; path = ../Rtt_GLProgram.cpp; sourceTree = "<group>"; };
+		A4B93F4217596600003466CC /* Rtt_GLProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLProgram.h; path = ../Rtt_GLProgram.h; sourceTree = "<group>"; };
+		A4B93F4317596600003466CC /* Rtt_GLRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLRenderer.cpp; path = ../Rtt_GLRenderer.cpp; sourceTree = "<group>"; };
+		A4B93F4417596600003466CC /* Rtt_GLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLRenderer.h; path = ../Rtt_GLRenderer.h; sourceTree = "<group>"; };
+		A4B93F4517596600003466CC /* Rtt_GLTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GLTexture.cpp; path = ../Rtt_GLTexture.cpp; sourceTree = "<group>"; };
+		A4B93F4617596600003466CC /* Rtt_GLTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GLTexture.h; path = ../Rtt_GLTexture.h; sourceTree = "<group>"; };
+		A4B93F4717596600003466CC /* Rtt_GPUResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GPUResource.cpp; path = ../Rtt_GPUResource.cpp; sourceTree = "<group>"; };
+		A4B93F4817596600003466CC /* Rtt_GPUResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GPUResource.h; path = ../Rtt_GPUResource.h; sourceTree = "<group>"; };
+		A4B93F4917596600003466CC /* Rtt_HighPrecisionTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_HighPrecisionTime.cpp; path = ../Rtt_HighPrecisionTime.cpp; sourceTree = "<group>"; };
+		A4B93F4A17596600003466CC /* Rtt_HighPrecisionTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_HighPrecisionTime.h; path = ../Rtt_HighPrecisionTime.h; sourceTree = "<group>"; };
+		A4B93F4B17596600003466CC /* Rtt_Matrix_Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Matrix_Renderer.cpp; path = ../Rtt_Matrix_Renderer.cpp; sourceTree = "<group>"; };
+		A4B93F4C17596600003466CC /* Rtt_Matrix_Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Matrix_Renderer.h; path = ../Rtt_Matrix_Renderer.h; sourceTree = "<group>"; };
+		A4B93F4D17596600003466CC /* Rtt_Program.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Program.cpp; path = ../Rtt_Program.cpp; sourceTree = "<group>"; };
+		A4B93F4E17596600003466CC /* Rtt_Program.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Program.h; path = ../Rtt_Program.h; sourceTree = "<group>"; };
+		A4B93F4F17596600003466CC /* Rtt_ProgramFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ProgramFactory.cpp; path = ../Rtt_ProgramFactory.cpp; sourceTree = "<group>"; };
+		A4B93F5017596600003466CC /* Rtt_ProgramFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ProgramFactory.h; path = ../Rtt_ProgramFactory.h; sourceTree = "<group>"; };
+		A4B93F5117596600003466CC /* Rtt_RenderData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_RenderData.cpp; path = ../Rtt_RenderData.cpp; sourceTree = "<group>"; };
+		A4B93F5217596600003466CC /* Rtt_RenderData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_RenderData.h; path = ../Rtt_RenderData.h; sourceTree = "<group>"; };
+		A4B93F5317596600003466CC /* Rtt_Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Renderer.cpp; path = ../Rtt_Renderer.cpp; sourceTree = "<group>"; };
+		A4B93F5417596600003466CC /* Rtt_Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Renderer.h; path = ../Rtt_Renderer.h; sourceTree = "<group>"; };
+		A4B93F5617596600003466CC /* Rtt_RenderTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_RenderTypes.cpp; path = ../Rtt_RenderTypes.cpp; sourceTree = "<group>"; };
+		A4B93F5717596600003466CC /* Rtt_RenderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_RenderTypes.h; path = ../Rtt_RenderTypes.h; sourceTree = "<group>"; };
+		A4B93F5817596600003466CC /* Rtt_Texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Texture.cpp; path = ../Rtt_Texture.cpp; sourceTree = "<group>"; };
+		A4B93F5917596600003466CC /* Rtt_Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Texture.h; path = ../Rtt_Texture.h; sourceTree = "<group>"; };
+		A4B93F5A17596600003466CC /* Rtt_TextureBitmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureBitmap.cpp; path = ../Rtt_TextureBitmap.cpp; sourceTree = "<group>"; };
+		A4B93F5B17596600003466CC /* Rtt_TextureBitmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureBitmap.h; path = ../Rtt_TextureBitmap.h; sourceTree = "<group>"; };
+		A4B93F5C17596600003466CC /* Rtt_Uniform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Uniform.cpp; path = ../Rtt_Uniform.cpp; sourceTree = "<group>"; };
+		A4B93F5D17596600003466CC /* Rtt_Uniform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Uniform.h; path = ../Rtt_Uniform.h; sourceTree = "<group>"; };
+		A4D0AF6117D1843A000C432B /* Rtt_VideoTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_VideoTexture.cpp; path = ../Rtt_VideoTexture.cpp; sourceTree = "<group>"; };
+		A4D0AF6217D1843B000C432B /* Rtt_VideoTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_VideoTexture.h; path = ../Rtt_VideoTexture.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A4B93ED717596543003466CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4B93EDE17596543003466CC /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A4B93ED117596543003466CC = {
+			isa = PBXGroup;
+			children = (
+				A4B93EDF17596543003466CC /* Renderer */,
+				A4B93EDC17596543003466CC /* Frameworks */,
+				A4B93EDB17596543003466CC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A4B93EDB17596543003466CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A4B93EDA17596543003466CC /* libtachyon.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A4B93EDC17596543003466CC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A4B93EDD17596543003466CC /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A4B93EDF17596543003466CC /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				A4B93F3017596600003466CC /* Rtt_CommandBuffer.cpp */,
+				A4B93F3117596600003466CC /* Rtt_CommandBuffer.h */,
+				A4B93F3217596600003466CC /* Rtt_CPUResource.cpp */,
+				A4B93F3317596600003466CC /* Rtt_CPUResource.h */,
+				A4B93F3417596600003466CC /* Rtt_FrameBufferObject.cpp */,
+				A4B93F3517596600003466CC /* Rtt_FrameBufferObject.h */,
+				A4B93F3617596600003466CC /* Rtt_Geometry_Renderer.cpp */,
+				A4B93F3717596600003466CC /* Rtt_Geometry_Renderer.h */,
+				9A5AC47C1770C3D0000DA193 /* Rtt_GeometryPool.cpp */,
+				9A5AC47E1770C3DF000DA193 /* Rtt_GeometryPool.h */,
+				A4B93F3817596600003466CC /* Rtt_GL.cpp */,
+				A4B93F3917596600003466CC /* Rtt_GL.h */,
+				A4B93F3A17596600003466CC /* Rtt_GLCommandBuffer.cpp */,
+				A4B93F3B17596600003466CC /* Rtt_GLCommandBuffer.h */,
+				A4B93F3C17596600003466CC /* Rtt_GLFrameBufferObject.cpp */,
+				A4B93F3D17596600003466CC /* Rtt_GLFrameBufferObject.h */,
+				A4B93F3E17596600003466CC /* Rtt_GLGeometry.cpp */,
+				A4B93F3F17596600003466CC /* Rtt_GLGeometry.h */,
+				A4B93F4117596600003466CC /* Rtt_GLProgram.cpp */,
+				A4B93F4217596600003466CC /* Rtt_GLProgram.h */,
+				A4B93F4317596600003466CC /* Rtt_GLRenderer.cpp */,
+				A4B93F4417596600003466CC /* Rtt_GLRenderer.h */,
+				A4B93F4517596600003466CC /* Rtt_GLTexture.cpp */,
+				A4B93F4617596600003466CC /* Rtt_GLTexture.h */,
+				A4B93F4717596600003466CC /* Rtt_GPUResource.cpp */,
+				A4B93F4817596600003466CC /* Rtt_GPUResource.h */,
+				A4B93F4917596600003466CC /* Rtt_HighPrecisionTime.cpp */,
+				A4B93F4A17596600003466CC /* Rtt_HighPrecisionTime.h */,
+				A4B93F4B17596600003466CC /* Rtt_Matrix_Renderer.cpp */,
+				A4B93F4C17596600003466CC /* Rtt_Matrix_Renderer.h */,
+				A4B93F4D17596600003466CC /* Rtt_Program.cpp */,
+				A4B93F4E17596600003466CC /* Rtt_Program.h */,
+				A4B93F4F17596600003466CC /* Rtt_ProgramFactory.cpp */,
+				A4B93F5017596600003466CC /* Rtt_ProgramFactory.h */,
+				A4B93F5117596600003466CC /* Rtt_RenderData.cpp */,
+				A4B93F5217596600003466CC /* Rtt_RenderData.h */,
+				A4B93F5317596600003466CC /* Rtt_Renderer.cpp */,
+				A4B93F5417596600003466CC /* Rtt_Renderer.h */,
+				A4B93F5617596600003466CC /* Rtt_RenderTypes.cpp */,
+				A4B93F5717596600003466CC /* Rtt_RenderTypes.h */,
+				A4B93F5817596600003466CC /* Rtt_Texture.cpp */,
+				A4B93F5917596600003466CC /* Rtt_Texture.h */,
+				A4B93F5A17596600003466CC /* Rtt_TextureBitmap.cpp */,
+				A4B93F5B17596600003466CC /* Rtt_TextureBitmap.h */,
+				A48B91D2178A9CBB0072EAF7 /* Rtt_TextureVolatile.cpp */,
+				A48B91D3178A9CBB0072EAF7 /* Rtt_TextureVolatile.h */,
+				A4B93F5C17596600003466CC /* Rtt_Uniform.cpp */,
+				A4B93F5D17596600003466CC /* Rtt_Uniform.h */,
+				A4D0AF6117D1843A000C432B /* Rtt_VideoTexture.cpp */,
+				A4D0AF6217D1843B000C432B /* Rtt_VideoTexture.h */,
+			);
+			name = Renderer;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A4B93ED917596543003466CC /* tachyon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A4B93EE817596543003466CC /* Build configuration list for PBXNativeTarget "tachyon" */;
+			buildPhases = (
+				A4B93ED617596543003466CC /* Sources */,
+				A4B93ED717596543003466CC /* Frameworks */,
+				A4B93ED817596543003466CC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = tachyon;
+			productName = Renderer;
+			productReference = A4B93EDA17596543003466CC /* libtachyon.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A4B93ED217596543003466CC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Corona Labs Inc";
+				TargetAttributes = {
+					A4B93ED917596543003466CC = {
+						LastSwiftMigration = 0820;
+					};
+				};
+			};
+			buildConfigurationList = A4B93ED517596543003466CC /* Build configuration list for PBXProject "libtachyon" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A4B93ED117596543003466CC;
+			productRefGroup = A4B93EDB17596543003466CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A4B93ED917596543003466CC /* tachyon */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A4B93ED617596543003466CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4B93F5E17596600003466CC /* Rtt_CommandBuffer.cpp in Sources */,
+				A4B93F5F17596600003466CC /* Rtt_CPUResource.cpp in Sources */,
+				A4B93F6017596600003466CC /* Rtt_FrameBufferObject.cpp in Sources */,
+				A4B93F6117596600003466CC /* Rtt_Geometry_Renderer.cpp in Sources */,
+				A4B93F6217596600003466CC /* Rtt_GL.cpp in Sources */,
+				A4B93F6317596600003466CC /* Rtt_GLCommandBuffer.cpp in Sources */,
+				A4B93F6417596600003466CC /* Rtt_GLFrameBufferObject.cpp in Sources */,
+				A4B93F6517596600003466CC /* Rtt_GLGeometry.cpp in Sources */,
+				A4B93F6717596600003466CC /* Rtt_GLProgram.cpp in Sources */,
+				A4B93F6817596600003466CC /* Rtt_GLRenderer.cpp in Sources */,
+				A4B93F6917596600003466CC /* Rtt_GLTexture.cpp in Sources */,
+				A4B93F6A17596600003466CC /* Rtt_GPUResource.cpp in Sources */,
+				A4B93F6B17596600003466CC /* Rtt_HighPrecisionTime.cpp in Sources */,
+				A4B93F6C17596600003466CC /* Rtt_Matrix_Renderer.cpp in Sources */,
+				A4B93F6D17596600003466CC /* Rtt_Program.cpp in Sources */,
+				A4B93F6E17596600003466CC /* Rtt_ProgramFactory.cpp in Sources */,
+				A4B93F6F17596600003466CC /* Rtt_RenderData.cpp in Sources */,
+				A4B93F7017596600003466CC /* Rtt_Renderer.cpp in Sources */,
+				A4B93F7117596600003466CC /* Rtt_RenderTypes.cpp in Sources */,
+				A4B93F7217596600003466CC /* Rtt_Texture.cpp in Sources */,
+				A4B93F7317596600003466CC /* Rtt_TextureBitmap.cpp in Sources */,
+				A4B93F7417596600003466CC /* Rtt_Uniform.cpp in Sources */,
+				9A5AC47D1770C3D0000DA193 /* Rtt_GeometryPool.cpp in Sources */,
+				A48B91D4178A9CBB0072EAF7 /* Rtt_TextureVolatile.cpp in Sources */,
+				A4D0AF6317D1843D000C432B /* Rtt_VideoTexture.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A4B93EE617596543003466CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_IPHONE_ENV,
+					Rtt_DEBUG,
+					LUA_USE_OBJC_EXCEPTIONS,
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../..;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = ../..;
+			};
+			name = Debug;
+		};
+		A4B93EE717596543003466CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_IPHONE_ENV,
+					NDEBUG,
+					LUA_USE_OBJC_EXCEPTIONS,
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../..;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = ../..;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A4B93EE917596543003466CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/libtachyon.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		A4B93EEA17596543003466CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/libtachyon.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A4B93ED517596543003466CC /* Build configuration list for PBXProject "libtachyon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4B93EE617596543003466CC /* Debug */,
+				A4B93EE717596543003466CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A4B93EE817596543003466CC /* Build configuration list for PBXNativeTarget "tachyon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4B93EE917596543003466CC /* Debug */,
+				A4B93EEA17596543003466CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A4B93ED217596543003466CC /* Project object */;
+}

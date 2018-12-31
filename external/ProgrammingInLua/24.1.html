@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 24.1</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="24.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="24.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#24">Chapter 24. An Overview of the C API</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><a name="first-ex"><h2>24.1 - A First Example</h2></a>
+
+<p>We will start this overview with a simple example of an
+application program:
+a stand-alone Lua interpreter.
+We can write a primitive stand-alone interpreter as follows:
+<p><font color="red">
+WARNING: this code is for Lua 5.0.
+To run it in Lua 5.1,
+you must change the five calls <code>luaopen_*(L)</code>
+to a single call to <code>luaL_openlibs(L)</code>.
+</font>
+<pre>
+    #include &lt;stdio.h>
+    #include &lt;string.h>
+    #include &lt;lua.h>
+    #include &lt;lauxlib.h>
+    #include &lt;lualib.h>
+    
+    int main (void) {
+      char buff[256];
+      int error;
+      lua_State *L = lua_open();   /* opens Lua */
+      luaopen_base(L);             /* opens the basic library */
+      luaopen_table(L);            /* opens the table library */
+      luaopen_io(L);               /* opens the I/O library */
+      luaopen_string(L);           /* opens the string lib. */
+      luaopen_math(L);             /* opens the math lib. */
+    
+      while (fgets(buff, sizeof(buff), stdin) != NULL) {
+        error = luaL_loadbuffer(L, buff, strlen(buff), "line") ||
+                lua_pcall(L, 0, 0, 0);
+        if (error) {
+          fprintf(stderr, "%s", lua_tostring(L, -1));
+          lua_pop(L, 1);  /* pop error message from the stack */
+        }
+      }
+    
+      lua_close(L);
+      return 0;
+    }
+</pre>
+The header file <code>lua.h</code> defines the basic functions provided by Lua.
+That includes functions to create a new Lua environment
+(such as <code>lua_open</code>),
+to invoke Lua functions (such as <code>lua_pcall</code>),
+to read and write global variables in the Lua environment,
+to register new functions to be called by Lua, and so on.
+Everything defined in <code>lua.h</code> has the <code>lua_</code> prefix.
+
+<p>The header file <code>lauxlib.h</code> defines the functions provided
+by the <em>auxiliary library</em> (auxlib).
+All its definitions start with <code>luaL_</code>
+(e.g., <code>luaL_loadbuffer</code>).
+The auxiliary library uses the basic API provided by <code>lua.h</code>
+to provide a higher abstraction level;
+all Lua standard libraries use the auxlib.
+The basic API strives for economy and orthogonality,
+whereas auxlib strives for practicality for common tasks.
+Of course, it is very easy for your program to create other
+abstractions that it needs, too.
+Keep in mind that the auxlib has no access to the internals of Lua.
+It does its entire job through the official basic API.
+
+<p>The Lua library defines no global variables at all.
+It keeps all its state in the dynamic structure <code>lua_State</code>
+and a pointer to this structure is passed as an argument
+to all functions inside Lua.
+This implementation makes Lua reentrant
+and ready to be used in multithreaded code.
+
+<p>The <code>lua_open</code> function creates a new environment (or <em>state</em>).
+When <code>lua_open</code> creates a fresh environment,
+this environment contains no predefined functions,
+not even <code>print</code>.
+To keep Lua small, all standard libraries
+are provided as separate packages,
+so that you do not have to use them if you do not need to.
+The header file <code>lualib.h</code> defines functions to open the libraries.
+The call to <code>luaopen_io</code>, for instance, creates the <code>io</code>
+table and registers the I/O functions
+(<code>io.read</code>, <code>io.write</code>, etc.) inside it.
+
+<p>After creating a state and populating it with the standard libraries,
+it is time to interpret the user input.
+For each line the user enters,
+the program first calls <code>luaL_loadbuffer</code>
+to compile the code.
+If there are no errors, the call returns zero
+and pushes the resulting chunk on the stack.
+(Remember that we will discuss this "magic" stack in
+detail in the next section.)
+Then the program calls <code>lua_pcall</code>,
+which pops the chunk from the stack and runs it in protected mode.
+Like <code>luaL_loadbuffer</code>,
+<code>lua_pcall</code> returns zero if there are no errors.
+In case of errors,
+both functions push an error message on the stack;
+we get this message with <code>lua_tostring</code> and,
+after printing it, we remove it from the stack
+with <code>lua_pop</code>.
+
+<p>Notice that, in case of errors,
+this program simply prints the error message to the standard error stream.
+Real error handling can be quite complex in C
+and how to do it depends on the nature of your application.
+The Lua core never writes anything directly to any output stream;
+it signals errors by returning error codes and error messages.
+Each application can handle these signals in a
+way most appropriate for its needs.
+To simplify our discussions,
+we will assume for now a simple
+error handler like the following one,
+which prints an error message,
+closes the Lua state, and exits from the whole application:
+<pre>
+    #include &lt;stdarg.h>
+    #include &lt;stdio.h>
+    #include &lt;stdlib.h>
+    
+    void error (lua_State *L, const char *fmt, ...) {
+      va_list argp;
+      va_start(argp, fmt);
+      vfprintf(stderr, argp);
+      va_end(argp);
+      lua_close(L);
+      exit(EXIT_FAILURE);
+    }
+</pre>
+Later we will discuss more about error handling in the
+application code.
+
+<p>Because you can compile Lua both as C and as C++ code,
+<code>lua.h</code> does not include this typical adjustment code
+that is present in several other C libraries:
+<pre>
+    #ifdef __cplusplus
+    extern "C" {
+    #endif
+       ...
+    #ifdef __cplusplus
+    }
+    #endif
+</pre>
+Therefore, if you have compiled Lua as C code
+(the most common case)
+and are using it in C++,
+you must include <code>lua.h</code> as follows:
+<pre>
+    extern "C" {
+    #include &lt;lua.h>
+    }
+</pre>
+A common trick is to create a header file <code>lua.hpp</code>
+with the above code and to include this new file in your
+C++ programs.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="24.2.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

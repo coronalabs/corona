@@ -1,0 +1,23 @@
+# Installation directories
+# System's libraries directory (where binary libraries are installed)
+LUA_LIBDIR= /usr/local/lib/lua/5.0
+# Lua includes directory
+LUA_INC= /usr/local/include
+
+# OS dependent
+LIB_OPTION= -shared #for Linux
+#LIB_OPTION= -bundle -undefined dynamic_lookup #for MacOS X
+
+# Lua version number (first and second digits of target version)
+LUA_VERSION_NUM= 500
+LIBNAME= $T.so.$V
+COMPAT_DIR= ../compat/src
+
+OPENSSL_LIBS= -L/usr/local/openssl/lib -lcrypto -lssl
+OPENSSL_INCS= -I/usr/local/openssl/include
+
+# Compilation directives
+WARN= -O2 -Wall -fPIC -W -Waggregate-return -Wcast-align -Wmissing-prototypes -Wnested-externs -Wshadow -Wwrite-strings
+INCS= -I$(LUA_INC) -I$(COMPAT_DIR)
+CFLAGS= $(WARN) $(OPENSSL_INCS) $(INCS)
+CC= gcc

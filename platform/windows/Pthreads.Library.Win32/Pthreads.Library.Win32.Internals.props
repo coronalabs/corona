@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="Pthreads.Library.Win32.Externals.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>pthreads</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>PTW32_BUILD;PTHREADS_EXPORTS;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+REM Digitally sign the application.
+if $(ConfigurationName) == Release (
+   call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"
+)
+
+mkdir "$(SolutionDir)Bin\Corona"
+copy /y "$(TargetPath)" "$(SolutionDir)Bin\Corona"
+
+if $(ConfigurationName) == Release (
+   mkdir "$(SolutionDir)Bin\Corona.Enterprise\lib"
+   copy /y "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Bin\Corona.Enterprise\lib"
+)
+if $(ConfigurationName) == Release (
+   mkdir "$(SolutionDir)Bin\Corona\Native\Corona\win\lib"
+   copy /y "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Bin\Corona\Native\Corona\win\lib"
+)
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

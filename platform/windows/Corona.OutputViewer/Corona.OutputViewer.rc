@@ -1,0 +1,299 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+#include "verrsrc.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "#include ""verrsrc.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#include ""res\\CoronaOutputViewer.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""      // Standard components\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""afxprint.rc""        // printing/print preview resources\r\n"
+    "#include ""afxribbon.rc""        // MFC ribbon and control bar resources\r\n"
+    "#endif\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Corona.Console.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 16
+BEGIN
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_PROCESS_START
+    BUTTON      ID_PROCESS_STOP
+    SEPARATOR
+    BUTTON      ID_FILE_SAVE_AS
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_CLEAR_ALL
+    SEPARATOR
+    BUTTON      ID_FIND_LABEL
+    BUTTON      ID_FIND_TEXTBOX
+    BUTTON      ID_FIND_PREVIOUS
+    BUTTON      ID_FIND_NEXT
+    BUTTON      ID_FIND_MATCH_CASE
+    BUTTON      ID_FIND_LOOPING
+    SEPARATOR
+    BUTTON      ID_SETUP_SUBMENU
+    BUTTON      ID_APP_ABOUT
+    BUTTON      ID_HELP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "K",            ID_EDIT_CLEAR_ALL,      VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_EDIT_CLEAR_ALL,      VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_FIND,                VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_FIND_NEXT,           VIRTKEY, NOINVERT
+    VK_F3,          ID_FIND_PREVIOUS,       VIRTKEY, SHIFT, NOINVERT
+    VK_F10,         ID_PROCESS_START,       VIRTKEY, NOINVERT
+    VK_F5,          ID_PROCESS_START,       VIRTKEY, NOINVERT
+    VK_F10,         ID_PROCESS_STOP,        VIRTKEY, SHIFT, NOINVERT
+    VK_F5,          ID_PROCESS_STOP,        VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_SETUP_SUBMENU,       VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Corona Labs Inc."
+            VALUE "FileDescription", "Corona Console"
+            VALUE "FileVersion", "1.0.0.2"
+            VALUE "InternalName", "Corona Console"
+            VALUE "LegalCopyright", "Copyright © 2010-2018 Corona Labs Inc."
+            VALUE "OriginalFilename", "Corona.Console.exe"
+            VALUE "ProductName", "Corona Console"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+END
+
+IDR_TOOLBAR_SETUP_MENU MENU
+BEGIN
+    POPUP "Setup"
+    BEGIN
+        POPUP "Visual &Theme"
+        BEGIN
+            MENUITEM "&Blue",                       ID_THEME_BLUE
+            MENUITEM "&Dark",                       ID_THEME_DARK
+            MENUITEM "&System",                     ID_THEME_SYSTEM
+        END
+        MENUITEM "Online &Documentation...",    ID_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "&About Corona Console...",     ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "Corona Console"
+    ID_STATUSBAR_ERROR_COUNT "Errors: 0"
+    ID_STATUSBAR_WARNING_COUNT "Warnings: 0"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "Corona Console"
+    AFX_IDS_IDLEMESSAGE     " "
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "View this application's information such as version and copyright.\nAbout"
+    ID_HELP                 "Display the Corona's online documentation."
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR_ALL       "Removes all logged entries from the output window.\nClear All"
+    ID_EDIT_COPY            "Copy the selection and put it on the clipboard.\nCopy"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window's size."
+    AFX_IDS_SCMOVE          "Change the window's position."
+    AFX_IDS_SCMINIMIZE      "Minimize the window to the taskbar."
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to fill the desktop."
+    AFX_IDS_SCCLOSE         "Close the window."
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size."
+END
+
+STRINGTABLE
+BEGIN
+    ID_THEME_SYSTEM         "Apply the Windows OS' default visual settings to this window."
+    ID_THEME_DARK           "Apply a dark MS-DOS like theme to this window."
+    ID_THEME_BLUE           "Apply a blue MS Office like theme to this window."
+    ID_PROCESS_START        "Run the currently selected application and log its output.\nStart"
+    ID_PROCESS_STOP         "Stop the currently running application.\nStop"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FIND_NEXT            "Search for the entered text proceeding the current cursor position in the log.\nFind Next"
+    ID_FIND_PREVIOUS        "Search for the entered text preceding the current cursor position in the log.\nFind Previous"
+    ID_FIND_MATCH_CASE      "Toggle on to do a case sensitive search.\nMatch Case"
+    ID_FIND_LOOPING         "Toggle on to do a looping search.\nLooping Search"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_OPEN            "Select an EXE file to run and log the output of.\nSelect File"
+    ID_FILE_SAVE_AS         "Save the logged output to file.\nSave As"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#include "res\CoronaOutputViewer.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"      // Standard components
+#if !defined(_AFXDLL)
+#include "afxprint.rc"        // printing/print preview resources
+#include "afxribbon.rc"        // MFC ribbon and control bar resources
+#endif
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

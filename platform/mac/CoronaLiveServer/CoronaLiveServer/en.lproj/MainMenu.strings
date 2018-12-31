@@ -1,0 +1,102 @@
+
+/* Class = "NSMenuItem"; title = "Window"; ObjectID = "0zl-hd-VOY"; */
+"0zl-hd-VOY.title" = "Window";
+
+/* Class = "NSMenuItem"; title = "Services"; ObjectID = "1am-FH-DWr"; */
+"1am-FH-DWr.title" = "Services";
+
+/* Class = "NSMenu"; title = "File"; ObjectID = "3tv-9T-jl2"; */
+"3tv-9T-jl2.title" = "File";
+
+/* Class = "NSMenuItem"; title = "Corona Live Server"; ObjectID = "4Rl-Oz-Vlu"; */
+"4Rl-Oz-Vlu.title" = "Corona Live Server";
+
+/* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "4e0-Sa-NMa"; */
+"4e0-Sa-NMa.title" = "Minimize";
+
+/* Class = "NSMenuItem"; title = "Help"; ObjectID = "5wk-gG-Sfi"; */
+"5wk-gG-Sfi.title" = "Help";
+
+/* Class = "NSMenu"; title = "Services"; ObjectID = "6K2-Dc-Uxb"; */
+"6K2-Dc-Uxb.title" = "Services";
+
+/* Class = "NSMenuItem"; title = "Project List"; ObjectID = "9ap-6Q-Tf8"; */
+"9ap-6Q-Tf8.title" = "Project List";
+
+/* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
+"AYu-sK-qS6.title" = "Main Menu";
+
+/* Class = "NSMenu"; title = "Help"; ObjectID = "AwS-KD-wqf"; */
+"AwS-KD-wqf.title" = "Help";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "ILb-lt-iR3"; */
+"ILb-lt-iR3.title" = "Text Cell";
+
+/* Class = "NSMenuItem"; title = "About Corona Live Server"; ObjectID = "LAF-zX-yrz"; */
+"LAF-zX-yrz.title" = "About Corona Live Server";
+
+/* Class = "NSMenuItem"; title = "Clear Menu"; ObjectID = "MOR-oo-fq9"; */
+"MOR-oo-fq9.title" = "Clear Menu";
+
+/* Class = "NSMenuItem"; title = "Zoom"; ObjectID = "QMK-6u-Gcr"; */
+"QMK-6u-Gcr.title" = "Zoom";
+
+/* Class = "NSWindow"; title = "Project List"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "Project List";
+
+/* Class = "NSMenuItem"; title = "Close"; ObjectID = "Rkr-c5-bZw"; */
+"Rkr-c5-bZw.title" = "Close";
+
+/* Class = "NSMenuItem"; title = "Hide Application"; ObjectID = "SlJ-8r-Ad1"; */
+"SlJ-8r-Ad1.title" = "Hide Application";
+
+/* Class = "NSMenuItem"; title = "Add Project..."; ObjectID = "Tn0-q6-RHs"; */
+"Tn0-q6-RHs.title" = "Add Project...";
+
+/* Class = "NSMenu"; title = "Window"; ObjectID = "U1V-vH-tYt"; */
+"U1V-vH-tYt.title" = "Window";
+
+/* Class = "NSMenuItem"; title = "Zoom"; ObjectID = "VYe-Px-m1d"; */
+"VYe-Px-m1d.title" = "Zoom";
+
+/* Class = "NSMenu"; title = "Corona Live Server"; ObjectID = "WpB-3z-1Di"; */
+"WpB-3z-1Di.title" = "Corona Live Server";
+
+/* Class = "NSMenuItem"; title = "Quit Corona Live Server"; ObjectID = "a8W-EK-S8q"; */
+"a8W-EK-S8q.title" = "Quit Corona Live Server";
+
+/* Class = "NSMenuItem"; title = "Bring All to Front"; ObjectID = "aa7-Jj-ffS"; */
+"aa7-Jj-ffS.title" = "Bring All to Front";
+
+/* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "abL-5u-Q2c"; */
+"abL-5u-Q2c.title" = "Minimize";
+
+/* Class = "NSMenuItem"; title = "Show All"; ObjectID = "b2S-B8-eZv"; */
+"b2S-B8-eZv.title" = "Show All";
+
+/* Class = "NSMenuItem"; title = "Window"; ObjectID = "bog-Ke-aey"; */
+"bog-Ke-aey.title" = "Window";
+
+/* Class = "NSMenu"; title = "Add Recent"; ObjectID = "eGW-YF-j13"; */
+"eGW-YF-j13.title" = "Add Recent";
+
+/* Class = "NSMenuItem"; title = "Bring All to Front"; ObjectID = "eQY-Mj-2tM"; */
+"eQY-Mj-2tM.title" = "Bring All to Front";
+
+/* Class = "NSMenuItem"; title = "Hide Others"; ObjectID = "eTm-j1-K1z"; */
+"eTm-j1-K1z.title" = "Hide Others";
+
+/* Class = "NSMenuItem"; title = "Preferences…"; ObjectID = "gUv-Qe-cAg"; */
+"gUv-Qe-cAg.title" = "Preferences…";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "gwC-ar-rKv"; */
+"gwC-ar-rKv.title" = "Table View Cell";
+
+/* Class = "NSMenu"; title = "Window"; ObjectID = "iQr-cf-Rp0"; */
+"iQr-cf-Rp0.title" = "Window";
+
+/* Class = "NSMenuItem"; title = "File"; ObjectID = "oDk-oP-IFv"; */
+"oDk-oP-IFv.title" = "File";
+
+/* Class = "NSMenuItem"; title = "Add Recent"; ObjectID = "vZV-Po-i1v"; */
+"vZV-Po-i1v.title" = "Add Recent";

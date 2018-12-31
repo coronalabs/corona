@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="res">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="%28root%29">
+      <UniqueIdentifier>{94c3361e-ca08-4833-8f13-4f36ee8a84cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\platform">
+      <UniqueIdentifier>{8b9d4efe-f4fb-4431-86c4-4367e52ee7f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%28root%29\platform\resources">
+      <UniqueIdentifier>{d70a86b8-685d-4057-813a-8ea8dc724d28}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MainFrame.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="MainApp.h" />
+    <ClInclude Include="LogEntryCollection.h" />
+    <ClInclude Include="LogEntry.h" />
+    <ClInclude Include="AlertListPane.h" />
+    <ClInclude Include="VisualTheme.h" />
+    <ClInclude Include="MFCToolBarLabel.h" />
+    <ClInclude Include="MFCVisualManagerWindowsCustom.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="MainApp.cpp" />
+    <ClCompile Include="LogEntryCollection.cpp" />
+    <ClCompile Include="LogEntry.cpp" />
+    <ClCompile Include="AlertListPane.cpp" />
+    <ClCompile Include="VisualTheme.cpp" />
+    <ClCompile Include="MFCToolBarLabel.cpp" />
+    <ClCompile Include="MFCVisualManagerWindowsCustom.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\Corona.OutputViewer.ico">
+      <Filter>res</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>res</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\CoronaOutputViewer.rc2">
+      <Filter>res</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Corona.OutputViewer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <LuaToCpp Include="..\..\resources\shell.lua">
+      <Filter>%28root%29\platform\resources</Filter>
+    </LuaToCpp>
+  </ItemGroup>
+</Project>

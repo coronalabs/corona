@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="libogg">
+      <UniqueIdentifier>{d9d9ca5f-e22a-4c7b-bcef-9b3f6c3964ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libogg\src">
+      <UniqueIdentifier>{7afa12f0-c104-448d-a8d1-a2d8aa6b0a8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libogg\include">
+      <UniqueIdentifier>{53826a07-f85c-4ce2-bc59-a47730505782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libogg\include\ogg">
+      <UniqueIdentifier>{e73a2abc-9c2d-40ea-9b47-e9e912223477}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis">
+      <UniqueIdentifier>{1434d27d-394e-425e-9191-1deef0f556a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis\include">
+      <UniqueIdentifier>{5a094491-8135-44e5-ad10-8a21754602d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis\include\vorbis">
+      <UniqueIdentifier>{bf71e8c3-c990-4fc6-8e31-17fc219a025e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis\lib">
+      <UniqueIdentifier>{b8b0660c-72c8-4b65-8de6-f047be07b33f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis\lib\books">
+      <UniqueIdentifier>{c27fdd9c-a79e-43dd-a21b-15ed0702e086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis\lib\books\coupled">
+      <UniqueIdentifier>{11a4d732-487d-475d-a6d6-fcd6214a1168}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis\lib\books\floor">
+      <UniqueIdentifier>{77f1bfec-0eb3-43ee-92f5-79c29fd3c7e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis\lib\books\uncoupled">
+      <UniqueIdentifier>{5cf8373f-2bfa-4e93-b7d8-378eb9bcaa5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libvorbis\lib\modes">
+      <UniqueIdentifier>{cc04b32b-074e-4aa9-a56e-05a93eac1c85}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\external\ogg\libogg\src\framing.c">
+      <Filter>libogg\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libogg\src\bitwise.c">
+      <Filter>libogg\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\analysis.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\bitrate.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\block.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\codebook.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\envelope.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\floor0.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\floor1.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\info.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\lookup.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\lpc.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\lsp.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\mapping0.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\mdct.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\psy.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\registry.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\res0.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\sharedbook.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\smallft.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\synthesis.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\vorbisenc.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\vorbisfile.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\ogg\libvorbis\lib\window.c">
+      <Filter>libvorbis\lib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\external\ogg\libogg\include\ogg\os_types.h">
+      <Filter>libogg\include\ogg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libogg\include\ogg\ogg.h">
+      <Filter>libogg\include\ogg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\include\vorbis\vorbisfile.h">
+      <Filter>libvorbis\include\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\include\vorbis\codec.h">
+      <Filter>libvorbis\include\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\include\vorbis\vorbisenc.h">
+      <Filter>libvorbis\include\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\mdct.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\misc.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\os.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\psy.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\registry.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\scales.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\smallft.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\window.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\backends.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\bitrate.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\codebook.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\codec_internal.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\envelope.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\highlevel.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\lookup.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\lookup_data.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\lpc.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\lsp.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\masking.h">
+      <Filter>libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\books\coupled\res_books_stereo.h">
+      <Filter>libvorbis\lib\books\coupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\books\coupled\res_books_51.h">
+      <Filter>libvorbis\lib\books\coupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\books\floor\floor_books.h">
+      <Filter>libvorbis\lib\books\floor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\books\uncoupled\res_books_uncoupled.h">
+      <Filter>libvorbis\lib\books\uncoupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_44.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_44p51.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_44u.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_X.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\floor_all.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\psych_8.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\psych_11.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\psych_16.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\psych_44.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\residue_8.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\residue_16.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\residue_44.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\residue_44p51.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\residue_44u.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_8.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_11.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_16.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_22.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\ogg\libvorbis\lib\modes\setup_32.h">
+      <Filter>libvorbis\lib\modes</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

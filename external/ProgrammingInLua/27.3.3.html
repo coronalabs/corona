@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 27.3.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="27.3.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="28.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P4">Part IV. The C API</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#27">Chapter 27. Techniques for Writing C Functions</a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h3>27.3.3 - Upvalues</h3>
+
+<p>While the registry implements global values,
+the <em>upvalue</em> mechanism implements an equivalent
+of C static variables,
+which are visible only inside a particular function.
+Every time you create a new C function in Lua,
+you can associate with it any number of upvalues;
+each upvalue can hold a single Lua value.
+Later, when the function is called,
+it has free access to any of its upvalues,
+using pseudo-indices.
+
+<p>We call this association of a C function
+with its upvalues a <em>closure</em>.
+Remember that, in Lua code,
+a closure is a function that uses local variables from an outer function.
+A C closure is a C approximation to a Lua closure.
+One interesting fact about closures is that you can create
+different closures using the same function code,
+but with different upvalues.
+
+<p>To see a simple example,
+let us create a <code>newCounter</code> function in C.
+(We already defined this same function in Lua,
+in <a href="6.1.html#closures">Section 6.1</a>.)
+This function is a factory function:
+It returns a new counter function each time it is called.
+Although all counters share the same C code,
+each one keeps its own independent counter.
+The factory function is like this:
+<pre>
+    /* forward declaration */
+    static int counter (lua_State *L);
+    
+    int newCounter (lua_State *L) {
+      lua_pushnumber(L, 0);
+      lua_pushcclosure(L, &amp;counter, 1);
+      return 1;
+    }
+</pre>
+The key function here is <code>lua_pushcclosure</code>,
+which creates a new closure.
+Its second argument is the base function (<code>counter</code>, in the example)
+and the third is the number of upvalues (1, in the example).
+Before creating a new closure,
+we must push on the stack the initial values for its upvalues.
+In our example, we push the number 0 as the initial value for the
+single upvalue.
+As expected,
+<code>lua_pushcclosure</code> leaves the new closure on the stack,
+so the closure is ready to be returned as the result of <code>newCounter</code>.
+
+<p>Now, let us see the definition of <code>counter</code>:
+
+<pre>
+    static int counter (lua_State *L) {
+      double val = lua_tonumber(L, lua_upvalueindex(1));
+      lua_pushnumber(L, ++val);  /* new value */
+      lua_pushvalue(L, -1);  /* duplicate it */
+      lua_replace(L, lua_upvalueindex(1));  /* update upvalue */
+      return 1;  /* return new value */
+    }
+</pre>
+Here, the key function is <code>lua_upvalueindex</code>
+(which is actually a macro),
+which produces the pseudo-index of an upvalue.
+Again, this pseudo-index is like any stack index,
+except that it does not live in the stack.
+The expression <code>lua_upvalueindex(1)</code> refers to the index of
+the first upvalue of the function.
+So, the <code>lua_tonumber</code> in function <code>counter</code>
+retrieves the current value of the first (and only) upvalue as a number.
+Then, function <code>counter</code> pushes the new value <code>++val</code>,
+makes a copy of it,
+and uses one of the copies to replace the upvalue with the new value.
+Finally, it returns the other copy as its return value.
+
+<p>Unlike Lua closures, C closures cannot share upvalues:
+Each closure has its own independent set.
+However, we can set the upvalues of different functions
+to refer to a common table,
+so that this table becomes a common place where those functions
+can share data.
+
+<p>
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="28.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

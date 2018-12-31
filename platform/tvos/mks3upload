@@ -1,0 +1,87 @@
+#!/bin/bash -e
+#
+# mks3upload
+#
+# Create a template archive suitable for uploading to S3 for use in Simulator device builds
+#
+
+AS2BACKUP=$(mktemp)
+ASSETS2="$(pwd)/../test/assets2"
+
+if [ -d $ASSETS2 ]
+then
+	rm $AS2BACKUP
+	mv $ASSETS2 $AS2BACKUP
+fi
+
+TEMPLATE_DIR=build/template
+
+if [ "$1" == "--clean" ] || [ "$1" == "-c" ]
+then
+	rm -rf build
+	shift
+
+	if [ "$1" == "--upload" ] || [ "$1" == "-u" ]
+	then
+		# if asked to clean then upload, be sure to build
+		./build_templates.sh "$(xcrun --sdk appletvos --show-sdk-version)" 2100.9999
+	fi
+fi
+
+if [ "$1" == "--build" ]
+then
+	rm -rf build
+	./build_templates.sh "$(xcrun --sdk appletvos --show-sdk-version)" 2100.9999
+	shift
+fi
+
+UPLOADS=""
+
+for PLATFORM in appletvos appletvsimulator
+do
+	echo "Creating $PLATFORM template ..."
+
+	for TVOS_VER in $TEMPLATE_DIR/${PLATFORM}/*
+	do
+
+		TVOS_VER=$(basename "${TVOS_VER}")
+
+		ARCHIVE="$(pwd)/2100.9999_template_${PLATFORM}_${TVOS_VER}_basic.tar.bz"
+
+		cp -X ../resources/config_require.lua "$TEMPLATE_DIR/${PLATFORM}/${TVOS_VER}/"
+		cp -X license.ccdata "$TEMPLATE_DIR/${PLATFORM}/${TVOS_VER}/template.app/"
+
+		(
+		cd "$TEMPLATE_DIR/${PLATFORM}/${TVOS_VER}/" || exit
+
+		# the excludes are common detritus due to a test app in platform/test/assets2
+		tar cvjf "${ARCHIVE}" --exclude='CoronaSimLogo-256.png' --exclude='*.jpg' --exclude='Icon*.png' ./template.app ./config_require.lua
+
+		rm config_require.lua
+
+		echo "Built ${ARCHIVE}"
+		)
+
+		UPLOADS="$UPLOADS $ARCHIVE"
+	done
+done
+
+
+if [ "$1" == "--upload" ]
+then
+	echo "Uploading: "
+	ACTION=eval
+else
+	echo "Upload with: "
+	ACTION=echo
+fi
+
+for UPL in $UPLOADS
+do
+	$ACTION aws s3 cp "$UPL" s3://ansca-templates/2100.9999/
+done
+
+if [ -d $AS2BACKUP ]
+then
+	mv $AS2BACKUP $ASSETS2 
+fi

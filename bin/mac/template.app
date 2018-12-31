@@ -1,0 +1,1 @@
+../../platform/mac/build/Release-template/template.app

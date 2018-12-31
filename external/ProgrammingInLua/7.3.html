@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head><title>Programming in Lua : 7.3</title>
+<link rel="stylesheet" type="text/css" href="pil.css">
+</head>
+<body bgcolor="white">
+<table width="100%" class="nav">
+<tr>
+<td width="10%" align="left"><a href="7.2.html"><img border="0" src="left.png" alt="Previous"></a></td>
+<td width="80%" align="center"><a href="index.html"><font face="Helvetica,Arial,sanserif">
+<font color="gray">Programming in </font><font color="blue"> Lua</font>
+</font></a></td>
+<td width="10%" align="right"><a href="7.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td width="10%" align="left"></td>
+<td width="80%" align="center"><a href="index.html#P1">Part I. The Language</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="index.html#7">Chapter 7. Iterators and the Generic <b>for</b></a></td>
+<td width="10%" align="right"></td></tr>
+</table>
+<hr/>
+<p><h2>7.3 - Stateless Iterators</h2>
+
+<p>As the name implies,
+a stateless iterator is an iterator that
+does not keep any state by itself.
+Therefore, we may use the same stateless iterator in multiple loops,
+avoiding the cost of creating new closures.
+
+<p>On each iteration,
+the <b>for</b> loop calls its iterator function with two arguments:
+the invariant state and the control variable.
+A stateless iterator generates the next element for
+the iteration using only these two arguments.
+A typical example of this kind of iterator is <code>ipairs</code>,
+which iterates over all elements in an array,
+as illustrated next:
+<pre>
+    a = {"one", "two", "three"}
+    for i, v in ipairs(a) do
+      print(i, v)
+    end
+</pre>
+The state of the iteration is the table being traversed
+(the invariant state, which does not change during the loop),
+plus the current index (the control variable).
+Both <code>ipairs</code> and the
+iterator it returns are quite simple;
+we could write them in Lua as follows:
+<pre>
+    function iter (a, i)
+      i = i + 1
+      local v = a[i]
+      if v then
+        return i, v
+      end
+    end
+    
+    function ipairs (a)
+      return iter, a, 0
+    end
+</pre>
+When Lua calls <code>ipairs(a)</code> in a <b>for</b> loop,
+it gets three values:
+the <code>iter</code> function as the iterator,
+<code>a</code> as the invariant state,
+and zero as the initial value for the control variable.
+Then, Lua calls <code>iter(a, 0)</code>,
+which results in <code>1, a[1]</code>
+(unless <code>a[1]</code> is already <B>nil</B>).
+In the second iteration, it calls <code>iter(a, 1)</code>,
+which results in <code>2, a[2]</code>, and so on,
+until the first nil element.
+
+<p>The <code>pairs</code> function,
+which iterates over all elements in a table, is similar,
+except that the iterator function is the <code>next</code> function,
+which is a primitive function in Lua:
+<pre>
+    function pairs (t)
+      return next, t, nil
+    end
+</pre>
+The call <code>next(t, k)</code>, where <code>k</code> is a key of the table <code>t</code>,
+returns a next key in the table,
+in an arbitrary order.
+(It returns also the value associated with that key,
+as a second return value.)
+The call <code>next(t, nil)</code> returns a first pair.
+When there are no more pairs, <code>next</code> returns <B>nil</B>.
+
+<p>Some people prefer to use <code>next</code> directly,
+without calling <code>pairs</code>:
+<pre>
+    for k, v in next, t do
+      ...
+    end
+</pre>
+Remember that the expression list of the <b>for</b> loop is
+adjusted to three results,
+so Lua gets <code>next</code>, <code>t</code>, and <B>nil</B>,
+exactly what it gets when it calls <code>pairs(t)</code>.
+
+<hr/>
+<table width="100%" class="nav">
+<tr valign="top">
+<td width="60%" align="left">
+<small>
+  Copyright &copy; 2003-2004 Roberto Ierusalimschy.  All rights reserved.
+</small>
+</td>
+<td width="30%" align="center">
+<a href="http://www.amazon.com/gp/product/8590379825?ie=UTF8&tag=theprogrammil3-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=8590379825">
+<img src="amazon.gif" alt="[Buy from Amazon]" border="0"></a>
+</td>
+<td width="10%" align="right"><a href="7.4.html"><img border="0" src="right.png" alt="Next"></a></td>
+</tr>
+</table>
+
+
+</body></html>
+

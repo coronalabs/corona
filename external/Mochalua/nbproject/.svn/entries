@@ -1,0 +1,55 @@
+8
+
+dir
+4
+http://mochalua.googlecode.com/svn/trunk/Mochalua/nbproject
+http://mochalua.googlecode.com/svn
+
+
+
+2008-11-13T20:59:18.223142Z
+3
+pcmeehan
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+17e1636c-a753-0410-8a7a-5f2974b5f328
+
+project.properties
+file
+
+
+
+
+2008-11-17T23:39:45.000000Z
+fd37403e3004387bb8f364fbdc9d1ebb
+2008-11-13T20:53:30.130789Z
+2
+pcmeehan
+
+project.xml
+file
+
+
+
+
+2008-11-17T23:39:45.000000Z
+3c8d9d73e0496638cc2e137c3c5d2b80
+2008-11-13T20:53:30.130789Z
+2
+pcmeehan
+
+private
+dir
+

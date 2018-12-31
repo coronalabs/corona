@@ -1,0 +1,17 @@
+lstrip compresses Lua programs by removing comments and whitespace,
+including line breaks. By default, lstrip removes all line breaks.
+Use "lstrip -p" to preserve some line breaks.
+Use "lstrip -p -p" to preserve all line breaks.
+
+lstrip can also dump the token stream with -d. In this mode, for each
+token lstrip outputs a line with the line number, the token, and its
+value, separated by tabs.
+
+To try lstrip, just edit Makefile to reflect your installation of Lua
+and then run make. This will build lstrip and run a simple test. Note
+that lstrip needs inside information from the Lua private headers and
+so it needs to be built using a Lua build directory, not just the usual
+installation directories.
+
+This code is hereby placed in the public domain.
+Please send comments, suggestions, and bug reports to lhf@tecgraf.puc-rio.br .

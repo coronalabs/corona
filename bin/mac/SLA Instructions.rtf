@@ -1,0 +1,55 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww9000\viewh9000\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\fs56 \cf0 \'f0 
+\fs36 Software License Agreement SDK version 1.0
+\fs24 \
+for Disk Copy--Mac OS X\
+\
+Contents: \
+SLAResource - the required resources in a resource fork.\
+SLA Instructions.rtf	- this file\
+\
+INTRODUCTION\
+Mac OS X's Disk Copy has the ability to display a multi-lingual software license agreement (SLA) before mounting a disk image.  The image will not be mounted unless the user indicates agreement with the license.  This document explains how to add license agreements to Mac OS X-native UDIF disk images. \
+\
+DETAILS\
+In order for Disk Copy to display an SLA, several resources have to be present in the image file.  In addition to localized SLA texts, the resource fork contains localized text for directions and buttons.  Since a UDIF image file normally only has a data fork, it is necessary to "unflatten" the file to expose its embedded resources, then to add the required resources using a program such as ResEdit[1] or the command line tool Rez[2], and finally to "flatten" the image back into a single fork for distribution.\
+\
+The resources are organized via an LPic resource with ID 5000.  A TMPL describing the structure of an LPic is included in the SLAResources file so that ResEdit can understand it.  The LPic consists of a default language specifier (a resource id offset within the file) followed by a list of 3-tuples: "system language ID," "local resource ID," and a flag indicating whether the language is two-byte.  If the default language specifier points to a nonexistent resource, the resource containing the language title "English" will be used.  If neither a default nor "English" exist, Disk Copy will hang while processing your disk image.\
+\
+For each entry in the LPic list, there must be a corresponding STR# resource with ID == 5000 + <the LPic entry's "local resource ID"> containing six strings as shown in the example STR# resources.  These strings effectively localize the SLA Panel's GUI and provide menu items for the languages popup.  TEXT and styl resources with corresponding resource IDs contain the texts of the localized license agreements.\
+\
+You can create everything you need in ResEdit by copying and pasting into a new TEXT or styl resource and by creating STR#'s with the right resource ID.  Be careful to renumber the resource IDs of TEXT and styl resources simultaneously ("Get info" to change the ID).  Also, beware that the correct display of styled text in Disk Copy's SLA window is dependent on what font you choose.  Times, Times New Roman, and Helvetica should work if cut and paste doesn't work the first time.  If you are looking for an additional source of matched TEXT and styl resources, you can use a text clipping.\
+\
+A look through the SLAResources file with ResEdit should give you an idea of how the resources are laid out.  We have provided STR# resources for the buttons in 16 different languages and two fake license agreements so you can see how everything works.  The example LPic only references these example agreements and the associated button strings.  The other STR# resources are not referenced by the example LPic.\
+\
+Encoding note: The STR# strings are interpreted according to the text encoding associated with the "system language ID" stored in the LPic.  System language IDs are listed in the Script.h file in OS X's CoreServices framework and are described within http://developer.apple.com.  The styl resources control the encodings used within the TEXT resources.\
+\
+\
+[1] ResEdit is available from http://download.info.apple.com/Apple_Support_Area/Apple_Software_Updates/English-North_American/Macintosh/Utilities/ResEdit_2.1.3.sea.bin\
+\
+[2] Rez is in /Developer/Tools/Rez on an OS X system with the developer package installed.\
+\
+STEP BY STEP\
+1. Create a disk image and populate it with files.\
+\
+2. Use 'hdiutil convert' on the command line to convert the image file to type UDRO (UDIF read-only) or type UDCO (UDIF read-only/compressed).  Beware of 'hdiutil convert' adding ".dmg" to your filename.  ie. 'hdiutil convert -format UDCO image.dmg -o image.ro'\
+\
+3. 'hdiutil unflatten' the image file to expose its resources (you can add resources to a flat UDIF, but they won't have any affect).  ie. 'hdiutil unflatten image.ro.dmg'\
+\
+4. Add the LPic, STR#, TEXT, and styl resources to the image file.  The \
+commands:\
+DeRez SLAResources > sla.r\
+Rez -a sla.r -o myunflattenedimage.dmg\
+will append the provided resources onto your unflattened dimage.  You'll still want to customize the resources (probably with ResEdit).\
+\
+5. Open your image file with Disk Copy and test the SLA.\
+\
+6. 'hdiutil flatten' your image for distribution.  ie. 'hdiutil flatten image.ro.dmg'\
+\
+May 6, 2003\
+}

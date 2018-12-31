@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="NsightTegraProject">
+    <NsightTegraProjectRevisionNumber>11</NsightTegraProjectRevisionNumber>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Tegra-Android">
+      <Configuration>Debug</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Tegra-Android">
+      <Configuration>Release</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Tegra-Android">
+      <Configuration>Shipping</Configuration>
+      <Platform>Tegra-Android</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9F5C833E-996B-48D8-BE4F-D72489BF682C}</ProjectGuid>
+    <RootNamespace>almixer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <AndroidTargetAPI>android-26</AndroidTargetAPI>
+    <AndroidMinAPI>android-17</AndroidMinAPI>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <AndroidTargetAPI>android-15</AndroidTargetAPI>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Shipping|Tegra-Android'">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <AndroidTargetAPI>android-15</AndroidTargetAPI>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <AdditionalOptions>-DSOUND_SUPPORTS_WAV -DSOUND_SUPPORTS_OGG -DANDROID_NDK -DENABLE_ALMIXER_THREADS -DALMIXER_COMPILE_WITHOUT_SDL -DALMIXER_USE_APPORTABLE_OPENAL_EXTENSIONS -DOPENAL_FIXED_POINT -DOPENAL_FIXED_POINT_SHIFT=16 -DMPG123_NO_CONFIGURE %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>Z:\corona\main\external\openal-soft_apportable\jni\OpenAL\include\AL;Z:\corona\main/external/ALmixer;Z:\corona\main/external/mpg123-1.13.1/src/libmpg123;Z:\corona\main/external/tremor/Tremor;Z:\corona\main/external/ALmixer/Isolated/LGPL;Z:\corona\main/external/ALmixer/Isolated</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SOUND_SUPPORTS_WAV;SOUND_SUPPORTS_MPG123;__ANDROID__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>-llog -ldl -lOpenSLES -lopenal %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>Z:\corona\main\platform\android\libs;Z:\corona\main\platform\android\sdk\Tegra-Android\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mpg123</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Tegra-Android'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\external\ALmixer\ALmixer.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\CircularQueue.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\ALmixer_RWops.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\LGPL\mpg123.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\LGPL\oggtremor.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\LGPL\SDL_sound_minimal.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\LGPL\wav.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\SimpleMutex.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\SimpleThreadPosix.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\SoundDecoder.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\Isolated\tErrorLib.c" />
+    <ClCompile Include="..\..\..\..\external\ALmixer\LinkedList.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\bitwise.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\codebook.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\dsp.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\floor0.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\floor1.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\floor_lookup.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\framing.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\info.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\mapping0.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\mdct.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\misc.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\res012.c" />
+    <ClCompile Include="..\..\..\..\external\tremor\Tremor\vorbisfile.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\external\ALmixer\ALmixer.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\CircularQueue.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\Isolated\ALmixer_RWops.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\Isolated\SimpleMutex.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\Isolated\SoundDecoder.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\Isolated\tErrorLib.h" />
+    <ClInclude Include="..\..\..\..\external\ALmixer\LinkedList.h" />
+    <ClInclude Include="..\..\..\..\external\tremor\Tremor\codebook.h" />
+    <ClInclude Include="..\..\..\..\external\tremor\Tremor\mdct.h" />
+    <ClInclude Include="..\..\..\..\external\tremor\Tremor\misc.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
