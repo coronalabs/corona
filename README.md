@@ -63,6 +63,6 @@ Due to the dual-licensed nature of Corona distribution, all contributors would h
 Entry points for each platform are located in `platform` directory. Refer to README.md files in its subdirectories.
 
 ## Governance and Code of Conduct
-Corona is maintained by [Corona Labs](https://coronalabs.com/) organization. Our mission is to make corona best game engine ever.
+Corona is maintained by [Corona Labs](https://coronalabs.com/) organization. Our mission is to make Corona the best game engine ever.
 
 To participate in the Corona community or development you must follow the Corona Community Code of Conduct (see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md))
