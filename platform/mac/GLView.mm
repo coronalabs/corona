@@ -1017,14 +1017,18 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 {
     unsigned long mask = [MacKeyServices getModifierMaskForKey:[event keyCode]];
 
-    // The mask contains a few bits set. All must be set to consider the key down.
-    if ( ( [event modifierFlags] & mask ) == mask )
+    // After certain actions, like using the screenshot tool, MacOS apparently triggers the "a" key event. Can't imagine anyone would like this event.
+    if ( [event keyCode] != kVK_ANSI_A )
     {
-        [self keyDown:event];
-    }
-    else
-    {
-        [self keyUp:event];
+        // The mask contains a few bits set. All must be set to consider the key down.
+        if ( ( [event modifierFlags] & mask ) == mask)
+        {
+            [self keyDown:event];
+        }
+        else
+        {
+            [self keyUp:event];
+        }
     }
 }
 
