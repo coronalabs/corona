@@ -9,7 +9,7 @@ Corona is a cross-platform framework ideal for rapidly creating apps and games f
 ## Benefits of usage Corona
 * Free for everybody – Enterprise features for every developer.
 * The easiest development tool for 2D games and mobile applications.
-* Corona allows to create apps easily, up to 10 times faster than other frameworks. 
+* Corona allows creating apps easily, up to 10 times faster than other frameworks. 
 * Corona is supported by detailed documentation system. 
 * Write the code once, run it many different places – Corona supports all major mobile platforms.
 * Corona Marketplace is a constantly growing store with more than 150 plugins and 300+ ready-to-go app assets. 
@@ -52,7 +52,7 @@ Note that Corona incorporates many libraries, both [third-party](sdk/dmg/Corona3
 
 ## Contributing
 
-If you are willing to improve Corona by contributing code, fork this repository and create a pull request with desired improvements. Project uses [git submodules](https://git-scm.com/book/en/Git-Tools-Submodules), so to clone the whole source code tree run
+If you are willing to improve Corona by contributing code, fork this repository and create a pull request with desired improvements. The project uses [git submodules](https://git-scm.com/book/en/Git-Tools-Submodules), so to clone the whole source code tree run
 
 ```sh
 git clone --recursive https://github.com/coronalabs/corona.git
@@ -60,7 +60,7 @@ git clone --recursive https://github.com/coronalabs/corona.git
 
 Due to the dual-licensed nature of Corona distribution, all contributors would have to sign a simple Contributor License Agreement (CLA) to ensure that their code can be part of Corona ecosystem. For more details see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Entry points for each platform are located in `platform` directory. Refer to README.md files in its subdirectories.
+Entry points for each platform are located in the `platform` directory. Refer to README.md files in its subdirectories.
 
 ## Governance and Code of Conduct
 Corona is maintained by [Corona Labs](https://coronalabs.com/) organization. Our mission is to make Corona the best game engine ever.
