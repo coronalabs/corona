@@ -306,11 +306,7 @@ namespace Rtt
 -(void)notifyWithTitle:(NSString*)title description:(NSString*)description iconData:(NSImage*)iconData;
 @end
 
-#ifndef Rtt_DEBUG
-@interface CoronaSimulatorApplication : DMACrashReportingApplication
-#else
 @interface CoronaSimulatorApplication : NSApplication
-#endif
 {
 	NSInteger fAttentionRequestID;
 }

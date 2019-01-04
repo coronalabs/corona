@@ -8413,10 +8413,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../../external",
-					"\"$(SRCROOT)/../../external/DeskMetrics/deskmetrics-mac-analytics-v2.1.0/sdk\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../../external";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -8942,10 +8939,7 @@
 				DEPLOYMENT_POSTPROCESSING = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../../external",
-					"\"$(SRCROOT)/../../external/DeskMetrics/deskmetrics-mac-analytics-v2.1.0/sdk\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../../external";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -9020,10 +9014,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../../external",
-					"\"$(SRCROOT)/../../external/DeskMetrics/deskmetrics-mac-analytics-v2.1.0/sdk\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../../external";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
