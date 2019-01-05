@@ -129,28 +129,25 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
     Real *timeArray = NULL;
     int numFramesInTimeArray = 0;
     lua_getfield( L, index, "time" );
-    if (lua_type(L, 1) == LUA_TNUMBER)
+    if ( lua_isnumber(L, -1) )
     {
         time = luaL_toreal( L, -1 );
     }
-    else
+    else if ( lua_istable( L, -1 ) )
     {
-        if ( lua_istable( L, -1 ) )
+        numFramesInTimeArray += (int) lua_objlen( L, -1 );
+        timeArray = (Real *)Rtt_MALLOC( allocator, numFramesInTimeArray * sizeof( Real ) );
+        for ( int i = 0; i < numFramesInTimeArray; i++ )
         {
-            numFramesInTimeArray += (int) lua_objlen( L, -1 );
-            timeArray = (Real *)Rtt_MALLOC( allocator, numFramesInTimeArray * sizeof( Real ) );
-            for ( int i = 0; i < numFramesInTimeArray; i++ )
+            lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
+            int value = (int)lua_tointeger( L, -1 );
+            if ( value < 1 )
             {
-                lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
-                int value = (int)lua_tointeger( L, -1 );
-                if ( value < 1 )
-                {
-                    Rtt_TRACE_SIM( ( "WARNING: Invalid value(%d) in 'time' array. Assuming the frame's time is 1\n", value ) );
-                    value = 1;
-                }
-                timeArray[i] = value;
-                lua_pop( L, 1 );
+                Rtt_TRACE_SIM( ( "WARNING: Invalid value(%d) in 'time' array. Assuming the frame's time is 1\n", value ) );
+                value = 1;
             }
+            timeArray[i] = value;
+            lua_pop( L, 1 );
         }
     }
     lua_pop( L, 1 );
