@@ -73,6 +73,7 @@ SpriteObjectSequence::VerifyValidTimeArrayParam( Real *timeArray, int numFramesI
         {
             newTimeArray[i] = timeArray[i];
         }
+        Rtt_DELETE(timeArray);
         return newTimeArray;
     }
     else // Repeat last frame time
@@ -83,6 +84,7 @@ SpriteObjectSequence::VerifyValidTimeArrayParam( Real *timeArray, int numFramesI
         {
             newTimeArray[i] = timeArray[Min(i, numFramesInTimeArray - 1)];
         }
+        Rtt_DELETE(timeArray);
         return newTimeArray;
     }
 }
