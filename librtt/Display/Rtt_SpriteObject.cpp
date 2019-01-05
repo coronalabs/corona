@@ -57,41 +57,40 @@ SpriteObjectSequence::DirectionForString( const char *value )
 
 	return result;
 }
-    
+
 Real*
 SpriteObjectSequence::VerifyValidTimeArrayParam( Real *timeArray, int numFramesInTimeArray, int numFrames )
 {
-    if (numFramesInTimeArray == 0 || numFramesInTimeArray == numFrames)
-    {
-        return timeArray;
-    }
-    else if (numFramesInTimeArray > numFrames) // Crop
-    {
-        Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be cropped.\n", numFramesInTimeArray, numFrames ) );
-        Real *newTimeArray = (Real *)Rtt_MALLOC( allocator, numFrames * sizeof( Real ) );
-        for ( int i = 0; i < numFrames; i++ )
-        {
-            newTimeArray[i] = timeArray[i];
-        }
-        Rtt_DELETE(timeArray);
-        return newTimeArray;
-    }
-    else // Repeat last frame time
-    {
-        Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be extended with last frame time.\n", numFramesInTimeArray, numFrames ) );
-        Real *newTimeArray = (Real *)Rtt_MALLOC( allocator, numFrames * sizeof( Real ) );
-        for ( int i = 0; i < numFrames; i++ )
-        {
-            newTimeArray[i] = timeArray[Min(i, numFramesInTimeArray - 1)];
-        }
-        Rtt_DELETE(timeArray);
-        return newTimeArray;
-    }
+	if (numFramesInTimeArray == 0 || numFramesInTimeArray == numFrames)
+	{
+		return timeArray;
+	}
+	else if (numFramesInTimeArray > numFrames) // Crop
+	{
+		Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be cropped.\n", numFramesInTimeArray, numFrames ) );
+		Real *newTimeArray = (Real *)Rtt_MALLOC( allocator, numFrames * sizeof( Real ) );
+		for ( int i = 0; i < numFrames; i++ )
+		{
+			newTimeArray[i] = timeArray[i];
+		}
+		Rtt_DELETE(timeArray);
+		return newTimeArray;
+	}
+	else // Repeat last frame time
+	{
+		Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be extended with last frame time.\n", numFramesInTimeArray, numFrames ) );
+		Real *newTimeArray = (Real *)Rtt_MALLOC( allocator, numFrames * sizeof( Real ) );
+		for ( int i = 0; i < numFrames; i++ )
+		{
+			newTimeArray[i] = timeArray[Min(i, numFramesInTimeArray - 1)];
+		}
+		Rtt_DELETE(timeArray);
+		return newTimeArray;
+	}
 }
 
 SpriteObjectSequence*
-SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index )
-{
+SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index ) {
 	const char kEmptyStr[] = "";
 
 	SpriteObjectSequence *result = NULL;
@@ -127,50 +126,51 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 	Direction loopDirection = DirectionForString( lua_tostring( L, -1 ) );
 	lua_pop( L, 1 );
 
-    Real time = 0;
-    Real *timeArray = NULL;
-    int numFramesInTimeArray = 0;
-    lua_getfield( L, index, "time" );
-    if ( lua_isnumber(L, -1) )
-    {
-        time = luaL_toreal( L, -1 );
-    }
-    else if ( lua_istable( L, -1 ) )
-    {
-        numFramesInTimeArray += (int) lua_objlen( L, -1 );
-        timeArray = (Real *)Rtt_MALLOC( allocator, numFramesInTimeArray * sizeof( Real ) );
-        for ( int i = 0; i < numFramesInTimeArray; i++ )
-        {
-            lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
-            int value = (int)lua_tointeger( L, -1 );
-            if ( value < 1 )
-            {
-                Rtt_TRACE_SIM( ( "WARNING: Invalid value(%d) in 'time' array. Assuming the frame's time is 1\n", value ) );
-                value = 1;
-            }
-            timeArray[i] = value;
-            lua_pop( L, 1 );
-        }
-    }
-    lua_pop( L, 1 );
-    
+	Real time = 0;
+	Real *timeArray = NULL;
+	int numFramesInTimeArray = 0;
+	lua_getfield( L, index, "time" );
+	if ( lua_isnumber(L, -1) )
+	{
+		time = luaL_toreal( L, -1 );
+	}
+	else if ( lua_istable( L, -1 ) )
+	{
+		numFramesInTimeArray += (int) lua_objlen( L, -1 );
+		timeArray = (Real *)Rtt_MALLOC( allocator, numFramesInTimeArray * sizeof( Real ) );
+		for ( int i = 0; i < numFramesInTimeArray; i++ )
+		{
+			lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
+			int value = (int)lua_tointeger( L, -1 );
+			if ( value < 1 )
+			{
+				Rtt_TRACE_SIM( ( "WARNING: Invalid value(%d) in 'time' array. Assuming the frame's time is 1\n", value ) );
+				value = 1;
+			}
+			time += value;
+			timeArray[i] = value;
+			lua_pop( L, 1 );
+		}
+	}
+	lua_pop( L, 1 );
+	
 	if ( start > 0 )
 	{
-        lua_getfield( L, index, "count" );
-        int numFrames = (int) lua_tointeger( L, -1 );
-        lua_pop( L, 1 );
-        
-        if ( numFrames <= 0 )
-        {
-            Rtt_TRACE_SIM( ( "WARNING: Invalid 'count' value(%d) in sequenceData. Assuming the frame count of the sequence is 1.\n", numFrames ) );
-            numFrames = 1;
-        }
-        
+		lua_getfield( L, index, "count" );
+		int numFrames = (int) lua_tointeger( L, -1 );
+		lua_pop( L, 1 );
+		
+		if ( numFrames <= 0 )
+		{
+			Rtt_TRACE_SIM( ( "WARNING: Invalid 'count' value(%d) in sequenceData. Assuming the frame count of the sequence is 1.\n", numFrames ) );
+			numFrames = 1;
+		}
+		
 		--start; // Lua value was 1-based
- 
-        Real *verifiedTimeArray = VerifyValidTimeArrayParam(timeArray, numFramesInTimeArray, numFrames);
-        result = Rtt_NEW( allocator, SpriteObjectSequence(
-            allocator, name, time, verifiedTimeArray, start, numFrames, loopCount, loopDirection ) );
+		
+		Real *verifiedTimeArray = VerifyValidTimeArrayParam(timeArray, numFramesInTimeArray, numFrames);
+		result = Rtt_NEW( allocator, SpriteObjectSequence(
+			allocator, name, time, verifiedTimeArray, start, numFrames, loopCount, loopDirection ) );
 	}
 	else
 	{
@@ -178,7 +178,7 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 		if ( lua_istable( L, -1 ) )
 		{
 			int numFrames = (int) lua_objlen( L, -1 );
-            
+			
 			FrameIndex *frames = (FrameIndex *)Rtt_MALLOC( allocator, numFrames * sizeof( FrameIndex ) );
 			for ( int i = 0; i < numFrames; i++ )
 			{
@@ -191,8 +191,8 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 				frames[i] = (value - 1); // Lua is 1-based
 				lua_pop( L, 1 );
 			}
-            
-            Real *verifiedTimeArray = VerifyValidTimeArrayParam(timeArray, numFramesInTimeArray, numFrames);
+
+			Real *verifiedTimeArray = VerifyValidTimeArrayParam(timeArray, numFramesInTimeArray, numFrames);
 			result = Rtt_NEW( allocator, SpriteObjectSequence(
 				allocator, name, time, verifiedTimeArray, frames, numFrames, loopCount, loopDirection ) );
 		}
@@ -233,7 +233,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 	Rtt_Allocator *allocator,
 	const char *name,
 	Real time,
-    Real *timeArray,
+	Real *timeArray,
 	FrameIndex start,
 	FrameIndex numFrames,
 	int loopCount,
@@ -242,7 +242,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 	fSheet(),
 	fName( allocator, name ),
 	fTime( time ),
-    fTimeArray( timeArray ),
+	fTimeArray( timeArray ),
 	fTimePerFrame( Rtt_RealDiv( Rtt_IntToReal( time ), Rtt_IntToReal( numFrames ) ) ),
 	fNumFrames( numFrames ),
 	fStart( start ),
@@ -258,7 +258,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 	Rtt_Allocator *allocator,
 	const char *name,
 	Real time,
-    Real *timeArray,
+	Real *timeArray,
 	FrameIndex *frames,
 	FrameIndex numFrames,
 	int loopCount,
@@ -267,7 +267,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 	fSheet(),
 	fName( allocator, name ),
 	fTime( time ),
-    fTimeArray( timeArray ),
+	fTimeArray( timeArray ),
 	fTimePerFrame( Rtt_RealDiv( Rtt_IntToReal( time ), Rtt_IntToReal( numFrames ) ) ),
 	fStart( -1 ),
 	fFrames( frames ),
@@ -281,6 +281,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 SpriteObjectSequence::~SpriteObjectSequence()
 {
 	Rtt_FREE( fFrames );
+	Rtt_FREE( fTimeArray );
 	Rtt_DELETE( fPaint );
 }
 
@@ -356,45 +357,48 @@ SpriteObjectSequence::GetFrame( int index ) const
 int
 SpriteObjectSequence::GetFrameIndexForDeltaTime( Real dt ) const
 {
-    if (GetTime() > 0)
-    {
-        return (int)Rtt_RealDiv( dt, GetTimePerFrame() );
-    }
-    else
-    {
-        int numFrames = GetNumFrames();
-        Real currentTime = 0;
-        Real *timeArray = GetTimeArray();
-        for (int i = 0; i < numFrames; ++i)
-        {
-            Real currentTimeForFrame = timeArray[i];
-            currentTime += currentTimeForFrame;
-            if (currentTime > dt) return i;
-        }
-        return numFrames;
-    }
+	if (GetTimeArray() == NULL)
+	{
+		return (int)Rtt_RealDiv( dt, GetTimePerFrame() );
+	}
+	else
+	{
+		int time = GetTime();
+		int numFrames = GetNumFrames();
+		int amountOfLoopsCompleted = floor(dt / time);
+		int amountOfFramesCompleted = amountOfLoopsCompleted * numFrames;
+		Real currentTime = amountOfLoopsCompleted * time;
+		Real *timeArray = GetTimeArray();
+		for (int i = 0; i < numFrames; ++i)
+		{
+			Real currentTimeForFrame = timeArray[i];
+			currentTime += currentTimeForFrame;
+			if (currentTime > dt) return amountOfFramesCompleted + i;
+		}
+		return amountOfFramesCompleted + numFrames;
+	}
 }
-    
+
 int
 SpriteObjectSequence::GetTimeForFrame( int frameIndex ) const
 {
-    if (GetTime() > 0)
-    {
-        return frameIndex * GetTimePerFrame();
-    }
-    else
-    {
-        Real summedTime = 0;
-        Real *timeArray = GetTimeArray();
-        for (int i = 0; i < frameIndex; ++i)
-        {
-            summedTime += timeArray[i];
-        }
-        return summedTime;
-    }
+	if (GetTimeArray() == NULL)
+	{
+		return frameIndex * GetTimePerFrame();
+	}
+	else
+	{
+		Real summedTime = 0;
+		Real *timeArray = GetTimeArray();
+		for (int i = 0; i < frameIndex; ++i)
+		{
+			summedTime += timeArray[i];
+		}
+		return summedTime;
+	}
 }
 
-    
+
 SpriteObjectSequence::FrameIndex
 SpriteObjectSequence::GetEffectiveFrame( int index, SpriteEvent::Phase *phase ) const
 {
@@ -652,7 +656,7 @@ SpriteObject::SpriteObject(
 	fPlayTime( 0 ),
 	fProperties( 0 )
 {
-    SetObjectDesc( "SpriteObject" );     // for introspection
+	SetObjectDesc( "SpriteObject" );     // for introspection
 }
 
 SpriteObject::~SpriteObject()
@@ -804,7 +808,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 		return;
 	}
 
-    bool shouldDispath = false;
+	bool shouldDispath = false;
 	SpriteEvent::Phase nextPhase = SpriteEvent::kNumPhases; // unknown
 
 	// By default, assume frame does not advance
@@ -823,14 +827,14 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 		if ( HasListener( kSpriteListener ) )
 		{
-            shouldDispath = true;
+			shouldDispath = true;
 			nextPhase = SpriteEvent::kBegan;
 		}
 	}
 	else
 	{
 		// Inductive step: advance frame
-		if ( sequence->GetTime() > 0 || sequence->GetTimeArray() != NULL)
+		if ( sequence->GetTime() > 0 )
 		{
 			// time-based sequence.
 			Real dt = Rtt_IntToReal( (U32) (milliseconds - fStartTime) );
@@ -838,16 +842,15 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 			{
 				dt = Rtt_RealMul( dt, fTimeScale );
 			}
-            
-            int frameIndexForDeltaTime = sequence->GetFrameIndexForDeltaTime(dt);
-            
-            bool isInfiniteLooping = ( 0 == sequence->GetLoopCount() );
+			
+			int frameIndexForDeltaTime = sequence->GetFrameIndexForDeltaTime(dt);
+
+			bool isInfiniteLooping = ( 0 == sequence->GetLoopCount() );
 			if ( isInfiniteLooping )
 			{
-				// For infinite looping, handle wrap-around
-				frameIndexForDeltaTime = frameIndexForDeltaTime % numFrames;
+				bool isFirstLoopDone = ( frameIndexForDeltaTime >= numFrames );
 
-                bool isFirstLoopDone = ( frameIndexForDeltaTime >= numFrames );
+				frameIndexForDeltaTime = frameIndexForDeltaTime % numFrames;
 				if ( isFirstLoopDone && frameIndexForDeltaTime < fCurrentFrame )
 				{
 					// It's unclear what case this is catching and it impedes debugging
@@ -856,7 +859,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 					if ( HasListener( kSpriteListener ) )
 					{
-                        shouldDispath = true;
+						shouldDispath = true;
 						nextPhase = SpriteEvent::kLoop;
 					}
 
@@ -871,7 +874,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 				// Assume the phase is 'next' for now, and set to other phases below.
 				if ( HasListener( kSpriteListener ) )
 				{
-                    shouldDispath = true;
+					shouldDispath = true;
 					nextPhase = SpriteEvent::kNext;
 				}
 
@@ -892,7 +895,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 							if ( HasListener( kSpriteListener ) )
 							{
-                                shouldDispath = true;
+								shouldDispath = true;
 								nextPhase = SpriteEvent::kEnded;
 							}
 						}
@@ -911,15 +914,15 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 			// Assume the phase is 'next' for now, and set to other phases below.
 			if ( HasListener( kSpriteListener ) )
 			{
-                shouldDispath = true;
+				shouldDispath = true;
 				nextPhase = SpriteEvent::kNext;
 			}
 
-            bool isInfiniteLooping = ( 0 == sequence->GetLoopCount() );
+			bool isInfiniteLooping = ( 0 == sequence->GetLoopCount() );
 			if ( isInfiniteLooping )
 			{
-                // For infinite looping, handle wrap-around (no last frame)
-                bool isFirstLoopDone = ( nextFrame >= numFrames );
+				// For infinite looping, handle wrap-around (no last frame)
+				bool isFirstLoopDone = ( nextFrame >= numFrames );
 				if ( isFirstLoopDone )
 				{
 					nextFrame = 0;
@@ -927,7 +930,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 					if ( HasListener( kSpriteListener ) )
 					{
-                        shouldDispath = true;
+						shouldDispath = true;
 						nextPhase = SpriteEvent::kLoop;
 					}
 				}
@@ -940,17 +943,17 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 				{
 					nextFrame = lastIndex;
 					fCurrentFrame = nextFrame;
-                    
+					
 					// We're about to advance beyond the last frame
 					if ( ! IsProperty( kIsPlayingEnded ) )
 					{
-                        SetPlaying( false );
-                        SetProperty( kIsPlayingEnded, true );
-                        if ( HasListener( kSpriteListener ) )
-                        {
-                            shouldDispath = true;
-                            nextPhase = SpriteEvent::kEnded;
-                        }
+						SetPlaying( false );
+						SetProperty( kIsPlayingEnded, true );
+						if ( HasListener( kSpriteListener ) )
+						{
+							shouldDispath = true;
+							nextPhase = SpriteEvent::kEnded;
+						}
 					}
 				}
 			}
@@ -1097,7 +1100,7 @@ SpriteObject::SetFrame( int index )
 		// Clamp: 0 <= index < GetNumFrames()
 		index = Max( index, 0 );
 		index = Min( index, GetNumFrames() );
-        
+		
 		if ( sequence->GetTime() > 0 )
 		{
 			// time-based, so frame changes depend on current time
