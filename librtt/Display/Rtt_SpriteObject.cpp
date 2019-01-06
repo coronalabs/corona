@@ -58,37 +58,6 @@ SpriteObjectSequence::DirectionForString( const char *value )
 	return result;
 }
 
-Real*
-SpriteObjectSequence::VerifyValidTimeArrayParam( Real *timeArray, int numFramesInTimeArray, int numFrames )
-{
-	if (numFramesInTimeArray == 0 || numFramesInTimeArray == numFrames)
-	{
-		return timeArray;
-	}
-	else if (numFramesInTimeArray > numFrames) // Crop
-	{
-		Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be cropped.\n", numFramesInTimeArray, numFrames ) );
-		Real *newTimeArray = (Real *)Rtt_MALLOC( allocator, numFrames * sizeof( Real ) );
-		for ( int i = 0; i < numFrames; i++ )
-		{
-			newTimeArray[i] = timeArray[i];
-		}
-		Rtt_DELETE(timeArray);
-		return newTimeArray;
-	}
-	else // Repeat last frame time
-	{
-		Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be extended with last frame time.\n", numFramesInTimeArray, numFrames ) );
-		Real *newTimeArray = (Real *)Rtt_MALLOC( allocator, numFrames * sizeof( Real ) );
-		for ( int i = 0; i < numFrames; i++ )
-		{
-			newTimeArray[i] = timeArray[Min(i, numFramesInTimeArray - 1)];
-		}
-		Rtt_DELETE(timeArray);
-		return newTimeArray;
-	}
-}
-
 SpriteObjectSequence*
 SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index ) {
 	const char kEmptyStr[] = "";
@@ -125,39 +94,13 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 	lua_getfield( L, index, "loopDirection" );
 	Direction loopDirection = DirectionForString( lua_tostring( L, -1 ) );
 	lua_pop( L, 1 );
-
-	Real time = 0;
-	Real *timeArray = NULL;
-	int numFramesInTimeArray = 0;
-	lua_getfield( L, index, "time" );
-	if ( lua_isnumber(L, -1) )
-	{
-		time = luaL_toreal( L, -1 );
-	}
-	else if ( lua_istable( L, -1 ) )
-	{
-		numFramesInTimeArray += (int) lua_objlen( L, -1 );
-		timeArray = (Real *)Rtt_MALLOC( allocator, numFramesInTimeArray * sizeof( Real ) );
-		for ( int i = 0; i < numFramesInTimeArray; i++ )
-		{
-			lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
-			int value = (int)lua_tointeger( L, -1 );
-			if ( value < 1 )
-			{
-				Rtt_TRACE_SIM( ( "WARNING: Invalid value(%d) in 'time' array. Assuming the frame's time is 1\n", value ) );
-				value = 1;
-			}
-			time += value;
-			timeArray[i] = value;
-			lua_pop( L, 1 );
-		}
-	}
-	lua_pop( L, 1 );
 	
+	FrameIndex *frames = NULL;
+	int numFrames;
 	if ( start > 0 )
 	{
 		lua_getfield( L, index, "count" );
-		int numFrames = (int) lua_tointeger( L, -1 );
+		numFrames = (int) lua_tointeger( L, -1 );
 		lua_pop( L, 1 );
 		
 		if ( numFrames <= 0 )
@@ -165,21 +108,15 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 			Rtt_TRACE_SIM( ( "WARNING: Invalid 'count' value(%d) in sequenceData. Assuming the frame count of the sequence is 1.\n", numFrames ) );
 			numFrames = 1;
 		}
-		
-		--start; // Lua value was 1-based
-		
-		Real *verifiedTimeArray = VerifyValidTimeArrayParam(timeArray, numFramesInTimeArray, numFrames);
-		result = Rtt_NEW( allocator, SpriteObjectSequence(
-			allocator, name, time, verifiedTimeArray, start, numFrames, loopCount, loopDirection ) );
 	}
 	else
 	{
 		lua_getfield( L, index, "frames" );
 		if ( lua_istable( L, -1 ) )
 		{
-			int numFrames = (int) lua_objlen( L, -1 );
+			numFrames = (int) lua_objlen( L, -1 );
 			
-			FrameIndex *frames = (FrameIndex *)Rtt_MALLOC( allocator, numFrames * sizeof( FrameIndex ) );
+			frames = (FrameIndex *)Rtt_MALLOC( allocator, numFrames * sizeof( FrameIndex ) );
 			for ( int i = 0; i < numFrames; i++ )
 			{
 				lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
@@ -191,19 +128,66 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 				frames[i] = (value - 1); // Lua is 1-based
 				lua_pop( L, 1 );
 			}
-
-			Real *verifiedTimeArray = VerifyValidTimeArrayParam(timeArray, numFramesInTimeArray, numFrames);
-			result = Rtt_NEW( allocator, SpriteObjectSequence(
-				allocator, name, time, verifiedTimeArray, frames, numFrames, loopCount, loopDirection ) );
-		}
-		else
-		{
-			Rtt_TRACE_SIM( ( "ERROR: sequenceData missing data. One of the following must be supplied: a pair of properties 'start'/'count' or an array value for the property 'frames'.\n" ) );
 		}
 		lua_pop( L, 1 );
 	}
-
-
+	
+	Real time = 0;
+	Real *timeArray = NULL;
+	lua_getfield( L, index, "time" );
+	if ( lua_isnumber(L, -1) )
+	{
+		time = luaL_toreal( L, -1 );
+	}
+	else if ( lua_istable( L, -1 ) )
+	{
+		int numFramesInTimeArray = (int) lua_objlen( L, -1 );
+		timeArray = (Real *)Rtt_MALLOC( allocator, numFrames * sizeof( Real ) );
+		
+		for ( int i = 0; i < Min(numFrames, numFramesInTimeArray); i++ ) // Resolve timeArray with available values in given lua array
+		{
+			lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
+			int value = (int)lua_tointeger( L, -1 );
+			if ( value < 1 )
+			{
+				Rtt_TRACE_SIM( ( "WARNING: Invalid value(%d) in 'time' array. Assuming the frame's time is 1\n", value ) );
+				value = 1;
+			}
+			timeArray[i] = value;
+			lua_pop( L, 1 );
+		}
+		
+		if (numFramesInTimeArray > numFrames)
+		{
+			Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be cropped.\n", numFramesInTimeArray, numFrames ) );
+		}
+		else if ( numFramesInTimeArray < numFrames) // If given lua array was smaller, repeat last frame
+		{
+			Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be extended with last frame time.\n", numFramesInTimeArray, numFrames ) );
+			for ( int i = numFramesInTimeArray - 1; i < numFrames; i++ )
+			{
+				timeArray[i] = timeArray[numFramesInTimeArray - 1];
+			}
+		}
+	}
+	lua_pop( L, 1 );
+	
+	if ( start > 0 )
+	{
+		--start; // Lua value was 1-based
+		result = Rtt_NEW( allocator, SpriteObjectSequence(
+			allocator, name, time, timeArray, start, numFrames, loopCount, loopDirection ) );
+	}
+	else if ( frames != NULL)
+	{
+			result = Rtt_NEW( allocator, SpriteObjectSequence(
+				allocator, name, time, timeArray, frames, numFrames, loopCount, loopDirection ) );
+	}
+	else
+	{
+		Rtt_TRACE_SIM( ( "ERROR: sequenceData missing data. One of the following must be supplied: a pair of properties 'start'/'count' or an array value for the property 'frames'.\n" ) );
+	}
+	
 	if ( result )
 	{
 		ImageSheetUserdata *ud = NULL;
@@ -357,14 +341,14 @@ SpriteObjectSequence::GetFrame( int index ) const
 int
 SpriteObjectSequence::GetTimeForFrame( int frameIndex ) const
 {
-	if (GetTimeArray() == NULL)
+	Real *timeArray = GetTimeArray();
+	if (timeArray == NULL)
 	{
 		return frameIndex * GetTimePerFrame();
 	}
 	else
 	{
 		Real summedTime = 0;
-		Real *timeArray = GetTimeArray();
 		for (int i = 0; i < frameIndex; ++i)
 		{
 			summedTime += timeArray[i];
@@ -679,6 +663,7 @@ SpriteObject::AddSequence( SpriteObjectSequence *sequence )
 		// If no sequences have been added
 		if ( 0 == fSequences.Length() )
 		{
+			ResetTimeArrayIteratorCache( sequence );
 			SetBitmapFrame( sequence->GetEffectiveFrame( 0 ) );
 		}
 		fSequences.Append( sequence );
@@ -844,7 +829,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 	else
 	{
 		// Inductive step: advance frame
-		if ( sequence->GetTime() > 0 )
+		if ( sequence->GetTime() > 0 || sequence->GetTimeArray() != NULL)
 		{
 			// time-based sequence.
 			Real dt = Rtt_IntToReal( (U32) (milliseconds - fStartTime) );
@@ -1000,9 +985,6 @@ SpriteObject::Play( lua_State *L )
 	{
 		Reset();
 	}
-	else if ( fTimeArrayCachedNextFrameTime == 0 ) { // Initial assignment of cache
-		ResetTimeArrayIteratorCache(GetCurrentSequence());
-	}
 
 	if ( ! IsPlaying() )
 	{
@@ -1115,7 +1097,7 @@ SpriteObject::SetFrame( int index )
 		index = Max( index, 0 );
 		index = Min( index, GetNumFrames() );
 		
-		if ( sequence->GetTime() > 0 )
+		if ( sequence->GetTime() > 0 || sequence->GetTimeArray() != NULL )
 		{
 			// time-based, so frame changes depend on current time
 			Real playTime = sequence->GetTimeForFrame(index);

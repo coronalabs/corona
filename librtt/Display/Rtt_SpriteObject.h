@@ -62,7 +62,6 @@ class SpriteObjectSequence
 		Direction;
 
 		static Direction DirectionForString( const char *value );
-		static Real *VerifyValidTimeArrayParam( Real *timeArray, int numFrames, int numFramesInTimeArray );
 
 	public:
 		static SpriteObjectSequence* Create( Rtt_Allocator *allocator, lua_State *L, int index );
