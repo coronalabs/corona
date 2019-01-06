@@ -782,7 +782,7 @@ SpriteObject::GetFrameIndexForDeltaTime( Real dt, SpriteObjectSequence *sequence
 		{
 			fTimeArrayCachedFrame += 1;
 			
-			int numSeqFrames = SpriteObjectSequence::kBounce == sequence->GetLoopDirection() ? numSeqFrames = 2 * (numFrames - 1) : numFrames;
+			int numSeqFrames = SpriteObjectSequence::kBounce == sequence->GetLoopDirection() ? 2 * (numFrames - 1) : numFrames;
 			int nextFrame = fTimeArrayCachedFrame % numSeqFrames;
 			if ( nextFrame >= numFrames ) {
 				nextFrame = 2 * (numFrames - 1) - nextFrame;
