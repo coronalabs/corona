@@ -355,31 +355,6 @@ SpriteObjectSequence::GetFrame( int index ) const
 }
 
 int
-SpriteObjectSequence::GetFrameIndexForDeltaTime( Real dt ) const
-{
-	if (GetTimeArray() == NULL)
-	{
-		return (int)Rtt_RealDiv( dt, GetTimePerFrame() );
-	}
-	else
-	{
-		int time = GetTime();
-		int numFrames = GetNumFrames();
-		int amountOfLoopsCompleted = floor(dt / time);
-		int amountOfFramesCompleted = amountOfLoopsCompleted * numFrames;
-		Real currentTime = amountOfLoopsCompleted * time;
-		Real *timeArray = GetTimeArray();
-		for (int i = 0; i < numFrames; ++i)
-		{
-			Real currentTimeForFrame = timeArray[i];
-			currentTime += currentTimeForFrame;
-			if (currentTime > dt) return amountOfFramesCompleted + i;
-		}
-		return amountOfFramesCompleted + numFrames;
-	}
-}
-
-int
 SpriteObjectSequence::GetTimeForFrame( int frameIndex ) const
 {
 	if (GetTimeArray() == NULL)
@@ -794,6 +769,41 @@ SpriteObject::SetBitmapFrame( int frameIndex )
 }
 
 void
+SpriteObject::ResetTimeArrayIteratorCache(SpriteObjectSequence *sequence)
+{
+	Real *timeArray = sequence->GetTimeArray();
+	if (timeArray != NULL){
+		fTimeArrayCachedFrame = 0;
+		fTimeArrayCachedNextFrameTime = timeArray[0];
+	}
+}
+
+int
+SpriteObject::GetFrameIndexForDeltaTime( Real dt, SpriteObjectSequence *sequence, int effectiveNumFrames)
+{
+	if (sequence->GetTimeArray() == NULL)
+	{
+		return (int)Rtt_RealDiv( dt, sequence->GetTimePerFrame() );
+	}
+	else if (dt < fTimeArrayCachedNextFrameTime)
+	{
+		return fTimeArrayCachedFrame;
+	}
+	else
+	{
+		int numFrames = sequence->GetNumFrames();
+		Real *timeArray = sequence->GetTimeArray();
+		for (int i = fTimeArrayCachedFrame; i < effectiveNumFrames; ++i) // Increase cachedFrame until dt is lower than cachedNextFrameTime again
+		{
+			fTimeArrayCachedFrame += 1;
+			fTimeArrayCachedNextFrameTime += timeArray[fTimeArrayCachedFrame % numFrames];
+			if (dt < fTimeArrayCachedNextFrameTime) break;
+		}
+		return fTimeArrayCachedFrame;
+	}
+}
+
+void
 SpriteObject::Update( lua_State *L, U64 milliseconds )
 {
 	if( ! IsPlaying() )
@@ -816,7 +826,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 	SpriteObjectSequence *sequence = GetCurrentSequence();
 
-	int numFrames = sequence->GetEffectiveNumFrames();
+	int effectiveNumFrames = sequence->GetEffectiveNumFrames();
 
 	if ( ! IsProperty( kIsPlayingBegan ) )
 	{
@@ -843,26 +853,26 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 				dt = Rtt_RealMul( dt, fTimeScale );
 			}
 			
-			int frameIndexForDeltaTime = sequence->GetFrameIndexForDeltaTime(dt);
+			int frameIndexForDeltaTime = GetFrameIndexForDeltaTime(dt, sequence, effectiveNumFrames);
 
+			// Infinite looping will never let fCurrentFrame > numFrames, finite looping does.
 			bool isInfiniteLooping = ( 0 == sequence->GetLoopCount() );
 			if ( isInfiniteLooping )
 			{
-				bool isFirstLoopDone = ( frameIndexForDeltaTime >= numFrames );
-
-				frameIndexForDeltaTime = frameIndexForDeltaTime % numFrames;
+				bool isFirstLoopDone = ( frameIndexForDeltaTime >= effectiveNumFrames );
+				
+				frameIndexForDeltaTime = frameIndexForDeltaTime % effectiveNumFrames;
 				if ( isFirstLoopDone && frameIndexForDeltaTime < fCurrentFrame )
 				{
-					// It's unclear what case this is catching and it impedes debugging
-					// so commenting out until the reason for it is remembered
-					// Rtt_ASSERT( 0 == index );
-
 					if ( HasListener( kSpriteListener ) )
 					{
 						shouldDispath = true;
 						nextPhase = SpriteEvent::kLoop;
 					}
 
+					if (sequence -> GetTimeArray() != NULL){
+						fTimeArrayCachedFrame = 0; // Just reset fTimeArrayCachedFrame since dt keeps counting.
+					}
 					fCurrentFrame = 0;
 					nextFrame = 0;
 				}
@@ -878,10 +888,11 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 					nextPhase = SpriteEvent::kNext;
 				}
 
+				// Check for "ended" on finite loops
 				if ( ! isInfiniteLooping )
 				{
 					// Handle end condition when we are at the last frame
-					int lastIndex = ( numFrames - 1 );
+					int lastIndex = ( effectiveNumFrames - 1 );
 
 					if ( frameIndexForDeltaTime >= lastIndex )
 					{
@@ -922,7 +933,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 			if ( isInfiniteLooping )
 			{
 				// For infinite looping, handle wrap-around (no last frame)
-				bool isFirstLoopDone = ( nextFrame >= numFrames );
+				bool isFirstLoopDone = ( nextFrame >= effectiveNumFrames );
 				if ( isFirstLoopDone )
 				{
 					nextFrame = 0;
@@ -938,7 +949,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 			else
 			{
 				// Handle end condition when we are at the last frame
-				int lastIndex = ( numFrames - 1 );
+				int lastIndex = ( effectiveNumFrames - 1 );
 				if ( nextFrame >= lastIndex )
 				{
 					nextFrame = lastIndex;
@@ -961,7 +972,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 	}
 
 	// Advance frame if valid index is set
-	if ( nextFrame >= 0 && nextFrame < numFrames )
+	if ( nextFrame >= 0 && nextFrame < effectiveNumFrames )
 	{
 		SpriteEvent::Phase defaultPhase = SpriteEvent::kNext;
 		int effectiveFrame = sequence->GetEffectiveFrame( nextFrame, & defaultPhase );
@@ -988,6 +999,9 @@ SpriteObject::Play( lua_State *L )
 	if ( IsProperty( kIsPlayingEnded ) )
 	{
 		Reset();
+	}
+	else if ( fTimeArrayCachedNextFrameTime == 0 ) { // Initial assignment of cache
+		ResetTimeArrayIteratorCache(GetCurrentSequence());
 	}
 
 	if ( ! IsPlaying() )
@@ -1105,7 +1119,6 @@ SpriteObject::SetFrame( int index )
 		{
 			// time-based, so frame changes depend on current time
 			Real playTime = sequence->GetTimeForFrame(index);
-
 			if ( ! Rtt_RealIsOne( fTimeScale ) )
 			{
 				playTime = Rtt_RealDiv( playTime, fTimeScale );
@@ -1116,7 +1129,8 @@ SpriteObject::SetFrame( int index )
 		}
 
 		fCurrentFrame = index;
-
+		ResetTimeArrayIteratorCache(sequence);
+		
 		int frameIndex = sequence->GetEffectiveFrame( index );
 		SetBitmapFrame( frameIndex );
 	}
@@ -1253,9 +1267,11 @@ SpriteObject::Reset()
 
 	// Set to initial frame
 	SpriteObjectSequence *sequence = GetCurrentSequence();
+	ResetTimeArrayIteratorCache(sequence);
 	int frameIndex = sequence->GetEffectiveFrame( 0 );
 	SetBitmapFrame( frameIndex );
 }
+	
 
 // ----------------------------------------------------------------------------
 

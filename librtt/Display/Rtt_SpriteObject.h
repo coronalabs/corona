@@ -62,7 +62,7 @@ class SpriteObjectSequence
 		Direction;
 
 		static Direction DirectionForString( const char *value );
-        static Real *VerifyValidTimeArrayParam( Real *timeArray, int numFrames, int numFramesInTimeArray );
+		static Real *VerifyValidTimeArrayParam( Real *timeArray, int numFrames, int numFramesInTimeArray );
 
 	public:
 		static SpriteObjectSequence* Create( Rtt_Allocator *allocator, lua_State *L, int index );
@@ -72,7 +72,7 @@ class SpriteObjectSequence
 			Rtt_Allocator *allocator,
 			const char *name,
 			Real time,
-            Real *timeArray,
+			Real *timeArray,
 			FrameIndex start,
 			FrameIndex numFrames,
 			int loopCount,
@@ -83,7 +83,7 @@ class SpriteObjectSequence
 			Rtt_Allocator *allocator,
 			const char *name,
 			Real time,
-            Real *timeArray,
+			Real *timeArray,
 			FrameIndex *frames,
 			FrameIndex numFrames,
 			int loopCount,
@@ -115,15 +115,14 @@ class SpriteObjectSequence
 		// Returns index in sheet of first frame
 		FrameIndex GetStartFrame() const;
 		FrameIndex GetLastFrame() const;
-        int GetFrameIndexForDeltaTime( Real dt ) const;
-        int GetTimeForFrame( int frameIndex ) const;
+		int GetTimeForFrame( int frameIndex ) const;
 
 	protected:
 		FrameIndex GetFrame( int i ) const;
 
 	public:
 		int GetNumFrames() const { return fNumFrames; }
-    
+
 	public:
 		// For 0 <= i < GetEffectiveNumFrames() where i is the sequence index
 		// int GetFrameIndex( int i ) const;
@@ -215,7 +214,9 @@ class SpriteObject : public RectObject
 	public:
 		const AutoPtr< ImageSheet >& GetDefaultSheet() const;
 		const AutoPtr< ImageSheet >& GetCurrentSheet() const;
-
+		void ResetTimeArrayIteratorCache(SpriteObjectSequence *sequence);
+		int GetFrameIndexForDeltaTime( Real dt, SpriteObjectSequence *sequence, int effectiveNumFrames );
+	
 	protected:
 		void SetBitmapFrame( int frameIndex );
 
@@ -265,6 +266,9 @@ class SpriteObject : public RectObject
 		int fCurrentFrame; // which frame in sheet are we currently showing
 		U64 fStartTime;
 		U64 fPlayTime; // when paused, stores amount of time played
+		int fTimeArrayCachedFrame; // stores iterator state for SpriteObjectSequence::GetFrameIndexForDeltaTime()
+		Real fTimeArrayCachedNextFrameTime; // stores iterator state for SpriteObjectSequence::GetFrameIndexForDeltaTime()
+	
 		Properties fProperties;
 };
 
