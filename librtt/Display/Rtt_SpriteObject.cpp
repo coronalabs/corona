@@ -59,7 +59,8 @@ SpriteObjectSequence::DirectionForString( const char *value )
 }
 
 SpriteObjectSequence*
-SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index ) {
+SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index )
+{
 	const char kEmptyStr[] = "";
 
 	SpriteObjectSequence *result = NULL;
@@ -810,7 +811,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 		return;
 	}
 
-	bool shouldDispath = false;
+	bool shouldDispach = false;
 	SpriteEvent::Phase nextPhase = SpriteEvent::kNumPhases; // unknown
 
 	// By default, assume frame does not advance
@@ -829,7 +830,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 		if ( HasListener( kSpriteListener ) )
 		{
-			shouldDispath = true;
+			shouldDispach = true;
 			nextPhase = SpriteEvent::kBegan;
 		}
 	}
@@ -858,7 +859,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 				{
 					if ( HasListener( kSpriteListener ) )
 					{
-						shouldDispath = true;
+						shouldDispach = true;
 						nextPhase = SpriteEvent::kLoop;
 					}
 
@@ -876,7 +877,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 				// Assume the phase is 'next' for now, and set to other phases below.
 				if ( HasListener( kSpriteListener ) )
 				{
-					shouldDispath = true;
+					shouldDispach = true;
 					nextPhase = SpriteEvent::kNext;
 				}
 
@@ -898,7 +899,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 							if ( HasListener( kSpriteListener ) )
 							{
-								shouldDispath = true;
+								shouldDispach = true;
 								nextPhase = SpriteEvent::kEnded;
 							}
 						}
@@ -917,7 +918,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 			// Assume the phase is 'next' for now, and set to other phases below.
 			if ( HasListener( kSpriteListener ) )
 			{
-				shouldDispath = true;
+				shouldDispach = true;
 				nextPhase = SpriteEvent::kNext;
 			}
 
@@ -933,7 +934,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 					if ( HasListener( kSpriteListener ) )
 					{
-						shouldDispath = true;
+						shouldDispach = true;
 						nextPhase = SpriteEvent::kLoop;
 					}
 				}
@@ -954,7 +955,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 						SetProperty( kIsPlayingEnded, true );
 						if ( HasListener( kSpriteListener ) )
 						{
-							shouldDispath = true;
+							shouldDispach = true;
 							nextPhase = SpriteEvent::kEnded;
 						}
 					}
@@ -970,7 +971,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 		int effectiveFrame = sequence->GetEffectiveFrame( nextFrame, & defaultPhase );
 		SetBitmapFrame( effectiveFrame );
 
-		if ( shouldDispath
+		if ( shouldDispach
 			 && SpriteEvent::kNext != defaultPhase // Did 'defaultPhase' change from default within GetEffectiveFrame?
 			 && SpriteEvent::kNext == nextPhase )	// Is 'phase' still the default?
 		{
@@ -978,7 +979,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 		}
 	}
 
-	if ( shouldDispath )
+	if ( shouldDispach )
 	{
 		SpriteEvent e( * this, nextPhase );
 		DispatchEvent( L, e );
