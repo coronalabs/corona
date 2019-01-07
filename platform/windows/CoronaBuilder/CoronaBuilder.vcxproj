@@ -142,7 +142,7 @@
     <ClCompile Include="..\..\..\external\sundown\Project\sundown\markdown.c" />
     <ClCompile Include="..\..\..\external\sundown\Project\sundown\stack.c" />
     <ClCompile Include="..\..\..\external\winutil\BtnST.cpp" />
-    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp" />
+    <ClCompile Include="..\..\..\external\winutil\BrowseDirDialog.cpp" />
     <ClCompile Include="..\..\..\external\winutil\SimpleBrowser.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Array.cpp" />
@@ -252,7 +252,7 @@
     <ClInclude Include="..\..\..\external\sundown\Project\sundown\markdown.h" />
     <ClInclude Include="..\..\..\external\sundown\Project\sundown\stack.h" />
     <ClInclude Include="..\..\..\external\winutil\BtnST.h" />
-    <ClInclude Include="..\..\..\external\winutil\DirDialog.h" />
+    <ClInclude Include="..\..\..\external\winutil\BrowseDirDialog.h" />
     <ClInclude Include="..\..\..\external\winutil\dirent.h" />
     <ClInclude Include="..\..\..\external\winutil\SimpleBrowser.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />

@@ -1230,9 +1230,6 @@ Apple Source Examples:
 
 
 
-====================================================================
-DirDialog.h, .cpp (Sample code on public forum.  License to reuse. http://www.codeguru.com/cpp/w-d/dislog/dialogforselectingfolders/article.php/c1865/  http://www.codeguru.com/submission-guidelines.php#permission)
-
 
 ====================================================================
 Omni Source License

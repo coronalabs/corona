@@ -27,7 +27,7 @@
 #include "Corona.LiveServer.h"
 #include "Corona.LiveServerDlg.h"
 #include "afxdialogex.h"
-#include "../../../external/winutil/DirDialog.h"
+#include "../../../external/winutil/BrowseDirDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -331,10 +331,10 @@ void CCoronaLiveServerDlg::OnBnClickedRemove()
 
 void CCoronaLiveServerDlg::OnBnClickedAdd()
 {
-	CDirDialog d = CDirDialog();
-	if (d.DoBrowse())
+	CString projectPath;
+	if (CBrowseDirDialog::Browse(projectPath))
 	{
-		AddProject(d.m_strPath);
+		AddProject(projectPath);
 	}	
 }
 
@@ -522,10 +522,10 @@ BOOL CCoronaLiveServerDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 
 void CCoronaLiveServerDlg::BrowseForHTML5Dir()
 {
-	CDirDialog d = CDirDialog();
-	if (d.DoBrowse())
+	CString projectPath;
+	if (CBrowseDirDialog::Browse(projectPath))
 	{
-		SetHTML5Directory(d.m_strPath);
+		SetHTML5Directory(projectPath);
 	}
 }
 

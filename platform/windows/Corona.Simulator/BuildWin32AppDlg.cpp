@@ -32,7 +32,7 @@
 #include "Interop\SimulatorRuntimeEnvironment.h"
 #include "CoronaInterface.h"
 #include "CoronaProject.h"
-#include "DirDialog.h"
+#include "BrowseDirDialog.h"
 #include "MessageDlg.h"
 #include "Rtt_SimulatorAnalytics.h"
 #include "Rtt_WebServicesSession.h"
@@ -150,16 +150,9 @@ void CBuildWin32AppDlg::OnBrowseSaveto()
 		directoryPath.ReleaseBuffer();
 	}
 
-	// Display the directory selection dialog.
-	CDirDialog selectDirectoryDialog;
-	selectDirectoryDialog.m_strSelDir = directoryPath;
-	selectDirectoryDialog.m_strTitle.LoadString(IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION);
-	auto result = selectDirectoryDialog.DoBrowse();
-
 	// Update the "Save to Folder" field if a selection was made.
-	if (IDOK == result)
+	if (CBrowseDirDialog::Browse(directoryPath, IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION))
 	{
-		directoryPath = selectDirectoryDialog.m_strPath;
 		SetDlgItemText(IDC_BUILD_SAVETO, directoryPath);
 	}
 }
