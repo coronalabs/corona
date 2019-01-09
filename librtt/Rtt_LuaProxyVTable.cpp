@@ -4759,15 +4759,9 @@ LuaSpriteObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object,
 		"numFrames",	// 2
 		"isPlaying",	// 3
 		"sequence",		// 4
-
-		// Methods
-		"play",			// 5
-		"pause",		// 6
-		"setSequence",	// 7
-		"setFrame",		// 8
 	};
 	static const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 9, 0, 7, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 5, 1, 1, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -4797,10 +4791,6 @@ LuaSpriteObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object,
 	case 2:
 	case 3:
 	case 4:
-	case 5:
-	case 6:
-	case 7:
-	case 8:
 		{
 			// Read-only properties
 			// no-op
