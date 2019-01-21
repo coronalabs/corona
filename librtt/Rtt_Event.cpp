@@ -26,7 +26,6 @@
 #include "Core/Rtt_Build.h"
 
 #include "Rtt_Event.h"
-#include "Rtt_EventUtils.h"
 
 #ifdef Rtt_AUTHORING_SIMULATOR
 	// scene is only required for simulator hit testing against status bar or overlay

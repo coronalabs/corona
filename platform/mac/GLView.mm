@@ -24,7 +24,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Core/Rtt_Build.h"
-#include "Rtt_EventUtils.h"
 
 #import "GLView.h"
 #include <OpenGL/gl.h>
@@ -1037,8 +1036,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 {
 	[self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kDown];
 	const char* characters = [[event characters] UTF8String];
-	
-	if (Rtt_isPrintableCharacterForCharacterEvent(characters)) {
+	if (strlen(characters) > 1 || isprint(characters[0])) {
 		Rtt::CharacterEvent e(NULL, characters);
 		[self dispatchEvent: ( & e )];
 	}

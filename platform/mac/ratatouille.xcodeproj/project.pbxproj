@@ -351,10 +351,6 @@
 		0797EB4D181F0BED00FA57B5 /* Rtt_PlatformMediaProviderBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 0797EB4C181F0BED00FA57B5 /* Rtt_PlatformMediaProviderBase.h */; };
 		0797EB57181F0C0300FA57B5 /* Rtt_PlatformVideoProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0797EB55181F0C0300FA57B5 /* Rtt_PlatformVideoProvider.cpp */; };
 		0797EB5D181F0CC400FA57B5 /* Rtt_MacVideoProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0797EB5C181F0CC400FA57B5 /* Rtt_MacVideoProvider.mm */; };
-		1B43931621F5D5D000A2B404 /* Rtt_EventUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B43931521F5D5D000A2B404 /* Rtt_EventUtils.h */; };
-		1B43931721F5D5D000A2B404 /* Rtt_EventUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B43931521F5D5D000A2B404 /* Rtt_EventUtils.h */; };
-		1B43932121F5D5ED00A2B404 /* Rtt_EventUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1B43932021F5D5ED00A2B404 /* Rtt_EventUtils.cpp */; };
-		1B43932221F5D5ED00A2B404 /* Rtt_EventUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1B43932021F5D5ED00A2B404 /* Rtt_EventUtils.cpp */; };
 		1F34F53D21115FB2006EE117 /* Rtt_LinuxAppPackager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F34F53321115FB1006EE117 /* Rtt_LinuxAppPackager.cpp */; };
 		1F34F54021116446006EE117 /* LinuxAppBuild.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F34F53E21116445006EE117 /* LinuxAppBuild.xib */; };
 		1F34F5432111661E006EE117 /* LinuxAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1F34F5412111661E006EE117 /* LinuxAppBuildController.mm */; };
@@ -2807,8 +2803,6 @@
 		07EB77BA178DD3200089B3C5 /* Rtt_SurfaceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_SurfaceInfo.h; sourceTree = "<group>"; };
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		1B43931521F5D5D000A2B404 /* Rtt_EventUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rtt_EventUtils.h; sourceTree = "<group>"; };
-		1B43932021F5D5ED00A2B404 /* Rtt_EventUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_EventUtils.cpp; sourceTree = "<group>"; };
 		1F34F53321115FB1006EE117 /* Rtt_LinuxAppPackager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_LinuxAppPackager.cpp; path = ../shared/Rtt_LinuxAppPackager.cpp; sourceTree = "<group>"; };
 		1F34F53C21115FB2006EE117 /* Rtt_LinuxAppPackager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_LinuxAppPackager.h; path = ../shared/Rtt_LinuxAppPackager.h; sourceTree = "<group>"; };
 		1F34F53F21116445006EE117 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/LinuxAppBuild.xib; sourceTree = "<group>"; };
@@ -4163,8 +4157,6 @@
 				000CE76212B73EE300D9B6A4 /* Rtt_Verifier.cpp */,
 				000CE76312B73EE300D9B6A4 /* Rtt_Verifier.h */,
 				000CE76412B73EE300D9B6A4 /* Rtt_VerifierData.h */,
-				1B43931521F5D5D000A2B404 /* Rtt_EventUtils.h */,
-				1B43932021F5D5ED00A2B404 /* Rtt_EventUtils.cpp */,
 			);
 			name = librtt;
 			path = ../../librtt;
@@ -5670,7 +5662,6 @@
 				000CE7ED12B73EE300D9B6A4 /* Rtt_PlatformVideoPlayer.h in Headers */,
 				03D1C55E1D70CCB200DB02EE /* Rtt_PreferenceValue.h in Headers */,
 				C2DA96481B46460F00DAF684 /* Rtt_PlatformVideoProvider.h in Headers */,
-				1B43931621F5D5D000A2B404 /* Rtt_EventUtils.h in Headers */,
 				000CE7EF12B73EE300D9B6A4 /* Rtt_PlatformWebPopup.h in Headers */,
 				C2DA96291B46460F00DAF684 /* Rtt_Real.h in Headers */,
 				C2DA965C1B46460F00DAF684 /* Rtt_RectObject.h in Headers */,
@@ -6022,7 +6013,6 @@
 				C229E0661B32221B00D87A7C /* Rtt_PlatformVideoProvider.h in Headers */,
 				03D1C55D1D70CCB100DB02EE /* Rtt_PreferenceValue.h in Headers */,
 				C229E0671B32221B00D87A7C /* Rtt_PlatformWebPopup.h in Headers */,
-				1B43931721F5D5D000A2B404 /* Rtt_EventUtils.h in Headers */,
 				C229E0681B32221B00D87A7C /* Rtt_Real.h in Headers */,
 				C229E0691B32221B00D87A7C /* Rtt_RectObject.h in Headers */,
 				C229E06A1B32221B00D87A7C /* Rtt_RectPath.h in Headers */,
@@ -7191,7 +7181,6 @@
 				000CE8C612B73F9800D9B6A4 /* prime.cpp in Sources */,
 				C26D8DA51951053F008DE65C /* re.lua in Sources */,
 				C208322D1AA54ADD005D2680 /* remdebug_engine.lua in Sources */,
-				1B43932121F5D5ED00A2B404 /* Rtt_EventUtils.cpp in Sources */,
 				000CE8C812B73F9800D9B6A4 /* rsa.cpp in Sources */,
 				000CE8D512B7400900D9B6A4 /* runtime.lua in Sources */,
 				000CE8D612B7400900D9B6A4 /* shell.lua in Sources */,
@@ -7802,7 +7791,6 @@
 				C229E1D81B32221B00D87A7C /* prime.cpp in Sources */,
 				C229E1DA1B32221B00D87A7C /* re.lua in Sources */,
 				C229E1DB1B32221B00D87A7C /* remdebug_engine.lua in Sources */,
-				1B43932221F5D5ED00A2B404 /* Rtt_EventUtils.cpp in Sources */,
 				C229E1DC1B32221B00D87A7C /* rsa.cpp in Sources */,
 				C229E1DD1B32221B00D87A7C /* runtime.lua in Sources */,
 				C229E1DE1B32221B00D87A7C /* shell.lua in Sources */,
