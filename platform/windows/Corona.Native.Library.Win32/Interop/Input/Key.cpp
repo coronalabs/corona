@@ -28,6 +28,7 @@
 #include "Core\Rtt_Assert.h"
 #include "Rtt_KeyName.h"
 #include <unordered_map>
+#include "WinString.h"
 
 
 namespace Interop { namespace Input {
@@ -360,6 +361,38 @@ Key::NativeCodeType Key::GetNativeCodeType() const
 const char* Key::GetCoronaName() const
 {
 	return fCoronaName;
+}
+
+const char* Key::GetCharacter()
+{
+	unsigned char *keyboardState = new unsigned char[256];
+	GetKeyboardState(keyboardState);
+
+	int scanCode = MapVirtualKey(this->GetNativeCodeValue(), 0x0); // 0x0 is MAPVK_VK_TO_VSC
+	if (scanCode == 0)
+	{
+		return NULL;
+	}
+	else
+	{
+		const int BUFFER_LENGTH = 2;
+		wchar_t chars[BUFFER_LENGTH];
+		chars[BUFFER_LENGTH - 1] = 0;
+
+		switch (ToUnicode(this->GetNativeCodeValue(), scanCode, keyboardState, chars, BUFFER_LENGTH - 1, 0))
+		{
+		case -1:
+		case 0:
+			return NULL;
+		default:
+			WinString stringConverter;
+			stringConverter.SetUTF16(chars);
+			int utf8Length = strlen(stringConverter.GetUTF8()) + 1;
+			char * out = new char[utf8Length];
+			strcpy_s(out, utf8Length, stringConverter.GetUTF8());
+			return out;
+		}
+	}
 }
 
 bool Key::Equals(const Key& value) const

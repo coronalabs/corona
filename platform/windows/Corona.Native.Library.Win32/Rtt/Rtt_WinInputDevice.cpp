@@ -34,7 +34,6 @@
 #include "Rtt_Event.h"
 #include "Rtt_Runtime.h"
 
-
 namespace Rtt {
 
 #pragma region Constructors/Destructors
@@ -243,12 +242,22 @@ void WinInputDevice::OnReceivedKeyInput(
 	{
 		auto keyInfo = arguments.GetKey();
 		auto modifierKeyStates = arguments.GetModifierKeyStates();
-		Rtt::KeyEvent event(
+		Rtt::KeyEvent keyEvent(
 				this, arguments.IsDown() ? Rtt::KeyEvent::kDown : Rtt::KeyEvent::kUp,
 				keyInfo.GetCoronaName(), keyInfo.GetNativeCodeValue(),
 				modifierKeyStates.IsShiftDown(), modifierKeyStates.IsAltDown(),
 				modifierKeyStates.IsControlDown(), modifierKeyStates.IsCommandDown());
-		runtimePointer->DispatchEvent(event);
+		runtimePointer->DispatchEvent(keyEvent);
+
+		if (arguments.IsDown())
+		{
+			const char* character = keyInfo.GetCharacter();
+			if (character != NULL && (strlen(character) > 1 || isprint(character[0])))
+			{
+				Rtt::CharacterEvent characterEvent(this, character);
+				runtimePointer->DispatchEvent(characterEvent);
+			}
+		}
 	}
 }
 

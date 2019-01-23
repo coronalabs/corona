@@ -820,14 +820,25 @@ void CoronaRuntimeEnvironment::RaiseKeyEventFor(Interop::Input::KeyEventArgs^ ar
 
 	// Raise a key event in Lua.
 	Rtt::KeyEvent::Phase phase = isDown ? Rtt::KeyEvent::kDown : Rtt::KeyEvent::kUp;
-	Rtt::KeyEvent event(
+	Rtt::KeyEvent keyEvent(
 					nullptr, phase, args->Key->CoronaNameAsStringPointer,
 					args->Key->NativeKeyCode, args->IsShiftDown, args->IsAltDown,
 					args->IsControlDown, args->IsCommandDown);
-	fRuntimePointer->DispatchEvent(event);
+	fRuntimePointer->DispatchEvent(keyEvent);
+
+	//Raise a character event in Lua.
+	if (isDown)
+	{
+		const char* character = keyInfo.GetCharacter();
+		if (character != NULL && (strlen(character) > 1 || isprint(character[0])))
+		{
+			Rtt::CharacterEvent characterEvent(nullptr, keyInfo.GetCharacter());
+			runtimePointer->DispatchEvent(characterEvent);
+		}
+	}
 
 	// Consume the key event if the Lua listener returned true.
-	args->Handled = event.GetResult();
+	args->Handled = keyEvent.GetResult();
 }
 
 void CoronaRuntimeEnvironment::OnReceivedTap(Platform::Object ^sender, Interop::Input::TapEventArgs ^args)

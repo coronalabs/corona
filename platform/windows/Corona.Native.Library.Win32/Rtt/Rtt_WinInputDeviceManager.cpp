@@ -40,7 +40,6 @@
 #include "Rtt_WinPlatform.h"
 #include <WindowsX.h>
 
-
 namespace Rtt
 {
 
@@ -1043,6 +1042,23 @@ void WinInputDeviceManager::OnReceivedMessage(
 					arguments.SetReturnResult(0);
 					arguments.SetHandled();
 				}
+			}
+			break;
+		}
+		case WM_CHAR:
+		{
+			wchar_t wParam = (wchar_t)arguments.GetWParam();
+			wchar_t wParamArray[2] = { wParam, 0 };
+
+			WinString stringConverter;
+			stringConverter.SetUTF16(wParamArray);
+			int utf8Length = strlen(stringConverter.GetUTF8()) + 1;
+			char * utf8Character = new char[utf8Length];
+			strcpy_s(utf8Character, utf8Length, stringConverter.GetUTF8());
+			if (strlen(utf8Character) > 1 || isprint(utf8Character[0]))
+			{
+				Rtt::CharacterEvent characterEvent(nullptr, utf8Character);
+				runtimePointer->DispatchEvent(characterEvent);
 			}
 			break;
 		}
