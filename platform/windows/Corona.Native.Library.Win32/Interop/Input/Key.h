@@ -267,6 +267,12 @@ class Key
 		/// </returns>
 		const char* GetCoronaName() const;
 
+		/// <summary>Retrieves the character which the Key corresponds to based on keyboard layout.</summary>
+		/// <returns>
+		///  <para>Returns the character which the Key corresponds to.</para>
+		/// </returns>
+		const char* GetCharacter();
+
 		/// <summary>Determines if this key matches the given key.</summary>
 		/// <param name="value">The key to be compared with.</param>
 		/// <returns>Return true if the keys match. Returns false if not.</returns>

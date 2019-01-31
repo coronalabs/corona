@@ -729,6 +729,31 @@ class KeyEvent : public VirtualEvent
         bool fIsCommandDown;
 		mutable bool fResult;
 };
+	
+// ----------------------------------------------------------------------------
+
+// Immediately broadcast to "Runtime"
+class CharacterEvent : public VirtualEvent
+{
+public:
+	typedef VirtualEvent Super;
+	virtual const char* Name() const;
+	
+public:
+	CharacterEvent(PlatformInputDevice *device, const char *character);
+	
+public:
+	virtual int Push( lua_State *L ) const;
+	virtual void Dispatch( lua_State *L, Runtime& runtime ) const;
+	
+public:
+	bool GetResult() const { return fResult; }
+	
+protected:
+	PlatformInputDevice *fDevice;
+	const char *fCharacter;
+	mutable bool fResult;
+};
 
 // ----------------------------------------------------------------------------
 

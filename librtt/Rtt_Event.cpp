@@ -1396,6 +1396,50 @@ KeyEvent::Dispatch( lua_State *L, Runtime& ) const
 
 // ----------------------------------------------------------------------------
 
+CharacterEvent::CharacterEvent(PlatformInputDevice *device, const char *character)
+:	fDevice( device ),
+fCharacter( character )
+{
+}
+
+const char*
+CharacterEvent::Name() const
+{
+	static const char kName[] = "character";
+	return kName;
+}
+
+int
+CharacterEvent::Push( lua_State *L ) const
+{
+	if ( Rtt_VERIFY( Super::Push( L ) ) )
+	{
+		if (fDevice)
+		{
+			fDevice->PushTo( L );
+			lua_setfield( L, -2, "device" );
+		}
+		
+		lua_pushstring( L, fCharacter );
+		lua_setfield( L, -2, "character" );
+	}
+	
+	return 1;
+}
+
+void
+CharacterEvent::Dispatch( lua_State *L, Runtime& ) const
+{
+	// Invoke Lua code: "Runtime:dispatchEvent( eventKey )"
+	int nargs = PrepareDispatch( L );
+	LuaContext::DoCall( L, nargs, 1 );
+	
+	fResult = lua_toboolean( L, -1 ); // fetch result
+	lua_pop( L, 1 ); // pop result off stack
+}
+
+// ----------------------------------------------------------------------------
+
 AxisEvent::AxisEvent(PlatformInputDevice *devicePointer, PlatformInputAxis *axisPointer, Rtt_Real rawValue)
 :	fDevicePointer( devicePointer ),
 	fAxisPointer( axisPointer ),
