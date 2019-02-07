@@ -290,6 +290,9 @@ GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 	 fCurrentDrawVersion( Program::kMaskCount0 ),
 	 fProgram( NULL ),
      fDefaultFBO( 0 ),
+	 // STEVE CHANGE
+	 fTimeTransform( NULL ),
+	 // /STEVE CHANGE
 	 fTimerQueries( new U32[kTimerQueryCount] ),
 	 fTimerQueryIndex( 0 ),
 	 fElapsedTimeGPU( 0.0f )
@@ -436,6 +439,10 @@ GLCommandBuffer::BindProgram( Program* program, Program::Version version )
 	Write<Program::Version>( version );
 	Write<GPUResource*>( program->GetGPUResource() );
 	
+	// STEVE CHANGE
+	fTimeTransform = program->GetTimeTransform();
+	// /STEVE CHANGE
+
 	fCurrentPrepVersion = version;
 	fProgram = program;
 }
@@ -994,6 +1001,16 @@ GLCommandBuffer::Write( T value )
 void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 {
 	GLProgram* glProgram = static_cast<GLProgram*>( resource );
+	// STEVE CHANGE
+	if (fTimeTransform)
+	{
+		const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
+		if (time.uniform && time.timestamp != glProgram->GetUniformTimestamp(Uniform::kTotalTime, fCurrentPrepVersion))
+		{
+			fTimeTransform->Apply( reinterpret_cast<Real*>(time.uniform->GetData()) );
+		}
+	}
+	// /STEVE CHANGE
 	for( U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
 	{
 		const UniformUpdate& update = fUniformUpdates[i];

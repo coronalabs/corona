@@ -46,6 +46,22 @@ class Uniform;
 
 // ----------------------------------------------------------------------------
 
+// STEVE CHANGE
+struct TimeTransform
+{
+	typedef void(*Func)( Real * time, Real arg1, Real arg2, Real arg3 );
+
+	TimeTransform() : func( NULL ), arg1( 0 ), arg2( 0 ), arg3( 0 )
+	{
+	}
+
+	void Apply( Real * time );
+
+	Func func;
+	Real arg1, arg2, arg3;
+};
+// /STEVE CHANGE
+
 // The CommandBuffer has two primary responsibilities. The first is to provide
 // an abstract interface through which render state may be specified, without
 // knowledge of the underlying rendering API. The second is to facilitate 

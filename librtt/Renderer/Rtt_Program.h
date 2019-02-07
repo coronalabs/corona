@@ -40,8 +40,13 @@ namespace Rtt
 {
 
 class ProgramHeader;
+// STEVE CHANGE
+struct TimeTransform;
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
+
+
 
 class Program : public CPUResource
 {
@@ -73,6 +78,11 @@ class Program : public CPUResource
 
 		static int CountLines( const char *str );
 
+		// STEVE CHANGE
+
+		TimeTransform *GetTimeTransform() const { return fTimeTransform; }
+		void SetTimeTransform( TimeTransform *transform ) { fTimeTransform = transform; }
+		// /STEVE CHANGE
 	public:
 		Program( Rtt_Allocator* allocator );
 		virtual ~Program();
@@ -113,6 +123,9 @@ class Program : public CPUResource
 #endif
 		int fVertexShellNumLines;
 		int fFragmentShellNumLines;
+		// STEVE CHANGE
+		TimeTransform *fTimeTransform;
+		// /STEVE CHANGE
 		bool fCompilerVerbose;
 };
 

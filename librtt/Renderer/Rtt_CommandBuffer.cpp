@@ -35,6 +35,17 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+// STEVE CHANGE
+void
+TimeTransform::Apply( Real * time )
+{
+	if (func && time)
+	{
+		func( time, arg1, arg2, arg3 );
+	}
+}
+// /STEVE CHANGE
+
 CommandBuffer::CommandBuffer( Rtt_Allocator* allocator )
 :	fAllocator( allocator ),
 	fBuffer( NULL ), 
