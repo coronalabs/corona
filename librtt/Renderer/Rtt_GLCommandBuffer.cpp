@@ -35,6 +35,9 @@
 #include "Renderer/Rtt_Program.h"
 #include "Renderer/Rtt_Texture.h"
 #include "Renderer/Rtt_Uniform.h"
+// STEVE CHANGE
+#include "Display/Rtt_ShaderResource.h"
+// /STEVE CHANGE
 #include "Core/Rtt_Config.h"
 #include "Core/Rtt_Allocator.h"
 #include "Core/Rtt_Assert.h"
@@ -440,7 +443,7 @@ GLCommandBuffer::BindProgram( Program* program, Program::Version version )
 	Write<GPUResource*>( program->GetGPUResource() );
 	
 	// STEVE CHANGE
-	fTimeTransform = program->GetTimeTransform();
+	fTimeTransform = program->GetShaderResource()->GetTimeTransform();
 	// /STEVE CHANGE
 
 	fCurrentPrepVersion = version;
@@ -1000,14 +1003,18 @@ GLCommandBuffer::Write( T value )
 
 void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 {
-	GLProgram* glProgram = static_cast<GLProgram*>( resource );
+	GLProgram* glProgram = static_cast<GLProgram*>(resource);
+
 	// STEVE CHANGE
+	Real rawTotalTime;
+	bool transformed = false;
+
 	if (fTimeTransform)
 	{
 		const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
-		if (time.uniform && time.timestamp != glProgram->GetUniformTimestamp(Uniform::kTotalTime, fCurrentPrepVersion))
+		if (time.uniform)
 		{
-			fTimeTransform->Apply( reinterpret_cast<Real*>(time.uniform->GetData()) );
+			transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
 		}
 	}
 	// /STEVE CHANGE
@@ -1019,6 +1026,12 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 			ApplyUniform( resource, i );
 		}
 	}
+	// STEVE CHANGE
+	if (transformed)
+	{
+		fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
+	}
+	// /STEVE CHANGE
 }
 
 void GLCommandBuffer::ApplyUniform( GPUResource* resource, U32 index )

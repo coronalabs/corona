@@ -41,7 +41,7 @@ namespace Rtt
 
 class ProgramHeader;
 // STEVE CHANGE
-struct TimeTransform;
+class ShaderResource;
 // /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
@@ -77,12 +77,6 @@ class Program : public CPUResource
 		static const char *HeaderForLanguage( Language language, const ProgramHeader& headerData );
 
 		static int CountLines( const char *str );
-
-		// STEVE CHANGE
-
-		TimeTransform *GetTimeTransform() const { return fTimeTransform; }
-		void SetTimeTransform( TimeTransform *transform ) { fTimeTransform = transform; }
-		// /STEVE CHANGE
 	public:
 		Program( Rtt_Allocator* allocator );
 		virtual ~Program();
@@ -100,6 +94,10 @@ class Program : public CPUResource
 		const char *GetHeaderSource() const { return fHeaderSource; }
 		void SetHeaderSource( const char *source );
 
+		// STEVE CHANGE
+		ShaderResource *GetShaderResource() { return fResource; }
+		void SetShaderResource( ShaderResource *resource ) { fResource = resource; }
+		// /STEVE CHANGE
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
 		ShaderBinaryVersions* GetCompiledShaders() const { return fCompiledShaders; }
 #endif
@@ -124,7 +122,7 @@ class Program : public CPUResource
 		int fVertexShellNumLines;
 		int fFragmentShellNumLines;
 		// STEVE CHANGE
-		TimeTransform *fTimeTransform;
+		ShaderResource *fResource;
 		// /STEVE CHANGE
 		bool fCompilerVerbose;
 };

@@ -533,6 +533,106 @@ ShaderFactory::BindUniformDataMap( lua_State *L, int index, const SharedPtr< Sha
 	return result;
 }
 
+// STEVE CHANGE
+static void
+Modulo( Real *x, Real range, Real, Real )
+{
+	*x = fmod( *x, range ); // TODO: Rtt_RealFmod?
+}
+
+static void
+PingPong( Real *x, Real range, Real, Real )
+{
+	Real pos = fmod( *x, Rtt_REAL_2 * range ); // TODO: Rtt_RealFmod?
+
+	if (pos > range)
+	{
+		pos = Rtt_REAL_2 * range - pos;
+	}
+
+	*x = pos;
+}
+
+static void
+Sine( Real *x, Real amplitude, Real period, Real shift )
+{
+	*x = amplitude * Rtt_RealSin( period * (*x + shift) );
+}
+
+void
+ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< ShaderResource >& resource)
+{
+	Rtt_LUA_STACK_GUARD(L);
+
+	lua_getfield( L, index, "timeTransform" ); // ..., xform?
+
+	if (lua_istable(L, -1))
+	{
+		lua_getfield( L, -1, "func" );	// ..., xform, func
+
+		if (lua_isstring( L, -1 ))
+		{
+			const char *func = lua_tostring( L, -1 );
+			TimeTransform *transform = NULL;
+
+			if (strcmp(func, "modulo") == 0)
+			{
+				lua_getfield( L, -2, "range" ); // ..., xform, "modulo", range?
+
+				Real range = (Real)luaL_optnumber( L, -1, 1.0 );
+				// TODO: > 0, etc.
+				transform = Rtt_NEW( fAllocator, TimeTransform );
+
+				transform->func = &Modulo;
+				transform->arg1 = range;
+
+				lua_pop( L, 1 ); // ..., xform, "modulo"
+			}
+
+			else if (strcmp( func, "pingpong" ) == 0)
+			{
+				lua_getfield( L, -2, "range" ); // ..., xform, "pingpong", range?
+
+				Real range = (Real)luaL_optnumber( L, -1, 1.0 );
+				// TODO: > 0, etc.
+				transform = Rtt_NEW( fAllocator, TimeTransform );
+
+				transform->func = &PingPong;
+				transform->arg1 = range;
+
+				lua_pop( L, 1 ); // ..., xform, "pingpong"
+			}
+
+			else if (strcmp( func, "sine" ) == 0)
+			{
+				lua_getfield( L, -2, "amplitude" ); // ..., xform, "sine", amplitude?
+				lua_getfield( L, -3, "period" ); // ..., xform, "sine", amplitude?, period?
+				lua_getfield( L, -4, "shift" ); // ..., xform, "sine", amplitude?, period?, shift?
+
+				Real amplitude = (Real)luaL_optnumber( L, -3, 1.0 );
+				Real period = (Real)luaL_optnumber( L, -2, 2.0 * M_PI );
+				Real shift = (Real)luaL_optnumber( L, -1, 0.0 );
+				// TODO: first two > 0, etc.
+				transform = Rtt_NEW( fAllocator, TimeTransform );
+
+				transform->func = &Modulo;
+				transform->arg1 = amplitude;
+				transform->arg2 = (Rtt_REAL_2 * M_PI) / period;
+				transform->arg3 = shift;
+
+				lua_pop( L, 3 ); // xform, "sine"
+			}
+
+			resource->SetTimeTransform( transform );
+		}
+
+		lua_pop( L, 1 ); // ..., xform
+	}
+
+	lua_pop( L, 1 ); // ...
+}
+// /STEVE CHANGE
+
 // shaderIndex is the index into the Lua table that defines the shader
 void
 ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPtr< ShaderResource >& resource )
@@ -542,6 +642,10 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
 	ShaderName name( resource->GetCategory(), resource->GetName().c_str() );
 	ShaderData *defaultData = Rtt_NEW( fOwner.GetAllocator(), ShaderData( resource ) );
 	resource->SetDefaultData( defaultData );
+
+	// STEVE CHANGE
+	BindTimeTransform( L, shaderIndex, resource );
+	// /STEVE CHANGE
 
 	bool has_vertex_data = BindVertexDataMap( L, shaderIndex, resource );
 	if( has_vertex_data )

@@ -98,9 +98,6 @@ Program::Program( Rtt_Allocator* allocator )
 	fHeaderSource( NULL ),
 	fVertexShellNumLines( 0 ),
 	fFragmentShellNumLines( 0 ),
-	// STEVE CHANGE
-	fTimeTransform( NULL ),
-	// /STEVE CHANGE
 	fCompilerVerbose( false )
 {
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )

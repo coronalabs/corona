@@ -96,6 +96,7 @@ class ShaderFactory
 		// Helper methods to instantiate Shader
 		bool BindVertexDataMap( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 		bool BindUniformDataMap( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
+		void BindTimeTransform( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 		void InitializeBindings( lua_State *L, int shaderIndex, const SharedPtr< ShaderResource >& resource );
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
 		bool LoadAllCompiledShaders(
