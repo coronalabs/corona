@@ -559,6 +559,44 @@ Sine( Real *x, Real amplitude, Real period, Real shift )
 	*x = amplitude * Rtt_RealSin( period * (*x + shift) );
 }
 
+static void
+GetNumberArg( lua_State * L, Real * value, const char * func, const char * name )
+{
+	lua_getfield( L, -2, name ); // ..., xform, func, value?
+		
+	if (!lua_isnil( L, -1 ))
+	{
+		if (lua_isnumber( L, -1 ))
+		{
+			*value = (Real)lua_tonumber( L, -1 );
+		}
+
+		else
+		{
+			CoronaLuaWarning( L, "graphics.defineEffect() ignoring invalid '%s' parameter for %s time transform (expected number but got %s)",
+						name, func, lua_typename( L, lua_type( L, -1 ) ) );
+		}
+	}
+
+	lua_pop( L, 1 ); // ..., xform, func
+}
+
+static void
+GetPositiveNumberArg( lua_State * L, Real * value, const char * func, const char * name )
+{
+	Real old = *value;
+
+	GetNumberArg( L, value, func, name );
+
+	if (old <= Rtt_REAL_0)
+	{
+		*value = old;
+
+		CoronaLuaWarning( L, "graphics.defineEffect() ignoring invalid '%s' parameter for %s time transform (must be positive number)",
+			name, func );
+	}
+}
+
 void
 ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< ShaderResource >& resource)
 {
@@ -566,7 +604,7 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
 
 	lua_getfield( L, index, "timeTransform" ); // ..., xform?
 
-	if (lua_istable(L, -1))
+	if (lua_istable( L, -1 ))
 	{
 		lua_getfield( L, -1, "func" );	// ..., xform, func
 
@@ -574,53 +612,39 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
 		{
 			const char *func = lua_tostring( L, -1 );
 			TimeTransform *transform = NULL;
+			bool isModulo = strcmp(func, "modulo") == 0;
 
-			if (strcmp(func, "modulo") == 0)
+			if (isModulo || strcmp( func, "pingpong" ) == 0)
 			{
-				lua_getfield( L, -2, "range" ); // ..., xform, "modulo", range?
+				Real range = Rtt_REAL_1;
+				
+				GetPositiveNumberArg( L, &range, func, "range" );
 
-				Real range = (Real)luaL_optnumber( L, -1, 1.0 );
-				// TODO: > 0, etc.
 				transform = Rtt_NEW( fAllocator, TimeTransform );
 
-				transform->func = &Modulo;
+				transform->func = isModulo ? &Modulo : &PingPong;
 				transform->arg1 = range;
-
-				lua_pop( L, 1 ); // ..., xform, "modulo"
-			}
-
-			else if (strcmp( func, "pingpong" ) == 0)
-			{
-				lua_getfield( L, -2, "range" ); // ..., xform, "pingpong", range?
-
-				Real range = (Real)luaL_optnumber( L, -1, 1.0 );
-				// TODO: > 0, etc.
-				transform = Rtt_NEW( fAllocator, TimeTransform );
-
-				transform->func = &PingPong;
-				transform->arg1 = range;
-
-				lua_pop( L, 1 ); // ..., xform, "pingpong"
 			}
 
 			else if (strcmp( func, "sine" ) == 0)
 			{
-				lua_getfield( L, -2, "amplitude" ); // ..., xform, "sine", amplitude?
-				lua_getfield( L, -3, "period" ); // ..., xform, "sine", amplitude?, period?
-				lua_getfield( L, -4, "shift" ); // ..., xform, "sine", amplitude?, period?, shift?
+				Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, shift = Rtt_REAL_0;
 
-				Real amplitude = (Real)luaL_optnumber( L, -3, 1.0 );
-				Real period = (Real)luaL_optnumber( L, -2, 2.0 * M_PI );
-				Real shift = (Real)luaL_optnumber( L, -1, 0.0 );
-				// TODO: first two > 0, etc.
+				GetPositiveNumberArg( L, &amplitude, func, "amplitude" );
+				GetPositiveNumberArg( L, &period, func, "period" );
+				GetNumberArg( L, &shift, func, "shift" );
+
 				transform = Rtt_NEW( fAllocator, TimeTransform );
 
 				transform->func = &Modulo;
 				transform->arg1 = amplitude;
 				transform->arg2 = (Rtt_REAL_2 * M_PI) / period;
 				transform->arg3 = shift;
+			}
 
-				lua_pop( L, 3 ); // xform, "sine"
+			else
+			{
+				CoronaLuaWarning( L, "graphics.defineEffect() ignoring unknown %s time transform", func );
 			}
 
 			resource->SetTimeTransform( transform );
