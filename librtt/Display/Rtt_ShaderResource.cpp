@@ -108,6 +108,10 @@ ShaderResource::Init(Program *defaultProgram)
 		fPrograms[i] = NULL;
 	}
 	fPrograms[ShaderResource::kDefault] = defaultProgram;
+
+	// STEVE CHANGE
+	defaultProgram->SetShaderResource( this );
+	// /STEVE CHANGE
 }
 
 ShaderResource::~ShaderResource()
@@ -140,7 +144,7 @@ ShaderResource::SetProgramMod(ProgramMod mod, Program *program)
 		fPrograms[mod] = program;
 
 		// STEVE CHANGE
-		program->SetShaderResource(this);
+		program->SetShaderResource( this );
 		// /STEVE CHANGE
 	}
 }

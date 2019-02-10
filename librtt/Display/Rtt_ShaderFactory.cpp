@@ -554,9 +554,11 @@ PingPong( Real *x, Real range, Real, Real )
 }
 
 static void
-Sine( Real *x, Real amplitude, Real period, Real shift )
+Sine( Real *x, Real amplitude, Real speed, Real shift )
 {
-	*x = amplitude * Rtt_RealSin( period * (*x + shift) );
+	Real t = *x;
+
+	*x = amplitude * Rtt_RealSin( speed * t + shift );
 }
 
 static void
@@ -636,7 +638,7 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
 
 				transform = Rtt_NEW( fAllocator, TimeTransform );
 
-				transform->func = &Modulo;
+				transform->func = &Sine;
 				transform->arg1 = amplitude;
 				transform->arg2 = (Rtt_REAL_2 * M_PI) / period;
 				transform->arg3 = shift;
