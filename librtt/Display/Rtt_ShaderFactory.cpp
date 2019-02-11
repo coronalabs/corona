@@ -667,7 +667,10 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
 	ShaderData *defaultData = Rtt_NEW( fOwner.GetAllocator(), ShaderData( resource ) );
 	resource->SetDefaultData( defaultData );
 
-	BindTimeTransform( L, shaderIndex, resource );
+	if (resource->UsesTime())
+	{
+		BindTimeTransform( L, shaderIndex, resource );
+	}
 
 	bool has_vertex_data = BindVertexDataMap( L, shaderIndex, resource );
 	if( has_vertex_data )
