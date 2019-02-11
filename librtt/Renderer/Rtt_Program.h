@@ -40,9 +40,7 @@ namespace Rtt
 {
 
 class ProgramHeader;
-// STEVE CHANGE
 class ShaderResource;
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -94,10 +92,8 @@ class Program : public CPUResource
 		const char *GetHeaderSource() const { return fHeaderSource; }
 		void SetHeaderSource( const char *source );
 
-		// STEVE CHANGE
 		ShaderResource *GetShaderResource() { return fResource; }
 		void SetShaderResource( ShaderResource *resource ) { fResource = resource; }
-		// /STEVE CHANGE
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
 		ShaderBinaryVersions* GetCompiledShaders() const { return fCompiledShaders; }
 #endif
@@ -121,9 +117,7 @@ class Program : public CPUResource
 #endif
 		int fVertexShellNumLines;
 		int fFragmentShellNumLines;
-		// STEVE CHANGE
 		ShaderResource *fResource;
-		// /STEVE CHANGE
 		bool fCompilerVerbose;
 };
 

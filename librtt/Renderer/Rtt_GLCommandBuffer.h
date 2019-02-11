@@ -36,9 +36,7 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
 struct TimeTransform;
-// /STEVE CHANGE
 
 // 
 class GLCommandBuffer : public CommandBuffer
@@ -115,9 +113,7 @@ class GLCommandBuffer : public CommandBuffer
 		U32 fTimerQueryIndex;
 		Real fElapsedTimeGPU;
 	
-		// STEVE CHANGE
-		TimeTransform * fTimeTransform;
-		// /STEVE CHANGE
+		TimeTransform* fTimeTransform;
 
 		S32 fCachedQuery[kNumQueryableParams];
 		

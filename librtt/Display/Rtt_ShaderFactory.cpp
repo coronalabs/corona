@@ -533,17 +533,16 @@ ShaderFactory::BindUniformDataMap( lua_State *L, int index, const SharedPtr< Sha
 	return result;
 }
 
-// STEVE CHANGE
 static void
 Modulo( Real *x, Real range, Real, Real )
 {
-	*x = fmod( *x, range ); // TODO: Rtt_RealFmod?
+	*x = fmod( *x, range ); // TODO?: Rtt_RealFmod
 }
 
 static void
 PingPong( Real *x, Real range, Real, Real )
 {
-	Real pos = fmod( *x, Rtt_REAL_2 * range ); // TODO: Rtt_RealFmod?
+	Real pos = fmod( *x, Rtt_REAL_2 * range ); // TODO?: Rtt_RealFmod
 
 	if (pos > range)
 	{
@@ -590,7 +589,7 @@ GetPositiveNumberArg( lua_State * L, Real * value, const char * func, const char
 
 	GetNumberArg( L, value, func, name );
 
-	if (old <= Rtt_REAL_0)
+	if (*value <= Rtt_REAL_0)
 	{
 		*value = old;
 
@@ -632,7 +631,7 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
 			{
 				Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, shift = Rtt_REAL_0;
 
-				GetPositiveNumberArg( L, &amplitude, func, "amplitude" );
+				GetNumberArg( L, &amplitude, func, "amplitude" );
 				GetPositiveNumberArg( L, &period, func, "period" );
 				GetNumberArg( L, &shift, func, "shift" );
 
@@ -657,7 +656,6 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
 
 	lua_pop( L, 1 ); // ...
 }
-// /STEVE CHANGE
 
 // shaderIndex is the index into the Lua table that defines the shader
 void
@@ -669,9 +667,7 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
 	ShaderData *defaultData = Rtt_NEW( fOwner.GetAllocator(), ShaderData( resource ) );
 	resource->SetDefaultData( defaultData );
 
-	// STEVE CHANGE
 	BindTimeTransform( L, shaderIndex, resource );
-	// /STEVE CHANGE
 
 	bool has_vertex_data = BindVertexDataMap( L, shaderIndex, resource );
 	if( has_vertex_data )

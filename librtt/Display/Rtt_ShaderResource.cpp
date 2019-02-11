@@ -39,15 +39,13 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
 bool
 TimeTransform::Apply( Uniform *time, Real *old, U32 now )
 {
 	if (NULL != func && NULL != time)
 	{
-		if (first || timestamp != now)
+		if (timestamp != now)
 		{
-			first = false;
 			timestamp = now;
 
 			time->GetValue(cached);
@@ -67,7 +65,6 @@ TimeTransform::Apply( Uniform *time, Real *old, U32 now )
 
 	return false;
 }
-// /STEVE CHANGE
 
 
 ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category )
@@ -76,9 +73,7 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
 	fVertexDataMap(),
 	fUniformDataMap(),
 	fDefaultData( NULL ),
-	// STEVE CHANGE
 	fTimeTransform( NULL ),
-	// /STEVE CHANGE
 	fUsesUniforms( false ),
 	fUsesTime( false )
 {
@@ -91,9 +86,7 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
 	fVertexDataMap(),
 	fUniformDataMap(),
 	fDefaultData( NULL ),
-	// STEVE CHANGE
 	fTimeTransform( NULL ),
-	// /STEVE CHANGE
 	fUsesUniforms( false ),
 	fUsesTime( false )
 {
@@ -109,9 +102,7 @@ ShaderResource::Init(Program *defaultProgram)
 	}
 	fPrograms[ShaderResource::kDefault] = defaultProgram;
 
-	// STEVE CHANGE
 	defaultProgram->SetShaderResource( this );
-	// /STEVE CHANGE
 }
 
 ShaderResource::~ShaderResource()
@@ -127,12 +118,10 @@ ShaderResource::~ShaderResource()
 		Rtt_DELETE( fDefaultData );
     }
 
-	// STEVE CHANGE
 	if ( NULL != fTimeTransform )
 	{
 		Rtt_DELETE( fTimeTransform );
 	}
-	// /STEVE CHANGE
 }
 
 void
@@ -143,9 +132,7 @@ ShaderResource::SetProgramMod(ProgramMod mod, Program *program)
 	{
 		fPrograms[mod] = program;
 
-		// STEVE CHANGE
 		program->SetShaderResource( this );
-		// /STEVE CHANGE
 	}
 }
 

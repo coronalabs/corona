@@ -39,12 +39,11 @@ namespace Rtt
 class Program;
 class ShaderData;
 
-// STEVE CHANGE
 struct TimeTransform
 {
 	typedef void (*Func)( Real *time, Real arg1, Real arg2, Real arg3 );
 
-	TimeTransform() : func( NULL ), arg1( 0 ), arg2( 0 ), arg3( 0 ), first( true )
+	TimeTransform() : func( NULL ), arg1( 0 ), arg2( 0 ), arg3( 0 ), timestamp( ~0 )
 	{
 	}
 
@@ -53,9 +52,7 @@ struct TimeTransform
 	Func func;
 	Real arg1, arg2, arg3, cached;
 	U32 timestamp;
-	bool first; // guard against timestamp coincidentally being true on first run
 };
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -101,10 +98,8 @@ class ShaderResource
 		bool UsesTime() const { return fUsesTime; }
 		void SetUsesTime( bool newValue ) { fUsesTime = newValue; }
 
-		// STEVE CHANGE
 		TimeTransform *GetTimeTransform() const { return fTimeTransform; }
 		void SetTimeTransform( TimeTransform *transform ) { fTimeTransform = transform; }
-		// /STEVE CHANGE
 	public:
 		// Shader either stores params on per-vertex basis or in uniforms.
 		// Batching most likely breaks as soon as you use uniforms,
@@ -143,9 +138,7 @@ class ShaderResource
 		VertexDataMap fVertexDataMap;
 		UniformDataMap fUniformDataMap;
 		ShaderData *fDefaultData;
-		// STEVE CHANGE
 		TimeTransform *fTimeTransform;
-		// /STEVE CHANGE
 		bool fUsesUniforms;
 		bool fUsesTime;
 
