@@ -1114,8 +1114,15 @@ SpriteObject::SetFrame( int index )
 				playTime = Rtt_RealDiv( playTime, fTimeScale );
 			}
 
-			U64 curTime = fPlayer.GetAnimationTime();
-			fStartTime = curTime - Rtt_RealToInt( playTime );
+			if ( !IsPlaying() )
+			{
+				fPlayTime = Rtt_RealToInt( playTime );
+			}
+			else
+			{
+				U64 curTime = fPlayer.GetAnimationTime();
+				fStartTime = curTime - Rtt_RealToInt( playTime );
+			}
 		}
 
 		fCurrentFrame = index;
