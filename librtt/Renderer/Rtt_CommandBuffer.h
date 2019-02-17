@@ -65,6 +65,9 @@ class CommandBuffer
 		QueryableParams;
 		
 	public:
+		// STEVE CHANGE
+		static size_t GetMaxVertexTextureUnits();
+		// /STEVE CHANGE
 		static size_t GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();

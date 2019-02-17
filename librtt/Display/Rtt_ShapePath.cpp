@@ -40,6 +40,9 @@
 #include "Display/Rtt_TesselatorShape.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_Renderer.h"
+// STEVE CHANGE
+#include "Rtt_LuaAux.h"
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -116,6 +119,46 @@ ShapePath::~ShapePath()
 	Rtt_DELETE( fTesselator );
 }
 
+// STEVE CHANGE
+void
+ShapePath::CalculateUV( ArrayVertex2& texVertices, Paint *paint, bool canTransformTexture )
+{
+	Transform t;
+
+	if ( canTransformTexture
+			|| ! paint->IsValid( Paint::kTextureTransformFlag ) )
+	{
+		paint->SetValid( Paint::kTextureTransformFlag );
+
+		paint->UpdateTransform( t );
+//			BitmapPaint *bitmapPaint = (BitmapPaint*)paint->AsPaint( Paint::kBitmap );
+//			if ( bitmapPaint )
+//			{
+//				t = bitmapPaint->GetTransform();
+//			}
+
+		S32 angle = 0;
+
+		const PlatformBitmap *bitmap = paint->GetBitmap();
+		if ( bitmap )
+		{
+			angle = bitmap->DegreesToUprightBits();
+			fTesselator->SetNormalizationScaleX( bitmap->GetNormalizationScaleX() );
+			fTesselator->SetNormalizationScaleY( bitmap->GetNormalizationScaleY() );
+		}
+
+		if ( 0 != angle )
+		{
+			t.Rotate( Rtt_IntToReal( angle ) );
+		}
+	}
+
+	texVertices.Clear();
+	fTesselator->GenerateFillTexture( texVertices, t );
+	paint->ApplyPaintUVTransformations( texVertices );
+}
+// /STEVE CHANGE
+
 void
 ShapePath::TesselateFill()
 {
@@ -154,6 +197,8 @@ ShapePath::TesselateFill()
 
 	if ( ! IsValid( kFillSourceTexture ) )
 	{
+// STEVE CHANGE
+		/*
 		Transform t; // default to identity
 
 		if ( canTransformTexture
@@ -187,6 +232,9 @@ ShapePath::TesselateFill()
 		fFillSource.TexVertices().Clear();
 		fTesselator->GenerateFillTexture( fFillSource.TexVertices(), t );
 		paint->ApplyPaintUVTransformations( fFillSource.TexVertices() );
+		*/
+		CalculateUV( fFillSource.TexVertices(), paint, canTransformTexture );
+// /STEVE CHANGE
 		SetValid( kFillSourceTexture );
 
 		// Force renderdata update
@@ -393,6 +441,31 @@ ShapePath::SetSelfBounds( Real width, Real height )
 
 	return result;
 }
+
+// STEVE CHANGE
+void
+ShapePath::GetTextureVertices( ArrayVertex2& texVertices )
+{
+	Rtt_ASSERT( HasFill() );
+
+	Paint *paint = GetFill();
+
+	CalculateUV( texVertices, paint, paint->CanTransform() );
+}
+
+Rect
+ShapePath::GetTextureExtents( const ArrayVertex2& texVertices ) const
+{
+	Rect extents;
+
+	for (S32 i = 0, iMax = texVertices.Length(); i < iMax; ++i)
+	{
+		extents.Union(texVertices[i]);
+	}
+
+	return extents;
+}
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

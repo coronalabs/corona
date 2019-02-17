@@ -183,6 +183,9 @@ class Renderer
 		static U32 GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
+		// STEVE CHANGE
+		static size_t GetMaxVertexTextureUnits();
+		// /STEVE CHANGE
 
 		struct Statistics
 		{

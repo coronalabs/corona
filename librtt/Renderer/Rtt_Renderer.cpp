@@ -906,6 +906,14 @@ Renderer::GetGpuSupportsHighPrecisionFragmentShaders()
 	return CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders();
 }
 
+// STEVE CHANGE
+size_t
+Renderer::GetMaxVertexTextureUnits()
+{
+	return CommandBuffer::GetMaxVertexTextureUnits();
+}
+// /STEVE CHANGE
+
 bool
 Renderer::GetStatisticsEnabled() const
 {

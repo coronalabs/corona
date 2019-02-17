@@ -247,6 +247,14 @@ LuaLibSystem::getInfo( lua_State *L )
 		Runtime *runtime = LuaContext::GetRuntime( L );
 		lua_pushboolean( L, runtime->GetDisplay().GetGpuSupportsHighPrecisionFragmentShaders() );
 	}
+	// STEVE CHANGE
+	else if ( Rtt_StringCompare( key, "maxVertexTextureUnits" ) == 0 )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		size_t n = runtime->GetDisplay().GetMaxVertexTextureUnits();
+		lua_pushnumber( L, n > 2U ? 2U : 0U ); // more than 2 requires new paint types
+	}
+	// /STEVE CHANGE
 	else
 	{
 		// This is a place where we can add system.getInfo() categories that return arbitrary types
@@ -325,6 +333,15 @@ openURL( lua_State *L )
     
     return 1;
 }
+
+// STEVE CHANGE
+static int
+getFrame( lua_State *L )
+{
+	lua_pushnumber( L, LuaContext::GetRuntime( L )->GetFrame() );
+	return 1;
+}
+// /STEVE CHANGE
 
 static int
 getTimer( lua_State *L )
@@ -1500,6 +1517,9 @@ LuaLibSystem::Initialize( lua_State *L )
 		{ "endListener", LuaLibSystem::EndListener }, // private; use system.activate() publicly
 		{ "hasEventSource", LuaLibSystem::HasEventSource }, // private
 		{ "getInfo", getInfo },
+		// STEVE CHANGE
+		{ "getFrame", getFrame },
+		// /STEVE CHANGE
 		{ "getTimer", getTimer },
 		{ "openURL", openURL },
 		{ "canOpenURL", canOpenURL },

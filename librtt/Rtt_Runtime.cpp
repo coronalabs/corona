@@ -98,6 +98,9 @@ Runtime::Runtime( const MPlatform& platform, MCallback *viewCallback )
 	fIsSuspended( -1 ), // uninitialized
 	fProperties( 0 ),
 	fSuspendOverrideProperties( kSuspendAll ),
+	// STEVE CHANGE
+	fFrame( 0 ),
+	// /STEVE CHANGE
 	fLaunchArgsRef( LUA_NOREF ),
 	fSimulatorPlatformName( NULL ),
 	fDownloadablePluginsRef( LUA_NOREF ),
@@ -1901,6 +1904,9 @@ Runtime::operator()()
 	else
 	{
 		fDisplay->Update();
+		// STEVE CHANGE
+		++fFrame;
+		// /STEVE CHANGE
 	}
 
 	if ( ! IsProperty( kRenderAsync ) )

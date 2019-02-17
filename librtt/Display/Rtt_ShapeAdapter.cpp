@@ -30,6 +30,9 @@
 #include "Core/Rtt_StringHash.h"
 #include "Display/Rtt_ShapePath.h"
 #include "Rtt_LuaContext.h"
+// STEVE CHANGE
+#include "Rtt_Runtime.h"
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -149,6 +152,70 @@ ShapeAdapter::ValueForKey(
 		lua_pushstring( L, fTypeString );
 		result = 1;
 	}
+	// STEVE CHANGE
+	// TODO: is hash worth it? these are not likely to be called often
+	else if (0 == strcmp( key, "textureBounds" ))
+	{
+		ArrayVertex2 texVertices( LuaContext::GetRuntime( L )->GetAllocator() );
+
+		const_cast<ShapePath *>( path )->GetTextureVertices( texVertices ); // TODO: okay? tesselator updates scale factors...
+
+		Rect r = path->GetTextureExtents( texVertices );
+
+		lua_createtable( L, 0, 4 ); // as with contentBounds...
+
+		const char uMin[] = "uMin";
+		const char vMin[] = "vMin";
+		const char uMax[] = "uMax";
+		const char vMax[] = "vMax";
+		const size_t kLen = sizeof( uMin ) - 1;
+
+		Rtt_STATIC_ASSERT( sizeof(char) == 1 );
+		Rtt_STATIC_ASSERT( sizeof(uMin) == sizeof(vMin) );
+		Rtt_STATIC_ASSERT( sizeof(uMin) == sizeof(uMax) );
+		Rtt_STATIC_ASSERT( sizeof(uMin) == sizeof(vMax) );
+
+		Real uMinRect = r.xMin;
+		Real vMinRect = r.yMin;
+		Real uMaxRect = r.xMax;
+		Real vMaxRect = r.yMax;
+
+		if ( r.IsEmpty() )
+		{
+			uMinRect = vMinRect = uMaxRect = vMaxRect = Rtt_REAL_0;
+		}
+
+		setProperty( L, uMin, kLen, uMinRect );
+		setProperty( L, vMin, kLen, vMinRect );
+		setProperty( L, uMax, kLen, uMaxRect );
+		setProperty( L, vMax, kLen, vMaxRect );
+
+		result = 1;
+	}
+
+	else if (0 == strcmp( key, "textureVertices" ))
+	{
+		ArrayVertex2 texVertices( LuaContext::GetRuntime( L )->GetAllocator() );
+
+		const_cast<ShapePath *>( path )->GetTextureVertices( texVertices ); // TODO: okay? tesselator updates scale factors...
+
+		S32 iMax = texVertices.Length();
+
+		lua_createtable( L, iMax * 2, 0 );
+
+		for (S32 i = 0; i < iMax; ++i)
+		{
+			const Vertex2& v = texVertices[i];
+
+			lua_pushnumber( L, v.x );
+			lua_rawseti( L, -2, i * 2 );
+			lua_pushnumber( L, v.y );
+			lua_rawseti( L, -2, i * 2 + 1 );
+		}
+
+		result = 1;
+	}
+	// /STEVE CHANGE
 #endif
 
 	return result;
