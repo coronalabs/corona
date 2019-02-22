@@ -98,10 +98,10 @@ public class JavaToNativeShim {
     private static native void nativeOrientationChanged( long bridgeAddress, int newOrientation, int oldOrientation );
     private static native void nativeResizeEvent( long bridgeAddress );
     private static native void nativeAlertCallback( long bridgeAddress, int buttonIndex, boolean cancelled );
-    private static native void nativeSoundEndCallback( long bridgeAddress, int id );
-    private static native void nativeVideoEndCallback( long bridgeAddress, int id );
-    private static native void nativeRecordCallback( long bridgeAddress, int id, int status );
-    private static native void nativeSetAudioRecorderState( long bridgeAddress, int id, boolean isRecording );
+    private static native void nativeSoundEndCallback( long bridgeAddress, long id );
+    private static native void nativeVideoEndCallback( long bridgeAddress, long id );
+    private static native void nativeRecordCallback( long bridgeAddress, long id, int status );
+    private static native void nativeSetAudioRecorderState( long bridgeAddress, long id, boolean isRecording );
     private static native void nativeTextEvent( long bridgeAddress, int id, boolean focusLost, boolean isDone );
 	private static native void nativeTextEditingEvent( long bridgeAddress, int id, int startPos, int numDeleted, String newCharacters, String oldString, String newString );
     private static native void nativeMultitouchEventBegin(long bridgeAddress);
@@ -566,28 +566,28 @@ public class JavaToNativeShim {
 		nativeAlertCallback( runtime.getJavaToNativeBridgeAddress(), buttonIndex, cancelled );
 	}
 	
-	public static void soundEndCallback( CoronaRuntime runtime, int id ) {
+	public static void soundEndCallback( CoronaRuntime runtime, long id ) {
 		if (runtime == null || runtime.wasDisposed()) {
 			return;
 		}
 		nativeSoundEndCallback( runtime.getJavaToNativeBridgeAddress(), id );
 	}
 	
-	public static void videoEndCallback( CoronaRuntime runtime, int id ) {
+	public static void videoEndCallback( CoronaRuntime runtime, long id ) {
 		if (runtime == null || runtime.wasDisposed()) {
 			return;
 		}
 		nativeVideoEndCallback( runtime.getJavaToNativeBridgeAddress(), id );
 	}
 	
-	public static void recordCallback( CoronaRuntime runtime, int id, int status ) {
+	public static void recordCallback( CoronaRuntime runtime, long id, int status ) {
 		if (runtime == null || runtime.wasDisposed()) {
 			return;
 		}
 		nativeRecordCallback( runtime.getJavaToNativeBridgeAddress(), id, status );
 	}
 
-	public static void setAudioRecorderState( CoronaRuntime runtime, int id, boolean isRecording ) {
+	public static void setAudioRecorderState( CoronaRuntime runtime, long id, boolean isRecording ) {
 		if (runtime == null || runtime.wasDisposed()) {
 			return;
 		}

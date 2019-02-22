@@ -51,14 +51,15 @@ AndroidEventSound::Load( const char * filePath )
 {
 	mySoundName.Set( filePath );
 
-	fNativeToJavaBridge->LoadSound( (int) this, filePath, true );
+	fNativeToJavaBridge->LoadSound( (uintptr_t) this, filePath, true );
+	return true;
 }
 
 
 void 
 AndroidEventSound::Play()
 {
-	fNativeToJavaBridge->PlaySound( (int) this, mySoundName.GetString(), false );
+	fNativeToJavaBridge->PlaySound( (uintptr_t) this, mySoundName.GetString(), false );
 }
 
 void

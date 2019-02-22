@@ -26,11 +26,11 @@
 
 #include "AndroidKeyServices.h"
 #include "Rtt_KeyName.h"
-#include <hash_map>
+#include <unordered_map>
 
 
 /// Android key code and name mapping type.
-typedef std::hash_map<int, const char*> AndroidKeyCollection;
+typedef std::unordered_map<int, const char*> AndroidKeyCollection;
 
 /// Map entry type for instances of the AndroidKeyCollection type.
 typedef std::pair<int, const char*> AndroidKeyCollectionPair;

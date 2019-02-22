@@ -908,7 +908,7 @@ LuaLibMedia::Initialize( lua_State *L )
 
 #ifdef Rtt_ANDROID_ENV
 void
-LuaLibMedia::RecordCallback( int status, int id )
+LuaLibMedia::RecordCallback( uintptr_t id, int status )
 {
 	PlatformAudioRecorder * recorder = (PlatformAudioRecorder *) id;
 	
@@ -916,7 +916,7 @@ LuaLibMedia::RecordCallback( int status, int id )
 }
 
 void
-LuaLibMedia::SoundEndCallback( int id )
+LuaLibMedia::SoundEndCallback( uintptr_t id )
 {
 	PlatformAudioPlayer * player = (PlatformAudioPlayer *) id;
 	
@@ -924,7 +924,7 @@ LuaLibMedia::SoundEndCallback( int id )
 }
 
 void
-LuaLibMedia::VideoEndCallback( int id )
+LuaLibMedia::VideoEndCallback( uintptr_t id )
 {
 	PlatformVideoPlayer * player = (PlatformVideoPlayer *) id;
 	

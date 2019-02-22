@@ -45,7 +45,7 @@ AndroidAudioPlayer::Load( const char * filePath )
 {
 	mySoundName.Set( filePath );
 
-	fNativeToJavaBridge->LoadSound( (int) this, filePath, false );
+	fNativeToJavaBridge->LoadSound( (uintptr_t) this, filePath, false );
 
 	return true;
 }
@@ -53,32 +53,32 @@ AndroidAudioPlayer::Load( const char * filePath )
 void 
 AndroidAudioPlayer::Play()
 {
-	fNativeToJavaBridge->PlaySound( (int) this, mySoundName.GetString(), GetLooping() );
+	fNativeToJavaBridge->PlaySound( (uintptr_t) this, mySoundName.GetString(), GetLooping() );
 }
 
 void 
 AndroidAudioPlayer::Stop()
 {
-	fNativeToJavaBridge->StopSound((int) this );
+	fNativeToJavaBridge->StopSound((uintptr_t) this );
 }
 
 void 
 AndroidAudioPlayer::Pause()
 {
-	fNativeToJavaBridge->PauseSound( (int) this );
+	fNativeToJavaBridge->PauseSound( (uintptr_t) this );
 }
 
 void 
 AndroidAudioPlayer::Resume()
 {
-	fNativeToJavaBridge->ResumeSound( (int) this );
+	fNativeToJavaBridge->ResumeSound( (uintptr_t) this );
 }
 
 void
 AndroidAudioPlayer::SetVolume( Rtt_Real volume )
 {
 {
-	fNativeToJavaBridge->SetVolume( (int) this, volume);
+	fNativeToJavaBridge->SetVolume( (uintptr_t) this, volume);
 }
 }
 
@@ -86,7 +86,7 @@ Rtt_Real
 AndroidAudioPlayer::GetVolume() const
 {
 {
-	return fNativeToJavaBridge->GetVolume( (int) this );
+	return fNativeToJavaBridge->GetVolume( (uintptr_t) this );
 }
 }
 

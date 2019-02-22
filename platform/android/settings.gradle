@@ -1,0 +1,3 @@
+include ':sdk', 'JNLua', 'app'
+project(':sdk').name = 'Corona'
+project(':JNLua').projectDir = new File('../../external/JNLua/')

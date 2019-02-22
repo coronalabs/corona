@@ -30,7 +30,7 @@ import com.ansca.corona.Controller;
 public class MediaEvent extends Event {
 
 	String myMediaName;
-	int myMediaId;
+	long myMediaId;
 	boolean myLooping = false;
 	Controller myController;
 
@@ -54,14 +54,14 @@ public class MediaEvent extends Event {
 		myController = controller;
 	}
 
-	MediaEvent( Controller controller, int id, Event event )
+	MediaEvent( Controller controller, long id, Event event )
 	{
 		myEvent = event;
 		myMediaId = id;
 		myController = controller;
 	}
 
-	MediaEvent( Controller controller, int id, String name, Event event )
+	MediaEvent( Controller controller, long id, String name, Event event )
 	{
 		myEvent = event;
 		myMediaId = id;

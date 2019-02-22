@@ -353,7 +353,7 @@ JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeAlertCallbac
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeSoundEndCallback
-  (JNIEnv *, jclass, jlong, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     com_ansca_corona_JavaToNativeShim
@@ -361,7 +361,7 @@ JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeSoundEndCall
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeVideoEndCallback
-  (JNIEnv *, jclass, jlong, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     com_ansca_corona_JavaToNativeShim
@@ -369,7 +369,7 @@ JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeVideoEndCall
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeRecordCallback
-  (JNIEnv *, jclass, jlong, jint, jint);
+  (JNIEnv *, jclass, jlong, jlong, jint);
 
 /*
  * Class:     com_ansca_corona_JavaToNativeShim

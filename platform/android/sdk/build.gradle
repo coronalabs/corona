@@ -1,0 +1,63 @@
+apply plugin: 'com.android.library'
+
+def sharedResLocation = "$buildDir/generated/sharedRes"
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '28.0.3'
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res', sharedResLocation]
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "../sdk/CMakeLists.txt"
+        }
+    }
+    useLibrary  'org.apache.http.legacy'
+}
+
+task generateSplashBeacon(type: Copy) {
+    group "Corona"
+    def splash = 'res/drawable/_corona_splash_screen.png'
+    from "SplashScreenBeacon.java.template"
+    into "src/com/ansca/corona"
+    rename 'SplashScreenBeacon.java.template', 'SplashScreenBeacon.java'
+    filter { it.replaceAll('999', file(splash).length().toString()) }
+    inputs.files splash
+}
+
+task updateWidgetResources(type: Copy) {
+    group "Corona"
+    from "../../../subrepos/widget/"
+    include "*.png"
+
+    into "$sharedResLocation/raw"
+
+    rename { filename ->
+        "corona_asset_$filename".replaceAll("@","_").toLowerCase()
+    }
+}
+
+task updateSharedResources {
+    dependsOn updateWidgetResources
+}
+
+preBuild.dependsOn generateSplashBeacon
+preBuild.dependsOn updateSharedResources
+
+dependencies {
+    implementation project(':JNLua')
+    implementation files('../../../plugins/build-core/network/android/network.jar')
+}

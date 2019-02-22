@@ -1,0 +1,81 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.corona.template"
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+    sourceSets {
+        main {
+            assets.srcDirs = ["$buildDir/generated/corona",]
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.mergeAssetsProvider.get() dependsOn packageCoronaApp
+    }
+}
+
+
+//def windows = System.properties['os.name'].toLowerCase().contains('windows');
+def nativeDir = "$System.env.HOME/Library/Application Support/Corona/Native/"
+
+task packageCoronaApp(type: Exec) {
+    description "Compile Lua project"
+    group "Corona"
+
+    executable "$nativeDir/Corona/mac/bin/lua"
+    workingDir  "$nativeDir/Corona/mac/bin"
+    def packagePath = "package.path='$nativeDir/Corona/shared/bin/?.lua;$nativeDir/Corona/shared/bin/?/init.lua;'..package.path"
+    def compileLua = "$nativeDir/Corona/shared/bin/Compile.lua"
+    def platform = 'mac'
+
+    args = [
+            '-e',
+            packagePath,
+            compileLua,
+            platform,
+            nativeDir
+    ]
+
+    def cpath = "$nativeDir/Corona/mac/bin/?.so"
+    def coronaAssetsDir = "$projectDir/../../test/assets2"
+
+//    environment "PATH", "$execPath"
+    environment "LUA_CPATH", "$cpath"
+    environment "TARGET_PLATFORM", 'android'
+    environment "PROJECT_DIR", "$rootDir"
+    environment "CORONA_COPY_PNG_PRESERVE", '--preserve'
+    environment "CONFIGURATION", 'release'
+    environment "CORONA_ASSETS_DIR", "$coronaAssetsDir"
+    environment "CORONA_TARGET_RESOURCES_DIR", "$buildDir/generated/corona"
+    environment "CORONA_TARGET_EXECUTABLE_DIR", "$buildDir/generated/corona"
+
+    inputs.dir "$coronaAssetsDir"
+    outputs.dir "$buildDir/generated/corona"
+
+    doFirst {
+        delete "$buildDir/generated/corona"
+        mkdir "$buildDir/generated/corona"
+    }
+
+}
+
+dependencies {
+    implementation project(":Corona")
+}

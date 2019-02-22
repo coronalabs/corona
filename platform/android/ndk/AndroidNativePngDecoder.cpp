@@ -445,7 +445,7 @@ AndroidOperationResult AndroidNativePngDecoder::OnDecodeFrom(AndroidBinaryReader
 					imageBytes[0] = byteBuffer[byteIndex];
 					imageBytes[1] = byteBuffer[byteIndex + 1];
 					imageBytes[2] = byteBuffer[byteIndex + 2];
-					imageBytes[3] = 255;
+					imageBytes[3] = (char)255;
 				}
 				imageBytes += 4;
 			}

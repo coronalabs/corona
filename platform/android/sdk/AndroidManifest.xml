@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.ansca.corona"
-      android:versionCode="1"
-      android:versionName="1.0">
+      package="com.ansca.corona">
 
-  <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="27" />
   <uses-feature android:glEsVersion="0x00020000" android:required="true" />
   
-  <application android:label="template" android:icon="@mipmap/icon" android:banner="@drawable/banner">
+  <application android:label="template">
     <activity android:name="com.ansca.corona.CoronaActivity"
               android:label="template">
         <intent-filter>
@@ -26,7 +23,7 @@
               android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
               android:configChanges="keyboardHidden|screenSize|orientation" />
     <provider android:name="com.ansca.corona.storage.FileContentProvider"
-              android:authorities="com.ansca.corona.files"
+              android:authorities="${applicationId}.files"
               android:exported="true" />
   </application>
 </manifest> 
