@@ -28,6 +28,7 @@
 #include <functional>
 #include <Windows.h>
 #include <Xinput.h>
+#include <string>
 
 
 #pragma region XInput Native Key Codes
@@ -271,7 +272,7 @@ class Key
 		/// <returns>
 		///  <para>Returns the character which the Key corresponds to.</para>
 		/// </returns>
-		const char* GetCharacter();
+		std::string GetCharacter();
 
 		/// <summary>Determines if this key matches the given key.</summary>
 		/// <param name="value">The key to be compared with.</param>

@@ -62,6 +62,7 @@ Rtt_DISABLE_WIN_XML_COMMENT_COMPILER_WARNINGS_END
 #include "Rtt_WinRTCallback.h"
 #include "Rtt_WinRTPlatform.h"
 #include "Rtt_WinRTRuntimeDelegate.h"
+#include <string>
 
 
 namespace CoronaLabs { namespace Corona { namespace WinRT {
@@ -829,10 +830,10 @@ void CoronaRuntimeEnvironment::RaiseKeyEventFor(Interop::Input::KeyEventArgs^ ar
 	//Raise a character event in Lua.
 	if (isDown)
 	{
-		const char* character = keyInfo.GetCharacter();
-		if (character != NULL && (strlen(character) > 1 || isprint(character[0])))
+		std::string character = keyInfo.GetCharacter();
+		if (character.length() || isprint(character[0]))
 		{
-			Rtt::CharacterEvent characterEvent(nullptr, keyInfo.GetCharacter());
+			Rtt::CharacterEvent characterEvent(nullptr, character.data());
 			runtimePointer->DispatchEvent(characterEvent);
 		}
 	}

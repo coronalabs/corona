@@ -30,7 +30,6 @@
 #include <unordered_map>
 #include "WinString.h"
 
-
 namespace Interop { namespace Input {
 
 #pragma region StlStringPointerHashProvider Struct
@@ -363,34 +362,32 @@ const char* Key::GetCoronaName() const
 	return fCoronaName;
 }
 
-const char* Key::GetCharacter()
+std::string Key::GetCharacter()
 {
-	unsigned char *keyboardState = new unsigned char[256];
+	std::string sKeyboardState;
+	sKeyboardState.reserve(256);
+	unsigned char *keyboardState = (unsigned char*)sKeyboardState.data();
 	GetKeyboardState(keyboardState);
 
 	int scanCode = MapVirtualKey(this->GetNativeCodeValue(), 0x0); // 0x0 is MAPVK_VK_TO_VSC
 	if (scanCode == 0)
 	{
-		return NULL;
+		return std::string();
 	}
 	else
 	{
-		const int BUFFER_LENGTH = 2;
-		wchar_t chars[BUFFER_LENGTH];
-		chars[BUFFER_LENGTH - 1] = 0;
+		const int BUFFER_LENGTH = 10;
+		wchar_t chars[BUFFER_LENGTH] = {0};
 
 		switch (ToUnicode(this->GetNativeCodeValue(), scanCode, keyboardState, chars, BUFFER_LENGTH - 1, 0))
 		{
 		case -1:
 		case 0:
-			return NULL;
+			return std::string();
 		default:
 			WinString stringConverter;
 			stringConverter.SetUTF16(chars);
-			int utf8Length = strlen(stringConverter.GetUTF8()) + 1;
-			char * out = new char[utf8Length];
-			strcpy_s(out, utf8Length, stringConverter.GetUTF8());
-			return out;
+			return std::string(stringConverter.GetUTF8());
 		}
 	}
 }

@@ -33,6 +33,7 @@
 #include "Interop\RuntimeEnvironment.h"
 #include "Rtt_Event.h"
 #include "Rtt_Runtime.h"
+#include <string>
 
 namespace Rtt {
 
@@ -251,10 +252,10 @@ void WinInputDevice::OnReceivedKeyInput(
 
 		if (arguments.IsDown())
 		{
-			const char* character = keyInfo.GetCharacter();
-			if (character != NULL && (strlen(character) > 1 || isprint(character[0])))
+			std::string character = keyInfo.GetCharacter();
+			if (character.length() && isprint(character[0]))
 			{
-				Rtt::CharacterEvent characterEvent(this, character);
+				Rtt::CharacterEvent characterEvent(this, character.data());
 				runtimePointer->DispatchEvent(characterEvent);
 			}
 		}
