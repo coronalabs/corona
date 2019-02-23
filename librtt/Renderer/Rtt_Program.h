@@ -40,8 +40,11 @@ namespace Rtt
 {
 
 class ProgramHeader;
+class ShaderResource;
 
 // ----------------------------------------------------------------------------
+
+
 
 class Program : public CPUResource
 {
@@ -72,7 +75,6 @@ class Program : public CPUResource
 		static const char *HeaderForLanguage( Language language, const ProgramHeader& headerData );
 
 		static int CountLines( const char *str );
-
 	public:
 		Program( Rtt_Allocator* allocator );
 		virtual ~Program();
@@ -90,6 +92,8 @@ class Program : public CPUResource
 		const char *GetHeaderSource() const { return fHeaderSource; }
 		void SetHeaderSource( const char *source );
 
+		ShaderResource *GetShaderResource() { return fResource; }
+		void SetShaderResource( ShaderResource *resource ) { fResource = resource; }
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
 		ShaderBinaryVersions* GetCompiledShaders() const { return fCompiledShaders; }
 #endif
@@ -113,6 +117,7 @@ class Program : public CPUResource
 #endif
 		int fVertexShellNumLines;
 		int fFragmentShellNumLines;
+		ShaderResource *fResource;
 		bool fCompilerVerbose;
 };
 

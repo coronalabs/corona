@@ -35,6 +35,7 @@
 #include "Renderer/Rtt_Program.h"
 #include "Renderer/Rtt_Texture.h"
 #include "Renderer/Rtt_Uniform.h"
+#include "Display/Rtt_ShaderResource.h"
 #include "Core/Rtt_Config.h"
 #include "Core/Rtt_Allocator.h"
 #include "Core/Rtt_Assert.h"
@@ -290,6 +291,7 @@ GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 	 fCurrentDrawVersion( Program::kMaskCount0 ),
 	 fProgram( NULL ),
      fDefaultFBO( 0 ),
+	 fTimeTransform( NULL ),
 	 fTimerQueries( new U32[kTimerQueryCount] ),
 	 fTimerQueryIndex( 0 ),
 	 fElapsedTimeGPU( 0.0f )
@@ -435,9 +437,11 @@ GLCommandBuffer::BindProgram( Program* program, Program::Version version )
 	WRITE_COMMAND( kCommandBindProgram );
 	Write<Program::Version>( version );
 	Write<GPUResource*>( program->GetGPUResource() );
-	
+
 	fCurrentPrepVersion = version;
 	fProgram = program;
+
+	fTimeTransform = program->GetShaderResource()->GetTimeTransform();
 }
 
 void
@@ -993,7 +997,20 @@ GLCommandBuffer::Write( T value )
 
 void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 {
-	GLProgram* glProgram = static_cast<GLProgram*>( resource );
+	GLProgram* glProgram = static_cast<GLProgram*>(resource);
+
+	Real rawTotalTime;
+	bool transformed = false;
+
+	if (fTimeTransform)
+	{
+		const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
+		if (time.uniform)
+		{
+			transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
+		}
+	}
+
 	for( U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
 	{
 		const UniformUpdate& update = fUniformUpdates[i];
@@ -1001,6 +1018,11 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 		{		
 			ApplyUniform( resource, i );
 		}
+	}
+
+	if (transformed)
+	{
+		fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
 	}
 }
 

@@ -39,12 +39,41 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+bool
+TimeTransform::Apply( Uniform *time, Real *old, U32 now )
+{
+	if (NULL != func && NULL != time)
+	{
+		if (timestamp != now)
+		{
+			timestamp = now;
+
+			time->GetValue(cached);
+
+			if (NULL != old)
+			{
+				*old = cached;
+			}
+
+			func( &cached, arg1, arg2, arg3 );
+		}
+
+		time->SetValue(cached);
+
+		return true;
+	}
+
+	return false;
+}
+
+
 ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category )
 :	fCategory( category ),
 	fName(),
 	fVertexDataMap(),
 	fUniformDataMap(),
 	fDefaultData( NULL ),
+	fTimeTransform( NULL ),
 	fUsesUniforms( false ),
 	fUsesTime( false )
 {
@@ -57,6 +86,7 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
 	fVertexDataMap(),
 	fUniformDataMap(),
 	fDefaultData( NULL ),
+	fTimeTransform( NULL ),
 	fUsesUniforms( false ),
 	fUsesTime( false )
 {
@@ -71,6 +101,8 @@ ShaderResource::Init(Program *defaultProgram)
 		fPrograms[i] = NULL;
 	}
 	fPrograms[ShaderResource::kDefault] = defaultProgram;
+
+	defaultProgram->SetShaderResource( this );
 }
 
 ShaderResource::~ShaderResource()
@@ -85,6 +117,11 @@ ShaderResource::~ShaderResource()
 	{
 		Rtt_DELETE( fDefaultData );
     }
+
+	if ( NULL != fTimeTransform )
+	{
+		Rtt_DELETE( fTimeTransform );
+	}
 }
 
 void
@@ -94,6 +131,8 @@ ShaderResource::SetProgramMod(ProgramMod mod, Program *program)
 	if ( Rtt_VERIFY(NULL == fPrograms[mod]) )
 	{
 		fPrograms[mod] = program;
+
+		program->SetShaderResource( this );
 	}
 }
 

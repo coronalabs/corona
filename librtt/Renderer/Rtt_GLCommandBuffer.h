@@ -36,6 +36,8 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+struct TimeTransform;
+
 // 
 class GLCommandBuffer : public CommandBuffer
 {
@@ -104,13 +106,15 @@ class GLCommandBuffer : public CommandBuffer
 		UniformUpdate fUniformUpdates[Uniform::kNumBuiltInVariables];
 		Program::Version fCurrentPrepVersion;
 		Program::Version fCurrentDrawVersion;
-
+	
 		Program* fProgram;
 		S32 fDefaultFBO;
 		U32* fTimerQueries;
 		U32 fTimerQueryIndex;
 		Real fElapsedTimeGPU;
-		
+	
+		TimeTransform* fTimeTransform;
+
 		S32 fCachedQuery[kNumQueryableParams];
 		
 };
