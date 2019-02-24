@@ -1998,7 +1998,9 @@ TouchEvent::TouchEvent()
 	fYStartScreen( Rtt_REAL_0 ),
 	fXStartContent( Rtt_REAL_0 ),
 	fYStartContent( Rtt_REAL_0 ),
-	fPressure( kPressureInvalid )
+	fPressure( kPressureInvalid ),
+	fDeltaX( Rtt_REAL_0 ),
+	fDeltaY( Rtt_REAL_0 )
 {
 }
 
@@ -2010,7 +2012,9 @@ TouchEvent::TouchEvent( Real x, Real y, Real xStartScreen, Real yStartScreen, Ph
 	fYStartScreen( yStartScreen ),
 	fXStartContent( xStartScreen ),
 	fYStartContent( yStartScreen ),
-	fPressure( pressure )
+	fPressure( pressure ),
+	fDeltaX( x - xStartScreen ),
+	fDeltaY( y - yStartScreen )
 {
 }
 
@@ -2030,6 +2034,8 @@ TouchEvent::Push( lua_State *L ) const
 		const char kXStartKey[] = "xStart";
 		const char kYStartKey[] = "yStart";
 		const char kPressureKey[] = "pressure";
+		const char kXDeltaKey[] = "xDelta";
+		const char kYDeltaKey[] = "yDelta";
 
 		lua_pushstring( L, StringForPhase( (Phase)fPhase ) );
 		lua_setfield( L, -2, kPhaseKey );
@@ -2038,6 +2044,10 @@ TouchEvent::Push( lua_State *L ) const
 		lua_setfield( L, -2, kXStartKey );
 		lua_pushnumber( L, Rtt_RealToFloat( fYStartContent ) );
 		lua_setfield( L, -2, kYStartKey );
+		lua_pushinteger( L, Rtt_RealToInt( fDeltaX) );
+		lua_setfield( L, -2, kXDeltaKey );
+		lua_pushinteger( L, Rtt_RealToInt( fDeltaY ));
+		lua_setfield( L, -2, kYDeltaKey );
 		
 		if ( fPressure >= kPressureThreshold )
 		{
