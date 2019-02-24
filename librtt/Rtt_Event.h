@@ -913,8 +913,8 @@ class TouchEvent : public HitEvent
 	public:
 		bool IsProperty( U16 mask ) const { return (fProperties & mask) != 0; }
 		void SetProperty( U16 mask, bool value );
-    Rtt_FORCE_INLINE Real DeltaX() const { return fDeltaX; };
-    Rtt_FORCE_INLINE Real DeltaY() const { return fDeltaY; };
+		Rtt_FORCE_INLINE Real DeltaX() const { return fDeltaX; };
+		Rtt_FORCE_INLINE Real DeltaY() const { return fDeltaY; };
 
 	private:
 		U16 fPhase;
@@ -924,8 +924,8 @@ class TouchEvent : public HitEvent
 		mutable Real fXStartContent;
 		mutable Real fYStartContent;
 		Real fPressure;
-        Real fDeltaX;
-        Real fDeltaY;
+		Real fDeltaX;
+		Real fDeltaY;
 };
 
 // ----------------------------------------------------------------------------
