@@ -6337,9 +6337,6 @@
 			attributes = {
 				LastUpgradeCheck = 0810;
 				TargetAttributes = {
-					8D1107260486CEB800E47090 = {
-						DevelopmentTeam = BG2J43EA88;
-					};
 					A4FBC4F61A2D5479004D9A01 = {
 						CreatedOnToolsVersion = 6.1;
 					};
@@ -8812,11 +8809,11 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../external\"",
@@ -9124,7 +9121,6 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

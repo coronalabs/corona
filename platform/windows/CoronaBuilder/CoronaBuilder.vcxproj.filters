@@ -67,7 +67,7 @@
     <ClInclude Include="..\..\..\external\winutil\BtnST.h">
       <Filter>%28root%29\external\winutil</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\external\winutil\DirDialog.h">
+    <ClInclude Include="..\..\..\external\winutil\BrowseDirDialog.h">
       <Filter>%28root%29\external\winutil</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\external\winutil\dirent.h">
@@ -166,7 +166,7 @@
     <ClCompile Include="..\..\..\external\winutil\BtnST.cpp">
       <Filter>%28root%29\external\winutil</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp">
+    <ClCompile Include="..\..\..\external\winutil\BrowseDirDialog.cpp">
       <Filter>%28root%29\external\winutil</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\external\rcedit\Project\src\rescle.cc">

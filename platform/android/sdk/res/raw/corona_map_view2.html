@@ -27,10 +27,10 @@
 				script.type = 'text/javascript';
 				var keyEntry = '';
 				if(googleApiKey) {
-					keyEntry = '&key=' + googleApiKey;
+					keyEntry = 'key=' + googleApiKey;
 				}
 				script.onload = initialize;
-				script.src = 'https://maps.googleapis.com/maps/api/js?v=3.9&sensor=false' + keyEntry;
+				script.src = 'https://maps.googleapis.com/maps/api/js?' + keyEntry;
 				document.body.appendChild(script);
 			}
 

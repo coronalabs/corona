@@ -27,7 +27,7 @@ simulator =
 {
 	device = "winphone-phone",
 	screenOriginX = 48,
-	screenOriginY = 160,
+	screenOriginY = 144,
 	screenWidth = 480,
 	screenHeight = 800,
 	deviceImage = "HTC-8S.png",
