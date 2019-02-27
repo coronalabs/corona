@@ -108,6 +108,63 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+// STEVE CHANGE
+CustomCommand::CustomCommand()
+:	fNext( NULL )
+{
+}
+
+CustomCommand::~CustomCommand()
+{
+}
+
+void
+CustomCommand::Emit( CommandBuffer& commandBuffer, bool before )
+{
+}
+
+void
+CustomCommand::Render( class Renderer& renderer )
+{
+}
+
+CommandStack::CommandStack()
+:	fTop( NULL )
+{
+}
+
+CommandStack::~CommandStack()
+{
+	while (!IsEmpty())
+	{
+		Pop();
+	}
+}
+
+void
+CommandStack::Push( CustomCommand* command )
+{
+	command->SetNextCommand( fTop );
+
+	fTop = command;
+}
+
+CustomCommand *
+CommandStack::Pop()
+{
+	CustomCommand* top = fTop;
+
+	if (top)
+	{
+		fTop = top->GetNextCommand();
+
+		top->SetNextCommand( NULL );
+	}
+
+	return top;
+}
+// /STEVE CHANGE
+
 // NOT USED: const U32 kElementsPerMat4 = 16;
 
 Renderer::Statistics::Statistics()
@@ -959,6 +1016,48 @@ Renderer::BindUniform( Uniform* uniform, U32 unit )
 	fBackCommandBuffer->BindUniform( uniform, unit );
 	INCREMENT( fStatistics.fUniformBindCount );
 }
+
+// STEVE CHANGE
+CommandStack *
+Renderer::BeginCommandStack( CommandStack* commandStack )
+{
+	CommandStack* prevStack = fCommandStack;
+
+	fCommandStack = commandStack;
+
+	return prevStack;
+}
+
+void
+Renderer::EndCommandStack( CommandStack* replacement )
+{
+	if (fCommandStack)
+	{
+		while (!fCommandStack->IsEmpty())
+		{
+			CustomCommand* command = fCommandStack->Pop;
+			int flags = command->GetFlags();
+
+			if (flags & CustomCommand::kCanEmitBeforeFlag)
+			{
+				command->Emit( *fBackCommandBuffer, true );
+			}
+
+			if (flags & CustomCommand::kCanRenderFlag)
+			{
+				command->Render( *this );
+			}
+
+			if (flags & CustomCommand::kCanEmitAfterFlag)
+			{
+				command->Emit( *fBackCommandBuffer, false );
+			}
+		}
+	}
+
+	fCommandStack = replacement;
+}
+// /STEVE CHANGE
 
 void 
 Renderer::CheckAndInsertDrawCommand()

@@ -225,6 +225,10 @@ GroupObject::Draw( Renderer& renderer ) const
 			renderer.PushMask( texture, uniform );
 		}
 
+		// STEVE CHANGE
+		CommandStack cur, *prev = renderer.BeginCommandStack( &cur );
+		// /STEVE CHANGE
+
 		for ( S32 i = 0, iMax = fChildren.Length(); i < iMax; i++ )
 		{
 			const DisplayObject *child = fChildren[i];
@@ -236,6 +240,10 @@ GroupObject::Draw( Renderer& renderer ) const
 				child->DidDraw( renderer );
 			}
 		}
+
+		// STEVE CHANGE
+		renderer.EndCommandStack( prev );
+		// /STEVE CHANGE
 
 		if ( mask )
 		{
