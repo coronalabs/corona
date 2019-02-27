@@ -53,6 +53,50 @@ class Uniform;
 
 // ----------------------------------------------------------------------------
 
+// STEVE CHANGE
+class CustomCommand {
+public:
+	typedef enum _CommandFlags
+	{
+		kCanEmitBeforeFlag		= 0x01,
+		kCanEmitAfterFlag		= 0x01,
+		kCanRenderFlag			= 0x04,
+		kDirtyFlag				= 0x08,
+		kHasDummyGeometryFlag	= 0x10,
+		kReuseRenderDataFlag	= 0x20,
+		kShouldDrawFlag			= 0x40 // for later use...
+	}
+	CommandFlags;
+
+	CustomCommand();
+	virtual ~CustomCommand();
+
+	virtual int GetFlags() = 0;
+	virtual void Emit( CommandBuffer& commandBuffer, bool before );
+	virtual void Render( class Renderer& renderer );
+
+	CustomCommand* GetNextCommand() const { return fNext; }
+	void SetNextCommand( CustomCommand* next ) { fNext = next; }
+
+private:
+	CustomCommand* fNext;
+};
+
+class CommandStack {
+public:
+	CommandStack();
+	~CommandStack();
+
+	void Push( CustomCommand* command );
+	CustomCommand* Pop();
+
+	bool IsEmpty() const { return fTop != NULL; }
+
+private:
+	CustomCommand* fTop;
+};
+// /STEVE CHANGE
+
 class Renderer
 {
 	public:
@@ -239,6 +283,10 @@ class Renderer
 		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
 		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
 
+		// STEVE CHANGE
+		CommandStack* BeginCommandStack( CommandStack* commandStack );
+		void EndCommandStack( CommandStack* replacement );
+		// /STEVE CHANGE
 	protected:
 		// Destroys all queued GPU resources passed into the DestroyQueue() method.
 		void DestroyQueuedGPUResources();
@@ -306,6 +354,10 @@ class Renderer
 		bool fScissorEnabled;
 		bool fMultisampleEnabled;
 		FrameBufferObject* fFrameBufferObject;
+
+		// STEVE CHANGE
+		CommandStack* fCommandStack;
+		// /STEVE CHANGE
 
 		RenderData fPrevious;
 		U32 fVertexOffset;
