@@ -118,16 +118,6 @@ CustomCommand::~CustomCommand()
 {
 }
 
-void
-CustomCommand::Emit( CommandBuffer& commandBuffer, bool before )
-{
-}
-
-void
-CustomCommand::Render( class Renderer& renderer )
-{
-}
-
 CommandStack::CommandStack()
 :	fTop( NULL )
 {
@@ -1036,22 +1026,8 @@ Renderer::EndCommandStack( CommandStack* replacement )
 		while (!fCommandStack->IsEmpty())
 		{
 			CustomCommand* command = fCommandStack->Pop;
-			int flags = command->GetFlags();
 
-			if (flags & CustomCommand::kCanEmitBeforeFlag)
-			{
-				command->Emit( *fBackCommandBuffer, true );
-			}
-
-			if (flags & CustomCommand::kCanRenderFlag)
-			{
-				command->Render( *this );
-			}
-
-			if (flags & CustomCommand::kCanEmitAfterFlag)
-			{
-				command->Emit( *fBackCommandBuffer, false );
-			}
+			command->Render( *this );
 		}
 	}
 

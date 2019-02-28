@@ -58,13 +58,10 @@ class CustomCommand {
 public:
 	typedef enum _CommandFlags
 	{
-		kCanEmitBeforeFlag		= 0x01,
-		kCanEmitAfterFlag		= 0x01,
-		kCanRenderFlag			= 0x04,
-		kDirtyFlag				= 0x08,
-		kHasDummyGeometryFlag	= 0x10,
-		kReuseRenderDataFlag	= 0x20,
-		kShouldDrawFlag			= 0x40 // for later use...
+		kDirtyFlag				= 0x01,
+		kHasDummyGeometryFlag	= 0x02,
+		kReuseRenderDataFlag	= 0x04,
+		kShouldDrawFlag			= 0x08 // for later use...
 	}
 	CommandFlags;
 
@@ -72,8 +69,7 @@ public:
 	virtual ~CustomCommand();
 
 	virtual int GetFlags() = 0;
-	virtual void Emit( CommandBuffer& commandBuffer, bool before );
-	virtual void Render( class Renderer& renderer );
+	virtual void Render( class Renderer& renderer ) = 0;
 
 	CustomCommand* GetNextCommand() const { return fNext; }
 	void SetNextCommand( CustomCommand* next ) { fNext = next; }
@@ -286,7 +282,10 @@ class Renderer
 		// STEVE CHANGE
 		CommandStack* BeginCommandStack( CommandStack* commandStack );
 		void EndCommandStack( CommandStack* replacement );
+
+		CommandStack* GetCommandStack() const { return fCommandStack; }
 		// /STEVE CHANGE
+
 	protected:
 		// Destroys all queued GPU resources passed into the DestroyQueue() method.
 		void DestroyQueuedGPUResources();
