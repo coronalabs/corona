@@ -87,6 +87,15 @@ namespace /*anonymous*/
 		kCommandClear,
 		kCommandDraw,
 		kCommandDrawIndexed,
+		// STEVE CHANGE
+		kCommandSetColorMask,
+		kCommandEnableStencil,
+		kCommandDisableStencil,
+		kCommandSetStencilMask,
+		kCommandSetStencilFunc,
+		kCommandSetStencilOp,
+		kCommandClearStencil,
+		// /STEVE CHANGE
 		kNumCommands
 	};
 
@@ -599,6 +608,53 @@ GLCommandBuffer::SetMultisampleEnabled( bool enabled )
 	WRITE_COMMAND( enabled ? kCommandEnableMultisample : kCommandDisableMultisample );
 }
 
+// STEVE CHANGE
+void
+GLCommandBuffer::SetColorMask( bool rmask, bool gmask, bool bmask, bool amask )
+{
+	WRITE_COMMAND( kCommandSetColorMask );
+	Write<bool>(rmask);
+	Write<bool>(gmask);
+	Write<bool>(bmask);
+	Write<bool>(amask);
+}
+
+void
+GLCommandBuffer::SetStencilEnabled( bool enabled )
+{
+	WRITE_COMMAND( enabled ? kCommandEnableStencil : kCommandDisableStencil );
+}
+
+void
+GLCommandBuffer::SetStencilMask( U32 mask )
+{
+	WRITE_COMMAND( kCommandSetStencilMask );
+	Write<GLuint>(mask);
+}
+
+void
+GLCommandBuffer::SetStencilFunc( S32 func, S32 ref, U32 mask )
+{
+	const GLenum funcs[] = { GL_ALWAYS, GL_NEVER, GL_LESS, GL_LEQUAL, GL_GREATER, GL_GEQUAL, GL_EQUAL, GL_NOTEQUAL };
+
+	WRITE_COMMAND( kCommandSetStencilFunc );
+	Write<GLenum>( funcs[ func ] );
+	Write<GLint>(ref);
+	Write<GLuint>(mask);
+}
+
+void
+GLCommandBuffer::SetStencilOp( S32 stencilFail, S32 depthFail, S32 depthPass )
+{
+	const GLenum actions[] = { GL_KEEP, GL_ZERO, GL_REPLACE, GL_INCR, GL_INCR_WRAP, GL_DECR, GL_DECR_WRAP, GL_INVERT };
+
+	WRITE_COMMAND( kCommandSetStencilOp );
+	Write<GLenum>( actions[ stencilFail ] );
+	Write<GLenum>( actions[ depthFail ] );
+	Write<GLenum>( actions[ depthPass ] );
+}
+// /STEVE CHANGE
+
 void 
 GLCommandBuffer::Clear(Real r, Real g, Real b, Real a)
 {
@@ -608,6 +664,15 @@ GLCommandBuffer::Clear(Real r, Real g, Real b, Real a)
 	Write<GLfloat>(b);
 	Write<GLfloat>(a);
 }
+
+// STEVE CHANGE
+void
+GLCommandBuffer::ClearStencil( S32 clear )
+{
+	WRITE_COMMAND( kCommandClearStencil );
+	Write<GLint>(clear);
+}
+// /STEVE CHANGE
 
 void 
 GLCommandBuffer::Draw( U32 offset, U32 count, Geometry::PrimitiveType type )
@@ -938,6 +1003,63 @@ GLCommandBuffer::Execute( bool measureGPU )
 				DEBUG_PRINT( "Draw indexed: mode=%i, count=%i", mode, count );
 				CHECK_ERROR_AND_BREAK;
 			}
+			// STEVE CHANGE
+			case kCommandSetColorMask:
+			{
+				bool rmask = Read<bool>();
+				bool gmask = Read<bool>();
+				bool bmask = Read<bool>();
+				bool amask = Read<bool>();
+				glColorMask( rmask, gmask, bmask, amask );
+				DEBUG_PRINT( "Set color mask: r=%s, g=%s, b=%s, a=%s", rmask ? "true" : "false", gmask ? "true" : "false", bmask ? "true" : "false", amask ? "true" : "false" );
+				CHECK_ERROR_AND_BREAK;
+			}
+			case kCommandEnableStencil:
+			{
+				glEnable( GL_STENCIL_TEST );
+				DEBUG_PRINT( "Enable stencil ");
+				CHECK_ERROR_AND_BREAK;
+			}
+			case kCommandDisableStencil:
+			{
+				glDisable( GL_STENCIL_TEST );
+				DEBUG_PRINT( "Disable stencil ");
+				CHECK_ERROR_AND_BREAK;
+			}
+			case kCommandSetStencilMask:
+			{
+				GLuint mask = Read<GLuint>();
+				glStencilMask( mask );
+				DEBUG_PRINT( "Set stencil mask: mask=%u", mask );
+				CHECK_ERROR_AND_BREAK;
+			}
+			case kCommandSetStencilFunc:
+			{
+				GLenum func = Read<GLenum>();
+				GLint ref = Read<GLint>();
+				GLuint mask = Read<GLuint>();
+				glStencilFunc( func, ref, mask );
+				DEBUG_PRINT( "Set stencil func: func=%i, ref=%i, mask=%u", func, ref, mask );
+				CHECK_ERROR_AND_BREAK;
+			}
+			case kCommandSetStencilOp:
+			{
+				GLenum stencilFail = Read<GLenum>();
+				GLenum depthFail = Read<GLenum>();
+				GLenum depthPass = Read<GLenum>();
+				glStencilOp( stencilFail, depthFail, depthPass );
+				DEBUG_PRINT( "Set stencil op: stencilFail=%i, depthFail=%i, depthPass=%i", stencilFail, depthFail, depthPass );
+				CHECK_ERROR_AND_BREAK;
+			}
+			case kCommandClearStencil:
+			{
+				GLint index = Read<GLint>();
+				glClearStencil( index );
+				glClear( GL_STENCIL_BUFFER_BIT );
+				DEBUG_PRINT( "Clear stencil: index=%i", index );
+				CHECK_ERROR_AND_BREAK;
+			}
+			// /STEVE CHANGE
 			default:
 				DEBUG_PRINT( "Unknown command(%d)", command );
 				Rtt_ASSERT_NOT_REACHED();

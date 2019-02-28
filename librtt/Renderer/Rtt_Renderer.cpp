@@ -204,6 +204,20 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fScissorEnabled( false ),
 	fMultisampleEnabled( false ),
 	fFrameBufferObject( NULL ),
+// STEVE CHANGE
+	fRedMask( Rtt_REAL_1 ),
+	fGreenMask( Rtt_REAL_1 ),
+	fBlueMask( Rtt_REAL_1 ),
+	fAlphaMask( Rtt_REAL_1 ),
+	fStencilFunc( 0 ),
+	fStencilRef( 0 ),
+	fStencilMask( ~0U ),
+	fStencilFail( 0 ),
+	fDepthFail( 0 ),
+	fDepthPass( 0 ),
+	fStencilBits( -1 ),
+	fStencilEnabled( false ),
+// /STEVE CHANGE
 	fInsertionLimit( std::numeric_limits<U32>::max() ),
 	fTimeDependencyCount( 0 )
 {
@@ -416,6 +430,109 @@ Renderer::SetMultisampleEnabled( bool enabled )
 	
 	DEBUG_PRINT( "Enabled multisample testing\n" );
 }
+
+// STEVE CHANGE
+void
+Renderer::GetColorMask( bool& rmask, bool& gmask, bool& bmask, bool& amask ) const
+{
+	rmask = fRedMask;
+	gmask = fGreenMask;
+	bmask = fBlueMask;
+	amask = fAlphaMask;
+}
+
+void
+Renderer::SetColorMask( bool rmask, bool gmask, bool bmask, bool amask )
+{
+	fRedMask = rmask;
+	fGreenMask = gmask;
+	fBlueMask = bmask;
+	fAlphaMask = amask;
+	CheckAndInsertDrawCommand();
+	fBackCommandBuffer->SetColorMask( rmask, gmask, bmask, amask );
+	
+	DEBUG_PRINT( "Set color mask: r=%s, g=%s, b=%s, a=%s\n", rmask ? "true" : "false", gmask ? "true" : "false", bmask ? "true" : "false", amask ? "true" : "false" );
+}
+
+bool
+Renderer::GetStencilEnabled() const
+{
+	return fStencilEnabled;
+}
+
+void
+Renderer::SetStencilEnabled( bool enabled )
+{
+	fStencilEnabled = enabled;
+	CheckAndInsertDrawCommand();
+	fBackCommandBuffer->SetStencilEnabled( enabled );
+	
+	DEBUG_PRINT( "Enabled stencil\n" );
+}
+
+U32
+Renderer::GetStencilMask() const
+{
+	return fStencilMask;
+}
+
+void
+Renderer::SetStencilMask( U32 mask )
+{
+	fStencilMask = mask;
+	CheckAndInsertDrawCommand();
+	fBackCommandBuffer->SetStencilMask( mask );
+	
+	DEBUG_PRINT( "Set stencil mask: mask=%u\n", mask );
+}
+
+void
+Renderer::GetStencilFunc( S32& func, S32& ref, U32& mask) const
+{
+	func = fStencilFunc;
+	ref = fStencilRef;
+	mask = fStencilMask;
+}
+
+void
+Renderer::SetStencilFunc( S32 func, S32 ref, U32 mask )
+{
+	fStencilFunc = func;
+	fStencilRef = ref;
+	fStencilMask = mask;
+	CheckAndInsertDrawCommand();
+	fBackCommandBuffer->SetStencilFunc( func, ref, mask );
+	
+	DEBUG_PRINT( "Set stencil func: func=%i, ref=%i, mask=%u\n", func, ref, mask );
+}
+
+void
+Renderer::GetStencilOp( S32& stencilFail, S32& depthFail, S32& depthPass ) const
+{
+	stencilFail = fStencilFail;
+	depthFail = fDepthFail;
+	depthPass = fDepthPass;
+}
+
+void
+Renderer::SetStencilOp( S32 stencilFail, S32 depthFail, S32 depthPass )
+{
+	fStencilFail = stencilFail;
+	fDepthFail = depthFail;
+	fDepthPass = depthPass;
+	CheckAndInsertDrawCommand();
+	fBackCommandBuffer->SetStencilOp( stencilFail, depthFail, depthPass );
+	
+	DEBUG_PRINT( "Set stencil op: stencilFail=%i, depthFail=%i, depthPass=%i\n", stencilFail, depthFail, depthPass );
+}
+
+void
+Renderer::ClearStencil( S32 clear )
+{
+	CheckAndInsertDrawCommand();
+	fBackCommandBuffer->ClearStencil( clear );
+}
+// /STEVE CHANGE
 
 FrameBufferObject* 
 Renderer::GetFrameBufferObject() const
@@ -1025,7 +1142,7 @@ Renderer::EndCommandStack( CommandStack* replacement )
 	{
 		while (!fCommandStack->IsEmpty())
 		{
-			CustomCommand* command = fCommandStack->Pop;
+			CustomCommand* command = fCommandStack->Pop();
 
 			command->Render( *this );
 		}

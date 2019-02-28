@@ -39,6 +39,90 @@ class CustomCommand;
 
 // ----------------------------------------------------------------------------
 
+class BooleanCommand : public CustomCommand {
+public:
+	typedef CustomCommand Super;
+	typedef void (*PrepareFunc)( const Renderer&, const bool*, bool* );
+	typedef void (*RenderFunc)( Renderer&, const bool* );
+	typedef int (*FlagFunc)( const Renderer&, const bool*, const bool* );
+
+	BooleanCommand( const bool* bools, bool* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags );
+
+	virtual int GetFlags( const Renderer& renderer );
+	virtual void Prepare( const Renderer& renderer );
+	virtual void Render( Renderer& renderer );
+
+private:
+	const bool* fBools;
+	bool* fPrev;
+	PrepareFunc fPrepare;
+	RenderFunc fRender;
+	FlagFunc fGetFlags;
+};
+
+class IntCommand : public CustomCommand {
+public:
+	typedef CustomCommand Super;
+	typedef void (*PrepareFunc)( const Renderer&, const S32*, S32* );
+	typedef void (*RenderFunc)( Renderer&, const S32* );
+	typedef int (*FlagFunc)( const Renderer&, const S32*, const S32* );
+
+	IntCommand( const S32* ints, S32* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags );
+
+	virtual int GetFlags( const Renderer& renderer );
+	virtual void Prepare( const Renderer& renderer );
+	virtual void Render( Renderer& renderer );
+
+private:
+	const S32* fInts;
+	S32* fPrev;
+	PrepareFunc fPrepare;
+	RenderFunc fRender;
+	FlagFunc fGetFlags;
+};
+
+class RealCommand : public CustomCommand {
+public:
+	typedef CustomCommand Super;
+	typedef void (*PrepareFunc)( const Renderer&, const Real*, Real* );
+	typedef void (*RenderFunc)( Renderer&, const Real* );
+	typedef int (*FlagFunc)( const Renderer&, const Real*, const Real* );
+
+	RealCommand( const Real* reals, Real* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags );
+
+	virtual int GetFlags( const Renderer& renderer );
+	virtual void Prepare( const Renderer& renderer );
+	virtual void Render( Renderer& renderer );
+
+private:
+	const Real* fReals;
+	Real* fPrev;
+	PrepareFunc fPrepare;
+	RenderFunc fRender;
+	FlagFunc fGetFlags;
+};
+
+class UintCommand : public CustomCommand {
+public:
+	typedef CustomCommand Super;
+	typedef void (*PrepareFunc)( const Renderer&, const U32*, U32* );
+	typedef void (*RenderFunc)( Renderer&, const U32* );
+	typedef int (*FlagFunc)( const Renderer&, const U32*, const U32* );
+
+	UintCommand( const U32* ints, U32* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags );
+
+	virtual int GetFlags( const Renderer& renderer );
+	virtual void Prepare( const Renderer& renderer );
+	virtual void Render( Renderer& renderer );
+
+private:
+	const U32* fUints;
+	U32* fPrev;
+	PrepareFunc fPrepare;
+	RenderFunc fRender;
+	FlagFunc fGetFlags;
+};
+
 class RenderStateObject : public DisplayObject
 {
 	Rtt_CLASS_NO_COPIES( RenderStateObject )
@@ -51,12 +135,13 @@ class RenderStateObject : public DisplayObject
 			kBoolean,
 			kBoolean4,
 			kInt,
+			kInt2Uint,
 			kInt3,
+			kInt4,
 			kReal,
 			kReal2,
-			kReal4,
-
-			kNumKinds
+			// kReal16 / 32? (matrices)
+			kUint
 		}
 		UsedKind;
 
@@ -67,76 +152,73 @@ class RenderStateObject : public DisplayObject
 			kDepthTestEnable,
 			kDitherEnable,
 			kScissorEnable,
-			kStencilEnable,
-
-			kNumBooleanStates
+			kStencilEnable
 		}
 		BooleanState;
 
 		typedef enum _BooleanState4 : int
 		{
-			kColorMask,
-
-			kNumBoolean4States
+			kColorMask
 		}
 		Boolean4State;
 
 		typedef enum _IntState : int
 		{
-			kClearStencil,
 			kCullFace,
-			kDepthFunc,
-			kStencilMask,
-
-			kNumIntStates
+			kDepthFunc
 		}
 		IntState;
 
+		typedef enum _Int2UintState : int
+		{
+			kStencilFunc
+		}
+		Int2UintState;
+
 		typedef enum _Int3State
 		{
-			kStencilFunc,
-			kStencilOp,
-
-			kNumInt3States
+			kStencilOp
 		}
 		Int3State;
 
+		typedef enum _Int4State
+		{
+			kScissor,
+			kViewport
+		}
+		Int4State;
+
 		typedef enum _RealState : int
 		{
-			kClearDepth,
-
-			kNumRealStates
+			kClearDepth
 		}
 		RealState;
 
 		typedef enum _Real2State : int
 		{
-			kDepthRange,
-
-			kNumReal2States
+			kDepthRange
 		}
 		Real2State;
 
-		typedef enum _Real4State : int
+		typedef enum _UintState
 		{
-			kScissor,
-			kViewport,
-
-			kNumReal4States
+			kStencilMask
 		}
-		Real4State;
+		UintState;
 
 	private:
 		union UsedValue {
 			bool bvalues[4];
-			int ivalue;
-			Real rvalues[4];
+			S32 ivalues[4];
+			Real rvalues[2];
+			U32 uvalues[1];
 		};
 
 		struct StateCommands {
 			CustomCommand* func;
 			CustomCommand* cleanup;
 			UsedValue value;
+			UsedValue previous;
 			UsedKind kind;
 			int state;
 		};
@@ -149,6 +231,9 @@ class RenderStateObject : public DisplayObject
 	public:
 		RenderStateObject( Rtt_Allocator* );
 		~RenderStateObject();
+
+		static S32 IndexForStencilFunc( const char *name );
+		static S32 IndexForStencilOpAction( const char *name );
 
 	public:
 		// MDrawable
@@ -169,14 +254,24 @@ class RenderStateObject : public DisplayObject
 		void SetBooleanState( BooleanState state, bool b );
 		void SetBoolean4State( Boolean4State state, bool b1, bool b2, bool b3, bool b4 );
 
-		void SetIntState( IntState state, int i );
-		void SetInt3State( Int3State state, int i1, int i2, int i3 );
+		void SetIntState( IntState state, S32 i );
+		void SetInt2UintState( Int2UintState state, S32 i1, S32 i2, U32 u );
+		void SetInt3State( Int3State state, S32 i1, S32 i2, S32 i3 );
+		void SetInt4State( Int4State state, S32 i1, S32 i2, S32 i3, S32 i4 );
 
 		void SetRealState( RealState state, Real r );
 		void SetReal2State( Real2State state, Real r1, Real r2, Real r3 );
-		void SetReal4State( Real4State state, Real r1, Real r2, Real r3, Real r4 );
     
+		void SetUintState( UintState state, U32 i );
+
 	private:
+		StateCommands* AddCommands( UsedKind kind, int state );
+		StateCommands* AddBooleanCommands( UsedKind kind, int state, BooleanCommand::PrepareFunc prepare, BooleanCommand::RenderFunc render, BooleanCommand::FlagFunc flags );
+		StateCommands* AddIntCommands( UsedKind kind, int state, IntCommand::PrepareFunc prepare, IntCommand::RenderFunc render, IntCommand::FlagFunc flags );
+		StateCommands* AddRealCommands( UsedKind kind, int state, RealCommand::PrepareFunc prepare, RealCommand::RenderFunc render, RealCommand::FlagFunc flags );
+		StateCommands* AddUintCommands( UsedKind kind, int state, UintCommand::PrepareFunc prepare, UintCommand::RenderFunc render, UintCommand::FlagFunc flags );
+	private:
+		Rtt_Allocator* fAllocator;
 		Array<StateCommands> fCommands;
 };
 

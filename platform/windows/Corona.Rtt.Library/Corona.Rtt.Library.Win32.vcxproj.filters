@@ -918,6 +918,9 @@
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceCollection.cpp">
       <Filter>librtt</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_RenderStateObject.cpp">
+      <Filter>librtt\Display</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\external\ALmixer\luaal.h">
@@ -1843,6 +1846,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h">
       <Filter>librtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_RenderStateObject.h">
+      <Filter>librtt\Display</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

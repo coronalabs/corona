@@ -102,6 +102,7 @@
     <ClCompile Include="..\..\..\librtt\Display\Rtt_PlatformBitmapTexture.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_RectObject.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_RectPath.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_RenderStateObject.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_Scene.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_Shader.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_ShaderBuiltin.cpp" />
@@ -399,6 +400,7 @@
     <ClInclude Include="..\..\..\librtt\Display\Rtt_PlatformBitmapTexture.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_RectObject.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_RectPath.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_RenderStateObject.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_Scene.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_Shader.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_ShaderBuiltin.h" />

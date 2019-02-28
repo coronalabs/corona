@@ -54,6 +54,158 @@ CommandBuffer::~CommandBuffer()
     }
 }
 
+// STEVE CHANGE
+const char *
+CommandBuffer::GetNameForStencilFunc( S32 func )
+{
+	switch (func)
+	{
+	case 0:
+		return "always";
+	case 1:
+		return "never";
+	case 2:
+		return "lessThan";
+	case 3:
+		return "lessThanOrEqual";
+	case 4:
+		return "greaterThan";
+	case 5:
+		return "greaterThanOrEqual";
+	case 6:
+		return "equal";
+	case 7:
+		return "notEqual";
+	default:
+		return NULL;
+	}
+}
+
+S32
+CommandBuffer::GetStencilFuncForName( const char *name )
+{
+	if (strcmp( name, "always" ) == 0)
+	{
+		return 0;
+	}
+
+	else if (strcmp( name, "never" ) == 0)
+	{
+		return 1;
+	}
+
+	else if (strcmp( name, "lessThan" ) == 0)
+	{
+		return 2;
+	}
+
+	else if (strcmp( name, "lessThanOrEqual" ) == 0)
+	{
+		return 3;
+	}
+	
+	else if (strcmp( name, "greaterThan" ) == 0)
+	{
+		return 4;
+	}
+	
+	else if (strcmp( name, "greaterThanOrEqual" ) == 0)
+	{
+		return 5;
+	}
+	
+	else if (strcmp( name, "equal" ) == 0)
+	{
+		return 6;
+	}
+	
+	else if (strcmp( name, "notEqual" ) == 0)
+	{
+		return 7;
+	}
+
+	else
+	{
+		return -1;
+	}
+}
+
+const char *
+CommandBuffer::GetNameForStencilOpAction( S32 action )
+{
+	switch (action)
+	{
+	case 0:
+		return "keep";
+	case 1:
+		return "zero";
+	case 2:
+		return "replace";
+	case 3:
+		return "increment";
+	case 4:
+		return "incrementWrap";
+	case 5:
+		return "decrement";
+	case 6:
+		return "decrementWrap";
+	case 7:
+		return "invert";
+	default:
+		return NULL;
+	}
+}
+
+S32
+CommandBuffer::GetStencilOpActionForName( const char *name )
+{
+	if (strcmp( name, "keep" ) == 0)
+	{
+		return 0;
+	}
+
+	else if (strcmp( name, "zero" ) == 0)
+	{
+		return 1;
+	}
+
+	else if (strcmp( name, "replace" ) == 0)
+	{
+		return 2;
+	}
+
+	else if (strcmp( name, "increment" ) == 0)
+	{
+		return 3;
+	}
+	
+	else if (strcmp( name, "incrementWrap" ) == 0)
+	{
+		return 4;
+	}
+	
+	else if (strcmp( name, "decrement" ) == 0)
+	{
+		return 5;
+	}
+	
+	else if (strcmp( name, "decrementWrap" ) == 0)
+	{
+		return 6;
+	}
+	
+	else if (strcmp( name, "invert" ) == 0)
+	{
+		return 7;
+	}
+
+	else
+	{
+		return -1;
+	}
+}
+// /STEVE CHANGE
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

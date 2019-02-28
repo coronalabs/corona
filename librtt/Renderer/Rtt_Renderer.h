@@ -68,7 +68,8 @@ public:
 	CustomCommand();
 	virtual ~CustomCommand();
 
-	virtual int GetFlags() = 0;
+	virtual int GetFlags( const class Renderer& renderer ) = 0;
+	virtual void Prepare( const class Renderer& renderer ) = 0;
 	virtual void Render( class Renderer& renderer ) = 0;
 
 	CustomCommand* GetNextCommand() const { return fNext; }
@@ -86,7 +87,7 @@ public:
 	void Push( CustomCommand* command );
 	CustomCommand* Pop();
 
-	bool IsEmpty() const { return fTop != NULL; }
+	bool IsEmpty() const { return NULL == fTop; }
 
 private:
 	CustomCommand* fTop;
@@ -154,6 +155,25 @@ class Renderer
 		// for multisampling b/c that's OS-specific.
 		bool GetMultisampleEnabled() const;
 		void SetMultisampleEnabled( bool enabled );
+
+		// STEVE CHANGE
+		void GetColorMask( bool& rmask, bool& gmask, bool& bmask, bool& amask ) const;
+		void SetColorMask( bool rmask, bool gmask, bool bmask, bool amask );
+
+		bool GetStencilEnabled() const;
+		void SetStencilEnabled( bool enabled );
+
+		U32 GetStencilMask() const;
+		void SetStencilMask( U32 mask );
+
+		void GetStencilFunc( S32& func, S32& ref, U32& mask) const;
+		void SetStencilFunc( S32 func, S32 ref, U32 mask );
+
+		void GetStencilOp( S32& stencilFail, S32& depthFail, S32& depthPass ) const;
+		void SetStencilOp( S32 stencilFail, S32 depthFail, S32 depthPass );
+
+		void ClearStencil( S32 clear );
+		// /STEVE CHANGE
 
 		// Get the active FrameBufferObject or NULL if one does not exist.
 		FrameBufferObject* GetFrameBufferObject() const;
@@ -355,6 +375,19 @@ class Renderer
 		FrameBufferObject* fFrameBufferObject;
 
 		// STEVE CHANGE
+		Real fRedMask;
+		Real fGreenMask;
+		Real fBlueMask;
+		Real fAlphaMask;
+		S32 fStencilFunc;
+		S32 fStencilRef;
+		U32 fStencilMask;
+		S32 fStencilFail;
+		S32 fDepthFail;
+		S32 fDepthPass;
+		S32 fStencilBits;
+		bool fStencilEnabled;
+
 		CommandStack* fCommandStack;
 		// /STEVE CHANGE
 
