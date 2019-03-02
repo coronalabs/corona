@@ -125,7 +125,12 @@ RenderStateObject::Draw( Renderer& renderer ) const
 		{
 			command.func->Render( renderer );
 
-			if (command.cleanup)
+			if (command.cleanup && !stack->Contains( *command.cleanup,
+				[]( const CustomCommand& c1, const CustomCommand& c2)
+				{
+					return c1.GetUserdata() == c2.GetUserdata();
+				}
+			) )
 			{
 				stack->Push( command.cleanup );
 			}
@@ -240,6 +245,8 @@ RenderStateObject::AddBooleanCommands( UsedKind kind, int state, BooleanCommand:
 
 	commands->func = Rtt_NEW( fAllocator, BooleanCommand( commands->value.bvalues, commands->previous.bvalues, prepare, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, BooleanCommand( commands->previous.bvalues, NULL, NULL, render, flags ) );
+
+	commands->cleanup->SetUserdata( render );
 
 	return commands;
 }
@@ -438,6 +445,8 @@ RenderStateObject::AddIntCommands( UsedKind kind, int state, IntCommand::Prepare
 
 	commands->func = Rtt_NEW( fAllocator, IntCommand( commands->value.ivalues, commands->previous.ivalues, prepare, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, IntCommand( commands->previous.ivalues, NULL, NULL, render, flags ) );
+
+	commands->cleanup->SetUserdata( render );
 
 	return commands;
 }
@@ -760,6 +769,8 @@ RenderStateObject::AddRealCommands( UsedKind kind, int state, RealCommand::Prepa
 	commands->func = Rtt_NEW( fAllocator, RealCommand( commands->value.rvalues, commands->previous.rvalues, prepare, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, RealCommand( commands->previous.rvalues, NULL, NULL, render, flags ) );
 
+	commands->cleanup->SetUserdata( render );
+
 	return commands;
 }
 
@@ -854,6 +865,8 @@ RenderStateObject::AddUintCommands( UsedKind kind, int state, UintCommand::Prepa
 	commands->func = Rtt_NEW( fAllocator, UintCommand( commands->value.uvalues, commands->previous.uvalues, prepare, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, UintCommand( commands->previous.uvalues, NULL, NULL, render, flags ) );
 
+	commands->cleanup->SetUserdata( render );
+
 	return commands;
 }
 
@@ -921,6 +934,22 @@ RenderStateObject::GetUintState( UintState state, U32& i ) const
 	}
 
 	return false;
+}
+
+void
+RenderStateObject::Remove( UsedKind kind, int state )
+{
+	StateCommands* commands = Find( kind, state );
+
+	if (commands)
+	{
+		Rtt_DELETE( commands->func );
+		Rtt_DELETE( commands->cleanup );
+
+		S32 index = (S32)(commands - fCommands.WriteAccess());
+
+		fCommands.Remove( index, 1, false );
+	}
 }
 
 // ----------------------------------------------------------------------------

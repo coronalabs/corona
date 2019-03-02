@@ -36,7 +36,8 @@ namespace Rtt
 
 // STEVE CHANGE
 CustomCommand::CustomCommand()
-:	fNext( NULL )
+:	fNext( NULL ),
+	fUserdata( NULL )
 {
 }
 
@@ -78,6 +79,20 @@ CommandStack::Pop()
 	}
 
 	return top;
+}
+
+bool
+CommandStack::Contains( const CustomCommand& ref, CommandPredicate predicate ) const
+{
+	for (CustomCommand* command = fTop; command; command = command->GetNextCommand())
+	{
+		if (predicate( ref, *command ))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool

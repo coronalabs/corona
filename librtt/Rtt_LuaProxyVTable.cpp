@@ -4812,114 +4812,104 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 	switch ( index )
 	{
 	case 0: // color mask
+		if (lua_istable( L, valueIndex ))
 		{
-			bool rmask = true, gmask = true, bmask = true, amask = true;
+			lua_getfield( L, valueIndex, "red" );
+			lua_getfield( L, valueIndex, "green" );
+			lua_getfield( L, valueIndex, "blue" );
+			lua_getfield( L, valueIndex, "alpha" );
 
-			if (lua_istable( L, valueIndex ))
-			{
-				lua_getfield( L, valueIndex, "red" );
-				lua_getfield( L, valueIndex, "green" );
-				lua_getfield( L, valueIndex, "blue" );
-				lua_getfield( L, valueIndex, "alpha" );
+			bool rmask = lua_type( L, -4 ) != LUA_TBOOLEAN || lua_toboolean( L, -4 );
+			bool gmask = lua_type( L, -3 ) != LUA_TBOOLEAN || lua_toboolean( L, -3 );
+			bool bmask = lua_type( L, -2 ) != LUA_TBOOLEAN || lua_toboolean( L, -2 );
+			bool amask = lua_type( L, -1 ) != LUA_TBOOLEAN || lua_toboolean( L, -1 );
 
-				rmask = lua_type( L, -4 ) != LUA_TBOOLEAN || lua_toboolean( L, -4 );
-				gmask = lua_type( L, -3 ) != LUA_TBOOLEAN || lua_toboolean( L, -3 );
-				bmask = lua_type( L, -2 ) != LUA_TBOOLEAN || lua_toboolean( L, -2 );
-				amask = lua_type( L, -1 ) != LUA_TBOOLEAN || lua_toboolean( L, -1 );
+			lua_pop( L, 4 );
 
-				lua_pop( L, 4 );
-			}
+			o.SetBoolean4State( RenderStateObject::kColorMask, rmask, gmask, bmask, amask );
+		}
 
-			else if (!lua_isnil( L, valueIndex ))
-			{
-				CoronaLuaWarning( L, "Color mask expects a table" );
+		else if (lua_isnil( L, valueIndex ))
+		{
+			o.Remove( RenderStateObject::kBoolean4, RenderStateObject::kColorMask );
+		}
 
-				result = false;
-			}
+		else
+		{
+			CoronaLuaWarning( L, "Color mask expects a table or nil" );
 
-			if (result)
-			{
-				o.SetBoolean4State( RenderStateObject::kColorMask, rmask, gmask, bmask, amask );
-			}
+			result = false;
 		}
 
 		break;
 	case 1: // stencil func
+		if (lua_istable( L, valueIndex ))
 		{
+			lua_getfield( L, valueIndex, "func" );
+			lua_getfield( L, valueIndex, "ref" );
+			lua_getfield( L, valueIndex, "mask" );
+				
 			S32 func = 0, ref = 0;
+
+			if (lua_isstring( L, -3 ))
+			{
+				func = RenderStateObject::IndexForStencilFunc( lua_tostring( L, -3 ) );
+
+				if (func < 0)
+				{
+					CoronaLuaWarning( L, "Bad stencil func: %s", lua_tostring( L, -3 ) );
+				}
+			}
+
+			else if (!lua_isnil( L, -3 ))
+			{
+				CoronaLuaWarning( L, "Stencil func should be a string" );
+
+				result = false;
+			}
+
+			if (lua_isnumber( L, -2 ))
+			{
+				ref = lua_tointeger( L, -2 );
+				// TODO: bounds check?
+			}
+
+			else if (!lua_isnil( L, -2 ))
+			{
+				CoronaLuaWarning( L, "Stencil ref should be an integer" );
+
+				result = false;
+			}
+
 			U32 mask = ~0U;
 
-			if (lua_istable( L, valueIndex ))
+			if (lua_isnumber( L, -2 ))
 			{
-				lua_getfield( L, valueIndex, "func" );
-				lua_getfield( L, valueIndex, "ref" );
-				lua_getfield( L, valueIndex, "mask" );
+				S32 imask = lua_tointeger( L, -2 );
 
-				if (lua_isstring( L, -3 ))
+				if (imask >= 0)
 				{
-					func = RenderStateObject::IndexForStencilFunc( lua_tostring( L, -3 ) );
-
-					if (func < 0)
-					{
-						CoronaLuaWarning( L, "Bad stencil func: %s", lua_tostring( L, -3 ) );
-					}
+					mask = (U32)imask;
 				}
 
-				else if (!lua_isnil( L, -3 ))
-				{
-					CoronaLuaWarning( L, "Stencil func should be a string" );
-
-					result = false;
-				}
-
-				if (lua_isnumber( L, -2 ))
-				{
-					ref = lua_tointeger( L, -2 );
-					// TODO: bounds check?
-				}
-
-				else if (!lua_isnil( L, -2 ))
-				{
-					CoronaLuaWarning( L, "Stencil ref should be an integer" );
-
-					result = false;
-				}
-
-				if (lua_isnumber( L, -2 ))
-				{
-					S32 imask = lua_tointeger( L, -2 );
-
-					if (imask >= 0)
-					{
-						mask = (U32)imask;
-					}
-
-					else
-					{
-						CoronaLuaWarning( L, "Stencil mask should be an unsigned integer" );
-
-						result = false;
-					}
-				}
-
-				else if (!lua_isnil( L, -2 ))
+				else
 				{
 					CoronaLuaWarning( L, "Stencil mask should be an unsigned integer" );
 
 					result = false;
 				}
-
-				lua_pop( L, 3 );
-
-				result = result && func >= 0;
 			}
 
-			else
+			else if (!lua_isnil( L, -2 ))
 			{
-				CoronaLuaWarning( L, "Stencil func expects a table" );
+				CoronaLuaWarning( L, "Stencil mask should be an unsigned integer" );
 
 				result = false;
 			}
+
+			lua_pop( L, 3 );
+
+			result = result && func >= 0;
 
 			if (result)
 			{
@@ -4927,8 +4917,26 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 			}
 		}
 
+		else if (lua_isnil( L, valueIndex ))
+		{
+			o.Remove( RenderStateObject::kInt2Uint, RenderStateObject::kStencilFunc );
+		}
+
+		else
+		{
+			CoronaLuaWarning( L, "Stencil func expects a table" );
+
+			result = false;
+		}
+
 		break;
 	case 2: // stencil op
+		if (lua_isnil( L, valueIndex ))
+		{
+			o.Remove( RenderStateObject::kInt3, RenderStateObject::kStencilOp );
+		}
+
+		else
 		{
 			int top = lua_gettop( L ), start = top;
 			S32 actions[] = { 0, 0, 0 };
@@ -4945,7 +4953,7 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 				--start;
 			}
 
-			for (int i = start + 1, j = 0, newTop = lua_gettop( L ); i <= newTop; ++i, ++j)
+			for (int i = start + 1, j = 0, newTop = lua_gettop( L ); result && i <= newTop; ++i, ++j)
 			{
 				if (lua_isstring( L, i ))
 				{
@@ -4955,17 +4963,21 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 				if (actions[j] < 0)
 				{
 					CoronaLuaWarning( L, "Unknown stencil action: %s", lua_tostring( L, i ) );
+
+					result = false;
 				}
 
 				else if (!lua_isnil( L, i ))
 				{
 					CoronaLuaWarning( L, "Expected string for stencil action" );
+
+					result = false;
 				}
 			}
 
 			lua_settop( L, top );
 
-			if (actions[0] >= 0 && actions[1] >= 0 && actions[2] >= 0)
+			if (result)
 			{
 				o.SetInt3State( RenderStateObject::kStencilOp, actions[0], actions[1], actions[2] );
 			}
@@ -4974,20 +4986,33 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 		break;
 	case 3: // scissor enabled
 	case 4: // stencil enabled
-		o.SetBooleanState( 3 == index ? RenderStateObject::kScissorEnable : RenderStateObject::kStencilEnable, lua_toboolean( L, valueIndex ) );
+		{
+			RenderStateObject::BooleanState state = 3 == index ? RenderStateObject::kScissorEnable : RenderStateObject::kStencilEnable;
+
+			if (!lua_isnil( L, valueIndex ))
+			{
+				o.SetBooleanState( state, lua_toboolean( L, valueIndex ) );
+			}
+
+			else
+			{
+				o.Remove( RenderStateObject::kBoolean, state );
+			}
+		}
 
 		break;
 	case 5: // scissor
 	case 6: // viewport
 		{
 			bool isScissor = 5 == index;
+			RenderStateObject::Int4State state = isScissor ? RenderStateObject::kScissor : RenderStateObject::kViewport;
 
 			if (lua_istable( L, valueIndex ))
 			{
 				S32 part[4] = { -1, -1, 0, 0 };
 				const char *names[] = { "x", "y", "width", "height" };
 
-				for (int i = 0; i < 4; ++i)
+				for (int i = 0; result && i < 4; ++i)
 				{
 					S32 was = part[i];
 
@@ -5002,24 +5027,28 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 
 					if (part[i] <= was)
 					{
-						CoronaLuaWarning( L, "%s expects integer > %i as %s component", isScissor ? "Scissor" : "Viewport", was, names[i] );
+						CoronaLuaWarning( L, "%s expects integer > %i as %s component, got %i", isScissor ? "Scissor" : "Viewport", was, names[i], part[i] );
 
-						break;
+						result = false;
 					}
 				}
 
-				if (part[0] >= 0 && part[1] >= 0 && part[2] > 0 && part[3] > 0)
+				if (result)
 				{
-					o.SetInt4State( isScissor ? RenderStateObject::kScissor : RenderStateObject::kViewport, part[0], part[1], part[2], part[3] );
+					o.SetInt4State( state, part[0], part[1], part[2], part[3] );
 				}
+			}
+
+			else if (lua_isnil( L, valueIndex ))
+			{
+				o.Remove( RenderStateObject::kInt4, state );
 			}
 
 			else
 			{
-				// TODO: nil???
-					// could add "undo" support...
-					// would just move "previous" back into value...
 				CoronaLuaWarning( L, "%s expects a table", isScissor ? "Scissor" : "Viewport" );
+
+				result = false;
 			}
 		}
 

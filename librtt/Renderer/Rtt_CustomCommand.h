@@ -59,11 +59,18 @@ public:
 	CustomCommand* GetNextCommand() const { return fNext; }
 	void SetNextCommand( CustomCommand* next ) { fNext = next; }
 
+	const void* GetUserdata() const { return fUserdata; }
+	void SetUserdata( const void* userdata ) { fUserdata = userdata; }
+
 private:
 	CustomCommand* fNext;
+	const void* fUserdata;
 };
 
 class CommandStack {
+public:
+	typedef bool (*CommandPredicate)( const CustomCommand& ref, const CustomCommand& command );
+
 public:
 	CommandStack();
 	~CommandStack();
@@ -71,6 +78,7 @@ public:
 	void Push( CustomCommand* command );
 	CustomCommand* Pop();
 
+	bool Contains( const CustomCommand& ref, CommandPredicate predicate ) const;
 	bool IsEmpty() const;
 
 private:

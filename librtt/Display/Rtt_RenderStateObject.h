@@ -280,6 +280,8 @@ class RenderStateObject : public DisplayObject
     
 		bool GetUintState( UintState state, U32& i ) const;
 
+		void Remove( UsedKind kind, int state );
+
 	private:
 		StateCommands* AddCommands( UsedKind kind, int state );
 		StateCommands* AddBooleanCommands( UsedKind kind, int state, BooleanCommand::PrepareFunc prepare, BooleanCommand::RenderFunc render, BooleanCommand::FlagFunc flags );
