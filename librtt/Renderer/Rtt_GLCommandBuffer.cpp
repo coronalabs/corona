@@ -613,10 +613,10 @@ void
 GLCommandBuffer::SetColorMask( bool rmask, bool gmask, bool bmask, bool amask )
 {
 	WRITE_COMMAND( kCommandSetColorMask );
-	Write<bool>(rmask);
-	Write<bool>(gmask);
-	Write<bool>(bmask);
-	Write<bool>(amask);
+	Write<GLboolean>(rmask ? GL_TRUE : GL_FALSE);
+	Write<GLboolean>(gmask ? GL_TRUE : GL_FALSE);
+	Write<GLboolean>(bmask ? GL_TRUE : GL_FALSE);
+	Write<GLboolean>(amask ? GL_TRUE : GL_FALSE);
 }
 
 void
@@ -1006,12 +1006,12 @@ GLCommandBuffer::Execute( bool measureGPU )
 			// STEVE CHANGE
 			case kCommandSetColorMask:
 			{
-				bool rmask = Read<bool>();
-				bool gmask = Read<bool>();
-				bool bmask = Read<bool>();
-				bool amask = Read<bool>();
+				GLboolean rmask = Read<GLboolean>();
+				GLboolean gmask = Read<GLboolean>();
+				GLboolean bmask = Read<GLboolean>();
+				GLboolean amask = Read<GLboolean>();
 				glColorMask( rmask, gmask, bmask, amask );
-				DEBUG_PRINT( "Set color mask: r=%s, g=%s, b=%s, a=%s", rmask ? "true" : "false", gmask ? "true" : "false", bmask ? "true" : "false", amask ? "true" : "false" );
+				DEBUG_PRINT( "Set color mask: r=%u, g=%u, b=%u, a=%u", (U32)rmask, (U32)gmask, (U32)bmask, (U32)amask );
 				CHECK_ERROR_AND_BREAK;
 			}
 			case kCommandEnableStencil:

@@ -31,6 +31,9 @@
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_Scene.h"
 #include "Display/Rtt_StageObject.h"
+// STEVE CHANGE
+#include "Renderer/Rtt_CustomCommand.h"
+// /STEVE CHANGE
 #include "Renderer/Rtt_Renderer.h"
 #include "Rtt_LuaProxyVTable.h"
 

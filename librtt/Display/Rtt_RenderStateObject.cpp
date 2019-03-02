@@ -70,6 +70,18 @@ RenderStateObject::IndexForStencilOpAction( const char *name )
 	return CommandBuffer::GetStencilOpActionForName( name );
 }
 
+const char *
+RenderStateObject::StencilFuncForIndex( S32 index )
+{
+	return CommandBuffer::GetNameForStencilFunc( index );
+}
+
+const char *
+RenderStateObject::StencilOpActionForIndex( S32 index )
+{
+	return CommandBuffer::GetNameForStencilOpAction( index );
+}
+
 bool
 RenderStateObject::UpdateTransform( const Matrix& parentToDstSpace )
 {
@@ -130,7 +142,7 @@ RenderStateObject::GetSelfBounds( Rect& rect ) const
 const LuaProxyVTable&
 RenderStateObject::ProxyVTable() const
 {
-	return LuaLineObjectProxyVTable::Constant(); // TODO: LuaRenderStateObjectProxyVTable
+	return LuaRenderStateObjectProxyVTable::Constant();
 }
 
 void
@@ -147,12 +159,28 @@ RenderStateObject::Clear()
 	fCommands.Clear();
 }
 
+const RenderStateObject::StateCommands *
+RenderStateObject::Find( UsedKind kind, int state ) const
+{
+	const StateCommands* commands = fCommands.ReadAccess();
+
+	for (S32 i = 0, length = fCommands.Length(); i < length; ++i)
+	{
+		if (commands[i].kind == kind && commands[i].state == state)
+		{
+			return &commands[i];
+		}
+	}
+
+	return NULL;
+}
+
 RenderStateObject::StateCommands *
 RenderStateObject::Find( UsedKind kind, int state )
 {
 	StateCommands* commands = fCommands.WriteAccess();
 
-	for (S32 i = 0, length; i < length; ++i)
+	for (S32 i = 0, length = fCommands.Length(); i < length; ++i)
 	{
 		if (commands[i].kind == kind && commands[i].state == state)
 		{
@@ -199,6 +227,8 @@ RenderStateObject::AddCommands ( UsedKind kind, int state )
 	newCommand.kind = kind;
 	newCommand.state = state;
 	newCommand.func = newCommand.cleanup = NULL;
+
+	fCommands.Append( newCommand );
 
 	return &fCommands[fCommands.Length() - 1];
 }
@@ -285,6 +315,21 @@ RenderStateObject::SetBooleanState( BooleanState state, bool b )
 	}
 }
 
+bool
+RenderStateObject::GetBooleanState( BooleanState state, bool& b ) const
+{
+	const StateCommands* commands = Find( kBoolean, state );
+
+	if (commands)
+	{
+		b = commands->value.bvalues[0];
+
+		return true;
+	}
+
+	return false;
+}
+
 void
 RenderStateObject::SetBoolean4State( Boolean4State state, bool b1, bool b2, bool b3, bool b4 )
 {
@@ -338,6 +383,25 @@ RenderStateObject::SetBoolean4State( Boolean4State state, bool b1, bool b2, bool
 		commands->value.bvalues[3] = b4;
 	}
 }
+
+bool
+RenderStateObject::GetBoolean4State( Boolean4State state, bool& b1, bool& b2, bool& b3, bool& b4 ) const
+{
+	const StateCommands* commands = Find( kBoolean4, state );
+
+	if (commands)
+	{
+		b1 = commands->value.bvalues[0];
+		b2 = commands->value.bvalues[1];
+		b3 = commands->value.bvalues[2];
+		b4 = commands->value.bvalues[3];
+
+		return true;
+	}
+
+	return false;
+}
+
 
 IntCommand::IntCommand( const S32* ints, S32* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags )
 :	Super(),
@@ -421,6 +485,21 @@ RenderStateObject::SetIntState( IntState state, S32 i )
 	}
 }
 
+bool
+RenderStateObject::GetIntState( IntState state, S32& i ) const
+{
+	const StateCommands* commands = Find( kInt, state );
+
+	if (commands)
+	{
+		i = commands->value.ivalues[0];
+
+		return true;
+	}
+
+	return false;
+}
+
 void
 RenderStateObject::SetInt2UintState( Int2UintState state, S32 i1, S32 i2, U32 u )
 {
@@ -470,8 +549,25 @@ RenderStateObject::SetInt2UintState( Int2UintState state, S32 i1, S32 i2, U32 u 
 	{
 		commands->value.ivalues[0] = i1;
 		commands->value.ivalues[1] = i2;
-		commands->value.ivalues[2] = *reinterpret_cast<S32*>(&u);
+		commands->value.uvalues[2] = u;
 	}
+}
+
+bool
+RenderStateObject::GetInt2UintState( Int2UintState state, S32& i1, S32& i2, U32& u ) const
+{
+	const StateCommands* commands = Find( kInt2Uint, state );
+
+	if (commands)
+	{
+		i1 = commands->value.ivalues[0];
+		i2 = commands->value.ivalues[1];
+		u = commands->value.uvalues[2];
+
+		return true;
+	}
+
+	return false;
 }
 
 void
@@ -525,6 +621,23 @@ RenderStateObject::SetInt3State( Int3State state, S32 i1, S32 i2, S32 i3 )
 		commands->value.ivalues[1] = i2;
 		commands->value.ivalues[2] = i3;
 	}
+}
+
+bool
+RenderStateObject::GetInt3State( Int3State state, S32& i1, S32& i2, S32& i3 ) const
+{
+	const StateCommands* commands = Find( kInt3, state );
+
+	if (commands)
+	{
+		i1 = commands->value.ivalues[0];
+		i2 = commands->value.ivalues[1];
+		i3 = commands->value.ivalues[2];
+
+		return true;
+	}
+
+	return false;
 }
 
 void
@@ -593,6 +706,24 @@ RenderStateObject::SetInt4State( Int4State state, S32 i1, S32 i2, S32 i3, S32 i4
 	}
 }
 
+bool
+RenderStateObject::GetInt4State( Int4State state, S32& i1, S32& i2, S32& i3, S32& i4 ) const
+{
+	const StateCommands* commands = Find( kInt4, state );
+
+	if (commands)
+	{
+		i1 = commands->value.ivalues[0];
+		i2 = commands->value.ivalues[1];
+		i3 = commands->value.ivalues[2];
+		i4 = commands->value.ivalues[3];
+
+		return true;
+	}
+
+	return false;
+}
+
 RealCommand::RealCommand( const Real* reals, Real* prev, PrepareFunc prepare, RenderFunc func, FlagFunc flags )
 :	Super(),
 	fReals( reals ),
@@ -644,8 +775,23 @@ RenderStateObject::SetRealState( RealState state, Real r )
 	}
 }
 
+bool
+RenderStateObject::GetRealState( RealState state, Real& r ) const
+{
+	const StateCommands* commands = Find( kReal, state );
+
+	if (commands)
+	{
+		r = commands->value.rvalues[0];
+
+		return true;
+	}
+
+	return false;
+}
+
 void
-RenderStateObject::SetReal2State( Real2State state, Real r1, Real r2, Real r3 )
+RenderStateObject::SetReal2State( Real2State state, Real r1, Real r2 )
 {
 	switch (state)
 	{
@@ -654,6 +800,22 @@ RenderStateObject::SetReal2State( Real2State state, Real r1, Real r2, Real r3 )
 	default:
 		Rtt_ASSERT_NOT_REACHED();
 	}
+}
+
+bool 
+RenderStateObject::GetReal2State( Real2State state, Real& r1, Real& r2 ) const
+{
+	const StateCommands* commands = Find( kReal2, state );
+
+	if (commands)
+	{
+		r1 = commands->value.rvalues[0];
+		r2 = commands->value.rvalues[1];
+
+		return true;
+	}
+
+	return false;
 }
 
 UintCommand::UintCommand( const U32* uints, U32* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags )
@@ -744,6 +906,21 @@ RenderStateObject::SetUintState( UintState state, U32 i )
 	{
 		commands->value.uvalues[0] = i;
 	}
+}
+    
+bool
+RenderStateObject::GetUintState( UintState state, U32& i ) const
+{
+	const StateCommands* commands = Find( kUint, state );
+
+	if (commands)
+	{
+		i = commands->value.uvalues[0];
+
+		return true;
+	}
+
+	return false;
 }
 
 // ----------------------------------------------------------------------------

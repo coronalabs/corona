@@ -431,6 +431,47 @@ class LuaPlatformVideoObjectProxyVTable : public LuaPlatformDisplayObjectProxyVT
 		virtual const LuaProxyVTable& Parent() const;
 };
 
+// STEVE CHANGE
+class LuaRenderFreeObjectProxyVTable : public LuaDisplayObjectProxyVTable
+{
+	public:
+		typedef LuaRenderFreeObjectProxyVTable Self;
+		typedef LuaDisplayObjectProxyVTable Super;
+
+	public:
+		static const Self& Constant();
+
+	public:
+		LuaRenderFreeObjectProxyVTable() {}
+
+	public:
+		virtual int ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction = false ) const;
+		virtual bool SetValueForKey( lua_State *L, MLuaProxyable& object, const char key[], int valueIndex ) const;
+		virtual const LuaProxyVTable& Parent() const;
+};
+
+class LuaRenderStateObjectProxyVTable : public LuaRenderFreeObjectProxyVTable
+{
+	public:
+		typedef LuaRenderStateObjectProxyVTable Self;
+		typedef LuaRenderFreeObjectProxyVTable Super;
+
+	public:
+		static const Self& Constant();
+
+	public:
+		LuaRenderStateObjectProxyVTable() {}
+
+	public:
+		virtual int ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction = false ) const;
+		virtual bool SetValueForKey( lua_State *L, MLuaProxyable& object, const char key[], int valueIndex ) const;
+		virtual const LuaProxyVTable& Parent() const;
+
+	public:
+		static int ClearStates( lua_State *L );
+};
+// /STEVE CHANGE
+
 class LuaSpriteObjectProxyVTable : public LuaShapeObjectProxyVTable
 {
 	public:

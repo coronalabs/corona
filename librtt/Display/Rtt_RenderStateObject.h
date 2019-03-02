@@ -29,13 +29,12 @@
 #include "Core/Rtt_Array.h"
 #include "Core/Rtt_Real.h"
 #include "Display/Rtt_DisplayObject.h"
+#include "Renderer/Rtt_CustomCommand.h"
 
 // ----------------------------------------------------------------------------
 
 namespace Rtt
 {
-
-class CustomCommand;
 
 // ----------------------------------------------------------------------------
 
@@ -211,7 +210,7 @@ class RenderStateObject : public DisplayObject
 			bool bvalues[4];
 			S32 ivalues[4];
 			Real rvalues[2];
-			U32 uvalues[1];
+			U32 uvalues[3];
 		};
 
 		struct StateCommands {
@@ -223,6 +222,7 @@ class RenderStateObject : public DisplayObject
 			int state;
 		};
 
+		const StateCommands* Find( UsedKind kind, int state ) const;
 		StateCommands* Find( UsedKind kind, int state );
 
 	public:
@@ -234,6 +234,8 @@ class RenderStateObject : public DisplayObject
 
 		static S32 IndexForStencilFunc( const char *name );
 		static S32 IndexForStencilOpAction( const char *name );
+		static const char *StencilFuncForIndex( S32 index );
+		static const char *StencilOpActionForIndex( S32 index );
 
 	public:
 		// MDrawable
@@ -244,6 +246,7 @@ class RenderStateObject : public DisplayObject
 		virtual void GetSelfBounds( Rect& rect ) const;
 
 		virtual bool CanCull() const { return false; }
+		virtual bool CanHitTest() const { return false; }
 
 	public:
 		virtual const LuaProxyVTable& ProxyVTable() const;
@@ -260,9 +263,22 @@ class RenderStateObject : public DisplayObject
 		void SetInt4State( Int4State state, S32 i1, S32 i2, S32 i3, S32 i4 );
 
 		void SetRealState( RealState state, Real r );
-		void SetReal2State( Real2State state, Real r1, Real r2, Real r3 );
+		void SetReal2State( Real2State state, Real r1, Real r2 );
     
 		void SetUintState( UintState state, U32 i );
+
+		bool GetBooleanState( BooleanState state, bool& b ) const;
+		bool GetBoolean4State( Boolean4State state, bool& b1, bool& b2, bool& b3, bool& b4 ) const;
+
+		bool GetIntState( IntState state, S32& i ) const;
+		bool GetInt2UintState( Int2UintState state, S32& i1, S32& i2, U32& u ) const;
+		bool GetInt3State( Int3State state, S32& i1, S32& i2, S32& i3 ) const;
+		bool GetInt4State( Int4State state, S32& i1, S32& i2, S32& i3, S32& i4 ) const;
+
+		bool GetRealState( RealState state, Real& r ) const;
+		bool GetReal2State( Real2State state, Real& r1, Real& r2 ) const;
+    
+		bool GetUintState( UintState state, U32& i ) const;
 
 	private:
 		StateCommands* AddCommands( UsedKind kind, int state );

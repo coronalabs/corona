@@ -163,6 +163,7 @@
     <ClCompile Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CommandBuffer.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CPUResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CustomCommand.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_FrameBufferObject.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">$(IntDir)Renderer\</ObjectFileName>
@@ -461,6 +462,7 @@
     <ClInclude Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CommandBuffer.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CPUResource.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CustomCommand.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_FrameBufferObject.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GeometryPool.h" />

@@ -26,6 +26,9 @@
 #include "Renderer/Rtt_Renderer.h"
 
 #include "Renderer/Rtt_CommandBuffer.h"
+// STEVE CHANGE
+#include "Renderer/Rtt_CustomCommand.h"
+// /STEVE CHANGE
 #include "Renderer/Rtt_FrameBufferObject.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_GeometryPool.h"
@@ -108,53 +111,6 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
-CustomCommand::CustomCommand()
-:	fNext( NULL )
-{
-}
-
-CustomCommand::~CustomCommand()
-{
-}
-
-CommandStack::CommandStack()
-:	fTop( NULL )
-{
-}
-
-CommandStack::~CommandStack()
-{
-	while (!IsEmpty())
-	{
-		Pop();
-	}
-}
-
-void
-CommandStack::Push( CustomCommand* command )
-{
-	command->SetNextCommand( fTop );
-
-	fTop = command;
-}
-
-CustomCommand *
-CommandStack::Pop()
-{
-	CustomCommand* top = fTop;
-
-	if (top)
-	{
-		fTop = top->GetNextCommand();
-
-		top->SetNextCommand( NULL );
-	}
-
-	return top;
-}
-// /STEVE CHANGE
-
 // NOT USED: const U32 kElementsPerMat4 = 16;
 
 Renderer::Statistics::Statistics()
@@ -215,8 +171,10 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fStencilFail( 0 ),
 	fDepthFail( 0 ),
 	fDepthPass( 0 ),
-	fStencilBits( -1 ),
+	fScissorWritten( false ),
 	fStencilEnabled( false ),
+	fStateDirty( false ),
+	fCommandStack( NULL ),
 // /STEVE CHANGE
 	fInsertionLimit( std::numeric_limits<U32>::max() ),
 	fTimeDependencyCount( 0 )
@@ -353,6 +311,19 @@ Renderer::SetViewport( S32 x, S32 y, S32 width, S32 height )
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetViewport( x, y, width, height );
 	
+	// STEVE CHANGE
+	fStateDirty = true;
+
+	if (!fScissorWritten)
+	{
+		fScissor[0] = x;
+		fScissor[1] = y;
+		fScissor[2] = width;
+		fScissor[3] = height;
+		fScissorWritten = true;
+	}
+	// /STEVE CHANGE
+
 	DEBUG_PRINT( "Set viewport: x=%i, y=%i, width=%i, height=%i\n", x, y, width, height );
 }
 
@@ -361,10 +332,22 @@ Renderer::SetViewport( S32 x, S32 y, S32 width, S32 height )
 void 
 Renderer::GetScissor( S32& x, S32& y, S32& width, S32& height ) const
 {
+	// STEVE CHANGE
+	if (!fScissorWritten)
+	{
+		GetViewport( x, y, width, height );
+	}
+
+	else
+	{
+	// /STEVE CHANGE
 	x = fScissor[0];
 	y = fScissor[1];
 	width = fScissor[2];
 	height = fScissor[3];
+	// STEVE CHANGE
+	}
+	// /STEVE CHANGE
 }
 
 void
@@ -374,6 +357,10 @@ Renderer::SetScissor( S32 x, S32 y, S32 width, S32 height )
 	fScissor[1] = y;
 	fScissor[2] = width;
 	fScissor[3] = height;
+
+	// STEVE CHANGE
+	fScissorWritten = true;
+	// /STEVE CHANGE
 
 	// Multiply bounds by view-projection matrix to account for content scaling
 	Real corner0[] = { static_cast<Real>( x ), static_cast<Real>( y ), 0.0f, 1.0f };
@@ -396,6 +383,10 @@ Renderer::SetScissor( S32 x, S32 y, S32 width, S32 height )
 	S32 y1 = static_cast<S32>( windowCoord1[1] );
 	fBackCommandBuffer->SetScissorRegion( x0, Min( y0, y1 ), x1 - x0, abs( y1 - y0 ) );
 	
+	// STEVE CHANGE
+	fStateDirty = true;
+	// /STEVE CHANGE
+
 	DEBUG_PRINT( "Set scissor window: x=%i, y=%i, width=%i, height=%i\n", x, y, width, height );
 }
 
@@ -411,7 +402,11 @@ Renderer::SetScissorEnabled( bool enabled )
 	fScissorEnabled = enabled;
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetScissorEnabled( enabled );
-	
+
+	// STEVE CHANGE
+	fStateDirty = true;
+	// /STEVE CHANGE
+
 	DEBUG_PRINT( "Enabled scissor testing\n" );
 }
 
@@ -451,6 +446,8 @@ Renderer::SetColorMask( bool rmask, bool gmask, bool bmask, bool amask )
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetColorMask( rmask, gmask, bmask, amask );
 	
+	fStateDirty = true;
+
 	DEBUG_PRINT( "Set color mask: r=%s, g=%s, b=%s, a=%s\n", rmask ? "true" : "false", gmask ? "true" : "false", bmask ? "true" : "false", amask ? "true" : "false" );
 }
 
@@ -467,6 +464,8 @@ Renderer::SetStencilEnabled( bool enabled )
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetStencilEnabled( enabled );
 	
+	fStateDirty = true;
+
 	DEBUG_PRINT( "Enabled stencil\n" );
 }
 
@@ -483,6 +482,8 @@ Renderer::SetStencilMask( U32 mask )
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetStencilMask( mask );
 	
+	fStateDirty = true;
+
 	DEBUG_PRINT( "Set stencil mask: mask=%u\n", mask );
 }
 
@@ -503,6 +504,8 @@ Renderer::SetStencilFunc( S32 func, S32 ref, U32 mask )
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetStencilFunc( func, ref, mask );
 	
+	fStateDirty = true;
+
 	DEBUG_PRINT( "Set stencil func: func=%i, ref=%i, mask=%u\n", func, ref, mask );
 }
 
@@ -523,6 +526,8 @@ Renderer::SetStencilOp( S32 stencilFail, S32 depthFail, S32 depthPass )
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetStencilOp( stencilFail, depthFail, depthPass );
 	
+	fStateDirty = true;
+
 	DEBUG_PRINT( "Set stencil op: stencilFail=%i, depthFail=%i, depthPass=%i\n", stencilFail, depthFail, depthPass );
 }
 
@@ -531,6 +536,8 @@ Renderer::ClearStencil( S32 clear )
 {
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->ClearStencil( clear );
+
+	fStateDirty = true;
 }
 // /STEVE CHANGE
 
@@ -653,6 +660,11 @@ Renderer::Insert( const RenderData* data )
 	bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1;
 	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2;
 	bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3;
+	// STEVE CHANGE
+	bool stateDirty = fStateDirty;
+
+	fStateDirty = false;
+	// /STEVE CHANGE
 	
 	Geometry* geometry = data->fGeometry;
 	Rtt_ASSERT( geometry );
@@ -695,7 +707,11 @@ Renderer::Insert( const RenderData* data )
 				|| userUniformDirty0
 				|| userUniformDirty1
 				|| userUniformDirty2
-				|| userUniformDirty3 );
+				|| userUniformDirty3
+				// STEVE CHANGE
+				|| stateDirty
+				// /STEVE CHANGE
+									);
 
 		// Only triangle strips are batched. All other primitive types
 		// force the previous batch to draw and a new one to be started.
@@ -1149,6 +1165,12 @@ Renderer::EndCommandStack( CommandStack* replacement )
 	}
 
 	fCommandStack = replacement;
+}
+
+CommandStack *
+Renderer::GetCommandStack() const
+{
+	return fCommandStack;
 }
 // /STEVE CHANGE
 

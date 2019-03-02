@@ -39,6 +39,9 @@
 #include "Display/Rtt_ImageSheetPaint.h"
 #include "Display/Rtt_Paint.h"
 #include "Display/Rtt_RectObject.h"
+// STEVE CHANGE
+#include "Display/Rtt_RenderStateObject.h"
+// /STEVE CHANGE
 #include "Display/Rtt_Scene.h"
 #include "Display/Rtt_ShaderFactory.h"
 #include "Display/Rtt_ShapeAdapterPolygon.h"
@@ -163,6 +166,9 @@ class DisplayLibrary
 		static int newGroup( lua_State *L );
 		static int newContainer( lua_State *L );
 		static int _newContainer( lua_State *L );
+		// STEVE CHANGE
+		static int newRenderState( lua_State *L );
+		// /STEVE CHANGE
 		static int newSnapshot( lua_State *L );
 		static int newSprite( lua_State *L );
 		static int newMesh( lua_State *L );
@@ -227,6 +233,9 @@ DisplayLibrary::Open( lua_State *L )
 		{ "newGroup", newGroup },
 		{ "newContainer", newContainer },
 		{ "_newContainer", _newContainer },
+		// STEVE CHANGE
+		{ "newRenderState", newRenderState },
+		// /STEVE CHANGE
 		{ "newSnapshot", newSnapshot },
 		{ "newSprite", newSprite },
 		{ "newMesh", newMesh },
@@ -1598,6 +1607,32 @@ DisplayLibrary::_newContainer( lua_State *L )
 
 	return result;
 }
+
+// STEVE CHANGE
+// display.newRenderState( [parent] )
+int
+DisplayLibrary::newRenderState( lua_State *L )
+{
+	Self *library = ToLibrary( L );
+	Display& display = library->GetDisplay();
+
+	Rtt_Allocator* context = display.GetAllocator();
+
+	// [parentGroup,]
+	int nextArg = 1;
+
+	// NOTE: GetParent() increments nextArg if parent found
+	GroupObject *parent = GetParent( L, nextArg );
+
+	RenderStateObject *o = Rtt_NEW( context, RenderStateObject( context ) );
+
+	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, o, parent );
+	
+//	o->Initialize( L, display, w, h );
+
+	return result;
+}
+// /STEVE CHANGE
 
 // display.newSnapshot( [parent, ] w, h )
 int

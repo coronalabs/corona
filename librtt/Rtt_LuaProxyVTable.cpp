@@ -41,6 +41,9 @@
 #include "Display/Rtt_LuaLibDisplay.h"
 #include "Display/Rtt_Paint.h"
 #include "Display/Rtt_RectPath.h"
+// STEVE CHANGE
+#include "Display/Rtt_RenderStateObject.h"
+// /STEVE CHANGE
 #include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderFactory.h"
 #include "Display/Rtt_ShapeObject.h"
@@ -4545,6 +4548,511 @@ LuaPlatformVideoObjectProxyVTable::Parent() const
 {
 	return Super::Constant();
 }
+
+// ----------------------------------------------------------------------------
+
+// STEVE CHANGE
+const LuaRenderFreeObjectProxyVTable&
+LuaRenderFreeObjectProxyVTable::Constant()
+{
+	static const Self kVTable;
+	return kVTable;
+}
+
+int
+LuaRenderFreeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction ) const
+{
+	if ( ! key ) { return 0; }
+	
+	int result = 1;
+
+    // deprecated properties have a trailing '#'
+	static const char * keys[] = 
+	{
+		"translate",
+		"scale",
+		"rotate",
+		"setReferencePoint",
+		"localToContent",
+		"contentToLocal",
+		"stageBounds#",
+		"stageWidth#",
+		"stageHeight#",
+		"x",
+		"y",
+		"anchorX",
+		"anchorY",
+		"contentBounds",
+		"contentWidth",
+		"contentHeight",
+		"setMask",
+		"maskX",
+		"maskY",
+		"maskScaleX",
+		"maskScaleY",
+		"maskRotation",
+		"isHitTestMasked"
+	};
+    const int numKeys = sizeof( keys ) / sizeof( const char * );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 35, 33, 15, __FILE__, __LINE__ );
+	StringHash *hash = &sHash;
+
+	if (hash->Lookup( key ) < 0)
+	{
+		result = 0; // suppress geometric or graphical properties
+	}
+	
+	else
+	{
+		result = Super::ValueForKey( L, object, key, overrideRestriction );
+	}
+	return result;
+}
+
+bool
+LuaRenderFreeObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, const char key[], int valueIndex ) const
+{
+	if ( ! key ) { return false; }
+
+    // deprecated properties have a trailing '#'
+	static const char * keys[] = 
+	{
+		"stageBounds#",
+		"stageWidth#",
+		"stageHeight#",
+		"x",
+		"y",
+		"anchorX",
+		"anchorY",
+		"contentBounds",
+		"contentWidth",
+		"contentHeight",
+		"maskX",
+		"maskY",
+		"maskScaleX",
+		"maskScaleY",
+		"maskRotation",
+		"isHitTestMasked"
+	};
+    const int numKeys = sizeof( keys ) / sizeof( const char * );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 0, 0, 0, __FILE__, __LINE__ );
+	StringHash *hash = &sHash;
+
+	if (hash->Lookup( key ) < 0)
+	{
+		return Super::SetValueForKey( L, object, key, valueIndex );
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+const LuaProxyVTable&
+LuaRenderFreeObjectProxyVTable::Parent() const
+{
+	return Super::Constant();
+}
+
+const LuaRenderStateObjectProxyVTable&
+LuaRenderStateObjectProxyVTable::Constant()
+{
+	static const Self kVTable;
+	return kVTable;
+}
+
+int
+LuaRenderStateObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction ) const
+{
+	if ( ! key ) { return 0; }
+	
+	int result = 1;
+
+	static const char * keys[] = 
+	{
+		"clearStates",			// 0
+		"colorMask",			// 1
+		"stencilFunc",			// 2
+		"stencilOp",			// 3
+		"scissorEnabled",		// 4
+		"stencilEnabled",		// 5
+		"scissor",				// 6
+		"viewport"				// 7
+	};
+    const int numKeys = sizeof( keys ) / sizeof( const char * );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 8, 2, 9, __FILE__, __LINE__ );
+	StringHash *hash = &sHash;
+
+	const RenderStateObject& o = static_cast< const RenderStateObject& >( object );
+	Rtt_WARN_SIM_PROXY_TYPE( L, 1, RenderStateObject );
+
+	int index = hash->Lookup( key );
+	switch ( index )
+	{
+	case 0:	// clearStates
+		Lua::PushCachedFunction( L, Self::ClearStates );
+		break;
+	case 1: // color mask
+		{
+			bool rmask = true, gmask = true, bmask = true, amask = true;
+
+			o.GetBoolean4State( RenderStateObject::kColorMask, rmask, gmask, bmask, amask );
+
+			lua_createtable( L, 0, 4 );
+			lua_pushboolean( L, rmask ? 1 : 0 );
+			lua_setfield( L, -2, "red" );
+			lua_pushboolean( L, gmask ? 1 : 0 );
+			lua_setfield( L, -2, "green" );
+			lua_pushboolean( L, bmask ? 1 : 0 );
+			lua_setfield( L, -2, "blue" );
+			lua_pushboolean( L, amask ? 1 : 0 );
+			lua_setfield( L, -2, "alpha" );
+		}
+		break;
+	case 2: // stencil func
+		{
+			S32 func = 0, ref = 0;
+			U32 mask = ~0U;
+
+			o.GetInt2UintState( RenderStateObject::kStencilFunc, func, ref, mask );
+
+			lua_createtable( L, 0, 3 );
+			lua_pushstring( L, RenderStateObject::StencilFuncForIndex( func ) );
+			lua_setfield( L, -2, "func" );
+			lua_pushinteger( L, ref );
+			lua_setfield( L, -2, "ref" );
+			lua_pushinteger( L, mask );
+			lua_setfield( L, -2, "mask" );
+		}
+		break;
+	case 3: // stencil op
+		{
+			S32 stencilFail = 0, depthFail = 0, depthPass = 0;
+
+			o.GetInt3State( RenderStateObject::kStencilOp, stencilFail, depthFail, depthPass );
+
+			lua_createtable( L, 0, 3 );
+			lua_pushstring( L, RenderStateObject::StencilOpActionForIndex( stencilFail ) );
+			lua_setfield( L, -2, "stencilFail" );
+			lua_pushstring( L, RenderStateObject::StencilOpActionForIndex( depthFail ) );
+			lua_setfield( L, -2, "depthFail" );
+			lua_pushstring( L, RenderStateObject::StencilOpActionForIndex( depthPass ) );
+			lua_setfield( L, -2, "depthPass" );
+		}
+		break;
+	case 4: // scissor enabled
+	case 5: // stencil enabled
+		{
+			bool enabled = false;
+
+			o.GetBooleanState( 4 == index ? RenderStateObject::kScissorEnable : RenderStateObject::kStencilEnable, enabled );
+
+			lua_pushboolean( L, enabled ? 1 : 0 );
+		}
+		break;
+	case 6: // scissor
+	case 7: // viewport
+		{
+			S32 x, y, width, height;
+
+			if (o.GetInt4State( 6 == index ? RenderStateObject::kScissor : RenderStateObject::kViewport, x, y, width, height ))
+			{
+				lua_createtable( L, 0, 4 );
+				lua_pushinteger( L, x );
+				lua_setfield( L, -2, "x" );
+				lua_pushinteger( L, y );
+				lua_setfield( L, -2, "y" );
+				lua_pushinteger( L, width );
+				lua_setfield( L, -2, "width" );
+				lua_pushinteger( L, height );
+				lua_setfield( L, -2, "height" );
+			}
+
+			else
+			{
+				result = 0; // ? (appropriate defaults?)
+			}
+		}
+		break;
+	default:
+		{
+			result = Super::ValueForKey( L, object, key, overrideRestriction );
+		}
+		break;
+	}
+	return result;
+}
+
+bool
+LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, const char key[], int valueIndex ) const
+{
+	if ( ! key ) { return false; }
+
+	bool result = true;
+
+	static const char * keys[] = 
+	{
+		"colorMask",			// 0
+		"stencilFunc",			// 1
+		"stencilOp",			// 2
+		"scissorEnabled",		// 3
+		"stencilEnabled",		// 4
+		"scissor",				// 5
+		"viewport"				// 6
+	};
+    const int numKeys = sizeof( keys ) / sizeof( const char * );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 7, 1, 9, __FILE__, __LINE__ );
+	StringHash *hash = &sHash;
+
+	RenderStateObject& o = static_cast< RenderStateObject& >( object );
+	Rtt_WARN_SIM_PROXY_TYPE( L, 1, RenderStateObject );
+
+	int index = hash->Lookup( key );
+	switch ( index )
+	{
+	case 0: // color mask
+		{
+			bool rmask = true, gmask = true, bmask = true, amask = true;
+
+			if (lua_istable( L, valueIndex ))
+			{
+				lua_getfield( L, valueIndex, "red" );
+				lua_getfield( L, valueIndex, "green" );
+				lua_getfield( L, valueIndex, "blue" );
+				lua_getfield( L, valueIndex, "alpha" );
+
+				rmask = lua_type( L, -4 ) != LUA_TBOOLEAN || lua_toboolean( L, -4 );
+				gmask = lua_type( L, -3 ) != LUA_TBOOLEAN || lua_toboolean( L, -3 );
+				bmask = lua_type( L, -2 ) != LUA_TBOOLEAN || lua_toboolean( L, -2 );
+				amask = lua_type( L, -1 ) != LUA_TBOOLEAN || lua_toboolean( L, -1 );
+
+				lua_pop( L, 4 );
+			}
+
+			else if (!lua_isnil( L, valueIndex ))
+			{
+				CoronaLuaWarning( L, "Color mask expects a table" );
+
+				result = false;
+			}
+
+			if (result)
+			{
+				o.SetBoolean4State( RenderStateObject::kColorMask, rmask, gmask, bmask, amask );
+			}
+		}
+
+		break;
+	case 1: // stencil func
+		{
+			S32 func = 0, ref = 0;
+			U32 mask = ~0U;
+
+			if (lua_istable( L, valueIndex ))
+			{
+				lua_getfield( L, valueIndex, "func" );
+				lua_getfield( L, valueIndex, "ref" );
+				lua_getfield( L, valueIndex, "mask" );
+
+				if (lua_isstring( L, -3 ))
+				{
+					func = RenderStateObject::IndexForStencilFunc( lua_tostring( L, -3 ) );
+
+					if (func < 0)
+					{
+						CoronaLuaWarning( L, "Bad stencil func: %s", lua_tostring( L, -3 ) );
+					}
+				}
+
+				else if (!lua_isnil( L, -3 ))
+				{
+					CoronaLuaWarning( L, "Stencil func should be a string" );
+
+					result = false;
+				}
+
+				if (lua_isnumber( L, -2 ))
+				{
+					ref = lua_tointeger( L, -2 );
+					// TODO: bounds check?
+				}
+
+				else if (!lua_isnil( L, -2 ))
+				{
+					CoronaLuaWarning( L, "Stencil ref should be an integer" );
+
+					result = false;
+				}
+
+				if (lua_isnumber( L, -2 ))
+				{
+					S32 imask = lua_tointeger( L, -2 );
+
+					if (imask >= 0)
+					{
+						mask = (U32)imask;
+					}
+
+					else
+					{
+						CoronaLuaWarning( L, "Stencil mask should be an unsigned integer" );
+
+						result = false;
+					}
+				}
+
+				else if (!lua_isnil( L, -2 ))
+				{
+					CoronaLuaWarning( L, "Stencil mask should be an unsigned integer" );
+
+					result = false;
+				}
+
+				lua_pop( L, 3 );
+
+				result = result && func >= 0;
+			}
+
+			else
+			{
+				CoronaLuaWarning( L, "Stencil func expects a table" );
+
+				result = false;
+			}
+
+			if (result)
+			{
+				o.SetInt2UintState( RenderStateObject::kStencilFunc, func, ref, mask );
+			}
+		}
+
+		break;
+	case 2: // stencil op
+		{
+			int top = lua_gettop( L ), start = top;
+			S32 actions[] = { 0, 0, 0 };
+
+			if (lua_istable( L, valueIndex )) // could be string for just stencilFail?
+			{
+				lua_getfield( L, valueIndex, "stencilFail" );
+				lua_getfield( L, valueIndex, "depthFail" );
+				lua_getfield( L, valueIndex, "depthPass" );
+			}
+
+			else
+			{
+				--start;
+			}
+
+			for (int i = start + 1, j = 0, newTop = lua_gettop( L ); i <= newTop; ++i, ++j)
+			{
+				if (lua_isstring( L, i ))
+				{
+					actions[j] = RenderStateObject::IndexForStencilOpAction( lua_tostring( L, i ) );
+				}
+
+				if (actions[j] < 0)
+				{
+					CoronaLuaWarning( L, "Unknown stencil action: %s", lua_tostring( L, i ) );
+				}
+
+				else if (!lua_isnil( L, i ))
+				{
+					CoronaLuaWarning( L, "Expected string for stencil action" );
+				}
+			}
+
+			lua_settop( L, top );
+
+			if (actions[0] >= 0 && actions[1] >= 0 && actions[2] >= 0)
+			{
+				o.SetInt3State( RenderStateObject::kStencilOp, actions[0], actions[1], actions[2] );
+			}
+		}
+
+		break;
+	case 3: // scissor enabled
+	case 4: // stencil enabled
+		o.SetBooleanState( 3 == index ? RenderStateObject::kScissorEnable : RenderStateObject::kStencilEnable, lua_toboolean( L, valueIndex ) );
+
+		break;
+	case 5: // scissor
+	case 6: // viewport
+		{
+			bool isScissor = 5 == index;
+
+			if (lua_istable( L, valueIndex ))
+			{
+				S32 part[4] = { -1, -1, 0, 0 };
+				const char *names[] = { "x", "y", "width", "height" };
+
+				for (int i = 0; i < 4; ++i)
+				{
+					S32 was = part[i];
+
+					lua_getfield( L, valueIndex, names[i] );
+
+					if (lua_isnumber( L, -1 ))
+					{
+						part[i] = lua_tointeger( L, -1 );
+					}
+
+					lua_pop( L, 1 );
+
+					if (part[i] <= was)
+					{
+						CoronaLuaWarning( L, "%s expects integer > %i as %s component", isScissor ? "Scissor" : "Viewport", was, names[i] );
+
+						break;
+					}
+				}
+
+				if (part[0] >= 0 && part[1] >= 0 && part[2] > 0 && part[3] > 0)
+				{
+					o.SetInt4State( isScissor ? RenderStateObject::kScissor : RenderStateObject::kViewport, part[0], part[1], part[2], part[3] );
+				}
+			}
+
+			else
+			{
+				// TODO: nil???
+					// could add "undo" support...
+					// would just move "previous" back into value...
+				CoronaLuaWarning( L, "%s expects a table", isScissor ? "Scissor" : "Viewport" );
+			}
+		}
+
+		break;
+	default:
+		result = Super::SetValueForKey( L, object, key, valueIndex );
+	}
+
+	return result;
+}
+
+const LuaProxyVTable&
+LuaRenderStateObjectProxyVTable::Parent() const
+{
+	return Super::Constant();
+}
+
+int
+LuaRenderStateObjectProxyVTable::ClearStates( lua_State *L )
+{
+	RenderStateObject *o = (RenderStateObject*)LuaProxy::GetProxyableObject( L, 1 );
+	
+	Rtt_WARN_SIM_PROXY_TYPE( L, 1, RenderStateObject );
+	
+	if ( o )
+	{
+		o->Clear();
+	}
+
+	return 0;
+}
+
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

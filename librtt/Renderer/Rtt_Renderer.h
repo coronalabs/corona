@@ -46,53 +46,15 @@ namespace Rtt
 {
 
 class CommandBuffer;
+// STEVE CHANGE
+class CommandStack;
+// /STEVE CHANGE
 class FrameBufferObject;
 class GeometryPool;
 class Texture;
 class Uniform;
 
 // ----------------------------------------------------------------------------
-
-// STEVE CHANGE
-class CustomCommand {
-public:
-	typedef enum _CommandFlags
-	{
-		kDirtyFlag				= 0x01,
-		kHasDummyGeometryFlag	= 0x02,
-		kReuseRenderDataFlag	= 0x04,
-		kShouldDrawFlag			= 0x08 // for later use...
-	}
-	CommandFlags;
-
-	CustomCommand();
-	virtual ~CustomCommand();
-
-	virtual int GetFlags( const class Renderer& renderer ) = 0;
-	virtual void Prepare( const class Renderer& renderer ) = 0;
-	virtual void Render( class Renderer& renderer ) = 0;
-
-	CustomCommand* GetNextCommand() const { return fNext; }
-	void SetNextCommand( CustomCommand* next ) { fNext = next; }
-
-private:
-	CustomCommand* fNext;
-};
-
-class CommandStack {
-public:
-	CommandStack();
-	~CommandStack();
-
-	void Push( CustomCommand* command );
-	CustomCommand* Pop();
-
-	bool IsEmpty() const { return NULL == fTop; }
-
-private:
-	CustomCommand* fTop;
-};
-// /STEVE CHANGE
 
 class Renderer
 {
@@ -303,7 +265,7 @@ class Renderer
 		CommandStack* BeginCommandStack( CommandStack* commandStack );
 		void EndCommandStack( CommandStack* replacement );
 
-		CommandStack* GetCommandStack() const { return fCommandStack; }
+		CommandStack* GetCommandStack() const;
 		// /STEVE CHANGE
 
 	protected:
@@ -385,8 +347,9 @@ class Renderer
 		S32 fStencilFail;
 		S32 fDepthFail;
 		S32 fDepthPass;
-		S32 fStencilBits;
+		bool fScissorWritten;
 		bool fStencilEnabled;
+		bool fStateDirty;
 
 		CommandStack* fCommandStack;
 		// /STEVE CHANGE
