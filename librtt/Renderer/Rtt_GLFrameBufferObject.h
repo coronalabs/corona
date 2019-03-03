@@ -50,6 +50,17 @@ class GLFrameBufferObject : public GPUResource
 
 		virtual GLuint GetName();
 		virtual GLuint GetTextureName();
+		// STEVE CHANGE
+		virtual GLuint GetDepthAttachmentName();
+		virtual GLuint GetStencilAttachmentName();
+		virtual GLuint GetDepthStencilAttachmentName();
+		// /STEVE CHANGE
+
+	// STEVE CHANGE
+	private:
+		GLuint fDepthAttachment;
+		GLuint fStencilAttachment;
+	// /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------

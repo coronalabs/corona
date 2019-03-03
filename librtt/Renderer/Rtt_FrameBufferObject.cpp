@@ -23,6 +23,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+// STEVE CHANGE
+#include "Display/Rtt_Display.h"
+#include "Display/Rtt_DisplayDefaults.h"
+// /STEVE CHANGE
 #include "Renderer/Rtt_FrameBufferObject.h"
 
 // ----------------------------------------------------------------------------
@@ -34,7 +38,11 @@ namespace Rtt
 
 FrameBufferObject::FrameBufferObject( Rtt_Allocator* allocator, Texture* texture )
 :	CPUResource( allocator ),
-	fTexture( texture )
+	fTexture( texture ),
+	// STEVE CHANGE
+	fDepthBits( 0 ),
+	fStencilBits( 0 )
+	// /STEVE CHANGE
 {
 }
 
@@ -47,6 +55,15 @@ Texture* FrameBufferObject::GetTexture() const
 {
 	return fTexture;
 }
+
+// STEVE CHANGE
+void
+FrameBufferObject::AddAnyAttachments( Display& display )
+{
+	fDepthBits = display.GetDefaults().GetDepthBits();
+	fStencilBits = display.GetDefaults().GetStencilBits();
+}
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

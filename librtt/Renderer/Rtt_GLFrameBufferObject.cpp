@@ -47,22 +47,103 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+// STEVE CHANGE
+GLuint
+NewAttachment( Texture* texture, GLint internalFormat )
+{
+	GLuint name = 0;
+	glGenRenderbuffers( 1, &name );
+	GL_CHECK_ERROR();
+
+	glBindRenderbuffer( GL_RENDERBUFFER, name ); 
+	glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, texture->GetWidth(), texture->GetHeight() );
+	GL_CHECK_ERROR();
+
+	return name;
+}
+// /STEVE CHANGE
+
 void 
 GLFrameBufferObject::Create( CPUResource* resource )
 {
 	Rtt_ASSERT( CPUResource::kFrameBufferObject == resource->GetType() );
 //	FrameBufferObject* fbo = static_cast<FrameBufferObject*>( resource );
-
+// STEVE CHANGE
+	FrameBufferObject* fbo = static_cast<FrameBufferObject*>( resource );
+// /STEVE CHANGE
 	GLuint name;
 	glGenFramebuffers( 1, &name );
 	fHandle = NameToHandle( name );
 	GL_CHECK_ERROR();
 
-	Update( resource );
+	// STEVE CHANGE
+	GLint depthFormat = 0, stencilFormat = 0;
 
-	DEBUG_PRINT( "%s : OpenGL name: %d\n",
+	switch (fbo->GetDepthBits()) // default.SetDepthBits() will restrict per platform
+	{
+	case 16:
+		depthFormat = GL_DEPTH_COMPONENT16;
+		break;
+	case 24:
+		depthFormat = GL_DEPTH_COMPONENT24;
+		break;
+	case 32:
+		depthFormat = GL_DEPTH_COMPONENT32;
+		break;
+	default:
+		break;
+	}
+
+	switch (fbo->GetStencilBits())
+	{
+	case 8:
+		stencilFormat = GL_STENCIL_INDEX8;
+		break;
+	default:
+		break;
+	}
+
+	bool fused = false;
+
+	if (depthFormat && stencilFormat)
+#if Rtt_EMSCRIPTEN_ENV
+	{
+		fused = true; // https://www.khronos.org/registry/webgl/specs/1.0/#6 (6.6)
+	}
+#else
+	{
+		// check extensions etc.
+	}
+#endif
+
+	if (fused)
+	{
+		fDepthAttachment = NewAttachment( fbo->GetTexture(), GL_DEPTH24_STENCIL8 ); // TODO: anything else sane?
+		fStencilAttachment = fDepthAttachment;
+	}
+
+	else
+	{
+		fDepthAttachment = fStencilAttachment = 0;
+
+		if (depthFormat)
+		{
+			fDepthAttachment = NewAttachment( fbo->GetTexture(), depthFormat );
+		}
+
+		if (stencilFormat)
+		{
+			fStencilAttachment = NewAttachment( fbo->GetTexture(), stencilFormat );
+		}
+	}
+	// /STEVE CHANGE
+
+	Update( resource );
+	// STEVE CHANGE
+	DEBUG_PRINT( "%s : OpenGL name: %d, depth: %d, stencil: %d\n",
 					__FUNCTION__,
-					name );
+					name, fDepthAttachment, fStencilAttachment );
+	// /STEVE CHANGE
 }
 
 void 
@@ -92,6 +173,32 @@ GLFrameBufferObject::Update( CPUResource* resource )
 
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_name, 0 );
 
+		// STEVE CHANGE
+		GLuint depth_stencil_name = GetDepthStencilAttachmentName();
+		
+		if (depth_stencil_name)
+		{
+			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_stencil_name );
+		}
+
+		else
+		{
+			GLuint depth_name = GetDepthAttachmentName();
+
+			if (depth_name)
+			{
+				glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_name );
+			}
+					
+			GLuint stencil_name = GetStencilAttachmentName();
+
+			if (stencil_name)
+			{
+				glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencil_name );
+			}
+		}
+		// /STEVE CHANGE
+
 		GLenum status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
 		if( status != GL_FRAMEBUFFER_COMPLETE )
 		{
@@ -105,6 +212,31 @@ GLFrameBufferObject::Update( CPUResource* resource )
 void 
 GLFrameBufferObject::Destroy()
 {
+	// STEVE CHANGE
+	GLuint depthStencilName = GetDepthStencilAttachmentName();
+	if ( 0 != depthStencilName )
+	{
+		glDeleteRenderbuffers( 1, &depthStencilName );
+		GL_CHECK_ERROR();
+	}
+	else
+	{
+		GLuint depthName = GetDepthAttachmentName();
+		if ( 0 != depthName )
+		{
+			glDeleteRenderbuffers( 1, &depthName );
+			GL_CHECK_ERROR();
+		}
+		GLuint stencilName = GetStencilAttachmentName();
+		if ( 0 != stencilName )
+		{
+			glDeleteRenderbuffers( 1, &stencilName );
+			GL_CHECK_ERROR();
+		}
+	}
+
+	// /STEVE CHANGE
+
 	GLuint name = GetName();
 	if ( 0 != name )
 	{
@@ -112,16 +244,19 @@ GLFrameBufferObject::Destroy()
 		GL_CHECK_ERROR();
 		fHandle = 0;
 	}
-
-	DEBUG_PRINT( "%s : OpenGL name: %d\n",
+	// STEVE CHANGE
+	DEBUG_PRINT( "%s : OpenGL name: %d, %d, %d\n",
 					__FUNCTION__,
-					name );
+					name, fDepthAttachment, fStencilAttachment );
+	// /STEVE CHANGE
 }
 
 void 
 GLFrameBufferObject::Bind()
 {
 	glBindFramebuffer( GL_FRAMEBUFFER, GetName() );
+	GLint bits;
+	glGetIntegerv( GL_STENCIL_BITS, &bits );
 	GL_CHECK_ERROR();
 }
 
@@ -148,6 +283,26 @@ GLFrameBufferObject::GetTextureName()
 
 	return param;
 }
+
+// STEVE CHANGE
+GLuint
+GLFrameBufferObject::GetDepthAttachmentName()
+{
+	return fDepthAttachment != fStencilAttachment ? fDepthAttachment : 0;
+}
+
+GLuint
+GLFrameBufferObject::GetStencilAttachmentName()
+{
+	return fDepthAttachment != fStencilAttachment ? fStencilAttachment : 0;
+}
+
+GLuint
+GLFrameBufferObject::GetDepthStencilAttachmentName()
+{
+	return fDepthAttachment == fStencilAttachment ? fDepthAttachment : 0;
+}
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

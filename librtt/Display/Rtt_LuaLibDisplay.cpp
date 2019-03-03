@@ -1859,6 +1859,18 @@ DisplayLibrary::getDefault( lua_State *L )
 		bool value = defaults.IsImageSheetSampledInsideFrame();
 		lua_pushboolean( L, value ? 1 : 0 );
 	}
+	// STEVE CHANGE
+	else if ( ( Rtt_StringCompare( key, "depthBits" ) == 0 ) )
+	{
+		U8 bits = defaults.GetDepthBits();
+		lua_pushinteger( L, bits );
+	}
+	else if ( ( Rtt_StringCompare( key, "stencilBits" ) == 0 ) )
+	{
+		U8 bits = defaults.GetStencilBits();
+		lua_pushinteger( L, bits );
+	}
+	// /STEVE CHANGE
 	else if ( key )
 	{
 		luaL_error( L, "ERROR: display.getDefault() given invalid key (%s)", key );
@@ -1984,6 +1996,36 @@ DisplayLibrary::setDefault( lua_State *L )
 		bool value = lua_toboolean( L, index ) ? true : false;
 		defaults.SetImageSheetSampledInsideFrame( value );
 	}
+	// STEVE CHANGE
+	else if ( ( Rtt_StringCompare( key, "depthBits" ) == 0 ) )
+	{
+		U8 bits = lua_tointeger( L, index );
+
+		if (bits == 0U || bits == 16U) // TODO: allow 24
+		{
+			defaults.SetDepthBits( bits );
+		}
+
+		else
+		{
+			CoronaLuaWarning( L, "Unsupported # of bits for depth buffers: %u", (U32)bits );
+		}
+	}
+	else if ( ( Rtt_StringCompare( key, "stencilBits" ) == 0 ) )
+	{
+		U8 bits = lua_tointeger( L, index );
+
+		if (bits == 0U || bits == 8U)
+		{
+			defaults.SetStencilBits( bits );
+		}
+
+		else
+		{
+			CoronaLuaWarning( L, "Unsupported # of bits for stencil buffers: %u", (U32)bits );
+		}
+	}
+	// /STEVE CHANGE
 	else if ( key )
 	{
 		luaL_error( L, "ERROR: display.setDefault() given invalid key (%s)", key );

@@ -163,6 +163,7 @@ class RenderStateObject : public DisplayObject
 
 		typedef enum _IntState : int
 		{
+			kClearStencil,
 			kCullFace,
 			kDepthFunc
 		}

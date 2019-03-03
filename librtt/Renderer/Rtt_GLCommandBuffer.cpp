@@ -777,9 +777,15 @@ GLCommandBuffer::Execute( bool measureGPU )
 			{
 				GLFrameBufferObject* fbo = Read<GLFrameBufferObject*>();
 				fbo->Bind();
-				DEBUG_PRINT( "Bind FrameBufferObject: OpenGL name: %i, OpenGL Texture name, if any: %d",
+				DEBUG_PRINT( "Bind FrameBufferObject: OpenGL name: %i, OpenGL Texture name, if any: %d; depth: %d, stencil: %d, depth-stencil: %d",
 								fbo->GetName(),
-								fbo->GetTextureName() );
+								fbo->GetTextureName(),
+								// STEVE CHANGE
+								fbo->GetDepthTextureName(),
+								fbo->GetStencilTextureName(),
+								fbo->GetDepthStencilTextureName()
+								// /STEVE CHANGE
+								);
 				CHECK_ERROR_AND_BREAK;
 			}
 			case kCommandUnBindFrameBufferObject:

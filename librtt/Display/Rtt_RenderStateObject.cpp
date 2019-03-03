@@ -429,7 +429,10 @@ IntCommand::GetFlags( const Renderer& renderer )
 void 
 IntCommand::Prepare( const Renderer& renderer )
 {
-	fPrepare( renderer, fInts, fPrev );
+	if (fPrepare)
+	{
+		fPrepare( renderer, fInts, fPrev );
+	}
 }
 
 void 
@@ -444,7 +447,11 @@ RenderStateObject::AddIntCommands( UsedKind kind, int state, IntCommand::Prepare
 	StateCommands* commands = AddCommands( kind, state );
 
 	commands->func = Rtt_NEW( fAllocator, IntCommand( commands->value.ivalues, commands->previous.ivalues, prepare, render, flags ) );
-	commands->cleanup = Rtt_NEW( fAllocator, IntCommand( commands->previous.ivalues, NULL, NULL, render, flags ) );
+
+	if (prepare)
+	{
+		commands->cleanup = Rtt_NEW( fAllocator, IntCommand( commands->previous.ivalues, NULL, NULL, render, flags ) );
+	}
 
 	commands->cleanup->SetUserdata( render );
 
@@ -474,6 +481,15 @@ RenderStateObject::SetIntState( IntState state, S32 i )
 
 		switch (state)
 		{
+		case kClearStencil:
+			// this is a command posing as a property, so no "prepare" logic
+
+			render = []( Renderer& renderer, const S32* ints)
+			{
+				renderer.ClearStencil( ints[0] );
+			};
+
+			break;
 		case kCullFace:
 			break;
 		case kDepthFunc:

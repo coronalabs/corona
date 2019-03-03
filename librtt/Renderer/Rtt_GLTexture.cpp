@@ -224,6 +224,7 @@ GLTexture::GetName()
 	return HandleToName( fHandle );
 }
 
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

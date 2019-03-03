@@ -34,6 +34,9 @@
 namespace Rtt
 {
 
+// STEVE CHANGE
+class Display;
+// /STEVE CHANGE
 class Texture;
 
 // ----------------------------------------------------------------------------
@@ -48,9 +51,19 @@ class FrameBufferObject : public CPUResource
 		FrameBufferObject( Rtt_Allocator* allocator, Texture* texture );
 		virtual ResourceType GetType() const;
 		Texture* GetTexture() const;
-		
+		// STEVE CHANGE
+		U8 GetDepthBits() const { return fDepthBits; }
+		U8 GetStencilBits() const { return fStencilBits; }
+
+		void AddAnyAttachments( Display& display );
+		// /STEVE CHANGE
+
 	private:
 		Texture* fTexture;
+		// STEVE CHANGE
+		U8 fDepthBits;
+		U8 fStencilBits;
+		// /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------

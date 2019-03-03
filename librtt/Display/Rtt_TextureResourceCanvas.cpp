@@ -82,6 +82,9 @@ TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factor
 	FrameBufferObject * fbo = Rtt_NEW( pAllocator,
 									  FrameBufferObject( pAllocator, texture ) );
 
+	// STEVE CHANGE
+	fbo->AddAnyAttachments( display );
+	// /STEVE CHANGE
 	GroupObject *cache = Rtt_NEW( pAllocator,
 								 GroupObject(display.GetAllocator(), display.GetStageOffscreen() ) );
 	cache->SetRenderedOffScreen( true );
@@ -205,6 +208,12 @@ void TextureResourceCanvas::Render(Rtt::Renderer &renderer, GroupObject *group, 
 			color.pixel = fClearColor;
 			const Real inv255 = 1.f / 255.f;
 			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255 );
+			// STEVE CHANGE
+			if (fDstFBO->GetStencilBits())
+			{
+				renderer.ClearStencil( 0 );
+			}
+			// /STEVE CHANGE
 		}
 		
 		group->WillDraw( renderer );
