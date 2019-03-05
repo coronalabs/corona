@@ -196,11 +196,11 @@ RenderStateObject::Find( UsedKind kind, int state )
 	return NULL;
 }
 
-BooleanCommand::BooleanCommand( const bool* bools, bool* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags )
+BooleanCommand::BooleanCommand( const bool* bools, bool* prev, PreRenderFunc preRender, RenderFunc render, FlagFunc flags )
 :	Super(),
 	fBools( bools ),
 	fPrev( prev ),
-	fPrepare( prepare ),
+	fPreRender( preRender ),
 	fRender( render ),
 	fGetFlags( flags )
 {
@@ -213,14 +213,13 @@ BooleanCommand::GetFlags( const Renderer& renderer )
 }
 
 void 
-BooleanCommand::Prepare( const Renderer& renderer )
-{
-	fPrepare( renderer, fBools, fPrev );
-}
-
-void 
 BooleanCommand::Render( Renderer& renderer )
 {
+	if (fPreRender && fPrev)
+	{
+		fPreRender( renderer, fPrev );
+	}
+
 	fRender( renderer, fBools );
 }
 
@@ -239,11 +238,11 @@ RenderStateObject::AddCommands ( UsedKind kind, int state )
 }
 
 RenderStateObject::StateCommands *
-RenderStateObject::AddBooleanCommands( UsedKind kind, int state, BooleanCommand::PrepareFunc prepare, BooleanCommand::RenderFunc render, BooleanCommand::FlagFunc flags )
+RenderStateObject::AddBooleanCommands( UsedKind kind, int state, BooleanCommand::PreRenderFunc preRender, BooleanCommand::RenderFunc render, BooleanCommand::FlagFunc flags )
 {
 	StateCommands* commands = AddCommands( kind, state );
 
-	commands->func = Rtt_NEW( fAllocator, BooleanCommand( commands->value.bvalues, commands->previous.bvalues, prepare, render, flags ) );
+	commands->func = Rtt_NEW( fAllocator, BooleanCommand( commands->value.bvalues, commands->previous.bvalues, preRender, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, BooleanCommand( commands->previous.bvalues, NULL, NULL, render, flags ) );
 
 	commands->cleanup->SetUserdata( render );
@@ -269,7 +268,7 @@ RenderStateObject::SetBooleanState( BooleanState state, bool b )
 			return flags;
 		};
 
-		BooleanCommand::PrepareFunc prepare = NULL;
+		BooleanCommand::PreRenderFunc preRender = NULL;
 		BooleanCommand::RenderFunc render = NULL;
 
 		switch (state)
@@ -280,27 +279,25 @@ RenderStateObject::SetBooleanState( BooleanState state, bool b )
 			break;
 		case kDepthTestEnable:
 			break;
-		case kDitherEnable:
-			break;
 		case kScissorEnable:
-			prepare = []( const Renderer& renderer, const bool*, bool* prev)
+			preRender = []( Renderer& renderer, bool* prev )
 			{
 				prev[0] = renderer.GetScissorEnabled();
 			};
 
-			render = []( Renderer& renderer, const bool* bools)
+			render = []( Renderer& renderer, const bool* bools )
 			{
 				renderer.SetScissorEnabled( bools[0] );
 			};
 
 			break;
 		case kStencilEnable:
-			prepare = []( const Renderer& renderer, const bool*, bool* prev)
+			preRender = []( Renderer& renderer, bool* prev )
 			{
 				prev[0] = renderer.GetStencilEnabled();
 			};
 
-			render = []( Renderer& renderer, const bool* bools)
+			render = []( Renderer& renderer, const bool* bools )
 			{
 				renderer.SetStencilEnabled( bools[0] );
 			};
@@ -312,7 +309,7 @@ RenderStateObject::SetBooleanState( BooleanState state, bool b )
 
 		if (render)
 		{
-			commands = AddBooleanCommands( kBoolean, state, prepare, render, flags );
+			commands = AddBooleanCommands( kBoolean, state, preRender, render, flags );
 		}
 	}
 
@@ -354,19 +351,19 @@ RenderStateObject::SetBoolean4State( Boolean4State state, bool b1, bool b2, bool
 
 			return flags;
 		};
-
-		BooleanCommand::PrepareFunc prepare = NULL;
+		
+		BooleanCommand::PreRenderFunc preRender = NULL;
 		BooleanCommand::RenderFunc render = NULL;
 
 		switch (state)
 		{
 		case kColorMask:
-			prepare = []( const Renderer& renderer, const bool*, bool* prev)
+			preRender = []( Renderer& renderer, bool* prev )
 			{
 				renderer.GetColorMask( prev[0], prev[1], prev[2], prev[3] );
 			};
 
-			render = []( Renderer& renderer, const bool* bools)
+			render = []( Renderer& renderer, const bool* bools )
 			{
 				renderer.SetColorMask( bools[0], bools[1], bools[2], bools[3] );
 			};
@@ -378,7 +375,7 @@ RenderStateObject::SetBoolean4State( Boolean4State state, bool b1, bool b2, bool
 
 		if (render)
 		{
-			commands = AddBooleanCommands( kBoolean4, state, prepare, render, flags );
+			commands = AddBooleanCommands( kBoolean4, state, preRender, render, flags );
 		}
 	}
 
@@ -410,11 +407,11 @@ RenderStateObject::GetBoolean4State( Boolean4State state, bool& b1, bool& b2, bo
 }
 
 
-IntCommand::IntCommand( const S32* ints, S32* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags )
+IntCommand::IntCommand( const S32* ints, S32* prev, PreRenderFunc preRender, RenderFunc render, FlagFunc flags )
 :	Super(),
 	fInts( ints ),
 	fPrev( prev ),
-	fPrepare( prepare ),
+	fPreRender( preRender ),
 	fRender( render ),
 	fGetFlags( flags )
 {
@@ -427,28 +424,24 @@ IntCommand::GetFlags( const Renderer& renderer )
 }
 
 void 
-IntCommand::Prepare( const Renderer& renderer )
-{
-	if (fPrepare)
-	{
-		fPrepare( renderer, fInts, fPrev );
-	}
-}
-
-void 
 IntCommand::Render( Renderer& renderer )
 {
+	if (fPreRender && fPrev)
+	{
+		fPreRender( renderer, fPrev );
+	}
+
 	fRender( renderer, fInts );
 }
 
 RenderStateObject::StateCommands *
-RenderStateObject::AddIntCommands( UsedKind kind, int state, IntCommand::PrepareFunc prepare, IntCommand::RenderFunc render, IntCommand::FlagFunc flags )
+RenderStateObject::AddIntCommands( UsedKind kind, int state, IntCommand::PreRenderFunc preRender, IntCommand::RenderFunc render, IntCommand::FlagFunc flags )
 {
 	StateCommands* commands = AddCommands( kind, state );
 
-	commands->func = Rtt_NEW( fAllocator, IntCommand( commands->value.ivalues, commands->previous.ivalues, prepare, render, flags ) );
+	commands->func = Rtt_NEW( fAllocator, IntCommand( commands->value.ivalues, commands->previous.ivalues, preRender, render, flags ) );
 
-	if (prepare)
+	if (preRender)
 	{
 		commands->cleanup = Rtt_NEW( fAllocator, IntCommand( commands->previous.ivalues, NULL, NULL, render, flags ) );
 	}
@@ -475,16 +468,16 @@ RenderStateObject::SetIntState( IntState state, S32 i )
 
 			return flags;
 		};
-
-		IntCommand::PrepareFunc prepare = NULL;
+		
+		IntCommand::PreRenderFunc preRender = NULL;
 		IntCommand::RenderFunc render = NULL;
 
 		switch (state)
 		{
 		case kClearStencil:
-			// this is a command posing as a property, so no "prepare" logic
+			// this is a command posing as a property, so not balanced with any pre-render and cleanup
 
-			render = []( Renderer& renderer, const S32* ints)
+			render = []( Renderer& renderer, const S32* ints )
 			{
 				renderer.ClearStencil( ints[0] );
 			};
@@ -500,7 +493,7 @@ RenderStateObject::SetIntState( IntState state, S32 i )
 
 		if (render)
 		{
-			commands = AddIntCommands( kInt, state, prepare, render, flags );
+			commands = AddIntCommands( kInt, state, preRender, render, flags );
 		}
 	}
 
@@ -543,18 +536,18 @@ RenderStateObject::SetInt2UintState( Int2UintState state, S32 i1, S32 i2, U32 u 
 			return flags;
 		};
 
-		IntCommand::PrepareFunc prepare = NULL;
+		IntCommand::PreRenderFunc preRender = NULL;
 		IntCommand::RenderFunc render = NULL;
 
 		switch (state)
 		{
 		case kStencilFunc:
-			prepare = []( const Renderer& renderer, const S32*, S32* prev)
+			preRender = []( Renderer& renderer, S32* prev )
 			{
 				renderer.GetStencilFunc( prev[0], prev[1], *reinterpret_cast<U32*>(&prev[2]) );
 			};
 
-			render = []( Renderer& renderer, const S32* ints)
+			render = []( Renderer& renderer, const S32* ints )
 			{
 				renderer.SetStencilFunc( ints[0], ints[1], *reinterpret_cast<const U32*>(&ints[2]) );
 			};
@@ -566,7 +559,7 @@ RenderStateObject::SetInt2UintState( Int2UintState state, S32 i1, S32 i2, U32 u 
 
 		if (render)
 		{
-			commands = AddIntCommands( kInt2Uint, state, prepare, render, flags );
+			commands = AddIntCommands( kInt2Uint, state, preRender, render, flags );
 		}
 	}
 
@@ -612,19 +605,19 @@ RenderStateObject::SetInt3State( Int3State state, S32 i1, S32 i2, S32 i3 )
 
 			return flags;
 		};
-
-		IntCommand::PrepareFunc prepare = NULL;
+		
+		IntCommand::PreRenderFunc preRender = NULL;
 		IntCommand::RenderFunc render = NULL;
 
 		switch (state)
 		{
 		case kStencilOp:
-			prepare = []( const Renderer& renderer, const S32*, S32* prev)
+			preRender = []( Renderer& renderer, S32* prev )
 			{
 				renderer.GetStencilOp( prev[0], prev[1], prev[2] );
 			};
 
-			render = []( Renderer& renderer, const S32* ints)
+			render = []( Renderer& renderer, const S32* ints )
 			{
 				renderer.SetStencilOp( ints[0], ints[1], ints[2] );
 			};
@@ -636,7 +629,7 @@ RenderStateObject::SetInt3State( Int3State state, S32 i1, S32 i2, S32 i3 )
 
 		if (render)
 		{
-			commands = AddIntCommands( kInt3, state, prepare, render, flags );
+			commands = AddIntCommands( kInt3, state, preRender, render, flags );
 		}
 	}
 
@@ -682,31 +675,31 @@ RenderStateObject::SetInt4State( Int4State state, S32 i1, S32 i2, S32 i3, S32 i4
 
 			return flags;
 		};
-
-		IntCommand::PrepareFunc prepare = NULL;
+		
+		IntCommand::PreRenderFunc preRender = NULL;
 		IntCommand::RenderFunc render = NULL;
 
 		switch (state)
 		{
 		case kScissor:
-			prepare = []( const Renderer& renderer, const S32*, S32* prev)
+			preRender = []( Renderer& renderer, S32* prev )
 			{
 				renderer.GetScissor( prev[0], prev[1], prev[2], prev[3] );
 			};
 
-			render = []( Renderer& renderer, const S32* ints)
+			render = []( Renderer& renderer, const S32* ints )
 			{
 				renderer.SetScissor( ints[0], ints[1], ints[2], ints[3] );
 			};
 
 			break;
 		case kViewport:
-			prepare = []( const Renderer& renderer, const S32*, S32* prev)
+			preRender = []( Renderer& renderer, S32* prev )
 			{
 				renderer.GetViewport( prev[0], prev[1], prev[2], prev[3] );
 			};
 
-			render = []( Renderer& renderer, const S32* ints)
+			render = []( Renderer& renderer, const S32* ints )
 			{
 				renderer.SetViewport( ints[0], ints[1], ints[2], ints[3] );
 			};
@@ -718,7 +711,7 @@ RenderStateObject::SetInt4State( Int4State state, S32 i1, S32 i2, S32 i3, S32 i4
 
 		if (render)
 		{
-			commands = AddIntCommands( kInt4, state, prepare, render, flags );
+			commands = AddIntCommands( kInt4, state, preRender, render, flags );
 		}
 	}
 
@@ -749,12 +742,12 @@ RenderStateObject::GetInt4State( Int4State state, S32& i1, S32& i2, S32& i3, S32
 	return false;
 }
 
-RealCommand::RealCommand( const Real* reals, Real* prev, PrepareFunc prepare, RenderFunc func, FlagFunc flags )
+RealCommand::RealCommand( const Real* reals, Real* prev, PreRenderFunc preRender, RenderFunc render, FlagFunc flags )
 :	Super(),
 	fReals( reals ),
 	fPrev( prev ),
-	fPrepare( prepare ),
-	fRender( func ),
+	fPreRender( preRender ),
+	fRender( render ),
 	fGetFlags( flags )
 {
 }
@@ -766,23 +759,22 @@ RealCommand::GetFlags( const Renderer& renderer )
 }
 
 void 
-RealCommand::Prepare( const Renderer& renderer )
-{
-	fPrepare( renderer, fReals, fPrev );
-}
-
-void 
 RealCommand::Render( Renderer& renderer )
 {
+	if (fPreRender && fPrev)
+	{
+		fPreRender( renderer, fPrev );
+	}
+
 	fRender( renderer, fReals );
 }
 
 RenderStateObject::StateCommands *
-RenderStateObject::AddRealCommands( UsedKind kind, int state, RealCommand::PrepareFunc prepare, RealCommand::RenderFunc render, RealCommand::FlagFunc flags )
+RenderStateObject::AddRealCommands( UsedKind kind, int state, RealCommand::PreRenderFunc preRender, RealCommand::RenderFunc render, RealCommand::FlagFunc flags )
 {
 	StateCommands* commands = AddCommands( kind, state );
 
-	commands->func = Rtt_NEW( fAllocator, RealCommand( commands->value.rvalues, commands->previous.rvalues, prepare, render, flags ) );
+	commands->func = Rtt_NEW( fAllocator, RealCommand( commands->value.rvalues, commands->previous.rvalues, preRender, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, RealCommand( commands->previous.rvalues, NULL, NULL, render, flags ) );
 
 	commands->cleanup->SetUserdata( render );
@@ -845,11 +837,11 @@ RenderStateObject::GetReal2State( Real2State state, Real& r1, Real& r2 ) const
 	return false;
 }
 
-UintCommand::UintCommand( const U32* uints, U32* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags )
+UintCommand::UintCommand( const U32* uints, U32* prev, PreRenderFunc preRender, RenderFunc render, FlagFunc flags )
 :	Super(),
 	fUints( uints ),
 	fPrev( prev ),
-	fPrepare( prepare ),
+	fPreRender( preRender ),
 	fRender( render ),
 	fGetFlags( flags )
 {
@@ -862,23 +854,22 @@ UintCommand::GetFlags( const Renderer& renderer )
 }
 
 void 
-UintCommand::Prepare( const Renderer& renderer )
-{
-	fPrepare( renderer, fUints, fPrev );
-}
-
-void 
 UintCommand::Render( Renderer& renderer )
 {
+	if (fPreRender && fPrev)
+	{
+		fPreRender( renderer, fPrev );
+	}
+
 	fRender( renderer, fUints );
 }
 
 RenderStateObject::StateCommands *
-RenderStateObject::AddUintCommands( UsedKind kind, int state, UintCommand::PrepareFunc prepare, UintCommand::RenderFunc render, UintCommand::FlagFunc flags )
+RenderStateObject::AddUintCommands( UsedKind kind, int state, UintCommand::PreRenderFunc preRender, UintCommand::RenderFunc render, UintCommand::FlagFunc flags )
 {
 	StateCommands* commands = AddCommands( kind, state );
 
-	commands->func = Rtt_NEW( fAllocator, UintCommand( commands->value.uvalues, commands->previous.uvalues, prepare, render, flags ) );
+	commands->func = Rtt_NEW( fAllocator, UintCommand( commands->value.uvalues, commands->previous.uvalues, preRender, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, UintCommand( commands->previous.uvalues, NULL, NULL, render, flags ) );
 
 	commands->cleanup->SetUserdata( render );
@@ -903,19 +894,19 @@ RenderStateObject::SetUintState( UintState state, U32 i )
 
 			return flags;
 		};
-
-		UintCommand::PrepareFunc prepare = NULL;
+		
+		UintCommand::PreRenderFunc preRender = NULL;
 		UintCommand::RenderFunc render = NULL;
 
 		switch (state)
 		{
 		case kStencilMask:
-			prepare = []( const Renderer& renderer, const U32*, U32* prev)
+			preRender = []( Renderer& renderer, U32* prev )
 			{
 				prev[0] = renderer.GetStencilMask();
 			};
 
-			render = []( Renderer& renderer, const U32* uints)
+			render = []( Renderer& renderer, const U32* uints )
 			{
 				renderer.SetStencilMask( uints[0] );
 			};
@@ -927,7 +918,7 @@ RenderStateObject::SetUintState( UintState state, U32 i )
 
 		if (render)
 		{
-			commands = AddUintCommands( kUint, state, prepare, render, flags );
+			commands = AddUintCommands( kUint, state, preRender, render, flags );
 		}
 	}
 

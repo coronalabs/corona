@@ -171,7 +171,6 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fStencilFail( 0 ),
 	fDepthFail( 0 ),
 	fDepthPass( 0 ),
-	fScissorWritten( false ),
 	fStencilEnabled( false ),
 	fStateDirty( false ),
 	fCommandStack( NULL ),
@@ -313,15 +312,6 @@ Renderer::SetViewport( S32 x, S32 y, S32 width, S32 height )
 	
 	// STEVE CHANGE
 	fStateDirty = true;
-
-	if (!fScissorWritten)
-	{
-		fScissor[0] = x;
-		fScissor[1] = y;
-		fScissor[2] = width;
-		fScissor[3] = height;
-		fScissorWritten = true;
-	}
 	// /STEVE CHANGE
 
 	DEBUG_PRINT( "Set viewport: x=%i, y=%i, width=%i, height=%i\n", x, y, width, height );
@@ -332,22 +322,10 @@ Renderer::SetViewport( S32 x, S32 y, S32 width, S32 height )
 void 
 Renderer::GetScissor( S32& x, S32& y, S32& width, S32& height ) const
 {
-	// STEVE CHANGE
-	if (!fScissorWritten)
-	{
-		GetViewport( x, y, width, height );
-	}
-
-	else
-	{
-	// /STEVE CHANGE
 	x = fScissor[0];
 	y = fScissor[1];
 	width = fScissor[2];
 	height = fScissor[3];
-	// STEVE CHANGE
-	}
-	// /STEVE CHANGE
 }
 
 void
@@ -357,10 +335,6 @@ Renderer::SetScissor( S32 x, S32 y, S32 width, S32 height )
 	fScissor[1] = y;
 	fScissor[2] = width;
 	fScissor[3] = height;
-
-	// STEVE CHANGE
-	fScissorWritten = true;
-	// /STEVE CHANGE
 
 	// Multiply bounds by view-projection matrix to account for content scaling
 	Real corner0[] = { static_cast<Real>( x ), static_cast<Real>( y ), 0.0f, 1.0f };

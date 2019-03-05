@@ -53,7 +53,7 @@ public:
 	virtual ~CustomCommand();
 
 	virtual int GetFlags( const Renderer& renderer ) = 0;
-	virtual void Prepare( const Renderer& renderer ) = 0;
+	virtual void Prepare( const Renderer& renderer ) {}
 	virtual void Render( Renderer& renderer ) = 0;
 
 	CustomCommand* GetNextCommand() const { return fNext; }

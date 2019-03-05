@@ -41,20 +41,19 @@ namespace Rtt
 class BooleanCommand : public CustomCommand {
 public:
 	typedef CustomCommand Super;
-	typedef void (*PrepareFunc)( const Renderer&, const bool*, bool* );
+	typedef void (*PreRenderFunc)( Renderer&, bool* );
 	typedef void (*RenderFunc)( Renderer&, const bool* );
 	typedef int (*FlagFunc)( const Renderer&, const bool*, const bool* );
 
-	BooleanCommand( const bool* bools, bool* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags );
+	BooleanCommand( const bool* bools, bool* prev, PreRenderFunc preRender, RenderFunc render, FlagFunc flags );
 
 	virtual int GetFlags( const Renderer& renderer );
-	virtual void Prepare( const Renderer& renderer );
 	virtual void Render( Renderer& renderer );
 
 private:
 	const bool* fBools;
-	bool* fPrev;
-	PrepareFunc fPrepare;
+	mutable bool* fPrev;
+	PreRenderFunc fPreRender;
 	RenderFunc fRender;
 	FlagFunc fGetFlags;
 };
@@ -62,20 +61,19 @@ private:
 class IntCommand : public CustomCommand {
 public:
 	typedef CustomCommand Super;
-	typedef void (*PrepareFunc)( const Renderer&, const S32*, S32* );
+	typedef void (*PreRenderFunc)( Renderer&, S32* );
 	typedef void (*RenderFunc)( Renderer&, const S32* );
 	typedef int (*FlagFunc)( const Renderer&, const S32*, const S32* );
 
-	IntCommand( const S32* ints, S32* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags );
+	IntCommand( const S32* ints, S32* prev, PreRenderFunc preRender, RenderFunc render, FlagFunc flags );
 
 	virtual int GetFlags( const Renderer& renderer );
-	virtual void Prepare( const Renderer& renderer );
 	virtual void Render( Renderer& renderer );
 
 private:
 	const S32* fInts;
-	S32* fPrev;
-	PrepareFunc fPrepare;
+	mutable S32* fPrev;
+	PreRenderFunc fPreRender;
 	RenderFunc fRender;
 	FlagFunc fGetFlags;
 };
@@ -83,20 +81,19 @@ private:
 class RealCommand : public CustomCommand {
 public:
 	typedef CustomCommand Super;
-	typedef void (*PrepareFunc)( const Renderer&, const Real*, Real* );
+	typedef void (*PreRenderFunc)( Renderer&, Real* );
 	typedef void (*RenderFunc)( Renderer&, const Real* );
 	typedef int (*FlagFunc)( const Renderer&, const Real*, const Real* );
 
-	RealCommand( const Real* reals, Real* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags );
+	RealCommand( const Real* reals, Real* prev, PreRenderFunc preRender, RenderFunc render, FlagFunc flags );
 
 	virtual int GetFlags( const Renderer& renderer );
-	virtual void Prepare( const Renderer& renderer );
 	virtual void Render( Renderer& renderer );
 
 private:
 	const Real* fReals;
-	Real* fPrev;
-	PrepareFunc fPrepare;
+	mutable Real* fPrev;
+	PreRenderFunc fPreRender;
 	RenderFunc fRender;
 	FlagFunc fGetFlags;
 };
@@ -104,20 +101,19 @@ private:
 class UintCommand : public CustomCommand {
 public:
 	typedef CustomCommand Super;
-	typedef void (*PrepareFunc)( const Renderer&, const U32*, U32* );
+	typedef void (*PreRenderFunc)( Renderer&, U32* );
 	typedef void (*RenderFunc)( Renderer&, const U32* );
 	typedef int (*FlagFunc)( const Renderer&, const U32*, const U32* );
 
-	UintCommand( const U32* ints, U32* prev, PrepareFunc prepare, RenderFunc render, FlagFunc flags );
+	UintCommand( const U32* ints, U32* prev, PreRenderFunc preRender, RenderFunc render, FlagFunc flags );
 
 	virtual int GetFlags( const Renderer& renderer );
-	virtual void Prepare( const Renderer& renderer );
 	virtual void Render( Renderer& renderer );
 
 private:
 	const U32* fUints;
-	U32* fPrev;
-	PrepareFunc fPrepare;
+	mutable U32* fPrev;
+	PreRenderFunc fPreRender;
 	RenderFunc fRender;
 	FlagFunc fGetFlags;
 };
@@ -149,7 +145,6 @@ class RenderStateObject : public DisplayObject
 			kCullFaceEnable,
 			kDepthMask,
 			kDepthTestEnable,
-			kDitherEnable,
 			kScissorEnable,
 			kStencilEnable
 		}
@@ -285,10 +280,10 @@ class RenderStateObject : public DisplayObject
 
 	private:
 		StateCommands* AddCommands( UsedKind kind, int state );
-		StateCommands* AddBooleanCommands( UsedKind kind, int state, BooleanCommand::PrepareFunc prepare, BooleanCommand::RenderFunc render, BooleanCommand::FlagFunc flags );
-		StateCommands* AddIntCommands( UsedKind kind, int state, IntCommand::PrepareFunc prepare, IntCommand::RenderFunc render, IntCommand::FlagFunc flags );
-		StateCommands* AddRealCommands( UsedKind kind, int state, RealCommand::PrepareFunc prepare, RealCommand::RenderFunc render, RealCommand::FlagFunc flags );
-		StateCommands* AddUintCommands( UsedKind kind, int state, UintCommand::PrepareFunc prepare, UintCommand::RenderFunc render, UintCommand::FlagFunc flags );
+		StateCommands* AddBooleanCommands( UsedKind kind, int state, BooleanCommand::PreRenderFunc preRender, BooleanCommand::RenderFunc render, BooleanCommand::FlagFunc flags );
+		StateCommands* AddIntCommands( UsedKind kind, int state, IntCommand::PreRenderFunc preRender, IntCommand::RenderFunc render, IntCommand::FlagFunc flags );
+		StateCommands* AddRealCommands( UsedKind kind, int state, RealCommand::PreRenderFunc preRender, RealCommand::RenderFunc render, RealCommand::FlagFunc flags );
+		StateCommands* AddUintCommands( UsedKind kind, int state, UintCommand::PreRenderFunc preRender, UintCommand::RenderFunc render, UintCommand::FlagFunc flags );
 	private:
 		Rtt_Allocator* fAllocator;
 		Array<StateCommands> fCommands;

@@ -4594,7 +4594,7 @@ LuaRenderFreeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& 
 		"isHitTestMasked"
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 35, 33, 15, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 23, 33, 15, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	if (hash->Lookup( key ) < 0)
@@ -4635,7 +4635,7 @@ LuaRenderFreeObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& obj
 		"isHitTestMasked"
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 0, 0, 0, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 16, 24, 6, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	if (hash->Lookup( key ) < 0)
@@ -4679,10 +4679,11 @@ LuaRenderStateObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable&
 		"stencilEnabled",		// 5
 		"scissor",				// 6
 		"viewport",				// 7
-		"clearStencil"			// 8
+		"clearStencil",			// 8
+		"stencilMask"			// 9
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 9, 6, 9, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 10, 18, 9, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	const RenderStateObject& o = static_cast< const RenderStateObject& >( object );
@@ -4779,6 +4780,15 @@ LuaRenderStateObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable&
 	case 8:	// clearStencil
 		result = 0; // just an operation at the moment
 		break;
+	case 9:	// stencilMask
+		{
+			U32 mask = ~0;
+
+			o.GetUintState( RenderStateObject::kStencilMask, mask );
+
+			lua_pushinteger( L, mask );
+		}
+		break;
 	default:
 		{
 			result = Super::ValueForKey( L, object, key, overrideRestriction );
@@ -4804,10 +4814,11 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 		"stencilEnabled",		// 4
 		"scissor",				// 5
 		"viewport",				// 6
-		"clearStencil"			// 7
+		"clearStencil",			// 7
+		"stencilMask"			// 8
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 8, 8, 9, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 9, 10, 9, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	RenderStateObject& o = static_cast< RenderStateObject& >( object );
@@ -4888,9 +4899,9 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 
 			U32 mask = ~0U;
 
-			if (lua_isnumber( L, -2 ))
+			if (lua_isnumber( L, -1 ))
 			{
-				S32 imask = lua_tointeger( L, -2 );
+				S32 imask = lua_tointeger( L, -1 );
 
 				if (imask >= 0)
 				{
@@ -4905,7 +4916,7 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 				}
 			}
 
-			else if (!lua_isnil( L, -2 ))
+			else if (!lua_isnil( L, -1 ))
 			{
 				CoronaLuaWarning( L, "Stencil mask should be an unsigned integer" );
 
@@ -4965,16 +4976,16 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 					actions[j] = RenderStateObject::IndexForStencilOpAction( lua_tostring( L, i ) );
 				}
 
-				if (actions[j] < 0)
+				else if (!lua_isnil( L, i ))
 				{
-					CoronaLuaWarning( L, "Unknown stencil action: %s", lua_tostring( L, i ) );
+					CoronaLuaWarning( L, "Expected string for stencil action" );
 
 					result = false;
 				}
 
-				else if (!lua_isnil( L, i ))
+				if (actions[j] < 0)
 				{
-					CoronaLuaWarning( L, "Expected string for stencil action" );
+					CoronaLuaWarning( L, "Unknown stencil action: %s", lua_tostring( L, i ) );
 
 					result = false;
 				}
@@ -5061,7 +5072,7 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 	case 7:	// clearStencil
 		if (lua_isnumber( L, valueIndex ))
 		{
-			o.SetIntState( RenderStateObject::kClearStencil, lua_tointeger( L, valueIndex ));
+			o.SetIntState( RenderStateObject::kClearStencil, lua_tointeger( L, valueIndex ) );
 		}
 
 		else if (lua_isnil( L, valueIndex ))
@@ -5075,6 +5086,25 @@ LuaRenderStateObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& ob
 
 			result = false;
 		}
+		break;
+	case 8:	// stencilMask
+		if (lua_isnumber( L, valueIndex ))
+		{
+			o.SetUintState( RenderStateObject::kStencilMask, lua_tointeger( L, valueIndex ));
+		}
+
+		else if (lua_isnil( L, valueIndex ))
+		{
+			o.Remove( RenderStateObject::kUint, RenderStateObject::kStencilMask );
+		}
+
+		else
+		{
+			CoronaLuaWarning( L, "Stencil mask expects an unsigned integer" );
+
+			result = false;
+		}
+		break;
 	default:
 		result = Super::SetValueForKey( L, object, key, valueIndex );
 	}

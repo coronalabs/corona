@@ -347,7 +347,6 @@ class Renderer
 		S32 fStencilFail;
 		S32 fDepthFail;
 		S32 fDepthPass;
-		bool fScissorWritten;
 		bool fStencilEnabled;
 		bool fStateDirty;
 
