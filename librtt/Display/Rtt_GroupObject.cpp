@@ -31,9 +31,9 @@
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_Scene.h"
 #include "Display/Rtt_StageObject.h"
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 #include "Renderer/Rtt_CustomCommand.h"
-// /STEVE CHANGE
+#endif // Rtt_WIN_ENV
 #include "Renderer/Rtt_Renderer.h"
 #include "Rtt_LuaProxyVTable.h"
 
@@ -228,9 +228,9 @@ GroupObject::Draw( Renderer& renderer ) const
 			renderer.PushMask( texture, uniform );
 		}
 
-		// STEVE CHANGE
+		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 		CommandStack cur, *prev = renderer.BeginCommandStack( &cur );
-		// /STEVE CHANGE
+		#endif // Rtt_WIN_ENV
 
 		for ( S32 i = 0, iMax = fChildren.Length(); i < iMax; i++ )
 		{
@@ -244,9 +244,9 @@ GroupObject::Draw( Renderer& renderer ) const
 			}
 		}
 
-		// STEVE CHANGE
+		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 		renderer.EndCommandStack( prev );
-		// /STEVE CHANGE
+		#endif // Rtt_WIN_ENV
 
 		if ( mask )
 		{

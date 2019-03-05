@@ -26,9 +26,9 @@
 #include "Renderer/Rtt_Renderer.h"
 
 #include "Renderer/Rtt_CommandBuffer.h"
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 #include "Renderer/Rtt_CustomCommand.h"
-// /STEVE CHANGE
+#endif
 #include "Renderer/Rtt_FrameBufferObject.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_GeometryPool.h"
@@ -160,7 +160,6 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fScissorEnabled( false ),
 	fMultisampleEnabled( false ),
 	fFrameBufferObject( NULL ),
-// STEVE CHANGE
 	fRedMask( Rtt_REAL_1 ),
 	fGreenMask( Rtt_REAL_1 ),
 	fBlueMask( Rtt_REAL_1 ),
@@ -173,8 +172,9 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fDepthPass( 0 ),
 	fStencilEnabled( false ),
 	fStateDirty( false ),
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 	fCommandStack( NULL ),
-// /STEVE CHANGE
+#endif // Rtt_WIN_ENV
 	fInsertionLimit( std::numeric_limits<U32>::max() ),
 	fTimeDependencyCount( 0 )
 {
@@ -310,9 +310,7 @@ Renderer::SetViewport( S32 x, S32 y, S32 width, S32 height )
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetViewport( x, y, width, height );
 	
-	// STEVE CHANGE
 	fStateDirty = true;
-	// /STEVE CHANGE
 
 	DEBUG_PRINT( "Set viewport: x=%i, y=%i, width=%i, height=%i\n", x, y, width, height );
 }
@@ -357,9 +355,7 @@ Renderer::SetScissor( S32 x, S32 y, S32 width, S32 height )
 	S32 y1 = static_cast<S32>( windowCoord1[1] );
 	fBackCommandBuffer->SetScissorRegion( x0, Min( y0, y1 ), x1 - x0, abs( y1 - y0 ) );
 	
-	// STEVE CHANGE
 	fStateDirty = true;
-	// /STEVE CHANGE
 
 	DEBUG_PRINT( "Set scissor window: x=%i, y=%i, width=%i, height=%i\n", x, y, width, height );
 }
@@ -377,9 +373,7 @@ Renderer::SetScissorEnabled( bool enabled )
 	CheckAndInsertDrawCommand();
 	fBackCommandBuffer->SetScissorEnabled( enabled );
 
-	// STEVE CHANGE
 	fStateDirty = true;
-	// /STEVE CHANGE
 
 	DEBUG_PRINT( "Enabled scissor testing\n" );
 }
@@ -400,7 +394,6 @@ Renderer::SetMultisampleEnabled( bool enabled )
 	DEBUG_PRINT( "Enabled multisample testing\n" );
 }
 
-// STEVE CHANGE
 void
 Renderer::GetColorMask( bool& rmask, bool& gmask, bool& bmask, bool& amask ) const
 {
@@ -513,7 +506,6 @@ Renderer::ClearStencil( S32 clear )
 
 	fStateDirty = true;
 }
-// /STEVE CHANGE
 
 FrameBufferObject* 
 Renderer::GetFrameBufferObject() const
@@ -634,11 +626,9 @@ Renderer::Insert( const RenderData* data )
 	bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1;
 	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2;
 	bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3;
-	// STEVE CHANGE
 	bool stateDirty = fStateDirty;
 
 	fStateDirty = false;
-	// /STEVE CHANGE
 	
 	Geometry* geometry = data->fGeometry;
 	Rtt_ASSERT( geometry );
@@ -682,9 +672,7 @@ Renderer::Insert( const RenderData* data )
 				|| userUniformDirty1
 				|| userUniformDirty2
 				|| userUniformDirty3
-				// STEVE CHANGE
 				|| stateDirty
-				// /STEVE CHANGE
 									);
 
 		// Only triangle strips are batched. All other primitive types
@@ -1114,7 +1102,7 @@ Renderer::BindUniform( Uniform* uniform, U32 unit )
 	INCREMENT( fStatistics.fUniformBindCount );
 }
 
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 CommandStack *
 Renderer::BeginCommandStack( CommandStack* commandStack )
 {
@@ -1146,7 +1134,7 @@ Renderer::GetCommandStack() const
 {
 	return fCommandStack;
 }
-// /STEVE CHANGE
+#endif // Rtt_WIN_ENV
 
 void 
 Renderer::CheckAndInsertDrawCommand()

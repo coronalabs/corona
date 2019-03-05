@@ -87,7 +87,6 @@ namespace /*anonymous*/
 		kCommandClear,
 		kCommandDraw,
 		kCommandDrawIndexed,
-		// STEVE CHANGE
 		kCommandSetColorMask,
 		kCommandEnableStencil,
 		kCommandDisableStencil,
@@ -95,7 +94,6 @@ namespace /*anonymous*/
 		kCommandSetStencilFunc,
 		kCommandSetStencilOp,
 		kCommandClearStencil,
-		// /STEVE CHANGE
 		kNumCommands
 	};
 
@@ -608,7 +606,6 @@ GLCommandBuffer::SetMultisampleEnabled( bool enabled )
 	WRITE_COMMAND( enabled ? kCommandEnableMultisample : kCommandDisableMultisample );
 }
 
-// STEVE CHANGE
 void
 GLCommandBuffer::SetColorMask( bool rmask, bool gmask, bool bmask, bool amask )
 {
@@ -653,7 +650,6 @@ GLCommandBuffer::SetStencilOp( S32 stencilFail, S32 depthFail, S32 depthPass )
 	Write<GLenum>( actions[ depthFail ] );
 	Write<GLenum>( actions[ depthPass ] );
 }
-// /STEVE CHANGE
 
 void 
 GLCommandBuffer::Clear(Real r, Real g, Real b, Real a)
@@ -665,14 +661,12 @@ GLCommandBuffer::Clear(Real r, Real g, Real b, Real a)
 	Write<GLfloat>(a);
 }
 
-// STEVE CHANGE
 void
 GLCommandBuffer::ClearStencil( S32 clear )
 {
 	WRITE_COMMAND( kCommandClearStencil );
 	Write<GLint>(clear);
 }
-// /STEVE CHANGE
 
 void 
 GLCommandBuffer::Draw( U32 offset, U32 count, Geometry::PrimitiveType type )
@@ -780,11 +774,9 @@ GLCommandBuffer::Execute( bool measureGPU )
 				DEBUG_PRINT( "Bind FrameBufferObject: OpenGL name: %i, OpenGL Texture name, if any: %d; depth: %d, stencil: %d, depth-stencil: %d",
 								fbo->GetName(),
 								fbo->GetTextureName(),
-								// STEVE CHANGE
 								fbo->GetDepthTextureName(),
 								fbo->GetStencilTextureName(),
 								fbo->GetDepthStencilTextureName()
-								// /STEVE CHANGE
 								);
 				CHECK_ERROR_AND_BREAK;
 			}
@@ -1009,7 +1001,6 @@ GLCommandBuffer::Execute( bool measureGPU )
 				DEBUG_PRINT( "Draw indexed: mode=%i, count=%i", mode, count );
 				CHECK_ERROR_AND_BREAK;
 			}
-			// STEVE CHANGE
 			case kCommandSetColorMask:
 			{
 				GLboolean rmask = Read<GLboolean>();
@@ -1065,7 +1056,6 @@ GLCommandBuffer::Execute( bool measureGPU )
 				DEBUG_PRINT( "Clear stencil: index=%i", index );
 				CHECK_ERROR_AND_BREAK;
 			}
-			// /STEVE CHANGE
 			default:
 				DEBUG_PRINT( "Unknown command(%d)", command );
 				Rtt_ASSERT_NOT_REACHED();

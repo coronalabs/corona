@@ -37,7 +37,6 @@ class Renderer;
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
 class CustomCommand {
 public:
 	typedef enum _CommandFlags

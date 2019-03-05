@@ -47,7 +47,6 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
 GLuint
 NewAttachment( Texture* texture, GLint internalFormat )
 {
@@ -61,22 +60,19 @@ NewAttachment( Texture* texture, GLint internalFormat )
 
 	return name;
 }
-// /STEVE CHANGE
 
 void 
 GLFrameBufferObject::Create( CPUResource* resource )
 {
 	Rtt_ASSERT( CPUResource::kFrameBufferObject == resource->GetType() );
-//	FrameBufferObject* fbo = static_cast<FrameBufferObject*>( resource );
-// STEVE CHANGE
+
 	FrameBufferObject* fbo = static_cast<FrameBufferObject*>( resource );
-// /STEVE CHANGE
+
 	GLuint name;
 	glGenFramebuffers( 1, &name );
 	fHandle = NameToHandle( name );
 	GL_CHECK_ERROR();
 
-	// STEVE CHANGE
 	GLint depthFormat = 0, stencilFormat = 0;
 
 	switch (fbo->GetDepthBits()) // default.SetDepthBits() will restrict per platform
@@ -136,14 +132,12 @@ GLFrameBufferObject::Create( CPUResource* resource )
 			fStencilAttachment = NewAttachment( fbo->GetTexture(), stencilFormat );
 		}
 	}
-	// /STEVE CHANGE
 
 	Update( resource );
-	// STEVE CHANGE
+
 	DEBUG_PRINT( "%s : OpenGL name: %d, depth: %d, stencil: %d\n",
 					__FUNCTION__,
 					name, fDepthAttachment, fStencilAttachment );
-	// /STEVE CHANGE
 }
 
 void 
@@ -173,7 +167,6 @@ GLFrameBufferObject::Update( CPUResource* resource )
 
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_name, 0 );
 
-		// STEVE CHANGE
 		GLuint depth_stencil_name = GetDepthStencilAttachmentName();
 		
 		if (depth_stencil_name)
@@ -197,7 +190,6 @@ GLFrameBufferObject::Update( CPUResource* resource )
 				glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencil_name );
 			}
 		}
-		// /STEVE CHANGE
 
 		GLenum status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
 		if( status != GL_FRAMEBUFFER_COMPLETE )
@@ -212,7 +204,6 @@ GLFrameBufferObject::Update( CPUResource* resource )
 void 
 GLFrameBufferObject::Destroy()
 {
-	// STEVE CHANGE
 	GLuint depthStencilName = GetDepthStencilAttachmentName();
 	if ( 0 != depthStencilName )
 	{
@@ -235,8 +226,6 @@ GLFrameBufferObject::Destroy()
 		}
 	}
 
-	// /STEVE CHANGE
-
 	GLuint name = GetName();
 	if ( 0 != name )
 	{
@@ -244,11 +233,10 @@ GLFrameBufferObject::Destroy()
 		GL_CHECK_ERROR();
 		fHandle = 0;
 	}
-	// STEVE CHANGE
+
 	DEBUG_PRINT( "%s : OpenGL name: %d, %d, %d\n",
 					__FUNCTION__,
 					name, fDepthAttachment, fStencilAttachment );
-	// /STEVE CHANGE
 }
 
 void 
@@ -284,25 +272,29 @@ GLFrameBufferObject::GetTextureName()
 	return param;
 }
 
-// STEVE CHANGE
+bool
+GLFrameBufferObject::MightHaveDepthStencilAttachment()
+{
+	return fDepthAttachment == fStencilAttachment;
+}
+
 GLuint
 GLFrameBufferObject::GetDepthAttachmentName()
 {
-	return fDepthAttachment != fStencilAttachment ? fDepthAttachment : 0;
+	return !MightHaveDepthStencilAttachment() ? fDepthAttachment : 0;
 }
 
 GLuint
 GLFrameBufferObject::GetStencilAttachmentName()
 {
-	return fDepthAttachment != fStencilAttachment ? fStencilAttachment : 0;
+	return !MightHaveDepthStencilAttachment() ? fStencilAttachment : 0;
 }
 
 GLuint
 GLFrameBufferObject::GetDepthStencilAttachmentName()
 {
-	return fDepthAttachment == fStencilAttachment ? fDepthAttachment : 0;
+	return MightHaveDepthStencilAttachment() ? fDepthAttachment : 0;
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

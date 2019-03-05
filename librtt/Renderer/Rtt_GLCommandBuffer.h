@@ -69,17 +69,15 @@ class GLCommandBuffer : public CommandBuffer
 		virtual void SetScissorEnabled( bool enabled );
 		virtual void SetScissorRegion( int x, int y, int width, int height );
 		virtual void SetMultisampleEnabled( bool enabled );
-// STEVE CHANGE
+
 		virtual void SetColorMask( bool rmask, bool gmask, bool bmask, bool amask );
 		virtual void SetStencilEnabled( bool enabled );
 		virtual void SetStencilMask( U32 mask );
 		virtual void SetStencilFunc( S32 func, S32 ref, U32 mask );
 		virtual void SetStencilOp( S32 stencilFail, S32 depthFail, S32 depthPass );
-// /STEVE CHANGE
+
 		virtual void Clear( Real r, Real g, Real b, Real a );
-// STEVE CHANGE
 		virtual void ClearStencil( S32 clear );
-// /STEVE CHANGE
 		virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type );
 		virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type );
 		virtual S32 GetCachedParam( CommandBuffer::QueryableParams param );

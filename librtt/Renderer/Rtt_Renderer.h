@@ -46,9 +46,9 @@ namespace Rtt
 {
 
 class CommandBuffer;
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 class CommandStack;
-// /STEVE CHANGE
+#endif // Rtt_WIN_ENV
 class FrameBufferObject;
 class GeometryPool;
 class Texture;
@@ -118,7 +118,6 @@ class Renderer
 		bool GetMultisampleEnabled() const;
 		void SetMultisampleEnabled( bool enabled );
 
-		// STEVE CHANGE
 		void GetColorMask( bool& rmask, bool& gmask, bool& bmask, bool& amask ) const;
 		void SetColorMask( bool rmask, bool gmask, bool bmask, bool amask );
 
@@ -135,7 +134,6 @@ class Renderer
 		void SetStencilOp( S32 stencilFail, S32 depthFail, S32 depthPass );
 
 		void ClearStencil( S32 clear );
-		// /STEVE CHANGE
 
 		// Get the active FrameBufferObject or NULL if one does not exist.
 		FrameBufferObject* GetFrameBufferObject() const;
@@ -261,12 +259,12 @@ class Renderer
 		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
 		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
 
-		// STEVE CHANGE
+		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 		CommandStack* BeginCommandStack( CommandStack* commandStack );
 		void EndCommandStack( CommandStack* replacement );
 
 		CommandStack* GetCommandStack() const;
-		// /STEVE CHANGE
+		#endif // Rtt_WIN_ENV
 
 	protected:
 		// Destroys all queued GPU resources passed into the DestroyQueue() method.
@@ -336,7 +334,6 @@ class Renderer
 		bool fMultisampleEnabled;
 		FrameBufferObject* fFrameBufferObject;
 
-		// STEVE CHANGE
 		Real fRedMask;
 		Real fGreenMask;
 		Real fBlueMask;
@@ -350,8 +347,9 @@ class Renderer
 		bool fStencilEnabled;
 		bool fStateDirty;
 
+		#ifdef Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 		CommandStack* fCommandStack;
-		// /STEVE CHANGE
+		#endif //Rtt_WIN_ENV
 
 		RenderData fPrevious;
 		U32 fVertexOffset;

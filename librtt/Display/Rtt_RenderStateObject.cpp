@@ -22,7 +22,7 @@
 // For overview and more information on licensing please refer to README.md
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_RenderStateObject.h"
 #include "Renderer/Rtt_CommandBuffer.h"
@@ -962,5 +962,5 @@ RenderStateObject::Remove( UsedKind kind, int state )
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt
-
+#endif // TODO: RenderStateObject REMOVE ME!
 // ----------------------------------------------------------------------------

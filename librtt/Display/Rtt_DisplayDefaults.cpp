@@ -53,10 +53,8 @@ DisplayDefaults::DisplayDefaults()
 	fLineColor( kWhite ),
 	fAnchorX( 0.5 ),
 	fAnchorY( 0.5 ),
-	// STEVE CHANGE
 	fDepthBits( 0 ),
 	fStencilBits( 0 ),
-	// /STEVE CHANGE
 	fMagTextureFilter( RenderTypes::kLinearTextureFilter ),
 	fMinTextureFilter( RenderTypes::kLinearTextureFilter ),
 	fWrapX( RenderTypes::kClampToEdgeWrap ),

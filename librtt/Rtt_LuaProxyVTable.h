@@ -431,7 +431,7 @@ class LuaPlatformVideoObjectProxyVTable : public LuaPlatformDisplayObjectProxyVT
 		virtual const LuaProxyVTable& Parent() const;
 };
 
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 class LuaRenderFreeObjectProxyVTable : public LuaDisplayObjectProxyVTable
 {
 	public:
@@ -470,7 +470,7 @@ class LuaRenderStateObjectProxyVTable : public LuaRenderFreeObjectProxyVTable
 	public:
 		static int ClearStates( lua_State *L );
 };
-// /STEVE CHANGE
+#endif // Rtt_WIN_ENV
 
 class LuaSpriteObjectProxyVTable : public LuaShapeObjectProxyVTable
 {

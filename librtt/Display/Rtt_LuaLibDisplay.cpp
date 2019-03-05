@@ -39,9 +39,9 @@
 #include "Display/Rtt_ImageSheetPaint.h"
 #include "Display/Rtt_Paint.h"
 #include "Display/Rtt_RectObject.h"
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 #include "Display/Rtt_RenderStateObject.h"
-// /STEVE CHANGE
+#endif
 #include "Display/Rtt_Scene.h"
 #include "Display/Rtt_ShaderFactory.h"
 #include "Display/Rtt_ShapeAdapterPolygon.h"
@@ -166,9 +166,9 @@ class DisplayLibrary
 		static int newGroup( lua_State *L );
 		static int newContainer( lua_State *L );
 		static int _newContainer( lua_State *L );
-		// STEVE CHANGE
+		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 		static int newRenderState( lua_State *L );
-		// /STEVE CHANGE
+		#endif // TODO: RenderStateObject REMOVE ME!
 		static int newSnapshot( lua_State *L );
 		static int newSprite( lua_State *L );
 		static int newMesh( lua_State *L );
@@ -233,9 +233,9 @@ DisplayLibrary::Open( lua_State *L )
 		{ "newGroup", newGroup },
 		{ "newContainer", newContainer },
 		{ "_newContainer", _newContainer },
-		// STEVE CHANGE
+		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 		{ "newRenderState", newRenderState },
-		// /STEVE CHANGE
+		#endif // TODO: RenderStateObject REMOVE ME!
 		{ "newSnapshot", newSnapshot },
 		{ "newSprite", newSprite },
 		{ "newMesh", newMesh },
@@ -1608,7 +1608,7 @@ DisplayLibrary::_newContainer( lua_State *L )
 	return result;
 }
 
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 // display.newRenderState( [parent] )
 int
 DisplayLibrary::newRenderState( lua_State *L )
@@ -1632,7 +1632,7 @@ DisplayLibrary::newRenderState( lua_State *L )
 
 	return result;
 }
-// /STEVE CHANGE
+#endif // Rtt_WIN_ENV
 
 // display.newSnapshot( [parent, ] w, h )
 int
@@ -1859,7 +1859,6 @@ DisplayLibrary::getDefault( lua_State *L )
 		bool value = defaults.IsImageSheetSampledInsideFrame();
 		lua_pushboolean( L, value ? 1 : 0 );
 	}
-	// STEVE CHANGE
 	else if ( ( Rtt_StringCompare( key, "depthBits" ) == 0 ) )
 	{
 		U8 bits = defaults.GetDepthBits();
@@ -1870,7 +1869,6 @@ DisplayLibrary::getDefault( lua_State *L )
 		U8 bits = defaults.GetStencilBits();
 		lua_pushinteger( L, bits );
 	}
-	// /STEVE CHANGE
 	else if ( key )
 	{
 		luaL_error( L, "ERROR: display.getDefault() given invalid key (%s)", key );
@@ -1996,7 +1994,6 @@ DisplayLibrary::setDefault( lua_State *L )
 		bool value = lua_toboolean( L, index ) ? true : false;
 		defaults.SetImageSheetSampledInsideFrame( value );
 	}
-	// STEVE CHANGE
 	else if ( ( Rtt_StringCompare( key, "depthBits" ) == 0 ) )
 	{
 		U8 bits = lua_tointeger( L, index );
@@ -2025,7 +2022,6 @@ DisplayLibrary::setDefault( lua_State *L )
 			CoronaLuaWarning( L, "Unsupported # of bits for stencil buffers: %u", (U32)bits );
 		}
 	}
-	// /STEVE CHANGE
 	else if ( key )
 	{
 		luaL_error( L, "ERROR: display.setDefault() given invalid key (%s)", key );

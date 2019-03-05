@@ -41,9 +41,9 @@
 #include "Display/Rtt_LuaLibDisplay.h"
 #include "Display/Rtt_Paint.h"
 #include "Display/Rtt_RectPath.h"
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 #include "Display/Rtt_RenderStateObject.h"
-// /STEVE CHANGE
+#endif
 #include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderFactory.h"
 #include "Display/Rtt_ShapeObject.h"
@@ -4551,7 +4551,7 @@ LuaPlatformVideoObjectProxyVTable::Parent() const
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 const LuaRenderFreeObjectProxyVTable&
 LuaRenderFreeObjectProxyVTable::Constant()
 {
@@ -5132,8 +5132,7 @@ LuaRenderStateObjectProxyVTable::ClearStates( lua_State *L )
 
 	return 0;
 }
-
-// /STEVE CHANGE
+#endif // Rtt_WIN_ENV
 
 // ----------------------------------------------------------------------------
 

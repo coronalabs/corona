@@ -222,9 +222,8 @@ SnapshotObject::Initialize( lua_State *L, Display& display, Real contentW, Real 
 	if (!fFrameBufferObject)
 	{
 		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture() ) );
-		// STEVE CHANGE
+
 		fFrameBufferObject->AddAnyAttachments( display );
-		// /STEVE CHANGE
 	}
 }
 
@@ -362,12 +361,11 @@ SnapshotObject::RenderToFBO(
 			color.pixel = * clearColor;
 			const Real inv255 = 1.f / 255.f;
 			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255 );
-			// STEVE CHANGE
+
 			if (dstFBO->GetStencilBits())
 			{
 				renderer.ClearStencil( 0 );
 			}
-			// /STEVE CHANGE
 		}
 
 		object.Draw( renderer );

@@ -23,6 +23,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
 #include "Renderer/Rtt_CustomCommand.h"
 
 #include <stddef.h>
@@ -34,7 +35,6 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
 CustomCommand::CustomCommand()
 :	fNext( NULL ),
 	fUserdata( NULL )
@@ -104,5 +104,5 @@ CommandStack::IsEmpty() const
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt
-
+#endif // TODO: RenderStateObject REMOVE ME!
 // ----------------------------------------------------------------------------

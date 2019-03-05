@@ -231,9 +231,7 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
 
 		renderer.SetViewport( 0, 0, fOwner.WindowWidth(), fOwner.WindowHeight() );
 		
-		// STEVE CHANGE
 		renderer.SetScissor( 0, 0, fOwner.WindowWidth(), fOwner.WindowWidth() );
-		// /STEVE CHANGE
 
 		glm::mat4 viewMatrix;
 		glm::mat4 projMatrix;

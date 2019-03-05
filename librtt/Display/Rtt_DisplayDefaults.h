@@ -62,13 +62,11 @@ class DisplayDefaults
 		void SetAnchorClamped( bool newValue ) { fIsAnchorClamped = newValue; }
 		
 	public:
-		// STEVE CHANGE
 		U8 GetDepthBits() const { return fDepthBits; }
 		void SetDepthBits( U8 bits ) { fDepthBits = bits; }
 
 		U8 GetStencilBits() const { return fStencilBits; }
 		void SetStencilBits( U8 bits ) { fStencilBits = bits; }
-		// /STEVE CHANGE
 
 		RenderTypes::TextureFilter GetMagTextureFilter() const { return (RenderTypes::TextureFilter)fMagTextureFilter; }
 		void SetMagTextureFilter( RenderTypes::TextureFilter newValue ) { fMagTextureFilter = newValue; }
@@ -109,10 +107,8 @@ class DisplayDefaults
 		Color fLineColor;
 		float fAnchorX;
 		float fAnchorY;
-		// STEVE CHANGE
 		U8 fDepthBits;
 		U8 fStencilBits;
-		// /STEVE CHANGE
 		U8 fMagTextureFilter;
 		U8 fMinTextureFilter;
 		U8 fWrapX;

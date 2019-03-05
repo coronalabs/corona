@@ -98,28 +98,24 @@ class CommandBuffer
 		virtual void SetScissorEnabled( bool enabled ) = 0;
 		virtual void SetScissorRegion( int x, int y, int width, int height ) = 0;
 		virtual void SetMultisampleEnabled( bool enabled ) = 0;
-// STEVE CHANGE
+
 		virtual void SetColorMask( bool rmask, bool gmask, bool bmask, bool amask ) = 0;
 		virtual void SetStencilEnabled( bool enabled ) = 0;
 		virtual void SetStencilMask( U32 mask ) = 0;
 		virtual void SetStencilFunc( S32 func, S32 ref, U32 mask ) = 0;
 		virtual void SetStencilOp( S32 stencilFail, S32 depthFail, S32 depthPass ) = 0;
-// /STEVE CHANGE
+
 		virtual void Clear( Real r, Real g, Real b, Real a ) = 0;
-// STEVE CHANGE
 		virtual void ClearStencil( S32 clear ) = 0;
-// /STEVE CHANGE
 		virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
 		virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
 		virtual S32 GetCachedParam( CommandBuffer::QueryableParams param ) = 0;
 		
-		// STEVE CHANGE
 		static const char *GetNameForStencilFunc( S32 func );
 		static S32 GetStencilFuncForName( const char *name );
 
 		static const char *GetNameForStencilOpAction( S32 action );
 		static S32 GetStencilOpActionForName( const char *name );
-		// /STEVE CHANGE
 
 		// Execute the generated command buffer. This function should only be
 		// called from a thread with an active rendering context. If requested

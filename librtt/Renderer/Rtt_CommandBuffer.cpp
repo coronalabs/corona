@@ -54,7 +54,6 @@ CommandBuffer::~CommandBuffer()
     }
 }
 
-// STEVE CHANGE
 const char *
 CommandBuffer::GetNameForStencilFunc( S32 func )
 {
@@ -204,7 +203,6 @@ CommandBuffer::GetStencilOpActionForName( const char *name )
 		return -1;
 	}
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

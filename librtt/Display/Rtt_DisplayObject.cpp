@@ -632,13 +632,11 @@ DisplayObject::CanCull() const
 	return true;
 }
 
-// STEVE CHANGE
 bool
 DisplayObject::CanHitTest() const
 {
 	return true;
 }
-// /STEVE CHANGE
 
 void
 DisplayObject::InitProxy( lua_State *L )

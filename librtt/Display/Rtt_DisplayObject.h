@@ -197,9 +197,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 
 	public:
 		virtual bool CanCull() const;
-		// STEVE CHANGE
 		virtual bool CanHitTest() const;
-		// /STEVE CHANGE
 
 	public:
 		// MLuaProxyable
@@ -394,7 +392,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 		void UpdateAlphaCumulative( U8 alphaCumulativeFromAncestors );
 
 		Rtt_INLINE bool IsNotHidden() const { return IsVisible() && Alpha() > 0; }
-		Rtt_INLINE bool ShouldHitTest() const { return CanHitTest() && (IsNotHidden() || IsHitTestable()); } // <- STEVE CHANGE
+		Rtt_INLINE bool ShouldHitTest() const { return (IsNotHidden() || IsHitTestable()) && CanHitTest(); }
 		bool ShouldDraw() const
 		{
 			return ( ! IsDirty() && IsNotHidden() ) || IsForceDraw();
