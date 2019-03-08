@@ -62,11 +62,11 @@ class DisplayDefaults
 		void SetAnchorClamped( bool newValue ) { fIsAnchorClamped = newValue; }
 		
 	public:
-		U8 GetDepthBits() const { return fDepthBits; }
-		void SetDepthBits( U8 bits ) { fDepthBits = bits; }
+		U8 GetDepthBitsize() const { return fDepthBitsize; }
+		void SetDepthBitsize( U8 bitsize ) { fDepthBitsize = bitsize; }
 
-		U8 GetStencilBits() const { return fStencilBits; }
-		void SetStencilBits( U8 bits ) { fStencilBits = bits; }
+		U8 GetStencilBitsize() const { return fStencilBitsize; }
+		void SetStencilBitsize( U8 bitsize ) { fStencilBitsize = bitsize; }
 
 		RenderTypes::TextureFilter GetMagTextureFilter() const { return (RenderTypes::TextureFilter)fMagTextureFilter; }
 		void SetMagTextureFilter( RenderTypes::TextureFilter newValue ) { fMagTextureFilter = newValue; }
@@ -107,8 +107,8 @@ class DisplayDefaults
 		Color fLineColor;
 		float fAnchorX;
 		float fAnchorY;
-		U8 fDepthBits;
-		U8 fStencilBits;
+		U8 fDepthBitsize;
+		U8 fStencilBitsize;
 		U8 fMagTextureFilter;
 		U8 fMinTextureFilter;
 		U8 fWrapX;

@@ -50,15 +50,15 @@ class FrameBufferObject : public CPUResource
 		virtual ResourceType GetType() const;
 		Texture* GetTexture() const;
 
-		U8 GetDepthBits() const { return fDepthBits; }
-		U8 GetStencilBits() const { return fStencilBits; }
+		U8 GetDepthBitsize() const { return fDepthBitsize; }
+		U8 GetStencilBitsize() const { return fStencilBitsize; }
 
 		void AddAnyAttachments( Display& display );
 
 	private:
 		Texture* fTexture;
-		U8 fDepthBits;
-		U8 fStencilBits;
+		U8 fDepthBitsize;
+		U8 fStencilBitsize;
 };
 
 // ----------------------------------------------------------------------------

@@ -208,7 +208,7 @@ void TextureResourceCanvas::Render(Rtt::Renderer &renderer, GroupObject *group, 
 			const Real inv255 = 1.f / 255.f;
 			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255 );
 
-			if (fDstFBO->GetStencilBits())
+			if (fDstFBO->GetStencilBitsize())
 			{
 				renderer.ClearStencil( 0 );
 			}

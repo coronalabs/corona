@@ -75,7 +75,7 @@ GLFrameBufferObject::Create( CPUResource* resource )
 
 	GLint depthFormat = 0, stencilFormat = 0;
 
-	switch (fbo->GetDepthBits()) // default.SetDepthBits() will restrict per platform
+	switch (fbo->GetDepthBitsize()) // default.SetDepthBitsize() should restrict invalid bitsizes for platform
 	{
 	case 16:
 		depthFormat = GL_DEPTH_COMPONENT16;
@@ -90,7 +90,7 @@ GLFrameBufferObject::Create( CPUResource* resource )
 		break;
 	}
 
-	switch (fbo->GetStencilBits())
+	switch (fbo->GetStencilBitsize())
 	{
 	case 8:
 		stencilFormat = GL_STENCIL_INDEX8;

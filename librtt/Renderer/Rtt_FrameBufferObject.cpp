@@ -37,8 +37,8 @@ namespace Rtt
 FrameBufferObject::FrameBufferObject( Rtt_Allocator* allocator, Texture* texture )
 :	CPUResource( allocator ),
 	fTexture( texture ),
-	fDepthBits( 0 ),
-	fStencilBits( 0 )
+	fDepthBitsize( 0 ),
+	fStencilBitsize( 0 )
 {
 }
 
@@ -55,8 +55,8 @@ Texture* FrameBufferObject::GetTexture() const
 void
 FrameBufferObject::AddAnyAttachments( Display& display )
 {
-	fDepthBits = display.GetDefaults().GetDepthBits();
-	fStencilBits = display.GetDefaults().GetStencilBits();
+	fDepthBitsize = display.GetDefaults().GetDepthBitsize();
+	fStencilBitsize = display.GetDefaults().GetStencilBitsize();
 }
 
 // ----------------------------------------------------------------------------

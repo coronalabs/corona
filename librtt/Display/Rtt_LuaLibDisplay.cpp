@@ -1859,15 +1859,15 @@ DisplayLibrary::getDefault( lua_State *L )
 		bool value = defaults.IsImageSheetSampledInsideFrame();
 		lua_pushboolean( L, value ? 1 : 0 );
 	}
-	else if ( ( Rtt_StringCompare( key, "depthBits" ) == 0 ) )
+	else if ( ( Rtt_StringCompare( key, "depthBitsize" ) == 0 ) )
 	{
-		U8 bits = defaults.GetDepthBits();
-		lua_pushinteger( L, bits );
+		U8 bitsize = defaults.GetDepthBitsize();
+		lua_pushinteger( L, bitsize );
 	}
-	else if ( ( Rtt_StringCompare( key, "stencilBits" ) == 0 ) )
+	else if ( ( Rtt_StringCompare( key, "stencilBitsize" ) == 0 ) )
 	{
-		U8 bits = defaults.GetStencilBits();
-		lua_pushinteger( L, bits );
+		U8 bitsize = defaults.GetStencilBitsize();
+		lua_pushinteger( L, bitsize );
 	}
 	else if ( key )
 	{
@@ -1994,32 +1994,32 @@ DisplayLibrary::setDefault( lua_State *L )
 		bool value = lua_toboolean( L, index ) ? true : false;
 		defaults.SetImageSheetSampledInsideFrame( value );
 	}
-	else if ( ( Rtt_StringCompare( key, "depthBits" ) == 0 ) )
+	else if ( ( Rtt_StringCompare( key, "depthBitsize" ) == 0 ) )
 	{
-		U8 bits = lua_tointeger( L, index );
+		U8 bitsize = lua_tointeger( L, index );
 
-		if (bits == 0U || bits == 16U) // TODO: allow 24
+		if (bitsize == 0U || bitsize == 16U) // TODO: allow 24
 		{
-			defaults.SetDepthBits( bits );
+			defaults.SetDepthBitsize( bitsize );
 		}
 
 		else
 		{
-			CoronaLuaWarning( L, "Unsupported # of bits for depth buffers: %u", (U32)bits );
+			CoronaLuaWarning( L, "Unsupported bitsize for depth buffers: %u", (U32)bitsize );
 		}
 	}
-	else if ( ( Rtt_StringCompare( key, "stencilBits" ) == 0 ) )
+	else if ( ( Rtt_StringCompare( key, "stencilBitsize" ) == 0 ) )
 	{
-		U8 bits = lua_tointeger( L, index );
+		U8 bitsize = lua_tointeger( L, index );
 
-		if (bits == 0U || bits == 8U)
+		if (bitsize == 0U || bitsize == 8U)
 		{
-			defaults.SetStencilBits( bits );
+			defaults.SetStencilBitsize( bitsize );
 		}
 
 		else
 		{
-			CoronaLuaWarning( L, "Unsupported # of bits for stencil buffers: %u", (U32)bits );
+			CoronaLuaWarning( L, "Unsupported bitsize for stencil buffers: %u", (U32)bitsize );
 		}
 	}
 	else if ( key )
