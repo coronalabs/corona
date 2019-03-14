@@ -349,7 +349,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 
 		local authorisedPlugins = {}
 		for _, ap in pairs(authPluginsJson.data) do -- ap : authorisedPlugin
-			authorisedPlugins[ap['plugin_name'] .. ' ' .. ap['plugin_developer']] = ap['status']
+			authorisedPlugins[ tostring(ap['plugin_name']) .. ' ' .. tostring(ap['plugin_developer'])] = ap['status']
 		end
 
 		local authErrors = false
