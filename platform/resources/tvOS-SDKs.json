@@ -7,10 +7,10 @@
 			"coronaVersion": 121000
 		},
 		{
-			"label": "12.0",
-			"xcodeVersion": "12.0",
-			"failMessage": "install or xcode-select Xcode 10.0 to enable",
-			"coronaVersion": 120000,
+			"label": "12.2",
+			"xcodeVersion": "12.2",
+			"failMessage": "install or xcode-select Xcode 10.2 to enable",
+			"coronaVersion": 122000,
 			"beta": false
 		}
 	 ]
