@@ -157,7 +157,19 @@ static NSString *kValueNone = @"None";
 			for (NSString *os in sortedOSKeys)
 			{
 				NSMenuItem *newTitle = [[NSMenuItem alloc] init];
-				[newTitle setTitle:os];
+				NSString *prettyOsName = os;
+				NSRange prefixRange = [prettyOsName rangeOfString:@"com.apple.CoreSimulator.SimRuntime."];
+				if(prefixRange.location == 0)
+				{
+					prettyOsName = [prettyOsName stringByReplacingCharactersInRange:prefixRange withString:@""];
+					NSRange firstDash = [prettyOsName rangeOfString:@"-"];
+					if(firstDash.location != NSNotFound)
+					{
+						prettyOsName = [prettyOsName stringByReplacingCharactersInRange:firstDash withString:@" "];
+					}
+					prettyOsName = [prettyOsName stringByReplacingOccurrencesOfString:@"-" withString:@"."];
+				}
+				[newTitle setTitle:prettyOsName];
 				[newTitle setEnabled:NO];
 				[[availableSimulatorsPopup menu] addItem:newTitle];
 
@@ -166,7 +178,7 @@ static NSString *kValueNone = @"None";
 
 				for (NSString *device in sortedDeviceKeys)
 				{
-					TVOSSimulatorMenuItem *newItem = [[TVOSSimulatorMenuItem alloc] initWithFullTitle:[NSString stringWithFormat:@"%@ / %@", device, os]
+					TVOSSimulatorMenuItem *newItem = [[TVOSSimulatorMenuItem alloc] initWithFullTitle:[NSString stringWithFormat:@"%@ / %@", device, prettyOsName]
 																								title:[NSString stringWithFormat:@"      %@", device]];
 
 					[newItem setEnabled:YES];
