@@ -4350,40 +4350,28 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 		return 0;
 	}
 
-    NSString *dockIconBounceTimeString = [[NSUserDefaults standardUserDefaults] stringForKey:kDockIconBounceTime];
-    NSInteger dockIconBounceTime = 0;
+    float dockIconBounceTime = 5.0;
 
-    if (dockIconBounceTimeString == nil)
+	id dockIconBounceTimeSetting = [[NSUserDefaults standardUserDefaults] stringForKey:kDockIconBounceTime];
+    if ([dockIconBounceTimeSetting respondsToSelector:@selector(integerValue)])
     {
-        // Preference not set, use default
-        dockIconBounceTime = 5;
-    }
-    else
-    {
-        dockIconBounceTime = [dockIconBounceTimeString integerValue];
+        dockIconBounceTime = [dockIconBounceTimeSetting integerValue];
     }
 
 	if (dockIconBounceTime == 0)
 	{
 		return 0;
 	}
-	else if (dockIconBounceTime > 0)
+	
+	NSInteger attentionId = [super requestUserAttention:requestType];
+	
+	if (dockIconBounceTime > 0)
 	{
-        // Bounce the icon
-        fAttentionRequestID = [super requestUserAttention:requestType];
-
-        // Schedule cancellation of bouncing (make sure we include modal runloop modes)
-        [self performSelector:@selector(cancelUserAttentionRequest:)
-                   withObject:(id)fAttentionRequestID
-                   afterDelay:dockIconBounceTime
-                      inModes:@[ NSRunLoopCommonModes ]];
-
-        return fAttentionRequestID;
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(dockIconBounceTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			[self cancelUserAttentionRequest:attentionId];
+		});
     }
-    else
-    {
-        return [super requestUserAttention:requestType];
-    }
+	return attentionId;
 }
 
 
