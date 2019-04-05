@@ -8,6 +8,7 @@ android {
 
     defaultConfig {
         minSdkVersion 15
+        //noinspection OldTargetApi
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -28,14 +29,26 @@ android {
     useLibrary  'org.apache.http.legacy'
 }
 
-task generateSplashBeacon(type: Copy) {
-    group "Corona"
-    def splash = 'res/drawable/_corona_splash_screen.png'
-    from "SplashScreenBeacon.java.template"
-    into "src/com/ansca/corona"
-    rename 'SplashScreenBeacon.java.template', 'SplashScreenBeacon.java'
-    filter { it.replaceAll('999', file(splash).length().toString()) }
-    inputs.files splash
+
+android.libraryVariants.all {
+    variant ->
+        def outputDir = "$buildDir/generated/source/corona/${variant.dirName}"
+        task "splashScreenChecker${variant.name.capitalize()}" (type: Copy) {
+            group "Corona"
+
+            def splash = 'res/drawable/_corona_splash_screen.png'
+            from "SplashScreenBeacon.java.template"
+            into "$outputDir/com/ansca/corona"
+            rename 'SplashScreenBeacon.java.template', 'SplashScreenBeacon.java'
+            filter { it.replaceAll('999', file(splash).length().toString()) }
+
+            doFirst {
+                delete "src/com/ansca/corona/SplashScreenBeacon.java"
+            }
+
+            inputs.file splash
+            variant.registerJavaGeneratingTask(it, file("$outputDir"))
+        }
 }
 
 task updateWidgetResources(type: Copy) {
@@ -50,12 +63,9 @@ task updateWidgetResources(type: Copy) {
     }
 }
 
-task updateSharedResources {
-    dependsOn updateWidgetResources
+android.libraryVariants.all {
+    it.mergeResourcesProvider.get() dependsOn updateWidgetResources
 }
-
-preBuild.dependsOn generateSplashBeacon
-preBuild.dependsOn updateSharedResources
 
 dependencies {
     implementation project(':JNLua')
