@@ -1,7 +1,15 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(lua)
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DANDROID_NDK -DRtt_ANDROID_ENV -DNDEBUG -DLUA_USE_DLOPEN -DLUA_USE_POSIX")
-add_definitions(-DANDROID_NDK -DRtt_ANDROID_ENV -DNDEBUG -DLUA_USE_DLOPEN -DLUA_USE_POSIX)
+
+add_definitions(
+	-DLUA_USE_DLOPEN
+	-DLUA_USE_POSIX
+)
+
+#if(CMAKE_ANDROID_ARCH MATCHES "arm")
+#	add_definitions(-D_ARM_ASSEM_)
+#endif()
+
 add_library( lua SHARED
     src/lapi.c
 	src/lauxlib.c

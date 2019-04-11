@@ -29,6 +29,9 @@ android {
     useLibrary  'org.apache.http.legacy'
 }
 
+android.libraryVariants.all {
+    it.generateBuildConfigProvider.get().enabled = false
+}
 
 android.libraryVariants.all {
     variant ->

@@ -1,44 +1,58 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(almixer)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSOUND_SUPPORTS_WAV -DSOUND_SUPPORTS_OGG -DANDROID_NDK -DENABLE_ALMIXER_THREADS -DALMIXER_COMPILE_WITHOUT_SDL -DNDEBUG -DALMIXER_USE_APPORTABLE_OPENAL_EXTENSIONS -DOPENAL_FIXED_POINT -DOPENAL_FIXED_POINT_SHIFT=16")
+
+add_definitions(
+	-DSOUND_SUPPORTS_WAV
+	-DSOUND_SUPPORTS_OGG
+	-DENABLE_ALMIXER_THREADS
+	-DALMIXER_COMPILE_WITHOUT_SDL
+	-DALMIXER_USE_APPORTABLE_OPENAL_EXTENSIONS
+	-DOPENAL_FIXED_POINT
+	-DOPENAL_FIXED_POINT_SHIFT=16
+)
+
+# if not Corona Cards
+add_definitions(
+	-DMPG123_NO_CONFIGURE
+	-DSOUND_SUPPORTS_MPG123
+)
 
 include_directories(
-	${LibOpenALPath}/include/AL
-	${LibAlMixerPath}
-	${LibAlMixerPath}/Isolated
-	${LibAlMixerPath}/Isolated/LGPL
-	${LibVorbisPath}
-	${LibMpg123Path}
-	${LibLuaSoPath}
+	../openal-soft_apportable/jni/OpenAL/include/AL
+	../ALmixer
+	Isolated
+	../tremor/Tremor
+	../mpg123-1.13.1/src/libmpg123
+	../lua-5.1.3/src
 )
 
 add_library( almixer SHARED 
-	${LibAlMixerPath}/ALmixer.c
-	${LibAlMixerPath}/CircularQueue.c
-	${LibAlMixerPath}/LinkedList.c
-	${LibAlMixerPath}/luaal.c
-	${LibAlMixerPath}/Isolated/ALmixer_RWops.c
-	${LibAlMixerPath}/Isolated/SimpleMutex.c
-	${LibAlMixerPath}/Isolated/SimpleThreadPosix.c
-	${LibAlMixerPath}/Isolated/SoundDecoder.c
-	${LibAlMixerPath}/Isolated/tErrorLib.c
-	${LibAlMixerPath}/Isolated/LGPL/wav.c
-	${LibAlMixerPath}/Isolated/LGPL/mpg123.c
-	${LibAlMixerPath}/Isolated/LGPL/oggtremor.c
-	${LibAlMixerPath}/Isolated/LGPL/SDL_sound_minimal.c
-	${LibVorbisPath}/bitwise.c
-	${LibVorbisPath}/codebook.c
-	${LibVorbisPath}/dsp.c
-	${LibVorbisPath}/floor0.c
-	${LibVorbisPath}/floor1.c
-	${LibVorbisPath}/floor_lookup.c
-	${LibVorbisPath}/framing.c
-	${LibVorbisPath}/info.c
-	${LibVorbisPath}/mapping0.c
-	${LibVorbisPath}/mdct.c
-	${LibVorbisPath}/misc.c
-	${LibVorbisPath}/res012.c
-	${LibVorbisPath}/vorbisfile.c
+	ALmixer.c
+	CircularQueue.c
+	LinkedList.c
+	luaal.c
+	Isolated/ALmixer_RWops.c
+	Isolated/SimpleMutex.c
+	Isolated/SimpleThreadPosix.c
+	Isolated/SoundDecoder.c
+	Isolated/tErrorLib.c
+	Isolated/LGPL/wav.c
+	Isolated/LGPL/mpg123.c
+	Isolated/LGPL/oggtremor.c
+	Isolated/LGPL/SDL_sound_minimal.c
+	../tremor/Tremor/bitwise.c
+	../tremor/Tremor/codebook.c
+	../tremor/Tremor/dsp.c
+	../tremor/Tremor/floor0.c
+	../tremor/Tremor/floor1.c
+	../tremor/Tremor/floor_lookup.c
+	../tremor/Tremor/framing.c
+	../tremor/Tremor/info.c
+	../tremor/Tremor/mapping0.c
+	../tremor/Tremor/mdct.c
+	../tremor/Tremor/misc.c
+	../tremor/Tremor/res012.c
+	../tremor/Tremor/vorbisfile.c
 )
 
 target_link_libraries ( almixer openal mpg123 lua log dl OpenSLES )

@@ -28,6 +28,7 @@ android {
     }
     applicationVariants.all { variant ->
         variant.mergeAssetsProvider.get() dependsOn packageCoronaApp
+        variant.generateBuildConfigProvider.get().enabled = false
     }
 }
 
