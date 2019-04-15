@@ -17,24 +17,26 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
 			SET(MODULE_COMMAND2 "${ARGV1}")
 		endif()
 		get_filename_component(F "${LUA_FILE}" NAME)
+		string(REPLACE ".lua" "_luaload.cpp" Fout "${F}")
 		string(REPLACE ".lua" ".cpp" F "${F}")
 		add_custom_command(
 			OUTPUT "${Lua2CppOutputDir}/${F}"
 			MAIN_DEPENDENCY "${LUA_FILE}"
 			COMMAND "${CORONA_ROOT}/platform/windows/Build.Tools/LuaToCppFile.bat" "${CORONA_ROOT}/bin/win" "${Lua2CppOutputDir}" "${LUA_FILE}" "${Lua2CppOutputDir}" ${MODULE_COMMAND1} ${MODULE_COMMAND2}
+			COMMAND ${CMAKE_COMMAND} -E copy "${Lua2CppOutputDir}/${Fout}" "${Lua2CppOutputDir}/${F}"
 		)
 	endfunction()
 
 	function(lua_2_c LUA_FILE)
 		get_filename_component(F "${LUA_FILE}" NAME)
-		string(REPLACE ".lua" ".cpp" Fcpp "${F}")
+		string(REPLACE ".lua" "_luaload.cpp" Fout "${F}")
 		string(REPLACE ".lua" ".c" F "${F}")
 
 		add_custom_command(
-				OUTPUT "${Lua2CppOutputDir}/${F}"
-				MAIN_DEPENDENCY "${LUA_FILE}"
-				COMMAND "${CORONA_ROOT}/platform/windows/Build.Tools/LuaToCppFile.bat" "${CORONA_ROOT}/bin/win" "${Lua2CppOutputDir}" "${LUA_FILE}" "${Lua2CppOutputDir}" ${MODULE_COMMAND1} ${MODULE_COMMAND2}
-				COMMAND ren "${Lua2CppOutputDir}/${Fcpp} ${F}"
+			OUTPUT "${Lua2CppOutputDir}/${F}"
+			MAIN_DEPENDENCY "${LUA_FILE}"
+			COMMAND "${CORONA_ROOT}/platform/windows/Build.Tools/LuaToCppFile.bat" "${CORONA_ROOT}/bin/win" "${Lua2CppOutputDir}" "${LUA_FILE}" "${Lua2CppOutputDir}" ${MODULE_COMMAND1} ${MODULE_COMMAND2}
+			COMMAND ${CMAKE_COMMAND} -E copy "${Lua2CppOutputDir}/${Fout}" "${Lua2CppOutputDir}/${F}"
 		)
 	endfunction()
 
