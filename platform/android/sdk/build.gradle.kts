@@ -19,10 +19,10 @@ android {
         }
     }
 
-    sourceSets["main"].manifest.srcFile(File("AndroidManifest.xml"))
-    sourceSets["main"].java.srcDirs(File("src"))
-    sourceSets["main"].res.srcDirs(File("res"))
-    sourceSets["main"].res.srcDirs(File(sharedResLocation))
+    sourceSets["main"].manifest.srcFile(file("AndroidManifest.xml"))
+    sourceSets["main"].java.srcDirs(file("src"))
+    sourceSets["main"].res.srcDirs(file("res"))
+    sourceSets["main"].res.srcDirs(file(sharedResLocation))
 
     externalNativeBuild {
         cmake {
@@ -38,42 +38,36 @@ android.libraryVariants.all {
     }
 }
 
-android.libraryVariants.all {
-    val variant = this
-    val outputDir = File("$buildDir/generated/source/corona/${variant.dirName}")
-    val name = "splashScreenChecker${variant.name.capitalize()}"
-    tasks.create<Copy>(name) {
-        group = "Corona"
+tasks.create<Copy>("splashScreenChecker") {
+    group = "Corona"
 
-        val splash = "res/drawable/_corona_splash_screen.png"
-
-        from("SplashScreenBeacon.java.template")
-        into("$outputDir/com/ansca/corona")
-        rename("SplashScreenBeacon.java.template", "SplashScreenBeacon.java")
-        filter {
-            it.replace("999", file(splash).length().toString())
-        }
-
-        doFirst {
-            delete("src/com/ansca/corona/SplashScreenBeacon.java")
-        }
-
-        inputs.file(splash)
-
-        variant.registerJavaGeneratingTask(this, outputDir)
+    val outputDir = file("$buildDir/generated/source/corona")
+    val splash = "res/drawable/_corona_splash_screen.png"
+    inputs.file(splash)
+    from("SplashScreenBeacon.java.template")
+    into("$outputDir/com/ansca/corona")
+    rename("SplashScreenBeacon.java.template", "SplashScreenBeacon.java")
+    filter {
+        it.replace("999", file(splash).length().toString())
+    }
+    val task = this
+    android.libraryVariants.all {
+        this.registerJavaGeneratingTask(task, outputDir)
     }
 }
 
-val updateWidgetTask = tasks.register<Copy>("updateWidgetResources") {
+tasks.create<Copy>("updateWidgetResources") {
     group = "Corona"
     from("../../../subrepos/widget/")
     include("*.png")
     into("$sharedResLocation/raw")
     rename { "corona_asset_$it".replace("@", "_").toLowerCase() }
-}
-android.libraryVariants.all {
-    mergeResourcesProvider?.configure {
-        dependsOn(updateWidgetTask)
+
+    val task = this
+    android.libraryVariants.all {
+        mergeResourcesProvider!!.configure {
+            dependsOn(task)
+        }
     }
 }
 
