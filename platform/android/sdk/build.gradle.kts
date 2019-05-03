@@ -2,8 +2,6 @@ plugins {
     id("com.android.library")
 }
 
-val sharedResLocation = "$buildDir/generated/sharedRes"
-
 @Suppress("OldTargetApi")
 android {
     compileSdkVersion(27)
@@ -22,7 +20,6 @@ android {
     sourceSets["main"].manifest.srcFile(file("AndroidManifest.xml"))
     sourceSets["main"].java.srcDirs(file("src"))
     sourceSets["main"].res.srcDirs(file("res"))
-    sourceSets["main"].res.srcDirs(file(sharedResLocation))
 
     externalNativeBuild {
         cmake {
@@ -52,22 +49,22 @@ tasks.create<Copy>("splashScreenChecker") {
     }
     val task = this
     android.libraryVariants.all {
-        this.registerJavaGeneratingTask(task, outputDir)
+        registerJavaGeneratingTask(task, outputDir)
     }
 }
 
 tasks.create<Copy>("updateWidgetResources") {
     group = "Corona"
+    val widgetResLocation = "$buildDir/generated/widgetResources"
     from("../../../subrepos/widget/")
     include("*.png")
-    into("$sharedResLocation/raw")
+    into("$widgetResLocation/raw")
     rename { "corona_asset_$it".replace("@", "_").toLowerCase() }
-
     val task = this
     android.libraryVariants.all {
-        mergeResourcesProvider!!.configure {
-            dependsOn(task)
-        }
+        registerGeneratedResFolders(files(widgetResLocation) {
+            builtBy(task)
+        })
     }
 }
 

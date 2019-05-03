@@ -26,7 +26,7 @@ android {
     }
 
     applicationVariants.all {
-        this.generateBuildConfigProvider?.configure {
+        generateBuildConfigProvider.configure {
             enabled = false
         }
     }
@@ -81,10 +81,10 @@ android.applicationVariants.all {
         }
     }
 
-    mergeAssetsProvider?.configure {
+    mergeAssetsProvider.configure {
         dependsOn(task)
     }
-    android.sourceSets[this.name].assets.srcDirs(generatedAssetsDir)
+    android.sourceSets[name].assets.srcDirs(generatedAssetsDir)
 }
 
 
