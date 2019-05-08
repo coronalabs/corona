@@ -6,7 +6,7 @@ add_definitions(
 	-DSOUND_SUPPORTS_OGG
 	-DENABLE_ALMIXER_THREADS
 	-DALMIXER_COMPILE_WITHOUT_SDL
-	-DALMIXER_USE_APPORTABLE_OPENAL_EXTENSIONS
+#	-DALMIXER_USE_APPORTABLE_OPENAL_EXTENSIONS
 	-DOPENAL_FIXED_POINT
 	-DOPENAL_FIXED_POINT_SHIFT=16
 )
@@ -18,7 +18,7 @@ add_definitions(
 )
 
 include_directories(
-	../openal-soft_apportable/jni/OpenAL/include/AL
+	../openal-soft/include/AL
 	../ALmixer
 	Isolated
 	../tremor/Tremor
@@ -55,4 +55,4 @@ add_library( almixer SHARED
 	../tremor/Tremor/vorbisfile.c
 )
 
-target_link_libraries ( almixer openal mpg123 lua log dl OpenSLES )
+target_link_libraries ( almixer OpenAL  lua log dl OpenSLES mpg123 )

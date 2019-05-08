@@ -76,3 +76,6 @@
 [submodule "subrepos/composer"]
 	path = subrepos/composer
 	url = https://github.com/coronalabs/framework-composer.git
+[submodule "external/openal-soft"]
+	path = external/openal-soft
+	url = https://github.com/coronalabs/openal-soft.git

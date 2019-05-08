@@ -20,7 +20,7 @@ include_directories (
 	${LuaIncludePath}
 	${CORONA_ROOT}/external/rsa
 	${CORONA_ROOT}/external/LuaHashMap
-	${CORONA_ROOT}/external/openal-soft_apportable/jni/OpenAL/include/AL
+	${CORONA_ROOT}/external/openal-soft/include/AL
 	${CORONA_ROOT}/external/ALmixer
 	${CORONA_ROOT}/external/ALmixer/Isolated
 	${CORONA_ROOT}/external/lpng1256
@@ -775,4 +775,4 @@ add_library( corona SHARED
 		${CORONA_ROOT}/external/libjpeg/jidctfst.c
 )
 
-target_link_libraries ( corona lua jnlua5.1 mpg123 openal almixer cpufeatures GLESv2 EGL jnigraphics dl log z OpenSLES )
+target_link_libraries ( corona lua jnlua5.1 mpg123 OpenAL almixer cpufeatures GLESv2 EGL jnigraphics dl log z OpenSLES )

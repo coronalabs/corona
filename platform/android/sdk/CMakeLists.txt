@@ -15,9 +15,17 @@ include(CMakeGenLua.cmake)
 
 add_subdirectory("../ndk" ${CMAKE_CURRENT_BINARY_DIR}/libcorona_build/)
 
+SET(ALSOFT_UTILS OFF CACHE BOOL "")
+SET(ALSOFT_EXAMPLES OFF CACHE BOOL "")
+SET(ALSOFT_TESTS OFF CACHE BOOL "")
+SET(ALSOFT_CONFIG OFF CACHE BOOL "")
+SET(ALSOFT_HRTF_DEFS OFF CACHE BOOL "")
+SET(ALSOFT_AMBDEC_PRESETS OFF CACHE BOOL "")
+SET(ALSOFT_INSTALL OFF CACHE BOOL "")
+add_subdirectory("${CORONA_ROOT}/external/openal-soft" "${CMAKE_CURRENT_BINARY_DIR}/libopenal_build/")
+
 add_subdirectory("${CORONA_ROOT}/external/lua-5.1.3" "${CMAKE_CURRENT_BINARY_DIR}/liblua_build/")
 add_subdirectory("${CORONA_ROOT}/external/JNLua/src/main/c" "${CMAKE_CURRENT_BINARY_DIR}/libjnlua5.1_build/")
-add_subdirectory("${CORONA_ROOT}/external/openal-soft_apportable/jni/OpenAL" "${CMAKE_CURRENT_BINARY_DIR}/libopenal_build/")
 add_subdirectory("${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123" "${CMAKE_CURRENT_BINARY_DIR}/libmpg123_build/")
 add_subdirectory("${CORONA_ROOT}/external/ALmixer" "${CMAKE_CURRENT_BINARY_DIR}/libalmixer_build/")
 add_subdirectory("${CORONA_ROOT}/plugins/ads" "${CMAKE_CURRENT_BINARY_DIR}/libads_build/")
