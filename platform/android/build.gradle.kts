@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         google()
@@ -10,12 +9,12 @@ buildscript {
 }
 
 allprojects {
-   repositories {
-       google()
-       jcenter()
-   }
+    repositories {
+        google()
+        jcenter()
+    }
 }
 
 tasks.register<Delete>("clean") {
-   delete(rootProject.buildDir)
+    delete(rootProject.buildDir)
 }

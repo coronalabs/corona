@@ -1,6 +1,5 @@
-rootProject.name = "root"
-include(":Corona", ":JNLua", ":app")
+rootProject.name = "Corona Android"
+include(":Corona", ":App")
 
-project(":JNLua").projectDir = file("../../external/JNLua/")
 project(":Corona").projectDir = file("sdk")
-project(":app").projectDir = file("app")
+project(":App").projectDir = file("app")

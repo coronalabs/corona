@@ -13,12 +13,13 @@ android {
         versionCode = 1
         versionName = "1.0"
         ndk {
-//            abiFilters("x86_64", "x86")
+            // abiFilters("x86_64", "x86")
         }
     }
 
     sourceSets["main"].manifest.srcFile(file("AndroidManifest.xml"))
-    sourceSets["main"].java.srcDirs(file("src"))
+    sourceSets["main"].java.srcDirs(file("src"), file("../../../external/JNLua/src/main"))
+    sourceSets["main"].java.filter.exclude("**/script/**")
     sourceSets["main"].res.srcDirs(file("res"))
 
     externalNativeBuild {
@@ -69,6 +70,5 @@ tasks.create<Copy>("updateWidgetResources") {
 }
 
 dependencies {
-    implementation(project(":JNLua"))
     implementation(files("../../../plugins/build-core/network/android/network.jar"))
 }
