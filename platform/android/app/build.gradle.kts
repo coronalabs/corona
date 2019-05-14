@@ -19,12 +19,6 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
-    externalNativeBuild {
-        cmake {
-            setPath("CMakeLists.txt")
-        }
-    }
-
     applicationVariants.all {
         generateBuildConfigProvider!!.configure {
             enabled = false

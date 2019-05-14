@@ -31,7 +31,7 @@ android {
 }
 
 android.libraryVariants.all {
-    generateBuildConfigProvider?.configure {
+    generateBuildConfigProvider!!.configure {
         enabled = false
     }
 }
