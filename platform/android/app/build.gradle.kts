@@ -19,9 +19,17 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+
     applicationVariants.all {
         generateBuildConfigProvider!!.configure {
             enabled = false
+        }
+    }
+    testOptions {
+        testVariants.all {
+            generateBuildConfigProvider!!.configure {
+                enabled = false
+            }
         }
     }
 }

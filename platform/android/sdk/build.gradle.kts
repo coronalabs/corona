@@ -28,11 +28,18 @@ android {
         }
     }
     useLibrary("org.apache.http.legacy")
-}
 
-android.libraryVariants.all {
-    generateBuildConfigProvider!!.configure {
-        enabled = false
+    libraryVariants.all {
+        generateBuildConfigProvider!!.configure {
+            enabled = false
+        }
+    }
+    testOptions {
+        testVariants.all {
+            generateBuildConfigProvider!!.configure {
+                enabled = false
+            }
+        }
     }
 }
 
