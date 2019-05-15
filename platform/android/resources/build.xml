@@ -76,7 +76,7 @@
 	<!-- Creates an "input.zip" file to be sent to the build server, requesting it to send us an APK template. -->
 	<target name="build-input-zip" depends="generate-live-build-manifest">
 		<property name="USER_ZIP" value="${TEMP_DIR}/input.zip"/>
-		<zip destfile="${USER_ZIP}" basedir="${TEMP_DIR}" encoding="UTF8" />
+		<zip destfile="${USER_ZIP}" basedir="${TEMP_DIR}" encoding="UTF8" excludes="resource.car" />
 	</target>
 
 	<!-- Extracts all files from the pre-built APK template to a temporary directory. -->

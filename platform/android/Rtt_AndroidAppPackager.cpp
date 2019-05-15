@@ -607,8 +607,13 @@ AndroidAppPackager::Prepackage( AppPackagerParams * params, const char * tmpDir 
 	{
 		Rtt_Log("Prepackage: Compiling Lua ...");
 	}
-
-	if ( CreateBuildProperties( * params, tmpDir ) && CompileScripts( params, tmpDir ) )
+	
+	char tmpResourceCar[kDefaultNumBytes + 1];
+	snprintf( tmpResourceCar, kDefaultNumBytes, "%s" LUA_DIRSEP "resource.car", tmpDir );
+	
+	if ( CompileScripts( params, tmpDir )
+		&& ArchiveDirectoryTree(params, tmpDir, tmpResourceCar)
+		&& CreateBuildProperties( * params, tmpDir ) )
 	{
 		if (! Rtt_StringIsEmpty(GetSplashImageFile()))
 		{
