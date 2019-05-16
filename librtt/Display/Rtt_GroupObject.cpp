@@ -31,7 +31,7 @@
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_Scene.h"
 #include "Display/Rtt_StageObject.h"
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 #include "Renderer/Rtt_CustomCommand.h"
 #endif // Rtt_WIN_ENV
 #include "Renderer/Rtt_Renderer.h"
@@ -228,7 +228,7 @@ GroupObject::Draw( Renderer& renderer ) const
 			renderer.PushMask( texture, uniform );
 		}
 
-		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+		#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 		CommandStack cur, *prev = renderer.BeginCommandStack( &cur );
 		#endif // Rtt_WIN_ENV
 
@@ -244,7 +244,7 @@ GroupObject::Draw( Renderer& renderer ) const
 			}
 		}
 
-		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+		#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 		renderer.EndCommandStack( prev );
 		#endif // Rtt_WIN_ENV
 

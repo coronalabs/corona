@@ -27,6 +27,7 @@
 
 #include "Core/Rtt_Allocator.h"
 #include <stddef.h>
+#include <string.h>
 
 // ----------------------------------------------------------------------------
 

@@ -39,7 +39,7 @@
 #include "Display/Rtt_ImageSheetPaint.h"
 #include "Display/Rtt_Paint.h"
 #include "Display/Rtt_RectObject.h"
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 #include "Display/Rtt_RenderStateObject.h"
 #endif
 #include "Display/Rtt_Scene.h"
@@ -166,7 +166,7 @@ class DisplayLibrary
 		static int newGroup( lua_State *L );
 		static int newContainer( lua_State *L );
 		static int _newContainer( lua_State *L );
-		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+		#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 		static int newRenderState( lua_State *L );
 		#endif // TODO: RenderStateObject REMOVE ME!
 		static int newSnapshot( lua_State *L );
@@ -233,7 +233,7 @@ DisplayLibrary::Open( lua_State *L )
 		{ "newGroup", newGroup },
 		{ "newContainer", newContainer },
 		{ "_newContainer", _newContainer },
-		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+		#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 		{ "newRenderState", newRenderState },
 		#endif // TODO: RenderStateObject REMOVE ME!
 		{ "newSnapshot", newSnapshot },
@@ -1608,7 +1608,7 @@ DisplayLibrary::_newContainer( lua_State *L )
 	return result;
 }
 
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 // display.newRenderState( [parent] )
 int
 DisplayLibrary::newRenderState( lua_State *L )

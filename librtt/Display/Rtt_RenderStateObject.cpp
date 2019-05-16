@@ -22,7 +22,7 @@
 // For overview and more information on licensing please refer to README.md
 //
 //////////////////////////////////////////////////////////////////////////////
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_RenderStateObject.h"
 #include "Renderer/Rtt_CommandBuffer.h"
@@ -245,7 +245,7 @@ RenderStateObject::AddBooleanCommands( UsedKind kind, int state, BooleanCommand:
 	commands->func = Rtt_NEW( fAllocator, BooleanCommand( commands->value.bvalues, commands->previous.bvalues, preRender, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, BooleanCommand( commands->previous.bvalues, NULL, NULL, render, flags ) );
 
-	commands->cleanup->SetUserdata( render );
+	commands->cleanup->SetUserdata( &render );
 
 	return commands;
 }
@@ -446,7 +446,7 @@ RenderStateObject::AddIntCommands( UsedKind kind, int state, IntCommand::PreRend
 		commands->cleanup = Rtt_NEW( fAllocator, IntCommand( commands->previous.ivalues, NULL, NULL, render, flags ) );
 	}
 
-	commands->cleanup->SetUserdata( render );
+	commands->cleanup->SetUserdata( &render );
 
 	return commands;
 }
@@ -777,7 +777,7 @@ RenderStateObject::AddRealCommands( UsedKind kind, int state, RealCommand::PreRe
 	commands->func = Rtt_NEW( fAllocator, RealCommand( commands->value.rvalues, commands->previous.rvalues, preRender, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, RealCommand( commands->previous.rvalues, NULL, NULL, render, flags ) );
 
-	commands->cleanup->SetUserdata( render );
+	commands->cleanup->SetUserdata( &render );
 
 	return commands;
 }
@@ -872,7 +872,7 @@ RenderStateObject::AddUintCommands( UsedKind kind, int state, UintCommand::PreRe
 	commands->func = Rtt_NEW( fAllocator, UintCommand( commands->value.uvalues, commands->previous.uvalues, preRender, render, flags ) );
 	commands->cleanup = Rtt_NEW( fAllocator, UintCommand( commands->previous.uvalues, NULL, NULL, render, flags ) );
 
-	commands->cleanup->SetUserdata( render );
+	commands->cleanup->SetUserdata( &render );
 
 	return commands;
 }

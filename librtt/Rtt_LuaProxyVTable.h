@@ -431,7 +431,7 @@ class LuaPlatformVideoObjectProxyVTable : public LuaPlatformDisplayObjectProxyVT
 		virtual const LuaProxyVTable& Parent() const;
 };
 
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 class LuaRenderFreeObjectProxyVTable : public LuaDisplayObjectProxyVTable
 {
 	public:

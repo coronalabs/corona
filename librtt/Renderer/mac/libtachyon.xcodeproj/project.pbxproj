@@ -58,6 +58,8 @@
 		A4B66A96176A77730077B2BF /* Rtt_Uniform.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A6A176A77730077B2BF /* Rtt_Uniform.h */; };
 		A4DCC6F21774EE0E00C29C87 /* Rtt_GeometryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4DCC6F01774EE0E00C29C87 /* Rtt_GeometryPool.cpp */; };
 		A4DCC6F31774EE0E00C29C87 /* Rtt_GeometryPool.h in Headers */ = {isa = PBXBuildFile; fileRef = A4DCC6F11774EE0E00C29C87 /* Rtt_GeometryPool.h */; };
+		CEA3299A227CFD2000CC94A4 /* Rtt_CustomCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA32999227CFD2000CC94A4 /* Rtt_CustomCommand.cpp */; };
+		CEA3299C227CFD2C00CC94A4 /* Rtt_CustomCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = CEA3299B227CFD2C00CC94A4 /* Rtt_CustomCommand.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -113,6 +115,8 @@
 		A4B66A6A176A77730077B2BF /* Rtt_Uniform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Uniform.h; path = ../Rtt_Uniform.h; sourceTree = "<group>"; };
 		A4DCC6F01774EE0E00C29C87 /* Rtt_GeometryPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GeometryPool.cpp; path = ../Rtt_GeometryPool.cpp; sourceTree = "<group>"; };
 		A4DCC6F11774EE0E00C29C87 /* Rtt_GeometryPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GeometryPool.h; path = ../Rtt_GeometryPool.h; sourceTree = "<group>"; };
+		CEA32999227CFD2000CC94A4 /* Rtt_CustomCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CustomCommand.cpp; path = ../Rtt_CustomCommand.cpp; sourceTree = "<group>"; };
+		CEA3299B227CFD2C00CC94A4 /* Rtt_CustomCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CustomCommand.h; path = ../Rtt_CustomCommand.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +149,8 @@
 		A4B669E6176A76E00077B2BF /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
+				CEA3299B227CFD2C00CC94A4 /* Rtt_CustomCommand.h */,
+				CEA32999227CFD2000CC94A4 /* Rtt_CustomCommand.cpp */,
 				07CFCF8C17DAA95E0039EF04 /* Rtt_MCPUResourceObserver.h */,
 				A4B66A3F176A77730077B2BF /* Rtt_CommandBuffer.cpp */,
 				A4B66A40176A77730077B2BF /* Rtt_CommandBuffer.h */,
@@ -215,6 +221,7 @@
 				A4B66A76176A77730077B2BF /* Rtt_GLCommandBuffer.h in Headers */,
 				A4B66A78176A77730077B2BF /* Rtt_GLFrameBufferObject.h in Headers */,
 				A4B66A7A176A77730077B2BF /* Rtt_GLGeometry.h in Headers */,
+				CEA3299C227CFD2C00CC94A4 /* Rtt_CustomCommand.h in Headers */,
 				A4B66A7C176A77730077B2BF /* Rtt_GLProgram.h in Headers */,
 				A4B66A7E176A77730077B2BF /* Rtt_GLRenderer.h in Headers */,
 				A4B66A80176A77730077B2BF /* Rtt_GLTexture.h in Headers */,
@@ -288,6 +295,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4B66A6B176A77730077B2BF /* Rtt_CommandBuffer.cpp in Sources */,
+				CEA3299A227CFD2000CC94A4 /* Rtt_CustomCommand.cpp in Sources */,
 				A4B66A6D176A77730077B2BF /* Rtt_CPUResource.cpp in Sources */,
 				A4B66A6F176A77730077B2BF /* Rtt_FrameBufferObject.cpp in Sources */,
 				A4B66A71176A77730077B2BF /* Rtt_Geometry_Renderer.cpp in Sources */,
