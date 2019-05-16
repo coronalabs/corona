@@ -35,10 +35,13 @@ android {
 }
 
 
-//val windows = System.getProperty("os.name").toLowerCase().contains("windows")
-val nativeDir = "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
-
-
+val windows = System.getProperty("os.name").toLowerCase().contains("windows")
+val shortOsName = if (windows) "win" else "mac"
+val nativeDir = if (windows) {
+    System.getenv("CORONA_ROOT").replace("\\", "/")
+} else {
+    "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
+}
 android.applicationVariants.all {
     val baseName = this.dirName.toLowerCase()
     val generatedAssetsDir = "$buildDir/generated/coronaAssets/$baseName"
@@ -47,26 +50,26 @@ android.applicationVariants.all {
         description = "Compile Lua project"
         group = "Corona"
 
-        setWorkingDir("$nativeDir/Corona/mac/bin")
-        val packagePath = """package.path="$nativeDir/Corona/shared/bin/?.lua;$nativeDir/Corona/shared/bin/?/init.lua;"..package.path"""
+        setWorkingDir("$nativeDir/Corona/$shortOsName/bin")
+        val packagePath = "package.path='$nativeDir/Corona/shared/bin/?.lua;$nativeDir/Corona/shared/bin/?/init.lua;'..package.path"
         val compileLua = "$nativeDir/Corona/shared/bin/Compile.lua"
-        val platform = "mac"
-
-        commandLine("$nativeDir/Corona/mac/bin/lua",
+        commandLine("$nativeDir/Corona/$shortOsName/bin/lua",
                 "-e",
                 packagePath,
                 compileLua,
-                platform,
+                shortOsName,
                 nativeDir
         )
 
-        val cpath = "$nativeDir/Corona/mac/bin/?.so"
+        val cpath = if (windows) "$nativeDir/Corona/win/bin/?.dll" else "$nativeDir/Corona/mac/bin/?.so"
         val coronaAssetsDir = "$projectDir/../../test/assets2"
 
-//      environment "PATH", "$execPath"
+        if (windows) {
+            environment["PATH"] = System.getenv("PATH") + System.getProperty("path.separator") + System.getenv("CORONA_PATH")
+        }
         environment["LUA_CPATH"] = cpath
         environment["TARGET_PLATFORM"] = "android"
-        environment["PROJECT_DIR"] = "$rootDir"
+        environment["PROJECT_DIR"] = rootDir.toString()
         environment["CORONA_COPY_PNG_PRESERVE"] = "--preserve"
         environment["CONFIGURATION"] = baseName
         assert(baseName == "release" || baseName == "debug")
@@ -78,8 +81,8 @@ android.applicationVariants.all {
         outputs.dir(generatedAssetsDir)
 
         doFirst {
-            delete(generatedAssetsDir)
             mkdir(generatedAssetsDir)
+            delete(fileTree(generatedAssetsDir) { include("**/*.*") })
         }
     }
 
