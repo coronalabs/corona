@@ -23,7 +23,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 #include "Renderer/Rtt_CustomCommand.h"
 
 #include <stddef.h>

@@ -46,7 +46,7 @@ namespace Rtt
 {
 
 class CommandBuffer;
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 class CommandStack;
 #endif // Rtt_WIN_ENV
 class FrameBufferObject;
@@ -259,7 +259,7 @@ class Renderer
 		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
 		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
 
-		#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+		#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 		CommandStack* BeginCommandStack( CommandStack* commandStack );
 		void EndCommandStack( CommandStack* replacement );
 
@@ -347,7 +347,7 @@ class Renderer
 		bool fStencilEnabled;
 		bool fStateDirty;
 
-		#ifdef Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+		#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV)// TODO: RenderStateObject REMOVE ME!
 		CommandStack* fCommandStack;
 		#endif //Rtt_WIN_ENV
 

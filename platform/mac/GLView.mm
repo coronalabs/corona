@@ -188,7 +188,8 @@
         NSOpenGLPFANoRecovery,
 		NSOpenGLPFADoubleBuffer,	// double buffered
         NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)16, // 16 bit depth buffer
-		NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
+        NSOpenGLPFAStencilSize, (NSOpenGLPixelFormatAttribute)8,
+        NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
 		NSOpenGLPFASamples,(NSOpenGLPixelFormatAttribute)4,
 		
         (NSOpenGLPixelFormatAttribute)0

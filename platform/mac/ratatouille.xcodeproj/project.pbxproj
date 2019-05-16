@@ -1635,6 +1635,11 @@
 		C2FCD3E31B38D03C00EF7B02 /* AndroidAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F36554146C44200019808D /* AndroidAppBuildController.mm */; };
 		C2FCD3E41B38D06000EF7B02 /* AppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B00FA014565609008FB6E6 /* AppBuildController.mm */; };
 		C2FCD3E61B38D0BD00EF7B02 /* WebAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A425454E18DB9EF400EE06A8 /* WebAppBuildController.mm */; };
+		CEA3299E227D045700CC94A4 /* Rtt_RenderStateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA3299D227D045600CC94A4 /* Rtt_RenderStateObject.cpp */; };
+		CEA3299F227D0A6C00CC94A4 /* Rtt_RenderStateObject.h in Sources */ = {isa = PBXBuildFile; fileRef = CEA3298E227CF9D100CC94A4 /* Rtt_RenderStateObject.h */; };
+		CEA329A0227D0A8C00CC94A4 /* Rtt_RenderStateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA3299D227D045600CC94A4 /* Rtt_RenderStateObject.cpp */; };
+		CEA329A1227D0AC900CC94A4 /* Rtt_RenderStateObject.h in Sources */ = {isa = PBXBuildFile; fileRef = CEA3298E227CF9D100CC94A4 /* Rtt_RenderStateObject.h */; };
+		CEA329A2227D0AD000CC94A4 /* Rtt_RenderStateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA3299D227D045600CC94A4 /* Rtt_RenderStateObject.cpp */; };
 		E23CD30D147C725200BC9038 /* BuildSessionState.mm in Sources */ = {isa = PBXBuildFile; fileRef = E23CD30C147C725200BC9038 /* BuildSessionState.mm */; };
 		F500FB401FED5CE20050B28B /* webtemplate.zip in Resources */ = {isa = PBXBuildFile; fileRef = F500FB3F1FED5CE20050B28B /* webtemplate.zip */; };
 		F50F51B81B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50F51B61B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp */; };
@@ -3378,6 +3383,8 @@
 		C2F98DCF1BB315C100BDE58B /* XMLRPC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XMLRPC.xcodeproj; path = "../../external/osx-xmlrpc/XMLRPC/XMLRPC.xcodeproj"; sourceTree = "<group>"; };
 		C2FCD3CE1B377B5C00EF7B02 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		C2FCEBA51B701A1800587F1E /* gameoverlayrenderer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = gameoverlayrenderer.dylib; path = /Applications/Steam.app/Contents/MacOS/gameoverlayrenderer.dylib; sourceTree = "<group>"; };
+		CEA3298E227CF9D100CC94A4 /* Rtt_RenderStateObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_RenderStateObject.h; path = Display/Rtt_RenderStateObject.h; sourceTree = "<group>"; };
+		CEA3299D227D045600CC94A4 /* Rtt_RenderStateObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_RenderStateObject.cpp; path = Display/Rtt_RenderStateObject.cpp; sourceTree = "<group>"; };
 		E23CD30B147C725200BC9038 /* BuildSessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildSessionState.h; sourceTree = "<group>"; };
 		E23CD30C147C725200BC9038 /* BuildSessionState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BuildSessionState.mm; sourceTree = "<group>"; };
 		F500FB3F1FED5CE20050B28B /* webtemplate.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = webtemplate.zip; path = ../resources/webtemplate.zip; sourceTree = "<group>"; };
@@ -4038,7 +4045,6 @@
 				000CE6F312B73EE300D9B6A4 /* Rtt_LuaLibMedia.h */,
 				000CE6F412B73EE300D9B6A4 /* Rtt_LuaLibNative.cpp */,
 				000CE6F512B73EE300D9B6A4 /* Rtt_LuaLibNative.h */,
-				000CE6F612B73EE300D9B6A4 /* Rtt_LuaLibOpenAL.cpp */,
 				000CE6F712B73EE300D9B6A4 /* Rtt_LuaLibOpenAL.h */,
 				000CE6FA12B73EE300D9B6A4 /* Rtt_LuaLibPhysics.cpp */,
 				000CE6FB12B73EE300D9B6A4 /* Rtt_LuaLibPhysics.h */,
@@ -4050,6 +4056,7 @@
 				000CE70512B73EE300D9B6A4 /* Rtt_LuaProxy.h */,
 				000CE70612B73EE300D9B6A4 /* Rtt_LuaProxyVTable.cpp */,
 				000CE70712B73EE300D9B6A4 /* Rtt_LuaProxyVTable.h */,
+				000CE6F612B73EE300D9B6A4 /* Rtt_LuaLibOpenAL.cpp */,
 				000CE70812B73EE300D9B6A4 /* Rtt_LuaResource.cpp */,
 				000CE70912B73EE300D9B6A4 /* Rtt_LuaResource.h */,
 				A4B71B9113F4BDBF009428CF /* Rtt_LuaResourceOwner.cpp */,
@@ -4824,6 +4831,8 @@
 		A43287E1176A61C300ACB6FF /* Display */ = {
 			isa = PBXGroup;
 			children = (
+				CEA3299D227D045600CC94A4 /* Rtt_RenderStateObject.cpp */,
+				CEA3298E227CF9D100CC94A4 /* Rtt_RenderStateObject.h */,
 				A43287E2176A621100ACB6FF /* Rtt_BitmapMask.cpp */,
 				A43287E3176A621100ACB6FF /* Rtt_BitmapMask.h */,
 				A43287E4176A621100ACB6FF /* Rtt_BitmapPaint.cpp */,
@@ -6862,6 +6871,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA329A0227D0A8C00CC94A4 /* Rtt_RenderStateObject.cpp in Sources */,
+				CEA3299F227D0A6C00CC94A4 /* Rtt_RenderStateObject.h in Sources */,
 				C2AF1E571DA6F24500907A65 /* valid_build_settings.lua in Sources */,
 				C2AF1E581DA6F24500907A65 /* valid_config_lua.lua in Sources */,
 				C2AF1E511DA6D8C700907A65 /* ValidateSettings.lua in Sources */,
@@ -7385,6 +7396,7 @@
 				A476E629131DB173009A59F2 /* Rtt_MacMapViewObject.mm in Sources */,
 				00B73D9C12B720CA0057F594 /* Rtt_MacRemotePlayerHost.mm in Sources */,
 				00B73D9D12B720CA0057F594 /* Rtt_MacServer.mm in Sources */,
+				CEA3299E227D045700CC94A4 /* Rtt_RenderStateObject.cpp in Sources */,
 				00B73D9E12B720CA0057F594 /* Rtt_MacSimulator.mm in Sources */,
 				A42E68AB143AB0DE00693E3A /* Rtt_MacSimulatorServices.mm in Sources */,
 				00B73D9F12B720CA0057F594 /* Rtt_MacSurfaceVideoRecorder.mm in Sources */,
@@ -7472,6 +7484,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA329A2227D0AD000CC94A4 /* Rtt_RenderStateObject.cpp in Sources */,
+				CEA329A1227D0AC900CC94A4 /* Rtt_RenderStateObject.h in Sources */,
 				F5DB5B1A21136F9D00EC5CBC /* linuxPackageApp.lua in Sources */,
 				C2AF1E591DA6F39900907A65 /* valid_build_settings.lua in Sources */,
 				C2AF1E5A1DA6F39900907A65 /* valid_config_lua.lua in Sources */,

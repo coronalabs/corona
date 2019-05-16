@@ -26,7 +26,7 @@
 #include "Renderer/Rtt_Renderer.h"
 
 #include "Renderer/Rtt_CommandBuffer.h"
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 #include "Renderer/Rtt_CustomCommand.h"
 #endif
 #include "Renderer/Rtt_FrameBufferObject.h"
@@ -172,7 +172,7 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fDepthPass( 0 ),
 	fStencilEnabled( false ),
 	fStateDirty( false ),
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 	fCommandStack( NULL ),
 #endif // Rtt_WIN_ENV
 	fInsertionLimit( std::numeric_limits<U32>::max() ),
@@ -1102,7 +1102,7 @@ Renderer::BindUniform( Uniform* uniform, U32 unit )
 	INCREMENT( fStatistics.fUniformBindCount );
 }
 
-#if Rtt_WIN_ENV // TODO: RenderStateObject REMOVE ME!
+#if defined(Rtt_WIN_ENV) || defined(Rtt_MAC_ENV) // TODO: RenderStateObject REMOVE ME!
 CommandStack *
 Renderer::BeginCommandStack( CommandStack* commandStack )
 {
