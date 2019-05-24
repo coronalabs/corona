@@ -26,6 +26,8 @@
 package com.ansca.corona.notifications;
 
 
+import android.content.pm.ApplicationInfo;
+
 /**
  * Provides thread safe methods for posting and managing notifications.
  * <p>
@@ -45,7 +47,6 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 	 * Used to uniquely identify notifications when posting them so that they will not
 	 * conflict with 3rd party library status bar notifications.
 	 */
-	private static final String DEFAULT_STATUS_BAR_TAG = "corona";
 	private static final String DEFAULT_CHANNEL_ID = "com.coronalabs.defaultChannel";
 
 
@@ -499,7 +500,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					android.app.NotificationManager notificationManager;
 					String serviceName = android.content.Context.NOTIFICATION_SERVICE;
 					notificationManager = (android.app.NotificationManager)context.getSystemService(serviceName);
-					notificationManager.notify(DEFAULT_STATUS_BAR_TAG, statusBarSettings.getId(), notification);
+					notificationManager.notify(statusBarSettings.getId(), notification);
 				}
 			}
 			catch (Exception ex) {
@@ -586,7 +587,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					android.app.NotificationManager notificationManager;
 					String serviceName = android.content.Context.NOTIFICATION_SERVICE;
 					notificationManager = (android.app.NotificationManager)context.getSystemService(serviceName);
-					notificationManager.cancel(DEFAULT_STATUS_BAR_TAG, settings.getId());
+					notificationManager.cancel(settings.getId());
 				}
 			}
 			catch (Exception ex) {
@@ -1087,14 +1088,23 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 				String serviceName = android.content.Context.NOTIFICATION_SERVICE;
 				android.app.NotificationManager notificationManager;
 				notificationManager = (android.app.NotificationManager)context.getSystemService(serviceName);
+				android.app.NotificationChannel mChannel;
+				ApplicationInfo applicationInfo = context.getApplicationInfo();
+				int stringId = applicationInfo.labelRes;
+				String applicationName = stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+
 				try {
-					if (notificationManager.getNotificationChannel(DEFAULT_CHANNEL_ID) == null)
+					mChannel = notificationManager.getNotificationChannel(DEFAULT_CHANNEL_ID);
+					if (mChannel == null)
 						throw new Exception();
 				} catch (Exception e) {
-					android.app.NotificationChannel mChannel = new android.app.NotificationChannel(DEFAULT_CHANNEL_ID, DEFAULT_STATUS_BAR_TAG, android.app.NotificationManager.IMPORTANCE_DEFAULT);
+					mChannel = new android.app.NotificationChannel(DEFAULT_CHANNEL_ID, applicationName, android.app.NotificationManager.IMPORTANCE_DEFAULT);
 					mChannel.setDescription("Default notification channel");
 					mChannel.enableLights(true);
 					notificationManager.createNotificationChannel(mChannel);
+				}
+				if(!applicationName.equals(mChannel.getName())) {
+					mChannel.setName(applicationName);
 				}
 				builder.setChannelId(DEFAULT_CHANNEL_ID);
 			}
