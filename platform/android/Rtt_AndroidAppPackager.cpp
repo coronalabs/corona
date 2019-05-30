@@ -218,7 +218,103 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 	{
 		char* inputFile = Prepackage( params, tmpDir );
 
-		if ( inputFile )
+		String gradleBuildEnabledStr;
+		fServices.GetPreference( "gradleBuild", &gradleBuildEnabledStr );
+		bool gradleBuild = Rtt_StringCompare(gradleBuildEnabledStr, "1")==0;
+		
+		if (gradleBuild && inputFile) //offline build
+		{
+#if defined(Rtt_MAC_ENV)
+			std::string gradleGo = "cd \"$HOME/Library/Application Support/Corona/Android Build/template\" && ";
+#endif
+			gradleGo.append("./gradlew buildCoronaApp");
+			
+			gradleGo.append(" -PcoronaDstDir=");
+			gradleGo.append(EscapeArgument(params->GetDstDir()));
+			
+			gradleGo.append(" -PcoronaTmpDir=");
+			gradleGo.append(EscapeArgument(tmpDir));
+			
+			gradleGo.append(" -PcoronaSrcDir=");
+			gradleGo.append(EscapeArgument(params->GetSrcDir()));
+			
+			String appFileName;
+			PlatformAppPackager::EscapeFileName( params->GetAppName(), appFileName );
+			gradleGo.append(" -PcoronaAppFileName=");
+			gradleGo.append(EscapeArgument(appFileName.GetString()));
+			
+			gradleGo.append(" -PcoronaAppPackage=");
+			gradleGo.append(EscapeArgument(params->GetAppPackage()));
+			
+			const AndroidAppPackagerParams * androidParams = (const AndroidAppPackagerParams *) params;
+			
+			gradleGo.append(" -PcoronaVersionCode=");
+			gradleGo.append(std::to_string(androidParams->GetVersionCode()));
+			
+			gradleGo.append(" -PcoronaVersionName=");
+			gradleGo.append(EscapeArgument(params->GetVersion()));
+			
+			gradleGo.append(" -PcoronaKeystore=");
+			gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyStore()));
+			
+			gradleGo.append(" -PcoronaKeystorePassword=");
+			gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyStorePassword()));
+			
+			gradleGo.append(" -PcoronaKeyAlias=");
+			gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyAlias()));
+			
+			gradleGo.append(" -PcoronaKeyAliasPassword=");
+			if(androidParams->GetAndroidKeyAliasPassword()!=NULL)
+			{
+				gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyAliasPassword()));
+			}
+			else
+			{
+				gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyStorePassword()));
+			}
+
+			
+			String debugBuildProcessPref;
+			int debugBuildProcess = 0;
+			fServices.GetPreference( "debugBuildProcess", &debugBuildProcessPref );
+			
+			if (! debugBuildProcessPref.IsEmpty())
+			{
+				debugBuildProcess = (int) strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
+			}
+			else
+			{
+				debugBuildProcess = 0;
+			}
+			
+			if (debugBuildProcess > 1)
+			{
+				// Obfuscate passwords
+				std::string placeHolder = EscapeArgument("XXXXXX");
+				std::string sanitizedCmdBuf = gradleGo;
+				
+				std::string keystorePasswordStr = EscapeArgument(androidParams->GetAndroidKeyStorePassword());
+				if (keystorePasswordStr.length() > 0)
+				{
+					ReplaceString(sanitizedCmdBuf, keystorePasswordStr, placeHolder);
+				}
+				
+				std::string keyaliasPasswordStr;
+				if (androidParams->GetAndroidKeyAliasPassword() != NULL)
+				{
+					keyaliasPasswordStr = EscapeArgument(androidParams->GetAndroidKeyAliasPassword());
+				}
+				if (keyaliasPasswordStr.length() > 0)
+				{
+					ReplaceString(sanitizedCmdBuf, keyaliasPasswordStr, placeHolder);
+				}
+				
+				Rtt_Log("Build: running: %s\n", sanitizedCmdBuf.c_str());
+			}
+
+			result = system(gradleGo.c_str());
+		}
+		else if ( inputFile )
 		{
 			const char kOutputName[] = "output.zip";
 			size_t tmpDirLen = strlen( tmpDir );
