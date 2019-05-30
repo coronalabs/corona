@@ -119,6 +119,9 @@ android.applicationVariants.all {
             exec {
                 workingDir = file(compiledDir)
                 standardInput = StringInputStream(outputsList.joinToString("\n"))
+                if(windows) {
+                    environment["PATH"] = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
+                }
                 commandLine(coronaBuilder, "car", "-f", "-", compiledLuaArchive)
             }
         }
