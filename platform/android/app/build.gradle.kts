@@ -165,7 +165,7 @@ android.applicationVariants.all {
 }
 
 //region Corona core development helpers
-tasks.create<Zip>("exportCoronaAppTemplate") {
+tasks.register<Zip>("exportCoronaAppTemplate") {
     group = "Corona-dev"
     destinationDirectory.set(file("$buildDir/outputs"))
     archiveFileName.set("android-template.zip")
@@ -188,7 +188,7 @@ tasks.create<Zip>("exportCoronaAppTemplate") {
     }
 }
 
-tasks.create<Copy>("installAppTemplateToNative") {
+tasks.register<Copy>("installAppTemplateToNative") {
     group = "Corona-dev"
     dependsOn("exportCoronaAppTemplate")
     from("$buildDir/outputs") {
@@ -197,11 +197,11 @@ tasks.create<Copy>("installAppTemplateToNative") {
     into("$nativeDir/Corona/android/resource")
 }
 
-tasks.create<Copy>("installAppTemplateAndAARToNative") {
+tasks.register<Copy>("installAppTemplateAndAARToNative") {
     group = "Corona-dev"
     dependsOn("installAppTemplateToNative")
     dependsOn(":Corona:assembleRelease")
-    from("${findProject(":Corona")!!.buildDir}/outputs/aar/") {
+    from("${findProject(":Corona")?.buildDir}/outputs/aar/") {
         include("Corona-release.aar")
         rename("Corona-release.aar", "Corona.aar")
     }
