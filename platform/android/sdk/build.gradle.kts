@@ -20,7 +20,7 @@ android {
     sourceSets["main"].manifest.srcFile(file("AndroidManifest.xml"))
     sourceSets["main"].java.srcDirs(file("src"), file("../../../external/JNLua/src/main"))
     sourceSets["main"].java.filter.exclude("**/script/**")
-    sourceSets["main"].res.srcDirs(file("res"))
+    sourceSets["main"].res.srcDirs(file("res-new"))
 
     externalNativeBuild {
         cmake {

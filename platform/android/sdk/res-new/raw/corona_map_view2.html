@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Map</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+		<meta charset="utf-8" />
+
+		<!-- Set up the map to appear fullscreen within the web browser. -->
+		<style type="text/css">
+			html { height: 100% }
+			body { height: 100%; margin: 0; padding: 0 }
+			#map_canvas { height: 100% }
+		</style>
+
+		<!-- Load the Google Maps API from their server. -->
+		<script type="text/javascript">
+			var fMap = null;
+			var fMarkers = [];
+			var fHasMapCenterBeenSetBefore = false;
+			var fCurrentLocationMonitor = null;
+			var fCurrentLocationMarker = null;
+			var fCurrentLocationMarkerImages = [];
+
+			function loadMapWithGoogleKey() {
+				var googleApiKey = window.corona.getGoogleMapAPIKey();
+				var script = document.createElement('script');
+				script.type = 'text/javascript';
+				var keyEntry = '';
+				if(googleApiKey) {
+					keyEntry = 'key=' + googleApiKey;
+				}
+				script.onload = initialize;
+				script.src = 'https://maps.googleapis.com/maps/api/js?' + keyEntry;
+				document.body.appendChild(script);
+			}
+
+
+			function initialize() {
+				// Load all images used by the custom "current location" marker.
+				if (window.corona) {
+					var urlCount = window.corona.getCurrentLocationMarkerUrlCount();
+					if (urlCount > 0) {
+						var scaledMarkerSize = new google.maps.Size(30, 30);
+						var markerOrigin = new google.maps.Point(
+									scaledMarkerSize.width / 2, scaledMarkerSize.height / 2);
+						fCurrentLocationMarkerImages = new Array(urlCount);
+						for (var index = 0; index < urlCount; index++) {
+							fCurrentLocationMarkerImages[index] = new google.maps.MarkerImage(
+										window.corona.getCurrentLocationMarkerUrlByIndex(index),
+										null, null, markerOrigin, scaledMarkerSize);
+						}
+					}
+				}
+
+				// Fetch default map settings from the Java side of Corona.
+				var latitude = 0;
+				var longitude = 0;
+ 				var position = new google.maps.LatLng(latitude,longitude);
+ 				var mapTypeId = google.maps.MapTypeId.ROADMAP;
+ 				var isZoomingEnabled = true;
+ 				var isPanningEnabled = true;
+ 				if (window.corona) {
+ 					var value = getMapTypeIdFromName(window.corona.getMapTypeName());
+ 					if (value != null) {
+ 						mapTypeId = value;
+ 					}
+ 					isZoomingEnabled = window.corona.isZoomEnabled();
+ 					isPanningEnabled = window.corona.isScrollEnabled();
+ 				}
+
+				// Create the map view.
+				var mapOptions = {
+					zoom: 1,
+					center: position,
+					disableDefaultUI: true,
+					mapTypeId: mapTypeId
+				};
+				fMap = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+				google.maps.event.addListenerOnce(fMap, "idle", onMapLoadFinished);
+				google.maps.event.addListener(fMap, "click", onMapTapped);
+				google.maps.event.addListener(fMap, "bounds_changed", onMapBoundsChanged);
+				if (window.corona) {
+					setZoomingEnabled(isZoomingEnabled);
+					setPanningEnabled(isPanningEnabled);
+				}
+
+				// Enable current location tracking.
+				setCurrentLocationTrackingEnabled(true);
+			}
+
+			function showRoadmapView() {
+				fMap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+			}
+
+			function showSatelliteView() {
+				fMap.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+			}
+
+			function showHybridView() {
+				fMap.setMapTypeId(google.maps.MapTypeId.HYBRID);
+			}
+
+			function getMapTypeIdFromName(mapTypeName) {
+				if (mapTypeName == "standard") {
+					return google.maps.MapTypeId.ROADMAP;
+				}
+				else if (mapTypeName == "satellite") {
+					return google.maps.MapTypeId.SATELLITE;
+				}
+				else if (mapTypeName == "hybrid") {
+					return google.maps.MapTypeId.HYBRID;
+				}
+				return null;
+			}
+
+			function setCurrentLocationTrackingEnabled(enabled) {
+				// Do not continue if HTML5 location tracking is not supported.
+				if (navigator.geolocation == null) {
+					return;
+				}
+
+				// Make sure argument is set to a valid value.
+				if (enabled == null) {
+					enabled = false;
+				}
+
+				// Create a location monitor, if not done already.
+				// This wraps the JavaScript geolocation functions.
+				if (fCurrentLocationMonitor == null) {
+					fCurrentLocationMonitor = {
+						watcherId: null,
+						watchdogTimerId: null,
+						hasReceivedData: false,
+						timeoutTime: null,
+						retries: 0,
+						start: function() {
+							// Do not continue if already started.
+							if (this.isRunning()) {
+								return;
+							}
+
+							// Enable location monitoring.
+							var monitor = this;
+							var onLocationReceived = function(position) {
+								monitor.hasReceivedData = true;
+								monitor.retries = 0;
+								monitor.timeoutTime = monitor.getNextLongTimeout();
+								onCurrentLocationReceived(position);
+							}
+							this.watcherId = navigator.geolocation.watchPosition(
+										onLocationReceived, null, { enableHighAccuracy: true });
+							this.hasReceivedData = false;
+
+							// Set up a watchdog timer to make sure that location data is being received.
+							// Will restart location monitoring if data has not been received in time.
+							// This is done in case Android fails to turn on the GPS due to buggy behavior
+							// or if the end-user disabled the GPS and later re-enabled it.
+							if (this.watchdogTimerId == null) {
+								var onWatchdogTimerElapsed = function() {
+									if (monitor.isRunning()) {
+										var currentTime = (new Date()).getTime();
+										if (monitor.timeoutTime <= currentTime) {
+											// A timeout occurred. Restart the location service.
+											var nextTimeoutTime;
+											var nextRetryCount = monitor.retries;
+											var nextHasReceivedDataState = monitor.hasReceivedData;
+											if ((monitor.hasReceivedData == false) && (monitor.retries < 2)) {
+												nextTimeoutTime = monitor.getNextShortTimeout();
+												nextRetryCount++;
+											}
+											else {
+												nextTimeoutTime = monitor.getNextLongTimeout();
+												onCurrentLocationLost();
+											}
+											monitor.stop();
+											monitor.start();
+											monitor.hasReceivedData = nextHasReceivedDataState;
+											monitor.retries = nextRetryCount;
+											monitor.timeoutTime = nextTimeoutTime;
+										}
+									}
+								};
+								this.watchdogTimerId = setInterval(onWatchdogTimerElapsed, 6000);
+							}
+							this.retries = 0;
+							this.timeoutTime = monitor.getNextShortTimeout();
+						},
+						stop: function() {
+							if (this.watcherId != null) {
+								navigator.geolocation.clearWatch(this.watcherId);
+								this.watcherId = null;
+							}
+							if (this.watchdogTimerId != null) {
+								clearInterval(this.watchdogTimerId);
+								this.watchdogTimerId = null;
+							}
+						},
+						isRunning: function() {
+							return (this.watcherId != null);
+						},
+						getNextShortTimeout: function() {
+							// Returns current time + 5 seconds.
+							return (new Date()).getTime() + 5000;
+						},
+						getNextLongTimeout: function() {
+							// Returns current time + 3 minutes.
+							return (new Date()).getTime() + (3 * 60000);
+						}
+					};
+				}
+
+				// Enable/disable location tracking.
+				if (enabled) {
+					fCurrentLocationMonitor.start();
+				}
+				else {
+					fCurrentLocationMonitor.stop();
+					onCurrentLocationLost();
+				}
+			}
+
+			function setPanningEnabled(enabled) {
+				if (enabled == null) {
+					enabled = true;
+				}
+				fMap.setOptions({ draggable: enabled });
+			}
+
+			function setZoomingEnabled(enabled) {
+				if (enabled == null) {
+					enabled = true;
+				}
+				var zoomOptions = {
+					disableDoubleClickZoom: !enabled,
+					scrollwheel: enabled,
+					zoomControl: enabled
+				};
+				fMap.setOptions(zoomOptions);
+			}
+
+			function setCenter(latitude, longitude, isAnimated) {
+				// Pan the map to show the given coordinate at the center of the view.
+				// If the center point has never been set before, then zoom in on it.
+				var position = new google.maps.LatLng(latitude, longitude);
+				if (fHasMapCenterBeenSetBefore == false) {
+					setRegion(latitude, longitude, 0.01, 0.01, isAnimated);
+				}
+				else if (isAnimated) {
+					fMap.panTo(position);
+				}
+				else {
+					fMap.setCenter(position);
+				}
+			}
+
+			function setRegion(latitude, longitude, latitudeSpan, longitudeSpan, isAnimated) {
+				var offsettedLatitude
+				var offsettedLongitude
+
+				// Calculate the south-west coordinate of the map view based on the given spans.
+				offsettedLatitude = latitude - (latitudeSpan / 2);
+				if (offsettedLatitude >= 0) {
+					offsettedLatitude %= 90;
+				}
+				else {
+					offsettedLatitude %= -90;
+				}
+				offsettedLongitude = longitude - (longitudeSpan / 2);
+				if (offsettedLongitude >= 0) {
+					offsettedLongitude %= 180;
+				}
+				else {
+					offsettedLongitude %= -180;
+				}
+				var southWestPosition = new google.maps.LatLng(offsettedLatitude, offsettedLongitude);
+
+				// Calculate the north-east coordinate of the map view based on the given spans.
+				offsettedLatitude = latitude + (latitudeSpan / 2);
+				if (offsettedLatitude >= 0) {
+					offsettedLatitude %= 90;
+				}
+				else {
+					offsettedLatitude %= -90;
+				}
+				offsettedLongitude = longitude + (longitudeSpan / 2);
+				if (offsettedLongitude >= 0) {
+					offsettedLongitude %= 180;
+				}
+				else {
+					offsettedLongitude %= -180;
+				}
+				var northEastPosition = new google.maps.LatLng(offsettedLatitude, offsettedLongitude);
+
+				// Zoom to the given region.
+				fHasMapCenterBeenSetBefore = true;
+				var bounds = new google.maps.LatLngBounds(southWestPosition, northEastPosition);
+				fMap.fitBounds(bounds);
+			}
+
+			function addMarker(markerId, latitude, longitude, title, subtitle, image) {
+				var position = new google.maps.LatLng(latitude, longitude);
+				var settings = {
+					map: fMap,
+					visible: true,
+					draggable: false,
+					animation: google.maps.Animation.DROP,
+					position: position
+				}
+				var marker = new google.maps.Marker(settings);
+				marker.markerId = markerId;
+				fMarkers.push(marker);
+				marker.clickListener = google.maps.event.addListener(marker, "click", onTappedMarker);
+				if (image != null) {
+					marker.setIcon(image);
+				}
+				
+				if (((title != null) && (title.length > 0)) || ((subtitle != null) && (subtitle.length > 0))) {
+					var windowText = "";
+					if ((title != null) && (title.length > 0)) {
+						windowText = "<b>" + title + "</b>";
+					}
+					if ((subtitle != null) && (subtitle.length > 0)) {
+						if (windowText.length > 0) {
+							windowText = windowText + "<p>";
+						}
+						windowText = windowText + subtitle;
+					}
+					var windowSettings = {
+						content: windowText
+					};
+					var infoWindow = new google.maps.InfoWindow(windowSettings);
+					infoWindow.isOpen = false;
+					infoWindow.closeClickListener = google.maps.event.addListener(
+								infoWindow, "closeclick", onClosedMarkerInfoWindow);
+					marker.infoWindow = infoWindow;
+				}
+			}
+
+			function removeMarker(markerId) {
+				var marker;
+				for (var iterator in fMarkers) {
+					marker = fMarkers[iterator];
+					if (marker && marker.markerId == markerId) {
+						if (marker.infoWindow) {
+							marker.infoWindow.close();
+							google.maps.event.removeListener(marker.infoWindow.closeClickListener);
+						}
+						google.maps.event.removeListener(marker.clickListener);
+						marker.setVisible(false);
+						marker.setMap(null);
+						fMarkers.length = fMarkers.length - 1;
+					}
+				}
+
+				// Force the map to redraw itself with the markers removed.
+				// Work-around a bug on Android web view where map won't redraw itself consistently.
+				var zoomLevel = fMap.getZoom();
+				fMap.setZoom(zoomLevel - 0.1);
+				fMap.setZoom(zoomLevel);
+			}
+
+			function removeAllMarkers() {
+				// Remove all markers and their annotations from the map.
+				var marker;
+				for (var iterator in fMarkers) {
+					marker = fMarkers[iterator];
+					if (marker) {
+						if (marker.infoWindow) {
+							marker.infoWindow.close();
+							google.maps.event.removeListener(marker.infoWindow.closeClickListener);
+						}
+						google.maps.event.removeListener(marker.clickListener);
+						marker.setVisible(false);
+						marker.setMap(null);
+					}
+				}
+
+				// Clear the marker collection.
+				fMarkers.length = 0;
+
+				// Force the map to redraw itself with the markers removed.
+				// Work-around a bug on Android web view where map won't redraw itself consistently.
+				var zoomLevel = fMap.getZoom();
+				fMap.setZoom(zoomLevel - 0.1);
+				fMap.setZoom(zoomLevel);
+			}
+
+			function onMapLoadFinished() {
+				if (window.corona) {
+					window.corona.onMapLoadFinished();
+				}
+			}
+
+			function onMapBoundsChanged() {
+				// Fetch the map's current bounds.
+				var bounds = fMap.getBounds();
+				if (bounds == null) {
+					return;
+				}
+
+				// Send current bounds to the Java side of Corona.
+				if (window.corona) {
+					var southWestPosition = bounds.getSouthWest();
+					var northEastPosition = bounds.getNorthEast();
+					window.corona.onMapBoundsChanged(
+							southWestPosition.lat(), southWestPosition.lng(),
+							northEastPosition.lat(), northEastPosition.lng());
+				}
+			}
+
+			function onClosedMarkerInfoWindow() {
+				this.isOpen = false;
+			}
+
+			function onTappedMarker() {
+				window.corona.onMarkerTouch(this.markerId);
+
+				var infoWindow = this.infoWindow;
+				if (infoWindow == null) {
+					return;
+				}
+
+				if (infoWindow.isOpen) {
+					infoWindow.close();
+				}
+				else {
+					infoWindow.open(fMap, this);
+				}
+				infoWindow.isOpen = !(infoWindow.isOpen);
+			}
+
+			function onMapTapped(event) {
+				if (window.corona) {
+					window.corona.onMapTapped(event.latLng.lat(), event.latLng.lng());
+				}
+			}
+
+			function onCurrentLocationReceived(position) {
+				// Send current location to the Java side of Corona.
+				var coordinates = position.coords;
+				if (window.corona) {
+					var altitude = coordinates.altitude ? coordinates.altitude : 0.0;
+					var altitudeAccuracy = coordinates.altitudeAccuracy ? coordinates.altitudeAccuracy : 0.0;
+					var heading = coordinates.heading ? coordinates.heading : 0.0;
+					var speed = coordinates.speed ? coordinates.speed : 0.0;
+					window.corona.onCurrentLocationReceived(
+							coordinates.latitude, coordinates.longitude, coordinates.accuracy,
+							altitude, altitudeAccuracy, heading, speed, position.timestamp);
+				}
+
+				// Move the current location marker to the given position.
+				var currentLocation = new google.maps.LatLng(coordinates.latitude, coordinates.longitude);
+				if (fCurrentLocationMarker == null) {
+					// Marker has not been created yet. Do so now at the given coordinates.
+					var settings = {
+						map: fMap,
+						visible: true,
+						draggable: false,
+						animation: null,
+						position: currentLocation
+					}
+					if (fCurrentLocationMarkerImages > 0) {
+						settings.optimized = false;
+					}
+					fCurrentLocationMarker = new google.maps.Marker(settings);
+					if (fCurrentLocationMarkerImages.length > 1) {
+						var onUpdateCurrentLocationMarkerImage = function() {
+							if (fCurrentLocationMarker) {
+								var nextIconIndex = 0;
+								if (fCurrentLocationMarker.iconIndex != null) {
+									nextIconIndex = (fCurrentLocationMarker.iconIndex + 1);
+									nextIconIndex = nextIconIndex % fCurrentLocationMarkerImages.length;
+								}
+								fCurrentLocationMarker.iconIndex = nextIconIndex;
+								fCurrentLocationMarker.setIcon(fCurrentLocationMarkerImages[nextIconIndex]);
+							}
+						};
+						onUpdateCurrentLocationMarkerImage();
+						fCurrentLocationMarker.animationTimerId =
+								setInterval(onUpdateCurrentLocationMarkerImage, 120);
+					}
+					else if (fCurrentLocationMarkerImages.length == 1) {
+						fCurrentLocationMarker.setIcon(fCurrentLocationMarkerImages[0]);
+					}
+				}
+				else {
+					// Update the existing current location marker.
+					fCurrentLocationMarker.setPosition(currentLocation);
+				}
+
+				// If the map center hasn't been set yet, then zoom to the device's current location.
+				if (fHasMapCenterBeenSetBefore == false) {
+					setRegion(position.coords.latitude, position.coords.longitude, 0.01, 0.01, true);
+				}
+			}
+
+			function onCurrentLocationLost() {
+				// Remove the current location marker.
+				if (fCurrentLocationMarker != null) {
+					// Disable the marker's animation timer.
+					if (fCurrentLocationMarker.animationTimerId != null) {
+						clearInterval(fCurrentLocationMarker.animationTimerId);
+						fCurrentLocationMarker.animationTimerId = null;
+					}
+
+					// Remove the marker from the map.
+					fCurrentLocationMarker.setVisible(false);
+					fCurrentLocationMarker.setMap(null);
+					fCurrentLocationMarker = null;
+
+					// Force the map to redraw itself after removing the above marker.
+					// Works-around a bug on Android web view where map won't redraw itself consistently.
+					var zoomLevel = fMap.getZoom();
+					fMap.setZoom(zoomLevel - 0.1);
+					fMap.setZoom(zoomLevel);
+				}
+
+				// Inform Corona that the device's current location is unknown.
+				if (window.corona) {
+					window.corona.onCurrentLocationLost();
+				}
+			}
+		</script>
+	</head>
+	<body onload="loadMapWithGoogleKey()">
+		<div id="map_canvas"></div>
+	</body>
+</html>

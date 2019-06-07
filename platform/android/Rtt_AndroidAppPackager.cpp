@@ -235,7 +235,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			gradleGo.append(" -PcoronaTmpDir=");
 			gradleGo.append(EscapeArgument(tmpDir));
 			
-			gradleGo.append(" -PcoronaSrcDir=");
+			gradleGo.append(" -PcoronaSrcDirSim=");
 			gradleGo.append(EscapeArgument(params->GetSrcDir()));
 			
 			String appFileName;
@@ -272,7 +272,18 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			{
 				gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyStorePassword()));
 			}
-
+			
+			if (fIsUsingExpansionFile &&
+				params->GetTargetAppStoreName() &&
+				!strcmp(params->GetTargetAppStoreName(), TargetAndroidAppStore::kGoogle.GetStringId()))
+			{
+				char expansionFileName[255];
+				snprintf(
+						 expansionFileName, sizeof(expansionFileName) - 1, "main.%d.%s.obb",
+						 androidParams->GetVersionCode(), params->GetAppPackage());
+				gradleGo.append(" -PcoronaExpansionFileName=");
+				gradleGo.append(expansionFileName);
+			}
 			
 			String debugBuildProcessPref;
 			int debugBuildProcess = 0;
