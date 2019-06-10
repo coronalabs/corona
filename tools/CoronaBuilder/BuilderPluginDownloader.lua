@@ -15,7 +15,9 @@ local lfs = require('lfs')
 local builder = require('builder')
 
 local serverBackend = 'https://backendapi.coronalabs.com'
-
+local verbosity = 3
+local androidBuild = false
+local alwaysQuery = false
 
 local function quoteString( str )
 	str = str:gsub('\\', '\\\\')
@@ -86,22 +88,26 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 				return
 			end
 
-			local pluginArchivePath = pluginsDest .. plugin .. '_' .. developer .. ".tgz"
-			local err, msg = builder.download(downloadURL, pluginArchivePath)
-			if msg then
-				print("ERROR: unable to download " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
-				return
-			end
+			if androidBuild then
+			print("plugin\t" .. plugin .. '_' .. developer .. ".tgz\t"  .. downloadURL)
+			else
+				local pluginArchivePath = pluginsDest .. plugin .. '_' .. developer .. ".tgz"
+				local err, msg = builder.download(downloadURL, pluginArchivePath)
+				if msg then
+					print("ERROR: unable to download " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+					return
+				end
 
-			local unpackLocation = pluginsDest .. plugin .. '_' .. developer
-			lfs.mkdir(unpackLocation)
-			local ret = unpackPlugin(pluginArchivePath, unpackLocation)
-			if ret ~= 0 then
-				print("ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
-				return
-			end
+				local unpackLocation = pluginsDest .. plugin .. '_' .. developer
+				lfs.mkdir(unpackLocation)
+				local ret = unpackPlugin(pluginArchivePath, unpackLocation)
+				if ret ~= 0 then
+					print("ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
+					return
+				end
 
-			table.insert(pluginDirectories, unpackLocation)
+				table.insert(pluginDirectories, unpackLocation)
+			end
 
 		end
 	end
@@ -118,7 +124,7 @@ local function androidDownloadPlugins( build, pluginsToDownload )
 		return
 	end
 
-	if #pluginDirectories > 0 then
+	if #pluginDirectories > 0 and verbosity>0 then
 		print()
 		print("Plugins were successfully downloaded")
 		print("General guidelines on how to use plugins with Corona Native can be found here: https://docs.coronalabs.com/native/android/index.html")
@@ -270,6 +276,13 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		if args[i] == '--force-load' then
 			table.remove(args, i)
 			forceLoad = true
+		elseif args[i] == '--android-build' then
+			table.remove(args, i)
+			verbosity = 0
+			androidBuild = true
+		elseif args[i] == '--always-query' then
+			table.remove(args, i)
+			alwaysQuery = true
 		elseif args[i] == '--' then
 			break
 		end
@@ -295,14 +308,25 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		return 1;
 	end
 
+	local settings
+	if buildSettingsFile:sub(-#"build.properties") == "build.properties" then
+		local props, err = io.open( buildSettingsFile, "r" )
+		if not config then
+			print("ERROR: unable to open build.properties file, error: " .. tostring(err))
+			return 1
+		end
+		settings = json.decode(props:read("*a") or '{"buildSettings":{}}').buildSettings or {}
 
-	local oldSettings = _G['settings']
-	_G['settings'] = nil
-	pcall( function(  )
-		dofile(buildSettingsFile)
-	end  )
-	local settings = _G['settings']
-	_G['settings'] = oldSettings
+		props:close()
+	else
+		local oldSettings = _G['settings']
+		_G['settings'] = nil
+		pcall( function(  )
+			dofile(buildSettingsFile)
+		end  )
+		settings = _G['settings']
+		_G['settings'] = oldSettings
+	end
 
 	if type(settings) ~= 'table' then
 		print("ERROR: Couldn't read 'build.settings' file at path: '" .. buildSettingsFile .. "'")
@@ -320,7 +344,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
 	end
 
-	if #pluginsToDownload > 0 then
+	if #pluginsToDownload > 0 or alwaysQuery then
 
 		local authURL = serverBackend .. '/v1/plugins/show/' .. user
 
@@ -350,6 +374,31 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		local authorisedPlugins = {}
 		for _, ap in pairs(authPluginsJson.data) do -- ap : authorisedPlugin
 			authorisedPlugins[ tostring(ap['plugin_name']) .. ' ' .. tostring(ap['plugin_developer'])] = ap['status']
+		end
+
+		local splashStatus = authorisedPlugins["plugin.CoronaSplashControl com.coronalabs"]
+		local pluginsDest = ""
+		if windows then
+			-- %APPDATA%\Corona Labs\Corona Simulator\NativePlugins\
+			pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs' 
+			lfs.mkdir(pluginsDest)
+			pluginsDest = pluginsDest .. '\\Corona Simulator'
+			lfs.mkdir(pluginsDest)
+			pluginsDest = pluginsDest .. '\\NativePlugins\\'
+			lfs.mkdir(pluginsDest)
+		else
+			pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona' 
+			lfs.mkdir(pluginsDest)
+			pluginsDest = pluginsDest .. '/Native Plugins/'
+			lfs.mkdir(pluginsDest)
+		end
+		pluginsDest = pluginsDest .. 'control'
+		if splashStatus == 2 and splashStatus == 1 then
+			local splashOut = io.open(pluginsDest, "w")
+			splashOut:write(user)
+			splashOut:close()
+		else
+			os.remove(pluginsDest)
 		end
 
 		local authErrors = false
@@ -431,7 +480,9 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		return 1
 	end
 
-	print("Done downloading plugins!")
+	if verbosity > 0 then
+		print("Done downloading plugins!")
+	end
 
 	return 0
 end

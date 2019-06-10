@@ -229,6 +229,9 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 #endif
 			gradleGo.append("./gradlew buildCoronaApp");
 			
+			gradleGo.append(" -PcoronaResourcesDir=");
+			EscapeArgument(fResourcesDir.GetString());
+			
 			gradleGo.append(" -PcoronaDstDir=");
 			gradleGo.append(EscapeArgument(params->GetDstDir()));
 			

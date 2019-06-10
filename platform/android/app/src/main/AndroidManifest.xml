@@ -1,17 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.corona.template">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+          package="com.corona.template"
+          android:installLocation="auto">
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/icon"
-        android:supportsRtl="true"
-        android:hardwareAccelerated="true"
-        android:name="android.support.multidex.MultiDexApplication"
+    
 
-        tools:ignore="GoogleAppIndexingWarning">
+    
+
+	<uses-feature android:glEsVersion="0x00020000" />
+	<uses-feature android:name="android.hardware.telephony" android:required="false" />
+	<uses-feature android:name="android.hardware.screen.portrait" android:required="false" />
+	<uses-feature android:name="android.hardware.screen.landscape" android:required="true" />
+	
+
+	
+
+	<application android:icon="@mipmap/icon"
+	             android:banner="@drawable/banner"
+	             android:label="Corona App"
+	             
+	             
+	             android:networkSecurityConfig="@xml/network_security_config"
+	             >
+
+		<meta-data android:name="targetedAppStore" android:value="none" />
+
+		
+
+		
+
+		
+
+		<!-- The main Corona activity that runs the Corona project. -->
+		<activity android:name="com.ansca.corona.CoronaActivity"
+		          android:screenOrientation="sensorLandscape"
+		          android:label="Corona App"
+				  android:resizeableActivity="false"
+
+				  android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"
+				  android:launchMode="singleTask"
+		          android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+			
+			<meta-data android:name="requestedDefaultOrientation" android:value="sensorLandscape" />
+			<intent-filter>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+			
+		</activity>
+
+		
 
     </application>
+
+	
 
 </manifest>

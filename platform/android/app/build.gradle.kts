@@ -1,3 +1,6 @@
+import com.android.ide.common.util.toPathString
+import de.undercouch.gradle.tasks.download.DownloadAction
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.tools.ant.filters.StringInputStream
@@ -7,6 +10,7 @@ plugins {
     id("com.android.application")
 }
 
+val coronaResourcesDir: String? by project
 val coronaDstDir: String? by project
 val coronaTmpDir: String? by project
 val coronaSrcDirSim: String? by project
@@ -28,19 +32,30 @@ val coronaSrcDir = coronaSrcDirSim ?: if (file("$rootDir/../test/assets2").exist
 val windows = System.getProperty("os.name").toLowerCase().contains("windows")
 val shortOsName = if (windows) "win" else "mac"
 val nativeDir = if (windows) {
-    System.getenv("CORONA_ROOT").replace("\\", "/")
+    val resourceDir = coronaResourcesDir?.let { file("$it/../Native/").absolutePath }?.takeIf { file(it).exists() }
+    (resourceDir ?: System.getenv("CORONA_ROOT")).replace("\\", "/")
 } else {
-    "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
+    val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native//").absolutePath }?.takeIf { file(it).exists() }
+    resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
 }
 
+val coronaAndroidPluginsCache = file(if (windows) {
+    "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
+} else {
+    "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
+})
+val coronaPlugins = file("$buildDir/corona-plugins")
+
+val buildToolsDir = if (file("$projectDir/../buildTools").exists()) {
+    "$projectDir/../buildTools"
+} else {
+    "$projectDir/../template"
+}
 
 var buildSettings: Any? = null
 coronaTmpDir?.let { srcDir ->
     file("$srcDir/build.properties").takeIf { it.exists() }?.let { f ->
         buildSettings = JsonSlurper().parse(f)
-        if (buildSettings is Map<*, *>) {
-            buildSettings = (buildSettings as Map<*, *>)["buildSettings"]
-        }
     }
 }
 if (buildSettings == null) {
@@ -66,13 +81,15 @@ if (buildSettings == null) {
                 environment["PATH"] = "${System.getenv("PATH")}${System.getProperty("path.separator")}${System.getenv("CORONA_PATH")}"
             }
             doLast {
-                buildSettings = JsonSlurper().parseText(output.toString())
+                buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(output.toString()))
             }
         }
     } else {
         buildSettings = JsonSlurper().parseText("{}")
         tasks.create("parseBuildSettings")
     }.group = "Corona"
+} else {
+    tasks.create("parseBuildSettings")
 }
 
 
@@ -123,7 +140,7 @@ android {
     }
 }
 
-
+//region Packaging Corona App
 android.applicationVariants.all {
     val baseName = this.baseName.toLowerCase()
     val isRelease = (baseName == "release")
@@ -133,6 +150,7 @@ android.applicationVariants.all {
     val compileLuaTask = tasks.create("compileLua${baseName.capitalize()}") {
         group = "Corona"
         description = "If required, compiles Lua and archives it into resource.car"
+        shouldRunAfter("processPlugins")
         val luac = "$nativeDir/Corona/$shortOsName/bin/luac"
         val coronaBuilder = if (windows) {
             "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
@@ -142,25 +160,41 @@ android.applicationVariants.all {
 
         val luaFiles = fileTree(coronaSrcDir) {
             include("**/*.lua")
+        } + fileTree(coronaPlugins) {
+            include("**/*.lua")
+            exclude("*/metadata.lua")
         }
+
         inputs.files(luaFiles)
         outputs.file(compiledLuaArchive)
         doLast {
             val rootFile = file(coronaSrcDir)
-            val compiledDir = "$buildDir/intermediates/compiledLua"
+            val compiledDir = "$buildDir/intermediates/compiled_lua_$baseName"
             delete(compiledDir)
             mkdir(compiledDir)
-            val outputsList = mutableListOf<String>()
-            luaFiles.forEach {
+            val outputsList = luaFiles.map {
+                val compiled = when {
+                    it.canonicalPath.startsWith(rootFile.canonicalPath) -> it.relativeTo(rootFile)
+                            .toPathString()
+                            .segments
+                            .joinToString(".")
+                            .replaceAfterLast(".", "lu")
+                    it.canonicalPath.startsWith(coronaPlugins.canonicalPath) -> it.relativeTo(coronaPlugins)
+                            .toPathString()
+                            .segments.drop(1)
+                            .joinToString(".")
+                            .replaceAfterLast(".", "lu")
+                            .removePrefix("lua.lua_51.")
+                    else -> throw InvalidUserDataException("Unknown location of Lua file '$it'!")
+                }
                 exec {
-                    val compiled = it.relativeTo(rootFile).path.replace(File.separator, ".").replaceAfterLast(".", "lu")
-                    outputsList += compiled
                     val additionalArguments = mutableListOf<String>()
                     if (isRelease) {
                         additionalArguments += "-s"
                     }
                     commandLine(luac, *additionalArguments.toTypedArray(), "-o", "$compiledDir/$compiled", "--", it)
                 }
+                compiled
             }
             mkdir(file(compiledLuaArchive).parent)
             exec {
@@ -184,6 +218,8 @@ android.applicationVariants.all {
             }
             exclude("**/*.lua", "build.settings")
             exclude("**/Icon\r")
+            exclude("AndroidResources/res/**")
+            exclude("AndroidResources/assets/**")
         }
 
         if (coronaTmpDir != null) {
@@ -212,6 +248,218 @@ android.applicationVariants.all {
     android.sourceSets[name].assets.srcDirs(generatedAssetsDir)
 }
 
+tasks.register<Exec>("downloadPlugins") {
+    group = "Corona"
+
+    val coronaBuilder = if (windows) {
+        "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
+    } else {
+        "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
+    }
+    val buildPropsFile = file("$coronaTmpDir/build.properties")
+    val inputSettingsFile = if (buildPropsFile.exists()) {
+        buildPropsFile
+    } else {
+        file("$coronaSrcDir/build.settings")
+    }
+    commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build")
+
+    //inputs.files(inputSettingsFile)
+    //outputs.dir(coronaAndroidPluginsCache)
+    standardOutput = ByteArrayOutputStream()
+
+    enabled = inputSettingsFile.exists()
+
+    isIgnoreExitValue = true
+
+    doLast {
+        if (execResult.exitValue != 0) {
+            println(standardOutput.toString())
+            execResult.rethrowFailure()
+        }
+        coronaAndroidPluginsCache.mkdirs()
+        delete(coronaPlugins)
+        val pluginUrls = standardOutput.toString()
+                .lines()
+                .filter { it.startsWith("plugin\t") }
+                .map { it.trim().removePrefix("plugin\t").split("\t") }
+        pluginUrls.forEach { (plugin, url) ->
+            val outputFile = with(DownloadAction(project)) {
+                src(url)
+                dest("$coronaAndroidPluginsCache/$plugin")
+                onlyIfModified(true)
+                cachedETagsFile("${coronaAndroidPluginsCache.parent}/ETags.txt")
+                execute()
+                outputFiles.first()
+            }
+            copy {
+                from(tarTree(outputFile))
+                into("$coronaPlugins/${outputFile.nameWithoutExtension}")
+            }
+        }
+    }
+}
+
+tasks.register("processPluginsAssets") {
+    group = "Corona"
+    //dependsOn("downloadPlugins")
+    val pluginAssetsDir = "$buildDir/generated/corona_plugin_assets"
+    doLast {
+        delete(pluginAssetsDir)
+        copy {
+            from(coronaPlugins) {
+                include("*/resources/assets/**/*")
+            }
+            into(pluginAssetsDir)
+            eachFile {
+                path = File(path).toPathString().segments.drop(3).joinToString("/")
+            }
+            includeEmptyDirs = false
+        }
+        copy {
+            from(coronaPlugins) {
+                include("*/lua/lua_51/**/*")
+                exclude("**/*.lua")
+            }
+            into("$pluginAssetsDir/.corona-plugins")
+            eachFile {
+                path = File(path).toPathString().segments.drop(3).joinToString("/")
+            }
+            includeEmptyDirs = false
+        }
+        if (file(pluginAssetsDir).exists()) {
+            android.sourceSets["main"].assets.srcDir(pluginAssetsDir)
+        }
+    }
+}
+
+tasks.register("processPluginsResources") {
+    group = "Corona"
+    dependsOn("downloadPlugins")
+    doLast {
+        val resourceDirectories = File(coronaPlugins.path)
+                .walk()
+                .filter { it.isDirectory }
+                .filter {
+                    it.relativeTo(coronaPlugins).toPathString().segments.drop(1) == listOf("resources")
+                }.flatMap { pr ->
+                    pr.walk()
+                            .filter { r -> r.isDirectory }
+                            .filter { r ->
+                                r.parentFile == pr || r.name.startsWith("package")
+                            }
+                }
+        resourceDirectories.forEach {
+            File(it, "res").takeIf { f -> f.exists() && f.isDirectory }?.let { p ->
+                android.sourceSets["main"].res.srcDir(p)
+            }
+        }
+        val extraPackages = resourceDirectories.map {
+            val packageFile = File(it, "package.txt")
+            if (packageFile.exists()) {
+                packageFile.readText().trim()
+            } else {
+                ""
+            }
+        }.filter { it.isNotBlank() }.joinToString(":")
+        if (extraPackages.isNotBlank()) {
+            android.aaptOptions.additionalParameters("--extra-packages", extraPackages)
+        }
+    }
+}
+
+tasks.register("processPluginsMetadata") {
+    group = "Corona"
+    dependsOn("downloadPlugins")
+    doLast {
+        file("$buildDir/intermediates").mkdirs()
+        val metadataFiles = fileTree(coronaPlugins) {
+            include("*/metadata.lua")
+        }.map { it.absolutePath }
+        exec {
+            commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
+                    , "-e"
+                    , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
+                    , "$buildToolsDir/convert_metadata.lua"
+                    , "$buildDir/intermediates/plugins_metadata.json"
+                    , *metadataFiles.toTypedArray()
+            )
+        }
+    }
+}
+
+tasks.register("processPluginsManifest") {
+    group = "Corona"
+    dependsOn("processPluginsMetadata")
+    dependsOn("parseBuildSettings")
+    doLast {
+        val buildPropsFile = file("$coronaTmpDir/build.properties")
+        val inputSettingsFile = if (buildPropsFile.exists()) {
+            buildPropsFile
+        } else {
+            val buildPropsOut = file("$buildDir/intermediates/corona.build.props")
+            buildPropsOut.writeText(JsonOutput.toJson(buildSettings))
+            buildPropsOut
+        }
+
+        exec {
+            val manifestGenDir = "$buildDir/intermediates/corona_manifest_gen"
+            file(manifestGenDir).mkdirs()
+            commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
+                    , "-e"
+                    , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
+                    , "$buildToolsDir/update_manifest.lua"
+                    , /*1*/ "$buildToolsDir/AndroidManifest.template.xml"
+                    , /*2*/ inputSettingsFile
+                    , /*3*/ coronaAppFileName ?: "Corona App"
+                    , /*4*/ "$manifestGenDir/AndroidManifest.xml"
+                    , /*5*/ "$buildDir/intermediates/plugins_metadata.json"
+                    , /*6*/ "$buildToolsDir/strings.xml"
+                    , /*7*/ "$manifestGenDir/strings.xml"
+                    , /*8*/ "$manifestGenDir/CopyToApk.txt"
+            )
+            copy {
+                from(manifestGenDir) {
+                    include("AndroidManifest.xml")
+                }
+                into("$projectDir/src/main")
+
+            }
+            copy {
+                from(manifestGenDir) {
+                    include("strings.xml")
+                }
+                into("$projectDir/src/main/res/values")
+            }
+        }
+    }
+}
+
+tasks.register("processPluginsJars") {
+    group = "Corona"
+    dependsOn("processPluginsMetadata")
+    doLast {
+        project.dependencies {
+            implementation(fileTree(coronaPlugins) {
+                include("**/*.jar")
+            })
+        }
+    }
+}
+
+tasks.create("processPlugins") {
+    group = "Corona"
+    dependsOn("processPluginsJars", "processPluginsAssets", "processPluginsManifest", "processPluginsMetadata", "processPluginsResources")
+}
+
+tasks.findByName("preBuild")?.let {
+    it.shouldRunAfter("processPlugins")
+    it.dependsOn("processPlugins")
+}
+
+//endregion
+
+
 //region Corona core development helpers
 tasks.register<Zip>("exportCoronaAppTemplate") {
     group = "Corona-dev"
@@ -230,6 +478,10 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
     from(android.sdkDirectory) {
         include("licenses/android-sdk-license")
         into("sdk")
+    }
+    from("$projectDir/../template") {
+        include("AndroidManifest.template.xml", "convert_metadata.lua", "update_manifest.lua")
+        into("buildTools")
     }
     doLast {
         println("Exported to '${archiveFile.get()}'")
@@ -271,9 +523,7 @@ val copyCoronaIconFiles = tasks.create("copyCoronaIconFiles") {
     description = "Copies icon files to appropriate resources location"
     group = "Corona"
     tasks.findByName("preBuild")?.dependsOn(this)
-    if (buildSettings == null) {
-        dependsOn("parseBuildSettings")
-    }
+    dependsOn("parseBuildSettings")
 }
 
 tasks.create<Copy>("copyAdaptiveIconResources") {
@@ -288,9 +538,6 @@ tasks.create("copyCoronaIcons") {
     description = "Copies icon files to appropriate resources location"
     group = "Corona"
     tasks.findByName("preBuild")?.dependsOn(this)
-    if (buildSettings == null) {
-        dependsOn("parseBuildSettings")
-    }
     dependsOn("copyAdaptiveIconResources")
     dependsOn(copyCoronaIconFiles)
 }
