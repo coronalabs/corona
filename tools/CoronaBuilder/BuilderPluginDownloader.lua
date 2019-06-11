@@ -311,7 +311,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	local settings
 	if buildSettingsFile:sub(-#"build.properties") == "build.properties" then
 		local props, err = io.open( buildSettingsFile, "r" )
-		if not config then
+		if not props then
 			print("ERROR: unable to open build.properties file, error: " .. tostring(err))
 			return 1
 		end

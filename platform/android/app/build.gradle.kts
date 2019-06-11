@@ -47,8 +47,8 @@ val coronaAndroidPluginsCache = file(if (windows) {
 })
 val coronaPlugins = file("$buildDir/corona-plugins")
 
-val buildToolsDir = if (file("$projectDir/../buildTools").exists()) {
-    "$projectDir/../buildTools"
+val buildToolsDir = if (file("$projectDir/buildTools").exists()) {
+    "$projectDir/buildTools"
 } else {
     "$projectDir/../template"
 }
@@ -343,6 +343,7 @@ fun downloadAndProcessCoronaPlugins() {
     // Collect Resources
     println("Collecting plugin resources")
     run {
+        file(generatedPluginsOutput).mkdirs()
         val resourceDirectories = File(coronaPlugins.path)
                 .walk()
                 .filter { it.isDirectory }
@@ -501,8 +502,8 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
         into("sdk")
     }
     from("$projectDir/../template") {
-        include("AndroidManifest.template.xml", "convert_metadata.lua", "update_manifest.lua")
-        into("buildTools")
+        include("AndroidManifest.template.xml", "convert_metadata.lua", "update_manifest.lua", "strings.xml")
+        into("template/app/buildTools")
     }
     doLast {
         println("Exported to '${archiveFile.get()}'")

@@ -226,11 +226,15 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 		{
 #if defined(Rtt_MAC_ENV)
 			std::string gradleGo = "cd \"$HOME/Library/Application Support/Corona/Android Build/template\" && ";
+#else
+			std::string gradleGo = "cd \"%APPDATA%\\Corona\\Android Build\\template\" && ";
 #endif
 			gradleGo.append("./gradlew buildCoronaApp");
 			
+			gradleGo.append(" -PconfigureCoronaPlugins=YES");
+			
 			gradleGo.append(" -PcoronaResourcesDir=");
-			EscapeArgument(fResourcesDir.GetString());
+			gradleGo.append(EscapeArgument(fResourcesDir.GetString()));
 			
 			gradleGo.append(" -PcoronaDstDir=");
 			gradleGo.append(EscapeArgument(params->GetDstDir()));
