@@ -153,7 +153,7 @@ android.applicationVariants.all {
     val baseName = this.baseName.toLowerCase()
     val isRelease = (baseName == "release")
     val generatedAssetsDir = "$buildDir/generated/corona_assets/$baseName"
-    val compiledLuaArchive = "$buildDir/intermediates/compiled_lua/$baseName/resource.car"
+    val compiledLuaArchive = "$buildDir/intermediates/compiled_lua_archive/$baseName/resource.car"
 
     val compileLuaTask = tasks.create("compileLua${baseName.capitalize()}") {
         group = "Corona"
@@ -166,20 +166,26 @@ android.applicationVariants.all {
             "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
         }
 
-        val luaFiles = fileTree(coronaSrcDir) {
+        val srcLuaFiles = fileTree(coronaSrcDir) {
             include("**/*.lua")
-        } + fileTree(coronaPlugins) {
+        }
+        val pluginLuaFiles = fileTree(coronaPlugins) {
             include("**/*.lua")
             exclude("*/metadata.lua")
         }
 
-        inputs.files(luaFiles)
+        inputs.files(srcLuaFiles + pluginLuaFiles)
         outputs.file(compiledLuaArchive)
         doLast {
             val rootFile = file(coronaSrcDir)
-            val compiledDir = "$buildDir/intermediates/compiled_lua_$baseName"
+            val compiledDir = "$buildDir/intermediates/compiled_lua/$baseName"
             delete(compiledDir)
             mkdir(compiledDir)
+            val luaFiles = if(coronaTmpDir==null) {
+                srcLuaFiles + pluginLuaFiles
+            } else {
+                pluginLuaFiles
+            }
             val outputsList = luaFiles.map {
                 val compiled = when {
                     it.canonicalPath.startsWith(rootFile.canonicalPath) -> it.relativeTo(rootFile)
@@ -203,7 +209,14 @@ android.applicationVariants.all {
                     commandLine(luac, *additionalArguments.toTypedArray(), "-o", "$compiledDir/$compiled", "--", it)
                 }
                 compiled
+            } + if (coronaTmpDir!=null) {
+                fileTree(coronaTmpDir!!) {
+                    include("*.lu")
+                }
+            } else {
+                files().asFileTree
             }
+
             mkdir(file(compiledLuaArchive).parent)
             exec {
                 workingDir = file(compiledDir)
@@ -220,6 +233,8 @@ android.applicationVariants.all {
         group = "Corona"
         description = "Copies all resources and compiled Lua to the project"
 
+        dependsOn(compileLuaTask)
+
         from(coronaSrcDir) {
             file("$coronaTmpDir/excludesfile.properties").takeIf { it.exists() }?.readLines()?.forEach {
                 exclude(it)
@@ -229,13 +244,7 @@ android.applicationVariants.all {
             exclude("AndroidResources/**")
         }
 
-        if (coronaTmpDir != null) {
-            from("$coronaTmpDir/resource.car")
-        } else {
-            from(compiledLuaArchive)
-            dependsOn(compileLuaTask)
-        }
-
+        from(compiledLuaArchive)
         into(generatedAssetsDir)
 
         doFirst {
@@ -681,8 +690,6 @@ tasks.create<Copy>("buildCoronaApp") {
     description = "Used when Simulator invokes a build. It all project variables must be passed"
     dependsOn("assembleRelease")
     dependsOn("bundleRelease")
-    tasks.findByName("assembleRelease")?.shouldRunAfter("clean")
-    tasks.findByName("bundleRelease")?.shouldRunAfter("clean")
 
     val copyTask = this
     android.applicationVariants.matching {
