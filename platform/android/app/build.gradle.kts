@@ -131,6 +131,20 @@ android {
             }
         }
     }
+    // This is dirty hack because Android Assets refuse to copy assets which start with . or _
+    android.applicationVariants.all {
+        mergeAssetsProvider!!.configure {
+            val mergeTask = this
+            doLast {
+                copy {
+                    from(generatedPluginAssetsDir) {
+                        include(".corona-plugins/**")
+                    }
+                    into(mergeTask.outputDir)
+                }
+            }
+        }
+    }
 }
 
 //region Packaging Corona App
@@ -318,7 +332,7 @@ fun downloadAndProcessCoronaPlugins() {
                 include("*/lua/lua_51/**/*")
                 exclude("**/*.lua")
             }
-            into("$generatedPluginAssetsDir/.corona-plugins") //TODO: make this actually go into an app
+            into("$generatedPluginAssetsDir/.corona-plugins")
             eachFile {
                 path = File(path).toPathString().segments.drop(3).joinToString("/")
             }
@@ -416,7 +430,6 @@ fun downloadAndProcessCoronaPlugins() {
             }
             into("$projectDir/src/main/res/values")
         }
-
     }
 }
 
