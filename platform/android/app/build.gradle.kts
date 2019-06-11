@@ -265,7 +265,7 @@ android.applicationVariants.all {
 }
 
 
-fun downloadAndProcessCoronaPlugins() {
+fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
 
     if (buildSettings == null) {
         parseBuildSettingsFile()
@@ -273,7 +273,7 @@ fun downloadAndProcessCoronaPlugins() {
 
     // Download plugins
     println("Authorizing plugins")
-    run {
+    if(reDownloadPlugins) {
         val coronaBuilder = if (windows) {
             "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
         } else {
@@ -450,6 +450,13 @@ tasks.create("processPlugins") {
     }
 }
 
+tasks.create("processPluginsNoDownload") {
+    group = "Corona"
+    doLast {
+        downloadAndProcessCoronaPlugins(false)
+    }
+}
+
 tasks.create("parseBuildSettings") {
     group = "Corona"
     doLast {
@@ -519,13 +526,15 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
     }
 }
 
+val coronaNativeOutputDir = project.findProperty("coronaNativeOutputDir") as? String ?: "$nativeDir/Corona"
+
 tasks.register<Copy>("installAppTemplateToNative") {
     group = "Corona-dev"
     dependsOn("exportCoronaAppTemplate")
     from("$buildDir/outputs") {
         include("android-template.zip")
     }
-    into("$nativeDir/Corona/android/resource")
+    into("$coronaNativeOutputDir/android/resource")
 }
 
 tasks.register<Copy>("installAppTemplateAndAARToNative") {
@@ -536,8 +545,9 @@ tasks.register<Copy>("installAppTemplateAndAARToNative") {
         include("Corona-release.aar")
         rename("Corona-release.aar", "Corona.aar")
     }
-    into("$nativeDir/Corona/android/lib/gradle")
+    into("$coronaNativeOutputDir/android/lib/gradle")
 }
+
 //endregion
 
 //region Corona Project icons
