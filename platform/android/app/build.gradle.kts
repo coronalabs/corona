@@ -64,7 +64,7 @@ coronaTmpDir?.let { srcDir ->
     }
 }
 
-if(configureCoronaPlugins == "YES") {
+if (configureCoronaPlugins == "YES") {
     downloadAndProcessCoronaPlugins()
 }
 
@@ -212,8 +212,7 @@ android.applicationVariants.all {
             }
             exclude("**/*.lua", "build.settings")
             exclude("**/Icon\r")
-            exclude("AndroidResources/res/**")
-            exclude("AndroidResources/assets/**")
+            exclude("AndroidResources/**")
         }
 
         if (coronaTmpDir != null) {
@@ -245,12 +244,12 @@ android.applicationVariants.all {
 
 fun downloadAndProcessCoronaPlugins() {
 
-    if(buildSettings == null) {
+    if (buildSettings == null) {
         parseBuildSettingsFile()
     }
 
     // Download plugins
-    println("Downloading Plugins")
+    println("Authorizing plugins")
     run {
         val coronaBuilder = if (windows) {
             "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
@@ -270,6 +269,8 @@ fun downloadAndProcessCoronaPlugins() {
             standardOutput = builderOutput
             isIgnoreExitValue = true
         }
+
+        println("Downloading plugins")
 
         if (execResult.exitValue != 0) {
             println(builderOutput.toString())
@@ -317,7 +318,7 @@ fun downloadAndProcessCoronaPlugins() {
                 include("*/lua/lua_51/**/*")
                 exclude("**/*.lua")
             }
-            into("$generatedPluginAssetsDir/_corona-plugins")
+            into("$generatedPluginAssetsDir/.corona-plugins") //TODO: make this actually go into an app
             eachFile {
                 path = File(path).toPathString().segments.drop(3).joinToString("/")
             }
@@ -337,14 +338,13 @@ fun downloadAndProcessCoronaPlugins() {
                     pr.walk()
                             .filter { r -> r.isDirectory }
                             .filter { r ->
-                                r.parentFile == pr || r.name.startsWith("package")
+                                r == pr || r.name.startsWith("package")
                             }
-                }
-        val resDirectories = JsonOutput.toJson(resourceDirectories.map { File(it, "res") }
+                }.toList()
+        val resDirectories = resourceDirectories.map { File(it, "res") }
                 .filter { it.exists() && it.isDirectory }
-                .map { it.absolutePath })
-
-        file("$generatedPluginsOutput/resourceDirectories.json").writeText(resDirectories)
+                .map { it.absolutePath }
+        file("$generatedPluginsOutput/resourceDirectories.json").writeText(JsonOutput.toJson(resDirectories))
 
         val extraPackages = resourceDirectories.map {
             val packageFile = File(it, "package.txt")
@@ -437,10 +437,10 @@ tasks.create("parseBuildSettings") {
 
 fun parseBuildSettingsFile() {
     val buildSettingsFile = file("$coronaSrcDir/build.settings")
-    if(buildSettings!=null) {
+    if (buildSettings != null) {
         return
     }
-    if(!buildSettingsFile.exists()) {
+    if (!buildSettingsFile.exists()) {
         return
     }
 
