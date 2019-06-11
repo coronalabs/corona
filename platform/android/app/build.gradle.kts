@@ -22,6 +22,7 @@ val coronaKeystore: String? by project
 val coronaKeystorePassword: String? by project
 val coronaKeyAlias: String? by project
 val coronaKeyAliasPassword: String? by project
+val configureCoronaPlugins: String? by project
 
 val coronaSrcDir = coronaSrcDirSim ?: if (file("$rootDir/../test/assets2").exists()) {
     "$rootDir/../test/assets2"
@@ -51,6 +52,10 @@ val buildToolsDir = if (file("$projectDir/../buildTools").exists()) {
 } else {
     "$projectDir/../template"
 }
+val generatedPluginsOutput = "$buildDir/generated/corona_plugins"
+val generatedPluginAssetsDir = "$generatedPluginsOutput/assets"
+val generatedIconsAndBannersDir = "$buildDir/generated/corona_icons"
+
 
 var buildSettings: Any? = null
 coronaTmpDir?.let { srcDir ->
@@ -58,40 +63,10 @@ coronaTmpDir?.let { srcDir ->
         buildSettings = JsonSlurper().parse(f)
     }
 }
-if (buildSettings == null) {
-    val buildSettingsFile = file("$coronaSrcDir/build.settings")
-    if (buildSettingsFile.exists()) {
-        tasks.create<Exec>("parseBuildSettings") {
 
-            val output = ByteArrayOutputStream()
-            setWorkingDir("$nativeDir/Corona/$shortOsName/bin")
-            commandLine("./lua",
-                    "-e",
-                    "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path",
-                    "-e",
-                    """
-                        pcall( function() dofile('${buildSettingsFile.path}') end	)
-                        if type(settings) == "table" then
-                            print(require('json').encode(settings))
-                        end
-                    """.trimIndent()
-            )
-            standardOutput = output
-            if (windows) {
-                environment["PATH"] = "${System.getenv("PATH")}${System.getProperty("path.separator")}${System.getenv("CORONA_PATH")}"
-            }
-            doLast {
-                buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(output.toString()))
-            }
-        }
-    } else {
-        buildSettings = JsonSlurper().parseText("{}")
-        tasks.create("parseBuildSettings")
-    }.group = "Corona"
-} else {
-    tasks.create("parseBuildSettings")
+if(configureCoronaPlugins == "YES") {
+    downloadAndProcessCoronaPlugins()
 }
-
 
 @Suppress("OldTargetApi")
 android {
@@ -138,14 +113,33 @@ android {
             }
         }
     }
+    sourceSets["main"].res.srcDir(generatedIconsAndBannersDir)
+    sourceSets["main"].assets.srcDir(generatedPluginAssetsDir)
+    file("$generatedPluginsOutput/resourceDirectories.json").takeIf { it.exists() }?.let {
+        val resourceDirs = JsonSlurper().parse(it)
+        if (resourceDirs is List<*>) {
+            resourceDirs.forEach { res ->
+                sourceSets["main"].res.srcDir(res)
+            }
+        }
+    }
+    file("$generatedPluginsOutput/resourcePackages.txt").takeIf { it.exists() }?.let {
+        val extraPackages = it.readText()
+        if (extraPackages.isNotBlank()) {
+            aaptOptions {
+                additionalParameters("--extra-packages", extraPackages)
+            }
+        }
+    }
 }
 
 //region Packaging Corona App
+
 android.applicationVariants.all {
     val baseName = this.baseName.toLowerCase()
     val isRelease = (baseName == "release")
-    val generatedAssetsDir = "$buildDir/generated/coronaAssets/$baseName"
-    val compiledLuaArchive = "$buildDir/generated/compiledLua/$baseName/resource.car"
+    val generatedAssetsDir = "$buildDir/generated/corona_assets/$baseName"
+    val compiledLuaArchive = "$buildDir/intermediates/compiled_lua/$baseName/resource.car"
 
     val compileLuaTask = tasks.create("compileLua${baseName.capitalize()}") {
         group = "Corona"
@@ -248,38 +242,42 @@ android.applicationVariants.all {
     android.sourceSets[name].assets.srcDirs(generatedAssetsDir)
 }
 
-tasks.register<Exec>("downloadPlugins") {
-    group = "Corona"
 
-    val coronaBuilder = if (windows) {
-        "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
-    } else {
-        "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
+fun downloadAndProcessCoronaPlugins() {
+
+    if(buildSettings == null) {
+        parseBuildSettingsFile()
     }
-    val buildPropsFile = file("$coronaTmpDir/build.properties")
-    val inputSettingsFile = if (buildPropsFile.exists()) {
-        buildPropsFile
-    } else {
-        file("$coronaSrcDir/build.settings")
-    }
-    commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build")
 
-    //inputs.files(inputSettingsFile)
-    //outputs.dir(coronaAndroidPluginsCache)
-    standardOutput = ByteArrayOutputStream()
+    // Download plugins
+    println("Downloading Plugins")
+    run {
+        val coronaBuilder = if (windows) {
+            "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
+        } else {
+            "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
+        }
+        val buildPropsFile = file("$coronaTmpDir/build.properties")
+        val inputSettingsFile = if (buildPropsFile.exists()) {
+            buildPropsFile
+        } else {
+            file("$coronaSrcDir/build.settings")
+        }
 
-    enabled = inputSettingsFile.exists()
+        val builderOutput = ByteArrayOutputStream()
+        val execResult = exec {
+            commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build")
+            standardOutput = builderOutput
+            isIgnoreExitValue = true
+        }
 
-    isIgnoreExitValue = true
-
-    doLast {
         if (execResult.exitValue != 0) {
-            println(standardOutput.toString())
+            println(builderOutput.toString())
             execResult.rethrowFailure()
         }
         coronaAndroidPluginsCache.mkdirs()
         delete(coronaPlugins)
-        val pluginUrls = standardOutput.toString()
+        val pluginUrls = builderOutput.toString()
                 .lines()
                 .filter { it.startsWith("plugin\t") }
                 .map { it.trim().removePrefix("plugin\t").split("\t") }
@@ -297,20 +295,18 @@ tasks.register<Exec>("downloadPlugins") {
                 into("$coronaPlugins/${outputFile.nameWithoutExtension}")
             }
         }
-    }
-}
 
-tasks.register("processPluginsAssets") {
-    group = "Corona"
-    //dependsOn("downloadPlugins")
-    val pluginAssetsDir = "$buildDir/generated/corona_plugin_assets"
-    doLast {
-        delete(pluginAssetsDir)
+    }
+
+    // Collect Assets
+    println("Collecting plugin assets")
+    run {
+        delete(generatedPluginAssetsDir)
         copy {
             from(coronaPlugins) {
                 include("*/resources/assets/**/*")
             }
-            into(pluginAssetsDir)
+            into(generatedPluginAssetsDir)
             eachFile {
                 path = File(path).toPathString().segments.drop(3).joinToString("/")
             }
@@ -321,22 +317,17 @@ tasks.register("processPluginsAssets") {
                 include("*/lua/lua_51/**/*")
                 exclude("**/*.lua")
             }
-            into("$pluginAssetsDir/.corona-plugins")
+            into("$generatedPluginAssetsDir/_corona-plugins")
             eachFile {
                 path = File(path).toPathString().segments.drop(3).joinToString("/")
             }
             includeEmptyDirs = false
         }
-        if (file(pluginAssetsDir).exists()) {
-            android.sourceSets["main"].assets.srcDir(pluginAssetsDir)
-        }
     }
-}
 
-tasks.register("processPluginsResources") {
-    group = "Corona"
-    dependsOn("downloadPlugins")
-    doLast {
+    // Collect Resources
+    println("Collecting plugin resources")
+    run {
         val resourceDirectories = File(coronaPlugins.path)
                 .walk()
                 .filter { it.isDirectory }
@@ -349,11 +340,12 @@ tasks.register("processPluginsResources") {
                                 r.parentFile == pr || r.name.startsWith("package")
                             }
                 }
-        resourceDirectories.forEach {
-            File(it, "res").takeIf { f -> f.exists() && f.isDirectory }?.let { p ->
-                android.sourceSets["main"].res.srcDir(p)
-            }
-        }
+        val resDirectories = JsonOutput.toJson(resourceDirectories.map { File(it, "res") }
+                .filter { it.exists() && it.isDirectory }
+                .map { it.absolutePath })
+
+        file("$generatedPluginsOutput/resourceDirectories.json").writeText(resDirectories)
+
         val extraPackages = resourceDirectories.map {
             val packageFile = File(it, "package.txt")
             if (packageFile.exists()) {
@@ -362,16 +354,12 @@ tasks.register("processPluginsResources") {
                 ""
             }
         }.filter { it.isNotBlank() }.joinToString(":")
-        if (extraPackages.isNotBlank()) {
-            android.aaptOptions.additionalParameters("--extra-packages", extraPackages)
-        }
+        file("$generatedPluginsOutput/resourcePackages.txt").writeText(extraPackages)
     }
-}
 
-tasks.register("processPluginsMetadata") {
-    group = "Corona"
-    dependsOn("downloadPlugins")
-    doLast {
+    // Run `convert_metadata.lua` which collects plugin metadata into single file
+    println("Collecting plugin metadata")
+    run {
         file("$buildDir/intermediates").mkdirs()
         val metadataFiles = fileTree(coronaPlugins) {
             include("*/metadata.lua")
@@ -386,13 +374,10 @@ tasks.register("processPluginsMetadata") {
             )
         }
     }
-}
 
-tasks.register("processPluginsManifest") {
-    group = "Corona"
-    dependsOn("processPluginsMetadata")
-    dependsOn("parseBuildSettings")
-    doLast {
+    // Run `update_manifest.lua` which generates AndroidManifest.xml
+    println("Creating AndroidManifest.xml")
+    run {
         val buildPropsFile = file("$coronaTmpDir/build.properties")
         val inputSettingsFile = if (buildPropsFile.exists()) {
             buildPropsFile
@@ -402,8 +387,8 @@ tasks.register("processPluginsManifest") {
             buildPropsOut
         }
 
+        val manifestGenDir = "$buildDir/intermediates/corona_manifest_gen"
         exec {
-            val manifestGenDir = "$buildDir/intermediates/corona_manifest_gen"
             file(manifestGenDir).mkdirs()
             commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
                     , "-e"
@@ -418,45 +403,68 @@ tasks.register("processPluginsManifest") {
                     , /*7*/ "$manifestGenDir/strings.xml"
                     , /*8*/ "$manifestGenDir/CopyToApk.txt"
             )
-            copy {
-                from(manifestGenDir) {
-                    include("AndroidManifest.xml")
-                }
-                into("$projectDir/src/main")
-
-            }
-            copy {
-                from(manifestGenDir) {
-                    include("strings.xml")
-                }
-                into("$projectDir/src/main/res/values")
-            }
         }
-    }
-}
-
-tasks.register("processPluginsJars") {
-    group = "Corona"
-    dependsOn("processPluginsMetadata")
-    doLast {
-        project.dependencies {
-            implementation(fileTree(coronaPlugins) {
-                include("**/*.jar")
-            })
+        copy {
+            from(manifestGenDir) {
+                include("AndroidManifest.xml")
+            }
+            into("$projectDir/src/main")
         }
+        copy {
+            from(manifestGenDir) {
+                include("strings.xml")
+            }
+            into("$projectDir/src/main/res/values")
+        }
+
     }
 }
 
 tasks.create("processPlugins") {
     group = "Corona"
-    dependsOn("processPluginsJars", "processPluginsAssets", "processPluginsManifest", "processPluginsMetadata", "processPluginsResources")
+    doLast {
+        downloadAndProcessCoronaPlugins()
+    }
 }
 
-tasks.findByName("preBuild")?.let {
-    it.shouldRunAfter("processPlugins")
-    it.dependsOn("processPlugins")
+tasks.create("parseBuildSettings") {
+    group = "Corona"
+    doLast {
+        parseBuildSettingsFile()
+    }
 }
 
+
+fun parseBuildSettingsFile() {
+    val buildSettingsFile = file("$coronaSrcDir/build.settings")
+    if(buildSettings!=null) {
+        return
+    }
+    if(!buildSettingsFile.exists()) {
+        return
+    }
+
+    val output = ByteArrayOutputStream()
+    exec {
+        setWorkingDir("$nativeDir/Corona/$shortOsName/bin")
+        commandLine("./lua",
+                "-e",
+                "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path",
+                "-e",
+                """
+                        pcall( function() dofile('${buildSettingsFile.path}') end	)
+                        if type(settings) == "table" then
+                            print(require('json').encode(settings))
+                        end
+                    """.trimIndent()
+        )
+        standardOutput = output
+        if (windows) {
+            environment["PATH"] = "${System.getenv("PATH")}${System.getProperty("path.separator")}${System.getenv("CORONA_PATH")}"
+        }
+    }
+    buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(output.toString()))
+}
 //endregion
 
 
@@ -511,26 +519,22 @@ tasks.register<Copy>("installAppTemplateAndAARToNative") {
 
 //region Corona Project icons
 
-val resourceOutputDirectory = "$buildDir/generated/coronaIcons/src/main/res"
-android.sourceSets["main"].res.srcDirs(resourceOutputDirectory)
-
 val cleanupIconsDir = tasks.create<Delete>("cleanupIconsDirectory") {
     group = "Corona"
-    delete(resourceOutputDirectory)
+    delete(generatedIconsAndBannersDir)
 }
 
 val copyCoronaIconFiles = tasks.create("copyCoronaIconFiles") {
     description = "Copies icon files to appropriate resources location"
     group = "Corona"
     tasks.findByName("preBuild")?.dependsOn(this)
-    dependsOn("parseBuildSettings")
 }
 
 tasks.create<Copy>("copyAdaptiveIconResources") {
     group = "Corona"
     dependsOn(copyCoronaIconFiles, cleanupIconsDir)
 
-    into(resourceOutputDirectory)
+    into(generatedIconsAndBannersDir)
     from("$coronaSrcDir/AndroidResources/res")
 }
 
@@ -547,7 +551,7 @@ tasks.create<Copy>("copyMainApplicationIcon") {
     copyCoronaIconFiles.dependsOn(this)
     dependsOn(cleanupIconsDir)
 
-    into(resourceOutputDirectory)
+    into(generatedIconsAndBannersDir)
     rename { "icon.png" }
 
     val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
@@ -565,7 +569,7 @@ tasks.create<Copy>("copyMainApplicationIcon") {
         }
     }
     doFirst {
-        delete("$resourceOutputDirectory/**/icon.png")
+        delete("$generatedIconsAndBannersDir/**/icon.png")
     }
 }
 
@@ -578,10 +582,10 @@ tasks.create<Copy>("copyMainApplicationBanner") {
     from(coronaSrcDir) {
         include("Banner-xhdpi.png")
     }
-    into("$resourceOutputDirectory/drawable-xhdpi")
+    into("$generatedIconsAndBannersDir/drawable-xhdpi")
     rename { "banner.png" }
     doFirst {
-        delete("$resourceOutputDirectory/**/banner.png")
+        delete("$generatedIconsAndBannersDir/**/banner.png")
     }
 }
 
@@ -593,10 +597,10 @@ tasks.create<Copy>("copyOuyaApplicationIcon") {
     from(coronaSrcDir) {
         include("Icon-ouya.png")
     }
-    into("$resourceOutputDirectory/drawable-xhdpi")
+    into("$generatedIconsAndBannersDir/drawable-xhdpi")
     rename { "ouya_icon.png" }
     doFirst {
-        delete("$resourceOutputDirectory/**/ouya_icon.png")
+        delete("$generatedIconsAndBannersDir/**/ouya_icon.png")
     }
 }
 
@@ -608,10 +612,10 @@ tasks.create<Copy>("copyXiaomiApplicationIcon") {
     from(coronaSrcDir) {
         include("Icon-ouya-xiaomi.png")
     }
-    into("$resourceOutputDirectory/drawable-xhdpi")
+    into("$generatedIconsAndBannersDir/drawable-xhdpi")
     rename { "ouya_xiaomi_icon.png" }
     doFirst {
-        delete("$resourceOutputDirectory/**/ouya_xiaomi_icon.png")
+        delete("$generatedIconsAndBannersDir/**/ouya_xiaomi_icon.png")
     }
 }
 
@@ -620,7 +624,7 @@ tasks.create<Copy>("copyDefaultNotificationIcons") {
     copyCoronaIconFiles.dependsOn(this)
     dependsOn(cleanupIconsDir)
 
-    into(resourceOutputDirectory)
+    into(generatedIconsAndBannersDir)
     rename { "corona_statusbar_icon_default.png" }
 
     val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
@@ -638,7 +642,7 @@ tasks.create<Copy>("copyDefaultNotificationIcons") {
         }
     }
     doFirst {
-        delete("$resourceOutputDirectory/**/corona_statusbar_icon_default.png")
+        delete("$generatedIconsAndBannersDir/**/corona_statusbar_icon_default.png")
     }
 }
 
@@ -650,9 +654,9 @@ tasks.create<Copy>("copySplashScreen") {
     from(projectDir) {
         include("_corona_splash_screen.png")
     }
-    into("$resourceOutputDirectory/drawable")
+    into("$generatedIconsAndBannersDir/drawable")
     doFirst {
-        delete("$resourceOutputDirectory/**/_corona_splash_screen.png")
+        delete("$generatedIconsAndBannersDir/**/_corona_splash_screen.png")
     }
 }
 
@@ -704,4 +708,7 @@ dependencies {
     } else {
         implementation(group = "", name = "Corona", ext = "aar")
     }
+    implementation(fileTree(coronaPlugins) {
+        include("**/*.jar")
+    })
 }
