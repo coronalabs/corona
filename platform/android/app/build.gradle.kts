@@ -271,8 +271,14 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
         parseBuildSettingsFile()
     }
 
+    val luaVerbosityPlug = if(!logger.isLifecycleEnabled) {
+        arrayOf("-e", "printError=print;print=function()end")
+    } else {
+        arrayOf()
+    }
+
     // Download plugins
-    println("Authorizing plugins")
+    logger.lifecycle("Authorizing plugins")
     if(reDownloadPlugins) {
         val coronaBuilder = if (windows) {
             "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
@@ -293,10 +299,10 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
             isIgnoreExitValue = true
         }
 
-        println("Downloading plugins")
+        logger.lifecycle("Downloading plugins")
 
         if (execResult.exitValue != 0) {
-            println(builderOutput.toString())
+            logger.error(builderOutput.toString())
             execResult.rethrowFailure()
         }
         coronaAndroidPluginsCache.mkdirs()
@@ -323,7 +329,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
     }
 
     // Collect Assets
-    println("Collecting plugin assets")
+    logger.lifecycle("Collecting plugin assets")
     run {
         delete(generatedPluginAssetsDir)
         copy {
@@ -350,7 +356,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
     }
 
     // Collect Resources
-    println("Collecting plugin resources")
+    logger.lifecycle("Collecting plugin resources")
     run {
         file(generatedPluginsOutput).mkdirs()
         val resourceDirectories = File(coronaPlugins.path)
@@ -382,7 +388,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
     }
 
     // Run `convert_metadata.lua` which collects plugin metadata into single file
-    println("Collecting plugin metadata")
+    logger.lifecycle("Collecting plugin metadata")
     run {
         file("$buildDir/intermediates").mkdirs()
         val metadataFiles = fileTree(coronaPlugins) {
@@ -392,6 +398,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
             commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
                     , "-e"
                     , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
+                    , *luaVerbosityPlug
                     , "$buildToolsDir/convert_metadata.lua"
                     , "$buildDir/intermediates/plugins_metadata.json"
                     , *metadataFiles.toTypedArray()
@@ -400,7 +407,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
     }
 
     // Run `update_manifest.lua` which generates AndroidManifest.xml
-    println("Creating AndroidManifest.xml")
+    logger.lifecycle("Creating AndroidManifest.xml")
     run {
         val buildPropsFile = file("$coronaTmpDir/build.properties")
         val inputSettingsFile = if (buildPropsFile.exists()) {
@@ -417,6 +424,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
             commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
                     , "-e"
                     , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
+                    , *luaVerbosityPlug
                     , "$buildToolsDir/update_manifest.lua"
                     , /*1*/ "$buildToolsDir/AndroidManifest.template.xml"
                     , /*2*/ inputSettingsFile
@@ -522,7 +530,7 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
         into("template/app/buildTools")
     }
     doLast {
-        println("Exported to '${archiveFile.get()}'")
+        logger.lifecycle("Exported to '${archiveFile.get()}'")
     }
 }
 

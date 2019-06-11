@@ -5,6 +5,10 @@
 -- Can also create a "strings.xml" file if the build settings contain a strings table
 ----------------------------------------------------------------------------------------------------
 
+if not printError then
+	printError = print
+end
+
 local json = require("json")
 
 
@@ -20,14 +24,14 @@ local newApkFilesFilePath = arg[8]
 
 -- Do not continue if missing required arguments.
 if not manifestTemplateFilePath or not buildPropertiesFilePath or not newManifestFilePath then
-	print( "USAGE: " .. arg[0] .. " src_manifest build.properties new_manifest" )
+	printError( "USAGE: " .. arg[0] .. " src_manifest build.properties new_manifest" )
 	os.exit( -1 )
 end
 
 -- Load the "build.properties" file.
 local buildPropertiesFileHandle = io.open( buildPropertiesFilePath, "r" )
 if not buildPropertiesFileHandle then
-	print( "ERROR: The properties file does not exist: ", buildPropertiesFilePath )
+	printError( "ERROR: The properties file does not exist: ", buildPropertiesFilePath )
 	os.exit( -1 )
 end
 local buildProperties = json.decode(buildPropertiesFileHandle:read("*a"))
@@ -953,7 +957,7 @@ end
 -- This file contains @KEY@ strings where we'll insert the given build settings to.
 local manifestTemplateFileHandle = io.open( manifestTemplateFilePath, "r" )
 if not manifestTemplateFileHandle then
-	print( "ERROR: The AndroidManifest.xml template file does not exist: ", manifestTemplateFilePath )
+	printError( "ERROR: The AndroidManifest.xml template file does not exist: ", manifestTemplateFilePath )
 	os.exit( -1 )
 end
 
@@ -977,7 +981,7 @@ manifestTemplateFileHandle:close()
 -- This file contains @KEY@ placeholders where we'll insert the given build settings to.
 local stringsTemplateFileHandle = io.open( stringsTemplateFilePath, "r" )
 if not stringsTemplateFileHandle then
-	print( "ERROR: The strings.xml template file does not exist: ", stringsTemplateFilePath )
+	printError( "ERROR: The strings.xml template file does not exist: ", stringsTemplateFilePath )
 	os.exit( -1 )
 end
 

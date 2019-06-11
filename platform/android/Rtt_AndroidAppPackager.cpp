@@ -233,6 +233,11 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			
 			gradleGo.append(" -PconfigureCoronaPlugins=YES");
 			
+			if (params->IsLiveBuild())
+			{
+				gradleGo.append(" -PcoronaLiveBuild=YES");
+			}
+			
 			gradleGo.append(" -PcoronaResourcesDir=");
 			gradleGo.append(EscapeArgument(fResourcesDir.GetString()));
 			
@@ -305,26 +310,35 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 				debugBuildProcess = 0;
 			}
 			
+			gradleGo.append(" --console=plain");
+			if(debugBuildProcess == 0) {
+				gradleGo.append(" -q");
+			}
+			
 			if (debugBuildProcess > 1)
 			{
 				// Obfuscate passwords
 				std::string placeHolder = EscapeArgument("XXXXXX");
 				std::string sanitizedCmdBuf = gradleGo;
 				
-				std::string keystorePasswordStr = EscapeArgument(androidParams->GetAndroidKeyStorePassword());
-				if (keystorePasswordStr.length() > 0)
-				{
-					ReplaceString(sanitizedCmdBuf, keystorePasswordStr, placeHolder);
-				}
-				
-				std::string keyaliasPasswordStr;
-				if (androidParams->GetAndroidKeyAliasPassword() != NULL)
-				{
-					keyaliasPasswordStr = EscapeArgument(androidParams->GetAndroidKeyAliasPassword());
-				}
-				if (keyaliasPasswordStr.length() > 0)
-				{
-					ReplaceString(sanitizedCmdBuf, keyaliasPasswordStr, placeHolder);
+				String unsanitizedBuildSettingStr;
+				fServices.GetPreference( "unsanitizedBuildLog", &unsanitizedBuildSettingStr );
+				if(Rtt_StringCompare(unsanitizedBuildSettingStr, "1") != 0) {
+					std::string keystorePasswordStr = EscapeArgument(androidParams->GetAndroidKeyStorePassword());
+					if (keystorePasswordStr.length() > 0)
+					{
+						ReplaceString(sanitizedCmdBuf, keystorePasswordStr, placeHolder);
+					}
+					
+					std::string keyaliasPasswordStr;
+					if (androidParams->GetAndroidKeyAliasPassword() != NULL)
+					{
+						keyaliasPasswordStr = EscapeArgument(androidParams->GetAndroidKeyAliasPassword());
+					}
+					if (keyaliasPasswordStr.length() > 0)
+					{
+						ReplaceString(sanitizedCmdBuf, keyaliasPasswordStr, placeHolder);
+					}
 				}
 				
 				Rtt_Log("Build: running: %s\n", sanitizedCmdBuf.c_str());
@@ -611,7 +625,11 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			free( inputFile );
 		}
 		// Clean up intermediate files
-        rmdir( tmpDir );
+		String retainTmpDirStr;
+		fServices.GetPreference( "retainBuildTmpDir", &retainTmpDirStr );
+		if(Rtt_StringCompare(retainTmpDirStr, "1") != 0) {
+        	rmdir( tmpDir );
+		}
 	}
 	else
 	{
@@ -637,7 +655,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 		if (params->GetBuildMessage() == NULL)
 		{
 			// If we don't already have a more precise error, use the XMLRPC layer's error message
-			params->SetBuildMessage(&session != NULL ? session.ErrorMessage() : "Failed to Build" );
+			params->SetBuildMessage(session.ErrorMessage() != NULL ? session.ErrorMessage() : "Failed to Build" );
 		}
 
 		Rtt_LogException("Android build failed (%d) after %ld seconds", result, (time(NULL) - startTime));
