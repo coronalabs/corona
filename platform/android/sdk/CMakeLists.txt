@@ -23,8 +23,9 @@ SET(ALSOFT_HRTF_DEFS OFF CACHE BOOL "")
 SET(ALSOFT_AMBDEC_PRESETS OFF CACHE BOOL "")
 SET(ALSOFT_INSTALL OFF CACHE BOOL "")
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
-    # On windows, use prebuilt binaries, because android sdk can't do windows apps.
     SET(ALSOFT_NATIVE_TOOLS_PATH "${CORONA_ROOT}/bin/win" CACHE STRING "Path to prebuilt native tools (leave blank to auto-build)" FORCE)
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+    SET(ALSOFT_NATIVE_TOOLS_PATH "${CORONA_ROOT}/bin/mac" CACHE STRING "Path to prebuilt native tools (leave blank to auto-build)" FORCE)
 endif()
 add_subdirectory("${CORONA_ROOT}/external/openal-soft" "${CMAKE_CURRENT_BINARY_DIR}/libopenal_build/")
 

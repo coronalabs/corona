@@ -80,3 +80,5 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+android.ipr
+android.iws
