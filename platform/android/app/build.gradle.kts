@@ -40,11 +40,6 @@ val nativeDir = if (windows) {
     resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
 }
 
-val coronaAndroidPluginsCache = file(if (windows) {
-    "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
-} else {
-    "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
-})
 val coronaPlugins = file("$buildDir/corona-plugins")
 
 val buildToolsDir = if (file("$projectDir/buildTools").exists()) {
@@ -181,7 +176,7 @@ android.applicationVariants.all {
             val compiledDir = "$buildDir/intermediates/compiled_lua/$baseName"
             delete(compiledDir)
             mkdir(compiledDir)
-            val luaFiles = if(coronaTmpDir==null) {
+            val luaFiles = if (coronaTmpDir == null) {
                 srcLuaFiles + pluginLuaFiles
             } else {
                 pluginLuaFiles
@@ -209,7 +204,7 @@ android.applicationVariants.all {
                     commandLine(luac, *additionalArguments.toTypedArray(), "-o", "$compiledDir/$compiled", "--", it)
                 }
                 compiled
-            } + if (coronaTmpDir!=null) {
+            } + if (coronaTmpDir != null) {
                 fileTree(coronaTmpDir!!) {
                     include("*.lu")
                 }
@@ -264,14 +259,41 @@ android.applicationVariants.all {
     android.sourceSets[name].assets.srcDirs(generatedAssetsDir)
 }
 
+fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): Int {
+    val coronaAndroidPluginsCache = file(if (windows) {
+        "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
+    } else {
+        "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
+    })
+    coronaAndroidPluginsCache.mkdirs()
+    val pluginUrls = builderOutput.toString()
+            .lines()
+            .filter { it.startsWith("plugin\t") }
+            .map { it.trim().removePrefix("plugin\t").split("\t") }
+    pluginUrls.forEach { (plugin, url) ->
+        val outputFile = with(DownloadAction(project)) {
+            src(url)
+            dest("$coronaAndroidPluginsCache/$plugin")
+            onlyIfModified(true)
+            cachedETagsFile("${coronaAndroidPluginsCache.parent}/ETags.txt")
+            execute()
+            outputFiles.first()
+        }
+        copy {
+            from(tarTree(outputFile))
+            into("$coronaPlugins/${outputFile.nameWithoutExtension}")
+        }
+    }
+    return pluginUrls.count()
+}
 
-fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
+fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
 
     if (buildSettings == null) {
         parseBuildSettingsFile()
     }
 
-    val luaVerbosityPlug = if(!logger.isLifecycleEnabled) {
+    val luaVerbosityPlug = if (!logger.isLifecycleEnabled) {
         arrayOf("-e", "printError=print;print=function()end")
     } else {
         arrayOf()
@@ -279,53 +301,64 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins : Boolean = true) {
 
     // Download plugins
     logger.lifecycle("Authorizing plugins")
-    if(reDownloadPlugins) {
+    if (reDownloadPlugins) {
+
+        delete(coronaPlugins)
+
         val coronaBuilder = if (windows) {
             "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
         } else {
             "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
         }
-        val buildPropsFile = file("$coronaTmpDir/build.properties")
-        val inputSettingsFile = if (buildPropsFile.exists()) {
-            buildPropsFile
-        } else {
-            file("$coronaSrcDir/build.settings")
-        }
 
-        val builderOutput = ByteArrayOutputStream()
-        val execResult = exec {
-            commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build")
-            standardOutput = builderOutput
-            isIgnoreExitValue = true
-        }
-
-        logger.lifecycle("Downloading plugins")
-
-        if (execResult.exitValue != 0) {
-            logger.error(builderOutput.toString())
-            execResult.rethrowFailure()
-        }
-        coronaAndroidPluginsCache.mkdirs()
-        delete(coronaPlugins)
-        val pluginUrls = builderOutput.toString()
-                .lines()
-                .filter { it.startsWith("plugin\t") }
-                .map { it.trim().removePrefix("plugin\t").split("\t") }
-        pluginUrls.forEach { (plugin, url) ->
-            val outputFile = with(DownloadAction(project)) {
-                src(url)
-                dest("$coronaAndroidPluginsCache/$plugin")
-                onlyIfModified(true)
-                cachedETagsFile("${coronaAndroidPluginsCache.parent}/ETags.txt")
-                execute()
-                outputFiles.first()
+        run {
+            val buildPropsFile = file("$coronaTmpDir/build.properties")
+            val inputSettingsFile = if (buildPropsFile.exists()) {
+                buildPropsFile
+            } else {
+                file("$coronaSrcDir/build.settings")
             }
-            copy {
-                from(tarTree(outputFile))
-                into("$coronaPlugins/${outputFile.nameWithoutExtension}")
+
+            val builderOutput = ByteArrayOutputStream()
+            val execResult = exec {
+                commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build")
+                standardOutput = builderOutput
+                isIgnoreExitValue = true
             }
+            if (execResult.exitValue != 0) {
+                logger.error("Error while fetching plugins")
+                logger.error(builderOutput.toString())
+                execResult.rethrowFailure()
+                throw InvalidPluginException("Error while fetching plugins")
+            }
+            logger.lifecycle("Downloading plugins")
+            downloadPluginsBasedOnBuilderOutput(builderOutput)
         }
 
+        logger.lifecycle("Fetching plugin dependencies")
+        var didDownloadSomething: Boolean
+        do {
+            val pluginDirectories = file(coronaPlugins)
+                    .walk()
+                    .maxDepth(1)
+                    .filter { it.isDirectory && it != coronaPlugins }
+                    .map { it.relativeTo(coronaPlugins).path }
+                    .toList()
+                    .toTypedArray()
+            val builderOutput = ByteArrayOutputStream()
+            val execResult = exec {
+                commandLine(coronaBuilder, "plugins", "download", "android", "--fetch-dependencies", coronaPlugins, *pluginDirectories)
+                standardOutput = builderOutput
+                isIgnoreExitValue = true
+            }
+            if (execResult.exitValue != 0) {
+                logger.error("Error while fetching plugin dependencies")
+                logger.error(builderOutput.toString())
+                execResult.rethrowFailure()
+                throw InvalidPluginException("Error while fetching plugin dependencies")
+            }
+            didDownloadSomething = downloadPluginsBasedOnBuilderOutput(builderOutput) > 0
+        } while (didDownloadSomething)
     }
 
     // Collect Assets
@@ -534,7 +567,8 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
     }
 }
 
-val coronaNativeOutputDir = project.findProperty("coronaNativeOutputDir") as? String ?: "$nativeDir/Corona"
+val coronaNativeOutputDir = project.findProperty("coronaNativeOutputDir") as? String
+        ?: "$nativeDir/Corona"
 
 tasks.register<Copy>("installAppTemplateToNative") {
     group = "Corona-dev"

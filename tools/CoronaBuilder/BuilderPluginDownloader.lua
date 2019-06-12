@@ -26,6 +26,7 @@ local function quoteString( str )
 end
 
 local windows = (package.config:match("^.") == '\\')
+local dirSeparator = package.config:sub(1,1)
 
 local function unpackPlugin( archive, dst )
 	if windows then
@@ -41,7 +42,7 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 	local pluginsDest
 	if windows then
 		-- %APPDATA%\Corona Labs\Corona Simulator\NativePlugins\
-		pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs' 
+		pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs'
 		lfs.mkdir(pluginsDest)
 		pluginsDest = pluginsDest .. '\\Corona Simulator'
 		lfs.mkdir(pluginsDest)
@@ -50,7 +51,7 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 		pluginsDest = pluginsDest .. platform .. '\\'
 		lfs.mkdir(pluginsDest)
 	else
-		pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona' 
+		pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona'
 		lfs.mkdir(pluginsDest)
 		pluginsDest = pluginsDest .. '/Native Plugins/'
 		lfs.mkdir(pluginsDest)
@@ -89,7 +90,7 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 			end
 
 			if androidBuild then
-			print("plugin\t" .. plugin .. '_' .. developer .. ".tgz\t"  .. downloadURL)
+				print("plugin\t" .. plugin .. '_' .. developer .. ".tgz\t"  .. downloadURL)
 			else
 				local pluginArchivePath = pluginsDest .. plugin .. '_' .. developer .. ".tgz"
 				local err, msg = builder.download(downloadURL, pluginArchivePath)
@@ -211,7 +212,7 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 		usesSwift = usesSwift or plugin.usesSwift
 	end
 
-	
+
 	-- generate xcconfig entries file
 	local configStrings = ""
 
@@ -234,7 +235,7 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 	if usesSwift then
 		configStrings = configStrings .. 'ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES[sdk=' .. sdk .. '*] = YES\n'
 	end
-	
+
 
 	local searchPathsConcat = ""
 	for p, _ in pairs(searchPaths) do
@@ -264,6 +265,47 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 
 end
 
+function fetchDependenciesForDirectories(root, deps, urlSuffix)
+	local fetched = {}
+	local toFetch = {}
+	for i=1, #deps do
+		local dep = deps[i]
+		fetched[dep] = true
+	end
+	for i=1, #deps do
+		local dep = deps[i]
+		local toDownload = {}
+		local metadataFile = root .. dirSeparator .. dep .. dirSeparator .. "metadata.lua"
+		pcall( function()
+			local metadata = dofile(root .. dirSeparator .. dep .. dirSeparator .. "metadata.lua")
+			toDownload = metadata.coronaManifest.dependencies
+		end	)
+		for plugin, developer in pairs(toDownload) do
+			if not fetched[plugin .. '_' .. developer] then
+				toFetch[plugin .. '_' .. developer] = {plugin, developer}
+			end
+		end
+	end
+
+	for _, pd in pairs(toFetch) do
+		local plugin, developer = unpack(pd)
+		local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. urlSuffix
+		local downloadInfoText, msg = builder.fetch(downloadInfoURL)
+		if not downloadInfoText then
+			print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+			return 1
+		end
+
+		local downloadInfoJSON = json.decode(downloadInfoText)
+		local downloadURL = downloadInfoJSON.url
+		if not downloadURL then
+			print("ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').')
+			return 1
+		end
+		print("plugin\t" .. plugin .. '_' .. developer .. ".tgz\t"  .. downloadURL)
+	end
+	return 0
+end
 
 function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	if args[1] ~= 'download' then
@@ -272,6 +314,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	end
 
 	local forceLoad = false
+	local fetchDependencies = false
 	for i=#args,1,-1 do
 		if args[i] == '--force-load' then
 			table.remove(args, i)
@@ -280,6 +323,10 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			table.remove(args, i)
 			verbosity = 0
 			androidBuild = true
+		elseif args[i] == '--fetch-dependencies' then
+			table.remove(args, i)
+			verbosity = 0
+			fetchDependencies = true
 		elseif args[i] == '--always-query' then
 			table.remove(args, i)
 			alwaysQuery = true
@@ -289,7 +336,19 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	end
 
 	local platform = args[2]
-	
+
+	if fetchDependencies then
+		if platform ~= "android" then
+			print("ERROR: fetching dependencies for unsupported platform " .. tostring(platform))
+			return 1
+		end
+		table.remove(args, 1)
+		table.remove(args, 1)
+		local root = args[1]
+		table.remove(args, 1)
+		return fetchDependenciesForDirectories(root, args, ('/%s.%s/%s/'):format(buildYear, buildRevision, platform))
+	end
+
 	if type(platform) ~= 'string' then
 		print("ERROR: missing platform parameter to 'plugins download' subcommand.")
 		return 1
@@ -300,7 +359,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		print("NOTICE: please, use modern 'ios' platform instead legacy 'iphone'.")
 	end
 
-	
+
 	local buildSettingsFile = args[3]
 	-- parse build settings and form "pluginsToDownload" containing { ['plugin.name']='com.coronalabs', }
 	if not buildSettingsFile then
@@ -380,14 +439,14 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		local pluginsDest = ""
 		if windows then
 			-- %APPDATA%\Corona Labs\Corona Simulator\NativePlugins\
-			pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs' 
+			pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs'
 			lfs.mkdir(pluginsDest)
 			pluginsDest = pluginsDest .. '\\Corona Simulator'
 			lfs.mkdir(pluginsDest)
 			pluginsDest = pluginsDest .. '\\NativePlugins\\'
 			lfs.mkdir(pluginsDest)
 		else
-			pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona' 
+			pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona'
 			lfs.mkdir(pluginsDest)
 			pluginsDest = pluginsDest .. '/Native Plugins/'
 			lfs.mkdir(pluginsDest)
@@ -425,15 +484,15 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		-- config for native plugins
 
 		local simConfig =  iOSDownloadPlugins('iphoneos', 'iphone', build, pluginsToDownload, forceLoad )
-		if not simConfig then 
+		if not simConfig then
 			return 1
 		end
 		local devConfig = iOSDownloadPlugins('iphonesimulator', 'iphone-sim', build, pluginsToDownload, forceLoad )
 		if not devConfig then
 			return 1
 		end
-		
-		
+
+
 		local xcconfig = args[4]
 		if not xcconfig then
 			print("ERROR: no output config file specified.")
