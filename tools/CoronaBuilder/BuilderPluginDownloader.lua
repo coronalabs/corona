@@ -63,27 +63,29 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 
 	for _, pd in pairs(pluginsToDownload) do
 		local plugin, developer, supportedPlatforms = unpack( pd )
-
-		local skip = false
+		local supportedPlatform = true
 		if supportedPlatforms then
+			supportedPlatform = supportedPlatforms[platform]
 			if platform == 'iphone' then
-				skip = not (supportedPlatforms[platform] or supportedPlatforms['ios'])
-			else
-				skip = not supportedPlatforms[platform]
+				supportedPlatform = supportedPlatform or supportedPlatforms['ios']
 			end
 		end
 
-		if not skip then
+		if supportedPlatform then
+			local downloadURL
+			if type(supportedPlatform) == 'table' and type(supportedPlatform.url) == 'string' then
+				downloadURL = supportedPlatform.url
+			else
+				local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. platform
+				local downloadInfoText, msg = builder.fetch(downloadInfoURL)
+				if not downloadInfoText then
+					print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+					return
+				end
 
-			local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. platform
-			local downloadInfoText, msg = builder.fetch(downloadInfoURL)
-			if not downloadInfoText then
-				print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
-				return
+				local downloadInfoJSON = json.decode(downloadInfoText)
+				downloadURL = downloadInfoJSON.url
 			end
-
-			local downloadInfoJSON = json.decode(downloadInfoText)
-			local downloadURL = downloadInfoJSON.url
 			if not downloadURL then
 				print("ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').')
 				return
@@ -462,12 +464,29 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 
 		local authErrors = false
 		for _, pd in pairs(pluginsToDownload) do
-			local plugin, developer = unpack( pd )
-			local status = authorisedPlugins[plugin .. ' ' .. developer]
-			if status ~= 2 and status ~= 1 then
-				print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
-				print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
-				authErrors = true
+			local plugin, developer, supportedPlatforms = unpack( pd )
+			local supportedPlatform = true
+			if supportedPlatforms then
+				supportedPlatform = supportedPlatforms[platform]
+				if platform == 'iphone' then
+					supportedPlatform = supportedPlatform or supportedPlatforms['ios']
+				end
+			end
+			if supportedPlatform then
+				if type(supportedPlatform) == 'table' and type(supportedPlatform.url) == 'string' then
+					-- verify self-hosted plugin
+					if supportedPlatform.url == "" then
+						print("ERROR: empty custom URL for: " .. plugin .. " (" .. developer .. ")")
+						authErrors = true
+					end
+				else
+					local status = authorisedPlugins[plugin .. ' ' .. developer]
+					if status ~= 2 and status ~= 1 then
+						print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
+						print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
+						authErrors = true
+					end
+				end
 			end
 		end
 		if authErrors then
