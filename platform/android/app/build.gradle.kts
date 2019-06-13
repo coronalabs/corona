@@ -609,6 +609,11 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
         include("AndroidManifest.template.xml", "convert_metadata.lua", "update_manifest.lua", "strings.xml")
         into("template/app/buildTools")
     }
+    from("$rootDir/../../plugins/build/licensing-google/android/bin") {
+        include("classes.jar")
+        into("template/app/libs")
+        rename("classes.jar", "licensing-google.jar")
+    }
     doLast {
         logger.lifecycle("Exported to '${archiveFile.get()}'")
     }
@@ -824,10 +829,17 @@ dependencies {
     val buildFromSource = file("CMakeLists.txt").exists() && file("../sdk").exists()
     if (buildFromSource) {
         implementation(project(":Corona"))
+        implementation(files("$rootDir/../../plugins/build/licensing-google/android/bin/classes.jar"))
     } else {
         implementation(group = "", name = "Corona", ext = "aar")
+        implementation(fileTree("libs") {
+            include("**/*.jar")
+        })
     }
     implementation(fileTree(coronaPlugins) {
-        include("**/*.jar")
+        include("**/*.jar", "**/*.aar")
+    })
+    implementation(fileTree("$coronaSrcDir/AndroidResources") {
+        include("**/*.jar", "**/*.aar")
     })
 }
