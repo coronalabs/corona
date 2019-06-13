@@ -315,6 +315,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		return 1
 	end
 
+	local buildDataPluginEntry = {}
 	local forceLoad = false
 	local fetchDependencies = false
 	for i=#args,1,-1 do
@@ -325,6 +326,11 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			table.remove(args, i)
 			verbosity = 0
 			androidBuild = true
+		elseif args[i] == '--build-data' then
+			table.remove(args, i)
+			buildDataPluginEntry = json.decode(args[i]) or {}
+			buildDataPluginEntry = buildDataPluginEntry.plugins or {}
+			table.remove(args, i)
 		elseif args[i] == '--fetch-dependencies' then
 			table.remove(args, i)
 			verbosity = 0
@@ -494,8 +500,13 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			return 1
 		end
 	else
-		print("No plugins to download")
+		print("No build.settings plugins to download")
 	end
+
+	for pluginName, pluginTable in pairs(buildDataPluginEntry) do
+		local publisherId = pluginTable['publisherId']
+		table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
+	end	
 
 	local build = buildYear .. '.' .. buildRevision
 	if platform == 'ios' then

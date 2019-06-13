@@ -35,6 +35,7 @@
 #include "Rtt_WebServicesSession.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_JavaHost.h"
+#include "Rtt_DeviceBuildData.h"
 
 #include "ListKeyStore.h"
 
@@ -253,7 +254,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			gradleGo.append(" -PcoronaTmpDir=");
 			gradleGo.append(EscapeArgument(tmpDir));
 			
-			gradleGo.append(" -PcoronaSrcDirSim=");
+			gradleGo.append(" -PcoronaSrcDir=");
 			gradleGo.append(EscapeArgument(params->GetSrcDir()));
 			
 			String appFileName;
@@ -303,6 +304,13 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 				gradleGo.append(expansionFileName);
 			}
 			
+			DeviceBuildData& deviceBuildData = params->GetDeviceBuildData( fServices.Platform(), fServices );
+			String json( & fServices.Platform().GetAllocator() );
+			deviceBuildData.GetJSON( json );
+
+			gradleGo.append(" -PcoronaBuildData=");
+			gradleGo.append(EscapeArgument(json.GetString()));
+
 			String debugBuildProcessPref;
 			int debugBuildProcess = 0;
 			fServices.GetPreference( "debugBuildProcess", &debugBuildProcessPref );

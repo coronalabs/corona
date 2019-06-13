@@ -13,7 +13,6 @@ plugins {
 val coronaResourcesDir: String? by project
 val coronaDstDir: String? by project
 val coronaTmpDir: String? by project
-val coronaSrcDirSim: String? by project
 val coronaAppFileName: String? by project
 val coronaAppPackage: String? by project
 val coronaVersionCode: String? by project
@@ -23,12 +22,13 @@ val coronaKeystorePassword: String? by project
 val coronaKeyAlias: String? by project
 val coronaKeyAliasPassword: String? by project
 val configureCoronaPlugins: String? by project
-
-val coronaSrcDir = coronaSrcDirSim ?: if (file("$rootDir/../test/assets2").exists()) {
+val isLiveBuild = project.findProperty("coronaLiveBuild") == "YES"
+val coronaSrcDir = project.findProperty("coronaSrcDir") as? String ?: if (file("$rootDir/../test/assets2").exists()) {
     "$rootDir/../test/assets2"
 } else {
     "$rootDir/../Corona"
 }
+val coronaBuildData = project.findProperty("coronaBuildData") as? String ?: "{}"
 
 val windows = System.getProperty("os.name").toLowerCase().contains("windows")
 val shortOsName = if (windows) "win" else "mac"
@@ -39,6 +39,7 @@ val nativeDir = if (windows) {
     val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native//").absolutePath }?.takeIf { file(it).exists() }
     resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
 }
+val windowsPathHelper = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
 
 val coronaPlugins = file("$buildDir/corona-plugins")
 
@@ -243,31 +244,35 @@ android.applicationVariants.all {
             exec {
                 workingDir = file(compiledDir)
                 standardInput = StringInputStream(outputsList.joinToString("\n"))
-                if (windows) {
-                    environment["PATH"] = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
-                }
+                if (windows) environment["PATH"] = windowsPathHelper
                 commandLine(coronaBuilder, "car", "-f", "-", compiledLuaArchive)
             }
         }
     }
 
-    val task = tasks.create<Copy>("packageCoronaApp${baseName.capitalize()}") {
+    val taskCopyResources = tasks.create<Copy>("packageCoronaApp${baseName.capitalize()}") {
         group = "Corona"
         description = "Copies all resources and compiled Lua to the project"
 
         dependsOn(compileLuaTask)
 
+        into(generatedAssetsDir)
+        from("$coronaTmpDir/output/assets")
+        from(compiledLuaArchive)
+
         from(coronaSrcDir) {
             file("$coronaTmpDir/excludesfile.properties").takeIf { it.exists() }?.readLines()?.forEach {
                 exclude(it)
             }
-            exclude("**/*.lua", "build.settings")
             exclude("**/Icon\r")
             exclude("AndroidResources/**")
+            if (isLiveBuild) {
+                into("corona_live_build_app_")
+            } else {
+                exclude("**/*.lua", "build.settings")
+            }
         }
 
-        from(compiledLuaArchive)
-        into(generatedAssetsDir)
 
         doFirst {
             delete(generatedAssetsDir)
@@ -281,7 +286,7 @@ android.applicationVariants.all {
     }
 
     mergeAssetsProvider!!.configure {
-        dependsOn(task)
+        dependsOn(taskCopyResources)
     }
     android.sourceSets[name].assets.srcDirs(generatedAssetsDir)
 }
@@ -348,10 +353,8 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
 
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
-                commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build")
-                if (windows) {
-                    environment["PATH"] = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
-                }
+                commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data", coronaBuildData)
+                if (windows) environment["PATH"] = windowsPathHelper
                 standardOutput = builderOutput
                 isIgnoreExitValue = true
             }
@@ -378,9 +381,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
                 commandLine(coronaBuilder, "plugins", "download", "android", "--fetch-dependencies", coronaPlugins, *pluginDirectories)
-                if (windows) {
-                    environment["PATH"] = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
-                }
+                if (windows) environment["PATH"] = windowsPathHelper
                 standardOutput = builderOutput
                 isIgnoreExitValue = true
             }
@@ -578,9 +579,7 @@ fun parseBuildSettingsFile() {
                     """.trimIndent()
         )
         standardOutput = output
-        if (windows) {
-            environment["PATH"] = "${System.getenv("PATH")}${System.getProperty("path.separator")}${System.getenv("CORONA_PATH")}"
-        }
+        if (windows) environment["PATH"] = windowsPathHelper
     }
     buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(output.toString()))
 }
