@@ -49,6 +49,7 @@ val buildToolsDir = if (file("$projectDir/buildTools").exists()) {
 }
 val generatedPluginsOutput = "$buildDir/generated/corona_plugins"
 val generatedPluginAssetsDir = "$generatedPluginsOutput/assets"
+val generatedNativeLibsDir = "$generatedPluginsOutput/native"
 val generatedIconsAndBannersDir = "$buildDir/generated/corona_icons"
 
 
@@ -108,13 +109,17 @@ android {
             }
         }
     }
-    sourceSets["main"].res.srcDir(generatedIconsAndBannersDir)
-    sourceSets["main"].assets.srcDir(generatedPluginAssetsDir)
+    val mainSourceSet = sourceSets["main"]
+    val pluginJniLibs = file(coronaPlugins).walk().maxDepth(1).filter { it.name == "jniLibs" }.toSet()
+    mainSourceSet.jniLibs.srcDirs(pluginJniLibs)
+    mainSourceSet.jniLibs.srcDir(generatedNativeLibsDir)
+    mainSourceSet.res.srcDir(generatedIconsAndBannersDir)
+    mainSourceSet.assets.srcDir(generatedPluginAssetsDir)
     file("$generatedPluginsOutput/resourceDirectories.json").takeIf { it.exists() }?.let {
         val resourceDirs = JsonSlurper().parse(it)
         if (resourceDirs is List<*>) {
             resourceDirs.forEach { res ->
-                sourceSets["main"].res.srcDir(res)
+                mainSourceSet.res.srcDir(res)
             }
         }
     }
@@ -139,6 +144,28 @@ android {
                 }
             }
         }
+    }
+}
+
+fileTree(coronaPlugins) {
+    include("**/corona.gradle", "**/corona.gradle.kts")
+}.forEach {
+    try {
+        apply(from = it)
+    } catch (ex: Exception) {
+        val pluginName = it.relativeTo(coronaPlugins).toPathString().segments.first()
+        logger.error("ERROR: configuring '$pluginName' failed!")
+        throw(ex)
+    }
+}
+fileTree("$coronaSrcDir/AndroidResources") {
+    include("**/corona.gradle", "**/corona.gradle.kts")
+}.forEach {
+    try {
+        apply(from = it)
+    } catch (ex: Exception) {
+        logger.error("ERROR: executing configuration from '${it.relativeTo(file(coronaSrcDir)).path}' failed!")
+        throw(ex)
     }
 }
 
@@ -482,6 +509,21 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             into("$projectDir/src/main/res/values")
         }
     }
+
+    logger.lifecycle("Collecting native libraries")
+    run {
+        copy {
+            from(coronaPlugins) {
+                include("**/*.so")
+                exclude("**/jniLibs/**")
+            }
+            into(generatedNativeLibsDir)
+            eachFile {
+                path = "armeabi-v7a/$name"
+            }
+            includeEmptyDirs = false
+        }
+    }
 }
 
 tasks.create("processPlugins") {
@@ -767,12 +809,6 @@ tasks.create<Copy>("buildCoronaApp") {
     }
 }
 
-
-repositories {
-    flatDir {
-        dir("libs")
-    }
-}
 
 dependencies {
     val buildFromSource = file("CMakeLists.txt").exists() && file("../sdk").exists()
