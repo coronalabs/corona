@@ -598,8 +598,7 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
         include("app/**")
         exclude("app/build/**", "app/CMakeLists.txt")
         exclude("**/*.iml", "**/\\.*")
-        include("template.properties")
-        rename("template.properties", "local.properties")
+        include("setup.sh", "setup.bat")
         into("template")
     }
     from(android.sdkDirectory) {

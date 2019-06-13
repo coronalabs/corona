@@ -96,15 +96,11 @@
 	</target>	
 	<target name="setup-gradle-builds" if="gradle.bundle.exists" depends="check-gradle-bundle">
 		<sequential>
-			<property environment="env"/>
-			<condition property="gradle.dest" value="${env.APPDATA}/Corona Labs/Corona Simulator/Android Build" else="${user.home}/Library/Application Support/Corona/Android Build">
-				<os family="windows" />
-			</condition>
-
-			<delete dir="${gradle.dest}/template"/>
-			<unzip src="${corona.native.android}/resource/android-template.zip" dest="${gradle.dest}" />
-			<chmod file="${gradle.dest}/template/gradlew" perm="a+x" />
-			<copy todir="${gradle.dest}/template/app/libs">
+			<delete dir="${TEMP_DIR}/template"/>
+			<unzip src="${corona.native.android}/resource/android-template.zip" dest="${TEMP_DIR}" />
+			<chmod file="${TEMP_DIR}/template/gradlew" perm="a+x" />
+			<chmod file="${TEMP_DIR}/template/setup.sh" perm="a+x" />
+			<copy todir="${TEMP_DIR}/template/app/libs">
 				<fileset dir="${corona.native.android}/lib/gradle/"/>
 			</copy>
 		</sequential>
