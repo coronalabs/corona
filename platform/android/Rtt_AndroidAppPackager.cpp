@@ -225,11 +225,11 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 		if (gradleBuild && inputFile) //offline build
 		{
 #if defined(Rtt_MAC_ENV)
-			std::string gradleGo = "cd \"$HOME/Library/Application Support/Corona/Android Build/template\" && ";
+			std::string gradleGo = "cd \"$HOME/Library/Application Support/Corona/Android Build/template\" && ./gradlew";
 #else
-			std::string gradleGo = "cd \"%APPDATA%\\Corona\\Android Build\\template\" && ";
+			std::string gradleGo = "cd \"%APPDATA%\\Corona Labs\\Corona Simulator\\Android Build\\template\" && gradlew.bat";
 #endif
-			gradleGo.append("./gradlew buildCoronaApp");
+			gradleGo.append(" buildCoronaApp");
 			
 			gradleGo.append(" -PconfigureCoronaPlugins=YES");
 			

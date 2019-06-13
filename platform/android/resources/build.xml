@@ -96,7 +96,8 @@
 	</target>	
 	<target name="setup-gradle-builds" if="gradle.bundle.exists" depends="check-gradle-bundle">
 		<sequential>
-			<condition property="gradle.dest" value="${env.APPDATA}/Corona/Android Build" else="${user.home}/Library/Application Support/Corona/Android Build">
+			<property environment="env"/>
+			<condition property="gradle.dest" value="${env.APPDATA}/Corona Labs/Corona Simulator/Android Build" else="${user.home}/Library/Application Support/Corona/Android Build">
 				<os family="windows" />
 			</condition>
 

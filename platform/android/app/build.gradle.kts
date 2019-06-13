@@ -349,6 +349,9 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
                 commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build")
+                if (windows) {
+                    environment["PATH"] = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
+                }
                 standardOutput = builderOutput
                 isIgnoreExitValue = true
             }
@@ -375,6 +378,9 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
                 commandLine(coronaBuilder, "plugins", "download", "android", "--fetch-dependencies", coronaPlugins, *pluginDirectories)
+                if (windows) {
+                    environment["PATH"] = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
+                }
                 standardOutput = builderOutput
                 isIgnoreExitValue = true
             }
@@ -809,6 +815,11 @@ tasks.create<Copy>("buildCoronaApp") {
     }
 }
 
+repositories {
+    flatDir {
+        dir("libs")
+    }
+}
 
 dependencies {
     val buildFromSource = file("CMakeLists.txt").exists() && file("../sdk").exists()
