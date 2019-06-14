@@ -581,7 +581,7 @@ fun parseBuildSettingsFile() {
         standardOutput = output
         if (windows) environment["PATH"] = windowsPathHelper
     }
-    buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(output.toString()))
+    buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(output.toString()), "packageName" to android.defaultConfig.applicationId)
 }
 //endregion
 
