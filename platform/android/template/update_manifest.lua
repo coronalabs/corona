@@ -63,7 +63,7 @@ local Constants =
 
 local minSdkVersion = tostring( Constants.MIN_SDK_VERSION )
 
-local packageName = ""
+local packageName = "com.corona.app"
 local defaultOrientation = nil
 local supportsOrientationChange = false
 local supportsOrientationPortrait = false

@@ -124,13 +124,12 @@ android {
             }
         }
     }
+    val extraPackages = mutableListOf(defaultConfig.applicationId!!)
     file("$generatedPluginsOutput/resourcePackages.txt").takeIf { it.exists() }?.let {
-        val extraPackages = it.readText()
-        if (extraPackages.isNotBlank()) {
-            aaptOptions {
-                additionalParameters("--extra-packages", extraPackages)
-            }
-        }
+        extraPackages += it.readText().trim()
+    }
+    aaptOptions {
+        additionalParameters("--extra-packages", extraPackages.filter { it.isNotBlank() }.joinToString(":"))
     }
     // This is dirty hack because Android Assets refuse to copy assets which start with . or _
     android.applicationVariants.all {
