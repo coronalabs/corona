@@ -507,10 +507,16 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			end
 			if supportedPlatform then
 				if type(supportedPlatform) == 'table' and type(supportedPlatform.url) == 'string' then
-					-- verify self-hosted plugin
 					if supportedPlatform.url == "" then
 						print("ERROR: empty custom URL for: " .. plugin .. " (" .. developer .. ")")
 						authErrors = true
+					else
+						local status = authorisedPlugins['plugin.selfHostedPlugins com.coronalabs']
+						if status ~= 2 and status ~= 1 then
+							print("ERROR: Self-Hosted plugins was not activated.")
+							print("ERROR: More information at: https://marketplace.coronalabs.com/service/self-hosted-plugins")
+							return 1
+						end	
 					end
 				else
 					local status = authorisedPlugins[plugin .. ' ' .. developer]
