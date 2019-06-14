@@ -316,6 +316,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	end
 
 	local buildDataPluginEntry = {}
+	local buildData = {}
 	local forceLoad = false
 	local fetchDependencies = false
 	for i=#args,1,-1 do
@@ -328,8 +329,8 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			androidBuild = true
 		elseif args[i] == '--build-data' then
 			table.remove(args, i)
-			buildDataPluginEntry = json.decode(args[i]) or {}
-			buildDataPluginEntry = buildDataPluginEntry.plugins or {}
+			buildData = json.decode(args[i]) or {}
+			buildDataPluginEntry = buildData.plugins or {}
 			table.remove(args, i)
 		elseif args[i] == '--fetch-dependencies' then
 			table.remove(args, i)
@@ -411,8 +412,30 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
 	end
 
-	if #pluginsToDownload > 0 or alwaysQuery then
-
+	local splashScreenEnabled = true
+	local splashScreenImage = nil
+	if buildData and buildData.splashScreen then
+		local splash = buildData.splashScreen
+		if splash ~= nil then
+			if splash.enable ~= nil then
+				splashScreenEnabled = splash.enable
+			end
+			if type(splash.image) == "string" then
+				splashScreenImage = splash.image
+			end
+		end
+		local splash = buildData.splashScreen[platform]
+		if splash ~= nil then
+			if splash.enable ~= nil then
+				splashScreenEnabled = splash.enable
+			end
+			if type(splash.image) == "string" then
+				splashScreenImage = splash.image
+			end
+		end
+	end
+	local needsSplashScreenControl = splashScreenImage ~= nil or not splashScreenEnabled
+	if #pluginsToDownload > 0 or alwaysQuery or needsSplashScreenControl then
 		local authURL = serverBackend .. '/v1/plugins/show/' .. user
 
 		local authorisedPluginsText, msg = builder.fetch(authURL)
@@ -443,32 +466,36 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			authorisedPlugins[ tostring(ap['plugin_name']) .. ' ' .. tostring(ap['plugin_developer'])] = ap['status']
 		end
 
-		local splashStatus = authorisedPlugins["plugin.CoronaSplashControl com.coronalabs"]
-		local pluginsDest = ""
-		if windows then
-			-- %APPDATA%\Corona Labs\Corona Simulator\NativePlugins\
-			pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs'
-			lfs.mkdir(pluginsDest)
-			pluginsDest = pluginsDest .. '\\Corona Simulator'
-			lfs.mkdir(pluginsDest)
-			pluginsDest = pluginsDest .. '\\NativePlugins\\'
-			lfs.mkdir(pluginsDest)
-		else
-			pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona'
-			lfs.mkdir(pluginsDest)
-			pluginsDest = pluginsDest .. '/Native Plugins/'
-			lfs.mkdir(pluginsDest)
-		end
-		pluginsDest = pluginsDest .. 'control'
-		if splashStatus == 2 and splashStatus == 1 then
-			local splashOut = io.open(pluginsDest, "w")
-			splashOut:write(user)
-			splashOut:close()
-		else
-			os.remove(pluginsDest)
+		local authErrors = false
+		if needsSplashScreenControl then
+			local splashStatus = authorisedPlugins["plugin.CoronaSplashControl com.coronalabs"]
+			local pluginsDest = ""
+			if windows then
+				-- %APPDATA%\Corona Labs\Corona Simulator\NativePlugins\
+				pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs'
+				lfs.mkdir(pluginsDest)
+				pluginsDest = pluginsDest .. '\\Corona Simulator'
+				lfs.mkdir(pluginsDest)
+				pluginsDest = pluginsDest .. '\\NativePlugins\\'
+				lfs.mkdir(pluginsDest)
+			else
+				pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona'
+				lfs.mkdir(pluginsDest)
+				pluginsDest = pluginsDest .. '/Native Plugins/'
+				lfs.mkdir(pluginsDest)
+			end
+			pluginsDest = pluginsDest .. 'control'
+			local hasSplashScreenControl = splashStatus == 2 or splashStatus == 1
+			if needsSplashScreenControl and not hasSplashScreenControl then
+				print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
+				print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/com.coronalabs/plugin.CoronaSplashControl")
+				authErrors = true
+			end
+			if needsSplashScreenControl and hasSplashScreenControl then
+				print("SPLASH\t" .. tostring(splashScreenImage))
+			end
 		end
 
-		local authErrors = false
 		for _, pd in pairs(pluginsToDownload) do
 			local plugin, developer, supportedPlatforms = unpack( pd )
 			local supportedPlatform = true

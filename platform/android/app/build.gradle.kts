@@ -51,6 +51,7 @@ val buildToolsDir = if (file("$projectDir/buildTools").exists()) {
 val generatedPluginsOutput = "$buildDir/generated/corona_plugins"
 val generatedPluginAssetsDir = "$generatedPluginsOutput/assets"
 val generatedNativeLibsDir = "$generatedPluginsOutput/native"
+val generatedControlPath = "$generatedPluginsOutput/control"
 val generatedIconsAndBannersDir = "$buildDir/generated/corona_icons"
 
 
@@ -297,7 +298,14 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): I
         "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
     })
     coronaAndroidPluginsCache.mkdirs()
-    val pluginUrls = builderOutput.toString()
+    val builderOutputStr = builderOutput.toString()
+    builderOutputStr.lines()
+            .filter { it.startsWith("SPLASH\t") }
+            .map { it.removePrefix("SPLASH\t").trim() }
+            .lastOrNull()?.let {
+                file(generatedControlPath).writeText(it)
+            }
+    val pluginUrls = builderOutputStr
             .lines()
             .filter { it.startsWith("plugin\t") }
             .map { it.trim().removePrefix("plugin\t").split("\t") }
@@ -364,6 +372,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
                 throw InvalidPluginException("Error while fetching plugins")
             }
             logger.lifecycle("Downloading plugins")
+            delete(generatedControlPath)
             downloadPluginsBasedOnBuilderOutput(builderOutput)
         }
 
@@ -776,10 +785,23 @@ tasks.create<Copy>("copySplashScreen") {
     copyCoronaIconFiles.dependsOn(this)
     dependsOn(cleanupIconsDir)
 
-    from(projectDir) {
-        include("_corona_splash_screen.png")
+    val control = file(generatedControlPath).takeIf { it.exists() }?.readText()?.trim()
+    if (control == null) {
+        from(projectDir) {
+            include("_corona_splash_screen.png")
+        }
+    } else {
+        if (control != "nil") {
+            from(projectDir) {
+                include(control)
+            }
+        }
     }
+
     into("$generatedIconsAndBannersDir/drawable")
+    rename {
+        "_corona_splash_screen.png"
+    }
     doFirst {
         delete("$generatedIconsAndBannersDir/**/_corona_splash_screen.png")
     }
