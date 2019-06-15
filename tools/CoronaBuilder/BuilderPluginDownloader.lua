@@ -606,5 +606,14 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		print("Done downloading plugins!")
 	end
 
+	if androidBuild then
+		local downloadInfoText, msg = builder.fetch(serverBackend.. "/v1/buildid/native/" .. user)
+		if not downloadInfoText then
+			print("ERROR: unable to fetch build ID: ", msg )
+			return 1
+		end
+		print("BUILD\t" .. downloadInfoText)
+	end
+
 	return 0
 end

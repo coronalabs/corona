@@ -52,6 +52,7 @@ val generatedPluginsOutput = "$buildDir/generated/corona_plugins"
 val generatedPluginAssetsDir = "$generatedPluginsOutput/assets"
 val generatedNativeLibsDir = "$generatedPluginsOutput/native"
 val generatedControlPath = "$generatedPluginsOutput/control"
+val generatedBuildIdPath = "$generatedPluginsOutput/build"
 val generatedIconsAndBannersDir = "$buildDir/generated/corona_icons"
 
 
@@ -239,11 +240,42 @@ android.applicationVariants.all {
             } else {
                 files().asFileTree
             }
-
+            val buildId = file(generatedBuildIdPath)
+                    .takeIf { it.exists() }?.let {
+                        file(generatedBuildIdPath).readText().trim()
+                    } ?: "unknown"
+            val metadataLuaStr = """
+                if not application or type( application ) ~= "table" then
+                    application = {}
+                end
+                application.metadata = {
+                    appName = "$coronaAppFileName",
+                    appVersion = "$coronaVersionName",
+                    appPackageId = "${android.defaultConfig.applicationId}",
+                    mode = "$baseName",
+                    build = "$buildId",
+                }
+            """.trimIndent()
+            val metadataConfig = file("$buildDir/tmp/config.$baseName.lua")
+            val metadataCompiled = file("$buildDir/tmp/config.$baseName.lu")
+            mkdir(metadataConfig.parent)
+            metadataConfig.writeText(metadataLuaStr)
+            val configEntries = outputsList.filter { file(it).name == "config.lu" } + metadataConfig
+            exec {
+                workingDir = file(compiledDir)
+                commandLine(luac, "-s", "-o", metadataCompiled, "--", *configEntries.toTypedArray())
+            }
+            copy {
+                from(metadataCompiled)
+                into(compiledDir)
+                rename { "config.lu" }
+            }
+            delete(metadataConfig)
+            val toArchive = outputsList.filter { file(it).name != "config.lu" } + "$compiledDir/config.lu"
             mkdir(file(compiledLuaArchive).parent)
             exec {
                 workingDir = file(compiledDir)
-                standardInput = StringInputStream(outputsList.joinToString("\n"))
+                standardInput = StringInputStream(toArchive.joinToString("\n"))
                 if (windows) environment["PATH"] = windowsPathHelper
                 commandLine(coronaBuilder, "car", "-f", "-", compiledLuaArchive)
             }
@@ -298,12 +330,19 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): I
         "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
     })
     coronaAndroidPluginsCache.mkdirs()
+    mkdir(generatedPluginsOutput)
     val builderOutputStr = builderOutput.toString()
     builderOutputStr.lines()
             .filter { it.startsWith("SPLASH\t") }
             .map { it.removePrefix("SPLASH\t").trim() }
             .lastOrNull()?.let {
                 file(generatedControlPath).writeText(it)
+            }
+    builderOutputStr.lines()
+            .filter { it.startsWith("BUILD\t") }
+            .map { it.removePrefix("BUILD\t").trim() }
+            .lastOrNull()?.let {
+                file(generatedBuildIdPath).writeText(it)
             }
     val pluginUrls = builderOutputStr
             .lines()

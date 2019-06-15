@@ -202,7 +202,8 @@ function androidCreateProperties(destinationDirectory, packageName, projectDirec
 			".*/**",
 			"._*",
 			"build.properties",
-			"AndroidResources/",
+			"AndroidResources/**",
+			"AndroidResources",
 		}
 
 	if settings and settings.excludeFiles then
