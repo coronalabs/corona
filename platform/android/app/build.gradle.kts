@@ -566,16 +566,28 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
 
     logger.lifecycle("Collecting native libraries")
     run {
-        copy {
-            from(coronaPlugins) {
+        delete(generatedNativeLibsDir)
+        file(coronaPlugins).walk().maxDepth(1).forEach {
+            if (it == coronaPlugins) return@forEach
+
+            val hasJniLibs = ! fileTree(it) {
+                include("**/jniLibs/**/*.so")
+            }.isEmpty
+            val armeabiV7Libs = fileTree(it) {
                 include("**/*.so")
-                exclude("**/jniLibs/**")
             }
-            into(generatedNativeLibsDir)
-            eachFile {
-                path = "armeabi-v7a/$name"
+            val hasArm32Libs = ! armeabiV7Libs.isEmpty
+            if (!hasJniLibs && hasArm32Libs) {
+                logger.error("WARNING: Plugin '$it' contain native library for armeabi-v7a but not for arm64.")
+                copy {
+                    from(armeabiV7Libs)
+                    into(generatedNativeLibsDir)
+                    eachFile {
+                        path = "armeabi-v7a/$name"
+                    }
+                    includeEmptyDirs = false
+                }
             }
-            includeEmptyDirs = false
         }
     }
 }
