@@ -361,8 +361,14 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			result = system(gradleGo.c_str());
 #else // Windows
 			Interop::Ipc::CommandLine::SetOutputCaptureEnabled(true);
+			Interop::Ipc::CommandLine::SetHideWindowEnabled(true);
 			Interop::Ipc::CommandLineRunResult cmdResult = Interop::Ipc::CommandLine::RunShellCommandUntilExit(gradleGo.c_str());
 			result = cmdResult.GetExitCode();
+			if (debugBuildProcess > 1 || result != 0)
+			{
+				std::string output = cmdResult.GetOutput();
+				Rtt_Log("%s", output.c_str());
+			}
 #endif
 		}
 		else if ( inputFile )
