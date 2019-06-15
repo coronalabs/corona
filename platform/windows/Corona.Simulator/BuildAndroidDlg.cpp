@@ -642,6 +642,14 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 	int iIndex;
 	bool isLiveBuild;
 
+	bool acceptedSDK = (AfxGetApp()->GetProfileString( REGISTRY_BUILD_ANDROID, _T("AcceptedSDKLicense"), _T("NO") ).Compare(_T("YES")) == 0);
+	if(!acceptedSDK)
+	{
+		UINT ret = DisplayWarningMessageWithHelp(IDS_ANDROID_BUILD, IDS_ANDROID_SDK_LICENSE, _T("https://developer.android.com/studio/terms"));
+		if (ret != IDYES) return;
+		AfxGetApp()->WriteProfileString( REGISTRY_BUILD_ANDROID, _T("AcceptedSDKLicense"), _T("YES") );
+	}
+
 	// Fetch and validate field values.
     GetDlgItemText(IDC_BUILD_APPNAME, sAppName);
 	sAppName.Trim();
