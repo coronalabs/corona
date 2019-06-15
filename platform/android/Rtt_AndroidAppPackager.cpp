@@ -357,8 +357,13 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 				
 				Rtt_Log("Build: running: %s\n", sanitizedCmdBuf.c_str());
 			}
-
+#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
 			result = system(gradleGo.c_str());
+#else // Windows
+			Interop::Ipc::CommandLine::SetOutputCaptureEnabled(true);
+			Interop::Ipc::CommandLineRunResult cmdResult = Interop::Ipc::CommandLine::RunShellCommandUntilExit(gradleGo.c_str());
+			result = cmdResult.GetExitCode();
+#endif
 		}
 		else if ( inputFile )
 		{
