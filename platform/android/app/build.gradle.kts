@@ -113,7 +113,7 @@ android {
         }
     }
     val mainSourceSet = sourceSets["main"]
-    val pluginJniLibs = file(coronaPlugins).walk().maxDepth(1).filter { it.name == "jniLibs" }.toSet()
+    val pluginJniLibs = file(coronaPlugins).walk().maxDepth(2).filter { it.name == "jniLibs" }.toSet()
     mainSourceSet.jniLibs.srcDirs(pluginJniLibs)
     mainSourceSet.jniLibs.srcDir(generatedNativeLibsDir)
     mainSourceSet.res.srcDir(generatedIconsAndBannersDir)
