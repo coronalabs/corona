@@ -223,7 +223,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 	BOOL androidSDKLicenseExists = [[NSFileManager defaultManager] fileExistsAtPath:androidSDKLicensePath];
 
 	if(!androidSDKLicenseExists || !androidSDKAccepted) {
-		NSModalResponse agreedmentRet = [self showModalSheet:@"Building Android App" message:@"You are about to build Android app for the first time with this build system.\nIt uses Android SDK and you must read and accept its [license agreement](https://developer.android.com/studio/terms) in order to proceed.\nNote, first time it will download about 250Mb which can take several minutes." buttonLabels:@[@"I Accept", @"Cancel"] alertStyle:NSWarningAlertStyle helpURL:@"https://developer.android.com/studio/terms" parentWindow:[self window] completionHandler:nil];
+		NSModalResponse agreedmentRet = [self showModalSheet:@"Building Android App" message:@"You are about to build an Android app for the first time with this build system.\nIt requires that the Android SDK is installed locally and you must read and accept its [license agreement](https://developer.android.com/studio/terms) in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes." buttonLabels:@[@"I Accept", @"Cancel"] alertStyle:NSWarningAlertStyle helpURL:@"https://developer.android.com/studio/terms" parentWindow:[self window] completionHandler:nil];
 		if(agreedmentRet == NSAlertSecondButtonReturn) return;
 		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"AndroidSDKAccepted"];
 	}

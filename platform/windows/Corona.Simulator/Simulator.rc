@@ -785,7 +785,7 @@ BEGIN
                             "You must have the Debug keystore selected to create a Live Build.\n\nDo you want to select it now?"
     IDS_OPEN_URL_HTML       "Open in Browser"
     IDS_ANDROID_BUILD       "Building Android App"
-    IDS_ANDROID_SDK_LICENSE """You are about to build Android app for the first time with this build system.\nIt uses Android SDK and you must read and accept its license agreement in order to proceed.\nNote, first time it will download about 250Mb which can take several minutes.\nPress 'Yes' to accept, 'No' to decline or 'Help' to read the license agreement."""
+    IDS_ANDROID_SDK_LICENSE """You are about to build an Android app for the first time with this build system.\nIt uses the Android SDK and you must read and accept its license agreement in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes.\nPress 'Yes' to accept, 'No' to decline or 'Help' to read the license agreement."""
 END
 
 STRINGTABLE
