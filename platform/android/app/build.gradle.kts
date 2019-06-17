@@ -50,10 +50,10 @@ val buildToolsDir = if (file("$projectDir/buildTools").exists()) {
 }
 val generatedPluginsOutput = "$buildDir/generated/corona_plugins"
 val generatedPluginAssetsDir = "$generatedPluginsOutput/assets"
-val generatedNativeLibsDir = "$generatedPluginsOutput/native"
+val generatedPluginNativeLibsDir = "$generatedPluginsOutput/native"
 val generatedControlPath = "$generatedPluginsOutput/control"
 val generatedBuildIdPath = "$generatedPluginsOutput/build"
-val generatedIconsAndBannersDir = "$buildDir/generated/corona_icons"
+val generatedMainIconsAndBannersDir = "$buildDir/generated/corona_icons"
 
 
 var buildSettings: Any? = null
@@ -115,8 +115,8 @@ android {
     val mainSourceSet = sourceSets["main"]
     val pluginJniLibs = file(coronaPlugins).walk().maxDepth(2).filter { it.name == "jniLibs" }.toSet()
     mainSourceSet.jniLibs.srcDirs(pluginJniLibs)
-    mainSourceSet.jniLibs.srcDir(generatedNativeLibsDir)
-    mainSourceSet.res.srcDir(generatedIconsAndBannersDir)
+    mainSourceSet.jniLibs.srcDir(generatedPluginNativeLibsDir)
+    mainSourceSet.res.srcDir(generatedMainIconsAndBannersDir)
     mainSourceSet.assets.srcDir(generatedPluginAssetsDir)
     file("$generatedPluginsOutput/resourceDirectories.json").takeIf { it.exists() }?.let {
         val resourceDirs = JsonSlurper().parse(it)
@@ -149,13 +149,46 @@ android {
     }
 }
 
+val pluginDisabledMetadata = mutableSetOf<String>()
+val pluginDisabledDependencies = mutableSetOf<String>()
+val pluginDisabledJar = mutableSetOf<String>()
+val pluginDisabledNative = mutableSetOf<String>()
+val pluginDisabledResources = mutableSetOf<String>()
+val pluginDisabledAssets = mutableSetOf<String>()
+val excludePluginMap = mapOf(
+        "metadata" to pluginDisabledMetadata
+        , "dependencies" to pluginDisabledDependencies
+        , "jars" to pluginDisabledJar
+        , "native" to pluginDisabledNative
+        , "resources" to pluginDisabledResources
+        , "assets" to pluginDisabledAssets
+)
+extra["excludeMap"] = excludePluginMap
+
 fileTree(coronaPlugins) {
     include("**/corona.gradle", "**/corona.gradle.kts")
 }.forEach {
+    val pluginName = it.relativeTo(coronaPlugins).toPathString().segments.first()
     try {
         apply(from = it)
+        // Exclude plugin from following lists
+        if (project.extra.has("excludeCoronaPlugin")) {
+            when (val exclude = project.extra["excludeCoronaPlugin"]) {
+                true -> excludePluginMap.forEach { kv -> kv.value.add(pluginName) }
+                is String -> if (excludePluginMap.containsKey(exclude)) excludePluginMap[exclude]?.add(pluginName)
+                is Iterable<*> -> exclude.forEach { e -> if (excludePluginMap.containsKey(e)) excludePluginMap[e]?.add(pluginName) }
+            }
+        }
+        project.extra["excludeCoronaPlugin"] = null
+        // Undo exclude
+        if (project.extra.has("includeCoronaPlugin")) {
+            when (val include = project.extra["includeCoronaPlugin"]) {
+                is String -> if (excludePluginMap.containsKey(include)) excludePluginMap[include]?.remove(pluginName)
+                is Iterable<*> -> include.forEach { e -> if (excludePluginMap.containsKey(e)) excludePluginMap[e]?.remove(pluginName) }
+            }
+        }
+        project.extra["includeCoronaPlugin"] = null
     } catch (ex: Exception) {
-        val pluginName = it.relativeTo(coronaPlugins).toPathString().segments.first()
         logger.error("ERROR: configuring '$pluginName' failed!")
         throw(ex)
     }
@@ -418,13 +451,13 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         logger.lifecycle("Fetching plugin dependencies")
         var didDownloadSomething: Boolean
         do {
-            val pluginDirectories = file(coronaPlugins)
+            val pluginDirectoriesSet = file(coronaPlugins)
                     .walk()
                     .maxDepth(1)
                     .filter { it.isDirectory && it != coronaPlugins }
                     .map { it.relativeTo(coronaPlugins).path }
-                    .toList()
-                    .toTypedArray()
+                    .toSet()
+            val pluginDirectories = (pluginDirectoriesSet - pluginDisabledDependencies).toTypedArray()
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
                 commandLine(coronaBuilder, "plugins", "download", "android", "--fetch-dependencies", coronaPlugins, *pluginDirectories)
@@ -449,6 +482,9 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         copy {
             from(coronaPlugins) {
                 include("*/resources/assets/**/*")
+                pluginDisabledAssets.forEach {
+                    exclude("**/$it/**")
+                }
             }
             into(generatedPluginAssetsDir)
             eachFile {
@@ -475,10 +511,11 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         file(generatedPluginsOutput).mkdirs()
         val resourceDirectories = File(coronaPlugins.path)
                 .walk()
+                .maxDepth(2)
                 .filter { it.isDirectory }
-                .filter {
-                    it.relativeTo(coronaPlugins).toPathString().segments.drop(1) == listOf("resources")
-                }.flatMap { pr ->
+                .filter { it.name == "resources" }
+                .filter { !pluginDisabledResources.contains(it.parentFile.name) }
+                .flatMap { pr ->
                     pr.walk()
                             .filter { r -> r.isDirectory }
                             .filter { r ->
@@ -507,6 +544,9 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         file("$buildDir/intermediates").mkdirs()
         val metadataFiles = fileTree(coronaPlugins) {
             include("*/metadata.lua")
+            pluginDisabledMetadata.forEach {
+                exclude("**/$it/**")
+            }
         }.map { it.absolutePath }
         exec {
             commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
@@ -566,22 +606,23 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
 
     logger.lifecycle("Collecting native libraries")
     run {
-        delete(generatedNativeLibsDir)
+        delete(generatedPluginNativeLibsDir)
         file(coronaPlugins).walk().maxDepth(1).forEach {
             if (it == coronaPlugins) return@forEach
+            if (pluginDisabledNative.contains(it.name)) return@forEach
 
-            val hasJniLibs = ! fileTree(it) {
+            val hasJniLibs = !fileTree(it) {
                 include("**/jniLibs/**/*.so")
             }.isEmpty
             val armeabiV7Libs = fileTree(it) {
                 include("**/*.so")
             }
-            val hasArm32Libs = ! armeabiV7Libs.isEmpty
+            val hasArm32Libs = !armeabiV7Libs.isEmpty
             if (!hasJniLibs && hasArm32Libs) {
                 logger.error("WARNING: Plugin '$it' contain native library for armeabi-v7a but not for arm64.")
                 copy {
                     from(armeabiV7Libs)
-                    into(generatedNativeLibsDir)
+                    into(generatedPluginNativeLibsDir)
                     eachFile {
                         path = "armeabi-v7a/$name"
                     }
@@ -706,7 +747,7 @@ tasks.register<Copy>("installAppTemplateAndAARToNative") {
 
 val cleanupIconsDir = tasks.create<Delete>("cleanupIconsDirectory") {
     group = "Corona"
-    delete(generatedIconsAndBannersDir)
+    delete(generatedMainIconsAndBannersDir)
 }
 
 val copyCoronaIconFiles = tasks.create("copyCoronaIconFiles") {
@@ -719,7 +760,7 @@ tasks.create<Copy>("copyAdaptiveIconResources") {
     group = "Corona"
     dependsOn(copyCoronaIconFiles, cleanupIconsDir)
 
-    into(generatedIconsAndBannersDir)
+    into(generatedMainIconsAndBannersDir)
     from("$coronaSrcDir/AndroidResources/res")
 }
 
@@ -736,7 +777,7 @@ tasks.create<Copy>("copyMainApplicationIcon") {
     copyCoronaIconFiles.dependsOn(this)
     dependsOn(cleanupIconsDir)
 
-    into(generatedIconsAndBannersDir)
+    into(generatedMainIconsAndBannersDir)
     rename { "icon.png" }
 
     val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
@@ -754,7 +795,7 @@ tasks.create<Copy>("copyMainApplicationIcon") {
         }
     }
     doFirst {
-        delete("$generatedIconsAndBannersDir/**/icon.png")
+        delete("$generatedMainIconsAndBannersDir/**/icon.png")
     }
 }
 
@@ -767,10 +808,10 @@ tasks.create<Copy>("copyMainApplicationBanner") {
     from(coronaSrcDir) {
         include("Banner-xhdpi.png")
     }
-    into("$generatedIconsAndBannersDir/drawable-xhdpi")
+    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
     rename { "banner.png" }
     doFirst {
-        delete("$generatedIconsAndBannersDir/**/banner.png")
+        delete("$generatedMainIconsAndBannersDir/**/banner.png")
     }
 }
 
@@ -782,10 +823,10 @@ tasks.create<Copy>("copyOuyaApplicationIcon") {
     from(coronaSrcDir) {
         include("Icon-ouya.png")
     }
-    into("$generatedIconsAndBannersDir/drawable-xhdpi")
+    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
     rename { "ouya_icon.png" }
     doFirst {
-        delete("$generatedIconsAndBannersDir/**/ouya_icon.png")
+        delete("$generatedMainIconsAndBannersDir/**/ouya_icon.png")
     }
 }
 
@@ -797,10 +838,10 @@ tasks.create<Copy>("copyXiaomiApplicationIcon") {
     from(coronaSrcDir) {
         include("Icon-ouya-xiaomi.png")
     }
-    into("$generatedIconsAndBannersDir/drawable-xhdpi")
+    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
     rename { "ouya_xiaomi_icon.png" }
     doFirst {
-        delete("$generatedIconsAndBannersDir/**/ouya_xiaomi_icon.png")
+        delete("$generatedMainIconsAndBannersDir/**/ouya_xiaomi_icon.png")
     }
 }
 
@@ -809,7 +850,7 @@ tasks.create<Copy>("copyDefaultNotificationIcons") {
     copyCoronaIconFiles.dependsOn(this)
     dependsOn(cleanupIconsDir)
 
-    into(generatedIconsAndBannersDir)
+    into(generatedMainIconsAndBannersDir)
     rename { "corona_statusbar_icon_default.png" }
 
     val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
@@ -827,7 +868,7 @@ tasks.create<Copy>("copyDefaultNotificationIcons") {
         }
     }
     doFirst {
-        delete("$generatedIconsAndBannersDir/**/corona_statusbar_icon_default.png")
+        delete("$generatedMainIconsAndBannersDir/**/corona_statusbar_icon_default.png")
     }
 }
 
@@ -849,12 +890,12 @@ tasks.create<Copy>("copySplashScreen") {
         }
     }
 
-    into("$generatedIconsAndBannersDir/drawable")
+    into("$generatedMainIconsAndBannersDir/drawable")
     rename {
         "_corona_splash_screen.png"
     }
     doFirst {
-        delete("$generatedIconsAndBannersDir/**/_corona_splash_screen.png")
+        delete("$generatedMainIconsAndBannersDir/**/_corona_splash_screen.png")
     }
 }
 
@@ -908,7 +949,16 @@ dependencies {
         })
     }
     implementation(fileTree(coronaPlugins) {
-        include("**/*.jar", "**/*.aar")
+        include("*/*.jar")
+        pluginDisabledJar.forEach {
+            exclude("**/$it/**")
+        }
+    })
+    implementation(fileTree(coronaPlugins) {
+        include("**/*.aar")
+    })
+    implementation(fileTree(coronaPlugins) {
+        include("*/jarLibs/*.jar")
     })
     implementation(fileTree("$coronaSrcDir/AndroidResources") {
         include("**/*.jar", "**/*.aar")
