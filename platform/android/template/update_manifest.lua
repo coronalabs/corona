@@ -674,14 +674,16 @@ manifestKeys.USER_USES_EXPANSION_FILE = stringBuffer
 
 stringBuffer = ""
 if googlePlayGamesAppId then
-	stringBuffer = '<meta-data android:name="com.google.android.gms.games.APP_ID" android:value="\\ ' .. googlePlayGamesAppId .. '" />'
+	stringBuffer = '<meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/corona_app_gsm_id" />'
+	strings["corona_app_gsm_id"] = googlePlayGamesAppId
 end
 manifestKeys.USER_USES_GOOGLE_PLAY_GAMES = stringBuffer
 
 -- Create a meta-data tags for Facebook integration if provided an App Id and Display Name.
 stringBuffer = ""
 if facebookAppId then
-	stringBuffer = '<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="\\ ' .. facebookAppId .. '" />'
+	stringBuffer = '<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/corona_app_facebook_id" />'
+	strings["corona_app_facebook_id"] = facebookAppId
 end
 manifestKeys.USER_USES_FACEBOOK = stringBuffer
 
