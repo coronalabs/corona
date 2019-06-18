@@ -155,6 +155,7 @@ val pluginDisabledJar = mutableSetOf<String>()
 val pluginDisabledNative = mutableSetOf<String>()
 val pluginDisabledResources = mutableSetOf<String>()
 val pluginDisabledAssets = mutableSetOf<String>()
+val excludePluginProcessed = mutableSetOf<String>()
 val excludePluginMap = mapOf(
         "metadata" to pluginDisabledMetadata
         , "dependencies" to pluginDisabledDependencies
@@ -165,44 +166,51 @@ val excludePluginMap = mapOf(
 )
 extra["excludeMap"] = excludePluginMap
 
-fileTree(coronaPlugins) {
-    include("**/corona.gradle", "**/corona.gradle.kts")
-}.forEach {
-    val pluginName = it.relativeTo(coronaPlugins).toPathString().segments.first()
-    try {
-        apply(from = it)
-        // Exclude plugin from following lists
-        if (project.extra.has("excludeCoronaPlugin")) {
-            when (val exclude = project.extra["excludeCoronaPlugin"]) {
-                true -> excludePluginMap.forEach { kv -> kv.value.add(pluginName) }
-                is String -> if (excludePluginMap.containsKey(exclude)) excludePluginMap[exclude]?.add(pluginName)
-                is Iterable<*> -> exclude.forEach { e -> if (excludePluginMap.containsKey(e)) excludePluginMap[e]?.add(pluginName) }
+fun processPluginGradleScripts() {
+    fileTree(coronaPlugins) {
+        include("**/corona.gradle", "**/corona.gradle.kts")
+    }.forEach {
+        val pluginName = it.relativeTo(coronaPlugins).toPathString().segments.first()
+        if (excludePluginProcessed.contains(it.absolutePath))
+            return@forEach
+
+        excludePluginProcessed.add(it.absolutePath)
+        try {
+            apply(from = it)
+            // Exclude plugin from following lists
+            if (project.extra.has("excludeCoronaPlugin")) {
+                when (val exclude = project.extra["excludeCoronaPlugin"]) {
+                    true -> excludePluginMap.forEach { kv -> kv.value.add(pluginName) }
+                    is String -> if (excludePluginMap.containsKey(exclude)) excludePluginMap[exclude]?.add(pluginName)
+                    is Iterable<*> -> exclude.forEach { e -> if (excludePluginMap.containsKey(e)) excludePluginMap[e]?.add(pluginName) }
+                }
             }
-        }
-        project.extra["excludeCoronaPlugin"] = null
-        // Undo exclude
-        if (project.extra.has("includeCoronaPlugin")) {
-            when (val include = project.extra["includeCoronaPlugin"]) {
-                is String -> if (excludePluginMap.containsKey(include)) excludePluginMap[include]?.remove(pluginName)
-                is Iterable<*> -> include.forEach { e -> if (excludePluginMap.containsKey(e)) excludePluginMap[e]?.remove(pluginName) }
+            project.extra["excludeCoronaPlugin"] = null
+            // Undo exclude
+            if (project.extra.has("includeCoronaPlugin")) {
+                when (val include = project.extra["includeCoronaPlugin"]) {
+                    is String -> if (excludePluginMap.containsKey(include)) excludePluginMap[include]?.remove(pluginName)
+                    is Iterable<*> -> include.forEach { e -> if (excludePluginMap.containsKey(e)) excludePluginMap[e]?.remove(pluginName) }
+                }
             }
+            project.extra["includeCoronaPlugin"] = null
+        } catch (ex: Exception) {
+            logger.error("ERROR: configuring '$pluginName' failed!")
+            throw(ex)
         }
-        project.extra["includeCoronaPlugin"] = null
-    } catch (ex: Exception) {
-        logger.error("ERROR: configuring '$pluginName' failed!")
-        throw(ex)
+    }
+    fileTree("$coronaSrcDir/AndroidResources") {
+        include("**/corona.gradle", "**/corona.gradle.kts")
+    }.forEach {
+        try {
+            apply(from = it)
+        } catch (ex: Exception) {
+            logger.error("ERROR: executing configuration from '${it.relativeTo(file(coronaSrcDir)).path}' failed!")
+            throw(ex)
+        }
     }
 }
-fileTree("$coronaSrcDir/AndroidResources") {
-    include("**/corona.gradle", "**/corona.gradle.kts")
-}.forEach {
-    try {
-        apply(from = it)
-    } catch (ex: Exception) {
-        logger.error("ERROR: executing configuration from '${it.relativeTo(file(coronaSrcDir)).path}' failed!")
-        throw(ex)
-    }
-}
+processPluginGradleScripts()
 
 //region Packaging Corona App
 
@@ -451,6 +459,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         logger.lifecycle("Fetching plugin dependencies")
         var didDownloadSomething: Boolean
         do {
+            processPluginGradleScripts()
             val pluginDirectoriesSet = file(coronaPlugins)
                     .walk()
                     .maxDepth(1)
@@ -474,6 +483,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             didDownloadSomething = downloadPluginsBasedOnBuilderOutput(builderOutput) > 0
         } while (didDownloadSomething)
     }
+    processPluginGradleScripts()
 
     // Collect Assets
     logger.lifecycle("Collecting plugin assets")
