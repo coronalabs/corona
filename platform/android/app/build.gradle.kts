@@ -63,6 +63,23 @@ coronaTmpDir?.let { srcDir ->
     }
 }
 
+val pluginDisabledMetadata = mutableSetOf<String>()
+val pluginDisabledDependencies = mutableSetOf<String>()
+val pluginDisabledJar = mutableSetOf<String>()
+val pluginDisabledNative = mutableSetOf<String>()
+val pluginDisabledResources = mutableSetOf<String>()
+val pluginDisabledAssets = mutableSetOf<String>()
+val coronaProcessedScripts = mutableSetOf<File>()
+val excludePluginMap = mapOf(
+        "metadata" to pluginDisabledMetadata
+        , "dependencies" to pluginDisabledDependencies
+        , "jars" to pluginDisabledJar
+        , "native" to pluginDisabledNative
+        , "resources" to pluginDisabledResources
+        , "assets" to pluginDisabledAssets
+)
+extra["excludeMap"] = excludePluginMap
+
 if (configureCoronaPlugins == "YES") {
     downloadAndProcessCoronaPlugins()
 }
@@ -149,32 +166,15 @@ android {
     }
 }
 
-val pluginDisabledMetadata = mutableSetOf<String>()
-val pluginDisabledDependencies = mutableSetOf<String>()
-val pluginDisabledJar = mutableSetOf<String>()
-val pluginDisabledNative = mutableSetOf<String>()
-val pluginDisabledResources = mutableSetOf<String>()
-val pluginDisabledAssets = mutableSetOf<String>()
-val excludePluginProcessed = mutableSetOf<String>()
-val excludePluginMap = mapOf(
-        "metadata" to pluginDisabledMetadata
-        , "dependencies" to pluginDisabledDependencies
-        , "jars" to pluginDisabledJar
-        , "native" to pluginDisabledNative
-        , "resources" to pluginDisabledResources
-        , "assets" to pluginDisabledAssets
-)
-extra["excludeMap"] = excludePluginMap
-
 fun processPluginGradleScripts() {
     fileTree(coronaPlugins) {
         include("**/corona.gradle", "**/corona.gradle.kts")
     }.forEach {
-        val pluginName = it.relativeTo(coronaPlugins).toPathString().segments.first()
-        if (excludePluginProcessed.contains(it.absolutePath))
+        if (coronaProcessedScripts.contains(it))
             return@forEach
+        coronaProcessedScripts.add(it)
 
-        excludePluginProcessed.add(it.absolutePath)
+        val pluginName = it.relativeTo(coronaPlugins).toPathString().segments.first()
         try {
             apply(from = it)
             // Exclude plugin from following lists
