@@ -239,6 +239,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			gradleGo.append(" --no-daemon");
 			
 			gradleGo.append(" -PconfigureCoronaPlugins=YES");
+			gradleGo.append(" -PcoronaBuild=" Rtt_STRING_BUILD);
 			
 			if (params->IsLiveBuild())
 			{

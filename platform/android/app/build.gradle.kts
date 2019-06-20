@@ -22,6 +22,7 @@ val coronaKeystorePassword: String? by project
 val coronaKeyAlias: String? by project
 val coronaKeyAliasPassword: String? by project
 val configureCoronaPlugins: String? by project
+val coronaBuild: String? by project
 val isLiveBuild = project.findProperty("coronaLiveBuild") == "YES"
 val coronaSrcDir = project.findProperty("coronaSrcDir") as? String ?: if (file("$rootDir/../test/assets2").exists()) {
     "$rootDir/../test/assets2"
@@ -295,6 +296,7 @@ android.applicationVariants.all {
                     appPackageId = "${android.defaultConfig.applicationId}",
                     mode = "$baseName",
                     build = "$buildId",
+                    coronaBuild = "$coronaBuild",
                 }
             """.trimIndent()
             val metadataConfig = file("$buildDir/tmp/config.$baseName.lua")
