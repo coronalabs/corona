@@ -312,7 +312,8 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			char buildDataFileOutput[maxPath+1];
 			snprintf(buildDataFileOutput, maxPath, "%s" LUA_DIRSEP "build.data", tmpDir);
 			const unsigned char *jsonStr = (const unsigned char *)json.GetString();
-			Rtt::Data<const unsigned char> &jsonData = Rtt::Data<const unsigned char>((unsigned char*)jsonStr, strnlen((char*)jsonStr, maxPath));
+			Rtt::Data<const unsigned char> jsonData(& fServices.Platform().GetAllocator());
+			jsonData.Set((unsigned char*)jsonStr, strnlen((char*)jsonStr, maxPath));
 			Rtt_WriteDataToFile(buildDataFileOutput, jsonData);
 
 			gradleGo.append(" -PcoronaBuildData=");
