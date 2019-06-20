@@ -308,9 +308,15 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			DeviceBuildData& deviceBuildData = params->GetDeviceBuildData( fServices.Platform(), fServices );
 			String json( & fServices.Platform().GetAllocator() );
 			deviceBuildData.GetJSON( json );
+			const size_t maxPath = 600;
+			char buildDataFileOutput[maxPath+1];
+			snprintf(buildDataFileOutput, maxPath, "%s" LUA_DIRSEP "build.data", tmpDir);
+			const unsigned char *jsonStr = (const unsigned char *)json.GetString();
+			Rtt::Data<const unsigned char> &jsonData = Rtt::Data<const unsigned char>((unsigned char*)jsonStr, strnlen((char*)jsonStr, maxPath));
+			Rtt_WriteDataToFile(buildDataFileOutput, jsonData);
 
 			gradleGo.append(" -PcoronaBuildData=");
-			gradleGo.append(EscapeArgument(json.GetString()));
+			gradleGo.append(EscapeArgument(buildDataFileOutput));
 
 			String debugBuildProcessPref;
 			int debugBuildProcess = 0;

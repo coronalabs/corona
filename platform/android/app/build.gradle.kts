@@ -444,7 +444,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
 
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
-                val buildData = coronaBuildData ?: fakeBuildData ?: "{}"
+                val buildData = coronaBuildData?.let { file(it).readText() } ?: fakeBuildData
                 commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data")
                 if (windows) environment["PATH"] = windowsPathHelper
                 standardInput = StringInputStream(buildData)
