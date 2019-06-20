@@ -312,7 +312,7 @@ android.applicationVariants.all {
                 rename { "config.lu" }
             }
             delete(metadataConfig)
-            val toArchive = outputsList.filter { file(it).name != "config.lu" } + "$compiledDir/config.lu"
+            val toArchive = outputsList.filter { file(it).name != "config.lu" } + "config.lu"
             mkdir(file(compiledLuaArchive).parent)
             exec {
                 workingDir = file(compiledDir)
