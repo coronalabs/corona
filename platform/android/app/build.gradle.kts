@@ -445,8 +445,9 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
                 val buildData = coronaBuildData ?: fakeBuildData ?: "{}"
-                commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data", buildData)
+                commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data")
                 if (windows) environment["PATH"] = windowsPathHelper
+                standardInput = StringInputStream(buildData)
                 standardOutput = builderOutput
                 isIgnoreExitValue = true
             }
@@ -900,11 +901,9 @@ tasks.create<Copy>("copySplashScreen") {
         from(projectDir) {
             include("_corona_splash_screen.png")
         }
-    } else {
-        if (control != "nil") {
-            from(projectDir) {
-                include(control)
-            }
+    } else if (control != "nil") {
+        from(coronaSrcDir) {
+            include(control)
         }
     }
 

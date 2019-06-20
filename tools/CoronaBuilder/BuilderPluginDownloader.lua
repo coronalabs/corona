@@ -329,9 +329,8 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			androidBuild = true
 		elseif args[i] == '--build-data' then
 			table.remove(args, i)
-			buildData = json.decode(args[i]) or {}
+			buildData = json.decode(io.read('*all')) or {}
 			buildDataPluginEntry = buildData.plugins or {}
-			table.remove(args, i)
 		elseif args[i] == '--fetch-dependencies' then
 			table.remove(args, i)
 			verbosity = 0
