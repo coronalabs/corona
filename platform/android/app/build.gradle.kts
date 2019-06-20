@@ -23,13 +23,14 @@ val coronaKeyAlias: String? by project
 val coronaKeyAliasPassword: String? by project
 val configureCoronaPlugins: String? by project
 val coronaBuild: String? by project
+val coronaBuildData: String? by project
 val isLiveBuild = project.findProperty("coronaLiveBuild") == "YES"
-val coronaSrcDir = project.findProperty("coronaSrcDir") as? String ?: if (file("$rootDir/../test/assets2").exists()) {
-    "$rootDir/../test/assets2"
-} else {
-    "$rootDir/../Corona"
-}
-val coronaBuildData = project.findProperty("coronaBuildData") as? String ?: "{}"
+val coronaSrcDir = project.findProperty("coronaSrcDir") as? String
+        ?: if (file("$rootDir/../test/assets2").exists()) {
+            "$rootDir/../test/assets2"
+        } else {
+            "$rootDir/../Corona"
+        }
 
 val windows = System.getProperty("os.name").toLowerCase().contains("windows")
 val shortOsName = if (windows) "win" else "mac"
@@ -58,6 +59,7 @@ val generatedMainIconsAndBannersDir = "$buildDir/generated/corona_icons"
 
 
 var buildSettings: Any? = null
+var fakeBuildData: String? = null
 coronaTmpDir?.let { srcDir ->
     file("$srcDir/build.properties").takeIf { it.exists() }?.let { f ->
         buildSettings = JsonSlurper().parse(f)
@@ -442,7 +444,8 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
 
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
-                commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data", coronaBuildData)
+                val buildData = coronaBuildData ?: fakeBuildData ?: "{}"
+                commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data", buildData)
                 if (windows) environment["PATH"] = windowsPathHelper
                 standardOutput = builderOutput
                 isIgnoreExitValue = true
@@ -679,21 +682,24 @@ fun parseBuildSettingsFile() {
     val output = ByteArrayOutputStream()
     exec {
         setWorkingDir("$nativeDir/Corona/$shortOsName/bin")
-        commandLine("./lua",
+        commandLine("$nativeDir/Corona/$shortOsName/bin/lua",
                 "-e",
                 "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path",
                 "-e",
                 """
-                        pcall( function() dofile('${buildSettingsFile.path}') end	)
-                        if type(settings) == "table" then
+                        pcall( function() dofile('${buildSettingsFile.path.replace("\\", "\\\\")}') end )
+                        if type(settings) == 'table' then
                             print(require('json').encode(settings))
+                        else
+                            print('{}')
                         end
                     """.trimIndent()
         )
         standardOutput = output
         if (windows) environment["PATH"] = windowsPathHelper
     }
-    buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(output.toString()), "packageName" to android.defaultConfig.applicationId)
+    fakeBuildData = output.toString()
+    buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(fakeBuildData), "packageName" to android.defaultConfig.applicationId)
 }
 //endregion
 
