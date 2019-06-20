@@ -24,7 +24,9 @@ val coronaKeyAliasPassword: String? by project
 val configureCoronaPlugins: String? by project
 val coronaBuild: String? by project
 val coronaBuildData: String? by project
+val coronaExpansionFileName: String? by project
 val isLiveBuild = project.findProperty("coronaLiveBuild") == "YES"
+val isExpansionFileRequired = !coronaExpansionFileName.isNullOrEmpty() && !isLiveBuild
 val coronaSrcDir = project.findProperty("coronaSrcDir") as? String
         ?: if (file("$rootDir/../test/assets2").exists()) {
             "$rootDir/../test/assets2"
@@ -154,15 +156,17 @@ android {
         additionalParameters("--extra-packages", extraPackages.filter { it.isNotBlank() }.joinToString(":"))
     }
     // This is dirty hack because Android Assets refuse to copy assets which start with . or _
-    android.applicationVariants.all {
-        mergeAssetsProvider!!.configure {
-            val mergeTask = this
-            doLast {
-                copy {
-                    from(generatedPluginAssetsDir) {
-                        include(".corona-plugins/**")
+    if (!isExpansionFileRequired) {
+        android.applicationVariants.all {
+            mergeAssetsProvider!!.configure {
+                val mergeTask = this
+                doLast {
+                    copy {
+                        from(generatedPluginAssetsDir) {
+                            include(".corona-plugins/**")
+                        }
+                        into(mergeTask.outputDir)
                     }
-                    into(mergeTask.outputDir)
                 }
             }
         }
@@ -216,6 +220,40 @@ fun processPluginGradleScripts() {
 processPluginGradleScripts()
 
 //region Packaging Corona App
+
+fun coronaAssetsCopySpec(spec: CopySpec) {
+    with(spec) {
+        file("$coronaTmpDir/excludesfile.properties").takeIf { it.exists() }?.readLines()?.forEach {
+            exclude(it)
+        }
+        if (coronaTmpDir == null) {
+            parseBuildSettingsFile()
+            (buildSettings as? Map<*, *>)?.forEach { bs -> if(bs.key == "buildSettings") {
+                (bs.value as? Map<*, *>)?.forEach { ef -> if(ef.key == "excludeFiles") {
+                    (ef.value as? Map<*, *>)?.forEach {
+                        if (it.key == "all" || it.key == "android") {
+                            if (it.value is Iterable<*>) {
+                                it.value.forEach {excludeEntry ->
+                                    if(excludeEntry is String) {
+                                        exclude("**/$excludeEntry")
+                                        println(excludeEntry)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }}
+            }}
+        }
+        exclude("**/Icon\r")
+        exclude("AndroidResources/**")
+        if (isLiveBuild) {
+            into("corona_live_build_app_")
+        } else {
+            exclude("**/*.lua", "build.settings")
+        }
+    }
+}
 
 android.applicationVariants.all {
     val baseName = this.baseName.toLowerCase()
@@ -337,16 +375,9 @@ android.applicationVariants.all {
         from("$coronaTmpDir/output/assets")
         from(compiledLuaArchive)
 
-        from(coronaSrcDir) {
-            file("$coronaTmpDir/excludesfile.properties").takeIf { it.exists() }?.readLines()?.forEach {
-                exclude(it)
-            }
-            exclude("**/Icon\r")
-            exclude("AndroidResources/**")
-            if (isLiveBuild) {
-                into("corona_live_build_app_")
-            } else {
-                exclude("**/*.lua", "build.settings")
+        if (!isExpansionFileRequired) {
+            from(coronaSrcDir) {
+                coronaAssetsCopySpec(this)
             }
         }
 
@@ -412,9 +443,7 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): I
 
 fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
 
-    if (buildSettings == null) {
-        parseBuildSettingsFile()
-    }
+    parseBuildSettingsFile()
 
     val luaVerbosityPlug = if (!logger.isLifecycleEnabled) {
         arrayOf("-e", "printError=print;print=function()end")
@@ -672,10 +701,10 @@ tasks.create("parseBuildSettings") {
 
 
 fun parseBuildSettingsFile() {
-    val buildSettingsFile = file("$coronaSrcDir/build.settings")
     if (buildSettings != null) {
         return
     }
+    val buildSettingsFile = file("$coronaSrcDir/build.settings")
     if (!buildSettingsFile.exists()) {
         return
     }
@@ -916,6 +945,22 @@ tasks.create<Copy>("copySplashScreen") {
     }
 }
 
+tasks.register<Zip>("createExpansionFile") {
+    group = "Corona"
+    enabled = isExpansionFileRequired
+    destinationDirectory.set(file("$buildDir/outputs"))
+    archiveFileName.set(coronaExpansionFileName)
+
+    from(coronaSrcDir) {
+        coronaAssetsCopySpec(this)
+        into(".")
+    }
+    from("$generatedPluginAssetsDir/.corona-plugins") {
+        into(".corona-plugins")
+    }
+
+}
+
 //endregion
 
 tasks.create<Copy>("buildCoronaApp") {
@@ -923,6 +968,7 @@ tasks.create<Copy>("buildCoronaApp") {
     description = "Used when Simulator invokes a build. It all project variables must be passed"
     dependsOn("assembleRelease")
     dependsOn("bundleRelease")
+    dependsOn("createExpansionFile")
 
     val copyTask = this
     android.applicationVariants.matching {
@@ -944,6 +990,13 @@ tasks.create<Copy>("buildCoronaApp") {
         doFirst {
             delete("$it/$coronaAppFileName.apk")
             delete("$it/$coronaAppFileName.aab")
+            delete("$it/$coronaExpansionFileName")
+        }
+        doLast {
+            copy {
+                from("$buildDir/outputs/$coronaExpansionFileName")
+                into(it)
+            }
         }
     }
 }
