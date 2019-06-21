@@ -236,7 +236,6 @@ fun coronaAssetsCopySpec(spec: CopySpec) {
                                 it.value.forEach {excludeEntry ->
                                     if(excludeEntry is String) {
                                         exclude("**/$excludeEntry")
-                                        println(excludeEntry)
                                     }
                                 }
                             }
