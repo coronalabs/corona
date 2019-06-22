@@ -221,7 +221,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 
 		String gradleBuildEnabledStr;
 		fServices.GetPreference( "gradleBuild", &gradleBuildEnabledStr );
-		bool gradleBuild = Rtt_StringCompare(gradleBuildEnabledStr, "1")==0;
+		bool gradleBuild = Rtt_StringCompare(gradleBuildEnabledStr, "0")!=0;
 		
 		if (gradleBuild && inputFile) //offline build
 		{
