@@ -486,7 +486,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			pluginsDest = pluginsDest .. 'control'
 			local hasSplashScreenControl = splashStatus == 2 or splashStatus == 1
 			if needsSplashScreenControl and not hasSplashScreenControl then
-				print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
+				print("ERROR: Splash Screen Control plugin could not be validated")
 				print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/com.coronalabs/plugin.CoronaSplashControl")
 				authErrors = true
 			end
