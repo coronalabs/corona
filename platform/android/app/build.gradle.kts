@@ -825,7 +825,7 @@ tasks.create<Copy>("copyMainApplicationIcon") {
     dependsOn(cleanupIconsDir)
 
     into(generatedMainIconsAndBannersDir)
-    rename { "icon.png" }
+    rename { "ic_launcher.png" }
 
     val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
     suffixes.forEach { dstSuffix ->
@@ -842,7 +842,7 @@ tasks.create<Copy>("copyMainApplicationIcon") {
         }
     }
     doFirst {
-        delete("$generatedMainIconsAndBannersDir/**/icon.png")
+        delete("$generatedMainIconsAndBannersDir/**/ic_launcher.png")
     }
 }
 

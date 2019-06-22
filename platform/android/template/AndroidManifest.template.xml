@@ -11,7 +11,7 @@
 
 	@USER_SUPPORTS_SCREENS@
 
-	<application android:icon="@mipmap/icon"
+	<application android:icon="@mipmap/ic_launcher"
 	             android:banner="@drawable/banner"
 	             android:label="@USER_APP_NAME@"
 	             @USER_LARGE_HEAP@
