@@ -429,6 +429,7 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): I
             dest("$coronaAndroidPluginsCache/$plugin")
             onlyIfModified(true)
             cachedETagsFile("${coronaAndroidPluginsCache.parent}/ETags.txt")
+            useETag(true)
             execute()
             outputFiles.first()
         }
