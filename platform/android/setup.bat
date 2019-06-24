@@ -1,9 +1,12 @@
 @echo off
 setlocal enableextensions enabledelayedexpansion
-if not exist "%APPDATA%\Corona Labs\Corona Simulator\Android Build\sdk\licenses" (
-md "%APPDATA%\Corona Labs\Corona Simulator\Android Build\sdk\licenses"
+set SDK=%APPDATA%\Corona Labs\Corona Simulator\Android Build\sdk
+FOR %%A IN (%*) DO (
+    IF "%%A"=="/T" set SDK=%WINDIR%\Temp\Corona Labs\sdk
 )
-copy /Y ..\sdk\licenses\android-sdk-license "%APPDATA%\Corona Labs\Corona Simulator\Android Build\sdk\licenses\android-sdk-license" >nul
-set PT=sdk.dir=%APPDATA%\Corona Labs\Corona Simulator\Android Build\sdk
-echo|set /p="%PT:\=/%" > local.properties
+if not exist "%SDK%\licenses" (
+md "%SDK%\licenses"
+)
+copy /Y ..\sdk\licenses\android-sdk-license "%SDK%\licenses\android-sdk-license" >nul
+echo|set /p="sdk.dir=%SDK:\=/%" > local.properties
 endlocal

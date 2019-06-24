@@ -25,6 +25,7 @@ val configureCoronaPlugins: String? by project
 val coronaBuild: String? by project
 val coronaBuildData: String? by project
 val coronaExpansionFileName: String? by project
+val coronaCustomHome: String? by project
 val isLiveBuild = project.findProperty("coronaLiveBuild") == "YES"
 val isExpansionFileRequired = !coronaExpansionFileName.isNullOrEmpty() && !isLiveBuild
 val coronaSrcDir = project.findProperty("coronaSrcDir") as? String
@@ -400,7 +401,11 @@ android.applicationVariants.all {
 
 fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): Int {
     val coronaAndroidPluginsCache = file(if (windows) {
-        "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
+        if(coronaCustomHome.isNullOrEmpty()) {
+            "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
+        } else {
+            "$coronaCustomHome/build cache/android"
+        }
     } else {
         "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
     })

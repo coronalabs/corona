@@ -54,6 +54,7 @@ class AndroidAppPackagerParams : public AppPackagerParams
 		String fKeyStorePassword;
 		String fKeyAliasPassword;
 		U32 fVersionCode;
+		bool fWindowsNonAscii;
 
 	public:
 		AndroidAppPackagerParams( const char* appName, 
@@ -83,6 +84,8 @@ class AndroidAppPackagerParams : public AppPackagerParams
 		const char * GetAndroidKeyAliasPassword() const { return fKeyAliasPassword.GetString(); }
 		U32 GetVersionCode() const { return fVersionCode; }
 
+		void SetWindowsNonAsciiUser(bool value) { fWindowsNonAscii = value; }
+		bool IsWindowsNonAsciiUser() const { return fWindowsNonAscii; }
 	public:
 		virtual void Print();
 };

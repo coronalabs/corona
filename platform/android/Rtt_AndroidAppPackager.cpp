@@ -98,6 +98,7 @@ AndroidAppPackagerParams::AndroidAppPackagerParams(
 		targetPlatform, targetAppStoreName, targetVersion, TargetDevice::kAndroidGenericDevice,
 		customBuildId, productId, appPackage, isDistributionBuild ),
 	fVersionCode(versionCode)
+	, fWindowsNonAscii(false)
 {
 	fKeyStore.Set( keyStore );
 	fKeyStorePassword.Set( storePassword );
@@ -225,6 +226,8 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 		
 		if (gradleBuild && inputFile) //offline build
 		{
+			const AndroidAppPackagerParams * androidParams = (const AndroidAppPackagerParams *)params;
+
 			std::string gradleGo = "cd ";
 			gradleGo.append(EscapeArgument(tmpDir));
 			gradleGo.append(" && cd template &&");
@@ -232,7 +235,12 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 #if defined(Rtt_MAC_ENV)
 			gradleGo.append(" ./setup.sh && ./gradlew");
 #else
-			gradleGo.append(" setup.bat && gradlew.bat");
+			gradleGo.append(" setup.bat");
+			if (androidParams->IsWindowsNonAsciiUser())
+			{
+				gradleGo.append(" /T");
+			}
+			gradleGo.append(" && gradlew.bat");
 #endif
 
 			gradleGo.append(" buildCoronaApp");
@@ -265,9 +273,18 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			
 			gradleGo.append(" -PcoronaAppPackage=");
 			gradleGo.append(EscapeArgument(params->GetAppPackage()));
-			
-			const AndroidAppPackagerParams * androidParams = (const AndroidAppPackagerParams *) params;
-			
+
+			if (androidParams->IsWindowsNonAsciiUser()) {
+				std::string gradleDir(tmpDirBase);
+
+				gradleDir += LUA_DIRSEP ".gradle";
+				gradleGo.append(" -Dgradle.user.home=");
+				gradleGo.append(EscapeArgument(gradleDir));
+
+				gradleGo.append(" -PcoronaCustomHome=");
+				gradleGo.append(EscapeArgument(tmpDirBase));
+			}
+
 			gradleGo.append(" -PcoronaVersionCode=");
 			gradleGo.append(std::to_string(androidParams->GetVersionCode()));
 			
