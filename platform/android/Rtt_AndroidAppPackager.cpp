@@ -240,7 +240,6 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			
 			gradleGo.append(" -PconfigureCoronaPlugins=YES");
 			gradleGo.append(" -PcoronaBuild=" Rtt_STRING_BUILD);
-			gradleGo.append(" -Dcom.android.build.gradle.overridePathCheck=true");
 			
 			if (params->IsLiveBuild())
 			{
