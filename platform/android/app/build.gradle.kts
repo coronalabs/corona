@@ -64,6 +64,7 @@ val generatedPluginAssetsDir = "$generatedPluginsOutput/assets"
 val generatedPluginNativeLibsDir = "$generatedPluginsOutput/native"
 val generatedControlPath = "$generatedPluginsOutput/control"
 val generatedBuildIdPath = "$generatedPluginsOutput/build"
+val generatedPluginMegaJar = "$generatedPluginsOutput/plugins.jar"
 val generatedMainIconsAndBannersDir = "$buildDir/generated/corona_icons"
 
 
@@ -691,6 +692,29 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             }
         }
     }
+
+    logger.lifecycle("Collecting legacy jar libraries")
+    run {
+        val megaJarExtracted = "$buildDir/intermediates/corona-mega-jar"
+        delete(megaJarExtracted)
+        delete(generatedPluginMegaJar)
+        fileTree(coronaPlugins) {
+            include("*/*.jar")
+            pluginDisabledJar.forEach {
+                exclude("**/$it/**")
+            }
+        }.sortedBy {
+            it.parent.contains("shared.")
+        }.forEach {
+            copy {
+                from(zipTree(it))
+                into(megaJarExtracted)
+            }
+        }
+        ant.withGroovyBuilder {
+            "zip"("destfile" to generatedPluginMegaJar, "basedir" to megaJarExtracted)
+        }
+    }
 }
 
 tasks.register("setUpCoronaAppAndPlugins") {
@@ -701,6 +725,7 @@ tasks.register("setUpCoronaAppAndPlugins") {
 }
 
 tasks.register("processPluginsNoDownload") {
+    if (coronaBuiltFromSource) group = "Corona"
     doLast {
         downloadAndProcessCoronaPlugins(false)
     }
@@ -1064,12 +1089,7 @@ dependencies {
             include("**/*.jar")
         })
     }
-    implementation(fileTree(coronaPlugins) {
-        include("*/*.jar")
-        pluginDisabledJar.forEach {
-            exclude("**/$it/**")
-        }
-    })
+    implementation(files(generatedPluginMegaJar))
     implementation(fileTree(coronaPlugins) {
         include("**/*.aar")
     })
