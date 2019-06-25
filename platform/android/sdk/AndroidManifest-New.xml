@@ -6,7 +6,8 @@
 
     <application android:hardwareAccelerated="true"
                  android:name="android.support.multidex.MultiDexApplication">
-        <activity android:name="com.ansca.corona.CoronaActivity">
+        <activity android:name="com.ansca.corona.CoronaActivity"
+                  android:icon="@mipmap/ic_launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -11,12 +11,14 @@
 
 	@USER_SUPPORTS_SCREENS@
 
+    <!-- Add android:name="CoronaApplication" to reactivate Application Delegate in Native Builds-->
 	<application android:icon="@mipmap/ic_launcher"
 	             android:banner="@drawable/banner"
 	             android:label="@USER_APP_NAME@"
 	             @USER_LARGE_HEAP@
 	             @USER_IS_GAME@
 	             android:networkSecurityConfig="@xml/network_security_config"
+				 tools:replace="android:icon"
 	             >
 
 		@USER_TARGETED_APP_STORE@

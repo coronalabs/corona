@@ -10,6 +10,8 @@ plugins {
     id("com.android.application")
 }
 
+//<editor-fold desc="Utility Variables Setup" defaultstate="collapsed">
+
 val coronaResourcesDir: String? by project
 val coronaDstDir: String? by project
 val coronaTmpDir: String? by project
@@ -34,7 +36,7 @@ val coronaSrcDir = project.findProperty("coronaSrcDir") as? String
         } else {
             "$rootDir/../Corona"
         }
-
+val coronaBuiltFromSource = file("CMakeLists.txt").exists() && file("../sdk").exists()
 val windows = System.getProperty("os.name").toLowerCase().contains("windows")
 val shortOsName = if (windows) "win" else "mac"
 val nativeDir = if (windows) {
@@ -48,11 +50,15 @@ val windowsPathHelper = "${System.getenv("PATH")}${File.pathSeparator}${System.g
 
 val coronaPlugins = file("$buildDir/corona-plugins")
 
-val buildToolsDir = if (file("$projectDir/buildTools").exists()) {
-    "$projectDir/buildTools"
-} else {
-    "$projectDir/../template"
-}
+val buildToolsDir = "$projectDir/buildTools".takeIf { file(it).exists() }
+        ?: "$projectDir/../template".takeIf { file(it).exists() } ?: {
+            copy {
+                from(zipTree("$nativeDir/Corona/android/resource/android-template.zip"))
+                into("$buildDir/intermediates/corona-build-tools")
+            }
+            "$buildDir/intermediates/corona-build-tools/template/app/buildTools"
+        }()
+
 val generatedPluginsOutput = "$buildDir/generated/corona_plugins"
 val generatedPluginAssetsDir = "$generatedPluginsOutput/assets"
 val generatedPluginNativeLibsDir = "$generatedPluginsOutput/native"
@@ -89,6 +95,8 @@ extra["excludeMap"] = excludePluginMap
 if (configureCoronaPlugins == "YES") {
     downloadAndProcessCoronaPlugins()
 }
+
+//</editor-fold>
 
 @Suppress("OldTargetApi")
 android {
@@ -174,6 +182,8 @@ android {
     }
 }
 
+//<editor-fold desc="Packaging Corona App" defaultstate="collapsed">
+
 fun processPluginGradleScripts() {
     fileTree(coronaPlugins) {
         include("**/corona.gradle", "**/corona.gradle.kts")
@@ -220,7 +230,6 @@ fun processPluginGradleScripts() {
 }
 processPluginGradleScripts()
 
-//region Packaging Corona App
 
 fun coronaAssetsCopySpec(spec: CopySpec) {
     with(spec) {
@@ -229,21 +238,25 @@ fun coronaAssetsCopySpec(spec: CopySpec) {
         }
         if (coronaTmpDir == null) {
             parseBuildSettingsFile()
-            (buildSettings as? Map<*, *>)?.forEach { bs -> if(bs.key == "buildSettings") {
-                (bs.value as? Map<*, *>)?.forEach { ef -> if(ef.key == "excludeFiles") {
-                    (ef.value as? Map<*, *>)?.forEach {
-                        if (it.key == "all" || it.key == "android") {
-                            if (it.value is Iterable<*>) {
-                                it.value.forEach {excludeEntry ->
-                                    if(excludeEntry is String) {
-                                        exclude("**/$excludeEntry")
+            (buildSettings as? Map<*, *>)?.forEach { bs ->
+                if (bs.key == "buildSettings") {
+                    (bs.value as? Map<*, *>)?.forEach { ef ->
+                        if (ef.key == "excludeFiles") {
+                            (ef.value as? Map<*, *>)?.forEach {
+                                if (it.key == "all" || it.key == "android") {
+                                    if (it.value is Iterable<*>) {
+                                        it.value.forEach { excludeEntry ->
+                                            if (excludeEntry is String) {
+                                                exclude("**/$excludeEntry")
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }}
-            }}
+                }
+            }
         }
         exclude("**/Icon\r")
         exclude("AndroidResources/**")
@@ -262,9 +275,7 @@ android.applicationVariants.all {
     val compiledLuaArchive = "$buildDir/intermediates/compiled_lua_archive/$baseName/resource.car"
 
     val compileLuaTask = tasks.create("compileLua${baseName.capitalize()}") {
-        group = "Corona"
         description = "If required, compiles Lua and archives it into resource.car"
-        shouldRunAfter("processPlugins")
         val luac = "$nativeDir/Corona/$shortOsName/bin/luac"
         val coronaBuilder = if (windows) {
             "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
@@ -366,7 +377,6 @@ android.applicationVariants.all {
     }
 
     val taskCopyResources = tasks.create<Copy>("packageCoronaApp${baseName.capitalize()}") {
-        group = "Corona"
         description = "Copies all resources and compiled Lua to the project"
 
         dependsOn(compileLuaTask)
@@ -401,7 +411,7 @@ android.applicationVariants.all {
 
 fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): Int {
     val coronaAndroidPluginsCache = file(if (windows) {
-        if(coronaCustomHome.isNullOrEmpty()) {
+        if (coronaCustomHome.isNullOrEmpty()) {
             "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
         } else {
             "$coronaCustomHome/build cache/android"
@@ -683,22 +693,20 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
     }
 }
 
-tasks.create("processPlugins") {
+tasks.register("setUpCoronaAppAndPlugins") {
     group = "Corona"
     doLast {
         downloadAndProcessCoronaPlugins()
     }
 }
 
-tasks.create("processPluginsNoDownload") {
-    group = "Corona"
+tasks.register("processPluginsNoDownload") {
     doLast {
         downloadAndProcessCoronaPlugins(false)
     }
 }
 
-tasks.create("parseBuildSettings") {
-    group = "Corona"
+tasks.register("parseBuildSettings") {
     doLast {
         parseBuildSettingsFile()
     }
@@ -736,12 +744,15 @@ fun parseBuildSettingsFile() {
     fakeBuildData = output.toString()
     buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(fakeBuildData), "packageName" to android.defaultConfig.applicationId)
 }
-//endregion
+
+//</editor-fold>
 
 
-//region Corona core development helpers
+//<editor-fold desc="Core Development helpers" defaultstate="collapsed">
+
 tasks.register<Zip>("exportCoronaAppTemplate") {
-    group = "Corona-dev"
+    if (coronaBuiltFromSource) group = "Corona-dev"
+    enabled = coronaBuiltFromSource
     destinationDirectory.set(file("$buildDir/outputs"))
     archiveFileName.set("android-template.zip")
     from(rootDir) {
@@ -771,11 +782,47 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
     }
 }
 
+tasks.register<Copy>("exportToNativeTemplate") {
+    if (coronaBuiltFromSource) group = "Corona-dev"
+    enabled = coronaBuiltFromSource
+    val templateDir = "$rootDir/../../subrepos/enterprise/contents/Project Template/App/android"
+
+    into(templateDir)
+    from(rootDir) {
+        include("build.gradle.kts")
+        include("gradlew", "gradlew.bat", "gradle/wrapper/**")
+        include("app/**")
+        exclude("app/build/**", "app/CMakeLists.txt", "app/build.gradle.kts")
+        exclude("**/*.iml", "**/\\.*")
+        exclude("**/AndroidManifest.xml")
+    }
+    from(rootDir) {
+        include("app/build.gradle.kts")
+        filter {
+            it.replace("com.corona.test", "com.mycompany.app")
+        }
+    }
+
+    doFirst {
+        delete(fileTree(templateDir) {
+            exclude("plugin/**")
+            exclude("settings.gradle")
+            exclude("**/AndroidManifest.xml")
+            exclude("**/*.java")
+        })
+    }
+    doLast {
+        println("Copied to ${file(templateDir).absolutePath}")
+    }
+}
+
+
 val coronaNativeOutputDir = project.findProperty("coronaNativeOutputDir") as? String
         ?: "$nativeDir/Corona"
 
 tasks.register<Copy>("installAppTemplateToNative") {
-    group = "Corona-dev"
+    if (coronaBuiltFromSource) group = "Corona-dev"
+    enabled = coronaBuiltFromSource
     dependsOn("exportCoronaAppTemplate")
     from("$buildDir/outputs") {
         include("android-template.zip")
@@ -784,7 +831,8 @@ tasks.register<Copy>("installAppTemplateToNative") {
 }
 
 tasks.register<Copy>("installAppTemplateAndAARToNative") {
-    group = "Corona-dev"
+    if (coronaBuiltFromSource) group = "Corona-dev"
+    enabled = coronaBuiltFromSource
     dependsOn("installAppTemplateToNative")
     dependsOn(":Corona:assembleRelease")
     from("${findProject(":Corona")?.buildDir}/outputs/aar/") {
@@ -794,182 +842,8 @@ tasks.register<Copy>("installAppTemplateAndAARToNative") {
     into("$coronaNativeOutputDir/android/lib/gradle")
 }
 
-//endregion
-
-//region Corona Project icons
-
-val cleanupIconsDir = tasks.create<Delete>("cleanupIconsDirectory") {
-    group = "Corona"
-    delete(generatedMainIconsAndBannersDir)
-}
-
-val copyCoronaIconFiles = tasks.create("copyCoronaIconFiles") {
-    description = "Copies icon files to appropriate resources location"
-    group = "Corona"
-    tasks.findByName("preBuild")?.dependsOn(this)
-}
-
-tasks.create<Copy>("copyAdaptiveIconResources") {
-    group = "Corona"
-    dependsOn(copyCoronaIconFiles, cleanupIconsDir)
-
-    into(generatedMainIconsAndBannersDir)
-    from("$coronaSrcDir/AndroidResources/res")
-}
-
-tasks.create("copyCoronaIcons") {
-    description = "Copies icon files to appropriate resources location"
-    group = "Corona"
-    tasks.findByName("preBuild")?.dependsOn(this)
-    dependsOn("copyAdaptiveIconResources")
-    dependsOn(copyCoronaIconFiles)
-}
-
-tasks.create<Copy>("copyMainApplicationIcon") {
-    group = "Corona"
-    copyCoronaIconFiles.dependsOn(this)
-    dependsOn(cleanupIconsDir)
-
-    into(generatedMainIconsAndBannersDir)
-    rename { "ic_launcher.png" }
-
-    val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
-    suffixes.forEach { dstSuffix ->
-        val fallbacks = listOf(dstSuffix) + suffixes.takeLastWhile { it != dstSuffix }
-        fallbacks.firstOrNull {
-            !fileTree(coronaSrcDir).matching {
-                include("Icon-$it*.png")
-            }.isEmpty
-        }?.let {
-            into("mipmap-$dstSuffix") {
-                from(coronaSrcDir)
-                include("Icon-$it*.png")
-            }
-        }
-    }
-    doFirst {
-        delete("$generatedMainIconsAndBannersDir/**/ic_launcher.png")
-    }
-}
-
-
-tasks.create<Copy>("copyMainApplicationBanner") {
-    group = "Corona"
-    copyCoronaIconFiles.dependsOn(this)
-    dependsOn(cleanupIconsDir)
-
-    from(coronaSrcDir) {
-        include("Banner-xhdpi.png")
-    }
-    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
-    rename { "banner.png" }
-    doFirst {
-        delete("$generatedMainIconsAndBannersDir/**/banner.png")
-    }
-}
-
-tasks.create<Copy>("copyOuyaApplicationIcon") {
-    group = "Corona"
-    copyCoronaIconFiles.dependsOn(this)
-    dependsOn(cleanupIconsDir)
-
-    from(coronaSrcDir) {
-        include("Icon-ouya.png")
-    }
-    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
-    rename { "ouya_icon.png" }
-    doFirst {
-        delete("$generatedMainIconsAndBannersDir/**/ouya_icon.png")
-    }
-}
-
-tasks.create<Copy>("copyXiaomiApplicationIcon") {
-    group = "Corona"
-    copyCoronaIconFiles.dependsOn(this)
-    dependsOn(cleanupIconsDir)
-
-    from(coronaSrcDir) {
-        include("Icon-ouya-xiaomi.png")
-    }
-    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
-    rename { "ouya_xiaomi_icon.png" }
-    doFirst {
-        delete("$generatedMainIconsAndBannersDir/**/ouya_xiaomi_icon.png")
-    }
-}
-
-tasks.create<Copy>("copyDefaultNotificationIcons") {
-    group = "Corona"
-    copyCoronaIconFiles.dependsOn(this)
-    dependsOn(cleanupIconsDir)
-
-    into(generatedMainIconsAndBannersDir)
-    rename { "corona_statusbar_icon_default.png" }
-
-    val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
-    suffixes.forEach { dstSuffix ->
-        val fallbacks = listOf(dstSuffix) + suffixes.takeLastWhile { it != dstSuffix }
-        fallbacks.firstOrNull {
-            !fileTree(coronaSrcDir).matching {
-                include("IconNotificationDefault-$it*.png")
-            }.isEmpty
-        }?.let {
-            into("drawable-$dstSuffix") {
-                from(coronaSrcDir)
-                include("IconNotificationDefault-$it*.png")
-            }
-        }
-    }
-    doFirst {
-        delete("$generatedMainIconsAndBannersDir/**/corona_statusbar_icon_default.png")
-    }
-}
-
-tasks.create<Copy>("copySplashScreen") {
-    group = "Corona"
-    copyCoronaIconFiles.dependsOn(this)
-    dependsOn(cleanupIconsDir)
-
-    val control = file(generatedControlPath).takeIf { it.exists() }?.readText()?.trim()
-    if (control == null) {
-        from(projectDir) {
-            include("_corona_splash_screen.png")
-        }
-    } else if (control != "nil") {
-        from(coronaSrcDir) {
-            include(control)
-        }
-    }
-
-    into("$generatedMainIconsAndBannersDir/drawable")
-    rename {
-        "_corona_splash_screen.png"
-    }
-    doFirst {
-        delete("$generatedMainIconsAndBannersDir/**/_corona_splash_screen.png")
-    }
-}
-
-tasks.register<Zip>("createExpansionFile") {
-    group = "Corona"
-    enabled = isExpansionFileRequired
-    destinationDirectory.set(file("$buildDir/outputs"))
-    archiveFileName.set(coronaExpansionFileName)
-
-    from(coronaSrcDir) {
-        coronaAssetsCopySpec(this)
-        into(".")
-    }
-    from("$generatedPluginAssetsDir/.corona-plugins") {
-        into(".corona-plugins")
-    }
-
-}
-
-//endregion
 
 tasks.create<Copy>("buildCoronaApp") {
-    group = "Corona"
     description = "Used when Simulator invokes a build. It all project variables must be passed"
     dependsOn("assembleRelease")
     dependsOn("bundleRelease")
@@ -1006,19 +880,186 @@ tasks.create<Copy>("buildCoronaApp") {
     }
 }
 
-repositories {
-    flatDir {
-        dir("libs")
+//</editor-fold>
+
+
+//<editor-fold desc="Corona project icons" defaultstate="collapsed">
+
+val cleanupIconsDir = tasks.create<Delete>("cleanupIconsDirectory") {
+    delete(generatedMainIconsAndBannersDir)
+}
+
+val copyCoronaIconFiles = tasks.create("copyCoronaIconFiles") {
+    description = "Copies icon files to appropriate resources location"
+    tasks.findByName("preBuild")?.dependsOn(this)
+}
+
+tasks.create<Copy>("copyAdaptiveIconResources") {
+    dependsOn(copyCoronaIconFiles, cleanupIconsDir)
+
+    into(generatedMainIconsAndBannersDir)
+    from("$coronaSrcDir/AndroidResources/res")
+}
+
+tasks.create("copyCoronaIcons") {
+    description = "Copies icon files to appropriate resources location"
+    tasks.findByName("preBuild")?.dependsOn(this)
+    dependsOn("copyAdaptiveIconResources")
+    dependsOn(copyCoronaIconFiles)
+}
+
+tasks.create<Copy>("copyMainApplicationIcon") {
+    copyCoronaIconFiles.dependsOn(this)
+    dependsOn(cleanupIconsDir)
+
+    into(generatedMainIconsAndBannersDir)
+    rename { "ic_launcher.png" }
+
+    val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
+    suffixes.forEach { dstSuffix ->
+        val fallbacks = listOf(dstSuffix) + suffixes.takeLastWhile { it != dstSuffix }
+        fallbacks.firstOrNull {
+            !fileTree(coronaSrcDir).matching {
+                include("Icon-$it*.png")
+            }.isEmpty
+        }?.let {
+            into("mipmap-$dstSuffix") {
+                from(coronaSrcDir)
+                include("Icon-$it*.png")
+            }
+        }
+    }
+    doFirst {
+        delete("$generatedMainIconsAndBannersDir/**/ic_launcher.png")
     }
 }
 
+
+tasks.create<Copy>("copyMainApplicationBanner") {
+    copyCoronaIconFiles.dependsOn(this)
+    dependsOn(cleanupIconsDir)
+
+    from(coronaSrcDir) {
+        include("Banner-xhdpi.png")
+    }
+    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
+    rename { "banner.png" }
+    doFirst {
+        delete("$generatedMainIconsAndBannersDir/**/banner.png")
+    }
+}
+
+tasks.create<Copy>("copyOuyaApplicationIcon") {
+    copyCoronaIconFiles.dependsOn(this)
+    dependsOn(cleanupIconsDir)
+
+    from(coronaSrcDir) {
+        include("Icon-ouya.png")
+    }
+    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
+    rename { "ouya_icon.png" }
+    doFirst {
+        delete("$generatedMainIconsAndBannersDir/**/ouya_icon.png")
+    }
+}
+
+tasks.create<Copy>("copyXiaomiApplicationIcon") {
+    copyCoronaIconFiles.dependsOn(this)
+    dependsOn(cleanupIconsDir)
+
+    from(coronaSrcDir) {
+        include("Icon-ouya-xiaomi.png")
+    }
+    into("$generatedMainIconsAndBannersDir/drawable-xhdpi")
+    rename { "ouya_xiaomi_icon.png" }
+    doFirst {
+        delete("$generatedMainIconsAndBannersDir/**/ouya_xiaomi_icon.png")
+    }
+}
+
+tasks.create<Copy>("copyDefaultNotificationIcons") {
+    copyCoronaIconFiles.dependsOn(this)
+    dependsOn(cleanupIconsDir)
+
+    into(generatedMainIconsAndBannersDir)
+    rename { "corona_statusbar_icon_default.png" }
+
+    val suffixes = listOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi").reversed()
+    suffixes.forEach { dstSuffix ->
+        val fallbacks = listOf(dstSuffix) + suffixes.takeLastWhile { it != dstSuffix }
+        fallbacks.firstOrNull {
+            !fileTree(coronaSrcDir).matching {
+                include("IconNotificationDefault-$it*.png")
+            }.isEmpty
+        }?.let {
+            into("drawable-$dstSuffix") {
+                from(coronaSrcDir)
+                include("IconNotificationDefault-$it*.png")
+            }
+        }
+    }
+    doFirst {
+        delete("$generatedMainIconsAndBannersDir/**/corona_statusbar_icon_default.png")
+    }
+}
+
+tasks.create<Copy>("copySplashScreen") {
+    copyCoronaIconFiles.dependsOn(this)
+    dependsOn(cleanupIconsDir)
+
+    val control = file(generatedControlPath).takeIf { it.exists() }?.readText()?.trim()
+    if (control == null) {
+        from(projectDir) {
+            include("_corona_splash_screen.png")
+        }
+    } else if (control != "nil") {
+        from(coronaSrcDir) {
+            include(control)
+        }
+    }
+
+    into("$generatedMainIconsAndBannersDir/drawable")
+    rename {
+        "_corona_splash_screen.png"
+    }
+    doFirst {
+        delete("$generatedMainIconsAndBannersDir/**/_corona_splash_screen.png")
+    }
+}
+
+tasks.register<Zip>("createExpansionFile") {
+    enabled = isExpansionFileRequired
+    destinationDirectory.set(file("$buildDir/outputs"))
+    archiveFileName.set(coronaExpansionFileName)
+
+    from(coronaSrcDir) {
+        coronaAssetsCopySpec(this)
+        into(".")
+    }
+    from("$generatedPluginAssetsDir/.corona-plugins") {
+        into(".corona-plugins")
+    }
+
+}
+
+//</editor-fold>
+
 dependencies {
-    val buildFromSource = file("CMakeLists.txt").exists() && file("../sdk").exists()
-    if (buildFromSource) {
+    if (coronaBuiltFromSource) {
         implementation(project(":Corona"))
         implementation(files("$rootDir/../../plugins/build/licensing-google/android/bin/classes.jar"))
     } else {
-        implementation(group = "", name = "Corona", ext = "aar")
+        val coronaLocal = file("libs/Corona.aar")
+        if (coronaLocal.exists()) {
+            implementation(files(coronaLocal))
+        } else {
+            val coronaNativeAAR = file("$nativeDir/Corona/android/lib/gradle/Corona.aar")
+            if (!coronaNativeAAR.exists()) {
+                throw InvalidUserDataException("Corona Native was not set-up properly. Launch `Native/Setup Corona Native.app` on macOS or reinstall on Windows.")
+            }
+            implementation(files(coronaNativeAAR))
+            implementation(files("$nativeDir/Corona/android/lib/Corona/libs/licensing-google.jar"))
+        }
         implementation(fileTree("libs") {
             include("**/*.jar")
         })
@@ -1038,4 +1079,7 @@ dependencies {
     implementation(fileTree("$coronaSrcDir/AndroidResources") {
         include("**/*.jar", "**/*.aar")
     })
+    if (file("../plugin").exists()) {
+        implementation(project(":plugin"))
+    }
 }
