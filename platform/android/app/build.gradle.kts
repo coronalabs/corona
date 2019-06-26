@@ -711,8 +711,10 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
                 into(megaJarExtracted)
             }
         }
-        ant.withGroovyBuilder {
-            "zip"("destfile" to generatedPluginMegaJar, "basedir" to megaJarExtracted)
+        if (file(megaJarExtracted).exists()) {
+            ant.withGroovyBuilder {
+                "zip"("destfile" to generatedPluginMegaJar, "basedir" to megaJarExtracted)
+            }
         }
     }
 }
