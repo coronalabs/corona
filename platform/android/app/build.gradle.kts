@@ -1091,7 +1091,9 @@ dependencies {
             include("**/*.jar")
         })
     }
-    implementation(files(generatedPluginMegaJar))
+    if (file(generatedPluginMegaJar).exists()) {
+        implementation(files(generatedPluginMegaJar))
+    }
     implementation(fileTree(coronaPlugins) {
         include("**/*.aar")
     })
