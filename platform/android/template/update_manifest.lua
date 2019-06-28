@@ -322,7 +322,9 @@ end
 local function fetchStringsFrom(source)
 	-- Fetch the strings to be inserted into the strings.xml file.
 	if "table" == type(source) then
-		strings = source
+		for i, v in pairs(source) do
+			strings[i] = v
+		end
 	end
 end
 
@@ -363,6 +365,7 @@ end
 -- Fetch "build.properties" information.
 ----------------------------------------------------------------------------------------------------
 
+strings["app_name"] = appName
 if buildProperties then
 	-- Fetch the package name.
 	if "string" == type(buildProperties.packageName) then
@@ -376,6 +379,10 @@ if buildProperties then
 	-- Fetch the targeted app store.
 	if ("string" == type(buildProperties.targetedAppStore)) and (string.len(buildProperties.targetedAppStore) > 0) then
 		targetedAppStore = buildProperties.targetedAppStore
+	end
+
+	if "string" == type(buildProperties.appName) then
+		strings["app_name"] = buildProperties.appName
 	end
 end
 

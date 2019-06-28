@@ -14,7 +14,7 @@
     <!-- Add android:name="CoronaApplication" to reactivate Application Delegate in Native Builds-->
 	<application android:icon="@mipmap/ic_launcher"
 	             android:banner="@drawable/banner"
-	             android:label="@USER_APP_NAME@"
+	             android:label="@string/app_name"
 	             @USER_LARGE_HEAP@
 	             @USER_IS_GAME@
 	             android:networkSecurityConfig="@xml/network_security_config"
@@ -32,7 +32,7 @@
 		<!-- The main Corona activity that runs the Corona project. -->
 		<activity android:name="com.ansca.corona.CoronaActivity"
 		          @USER_DEFAULT_ORIENTATION@
-		          android:label="@USER_APP_NAME@"
+		          android:label="@string/app_name"
 				  @USER_CORONA_ACTIVITY_ATTRIBUTES@
 				  android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"
 				  android:launchMode="singleTask"

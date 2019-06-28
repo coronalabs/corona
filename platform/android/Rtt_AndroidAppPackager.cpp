@@ -751,8 +751,9 @@ AndroidAppPackager::CreateBuildProperties( const AppPackagerParams& params, cons
 	lua_pushinteger( L, ((AndroidAppPackagerParams&)params).GetVersionCode() );
 	lua_pushstring( L, params.GetVersion() );
 	lua_pushstring( L, params.GetTargetAppStoreName() );
+	lua_pushstring( L, params.GetAppName() );
 
-	bool result = Rtt_VERIFY( 0 == Lua::DoCall( L, 6, 1 ) );
+	bool result = Rtt_VERIFY( 0 == Lua::DoCall( L, 7, 1 ) );
 	if ( ! lua_isnil( L, -1 ) )
 	{
 		Rtt_TRACE_SIM( ( "ERROR: Could not create build.properties:\n\t%s\n", lua_tostring( L, -1 ) ) );

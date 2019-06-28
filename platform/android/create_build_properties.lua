@@ -97,7 +97,7 @@ end
 
 -- Creates a "build.properties" file with the given settings and the "build.settings" file.
 -- Returns nil if succeeded. Returns an error message string if there was a failure.
-function androidCreateProperties(destinationDirectory, packageName, projectDirectory, versionCode, versionName, targetedAppStore)
+function androidCreateProperties(destinationDirectory, packageName, projectDirectory, versionCode, versionName, targetedAppStore, appName)
 	local json = require("json")
 	local lfs = require('lfs')
 	local errorMessage = nil
@@ -145,6 +145,7 @@ function androidCreateProperties(destinationDirectory, packageName, projectDirec
 	buildProperties.versionCode = versionCode
 	buildProperties.versionName = versionName
 	buildProperties.targetedAppStore = targetedAppStore
+	buildProperties.appName = appName
 	if type(settings) == "table" then
 		buildProperties.buildSettings = settings
 
@@ -250,7 +251,7 @@ if arg then
 	end
 
 	-- Create the "build.properties" file.
-	local errorMessage = androidCreateProperties(arg[1], arg[2], arg[3], arg[4], arg[5], arg[6])
+	local errorMessage = androidCreateProperties(arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7])
 	if errorMessage then
 		local logMessage = 'ERROR: Failed to create the "build.properties" file. '
 		if ("string" == type(errorMessage)) and (string.len(errorMessage) > 0) then

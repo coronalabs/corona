@@ -869,36 +869,50 @@ tasks.register<Copy>("installAppTemplateAndAARToNative") {
     into("$coronaNativeOutputDir/android/lib/gradle")
 }
 
+fun copyWithAppFilename(dest: String, appName: String?) {
+    delete("$dest/$coronaAppFileName.apk")
+    delete("$dest/$coronaAppFileName.aab")
+    copy {
+        into(dest)
+        val copyTask = this
+        android.applicationVariants.matching {
+            it.name.compareTo("release", true) == 0
+        }.all {
+            copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
+                include("*.apk")
+                exclude("*unsigned*")
+            }
+            copyTask.from("$buildDir/outputs/bundle/$name") {
+                include("*.aab")
+            }
+        }
+        rename {
+            "$appName.${file(it).extension}"
+        }
+    }
+}
 
-tasks.create<Copy>("buildCoronaApp") {
+tasks.create("buildCoronaApp") {
     description = "Used when Simulator invokes a build. It all project variables must be passed"
     dependsOn("assembleRelease")
     dependsOn("bundleRelease")
     dependsOn("createExpansionFile")
 
-    val copyTask = this
-    android.applicationVariants.matching {
-        it.name.compareTo("release", true) == 0
-    }.all {
-        copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
-            include("*.apk")
-            exclude("*unsigned*")
-        }
-        copyTask.from("$buildDir/outputs/bundle/$name") {
-            include("*.aab")
-        }
-    }
-    rename {
-        "$coronaAppFileName.${file(it).extension}"
-    }
     coronaDstDir?.let {
-        into(it)
-        doFirst {
-            delete("$it/$coronaAppFileName.apk")
-            delete("$it/$coronaAppFileName.aab")
-            delete("$it/$coronaExpansionFileName")
-        }
         doLast {
+            try {
+                copyWithAppFilename(it, coronaAppFileName)
+            } catch (ignore: Exception) {
+                try {
+                    val defaultName = "App"
+                    copyWithAppFilename(it, defaultName)
+                    logger.error("WARNING: Used default filename '$defaultName' because original contains non-ASCII symbols.")
+                } catch (ex: Exception) {
+                    logger.error("ERROR: Unable to finalize build. Make sure path to destination doesn't contain non-ASCII symbols")
+                    throw ex
+                }
+            }
+            delete("$it/$coronaExpansionFileName")
             copy {
                 from("$buildDir/outputs/$coronaExpansionFileName")
                 into(it)
