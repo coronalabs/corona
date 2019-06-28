@@ -4,12 +4,12 @@ plugins {
 
 @Suppress("OldTargetApi")
 android {
-    compileSdkVersion(27)
+    compileSdkVersion(28)
     buildToolsVersion("28.0.3")
 
     defaultConfig {
         minSdkVersion(15)
-        targetSdkVersion(27)
+        targetSdkVersion(28)
         versionCode = 1
         versionName = "1.0"
         ndk {

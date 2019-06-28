@@ -101,11 +101,11 @@ if (configureCoronaPlugins == "YES") {
 
 @Suppress("OldTargetApi")
 android {
-    compileSdkVersion(27)
+    compileSdkVersion(28)
     defaultConfig {
         applicationId = coronaAppPackage ?: "com.corona.test"
         minSdkVersion(15)
-        targetSdkVersion(27)
+        targetSdkVersion(28)
         versionCode = coronaVersionCode?.toInt() ?: 1
         versionName = coronaVersionName ?: "1.0"
         multiDexEnabled = true
@@ -783,7 +783,7 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
     destinationDirectory.set(file("$buildDir/outputs"))
     archiveFileName.set("android-template.zip")
     from(rootDir) {
-        include("build.gradle.kts", "settings.gradle.kts")
+        include("build.gradle.kts", "settings.gradle.kts", "gradle.properties")
         include("gradlew", "gradlew.bat", "gradle/wrapper/**")
         include("app/**")
         exclude("app/build/**", "app/CMakeLists.txt")
