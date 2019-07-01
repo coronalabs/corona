@@ -104,7 +104,6 @@ android {
     compileSdkVersion(28)
     defaultConfig {
         applicationId = coronaAppPackage ?: "com.corona.test"
-        minSdkVersion(15)
         targetSdkVersion(28)
         versionCode = coronaVersionCode?.toInt() ?: 1
         versionName = coronaVersionName ?: "1.0"
