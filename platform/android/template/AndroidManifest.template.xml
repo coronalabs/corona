@@ -3,8 +3,6 @@
           package="@USER_ACTIVITY_PACKAGE@"
           android:installLocation="@USER_INSTALL_LOCATION@">
 
-	<uses-sdk android:minSdkVersion="@USER_MIN_SDK_VERSION@" />
-
     @USER_PERMISSIONS@
 
     @USER_USES_PERMISSIONS@

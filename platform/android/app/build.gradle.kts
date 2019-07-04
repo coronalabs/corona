@@ -1,10 +1,11 @@
 import com.android.ide.common.util.toPathString
+import com.beust.klaxon.JsonArray
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.Klaxon
+import com.beust.klaxon.Parser
 import de.undercouch.gradle.tasks.download.DownloadAction
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.tools.ant.filters.StringInputStream
-
 
 plugins {
     id("com.android.application")
@@ -16,7 +17,7 @@ val coronaResourcesDir: String? by project
 val coronaDstDir: String? by project
 val coronaTmpDir: String? by project
 val coronaAppFileName: String? by project
-val coronaAppPackage: String? by project
+val coronaAppPackage = project.findProperty("coronaLiveBuild") as? String ?: "com.corona.test"
 val coronaVersionCode: String? by project
 val coronaVersionName: String? by project
 val coronaKeystore: String? by project
@@ -68,13 +69,25 @@ val generatedPluginMegaJar = "$generatedPluginsOutput/plugins.jar"
 val generatedMainIconsAndBannersDir = "$buildDir/generated/corona_icons"
 
 
-var buildSettings: Any? = null
+var buildSettings: JsonObject? = null
 var fakeBuildData: String? = null
 coronaTmpDir?.let { srcDir ->
     file("$srcDir/build.properties").takeIf { it.exists() }?.let { f ->
-        buildSettings = JsonSlurper().parse(f)
+        buildSettings = Parser.default().parse(f.absolutePath) as? JsonObject
     }
 }
+parseBuildSettingsFile()
+val coronaMinSdkVersion = buildSettings?.obj("buildSettings")?.obj("android")?.let {
+    try {
+        return@let it.string("minSdkVersion")?.toIntOrNull()
+    } catch (ignore: Exception) {
+    }
+    try {
+        return@let it.int("minSdkVersion")
+    } catch (ignore: Exception) {
+    }
+    null
+} ?: 15
 
 val pluginDisabledMetadata = mutableSetOf<String>()
 val pluginDisabledDependencies = mutableSetOf<String>()
@@ -99,12 +112,12 @@ if (configureCoronaPlugins == "YES") {
 
 //</editor-fold>
 
-@Suppress("OldTargetApi")
 android {
     compileSdkVersion(28)
     defaultConfig {
-        applicationId = coronaAppPackage ?: "com.corona.test"
+        applicationId = coronaAppPackage
         targetSdkVersion(28)
+        minSdkVersion(coronaMinSdkVersion)
         versionCode = coronaVersionCode?.toInt() ?: 1
         versionName = coronaVersionName ?: "1.0"
         multiDexEnabled = true
@@ -150,14 +163,12 @@ android {
     mainSourceSet.res.srcDir(generatedMainIconsAndBannersDir)
     mainSourceSet.assets.srcDir(generatedPluginAssetsDir)
     file("$generatedPluginsOutput/resourceDirectories.json").takeIf { it.exists() }?.let {
-        val resourceDirs = JsonSlurper().parse(it)
-        if (resourceDirs is List<*>) {
-            resourceDirs.forEach { res ->
-                mainSourceSet.res.srcDir(res)
-            }
+        val resourceDirs: List<String>? = Klaxon().parseArray(it)
+        resourceDirs?.forEach { res ->
+            mainSourceSet.res.srcDir(res)
         }
     }
-    val extraPackages = mutableListOf(defaultConfig.applicationId!!)
+    val extraPackages = mutableListOf(coronaAppPackage)
     file("$generatedPluginsOutput/resourcePackages.txt").takeIf { it.exists() }?.let {
         extraPackages += it.readText().trim()
     }
@@ -238,23 +249,12 @@ fun coronaAssetsCopySpec(spec: CopySpec) {
         }
         if (coronaTmpDir == null) {
             parseBuildSettingsFile()
-            (buildSettings as? Map<*, *>)?.forEach { bs ->
-                if (bs.key == "buildSettings") {
-                    (bs.value as? Map<*, *>)?.forEach { ef ->
-                        if (ef.key == "excludeFiles") {
-                            (ef.value as? Map<*, *>)?.forEach {
-                                if (it.key == "all" || it.key == "android") {
-                                    if (it.value is Iterable<*>) {
-                                        it.value.forEach { excludeEntry ->
-                                            if (excludeEntry is String) {
-                                                exclude("**/$excludeEntry")
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+            buildSettings?.obj("buildSettings")?.obj("excludeFiles")?.let {
+                it.array<String>("all")?.forEach { excludeEntry ->
+                    exclude("**/$excludeEntry")
+                }
+                it.array<String>("android")?.forEach { excludeEntry ->
+                    exclude("**/$excludeEntry")
                 }
             }
         }
@@ -409,16 +409,28 @@ android.applicationVariants.all {
     android.sourceSets[name].assets.srcDirs(generatedAssetsDir)
 }
 
-fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): Int {
-    val coronaAndroidPluginsCache = file(if (windows) {
-        if (coronaCustomHome.isNullOrEmpty()) {
-            "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
-        } else {
-            "$coronaCustomHome/build cache/android"
-        }
+
+val coronaAndroidPluginsCache = file(if (windows) {
+    if (coronaCustomHome.isNullOrEmpty()) {
+        "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
     } else {
-        "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
-    })
+        "$coronaCustomHome/build cache/android"
+    }
+} else {
+    "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
+})
+val eTagFileName = "${coronaAndroidPluginsCache.parent}/CoronaETags.txt"
+fun readETagMap(): Map<String, String> {
+    return file(eTagFileName).takeIf { it.exists() }?.readLines()?.map { s ->
+        val (k, v) = s.split("\t")
+        k to v
+    }?.toMap() ?: mapOf()
+}
+
+val eTagMap = readETagMap()
+var newETagMap = mutableMapOf<String, String>()
+
+fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): Int {
     coronaAndroidPluginsCache.mkdirs()
     mkdir(generatedPluginsOutput)
     val builderOutputStr = builderOutput.toString()
@@ -439,14 +451,22 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): I
             .filter { it.startsWith("plugin\t") }
             .map { it.trim().removePrefix("plugin\t").split("\t") }
     pluginUrls.forEach { (plugin, url) ->
+        val existingTag = eTagMap[plugin]
         val outputFile = with(DownloadAction(project)) {
             src(url)
             dest("$coronaAndroidPluginsCache/$plugin")
-            onlyIfModified(true)
-            cachedETagsFile("${coronaAndroidPluginsCache.parent}/ETags.txt")
-            useETag(true)
+            val outputFile = outputFiles.first()
+            if(existingTag != null && outputFile.exists()) {
+                header("If-None-Match", existingTag)
+            }
+            responseInterceptor { response, _ ->
+                val eTag = response.getFirstHeader("ETag")
+                if (eTag != null) {
+                    newETagMap[plugin] = eTag.value
+                }
+            }
             execute()
-            outputFiles.first()
+            outputFile
         }
         copy {
             from(tarTree(outputFile))
@@ -532,6 +552,11 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             }
             didDownloadSomething = downloadPluginsBasedOnBuilderOutput(builderOutput) > 0
         } while (didDownloadSomething)
+
+        if (newETagMap.count() > 0) {
+            val combinedETags = readETagMap() + newETagMap
+            file(eTagFileName).writeText(combinedETags.map { it.key + "\t" + it.value }.joinToString("\n"))
+        }
     }
     processPluginGradleScripts()
 
@@ -585,7 +610,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         val resDirectories = resourceDirectories.map { File(it, "res") }
                 .filter { it.exists() && it.isDirectory }
                 .map { it.absolutePath }
-        file("$generatedPluginsOutput/resourceDirectories.json").writeText(JsonOutput.toJson(resDirectories))
+        file("$generatedPluginsOutput/resourceDirectories.json").writeText(JsonArray(resDirectories).toJsonString())
 
         val extraPackages = resourceDirectories.map {
             val packageFile = File(it, "package.txt")
@@ -628,7 +653,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             buildPropsFile
         } else {
             val buildPropsOut = file("$buildDir/intermediates/corona.build.props")
-            buildPropsOut.writeText(JsonOutput.toJson(buildSettings))
+            buildPropsOut.writeText(buildSettings!!.toJsonString())
             buildPropsOut
         }
 
@@ -768,7 +793,8 @@ fun parseBuildSettingsFile() {
         if (windows) environment["PATH"] = windowsPathHelper
     }
     fakeBuildData = output.toString()
-    buildSettings = mapOf("buildSettings" to JsonSlurper().parseText(fakeBuildData), "packageName" to android.defaultConfig.applicationId)
+    val parsedBuildSettingsFile = Parser.default().parse(StringBuilder(fakeBuildData)) as? JsonObject
+    buildSettings = JsonObject(mapOf("buildSettings" to parsedBuildSettingsFile, "packageName" to coronaAppPackage))
 }
 
 //</editor-fold>

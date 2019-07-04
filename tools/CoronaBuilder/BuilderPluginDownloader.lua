@@ -433,6 +433,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			end
 		end
 	end
+	local addedPluginsToDownload = {}
 	local needsSplashScreenControl = splashScreenImage ~= nil or not splashScreenEnabled
 	if #pluginsToDownload > 0 or alwaysQuery or needsSplashScreenControl then
 		local authURL = serverBackend .. '/v1/plugins/show/' .. user
@@ -497,6 +498,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 
 		for _, pd in pairs(pluginsToDownload) do
 			local plugin, developer, supportedPlatforms = unpack( pd )
+			addedPluginsToDownload[plugin .. " " .. developer] = true
 			local supportedPlatform = true
 			if supportedPlatforms then
 				supportedPlatform = supportedPlatforms[platform]
@@ -535,9 +537,12 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		print("No build.settings plugins to download")
 	end
 
+
 	for pluginName, pluginTable in pairs(buildDataPluginEntry) do
 		local publisherId = pluginTable['publisherId']
-		table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
+		if not addedPluginsToDownload[pluginName .. " " .. publisherId] then
+			table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
+		end
 	end	
 
 	local build = buildYear .. '.' .. buildRevision

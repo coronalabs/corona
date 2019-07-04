@@ -6,6 +6,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:3.4.1")
         classpath("de.undercouch:gradle-download-task:3.4.3")
+        classpath("com.beust:klaxon:5.0.1")
     }
 }
 
