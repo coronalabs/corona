@@ -1,17 +1,18 @@
 {
 	"tvos": [
 		{
-			"label": "12.1",
-			"xcodeVersion": "12.1",
-			"failMessage": "install or xcode-select Xcode 10.1 to enable",
-			"coronaVersion": 121000
-		},
-		{
 			"label": "12.2",
 			"xcodeVersion": "12.2",
 			"failMessage": "install or xcode-select Xcode 10.2 to enable",
 			"coronaVersion": 122000,
 			"beta": false
+		},
+		{
+			"label": "13.0",
+			"xcodeVersion": "13.0",
+			"failMessage": "install or xcode-select Xcode 11.0 to enable",
+			"coronaVersion": 130000,
+			"beta": true
 		}
 	 ]
 }

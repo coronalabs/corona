@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -830,22 +830,28 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$TARGET_TEMP_DIR/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\nDST_DIR=$TARGET_TEMP_DIR/$CURRENT_ARCH\nif [ ! -d \"$DST_DIR\" ]; then\t\t\n    mkdir \"$DST_DIR\"\nfi\n\n\"$TOOLCHAIN_DIR\"/lua $SRCROOT/../../bin/rcc.lua -c \"$TOOLCHAIN_DIR\" -O$CONFIGURATION -o $DST_DIR/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH\n\"$TOOLCHAIN_DIR\"/lua -epackage.path=[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]] $SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua -d $DST_DIR -o $INPUT_FILE_BASE -l $DST_DIR/?.lu -n $INPUT_FILE_BASE";
+			runOncePerArchitecture = 0;
+			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\nDST_DIR=$TARGET_TEMP_DIR/$CURRENT_ARCH\nif [ ! -d \"$DST_DIR\" ]; then\t\t\n    mkdir \"$DST_DIR\"\nfi\n\n\"$TOOLCHAIN_DIR\"/lua $SRCROOT/../../bin/rcc.lua -c \"$TOOLCHAIN_DIR\" -O$CONFIGURATION -o $DST_DIR/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH\n\"$TOOLCHAIN_DIR\"/lua -epackage.path=[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]] $SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua -d $DST_DIR -o $INPUT_FILE_BASE -l $DST_DIR/?.lu -n $INPUT_FILE_BASE\n";
 		};
 		C2F911751CDC115B004A5564 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "set -o errexit\nTOOLSDIR=\"$PROJECT_DIR/../../bin/mac\"\nif [ -e \"$TOOLSDIR/lua\" ]; then\n    LUA_DIR=\"$TOOLSDIR\"\nelse\n    echo \"ERROR: cannot find 'lua' in $TOOLSDIR\"\n    exit 1\nfi\n\n\necho \"Compiling Lua to CPP: $INPUT_FILE_PATH -> $TARGET_TEMP_DIR/$INPUT_FILE_BASE.cpp\"\n\"$LUA_DIR/lua\" \"$SRCROOT/../../bin/rcc.lua\" -c \"$LUA_DIR\" -O\"$CONFIGURATION\" -o \"$TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu\" \"$INPUT_FILE_PATH\"\n\"$LUA_DIR/lua\" -epackage.path=\"[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]]\" \"$SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua\" -d \"$TARGET_TEMP_DIR\" -o \"$INPUT_FILE_BASE\" -l \"$TARGET_TEMP_DIR/?.lu\" -n -m luasocket \"$INPUT_FILE_BASE\"";
+			runOncePerArchitecture = 0;
+			script = "set -o errexit\nTOOLSDIR=\"$PROJECT_DIR/../../bin/mac\"\nif [ -e \"$TOOLSDIR/lua\" ]; then\n    LUA_DIR=\"$TOOLSDIR\"\nelse\n    echo \"ERROR: cannot find 'lua' in $TOOLSDIR\"\n    exit 1\nfi\n\n\necho \"Compiling Lua to CPP: $INPUT_FILE_PATH -> $TARGET_TEMP_DIR/$INPUT_FILE_BASE.cpp\"\n\"$LUA_DIR/lua\" \"$SRCROOT/../../bin/rcc.lua\" -c \"$LUA_DIR\" -O\"$CONFIGURATION\" -o \"$TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu\" \"$INPUT_FILE_PATH\"\n\"$LUA_DIR/lua\" -epackage.path=\"[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]]\" \"$SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua\" -d \"$TARGET_TEMP_DIR\" -o \"$INPUT_FILE_BASE\" -l \"$TARGET_TEMP_DIR/?.lu\" -n -m luasocket \"$INPUT_FILE_BASE\"\n";
 		};
 /* End PBXBuildRule section */
 
@@ -4195,7 +4201,10 @@
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../librtt . ";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					.,
+				);
 			};
 			name = "Release-template";
 		};
@@ -4256,7 +4265,10 @@
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../librtt . ";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					.,
+				);
 			};
 			name = "Release-template-trial";
 		};
@@ -4544,7 +4556,10 @@
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../librtt . ";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					.,
+				);
 			};
 			name = Debug;
 		};
@@ -4612,7 +4627,10 @@
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../librtt . ";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					.,
+				);
 			};
 			name = Release;
 		};

@@ -18,7 +18,7 @@ Desktop DF
 IDEWorkspaceChecks.plist
 
 # Build files
-*/build/*
+**/build/**
 *.pbxuser
 *.perspective*
 *.mode1
