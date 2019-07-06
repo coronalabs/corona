@@ -75,22 +75,17 @@
 
 
 	<condition property="corona.native.android" value="${BUNDLE_DIR}/../Native/Corona/android">
-		<os family="windows" />
+		<available file="${BUNDLE_DIR}/../Native/Corona/android" />
 	</condition>
 	<condition property="corona.native.android" value="${BUNDLE_DIR}/../../../Native/Corona/android">
-		<and>
-			<os family="mac" />
-			<available file="${BUNDLE_DIR}/../../../Native/Corona/android" />
-		</and>
+		<available file="${BUNDLE_DIR}/../../../Native/Corona/android" />
+	</condition>
+	<condition property="corona.native.android" value="${BUNDLE_DIR}/../../../../../android">
+		<available file="${BUNDLE_DIR}/../../../../../android" />
 	</condition>
 	<condition property="corona.native.android" value="${user.home}/Library/Application Support/Corona/Native/Corona/android">
-		<and>
-			<os family="mac" />
-			<not>
-				<available file="${BUNDLE_DIR}/../../../Native/Corona/android" />
-			</not>
-		</and>
-	</condition>
+		<available file="${user.home}/Library/Application Support/Corona/Native/Corona/android" />
+	</condition>	
 	<target name="check-gradle-bundle">
 		<available file="${corona.native.android}/resource/android-template.zip" property="gradle.bundle.exists"/>
 	</target>	
