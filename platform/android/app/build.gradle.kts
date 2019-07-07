@@ -17,7 +17,7 @@ val coronaResourcesDir: String? by project
 val coronaDstDir: String? by project
 val coronaTmpDir: String? by project
 val coronaAppFileName: String? by project
-val coronaAppPackage = project.findProperty("coronaLiveBuild") as? String ?: "com.corona.test"
+val coronaAppPackage = project.findProperty("coronaAppPackage") as? String ?: "com.corona.test"
 val coronaVersionCode: String? by project
 val coronaVersionName: String? by project
 val coronaKeystore: String? by project
