@@ -1082,11 +1082,12 @@ tasks.create<Copy>("copySplashScreen") {
         from(coronaSrcDir) {
             include(control)
         }
+        if(inputs.sourceFiles.isEmpty) throw InvalidUserDataException("Custom Splash Screen file '$control' not found!")
     }
 
     into("$generatedMainIconsAndBannersDir/drawable")
     rename {
-        "_corona_splash_screen.png"
+        "_corona_splash_screen.${file(it).extension}"
     }
     doFirst {
         delete("$generatedMainIconsAndBannersDir/**/_corona_splash_screen.png")

@@ -59,6 +59,9 @@ tasks.create<Copy>("splashScreenChecker") {
     android.libraryVariants.all {
         registerJavaGeneratingTask(task, outputDir)
     }
+    doFirst {
+        delete("$projectDir/src/com/ansca/corona/SplashScreenBeacon.java")
+    }
 }
 
 tasks.create<Copy>("updateWidgetResources") {
