@@ -89,6 +89,18 @@ val coronaMinSdkVersion = buildSettings?.obj("buildSettings")?.obj("android")?.l
     null
 } ?: 15
 
+val coronaAndroidPluginsCache = file(if (windows) {
+    if (coronaCustomHome.isNullOrEmpty()) {
+        "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
+    } else {
+        "$coronaCustomHome/build cache/android"
+    }
+} else {
+    "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
+})
+val eTagFileName = "${coronaAndroidPluginsCache.parent}/CoronaETags.txt"
+
+
 val pluginDisabledMetadata = mutableSetOf<String>()
 val pluginDisabledDependencies = mutableSetOf<String>()
 val pluginDisabledJar = mutableSetOf<String>()
@@ -410,16 +422,6 @@ android.applicationVariants.all {
 }
 
 
-val coronaAndroidPluginsCache = file(if (windows) {
-    if (coronaCustomHome.isNullOrEmpty()) {
-        "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
-    } else {
-        "$coronaCustomHome/build cache/android"
-    }
-} else {
-    "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
-})
-val eTagFileName = "${coronaAndroidPluginsCache.parent}/CoronaETags.txt"
 fun readETagMap(): Map<String, String> {
     return file(eTagFileName).takeIf { it.exists() }?.readLines()?.map { s ->
         val (k, v) = s.split("\t")
@@ -427,10 +429,7 @@ fun readETagMap(): Map<String, String> {
     }?.toMap() ?: mapOf()
 }
 
-val eTagMap = readETagMap()
-var newETagMap = mutableMapOf<String, String>()
-
-fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): Int {
+fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream, eTagMap: Map<String, String>, newETagMap: MutableMap<String, String>): Int {
     coronaAndroidPluginsCache.mkdirs()
     mkdir(generatedPluginsOutput)
     val builderOutputStr = builderOutput.toString()
@@ -456,7 +455,7 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream): I
             src(url)
             dest("$coronaAndroidPluginsCache/$plugin")
             val outputFile = outputFiles.first()
-            if(existingTag != null && outputFile.exists()) {
+            if (existingTag != null && outputFile.exists()) {
                 header("If-None-Match", existingTag)
             }
             responseInterceptor { response, _ ->
@@ -497,6 +496,8 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         } else {
             "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
         }
+        val eTagMap = readETagMap()
+        val newETagMap = mutableMapOf<String, String>()
 
         run {
             val buildPropsFile = file("$coronaTmpDir/build.properties")
@@ -523,7 +524,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             }
             logger.lifecycle("Downloading plugins")
             delete(generatedControlPath)
-            downloadPluginsBasedOnBuilderOutput(builderOutput)
+            downloadPluginsBasedOnBuilderOutput(builderOutput, eTagMap, newETagMap)
         }
 
         logger.lifecycle("Fetching plugin dependencies")
@@ -550,7 +551,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
                 execResult.rethrowFailure()
                 throw InvalidPluginException("Error while fetching plugin dependencies")
             }
-            didDownloadSomething = downloadPluginsBasedOnBuilderOutput(builderOutput) > 0
+            didDownloadSomething = downloadPluginsBasedOnBuilderOutput(builderOutput, eTagMap, newETagMap) > 0
         } while (didDownloadSomething)
 
         if (newETagMap.count() > 0) {
@@ -1082,7 +1083,7 @@ tasks.create<Copy>("copySplashScreen") {
         from(coronaSrcDir) {
             include(control)
         }
-        if(inputs.sourceFiles.isEmpty) throw InvalidUserDataException("Custom Splash Screen file '$control' not found!")
+        if (inputs.sourceFiles.isEmpty) throw InvalidUserDataException("Custom Splash Screen file '$control' not found!")
     }
 
     into("$generatedMainIconsAndBannersDir/drawable")
