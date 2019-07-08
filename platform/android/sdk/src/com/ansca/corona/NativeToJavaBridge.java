@@ -158,7 +158,7 @@ public class NativeToJavaBridge {
 		CoronaRuntime runtime, long luaStateMemoryAddress, String libName, String className )
 	{
 		int result = 0;
-
+		StringBuilder err = new StringBuilder();
 		if (runtime != null) {
 			// Fetch the runtime's Lua state.
 			// TODO: We need to account for corountines.
@@ -182,20 +182,13 @@ public class NativeToJavaBridge {
 				if ( verbose ) { Log.v( "Corona", "Loading via reflection: " + classPath ); }
 			}
 			catch ( Exception ex ) {
-				// Only emit warning if the plugin is NOT the Google Play Services base library
-				// or the Enterprise splash screen enforcement module
-				if ( ! classPath.toLowerCase().contains( "shared.google.play.services.base" ) &&
-					 ! classPath.contains( "_CoronaSetup.LuaLoader" ) &&
-					 ! classPath.contains( "_Corona_Build_Number.LuaLoader" ) )
-				{
-					Log.i( "Corona", "WARNING: Could not load class '" + classPath + "'" );
-					if ( verbose ) {
-						ex.printStackTrace();
-					}
-				}
+				err.append("\n\tno Java class '").append(classPath).append("'");
+			}
+			if(result == 0) {
+				L.pushString(err.toString());
+				result = 1;
 			}
 		}
-
 		return result;
 	}
 

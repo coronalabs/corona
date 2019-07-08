@@ -34,6 +34,7 @@
 #include "Rtt_DependencyLoader.h"
 
 #include <android/log.h>
+#include <dlfcn.h>
 
 // ----------------------------------------------------------------------------
 
@@ -57,6 +58,52 @@ JavaLuaLoader( lua_State *L )
 	int result = bridge->LoadClass( L, libName, kClassName );
 
 	return result;
+}
+
+static int
+AndroidZipSoLoader( lua_State *L )
+{
+	lua_pushliteral(L, "");
+	const char *libName = luaL_checkstring( L, 1 );
+	lua_CFunction res = NULL;
+	lua_getglobal(L, "package");
+	lua_getfield(L, -1, "APKs");
+	if(lua_istable(L, -1))
+	{
+	    lua_getfield(L, -1, "abi");
+	    const char* abi = luaL_checkstring(L, -1);
+		int length = (int)lua_objlen( L, -2 );
+        for ( int i = 0; i < length && res == NULL; i++ )
+        {
+            lua_rawgeti( L, -2, i + 1 );
+            const char *apk = luaL_checkstring(L, -1);
+            const char *dlopenName = lua_pushfstring( L, "%s!/lib/%s/lib%s.so", apk, abi, libName );
+            const char *libNameFlattened = luaL_gsub( L, libName, ".", "_" );
+            const char *funcName = lua_pushfstring( L, "luaopen_%s", libNameFlattened );
+            void * handle = dlopen(dlopenName, RTLD_LAZY);
+            if(handle) {
+                res = (lua_CFunction)dlsym(handle, funcName);
+                // dlclose(handle); // this crashes Android
+            }
+            if(res == NULL) {
+                lua_pushvalue(L, 2);
+                lua_pushfstring(L, "\n\tno zipped .so symbol at '%s'", dlopenName);
+                lua_concat(L, 2);
+                lua_replace(L, 2);
+            }
+            lua_pop( L, 4 );
+		}
+		lua_pop(L, 1); // abi
+	}
+	lua_pop(L, 2);
+
+	if ( res )
+	{
+	    lua_pop(L, 1); // pop error string
+		lua_pushcfunction( L, res );
+	}
+
+	return 1;
 }
 
 static int
@@ -105,6 +152,7 @@ AndroidRuntimeDelegate::DidInitLuaLibraries( const Runtime& sender ) const
 		Lua::InsertPackageLoader( L, & FileLoader, -1, fNativeToJavaBridge );
 	}
 	Lua::InsertPackageLoader( L, & JavaLuaLoader, -1, fNativeToJavaBridge );
+	Lua::InsertPackageLoader( L, & AndroidZipSoLoader, -1 );
 }
 
 bool

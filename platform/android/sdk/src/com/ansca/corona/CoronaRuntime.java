@@ -313,7 +313,28 @@ public class CoronaRuntime {
 		String cpathNew = nativeLibraryPath + "/lib?.so;" + cpathValue;
 		fLuaState.pushString( cpathNew );
 		fLuaState.setField( -2, cpathKey );
-		
+
+		fLuaState.newTable();
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+		    int i = 1;
+			android.content.pm.ApplicationInfo ai = CoronaEnvironment.getApplicationContext().getApplicationInfo();
+			String main = ai.sourceDir;
+			if (main != null) {
+				fLuaState.pushString(main);
+				fLuaState.rawSet(-2, i++);
+			}
+			String[] splits = ai.splitSourceDirs;
+			if (splits != null) {
+				for (String split : splits) {
+					fLuaState.pushString(split);
+					fLuaState.rawSet(-2, i++);
+				}
+			}
+            fLuaState.pushString(android.os.Build.SUPPORTED_ABIS[0]);
+			fLuaState.setField(-2, "abi");
+		}
+		fLuaState.setField(-2, "APKs");
+
 		// Pop the Lua "package" table off of the stack.
 		fLuaState.pop( 1 );
 	}
