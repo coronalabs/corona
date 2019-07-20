@@ -242,6 +242,17 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			}
 			gradleGo.append(" && gradlew.bat");
 #endif
+			if (androidParams->IsWindowsNonAsciiUser()) {
+				std::string gradleDir(tmpDirBase);
+				gradleDir += LUA_DIRSEP ".gradle";
+				gradleDir = EscapeArgument(gradleDir);
+
+				gradleGo.append(" -g ");
+				gradleGo.append(gradleDir);
+
+				gradleGo.append(" -Dgradle.user.home=");
+				gradleGo.append(gradleDir);
+			}
 
 			gradleGo.append(" buildCoronaApp");
 			gradleGo.append(" --no-daemon");
@@ -253,7 +264,12 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			{
 				gradleGo.append(" -PcoronaLiveBuild=YES");
 			}
-			
+
+			if (androidParams->IsWindowsNonAsciiUser()) {
+				gradleGo.append(" -PcoronaCustomHome=");
+				gradleGo.append(EscapeArgument(tmpDirBase));
+			}
+
 			gradleGo.append(" -PcoronaResourcesDir=");
 			gradleGo.append(EscapeArgument(fResourcesDir.GetString()));
 			
@@ -273,17 +289,6 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			
 			gradleGo.append(" -PcoronaAppPackage=");
 			gradleGo.append(EscapeArgument(params->GetAppPackage()));
-
-			if (androidParams->IsWindowsNonAsciiUser()) {
-				std::string gradleDir(tmpDirBase);
-
-				gradleDir += LUA_DIRSEP ".gradle";
-				gradleGo.append(" -Dgradle.user.home=");
-				gradleGo.append(EscapeArgument(gradleDir));
-
-				gradleGo.append(" -PcoronaCustomHome=");
-				gradleGo.append(EscapeArgument(tmpDirBase));
-			}
 
 			gradleGo.append(" -PcoronaVersionCode=");
 			gradleGo.append(std::to_string(androidParams->GetVersionCode()));
