@@ -71,28 +71,30 @@ AndroidZipSoLoader( lua_State *L )
 	if(lua_istable(L, -1))
 	{
 	    lua_getfield(L, -1, "abi");
-	    const char* abi = luaL_checkstring(L, -1);
-		int length = (int)lua_objlen( L, -2 );
-        for ( int i = 0; i < length && res == NULL; i++ )
-        {
-            lua_rawgeti( L, -2, i + 1 );
-            const char *apk = luaL_checkstring(L, -1);
-            const char *dlopenName = lua_pushfstring( L, "%s!/lib/%s/lib%s.so", apk, abi, libName );
-            const char *libNameFlattened = luaL_gsub( L, libName, ".", "_" );
-            const char *funcName = lua_pushfstring( L, "luaopen_%s", libNameFlattened );
-            void * handle = dlopen(dlopenName, RTLD_LAZY);
-            if(handle) {
-                res = (lua_CFunction)dlsym(handle, funcName);
-                // dlclose(handle); // this crashes Android
+	    const char* abi = lua_tostring(L, -1);
+	    if(abi != NULL) {
+            int length = (int) lua_objlen(L, -2);
+            for (int i = 0; i < length && res == NULL; i++) {
+                lua_rawgeti(L, -2, i + 1);
+                const char *apk = luaL_checkstring(L, -1);
+                const char *dlopenName = lua_pushfstring(L, "%s!/lib/%s/lib%s.so", apk, abi,
+                                                         libName);
+                const char *libNameFlattened = luaL_gsub(L, libName, ".", "_");
+                const char *funcName = lua_pushfstring(L, "luaopen_%s", libNameFlattened);
+                void *handle = dlopen(dlopenName, RTLD_LAZY);
+                if (handle) {
+                    res = (lua_CFunction) dlsym(handle, funcName);
+                    // dlclose(handle); // this crashes Android
+                }
+                if (res == NULL) {
+                    lua_pushvalue(L, 2);
+                    lua_pushfstring(L, "\n\tno zipped .so symbol at '%s'", dlopenName);
+                    lua_concat(L, 2);
+                    lua_replace(L, 2);
+                }
+                lua_pop(L, 4);
             }
-            if(res == NULL) {
-                lua_pushvalue(L, 2);
-                lua_pushfstring(L, "\n\tno zipped .so symbol at '%s'", dlopenName);
-                lua_concat(L, 2);
-                lua_replace(L, 2);
-            }
-            lua_pop( L, 4 );
-		}
+        }
 		lua_pop(L, 1); // abi
 	}
 	lua_pop(L, 2);

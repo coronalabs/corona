@@ -314,9 +314,10 @@ public class CoronaRuntime {
 		fLuaState.pushString( cpathNew );
 		fLuaState.setField( -2, cpathKey );
 
-		fLuaState.newTable();
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-		    int i = 1;
+			fLuaState.newTable();
+
+			int i = 1;
 			android.content.pm.ApplicationInfo ai = CoronaEnvironment.getApplicationContext().getApplicationInfo();
 			String main = ai.sourceDir;
 			if (main != null) {
@@ -332,8 +333,9 @@ public class CoronaRuntime {
 			}
             fLuaState.pushString(android.os.Build.SUPPORTED_ABIS[0]);
 			fLuaState.setField(-2, "abi");
+
+			fLuaState.setField(-2, "APKs");
 		}
-		fLuaState.setField(-2, "APKs");
 
 		// Pop the Lua "package" table off of the stack.
 		fLuaState.pop( 1 );
