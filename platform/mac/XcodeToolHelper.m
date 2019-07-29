@@ -443,7 +443,7 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 				{
 					if ([key contains:osName])
 					{
-						if ([[dict objectForKey:@"availability"] isEqualToString:@"(available)"])
+						if ([[dict objectForKey:@"availability"] isEqualToString:@"(available)"] || [[dict objectForKey:@"isAvailable"] boolValue])
 						{
 							NSMutableDictionary *osDict = nil;
 
