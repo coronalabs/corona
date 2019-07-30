@@ -335,6 +335,7 @@ android.applicationVariants.all {
                     if (isRelease) {
                         additionalArguments += "-s"
                     }
+                    if (windows) environment["PATH"] = windowsPathHelper
                     commandLine(luac, *additionalArguments.toTypedArray(), "-o", "$compiledDir/$compiled", "--", it)
                 }
                 compiled
@@ -369,6 +370,7 @@ android.applicationVariants.all {
             val configEntries = outputsList.filter { file(it).name == "config.lu" } + metadataConfig
             exec {
                 workingDir = file(compiledDir)
+                if (windows) environment["PATH"] = windowsPathHelper
                 commandLine(luac, "-s", "-o", metadataCompiled, "--", *configEntries.toTypedArray())
             }
             copy {
@@ -635,6 +637,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             }
         }.map { it.absolutePath }
         exec {
+            if (windows) environment["PATH"] = windowsPathHelper
             commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
                     , "-e"
                     , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
@@ -659,8 +662,9 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         }
 
         val manifestGenDir = "$buildDir/intermediates/corona_manifest_gen"
+        file(manifestGenDir).mkdirs()
         exec {
-            file(manifestGenDir).mkdirs()
+            if (windows) environment["PATH"] = windowsPathHelper
             commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
                     , "-e"
                     , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
