@@ -491,25 +491,34 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream, eT
             .map { it.trim().removePrefix("plugin\t").split("\t") }
     pluginUrls.forEach { (plugin, url) ->
         val existingTag = eTagMap[plugin]
-        val outputFile = with(DownloadAction(project)) {
-            src(url)
-            dest("$coronaAndroidPluginsCache/$plugin")
-            val outputFile = outputFiles.first()
-            if (existingTag != null && outputFile.exists()) {
-                header("If-None-Match", existingTag)
-            }
-            responseInterceptor { response, _ ->
-                val eTag = response.getFirstHeader("ETag")
-                if (eTag != null) {
-                    newETagMap[plugin] = eTag.value
+        try {
+            val outputFile = with(DownloadAction(project)) {
+                src(url)
+                dest("$coronaAndroidPluginsCache/$plugin")
+                val outputFile = outputFiles.first()
+                if (existingTag != null && outputFile.exists()) {
+                    header("If-None-Match", existingTag)
                 }
+                responseInterceptor { response, _ ->
+                    val eTag = response.getFirstHeader("ETag")
+                    if (eTag != null) {
+                        newETagMap[plugin] = eTag.value
+                    }
+                }
+                execute()
+                outputFile
             }
-            execute()
-            outputFile
-        }
-        copy {
-            from(tarTree(outputFile))
-            into("$coronaPlugins/${outputFile.nameWithoutExtension}")
+            copy {
+                from(tarTree(outputFile))
+                into("$coronaPlugins/${outputFile.nameWithoutExtension}")
+            }
+        } catch (ex: Exception) {
+            if(ex.message?.equals("Not Found", ignoreCase = true) == true) {
+                logger.error("WARNING: plugin '${plugin.removeSuffix(".tgz")}' was not found for current platform. Consider disabling it with 'supportedPlatforms' field.")
+            } else {
+                logger.error("ERROR: There was a problem downloading plugin '${plugin.removeSuffix(".tgz")}'. Please, try again.")
+                throw ex
+            }
         }
     }
     return pluginUrls.count()
