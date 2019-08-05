@@ -8,5 +8,5 @@ if not exist "%SDK%\licenses" (
 md "%SDK%\licenses"
 )
 copy /Y ..\sdk\licenses\android-sdk-license "%SDK%\licenses\android-sdk-license" >nul
-echo|set /p="sdk.dir=%SDK:\=/%" > local.properties
+echo sdk.dir=%SDK:\=/% > local.properties
 endlocal
