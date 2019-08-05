@@ -1106,7 +1106,7 @@ tasks.register<Zip>("createExpansionFile") {
 
     from(coronaSrcDir) {
         coronaAssetsCopySpec(this)
-        into(".")
+        into("")
     }
     from("$generatedPluginAssetsDir/.corona-plugins") {
         into(".corona-plugins")
