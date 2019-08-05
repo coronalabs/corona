@@ -18,8 +18,6 @@ val coronaDstDir: String? by project
 val coronaTmpDir: String? by project
 val coronaAppFileName: String? by project
 val coronaAppPackage = project.findProperty("coronaAppPackage") as? String ?: "com.corona.test"
-val coronaVersionCode: String? by project
-val coronaVersionName: String? by project
 val coronaKeystore: String? by project
 val coronaKeystorePassword: String? by project
 val coronaKeyAlias: String? by project
@@ -77,17 +75,54 @@ coronaTmpDir?.let { srcDir ->
     }
 }
 parseBuildSettingsFile()
-val coronaMinSdkVersion = buildSettings?.obj("buildSettings")?.obj("android")?.let {
-    try {
-        return@let it.string("minSdkVersion")?.toIntOrNull()
-    } catch (ignore: Exception) {
+val coronaMinSdkVersion = try {
+    buildSettings?.obj("buildSettings")?.obj("android")?.let {
+        try {
+            return@let it.string("minSdkVersion")?.toIntOrNull()
+        } catch (ignore: Throwable) {
+        }
+        try {
+            return@let it.int("minSdkVersion")
+        } catch (ignore: Throwable) {
+        }
+        null
     }
-    try {
-        return@let it.int("minSdkVersion")
-    } catch (ignore: Exception) {
-    }
+} catch (ignore: Throwable) {
     null
 } ?: 15
+
+val coronaVersionName = try {
+    buildSettings?.obj("buildSettings")?.obj("android")?.let {
+        try {
+            return@let it.string("versionName")
+        } catch (ignore: Throwable) {
+        }
+        try {
+            return@let it.int("versionName")?.toString()
+        } catch (ignore: Throwable) {
+        }
+        null
+    }
+} catch (ignore: Throwable) {
+    null
+} ?: project.findProperty("coronaVersionName") as? String ?: "1.0"
+
+val coronaVersionCode: Int = try {
+    buildSettings?.obj("buildSettings")?.obj("android")?.let {
+        try {
+            return@let it.string("versionCode")?.toIntOrNull()
+        } catch (ignore: Throwable) {
+        }
+        try {
+            return@let it.int("versionCode")
+        } catch (ignore: Throwable) {
+        }
+        null
+    }
+} catch (ignore: Throwable) {
+    null
+} ?: (project.findProperty("coronaVersionCode") as? String)?.toIntOrNull() ?: 1
+
 
 val coronaAndroidPluginsCache = file(if (windows) {
     if (coronaCustomHome.isNullOrEmpty()) {
@@ -130,8 +165,8 @@ android {
         applicationId = coronaAppPackage
         targetSdkVersion(28)
         minSdkVersion(coronaMinSdkVersion)
-        versionCode = coronaVersionCode?.toInt() ?: 1
-        versionName = coronaVersionName ?: "1.0"
+        versionCode = coronaVersionCode
+        versionName = coronaVersionName
         multiDexEnabled = true
     }
 
@@ -235,7 +270,7 @@ fun processPluginGradleScripts() {
                 }
             }
             project.extra["includeCoronaPlugin"] = null
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
             logger.error("ERROR: configuring '$pluginName' failed!")
             throw(ex)
         }
@@ -245,7 +280,7 @@ fun processPluginGradleScripts() {
     }.forEach {
         try {
             apply(from = it)
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
             logger.error("ERROR: executing configuration from '${it.relativeTo(file(coronaSrcDir)).path}' failed!")
             throw(ex)
         }
@@ -261,13 +296,16 @@ fun coronaAssetsCopySpec(spec: CopySpec) {
         }
         if (coronaTmpDir == null) {
             parseBuildSettingsFile()
-            buildSettings?.obj("buildSettings")?.obj("excludeFiles")?.let {
-                it.array<String>("all")?.forEach { excludeEntry ->
-                    exclude("**/$excludeEntry")
+            try {
+                buildSettings?.obj("buildSettings")?.obj("excludeFiles")?.let {
+                    it.array<String>("all")?.forEach { excludeEntry ->
+                        exclude("**/$excludeEntry")
+                    }
+                    it.array<String>("android")?.forEach { excludeEntry ->
+                        exclude("**/$excludeEntry")
+                    }
                 }
-                it.array<String>("android")?.forEach { excludeEntry ->
-                    exclude("**/$excludeEntry")
-                }
+            } catch (ignore: Throwable) {
             }
         }
         exclude("**/Icon\r")
@@ -932,12 +970,12 @@ tasks.create("buildCoronaApp") {
         doLast {
             try {
                 copyWithAppFilename(it, coronaAppFileName)
-            } catch (ignore: Exception) {
+            } catch (ignore: Throwable) {
                 try {
                     val defaultName = "App"
                     copyWithAppFilename(it, defaultName)
                     logger.error("WARNING: Used default filename '$defaultName' because original contains non-ASCII symbols.")
-                } catch (ex: Exception) {
+                } catch (ex: Throwable) {
                     logger.error("ERROR: Unable to finalize build. Make sure path to destination doesn't contain non-ASCII symbols")
                     throw ex
                 }
