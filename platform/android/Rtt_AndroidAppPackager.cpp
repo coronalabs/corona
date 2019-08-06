@@ -229,6 +229,9 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			const AndroidAppPackagerParams * androidParams = (const AndroidAppPackagerParams *)params;
 
 			std::string gradleGo = "cd ";
+#if defined(Rtt_WIN_ENV)
+			gradleGo.append("/d ");
+#endif
 			gradleGo.append(EscapeArgument(tmpDir));
 			gradleGo.append(" && cd template &&");
 			
