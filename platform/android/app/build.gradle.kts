@@ -513,7 +513,7 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream, eT
                 into("$coronaPlugins/${outputFile.nameWithoutExtension}")
             }
         } catch (ex: Exception) {
-            if(ex.message?.equals("Not Found", ignoreCase = true) == true) {
+            if (ex.message?.equals("Not Found", ignoreCase = true) == true) {
                 logger.error("WARNING: plugin '${plugin.removeSuffix(".tgz")}' was not found for current platform. Consider disabling it with 'supportedPlatforms' field.")
             } else {
                 logger.error("ERROR: There was a problem downloading plugin '${plugin.removeSuffix(".tgz")}'. Please, try again.")
@@ -559,6 +559,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
                 val buildData = coronaBuildData?.let { file(it).readText() } ?: fakeBuildData
+                ?: throw InvalidModelException("Unable to retrieve build.data: '$coronaBuildData', '${file(coronaBuildData ?: "null")}'")
                 commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data")
                 if (windows) environment["PATH"] = windowsPathHelper
                 standardInput = StringInputStream(buildData)
