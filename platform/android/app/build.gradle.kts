@@ -27,6 +27,7 @@ val coronaBuild: String? by project
 val coronaBuildData: String? by project
 val coronaExpansionFileName: String? by project
 val coronaCustomHome: String? by project
+val coronaTargetStore = project.findProperty("coronaTargetStore") as? String ?: "none"
 val isLiveBuild = project.findProperty("coronaLiveBuild") == "YES"
 val isExpansionFileRequired = !coronaExpansionFileName.isNullOrEmpty() && !isLiveBuild
 val coronaSrcDir = project.findProperty("coronaSrcDir") as? String
@@ -559,7 +560,8 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
                 val buildData = coronaBuildData?.let { file(it).readText() } ?: fakeBuildData
-                ?: throw InvalidModelException("Unable to retrieve build.data: '$coronaBuildData', '${file(coronaBuildData ?: "null")}'")
+                ?: throw InvalidModelException("Unable to retrieve build.data: '$coronaBuildData', '${file(coronaBuildData
+                        ?: "null")}'")
                 commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data")
                 if (windows) environment["PATH"] = windowsPathHelper
                 standardInput = StringInputStream(buildData)
@@ -847,7 +849,7 @@ fun parseBuildSettingsFile() {
     }
     fakeBuildData = output.toString()
     val parsedBuildSettingsFile = Parser.default().parse(StringBuilder(fakeBuildData)) as? JsonObject
-    buildSettings = JsonObject(mapOf("buildSettings" to parsedBuildSettingsFile, "packageName" to coronaAppPackage))
+    buildSettings = JsonObject(mapOf("buildSettings" to parsedBuildSettingsFile, "packageName" to coronaAppPackage, "targetedAppStore" to coronaTargetStore))
 }
 
 //</editor-fold>
