@@ -8,6 +8,7 @@
                  android:name="android.support.multidex.MultiDexApplication"
                  android:icon="@mipmap/ic_launcher"
     >
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
         <activity android:name="com.ansca.corona.CoronaActivity"
                   android:icon="@mipmap/ic_launcher">
             <intent-filter>
