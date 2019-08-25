@@ -57,6 +57,7 @@ class PlatformProductList
 		virtual double GetPrice( int index ) const = 0;
 		virtual Rtt_STRONG const char* GetLocalizedPrice( int index ) const = 0;
 		virtual const char* GetPriceLocaleIdentifier( int index ) const = 0;
+		virtual const char* GetPriceLocaleCurrencyCode( int index ) const = 0;
 
 };
 

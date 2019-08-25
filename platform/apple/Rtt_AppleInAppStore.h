@@ -48,13 +48,14 @@ class AppleProductList : public PlatformProductList
 		virtual ~AppleProductList();
 
 	public:
-		virtual int GetLength() const;
-		virtual const char* GetTitle( int index ) const;
-		virtual const char* GetDescription( int index ) const;
-		virtual const char* GetProductIdentifier( int index ) const;
-		virtual double GetPrice( int index ) const;
-		virtual Rtt_STRONG const char* GetLocalizedPrice( int index ) const;
+		virtual int GetLength() const  override;
+		virtual const char* GetTitle( int index ) const override;
+		virtual const char* GetDescription( int index ) const override;
+		virtual const char* GetProductIdentifier( int index ) const override;
+		virtual double GetPrice( int index ) const override;
+		virtual Rtt_STRONG const char* GetLocalizedPrice( int index ) const override;
 		virtual const char* GetPriceLocaleIdentifier( int index ) const override;
+		virtual const char* GetPriceLocaleCurrencyCode( int index ) const override;
 
 	private:
 		NSArray *fProducts; // array of SKProduct objects
