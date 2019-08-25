@@ -468,7 +468,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 
 		local authErrors = false
 		if needsSplashScreenControl then
-			local splashStatus = authorisedPlugins["plugin.CoronaSplashControl com.coronalabs"]
+			local splashStatus = authorisedPlugins["plugin.CoronaSplashControl com.coronalabs"] or 0
 			local pluginsDest = ""
 			if windows then
 				-- %APPDATA%\Corona Labs\Corona Simulator\NativePlugins\
@@ -485,7 +485,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 				lfs.mkdir(pluginsDest)
 			end
 			pluginsDest = pluginsDest .. 'control'
-			local hasSplashScreenControl = splashStatus == 2 or splashStatus == 1
+			local hasSplashScreenControl = splashStatus > 0
 			if needsSplashScreenControl and not hasSplashScreenControl then
 				print("ERROR: Splash Screen Control plugin could not be validated")
 				print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/com.coronalabs/plugin.CoronaSplashControl")
@@ -512,16 +512,16 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 						print("ERROR: empty custom URL for: " .. plugin .. " (" .. developer .. ")")
 						authErrors = true
 					else
-						local status = authorisedPlugins['plugin.selfHostedPlugins com.coronalabs']
-						if status ~= 2 and status ~= 1 then
+						local status = authorisedPlugins['plugin.selfHostedPlugins com.coronalabs'] or 0
+						if status == 0 then
 							print("ERROR: Self-Hosted plugins was not activated.")
 							print("ERROR: More information at: https://marketplace.coronalabs.com/service/self-hosted-plugins")
 							return 1
 						end	
 					end
 				else
-					local status = authorisedPlugins[plugin .. ' ' .. developer]
-					if status ~= 2 and status ~= 1 then
+					local status = authorisedPlugins[plugin .. ' ' .. developer] or 0
+					if status == 0 then
 						print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
 						print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
 						authErrors = true
