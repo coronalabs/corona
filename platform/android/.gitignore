@@ -82,3 +82,4 @@ lint/tmp/
 # lint/reports/
 android.ipr
 android.iws
+/sdk/.cxx/

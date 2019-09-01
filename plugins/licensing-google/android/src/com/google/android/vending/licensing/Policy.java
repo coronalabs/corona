@@ -25,8 +25,6 @@ import android.util.Log;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URISyntaxException;
-import java.net.MalformedURLException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -181,8 +179,7 @@ public abstract class Policy {
     protected Map<String, String> decodeExtras(String extras) {
         Map<String, String> results = new HashMap<String, String>();
         try {
-            URI rawExtras = new URI("?" + extras);
-            Map<String, String> extraList = splitQuery(new URL(rawExtras.toString()));
+            Map<String, String> extraList = splitQuery(extras);
             for (Map.Entry<String, String> entry : extraList.entrySet())
             {
                 String name = entry.getKey();
@@ -192,19 +189,14 @@ public abstract class Policy {
                 }
                 results.put(name, entry.getValue());
             }
-        } catch (URISyntaxException e) {
-            Log.w("Policy", "Invalid syntax error while decoding extras data from server.");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return results;
     }
     
-    public static Map<String, String> splitQuery(URL url) throws UnsupportedEncodingException {
+    public static Map<String, String> splitQuery(String query) throws UnsupportedEncodingException {
         Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-        String query = url.getQuery();
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
