@@ -377,8 +377,10 @@ handleCheckingForExpansionFiles = function()
 			titleBackground:setFillColor( .4, .5, .6 )
 
 			appIcon = display.newImageRect("android.app.icon://", display.viewableContentHeight/10, display.viewableContentHeight/10)
-			appIcon.x = display.screenOriginX + appIcon.width/2
-			appIcon.y = display.screenOriginY + appIcon.height/2
+			if appIcon then
+				appIcon.x = display.screenOriginX + appIcon.width/2
+				appIcon.y = display.screenOriginY + appIcon.height/2
+			end
 
 			title = display.newText(system.getInfo("appName"), display.contentCenterX, display.screenOriginY, native.systemFontBold, textSize)
 			title.x = titleBackground.x
