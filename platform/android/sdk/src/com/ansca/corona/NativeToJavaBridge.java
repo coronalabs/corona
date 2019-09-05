@@ -986,6 +986,19 @@ public class NativeToJavaBridge {
 					}
 					// canRecycleBitmap = false;
 				}
+				if (result == null) {
+					int w = Math.max(drawable.getIntrinsicWidth(), 1);
+					int h = Math.max(drawable.getIntrinsicHeight(), 1);
+					if (loadImageInfoOnly) {
+						result = new LoadBitmapResult(w, h, 1.0f, 0);
+					} else {
+						final Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+						final Canvas canvas = new Canvas(bmp);
+						drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+						drawable.draw(canvas);
+						result = new LoadBitmapResult(bmp, 1.0f, 0);
+					}
+				}
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
