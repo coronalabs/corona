@@ -120,9 +120,9 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 end
 
 
-local function androidDownloadPlugins( build, pluginsToDownload )
+local function androidDownloadPlugins( platform, build, pluginsToDownload )
 
-	local pluginDirectories = getPluginDirectories('android', build, pluginsToDownload)
+	local pluginDirectories = getPluginDirectories(platform, build, pluginsToDownload)
 	if not pluginDirectories then
 		return
 	end
@@ -346,10 +346,6 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	local platform = args[2]
 
 	if fetchDependencies then
-		if platform ~= "android" then
-			print("ERROR: fetching dependencies for unsupported platform " .. tostring(platform))
-			return 1
-		end
 		table.remove(args, 1)
 		table.remove(args, 1)
 		local root = args[1]
@@ -596,8 +592,8 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		config:close()
 
 
-	elseif platform == 'android' then
-		local androidConfSuccess = androidDownloadPlugins(build, pluginsToDownload)
+	elseif platform == 'android' or platform == 'android-kindle' then
+		local androidConfSuccess = androidDownloadPlugins(platform, build, pluginsToDownload)
 		if not androidConfSuccess then
 			return 1
 		end

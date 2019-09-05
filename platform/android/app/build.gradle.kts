@@ -124,15 +124,20 @@ val coronaVersionCode: Int = try {
     null
 } ?: (project.findProperty("coronaVersionCode") as? String)?.toIntOrNull() ?: 1
 
+val androidDestPluginPlatform = if (coronaTargetStore.equals("amazon", ignoreCase = true)) {
+    "android-kindle"
+} else {
+    "android"
+}
 
 val coronaAndroidPluginsCache = file(if (windows) {
     if (coronaCustomHome.isNullOrEmpty()) {
-        "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/android"
+        "${System.getenv("APPDATA")}/Corona Labs/Corona Simulator/build cache/$androidDestPluginPlatform"
     } else {
-        "$coronaCustomHome/build cache/android"
+        "$coronaCustomHome/build cache/$androidDestPluginPlatform"
     }
 } else {
-    "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/android"
+    "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/$androidDestPluginPlatform"
 })
 val eTagFileName = "${coronaAndroidPluginsCache.parent}/CoronaETags.txt"
 
@@ -491,7 +496,8 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream, eT
             .filter { it.startsWith("plugin\t") }
             .map { it.trim().removePrefix("plugin\t").split("\t") }
     pluginUrls.forEach { (plugin, url) ->
-        val existingTag = eTagMap[plugin]
+        val eTagKey = "$androidDestPluginPlatform/$plugin"
+        val existingTag = eTagMap[eTagKey]
         try {
             val outputFile = with(DownloadAction(project)) {
                 src(url)
@@ -503,7 +509,7 @@ fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream, eT
                 responseInterceptor { response, _ ->
                     val eTag = response.getFirstHeader("ETag")
                     if (eTag != null) {
-                        newETagMap[plugin] = eTag.value
+                        newETagMap[eTagKey] = eTag.value
                     }
                 }
                 execute()
@@ -562,7 +568,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
                 val buildData = coronaBuildData?.let { file(it).readText() } ?: fakeBuildData
                 ?: throw InvalidModelException("Unable to retrieve build.data: '$coronaBuildData', '${file(coronaBuildData
                         ?: "null")}'")
-                commandLine(coronaBuilder, "plugins", "download", "android", inputSettingsFile, "--android-build", "--build-data")
+                commandLine(coronaBuilder, "plugins", "download", androidDestPluginPlatform, inputSettingsFile, "--android-build", "--build-data")
                 if (windows) environment["PATH"] = windowsPathHelper
                 standardInput = StringInputStream(buildData)
                 standardOutput = builderOutput
@@ -592,7 +598,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             val pluginDirectories = (pluginDirectoriesSet - pluginDisabledDependencies).toTypedArray()
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
-                commandLine(coronaBuilder, "plugins", "download", "android", "--fetch-dependencies", coronaPlugins, *pluginDirectories)
+                commandLine(coronaBuilder, "plugins", "download", androidDestPluginPlatform, "--fetch-dependencies", coronaPlugins, *pluginDirectories)
                 if (windows) environment["PATH"] = windowsPathHelper
                 standardOutput = builderOutput
                 isIgnoreExitValue = true
@@ -956,7 +962,7 @@ fun copyWithAppFilename(dest: String, appName: String?) {
         into(dest)
         val copyTask = this
         android.applicationVariants.matching {
-            it.name.compareTo("release", true) == 0
+            it.name.equals("release", true)
         }.all {
             copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
                 include("*.apk")

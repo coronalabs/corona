@@ -308,6 +308,9 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			gradleGo.append(" -PcoronaKeyAlias=");
 			gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyAlias()));
 			
+			gradleGo.append(" -PcoronaTargetStore=");
+			gradleGo.append(EscapeArgument(androidParams->GetTargetAppStoreName()));
+
 			gradleGo.append(" -PcoronaKeyAliasPassword=");
 			if(androidParams->GetAndroidKeyAliasPassword()!=NULL)
 			{
