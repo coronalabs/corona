@@ -26,9 +26,9 @@
 package com.ansca.corona.events;
 
 public class VideoEndedTask implements com.ansca.corona.CoronaRuntimeTask {
-	private int fMediaId;
+	private long fMediaId;
 
-	public VideoEndedTask( int mediaId )
+	public VideoEndedTask( long mediaId )
 	{
 		fMediaId = mediaId;
 	}
