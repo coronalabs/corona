@@ -339,8 +339,41 @@ public class CoronaRuntime {
 
 		// Pop the Lua "package" table off of the stack.
 		fLuaState.pop( 1 );
+
+        insertFakeNativeLoader();
 	}
 	
+	/**
+	 * This iserts fake loader into package.loaders which just calls System.loadLibrary
+	 * This does not expose symbols to the C, but does something so dlopen starts to work
+	 * on old x64 Androids. Weird workaround, but works.
+	 */
+	private void insertFakeNativeLoader() {
+		fLuaState.getGlobal("table");
+		fLuaState.getField(-1, "insert"); // push function to be called
+
+		fLuaState.getGlobal("package");
+		fLuaState.getField(-1, "loaders"); // push 1st arg: "package.loaders" table
+		fLuaState.remove(-2); // pop "package"
+		fLuaState.pushInteger(2); // position of the fake loader
+		fLuaState.pushJavaFunction(new com.naef.jnlua.JavaFunction() {
+			@Override
+			public int invoke(com.naef.jnlua.LuaState luaState) {
+				try {
+                    // Insert "fake" library loader. This helps to load ARM64 libraries
+                    // on adnroid 5.1 first gen x64 devices for some reason, helps them
+                    // load dependencies
+                    System.loadLibrary(luaState.toString(1));
+				} catch (Throwable ignore) {
+				}
+				return 0;
+			}
+		});
+
+		fLuaState.call(3, 0); // call table.insert( package.loaders, [index,] loader )
+		fLuaState.pop(1); // pop "table"
+	}
+
 	/**
 	 * To be called when the C++ side of the Corona runtime has been created and its Lua state has been initialized.
 	 * This object will generate a LuaState wrapper around the C Lua state instance and then notify all listeners
