@@ -81,5 +81,4 @@ tasks.create<Copy>("updateWidgetResources") {
 
 dependencies {
     api(files("../../../plugins/build-core/network/android/network.jar"))
-    //api(files("../../../external/apache-http-legacy/org.apache.http.legacy.jar"))
 }

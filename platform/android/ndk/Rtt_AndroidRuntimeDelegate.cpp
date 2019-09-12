@@ -65,10 +65,21 @@ AndroidZipSoLoader( lua_State *L )
 {
 	lua_pushliteral(L, "");
 	const char *libName = luaL_checkstring( L, 1 );
-	lua_CFunction res = NULL;
-	lua_getglobal(L, "package");
+    const char *libNameFlattened = luaL_gsub(L, libName, ".", "_");
+    const char *funcName = lua_pushfstring(L, "luaopen_%s", libNameFlattened);
+
+    lua_getglobal(L, "package");
+
+	lua_CFunction res = (lua_CFunction) dlsym(RTLD_DEFAULT, funcName);
+    if (res == NULL) {
+        lua_pushvalue(L, 2);
+        lua_pushfstring(L, "\n\tno global loaded symbol '%s'", funcName);
+        lua_concat(L, 2);
+        lua_replace(L, 2);
+    }
+
 	lua_getfield(L, -1, "APKs");
-	if(lua_istable(L, -1))
+	if(lua_istable(L, -1) && res == NULL)
 	{
 	    lua_getfield(L, -1, "abi");
 	    const char* abi = lua_tostring(L, -1);
@@ -77,11 +88,8 @@ AndroidZipSoLoader( lua_State *L )
             for (int i = 0; i < length && res == NULL; i++) {
                 lua_rawgeti(L, -2, i + 1);
                 const char *apk = luaL_checkstring(L, -1);
-                const char *dlopenName = lua_pushfstring(L, "%s!/lib/%s/lib%s.so", apk, abi,
-                                                         libName);
-                const char *libNameFlattened = luaL_gsub(L, libName, ".", "_");
-                const char *funcName = lua_pushfstring(L, "luaopen_%s", libNameFlattened);
-                void *handle = dlopen(dlopenName, RTLD_LAZY);
+                const char *dlopenName = lua_pushfstring(L, "%s!/lib/%s/lib%s.so", apk, abi, libName);
+                void *handle = dlopen(dlopenName, RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
                 if (handle) {
                     res = (lua_CFunction) dlsym(handle, funcName);
                     // dlclose(handle); // this crashes Android
@@ -92,12 +100,12 @@ AndroidZipSoLoader( lua_State *L )
                     lua_concat(L, 2);
                     lua_replace(L, 2);
                 }
-                lua_pop(L, 4);
+                lua_pop(L, 2);
             }
         }
 		lua_pop(L, 1); // abi
 	}
-	lua_pop(L, 2);
+	lua_pop(L, 4);
 
 	if ( res )
 	{

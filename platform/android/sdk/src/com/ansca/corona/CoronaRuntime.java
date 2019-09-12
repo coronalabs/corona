@@ -286,19 +286,7 @@ public class CoronaRuntime {
 		}
 
 		// Fetch the path to where this application's native C/C++ libraries are located.
-		String nativeLibraryPath;
-		if (android.os.Build.VERSION.SDK_INT >= 9) {
-			nativeLibraryPath = ApiLevel9.getNativeLibraryDirectoryFrom(CoronaEnvironment.getApplicationContext());
-		}
-		else {
-			nativeLibraryPath = CoronaEnvironment.getApplicationContext().getApplicationInfo().dataDir + "/lib";
-		}
-
-		// Do not continue if the library directory could not be found.
-		// Note: This should never happen, but we should check anyways.
-		if ((nativeLibraryPath == null) || (nativeLibraryPath.length() <= 0)) {
-			return;
-		}
+		String nativeLibraryPath = ApiLevel9.getNativeLibraryDirectoryFrom(CoronaEnvironment.getApplicationContext());
 
 		// Push the Lua "package" table to the top of the stack.
 		fLuaState.getGlobal( "package" );
@@ -314,16 +302,15 @@ public class CoronaRuntime {
 		fLuaState.pushString( cpathNew );
 		fLuaState.setField( -2, cpathKey );
 
+		fLuaState.newTable();
+		int i = 1;
+		android.content.pm.ApplicationInfo ai = CoronaEnvironment.getApplicationContext().getApplicationInfo();
+		String main = ai.sourceDir;
+		if (main != null) {
+			fLuaState.pushString(main);
+			fLuaState.rawSet(-2, i++);
+		}
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-			fLuaState.newTable();
-
-			int i = 1;
-			android.content.pm.ApplicationInfo ai = CoronaEnvironment.getApplicationContext().getApplicationInfo();
-			String main = ai.sourceDir;
-			if (main != null) {
-				fLuaState.pushString(main);
-				fLuaState.rawSet(-2, i++);
-			}
 			String[] splits = ai.splitSourceDirs;
 			if (splits != null) {
 				for (String split : splits) {
@@ -331,12 +318,11 @@ public class CoronaRuntime {
 					fLuaState.rawSet(-2, i++);
 				}
 			}
-            fLuaState.pushString(android.os.Build.SUPPORTED_ABIS[0]);
-			fLuaState.setField(-2, "abi");
-
-			fLuaState.setField(-2, "APKs");
 		}
+		fLuaState.pushString(android.os.Build.CPU_ABI); // despite promise, SUPPORTED_ABIS[0] is not what we want
+		fLuaState.setField(-2, "abi");
 
+		fLuaState.setField(-2, "APKs");
 		// Pop the Lua "package" table off of the stack.
 		fLuaState.pop( 1 );
 
