@@ -50,8 +50,24 @@ val windowsPathHelper = "${System.getenv("PATH")}${File.pathSeparator}${System.g
 
 val coronaPlugins = file("$buildDir/corona-plugins")
 
+fun checkCoronaNativeInstallation() {
+    if (file("$nativeDir/Corona/android/resource/android-template.zip").exists())
+        return
+    if (windows) {
+        throw InvalidUserDataException("Corona Native was not set-up properly. Re-install Corona to fix this issue.")
+    } else {
+        val setupNativeApp = File("/Applications").listFiles { f ->
+            f.isDirectory && f.name.startsWith("Corona")
+        }?.max()?.let {
+            "${it.absolutePath}/Native/Setup Corona Native.app"
+        } ?: "Native/Setup Corona Native.app"
+        throw InvalidUserDataException("Corona Native was not set-up properly. Launch '$setupNativeApp'.")
+    }
+}
+
 val buildToolsDir = "$projectDir/buildTools".takeIf { file(it).exists() }
         ?: "$projectDir/../template".takeIf { file(it).exists() } ?: {
+            checkCoronaNativeInstallation()
             copy {
                 from(zipTree("$nativeDir/Corona/android/resource/android-template.zip"))
                 into("$buildDir/intermediates/corona-build-tools")
@@ -895,7 +911,7 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
     }
 }
 
-tasks.register<Copy>("exportToNativeTemplate") {
+tasks.register<Copy>("exportToNativeAppTemplate") {
     if (coronaBuiltFromSource) group = "Corona-dev"
     enabled = coronaBuiltFromSource
     val templateDir = "$rootDir/../../subrepos/enterprise/contents/Project Template/App/android"
@@ -1181,11 +1197,8 @@ dependencies {
         if (coronaLocal.exists()) {
             implementation(files(coronaLocal))
         } else {
-            val coronaNativeAAR = file("$nativeDir/Corona/android/lib/gradle/Corona.aar")
-            if (!coronaNativeAAR.exists()) {
-                throw InvalidUserDataException("Corona Native was not set-up properly. Launch `Native/Setup Corona Native.app` on macOS or reinstall on Windows.")
-            }
-            implementation(files(coronaNativeAAR))
+            checkCoronaNativeInstallation()
+            implementation(files("$nativeDir/Corona/android/lib/gradle/Corona.aar"))
             implementation(files("$nativeDir/Corona/android/lib/Corona/libs/licensing-google.jar"))
         }
         implementation(fileTree("libs") {
