@@ -60,6 +60,10 @@ JavaLuaLoader( lua_State *L )
 	return result;
 }
 
+#if !defined(RTLD_NODELETE)
+	#define RTLD_NODELETE 0
+#endif
+
 static int
 AndroidZipSoLoader( lua_State *L )
 {

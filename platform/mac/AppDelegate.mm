@@ -274,7 +274,7 @@ static const int       kClearProjectSandboxMenuTag = 1001;
 
 NSString *kosVersionMinimum = @"10.9";   // we refuse to run on OSes older than this
 NSString *kosVersionPrevious = @"10.12";  // should be updated as Apple releases new OSes
-NSString *kosVersionCurrent = @"10.14";  // should be updated as Apple releases new OSes; we will run on this one and the previous one
+NSString *kosVersionCurrent = @"10.15";  // should be updated as Apple releases new OSes; we will run on this one and the previous one
 
 // These tags are defined on the various DeviceBuild dialogs in Interface Builder
 enum {
