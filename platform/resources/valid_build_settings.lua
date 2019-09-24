@@ -130,6 +130,10 @@ settings =
         iCloud = true,
 		skipPNGCrush = true,
 		xcassets = "",
+		entitlements = 
+		{
+			[""] = true,
+		},
 
 		plist =  -- most of these keys are probably valid for tvos too.
 		{
