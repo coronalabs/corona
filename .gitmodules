@@ -4,18 +4,6 @@
 [submodule "external/CryptoPP"]
 	path = external/CryptoPP
 	url = https://github.com/coronalabs/submodule-CryptoPP.git
-[submodule "external/libimobiledevice/ideviceinstaller"]
-	path = external/libimobiledevice/ideviceinstaller
-	url = https://github.com/coronalabs/submodule-ideviceinstaller.git
-[submodule "external/libimobiledevice/libimobiledevice"]
-	path = external/libimobiledevice/libimobiledevice
-	url = https://github.com/coronalabs/submodule-libimobiledevice.git
-[submodule "external/libimobiledevice/libplist"]
-	path = external/libimobiledevice/libplist
-	url = https://github.com/coronalabs/submodule-libplist.git
-[submodule "external/libimobiledevice/libusbmuxd"]
-	path = external/libimobiledevice/libusbmuxd
-	url = https://github.com/coronalabs/submodule-libusbmuxd.git
 [submodule "external/freetype-2.9"]
 	path = external/freetype-2.9
 	url = https://github.com/coronalabs/submodule-freetype.git
