@@ -662,7 +662,8 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 
         for (NSString *certName in sortedKeys)
         {
-            if ([certName hasPrefix:k3rdPartyMacDeveloperIdentityTag])
+            if ([certName hasPrefix:k3rdPartyMacDeveloperIdentityTag]
+				|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"])
             {
                 NSMenuItem *newItem = [[NSMenuItem alloc] init];
                 [newItem setTitle:certName];
@@ -675,7 +676,8 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
                 }
             }
 
-            if ([certName hasPrefix:k3rdPartyMacDeveloperIdentityTag])
+            if ([certName hasPrefix:k3rdPartyMacDeveloperIdentityTag]
+				|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"])
             {
                 NSMenuItem *newItem = [[NSMenuItem alloc] init];
                 [newItem setTitle:certName];

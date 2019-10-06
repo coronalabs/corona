@@ -561,7 +561,7 @@ function CoronaPListSupport.generateEntitlements( settings, platform, provisionP
 				end
 			end
 			if ppEnt and appId then
-				local t = {}
+				local t = { ["com.apple.application-identifier"] = appId }
 				local kvsContainer = ppEnt["com.apple.developer.ubiquity-kvstore-identifier"]
 				if kvsContainer then
 					if "table" == type(platformSettings.iCloud) and platformSettings.iCloud["kvstore-identifier"] then
