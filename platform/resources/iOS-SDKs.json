@@ -3,15 +3,15 @@
 		{
 			"label": "12.4",
 			"xcodeVersion": "12.4",
-			"failMessage": "install or xcode-select Xcode 10.3 to enable",
+			"failMessage": "install or xcode-select Xcode 10.4 to enable",
 			"coronaVersion": 124000,
 			"beta": false
 		},
 		{
-			"label": "13.0",
-			"xcodeVersion": "13.0",
-			"failMessage": "install or xcode-select Xcode 11.0 to enable",
-			"coronaVersion": 130000,
+			"label": "13.1",
+			"xcodeVersion": "13.1",
+			"failMessage": "install or xcode-select Xcode 11.1 to enable",
+			"coronaVersion": 131000,
 			"beta": false
 		}
 	]
