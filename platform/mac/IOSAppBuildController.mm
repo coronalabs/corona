@@ -1199,10 +1199,18 @@ static NSString *kValueNone = @"None";
 						 description:[NSString stringWithFormat:@"Upload of \"%@\" to the App Store is complete", self.appName]
 							iconData:nil];
 #else
-		NSString *message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store using [Application Loader](launch-bundle:com.apple.itunes.connect.ApplicationLoader).\n\nPress *Choose* on the *Application Loader* window to load\n*%@* into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".ipa"]];
+		NSString *message;
+		if([[NSWorkspace sharedWorkspace] URLForApplicationToOpenURL:[NSURL URLWithString:@"transporter://"]])
+		{
+			message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store using the [Transporter](launch-bundle:com.apple.TransporterApp|macappstore://itunes.apple.com/app/id1450874784) app.\n\nPress *Add App* on the *Transporter* window to load `%@` into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".ipa"]];
+		}
+		else
+		{
+			message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store. Install and run the [Transporter](launch-bundle:com.apple.TransporterApp|macappstore://itunes.apple.com/app/id1450874784) app.\n\nAfter signing into *Transporter* app, press *Add App* on its window to load `%@` into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".ipa"]];
+		}
 
 		// Open Application Loader
-		[[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:@"com.apple.itunes.connect.ApplicationLoader"
+		[[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:@"com.apple.TransporterApp"
 															 options:NSWorkspaceLaunchDefault
 									  additionalEventParamDescriptor:nil
 													launchIdentifier:nil];
