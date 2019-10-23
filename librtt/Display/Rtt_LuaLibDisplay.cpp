@@ -1764,6 +1764,15 @@ DisplayLibrary::getDefault( lua_State *L )
 		Color c = defaults.GetLineColor();
 		result = PushColor( L, c, defaults.IsByteColorRange() );
 	}
+// STEVE CHANGE
+	else if ( Rtt_StringCompare( key, "canvasFormat" ) == 0 )
+	{
+		Texture::Format format = defaults.GetCanvasFormat();
+
+		if ( Texture::kLuminance == format ) lua_pushliteral( L, "mask" );
+		else lua_pushliteral( L, "rgba" );
+	}
+// /STEVE CHANGE
 	else if ( Rtt_StringCompare( key, "background" ) == 0 )
 	{
 		Color c = defaults.GetClearColor();
@@ -1875,6 +1884,20 @@ DisplayLibrary::setDefault( lua_State *L )
 	{
 		defaults.SetLineColor( c );
 	}
+// STEVE CHANGE
+	else if ( Rtt_StringCompare( key, "canvasFormat" ) == 0 )
+	{
+		const char *value = lua_tostring( L, index );
+		Texture::Format format = Texture::kRGBA;
+
+		if ( Rtt_StringCompare( key, "mask" ) == 0 )
+		{
+			format = Texture::kLuminance;
+		}
+
+		defaults.SetCanvasFormat( format );
+	}
+// /STEVE CHANGE
 //	else if ( Rtt_StringCompare( key, "textColor" ) == 0 )
 //	{
 //		defaults.SetTextColor( c );

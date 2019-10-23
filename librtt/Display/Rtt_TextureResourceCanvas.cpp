@@ -73,7 +73,7 @@ TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factor
 	
 	Texture::Filter filter = RenderTypes::Convert( display.GetDefaults().GetMagTextureFilter() );
 	Texture::Wrap wrap = RenderTypes::Convert( display.GetDefaults().GetTextureWrapX() );
-	Texture::Format format = Texture::kRGBA;
+	Texture::Format format = display.GetDefaults().GetCanvasFormat();// Texture::kRGBA; <- STEVE CHANGE
 
 	
 	Texture *texture = Rtt_NEW( pAllocator,

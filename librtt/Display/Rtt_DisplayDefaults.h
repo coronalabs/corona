@@ -76,6 +76,11 @@ class DisplayDefaults
 
 		bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame;}
 		void SetImageSheetSampledInsideFrame( bool newValue ) { fIsImageSheetSampledInsideFrame = newValue; }
+
+	// STEVE CHANGE
+		Texture::Format GetCanvasFormat() const { return fCanvasFormat; }
+		void SetCanvasFormat( Texture::Format format ) { fCanvasFormat = format; }
+	// /STEVE CHANGE
 	public:
 		bool IsV1Compatibility() const { return fV1Compatibility; }
 		void SetV1Compatibility( bool newValue ) { fV1Compatibility = newValue; }
@@ -99,6 +104,9 @@ class DisplayDefaults
 		Color fStrokeColor;
 		Color fTextColor;
 		Color fLineColor;
+	// STEVE CHANGE
+		Texture::Format fCanvasFormat;
+	// /STEVE CHANGE
 		float fAnchorX;
 		float fAnchorY;
 		U8 fMagTextureFilter;
