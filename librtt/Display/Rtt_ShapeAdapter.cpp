@@ -30,9 +30,7 @@
 #include "Core/Rtt_StringHash.h"
 #include "Display/Rtt_ShapePath.h"
 #include "Rtt_LuaContext.h"
-// STEVE CHANGE
 #include "Rtt_Runtime.h"
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -152,7 +150,7 @@ ShapeAdapter::ValueForKey(
 		lua_pushstring( L, fTypeString );
 		result = 1;
 	}
-	// STEVE CHANGE
+
 	// TODO: is hash worth it? these are not likely to be called often
 	else if (0 == strcmp( key, "textureBounds" ))
 	{
@@ -203,19 +201,18 @@ ShapeAdapter::ValueForKey(
 
 		lua_createtable( L, iMax * 2, 0 );
 
-		for (S32 i = 0; i < iMax; ++i)
+		for (S32 i = 0, j = 0; i < iMax; ++i, j += 2)
 		{
 			const Vertex2& v = texVertices[i];
 
 			lua_pushnumber( L, v.x );
-			lua_rawseti( L, -2, i * 2 );
+			lua_rawseti( L, -2, j + 1 );
 			lua_pushnumber( L, v.y );
-			lua_rawseti( L, -2, i * 2 + 1 );
+			lua_rawseti( L, -2, j + 2 );
 		}
 
 		result = 1;
 	}
-	// /STEVE CHANGE
 #endif
 
 	return result;
