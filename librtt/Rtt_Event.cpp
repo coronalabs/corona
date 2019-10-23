@@ -159,6 +159,8 @@ FrameEvent::Push( lua_State *L ) const
 {
 	if ( Rtt_VERIFY( Super::Push( L ) ) )
 	{
+		lua_pushnumber( L, LuaContext::GetRuntime( L )->GetFrame() );
+		lua_setfield( L, -2, "frame" );
 		lua_pushnumber( L, LuaContext::GetRuntime( L )->GetElapsedMS() );
 		lua_setfield( L, -2, "time" );
 	}

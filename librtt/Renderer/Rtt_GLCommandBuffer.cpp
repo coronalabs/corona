@@ -147,7 +147,6 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
 size_t
 CommandBuffer::GetMaxVertexTextureUnits()
 {
@@ -164,7 +163,6 @@ CommandBuffer::GetMaxVertexTextureUnits()
 
 	return sMaxUnits;
 }
-// /STEVE CHANGE
 
 size_t
 CommandBuffer::GetMaxTextureSize()
