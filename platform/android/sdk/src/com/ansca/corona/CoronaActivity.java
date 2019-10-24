@@ -2073,7 +2073,8 @@ public class CoronaActivity extends Activity {
 		android.content.res.Resources resources = context.getResources();
 		com.ansca.corona.storage.FileServices fileServices;
 		fileServices = new com.ansca.corona.storage.FileServices(context);
-		boolean splashExists = fileServices.doesResourceFileExist("drawable/_corona_splash_screen.png");
+		boolean splashExists = fileServices.doesResourceFileExist("drawable/_corona_splash_screen.png")
+				            || fileServices.doesResourceFileExist("drawable/_corona_splash_screen.jpg");
 
 		// Log.v("Corona", "showCoronaSplashScreen: splashExists: " + splashExists);
 		if ( splashExists )

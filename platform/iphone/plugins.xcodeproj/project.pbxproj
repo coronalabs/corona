@@ -36,22 +36,28 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
 			);
-			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"";
+			runOncePerArchitecture = 0;
+			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n";
 		};
 		A484DB8C15EF597E00BDE27A /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
 			);
-			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"";
+			runOncePerArchitecture = 0;
+			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n";
 		};
 /* End PBXBuildRule section */
 
@@ -358,6 +364,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);

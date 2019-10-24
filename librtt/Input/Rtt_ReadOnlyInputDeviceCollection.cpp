@@ -157,7 +157,7 @@ bool ReadOnlyInputDeviceCollection::Contains(PlatformInputDevice *devicePointer)
 {
 	if (NULL == fCollectionPointer)
 	{
-		return NULL;
+		return false;
 	}
 	return fCollectionPointer->Contains(devicePointer);
 }

@@ -2,16 +2,24 @@
 
 path=`dirname $0`
 
-# -----------------------------------------------------------------------------
+function cleanup()
+{
+	( # reverting version files
+		cd "$WORKSPACE"
+		hg revert --no-backup platform/resources/linuxtemplate.tar.gz platform/resources/raspbiantemplate.tar.gz platform/resources/webtemplate.zip
+		hg revert --no-backup platform/mac/Info.plist
+		hg revert --no-backup librtt/Core/Rtt_Version.h 
+	) &>/dev/null
+	exit
+}
+
 
 # Test parameters
-export BUILD_NUMBER=55
 export CHANGESET=tip
-export YEAR=`date -j -f "%a %b %d %T %Z %Y" "\`date\`" "+%Y"`
-export MONTH=`date -j -f "%a %b %d %T %Z %Y" "\`date\`" "+%m" | sed  's/^0//'`
-export DAY=`date -j -f "%a %b %d %T %Z %Y" "\`date\`" "+%d" | sed  's/^0//'`
+export MONTH=`date "+%m"`
+export DAY=`date "+%d"`
 export DOCS_CHANGESET=tip
-export REPO=ssh://hg@192.168.192.25/clones/walter-graphics/
+export REPO=ssh://hg@bitbucket.org/coronalabs/main
 export DOCS_REPO=ssh://hg@bitbucket.com/coronalabs/api-tachyon
 export Release=daily
 #export Release=release
@@ -28,10 +36,23 @@ WORKSPACE=$path/../..
 pushd $WORKSPACE > /dev/null
 dir=`pwd`
 WORKSPACE=$dir
+export BUILD_NUMBER=$(find .. -name 'CoronaEnterprise-*.tgz' -maxdepth 1 | sort  | tail -n1 | cut -d '.' -f 4)
+export YEAR=$(find .. -name 'CoronaEnterprise-*.tgz' -maxdepth 1 | sort  | tail -n1 | cut -d '.' -f 3 | cut -d '-' -f 2)
 popd > /dev/null
 
-export WORKSPACE=$WORKSPACE
+export WORKSPACE
 
-# -----------------------------------------------------------------------------
+if [ -z "$BUILD_NUMBER" -o -z "$YEAR" ]; then
+	echo 'Missing ../CoronaEnterprise-YYYY.BBBBB.tgz'
+	cleanup
+fi
+
+if [ ! -f "$WORKSPACE/docs.zip" ]; then
+	echo 'Missing docs.zip file'
+	cleanup
+fi
+
 
 "$path"/build_jenkins.sh
+
+cleanup

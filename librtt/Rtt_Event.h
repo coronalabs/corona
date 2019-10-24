@@ -729,6 +729,31 @@ class KeyEvent : public VirtualEvent
         bool fIsCommandDown;
 		mutable bool fResult;
 };
+	
+// ----------------------------------------------------------------------------
+
+// Immediately broadcast to "Runtime"
+class CharacterEvent : public VirtualEvent
+{
+public:
+	typedef VirtualEvent Super;
+	virtual const char* Name() const;
+	
+public:
+	CharacterEvent(PlatformInputDevice *device, const char *character);
+	
+public:
+	virtual int Push( lua_State *L ) const;
+	virtual void Dispatch( lua_State *L, Runtime& runtime ) const;
+	
+public:
+	bool GetResult() const { return fResult; }
+	
+protected:
+	PlatformInputDevice *fDevice;
+	const char *fCharacter;
+	mutable bool fResult;
+};
 
 // ----------------------------------------------------------------------------
 
@@ -888,6 +913,8 @@ class TouchEvent : public HitEvent
 	public:
 		bool IsProperty( U16 mask ) const { return (fProperties & mask) != 0; }
 		void SetProperty( U16 mask, bool value );
+		Rtt_FORCE_INLINE Real DeltaX() const { return fDeltaX; };
+		Rtt_FORCE_INLINE Real DeltaY() const { return fDeltaY; };
 
 	private:
 		U16 fPhase;
@@ -897,6 +924,8 @@ class TouchEvent : public HitEvent
 		mutable Real fXStartContent;
 		mutable Real fYStartContent;
 		Real fPressure;
+		Real fDeltaX;
+		Real fDeltaY;
 };
 
 // ----------------------------------------------------------------------------

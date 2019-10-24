@@ -28,8 +28,6 @@
 #include "Resource.h"
 #include "afxcmn.h"
 #include "afxwin.h"
-#include "DirDialog.h"
-
 
 /// Dialog used to create a new Corona project.
 class CNewProjectDlg : public CDialog
@@ -66,6 +64,5 @@ private:
 	CSize fPhoneScreenSize;
 	CSize fTabletScreenSize;
 	CFont fBoldRadioButtonFont;
-	CDirDialog fProjectFolderSelectionDialog;
 	CString fNewProjectPath;
 };

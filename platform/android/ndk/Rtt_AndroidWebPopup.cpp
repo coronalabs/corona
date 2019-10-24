@@ -101,6 +101,7 @@ AndroidWebPopup::Close()
 		Rtt_DELETE( fWebView );
 		fWebView = NULL;
 	}
+	return true;
 }
 
 int

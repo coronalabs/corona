@@ -848,9 +848,21 @@ function OSXPostPackage( params )
 
 		-- bundle is now ready to be signed
 		if options.signingIdentity then
-			local entitlements = ""
+			local entitlements_filename = os.tmpname() .. "_entitlements.xcent"
+			local entitlements = entitlements_filename
+			local result, includeProvisioning = generateOSXEntitlements( entitlements_filename, settings, provisionFile )
+			if result ~= "" then
+				entitlements = ""
+			end
+
+			-- Copy provisioning profile if we need it
+			if includeProvisioning then
+				runScript( "/bin/cp " .. quoteString(provisionFile) .. " " .. quoteString(makepath(appBundleFileUnquoted, "Contents/embedded.provisionprofile")) )
+			end
+
 			setStatus("Signing application with "..tostring(options.signingIdentityName))
 			local result, errMsg = runScript( getCodesignScript( entitlements, appBundleFileUnquoted, options.signingIdentity, options.xcodetoolhelper.codesign ) )
+			runScript( "/bin/rm -f " .. entitlements_filename )
 
 			if result ~= 0 then
 				errMsg = "ERROR: code signing failed: "..tostring(errMsg)

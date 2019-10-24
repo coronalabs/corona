@@ -882,7 +882,7 @@ Lua::DoFile( lua_State *L, const char* file, int narg, bool clear, String *error
 		if ( errorMesg != NULL )
 		{
 			errorMesg->Set("");
-			status = lua_pcall(L, narg, 0, NULL);
+			status = lua_pcall(L, narg, 0, 0);
 		}
 		else
 		{

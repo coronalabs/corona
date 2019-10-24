@@ -15,7 +15,9 @@ local lfs = require('lfs')
 local builder = require('builder')
 
 local serverBackend = 'https://backendapi.coronalabs.com'
-
+local verbosity = 3
+local androidBuild = false
+local alwaysQuery = false
 
 local function quoteString( str )
 	str = str:gsub('\\', '\\\\')
@@ -24,6 +26,7 @@ local function quoteString( str )
 end
 
 local windows = (package.config:match("^.") == '\\')
+local dirSeparator = package.config:sub(1,1)
 
 local function unpackPlugin( archive, dst )
 	if windows then
@@ -39,7 +42,7 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 	local pluginsDest
 	if windows then
 		-- %APPDATA%\Corona Labs\Corona Simulator\NativePlugins\
-		pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs' 
+		pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs'
 		lfs.mkdir(pluginsDest)
 		pluginsDest = pluginsDest .. '\\Corona Simulator'
 		lfs.mkdir(pluginsDest)
@@ -48,7 +51,7 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 		pluginsDest = pluginsDest .. platform .. '\\'
 		lfs.mkdir(pluginsDest)
 	else
-		pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona' 
+		pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona'
 		lfs.mkdir(pluginsDest)
 		pluginsDest = pluginsDest .. '/Native Plugins/'
 		lfs.mkdir(pluginsDest)
@@ -60,48 +63,54 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 
 	for _, pd in pairs(pluginsToDownload) do
 		local plugin, developer, supportedPlatforms = unpack( pd )
-
-		local skip = false
+		local supportedPlatform = true
 		if supportedPlatforms then
+			supportedPlatform = supportedPlatforms[platform]
 			if platform == 'iphone' then
-				skip = not (supportedPlatforms[platform] or supportedPlatforms['ios'])
-			else
-				skip = not supportedPlatforms[platform]
+				supportedPlatform = supportedPlatform or supportedPlatforms['ios']
 			end
 		end
 
-		if not skip then
+		if supportedPlatform then
+			local downloadURL
+			if type(supportedPlatform) == 'table' and type(supportedPlatform.url) == 'string' then
+				downloadURL = supportedPlatform.url
+			else
+				local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. platform
+				local downloadInfoText, msg = builder.fetch(downloadInfoURL)
+				if not downloadInfoText then
+					print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+					return
+				end
 
-			local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. platform
-			local downloadInfoText, msg = builder.fetch(downloadInfoURL)
-			if not downloadInfoText then
-				print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
-				return
+				local downloadInfoJSON = json.decode(downloadInfoText)
+				downloadURL = downloadInfoJSON.url
 			end
-
-			local downloadInfoJSON = json.decode(downloadInfoText)
-			local downloadURL = downloadInfoJSON.url
 			if not downloadURL then
 				print("ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').')
 				return
 			end
 
-			local pluginArchivePath = pluginsDest .. plugin .. '_' .. developer .. ".tgz"
-			local err, msg = builder.download(downloadURL, pluginArchivePath)
-			if msg then
-				print("ERROR: unable to download " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
-				return
-			end
+			if androidBuild then
+				print("plugin\t" .. plugin .. '_' .. developer .. ".tgz\t"  .. downloadURL)
+			else
+				local pluginArchivePath = pluginsDest .. plugin .. '_' .. developer .. ".tgz"
+				local err, msg = builder.download(downloadURL, pluginArchivePath)
+				if msg then
+					print("ERROR: unable to download " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+					return
+				end
 
-			local unpackLocation = pluginsDest .. plugin .. '_' .. developer
-			lfs.mkdir(unpackLocation)
-			local ret = unpackPlugin(pluginArchivePath, unpackLocation)
-			if ret ~= 0 then
-				print("ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
-				return
-			end
+				local unpackLocation = pluginsDest .. plugin .. '_' .. developer
+				lfs.mkdir(unpackLocation)
+				local ret = unpackPlugin(pluginArchivePath, unpackLocation)
+				if ret ~= 0 then
+					print("ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
+					return
+				end
 
-			table.insert(pluginDirectories, unpackLocation)
+				table.insert(pluginDirectories, unpackLocation)
+			end
 
 		end
 	end
@@ -111,14 +120,14 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 end
 
 
-local function androidDownloadPlugins( build, pluginsToDownload )
+local function androidDownloadPlugins( platform, build, pluginsToDownload )
 
-	local pluginDirectories = getPluginDirectories('android', build, pluginsToDownload)
+	local pluginDirectories = getPluginDirectories(platform, build, pluginsToDownload)
 	if not pluginDirectories then
 		return
 	end
 
-	if #pluginDirectories > 0 then
+	if #pluginDirectories > 0 and verbosity>0 then
 		print()
 		print("Plugins were successfully downloaded")
 		print("General guidelines on how to use plugins with Corona Native can be found here: https://docs.coronalabs.com/native/android/index.html")
@@ -205,7 +214,7 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 		usesSwift = usesSwift or plugin.usesSwift
 	end
 
-	
+
 	-- generate xcconfig entries file
 	local configStrings = ""
 
@@ -228,7 +237,7 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 	if usesSwift then
 		configStrings = configStrings .. 'ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES[sdk=' .. sdk .. '*] = YES\n'
 	end
-	
+
 
 	local searchPathsConcat = ""
 	for p, _ in pairs(searchPaths) do
@@ -258,6 +267,47 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 
 end
 
+function fetchDependenciesForDirectories(root, deps, urlSuffix)
+	local fetched = {}
+	local toFetch = {}
+	for i=1, #deps do
+		local dep = deps[i]
+		fetched[dep] = true
+	end
+	for i=1, #deps do
+		local dep = deps[i]
+		local toDownload = {}
+		local metadataFile = root .. dirSeparator .. dep .. dirSeparator .. "metadata.lua"
+		pcall( function()
+			local metadata = dofile(root .. dirSeparator .. dep .. dirSeparator .. "metadata.lua")
+			toDownload = metadata.coronaManifest.dependencies
+		end	)
+		for plugin, developer in pairs(toDownload) do
+			if not fetched[plugin .. '_' .. developer] then
+				toFetch[plugin .. '_' .. developer] = {plugin, developer}
+			end
+		end
+	end
+
+	for _, pd in pairs(toFetch) do
+		local plugin, developer = unpack(pd)
+		local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. urlSuffix
+		local downloadInfoText, msg = builder.fetch(downloadInfoURL)
+		if not downloadInfoText then
+			print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+			return 1
+		end
+
+		local downloadInfoJSON = json.decode(downloadInfoText)
+		local downloadURL = downloadInfoJSON.url
+		if not downloadURL then
+			print("ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').')
+			return 1
+		end
+		print("plugin\t" .. plugin .. '_' .. developer .. ".tgz\t"  .. downloadURL)
+	end
+	return 0
+end
 
 function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	if args[1] ~= 'download' then
@@ -265,18 +315,44 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		return 1
 	end
 
+	local buildDataPluginEntry = {}
+	local buildData = {}
 	local forceLoad = false
+	local fetchDependencies = false
 	for i=#args,1,-1 do
 		if args[i] == '--force-load' then
 			table.remove(args, i)
 			forceLoad = true
+		elseif args[i] == '--android-build' then
+			table.remove(args, i)
+			verbosity = 0
+			androidBuild = true
+		elseif args[i] == '--build-data' then
+			table.remove(args, i)
+			buildData = json.decode(io.read('*all')) or {}
+			buildDataPluginEntry = buildData.plugins or {}
+		elseif args[i] == '--fetch-dependencies' then
+			table.remove(args, i)
+			verbosity = 0
+			fetchDependencies = true
+		elseif args[i] == '--always-query' then
+			table.remove(args, i)
+			alwaysQuery = true
 		elseif args[i] == '--' then
 			break
 		end
 	end
 
 	local platform = args[2]
-	
+
+	if fetchDependencies then
+		table.remove(args, 1)
+		table.remove(args, 1)
+		local root = args[1]
+		table.remove(args, 1)
+		return fetchDependenciesForDirectories(root, args, ('/%s.%s/%s/'):format(buildYear, buildRevision, platform))
+	end
+
 	if type(platform) ~= 'string' then
 		print("ERROR: missing platform parameter to 'plugins download' subcommand.")
 		return 1
@@ -287,7 +363,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		print("NOTICE: please, use modern 'ios' platform instead legacy 'iphone'.")
 	end
 
-	
+
 	local buildSettingsFile = args[3]
 	-- parse build settings and form "pluginsToDownload" containing { ['plugin.name']='com.coronalabs', }
 	if not buildSettingsFile then
@@ -295,14 +371,25 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		return 1;
 	end
 
+	local settings
+	if buildSettingsFile:sub(-#"build.properties") == "build.properties" then
+		local props, err = io.open( buildSettingsFile, "r" )
+		if not props then
+			print("ERROR: unable to open build.properties file, error: " .. tostring(err))
+			return 1
+		end
+		settings = json.decode(props:read("*a") or '{"buildSettings":{}}').buildSettings or {}
 
-	local oldSettings = _G['settings']
-	_G['settings'] = nil
-	pcall( function(  )
-		dofile(buildSettingsFile)
-	end  )
-	local settings = _G['settings']
-	_G['settings'] = oldSettings
+		props:close()
+	else
+		local oldSettings = _G['settings']
+		_G['settings'] = nil
+		pcall( function(  )
+			dofile(buildSettingsFile)
+		end  )
+		settings = _G['settings']
+		_G['settings'] = oldSettings
+	end
 
 	if type(settings) ~= 'table' then
 		print("ERROR: Couldn't read 'build.settings' file at path: '" .. buildSettingsFile .. "'")
@@ -320,8 +407,31 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
 	end
 
-	if #pluginsToDownload > 0 then
-
+	local splashScreenEnabled = true
+	local splashScreenImage = nil
+	if buildData and buildData.splashScreen then
+		local splash = buildData.splashScreen
+		if splash ~= nil then
+			if splash.enable ~= nil then
+				splashScreenEnabled = splash.enable
+			end
+			if type(splash.image) == "string" then
+				splashScreenImage = splash.image
+			end
+		end
+		local splash = buildData.splashScreen[platform]
+		if splash ~= nil then
+			if splash.enable ~= nil then
+				splashScreenEnabled = splash.enable
+			end
+			if type(splash.image) == "string" then
+				splashScreenImage = splash.image
+			end
+		end
+	end
+	local addedPluginsToDownload = {}
+	local needsSplashScreenControl = splashScreenImage ~= nil or not splashScreenEnabled
+	if #pluginsToDownload > 0 or alwaysQuery or needsSplashScreenControl then
 		local authURL = serverBackend .. '/v1/plugins/show/' .. user
 
 		local authorisedPluginsText, msg = builder.fetch(authURL)
@@ -349,17 +459,70 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 
 		local authorisedPlugins = {}
 		for _, ap in pairs(authPluginsJson.data) do -- ap : authorisedPlugin
-			authorisedPlugins[ap['plugin_name'] .. ' ' .. ap['plugin_developer']] = ap['status']
+			authorisedPlugins[ tostring(ap['plugin_name']) .. ' ' .. tostring(ap['plugin_developer'])] = ap['status']
 		end
 
 		local authErrors = false
-		for _, pd in pairs(pluginsToDownload) do
-			local plugin, developer = unpack( pd )
-			local status = authorisedPlugins[plugin .. ' ' .. developer]
-			if status ~= 2 and status ~= 1 then
-				print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
-				print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
+		if needsSplashScreenControl then
+			local splashStatus = authorisedPlugins["plugin.CoronaSplashControl com.coronalabs"] or 0
+			local pluginsDest = ""
+			if windows then
+				-- %APPDATA%\Corona Labs\Corona Simulator\NativePlugins\
+				pluginsDest = os.getenv('APPDATA') .. '\\Corona Labs'
+				lfs.mkdir(pluginsDest)
+				pluginsDest = pluginsDest .. '\\Corona Simulator'
+				lfs.mkdir(pluginsDest)
+				pluginsDest = pluginsDest .. '\\NativePlugins\\'
+				lfs.mkdir(pluginsDest)
+			else
+				pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona'
+				lfs.mkdir(pluginsDest)
+				pluginsDest = pluginsDest .. '/Native Plugins/'
+				lfs.mkdir(pluginsDest)
+			end
+			pluginsDest = pluginsDest .. 'control'
+			local hasSplashScreenControl = splashStatus > 0
+			if needsSplashScreenControl and not hasSplashScreenControl then
+				print("ERROR: Splash Screen Control plugin could not be validated")
+				print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/com.coronalabs/plugin.CoronaSplashControl")
 				authErrors = true
+			end
+			if needsSplashScreenControl and hasSplashScreenControl then
+				print("SPLASH\t" .. tostring(splashScreenImage))
+			end
+		end
+
+		for _, pd in pairs(pluginsToDownload) do
+			local plugin, developer, supportedPlatforms = unpack( pd )
+			addedPluginsToDownload[plugin .. " " .. developer] = true
+			local supportedPlatform = true
+			if supportedPlatforms then
+				supportedPlatform = supportedPlatforms[platform]
+				if platform == 'iphone' then
+					supportedPlatform = supportedPlatform or supportedPlatforms['ios']
+				end
+			end
+			if supportedPlatform then
+				if type(supportedPlatform) == 'table' and type(supportedPlatform.url) == 'string' then
+					if supportedPlatform.url == "" then
+						print("ERROR: empty custom URL for: " .. plugin .. " (" .. developer .. ")")
+						authErrors = true
+					else
+						local status = authorisedPlugins['plugin.selfHostedPlugins com.coronalabs'] or 0
+						if status == 0 then
+							print("ERROR: Self-Hosted plugins was not activated.")
+							print("ERROR: More information at: https://marketplace.coronalabs.com/service/self-hosted-plugins")
+							return 1
+						end	
+					end
+				else
+					local status = authorisedPlugins[plugin .. ' ' .. developer] or 0
+					if status == 0 then
+						print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
+						print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
+						authErrors = true
+					end
+				end
 			end
 		end
 		if authErrors then
@@ -367,8 +530,16 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			return 1
 		end
 	else
-		print("No plugins to download")
+		print("No build.settings plugins to download")
 	end
+
+
+	for pluginName, pluginTable in pairs(buildDataPluginEntry) do
+		local publisherId = pluginTable['publisherId']
+		if not addedPluginsToDownload[pluginName .. " " .. publisherId] then
+			table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
+		end
+	end	
 
 	local build = buildYear .. '.' .. buildRevision
 	if platform == 'ios' then
@@ -376,15 +547,15 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		-- config for native plugins
 
 		local simConfig =  iOSDownloadPlugins('iphoneos', 'iphone', build, pluginsToDownload, forceLoad )
-		if not simConfig then 
+		if not simConfig then
 			return 1
 		end
 		local devConfig = iOSDownloadPlugins('iphonesimulator', 'iphone-sim', build, pluginsToDownload, forceLoad )
 		if not devConfig then
 			return 1
 		end
-		
-		
+
+
 		local xcconfig = args[4]
 		if not xcconfig then
 			print("ERROR: no output config file specified.")
@@ -421,8 +592,8 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		config:close()
 
 
-	elseif platform == 'android' then
-		local androidConfSuccess = androidDownloadPlugins(build, pluginsToDownload)
+	elseif platform == 'android' or platform == 'android-kindle' then
+		local androidConfSuccess = androidDownloadPlugins(platform, build, pluginsToDownload)
 		if not androidConfSuccess then
 			return 1
 		end
@@ -431,7 +602,18 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		return 1
 	end
 
-	print("Done downloading plugins!")
+	if verbosity > 0 then
+		print("Done downloading plugins!")
+	end
+
+	if androidBuild then
+		local downloadInfoText, msg = builder.fetch(serverBackend.. "/v1/buildid/native/" .. user)
+		if not downloadInfoText then
+			print("ERROR: unable to fetch build ID: ", msg )
+			return 1
+		end
+		print("BUILD\t" .. downloadInfoText)
+	end
 
 	return 0
 end

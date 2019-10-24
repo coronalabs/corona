@@ -5,6 +5,10 @@
 -- Can also create a "strings.xml" file if the build settings contain a strings table
 ----------------------------------------------------------------------------------------------------
 
+if not printError then
+	printError = print
+end
+
 local json = require("json")
 
 
@@ -20,14 +24,14 @@ local newApkFilesFilePath = arg[8]
 
 -- Do not continue if missing required arguments.
 if not manifestTemplateFilePath or not buildPropertiesFilePath or not newManifestFilePath then
-	print( "USAGE: " .. arg[0] .. " src_manifest build.properties new_manifest" )
+	printError( "USAGE: " .. arg[0] .. " src_manifest build.properties new_manifest" )
 	os.exit( -1 )
 end
 
 -- Load the "build.properties" file.
 local buildPropertiesFileHandle = io.open( buildPropertiesFilePath, "r" )
 if not buildPropertiesFileHandle then
-	print( "ERROR: The properties file does not exist: ", buildPropertiesFilePath )
+	printError( "ERROR: The properties file does not exist: ", buildPropertiesFilePath )
 	os.exit( -1 )
 end
 local buildProperties = json.decode(buildPropertiesFileHandle:read("*a"))
@@ -59,7 +63,7 @@ local Constants =
 
 local minSdkVersion = tostring( Constants.MIN_SDK_VERSION )
 
-local packageName = ""
+local packageName = "com.corona.app"
 local defaultOrientation = nil
 local supportsOrientationChange = false
 local supportsOrientationPortrait = false
@@ -318,7 +322,9 @@ end
 local function fetchStringsFrom(source)
 	-- Fetch the strings to be inserted into the strings.xml file.
 	if "table" == type(source) then
-		strings = source
+		for i, v in pairs(source) do
+			strings[i] = v
+		end
 	end
 end
 
@@ -359,6 +365,7 @@ end
 -- Fetch "build.properties" information.
 ----------------------------------------------------------------------------------------------------
 
+strings["app_name"] = appName
 if buildProperties then
 	-- Fetch the package name.
 	if "string" == type(buildProperties.packageName) then
@@ -372,6 +379,10 @@ if buildProperties then
 	-- Fetch the targeted app store.
 	if ("string" == type(buildProperties.targetedAppStore)) and (string.len(buildProperties.targetedAppStore) > 0) then
 		targetedAppStore = buildProperties.targetedAppStore
+	end
+
+	if "string" == type(buildProperties.appName) then
+		strings["app_name"] = buildProperties.appName
 	end
 end
 
@@ -670,14 +681,16 @@ manifestKeys.USER_USES_EXPANSION_FILE = stringBuffer
 
 stringBuffer = ""
 if googlePlayGamesAppId then
-	stringBuffer = '<meta-data android:name="com.google.android.gms.games.APP_ID" android:value="\\ ' .. googlePlayGamesAppId .. '" />'
+	stringBuffer = '<meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/corona_app_gsm_id" />'
+	strings["corona_app_gsm_id"] = googlePlayGamesAppId
 end
 manifestKeys.USER_USES_GOOGLE_PLAY_GAMES = stringBuffer
 
 -- Create a meta-data tags for Facebook integration if provided an App Id and Display Name.
 stringBuffer = ""
 if facebookAppId then
-	stringBuffer = '<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="\\ ' .. facebookAppId .. '" />'
+	stringBuffer = '<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/corona_app_facebook_id" />'
+	strings["corona_app_facebook_id"] = facebookAppId
 end
 manifestKeys.USER_USES_FACEBOOK = stringBuffer
 
@@ -953,7 +966,7 @@ end
 -- This file contains @KEY@ strings where we'll insert the given build settings to.
 local manifestTemplateFileHandle = io.open( manifestTemplateFilePath, "r" )
 if not manifestTemplateFileHandle then
-	print( "ERROR: The AndroidManifest.xml template file does not exist: ", manifestTemplateFilePath )
+	printError( "ERROR: The AndroidManifest.xml template file does not exist: ", manifestTemplateFilePath )
 	os.exit( -1 )
 end
 
@@ -977,7 +990,7 @@ manifestTemplateFileHandle:close()
 -- This file contains @KEY@ placeholders where we'll insert the given build settings to.
 local stringsTemplateFileHandle = io.open( stringsTemplateFilePath, "r" )
 if not stringsTemplateFileHandle then
-	print( "ERROR: The strings.xml template file does not exist: ", stringsTemplateFilePath )
+	printError( "ERROR: The strings.xml template file does not exist: ", stringsTemplateFilePath )
 	os.exit( -1 )
 end
 

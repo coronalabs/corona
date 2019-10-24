@@ -40,12 +40,13 @@ bool
 AndroidVideoPlayer::Load( const char * path, bool isRemote )
 {
 	fPath.Set( path );
+	return true;
 }
 
 void
 AndroidVideoPlayer::Play()
 {
-	fNativeToJavaBridge->PlayVideo( (int) this, fPath.GetString(), fMediaControlsEnabled );
+	fNativeToJavaBridge->PlayVideo( (uintptr_t) this, fPath.GetString(), fMediaControlsEnabled );
 }
 
 void

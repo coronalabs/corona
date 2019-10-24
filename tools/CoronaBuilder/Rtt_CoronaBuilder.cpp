@@ -505,15 +505,15 @@ CoronaBuilder::Main( int argc, const char *argv[] )
 			break;
 		case CoronaBuilderParams::kCarCommand:
 			{
-				ConsoleAuthorizationDelegate delegate;
-				if ( VerifyPermission( delegate, kCarPermission ) )
+//				ConsoleAuthorizationDelegate delegate;
+//				if ( VerifyPermission( delegate, kCarPermission ) )
 				{
 					result = Rtt_CarMain( argc - 1, argv + 1 );
 				}
-				else
-				{
-					fprintf( stderr, "error: CoronaBuilder: This computer is not properly authorized. You must have an account with an '%s' subscription. Please use the 'authorize' command or check that your subscription type is valid\n", AuthorizationTicket::DisplayStringForSubscription( AuthorizationTicket::kEnterpriseNativeExtensionsSubscription ) );
-				}
+//				else
+//				{
+//					fprintf( stderr, "error: CoronaBuilder: This computer is not properly authorized. You must have an account with an '%s' subscription. Please use the 'authorize' command or check that your subscription type is valid\n", AuthorizationTicket::DisplayStringForSubscription( AuthorizationTicket::kEnterpriseNativeExtensionsSubscription ) );
+//				}
 			}
 			break;
         case CoronaBuilderParams::kVersionCommand:

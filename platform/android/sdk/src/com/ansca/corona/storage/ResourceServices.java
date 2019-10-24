@@ -130,13 +130,26 @@ public class ResourceServices extends com.ansca.corona.ApplicationContextProvide
 		if ((resourceName == null) || (resourceName.length() <= 0)) {
 			return INVALID_RESOURCE_ID;
 		}
-		
+
 		// Fetch the specified resource's unique integer ID by its name.
 		android.content.res.Resources resources = getResources();
 		if (resources == null) {
 			return INVALID_RESOURCE_ID;
 		}
-		return resources.getIdentifier(resourceName, typeName, getPackageName());
+
+		String packageOld = getPackageName();
+		int r = resources.getIdentifier(resourceName, typeName, packageOld);
+		if(r!=0) return r;
+
+		android.content.Context ctx = getApplicationContext();
+		String packageName = ctx.getPackageName();
+		r = resources.getIdentifier(resourceName, typeName, packageName);
+		if(r!=0) return r;
+
+		r = resources.getIdentifier(resourceName, typeName, "com.ansca.corona");
+		if(r!=0) return r;
+
+		return 0;
 	}
 	
 	/**

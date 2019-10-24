@@ -33,7 +33,7 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\external\winutil\DirDialog.h">
+    <ClInclude Include="..\..\..\external\winutil\BrowseDirDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CoronaLiveServerWin.h">
@@ -59,7 +59,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp">
+    <ClCompile Include="..\..\..\external\winutil\BrowseDirDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CoronaLiveServerWin.cpp">

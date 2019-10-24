@@ -49,8 +49,7 @@ int main( int argc, const char *argv[] )
 	if (resourceDir.GetLength() == 0)
 	{
 		fprintf(stderr, "CoronaBuilder: cannot find a setting for CORONA_PATH.  Install Corona first\n");
-
-		exit(1);
+		return 1;
 	}
 
 	resourceDir.TrimRight(_T("\\"));
@@ -59,7 +58,8 @@ int main( int argc, const char *argv[] )
 	// NEEDSWORK - technically this only needs to be done for an actual build
 	if (!InitJavaPaths(resourceDir))
 	{
-		return 1;
+		fprintf(stderr, "ERROR: while initializing Java. Some functionality will be unavailable\n");
+		//return 1;
 	}
 
 	//Interop::RuntimeEnvironment::CreationSettings settings;

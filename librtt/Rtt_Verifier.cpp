@@ -103,6 +103,9 @@ Verifier::IsValidApplication( const char* filename )
 	const volatile U32* kN = VerifierData::ModulusBase( kData ); // kData + kModulusIndex;
 	const volatile U32* kC = VerifierData::SignatureBase( kData ); // kData + kSignatureIndex;
 	const volatile U32* kE = VerifierData::ExponentBase( kData ); // kData + kExponentIndex;
+	printf("%zx%zx%zx%zx", (size_t)kN, (size_t)kC, (size_t)kE, (size_t)kData);
+
+	return true;
 
 #if defined ( Rtt_TVOS_ENV )
 	// TODO: figure out how to fix validation with bitcode.

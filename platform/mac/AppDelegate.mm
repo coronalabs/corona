@@ -274,7 +274,7 @@ static const int       kClearProjectSandboxMenuTag = 1001;
 
 NSString *kosVersionMinimum = @"10.9";   // we refuse to run on OSes older than this
 NSString *kosVersionPrevious = @"10.12";  // should be updated as Apple releases new OSes
-NSString *kosVersionCurrent = @"10.14";  // should be updated as Apple releases new OSes; we will run on this one and the previous one
+NSString *kosVersionCurrent = @"10.15";  // should be updated as Apple releases new OSes; we will run on this one and the previous one
 
 // These tags are defined on the various DeviceBuild dialogs in Interface Builder
 enum {
@@ -4350,40 +4350,28 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 		return 0;
 	}
 
-    NSString *dockIconBounceTimeString = [[NSUserDefaults standardUserDefaults] stringForKey:kDockIconBounceTime];
-    NSInteger dockIconBounceTime = 0;
+    float dockIconBounceTime = 5.0;
 
-    if (dockIconBounceTimeString == nil)
+	id dockIconBounceTimeSetting = [[NSUserDefaults standardUserDefaults] stringForKey:kDockIconBounceTime];
+    if ([dockIconBounceTimeSetting respondsToSelector:@selector(integerValue)])
     {
-        // Preference not set, use default
-        dockIconBounceTime = 5;
-    }
-    else
-    {
-        dockIconBounceTime = [dockIconBounceTimeString integerValue];
+        dockIconBounceTime = [dockIconBounceTimeSetting integerValue];
     }
 
 	if (dockIconBounceTime == 0)
 	{
 		return 0;
 	}
-	else if (dockIconBounceTime > 0)
+	
+	NSInteger attentionId = [super requestUserAttention:requestType];
+	
+	if (dockIconBounceTime > 0)
 	{
-        // Bounce the icon
-        fAttentionRequestID = [super requestUserAttention:requestType];
-
-        // Schedule cancellation of bouncing (make sure we include modal runloop modes)
-        [self performSelector:@selector(cancelUserAttentionRequest:)
-                   withObject:(id)fAttentionRequestID
-                   afterDelay:dockIconBounceTime
-                      inModes:@[ NSRunLoopCommonModes ]];
-
-        return fAttentionRequestID;
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(dockIconBounceTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			[self cancelUserAttentionRequest:attentionId];
+		});
     }
-    else
-    {
-        return [super requestUserAttention:requestType];
-    }
+	return attentionId;
 }
 
 

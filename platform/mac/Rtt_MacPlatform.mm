@@ -1233,7 +1233,11 @@ MacPlatform::PushSystemInfo( lua_State *L, const char *key ) const
 	{
 		// Fetch the application's name.
 		const char *applicationName = "";
+#if Rtt_AUTHORING_SIMULATOR
 		NSString *value = [GetResourceDirectory() lastPathComponent];
+#else
+		NSString *value = (NSString*)[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+#endif
 		if (value)
 		{
 			applicationName = [value UTF8String];

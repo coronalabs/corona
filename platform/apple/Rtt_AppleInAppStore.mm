@@ -91,6 +91,13 @@ AppleProductList::GetPriceLocaleIdentifier( int index ) const
 	return [[[product priceLocale] objectForKey:NSLocaleIdentifier] UTF8String];
 }
 	
+const char*
+AppleProductList::GetPriceLocaleCurrencyCode( int index ) const
+{
+	SKProduct* product = [fProducts objectAtIndex:index];
+	return [[[product priceLocale] objectForKey:NSLocaleCurrencyCode] UTF8String];
+}
+
 Rtt_STRONG const char*
 AppleProductList::GetLocalizedPrice( int index ) const
 {

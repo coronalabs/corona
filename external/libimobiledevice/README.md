@@ -1,13 +1,13 @@
 Corona Labs fork of libimobiledevice
 
-The four subrepos here are clones of Git repos on Github which are forks of the upstream originals.  Various bugs are fixed and minor features added.  To fetch / merge with the upstream install hggit on a developer machine (the original Git repos are not used to avoid Git/hggit dependencies on the build machines).
 
-Git repos:
-
-* git://github.com/coronalabs/ideviceinstaller.git
-* git://github.com/coronalabs/libimobiledevice.git
-* git://github.com/coronalabs/libplist.git
-* git://github.com/coronalabs/libusbmuxd.git
+```
+git clone git@github.com:coronalabs/submodule-ideviceinstaller.git ideviceinstaller
+git clone git@github.com:coronalabs/submodule-libimobiledevice.git libimobiledevice
+git clone git@github.com:coronalabs/submodule-libplist.git libplist
+git clone git@github.com:coronalabs/submodule-libusbmuxd.git libusbmuxd
+./build.sh
+```
 
 The build.sh script configures and makes each repo and copies the needed build products to the device-support directory and then optionally to a final install location.  It is used by the Simulator Xcode project.
 

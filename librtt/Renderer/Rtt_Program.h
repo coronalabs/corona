@@ -44,6 +44,8 @@ class ShaderResource;
 
 // ----------------------------------------------------------------------------
 
+
+
 class Program : public CPUResource
 {
 	public:
@@ -73,7 +75,6 @@ class Program : public CPUResource
 		static const char *HeaderForLanguage( Language language, const ProgramHeader& headerData );
 
 		static int CountLines( const char *str );
-
 	public:
 		Program( Rtt_Allocator* allocator );
 		virtual ~Program();

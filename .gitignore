@@ -10,6 +10,11 @@
 Desktop DB
 Desktop DF
 
+/docs/
+/Corona-*.dmg
+/CoronaSDK-dsym-*.zip
+/docs.zip
+
 # Eclipse
 .metadata/*
 
@@ -76,7 +81,7 @@ ServiceFabricBackup/
 *.rptproj.bak
 
 # Build files
-*/build/*
+**/build/**
 *.pbxuser
 *.perspective*
 *.mode1
@@ -162,6 +167,8 @@ platform/windows/**/Debug.App/*
 platform/windows/**/Debug.Simulator/*
 platform/windows/**/Release.App/*
 platform/windows/**/Release.Simulator/*
+platform/windows/**/Debug/
+platform/windows/**/Release/
 
 # Android
 */libs/armeabi/*
@@ -247,6 +254,7 @@ platform/symbian
 platform/webos
 
 .hg*
+_hg/
 *.p12
 *.cert
 /platform/windows/Build.Tools/CoronaLabsInc.pfx

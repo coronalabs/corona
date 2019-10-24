@@ -29,6 +29,7 @@
 #include "Core/Rtt_Allocator.h"
 #include "Core/Rtt_New.h"
 #include "Core/Rtt_Types.h"
+#include "Core/Rtt_Assert.h"
 
 #include <string.h>
 

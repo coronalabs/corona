@@ -1039,7 +1039,7 @@ AndroidPlatform::CancelNotification( void *notificationId ) const
 	}
 	else
 	{
-		fNativeToJavaBridge->NotificationCancel((int)notificationId);
+		fNativeToJavaBridge->NotificationCancel((uintptr_t)notificationId);
 	}
 }
 

@@ -60,7 +60,7 @@ public class AudioRecorder {
 	private boolean fIsRunning;
 
 	// The id of the current instance
-	private int fId;
+	private long fId;
 
 	// If the current thread is notifying the Runtime
 	private boolean fIsNotifying = false;
@@ -216,7 +216,7 @@ public class AudioRecorder {
 	 * Sets the id for the instance of the object.
 	 * @param id The id to be set to
 	 */
-	public void setId(int id) {
+	public void setId(long id) {
 		fId = id;
 	}
 
@@ -291,7 +291,7 @@ public class AudioRecorder {
 		fIsNotifying = true;
 		fHandler.post(new Runnable() {
 			public void run() {
-				JavaToNativeShim.recordCallback(fCoronaRuntime, status, fId);
+				JavaToNativeShim.recordCallback(fCoronaRuntime, fId, status);
 			}
 		});
 	}
@@ -445,7 +445,7 @@ public class AudioRecorder {
 
 		/**
 		 * Overwrites the totalDataLen and totalAudioLen fields.  The totalDataLen is assumed to be totalAudioLen + 36
-		 * @param totalDataLen The number of bytes of the audio data.
+		 * @param totalAudioLen The number of bytes of the audio data.
 		 */
 		private void overwriteData(String path, long totalAudioLen) {
 			RandomAccessFile randomAccessFile = null;

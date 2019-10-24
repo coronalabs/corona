@@ -16,9 +16,6 @@
 
 package com.google.android.vending.licensing;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;

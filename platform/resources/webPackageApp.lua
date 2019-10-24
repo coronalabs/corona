@@ -445,8 +445,8 @@ local function webDownloadPlugins(user, buildYear, buildRevision, tmpDir, appFol
 		local authErrors = false
 		for _, pd in pairs(pluginsToDownload) do
 			local plugin, developer = unpack( pd )
-			local status = authorisedPlugins[plugin .. ' ' .. developer]
-			if status ~= 2 and status ~= 1 then
+			local status = authorisedPlugins[plugin .. ' ' .. developer] or 0
+			if status == 0 then
 				log("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
 				log("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
 				authErrors = true

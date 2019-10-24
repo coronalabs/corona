@@ -164,7 +164,7 @@ namespace Rtt
 
 	// default settings
 	static int sBufferSize(2048);
-	static int sSampleRate(SL_SAMPLINGRATE_44_1);
+	static SLuint32 sSampleRate(SL_SAMPLINGRATE_44_1);
 
 	PlatformOpenSLESPlayer::PlatformOpenSLESPlayer()
 		: fEngineObject(NULL)
@@ -271,7 +271,7 @@ namespace Rtt
 		// realize the output mix
 		callSLESBOOL( (*fOutputMixObject)->Realize(fOutputMixObject, SL_BOOLEAN_FALSE) );
 
-		return this;
+		return true;
 	}
 
 	// the SL_PLAYEVENT_HEADATEND callback handler is currently called with an internal mutex locked,
@@ -1634,7 +1634,7 @@ namespace Rtt
 		fMaxVolume = val; 
 
 		// reset 
-		setVolume(getVolume(), fMaster);
+		return setVolume(getVolume(), fMaster);
 	}
 
 	bool aPlayer::setMinVolume(float val)
@@ -1642,7 +1642,7 @@ namespace Rtt
 		fMinVolume = val; 
 
 		// reset 
-		setVolume(getVolume(), fMaster);
+		return setVolume(getVolume(), fMaster);
 	}
 
 	int aPlayer::getPosition()

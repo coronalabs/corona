@@ -71,7 +71,7 @@ AndroidAudioRecorder::Start()
 	if ( fIsRunning )
 		return;
 		
-	fIsRunning = fNativeToJavaBridge->RecordStart( (int) this, fFile.GetString() );
+	fIsRunning = fNativeToJavaBridge->RecordStart( (uintptr_t) this, fFile.GetString() );
 }
 
 void
@@ -82,7 +82,7 @@ AndroidAudioRecorder::Stop()
 
 	fIsRunning = false;
 
-	fNativeToJavaBridge->RecordStop( (int) this );
+	fNativeToJavaBridge->RecordStop( (uintptr_t) this );
 }
 
 void
@@ -101,7 +101,7 @@ AndroidAudioRecorder::NotificationCallback( int bytesRead )
 	bool result;
 	
 	do {
-		result = fNativeToJavaBridge->RecordGetBytes( (int) this, data );
+		result = fNativeToJavaBridge->RecordGetBytes( (uintptr_t) this, data );
 	} while ( result );
 }
 

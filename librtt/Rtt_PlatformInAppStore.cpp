@@ -217,6 +217,9 @@ ProductListEvent::Push( lua_State *L ) const
 			lua_pushstring( L, products->GetPriceLocaleIdentifier( i ) );
 			lua_setfield( L, -2, "priceLocale" );
 			
+			lua_pushstring( L, products->GetPriceLocaleCurrencyCode( i ) );
+			lua_setfield( L, -2, "priceCurrencyCode" );
+
 			lua_rawseti( L, -2, i+1); // add 1 for arrays start at index 1 in Lua
 		}
 		lua_setfield( L, -2, "products" );
