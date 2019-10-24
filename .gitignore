@@ -10,6 +10,11 @@
 Desktop DB
 Desktop DF
 
+/docs/
+/Corona-*.dmg
+/CoronaSDK-dsym-*.zip
+/docs.zip
+
 # Eclipse
 .metadata/*
 
