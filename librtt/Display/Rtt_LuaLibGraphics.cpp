@@ -616,7 +616,7 @@ SharedPtr<TextureResource> CreateResourceBitmapFromTable(Rtt::TextureFactory &fa
 }
 
 //helper funciton to parse lua table to create canvas resource
-SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &factory, lua_State *L, int index)
+SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &factory, lua_State *L, int index, bool isCanvas)
 {
 	Display &display = factory.GetDisplay();
 	
@@ -671,7 +671,7 @@ SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &fa
 		char filename[30];
 		snprintf(filename, 30, "corona://FBOgo_%u", sNextRenderTextureID++);
 
-		SharedPtr<TextureResource> texSource = factory.FindOrCreateCanvas( filename, width, height, pixelWidth, pixelHeight );
+		SharedPtr<TextureResource> texSource = factory.FindOrCreateCanvas( filename, width, height, pixelWidth, pixelHeight, isCanvas );
 		if( texSource.NotNull() )
 		{
 			factory.Retain(texSource);
@@ -707,11 +707,11 @@ GraphicsLibrary::newTexture( lua_State *L )
 				Display& display = library->GetDisplay();
 				ret = CreateResourceBitmapFromTable(display.GetTextureFactory(), L, index);
 			}
-			else if ( 0 == strcmp( "canvas", textureType ) )
+			else if ( 0 == strcmp( "canvas", textureType ) || 0 == strcmp( "maskCanvas", textureType ) )
 			{
 				Self *library = ToLibrary( L );
 				Display& display = library->GetDisplay();
-				ret = CreateResourceCanvasFromTable(display.GetTextureFactory(), L, index);
+				ret = CreateResourceCanvasFromTable(display.GetTextureFactory(), L, index, 0 == strcmp( "maskCanvas", textureType ));
 			}
 			else
 			{

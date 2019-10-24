@@ -64,8 +64,7 @@ TextureResourceCanvas::TextureResourceCanvas(TextureFactory &factory,
 
 }
 
-
-TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factory, Real width, Real height, int texWidth, int texHeight)
+TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factory, Real width, Real height, int texWidth, int texHeight, Texture::Format format)
 {
 	Display &display = factory.GetDisplay();
 	
@@ -73,7 +72,6 @@ TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factor
 	
 	Texture::Filter filter = RenderTypes::Convert( display.GetDefaults().GetMagTextureFilter() );
 	Texture::Wrap wrap = RenderTypes::Convert( display.GetDefaults().GetTextureWrapX() );
-	Texture::Format format = display.GetDefaults().GetCanvasFormat();// Texture::kRGBA; <- STEVE CHANGE
 
 	
 	Texture *texture = Rtt_NEW( pAllocator,

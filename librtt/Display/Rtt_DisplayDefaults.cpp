@@ -51,9 +51,6 @@ DisplayDefaults::DisplayDefaults()
 	fStrokeColor( kWhite ),
 	fTextColor( kWhite ),
 	fLineColor( kWhite ),
-// STEVE CHANGE
-	fCanvasFormat( Texture::kRGBA ),
-// /STEVE CHANGE
 	fAnchorX( 0.5 ),
 	fAnchorY( 0.5 ),
 	fMagTextureFilter( RenderTypes::kLinearTextureFilter ),

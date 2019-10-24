@@ -41,7 +41,8 @@ class TextureResourceCanvas : public TextureResource
 		static Self *Create(
 							TextureFactory& factory,
 							Real w, Real h,
-							int texW, int texH);
+							int texW, int texH,
+							Texture::Format format);
 		
 		virtual ~TextureResourceCanvas();
 		
