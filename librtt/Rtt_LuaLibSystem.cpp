@@ -247,6 +247,12 @@ LuaLibSystem::getInfo( lua_State *L )
 		Runtime *runtime = LuaContext::GetRuntime( L );
 		lua_pushboolean( L, runtime->GetDisplay().GetGpuSupportsHighPrecisionFragmentShaders() );
 	}
+	else if ( Rtt_StringCompare( key, "maxVertexTextureUnits" ) == 0 )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		size_t n = runtime->GetDisplay().GetMaxVertexTextureUnits();
+		lua_pushnumber( L, n > 2U ? 2U : 0U ); // more than 2 requires new paint types
+	}
 	else
 	{
 		// This is a place where we can add system.getInfo() categories that return arbitrary types

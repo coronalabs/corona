@@ -338,6 +338,7 @@ class Display
 		static U32 GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
+		static size_t GetMaxVertexTextureUnits();
 
 	public:
 		Scene& GetScene() { return *fScene; }

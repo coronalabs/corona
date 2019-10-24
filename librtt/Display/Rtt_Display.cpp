@@ -1843,6 +1843,12 @@ Display::GetGpuSupportsHighPrecisionFragmentShaders()
 	return Renderer::GetGpuSupportsHighPrecisionFragmentShaders();
 }
 
+size_t
+Display::GetMaxVertexTextureUnits()
+{
+	return Renderer::GetMaxVertexTextureUnits();
+}
+
 void
 Display::SetWireframe( bool newValue )
 {

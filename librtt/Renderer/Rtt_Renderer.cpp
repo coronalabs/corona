@@ -906,6 +906,12 @@ Renderer::GetGpuSupportsHighPrecisionFragmentShaders()
 	return CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders();
 }
 
+size_t
+Renderer::GetMaxVertexTextureUnits()
+{
+	return CommandBuffer::GetMaxVertexTextureUnits();
+}
+
 bool
 Renderer::GetStatisticsEnabled() const
 {

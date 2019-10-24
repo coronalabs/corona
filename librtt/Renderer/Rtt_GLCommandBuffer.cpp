@@ -148,6 +148,23 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 size_t
+CommandBuffer::GetMaxVertexTextureUnits()
+{
+	static size_t sMaxUnits = ~0; // 0 would be valid result
+	
+	if ( ~0 == sMaxUnits )
+	{
+		GLint maxUnits = 0;
+
+		glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, &maxUnits ); // TODO: check if this is same on Android, etc.
+		sMaxUnits = maxUnits;
+		GL_CHECK_ERROR();
+	}
+
+	return sMaxUnits;
+}
+
+size_t
 CommandBuffer::GetMaxTextureSize()
 {
 	static size_t sMaxSize = 0;
