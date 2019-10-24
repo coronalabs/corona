@@ -332,7 +332,6 @@ openURL( lua_State *L )
     return 1;
 }
 
-
 static int
 getTimer( lua_State *L )
 {
