@@ -441,9 +441,9 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 				// Keys are NSString, obj are NSArray of NSDictionary of NSString
 				for (NSDictionary *dict in obj)
 				{
-					if ([key hasPrefix:osName])
+					if ([key contains:osName])
 					{
-						if ([[dict objectForKey:@"availability"] isEqualToString:@"(available)"])
+						if ([[dict objectForKey:@"availability"] isEqualToString:@"(available)"] || [[dict objectForKey:@"isAvailable"] boolValue])
 						{
 							NSMutableDictionary *osDict = nil;
 

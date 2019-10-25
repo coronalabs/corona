@@ -69,7 +69,7 @@ jint JNI_OnLoad( JavaVM *vm, void * reserved )
  * @return The bridge object at the specfied address.
  */
 JavaToNativeBridge*
-JavaToNativeBridgeFromMemoryAddress(long bridgeAddress)
+JavaToNativeBridgeFromMemoryAddress(jlong bridgeAddress)
 {
 	JavaToNativeBridge* bridge;
 	bridge = (JavaToNativeBridge*)bridgeAddress;
@@ -432,19 +432,19 @@ Java_com_ansca_corona_JavaToNativeShim_nativeAlertCallback(JNIEnv * env, jclass 
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeSoundEndCallback(JNIEnv * env, jclass cd, jlong bridgeAddress, jint id )
+Java_com_ansca_corona_JavaToNativeShim_nativeSoundEndCallback(JNIEnv * env, jclass cd, jlong bridgeAddress, jlong id )
 {
 	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->SoundEndCallback( id );
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeVideoEndCallback(JNIEnv * env, jclass cd, jlong bridgeAddress, jint id )
+Java_com_ansca_corona_JavaToNativeShim_nativeVideoEndCallback(JNIEnv * env, jclass cd, jlong bridgeAddress, jlong id )
 {
 	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->VideoEndCallback( id );
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeRecordCallback(JNIEnv * env, jclass c, jlong bridgeAddress, jint id, jint status )
+Java_com_ansca_corona_JavaToNativeShim_nativeRecordCallback(JNIEnv * env, jclass c, jlong bridgeAddress, jlong id, jint status )
 {
 #ifdef DEBUG
     __android_log_print(ANDROID_LOG_INFO, "Corona", "record callback %x %d", id, status );
@@ -453,7 +453,7 @@ Java_com_ansca_corona_JavaToNativeShim_nativeRecordCallback(JNIEnv * env, jclass
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeSetAudioRecorderState(JNIEnv * env, jclass cd, jlong bridgeAddress, jint id, jboolean isRecording)
+Java_com_ansca_corona_JavaToNativeShim_nativeSetAudioRecorderState(JNIEnv * env, jclass cd, jlong bridgeAddress, jlong id, jboolean isRecording)
 {
 	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->SetAudioRecorderState( id, isRecording );
 }

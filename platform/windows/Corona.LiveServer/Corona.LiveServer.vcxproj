@@ -115,7 +115,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\external\winutil\DirDialog.h" />
+    <ClInclude Include="..\..\..\external\winutil\BrowseDirDialog.h" />
     <ClInclude Include="..\..\shared\CoronaLiveServer\CoronaHTTPServer.h" />
     <ClInclude Include="..\..\shared\CoronaLiveServer\CoronaLiveServerCore.h" />
     <ClInclude Include="Corona.LiveServer.h" />
@@ -127,7 +127,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp" />
+    <ClCompile Include="..\..\..\external\winutil\BrowseDirDialog.cpp" />
     <ClCompile Include="..\..\shared\CoronaLiveServer\CoronaHTTPServer.cpp" />
     <ClCompile Include="..\..\shared\CoronaLiveServer\CoronaLiveServerCore.cpp" />
     <ClCompile Include="Corona.LiveServer.cpp" />

@@ -34,7 +34,7 @@
 #include "BuildResult.h"
 #include "WinGlobalProperties.h"
 #include "WinString.h"
-#include "DirDialog.h"
+#include "BrowseDirDialog.h"
 #include "HtmlMessageDlg.h"
 #include "MessageDlg.h"
 #include "ListKeyStore.h"
@@ -574,14 +574,9 @@ void CBuildAndroidDlg::OnBrowseSaveto()
 	   ::SHGetFolderPath(nullptr, CSIDL_MYDOCUMENTS, nullptr, 0, sDir.GetBuffer(MAX_PATH));
 	   sDir.ReleaseBuffer();
    }
-
-   CDirDialog dirDialog;
-   dirDialog.m_strSelDir = sDir;
-   dirDialog.m_strTitle.LoadString(IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION);
    
-   if( dirDialog.DoBrowse() == IDOK )
+   if (CBrowseDirDialog::Browse(sDir, IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION))
    {
-      sDir = dirDialog.m_strPath;
       SetDlgItemText( IDC_BUILD_SAVETO, sDir );
    }
 }
@@ -646,6 +641,14 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 	int iVersionCode;
 	int iIndex;
 	bool isLiveBuild;
+
+	bool acceptedSDK = (AfxGetApp()->GetProfileString( REGISTRY_BUILD_ANDROID, _T("AcceptedSDKLicense"), _T("NO") ).Compare(_T("YES")) == 0);
+	if(!acceptedSDK)
+	{
+		UINT ret = DisplayWarningMessageWithHelp(IDS_ANDROID_BUILD, IDS_ANDROID_SDK_LICENSE, _T("https://developer.android.com/studio/terms"));
+		if (ret != IDYES) return;
+		AfxGetApp()->WriteProfileString( REGISTRY_BUILD_ANDROID, _T("AcceptedSDKLicense"), _T("YES") );
+	}
 
 	// Fetch and validate field values.
     GetDlgItemText(IDC_BUILD_APPNAME, sAppName);

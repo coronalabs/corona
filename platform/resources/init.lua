@@ -413,6 +413,25 @@ end
 
 Runtime.Object = PublicObject
 
+-------------------------------------------------------------------------------
+-- Per-frame logic
+-------------------------------------------------------------------------------
+
+local _frame_id, _frame_start_time
+
+local function onEnterFrameEvent( event )
+	_frame_id, _frame_start_time = event.frame, event.time
+end
+
+Runtime:addEventListener( "enterFrame", onEnterFrameEvent )
+
+function Runtime.getFrameID( )
+	return _frame_id + 1
+end
+
+function Runtime.getFrameStartTime( )
+	return _frame_start_time
+end
 
 -------------------------------------------------------------------------------
 -- DisplayObject

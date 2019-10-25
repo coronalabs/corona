@@ -1138,38 +1138,38 @@ JavaToNativeBridge::AlertCallback( int which, bool cancelled )
 }
 
 void
-JavaToNativeBridge::SoundEndCallback( int id )
+JavaToNativeBridge::SoundEndCallback( long id )
 {
 	if (fNativeToJavaBridge != NULL)
 	{
-		fNativeToJavaBridge->SoundEndCallback(id);
+		fNativeToJavaBridge->SoundEndCallback((uintptr_t)id);
 	}
 }
 
 void
-JavaToNativeBridge::VideoEndCallback( int id )
+JavaToNativeBridge::VideoEndCallback( long id )
 {
 	if (fNativeToJavaBridge != NULL)
 	{
-		fNativeToJavaBridge->VideoEndCallback(id);
+		fNativeToJavaBridge->VideoEndCallback((uintptr_t)id);
 	}
 }
 
 void 
-JavaToNativeBridge::RecordCallback( int id, int status )
+JavaToNativeBridge::RecordCallback( long id, int status )
 {
 	if (fNativeToJavaBridge != NULL)
 	{
-		fNativeToJavaBridge->RecordCallback(id, status);
+		fNativeToJavaBridge->RecordCallback((uintptr_t)id, status);
 	}
 }
 
 void
-JavaToNativeBridge::SetAudioRecorderState( int id, bool isRecording )
+JavaToNativeBridge::SetAudioRecorderState( long id, bool isRecording )
 {
 	if (fPlatform && fRuntime)
 	{
-		Rtt::AndroidAudioRecorder *audioRecorderPointer = (Rtt::AndroidAudioRecorder*) id;
+		Rtt::AndroidAudioRecorder *audioRecorderPointer = (Rtt::AndroidAudioRecorder*) (uintptr_t)id;
 		if (audioRecorderPointer)
 		{
 			audioRecorderPointer->SetRunningState( isRecording );

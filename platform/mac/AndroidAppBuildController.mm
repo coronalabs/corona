@@ -217,6 +217,17 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
 - (IBAction)build:(id)sender
 {
+	BOOL androidSDKAccepted = [[NSUserDefaults standardUserDefaults] boolForKey:@"AndroidSDKAccepted"];
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+	NSString *androidSDKLicensePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Corona/Android Build/sdk/licenses/android-sdk-license"];
+	BOOL androidSDKLicenseExists = [[NSFileManager defaultManager] fileExistsAtPath:androidSDKLicensePath];
+
+	if(!androidSDKLicenseExists || !androidSDKAccepted) {
+		NSModalResponse agreedmentRet = [self showModalSheet:@"Building Android App" message:@"You are about to build an Android app for the first time with this build system.\nIt requires that the Android SDK is installed locally and you must read and accept its [license agreement](https://developer.android.com/studio/terms) in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes." buttonLabels:@[@"I Accept", @"Cancel"] alertStyle:NSWarningAlertStyle helpURL:@"https://developer.android.com/studio/terms" parentWindow:[self window] completionHandler:nil];
+		if(agreedmentRet == NSAlertSecondButtonReturn) return;
+		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"AndroidSDKAccepted"];
+	}
+	
     MacConsolePlatform platform;
     MacPlatformServices *services = new MacPlatformServices( platform );
     WebServicesSession *session = new WebServicesSession( *services );

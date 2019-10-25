@@ -131,7 +131,7 @@ JNIEnv* get_jni_env()
 
 /* --- Version --- */
 /* lua_version() */
-JNIEXPORT jstring JNICALL Java_com_naef_jnlua_LuaState_lua_1version(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_com_naef_jnlua_LuaState_lua_1version(JNIEnv *env, jclass type) {
 	const char *luaVersion;
 	
 	luaVersion = LUA_VERSION;

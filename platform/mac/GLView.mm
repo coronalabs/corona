@@ -1023,52 +1023,47 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
         // The mask contains a few bits set. All must be set to consider the key down.
         if ( ( [event modifierFlags] & mask ) == mask)
         {
-            [self keyDown:event];
+            [self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kDown];
         }
         else
         {
-            [self keyUp:event];
+            [self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kUp];
         }
     }
 }
 
 - (void)keyDown:(NSEvent *)event
 {
-	using namespace Rtt;
-
-	NSUInteger modifierFlags = [event modifierFlags];
-	unsigned short keyCode = [event keyCode];
-	NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
-
-	KeyEvent e(
-		NULL,
-		KeyEvent::kDown,
-		[keyName UTF8String],
-		keyCode,
-		(modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
-        (modifierFlags & NSAlternateKeyMask),
-        (modifierFlags & NSControlKeyMask),
-        (modifierFlags & NSCommandKeyMask) );
-	[self dispatchEvent: ( & e )];
+	[self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kDown];
+	const char* characters = [[event characters] UTF8String];
+	if (strlen(characters) > 1 || isprint(characters[0])) {
+		Rtt::CharacterEvent e(NULL, characters);
+		[self dispatchEvent: ( & e )];
+	}
 }
 
 - (void)keyUp:(NSEvent *)event
 {
-	using namespace Rtt;
+	[self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kUp];
+}
 
+- (void)dispatchKeyEvent:(NSEvent *)event withPhase:(Rtt::KeyEvent::Phase)phase
+{
+	using namespace Rtt;
+	
 	NSUInteger modifierFlags = [event modifierFlags];
 	unsigned short keyCode = [event keyCode];
 	NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
-
+	
 	KeyEvent e(
-		NULL,
-		KeyEvent::kUp,
-		[keyName UTF8String],
-		[event keyCode],
-		(modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
-        (modifierFlags & NSAlternateKeyMask),
-        (modifierFlags & NSControlKeyMask),
-		(modifierFlags & NSCommandKeyMask) );
+			   NULL,
+			   phase,
+			   [keyName UTF8String],
+			   keyCode,
+			   (modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
+			   (modifierFlags & NSAlternateKeyMask),
+			   (modifierFlags & NSControlKeyMask),
+			   (modifierFlags & NSCommandKeyMask) );
 	[self dispatchEvent: ( & e )];
 }
 

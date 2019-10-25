@@ -39,7 +39,6 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-// Modified from http://www.codeguru.com/cpp/g-m/multimedia/audio/article.php/c8877
 /////////////////////////////////////////////////////////////////////////////
 // CWriteSoundFile class
 

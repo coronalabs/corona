@@ -324,8 +324,10 @@ public class CoronaEditText extends EditText {
 	{
 		TransformationMethod method;
 
-		if ( isPassword )
+		if ( isPassword ) {
 			method = PasswordTransformationMethod.getInstance();
+			setTextViewInputType("password");
+		}
 		else
 			method = SingleLineTransformationMethod.getInstance();
 
@@ -333,7 +335,6 @@ public class CoronaEditText extends EditText {
 
 		myIsPassword = isPassword;
 
-		setTextViewInputType("password");
 	}
 
 	public boolean getTextViewPassword()

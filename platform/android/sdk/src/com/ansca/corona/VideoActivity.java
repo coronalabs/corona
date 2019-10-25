@@ -41,7 +41,7 @@ public class VideoActivity extends android.app.Activity {
 	private CoronaVideoView fVideoView;
 	
 	/** Unique integer ID assigned to this activity by this application's MediaManager class. */
-	private int fVideoId;
+	private long fVideoId;
 
 	/** Set true if the activity's onPause() was called. Set false if currently active. */
 	private boolean fWasActivityPaused;
@@ -161,7 +161,7 @@ public class VideoActivity extends android.app.Activity {
 			fVideoView.setMediaController(new android.widget.MediaController(themedContextWrapper));
 		}
 		fVideoView.setVideoURIUsingCoronaProxy(android.net.Uri.parse(getIntent().getExtras().getString("video_uri")));
-		fVideoId = getIntent().getExtras().getInt("video_id");
+		fVideoId = getIntent().getExtras().getLong("video_id");
 		fWasActivityPaused = false;
 		fWasVideoSuspended = false;
 		fVideoView.start();

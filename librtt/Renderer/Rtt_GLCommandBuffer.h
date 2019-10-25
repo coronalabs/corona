@@ -112,9 +112,7 @@ class GLCommandBuffer : public CommandBuffer
 		U32* fTimerQueries;
 		U32 fTimerQueryIndex;
 		Real fElapsedTimeGPU;
-	
 		TimeTransform* fTimeTransform;
-
 		S32 fCachedQuery[kNumQueryableParams];
 		
 };

@@ -32,6 +32,7 @@
 #include "Rtt_Lua.h"
 #include "Rtt_LuaContext.h"
 #include "WinString.h"
+#include "BrowseDirDialog.h"
 
 Rtt_EXPORT int luaopen_lfs (lua_State *L);
 
@@ -108,12 +109,7 @@ BOOL CNewProjectDlg::OnInitDialog()
 	}
 
 	// Set up the project folder selection dialog and field. Have it default to the above path.
-	if (strlen(pathName) > 0)
-	{
-		fProjectFolderSelectionDialog.m_strSelDir = pathName;
-		fProjectFolderSelectionDialog.m_strPath = pathName;
-	}
-	fProjectFolderSelectionDialog.m_strTitle.LoadString(IDS_SELECT_ROOT_PROJECT_FOLDER_DESCRIPTION);
+	fNewProjectPath = pathName;
 	UpdateProjectLocationField();
 
 	// Set a maximum character limit for the screen width/height edit boxes.
@@ -198,10 +194,8 @@ void CNewProjectDlg::OnScreenSizeComboBoxSelectionChanged()
 void CNewProjectDlg::OnClickedBrowseButton()
 {
 	// Display a folder selection dialog. Update the project folder field if a selection was made.
-	int result = fProjectFolderSelectionDialog.DoBrowse();
-	if (result != 0)
+	if (CBrowseDirDialog::Browse(fNewProjectPath, IDS_SELECT_ROOT_PROJECT_FOLDER_DESCRIPTION))
 	{
-		fProjectFolderSelectionDialog.m_strSelDir = fProjectFolderSelectionDialog.m_strPath;
 		UpdateProjectLocationField();
 	}
 }
@@ -439,7 +433,7 @@ void CNewProjectDlg::UpdateProjectLocationField()
 	// Build a project path using the current application name.
 	fAppNameEditBox.GetWindowText(applicationName);
 	applicationName.Trim();
-	path = fProjectFolderSelectionDialog.m_strPath;
+	path = fNewProjectPath;
 	if (path.GetLength() <= 0)
 	{
 		path = _T("C:");

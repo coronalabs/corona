@@ -516,6 +516,14 @@
 	//NSDEBUG(@"windowWillEnterFullScreen: %@ %@", NSStringFromRect([_window frame]), NSStringFromRect([[_window screen] frame]) );
 }
 
+- (void)windowDidEnterFullScreen:(NSNotification *)notification
+{
+	if ([_coronaView settingsDefaultWindowMode] == kFullscreen)
+	{
+		[self setWindowStyles];
+	}
+}
+
 - (void)windowWillExitFullScreen:(NSNotification *)notification
 {
 	//NSDEBUG(@"windowWillExitFullScreen: %@ (inLiveResize %s)", notification, ([_window inLiveResize] ? "YES" : "NO"));

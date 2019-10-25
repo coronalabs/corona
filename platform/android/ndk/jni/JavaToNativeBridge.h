@@ -101,10 +101,10 @@ class JavaToNativeBridge
 		void OrientationChanged(int newOrientation, int oldOrientation);
 		void ResizeEvent();
 		void AlertCallback(int which, bool cancelled);
-		void SoundEndCallback( int id );
-		void VideoEndCallback( int id );
-		void RecordCallback( int id, int status );
-		void SetAudioRecorderState( int id, bool isRecording );
+		void SoundEndCallback( long id );
+		void VideoEndCallback( long id );
+		void RecordCallback( long id, int status );
+		void SetAudioRecorderState( long id, bool isRecording );
 		void TextEvent( int id, bool hasFocus, bool isDone );
 		void TextEditingEvent( JNIEnv *env, int id, int startPos, int numDeleted, jstring newCharacters, jstring oldString, jstring newString );
 		void MultitouchEventBegin();

@@ -26,9 +26,9 @@
 package com.ansca.corona.events;
 
 public class SoundEndedTask implements com.ansca.corona.CoronaRuntimeTask {
-	private int fMediaId;
+	private long fMediaId;
 
-	public SoundEndedTask( int mediaId )
+	public SoundEndedTask( long mediaId )
 	{
 		fMediaId = mediaId;
 	}

@@ -128,8 +128,11 @@ AppPackagerFactory::CreatePackagerParamsAndroid(
 
 			}
 
+			int androidVersionCode = 1;
 			lua_getfield( L, index, "androidVersionCode" );
-			int androidVersionCode = (int) lua_tointeger( L, -1 );
+			if(lua_isnumber(L, -1)) {
+				androidVersionCode = (int) lua_tointeger( L, -1 );
+			}
 
 			lua_getfield( L, index, "androidAppPackage" );
 			const char *origAndroidAppPackage = lua_tostring( L, -1 );

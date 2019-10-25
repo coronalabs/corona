@@ -307,9 +307,7 @@ namespace Rtt
 @end
 
 @interface CoronaSimulatorApplication : NSApplication
-{
-	NSInteger fAttentionRequestID;
-}
+
 @property (nonatomic, readwrite) BOOL suppressAttentionRequests;
 
 - (NSInteger)requestUserAttention:(NSRequestUserAttentionType)requestType;

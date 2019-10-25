@@ -117,9 +117,9 @@ BEGIN
         POPUP "&Build"
         BEGIN
             MENUITEM "&Android...\tCtrl+B",         ID_BUILD_FOR_ANDROID
-            MENUITEM "&HTML5 (beta)...\tCtrl+Alt+B",       ID_BUILD_FOR_WEB
+            MENUITEM "&HTML5 (beta)...\tCtrl+Alt+B", ID_BUILD_FOR_WEB
             MENUITEM "&Windows...\tCtrl+Shift+B",   ID_BUILD_FOR_WIN32
-            MENUITEM "&Linux (beta)...\tCtrl+Shift+Alt+B",   ID_BUILD_FOR_LINUX
+            MENUITEM "&Linux (beta)...\tCtrl+Shift+Alt+B", ID_BUILD_FOR_LINUX
         END
         MENUITEM "Open in &Editor\tCtrl+Shift+O", ID_FILE_OPENINEDITOR
         MENUITEM "Show Project &Files",         ID_FILE_SHOW_PROJECT_FILES
@@ -202,7 +202,7 @@ IDR_MAINFRAME ACCELERATORS
 BEGIN
     "B",            ID_BUILD_FOR_ANDROID,   VIRTKEY, CONTROL, NOINVERT
     "B",            ID_BUILD_FOR_WIN32,     VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, ALT, CONTROL, NOINVERT
+    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, CONTROL, ALT, NOINVERT
     "B",            ID_BUILD_FOR_LINUX,     VIRTKEY, SHIFT, CONTROL, ALT, NOINVERT
     "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
@@ -462,8 +462,10 @@ BEGIN
     LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
     EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
-    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
-    CONTROL         "Create FB Instant archive", IDC_CREATE_FB_INSTANT_ARCHIVE, "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,100,181,10
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    CONTROL         "Create FB Instant archive",IDC_CREATE_FB_INSTANT_ARCHIVE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,100,181,10
     DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
 END
@@ -482,7 +484,8 @@ BEGIN
     LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
     EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
-    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
     DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
 END
@@ -699,7 +702,7 @@ BEGIN
         BOTTOMMARGIN, 109
     END
 
-		IDD_BUILD_LINUX, DIALOG
+    IDD_BUILD_LINUX, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 306
@@ -781,6 +784,8 @@ BEGIN
     IDS_CREATE_LIVE_BUILD_WARNING 
                             "You must have the Debug keystore selected to create a Live Build.\n\nDo you want to select it now?"
     IDS_OPEN_URL_HTML       "Open in Browser"
+    IDS_ANDROID_BUILD       "Building Android App"
+    IDS_ANDROID_SDK_LICENSE """You are about to build an Android app for the first time with this build system.\nIt uses the Android SDK and you must read and accept its license agreement in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes.\nPress 'Yes' to accept, 'No' to decline or 'Help' to read the license agreement."""
 END
 
 STRINGTABLE

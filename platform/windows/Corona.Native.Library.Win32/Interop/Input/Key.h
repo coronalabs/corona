@@ -28,6 +28,7 @@
 #include <functional>
 #include <Windows.h>
 #include <Xinput.h>
+#include <string>
 
 
 #pragma region XInput Native Key Codes
@@ -266,6 +267,12 @@ class Key
 		///  Returns Corona's unique string ID for this key such as "enter", "tab", "buttonA", "buttonB", etc.
 		/// </returns>
 		const char* GetCoronaName() const;
+
+		/// <summary>Retrieves the character which the Key corresponds to based on keyboard layout.</summary>
+		/// <returns>
+		///  <para>Returns the character which the Key corresponds to.</para>
+		/// </returns>
+		std::string GetCharacter();
 
 		/// <summary>Determines if this key matches the given key.</summary>
 		/// <param name="value">The key to be compared with.</param>

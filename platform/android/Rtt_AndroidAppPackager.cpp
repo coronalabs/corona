@@ -35,6 +35,7 @@
 #include "Rtt_WebServicesSession.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_JavaHost.h"
+#include "Rtt_DeviceBuildData.h"
 
 #include "ListKeyStore.h"
 
@@ -97,6 +98,7 @@ AndroidAppPackagerParams::AndroidAppPackagerParams(
 		targetPlatform, targetAppStoreName, targetVersion, TargetDevice::kAndroidGenericDevice,
 		customBuildId, productId, appPackage, isDistributionBuild ),
 	fVersionCode(versionCode)
+	, fWindowsNonAscii(false)
 {
 	fKeyStore.Set( keyStore );
 	fKeyStorePassword.Set( storePassword );
@@ -218,7 +220,193 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 	{
 		char* inputFile = Prepackage( params, tmpDir );
 
-		if ( inputFile )
+		String gradleBuildEnabledStr;
+		fServices.GetPreference( "gradleBuild", &gradleBuildEnabledStr );
+		bool gradleBuild = Rtt_StringCompare(gradleBuildEnabledStr, "0")!=0;
+		
+		if (gradleBuild && inputFile) //offline build
+		{
+			const AndroidAppPackagerParams * androidParams = (const AndroidAppPackagerParams *)params;
+
+			std::string gradleGo = "cd ";
+#if defined(Rtt_WIN_ENV)
+			gradleGo.append("/d ");
+#endif
+			gradleGo.append(EscapeArgument(tmpDir));
+			gradleGo.append(" && cd template &&");
+			
+#if defined(Rtt_MAC_ENV)
+			gradleGo.append(" ./setup.sh && ./gradlew");
+#else
+			gradleGo.append(" setup.bat");
+			if (androidParams->IsWindowsNonAsciiUser())
+			{
+				gradleGo.append(" /T");
+			}
+			gradleGo.append(" && gradlew.bat");
+#endif
+			if (androidParams->IsWindowsNonAsciiUser()) {
+				std::string gradleDir(tmpDirBase);
+				gradleDir += LUA_DIRSEP ".gradle";
+				gradleDir = EscapeArgument(gradleDir);
+
+				gradleGo.append(" -g ");
+				gradleGo.append(gradleDir);
+
+				gradleGo.append(" -Dgradle.user.home=");
+				gradleGo.append(gradleDir);
+			}
+
+			gradleGo.append(" buildCoronaApp");
+			gradleGo.append(" --no-daemon");
+			
+			gradleGo.append(" -PconfigureCoronaPlugins=YES");
+			gradleGo.append(" -PcoronaBuild=" Rtt_STRING_BUILD);
+			
+			if (params->IsLiveBuild())
+			{
+				gradleGo.append(" -PcoronaLiveBuild=YES");
+			}
+
+			if (androidParams->IsWindowsNonAsciiUser()) {
+				gradleGo.append(" -PcoronaCustomHome=");
+				gradleGo.append(EscapeArgument(tmpDirBase));
+			}
+
+			gradleGo.append(" -PcoronaResourcesDir=");
+			gradleGo.append(EscapeArgument(fResourcesDir.GetString()));
+			
+			gradleGo.append(" -PcoronaDstDir=");
+			gradleGo.append(EscapeArgument(params->GetDstDir()));
+			
+			gradleGo.append(" -PcoronaTmpDir=");
+			gradleGo.append(EscapeArgument(tmpDir));
+			
+			gradleGo.append(" -PcoronaSrcDir=");
+			gradleGo.append(EscapeArgument(params->GetSrcDir()));
+			
+			String appFileName;
+			PlatformAppPackager::EscapeFileName( params->GetAppName(), appFileName );
+			gradleGo.append(" -PcoronaAppFileName=");
+			gradleGo.append(EscapeArgument(appFileName.GetString()));
+			
+			gradleGo.append(" -PcoronaAppPackage=");
+			gradleGo.append(EscapeArgument(params->GetAppPackage()));
+
+			gradleGo.append(" -PcoronaVersionCode=");
+			gradleGo.append(std::to_string(androidParams->GetVersionCode()));
+			
+			gradleGo.append(" -PcoronaVersionName=");
+			gradleGo.append(EscapeArgument(params->GetVersion()));
+			
+			gradleGo.append(" -PcoronaKeystore=");
+			gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyStore()));
+			
+			gradleGo.append(" -PcoronaKeystorePassword=");
+			gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyStorePassword()));
+			
+			gradleGo.append(" -PcoronaKeyAlias=");
+			gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyAlias()));
+			
+			gradleGo.append(" -PcoronaTargetStore=");
+			gradleGo.append(EscapeArgument(androidParams->GetTargetAppStoreName()));
+
+			gradleGo.append(" -PcoronaKeyAliasPassword=");
+			if(androidParams->GetAndroidKeyAliasPassword()!=NULL)
+			{
+				gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyAliasPassword()));
+			}
+			else
+			{
+				gradleGo.append(EscapeArgument(androidParams->GetAndroidKeyStorePassword()));
+			}
+			
+			if (fIsUsingExpansionFile &&
+				params->GetTargetAppStoreName() &&
+				!strcmp(params->GetTargetAppStoreName(), TargetAndroidAppStore::kGoogle.GetStringId()))
+			{
+				char expansionFileName[255];
+				snprintf(
+						 expansionFileName, sizeof(expansionFileName) - 1, "main.%d.%s.obb",
+						 androidParams->GetVersionCode(), params->GetAppPackage());
+				gradleGo.append(" -PcoronaExpansionFileName=");
+				gradleGo.append(expansionFileName);
+			}
+			
+			DeviceBuildData& deviceBuildData = params->GetDeviceBuildData( fServices.Platform(), fServices );
+			String json( & fServices.Platform().GetAllocator() );
+			deviceBuildData.GetJSON( json );
+			const size_t maxPath = 600;
+			char buildDataFileOutput[maxPath+1];
+			snprintf(buildDataFileOutput, maxPath, "%s" LUA_DIRSEP "build.data", tmpDir);
+			Rtt::Data<const unsigned char> jsonData(& fServices.Platform().GetAllocator());
+			jsonData.Set((unsigned char*)json.GetString(), json.GetLength());
+			Rtt_WriteDataToFile(buildDataFileOutput, jsonData);
+
+			gradleGo.append(" -PcoronaBuildData=");
+			gradleGo.append(EscapeArgument(buildDataFileOutput));
+
+			String debugBuildProcessPref;
+			int debugBuildProcess = 0;
+			fServices.GetPreference( "debugBuildProcess", &debugBuildProcessPref );
+			
+			if (! debugBuildProcessPref.IsEmpty())
+			{
+				debugBuildProcess = (int) strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
+			}
+			else
+			{
+				debugBuildProcess = 0;
+			}
+			
+			gradleGo.append(" --console=plain");
+			if(debugBuildProcess == 0) {
+				gradleGo.append(" -q");
+			}
+			
+			if (debugBuildProcess > 1)
+			{
+				// Obfuscate passwords
+				std::string placeHolder = EscapeArgument("XXXXXX");
+				std::string sanitizedCmdBuf = gradleGo;
+				
+				String unsanitizedBuildSettingStr;
+				fServices.GetPreference( "unsanitizedBuildLog", &unsanitizedBuildSettingStr );
+				if(Rtt_StringCompare(unsanitizedBuildSettingStr, "1") != 0) {
+					std::string keystorePasswordStr = EscapeArgument(androidParams->GetAndroidKeyStorePassword());
+					if (keystorePasswordStr.length() > 0)
+					{
+						ReplaceString(sanitizedCmdBuf, keystorePasswordStr, placeHolder);
+					}
+					
+					std::string keyaliasPasswordStr;
+					if (androidParams->GetAndroidKeyAliasPassword() != NULL)
+					{
+						keyaliasPasswordStr = EscapeArgument(androidParams->GetAndroidKeyAliasPassword());
+					}
+					if (keyaliasPasswordStr.length() > 0)
+					{
+						ReplaceString(sanitizedCmdBuf, keyaliasPasswordStr, placeHolder);
+					}
+				}
+				
+				Rtt_Log("Build: running: %s\n", sanitizedCmdBuf.c_str());
+			}
+#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
+			result = system(gradleGo.c_str());
+#else // Windows
+			Interop::Ipc::CommandLine::SetOutputCaptureEnabled(true);
+			Interop::Ipc::CommandLine::SetHideWindowEnabled(true);
+			Interop::Ipc::CommandLineRunResult cmdResult = Interop::Ipc::CommandLine::RunShellCommandUntilExit(gradleGo.c_str());
+			result = cmdResult.GetExitCode();
+			if (debugBuildProcess > 1 || result != 0)
+			{
+				std::string output = cmdResult.GetOutput();
+				Rtt_Log("%s", output.c_str());
+			}
+#endif
+		}
+		else if ( inputFile )
 		{
 			const char kOutputName[] = "output.zip";
 			size_t tmpDirLen = strlen( tmpDir );
@@ -497,7 +685,11 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 			free( inputFile );
 		}
 		// Clean up intermediate files
-        rmdir( tmpDir );
+		String retainTmpDirStr;
+		fServices.GetPreference( "retainBuildTmpDir", &retainTmpDirStr );
+		if(Rtt_StringCompare(retainTmpDirStr, "1") != 0) {
+        	rmdir( tmpDir );
+		}
 	}
 	else
 	{
@@ -523,7 +715,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 		if (params->GetBuildMessage() == NULL)
 		{
 			// If we don't already have a more precise error, use the XMLRPC layer's error message
-			params->SetBuildMessage(&session != NULL ? session.ErrorMessage() : "Failed to Build" );
+			params->SetBuildMessage(session.ErrorMessage() != NULL ? session.ErrorMessage() : "Failed to Build" );
 		}
 
 		Rtt_LogException("Android build failed (%d) after %ld seconds", result, (time(NULL) - startTime));
@@ -570,8 +762,9 @@ AndroidAppPackager::CreateBuildProperties( const AppPackagerParams& params, cons
 	lua_pushinteger( L, ((AndroidAppPackagerParams&)params).GetVersionCode() );
 	lua_pushstring( L, params.GetVersion() );
 	lua_pushstring( L, params.GetTargetAppStoreName() );
+	lua_pushstring( L, params.GetAppName() );
 
-	bool result = Rtt_VERIFY( 0 == Lua::DoCall( L, 6, 1 ) );
+	bool result = Rtt_VERIFY( 0 == Lua::DoCall( L, 7, 1 ) );
 	if ( ! lua_isnil( L, -1 ) )
 	{
 		Rtt_TRACE_SIM( ( "ERROR: Could not create build.properties:\n\t%s\n", lua_tostring( L, -1 ) ) );
@@ -607,8 +800,8 @@ AndroidAppPackager::Prepackage( AppPackagerParams * params, const char * tmpDir 
 	{
 		Rtt_Log("Prepackage: Compiling Lua ...");
 	}
-
-	if ( CreateBuildProperties( * params, tmpDir ) && CompileScripts( params, tmpDir ) )
+	
+	if ( CompileScripts( params, tmpDir ) && CreateBuildProperties( * params, tmpDir ) )
 	{
 		if (! Rtt_StringIsEmpty(GetSplashImageFile()))
 		{

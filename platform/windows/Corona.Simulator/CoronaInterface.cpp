@@ -583,11 +583,31 @@ CBuildResult appAndroidBuild(
 	params.SetUsesMonetization( enableMonetization );
 #endif
 
+	TCHAR user[MAX_PATH];
+	DWORD ulen = MAX_PATH;
+	GetUserName(user, &ulen);
+	bool asciiUserName = true;
+	for (size_t i = 0; i < ulen && asciiUserName; i++)
+	{
+		asciiUserName = iswascii(user[i]);
+	}
+
     // Get Windows temp directory
 	TCHAR TempPath[MAX_PATH];
 	GetTempPath(MAX_PATH, TempPath);  // ends in '\\'
+	size_t tempBaseLen = _tcslen(TempPath);
+	if (!asciiUserName)
+	{
+		GetWindowsDirectory(TempPath, MAX_PATH);
+		tempBaseLen = _tcslen(TempPath);
+		TCHAR *winTemp = _T("\\Temp\\");
+		_tcsncpy_s(TempPath + tempBaseLen, MAX_PATH - tempBaseLen, winTemp, _tcslen(winTemp));
+		tempBaseLen = _tcslen(TempPath);
+		params.SetWindowsNonAsciiUser(true);
+	}
+
     TCHAR *sCompanyName = _T("Corona Labs");
-    _tcsncpy_s( TempPath + _tcslen( TempPath ), (MAX_PATH - _tcslen( TempPath )), sCompanyName, _tcslen( sCompanyName ) );
+    _tcsncpy_s(TempPath + tempBaseLen, MAX_PATH - tempBaseLen, sCompanyName, _tcslen(sCompanyName));
     TempPath[ _tcslen( TempPath ) ] = '\0';  // ensure null-termination
 	WinString strTempDir;
 	strTempDir.SetTCHAR( TempPath );

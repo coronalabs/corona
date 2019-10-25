@@ -38,6 +38,7 @@ stoplist = {
 	"onDemandResources",
 	"strings",
 	"coronaActivityFlags",
+	"entitlements",
 }
 
 settings = 
@@ -130,7 +131,7 @@ settings =
         iCloud = true,
 		skipPNGCrush = true,
 		xcassets = "",
-
+		entitlements = { },
 		plist =  -- most of these keys are probably valid for tvos too.
 		{
 			CFBundleId = "",
@@ -227,10 +228,7 @@ settings =
 	{
 		iCloud = {},
 		bundleResourcesDirectory = "",
-		entitlements = 
-		{
-			[""] = true,
-		},
+		entitlements = { },
 		plist = 
 		{
 			CFBundleURLTypes = {

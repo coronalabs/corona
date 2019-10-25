@@ -539,9 +539,9 @@ local function linuxDownloadPlugins(user, buildYear, buildRevision, tmpDir, appF
 		local authErrors = false
 		for _, pd in pairs(pluginsToDownload) do
 			local plugin, developer = unpack( pd )
-			local status = authorisedPlugins[plugin .. ' ' .. developer]
+			local status = authorisedPlugins[plugin .. ' ' .. developer] or 0
 			log3('plugins to load:', plugin, ', status=', status)
-			if status ~= 2 and status ~= 1 then
+			if status == 0 then
 				log("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
 				log("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
 				authErrors = true

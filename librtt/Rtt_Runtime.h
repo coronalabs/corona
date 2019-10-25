@@ -285,6 +285,8 @@ class Runtime : public MCallback,
 		U8 GetFPS() const { return fFPS; }
 		float GetFrameInterval() const { return 1.f / ((float)fFPS); }
 
+		U32 GetFrame() const { return fFrame; }
+
 		// Number of ms since app launch
 		double GetElapsedMS() const;
 		Rtt_AbsoluteTime GetElapsedTime() const;
@@ -377,6 +379,7 @@ class Runtime : public MCallback,
 		S8 fIsSuspended;
 		U16 fProperties;
 		U32 fSuspendOverrideProperties;
+		U32 fFrame;
 		int fLaunchArgsRef;
 		const char *fSimulatorPlatformName;
 		int fDownloadablePluginsRef;

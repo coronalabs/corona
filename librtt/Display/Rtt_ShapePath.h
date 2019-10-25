@@ -71,6 +71,7 @@ class ShapePath : public ClosedPath
 		void UpdateFill( RenderData& data, const Matrix& srcToDstSpace );
 		void UpdateStroke( const Matrix& srcToDstSpace );
 
+		void CalculateUV( ArrayVertex2& texVertices, Paint *paint, bool canTransformTexture );
 	public:
 		// MDrawable
 		virtual void Update( RenderData& data, const Matrix& srcToDstSpace );
@@ -78,6 +79,8 @@ class ShapePath : public ClosedPath
 		virtual void Translate( Real dx, Real dy );
 		virtual void GetSelfBounds( Rect& rect ) const;
 
+		void GetTextureVertices( ArrayVertex2& texVertices);
+		Rect GetTextureExtents( const ArrayVertex2& texVertices ) const;
 	public:
 		virtual bool SetSelfBounds( Real width, Real height );
 

@@ -57,9 +57,9 @@ class LuaLibMedia
 		static void Initialize( lua_State *L );
 
 #ifdef Rtt_ANDROID_ENV
-		static void RecordCallback( int id, int status );
-		static void SoundEndCallback( int id );
-		static void VideoEndCallback( int id );
+		static void RecordCallback( uintptr_t id, int status );
+		static void SoundEndCallback( uintptr_t id );
+		static void VideoEndCallback( uintptr_t id );
 #endif // Rtt_ANDROID_ENV
 };
 

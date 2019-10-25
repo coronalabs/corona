@@ -493,22 +493,28 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/$(INPUT_FILE_BASE).lu",
 			);
-			script = "TOOLSDIR=\"$PROJECT_DIR/../../bin/mac\"\nif [ -e \"$TOOLSDIR/lua\" ]; then\n    LUA_DIR=\"$TOOLSDIR\"\nelse\n    echo \"ERROR: cannot find 'lua' in $TOOLSDIR\"\n    exit 1\nfi\n\n\"$LUA_DIR\"/lua $SRCROOT/../../bin/rcc.lua -c \"$LUA_DIR\" -O$CONFIGURATION -o \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\"/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH";
+			runOncePerArchitecture = 0;
+			script = "TOOLSDIR=\"$PROJECT_DIR/../../bin/mac\"\nif [ -e \"$TOOLSDIR/lua\" ]; then\n    LUA_DIR=\"$TOOLSDIR\"\nelse\n    echo \"ERROR: cannot find 'lua' in $TOOLSDIR\"\n    exit 1\nfi\n\n\"$LUA_DIR\"/lua $SRCROOT/../../bin/rcc.lua -c \"$LUA_DIR\" -O$CONFIGURATION -o \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\"/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH\n";
 		};
 		A46936A2169D6A0700723568 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/$(INPUT_FILE_BASE).lu",
 			);
-			script = "TOOLSDIR=\"$PROJECT_DIR/../../bin/mac\"\nif [ -e \"$TOOLSDIR/lua\" ]; then\n    LUA_DIR=\"$TOOLSDIR\"\nelse\n    echo \"ERROR: cannot find 'lua' in $TOOLSDIR\"\n    exit 1\nfi\n\n\"$LUA_DIR\"/lua $SRCROOT/../../bin/rcc.lua -c \"$LUA_DIR\" -O$CONFIGURATION -o \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\"/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH";
+			runOncePerArchitecture = 0;
+			script = "TOOLSDIR=\"$PROJECT_DIR/../../bin/mac\"\nif [ -e \"$TOOLSDIR/lua\" ]; then\n    LUA_DIR=\"$TOOLSDIR\"\nelse\n    echo \"ERROR: cannot find 'lua' in $TOOLSDIR\"\n    exit 1\nfi\n\n\"$LUA_DIR\"/lua $SRCROOT/../../bin/rcc.lua -c \"$LUA_DIR\" -O$CONFIGURATION -o \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\"/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH\n";
 		};
 /* End PBXBuildRule section */
 
@@ -3617,7 +3623,10 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../librtt . ";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					.,
+				);
 			};
 			name = "Release-template";
 		};
@@ -3680,7 +3689,10 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../librtt . ";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					.,
+				);
 			};
 			name = "Release-template-trial";
 		};
@@ -5034,7 +5046,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "CoronaCards/Test-Swift/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -5080,7 +5095,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "CoronaCards/Test-Swift/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -5125,7 +5143,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "CoronaCards/Test-Swift/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -5170,7 +5191,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "CoronaCards/Test-Swift/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -5441,7 +5465,10 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../librtt . ";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					.,
+				);
 			};
 			name = Debug;
 		};
@@ -5508,7 +5535,10 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../librtt . ";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					.,
+				);
 			};
 			name = Release;
 		};

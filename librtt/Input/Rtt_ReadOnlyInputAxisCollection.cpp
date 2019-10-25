@@ -142,7 +142,7 @@ bool ReadOnlyInputAxisCollection::Contains(PlatformInputAxis *axisPointer) const
 {
 	if (NULL == fCollectionPointer)
 	{
-		return NULL;
+		return false;
 	}
 	return fCollectionPointer->Contains(axisPointer);
 }

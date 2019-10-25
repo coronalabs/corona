@@ -858,10 +858,18 @@ static NSString *kValueNotSet = @"not set";
 
         if ([string hasPrefix:@"launch-bundle:"])
         {
-            [[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:[string stringByReplacingOccurrencesOfString:@"launch-bundle:" withString:@""]
-                                                                 options:NSWorkspaceLaunchDefault
-                                          additionalEventParamDescriptor:nil
-                                                        launchIdentifier:nil];
+			string = [string stringByReplacingOccurrencesOfString:@"launch-bundle:" withString:@""];
+			NSArray *components = [string componentsSeparatedByString:@"|"];
+			NSString *bundleId = [components firstObject];
+			if(![[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:bundleId
+																	 options:NSWorkspaceLaunchDefault
+											  additionalEventParamDescriptor:nil
+															launchIdentifier:nil])
+			{
+				if([components count]>1) {
+					[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[components objectAtIndex:1]]];
+				}
+			}
             
             return YES;
         }

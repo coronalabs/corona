@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 #
 # build_dmg.sh
 #
