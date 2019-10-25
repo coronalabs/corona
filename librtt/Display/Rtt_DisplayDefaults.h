@@ -76,7 +76,6 @@ class DisplayDefaults
 
 		bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame;}
 		void SetImageSheetSampledInsideFrame( bool newValue ) { fIsImageSheetSampledInsideFrame = newValue; }
-
 	public:
 		bool IsV1Compatibility() const { return fV1Compatibility; }
 		void SetV1Compatibility( bool newValue ) { fV1Compatibility = newValue; }
