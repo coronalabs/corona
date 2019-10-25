@@ -114,7 +114,11 @@
 	UIColor *color = _userColor;
 	if ( !color )
 	{
-		color = [UIColor blackColor];
+		if (@available(iOS 13.0, *)) {
+			color = [UIColor labelColor];
+		} else {
+			color = [UIColor blackColor];
+		}
 	}
 	[self setTextColor:color];
 }
@@ -124,7 +128,11 @@
 	if ( ( [[self text] isEqualToString:@""] || _showingPlaceholder ) && _placeholder )
 	{
 		[super setText:_placeholder];
-		[self setTextColor:[UIColor lightGrayColor]];
+		if (@available(iOS 13.0, *)) {
+			[self setTextColor:[UIColor placeholderTextColor]];
+		} else {
+			[self setTextColor:[UIColor lightGrayColor]];
+		}
 		_showingPlaceholder = true;
 	}
 	else
