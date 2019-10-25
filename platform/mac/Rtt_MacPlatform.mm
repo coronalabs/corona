@@ -1251,6 +1251,15 @@ MacPlatform::PushSystemInfo( lua_State *L, const char *key ) const
 		lua_pushstring(L, "");
 		pushedValues = 1;
 	}
+	else if ( Rtt_StringCompare( key, "darkMode" ) == 0 )
+	{
+		BOOL res = NO;
+		if (@available(macOS 10.14, *)) {
+			res = [fView.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua;
+		}
+		lua_pushboolean(L, res);
+		pushedValues = 1;
+	}
 	else
 	{
 		// Attempt to fetch the requested system info from the base class.

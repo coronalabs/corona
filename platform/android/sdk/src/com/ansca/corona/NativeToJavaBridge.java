@@ -2057,6 +2057,11 @@ public class NativeToJavaBridge {
 			luaState.pushString(languageCode);
 			valuesPushed = 1;
 		}
+		else if (key.equals("darkMode")) {
+			int currentNightMode = context.getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+			luaState.pushBoolean(currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES);
+			valuesPushed = 1;
+		}
 
 		// Push nil if failed to fetch the requested value.
 		if (valuesPushed <= 0) {

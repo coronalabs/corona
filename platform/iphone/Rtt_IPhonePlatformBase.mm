@@ -567,6 +567,15 @@ IPhonePlatformBase::PushSystemInfo( lua_State *L, const char *key ) const
 		lua_pushstring(L, versionName);
 		pushedValues = 1;
 	}
+	else if ( Rtt_StringCompare( key, "darkMode" ) == 0 )
+	{
+		BOOL res = NO;
+		if (@available(iOS 13.0, tvOS 13.0, *)) {
+			res = fView.viewController.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+		}
+		lua_pushboolean(L, res);
+		pushedValues = 1;
+	}
 	else
 	{
 		// Attempt to fetch the requested system info from the base class.
