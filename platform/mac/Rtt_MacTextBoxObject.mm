@@ -188,7 +188,14 @@ DispatchEvent( Rtt_NSTextView* textbox, int startpos, int numdeleted, const char
 	NSColor *color = _userColor;
 	if ( !color )
 	{
-		color = [NSColor blackColor];
+		if(@available(macOS 10.10, *))
+		{
+			color = [NSColor labelColor];
+		}
+		else
+		{
+			color = [NSColor blackColor];
+		}
 	}
 	[self setTextColor:color];
 }
@@ -197,7 +204,14 @@ DispatchEvent( Rtt_NSTextView* textbox, int startpos, int numdeleted, const char
 {
 	if ( ( [[self string] isEqualToString:@""] || _showingPlaceholder ) && _placeholder )
 	{
-		[self setTextColor:[NSColor grayColor]];
+		if(@available(macOS 10.10, *))
+		{
+			[self setTextColor:[NSColor placeholderTextColor]];
+		}
+		else
+		{
+			[self setTextColor:[NSColor grayColor]];
+		}
 		[super setString:_placeholder];
 		_showingPlaceholder = true;
 	}
