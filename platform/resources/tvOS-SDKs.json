@@ -8,10 +8,10 @@
 			"beta": false
 		},
 		{
-			"label": "13.0",
-			"xcodeVersion": "13.0",
-			"failMessage": "install or xcode-select Xcode 11.1 to enable",
-			"coronaVersion": 130000,
+			"label": "13.2",
+			"xcodeVersion": "13.2",
+			"failMessage": "install or xcode-select Xcode 11.2 to enable",
+			"coronaVersion": 132000,
 			"beta": false
 		}
 	]
