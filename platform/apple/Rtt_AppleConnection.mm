@@ -123,13 +123,14 @@
 	// NSDEBUG(@"%s: %g%%", __func__, (percent * 100));
 
 #if ! defined(Rtt_NO_GUI)
-	AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
-
-	// Don't move progress from 0 to 100% in one go (avoids progress bar for small protocol messages)
-	if (percent < 0.99 || appDelegate.buildDownloadProgess != 0)
-	{
-		appDelegate.buildDownloadProgess = percent;
-	}
+	[[NSRunLoop mainRunLoop] performBlock:^{
+		AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
+		// Don't move progress from 0 to 100% in one go (avoids progress bar for small protocol messages)
+		if (percent < 0.99 || appDelegate.buildDownloadProgess != 0)
+		{
+			appDelegate.buildDownloadProgess = percent;
+		}
+	}];
 #endif
 }
 
@@ -271,13 +272,14 @@
 	[outputFile writeData:data];
 
 #if ! defined(Rtt_NO_GUI)
-	AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
-
-	// Don't move progress from 0 to 100% in one go (avoids progress bar for small protocol messages)
-	if (percent < 0.99 || appDelegate.buildDownloadProgess != 0)
-	{
-		appDelegate.buildDownloadProgess = percent;
-	}
+	[[NSRunLoop mainRunLoop] performBlock:^{
+		AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
+		// Don't move progress from 0 to 100% in one go (avoids progress bar for small protocol messages)
+		if (percent < 0.99 || appDelegate.buildDownloadProgess != 0)
+		{
+			appDelegate.buildDownloadProgess = percent;
+		}
+	}];
 #endif
 }
 
@@ -328,6 +330,13 @@ namespace Rtt
 bool
 AppleConnection::Download(const char *urlStr, const char *filename)
 {
+#if ! defined(Rtt_NO_GUI)
+	__block AppDelegate *appDelegate = nil;
+	[[NSRunLoop mainRunLoop] performBlock:^{
+		appDelegate = (AppDelegate*)[NSApp delegate];
+	}];
+#endif
+
 	NSURL *downloadURL = [NSURL URLWithString:[NSString stringWithExternalString:urlStr]];
 	NSURL *fileURL = [NSURL fileURLWithPath:[NSString stringWithExternalString:filename]];
 	NSURLRequest *downloadRequest = [[[NSURLRequest alloc] initWithURL:downloadURL] autorelease];
@@ -361,8 +370,6 @@ AppleConnection::Download(const char *urlStr, const char *filename)
 	{
 		@autoreleasepool {
 #if ! defined(Rtt_NO_GUI)
-			AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
-
 			if ([appDelegate stopRequested])
 			{
 				[downloadConnection cancel];
@@ -510,6 +517,13 @@ CreateParamsArray( const KeyValuePair* pairs, int numPairs )
 PlatformDictionaryWrapper*
 AppleConnection::Call( const char* m, const KeyValuePair* pairs, int numPairs )
 {
+#if ! defined(Rtt_NO_GUI)
+	__block AppDelegate *appDelegate = nil;
+	[[NSRunLoop mainRunLoop] performBlock:^{
+		appDelegate = (AppDelegate*)[NSApp delegate];
+	}];
+#endif
+
 	XMLRPCRequest *xmlRequest = [[[XMLRPCRequest alloc] initWithURL:fUrl] autorelease];
     time_t startTime = 0;
 	PlatformDictionaryWrapper* result = NULL;
@@ -573,8 +587,6 @@ AppleConnection::Call( const char* m, const KeyValuePair* pairs, int numPairs )
 			@autoreleasepool {
 
 #if ! defined(Rtt_NO_GUI)
-				AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
-
 				if ([appDelegate stopRequested])
 				{
 					[xmlRPCConnection cancel];
