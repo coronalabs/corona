@@ -120,7 +120,10 @@
 			color = [UIColor blackColor];
 		}
 	}
-	[self setTextColor:color];
+	if( ! [[self textColor] isEqual:color] )
+	{
+		[self setTextColor:color];
+	}
 }
 
 - (void) updatePlaceholder
