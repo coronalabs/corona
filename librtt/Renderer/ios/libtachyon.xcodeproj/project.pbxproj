@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		9A5AC47D1770C3D0000DA193 /* Rtt_GeometryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A5AC47C1770C3D0000DA193 /* Rtt_GeometryPool.cpp */; };
 		A48B91D4178A9CBB0072EAF7 /* Rtt_TextureVolatile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A48B91D2178A9CBB0072EAF7 /* Rtt_TextureVolatile.cpp */; };
-		A4B93EDE17596543003466CC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B93EDD17596543003466CC /* Foundation.framework */; };
 		A4B93F5E17596600003466CC /* Rtt_CommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3017596600003466CC /* Rtt_CommandBuffer.cpp */; };
 		A4B93F5F17596600003466CC /* Rtt_CPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3217596600003466CC /* Rtt_CPUResource.cpp */; };
 		A4B93F6017596600003466CC /* Rtt_FrameBufferObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3417596600003466CC /* Rtt_FrameBufferObject.cpp */; };
@@ -53,7 +52,6 @@
 		A48B91D2178A9CBB0072EAF7 /* Rtt_TextureVolatile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureVolatile.cpp; path = ../Rtt_TextureVolatile.cpp; sourceTree = "<group>"; };
 		A48B91D3178A9CBB0072EAF7 /* Rtt_TextureVolatile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureVolatile.h; path = ../Rtt_TextureVolatile.h; sourceTree = "<group>"; };
 		A4B93EDA17596543003466CC /* libtachyon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtachyon.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		A4B93EDD17596543003466CC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A4B93F3017596600003466CC /* Rtt_CommandBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CommandBuffer.cpp; path = ../Rtt_CommandBuffer.cpp; sourceTree = "<group>"; };
 		A4B93F3117596600003466CC /* Rtt_CommandBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CommandBuffer.h; path = ../Rtt_CommandBuffer.h; sourceTree = "<group>"; };
 		A4B93F3217596600003466CC /* Rtt_CPUResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CPUResource.cpp; path = ../Rtt_CPUResource.cpp; sourceTree = "<group>"; };
@@ -107,7 +105,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4B93EDE17596543003466CC /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,7 +131,6 @@
 		A4B93EDC17596543003466CC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A4B93EDD17596543003466CC /* Foundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -235,6 +231,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = A4B93ED117596543003466CC;
