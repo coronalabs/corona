@@ -33,11 +33,7 @@
 
 // ----------------------------------------------------------------------------
 
-@class NSDictionary;
 @class NSString;
-@class NSURL;
-@class UIView;
-@class UIWebView;
 @class IPhoneWebView;
 
 namespace Rtt
