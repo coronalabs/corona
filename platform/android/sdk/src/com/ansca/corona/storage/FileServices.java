@@ -619,6 +619,16 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 									0, android.content.res.AssetFileDescriptor.UNKNOWN_LENGTH);
 						}
 						catch (Exception ex) { }
+						try {
+							// extract file it if was not extracted yet
+							if(descriptor == null && extractAssetFile(filePath) != null) {
+								java.io.File file = getCoronaResourcesFile(filePath);
+								descriptor = new android.content.res.AssetFileDescriptor(
+										android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY),
+										0, android.content.res.AssetFileDescriptor.UNKNOWN_LENGTH);
+							}
+						}
+						catch (Exception ignore) {}
 						if (descriptor == null) {
 							// Attempt to access the file in the APK's "raw" resource directory.
 							try {
