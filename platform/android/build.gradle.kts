@@ -4,7 +4,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.0")
+        classpath("com.android.tools.build:gradle:3.5.2")
         classpath("de.undercouch:gradle-download-task:3.4.3")
         classpath("com.beust:klaxon:5.0.1")
     }
