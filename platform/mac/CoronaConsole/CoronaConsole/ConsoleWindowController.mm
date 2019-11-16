@@ -488,37 +488,36 @@ static size_t ConsoleRepeatLimit = 50;
 	dispatch_async(dispatch_get_main_queue(), ^{
 		NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:text];
 
-		[attrString addAttributes:boldFontAttr range:NSMakeRange(0, 20)];
-		[attrString addAttributes:timestampAttr range:NSMakeRange(0, 20)];
-		[attrString addAttributes:textAttr range:NSMakeRange(20, [text length]-20)];
-		[attrString addAttributes:paraAttr range:NSMakeRange(0, [text length])];
+		[attrString addAttributes:self->boldFontAttr range:NSMakeRange(0, 20)];
+		[attrString addAttributes:self->timestampAttr range:NSMakeRange(0, 20)];
+		[attrString addAttributes:self->textAttr range:NSMakeRange(20, [text length]-20)];
+		[attrString addAttributes:self->paraAttr range:NSMakeRange(0, [text length])];
 
 		if ([text contains:@"ERROR:"] || [text contains:@"Runtime error"]  )
 		{
-			[attrString addAttributes:errorAttr range:NSMakeRange(20, [text length]-20)];
+			[attrString addAttributes:self->errorAttr range:NSMakeRange(20, [text length]-20)];
 		}
 		else if ([text contains:@"WARNING:"])
 		{
-			[attrString addAttributes:warningAttr range:NSMakeRange(20, [text length]-20)];
+			[attrString addAttributes:self->warningAttr range:NSMakeRange(20, [text length]-20)];
 		}
-
-		NSRect visibleRect = [[_scrollView contentView] documentVisibleRect];
-		NSRect documentRect = [[_scrollView contentView] documentRect];
+		NSRect visibleRect = [self->_textView visibleRect];
+		NSRect documentRect = [[self->_scrollView contentView] documentRect];
 
 		[self.textFinder noteClientStringWillChange];
 
-		[[_textView textStorage] appendAttributedString:attrString];
+		[[self->_textView textStorage] appendAttributedString:attrString];
 		attrString = nil;
-		[_textFinder setFindIndicatorNeedsUpdate:YES];
+		[self->_textFinder setFindIndicatorNeedsUpdate:YES];
 
 		// Scroll to new end if document is scrolled to end (but not if the scrollbar has been adjusted
 		// manually to a point other than the end)
 		if ((visibleRect.size.height + visibleRect.origin.y) == (documentRect.size.height + documentRect.origin.y))
 		{
-			[_textView scrollRangeToVisible:NSMakeRange([[_textView string] length], 0)];
+			[self->_textView scrollToEndOfDocument:nil];
 		}
 
-		NSString *string = [[_textView textStorage] string];
+		NSString *string = [[self->_textView textStorage] string];
 		NSUInteger numberOfLines, index, stringLength = [string length];
 
 		if (stringLength > ConsoleMaxChars)
@@ -534,7 +533,7 @@ static size_t ConsoleRepeatLimit = 50;
 
 			[self.textFinder noteClientStringWillChange];
 
-			[[_textView textStorage] deleteCharactersInRange:NSMakeRange(0, index)];
+			[[self->_textView textStorage] deleteCharactersInRange:NSMakeRange(0, index)];
 		}
 	});
 }
