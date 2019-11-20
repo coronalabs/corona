@@ -835,8 +835,14 @@ public class PermissionsServices extends com.ansca.corona.ApplicationContextProv
 
 				// Check the permission group attribute:
 				// if part of the desired permission group. return the permission!
-				if (permissionInfo != null && permissionInfo.group != null && permissionInfo.group.equals(permissionGroup)) {
-					allPermissionsInGroup.add(requestedPermissions[permissionIdx]);
+				if (permissionInfo != null && permissionInfo.group != null) {
+					String groupFromInfo = permissionInfo.group;
+					if(groupFromInfo.equals("android.permission-group.UNDEFINED")) {
+						groupFromInfo = sMarshmallowPermissionToPermissionGroupMap.get(requestedPermissions[permissionIdx]);
+					}
+					if(groupFromInfo != null && groupFromInfo.equals(permissionGroup)) {
+						allPermissionsInGroup.add(requestedPermissions[permissionIdx]);
+					}
 				}
 			}
 
@@ -974,7 +980,11 @@ public class PermissionsServices extends com.ansca.corona.ApplicationContextProv
 
 		try {
 			android.content.pm.PermissionInfo permissionInfo = packageManager.getPermissionInfo(permission, 0);
-			return permissionInfo.group;
+			String group = permissionInfo.group;
+			if(group.equals("android.permission-group.UNDEFINED")) {
+				group = sMarshmallowPermissionToPermissionGroupMap.get(permission);
+			}
+			return group;
 		} catch (Exception ex) {
 			// This permission doesn't exist on this device. Move on.
 		}
