@@ -779,7 +779,9 @@ SpriteObject::GetFrameIndexForDeltaTime( Real dt, SpriteObjectSequence *sequence
 	{
 		int numFrames = sequence->GetNumFrames();
 		Real *timeArray = sequence->GetTimeArray();
-		for (int i = fTimeArrayCachedFrame; i < effectiveNumFrames; ++i) // Increase cachedFrame until dt is lower than cachedNextFrameTime again
+		
+		// Increase cachedFrame until dt is lower than cachedNextFrameTime again OR effectiveNumFrames is reached when using finite loops
+		for (int i = fTimeArrayCachedFrame; (0 == sequence->GetLoopCount() && dt > fTimeArrayCachedNextFrameTime) || i < effectiveNumFrames; ++i)
 		{
 			fTimeArrayCachedFrame += 1;
 			
