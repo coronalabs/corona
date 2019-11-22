@@ -30,9 +30,9 @@
 
 // ----------------------------------------------------------------------------
 
-@class MPMoviePlayerController;
-@class MPMoviePlayerViewController;
+@class AVPlayerViewController;
 @class IPhoneMovieObserver;
+
 namespace Rtt
 {
 
@@ -58,19 +58,12 @@ class IPhoneVideoPlayer : public PlatformVideoPlayer
 
 	public:
 		virtual void Play();
-//		virtual void Stop();
 		virtual void SetProperty( U32 mask, bool newValue );
 
-	public:
-		void LoadStateDidChange();
-		void DidExitFullscreen();
-		void PlaybackDidFinish();
-
+		void PlaybackDone();
 	private:
-		MPMoviePlayerController* fMovieController;
-		IPhoneMovieObserver* fMovieObserver;
-		MPMoviePlayerViewController* fMoviePlayerViewController;
-		bool fMoviePlayerViewControllerIsPushed;
+		IPhoneMovieObserver *fMovieObserver;
+		AVPlayerViewController* fMoviePlayerViewController;
 };
 
 // ----------------------------------------------------------------------------
