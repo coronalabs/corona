@@ -3009,6 +3009,10 @@ IsAppAllowedToRun( const Rtt::AuthorizationTicket* t )
 -(IBAction)launchSimulator:(id)sender
 {
 	using namespace Rtt;
+	if([[NSUserDefaults standardUserDefaults] boolForKey:@"clearConsoleOnRelaunch"])
+	{
+		[self clearConsole];
+	}
 
 	// Detect relaunch
 	if ( fSimulator )
@@ -4294,6 +4298,20 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 - (IBAction)bringAllToFront:(id)sender
 {
 	[NSApp arrangeInFront:sender];
+}
+
+-(void) clearConsole
+{
+	if ([consoleTask isRunning])
+	{
+		// Signal the logger to bring its window to the front
+		pid_t consolePID = [consoleTask processIdentifier];
+
+		if (consolePID != 0)
+		{
+			kill(consolePID, SIGIO);
+		}
+	}
 }
 
 - (IBAction)consoleMenuitem:(id)sender

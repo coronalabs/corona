@@ -31,6 +31,7 @@
 	NSRunningApplication *simulator;
 }
 
+- (void) clearConsole;
 - (void) bringToFront;
 - (void)observeValueForKeyPath:(NSString *)keyPath
 					  ofObject:(id)object

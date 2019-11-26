@@ -39,6 +39,15 @@ static void SignalHandler(int signal)
 	});
 }
 
+static void ClearConsoleSig(int signal)
+{
+	// When we receive a SIGIO clear console
+	dispatch_async(dispatch_get_main_queue(), ^{
+		AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
+
+		[appDelegate clearConsole];
+	});
+}
 
 @implementation AppDelegate
 
@@ -48,6 +57,8 @@ static void SignalHandler(int signal)
 	struct sigaction action = { 0 };
 	action.sa_handler = SignalHandler;
 	sigaction(SIGHUP, &action, NULL);
+	action.sa_handler = ClearConsoleSig;
+	sigaction(SIGIO, &action, NULL);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -100,6 +111,11 @@ static void SignalHandler(int signal)
 - (IBAction)clearConsole:(id)sender
 {
 	[[ConsoleWindowController sharedConsole] clearLog:sender];
+}
+
+-(void) clearConsole
+{
+	[self clearConsole:nil];
 }
 
 - (IBAction)gotoEndOfConsole:(id)sender

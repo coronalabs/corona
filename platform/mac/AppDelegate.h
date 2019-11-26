@@ -311,5 +311,6 @@ namespace Rtt
 @property (nonatomic, readwrite) BOOL suppressAttentionRequests;
 
 - (NSInteger)requestUserAttention:(NSRequestUserAttentionType)requestType;
+- (void) clearConsole;
 
 @end
