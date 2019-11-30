@@ -2053,6 +2053,19 @@ public class Controller {
 						vis |= ApiLevel11.getSystemUiVisibility(glView) & android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
 					}
 					ApiLevel11.setSystemUiVisibility(glView, vis);
+
+					final int finalVis = vis;
+					glView.setOnSystemUiVisibilityChangeListener(new android.view.View.OnSystemUiVisibilityChangeListener() {
+
+						@Override
+						public void onSystemUiVisibilityChange(int visibilityInt)
+						{
+							if((finalVis & android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) != 0)
+							{
+								ApiLevel11.setSystemUiVisibility(glView, finalVis);
+							}
+						}
+					});
 				}
 			}
 		});
