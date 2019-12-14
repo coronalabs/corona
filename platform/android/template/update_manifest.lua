@@ -95,6 +95,7 @@ local applicationChildXmlElements = {}
 local googlePlayGamesAppId = false
 local facebookAppId = false
 local coronaWindowMovesWhenKeyboardAppears = false
+local initialSystemUiVisibility = nil
 local allowAppsReadOnlyAccessToFiles = true
 local strings = {}
 local apkFiles = { "...NONE..." } -- necessary due to the way ant treats empty filelists
@@ -522,6 +523,11 @@ if "table" == type(buildSettings) then
 			coronaWindowMovesWhenKeyboardAppears = buildSettings.android.CoronaWindowMovesWhenKeyboardAppears
 		end
 
+		-- Fetch the "initialSystemUiVisibility" flag used to set the systemUiVisibility before the splashScreen is shown.
+        if type(buildSettings.android.initialSystemUiVisibility) == "string" then
+        	initialSystemUiVisibility = buildSettings.android.initialSystemUiVisibility
+        end
+
 		-- Fetch a flag indicating if Corona's FileContentProvider should provide public read-only access to files.
 		if type(buildSettings.android.allowAppsReadOnlyAccessToFiles) == "boolean" then
 			allowAppsReadOnlyAccessToFiles = buildSettings.android.allowAppsReadOnlyAccessToFiles
@@ -700,6 +706,13 @@ if coronaWindowMovesWhenKeyboardAppears then
 	stringBuffer = '<meta-data android:name="coronaWindowMovesWhenKeyboardAppears" android:value="true" />'
 end
 manifestKeys.USER_CORONA_WINDOW_MOVES_WHEN_KEYBOARD_APPEARS = stringBuffer
+
+-- Create a meta-data tag for the "initialSystemUiVisibility" setting, if provided.
+stringBuffer = ""
+if initialSystemUiVisibility then
+	stringBuffer = '<meta-data android:name="initialSystemUiVisibility" android:value="true" />'
+end
+manifestKeys.USER_INITIAL_SYSTEM_UI_VISIBILITY = stringBuffer
 
 -- Create a "largeHeap" application tag attribute if set.
 stringBuffer = ""
