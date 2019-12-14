@@ -2028,7 +2028,8 @@ public class Controller {
 						// 0x00001000 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY lets touch events pass to the corona app
 						// 0x00000002 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION hides any on screen navigation buttons
 						// 0x00000004 View.SYSTEM_UI_FLAG_FULLSCREEN hides the status bar
-						vis = 0x00001000 | 0x00000002 | 0x00000004;
+						// 0x00000200 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION avoids resize event
+						vis = 0x00001000 | 0x00000002 | 0x00000004 | 0x00000200;
 				} else if (visibility.equals("immersive") && (
 					(android.os.Build.VERSION.SDK_INT >= 19) ||
 					(android.os.Build.MANUFACTURER.equals("Amazon") && android.os.Build.VERSION.SDK_INT >= 14))) {
@@ -2037,7 +2038,8 @@ public class Controller {
 						// 0x00000800 View.SYSTEM_UI_FLAG_IMMERSIVE lets touch events pass to the corona app
 						// 0x00000002 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION hides any on screen navigation buttons
 						// 0x00000004 View.SYSTEM_UI_FLAG_FULLSCREEN hides the status bar
-						vis = 0x00000800 | 0x00000002 | 0x00000004;
+						// 0x00000200 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION avoids resize event
+						vis = 0x00000800 | 0x00000002 | 0x00000004 | 0x00000200;
 				} else if (visibility.equals("lowProfile")) {
 					// On API Level 14 and above: View.SYSTEM_UI_FLAG_LOW_PROFILE dims any on screen buttons if they exists
 					// For API Level 11 - 13: View.STATUS_BAR_HIDDEN has the same effect
