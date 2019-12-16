@@ -87,11 +87,6 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>LSEnvironment</key>
-	<dict>
-		<key>JAVA_VERSION</key>
-		<string>1.8</string>
-	</dict>
 	<key>NSSupportsSuddenTermination</key>
 	<string>YES</string>
 </dict>
