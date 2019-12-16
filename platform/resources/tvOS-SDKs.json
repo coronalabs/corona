@@ -1,9 +1,9 @@
 {
 	"tvos": [
 		{
-			"label": "13.2",
+			"label": "13.3",
 			"xcodeVersion": "13.2",
-			"failMessage": "install or xcode-select Xcode 11.2.1 to enable",
+			"failMessage": "install or xcode-select Xcode 11.3 to enable",
 			"coronaVersion": 132000,
 			"beta": false
 		}
