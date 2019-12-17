@@ -32,6 +32,7 @@ import android.app.UiModeManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.animation.AlphaAnimation;
@@ -263,6 +264,26 @@ public class CoronaActivity extends Activity {
 
 		// Create our CoronaRuntime, which also initializes the native side of the CoronaRuntime.
 		fCoronaRuntime = new CoronaRuntime(this, false);
+
+		// Set initialSystemUiVisibility before splashScreen comes up
+		try {
+			android.content.pm.ActivityInfo activityInfo;
+			activityInfo = getPackageManager().getActivityInfo(getComponentName(), android.content.pm.PackageManager.GET_META_DATA);
+			if ((activityInfo != null) && (activityInfo.metaData != null)) {
+				String initialSystemUiVisibility = activityInfo.metaData.getString("initialSystemUiVisibility");
+				if (initialSystemUiVisibility != null) {
+					if (initialSystemUiVisibility.equals("immersiveSticky") && Build.VERSION.SDK_INT < 19) {
+						fCoronaRuntime.getController().setSystemUiVisibility("lowProfile");
+					} else {
+						fCoronaRuntime.getController().setSystemUiVisibility(initialSystemUiVisibility);
+					}
+				}
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		// fCoronaRuntime = new CoronaRuntime(this, false);		// for Tegra debugging
 
 		showCoronaSplashScreen();
