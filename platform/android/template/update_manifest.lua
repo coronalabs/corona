@@ -524,9 +524,9 @@ if "table" == type(buildSettings) then
 		end
 
 		-- Fetch the "initialSystemUiVisibility" flag used to set the systemUiVisibility before the splashScreen is shown.
-        if type(buildSettings.android.initialSystemUiVisibility) == "string" then
-        	initialSystemUiVisibility = buildSettings.android.initialSystemUiVisibility
-        end
+		if type(buildSettings.android.initialSystemUiVisibility) == "string" then
+			initialSystemUiVisibility = buildSettings.android.initialSystemUiVisibility
+		end
 
 		-- Fetch a flag indicating if Corona's FileContentProvider should provide public read-only access to files.
 		if type(buildSettings.android.allowAppsReadOnlyAccessToFiles) == "boolean" then
