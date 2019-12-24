@@ -710,7 +710,7 @@ manifestKeys.USER_CORONA_WINDOW_MOVES_WHEN_KEYBOARD_APPEARS = stringBuffer
 -- Create a meta-data tag for the "initialSystemUiVisibility" setting, if provided.
 stringBuffer = ""
 if initialSystemUiVisibility then
-	stringBuffer = '<meta-data android:name="initialSystemUiVisibility" android:value="true" />'
+	stringBuffer = '<meta-data android:name="initialSystemUiVisibility" android:value="' .. initialSystemUiVisibility .. '" />'
 end
 manifestKeys.USER_INITIAL_SYSTEM_UI_VISIBILITY = stringBuffer
 
