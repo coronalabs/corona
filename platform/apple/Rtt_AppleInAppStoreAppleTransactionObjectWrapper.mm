@@ -146,7 +146,7 @@ const char*
 AppleStoreTransaction::GetReceipt() const
 {
 #if defined( Rtt_IPHONE_ENV )
-	return [[[fTransaction transactionReceipt] description] UTF8String];
+	return [[[fTransaction transactionReceipt] base64EncodedStringWithOptions:0] UTF8String];
 #else
 	return NULL;
 #endif
@@ -174,7 +174,7 @@ const char*
 AppleStoreTransaction::GetOriginalReceipt() const
 {
 #if defined( Rtt_IPHONE_ENV )
-	return [[[[fTransaction originalTransaction] transactionReceipt] description] UTF8String];
+	return [[[[fTransaction originalTransaction] transactionReceipt] base64EncodedStringWithOptions:0] UTF8String];
 #else
 	return NULL;
 #endif
