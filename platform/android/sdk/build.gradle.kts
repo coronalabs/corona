@@ -12,9 +12,6 @@ android {
         targetSdkVersion(28)
         versionCode = 1
         versionName = "1.0"
-        ndk {
-            // abiFilters("x86_64", "x86")
-        }
     }
 
     sourceSets["main"].manifest.srcFile(file("AndroidManifest-New.xml"))

@@ -203,8 +203,6 @@ android {
         }
     }
 
-    flavorDimensions("corona")
-
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -584,7 +582,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
                 val buildData = coronaBuildData?.let { file(it).readText() } ?: fakeBuildData
                 ?: throw InvalidModelException("Unable to retrieve build.data: '$coronaBuildData', '${file(coronaBuildData
                         ?: "null")}'")
-                commandLine(coronaBuilder, "plugins", "download", androidDestPluginPlatform, inputSettingsFile, "--android-build", "--build-data")
+                commandLine(coronaBuilder, "plugins", "download", androidDestPluginPlatform, "--build", "$coronaBuild", inputSettingsFile, "--android-build", "--build-data")
                 if (windows) environment["PATH"] = windowsPathHelper
                 standardInput = StringInputStream(buildData)
                 standardOutput = builderOutput
@@ -614,7 +612,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             val pluginDirectories = (pluginDirectoriesSet - pluginDisabledDependencies).toTypedArray()
             val builderOutput = ByteArrayOutputStream()
             val execResult = exec {
-                commandLine(coronaBuilder, "plugins", "download", androidDestPluginPlatform, "--fetch-dependencies", coronaPlugins, *pluginDirectories)
+                commandLine(coronaBuilder, "plugins", "download", androidDestPluginPlatform, "--build", "$coronaBuild", "--fetch-dependencies", coronaPlugins, *pluginDirectories)
                 if (windows) environment["PATH"] = windowsPathHelper
                 standardOutput = builderOutput
                 isIgnoreExitValue = true
@@ -938,6 +936,7 @@ tasks.register<Copy>("exportToNativeAppTemplate") {
             exclude("settings.gradle")
             exclude("**/AndroidManifest.xml")
             exclude("**/*.java")
+            exclude("gradle.properties")
         })
     }
     doLast {
@@ -1198,8 +1197,8 @@ dependencies {
             implementation(files(coronaLocal))
         } else {
             checkCoronaNativeInstallation()
-            implementation(files("$nativeDir/Corona/android/lib/gradle/Corona.aar"))
-            implementation(files("$nativeDir/Corona/android/lib/Corona/libs/licensing-google.jar"))
+            implementation(":Corona@aar")
+            implementation(":licensing-google@jar")
         }
         implementation(fileTree("libs") {
             include("**/*.jar")
