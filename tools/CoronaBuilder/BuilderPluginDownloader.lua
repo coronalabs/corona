@@ -338,6 +338,16 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		elseif args[i] == '--always-query' then
 			table.remove(args, i)
 			alwaysQuery = true
+		elseif args[i] == '--build' then
+			table.remove(args, i)
+			local build = args[i]
+			table.remove(args, i)
+			build = (build or ""):gmatch('(%d+)%.(%d+)')
+			local y,b = build()
+			if y and b then
+				buildYear = y
+				buildRevision = b
+			end
 		elseif args[i] == '--' then
 			break
 		end
