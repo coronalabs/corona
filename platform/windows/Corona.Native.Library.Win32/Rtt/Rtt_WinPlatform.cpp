@@ -1740,6 +1740,32 @@ void WinPlatform::SetNativeProperty(lua_State *L, const char *key, int valueInde
 			::SetWindowTextW(windowHandle, stringConverter.GetUTF16());
 		}
 	}
+	else if (Rtt_StringCompare(key, "windowSize") == 0)
+	{
+		// Change the window size.
+		auto windowPointer = fEnvironment.GetMainWindow();
+		if (windowPointer && (lua_type(L, valueIndex) == LUA_TTABLE))
+		{
+			// Get the current window size and update its values.
+			auto currentClientSize = windowPointer->GetNormalModeClientSize();
+			lua_getfield( L, -1, "width");
+			if (lua_type( L, -1 ) == LUA_TNUMBER) 
+			{
+				currentClientSize.cx = (S32) lua_tointeger( L, -1 );
+			}
+			lua_pop( L, 1 );
+
+			lua_getfield( L, -1, "height");
+			if (lua_type( L, -1 ) == LUA_TNUMBER) 
+			{
+				currentClientSize.cy = (S32) lua_tointeger( L, -1 );
+			}
+			lua_pop( L, 1 );
+
+			// Update the window size.
+			windowPointer->SetNormalModeClientSize(currentClientSize);
+		}
+	}
 	else if (Rtt_StringCompare(key, "windowMode") == 0)
 	{
 		// Change the window mode to normal, minimized, maximized, fullscreen, etc.
