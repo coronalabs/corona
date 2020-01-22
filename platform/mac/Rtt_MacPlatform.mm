@@ -1858,6 +1858,36 @@ MacPlatform::SetNativeProperty(lua_State *L, const char *key, int valueIndex) co
             [window setTitle:[NSString stringWithExternalString:lua_tostring(L, valueIndex)]];
         }
     }
+    else if (Rtt_StringCompare(key, "windowSize") == 0)
+    {
+#ifdef Rtt_AUTHORING_SIMULATOR
+
+		Rtt_Log("Note: native.setProperty(\"windowSize\", mode) does not work in the Simulator");
+#else
+		if (window != nil && (lua_type(L, valueIndex) == LUA_TTABLE))
+		{
+			NSRect frame = [window frame];
+			NSSize size = frame.size;
+			
+			lua_getfield( L, -1, "width");
+			if (lua_type( L, -1 ) == LUA_TNUMBER) 
+			{
+			    size.width = lua_tointeger( L, -1 );
+			}
+			lua_pop( L, 1 );
+			
+			lua_getfield( L, -1, "height");
+			if (lua_type( L, -1 ) == LUA_TNUMBER) 
+			{
+			    size.height = lua_tointeger( L, -1 );
+			}
+			lua_pop( L, 1 );
+			
+			[fView setFrameSize:NSMakeSize(size.width, size.height)];
+			[window setContentSize:(NSSize)size];
+		}
+#endif
+	}
     else if (Rtt_StringCompare(key, "windowMode") == 0)
     {
 #ifdef Rtt_AUTHORING_SIMULATOR
