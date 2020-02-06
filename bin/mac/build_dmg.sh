@@ -14,6 +14,7 @@
 set -e # exit on any error
 
 TOOLSPATH=$(dirname "$0")
+PLATFORM_MAC="$TOOLSPATH"/../../platform/mac
 PRODUCT_DIR=Corona
 DSTDIR=$(date "+Corona.%Y.%m.%d")
 CUSTOM_ID=""
@@ -86,7 +87,7 @@ logfilepath=$(pwd)/$TOOLSPATH/logs/$logfileprefix
 mkdir -pv "$logfilepath"
 
 (
-cd "$TOOLSPATH"/../../platform/mac
+cd "$PLATFORM_MAC"
 ./build.sh  "$CUSTOM_ID" "$S3_BUCKET" | tee  "$logfilepath"/simulator.txt
 
 if [ "${PIPESTATUS[0]}" -ne 0 ] #exit if the build script failed. $? gives us the output from tee not build.sh
@@ -97,13 +98,6 @@ fi
 )
 
 mkdir "$TMPPATH"
-
-#codesign Simulator
-codesign --deep -f -s "Developer ID Application: Corona Labs Inc" "$TOOLSPATH/Corona Simulator.app" --timestamp=none
-
-#codesign Debugger and Terminal
-codesign --deep -f -s "Developer ID Application: Corona Labs Inc" "$TOOLSPATH/debugger" --timestamp=none
-codesign --deep -f -s "Developer ID Application: Corona Labs Inc" "$TOOLSPATH/Corona Terminal" --timestamp=none
 
 mkdir "$TMPPATH/${PRODUCT_DIR}"
 ditto "$TOOLSPATH/../../platform/resources/icons/CoronaSDK-DMG-DS_Store" "$TMPPATH"/.DS_Store
@@ -130,19 +124,84 @@ then
 	cp -v "$TOOLSPATH/../../sdk/dmg/Setup Corona.icns" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Native.app/Contents/Resources/applet.icns"
 	cp -v "$TOOLSPATH/../../sdk/dmg/Setup Corona.icns" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Enterprise.app/Contents/Resources/applet.icns"
 	xattr -cr "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Native.app"
-	codesign -s "Developer ID Application: Corona Labs Inc" --timestamp=none "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Native.app"
 	xattr -cr "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Enterprise.app"
-	codesign -s "Developer ID Application: Corona Labs Inc" --timestamp=none "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Enterprise.app"
 fi
 
 # unfortunately, since macOS 10.12 resource forks can not be signed, so removing some icons
-#bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/debugger" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Debugger.png"
+# bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/debugger" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Debugger.png"
 # bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${SAMPLECODE_DIR}" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Folder.png"
 # bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Folder.png"
 bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Folder.png"
 bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/Documentation.html" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Docs.png"
 #bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Corona Terminal" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Terminal.png"
 xcrun SetFile -a E "$TMPPATH/${PRODUCT_DIR}/Documentation.html" # hide extension
+
+
+## Codesign everything
+(
+	ENTITLEMENTS="$(cd "$PLATFORM_MAC" ; pwd)/CoronaSimulator.entitlements"
+	TMPPATH="$(cd "$TMPPATH" ; pwd)"
+
+	function CodesignLocation {
+	(
+		cd "$1"
+
+		local EXECUTABLES=()
+		local LIBRARIES=()
+		local ZIPS=()
+
+		save_x=$-
+		set +x
+
+		while read f
+		do
+			file_result=$(file "$f" -b -h)
+
+			if [[ $file_result == *"Mach-O"*"executable"* ]]
+			then
+				EXECUTABLES+=("$f")
+			elif [[ $file_result == *"Zip archive data"* ]] && [[ $f == *OSXAppTemplate* ]]
+			then
+				ZIPS+=("$f")
+			elif [[ $file_result == *"Mach-O"*"library"* ]]
+			then
+				LIBRARIES+=("$f")
+			elif [[ $file_result == *"Mach-O"*"ar archive"* ]]
+			then
+				LIBRARIES+=("$f")
+			elif [[ $file_result == *"Mach-O"*"bundle"* ]]
+			then
+				LIBRARIES+=("$f")
+			fi
+		done < <(find . -type f)
+
+		while read f
+		do
+			EXECUTABLES+=("$f")
+		done < <(find . -d -name '*.app')
+
+		[[ $save_x =~ x ]] && set -x
+
+		for z in "${ZIPS[@]}"
+		do
+			ZD="$(mktemp -d "${TMPPATH}/ziptmp-XXXXX")"
+			ditto -x -k "$z" "$ZD"
+			CodesignLocation "$ZD"
+			ditto -c -k "$ZD" "$ZD.zip"
+			mv "$ZD.zip" "$z"
+			rm -r "$ZD"
+		done
+
+		
+		codesign --timestamp --deep --force --options runtime --strict --sign 'Developer ID Application: Corona Labs Inc' "${LIBRARIES[@]}"
+		codesign --timestamp --deep --force --options runtime --strict --sign 'Developer ID Application: Corona Labs Inc' --entitlements "$ENTITLEMENTS"  "${EXECUTABLES[@]}"
+	)
+	}
+
+	CodesignLocation "$TMPPATH"
+
+)
+
 
 # this causes hdiutil create to generate corrupt filesystems for some reason
 # ditto "$TOOLSPATH/../../platform/resources/icons/Applications-CoronaSDK-DS_Store" "$TMPPATH"/${PRODUCT_DIR}/.DS_Store
@@ -206,4 +265,4 @@ hdiutil unflatten "$DSTBASE/$DMG_FILE"
 "$TOOLSPATH/AddLicense" "$DSTBASE/$DMG_FILE" English "$TOOLSPATH/../../sdk/dmg/Corona_License.rtf"
 hdiutil flatten "$DSTBASE/$DMG_FILE"
 
-codesign -s "Developer ID Application: Corona Labs Inc" "$DSTBASE/$DMG_FILE" --timestamp=none
+codesign --timestamp --deep --force --options runtime --strict --sign "Developer ID Application: Corona Labs Inc" "$DSTBASE/$DMG_FILE"

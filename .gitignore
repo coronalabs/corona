@@ -1,5 +1,5 @@
 *.xcuserdatad/
-
+/Corona*/
 
 # Hidden files used by the Finder in MacOS
 .DS_Store

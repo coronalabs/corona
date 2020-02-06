@@ -155,7 +155,7 @@
 		003E585E153CC3C700483125 /* lobjectivec_exceptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 003E585C153CC3C700483125 /* lobjectivec_exceptions.m */; };
 		004A5F371368DB24003BD9DA /* Corona3rdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 004A5F361368DB08003BD9DA /* Corona3rdPartyLicenses.txt */; };
 		004ADB3B1468C54400D732FC /* SkinlessSimulatorWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 004ADB3A1468C54300D732FC /* SkinlessSimulatorWindow.mm */; };
-		0052EBF412B73ADD006ED5BC /* ALmixer.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 00B737BA12B707B40057F594 /* ALmixer.framework */; };
+		0052EBF412B73ADD006ED5BC /* ALmixer.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 00B737BA12B707B40057F594 /* ALmixer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		00537D71154F6DE2008CEF00 /* lfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 00537D67154F6DE2008CEF00 /* lfs.c */; };
 		00537D72154F6DE2008CEF00 /* lfs.h in Headers */ = {isa = PBXBuildFile; fileRef = 00537D69154F6DE2008CEF00 /* lfs.h */; };
 		0054B975138205E400BC962A /* lua_hash_map.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0054B967138205E300BC962A /* lua_hash_map.hpp */; };
@@ -346,7 +346,7 @@
 		072020EE17C58DA100B6D424 /* kernel_filter_blurHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = 072020E617C58D8A00B6D424 /* kernel_filter_blurHorizontal_gl.lua */; };
 		072020EF17C58DA100B6D424 /* kernel_filter_blurVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = 072020E717C58D8A00B6D424 /* kernel_filter_blurVertical_gl.lua */; };
 		072020F017C58DA100B6D424 /* kernel_filter_levels_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = 072020E817C58D8A00B6D424 /* kernel_filter_levels_gl.lua */; };
-		0727BA8716E68FE800981C4B /* network.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0727BA8616E68FE800981C4B /* network.dylib */; };
+		0727BA8716E68FE800981C4B /* network.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0727BA8616E68FE800981C4B /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		0797EB4D181F0BED00FA57B5 /* Rtt_PlatformMediaProviderBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 0797EB4C181F0BED00FA57B5 /* Rtt_PlatformMediaProviderBase.h */; };
 		0797EB57181F0C0300FA57B5 /* Rtt_PlatformVideoProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0797EB55181F0C0300FA57B5 /* Rtt_PlatformVideoProvider.cpp */; };
 		0797EB5D181F0CC400FA57B5 /* Rtt_MacVideoProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0797EB5C181F0CC400FA57B5 /* Rtt_MacVideoProvider.mm */; };
@@ -496,7 +496,7 @@
 		A41AC0E716A5DB5C00AD331A /* easing.lua in Sources */ = {isa = PBXBuildFile; fileRef = A41AC0E516A5DAD300AD331A /* easing.lua */; };
 		A41AC0E816A5DB5C00AD331A /* timer.lua in Sources */ = {isa = PBXBuildFile; fileRef = A41AC0E416A5DAC600AD331A /* timer.lua */; };
 		A41AC0E916A5DB5C00AD331A /* transition.lua in Sources */ = {isa = PBXBuildFile; fileRef = A41AC0E316A5DAB800AD331A /* transition.lua */; };
-		A41AC1B916A75A9E00AD331A /* gameNetwork.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = A41AC1B516A75A7600AD331A /* gameNetwork.dylib */; };
+		A41AC1B916A75A9E00AD331A /* gameNetwork.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = A41AC1B516A75A7600AD331A /* gameNetwork.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A425455B18DBA04800EE06A8 /* WebAppBuild.xib in Resources */ = {isa = PBXBuildFile; fileRef = A425455918DBA04700EE06A8 /* WebAppBuild.xib */; };
 		A425457418E4FD6400EE06A8 /* webPackageApp.lua in Sources */ = {isa = PBXBuildFile; fileRef = A425457318E4FD1800EE06A8 /* webPackageApp.lua */; };
 		A42E68AB143AB0DE00693E3A /* Rtt_MacSimulatorServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = A42E68AA143AB0DE00693E3A /* Rtt_MacSimulatorServices.mm */; };
@@ -677,7 +677,7 @@
 		A4E76F191399772500AFB095 /* create_build_properties.lua in Sources */ = {isa = PBXBuildFile; fileRef = A4E76F181399772500AFB095 /* create_build_properties.lua */; };
 		A4E76F6D13A99D5200AFB095 /* json.lua in Sources */ = {isa = PBXBuildFile; fileRef = A4E76F6C13A99D5200AFB095 /* json.lua */; };
 		A4ED10AE14D2931000ECF49E /* Rtt_Lua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4ED10AC14D2930F00ECF49E /* Rtt_Lua.cpp */; };
-		A4F12C2516D43685002BCCFB /* licensing.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = A4F12C2316D43662002BCCFB /* licensing.dylib */; };
+		A4F12C2516D43685002BCCFB /* licensing.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = A4F12C2316D43662002BCCFB /* licensing.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A4F36552146C44030019808D /* AndroidAppBuild.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4F36550146C44030019808D /* AndroidAppBuild.xib */; };
 		A4FBC51D1A2D55A2004D9A01 /* libBox2D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 50B013EB17558BCA00B822B8 /* libBox2D.a */; };
 		A4FBC51E1A2D55A2004D9A01 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B733FB12B6F6BC0057F594 /* liblua.a */; };
@@ -3405,6 +3405,7 @@
 		F5B248491B57123B0087FFBC /* Rtt_TextureResourceAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceAdapter.h; path = Display/Rtt_TextureResourceAdapter.h; sourceTree = "<group>"; };
 		F5B2484C1B57123B0087FFBC /* Rtt_TextureResourceBitmapAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceBitmapAdapter.cpp; path = Display/Rtt_TextureResourceBitmapAdapter.cpp; sourceTree = "<group>"; };
 		F5B5A7511B7545C20020027E /* Rtt_TextureResourceBitmapAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceBitmapAdapter.h; path = Display/Rtt_TextureResourceBitmapAdapter.h; sourceTree = "<group>"; };
+		F5C39D7C23EBCC280058DD5E /* CoronaSimulator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CoronaSimulator.entitlements; sourceTree = "<group>"; };
 		F5C40DB81CB6876F004F7789 /* Rtt_TesselatorMesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TesselatorMesh.cpp; path = Display/Rtt_TesselatorMesh.cpp; sourceTree = "<group>"; };
 		F5C40DB91CB6876F004F7789 /* Rtt_TesselatorMesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_TesselatorMesh.h; path = Display/Rtt_TesselatorMesh.h; sourceTree = "<group>"; };
 		F5C40DC61CB68830004F7789 /* Rtt_ShapeAdapterMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ShapeAdapterMesh.cpp; path = Display/Rtt_ShapeAdapterMesh.cpp; sourceTree = "<group>"; };
@@ -4377,6 +4378,7 @@
 		00B73C6D12B720C90057F594 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F5C39D7C23EBCC280058DD5E /* CoronaSimulator.entitlements */,
 				F500FB3F1FED5CE20050B28B /* webtemplate.zip */,
 				F545474A21178F7400D5EDB7 /* linuxtemplate.tar.gz */,
 				F5A633E5216D74E10052364E /* raspbiantemplate.tar.gz */,
@@ -6765,7 +6767,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ $CONFIGURATION == *-template ]]; then\necho \"Skipping creation of agent app in template build\"\nexit 0\nfi\n\nif [[ $CONFIGURATION == \"Debug\" ]]; then\necho \"Skipping codesign of components in Debug build\"\nexit 0\nfi\n\n# Xcode will sign the main app for us via the normal Xcode settings.\n# But we need to sign any additional external tools we bundle with the simulator that aren't already signed.\n\n# sign zipalign\ncodesign --timestamp=none -f -s \"Developer ID Application: Corona Labs Inc\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/zipalign\"\n\n# sign that annoying Corona Terminal shell script which needs to die\ncodesign --timestamp=none -f -s \"Developer ID Application: Corona Labs Inc\" \"$SRCROOT/../../bin/mac/Corona Terminal\"\n\n";
+			shellScript = "if [[ $CONFIGURATION == *-template ]]; then\necho \"Skipping creation of agent app in template build\"\nexit 0\nfi\n\nif [[ $CONFIGURATION == \"Debug\" ]]; then\necho \"Skipping codesign of components in Debug build\"\nexit 0\nfi\n\n# Xcode will sign the main app for us via the normal Xcode settings.\n# But we need to sign any additional external tools we bundle with the simulator that aren't already signed.\n\n# sign zipalign\ncodesign -f -s \"Developer ID Application: Corona Labs Inc\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/zipalign\"\n\n# sign that annoying Corona Terminal shell script which needs to die\ncodesign -f -s \"Developer ID Application: Corona Labs Inc\" \"$SRCROOT/../../bin/mac/Corona Terminal\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		A4F7A7A91444D6FE0010CDE1 /* Run script (copy Simulator extensions) */ = {
@@ -8444,6 +8446,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				SDKROOT = macosx;
 				SEPARATE_STRIP = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -8458,11 +8461,13 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../external\"",
@@ -8496,7 +8501,6 @@
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = template;
 				PROVISIONING_PROFILE = "";
@@ -8804,11 +8808,13 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../external\"",
@@ -8842,7 +8848,6 @@
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_CODE_SIGN_FLAGS = "--timestamp=none --deep";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Corona Simulator";
 				PROVISIONING_PROFILE = "";
@@ -8862,11 +8867,13 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../external\"",
@@ -8900,7 +8907,6 @@
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Corona Simulator";
 				PROVISIONING_PROFILE = "";
@@ -8972,7 +8978,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
+				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = macosx;
 				SEPARATE_STRIP = NO;
@@ -9045,6 +9051,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				SDKROOT = macosx;
 				SEPARATE_STRIP = NO;
 				STRIP_INSTALLED_PRODUCT = NO;

@@ -21,8 +21,8 @@ codesign_framework() {
 	export PATH="${DEVELOPER_BASE}/Platforms/AppleTVOS.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 	# --preserve flags per Xcode 7.1
-	echo /usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} --preserve-metadata=identifier,entitlements --timestamp=none "${FRAMEWORK_BINARY}"
-	/usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} --preserve-metadata=identifier,entitlements --timestamp=none "${FRAMEWORK_BINARY}"
+	echo /usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} --preserve-metadata=identifier,entitlements "${FRAMEWORK_BINARY}"
+	/usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} --preserve-metadata=identifier,entitlements "${FRAMEWORK_BINARY}"
 }
 
 
