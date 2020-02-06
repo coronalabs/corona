@@ -1265,7 +1265,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 }
 
 // Fix the view layering when the app is hidden or minaturized
-// Fixes bug http://bugs.anscamobile.com/default.asp?44953
+// Fixes bug http://bugs.coronalabs.com/default.asp?44953
 - (void) restoreWindowProperties
 {
 	NSArray* subviews = [self subviews];

@@ -110,7 +110,7 @@ MacSimulator::~MacSimulator()
 
     [fWindow saveFrameUsingName:fDeviceName];
 	[fWindow close];
-	// Fix case 40335: Simulator crashes sometime after an app with a native textfield runs (http://bugs.anscamobile.com/default.asp?40335)
+	// Fix case 40335: Simulator crashes sometime after an app with a native textfield runs (http://bugs.coronalabs.com/default.asp?40335)
 	[fWindow makeFirstResponder:nil];
 
 	[fWindowController close];
@@ -120,7 +120,7 @@ MacSimulator::~MacSimulator()
 	[fDeviceName release];
 	[fProperties release];
 	[fWindow release];
-	// Fix case 20368: Setting focus on native keyboard crashes simulator (http://bugs.anscamobile.com/default.asp?20368)
+	// Fix case 20368: Setting focus on native keyboard crashes simulator (http://bugs.coronalabs.com/default.asp?20368)
 	fWindow = nil;
 	[fWindowController release];
 

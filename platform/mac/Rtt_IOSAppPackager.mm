@@ -287,8 +287,10 @@ IOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, 
 		}
 
 		// Clean up intermediate files
-		sprintf( cmd, "rm -rf \"%s\"", tmpDir );
-		(void)Rtt_VERIFY( 0 == system( cmd ) );
+		if(!([[NSUserDefaults standardUserDefaults] integerForKey:@"retainBuildTmpDir"] > 1)) {
+			sprintf( cmd, "rm -rf \"%s\"", tmpDir );
+			(void)Rtt_VERIFY( 0 == system( cmd ) );
+		}
 	}
 
 exit_gracefully:

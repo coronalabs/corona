@@ -3570,7 +3570,7 @@ LuaGroupObjectProxyVTable::Insert( lua_State *L, GroupObject *parent )
 		{
 			GroupObject* oldParent = child->GetParent();
 
-			// Display an error if they're indexing beyond the array (bug http://bugs.anscamobile.com/?18838 )
+			// Display an error if they're indexing beyond the array (bug http://bugs.coronalabs.com/?18838 )
 			const S32 maxIndex = parent->NumChildren();
 			if ( index > maxIndex || index < 0 )
 			{

@@ -2275,7 +2275,7 @@ public class CoronaActivity extends Activity {
 	 * Displays the device's default photo library activity for selecting an image file.
 	 * @param destinationFilePath The path\file name to copy the selected photo to. Can be set null.
 	 */
-	// TODO: Have this convert the image to the proper format per this bug: http://bugs.anscamobile.com/default.asp?45777
+	// TODO: Have this convert the image to the proper format per this bug: http://bugs.coronalabs.com/default.asp?45777
 	void showSelectImageWindowUsing(String destinationFilePath) {
 		// Verify we can read from external storage if needed, requesting permission if we don't have it!
 		// This check only applies to Android 4.1 and above. 

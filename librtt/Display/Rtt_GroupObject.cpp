@@ -319,7 +319,7 @@ GroupObject::Insert( S32 index, DisplayObject* newChild, bool resetTransform )
 	{
 		GroupObject* oldParent = newChild->GetParent();
 
-		// Make sure we aren't indexing beyond the array (bug http://bugs.anscamobile.com/?18838 )
+		// Make sure we aren't indexing beyond the array (bug http://bugs.coronalabs.com/?18838 )
 		const S32 maxIndex = NumChildren();
 		if ( index > maxIndex || index < 0 )
 		{
