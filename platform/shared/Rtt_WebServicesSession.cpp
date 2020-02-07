@@ -333,7 +333,7 @@ WebServicesSession::Call( const char* method, KeyValuePair* params, size_t numPa
 
 	// This domain is what Drupal thinks the domain string that's used in formulating the web API call.
 	// Both live and staging server are configured to have this set to be the same.
-	const char *domain = "developer.coronalabs.com";
+	const char *domain = "developer.anscamobile.com";
 	unsigned char key[] = "8e3ed4869262703dedf5c55aea6632b4";
 
 	// Calculate the current time on the server.
