@@ -262,7 +262,7 @@ local function getCodesignScript( entitlements, path, appIdentity, codesign )
 		verboseParam = "-".. string.rep("v", debugBuildProcess) .." "
 	end
 
-	local cmd = removeXattrs .. codesign.." --deep -f -s "..quoteString(appIdentity).." "..entitlementsParam..verboseParam..quotedpath
+	local cmd = removeXattrs .. codesign.." --options runtime --deep -f -s "..quoteString(appIdentity).." "..entitlementsParam..verboseParam..quotedpath
 
 	return cmd
 end
