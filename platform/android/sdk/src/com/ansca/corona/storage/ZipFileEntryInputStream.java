@@ -92,7 +92,7 @@ public class ZipFileEntryInputStream extends java.io.InputStream {
 
 	/**
 	 * Creates a new input stream for reading decompressed data from one entry within a zip file.
-	 * @param file The zip file to be accessed. Cannot be null.
+	 * @param zipFile The zip file to be accessed. Cannot be null.
 	 * @param entryName The unique name of the entry within the zip file. Cannot be null or empty.
 	 */
 	public ZipFileEntryInputStream(java.util.zip.ZipFile zipFile, String entryName)

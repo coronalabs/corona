@@ -56,7 +56,7 @@ public class CoronaRuntimeProvider {
 
 	/**
 	 * Gets the runtime associated with the LuaState object
-	 * @param runtime The lua state associated with the runtime
+	 * @param L The lua state associated with the runtime
 	 * @return The runtime associated with the lua state
 	 */
 	public static CoronaRuntime getRuntimeByLuaState(LuaState L) {

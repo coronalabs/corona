@@ -59,7 +59,6 @@ public class AndroidVersionSpecificFactory {
 	/**
 	 * Create appropriate IAndroidVersionSpecific subclass
 	 * 
-	 * @param version	Android version, e.g. "android5"
 	 * @return			IAndroidVersionSpecific implementation
 	 */
 	public static IAndroidVersionSpecific create() {

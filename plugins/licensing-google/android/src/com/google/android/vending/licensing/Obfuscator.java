@@ -39,9 +39,9 @@ public interface Obfuscator {
     /**
      * Undo the transformation applied to data by the obfuscate() method.
      *
-     * @param original The data that is to be obfuscated.
+     * @param obfuscated The data that is to be deobfuscated.
      * @param key The key for the data that is to be obfuscated.
-     * @return A transformed version of the original data.
+     * @return Original data.
      * @throws ValidationException Optionally thrown if a data integrity check fails.
      */
     String unobfuscate(String obfuscated, String key) throws ValidationException;

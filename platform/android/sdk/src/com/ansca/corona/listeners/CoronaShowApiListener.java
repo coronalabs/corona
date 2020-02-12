@@ -34,14 +34,14 @@ public interface CoronaShowApiListener{
 	/**
 	 * Called from media.selectPhoto().  The lua script wants to select a photo from the gallery
 	 * How the information gets back to the lua side is up to the CoronaKit developer.
-	 * @param destinationFilPath The location of the requested save location.
+	 * @param destinationFilePath The location of the requested save location.
 	 */
 	public void showSelectImageWindowUsing(String destinationFilePath);
 	
 	/**
 	 * Called from media.selectPhoto().  The lua script wants to receive a photo from the camera.  
 	 * How the information gets back to the lua side is up to the CoronaKit developer.
-	 * @param destinationFilPath The location of the requested save location.
+	 * @param destinationFilePath The location of the requested save location.
 	 */
 	public void showCameraWindowForImage(String destinationFilePath);
 	

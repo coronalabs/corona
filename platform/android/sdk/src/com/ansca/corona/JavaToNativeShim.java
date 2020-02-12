@@ -664,9 +664,10 @@ public class JavaToNativeShim {
 
 	/**
 	 * Creates and sends a video pick event on the native side.
+	 * @param runtime context
 	 * @param selectedVideoFileName The selected video file.  It can be a path or a uri.
 	 * @param duration The number of seconds of the video in milliseconds.  The event created will be in seconds.
-	 * @param duration The size of the video in bytes.
+	 * @param size The size of the video in bytes.
 	 */
 	public static void videoPickerEvent( CoronaRuntime runtime, String selectedVideoFileName, int duration, long size )
 	{

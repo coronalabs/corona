@@ -591,12 +591,7 @@ public class MapView extends android.widget.FrameLayout {
 	 * <p>
 	 * Setting both arguments "title" and "subtitle" to null or empty string will prevent an annotation
 	 * from being displayed on the marker.
-	 * @param latitude The latitude position to place the marker at.
-	 * @param longitude The longitude position to place the marker at.
-	 * @param title The title text to put on the marker's annotation.
-	 *              Set to null or empty string to not add a title to the annotation.
-	 * @param subtitle The description text to put below the title in the marker's annotation.
-	 *                 Set to null or empty string to not add a description to the annotation.
+	 * @param mapMarker contains description of the map marker
 	 */
 	public void addMarker(final MapMarker mapMarker) {
 		fOperationQueue.add(new Runnable() {

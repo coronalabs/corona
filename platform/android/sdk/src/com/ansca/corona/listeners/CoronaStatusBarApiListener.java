@@ -36,7 +36,7 @@ public interface CoronaStatusBarApiListener{
 
 	/**
 	 * Sets the status bar mode.
-	 * @param The settings for the status bar
+	 * @param mode The settings for the status bar
 	 */
 	public void setStatusBarMode(CoronaStatusBarSettings mode);
 

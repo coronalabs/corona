@@ -301,7 +301,7 @@ public class InputDeviceContext {
 	 * <p>
 	 * Note that if the beginUpdate() method has been called, then this method will not raise
 	 * an event until the context's endUpdate() method has been called.
-	 * @param value The connection state such as CONNECTED, DISCONNECTED, etc.
+	 * @param state The connection state such as CONNECTED, DISCONNECTED, etc.
 	 *              <p>
 	 *              Cannot be null or else an exception will be thrown.
 	 */

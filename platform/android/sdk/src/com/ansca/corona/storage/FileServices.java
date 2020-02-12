@@ -86,7 +86,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 	/**
 	 * Determines if the given path\file name is an asset file inside of the APK or expansion file.
-	 * @param fileName The path and file name to check if it is an asset file. Cannot be null or empty.
+	 * @param filePath The path and file name to check if it is an asset file. Cannot be null or empty.
 	 * @return Returns true if the given file is inside of the APK or expansion file.
 	 *         <p>
 	 *         Returns false if the given file is an external file, null, or an empty string.
@@ -495,7 +495,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 	/**
 	 * Safely opens an input stream to the given file without exceptions.
-	 * @param filePath The file to be opened.
+	 * @param file The file to be opened.
 	 * @return Returns an input stream to the given file.
 	 *         <p>
 	 *         Returns null if unable to find or access the given file.

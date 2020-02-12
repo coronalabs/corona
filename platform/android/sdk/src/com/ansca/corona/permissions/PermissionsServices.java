@@ -35,7 +35,7 @@ package com.ansca.corona.permissions;
  * All methods in this class are thread safe and can be called from any thread.
  * <p>
  * <b>Added in <a href="http://developer.coronalabs.com/release-ent/2016/2828/">daily build 2016.2828</a></b>.
- * @see ApplicationContextProvider
+ * @see com.ansca.corona.ApplicationContextProvider
  */
 public class PermissionsServices extends com.ansca.corona.ApplicationContextProvider {
 

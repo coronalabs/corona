@@ -35,7 +35,7 @@ package com.google.android.vending.licensing.util;
  * Base64 converter class. This code is not a full-blown MIME encoder;
  * it simply converts binary data to base64 data and back.
  *
- * <p>Note {@link CharBase64} is a GWT-compatible implementation of this
+ * <p>Note {@code CharBase64} is a GWT-compatible implementation of this
  * class.
  */
 public class Base64 {

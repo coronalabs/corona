@@ -30,7 +30,7 @@ package com.ansca.corona.storage;
  * A "package" in this case can refer to an app, a background service, or any other APK installed on a device.
  * <p>
  * <b>Added in <a href="http://developer.coronalabs.com/release-ent/2016/2932/">daily build 2016.2932</a></b>.
- * @see ApplicationContextProvider
+ * @see com.ansca.corona.ApplicationContextProvider
  */
 public class PackageServices extends com.ansca.corona.ApplicationContextProvider {
 	/**

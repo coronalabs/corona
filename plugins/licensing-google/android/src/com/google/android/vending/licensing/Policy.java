@@ -113,7 +113,6 @@ public abstract class Policy {
      * 
      * @param index the index of the URL to fetch. This value will be either
      *            MAIN_FILE_URL_INDEX or PATCH_FILE_URL_INDEX
-     * @param URL the URL to set
      */
     public String getExpansionURL(int index) {
         if (index < mExpansionURLs.size()) {

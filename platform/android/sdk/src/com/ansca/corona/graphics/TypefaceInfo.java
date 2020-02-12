@@ -101,7 +101,7 @@ public class TypefaceInfo {
 
 	/**
 	 * Determines if the given typeface settings exactly matches this object's typeface information.
-	 * @param info Reference to the typeface settings to be compared with this object.
+	 * @param settings Reference to the typeface settings to be compared with this object.
 	 * @return Returns true if the given settings exactly matches this object's information.
 	 *         <p>
 	 *         Returns false if given a null argument or if the given information does not
