@@ -131,7 +131,11 @@ static CGFloat kAnimationDuration = 0.3;
         // Propagate the w,h, but do not propagate the origin, as the parent already accounts for it.
 		CGRect webViewRect = rect;
 		webViewRect.origin = CGPointZero;
-		fWebView = [[WKWebView alloc] initWithFrame:webViewRect];
+		
+		WKWebViewConfiguration *theConfiguration = [[WKWebViewConfiguration alloc] init];
+    		[theConfiguration.preferences  setValue:@YES forKey:@"allowFileAccessFromFileURLs"];
+		
+		fWebView = [[WKWebView alloc] initWithFrame:webViewRect, configuration:theConfiguration];
 		fWebView.navigationDelegate = self;
 //		fWebView.scalesPageToFit = YES;
         
