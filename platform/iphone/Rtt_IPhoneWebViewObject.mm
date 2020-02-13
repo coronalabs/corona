@@ -132,10 +132,10 @@ static CGFloat kAnimationDuration = 0.3;
 		CGRect webViewRect = rect;
 		webViewRect.origin = CGPointZero;
 		
-		WKWebViewConfiguration *theConfiguration = [[WKWebViewConfiguration alloc] init];
+		WKWebViewConfiguration *theConfiguration = [[[WKWebViewConfiguration alloc] init] autorelease];
     		[theConfiguration.preferences  setValue:@YES forKey:@"allowFileAccessFromFileURLs"];
 		
-		fWebView = [[WKWebView alloc] initWithFrame:webViewRect, configuration:theConfiguration];
+		fWebView = [[WKWebView alloc] initWithFrame:webViewRect configuration:theConfiguration];
 		fWebView.navigationDelegate = self;
 //		fWebView.scalesPageToFit = YES;
         
