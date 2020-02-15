@@ -755,12 +755,12 @@ local function packageApp( options )
 
 		local bundleOptions = {
 			exe=options.bundleexecutable,
-			sdkBase=quoteString(iPhoneSDKRoot),
-			app=appBundleFile,
+			sdkBase=iPhoneSDKRoot,
+			app=appBundleFileUnquoted,
 			identity=options.signingIdentity,
 			platform="iphoneos"
 		}
-		local bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --sign {identity} --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain --toolchain "{sdkBase}/Toolchains/Swift_2.3.xctoolchain" --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
+		local bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --sign {identity} --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
 		
 		if not options.signingIdentity then
 			bundleOptions.identity = "-"
@@ -783,6 +783,7 @@ local function packageApp( options )
 			-- just embed swift
 			bundleScript = bundleScript .. '--resource-destination "{app}" --resource-library libswiftRemoteMirror.dylib '
 		end
+		bundleScript = bundleScript .. ' && find "{app}/Frameworks" -iname "libSwift*.dylib" -exec $(xcrun -f lipo) {} -remove arm64e -output {} \\;'
 
 		bundleScript = bundleScript:gsub("({([^}]+)})",
 		function(whole,i) return bundleOptions[i] or whole end)
