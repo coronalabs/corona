@@ -1,11 +1,13 @@
---------------------------------------------------------------------------------
----- buildSettingsToPlist.lua
-----
+------------------------------------------------------------------------------
+--
+-- This file is part of the Corona game engine.
+-- For overview and more information on licensing please refer to README.md 
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
+--
+------------------------------------------------------------------------------
+
 ---- Amend an app's Info.plist with CoronaSDK specific items.
-----
----- Copyright (c) 2014 Corona Labs Inc. All rights reserved.
-----
-----------------------------------------------------------------------------------
 
 -- add $pwd/../../shared/resource to lua module lookup path
 package.path = package.path .. ";" .. arg[0]:match("(.+)/") .. "/../../shared/resource/?.lua"

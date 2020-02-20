@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-	Copyright (c) 2013 Corona Labs Inc. All rights reserved.
 
-	Summary:
+		//////////////////////////////////////////////////////////////////////////////
+		//
+		// This file is part of the Corona game engine.
+		// For overview and more information on licensing please refer to README.md 
+		// Home page: https://github.com/coronalabs/corona
+		// Contact: support@coronalabs.com
+		//
+		//////////////////////////////////////////////////////////////////////////////
+
 		This file is referenced by the "LuaToCppTask.targets" file.
 		It is used by a Visual Studio project to provide property field information for *.lua files.
  -->

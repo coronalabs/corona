@@ -42,13 +42,14 @@ The easiest and recommended way to get started with Corona is to download binary
 Exhaustive Corona API documentation, as well as getting started and more advanced guides are available on [docs.coronalabs.com](http://docs.coronalabs.com).
 
 ## Source Code and licensing
-Corona is dual-licensed under both a commercial and open source license.
+Corona is licensed under [MIT](LICENSE) open source license.
 
-The commercial Corona license gives you the full rights to customize the engine and distribute built apps on your own terms without any open source license obligations. Binary distributions obtained from [coronalabs.com](https://coronalabs.com/) are using this license.
+This license gives you the full rights to customize the engine and distribute built apps on your own terms. 
 
-Corona is also available under the GPLv3 open source license. Corona open source licensing is ideal for use cases such as open source projects, research or educational purposes. See [LICENSE.GPL](LICENSE.GPL) for full text of GPL license.
+Binary distributions obtained from [coronalabs.com](https://coronalabs.com/) may use older license argreement. If you have a copy of previous licensed code or distribution you still must follow license you obtained it was obtained with.
 
 Note that Corona incorporates many libraries, both [third-party](sdk/dmg/Corona3rdPartyLicenses.txt) and made by Corona Labs. They may have different licenses.
+
 
 ## Contributing
 
@@ -58,7 +59,7 @@ If you are willing to improve Corona by contributing code, fork this repository 
 git clone --recursive https://github.com/coronalabs/corona.git
 ```
 
-Due to the dual-licensed nature of Corona distribution, all contributors would have to sign a simple Contributor License Agreement (CLA) to ensure that their code can be part of Corona ecosystem. For more details see [CONTRIBUTING.md](CONTRIBUTING.md).
+Due to the open source nature of Corona distribution, all contributors would have to sign a simple Contributor License Agreement (CLA) to ensure that their code can be part of Corona ecosystem. For more details see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Entry points for each platform are located in the `platform` directory. Refer to README.md files in its subdirectories.
 

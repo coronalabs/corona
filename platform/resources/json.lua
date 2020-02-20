@@ -1,15 +1,14 @@
---------------------------------------------------------------------------------
----- json.lua
-----
+------------------------------------------------------------------------------
+--
+-- This file is part of the Corona game engine.
+-- For overview and more information on licensing please refer to README.md 
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
+--
+------------------------------------------------------------------------------
+
 ---- Wrapper for dkjson.lua that implements the defaults we want (and improves
 ---- a common error behavior)
-----
----- Copyright (c) 2014 Corona Labs Inc. All rights reserved.
-----
----- Reviewers:
----- 		Perry
-----
-----------------------------------------------------------------------------------
 
 local dkjson = require "dkjson"
 

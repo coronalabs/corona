@@ -1,14 +1,12 @@
---------------------------------------------------------------------------------
----- CoronaBuilder.lua
-----
-----
-----
----- Copyright (c) 2017 Corona Labs Inc. All rights reserved.
-----
----- Reviewers:
----- 		Vlad
-----
-----------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+--
+-- This file is part of the Corona game engine.
+-- For overview and more information on licensing please refer to README.md 
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
+--
+------------------------------------------------------------------------------
+
 
 local json = require('json')
 local lfs = require('lfs')
