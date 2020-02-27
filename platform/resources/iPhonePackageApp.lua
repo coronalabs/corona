@@ -1257,7 +1257,7 @@ function iPhonePostPackage( params )
 			-- runScript( "cp "..tmpDir.."/output.zip /tmp/" )
 		end
 
-		setStatus("Unpacking build from server")
+		setStatus("Unpacking build with plugins")
 
 		-- The file 'Default-568h@2x.png' is a special case: if there is one in the project,
 		-- don't overwrite it with the one from the template

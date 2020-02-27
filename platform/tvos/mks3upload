@@ -49,13 +49,16 @@ do
 		ARCHIVE="$(pwd)/2100.9999_template_${PLATFORM}_${TVOS_VER}_basic.tar.bz"
 
 		cp -X ../resources/config_require.lua "$TEMPLATE_DIR/${PLATFORM}/${TVOS_VER}/"
+		mkdir -p "$TEMPLATE_DIR/${PLATFORM}/${TVOS_VER}/libtemplate/"
+		cp -X ../../tools/buildsys-ios/libtemplate/build_output.sh "$TEMPLATE_DIR/${PLATFORM}/${TVOS_VER}/libtemplate/"
+		touch license.ccdata
 		cp -X license.ccdata "$TEMPLATE_DIR/${PLATFORM}/${TVOS_VER}/template.app/"
 
 		(
 		cd "$TEMPLATE_DIR/${PLATFORM}/${TVOS_VER}/" || exit
 
 		# the excludes are common detritus due to a test app in platform/test/assets2
-		tar cvjf "${ARCHIVE}" --exclude='CoronaSimLogo-256.png' --exclude='*.jpg' --exclude='Icon*.png' ./template.app ./config_require.lua
+		tar cvjf "${ARCHIVE}" --exclude='CoronaSimLogo-256.png' --exclude='*.jpg' --exclude='Icon*.png' ./libtemplate ./template.app ./config_require.lua
 
 		rm config_require.lua
 
@@ -85,3 +88,12 @@ if [ -d $AS2BACKUP ]
 then
 	mv $AS2BACKUP $ASSETS2 
 fi
+
+for TVOS_VER in $TEMPLATE_DIR/appletvos/*
+do
+	TVOS_VER=$(basename "${TVOS_VER}")
+
+	cp "2100.9999_template_appletvos_${TVOS_VER}_basic.tar.bz" "../resources/iostemplate/appletvos_${TVOS_VER}.tar.bz"
+	cp "2100.9999_template_appletvsimulator_${TVOS_VER}_basic.tar.bz" "../resources/iostemplate/appletvsimulator_${TVOS_VER}.tar.bz"
+
+done

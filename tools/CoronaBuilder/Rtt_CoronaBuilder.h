@@ -98,6 +98,7 @@ class CoronaBuilder
 		mutable String fUsr;
 		String fCommandPath;
 		lua_State *fL;
+		bool fOfflineMode;
 };
 
 // ----------------------------------------------------------------------------

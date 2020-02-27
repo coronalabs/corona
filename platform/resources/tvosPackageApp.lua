@@ -1499,6 +1499,7 @@ function buildExe( options )
 	local dstDir = appBundleFileUnquoted
 
 	local buildDir = dstDir .. '/.build'
+	runScript('mkdir -p "' ..  buildDir .. '"')
 
 	local pluginsDir = buildDir
 	local dstFrameworksDir = dstDir .. "/Frameworks"
@@ -1807,7 +1808,7 @@ function tvosPostPackage( params )
 			runScript( "unzip -Z -1 "..tmpDir.."/output.zip" )
 		end
 
-		setStatus("Unpacking build from server")
+		setStatus("Unpacking build with plugins")
 
 		-- The file 'Default-568h@2x.png' is a special case: if there is one in the project,
 		-- don't overwrite it with the one from the template

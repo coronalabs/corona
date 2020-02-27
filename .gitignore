@@ -267,5 +267,6 @@ external/facebook-ios-sdk
 external/facebook-android-sdk
 plugins/ads-inmobi
 plugins/ads-inneractive
-tools/buildsys-ios
 commit-email.sh
+platform/resources/iostemplate
+platform/tvos/license.ccdata
