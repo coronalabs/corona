@@ -250,7 +250,7 @@ IOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, 
                 lua_pushstring(L, escapedAppName.GetString());
                 lua_setfield(L, -2, "appName");
                 
-				lua_pushliteral(L, "vlad@coronalabs.com");
+				lua_pushstring(L, params->GetCoronaUser());
 				lua_setfield(L, -2, "user");
 				
 				if ( Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )

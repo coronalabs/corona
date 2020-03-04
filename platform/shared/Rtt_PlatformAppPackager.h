@@ -58,6 +58,7 @@ class AppPackagerParams
 		bool fIncludeFusePlugins;
 		bool fUsesMonetization;
 		bool fLiveBuild;
+		String fCoronaUser;
 
 	public:
 		AppPackagerParams( const char* appName,
@@ -105,6 +106,9 @@ class AppPackagerParams
 
 		bool IsLiveBuild() const { return fLiveBuild; }
 		void SetLiveBuild( bool newValue ) { fLiveBuild = newValue; }
+
+		const char * GetCoronaUser() const { return fCoronaUser.GetString(); }
+		void SetCoronaUser(const char* user) { fCoronaUser.Set(user); }
 
 	public:
 		void SetBuildSettingsPath( const char *path ) { fBuildSettingsPath.Set( path ); }

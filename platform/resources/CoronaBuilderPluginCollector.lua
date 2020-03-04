@@ -17,10 +17,34 @@ function log(...)
     end
 end
 
+local SEP = package.config:sub(1,1)
+local isWindows = SEP == '\\'
+
+local function isDir(f)
+    return lfs.attributes(f, 'mode') == 'directory'
+end
+
+local function isFile(f)
+    return lfs.attributes(f, 'mode') == 'file'
+end
+
+
 local function quoteString( str )
     str = str:gsub('\\', '\\\\')
     str = str:gsub('"', '\\"')
     return "\"" .. str .. "\""
+end
+
+local function mkdirs(path)
+    local c = ""
+    path:gsub('[^/]+', function(dir)
+        c = c .. '/' .. dir
+        if isDir(c) then
+            -- do nothing, directory already exists
+        else
+            assert(lfs.mkdir(c))
+        end
+    end)
 end
 
 local function exec(cmd)
@@ -29,6 +53,15 @@ local function exec(cmd)
         cmd = cmd .. ' &> /dev/null'
     end
     assert(0 == os.execute(cmd))
+end
+
+local function copyFile(src, dst)
+    -- note that dst can be directory or file
+    if isWindows then
+        exec('copy ' .. quoteString(src) .. ' ' .. quoteString(dst))
+    else
+        exec('/bin/cp ' .. quoteString(src) .. ' ' .. quoteString(dst))
+    end
 end
 
 local pluginLocatorCoronaStore =  {}
@@ -98,16 +131,18 @@ function pluginLocatorCoronaStore:collect(destination, plugin, pluginTable, plug
     end
 
     local buildStr = downloadURL:match('/(%d%d%d%d%.%d%d%d%d)/')
+    local pluginArchivePath = params.pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin .. '/' .. buildStr .. '/' .. pluginPlatform
     local file, err = self.http.request(downloadURL)
     if err == 404 then
+        mkdirs(pluginArchivePath)
+        io.open(pluginArchivePath .. '/' .. params.ignoreMissingMarker, 'w'):close()
         log("Corona Store: plugin " .. plugin .. " is not supported by the platform!")
         return true
     elseif err ~= 200 then
         return "Corona Store: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Error message: \n' .. file
     end
 
-    local pluginArchivePath = params.pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin .. '/' .. buildStr .. '/' .. pluginPlatform
-    exec('/bin/mkdir -p ' .. quoteString(pluginArchivePath))
+    mkdirs(pluginArchivePath)
     pluginArchivePath = pluginArchivePath .. '/data.tgz'
 
     fi = io.open(pluginArchivePath, "wb")
@@ -117,8 +152,8 @@ function pluginLocatorCoronaStore:collect(destination, plugin, pluginTable, plug
     fi:write(file)
     fi:close()
     
-    exec('/bin/mkdir -p ' .. quoteString(destination))
-    exec('/bin/cp ' .. quoteString(pluginArchivePath) .. ' ' ..  quoteString(destination) )
+    mkdirs(destination)
+    copyFile(pluginArchivePath, destination)
     return true
 end
 
@@ -135,8 +170,20 @@ local function pluginLocatorCustomURL(destination, plugin, pluginTable, pluginPl
         return "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "].url is not a string"
     end
 
-    exec('/bin/mkdir -p ' .. quoteString(destination))
-    exec('curl -sS  -o ' .. quoteString(destination .. '/data.tgz') .. ' ' ..  quoteString(pluginTable.supportedPlatforms[pluginPlatform].url))
+    local downloadURL = pluginTable.supportedPlatforms[pluginPlatform].url
+    local file, code = self.http.request(downloadURL)
+    if err ~= 200 then
+        return "Custom URL: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Error message: ' .. file .. "; URL: " .. downloadURL
+    end
+
+    mkdirs(destination)
+    fi = io.open(destination .. '/data.tgz', "wb")
+    if (fi == nil) then
+        return 'Custom URL: unable to create destination tgz'
+    end
+    fi:write(file)
+    fi:close()
+
     return true
 end
 
@@ -147,7 +194,7 @@ local function pluginLocatorFileSystemVersionized(destination, plugin, pluginTab
     end
     local pluginStorage = params.pluginStorage
     local pluginDir = pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin
-    if lfs.attributes(pluginDir, 'mode') ~= 'directory' then
+    if not isDir(pluginDir) then
         return "Locally: no directory " .. pluginDir
     end
     local targetBuild = tonumber(params.build)
@@ -156,7 +203,7 @@ local function pluginLocatorFileSystemVersionized(destination, plugin, pluginTab
     for file in lfs.dir(pluginDir) do
         if file ~= "." and file ~= ".." then
             local f = pluginDir..'/'..file
-            if lfs.attributes(f, 'mode') == 'directory' then
+            if isDir(f) then
                 local dirBuild = file:match('^%d+%.(%d+)$')
                 if dirBuild then
                     dirBuild = tonumber(dirBuild)
@@ -172,14 +219,14 @@ local function pluginLocatorFileSystemVersionized(destination, plugin, pluginTab
         return "Locally: didn't find suitable version in " .. pluginDir
     end
     local localPath = foundDir .. '/' .. pluginPlatform .. '/data.tgz'
-    if lfs.attributes(localPath, 'mode') == 'file' then
-        exec('/bin/mkdir -p ' .. quoteString(destination))
-        exec('/bin/cp ' .. quoteString(localPath) .. ' ' ..  quoteString(destination) )
+    if isFile(localPath) then
+        mkdirs(destination)
+        copyFile(localPath, destination)
+        return true
     else
-        -- if we found suitable version, but no platform directory, it means plugin is not supported
-        log('Local lookup determined that plugin ' .. plugin .. ' is not supported by the platform in this version ' ..  pluginPlatform)
+        return "Locally: plugin file not found: " .. localPath
     end
-    return true
+    return false
 end
 
 
@@ -189,9 +236,9 @@ local function pluginLocatorFileSystemAllPlatforms(destination, plugin, pluginTa
     end
     local pluginStorage = params.pluginStorage
     local localPath = pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin .. '/data.tgz'
-    if lfs.attributes(localPath, 'mode') == 'file' then
-        exec('/bin/mkdir -p ' .. quoteString(destination))
-        exec('/bin/cp ' .. quoteString(localPath) .. ' ' ..  quoteString(destination) )
+    if isFile(localPath) then
+        mkdirs(destination)
+        copyFile(localPath, destination)
         return true
     else
         return "Locally: no file '".. localPath .. "'"
@@ -204,15 +251,61 @@ local function pluginLocatorFileSystem(destination, plugin, pluginTable, pluginP
     end
     local pluginStorage = params.pluginStorage
     local localPath = pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin .. '/' .. pluginPlatform .. '/data.tgz'
-    if lfs.attributes(localPath, 'mode') == 'file' then
-        exec('/bin/mkdir -p ' .. quoteString(destination))
-        exec('/bin/cp ' .. quoteString(localPath) .. ' ' ..  quoteString(destination) )
+    if isFile(localPath) then
+        mkdirs(destination)
+        copyFile(localPath, destination)
         return true
-    elseif lfs.attributes(pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin, 'mode') == 'directory' then
+    elseif isDir(pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin) then
         log('Local lookup determined that plugin ' .. plugin .. ' is not supported by the platform ' ..  pluginPlatform)
     else
         return "Locally: no file '".. localPath .. "'"
     end
+end
+
+local function pluginLocatorIgnoreMissing(destination, plugin, pluginTable, pluginPlatform, params)
+    if type(pluginTable.publisherId) ~= 'string' then
+        return "Locally: plugin has no string publisherId"
+    end
+    local function hasIgnoreMissingMarker(path)
+        return isFile(path .. '/' .. params.ignoreMissingMarker)
+    end
+    local pluginStorage = params.pluginStorage
+    local pluginDir = pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin
+    if not isDir(pluginDir) then
+        return "Ignore Missing checker: no plugin directory " .. pluginDir
+    end
+    if hasIgnoreMissingMarker(pluginDir) then
+        return true
+    end
+    if hasIgnoreMissingMarker(pluginDir .. '/' .. pluginPlatform) then
+        return true
+    end
+
+    local targetBuild = tonumber(params.build)
+    local lastFound = -1
+    local foundDir
+    for file in lfs.dir(pluginDir) do
+        if file ~= "." and file ~= ".." then
+            local f = pluginDir..'/'..file
+            if isDir(f) then
+                local dirBuild = file:match('^%d+%.(%d+)$')
+                if dirBuild then
+                    dirBuild = tonumber(dirBuild)
+                    if dirBuild > lastFound and dirBuild <= targetBuild then
+                        lastFound = dirBuild
+                        foundDir = f
+                    end 
+                end
+            end
+        end
+    end
+    if not foundDir then
+        return "Ignore Missing checker: didn't find suitable version in " .. pluginDir
+    end
+    if hasIgnoreMissingMarker(foundDir) or hasIgnoreMissingMarker(foundDir .. '/' .. pluginPlatform) then
+        return true
+    end
+    return "Ignore Missing checker: did not find marker in " .. foundDir
 end
 
 
@@ -261,13 +354,16 @@ end
 function CollectCoronaPlugins(params)
     log("Collecting plugins")
 
-    local pluginLocators = { pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, pluginLocatorCustomURL, pluginLocatorCoronaStore, }
+    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, pluginLocatorCoronaStore, pluginLocatorIgnoreMissing }
 
     local dstDir = params.destinationDirectory
 
     params.pluginLocators = pluginLocators
     if not params.pluginStorage then
         params.pluginStorage = os.getenv("HOME") .. '/CoronaPlugins'
+    end
+    if not params.ignoreMissingMarker then
+        params.ignoreMissingMarker = 'IgnoreMissing'
     end
 
     local plugins = json.decode(params.buildData).plugins

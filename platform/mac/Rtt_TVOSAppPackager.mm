@@ -112,8 +112,8 @@ TVOSAppPackager::TVOSAppPackager( const MPlatformServices& services, MacSimulato
 	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
 	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
 	Lua::RegisterModuleLoader( L, "lfs", luaopen_lfs );
-	Lua::RegisterModuleLoader( L, "CoronaBuilderPluginCollector", luaload_CoronaBuilderPluginCollector);
-    
+	Lua::RegisterModuleLoader( L, "CoronaBuilderPluginCollector", Lua::Open< luaload_CoronaBuilderPluginCollector >);
+
 	Lua::DoBuffer( fVM, & luaload_tvosPackageApp, NULL);
 }
 
@@ -240,6 +240,9 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 				lua_pushstring(L, params->GetAppPackage());
 				lua_setfield(L, -2, "appPackage");
 				
+				lua_pushstring(L, params->GetCoronaUser());
+				lua_setfield(L, -2, "user");
+
 				
 				DeviceBuildData & buildData = params->GetDeviceBuildData(fServices.Platform(), fServices);
 				Rtt::String json;
