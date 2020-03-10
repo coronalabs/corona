@@ -103,7 +103,7 @@ static CGFloat kAnimationDuration = 0.3;
 - (void)addObservers;
 - (void)removeObservers;
 - (void)loadHtmlString:(NSString*)htmlString baseURL:(NSURL*)baseUrl;
-- (void)loadRequest:(NSURLRequest*)request;
+- (void)loadRequest:(NSURLRequest*)request baseURL:(NSURL*)baseUrl;
 - (void)stopLoading;
 - (BOOL)back;
 - (BOOL)forward;
@@ -131,11 +131,7 @@ static CGFloat kAnimationDuration = 0.3;
         // Propagate the w,h, but do not propagate the origin, as the parent already accounts for it.
 		CGRect webViewRect = rect;
 		webViewRect.origin = CGPointZero;
-		
-		WKWebViewConfiguration *theConfiguration = [[[WKWebViewConfiguration alloc] init] autorelease];
-    		[theConfiguration.preferences  setValue:@YES forKey:@"allowFileAccessFromFileURLs"];
-		
-		fWebView = [[WKWebView alloc] initWithFrame:webViewRect configuration:theConfiguration];
+		fWebView = [[WKWebView alloc] initWithFrame:webViewRect];
 		fWebView.navigationDelegate = self;
 //		fWebView.scalesPageToFit = YES;
         
@@ -233,7 +229,7 @@ static CGFloat kAnimationDuration = 0.3;
 	}
 	
 }
-- (void)loadRequest:(NSURLRequest*)request
+- (void)loadRequest:(NSURLRequest*)request baseURL:(NSURL*)baseUrl
 {
 	if ( isLoading )
 	{
@@ -275,8 +271,11 @@ static CGFloat kAnimationDuration = 0.3;
     
 	[fLoadingURL release];
 	fLoadingURL = [request.URL retain];
-
-	[fWebView loadRequest:request];
+	if([fLoadingURL isFileURL] && baseUrl && [fWebView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
+		[fWebView loadFileURL:request.URL allowingReadAccessToURL:baseUrl];
+	} else {
+		[fWebView loadRequest:request];
+	}
 
     if (false == loadImmediately)
     {
@@ -669,7 +668,7 @@ IPhoneWebViewObject::Request( NSString *urlString, NSURL *baseUrl )
 	}
 
 	Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)GetView();
-	[container loadRequest:request];
+	[container loadRequest:request baseURL:baseUrl];
 
 	[request release];
 }
