@@ -35,6 +35,8 @@ jobs:
         with:
           name: iOS-Templates
           path: ./ios_output.zip
+        env:
+          CERT_PASSWORD: ${{ secrets.CertsPassword }}
   tvOS-template:
     runs-on: macos-latest
     steps:
@@ -49,6 +51,8 @@ jobs:
         shell: bash
         working-directory: ./platform/tvos
         run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
   macOS-Simulator:
     runs-on: macos-latest
     needs:

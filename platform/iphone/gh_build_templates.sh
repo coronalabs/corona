@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ex
+set -e
 
 WORKSPACE=$(cd "$(dirname "$0")/../.." && pwd)
 BUILD_NUMBER=${BUILD_NUMBER:-2020}
@@ -23,11 +23,14 @@ export WORKSPACE
 [ -z "$MONTH" ]         || sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_MONTH[[:space:]]*[[:digit:]]*$/#define Rtt_BUILD_MONTH $MONTH/" "${WORKSPACE}/librtt/Core/Rtt_Version.h"
 [ -z "$DAY" ]           || sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_DAY[[:space:]]*[[:digit:]]*$/#define Rtt_BUILD_DAY $DAY/" "${WORKSPACE}/librtt/Core/Rtt_Version.h"
 
-# security create-keychain -p 'Password123' build.keychain
-# security default-keychain -s build.keychain
-# security unlock-keychain -p 'Password123' build.keychain
-# security import Certificate.p12 
-# security set-key-partition-list -S apple-tool:,apple: -s -k 'Password123' build.keychain
+if [ -n "$CERT_PASSWORD" ]
+then
+    security delete-keychain build.keychain || true
+    security create-keychain -p 'Password123' build.keychain
+    security default-keychain -s build.keychain
+    security unlock-keychain -p 'Password123' build.keychain
+    security import Certificates.p12 -A -P "$CERT_PASSWORD"
+fi
 
 if ! (cd "$WORKSPACE/platform/iphone/" && ./build_templates.sh "$IOS_SDK" "$BUILD")
 then
@@ -37,8 +40,12 @@ fi
 
 git checkout "$WORKSPACE/librtt/Core/Rtt_Version.h"
 rm -rf "$WORKSPACE/librtt/Core/Rtt_Version.h.bak"
-# security default-keychain -s login.keychain
-# security delete-keychain build.keychain &> /dev/null || true
+
+if [ -n "$CERT_PASSWORD" ]
+then
+    security default-keychain -s login.keychain
+    security delete-keychain build.keychain &> /dev/null || true
+fi
 
 if [ "$BUILD_FAILED" = "YES" ]
 then
@@ -46,7 +53,7 @@ then
 fi
 
 (
-    set -ex
+    set -e
     cd "$WORKSPACE/platform/iphone/"
     for PLATFORM in iphone iphone-sim
     do
@@ -66,7 +73,7 @@ fi
             ARCHIVE="$WORKSPACE/platform/iphone/${SDK_PLATFORM}_${IOS_VER}.tar.bz"
 
             (
-                set -ex
+                set -e
                 cd "template/${PLATFORM}/${IOS_VER}/basic/"
                 rm -f "${ARCHIVE}"
                 tar cvjf "${ARCHIVE}" --exclude='CoronaSimLogo-256.png' --exclude='world.jpg' --exclude='Icon*.png' ./{libtemplate,template.app}
