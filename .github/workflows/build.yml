@@ -1,0 +1,58 @@
+name: Daily Build
+
+on:
+  repository_dispatch:
+    types:
+      - build
+  push:
+
+env:
+  BUILD_NUMBER: ${{ github.event.client_payload.number }}
+  YEAR: ${{ github.event.client_payload.year }}
+  MONTH: ${{ github.event.client_payload.month }}
+  DAY: ${{ github.event.client_payload.day }}
+  BUILD: ${{ github.event.client_payload.year }}.${{ github.event.client_payload.number }}
+  WORKSPACE: ${{ github.workspace }}
+
+
+jobs:
+  iOS-template:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1 --rebase
+      - name: Build iOS templates
+        shell: bash
+        working-directory: ./platform/iphone
+        run: ./gh_build_templates.sh
+      - name: Upload iOS templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: iOS-Templates
+          path: ./ios_output.zip
+  tvOS-template:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1 --rebase
+      - name: Build iOS templates
+        shell: bash
+        working-directory: ./platform/tvos
+        run: ./gh_build_templates.sh
+  macOS-Simulator:
+    runs-on: macos-latest
+    needs:
+      - tvOS-template
+      - iOS-template
+    steps:
+      - run: echo "All done"

@@ -1,4 +1,4 @@
-#!/bin/bash #-x
+#!/bin/bash -x
 #
 # Checks exit value for error
 #

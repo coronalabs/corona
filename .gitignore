@@ -269,3 +269,5 @@ plugins/ads-inmobi
 plugins/ads-inneractive
 tools/buildsys-ios
 commit-email.sh
+
+platform/iphone/*.tar.bz
