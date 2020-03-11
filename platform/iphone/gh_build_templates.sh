@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 WORKSPACE=$(cd "$(dirname "$0")/../.." && pwd)
 BUILD_NUMBER=${BUILD_NUMBER:-2020}
@@ -51,7 +51,7 @@ then
     security unlock-keychain -p 'Password123' build.keychain
     security import Certificates.p12 -A -P "$CERT_PASSWORD"
     mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-    cp ./*.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/"
+    cp "$WORKSPACE/platform/$PLATFORM_DIR"/*.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/"
 fi
 
 if ! (cd "$WORKSPACE/platform/$PLATFORM_DIR/" && ./build_templates.sh "$XCODE_SDK" "$BUILD")
