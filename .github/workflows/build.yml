@@ -1,9 +1,9 @@
 name: Daily Build
 
 on:
-  repository_dispatch:
-    types:
-      - build
+  # repository_dispatch:
+  #   types:
+  #     - build
   push:
 
 env:
@@ -37,7 +37,6 @@ jobs:
           name: iOS-Templates
           path: ./ios_output.zip
   tvOS-template:
-    if: "false"
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
