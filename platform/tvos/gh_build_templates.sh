@@ -1,1 +1,1 @@
-touch "tvos_output.zip"
+../iphone/gh_build_templates.sh

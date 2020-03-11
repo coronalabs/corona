@@ -8,7 +8,27 @@ MONTH=${MONTH:-04}
 DAY=${DAY:-04}
 BUILD=${BUILD:-$YEAR.$BUILD_NUMBER}
 
-IOS_SDK=${IOS_SDK:-$(xcrun --sdk iphoneos --show-sdk-version)}
+PLATFORM_DIR=$(basename "$(cd "$(dirname "$0")" && pwd)")
+if [ "$PLATFORM_DIR" = "tvos" ]
+then
+    XCODE_SDK=${XCODE_SDK:-$(xcrun --sdk appletvos --show-sdk-version)}
+    TEMPLATE_DIR=build/template
+    BASIC=
+    OUTPUT="$WORKSPACE/tvos_output.zip"
+    PLATFORMS="appletvos appletvsimulator"
+elif [ "$PLATFORM_DIR" = "iphone" ]
+then
+    XCODE_SDK=${XCODE_SDK:-$(xcrun --sdk iphoneos --show-sdk-version)}
+    TEMPLATE_DIR=template
+    BASIC=basic
+    OUTPUT="$WORKSPACE/ios_output.zip"
+    PLATFORMS="iphone iphone-sim"
+else
+    PLATFORMS=
+    exit 1
+fi
+
+rm -f "$OUTPUT"
 
 export BUILD_NUMBER
 export YEAR
@@ -30,9 +50,11 @@ then
     security default-keychain -s build.keychain
     security unlock-keychain -p 'Password123' build.keychain
     security import Certificates.p12 -A -P "$CERT_PASSWORD"
+    mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+    cp ./*.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/"
 fi
 
-if ! (cd "$WORKSPACE/platform/iphone/" && ./build_templates.sh "$IOS_SDK" "$BUILD")
+if ! (cd "$WORKSPACE/platform/$PLATFORM_DIR/" && ./build_templates.sh "$XCODE_SDK" "$BUILD")
 then
     BUILD_FAILED=YES
     echo "BUILD FAILED"
@@ -54,36 +76,36 @@ fi
 
 (
     set -e
-    cd "$WORKSPACE/platform/iphone/"
-    for PLATFORM in iphone iphone-sim
+    cd "$WORKSPACE/platform/$PLATFORM_DIR/"
+    for PLATFORM in $PLATFORMS
     do
         case "$PLATFORM" in
             "iphone-sim") SDK_PLATFORM=iphonesimulator ;;
             "iphone") SDK_PLATFORM=iphoneos ;;
             "tvos") SDK_PLATFORM=appletvos ;;
             "tvos-sim") SDK_PLATFORM=appletvsimulator ;;
+            *) SDK_PLATFORM=$PLATFORM ;;
         esac
         echo "Creating $PLATFORM template for $SDK_PLATFORM"
         # remove symbolic link which confuses things
-        rm -f "template/$PLATFORM/$PLATFORM"
+        rm -f "$TEMPLATE_DIR/$PLATFORM/$PLATFORM"
 
-        for IOS_VER in template/"${PLATFORM}"/*
+        for IOS_VER in "$TEMPLATE_DIR/$PLATFORM"/*
         do
             IOS_VER=$(basename "${IOS_VER}")
-            ARCHIVE="$WORKSPACE/platform/iphone/${SDK_PLATFORM}_${IOS_VER}.tar.bz"
+            ARCHIVE="$WORKSPACE/platform/$PLATFORM_DIR/${SDK_PLATFORM}_${IOS_VER}.tar.bz"
 
             (
                 set -e
-                cd "template/${PLATFORM}/${IOS_VER}/basic/"
+                cd "$TEMPLATE_DIR/${PLATFORM}/${IOS_VER}/$BASIC"
+                cp -X "$WORKSPACE/platform/resources/config_require.lua" ./
+                mkdir -p libtemplate
+                cp -X "$WORKSPACE/tools/buildsys-ios/libtemplate/build_output.sh" libtemplate/ || true
                 rm -f "${ARCHIVE}"
                 tar cvjf "${ARCHIVE}" --exclude='CoronaSimLogo-256.png' --exclude='world.jpg' --exclude='Icon*.png' ./{libtemplate,template.app}
                 echo "Built ${ARCHIVE}"
             )
-
-            UPLOADS="$UPLOADS $ARCHIVE"
+            zip -0 -j "$OUTPUT" "$ARCHIVE"
         done
     done
-    echo "$UPLOADS"
-    rm -f "$WORKSPACE/ios_output.zip"
-    zip -0 "$WORKSPACE/ios_output.zip" iphone*.tar.bz
 )

@@ -271,3 +271,5 @@ tools/buildsys-ios
 commit-email.sh
 
 platform/iphone/*.tar.bz
+platform/tvos/*.tar.bz
+/*_output.zip

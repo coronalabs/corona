@@ -30,13 +30,13 @@ jobs:
         shell: bash
         working-directory: ./platform/iphone
         run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertsPassword }}
       - name: Upload iOS templates
         uses: actions/upload-artifact@v1
         with:
           name: iOS-Templates
           path: ./ios_output.zip
-        env:
-          CERT_PASSWORD: ${{ secrets.CertsPassword }}
   tvOS-template:
     runs-on: macos-latest
     steps:
@@ -53,6 +53,11 @@ jobs:
         run: ./gh_build_templates.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Upload tvOS templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: tvOS-Templates
+          path: ./tvos_output.zip
   macOS-Simulator:
     runs-on: macos-latest
     needs:
