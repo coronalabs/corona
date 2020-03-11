@@ -11,7 +11,6 @@ env:
   YEAR: ${{ github.event.client_payload.year }}
   MONTH: ${{ github.event.client_payload.month }}
   DAY: ${{ github.event.client_payload.day }}
-  BUILD: ${{ github.event.client_payload.year }}.${{ github.event.client_payload.number }}
   WORKSPACE: ${{ github.workspace }}
 
 
@@ -31,7 +30,7 @@ jobs:
         working-directory: ./platform/iphone
         run: ./gh_build_templates.sh
         env:
-          CERT_PASSWORD: ${{ secrets.CertsPassword }}
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Upload iOS templates
         uses: actions/upload-artifact@v1
         with:
