@@ -20,4 +20,4 @@ defaults write platform/mac/Info CFBundleShortVersionString "$YEAR"."$BUILD_NUMB
 plutil -convert xml1 platform/mac/Info.plist
 
 
-COPYFILE_DISABLE=1 tar -czf corona.tar.gz --exclude '.git' -- *
+COPYFILE_DISABLE=1 tar -czf corona_src.tgz --exclude '.git' ./

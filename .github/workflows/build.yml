@@ -32,8 +32,8 @@ jobs:
       - name: Upload Source bundle
         uses: actions/upload-artifact@v1
         with:
-          name: corona.tar.gz
-          path: ./corona.tar.gz
+          name: corona_src
+          path: ./corona_src.tgz
 
   iOS-template:
     needs: source-code
@@ -42,10 +42,10 @@ jobs:
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
-          name: corona.tar.gz
+          name: corona_src
       - name: Unpack source code
         shell: bash
-        run: tar -xzf ./corona.tar.gz
+        run: tar -xzf ./corona_src.tgz
       - name: Build iOS templates
         shell: bash
         working-directory: ./platform/iphone
@@ -64,10 +64,10 @@ jobs:
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
-          name: corona.tar.gz
+          name: corona_src
       - name: Unpack source code
         shell: bash
-        run: tar -xzf ./corona.tar.gz
+        run: tar -xzf ./corona_src.tgz
       - name: Build tvOS templates
         shell: bash
         working-directory: ./platform/tvos
@@ -86,10 +86,10 @@ jobs:
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
-          name: corona.tar.gz
+          name: corona_src
       - name: Unpack source code
         shell: bash
-        run: tar -xzf ./corona.tar.gz
+        run: tar -xzf ./corona_src.tgz
       - name: Build Corona Native
         shell: bash
         run: ./tools/GHAction/build_native.sh
