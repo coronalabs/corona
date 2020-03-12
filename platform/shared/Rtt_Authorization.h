@@ -42,6 +42,7 @@ class Authorization
 		static const char kVersionKey[];
 		static const char kUsernameKey[];
 		static const char kRenewalReminderKey[];
+		static const char kOfflineModeConfirmed[];
 
 	public:
 		Authorization( const MPlatformServices& services, MAuthorizationDelegate& delegate );

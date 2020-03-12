@@ -92,6 +92,8 @@ class WebServicesSession
 		int BeginBuild( AppPackagerParams * params, const char* inputFile, const char* outputFile );
 
         const char *ErrorMessage() { return fErrorMessage; }
+        
+        bool IsOfflineSession() const;
 
 	private:
 		const MPlatformServices& fServices;

@@ -595,6 +595,11 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 @synthesize _currentLocation;
 @synthesize fAnalytics;
 
++(BOOL)offlineModeAllowed {
+	static BOOL allowed = [[NSUserDefaults standardUserDefaults] boolForKey:@"allowOfflineMode"];
+	return allowed;
+}
+
 -(id)init
 {
 	self = [super init];
@@ -855,16 +860,25 @@ CheckForUpdate( const Rtt::MacPlatformServices& services, const Rtt::Authorizati
 
 		if ( ! authorizer.Initialize(true) )
 		{
-			NSRunAlertPanel( @"Could not authorize this computer to use Corona Simulator", @"An Internet connection is required to authorize first time use.", nil, nil, nil );
+			if(![AppDelegate offlineModeAllowed])
+			{
 			
-			[[NSApplication sharedApplication] terminate:self];
-			
-			return;
+				NSRunAlertPanel( @"Could not authorize this computer to use Corona Simulator", @"An Internet connection is required to authorize first time use.", nil, nil, nil );
+				
+				[[NSApplication sharedApplication] terminate:self];
+				
+				return;
+			}
 		}
 
         ticket = authorizer.GetTicket();
+        
+		if(!ticket && [AppDelegate offlineModeAllowed]) {
+			authorizedToLaunch = YES;
+			return;
+		}
       
-		if ( ! authorizer.VerifyTicket() )
+		if ( ticket && ! authorizer.VerifyTicket() )
 		{
 			NSRunAlertPanel( @"Could not launch Corona Simulator", @"Invalid registration.", nil, nil, nil );
 			
@@ -1587,6 +1601,7 @@ CheckForUpdate( const Rtt::MacPlatformServices& services, const Rtt::Authorizati
 // I believe this is generally safe enough because awakeFromNib gets called before applicationWillFinishLaunching.
 -(void)applicationWillFinishLaunching:(NSNotification*)aNotification
 {
+	
 	// Set up the ticket subsystem
 	fServices = new Rtt::MacPlatformServices( *fConsolePlatform );
 	fAuthorizerDelegate = new Rtt::MacAuthorizationDelegate;
@@ -1848,7 +1863,7 @@ CheckForUpdate( const Rtt::MacPlatformServices& services, const Rtt::Authorizati
 static bool
 IsAppAllowedToRun( const Rtt::AuthorizationTicket* t )
 {
-	return t && t->IsAppAllowedToRun();
+	return [AppDelegate offlineModeAllowed] || (t && t->IsAppAllowedToRun());
 }
 
 -(BOOL)isRunnable
@@ -2099,7 +2114,7 @@ IsAppAllowedToRun( const Rtt::AuthorizationTicket* t )
 	const Rtt::AuthorizationTicket* ticket = [self ticket];
 	if ( NULL == ticket )
 	{
-		return nil;
+		return @"<offline user>";
 	}
 	
 	const char* label = ticket->GetUsername();
@@ -2127,7 +2142,7 @@ IsAppAllowedToRun( const Rtt::AuthorizationTicket* t )
 	
 	// If we're connected to the internet, try to deauth this computer with the server so we don't burn one
 	// of their (many) authorization slots.  We don't bug the user if this doesn't work.
-	if ( services.IsInternetAvailable() )
+	if ( services.IsInternetAvailable() && ticket )
 	{
 		const char *usr = ticket->GetUsername();
 		Rtt::String encryptedPassword;
@@ -2149,6 +2164,7 @@ IsAppAllowedToRun( const Rtt::AuthorizationTicket* t )
 	services.SetPreference( Authorization::kTicketKey, NULL );
 	services.SetPreference( Authorization::kSuppressFeedbackKey, NULL );
 	services.SetPreference( Authorization::kUsernameKey, NULL );
+	services.SetLibraryPreference( Authorization::kOfflineModeConfirmed, NULL );
 
 	if (ticket != NULL)
 	{

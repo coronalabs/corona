@@ -309,7 +309,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 	}
 
 	// We don't login to build macOS apps so we output this here
-	const char* usr = [appDelegate ticket]->GetUsername();
+	const char* usr = [appDelegate ticket]?[appDelegate ticket]->GetUsername():"anonymous@corona";
 
 	Rtt_Log("Building %s app for %s with %s", [self.platformTitle UTF8String], usr, Rtt_STRING_BUILD);
 	

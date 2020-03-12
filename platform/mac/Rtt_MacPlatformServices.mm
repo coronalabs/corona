@@ -233,6 +233,7 @@ MacPlatformServices::SetPreference( const char *key, const char *value ) const
 		   || ( 0 == strcmp(key, Authorization::kVersionKey) )
 		   || ( 0 == strcmp(key, Authorization::kUsernameKey) )
 		   || ( 0 == strcmp(key, Authorization::kRenewalReminderKey) )
+		   || ( 0 == strcmp(key, Authorization::kOfflineModeConfirmed) )
 		   || ( 0 == strcmp(key, "LastUpdateCheck") ) // no external constant to refer to
 		)
 		{

@@ -120,21 +120,26 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 	{
 		// Generate a default package id based on the user's email address + the app name
 		const Rtt::AuthorizationTicket *ticket = [appDelegate ticket];
-		NSString *username = [NSString stringWithExternalString:ticket->GetUsername()];
-		NSArray *nameComponents = [username componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]];
+		NSString *tmpPackageName;
+		if(ticket) {
+			NSString *username = [NSString stringWithExternalString:ticket->GetUsername()];
+			NSArray *nameComponents = [username componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]];
 
-		NSMutableString *tmpPackageName = [[[NSMutableString alloc] init] autorelease];
+			tmpPackageName = [[[NSMutableString alloc] init] autorelease];
 
-		// Reverse the order of the components of the email address and concatenate them together
-		// separated by periods for something like: com.coronalabs.perry.MyNewApp
-		for (id component in [nameComponents reverseObjectEnumerator])
-		{
-			[tmpPackageName appendString:component];
-			[tmpPackageName appendString:@"."];
+			// Reverse the order of the components of the email address and concatenate them together
+			// separated by periods for something like: com.coronalabs.perry.MyNewApp
+			for (id component in [nameComponents reverseObjectEnumerator])
+			{
+				[tmpPackageName appendString:component];
+				[tmpPackageName appendString:@"."];
+			}
+
+			// Add the appname having replaced any non-alphanumerics with underscores
+			[tmpPackageName appendString:[[self.appName componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]] componentsJoinedByString:@"_"]];
+		} else {
+			tmpPackageName = [@"com.coronalabs." stringByAppendingString:[[self.appName componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]] componentsJoinedByString:@"_"]];
 		}
-
-		// Add the appname having replaced any non-alphanumerics with underscores
-		[tmpPackageName appendString:[[self.appName componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]] componentsJoinedByString:@"_"]];
 
 		self.androidAppPackage = tmpPackageName;
 	}

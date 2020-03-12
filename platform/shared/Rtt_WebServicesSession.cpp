@@ -306,6 +306,12 @@ GetHexBytes( char* dst, int dstLen, const unsigned char* dataBuffer, size_t len 
 	return result;
 }
 
+bool WebServicesSession::IsOfflineSession() const {
+	Rtt::String out;
+	fServices.GetPreference(Rtt::Authorization::kOfflineModeConfirmed, &out);
+	return !out.IsEmpty();
+}
+
 // This is one version of this interface, see below for another
     
 PlatformDictionaryWrapper*
