@@ -274,3 +274,4 @@ platform/tvos/license.ccdata
 platform/iphone/*.tar.bz
 platform/tvos/*.tar.bz
 /*_output.zip
+/corona.tar.gz

@@ -24,7 +24,7 @@ then
     OUTPUT="$WORKSPACE/ios_output.zip"
     PLATFORMS="iphone iphone-sim"
 else
-    PLATFORMS=
+    echo "ERROR: Don't know how to handle '$PLATFORM_DIR'"
     exit 1
 fi
 
@@ -36,12 +36,6 @@ export MONTH
 export DAY
 export BUILD
 export WORKSPACE
-
-
-[ -z "$BUILD_NUMBER" ]  || sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_REVISION.*$/#define Rtt_BUILD_REVISION $BUILD_NUMBER/" "${WORKSPACE}/librtt/Core/Rtt_Version.h"
-[ -z "$YEAR" ]          || sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_YEAR[[:space:]]*[[:digit:]]*$/#define Rtt_BUILD_YEAR $YEAR/" "${WORKSPACE}/librtt/Core/Rtt_Version.h"
-[ -z "$MONTH" ]         || sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_MONTH[[:space:]]*[[:digit:]]*$/#define Rtt_BUILD_MONTH $MONTH/" "${WORKSPACE}/librtt/Core/Rtt_Version.h"
-[ -z "$DAY" ]           || sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_DAY[[:space:]]*[[:digit:]]*$/#define Rtt_BUILD_DAY $DAY/" "${WORKSPACE}/librtt/Core/Rtt_Version.h"
 
 if [ -n "$CERT_PASSWORD" ]
 then

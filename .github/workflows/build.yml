@@ -15,8 +15,9 @@ env:
 
 
 jobs:
-  iOS-template:
-    runs-on: macos-latest
+  source-code:
+    name: Check out and process source code
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Checkout submodules
@@ -25,6 +26,26 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1 --rebase
+      - name: Set daily build
+        shell: bash
+        run: ./tools/gh_process_sources.sh
+      - name: Upload Source bundle
+        uses: actions/upload-artifact@v1
+        with:
+          name: corona.tar.gz
+          path: ./corona.tar.gz
+
+  iOS-template:
+    needs: source-code
+    runs-on: macos-latest
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: corona.tar.gz
+      - name: Unpack source code
+        shell: bash
+        run: tar -xzf corona.tar.gz
       - name: Build iOS templates
         shell: bash
         working-directory: ./platform/iphone
@@ -37,16 +58,17 @@ jobs:
           name: iOS-Templates
           path: ./ios_output.zip
   tvOS-template:
+    needs: source-code
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Checkout submodules
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: corona.tar.gz
+      - name: Unpack source code
         shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1 --rebase
-      - name: Build iOS templates
+        run: tar -xzf corona.tar.gz
+      - name: Build tvOS templates
         shell: bash
         working-directory: ./platform/tvos
         run: ./gh_build_templates.sh
@@ -58,9 +80,10 @@ jobs:
           name: tvOS-Templates
           path: ./tvos_output.zip
   macOS-Simulator:
-    runs-on: macos-latest
     needs:
+      - source-code
       - tvOS-template
       - iOS-template
+    runs-on: macos-latest
     steps:
       - run: echo "All done"
