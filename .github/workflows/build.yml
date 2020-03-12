@@ -45,7 +45,7 @@ jobs:
           name: corona.tar.gz
       - name: Unpack source code
         shell: bash
-        run: tar -xzf corona.tar.gz
+        run: tar -xzf ./corona.tar.gz
       - name: Build iOS templates
         shell: bash
         working-directory: ./platform/iphone
@@ -67,7 +67,7 @@ jobs:
           name: corona.tar.gz
       - name: Unpack source code
         shell: bash
-        run: tar -xzf corona.tar.gz
+        run: pwd && tar -xzf ./corona.tar.gz
       - name: Build tvOS templates
         shell: bash
         working-directory: ./platform/tvos
@@ -89,7 +89,7 @@ jobs:
           name: corona.tar.gz
       - name: Unpack source code
         shell: bash
-        run: tar -xzf corona.tar.gz
+        run: tar -xzf ./corona.tar.gz
       - name: Build Corona Native
         shell: bash
         run: ./tools/GHAction/build_native.sh
