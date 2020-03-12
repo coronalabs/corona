@@ -442,38 +442,15 @@ CoronaBuilder::Main( int argc, const char *argv[] )
 		case CoronaBuilderParams::kAppSignCommand:
 			{
 				// CoronaBuilder app_sign sign "developerkey.cert" "resource.corona-archive" "$EXE_PATH" little [platform bundleID]
+				const char *platformName = (argc > 7 && argv[7][0] != '-') ? argv[7] : NULL;
+				const char *bundleID = (argc > 8 && argv[8][0] != '-') ? argv[8] : NULL;
 
-				ConsoleAuthorizationDelegate delegate;
-				if ( VerifyPermission( delegate, kAppSignPermission ) )
-				{
-					const char *platformName = (argc > 7 && argv[7][0] != '-') ? argv[7] : NULL;
-					const char *bundleID = (argc > 8 && argv[8][0] != '-') ? argv[8] : NULL;
+				bool sign = (strncmp(argv[2], "sign", 4) == 0);
 
-					bool sign = (strncmp(argv[2], "sign", 4) == 0);
+				result = Rtt_AppSignMain( argc - 1, argv + 1 );
 
-					if ( sign && !fOfflineMode )
-					{
-						if(! CanCustomizeSplashScreen(platformName, bundleID))
-						{
-							String carFile(argv[4]);
-
-							// This information has already been conveyed at this point
-							// fprintf(stderr, "NOTE: using the default Corona splash screen\nActivate the Splash Screen Control plugin for user '%s' if you don't want it\nby visiting https://marketplace.coronalabs.com/plugin/splash-screen-control\n", fUsr.GetString());
-
-							Rtt_CoronaBuilderAddSplashControl(carFile);
-						}
-						InsertBuildId(argv[4]);
-					}
-
-					result = Rtt_AppSignMain( argc - 1, argv + 1 );
-
-					// replace all architectures
-					while (sign && result == 0 && Rtt_AppSignMain( argc - 1, argv + 1 ) == 0);
-				}
-				else
-				{
-					fprintf( stderr, "error: CoronaBuilder: This computer is not properly authorized. You must have an account with an '%s' subscription. Please use the 'authorize' command or check that your subscription type is valid\n", AuthorizationTicket::DisplayStringForSubscription( AuthorizationTicket::kEnterpriseNativeExtensionsSubscription ) );
-				}
+				// replace all architectures
+				while (sign && result == 0 && Rtt_AppSignMain( argc - 1, argv + 1 ) == 0);
 			}
 			break;
 		case CoronaBuilderParams::kPluginsCommand:

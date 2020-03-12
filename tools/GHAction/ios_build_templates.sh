@@ -57,9 +57,6 @@ then
     echo "BUILD FAILED"
 fi
 
-git checkout "$WORKSPACE/librtt/Core/Rtt_Version.h"
-rm -rf "$WORKSPACE/librtt/Core/Rtt_Version.h.bak"
-
 if [ -n "$CERT_PASSWORD" ]
 then
     security default-keychain -s login.keychain
