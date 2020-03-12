@@ -1,1 +1,0 @@
-../iphone/gh_build_templates.sh

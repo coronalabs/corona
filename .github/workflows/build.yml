@@ -17,7 +17,7 @@ env:
 jobs:
   source-code:
     name: Check out and process source code
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Checkout submodules
@@ -28,7 +28,7 @@ jobs:
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1 --rebase
       - name: Set daily build
         shell: bash
-        run: ./tools/gh_process_sources.sh
+        run: ./tools/GHAction/process_sources.sh
       - name: Upload Source bundle
         uses: actions/upload-artifact@v1
         with:
@@ -79,6 +79,28 @@ jobs:
         with:
           name: tvOS-Templates
           path: ./tvos_output.zip
+  native:
+    needs: source-code
+    runs-on: macos-latest
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: corona.tar.gz
+      - name: Unpack source code
+        shell: bash
+        run: tar -xzf corona.tar.gz
+      - name: Build Corona Native
+        shell: bash
+        run: ./tools/GHAction/build_native.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Upload Corona Native
+        uses: actions/upload-artifact@v1
+        with:
+          name: native
+          path: ./CoronaNative.tar.gz
+
   macOS-Simulator:
     needs:
       - source-code
