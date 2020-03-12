@@ -67,7 +67,7 @@ jobs:
           name: corona.tar.gz
       - name: Unpack source code
         shell: bash
-        run: ls -a && pwd && tar -xzf ./corona.tar.gz
+        run: ls -a && pwd && tar -xavf ./corona.tar.gz
       - name: Build tvOS templates
         shell: bash
         working-directory: ./platform/tvos
