@@ -40,27 +40,6 @@ android {
     }
 }
 
-tasks.create<Copy>("splashScreenChecker") {
-    group = "Corona"
-
-    val outputDir = file("$buildDir/generated/source/corona")
-    val splash = "res/drawable/_corona_splash_screen.png"
-    inputs.file(splash)
-    from("SplashScreenBeacon.java.template")
-    into("$outputDir/com/ansca/corona")
-    rename("SplashScreenBeacon.java.template", "SplashScreenBeacon.java")
-    filter {
-        it.replace("999", file(splash).length().toString())
-    }
-    val task = this
-    android.libraryVariants.all {
-        registerJavaGeneratingTask(task, outputDir)
-    }
-    doFirst {
-        delete("$projectDir/src/com/ansca/corona/SplashScreenBeacon.java")
-    }
-}
-
 tasks.create<Copy>("updateWidgetResources") {
     group = "Corona"
     val widgetResLocation = "$buildDir/generated/widgetResources"

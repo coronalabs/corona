@@ -30,7 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build.Tools", "Build.Tools"
 		Build.Tools\LuaToCppFile.bat = Build.Tools\LuaToCppFile.bat
 		Build.Tools\LuaToCppSchema.xml = Build.Tools\LuaToCppSchema.xml
 		Build.Tools\LuaToCppTask.targets = Build.Tools\LuaToCppTask.targets
-		Build.Tools\TemplateToLua.bat = Build.Tools\TemplateToLua.bat
 		Build.Tools\UpdateProjectFileVersion.vbs = Build.Tools\UpdateProjectFileVersion.vbs
 	EndProjectSection
 EndProject

@@ -2215,9 +2215,6 @@ public class CoronaActivity extends Activity {
 					if (parent != null) {
 						parent.removeView(splashView);
 					}
-
-					// Ping a beacon if we displayed the default splash screen
-					SplashScreenBeacon.sendBeacon(getRuntimeTaskDispatcher());
 				}
 			}, 500);
 

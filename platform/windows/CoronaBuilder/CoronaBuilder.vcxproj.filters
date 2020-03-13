@@ -105,7 +105,6 @@
     <LuaToCpp Include="..\..\resources\webPackageApp.lua" />
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua" />
     <LuaToCpp Include="..\..\..\tools\CoronaBuilder\BuilderPluginDownloader.lua" />
-    <LuaToCpp Include="..\..\..\tools\CoronaBuilder\_CoronaSetup_android.lua" />
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
   </ItemGroup>
   <ItemGroup>

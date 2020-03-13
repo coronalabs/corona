@@ -82,9 +82,6 @@
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <PreBuildEvent>
-      <Command>../Build.Tools/TemplateToLua.bat "../../../tools/CoronaBuilder/_CoronaSetup_android.lua.template" "../../../tools/CoronaBuilder/_CoronaSetup_android.lua"</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -117,9 +114,6 @@
     <PostBuildEvent>
       <Command>if $(ConfigurationName) == Release ( call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)" )</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>../Build.Tools/TemplateToLua.bat "../../../tools/CoronaBuilder/_CoronaSetup_android.lua.template" "../../../tools/CoronaBuilder/_CoronaSetup_android.lua"</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\external\hmac\hmac_sha2.c" />
@@ -349,7 +343,6 @@
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua" />
     <LuaToCpp Include="..\..\..\tools\CoronaBuilder\BuilderPluginDownloader.lua" />
     <LuaToCpp Include="..\..\..\tools\CoronaBuilder\CoronaBuilder.lua" />
-    <LuaToCpp Include="..\..\..\tools\CoronaBuilder\_CoronaSetup_android.lua" />
     <LuaToCpp Include="..\..\android\create_build_properties.lua" />
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
     <LuaToCpp Include="..\..\resources\webPackageApp.lua" />
