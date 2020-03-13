@@ -144,13 +144,13 @@ jobs:
         with:
           name: iOS-templates
       - name: Put iOS templates in place
-        run: unzip iOS-templates/ios_output.zip -d platform/resources/iostemplate
+        run: cp -v iOS-templates/* platform/resources/iostemplate/
       - name: Get tvOS templates
         uses: actions/download-artifact@v1
         with:
           name: tvOS-templates
       - name: Put iOS templates in place
-        run: unzip tvOS-templates/tvos_output.zip -d platform/resources/iostemplate
+        run: cp -v tvOS-templates/* platform/resources/iostemplate/
       # todo
       # platform/resources/webtemplate.zip
       # platform/resources/linuxtemplate.tar.gz
