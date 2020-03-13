@@ -20,6 +20,7 @@ then
     do
         cp "$WORKSPACE/platform/$PLATFORM_DIR"/*.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/"
     done
+    cp "$WORKSPACE/tools/GHAction/Provisioning"/* "$HOME/Library/MobileDevice/Provisioning Profiles/"
 fi
 
 BUILD_NUMBER=${BUILD_NUMBER:-3575}
