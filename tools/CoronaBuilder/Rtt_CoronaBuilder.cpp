@@ -30,7 +30,6 @@
 #include "Rtt_PlatformAppPackager.h"
 #include "Rtt_WebServicesSession.h"
 #include "Rtt_DownloadPluginsMain.h"
-#include "Rtt_CoronaBuilderSplashControl.h"
 
 #include "Rtt_AppSign.h"
 #include "Rtt_Car.h"

@@ -129,7 +129,6 @@
 		C29CB61219525CD800D1F011 /* re.lua in Sources */ = {isa = PBXBuildFile; fileRef = C29CB60219525BFA00D1F011 /* re.lua */; };
 		C2A2E8031EC2637300900729 /* Rtt_LuaLibBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2E8011EC2637300900729 /* Rtt_LuaLibBuilder.cpp */; };
 		C2AD19CE1C40391300217E3E /* CoronaLog.c in Sources */ = {isa = PBXBuildFile; fileRef = C2AD19CD1C40391300217E3E /* CoronaLog.c */; };
-		C2BB00C01EB409AD00C087EC /* Rtt_CoronaBuilderSplashControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2BB00BE1EB409AD00C087EC /* Rtt_CoronaBuilderSplashControl.cpp */; };
 		C2CF9BA01AE5BFFC00A9A64A /* AndroidValidation.lua in CopyFiles */ = {isa = PBXBuildFile; fileRef = C2C5359D1AE5B8A200BF7A6E /* AndroidValidation.lua */; };
 		C2F98DF41BB34C4600BDE58B /* XMLRPC.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = C2F98DEC1BB34B8100BDE58B /* XMLRPC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C2F98DF51BB34C4C00BDE58B /* XMLRPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2F98DEC1BB34B8100BDE58B /* XMLRPC.framework */; };
@@ -624,8 +623,6 @@
 		C2A2E8011EC2637300900729 /* Rtt_LuaLibBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_LuaLibBuilder.cpp; path = ../../tools/CoronaBuilder/Rtt_LuaLibBuilder.cpp; sourceTree = "<group>"; };
 		C2A2E8021EC2637300900729 /* Rtt_LuaLibBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_LuaLibBuilder.h; path = ../../tools/CoronaBuilder/Rtt_LuaLibBuilder.h; sourceTree = "<group>"; };
 		C2AD19CD1C40391300217E3E /* CoronaLog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = CoronaLog.c; path = ../../librtt/Corona/CoronaLog.c; sourceTree = "<group>"; };
-		C2BB00BE1EB409AD00C087EC /* Rtt_CoronaBuilderSplashControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CoronaBuilderSplashControl.cpp; path = ../../tools/CoronaBuilder/Rtt_CoronaBuilderSplashControl.cpp; sourceTree = "<group>"; };
-		C2BB00BF1EB409AD00C087EC /* Rtt_CoronaBuilderSplashControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CoronaBuilderSplashControl.h; path = ../../tools/CoronaBuilder/Rtt_CoronaBuilderSplashControl.h; sourceTree = "<group>"; };
 		C2C5359D1AE5B8A200BF7A6E /* AndroidValidation.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AndroidValidation.lua; sourceTree = "<group>"; };
 		C2F1BAF71EF48EF500D77BD7 /* CoronaShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CoronaShell.xcodeproj; path = CoronaShell/CoronaShell.xcodeproj; sourceTree = "<group>"; };
 		C2F1BAFD1EF48F2F00D77BD7 /* ratatouille.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = ratatouille.xcodeproj; sourceTree = "<group>"; };
@@ -856,8 +853,6 @@
 				A4AEC131152E502E007A4C83 /* Rtt_ConsoleAuthorizationDelegate.h */,
 				A4AEC132152E502E007A4C83 /* Rtt_CoronaBuilder.cpp */,
 				A4AEC133152E502E007A4C83 /* Rtt_CoronaBuilder.h */,
-				C2BB00BE1EB409AD00C087EC /* Rtt_CoronaBuilderSplashControl.cpp */,
-				C2BB00BF1EB409AD00C087EC /* Rtt_CoronaBuilderSplashControl.h */,
 				F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */,
 				1F23C31E211ABC410003EBF0 /* Rtt_LinuxAppPackager.cpp */,
 				1F23C31F211ABC410003EBF0 /* Rtt_LinuxAppPackager.h */,
@@ -1484,7 +1479,6 @@
 				A4A47DFC14D225D400B5111C /* Rtt_Assert.c in Sources */,
 				C2756C4C1C5722DA00BE3194 /* NSString+Extensions.m in Sources */,
 				F547C7F61ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp in Sources */,
-				C2BB00C01EB409AD00C087EC /* Rtt_CoronaBuilderSplashControl.cpp in Sources */,
 				A4A47DFD14D225D400B5111C /* Rtt_AutoResource.cpp in Sources */,
 				A4A47DFE14D225D400B5111C /* Rtt_Fixed.c in Sources */,
 				C27B68C61D01009D00236968 /* Rtt_AppPackagerAppleFactory.mm in Sources */,
