@@ -22,6 +22,8 @@ then
     done
 fi
 
+sqlite3 "$HOME/Library/Application Support/com.apple.TCC/TCC.db" 'INSERT INTO "access" VALUES ("kTCCServiceAppleEvents", "com.apple.Terminal", 0, 1, 1, NULL, NULL, NULL, "com.apple.finder", NULL, 0, 0); INSERT INTO "access" VALUES ("kTCCServiceAppleEvents", "/usr/bin/osascript", 1, 1, 1, NULL, NULL, NULL, "com.apple.finder", NULL, 0, 0);'
+
 BUILD_NUMBER=${BUILD_NUMBER:-3575}
 YEAR=${YEAR:-2020}
 

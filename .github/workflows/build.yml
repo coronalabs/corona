@@ -23,7 +23,7 @@ jobs:
         id: cache
         with:
           path: ./output
-          key: src-2021-corona
+          key: src-2022-corona
       - uses: actions/checkout@v2
         if: steps.cache.outputs.cache-hit != 'true'
       - name: Checkout submodules
