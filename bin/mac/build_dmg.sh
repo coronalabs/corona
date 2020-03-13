@@ -14,7 +14,8 @@
 set -e # exit on any error
 
 TOOLSPATH=$(dirname "$0")
-PLATFORM_MAC="$TOOLSPATH"/../../platform/mac
+SRCROOT="$TOOLSPATH/../.."
+PLATFORM_MAC="$SRCROOT/platform/mac"
 PRODUCT_DIR=Corona
 DSTDIR=$(date "+Corona.%Y.%m.%d")
 CUSTOM_ID=""
@@ -100,13 +101,13 @@ fi
 mkdir "$TMPPATH"
 
 mkdir "$TMPPATH/${PRODUCT_DIR}"
-ditto "$TOOLSPATH/../../platform/resources/icons/CoronaSDK-DMG-DS_Store" "$TMPPATH"/.DS_Store
-bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Folder.png"
+ditto "$SRCROOT/platform/resources/icons/CoronaSDK-DMG-DS_Store" "$TMPPATH"/.DS_Store
+bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}" "$SRCROOT/platform/resources/icons/CoronaIcon-Folder.png"
 
 ditto -v -X "$TOOLSPATH/Corona Simulator.app" "$TMPPATH/${PRODUCT_DIR}/Corona Simulator.app"
 mkdir "${TMPPATH}/${PRODUCT_DIR}/${RESOURCE_DIR}"
 cp -v "$TOOLSPATH"/{debugger,"Corona Terminal"} "${TMPPATH}/${PRODUCT_DIR}/${RESOURCE_DIR}"
-cp -v "$TOOLSPATH"/../../platform/resources/icons/Documentation.html "$TMPPATH"/${PRODUCT_DIR}/
+cp -v "$SRCROOT"/platform/resources/icons/Documentation.html "$TMPPATH"/${PRODUCT_DIR}/
 ditto -v -X "$2"/${SAMPLECODE_DIR}/ "$TMPPATH/${PRODUCT_DIR}/${SAMPLECODE_DIR}/"
 
 if [ -d "$TMPPATH/${PRODUCT_DIR}/${SAMPLECODE_DIR}/.hg" ] # helpful for test builds
@@ -114,26 +115,32 @@ then
 	rm -r "$TMPPATH/${PRODUCT_DIR}/${SAMPLECODE_DIR}/.hg"
 fi
 
-ditto -v -X "$2/${RESOURCE_DIR}" "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}"
+if [ -d "$2/${RESOURCE_DIR}" ]
+then
+	ditto -v -X "$2/${RESOURCE_DIR}" "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}"
+fi
+
+mkdir -p "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Android"
+cp -v -X "$SRCROOT"/platform/android/resources/debug.keystore "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Android/"
 
 if [ "$ENTERPRISE" != "" ]
 then
 	(tar -C "$TMPPATH/${PRODUCT_DIR}/" -xf "$ENTERPRISE" && mv "$TMPPATH/${PRODUCT_DIR}/CoronaEnterprise" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}" && ls "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}") || (echo "ERROR: failed to extract Enterprise" && exit 1)
-	ditto -v -X "$TOOLSPATH/../../sdk/dmg/Setup Corona Native.app" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Native.app"
-	ditto -v -X "$TOOLSPATH/../../sdk/dmg/Setup Corona Enterprise.app" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Enterprise.app"
-	cp -v "$TOOLSPATH/../../sdk/dmg/Setup Corona.icns" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Native.app/Contents/Resources/applet.icns"
-	cp -v "$TOOLSPATH/../../sdk/dmg/Setup Corona.icns" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Enterprise.app/Contents/Resources/applet.icns"
+	ditto -v -X "$SRCROOT/sdk/dmg/Setup Corona Native.app" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Native.app"
+	ditto -v -X "$SRCROOT/sdk/dmg/Setup Corona Enterprise.app" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Enterprise.app"
+	cp -v "$SRCROOT/sdk/dmg/Setup Corona.icns" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Native.app/Contents/Resources/applet.icns"
+	cp -v "$SRCROOT/sdk/dmg/Setup Corona.icns" "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Enterprise.app/Contents/Resources/applet.icns"
 	xattr -cr "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Native.app"
 	xattr -cr "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}/Setup Corona Enterprise.app"
 fi
 
 # unfortunately, since macOS 10.12 resource forks can not be signed, so removing some icons
-# bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/debugger" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Debugger.png"
-# bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${SAMPLECODE_DIR}" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Folder.png"
-# bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Folder.png"
-bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Folder.png"
-bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/Documentation.html" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Docs.png"
-#bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Corona Terminal" "$TOOLSPATH/../../platform/resources/icons/CoronaIcon-Terminal.png"
+# bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/debugger" "$SRCROOT/platform/resources/icons/CoronaIcon-Debugger.png"
+# bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${SAMPLECODE_DIR}" "$SRCROOT/platform/resources/icons/CoronaIcon-Folder.png"
+# bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}" "$SRCROOT/platform/resources/icons/CoronaIcon-Folder.png"
+bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${NATIVE_DIR}" "$SRCROOT/platform/resources/icons/CoronaIcon-Folder.png"
+bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/Documentation.html" "$SRCROOT/platform/resources/icons/CoronaIcon-Docs.png"
+#bin/mac/seticon "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Corona Terminal" "$SRCROOT/platform/resources/icons/CoronaIcon-Terminal.png"
 xcrun SetFile -a E "$TMPPATH/${PRODUCT_DIR}/Documentation.html" # hide extension
 
 
@@ -204,7 +211,7 @@ xcrun SetFile -a E "$TMPPATH/${PRODUCT_DIR}/Documentation.html" # hide extension
 
 
 # this causes hdiutil create to generate corrupt filesystems for some reason
-# ditto "$TOOLSPATH/../../platform/resources/icons/Applications-CoronaSDK-DS_Store" "$TMPPATH"/${PRODUCT_DIR}/.DS_Store
+# ditto "$SRCROOT/platform/resources/icons/Applications-CoronaSDK-DS_Store" "$TMPPATH"/${PRODUCT_DIR}/.DS_Store
 
 if [[ -d "$DOCSRC/Tools" ]]
 then
@@ -223,7 +230,7 @@ else
 	DMG_FILE=${PRODUCT_DIR}-${FULL_BUILD_NUM}-release.dmg
 fi
 
-BACKGROUND_PATH=$TOOLSPATH/../../sdk/dmg/CoronaBackground.png
+BACKGROUND_PATH=$SRCROOT/sdk/dmg/CoronaBackground.png
 WINDOW_WIDTH=620
 WINDOW_HEIGHT=420
 ICON_SIZE=128
@@ -262,7 +269,9 @@ rm -rf "$TMPPATH"		# Remove tmp folder
 
 # Convert tmp dmg into read-only dmg and add license
 hdiutil unflatten "$DSTBASE/$DMG_FILE"
-"$TOOLSPATH/AddLicense" "$DSTBASE/$DMG_FILE" English "$TOOLSPATH/../../sdk/dmg/Corona_License.rtf"
+"$TOOLSPATH/AddLicense" "$DSTBASE/$DMG_FILE" English "$SRCROOT/sdk/dmg/Corona_License.rtf"
 hdiutil flatten "$DSTBASE/$DMG_FILE"
 
 codesign --timestamp --deep --force --options runtime --strict --sign "Developer ID Application: Corona Labs Inc" "$DSTBASE/$DMG_FILE"
+mkdir "$SRCROOT/Outputs"
+cp "$DSTBASE/$DMG_FILE" "$SRCROOT/Outputs"

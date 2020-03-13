@@ -21,13 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Checkout submodules
-        shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1 --rebase
       - name: Set daily build
-        shell: bash
         run: ./tools/GHAction/process_sources.sh
       - name: Upload Source bundle
         uses: actions/upload-artifact@v1
@@ -44,10 +42,8 @@ jobs:
         with:
           name: SourceCode
       - name: Unpack source code
-        shell: bash
         run: tar -xzf SourceCode/corona.tgz
       - name: Build iOS templates
-        shell: bash
         working-directory: ./platform/iphone
         run: ./gh_build_templates.sh
         env:
@@ -66,10 +62,8 @@ jobs:
         with:
           name: SourceCode
       - name: Unpack source code
-        shell: bash
         run: tar -xzf SourceCode/corona.tgz
       - name: Build tvOS templates
-        shell: bash
         working-directory: ./platform/tvos
         run: ./gh_build_templates.sh
         env:
@@ -88,17 +82,15 @@ jobs:
         with:
           name: SourceCode
       - name: Unpack source code
-        shell: bash
         run: tar -xzf SourceCode/corona.tgz
       - name: Build Corona Native
-        shell: bash
         run: ./tools/GHAction/build_native.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Upload Corona Native
         uses: actions/upload-artifact@v1
         with:
-          name: native
+          name: Native
           path: ./CoronaNative.tar.gz
 
   macOS-Simulator:
@@ -108,4 +100,46 @@ jobs:
       - iOS-template
     runs-on: macos-latest
     steps:
-      - run: echo "All done"
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - name: Get iOS templates
+        uses: actions/download-artifact@v1
+        with:
+          name: iOS-templates
+      - name: Put iOS templates in place
+        run: unzip iOS-templates/ios_output.zip -d platform/resources/iostemplate
+      - name: Get tvOS templates
+        uses: actions/download-artifact@v1
+        with:
+          name: tvOS-templates
+      - name: Put iOS templates in place
+        run: unzip iOS-templates/tvos_output.zip -d platform/resources/iostemplate
+      # todo
+      # platform/resources/webtemplate.zip
+      # platform/resources/linuxtemplate.tar.gz
+      # platform/resources/raspbiantemplate.tar.gz
+      - run: mkdir docs
+      - name: Get Sample Code
+        uses: actions/checkout@v2
+        with:
+          repository: coronalabs/samples-coronasdk
+          path: docs/SampleCode
+      - name: Clean-up docs
+        run: rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
+      - name: Get Corona Native
+        uses: actions/download-artifact@v1
+        with:
+          name: Native
+      - name: Build DMG
+        run: ./tools/GHAction/build_dmg.sh
+      - name: Upload macOS Daily build artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Corona DMG
+          path: ./Outputs
+
+        
