@@ -22,7 +22,20 @@ then
     done
 fi
 
-sqlite3 "$HOME/Library/Application Support/com.apple.TCC/TCC.db" 'INSERT INTO "access" VALUES ("kTCCServiceAppleEvents", "com.apple.Terminal", 0, 1, 1, NULL, NULL, NULL, "com.apple.finder", NULL, 0, 0); INSERT INTO "access" VALUES ("kTCCServiceAppleEvents", "/usr/bin/osascript", 1, 1, 1, NULL, NULL, NULL, "com.apple.finder", NULL, 0, 0);'
+TCCDB="$HOME/Library/Application Support/com.apple.TCC/TCC.db"
+if [ ! -f "$TCCDB" ]
+then
+	mkdir -p "$(dirname "$TCCDB")"
+	sqlite3 "$TCCDB" '
+	CREATE TABLE "access" ( service TEXT NOT NULL, client TEXT NOT NULL, client_type INTEGER NOT NULL, allowed INTEGER NOT NULL, prompt_count INTEGER NOT NULL, csreq BLOB, policy_id INTEGER, indirect_object_identifier_type INTEGER, indirect_object_identifier TEXT DEFAULT "UNUSED", indirect_object_code_identity BLOB, flags INTEGER, last_modified INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (service, client, client_type, indirect_object_identifier), FOREIGN KEY (policy_id) REFERENCES policies(id) ON DELETE CASCADE ON UPDATE CASCADE);
+	CREATE TABLE access_overrides ( service TEXT NOT NULL PRIMARY KEY);
+	CREATE TABLE active_policy ( client TEXT NOT NULL, client_type INTEGER NOT NULL, policy_id INTEGER NOT NULL, PRIMARY KEY (client, client_type), FOREIGN KEY (policy_id) REFERENCES policies(id) ON DELETE CASCADE ON UPDATE CASCADE);
+	CREATE TABLE admin (key TEXT PRIMARY KEY NOT NULL, value INTEGER NOT NULL);
+	CREATE TABLE expired ( service TEXT NOT NULL, client TEXT NOT NULL, client_type INTEGER NOT NULL, csreq BLOB, last_modified INTEGER NOT NULL , expired_at INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (service, client, client_type));
+	CREATE TABLE policies ( id INTEGER NOT NULL PRIMARY KEY, bundle_id TEXT NOT NULL, uuid TEXT NOT NULL, display TEXT NOT NULL, UNIQUE (bundle_id, uuid));
+	INSERT INTO "admin" VALUES ("version", "15");'
+fi
+sqlite3 "$TCCDB" 'REPLACE into "access" VALUES ("kTCCServiceAppleEvents", "com.apple.Terminal", 0, 1, 1, NULL, NULL, NULL, "com.apple.finder", NULL, 0, 0), ("kTCCServiceAppleEvents", "/usr/bin/osascript", 1, 1, 1, NULL, NULL, NULL, "com.apple.finder", NULL, 0, 0);'
 
 BUILD_NUMBER=${BUILD_NUMBER:-3575}
 YEAR=${YEAR:-2020}
@@ -43,3 +56,4 @@ if [ "$BUILD_FAILED" = "YES" ]
 then
     exit 1
 fi
+echo $?

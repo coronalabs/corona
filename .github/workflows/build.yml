@@ -19,21 +19,13 @@ jobs:
     name: Check out and process source code
     runs-on: macos-latest
     steps:
-      - uses: actions/cache@v1
-        id: cache
-        with:
-          path: ./output
-          key: src-2022-corona
       - uses: actions/checkout@v2
-        if: steps.cache.outputs.cache-hit != 'true'
       - name: Checkout submodules
-        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1 --rebase
       - name: Set daily build
-        if: steps.cache.outputs.cache-hit != 'true'
         run: ./tools/GHAction/process_sources.sh
       - name: Upload Source bundle
         uses: actions/upload-artifact@v1
