@@ -94,7 +94,7 @@ cd "$PLATFORM_MAC"
 if [ "${PIPESTATUS[0]}" -ne 0 ] #exit if the build script failed. $? gives us the output from tee not build.sh
 then
 	echo "BUILD ERROR: Could not build 'Corona Simulator.app'"
-	exit -1
+	exit 22
 fi
 )
 
