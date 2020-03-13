@@ -169,6 +169,8 @@ jobs:
           name: Native
       - name: Build DMG
         run: ./tools/GHAction/build_dmg.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Upload macOS Daily build artifact
         uses: actions/upload-artifact@v1
         with:
