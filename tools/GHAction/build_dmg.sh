@@ -25,8 +25,6 @@ fi
 BUILD_NUMBER=${BUILD_NUMBER:-3575}
 YEAR=${YEAR:-2020}
 
-
-
 if ! bin/mac/build_dmg.sh -d -b "$YEAR.$BUILD_NUMBER" -e "${WORKSPACE}/Native/CoronaNative.tar.gz" "${WORKSPACE}" "${WORKSPACE}/docs"
 then
     BUILD_FAILED=YES
@@ -43,6 +41,3 @@ if [ "$BUILD_FAILED" = "YES" ]
 then
     exit 1
 fi
-
-mv build/CoronaEnterprise.tgz "$WORKSPACE/CoronaNative.tar.gz"
-
