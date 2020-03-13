@@ -442,14 +442,10 @@ CoronaBuilder::Main( int argc, const char *argv[] )
 		case CoronaBuilderParams::kAppSignCommand:
 			{
 				// CoronaBuilder app_sign sign "developerkey.cert" "resource.corona-archive" "$EXE_PATH" little [platform bundleID]
-				const char *platformName = (argc > 7 && argv[7][0] != '-') ? argv[7] : NULL;
-				const char *bundleID = (argc > 8 && argv[8][0] != '-') ? argv[8] : NULL;
-
 				bool sign = (strncmp(argv[2], "sign", 4) == 0);
-
 				result = Rtt_AppSignMain( argc - 1, argv + 1 );
 
-				// replace all architectures
+        // replace all architectures
 				while (sign && result == 0 && Rtt_AppSignMain( argc - 1, argv + 1 ) == 0);
 			}
 			break;

@@ -853,7 +853,6 @@
 		A4FA8055170BFEFA002A7FC9 /* Rtt_IPhoneNativeObject.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_IPhoneNativeObject.mm; path = platform/iphone/Rtt_IPhoneNativeObject.mm; sourceTree = "<group>"; };
 		C2074EB81E160FC1009FC33C /* CoronaBeacon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaBeacon.h; path = platform/iphone/CoronaBeacon.h; sourceTree = "<group>"; };
 		C2074EB91E160FC1009FC33C /* CoronaBeacon.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaBeacon.mm; path = platform/iphone/CoronaBeacon.mm; sourceTree = "<group>"; };
-		C21A628A1E04B86600B382AE /* DefaultSplashInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultSplashInfo.h; sourceTree = "<group>"; };
 		C23D8DDE1954F13C00D6555E /* widget_theme_android_holo_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = widget_theme_android_holo_dark.png; path = ../../subrepos/widget/widget_theme_android_holo_dark.png; sourceTree = "<group>"; };
 		C23D8DDF1954F13C00D6555E /* widget_theme_android_holo_dark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "widget_theme_android_holo_dark@2x.png"; path = "../../subrepos/widget/widget_theme_android_holo_dark@2x.png"; sourceTree = "<group>"; };
 		C23D8DE01954F13C00D6555E /* widget_theme_android_holo_dark@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "widget_theme_android_holo_dark@4x.png"; path = "../../subrepos/widget/widget_theme_android_holo_dark@4x.png"; sourceTree = "<group>"; };
@@ -1197,7 +1196,6 @@
 				A4841097151147BF0074BD57 /* libplayer */,
 				A46936AD169DEBB700723568 /* libtemplate */,
 				32CA4F630368D1EE00C91783 /* Rtt_Player.pch */,
-				C21A628A1E04B86600B382AE /* DefaultSplashInfo.h */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				A445AA5E16B2049B00A9A764 /* Core Plugins */,
 				A491870516421FAD00A39286 /* Core Plugins (Enterprise-optional) */,
@@ -1885,7 +1883,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A48410A1151147BF0074BD57 /* Build configuration list for PBXNativeTarget "libplayer-core" */;
 			buildPhases = (
-				C213DFFD1E04C6FC005ED97E /* Generate DefaultSplashInfo.h */,
 				A4841091151147BE0074BD57 /* Sources */,
 				A4841092151147BE0074BD57 /* Frameworks */,
 				A4841093151147BE0074BD57 /* Headers */,
@@ -2620,20 +2617,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "echo \"Copying Corona\"\nditto -V \"$PROJECT_DIR\"/../test/assets2 \"$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH\"";
-		};
-		C213DFFD1E04C6FC005ED97E /* Generate DefaultSplashInfo.h */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Generate DefaultSplashInfo.h";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "#!/bin/bash\n# This script generates a header file that contains the size in bytes of the default splash screen file.\n# The value is used to determine whether the app is displaying the default (unpaid) splash screen or one\n# of their own and this controls whether the \"corona splash screen shown\" beacon is sent.\n\nTARGET_HEADER=\"$PROJECT_DIR/DefaultSplashInfo.h\"\necho \"Generating $TARGET ...\"\nDEFAULT_SPLASH_IMAGE_FILE_SIZE=$(\"$PROJECT_DIR/../../tools/get_splash_screen_size.sh\" ios \"$PROJECT_DIR/../..\")\n\nif [[ \"$DEFAULT_SPLASH_IMAGE_FILE_SIZE\" =~ ^ERROR: ]]\nthen\n    # We got an error, bail\n    echo \"$DEFAULT_SPLASH_IMAGE_FILE_SIZE\"\n    exit 1\nfi\n\necho \"// Machine generated file - DO NOT EDIT\" >$TARGET_HEADER\necho \"#define  DEFAULT_SPLASH_IMAGE_FILE_SIZE $DEFAULT_SPLASH_IMAGE_FILE_SIZE\" >>$TARGET_HEADER";
 		};
 /* End PBXShellScriptBuildPhase section */
 

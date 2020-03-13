@@ -63,13 +63,5 @@ if params.showMessage then
 
 end
 
--------------------------------------------------------------------------------
--- Splash screen validation for Enterprise
--------------------------------------------------------------------------------
-local fileExists, coronaSetup = pcall(require, '_CoronaSetup')
-if fileExists then
-	coronaSetup.validateSplashScreen()
-end
-
 -- Tell the runtime that shell.lua has completed
 callOnShellComplete(nil)

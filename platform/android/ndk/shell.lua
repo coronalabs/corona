@@ -576,14 +576,6 @@ if not usingGooglePlayServices then
 	handleCheckingForExpansionFiles()
 end
 
--------------------------------------------------------------------------------
--- Splash screen validation for Enterprise
--------------------------------------------------------------------------------
-local fileExists, coronaSetup = pcall(require, '_CoronaSetup')
-if fileExists then
-	coronaSetup.validateSplashScreen()
-end
-
 -- following line is commented out because callOnShellComplete should be
 -- invoked when expansion file is done expanding
 -- callOnShellComplete(nil)

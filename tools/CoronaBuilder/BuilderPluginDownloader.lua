@@ -439,9 +439,11 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			end
 		end
 	end
+	if splashScreenImage ~= nil or not splashScreenEnabled then
+		print("SPLASH\t" .. tostring(splashScreenImage))
+	end
 	local addedPluginsToDownload = {}
-	local needsSplashScreenControl = splashScreenImage ~= nil or not splashScreenEnabled
-	if #pluginsToDownload > 0 or alwaysQuery or needsSplashScreenControl then
+	if #pluginsToDownload > 0 or alwaysQuery then
 		local authorisedPlugins = {}
 
 		if user then
@@ -476,21 +478,6 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		end
 
 		local authErrors = false
-		if needsSplashScreenControl then
-			-- alwyas has SPC
-			-- local splashStatus = authorisedPlugins["plugin.CoronaSplashControl com.coronalabs"] or 0
-			-- local hasSplashScreenControl = splashStatus > 0
-			-- if needsSplashScreenControl and not hasSplashScreenControl then
-			-- 	print("ERROR: Splash Screen Control plugin could not be validated")
-			-- 	print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/com.coronalabs/plugin.CoronaSplashControl")
-			-- 	authErrors = true
-			-- end
-			local hasSplashScreenControl = true
-			if needsSplashScreenControl and hasSplashScreenControl then
-				print("SPLASH\t" .. tostring(splashScreenImage))
-			end
-		end
-
 		for _, pd in pairs(pluginsToDownload) do
 			local plugin, developer, supportedPlatforms = unpack( pd )
 			addedPluginsToDownload[plugin .. " " .. developer] = true
@@ -506,14 +493,6 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 					if supportedPlatform.url == "" then
 						print("ERROR: empty custom URL for: " .. plugin .. " (" .. developer .. ")")
 						authErrors = true
-					else
-						-- always allow Self hosted plugins
-						-- local status = authorisedPlugins['plugin.selfHostedPlugins com.coronalabs'] or 0
-						-- if status == 0 then
-						-- 	print("ERROR: Self-Hosted plugins was not activated.")
-						-- 	print("ERROR: More information at: https://marketplace.coronalabs.com/service/self-hosted-plugins")
-						-- 	return 1
-						-- end	
 					end
 				else
 					local status = authorisedPlugins[plugin .. ' ' .. developer] or 0
