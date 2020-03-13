@@ -273,5 +273,5 @@ hdiutil unflatten "$DSTBASE/$DMG_FILE"
 hdiutil flatten "$DSTBASE/$DMG_FILE"
 
 codesign --timestamp --deep --force --options runtime --strict --sign "Developer ID Application: Corona Labs Inc" "$DSTBASE/$DMG_FILE"
-mkdir "$SRCROOT/Outputs"
-cp "$DSTBASE/$DMG_FILE" "$SRCROOT/Outputs"
+mkdir "$SRCROOT/output"
+cp "$DSTBASE/$DMG_FILE" "$SRCROOT/output"

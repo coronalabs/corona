@@ -22,3 +22,5 @@ plutil -convert xml1 platform/mac/Info.plist
 
 
 COPYFILE_DISABLE=1 tar -czf corona.tgz --exclude '.git' --exclude 'corona.tgz' ./
+mkdir -p output
+mv corona.tgz ./corona.tgz

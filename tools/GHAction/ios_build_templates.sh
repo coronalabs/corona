@@ -99,7 +99,8 @@ fi
                 tar cvjf "${ARCHIVE}" --exclude='CoronaSimLogo-256.png' --exclude='world.jpg' --exclude='Icon*.png' ./{libtemplate,template.app}
                 echo "Built ${ARCHIVE}"
             )
-            zip -0 -j "$OUTPUT" "$ARCHIVE"
+            mkdir -p "$WORKSPACE/output"
+            cp -v "$ARCHIVE" "$WORKSPACE/output"
         done
     done
 )

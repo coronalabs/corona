@@ -41,5 +41,5 @@ then
     exit 1
 fi
 
-mv build/CoronaEnterprise.tgz "$WORKSPACE/CoronaNative.tar.gz"
-
+mkdir -p "$WORKSPACE/output/"
+mv build/CoronaEnterprise.tgz "$WORKSPACE/output/CoronaNative.tar.gz"
