@@ -293,7 +293,6 @@
     <ClCompile Include="..\..\..\librtt\Core\Rtt_UseCount.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_WeakCount.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_SharedCount.cpp" />
-    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilderSplashControl.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunResult.cpp">
@@ -465,7 +464,6 @@
     <ClInclude Include="..\..\..\librtt\Core\Rtt_WeakCount.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_WeakPtr.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedCount.h" />
-    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilderSplashControl.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunResult.h">
