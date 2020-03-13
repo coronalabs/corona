@@ -74,7 +74,7 @@ RectToCGRect( const Rtt::Rect& bounds, CGRect * outRect )
 - (void)addObservers;
 - (void)removeObservers;
 
-- (void)openWithRequest:(NSURLRequest*)request;
+- (void)openWithRequest:(NSURLRequest*)request  baseURL:(NSURL*)baseUrl;;
 
 - (void)close;
 - (void)finishClose;
@@ -178,14 +178,18 @@ RectToCGRect( const Rtt::Rect& bounds, CGRect * outRect )
 {
 }
 
-- (void)openWithRequest:(NSURLRequest*)request
+- (void)openWithRequest:(NSURLRequest*)request baseURL:(NSURL*)baseUrl
 {
 	[self initView];
 
 	[fLoadingURL release];
 	fLoadingURL = [request.URL retain];
 
-	[fWebView loadRequest:request];
+	if([fLoadingURL isFileURL] && baseUrl && [fWebView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
+		[fWebView loadFileURL:fLoadingURL allowingReadAccessToURL:baseUrl];
+	} else {
+		[fWebView loadRequest:request];
+	}
 	isLoading = YES;
 
 	if ( ! isOpen )
@@ -582,7 +586,7 @@ IPhoneWebPopup::Show( const MPlatform& platform, const char *url )
 		: [[NSURL alloc] initWithString:urlString];
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:u];
 	[u release];
-	[baseUrl release];
+	[baseUrl autorelease];
 
 	[request setHTTPMethod:fMethod];
 	if ( NSOrderedSame == [fMethod caseInsensitiveCompare:@"POST"] )
@@ -602,7 +606,7 @@ IPhoneWebPopup::Show( const MPlatform& platform, const char *url )
 	{
 	}
 
-	[fWebView openWithRequest:request];
+	[fWebView openWithRequest:request baseURL:baseUrl];
 
 	[request release];
 }

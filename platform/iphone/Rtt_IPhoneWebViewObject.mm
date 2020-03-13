@@ -87,7 +87,7 @@ static CGFloat kAnimationDuration = 0.3;
 - (void)addObservers;
 - (void)removeObservers;
 - (void)loadHtmlString:(NSString*)htmlString baseURL:(NSURL*)baseUrl;
-- (void)loadRequest:(NSURLRequest*)request;
+- (void)loadRequest:(NSURLRequest*)request baseURL:(NSURL*)baseUrl;
 - (void)stopLoading;
 - (BOOL)back;
 - (BOOL)forward;
@@ -213,7 +213,7 @@ static CGFloat kAnimationDuration = 0.3;
 	}
 	
 }
-- (void)loadRequest:(NSURLRequest*)request
+- (void)loadRequest:(NSURLRequest*)request baseURL:(NSURL*)baseUrl
 {
 	if ( isLoading )
 	{
@@ -255,8 +255,11 @@ static CGFloat kAnimationDuration = 0.3;
     
 	[fLoadingURL release];
 	fLoadingURL = [request.URL retain];
-
-	[fWebView loadRequest:request];
+	if([fLoadingURL isFileURL] && baseUrl && [fWebView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
+		[fWebView loadFileURL:request.URL allowingReadAccessToURL:baseUrl];
+	} else {
+		[fWebView loadRequest:request];
+	}
 
     if (false == loadImmediately)
     {
@@ -649,7 +652,7 @@ IPhoneWebViewObject::Request( NSString *urlString, NSURL *baseUrl )
 	}
 
 	Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)GetView();
-	[container loadRequest:request];
+	[container loadRequest:request baseURL:baseUrl];
 
 	[request release];
 }
