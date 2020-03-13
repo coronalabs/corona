@@ -98,6 +98,7 @@ jobs:
       - source-code
       - tvOS-template
       - iOS-template
+      - native
     runs-on: macos-latest
     steps:
       - name: Get processed code
@@ -117,7 +118,7 @@ jobs:
         with:
           name: tvOS-templates
       - name: Put iOS templates in place
-        run: unzip iOS-templates/tvos_output.zip -d platform/resources/iostemplate
+        run: unzip tvOS-templates/tvos_output.zip -d platform/resources/iostemplate
       # todo
       # platform/resources/webtemplate.zip
       # platform/resources/linuxtemplate.tar.gz
