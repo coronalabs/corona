@@ -276,3 +276,6 @@ platform/tvos/*.tar.bz
 /*_output.zip
 /corona.tar.gz
 /CoronaNative.tar.gz
+sdk/dmg/bgp.png
+sdk/dmg/bgp@2x.png
+sdk/dmg/processed_appdmg.json

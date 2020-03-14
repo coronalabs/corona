@@ -218,10 +218,10 @@ then
     ditto -v -X "$DOCSRC"/Tools "$TMPPATH"/${PRODUCT_DIR}/Tools
 fi
 
-RESULT_DIR="$TMPPATH/${PRODUCT_DIR}"
+RESULT_DIR="$DSTDIR/${PRODUCT_DIR}"
 if [ "${BUILD_NUM}" != "" ] && [ "$DAILY_BUILD" == true ]
 then
-	RESULT_DIR="$TMPPATH/${PRODUCT_DIR}${BUILD_NUM}"
+	RESULT_DIR="$DSTDIR/${PRODUCT_DIR}${BUILD_NUM}"
 	mv "$TMPPATH"/${PRODUCT_DIR} "$TMPPATH/${PRODUCT_DIR}${BUILD_NUM}"
 	VOLUME_NAME=${PRODUCT_DIR}${BUILD_NUM}
 	ICON_NAME=${PRODUCT_DIR}${BUILD_NUM}
@@ -250,20 +250,17 @@ then
 	convert sdk/dmg/CoronaBackground.png -pointsize 13 -stroke DarkGrey -fill DarkGrey -draw "text 39,387 '$FULL_BUILD_NUM'" "$TMPBACKGROUND"
 	BACKGROUND_PATH="$TMPBACKGROUND"
 
-	convert sdk/dmg/BG.png    -pointsize 13 -stroke DarkGrey -fill DarkGrey -draw "text 39,387 '$FULL_BUILD_NUM'" /tmp/corona-bg.png
-	convert sdk/dmg/BG@2x.png -pointsize 26 -stroke DarkGrey -fill DarkGrey -draw "text 78,774 '$FULL_BUILD_NUM'" /tmp/corona-bg@2x.png
+	convert sdk/dmg/BG.png    -pointsize 13 -stroke DarkGrey -fill DarkGrey -draw "text 39,387 '$FULL_BUILD_NUM'" sdk/dmg/bgp.png
+	convert sdk/dmg/BG@2x.png -pointsize 26 -stroke DarkGrey -fill DarkGrey -draw "text 78,774 '$FULL_BUILD_NUM'" sdk/dmg/bgp@2x.png
 else
-	cp sdk/dmg/BG.png    /tmp/corona-bg.png
-	cp sdk/dmg/BG@2x.png /tmp/corona-bg@2x.png
+	cp sdk/dmg/BG.png    sdk/dmg/bgp.png
+	cp sdk/dmg/BG@2x.png sdk/dmg/bgp@2x.png
 fi
 
 if [ -x "$(command -v appdmg)" ]
 then
-	(
-		set -ex
-		cd "$RESULT_DIR"
-		appdmg "$SRCROOT/sdk/dmg/appdmg.json" "$DMG_FILE"
-	)
+	sed "s#XXXXXXXX#../../$RESULT_DIR#g ; s#YYYY#$FULL_BUILD_NUM#g" sdk/dmg/appdmg.json > sdk/dmg/processed_appdmg.json
+	appdmg sdk/dmg/processed_appdmg.json "$DMG_FILE"
 else
 	"$TOOLSPATH"/create-dmg/create-dmg $JENKINS --volname "$VOLUME_NAME" --background "$BACKGROUND_PATH" --window-size $WINDOW_WIDTH $WINDOW_HEIGHT --app-drop-link $APP_X $APP_Y --icon "$ICON_NAME" $ICON_X $ICON_Y --icon-size $ICON_SIZE "$DMG_FILE" "$TMPPATH"
 fi
@@ -290,5 +287,5 @@ hdiutil unflatten "$DSTBASE/$DMG_FILE"
 hdiutil flatten "$DSTBASE/$DMG_FILE"
 
 codesign --timestamp --deep --force --options runtime --strict --sign "Developer ID Application: Corona Labs Inc" "$DSTBASE/$DMG_FILE"
-mkdir "$SRCROOT/output"
+mkdir -p "$SRCROOT/output"
 cp "$DSTBASE/$DMG_FILE" "$SRCROOT/output"
