@@ -159,6 +159,10 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: Native
+      - name: install appdmg
+        run: npm install -g appdmg
+      - name: install imagemagick
+        run: brew install imagemagick gs
       - name: Build DMG
         run: ./tools/GHAction/build_dmg.sh
         env:

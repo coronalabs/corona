@@ -218,8 +218,10 @@ then
     ditto -v -X "$DOCSRC"/Tools "$TMPPATH"/${PRODUCT_DIR}/Tools
 fi
 
+RESULT_DIR="$TMPPATH/${PRODUCT_DIR}"
 if [ "${BUILD_NUM}" != "" ] && [ "$DAILY_BUILD" == true ]
 then
+	RESULT_DIR="$TMPPATH/${PRODUCT_DIR}${BUILD_NUM}"
 	mv "$TMPPATH"/${PRODUCT_DIR} "$TMPPATH/${PRODUCT_DIR}${BUILD_NUM}"
 	VOLUME_NAME=${PRODUCT_DIR}${BUILD_NUM}
 	ICON_NAME=${PRODUCT_DIR}${BUILD_NUM}
@@ -247,13 +249,24 @@ then
 	TMPBACKGROUND=/tmp/CoronaBackground$$.png
 	convert sdk/dmg/CoronaBackground.png -pointsize 13 -stroke DarkGrey -fill DarkGrey -draw "text 39,387 '$FULL_BUILD_NUM'" "$TMPBACKGROUND"
 	BACKGROUND_PATH="$TMPBACKGROUND"
+
+	convert sdk/dmg/BG.png    -pointsize 13 -stroke DarkGrey -fill DarkGrey -draw "text 39,387 '$FULL_BUILD_NUM'" /tmp/corona-bg.png
+	convert sdk/dmg/BG@2x.png -pointsize 26 -stroke DarkGrey -fill DarkGrey -draw "text 78,774 '$FULL_BUILD_NUM'" /tmp/corona-bg@2x.png
+else
+	cp sdk/dmg/BG.png    /tmp/corona-bg.png
+	cp sdk/dmg/BG@2x.png /tmp/corona-bg@2x.png
 fi
-JENKINS=
-if [ -n "$GITHUB_ACTIONS" ]
+
+if [ -x "$(command -v appdmg)" ]
 then
-    JENKINS=--skip-jenkins
+	(
+		set -ex
+		cd "$RESULT_DIR"
+		appdmg "$SRCROOT/sdk/dmg/appdmg.json" "$DMG_FILE"
+	)
+else
+	"$TOOLSPATH"/create-dmg/create-dmg $JENKINS --volname "$VOLUME_NAME" --background "$BACKGROUND_PATH" --window-size $WINDOW_WIDTH $WINDOW_HEIGHT --app-drop-link $APP_X $APP_Y --icon "$ICON_NAME" $ICON_X $ICON_Y --icon-size $ICON_SIZE "$DMG_FILE" "$TMPPATH"
 fi
-"$TOOLSPATH"/create-dmg/create-dmg $JENKINS --volname "$VOLUME_NAME" --background "$BACKGROUND_PATH" --window-size $WINDOW_WIDTH $WINDOW_HEIGHT --app-drop-link $APP_X $APP_Y --icon "$ICON_NAME" $ICON_X $ICON_Y --icon-size $ICON_SIZE "$DMG_FILE" "$TMPPATH"
 
 mv -f "$DMG_FILE" "$DSTBASE"/"$DMG_FILE"
 rm -f "$TMPBACKGROUND"
