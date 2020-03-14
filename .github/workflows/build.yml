@@ -1,9 +1,9 @@
 name: Daily Build
 
 on:
-  # repository_dispatch:
-  #   types:
-  #     - build
+  repository_dispatch:
+    types:
+      - build
   push:
 
 env:
@@ -37,21 +37,21 @@ jobs:
     needs: source-code
     runs-on: macos-latest
     steps:
-      # - uses: actions/cache@v1
-      #   id: cache
-      #   with:
-      #     path: ./output
-      #     key: ios-2021-corona
+      - uses: actions/cache@v1
+        id: cache
+        with:
+          path: ./output
+          key: ios-2021-corona
       - name: Get processed code
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v1
         with:
           name: SourceCode
       - name: Unpack source code
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: tar -xzf SourceCode/corona.tgz
       - name: Build iOS templates
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         working-directory: ./platform/iphone
         run: ./gh_build_templates.sh
         env:
@@ -65,21 +65,21 @@ jobs:
     needs: source-code
     runs-on: macos-latest
     steps:
-      # - uses: actions/cache@v1
-      #   id: cache
-      #   with:
-      #     path: ./output
-      #     key: tvos-2021-corona
+      - uses: actions/cache@v1
+        id: cache
+        with:
+          path: ./output
+          key: tvos-2021-corona
       - name: Get processed code
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v1
         with:
           name: SourceCode
       - name: Unpack source code
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: tar -xzf SourceCode/corona.tgz
       - name: Build tvOS templates
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         working-directory: ./platform/tvos
         run: ./gh_build_templates.sh
         env:
@@ -93,21 +93,21 @@ jobs:
     needs: source-code
     runs-on: macos-latest
     steps:
-      # - uses: actions/cache@v1
-      #   id: cache
-      #   with:
-      #     path: ./output
-      #     key: native-2021-corona
+      - uses: actions/cache@v1
+        id: cache
+        with:
+          path: ./output
+          key: native-2021-corona
       - name: Get processed code
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v1
         with:
           name: SourceCode
       - name: Unpack source code
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: tar -xzf SourceCode/corona.tgz
       - name: Build Corona Native
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: ./tools/GHAction/build_native.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
