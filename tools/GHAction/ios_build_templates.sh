@@ -45,7 +45,7 @@ then
     security import "$WORKSPACE/tools/GHAction/Certificates.p12" -A -P "$CERT_PASSWORD"
     security unlock-keychain -p 'Password123' build.keychain
     security set-keychain-settings build.keychain
-    security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 'Password123' build.keychain
+    security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 'Password123' build.keychain > /dev/null
 
     mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
     cp "$WORKSPACE/platform/$PLATFORM_DIR"/*.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/"

@@ -7,7 +7,7 @@ on:
   push:
 
 env:
-  BUILD_NUMBER: ${{ github.event.client_payload.number }}
+  BUILD_NUMBER: ${{ github.event.client_payload.number || 3789 }}
   YEAR: ${{ github.event.client_payload.year }}
   MONTH: ${{ github.event.client_payload.month }}
   DAY: ${{ github.event.client_payload.day }}
@@ -61,6 +61,7 @@ jobs:
         with:
           name: iOS-Templates
           path: ./output
+
   tvOS-template:
     needs: source-code
     runs-on: macos-latest
@@ -89,6 +90,7 @@ jobs:
         with:
           name: tvOS-Templates
           path: ./output
+
   native:
     needs: source-code
     runs-on: macos-latest
@@ -170,5 +172,25 @@ jobs:
       - name: Upload macOS Daily build artifact
         uses: actions/upload-artifact@v1
         with:
-          name: Corona DMG
+          name: CoronaDMG
           path: ./output
+
+  notarize:
+    needs:
+      - macOS-Simulator
+    runs-on: macos-latest
+    steps:
+      - name: Get built simulator
+        if: secrets.AppleAuth
+        uses: actions/download-artifact@v1
+        with:
+          name: CoronaDMG
+      - name: Notarize
+        if: secrets.AppleAuth
+        run: |
+          for dmg in ./CoronaDMG/*.dmg
+          do
+            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id 'com.coronalabs.CoronaSimulator'  --file "$dmg"
+          done
+        env:
+          APPLE_AUTH: ${{ secrets.AppleAuth }} # --username 'apple@id.email' --password 'secret-app-specific' --asc-provider anscainc
