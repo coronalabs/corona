@@ -4,10 +4,10 @@ on:
   repository_dispatch:
     types:
       - build
-  # push:
+  push:
 
 env:
-  BUILD_NUMBER: ${{ github.event.client_payload.number || 9999 }}
+  BUILD_NUMBER: ${{ github.event.client_payload.number || 3600 }}
   YEAR: ${{ github.event.client_payload.year }}
   MONTH: ${{ github.event.client_payload.month }}
   DAY: ${{ github.event.client_payload.day }}
