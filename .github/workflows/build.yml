@@ -91,6 +91,43 @@ jobs:
           name: tvOS-Templates
           path: ./output
 
+  webtemplate:
+    needs:
+      - source-code
+    runs-on: macos-latest
+    steps:
+      # - uses: actions/cache@v1
+      #   id: cache
+      #   with:
+      #     path: ./output
+      #     key: webtemplate-2021-corona
+      - name: Set up emsdk
+        run: |
+          wget -q --header='Accept:application/octet-stream' https://github.com/coronalabs/emsdk/releases/download/e1.37.22_64bit/emsdk.tar.xz -O emsdk.tar.xz
+          tar -xjf emsdk.tar.xz -C ~/
+          sed -i .bak "s#/Users/jenkins#${HOME}#g" ~/.emscripten
+          TMP_DIR=$(mktemp -d -t EMSCRIPTENXXX)
+          sed -i .bak -E "s#^TEMP_DIR.*#TEMP_DIR = '$TMP_DIR'#g" ~/.emscripten
+          xattr -r -d com.apple.quarantine ~/sdk-emscripten-mac || true
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - name: Build webtemplate
+        working-directory: ./platform/emscripten/gmake
+        run: ./build_template.sh
+      - name: Copy result to output
+        run: |
+          mkdir -p output
+          cp platform/emscripten/webtemplate.zip output
+      - name: Upload webtemplate artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Webtemplate
+          path: ./output
+
   native:
     needs: source-code
     runs-on: macos-latest
@@ -125,6 +162,7 @@ jobs:
       - tvOS-template
       - iOS-template
       - native
+      - webtemplate
     runs-on: macos-latest
     steps:
       - name: Get processed code
@@ -145,8 +183,13 @@ jobs:
           name: tvOS-templates
       - name: Put iOS templates in place
         run: cp -v tvOS-templates/* platform/resources/iostemplate/
+      - name: Get Webtemplate
+        uses: actions/download-artifact@v1
+        with:
+          name: Webtemplate
+      - name: Put webtemplate in place
+        run: cp -v Webtemplate/webtemplate.zip platform/resources/
       # todo
-      # platform/resources/webtemplate.zip
       # platform/resources/linuxtemplate.tar.gz
       # platform/resources/raspbiantemplate.tar.gz
       - run: mkdir docs
