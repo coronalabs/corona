@@ -219,17 +219,16 @@ jobs:
           path: ./output
 
   notarize:
+    if: contains(secrets.AppleAuth, ' ')
     needs:
       - macOS-Simulator
     runs-on: macos-latest
     steps:
       - name: Get built simulator
-        if: secrets.AppleAuth
         uses: actions/download-artifact@v1
         with:
           name: CoronaDMG
       - name: Notarize
-        if: secrets.AppleAuth
         run: |
           for dmg in ./CoronaDMG/*.dmg
           do
