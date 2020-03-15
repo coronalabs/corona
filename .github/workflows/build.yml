@@ -136,6 +136,7 @@ jobs:
   linux:
     needs:
       - source-code
+    runs-on: ubuntu-latest
     container:
       image: coronalabs/linux_builder_rpi
       options: --entrypoint="/bin/bash" --workdir="/main"
