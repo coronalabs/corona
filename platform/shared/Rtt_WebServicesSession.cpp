@@ -37,7 +37,7 @@
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
 	#include "WinFile.h"  // memory mapped file
 #elif defined(Rtt_LINUX_ENV)
-// 
+	const char Rtt::Authorization::kOfflineModeConfirmed[] = "OfflineModeConfirmed";
 #else 
 	#include <sys/fcntl.h>
 	#include <sys/mman.h>
