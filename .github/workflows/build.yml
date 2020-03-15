@@ -4,10 +4,10 @@ on:
   repository_dispatch:
     types:
       - build
-  push:
+  # push:
 
 env:
-  BUILD_NUMBER: ${{ github.event.client_payload.number || 3789 }}
+  BUILD_NUMBER: ${{ github.event.client_payload.number || 9999 }}
   YEAR: ${{ github.event.client_payload.year }}
   MONTH: ${{ github.event.client_payload.month }}
   DAY: ${{ github.event.client_payload.day }}
@@ -37,11 +37,11 @@ jobs:
     needs: source-code
     runs-on: macos-latest
     steps:
-      - uses: actions/cache@v1
-        id: cache
-        with:
-          path: ./output
-          key: ios-2021-corona
+      # - uses: actions/cache@v1
+      #   id: cache
+      #   with:
+      #     path: ./output
+      #     key: ios-2021-corona
       - name: Get processed code
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v1
@@ -66,11 +66,11 @@ jobs:
     needs: source-code
     runs-on: macos-latest
     steps:
-      - uses: actions/cache@v1
-        id: cache
-        with:
-          path: ./output
-          key: tvos-2021-corona
+      # - uses: actions/cache@v1
+      #   id: cache
+      #   with:
+      #     path: ./output
+      #     key: tvos-2021-corona
       - name: Get processed code
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v1
@@ -96,11 +96,11 @@ jobs:
       - source-code
     runs-on: macos-latest
     steps:
-      - uses: actions/cache@v1
-        id: cache
-        with:
-          path: ./output
-          key: webtemplate-2021-corona
+      # - uses: actions/cache@v1
+      #   id: cache
+      #   with:
+      #     path: ./output
+      #     key: webtemplate-2021-corona
       - name: Set up emsdk
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -173,11 +173,11 @@ jobs:
     needs: source-code
     runs-on: macos-latest
     steps:
-      - uses: actions/cache@v1
-        id: cache
-        with:
-          path: ./output
-          key: native-2021-corona
+      # - uses: actions/cache@v1
+      #   id: cache
+      #   with:
+      #     path: ./output
+      #     key: native-2021-corona
       - name: Get processed code
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v1
