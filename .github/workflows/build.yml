@@ -219,7 +219,6 @@ jobs:
           path: ./output
 
   notarize:
-    if: contains(secrets.AppleAuth, ' ')
     needs:
       - macOS-Simulator
     runs-on: macos-latest
@@ -230,6 +229,11 @@ jobs:
           name: CoronaDMG
       - name: Notarize
         run: |
+          if [ -z "$APPLE_AUTH" ]
+          then 
+            echo 'Skipping because no authorization provided'
+            exit 0
+          fi
           for dmg in ./CoronaDMG/*.dmg
           do
             xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id 'com.coronalabs.CoronaSimulator'  --file "$dmg"
