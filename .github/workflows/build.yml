@@ -139,13 +139,12 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: coronalabs/linux_builder_rpi
-      options: --entrypoint="/bin/bash" --workdir="/main"
     steps:
-      - uses: actions/cache@v1
-        id: cache
-        with:
-          path: ./output
-          key: linux-2021-corona
+      # - uses: actions/cache@v1
+      #   id: cache
+      #   with:
+      #     path: ./output
+      #     key: linux-2021-corona
       - name: Get processed code
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v1
@@ -165,7 +164,7 @@ jobs:
           cp -v platform/linux/linuxtemplate.tar.gz output
           cp -v platform/linux/raspbiantemplate.tar.gz output
       - name: Upload webtemplate artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2-preview
         with:
           name: Linux-Templates
           path: ./output
