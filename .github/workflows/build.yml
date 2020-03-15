@@ -136,7 +136,9 @@ jobs:
   linux:
     needs:
       - source-code
-    runs-on: ubuntu-latest
+    container:
+      image: coronalabs/linux_builder_rpi
+      options: --entrypoint="/bin/bash" --workdir="/main"
     steps:
       - uses: actions/cache@v1
         id: cache
@@ -154,7 +156,7 @@ jobs:
       - name: Build linux binaries
         if: steps.cache.outputs.cache-hit != 'true'
         working-directory: ./platform/linux
-        run: touch linuxtemplate.tar.gz raspbiantemplate.tar.gz
+        run: ../../tools/GHAction/build_native_linux.sh
       - name: Copy result to output
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
