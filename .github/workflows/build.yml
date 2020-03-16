@@ -175,7 +175,7 @@ jobs:
       - name: Upload Linux Simulatory artifact
         uses: actions/upload-artifact@v2-preview
         with:
-          name: Linux-Templates
+          name: Simulator-Linux
           path: ./output/CoronaSimulator*
 
   native:
@@ -272,7 +272,7 @@ jobs:
       - name: Upload macOS Daily build artifact
         uses: actions/upload-artifact@v1
         with:
-          name: CoronaDMG
+          name: Simulator-macOS
           path: ./output
 
   notarize:
@@ -283,7 +283,7 @@ jobs:
       - name: Get built simulator
         uses: actions/download-artifact@v1
         with:
-          name: CoronaDMG
+          name: Simulator-macOS
       - name: Notarize
         run: |
           if [ -z "$APPLE_AUTH" ]
@@ -291,7 +291,7 @@ jobs:
             echo 'Skipping because no authorization provided'
             exit 0
           fi
-          for dmg in ./CoronaDMG/*.dmg
+          for dmg in ./Simulator-macOS/*.dmg
           do
             xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH$BUILD_NUMBER"  --file "$dmg"
           done
