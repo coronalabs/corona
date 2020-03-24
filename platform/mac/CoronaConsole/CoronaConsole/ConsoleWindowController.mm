@@ -411,7 +411,7 @@ static size_t ConsoleRepeatLimit = 50;
 
 	// Output a timestamp
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"MMM dd hh:mm:ss.SSS "];
+	[dateFormat setDateFormat:@"MMM dd HH:mm:ss.SSS "];
 	NSString *timestamp = [dateFormat stringFromDate:[NSDate date]];
 
 	dateFormat = nil;
