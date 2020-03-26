@@ -3,6 +3,7 @@ REM ----------------------------------------------------------------------------
 REM Batch file used to digitally sign a given file with Corona Labs' certificate.
 REM ---------------------------------------------------------------------------------------
 
+if NOT EXIST "%~dp0CoronaLabsInc.pfx" goto :eof
 
 REM Validate arguments. If incorrect, then echo out how to use this batch file.
 if "%~1"=="" goto OnShowCommandLineHelp

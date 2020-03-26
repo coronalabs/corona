@@ -1024,6 +1024,7 @@ BOOL CSimDocManager::DoPromptFileName(CString& fileName, UINT nIDSTitle, DWORD l
 }
 
 // Copied from docmgr.cpp because DoPromptFilename needs it.
+/*
 AFX_STATIC void AFXAPI _AfxAppendFilterSuffix(
 	CString& filter, OPENFILENAME& ofn, CDocTemplate* pTemplate, CString* pstrDefaultExt)
 {
@@ -1076,7 +1077,7 @@ AFX_STATIC void AFXAPI _AfxAppendFilterSuffix(
 		ofn.nMaxCustFilter++;
 	}
 }
-
+*/
 /////////////////////////////////////////////////////////////////////////////////////
 // CLuaFileDialog dialog - only allow selection of main.lua
 /////////////////////////////////////////////////////////////////////////////////////

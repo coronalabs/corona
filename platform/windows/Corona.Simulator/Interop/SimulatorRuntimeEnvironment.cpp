@@ -135,7 +135,7 @@ SimulatorRuntimeEnvironment::CreationResult SimulatorRuntimeEnvironment::CreateU
 
 	// Fetch the Lua "system.SystemResourceDirectory" path equivalent.
 	std::wstring systemResourceDirectoryPath(ReturnEmptyWStringIfNull(settings.SystemResourceDirectoryPath));
-	if (systemResourceDirectoryPath.empty())
+	if (systemResourceDirectoryPath.empty() && settings.IsRuntimeCreationEnabled )
 	{
 		auto appProperties = GetWinProperties();
 		if (appProperties && appProperties->GetResourcesDir())
@@ -144,11 +144,11 @@ SimulatorRuntimeEnvironment::CreationResult SimulatorRuntimeEnvironment::CreateU
 			stringConverter.SetUTF8(appProperties->GetResourcesDir());
 			systemResourceDirectoryPath = stringConverter.GetUTF16();
 		}
-		if (systemResourceDirectoryPath.empty())
-		{
-			systemResourceDirectoryPath = ApplicationServices::GetDirectoryPath();
-			systemResourceDirectoryPath += L"\\Resources";
-		}
+	}
+	if (systemResourceDirectoryPath.empty())
+	{
+		systemResourceDirectoryPath = ApplicationServices::GetDirectoryPath();
+		systemResourceDirectoryPath += L"\\Resources";
 	}
 
 	// Fetch the Lua "system.ResourceDirectory" path equivalent.

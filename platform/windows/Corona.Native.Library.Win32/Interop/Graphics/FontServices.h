@@ -11,7 +11,7 @@
 
 #include "MFontLoader.h"
 #include <GdiPlus.h>
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 #include <Windows.h>
 
@@ -103,7 +103,7 @@ class FontServices : public MFontLoader
 		///  Defines a hash table collection type using a string for the key and a
 		///  GDI+ FontFamily object pointer for the value.
 		/// </summary>
-		typedef std::hash_map<std::wstring, Gdiplus::FontFamily*> StringFontFamilyMap;
+		typedef std::unordered_map<std::wstring, Gdiplus::FontFamily*> StringFontFamilyMap;
 
 		/// <summary>Defines a [wstring/FontFamily] pair for the "StringFontFamilyMap" type.</summary>
 		typedef std::pair<std::wstring, Gdiplus::FontFamily*> StringFontFamilyPair;

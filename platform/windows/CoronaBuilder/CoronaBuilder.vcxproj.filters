@@ -106,6 +106,7 @@
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua" />
     <LuaToCpp Include="..\..\..\tools\CoronaBuilder\BuilderPluginDownloader.lua" />
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
+    <LuaToCpp Include="..\..\resources\CoronaBuilderPluginCollector.lua" />   
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

@@ -12,6 +12,11 @@
 #include <dns_sd.h>
 #include "..\..\shared\CoronaLiveServer\CoronaLiveServerCore.h"
 
+FILE _iob[] = { *stdin, *stdout, *stderr };
+extern "C" FILE * __cdecl __iob_func(void) { return _iob; }
+
+extern "C" void __cdecl _vacopy(va_list dest, va_list src) { va_copy(dest, src);  }
+
 #pragma comment(lib, "dnssd.lib")
 
 #define WM_UPDATE_NOTIFICATION (WM_USER+31)
