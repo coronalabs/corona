@@ -297,7 +297,9 @@ jobs:
           cd platform\windows
           dir
           "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+          dir
           devenv "CoronaBuilder.sln" /rebuild "Release|x86"
+          dir
       - name: Upload Widnows Corona Biulder artifact
         uses: actions/upload-artifact@v1
         with:
