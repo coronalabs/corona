@@ -286,15 +286,17 @@ jobs:
           name: SourceCode
       - name: Unpack source code
         shell: bash
-        run: 7z x SourceCode/corona.tgz
+        run: |
+          7z x SourceCode/corona.tgz
+          7z x corona.tar
       - name: Build Corona Builder
         shell: cmd
         run: |
+          echo ON
           dir
           cd platform\windows
-          echo vs123123123123123
-          dir /s "C:\Program Files (x86)\Microsoft Visual Studio"
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars32.bat"
+          dir
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
           devenv "CoronaBuilder.sln" /rebuild "Release|x86"
       - name: Upload Widnows Corona Biulder artifact
         uses: actions/upload-artifact@v1
