@@ -296,7 +296,7 @@ jobs:
           dir
           cd platform\windows
           dir
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
           devenv "CoronaBuilder.sln" /rebuild "Release|x86"
       - name: Upload Widnows Corona Biulder artifact
         uses: actions/upload-artifact@v1
