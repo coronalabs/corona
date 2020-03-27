@@ -288,6 +288,7 @@ jobs:
         shell: bash
         run: 7z x SourceCode/corona.tgz
       - name: Build Corona Builder
+        shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/VC/Auxiliary/Build/vcvars32.bat"
           cd platform/windows
