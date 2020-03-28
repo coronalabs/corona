@@ -300,13 +300,11 @@ jobs:
         shell: cmd
         run: |
           echo ON
-          dir
           cd platform\windows
-          dir
           CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
-          dir
           devenv "CoronaBuilder.sln" /rebuild "Release|Win32"
-          dir
+        env:
+          WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
       - name: Upload Widnows Corona Biulder artifact
         uses: actions/upload-artifact@v1
         with:
