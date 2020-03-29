@@ -13,10 +13,12 @@ if "%~1"=="" goto OnShowCommandLineHelp
 REM Attempt to fetch the optional 2nd argument "Program Name".
 if NOT "%~2"=="" set programNameArgument=/d "%~2"
 
+REM Set up command line tools if not available
+echo Setup command line
+call "%~dp0VSVars.bat"
 
 REM Digitally sign the given file.
 echo Digitally signing file: %~1
-call "%VS120COMNTOOLS%vsvars32.bat"
 
 signtool sign /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.digicert.com %programNameArgument% "%~1"
 if errorlevel 0 goto:eof
