@@ -303,9 +303,9 @@ jobs:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
       - name: Clean-up docs
-        run: |
-          rm -r -fo docs/SampleCode/.git docs/SampleCode/.gitignore
-          mv docs ../docs
+        run:  rm -r -fo docs/SampleCode/.git docs/SampleCode/.gitignore
+      - name: Move docs outside the directory
+        run: mv docs ../docs
       - name: Build Corona Builder
         shell: cmd
         run: |
