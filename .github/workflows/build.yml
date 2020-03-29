@@ -296,6 +296,16 @@ jobs:
 #         run: |
 #           7z x SourceCode/corona.tgz
 #           7z x corona.tar
+      - run: mkdir -f docs
+      - name: Get Sample Code
+        uses: actions/checkout@v2
+        with:
+          repository: coronalabs/samples-coronasdk
+          path: docs/SampleCode
+      - name: Clean-up docs
+        run: |
+          rm -r -fo docs/SampleCode/.git docs/SampleCode/.gitignore
+          mv docs ../docs
       - name: Build Corona Builder
         shell: cmd
         run: |
