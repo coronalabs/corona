@@ -313,6 +313,7 @@ jobs:
         run: |
           cd platform\windows
           call Build.Tools\VSVars.bat
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
           devenv "Corona.Shell.sln" /rebuild "Debug|Win32"
           devenv "Corona.Simulator.sln" /build "Debug|Win32"
           devenv "CoronaBuilder.sln" /build "Debug|Win32"
