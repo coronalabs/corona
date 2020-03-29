@@ -314,10 +314,7 @@ jobs:
           cd platform\windows
           call Build.Tools\VSVars.bat
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
-          devenv "Corona.Shell.sln" /rebuild "Debug|Win32"
-          devenv "Corona.Simulator.sln" /build "Debug|Win32"
-          devenv "CoronaBuilder.sln" /build "Debug|Win32"
-          devenv "Corona.SDK.sln" /build "Debug|x86"
+          devenv "Corona.SDK.sln" /rebuild "Release|x86"
         env:
           WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
       - name: Upload Widnows Corona Biulder artifact
