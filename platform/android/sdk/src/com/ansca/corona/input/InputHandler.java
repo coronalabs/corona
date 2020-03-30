@@ -73,7 +73,7 @@ public class InputHandler {
 		// Do not allow key repeat. The "down" event should only happen once per press.
 		KeyPhase phase = KeyPhase.from(event);
 		if ((phase == KeyPhase.DOWN) && (event.getRepeatCount() > 0)) {
-			return true;
+			return event.getKeyCode() != android.view.KeyEvent.KEYCODE_VOLUME_UP && event.getKeyCode() != android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 		}
 
 		// Ignore the key event if it came from the Corona runtime.
