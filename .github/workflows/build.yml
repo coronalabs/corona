@@ -356,7 +356,6 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Corona ${{ env.YEAR }}.${{ env.BUILD }}
       - name: Upload Release Asset for macOS
-        id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -366,7 +365,6 @@ jobs:
           asset_name: Corona-${{ env.YEAR }}.${{ env.BUILD }}.dmg
           asset_content_type: application/x-apple-diskimage
       - name: Upload Release Asset for Windows
-        id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
