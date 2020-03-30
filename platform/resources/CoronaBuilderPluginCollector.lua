@@ -169,10 +169,10 @@ local function pluginLocatorCustomURL(destination, plugin, pluginTable, pluginPl
     if type(pluginTable.supportedPlatforms[pluginPlatform].url) ~= 'string' then
         return "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "].url is not a string"
     end
-
+    local http = require( "socket.http" )
     local downloadURL = pluginTable.supportedPlatforms[pluginPlatform].url
-    local file, code = self.http.request(downloadURL)
-    if err ~= 200 then
+    local file, err = http.request(downloadURL)
+    if not file then
         return "Custom URL: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Error message: ' .. file .. "; URL: " .. downloadURL
     end
 
