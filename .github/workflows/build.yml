@@ -172,7 +172,7 @@ jobs:
       - name: Put native in place
         run: |
           tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
-          mv CoronaEnterprise/Corona/android/lib/gradle/Corona.aar ./
+          mv CoronaEnterprise/Corona/android/lib/gradle/Corona.aar ./CoronaCards.aar
           cp platform/android/sdk/AndroidManifest-Cards.xml ./AndroidManifest.xml
           zip -o CoronaCards.aar AndroidManifest.xml
           zip -o CoronaCardsAndroidAAR.zip CoronaCards.aar
