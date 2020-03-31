@@ -172,12 +172,11 @@ jobs:
       - name: Put native in place
         run: |
           tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
-          mkdir output
-          cd output
           mv CoronaEnterprise/Corona/android/lib/gradle/Corona.aar ./
-          cp platform/android/sdk/AndroidManifest-Cards.xml AndroidManifest.xml
+          cp platform/android/sdk/AndroidManifest-Cards.xml ./AndroidManifest.xml
           zip -o CoronaCards.aar AndroidManifest.xml
           zip -o CoronaCardsAndroidAAR.zip CoronaCards.aar
+          mkdir -p output
           mv CoronaCardsAndroidAAR.zip output/
       - name: Upload Corona Cards Android AAR archive
         uses: actions/upload-artifact@v1
