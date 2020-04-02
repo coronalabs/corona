@@ -15,7 +15,8 @@
 #include "WinString.h"
 #include "Core/Rtt_Build.h"
 #include "Rtt_AuthorizationTicket.h"
-
+#include "Rtt_WinPlatformServices.h"
+#include "Rtt_Authorization.h"
 
 IMPLEMENT_DYNAMIC(CPreferencesDlg, CDialog)
 
@@ -109,6 +110,15 @@ BOOL CPreferencesDlg::OnInitDialog()
 		pLabel =(CStatic*)GetDlgItem( IDC_SUBSCRIPTION );
 		pLabel->SetWindowText(stringConverter.GetTCHAR());
 #endif
+	}
+	else {
+		Rtt::String out;
+		GetWinProperties()->GetServices()->GetPreference(Rtt::Authorization::kOfflineModeConfirmed, &out);
+		if (!out.IsEmpty())
+		{
+			CStatic* pLabel = (CStatic*)GetDlgItem(IDC_USER_ACCOUNT);
+			pLabel->SetWindowText(_T("<Offline User>"));
+		}
 	}
 	
 	return TRUE;  // return TRUE unless you set the focus to a control

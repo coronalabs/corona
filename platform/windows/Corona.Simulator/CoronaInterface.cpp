@@ -107,6 +107,13 @@ bool appAuthorizeInstance()
 	auto ticket = GetWinProperties()->GetTicket();
 	Rtt::WebServicesSession session(*pServices);
 
+	Rtt::String out;
+	pServices->GetPreference(Rtt::Authorization::kOfflineModeConfirmed, &out);
+	if (!out.IsEmpty())
+	{
+		return true;
+	}
+
 	// Load authorization information from machine if it exists (don't try to login,
 	// we do that later if we don't find a valid ticket)
 	hasSucceeded = pAuth->Initialize( false );
@@ -143,6 +150,7 @@ bool appAuthorizeInstance()
 		dialog.SetDefaultText(IDS_LOGIN);
 		dialog.SetAltText(IDS_QUIT);
 		dialog.SetIconStyle(MB_ICONEXCLAMATION);
+		dialog.SetButton3Text(_T("Offline"));
 		int result = dialog.DoModal();
 
 		if (ID_MSG_BUTTON2 == result)
@@ -151,6 +159,11 @@ bool appAuthorizeInstance()
 			PostQuitMessage( 0 );
 
 			return false;
+		}
+		else if (ID_MSG_BUTTON3 == result)
+		{
+			pServices->SetPreference(Rtt::Authorization::kOfflineModeConfirmed, "YES");
+			return true;
 		}
 
 #if 0
@@ -297,7 +310,7 @@ bool appAuthorizeInstance()
 bool appDeauthorize()
 {
 	CString message;
-	int resultCode = Rtt::Authorization::kAuthorizationError;
+	int resultCode = Rtt::Authorization::kAuthorizationDeauthorizeSuccess;
 	bool wasDeauthorized = false;
 
 	// Display a progress window and wait cursor.
@@ -313,6 +326,7 @@ bool appDeauthorize()
 	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
 	Rtt::String ticketData, pwd;
 	Rtt::WinPlatformServices *pServices = GetWinProperties()->GetServices();
+	pServices->SetPreference(Rtt::Authorization::kOfflineModeConfirmed, NULL);
 	pServices->GetPreference( Rtt::Authorization::kTicketKey, &ticketData );
 
 	if (pAuth && pTicket)
@@ -412,6 +426,12 @@ int appLoginToServer( Rtt::WebServicesSession *pSession )
 {
 	const char *username = "";
 	Rtt::WinPlatformServices *pServices = GetWinProperties()->GetServices();
+	Rtt::String out;
+	pServices->GetPreference(Rtt::Authorization::kOfflineModeConfirmed, &out);
+	if (!out.IsEmpty())
+	{
+		return Rtt::WebServicesSession::kNoError;
+	}
 	const Rtt::AuthorizationTicket *pTicket = NULL;
 	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
 

@@ -854,30 +854,33 @@ void CSimulatorView::OnBuildForAndroid()
 	// Force a login if we are not already logged in
 	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
 	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
+	if (pTicket)
 	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "android";
-		keyValues["reason"] = "enter-password-failed";
+		int previousUid = pTicket->GetUid();
+		if (!pAuth->Initialize(true))
+		{
+			// They cancelled their attempt to login so they can't build
+			static std::map<std::string, std::string> keyValues;
+			keyValues["target"] = "android";
+			keyValues["reason"] = "enter-password-failed";
 
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
+			GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
 
-		return;
-	}
+			return;
+		}
 
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
+		// Refresh the ticket in case we logged in
+		pTicket = GetWinProperties()->GetTicket();
+		if (pTicket != NULL && pTicket->IsPlaceholder())
+		{
+			// They aren't really logged in so they can't build
+			return;
+		}
+		if (pTicket->GetUid() != previousUid)
+		{
+			// Let analytics know that the UID has changed
+			GetWinProperties()->GetAnalytics()->BeginSession(pTicket->GetUid());
+		}
 	}
 
 	// Display the build window.
