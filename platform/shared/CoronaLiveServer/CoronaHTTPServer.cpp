@@ -27,8 +27,6 @@
 	#include <codecvt>
 	#include <io.h>
 	#include <stdio.h>
-	//#pragma comment(lib, "libevent_core.lib")
-	//#pragma comment(lib, "libevent_extras.lib")
 	int evbuffer_add_file_no_mmap(struct evbuffer *buf, int fd, ev_off_t offset, ev_off_t length);
 	#define open _wopen
 	#define close _close
