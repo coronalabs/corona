@@ -55,6 +55,13 @@ MainApp::MainApp()
 	fIsDisableCloseWhileReadingEnabled(false),
 	fVisualThemePointer(nullptr)
 {
+#ifdef _DEBUG
+	if (::GetAsyncKeyState(VK_PAUSE))
+	{
+		while (!::IsDebuggerPresent())
+			::Sleep(100);
+	}
+#endif
 	// Sets the application ID to be used by the Windows jumplist on the taskbar.
 	// Note: This application does not use Windows' jumplist feature.
 	SetAppID(_T("CoronaLabs.CoronaOutputViewer.NoVersion"));
@@ -236,7 +243,7 @@ BOOL MainApp::InitInstance()
 						parentProcessStr = argumentStringPointer + kParentProcessSwitchLength;
 						if (L'\0' != parentProcessStr[0])
 						{
-							long parentProcessID = (long)_wtol(parentProcessStr.c_str());
+							unsigned long parentProcessID = (unsigned long)wcstoul(parentProcessStr.c_str(), NULL, 10);
 							if (parentProcessID > 0)
 							{
 								HANDLE hProcHandle = OpenProcess(SYNCHRONIZE, FALSE, parentProcessID);
