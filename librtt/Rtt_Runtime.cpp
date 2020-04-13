@@ -33,6 +33,7 @@
 #include "Rtt_Scheduler.h"
 #include "Display/Rtt_TextObject.h"
 #include "Rtt_Verifier.h"
+#include "Rtt_LuaFrameworks.h"
 
 #ifdef Rtt_USE_ALMIXER
 	#include "Rtt_PlatformOpenALPlayer.h"
@@ -866,7 +867,7 @@ Runtime::PopAndClearConfig( lua_State *L )
 void
 Runtime::AddDownloadablePlugin(
 	lua_State *L, const char *pluginName, const char *publisherId,
-	int downloadablePluginsIndex, bool isSupportedOnThisPlatform /*=true*/)
+	int downloadablePluginsIndex, bool isSupportedOnThisPlatform, const char *pluginEntryJSON)
 {
 	Rtt_LUA_STACK_GUARD( L );
 
@@ -880,6 +881,9 @@ Runtime::AddDownloadablePlugin(
 
 		lua_pushboolean( L, isSupportedOnThisPlatform ? 1 : 0 );
 		lua_setfield( L, -2, "isSupportedOnThisPlatform" );
+		
+		lua_pushstring(L, pluginEntryJSON);
+		lua_setfield(L, -2, "json");
 	}
 	++fDownloadablePluginsCount;
 	lua_rawseti( L, downloadablePluginsIndex, fDownloadablePluginsCount );
@@ -895,7 +899,17 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 	// any side effects from the Runtime's L state. Note the separate
 	// 'runtimeL' variable for Runtime's L below.
 	lua_State *L = luaL_newstate();
+	luaL_openlibs(L);
 	
+	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
+	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
+	lua_getglobal(L, "require");
+	lua_pushstring(L, "json");
+	lua_pcall(L, 1, 1, 0);
+	lua_getfield(L, -1, "encode");
+	lua_setglobal(L, "jsonEncode");
+	lua_pop(L, 1); // pop json
+
 	const char kBuildSettings[] = "build.settings";
 	
 	String filePath( & fPlatform.GetAllocator() );
@@ -953,6 +967,14 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 					// ensure the stack contains a table at top
 					if (lua_istable(L, -1))
 					{
+						lua_getglobal(L, "jsonEncode");
+						lua_pushvalue(L, -2);
+						lua_pcall(L, 1, 1, 0);
+						const char *pluginJson = lua_tostring(L, -1);
+						String pluginJsonStr;
+						pluginJsonStr.Set(pluginJson);
+						lua_pop(L, 1);
+						
 						// Honor the settings for "supportedPlatforms", if any
 						lua_getfield(L, -1, "supportedPlatforms");
 						{
@@ -986,7 +1008,7 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 								// Transfer information to Runtime's list of downloadable plugins.
 								// Note, we use runtimeL instead of L here!
 								AddDownloadablePlugin(
-									runtimeL, pluginName, publisherId, downloadablePluginsIndex, availableOnPlatform);
+									runtimeL, pluginName, publisherId, downloadablePluginsIndex, availableOnPlatform, pluginJsonStr.GetString());
 							}
 							lua_pop(L, 1); // pop publisherId
 						}
@@ -1001,7 +1023,7 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 				// Always download the fuse plugin stub
-				AddDownloadablePlugin(runtimeL, kFusePluginName, kFusePublisherId, downloadablePluginsIndex, false);
+				AddDownloadablePlugin(runtimeL, kFusePluginName, kFusePublisherId, downloadablePluginsIndex, false, NULL);
 #endif
 
 				lua_pop(runtimeL, 1); // pop downloadablePlugins table

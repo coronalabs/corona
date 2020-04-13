@@ -190,7 +190,7 @@ class Runtime : public MCallback,
 	protected:
 		void AddDownloadablePlugin(
 				lua_State *L, const char *pluginName, const char *publisherId,
-				int downloadablePluginsIndex, bool isSupportedOnThisPlatform = true);
+				int downloadablePluginsIndex, bool isSupportedOnThisPlatform, const char *pluginEntryJSON);
 
 	public:
 		void FindDownloadablePlugins( const char *simPlatformName );
