@@ -3,7 +3,7 @@
 		{
 			"label": "13.4",
 			"xcodeVersion": "13.4",
-			"failMessage": "install or xcode-select Xcode 11.4 to enable",
+			"failMessage": "install or xcode-select Xcode 11.4.1 to enable",
 			"coronaVersion": 134000,
 			"beta": false
 		}
