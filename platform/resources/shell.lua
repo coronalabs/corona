@@ -678,10 +678,7 @@ function PluginSync:handleManifestDownload( event, context )
 		self:UpdateClientCatalog()
 
 		print( "PluginSync: failed to download plugin: " .. event.url )
-		native.showAlert(
-				"Plugin Download Error",
-				"The following plugin could not be downloaded:\n    " .. context.key .. "\n\nIf you are sure you are requiring the correct plugin name, then please contact support.",
-				{ "OK" } )
+		--Alert Not needed
 
 	else
 
