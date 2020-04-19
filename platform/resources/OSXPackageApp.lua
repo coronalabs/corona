@@ -731,6 +731,9 @@ function OSXPostPackage( params )
 			return "ERROR: unzipping template failed: "..tostring(errMsg)
 		end
 
+		-- cleanup signature from the template
+		runScript( "cd ".. options.appBundleFile .. " ; /usr/bin/codesign --remove-signature . ; rm -rf Contents/_CodeSignature " )
+
 		-- If "bundleResourcesDirectory" is set, copy the contents of that directory to the
 		-- application's Resource directory
 		if options and options.settings and options.settings.osx and options.settings.osx.bundleResourcesDirectory then
