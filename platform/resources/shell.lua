@@ -274,7 +274,6 @@ Runtime:addEventListener( "resize", _on_resize )
 
 local PluginSync =
 {
-	contextForUrl = {},
 	queue = {},
 
 	-- This is the catalog of plugin manifest.
@@ -427,7 +426,7 @@ function PluginSync:buildListOfManifestsToDownload( required_plugin )
 
 	if should_queue then
 		-- Queue for download.
-		table.insert( self.queue, key )
+		table.insert( self.queue, required_plugin )
 	else
 		self:debugPrint( "Skipped download of: " .. key )
 	end
@@ -442,91 +441,38 @@ function PluginSync:downloadQueuedManifests( onComplete )
 		return
 	end
 
-	local http = require("socket.http")
-	if http.request( "http://plugins.coronasphere.com" ) == nil then
-
-		-- No internet access.
-		local warnNoInternetTime = system.getPreference("simulator", "pluginSyncWarnNoInternetTime", "number") or os.time()
-
-		if os.time() >= warnNoInternetTime then
-
-			local function listener( event )
-				if "clicked" == event.action then
-					if 2 == event.index then
-						-- Suspend warnings for 3 hours
-						local preference = { pluginSyncWarnNoInternetTime = (os.time() + (3 * 60 * 60)), }
-						system.setPreferences("simulator", preference)
-					end
-
-					-- 'Continue anyway', meaning launch the project without
-					-- downloading plugins
-					onComplete()
-				end
-			end
-
-			system.deletePreference("simulator", "pluginSyncWarnNoInternetTime")
-
-			-- Handle error case (no internet, or coronasphere is down)
-			native.showAlert(
-				"Plugin Warning",
-				"This project may not behave properly. This project requires certain plugins that need to be downloaded from the Internet, but a connection could not be established.",
-				{ "Continue Anyway", "Continue and Don't Show Again" },
-				listener )
-		else
-			-- If we've been asked not to warn about no internet then the default action is
-			-- 'Continue anyway', meaning launch the project without downloading plugins
-			print("WARNING: PluginSync: no internet to download/check plugins; continuing anyway")
-			onComplete()
-		end
-	else
-
-		-- We have internet access.
-		--
-		-- Download plugins and defer launching project.
-		--
-		-- The application won't function properly without plugins,
-		-- and the Simulator is already phoning home multiple times
-		-- by this point, so it's unnecessary to query the user to
-		-- proceed.
-		self:downloadManifest( onComplete )
-
-	end
-
-end
-
-function PluginSync:downloadManifest( onComplete )
-
 	native.setActivityIndicator( true )
 
 	self.requests = {}
 	self.onComplete = onComplete
 
+	local plugins = {}
 	for i=1,#self.queue do
 		-- Store a mapping between the key used in the clientCatalog
 		-- and the url which we'll need in the networkRequest listener
-		local key = self.queue[i]
-		local url = 'http://plugins.coronasphere.com/' .. key .. '/manifest.json'
-		-- Cache buster
-		url = url .. '?ts='..tostring(os.time())
-
-		self.contextForUrl[url] =
-		{
-			key=key,
-		}
-
-		-- make request to get the manifest for the plugin.
-		-- later on, we'll have to download the actual plugin file itself.
-
-		self:debugPrint("PluginSync: downloading manifest: " .. url)
-
-		-- Download to memory.
-		network.request( url,
-							"GET",
-							self ) -- "self" is who will receive the networkRequest() event.
-
-		-- and record the url request
-		table.insert( self.requests, url )
+		local pluginInfo = self.queue[i]
+		key = pluginInfo.publisherId .. '/' .. pluginInfo.pluginName
+		plugins[pluginInfo.pluginName] = {}
+		if pluginInfo.json then
+			plugins[pluginInfo.pluginName] = json.decode(pluginInfo.json)
+		end
+		plugins[pluginInfo.pluginName].publisherId = pluginInfo.publisherId
 	end
+	local _, sim_build_number = string.match( system.getInfo( "build" ), '(%d+)%.(%d+)' )
+
+	local collectorParams = { 
+		pluginPlatform = self.platform,
+		plugins = plugins,
+		destinationDirectory = system.pathForFile("", system.PluginsDirectory),
+		build = sim_build_number,
+		extractLocation = system.pathForFile("", system.PluginsDirectory),
+	}
+	local result = params.pluginCollector().collect(collectorParams)
+	if type(result) == 'string' then
+        print("WARNING: there was an issue whilde downloading simulator plugin stub:\n" .. result)
+	end
+	native.setActivityIndicator( false )
+	onComplete()
 end
 
 function PluginSync:allDownloadsCompleted()
@@ -915,6 +861,11 @@ end
 local function loadMain( onComplete )
 
 	PluginSync:initialize( params.platform )
+	if not params.pluginCollector then
+		-- No way to download.
+		onComplete( )
+		return
+	end
 
 	local required_plugins = params.plugins
 	if ( not required_plugins ) or

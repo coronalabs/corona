@@ -351,7 +351,7 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, pa
     end
 end
 
-function CollectCoronaPlugins(params)
+local function CollectCoronaPlugins(params)
     log("Collecting plugins")
 
     local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, pluginLocatorCoronaStore, pluginLocatorIgnoreMissing }
@@ -366,7 +366,7 @@ function CollectCoronaPlugins(params)
         params.ignoreMissingMarker = 'IgnoreMissing'
     end
 
-    local plugins = json.decode(params.buildData).plugins
+    local plugins = params.plugins or json.decode(params.buildData).plugins
     if type(plugins) ~= 'table' then return end
 
     local pluginPlatform = params.pluginPlatform
@@ -396,8 +396,15 @@ function CollectCoronaPlugins(params)
         unresolvedDeps = {}
         allFetched = true
         for plugin, _ in pairs(collectedPlugins)  do
-            local pluginDestination = dstDir .. '/' .. plugin
-            if 0 == os.execute('/usr/bin/tar -xzf ' .. quoteString(pluginDestination .. '/data.tgz') .. ' -C ' .. quoteString(pluginDestination) .. ' metadata.lua') then
+            local pluginArc = dstDir .. '/' .. plugin .. '/data.tgz'
+            local pluginDestination = params.extractLocation or (dstDir .. '/' .. plugin)
+            local ret
+            if params.extractLocation then
+                ret = os.execute('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(params.extractLocation) )
+            else
+                ret = os.execute('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(pluginDestination) .. ' metadata.lua')
+            end
+            if 0 == ret then
                 local toDownload = {}
                 local metadataFile = pluginDestination .. "/metadata.lua"
                 pcall( function()

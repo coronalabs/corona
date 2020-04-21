@@ -49,7 +49,7 @@
 
 namespace Rtt
 {
-
+int luaload_CoronaBuilderPluginCollector(lua_State *L);
 // ----------------------------------------------------------------------------
 
 // These iterations are reasonable default values. See http://www.box2d.org/forum/viewtopic.php?f=8&t=4396 for discussion.
@@ -419,6 +419,11 @@ pushShellArgs( lua_State* L )
 
 		runtime->PushDownloadablePlugins( L );
 		lua_setfield( L, -2, "plugins" );
+		
+#if defined( Rtt_AUTHORING_SIMULATOR )
+		luaload_CoronaBuilderPluginCollector(L);
+		lua_setfield( L, -2, "pluginCollector");
+#endif
 
 		const char *name = runtime->GetSimulatorPlaformName();
 		if ( name )
