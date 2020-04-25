@@ -329,7 +329,7 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, pa
         end
     end
     local pluginDestination = dstDir .. '/' .. plugin
-    local err = "Unable to find plugin '" .. plugin .. "' in:"
+    local err = "Unable to find plugin '" .. plugin .. "' for " .. (params.modernPlatform or params.pluginPlatform) .. " in:"
     local ok =  false
     for i = 1,#pluginLocators do
         local locator = pluginLocators[i]
@@ -352,7 +352,8 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, pa
 end
 
 local function CollectCoronaPlugins(params)
-    log("Collecting plugins")
+    log("Collecting plugins", json.encode(params))
+    local ret = nil
 
     local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, pluginLocatorCoronaStore, pluginLocatorIgnoreMissing }
 
@@ -376,9 +377,14 @@ local function CollectCoronaPlugins(params)
         assert(type(pluginTable) == 'table', 'Invalid plugin table for ' .. plugin)
         local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
         if type(result) == 'string'  then
-            return result
+            if params.continueOnError then
+                ret = (ret or "") .. result .. "\n"
+            else
+                return result
+            end
+        else  
+            collectedPlugins[plugin] = true
         end
-        collectedPlugins[plugin] = true
     end
 
     log("Collecting plugin dependencies")
@@ -389,9 +395,14 @@ local function CollectCoronaPlugins(params)
             log("Collecting dependency " .. plugin)
             local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
             if type(result) == 'string'  then
-                return result
-            end
-            collectedPlugins[plugin] = true
+                if params.continueOnError then
+                    ret = (ret or "") .. result .. "\n"
+                else
+                    return result
+                end
+            else  
+                collectedPlugins[plugin] = true
+            end    
         end
         unresolvedDeps = {}
         allFetched = true
@@ -423,6 +434,7 @@ local function CollectCoronaPlugins(params)
             end
         end
     until allFetched
+    return ret
 end
 
 
