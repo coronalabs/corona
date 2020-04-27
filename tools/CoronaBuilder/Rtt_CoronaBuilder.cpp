@@ -317,56 +317,6 @@ CoronaBuilder::Usage( const char *arg0 )
 			"\n", progname.GetString());
 }
 
-void CoronaBuilder::InsertBuildId(const char *carFile)
-{
-	String url("https://backendapi.coronalabs.com/v1/buildid/native/");
-	url.Append(fUsr);
-	String build_id, error;
-	std::map<std::string, std::string> headers;
-	if(GetPlatform().HttpDownload(url.GetString(), build_id, error, headers) && build_id.GetLength())
-	{
-		String contents("return \"");
-		contents.Append(build_id);
-		contents.Append("\"");
-
-#ifdef WIN32
-		char tmpDirTemplate[_MAX_PATH];
-		const char* tmp = getenv("TMP");
-		if (tmp == NULL)
-		{
-			tmp = getenv("TEMP");
-		}
-
-		if (tmp)
-		{
-			_snprintf(tmpDirTemplate, sizeof(tmpDirTemplate), "%s\\CBASCXXXXXX", tmp);
-		}
-		else
-		{
-			strcpy(tmpDirTemplate, "\\tmp\\CBASCXXXXXX");
-		}
-#else
-		char tmpDirTemplate[] = "/tmp/CBASCXXXXXX";
-#endif
-		const char *tmpDirName = Rtt_MakeTempDirectory(tmpDirTemplate);
-		String tmpFilename(tmpDirName);
-		tmpFilename.AppendPathComponent("_Corona_Build_Number.lu");
-
-		bool writeSuccess = false;
-		FILE *fp = Rtt_FileOpen(tmpFilename, "wb");
-		if (fp != NULL)
-		{
-			writeSuccess = (fputs(contents.GetString(), fp) > 0);
-		}
-		Rtt_FileClose(fp);
-
-		if(writeSuccess)
-		{
-			const char *srcPaths[1] = { tmpFilename };
-			Archive::Serialize( carFile, 1, srcPaths );
-		}
-	}
-}
 
 int
 CoronaBuilder::Main( int argc, const char *argv[] )

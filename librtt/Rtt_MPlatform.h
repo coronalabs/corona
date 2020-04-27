@@ -181,13 +181,6 @@ class MPlatform
 		virtual OperationResult SetPreferences( const char* categoryName, const PreferenceCollection& collection ) const = 0;
 		virtual OperationResult DeletePreferences( const char* categoryName, const char** keyNameArray, U32 keyNameCount ) const = 0;
 
-		// TODO: Is this the right place for this?
-		// Async call (does not block). No notification of failure. Useful for analytics.
-		virtual void HttpPost( const char* url, const char* key, const char* value ) const = 0;
-		// Sync call (blocks). Returns false on failure. Useful for misc things.
-		virtual bool HttpDownload( const char* url, String& result, String& errorMesg, const std::map<std::string, std::string>& headers ) const = 0;
-		virtual bool HttpDownloadFile( const char* url, const char* filename, String& errorMesg, const std::map<std::string, std::string>& headers ) const = 0;
-
 		virtual PlatformEventSound * CreateEventSound( const ResourceHandle<lua_State> & handle, const char* filePath ) const = 0;
 
 		virtual void ReleaseEventSound( PlatformEventSound * soundID ) const = 0;

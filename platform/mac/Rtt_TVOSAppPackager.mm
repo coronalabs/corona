@@ -38,6 +38,7 @@ class Rtt::MacSimulatorServices
 
 #include <dirent.h>
 #include <sys/stat.h>
+#include "Rtt_HTTPClient.h"
 
 Rtt_EXPORT int luaopen_lfs (lua_State *L);
 Rtt_EXPORT int luaopen_socket_core (lua_State *L);
@@ -60,15 +61,6 @@ namespace Rtt
     int luaload_tvosPackageApp(lua_State* L);
     int luaload_CoronaPListSupport(lua_State* L);
 	int luaload_CoronaOfflineiOSPackager(lua_State* L);
-    int luaload_CoronaBuilderPluginCollector(lua_State *L);
-	extern int luaload_luasocket_socket(lua_State *L);
-	extern int luaload_luasocket_ftp(lua_State *L);
-	extern int luaload_luasocket_headers(lua_State *L);
-	extern int luaload_luasocket_http(lua_State *L);
-	extern int luaload_luasocket_url(lua_State *L);
-	extern int luaload_luasocket_mime(lua_State *L);
-	extern int luaload_luasocket_ltn12(lua_State *L);
-
 
 // ----------------------------------------------------------------------------
 
@@ -108,11 +100,7 @@ TVOSAppPackager::TVOSAppPackager( const MPlatformServices& services, MacSimulato
 #endif
 
 	Lua::RegisterModuleLoader( L, "CoronaPListSupport", Lua::Open< luaload_CoronaPListSupport > );
-	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
-	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
-	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
-	Lua::RegisterModuleLoader( L, "lfs", luaopen_lfs );
-	Lua::RegisterModuleLoader( L, "CoronaBuilderPluginCollector", Lua::Open< luaload_CoronaBuilderPluginCollector >);
+	HTTPClient::registerFetcherModuleLoaders(L);
 
 	Lua::DoBuffer( fVM, & luaload_tvosPackageApp, NULL);
 }
@@ -156,17 +144,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 				}
 
 				lua_State *L = fVM;
-				Lua::RegisterModuleLoader( L, "socket.core", luaopen_socket_core );
-				Lua::RegisterModuleLoader( L, "socket", Lua::Open< luaload_luasocket_socket > );
-				Lua::RegisterModuleLoader( L, "socket.ftp", Lua::Open< luaload_luasocket_ftp > );
-				Lua::RegisterModuleLoader( L, "socket.headers", Lua::Open< luaload_luasocket_headers > );
-				Lua::RegisterModuleLoader( L, "socket.http", Lua::Open< luaload_luasocket_http > );
-				Lua::RegisterModuleLoader( L, "socket.url", Lua::Open< luaload_luasocket_url > );
-				Lua::RegisterModuleLoader( L, "mime.core", luaopen_mime_core );
-				Lua::RegisterModuleLoader( L, "mime", Lua::Open< luaload_luasocket_mime > );
-				Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< luaload_luasocket_ltn12 > );
 
-				
 				Lua::DoBuffer( L, & luaload_CoronaOfflineiOSPackager, NULL);
 				lua_getglobal(L, "CreateOfflinePackage");
 				lua_newtable( L );

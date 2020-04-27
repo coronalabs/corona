@@ -372,10 +372,12 @@ function PluginSync:addPluginToQueueIfRequired( required_plugin )
 
 	local manifest = self.clientCatalog[ key ]
 	should_queue = should_queue or ( not manifest )
-	if manifest and type(manifest.lastUpdate) == 'number'  then
+	if type(manifest) == 'table' and type(manifest.lastUpdate) == 'number'  then
 		local age = os.difftime(self.now, manifest.lastUpdate)
 		-- update plugins every 30 minutes or so
-		should_queue = should_queue or ( age > 60 )
+		should_queue = should_queue or ( age > 60*30 )
+	else
+		should_queue = true
 	end
 
 	if should_queue then
@@ -404,6 +406,8 @@ local function collectPlugins(localQueue, extractLocation, platform)
 		build = sim_build_number,
 		extractLocation = extractLocation,
 		continueOnError = true,
+		fetch = params.pluginCollector_fetch,
+		download = params.pluginCollector_download,
 	}
 	return params.pluginCollector().collect(collectorParams)
 end
@@ -424,7 +428,7 @@ function PluginSync:downloadQueuedPlugins( onComplete )
 	local updateTime = self.now
 	if type(result) == 'string' then
 		updateTime = nil
-        print("WARNING: there was an issue whilde downloading simulator plugin stub:\n" .. result)
+        print("WARNING: there was an issue whilde downloading simulator plugin placeholders:\n" .. result)
 	end
 	for i=1,#self.queue do
 		local key = self.queue[i].clientCatalogKey

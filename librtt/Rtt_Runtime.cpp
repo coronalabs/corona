@@ -34,6 +34,7 @@
 #include "Display/Rtt_TextObject.h"
 #include "Rtt_Verifier.h"
 #include "Rtt_LuaFrameworks.h"
+#include "Rtt_HTTPClient.h"
 
 #ifdef Rtt_USE_ALMIXER
 	#include "Rtt_PlatformOpenALPlayer.h"
@@ -421,6 +422,12 @@ pushShellArgs( lua_State* L )
 		lua_setfield( L, -2, "plugins" );
 		
 #if defined( Rtt_AUTHORING_SIMULATOR )
+		lua_pushcfunction(L, &HTTPClient::fetch);
+		lua_setfield( L, -2, "pluginCollector_fetch");
+
+		lua_pushcfunction(L, &HTTPClient::download);
+		lua_setfield( L, -2, "pluginCollector_download");
+
 		luaload_CoronaBuilderPluginCollector(L);
 		lua_setfield( L, -2, "pluginCollector");
 #endif

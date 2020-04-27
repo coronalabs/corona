@@ -1677,6 +1677,9 @@
 		F57D17791BE2750800AABAC1 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D17781BE2750800AABAC1 /* GameController.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F57D177A1BE2752900AABAC1 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D17781BE2750800AABAC1 /* GameController.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F5800DF81AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5800DF61AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp */; };
+		F58CA276245651B2002191EA /* Rtt_HTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */; };
+		F58CA27824565212002191EA /* Rtt_HTTPClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27724565212002191EA /* Rtt_HTTPClient.mm */; };
+		F58CA27A24565579002191EA /* Rtt_HTTPClientCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */; };
 		F5A633EE216D74E10052364E /* raspbiantemplate.tar.gz in Resources */ = {isa = PBXBuildFile; fileRef = F5A633E5216D74E10052364E /* raspbiantemplate.tar.gz */; };
 		F5A752271BFA40F000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A752281BFA40F000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */; };
@@ -3405,6 +3408,9 @@
 		F57D17781BE2750800AABAC1 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		F5800DF61AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ImageSheetPaintAdapter.cpp; path = Display/Rtt_ImageSheetPaintAdapter.cpp; sourceTree = "<group>"; };
 		F5800DF71AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ImageSheetPaintAdapter.h; path = Display/Rtt_ImageSheetPaintAdapter.h; sourceTree = "<group>"; };
+		F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_HTTPClient.h; sourceTree = "<group>"; };
+		F58CA27724565212002191EA /* Rtt_HTTPClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_HTTPClient.mm; sourceTree = SOURCE_ROOT; };
+		F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_HTTPClientCommon.cpp; sourceTree = "<group>"; };
 		F5A633E5216D74E10052364E /* raspbiantemplate.tar.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; name = raspbiantemplate.tar.gz; path = ../resources/raspbiantemplate.tar.gz; sourceTree = "<group>"; };
 		F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = ../platform/iphone/Corona/CoronaLuaObjCHelper.h; sourceTree = "<group>"; };
 		F5A752261BFA40F000CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = ../platform/iphone/Corona/CoronaLuaObjCHelper.mm; sourceTree = "<group>"; };
@@ -4072,6 +4078,9 @@
 				000CE71512B73EE300D9B6A4 /* Rtt_MLuaProxyable.h */,
 				000CE71612B73EE300D9B6A4 /* Rtt_MLuaTableBridge.h */,
 				000CE71712B73EE300D9B6A4 /* Rtt_MPlatform.h */,
+				F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */,
+				F58CA27724565212002191EA /* Rtt_HTTPClient.mm */,
+				F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */,
 				000CE71812B73EE300D9B6A4 /* Rtt_MPlatformDevice.h */,
 				000CE71912B73EE300D9B6A4 /* Rtt_MReloadableResource.h */,
 				A42E68AC143AB5BA00693E3A /* Rtt_MRuntimeDelegate.h */,
@@ -6045,6 +6054,7 @@
 				C229E07C1B32221B00D87A7C /* Rtt_ShapeAdapterPolygon.h in Headers */,
 				C229E07D1B32221B00D87A7C /* Rtt_ShapeAdapterRect.h in Headers */,
 				C229E07E1B32221B00D87A7C /* Rtt_ShapeAdapterRoundedRect.h in Headers */,
+				F58CA276245651B2002191EA /* Rtt_HTTPClient.h in Headers */,
 				C229E07F1B32221B00D87A7C /* Rtt_ShapeObject.h in Headers */,
 				C229E0801B32221B00D87A7C /* Rtt_ShapePath.h in Headers */,
 				C229E0811B32221B00D87A7C /* Rtt_SharedCount.h in Headers */,
@@ -7645,6 +7655,7 @@
 				C229E1421B32221B00D87A7C /* Rtt_Scheduler.cpp in Sources */,
 				C229E1431B32221B00D87A7C /* Rtt_Shader.cpp in Sources */,
 				C229E1441B32221B00D87A7C /* Rtt_ShaderBuiltin.cpp in Sources */,
+				F58CA27A24565579002191EA /* Rtt_HTTPClientCommon.cpp in Sources */,
 				C229E1451B32221B00D87A7C /* Rtt_ShaderComposite.cpp in Sources */,
 				C229E1461B32221B00D87A7C /* Rtt_ShaderCompositeAdapter.cpp in Sources */,
 				C229E1471B32221B00D87A7C /* Rtt_ShaderData.cpp in Sources */,
@@ -7793,6 +7804,7 @@
 				C229E1D01B32221B00D87A7C /* kernel_generator_marchingAnts_gl.lua in Sources */,
 				C229E1D11B32221B00D87A7C /* kernel_generator_perlinNoise_gl.lua in Sources */,
 				C229E1D21B32221B00D87A7C /* kernel_generator_radialGradient_gl.lua in Sources */,
+				F58CA27824565212002191EA /* Rtt_HTTPClient.mm in Sources */,
 				C229E1D31B32221B00D87A7C /* kernel_generator_random_gl.lua in Sources */,
 				C229E1D41B32221B00D87A7C /* kernel_generator_stripes_gl.lua in Sources */,
 				C229E1D51B32221B00D87A7C /* kernel_generator_sunbeams_gl.lua in Sources */,

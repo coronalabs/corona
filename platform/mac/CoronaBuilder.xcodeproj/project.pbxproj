@@ -135,6 +135,8 @@
 		F53C329F2404E30900BC2BED /* CoronaBuilderPluginCollector.lua in Sources */ = {isa = PBXBuildFile; fileRef = F53C328E2404E2C000BC2BED /* CoronaBuilderPluginCollector.lua */; };
 		F547C7F61ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */; };
 		F547C7F71ED28BA600C4ED92 /* BuilderPluginDownloader.lua in Sources */ = {isa = PBXBuildFile; fileRef = F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */; };
+		F58CA29C245658C5002191EA /* Rtt_HTTPClientCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58CA28C245658C5002191EA /* Rtt_HTTPClientCommon.cpp */; };
+		F58CA29E245658E3002191EA /* Rtt_HTTPClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58CA29D245658E3002191EA /* Rtt_HTTPClient.mm */; };
 		F5BEA4B823FFE98200206A6A /* CoronaOfflineiOSPackager.lua in Sources */ = {isa = PBXBuildFile; fileRef = F5BEA4A723FFE97300206A6A /* CoronaOfflineiOSPackager.lua */; };
 		F5DB5B312113702800EC5CBC /* linuxPackageApp.lua in Sources */ = {isa = PBXBuildFile; fileRef = F5DB5B202113701300EC5CBC /* linuxPackageApp.lua */; };
 		F5FBD1CE20696145009A9D32 /* Rtt_WebAppPackager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FBD1CC20696145009A9D32 /* Rtt_WebAppPackager.cpp */; };
@@ -633,6 +635,9 @@
 		F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BuilderPluginDownloader.lua; path = ../../tools/CoronaBuilder/BuilderPluginDownloader.lua; sourceTree = "<group>"; };
 		F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_DownloadPluginsMain.cpp; path = ../../tools/CoronaBuilder/Rtt_DownloadPluginsMain.cpp; sourceTree = "<group>"; };
 		F547C7F51ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_DownloadPluginsMain.h; path = ../../tools/CoronaBuilder/Rtt_DownloadPluginsMain.h; sourceTree = "<group>"; };
+		F56569EE24565C320059F1A9 /* Rtt_HTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_HTTPClient.h; path = ../../librtt/Rtt_HTTPClient.h; sourceTree = "<group>"; };
+		F58CA28C245658C5002191EA /* Rtt_HTTPClientCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_HTTPClientCommon.cpp; path = ../../librtt/Rtt_HTTPClientCommon.cpp; sourceTree = "<group>"; };
+		F58CA29D245658E3002191EA /* Rtt_HTTPClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_HTTPClient.mm; sourceTree = "<group>"; };
 		F5BEA4A723FFE97300206A6A /* CoronaOfflineiOSPackager.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaOfflineiOSPackager.lua; path = ../resources/CoronaOfflineiOSPackager.lua; sourceTree = "<group>"; };
 		F5DB5B202113701300EC5CBC /* linuxPackageApp.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linuxPackageApp.lua; path = ../resources/linuxPackageApp.lua; sourceTree = "<group>"; };
 		F5FBD1CC20696145009A9D32 /* Rtt_WebAppPackager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_WebAppPackager.cpp; path = ../shared/Rtt_WebAppPackager.cpp; sourceTree = "<group>"; };
@@ -842,6 +847,9 @@
 		A4BAC00714CF7D3400696484 /* CoronaBuilder */ = {
 			isa = PBXGroup;
 			children = (
+				F56569EE24565C320059F1A9 /* Rtt_HTTPClient.h */,
+				F58CA29D245658E3002191EA /* Rtt_HTTPClient.mm */,
+				F58CA28C245658C5002191EA /* Rtt_HTTPClientCommon.cpp */,
 				1F23C321211ABCE30003EBF0 /* Rtt_AppPackagerLinuxFactory.cpp */,
 				C2A2E8011EC2637300900729 /* Rtt_LuaLibBuilder.cpp */,
 				C2A2E8021EC2637300900729 /* Rtt_LuaLibBuilder.h */,
@@ -1471,6 +1479,7 @@
 				A4BABC2214CF456700696484 /* vlong_io.cpp in Sources */,
 				A4BABCDA14CF4AD200696484 /* Rtt_TargetDevice.cpp in Sources */,
 				A4BABCDB14CF4AD200696484 /* Rtt_WebServicesSession.cpp in Sources */,
+				F58CA29E245658E3002191EA /* Rtt_HTTPClient.mm in Sources */,
 				A4BABF6914CF4CC900696484 /* hmac_sha2.c in Sources */,
 				A4BABF6A14CF4CC900696484 /* sha2.c in Sources */,
 				C2A2E8031EC2637300900729 /* Rtt_LuaLibBuilder.cpp in Sources */,
@@ -1526,6 +1535,7 @@
 				A4AEC139152E502E007A4C83 /* Rtt_CoronaBuilder.cpp in Sources */,
 				C29CB60619525BFA00D1F011 /* lpeg.c in Sources */,
 				A4C5209E1551ACB400B77A7E /* lfs.c in Sources */,
+				F58CA29C245658C5002191EA /* Rtt_HTTPClientCommon.cpp in Sources */,
 				0076A7EF16095ACC00A9757B /* Rtt_Assert.m in Sources */,
 				03D1C5891D70D21B00DB02EE /* Rtt_PreferenceValue.cpp in Sources */,
 				03D1C57C1D70D1C400DB02EE /* Rtt_UseCount.cpp in Sources */,

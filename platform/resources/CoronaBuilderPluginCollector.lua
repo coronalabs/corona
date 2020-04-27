@@ -64,17 +64,89 @@ local function copyFile(src, dst)
     end
 end
 
+
+local PluginCollectorSolar2DDirectory =  {}
+function PluginCollectorSolar2DDirectory:init(params)
+    local t = {}
+	local directoryPluginsText, msg = params.fetch("https://plugins.solar2d.com/plugins.json")
+    if not directoryPluginsText then
+        log("Solar2D Directory: error initializing directory " .. tostring(msg))
+		return
+	end
+	local directoryPlugins = json.decode( directoryPluginsText )
+	if not directoryPlugins then
+		return
+    end
+
+    self.pluginsCache = {}
+
+    for repoOwner, repoObject in pairs(directoryPlugins) do
+        for providerName,providerObject  in pairs(repoObject) do
+            for pluginName, pluginObject in pairs(providerObject) do
+                self.pluginsCache[providerName .. '/' .. pluginName] = {repo = repoOwner, plugin = pluginObject}
+            end
+        end
+	end
+	return true
+end
+
+function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTable, pluginPlatform, params)
+    if not self.pluginsCache then
+        return "Solar2D Directory: directory was not fetched"
+    end
+    local pluginEntry = self.pluginsCache[tostring(pluginTable.publisherId) .. '/' .. plugin]
+    if not pluginEntry then
+        return "Solar2D Directory: plugin " .. plugin .. " was not found at Solar2D Directory"
+    end
+    local pluginObject = pluginEntry.plugin
+    local repoOwner = pluginEntry.repo
+
+    local build = tonumber(params.build)
+    local vFoundBuid, vFoundObject, vFoundBuildName
+    for entryBuild, entryObject in pairs(pluginObject.v) do
+        local entryBuildNumber = tonumber(entryBuild:match('^%d+%.(%d+)$'))
+        if entryBuildNumber <= build and entryBuildNumber > (vFoundBuid or 0) then
+            vFoundBuid = entryBuildNumber
+            vFoundObject = entryObject
+            vFoundBuildName = entryBuild
+        end
+    end
+    if not vFoundBuid then
+        return "Solar2D Directory: unable to find compatible version for " .. plugin .. "."
+    end
+    local hasPlatform = false
+    for i=1,#vFoundObject do
+        hasPlatform = hasPlatform or vFoundObject[i] == pluginPlatform
+    end
+    if not hasPlatform then
+        log("Solar2D Directory: skipped plugin " .. plugin .. " because platform is not supported")
+        return true
+    end
+    local repoName = pluginObject.p or (pluginTable.publisherId .. '-' .. plugin)
+    local downloadURL = "https://github.com/" .. repoOwner .. "/" .. repoName .. "/releases/download/" .. pluginObject.r .. "/" .. vFoundBuildName .. "-" .. pluginPlatform .. ".tgz"
+    local pluginArchivePath = params.pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin .. '/' .. vFoundBuildName .. '/' .. pluginPlatform
+    mkdirs(destination)
+    local file, err = params.download(downloadURL, destination .. '/data.tgz')
+    if not file then
+        return "Solar2D Directory: unable to download " .. plugin .. '. Code: ' .. err .. 'Error message: ' .. file
+    end
+    return true
+end
+
+
 local pluginLocatorCoronaStore =  {}
 function pluginLocatorCoronaStore:init(params)
     self.user = params.user
     if not self.user  then
         return
     end
-    self.http = require( "socket.http" )
+    if params.pluginPlatform == 'mac-sim' or params.pluginPlatform == 'win32-sim' then
+        return
+    end
     self.serverBackend = 'https://backendapi.coronalabs.com'
 
     local authURL = self.serverBackend .. '/v1/plugins/show/' .. self.user
-	local authorisedPluginsText, msg = self.http.request(authURL)
+	local authorisedPluginsText, msg = params.fetch(authURL)
 
 	if not authorisedPluginsText then
 		return false
@@ -108,6 +180,9 @@ function pluginLocatorCoronaStore:collect(destination, plugin, pluginTable, plug
     if not self.user then
         return "Corona Store: no user login"
     end
+    if params.pluginPlatform == 'mac-sim' or params.pluginPlatform == 'win32-sim' then
+        return "Corona Store: Simulator is not supported by store plugin collector."
+    end
     if not self.authorizedPlugins then
         return "Corona Store: authorized plugins was not fetched"
     end
@@ -119,7 +194,7 @@ function pluginLocatorCoronaStore:collect(destination, plugin, pluginTable, plug
     local build = params.build
     local downloadInfoURL = self.serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. pluginPlatform
 
-    local downloadInfoText, msg = self.http.request(downloadInfoURL)
+    local downloadInfoText, msg = params.fetch(downloadInfoURL)
     if not downloadInfoText then
         return "Corona Store: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg 
     end
@@ -132,26 +207,13 @@ function pluginLocatorCoronaStore:collect(destination, plugin, pluginTable, plug
 
     local buildStr = downloadURL:match('/(%d%d%d%d%.%d%d%d%d)/')
     local pluginArchivePath = params.pluginStorage .. '/' .. pluginTable.publisherId .. '/' .. plugin .. '/' .. buildStr .. '/' .. pluginPlatform
-    local file, err = self.http.request(downloadURL)
-    if err == 404 then
-        mkdirs(pluginArchivePath)
-        io.open(pluginArchivePath .. '/' .. params.ignoreMissingMarker, 'w'):close()
-        log("Corona Store: plugin " .. plugin .. " is not supported by the platform!")
-        return true
-    elseif err ~= 200 then
+    mkdirs(pluginArchivePath)
+    pluginArchivePath = pluginArchivePath .. '/data.tgz'
+    local file, err = params.download(downloadURL, pluginArchivePath)
+    if err then
         return "Corona Store: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Error message: \n' .. file
     end
 
-    mkdirs(pluginArchivePath)
-    pluginArchivePath = pluginArchivePath .. '/data.tgz'
-
-    fi = io.open(pluginArchivePath, "wb")
-    if (fi == nil) then
-        return 'Corona Store: unable to create tgz'
-    end
-    fi:write(file)
-    fi:close()
-    
     mkdirs(destination)
     copyFile(pluginArchivePath, destination)
     return true
@@ -169,20 +231,12 @@ local function pluginLocatorCustomURL(destination, plugin, pluginTable, pluginPl
     if type(pluginTable.supportedPlatforms[pluginPlatform].url) ~= 'string' then
         return "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "].url is not a string"
     end
-    local http = require( "socket.http" )
     local downloadURL = pluginTable.supportedPlatforms[pluginPlatform].url
-    local file, err = http.request(downloadURL)
-    if not file then
-        return "Custom URL: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Error message: ' .. file .. "; URL: " .. downloadURL
-    end
-
     mkdirs(destination)
-    fi = io.open(destination .. '/data.tgz', "wb")
-    if (fi == nil) then
-        return 'Custom URL: unable to create destination tgz'
+    local file, err = params.download(downloadURL, destination .. '/data.tgz')
+    if not file then
+        return "Custom URL: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Destination: ' .. file .. "; URL: " .. downloadURL
     end
-    fi:write(file)
-    fi:close()
 
     return true
 end
@@ -308,25 +362,9 @@ local function pluginLocatorIgnoreMissing(destination, plugin, pluginTable, plug
     return "Ignore Missing checker: did not find marker in " .. foundDir
 end
 
-
-local initializedLocators = false
 local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
     if type(pluginTable.supportedPlatforms) == 'table' and not pluginTable.supportedPlatforms[pluginPlatform] then
         return
-    end
-    if not initializedLocators then
-        initializedLocators = true
-        for i = 1,#pluginLocators do
-            local locator = pluginLocators[i]
-            if type(locator) == 'table' and type(locator.init) == 'function' then
-                locator:init(params)
-                if type(locator.collect) ~= 'function' then
-                    return "ERROR: Plugin Locator #" .. tostring(i) .. " does not have :collect() method!"
-                end
-            elseif type(locator) ~= 'function' then
-                return "ERROR: Plugin Locator #" .. tostring(i) .. " is not a function!"
-            end
-        end
     end
     local pluginDestination = dstDir .. '/' .. plugin
     local err = "Unable to find plugin '" .. plugin .. "' for " .. (params.modernPlatform or params.pluginPlatform) .. " in:"
@@ -335,6 +373,10 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, pa
         local locator = pluginLocators[i]
         local result
         if type(locator) == 'table' then
+            if not locator.initialized and type(locator.init) == 'function' then
+                locator:init(params)
+                locator.initialized = true
+            end
             result = locator:collect(pluginDestination, plugin, pluginTable, pluginPlatform, params)
         else
             result = locator(pluginDestination, plugin, pluginTable, pluginPlatform, params)
@@ -352,10 +394,12 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, pa
 end
 
 local function CollectCoronaPlugins(params)
+    params.fetch = params.fetch or pluginCollector_fetch
+    params.download = params.download or pluginCollector_download
     log("Collecting plugins", json.encode(params))
     local ret = nil
 
-    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, pluginLocatorCoronaStore, pluginLocatorIgnoreMissing }
+    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, PluginCollectorSolar2DDirectory, pluginLocatorCoronaStore, pluginLocatorIgnoreMissing }
 
     local dstDir = params.destinationDirectory
 

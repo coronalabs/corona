@@ -87,7 +87,6 @@ class CoronaBuilder
 		int Build( const BuildParams& params ) const;
 		void RecordSuccessfulAuthorization() const;
 		bool CanCustomizeSplashScreen(const char *platformName, const char *bundleID);
-		void InsertBuildId(const char *carFile);
 
 	protected:
 		
