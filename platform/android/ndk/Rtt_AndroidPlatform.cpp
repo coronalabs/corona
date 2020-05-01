@@ -518,33 +518,7 @@ AndroidPlatform::PathForFile( const char * filename, const char * baseDir, Strin
 		result.Set( baseDir );
 	}
 }
-	
-void 
-AndroidPlatform::HttpPost( const char* url, const char* key, const char* value ) const
-{
-	fNativeToJavaBridge->HttpPost( url, key, value );
-}
 
-bool
-AndroidPlatform::HttpDownload( const char* url, Rtt::String &result, String& errorMesg, const std::map<std::string, std::string>& headers ) const
-{
-	result.Set("");
-	errorMesg.Set("");
-
-	Rtt_ASSERT_NOT_IMPLEMENTED();
-	
-	return false;
-}
-
-bool
-AndroidPlatform::HttpDownloadFile( const char* url, const char *filename, String& errorMesg, const std::map<std::string, std::string>& headers ) const
-{
-	errorMesg.Set("");
-
-	Rtt_ASSERT_NOT_IMPLEMENTED();
-
-	return false;
-}
 FontMetricsMap 
 AndroidPlatform::GetFontMetrics( const PlatformFont& font ) const
 {

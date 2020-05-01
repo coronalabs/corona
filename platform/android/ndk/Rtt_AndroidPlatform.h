@@ -69,10 +69,6 @@ class AndroidPlatform : public MPlatform
         virtual PlatformBitmap* CreateBitmap( const char* filename, bool convertToGrayscale ) const;
         virtual PlatformBitmap* CreateBitmapMask( const char str[], const PlatformFont& font, Real w, Real h, const char alignment[] , Real & baselineOffset ) const;
 
-        virtual void HttpPost( const char* url, const char* key, const char* value ) const;
-		virtual bool HttpDownload( const char* url, String& result, String& errorMesg, const std::map<std::string, std::string>& headers  ) const;
-		virtual bool HttpDownloadFile( const char* url, const char* filename, String& errorMesg, const std::map<std::string, std::string>& headers  ) const;
-
         virtual PlatformEventSound * CreateEventSound( const ResourceHandle<lua_State> & handle, const char* filePath ) const;
 		 virtual FontMetricsMap GetFontMetrics( const PlatformFont& font ) const;
         virtual void ReleaseEventSound( PlatformEventSound * soundID ) const;

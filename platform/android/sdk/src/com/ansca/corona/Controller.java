@@ -17,14 +17,6 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Locale;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-
 import android.app.AlertDialog;
 import android.app.Activity;
 import android.content.ContentValues;
@@ -470,34 +462,6 @@ public class Controller {
 		if (myGLView != null) {
 			myGLView.setNeedsSwap();
 		}
-    }
-    
-    public void httpPost( String url, String key, String value ) {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpContext localContext = new BasicHttpContext();
-
-        HttpPost httpPost = new HttpPost( url );
-
-    	httpPost.setHeader( "Content-Type", "application/x-www-form-urlencoded" );
-
-    	StringEntity entity;
-		try {
-			entity = new StringEntity( key + "=" + value, "UTF-8" );
-
-	    	httpPost.setEntity( entity );
-
-	    	HttpResponse response = httpClient.execute( httpPost, localContext );
-
-//    		if ( response != null ) {
-//        		String result = response.getStatusLine().toString();
-//       	}
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-    	} catch ( ClientProtocolException e ) {
-    		e.printStackTrace();
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	} 
     }
 
 	/**

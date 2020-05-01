@@ -604,27 +604,6 @@ PlatformBitmap* WinPlatform::CreateBitmapMask(
 				fEnvironment, str, (const WinFont&)font, integerWidth, integerHeight, *alignmentPointer, baselineOffset));
 }
 
-void WinPlatform::HttpPost(const char* url, const char* key, const char* value) const
-{
-	Rtt_ASSERT_NOT_IMPLEMENTED();
-}
-
-bool
-WinPlatform::HttpDownload( const char* url, Rtt::String &result, String& errorMesg, const std::map<std::string, std::string>& headers ) const
-{
-	Rtt_ASSERT_NOT_IMPLEMENTED();
-
-	return false;
-}
-
-bool
-WinPlatform::HttpDownloadFile( const char* url, const char *filename, String& errorMesg, const std::map<std::string, std::string>& headers  ) const
-{
-	Rtt_ASSERT_NOT_IMPLEMENTED();
-
-	return false;
-}
-
 PlatformEventSound* WinPlatform::CreateEventSound(const ResourceHandle<lua_State>& handle, const char* filePath) const
 {
 	WinEventSound * player = new WinEventSound(fEnvironment, handle);
