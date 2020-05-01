@@ -400,6 +400,7 @@
     <ClInclude Include="..\..\..\librtt\Rtt_RenderingStream.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Resource.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Runtime.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_HTTPClient.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegate.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegatePlayer.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Scheduler.h" />
@@ -665,6 +666,8 @@
     <ClCompile Include="..\..\..\librtt\Rtt_RenderingStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Resource.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Runtime.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_HTTPClientCommon.cpp" />
+    <ClCompile Include="Rtt_HTTPClientWindows.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegate.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegatePlayer.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Scheduler.cpp" />
@@ -723,6 +726,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <LuaToCpp Include="..\..\resources\CoronaBuilderPluginCollector.lua" />
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua" />
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaLibrary.lua" />
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaPrototype.lua" />

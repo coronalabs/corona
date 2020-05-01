@@ -110,6 +110,8 @@ DependencyLoader::CCDataLoader( lua_State *L )
 bool
 DependencyLoader::CCDependencyCheck( const Rtt::Runtime& sender )
 {
+	return true;
+	
 	lua_State *L = sender.VMContext().L();
 
 	bool result = false;

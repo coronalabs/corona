@@ -11,20 +11,13 @@
 
 #include "Rtt_DownloadPluginsMain.h"
 #include "Rtt_LuaLibBuilder.h"
+#include "Rtt_HTTPClient.h"
 
 // ----------------------------------------------------------------------------
-extern "C" {
-int luaopen_lfs (lua_State *L);
-}
 
 namespace Rtt
 {
-
-int luaload_json(lua_State *L);
-int luaload_dkjson(lua_State *L);
-int luaload_BuilderPluginDownloader(lua_State *L);
-int luaload_CoronaPListSupport(lua_State *L);
-
+	int luaload_BuilderPluginDownloader(lua_State* L);
 
 DownloadPluginsMain::DownloadPluginsMain(lua_State *L)
 :	fL( L )
@@ -35,8 +28,17 @@ DownloadPluginsMain::DownloadPluginsMain(lua_State *L)
 int DownloadPluginsMain::Run(int argc, const char* args[], const char* usr)
 {
 	lua_State *L = fL;
-
-	lua_getglobal(L, "DownloadPluginsMain");
+	
+	if(argc >= 2 && strcmp("--android-offline-plugins", args[1]) == 0) {
+		lua_getglobal(L, "DownloadAndroidOfflinePlugins");
+		args++;
+		argc--;
+		HTTPClient::registerFetcherModuleLoaders(L);
+	}
+	else {
+		lua_getglobal(L, "DownloadPluginsMain");
+	}
+	
 	Rtt_ASSERT(lua_type(L, -1) == LUA_TFUNCTION);
 	lua_createtable(L, argc, 0);
 	for(int i = 0; i<argc; i++)

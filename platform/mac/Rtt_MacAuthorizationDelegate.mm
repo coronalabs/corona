@@ -111,8 +111,11 @@ static const char kDoNotStopModal[] = "";
 			result = NO;
 			break;
 		case kActionOther2:
-			// We no longer exit the app on cancellation of login
-			// [NSApp terminate:self];
+			NSDictionary *details = [NSDictionary dictionaryWithObjectsAndKeys:@"Corona will start in offline mode. To change this go to Preferences… / Deauthorize and Quit", NSLocalizedDescriptionKey, nil];
+			NSError *error = [NSError errorWithDomain:@"Corona Simulator" code:404 userInfo:details];
+			[[NSAlert alertWithError:error] runModal];
+			AuthorizationContext* c = (AuthorizationContext*)sender.userdata;
+			c->authorizer->GetServices().SetPreference(Rtt::Authorization::kOfflineModeConfirmed, "offline");
 			break;
 	}
 
@@ -1142,7 +1145,7 @@ MacAuthorizationDelegate::TicketNotInstalled( const Authorization& sender )
 		// choose register or the help button, the dialog will not disappear.
 		// When a login is attempted, MacAuthorizationDelegate::Login() is called
 		// while the modal dialog is still running.
-		result = Rtt_VERIFY( kActionDefault == [fLoginController runModalWithMessage:[NSString stringWithExternalString:sender.GetLoginMessage()]] );
+		result = ( kActionDefault == [fLoginController runModalWithMessage:[NSString stringWithExternalString:sender.GetLoginMessage()]] );
 	}
 
 	return result;

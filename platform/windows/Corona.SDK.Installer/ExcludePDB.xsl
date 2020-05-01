@@ -11,11 +11,24 @@
   </xsl:template>
   <xsl:output method="xml" indent="yes" />
 
-  <xsl:key name="file-search" match="wix:Component[wix:File/@Source='$(var.CoronaSdkDir)\Corona Simulator.pdb']" use="@Id"/>
+  <xsl:key
+    name="iobjToRemove"
+    match="wix:Component[ substring( wix:File/@Source, string-length( wix:File/@Source ) - 4 ) = '.iobj' ]"
+    use="@Id"
+  />
+  <xsl:key
+      name="ipdbToRemove"
+      match="wix:Component[ substring( wix:File/@Source, string-length( wix:File/@Source ) - 4 ) = '.ipdb' ]"
+      use="@Id"
+  />
+  <xsl:key
+      name="pdbToRemove"
+      match="wix:Component[ substring( wix:File/@Source, string-length( wix:File/@Source ) - 3 ) = '.pdb' ]"
+      use="@Id"
+  />
 
-  <!-- Remove directories. -->
-  <xsl:template match="wix:Component[wix:File/@Source='$(var.CoronaSdkDir)\Corona Simulator.pdb']" />
-
-  <!-- Remove componentsrefs referencing components in those directories. -->
-  <xsl:template match="wix:ComponentRef[key('file-search', @Id)]" />
+  <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'iobjToRemove', @Id ) ]" />
+  <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'ipdbToRemove', @Id ) ]" />
+  <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'pdbToRemove', @Id ) ]" />
+  
 </xsl:stylesheet>

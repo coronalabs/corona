@@ -178,6 +178,8 @@ namespace Rtt
 @property (nonatomic, readwrite) BOOL respondsToBackKey;
 @property (nonatomic, readonly, getter=analytics) Rtt::SimulatorAnalytics *fAnalytics;
 
++(BOOL)offlineModeAllowed;
+
 -(BOOL)isRunning;
 -(IBAction)showHelp:(id)sender;
 -(void)signin;

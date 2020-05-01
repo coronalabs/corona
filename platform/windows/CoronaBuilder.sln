@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoronaBuilder", "CoronaBuilder\CoronaBuilder.vcxproj", "{EAFC16C3-22B1-4C46-BEDE-8828226D926B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -21,6 +21,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua.Console", "Lua.Console\Lua.Console.vcxproj", "{50977859-079E-4375-9B3F-BD598E6F7463}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua.Compiler", "Lua.Compiler\Lua.Compiler.vcxproj", "{511AE85E-6A1E-4830-BEF1-F695B2855B47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D0ADD46C-58EE-41AF-8E62-BAB080D7CE21} = {D0ADD46C-58EE-41AF-8E62-BAB080D7CE21}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LPeg.Library.Win32", "LPeg.Library\LPeg.Library.Win32.vcxproj", "{EC28B73D-7A9E-46AB-951D-7D528329B994}"
 EndProject
@@ -37,10 +40,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQLite.Library.Win32", "SQL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luafilesystem_dll", "luafilesystem\luafilesystem_dll.vcxproj", "{61D9B687-BAC9-4571-A43D-F15B2A718E05}"
 	ProjectSection(ProjectDependencies) = postProject
+		{50977859-079E-4375-9B3F-BD598E6F7463} = {50977859-079E-4375-9B3F-BD598E6F7463}
+		{511AE85E-6A1E-4830-BEF1-F695B2855B47} = {511AE85E-6A1E-4830-BEF1-F695B2855B47}
 		{D0ADD46C-58EE-41AF-8E62-BAB080D7CE21} = {D0ADD46C-58EE-41AF-8E62-BAB080D7CE21}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua.Socket.Library.Win32", "Lua.Socket.Library\Lua.Socket.Library.Win32.vcxproj", "{4BE37D68-BA9E-464A-BC28-510A8B39CCCD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50977859-079E-4375-9B3F-BD598E6F7463} = {50977859-079E-4375-9B3F-BD598E6F7463}
+		{511AE85E-6A1E-4830-BEF1-F695B2855B47} = {511AE85E-6A1E-4830-BEF1-F695B2855B47}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -210,5 +219,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AEF06E1E-2152-4A98-A743-12D82B0DFE69}
 	EndGlobalSection
 EndGlobal

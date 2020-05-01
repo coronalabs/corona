@@ -360,6 +360,12 @@
     <ClCompile Include="..\..\..\librtt\Rtt_Runtime.cpp">
       <Filter>librtt</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Rtt_HTTPClientCommon.cpp">
+      <Filter>librtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt_HTTPClientWindows.cpp">
+      <Filter>librtt</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegate.cpp">
       <Filter>librtt</Filter>
     </ClCompile>
@@ -1208,6 +1214,9 @@
     <ClInclude Include="..\..\..\librtt\Rtt_Runtime.h">
       <Filter>librtt</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Rtt_HTTPClient.h">
+      <Filter>librtt</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegate.h">
       <Filter>librtt</Filter>
     </ClInclude>
@@ -1847,6 +1856,9 @@
   </ItemGroup>
   <ItemGroup>
     <LuaToCpp Include="..\..\resources\loader_callback.lua">
+      <Filter>platform\resources</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\CoronaBuilderPluginCollector.lua">
       <Filter>platform\resources</Filter>
     </LuaToCpp>
     <LuaToCpp Include="..\..\resources\loader_ccdata.lua">

@@ -225,6 +225,9 @@ CoronaBuilder::CoronaBuilder(
 //	fAuthorizerDelegate( NULL ),
 //	fAuthorizer( NULL )
 {
+	Rtt::String offlineModeStr;
+	services.GetPreference(Rtt::Authorization::kOfflineModeConfirmed, &offlineModeStr);
+	fOfflineMode = !offlineModeStr.IsEmpty();
 	lua_pushlightuserdata( fL, this );
 	Lua::RegisterModuleLoader( fL, "builder", LuaLibBuilder::Open, 1 );
 
@@ -314,56 +317,6 @@ CoronaBuilder::Usage( const char *arg0 )
 			"\n", progname.GetString());
 }
 
-void CoronaBuilder::InsertBuildId(const char *carFile)
-{
-	String url("https://backendapi.coronalabs.com/v1/buildid/native/");
-	url.Append(fUsr);
-	String build_id, error;
-	std::map<std::string, std::string> headers;
-	if(GetPlatform().HttpDownload(url.GetString(), build_id, error, headers) && build_id.GetLength())
-	{
-		String contents("return \"");
-		contents.Append(build_id);
-		contents.Append("\"");
-
-#ifdef WIN32
-		char tmpDirTemplate[_MAX_PATH];
-		const char* tmp = getenv("TMP");
-		if (tmp == NULL)
-		{
-			tmp = getenv("TEMP");
-		}
-
-		if (tmp)
-		{
-			_snprintf(tmpDirTemplate, sizeof(tmpDirTemplate), "%s\\CBASCXXXXXX", tmp);
-		}
-		else
-		{
-			strcpy(tmpDirTemplate, "\\tmp\\CBASCXXXXXX");
-		}
-#else
-		char tmpDirTemplate[] = "/tmp/CBASCXXXXXX";
-#endif
-		const char *tmpDirName = Rtt_MakeTempDirectory(tmpDirTemplate);
-		String tmpFilename(tmpDirName);
-		tmpFilename.AppendPathComponent("_Corona_Build_Number.lu");
-
-		bool writeSuccess = false;
-		FILE *fp = Rtt_FileOpen(tmpFilename, "wb");
-		if (fp != NULL)
-		{
-			writeSuccess = (fputs(contents.GetString(), fp) > 0);
-		}
-		Rtt_FileClose(fp);
-
-		if(writeSuccess)
-		{
-			const char *srcPaths[1] = { tmpFilename };
-			Archive::Serialize( carFile, 1, srcPaths );
-		}
-	}
-}
 
 int
 CoronaBuilder::Main( int argc, const char *argv[] )
@@ -440,7 +393,8 @@ CoronaBuilder::Main( int argc, const char *argv[] )
 				// CoronaBuilder app_sign sign "developerkey.cert" "resource.corona-archive" "$EXE_PATH" little [platform bundleID]
 				bool sign = (strncmp(argv[2], "sign", 4) == 0);
 				result = Rtt_AppSignMain( argc - 1, argv + 1 );
-				// replace all architectures
+
+        // replace all architectures
 				while (sign && result == 0 && Rtt_AppSignMain( argc - 1, argv + 1 ) == 0);
 			}
 			break;
@@ -701,6 +655,10 @@ CoronaBuilder::VerifyPermission(
 				AuthorizationTicket::DisplayStringForSubscription( sub ) );
 		}
 	}
+	else if(fOfflineMode)
+	{
+		return true;
+	}
 	else
 	{
 		fprintf( stderr, "error: CoronaBuilder: %s\n", errorMsg );
@@ -720,6 +678,14 @@ CoronaBuilder::Authorize( const char *inUsr, const char *inPwd ) const
 
         exit( 1 );
     }
+    
+    if(strcmp(inUsr, "offline") == 0) {
+		fServices.SetPreference(Authorization::kOfflineModeConfirmed, "offline");
+		return kNoError;
+	} else {
+		fServices.SetPreference(Authorization::kOfflineModeConfirmed, NULL);
+	}
+    
     if (inPwd == NULL)
     {
         fprintf(stderr, "error: CoronaBuilder: missing password\n");
@@ -1225,6 +1191,7 @@ CoronaBuilder::Build( const BuildParams& params ) const
 	if ( VerifyPermission( delegate, kBuildPermission ) )
 	{
 		AppPackagerFactory factory( fServices );
+		WebServicesSession session( fServices );
 		PlatformAppPackager *packager = params.CreatePackager( factory, targetPlatform );
 
 		AppPackagerParams *appParams = params.CreatePackagerParams( factory, targetPlatform );
@@ -1235,16 +1202,22 @@ CoronaBuilder::Build( const BuildParams& params ) const
 			const char *usr = fUsr.GetString();
 
 			String encryptedPassword;
-			fServices.GetPreference( usr, &encryptedPassword );
+			if(usr) {
+				fServices.GetPreference( usr, &encryptedPassword );
+			}
 
-			if ( fServices.IsInternetAvailable() )
+			if ( !usr || fServices.IsInternetAvailable() )
 			{
-				WebServicesSession session( fServices );
 
-				int code = session.LoginWithEncryptedPassword(
-					WebServicesSession::CoronaServerUrl(fServices),
-					usr,
-					encryptedPassword.GetString() );
+				int code = WebServicesSession::kLoginError;
+				if(session.IsOfflineSession()) {
+					code = WebServicesSession::kNoError;
+				} else if(usr) {
+					code = session.LoginWithEncryptedPassword(
+						WebServicesSession::CoronaServerUrl(fServices),
+						usr,
+						encryptedPassword.GetString() );
+				}
 
 				if ( WebServicesSession::kNoError == code )
 				{

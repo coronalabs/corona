@@ -470,6 +470,9 @@ static NSString *kValueNone = @"None";
 
     params->SetStripDebug( isStripDebug );
 	params->SetLiveBuild(isLiveBuild);
+	if([appDelegate ticket]) {
+		params->SetCoronaUser([appDelegate ticket]->GetUsername());
+	}
 
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 /*

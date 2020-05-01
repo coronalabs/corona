@@ -96,11 +96,6 @@ class ApplePlatform : public MPlatform
 		virtual OperationResult SetPreferences( const char* categoryName, const PreferenceCollection& collection ) const;
 		virtual OperationResult DeletePreferences( const char* categoryName, const char** keyNameArray, U32 keyNameCount ) const;
 
-		virtual void HttpPost( const char* url, const char* key, const char* value ) const;
-		virtual bool HttpDownload( const char* url, String& result, String& errorMesg, const std::map<std::string, std::string>& headers ) const;
-		virtual bool HttpDownloadFile( const char* url, const char *filename, String& errorMesgOut, const std::map<std::string, std::string>& headers ) const;
-
-
 		virtual PlatformEventSound * CreateEventSound( const ResourceHandle<lua_State> &handle, const char* filePath ) const;
 		virtual void ReleaseEventSound( PlatformEventSound * soundID ) const;
 		virtual void PlayEventSound( PlatformEventSound * soundID ) const;

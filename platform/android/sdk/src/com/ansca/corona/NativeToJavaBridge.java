@@ -1488,11 +1488,6 @@ public class NativeToJavaBridge {
 		runtime.getController().getEventManager().resumeSound(id);
 	}
 
-	protected static void callHttpPost( CoronaRuntime runtime, String url, String key, String value )
-	{
-		runtime.getController().httpPost( url, key, value );
-	}
-
 	protected static void callPlayVideo( CoronaRuntime runtime, long id, String url, boolean mediaControlsEnabled )
 	{
 		runtime.getController().getMediaManager().playVideo( id, url, mediaControlsEnabled );

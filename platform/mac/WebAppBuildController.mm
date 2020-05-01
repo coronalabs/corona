@@ -280,7 +280,7 @@ using namespace Rtt;
 	}
 
 	const Rtt::AuthorizationTicket *ticket = [appDelegate ticket];
-	NSString *username = [NSString stringWithExternalString:ticket->GetUsername()];
+	NSString *username = ticket?[NSString stringWithExternalString:ticket->GetUsername()]:@"anonymous@corona";
 	const char* identity = [username UTF8String];
 	
 	bool useStandartResources = (fUseStandartResources.state == NSOnState);

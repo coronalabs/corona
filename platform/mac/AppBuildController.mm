@@ -1115,9 +1115,12 @@ static NSString *kValueNotSet = @"not set";
 
 - (BOOL) loginSession:(WebServicesSession *)session services:(MacPlatformServices *)services ticket:(const AuthorizationTicket *)ticket message:(NSString **)message
 {
-    Rtt_ASSERT(session);
+	Rtt_ASSERT(session);
     Rtt_ASSERT(services);
-    Rtt_ASSERT(ticket);
+
+    if(!ticket && services) {
+		return session && session->IsOfflineSession();
+	}
 
     const char* usr = ticket->GetUsername();
     Rtt::String encryptedPassword;

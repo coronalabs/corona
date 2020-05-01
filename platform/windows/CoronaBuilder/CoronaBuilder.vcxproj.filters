@@ -106,6 +106,7 @@
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua" />
     <LuaToCpp Include="..\..\..\tools\CoronaBuilder\BuilderPluginDownloader.lua" />
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
+    <LuaToCpp Include="..\..\resources\CoronaBuilderPluginCollector.lua" />   
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -229,6 +230,8 @@
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerHTML5Factory.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_HTTPClientCommon.cpp" />
+    <ClCompile Include="..\Corona.Rtt.Library\Rtt_HTTPClientWindows.cpp" />
     <ClCompile Include="..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.cpp">
       <Filter>Rtt</Filter>
     </ClCompile>
@@ -393,6 +396,7 @@
     <ClInclude Include="..\..\..\tools\app_sign\Rtt_AppSign.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_HTTPClient.h" />
     <ClInclude Include="..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.h">
       <Filter>Rtt</Filter>
     </ClInclude>

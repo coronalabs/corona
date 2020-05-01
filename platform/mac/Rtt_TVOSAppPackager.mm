@@ -29,6 +29,7 @@ class Rtt::MacSimulatorServices
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_WebServicesSession.h"
 #include "Rtt_FileSystem.h"
+#include "Rtt_DeviceBuildData.h"
 
 #include "XcodeToolHelper.h"
 
@@ -37,8 +38,12 @@ class Rtt::MacSimulatorServices
 
 #include <dirent.h>
 #include <sys/stat.h>
+#include "Rtt_HTTPClient.h"
 
 Rtt_EXPORT int luaopen_lfs (lua_State *L);
+Rtt_EXPORT int luaopen_socket_core (lua_State *L);
+Rtt_EXPORT int luaopen_mime_core(lua_State *L);
+
 
 // ----------------------------------------------------------------------------
 
@@ -55,6 +60,7 @@ namespace Rtt
 // following function which loads the bytecodes via luaL_loadbuffer.
     int luaload_tvosPackageApp(lua_State* L);
     int luaload_CoronaPListSupport(lua_State* L);
+	int luaload_CoronaOfflineiOSPackager(lua_State* L);
 
 // ----------------------------------------------------------------------------
 
@@ -94,11 +100,8 @@ TVOSAppPackager::TVOSAppPackager( const MPlatformServices& services, MacSimulato
 #endif
 
 	Lua::RegisterModuleLoader( L, "CoronaPListSupport", Lua::Open< luaload_CoronaPListSupport > );
-	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
-	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
-	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
-	Lua::RegisterModuleLoader( L, "lfs", luaopen_lfs );
-    
+	HTTPClient::registerFetcherModuleLoaders(L);
+
 	Lua::DoBuffer( fVM, & luaload_tvosPackageApp, NULL);
 }
 
@@ -133,13 +136,129 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 			char* outputFile = (char*)malloc( outputFileLen );
 			sprintf( outputFile, "%s" LUA_DIRSEP "%s", tmpDir, kOutputName );
 
-            if (fSimulatorServices != NULL)
-            {
-                fSimulatorServices->SetBuildMessage("Communicating with build server");
-            }
+			if(session.IsOfflineSession())
+			{
+				if (fSimulatorServices != NULL)
+				{
+					fSimulatorServices->SetBuildMessage("Collecting plugins locally");
+				}
 
-            // Send params/input.zip via web api
-			result = session.BeginBuild( params, inputFile, outputFile );
+				lua_State *L = fVM;
+
+				Lua::DoBuffer( L, & luaload_CoronaOfflineiOSPackager, NULL);
+				lua_getglobal(L, "CreateOfflinePackage");
+				lua_newtable( L );
+				
+				lua_pushstring(L, tmpDir);
+				lua_setfield(L, -2, "tmpDir");
+				
+				lua_pushstring(L, outputFile);
+				lua_setfield(L, -2, "outputFile");
+				
+				lua_pushstring(L, inputFile);
+				lua_setfield(L, -2, "inputFile");
+				
+				const char *platform, *modernPlatform, *pluginPlatform;
+				bool isAppleTV = false;
+				switch (params->GetTargetDevice()) {
+					case TargetDevice::kIPhone:
+					case TargetDevice::kIPad:
+					case TargetDevice::kIOSUniversal:
+						platform = "iphoneos";
+						modernPlatform = "ios";
+						pluginPlatform = "iphone";
+						break;
+					case TargetDevice::kAppleTV:
+						platform = "appletvos";
+						modernPlatform = "tvos";
+						pluginPlatform = "appletvos";
+						isAppleTV = true;
+						break;
+					case TargetDevice::kIPhoneXCodeSimulator:
+					case TargetDevice::kIPadXCodeSimulator:
+					case TargetDevice::kIOSUniversalXCodeSimulator:
+						platform = "iphonesimulator";
+						modernPlatform = "ios-sim";
+						pluginPlatform = "iphone-sim";
+						break;
+					case TargetDevice::kTVOSXCodeSimulator:
+						platform = "appletvsimulator";
+						modernPlatform = "tvos-sim";
+						pluginPlatform = "appletvsimulator";
+						isAppleTV = true;
+						break;
+					default:
+						Rtt_ASSERT(0);
+						platform = "iphoneos";
+					break;
+				}
+				
+				lua_pushstring(L, platform);
+				lua_setfield(L, -2, "platform");
+				lua_pushstring(L, modernPlatform);
+				lua_setfield(L, -2, "modernPlatform");
+				lua_pushstring(L, pluginPlatform);
+				lua_setfield(L, -2, "pluginPlatform");
+				lua_pushboolean(L, isAppleTV);
+				lua_setfield(L, -2, "isAppleTV");
+				
+				lua_pushstring(L, Rtt_MACRO_TO_STRING( Rtt_BUILD_REVISION ) );
+				lua_setfield(L, -2, "build");
+				
+				char templateZip[255];
+				snprintf(templateZip, 255, "%s_%.1f.tar.bz", platform, params->GetTargetVersion()/10000.0f);
+				lua_pushstring(L, templateZip);
+				lua_setfield(L, -2, "template");
+				
+				Rtt::String resourceDir;
+				fServices.Platform().PathForFile(NULL, MPlatform::kSystemResourceDir, 0, resourceDir);
+				lua_pushstring(L, resourceDir.GetString());
+				lua_setfield(L, -2, "resourceDir");
+
+				lua_pushstring(L, params->GetAppPackage());
+				lua_setfield(L, -2, "appPackage");
+				
+				lua_pushstring(L, params->GetCoronaUser());
+				lua_setfield(L, -2, "user");
+
+				
+				DeviceBuildData & buildData = params->GetDeviceBuildData(fServices.Platform(), fServices);
+				Rtt::String json;
+				buildData.GetJSON(json);
+				lua_pushstring(L, json.GetString());
+				lua_setfield(L, -2, "buildData");
+				
+				String escapedAppName;
+                PlatformAppPackager::EscapeFileName( params->GetAppName(), escapedAppName );
+                lua_pushstring(L, escapedAppName.GetString());
+                lua_setfield(L, -2, "appName");
+
+				
+				if ( Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
+				{
+					result = WebServicesSession::kNoError;
+					if ( lua_isstring( L, -1 ) )
+					{
+						Rtt_TRACE_SIM( ( "BUILD ERROR: %s\n", lua_tostring( L, -1 ) ) );
+						params->SetBuildMessage( lua_tostring( L, -1 ) );
+						result = WebServicesSession::kBuildError;
+					}
+				}
+				else
+				{
+					result = WebServicesSession::kCriticalError;
+				}
+				lua_pop( L, 1 );
+			}
+			else
+			{
+				if (fSimulatorServices != NULL)
+				{
+					fSimulatorServices->SetBuildMessage("Communicating with build server");
+				}
+				// Send params/input.zip via web api
+				result = session.BeginBuild( params, inputFile, outputFile );
+			}
 			if ( WebServicesSession::kNoError == result )
 			{
 				lua_State *L = fVM;

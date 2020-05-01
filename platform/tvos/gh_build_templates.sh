@@ -1,0 +1,1 @@
+../../tools/GHAction/ios_build_templates.sh

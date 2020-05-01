@@ -698,7 +698,7 @@ PlatformSimulator::Start( const SimulatorOptions& options )
 	Runtime& runtime = fPlayer->GetRuntime();
 
 	// Currently, enterprise is required to have the Lua parser available
-	bool isLuaParserAvailable = options.isEnterprise;
+	bool isLuaParserAvailable = true;
 	runtime.SetProperty( Runtime::kIsLuaParserAvailable, isLuaParserAvailable );
 
  	// Read plugins from build.settings

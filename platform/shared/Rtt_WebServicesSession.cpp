@@ -37,7 +37,7 @@
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
 	#include "WinFile.h"  // memory mapped file
 #elif defined(Rtt_LINUX_ENV)
-// 
+	const char Rtt::Authorization::kOfflineModeConfirmed[] = "OfflineModeConfirmed";
 #else 
 	#include <sys/fcntl.h>
 	#include <sys/mman.h>
@@ -304,6 +304,12 @@ GetHexBytes( char* dst, int dstLen, const unsigned char* dataBuffer, size_t len 
 	}
 
 	return result;
+}
+
+bool WebServicesSession::IsOfflineSession() const {
+	Rtt::String out;
+	fServices.GetPreference(Rtt::Authorization::kOfflineModeConfirmed, &out);
+	return !out.IsEmpty();
 }
 
 // This is one version of this interface, see below for another

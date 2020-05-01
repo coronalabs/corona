@@ -53,6 +53,7 @@ const char Authorization::kVersionKey[] = "Version";
 const char Authorization::kUsernameKey[] = "Username";
 
 const char Authorization::kRenewalReminderKey[] = "RenewalReminder";
+const char Authorization::kOfflineModeConfirmed[] = "OfflineModeConfirmed";
 
 Authorization::Authorization( const MPlatformServices& services, MAuthorizationDelegate& delegate )
 :	fServices( services ),
@@ -161,7 +162,9 @@ Authorization::Initialize(bool initiateLogin /* = false */) const
 	
 	if (!result)
 	{
-		if (initiateLogin)
+		Rtt::String out;
+		fServices.GetPreference(Rtt::Authorization::kOfflineModeConfirmed, &out);
+		if (initiateLogin && out.IsEmpty())
 		{
 			// Display a login window if the user does not have a ticket yet.
 			for (; !result && fDelegate.TicketNotInstalled(*this); result = InitializeTicket())
@@ -682,7 +685,7 @@ Authorization::VerifyTicketOnce() const
 
 	InitializeTicket();
 
-	if ( Rtt_VERIFY( fTicket ) )
+	if ( fTicket )
 	{
 		result = fTicket->IsAppAllowedToRun();
 	}

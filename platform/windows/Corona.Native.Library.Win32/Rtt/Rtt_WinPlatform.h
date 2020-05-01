@@ -78,9 +78,6 @@ class WinPlatform : public MPlatform
 		virtual bool OpenURL(const char* url) const;
 		virtual int CanOpenURL(const char* url) const;
 		virtual FontMetricsMap GetFontMetrics(const PlatformFont& font ) const;
-		virtual void HttpPost(const char* url, const char* key, const char* value) const;
-		virtual bool HttpDownload( const char* url, String& result, String& errorMesg, const std::map<std::string, std::string>& headers  ) const;
-		virtual bool HttpDownloadFile( const char* url, const char* filename, String& errorMesg, const std::map<std::string, std::string>& headers  ) const;
 		virtual PlatformEventSound * CreateEventSound(const ResourceHandle<lua_State> & handle, const char* filePath) const;
 		virtual void ReleaseEventSound(PlatformEventSound * soundID) const;
 		virtual void PlayEventSound(PlatformEventSound * soundID) const;

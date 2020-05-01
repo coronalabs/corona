@@ -275,6 +275,7 @@
 		C26005721D62A63400C542D0 /* _CoronaSplashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */; };
 		C2A6E5311AB0BEE500509FB2 /* widget_theme_ios7@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = C2A6E5301AB0BEE500509FB2 /* widget_theme_ios7@4x.png */; };
 		C2F911791CDC15F4004A5564 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4359164B1D5200CFE7B3 /* libluasocket.a */; };
+		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3711BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
@@ -2602,7 +2603,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export SF_TARGET_NAME=CoronaCards\n\n\"$PROJECT_DIR\"/bin-xcode/build_framework.sh";
+			shellScript = "export SF_TARGET_NAME=CoronaCards\n\n\"$PROJECT_DIR\"/bin-xcode/build_framework.sh\n";
 		};
 		A4EF76F31A352B43002D3BEF /* Copy Corona Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2721,6 +2722,7 @@
 				A4C318761A69D3D000F186DF /* CoronaSystemResourceManager.mm in Sources */,
 				A40D2F6818876D5200B4A354 /* CoronaViewPluginContext.mm in Sources */,
 				A48E9C01183F57B400F67CB3 /* Rtt_IPhoneDevice.mm in Sources */,
+				F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */,
 				070F391118CE209B00BC2BEE /* Rtt_DependencyUtilsApple.mm in Sources */,
 				070F391018CE208700BC2BEE /* Rtt_DependencyLoader.cpp in Sources */,
 			);

@@ -146,9 +146,6 @@ namespace Rtt
 		virtual PlatformBitmap* CreateBitmapMask(const char str[], const PlatformFont& font, Real w, Real h, 
 			const char alignment[], Real& baselineOffset) const override  { Rtt_ASSERT_MSG( 0, "Code should NOT be reached" ); return NULL; }
 		virtual FontMetricsMap GetFontMetrics(const PlatformFont& font) const override;
-		virtual bool HttpDownload(const char* url, String& result, String& errorMesg, const std::map<std::string, std::string>& headers) const override;
-		virtual bool HttpDownloadFile(const char* url, const char* filename, String& errorMesg, const std::map<std::string, std::string>& headers) const override;
-		bool HttpDownloadBuffer(const char* url, std::vector<char>& result, String& errorMesg, const std::map<std::string, std::string>& headers) const;
 		virtual void Suspend() const override { Rtt_ASSERT_MSG( 0, "Code should NOT be reached" ); }
 		virtual void Resume() const override { Rtt_ASSERT_MSG( 0, "Code should NOT be reached" ); }
 		virtual void GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Real &bottom, Rtt_Real &right) const override;

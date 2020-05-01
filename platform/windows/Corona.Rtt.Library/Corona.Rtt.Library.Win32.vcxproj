@@ -271,6 +271,8 @@
     <ClCompile Include="..\..\..\librtt\Rtt_RenderingStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Resource.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Runtime.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_HTTPClientCommon.cpp" />
+    <ClCompile Include="Rtt_HTTPClientWindows.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegate.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegatePlayer.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">..\..\..\external\luasocket\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -578,6 +580,7 @@
     <ClInclude Include="..\..\..\librtt\Rtt_RenderingStream.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Resource.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Runtime.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_HTTPClient.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegate.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegatePlayer.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Scheduler.h" />
@@ -629,6 +632,7 @@
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaLibrary.lua" />
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaPrototype.lua" />
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaProvider.lua" />
+    <LuaToCpp Include="..\..\resources\CoronaBuilderPluginCollector.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_add_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_average_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_colorBurn_gl.lua" />
@@ -806,32 +810,32 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -921,6 +925,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -937,6 +942,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

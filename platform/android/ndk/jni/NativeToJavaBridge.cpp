@@ -1014,37 +1014,6 @@ NativeToJavaBridge::LoadImage(
 }
 
 void 
-NativeToJavaBridge::HttpPost( const char* url, const char * key, const char* value )
-{
-	if ( !url || !key || !value )
-		return;
-		
-	NativeTrace trace( "NativeToJavaBridge::HttpPost" );
-
-	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
-	
-	if ( bridge.isValid() ) {
-		
-		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
-			"callHttpPost", "(Lcom/ansca/corona/CoronaRuntime;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
-		
-		if ( mid != NULL ) {
-
-			jstringParam urlJ( bridge.getEnv(), url );
-			jstringParam keyJ( bridge.getEnv(), key );
-			jstringParam valueJ( bridge.getEnv(), value );
-
-			if ( urlJ.isValid() && keyJ.isValid() && valueJ.isValid() )
-			{
-				bridge.getEnv()->CallStaticVoidMethod(
-						bridge.getClass(), mid, fCoronaRuntime, urlJ.getValue(), keyJ.getValue(), valueJ.getValue());
-				HandleJavaException();
-			}
-		}
-	}
-}
-
-void 
 NativeToJavaBridge::PlayVideo( uintptr_t id, const char * url, bool mediaControlsEnabled )
 {
 	if ( !url )

@@ -15,6 +15,7 @@
 #include "Rtt_CoronaBuilder.h"
 #include "Rtt_Event.h"
 #include "Rtt_Runtime.h"
+#include "Rtt_HTTPClient.h"
 
 #include <map>
 #include <string>
@@ -26,123 +27,6 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-//
-// local result = builder.fetch(url)
-//
-static int
-fetch( lua_State *L )
-{
-	Rtt_ASSERT( lua_islightuserdata( L, lua_upvalueindex( 1 ) ) );
-	CoronaBuilder *builder = (CoronaBuilder *)lua_touserdata( L, lua_upvalueindex( 1 ) );
-	const MPlatform& platform = builder->GetPlatform();
-	String result;
-	String errorMesg;
-	std::map<std::string, std::string> headers;
-	if ( lua_istable( L, 2 ) )
-	{
-		lua_pushnil(L);  /* first key */
-		while (lua_next(L, 2) != 0)
-		{
-			/* uses 'key' (at index -2) and 'value' (at index -1) */
-			bool isValidArg = lua_isstring( L, -1 );
-			if ( isValidArg )
-			{
-				std::string name =  lua_tostring( L, -2 );
-				std::string value =  lua_tostring( L, -1 );
-				headers.insert ( std::map<std::string, std::string>::value_type(name, value) );
-			}
-			lua_pop( L, 1 );
-		}
-
-	}
-
-
-	const char *url = NULL;
-
-	if ( lua_isstring( L, 1 ) )
-	{
-		url = lua_tostring( L, 1 );
-
-		if (! platform.HttpDownload(url, result, errorMesg, headers))
-		{
-			lua_pushnil( L );
-			lua_pushstring(L, errorMesg);
-		}
-		else
-		{
-			lua_pushstring( L, result );
-			lua_pushnil(L);
-		}
-	}
-	else
-	{
-		luaL_error( L, "ERROR: builder.fetch(url) requires a string as the first argument" );
-	}
-
-	return 2;
-}
-
-//
-// builder.download(url, filename, headers)
-//
-static int
-download( lua_State *L )
-{
-	Rtt_ASSERT( lua_islightuserdata( L, lua_upvalueindex( 1 ) ) );
-	CoronaBuilder *builder = (CoronaBuilder *)lua_touserdata( L, lua_upvalueindex( 1 ) );
-	const MPlatform& platform = builder->GetPlatform();
-	bool result = false;
-	const char *url = NULL;
-	const char *filename = NULL;
-	String errorMesg;
-	std::map<std::string, std::string> headers;
-
-	if (lua_isstring( L, 1 ) && lua_isstring( L, 2 ))
-	{
-		url = lua_tostring( L, 1 );
-		filename = lua_tostring( L, 2 );
-	}
-
-	if ( lua_istable( L, 3 ) )
-	{
-		lua_pushnil(L);  /* first key */
-		while (lua_next(L, 3) != 0)
-		{
-			/* uses 'key' (at index -2) and 'value' (at index -1) */
-			bool isValidArg = lua_isstring( L, -1 );
-			if ( isValidArg )
-			{
-				std::string name =  lua_tostring( L, -2 );
-				std::string value =  lua_tostring( L, -1 );
-				headers.insert ( std::pair<std::string, std::string>(name, value) );
-			}
-			lua_pop( L, 1 );
-		}
-
-	}
-
-	if (url != NULL && filename != NULL)
-	{
-		result = platform.HttpDownloadFile(url, filename, errorMesg, headers);
-
-		if (! result)
-		{
-			lua_pushboolean(L, false);
-			lua_pushstring(L, errorMesg);
-		}
-		else
-		{
-			lua_pushboolean(L, true);
-			lua_pushnil(L);
-		}
-	}
-	else
-	{
-		luaL_error( L, "ERROR: builder.download(url, filename) requires two string arguments" );
-	}
-
-	return 2;
-}
 
 #if 0
 static int
@@ -205,8 +89,8 @@ LuaLibBuilder::Open( lua_State *L )
 {
 	const luaL_Reg kVTable[] =
 	{
-		{ "fetch", fetch },
-		{ "download", download },
+		{ "fetch", &HTTPClient::fetch },
+		{ "download", &HTTPClient::download },
 #if 0
 		{ "getPreference", getPreference },
 		{ "setPreference", setPreference },

@@ -385,6 +385,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 #if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
 			result = system(gradleGo.c_str());
 #else // Windows
+#if !defined(Rtt_NO_GUI)
 			Interop::Ipc::CommandLine::SetOutputCaptureEnabled(true);
 			Interop::Ipc::CommandLine::SetHideWindowEnabled(true);
 			Interop::Ipc::CommandLineRunResult cmdResult = Interop::Ipc::CommandLine::RunShellCommandUntilExit(gradleGo.c_str());
@@ -394,6 +395,11 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 				std::string output = cmdResult.GetOutput();
 				Rtt_Log("%s", output.c_str());
 			}
+#else
+			gradleGo.insert(0, "\"");
+			gradleGo.append("\"");
+			result = system(gradleGo.c_str());
+#endif
 #endif
 		}
 		else if ( inputFile )
@@ -910,6 +916,7 @@ AndroidAppPackager::Prepackage( AppPackagerParams * params, const char * tmpDir 
 		
 #else // Windows
 
+#if !defined( Rtt_NO_GUI )
 		WinString cmdBufStr;
 		cmdBufStr.SetUTF8(cmdBuf);
 
@@ -920,20 +927,29 @@ AndroidAppPackager::Prepackage( AppPackagerParams * params, const char * tmpDir 
 
 		iresult = cmdResult.GetExitCode();
 
-#if !defined( Rtt_NO_GUI )
 		CSimulatorApp *pApp = ((CSimulatorApp *)AfxGetApp());
 		if (pApp!= NULL && pApp->IsStopBuildRequested())
 		{
 			// A request to stop the build was made while the Java was running
 			iresult = -1;
 		}
-#endif
 
 		if (debugBuildProcess > 1)
 		{
 			std::string output = cmdResult.GetOutput();
 			Rtt_Log("%s", output.c_str());
 		}
+#else
+		// due to windows bug whole thing must be quoted for some reason
+		int len = strlen(cmdBuf);
+		for (int i = len; i>0; i--) {
+			cmdBuf[i] = cmdBuf[i - 1];
+		}
+		cmdBuf[0] = '"';
+		cmdBuf[len + 1] = '"';
+		cmdBuf[len + 2] = 0;
+		iresult = system(cmdBuf);
+#endif
 
 #endif
 

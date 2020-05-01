@@ -3,7 +3,7 @@ import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.Parser
-import de.undercouch.gradle.tasks.download.DownloadAction
+import com.beust.klaxon.lookup
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.tools.ant.filters.StringInputStream
 
@@ -24,6 +24,7 @@ val coronaKeyAlias: String? by project
 val coronaKeyAliasPassword: String? by project
 val configureCoronaPlugins: String? by project
 val coronaBuild: String? by project
+val (dailyBuildYear, dailyBuildRevision) = coronaBuild?.split('.') ?: listOf(null, null)
 val coronaBuildData: String? by project
 val coronaExpansionFileName: String? by project
 val coronaCustomHome: String? by project
@@ -43,12 +44,14 @@ val nativeDir = if (windows) {
     val resourceDir = coronaResourcesDir?.let { file("$it/../Native/").absolutePath }?.takeIf { file(it).exists() }
     (resourceDir ?: System.getenv("CORONA_ROOT")).replace("\\", "/")
 } else {
-    val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native//").absolutePath }?.takeIf { file(it).exists() }
+    val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native/").absolutePath }?.takeIf { file(it).exists() }
     resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
 }
 val windowsPathHelper = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
 
 val coronaPlugins = file("$buildDir/corona-plugins")
+val luaCmd = "$nativeDir/Corona/$shortOsName/bin/lua"
+val isSimulatorBuild = coronaTmpDir != null
 
 fun checkCoronaNativeInstallation() {
     if (file("$nativeDir/Corona/android/resource/android-template.zip").exists())
@@ -78,67 +81,67 @@ val buildToolsDir = "$projectDir/buildTools".takeIf { file(it).exists() }
 val generatedPluginsOutput = "$buildDir/generated/corona_plugins"
 val generatedPluginAssetsDir = "$generatedPluginsOutput/assets"
 val generatedPluginNativeLibsDir = "$generatedPluginsOutput/native"
-val generatedControlPath = "$generatedPluginsOutput/control"
 val generatedBuildIdPath = "$generatedPluginsOutput/build"
 val generatedPluginMegaJar = "$generatedPluginsOutput/plugins.jar"
 val generatedMainIconsAndBannersDir = "$buildDir/generated/corona_icons"
 
-
-var buildSettings: JsonObject? = null
-var fakeBuildData: String? = null
-coronaTmpDir?.let { srcDir ->
-    file("$srcDir/build.properties").takeIf { it.exists() }?.let { f ->
-        buildSettings = Parser.default().parse(f.absolutePath) as? JsonObject
+val parsedBuildProperties: JsonObject = run {
+    coronaTmpDir?.let { srcDir ->
+        file("$srcDir/build.properties").takeIf { it.exists() }?.let { f ->
+            return@run Parser.default().parse(f.absolutePath) as JsonObject
+        }
     }
+
+    val buildSettingsFile = file("$coronaSrcDir/build.settings")
+    if (!buildSettingsFile.exists()) {
+        return@run JsonObject(mapOf("buildSettings" to JsonObject(), "packageName" to coronaAppPackage, "targetedAppStore" to coronaTargetStore))
+    }
+
+    val output = ByteArrayOutputStream()
+    val execResult = exec {
+        setWorkingDir("$nativeDir/Corona/$shortOsName/bin")
+        commandLine(luaCmd,
+                "-e",
+                "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path",
+                "-e",
+                """
+                        dofile('${buildSettingsFile.path.replace("\\", "\\\\")}')
+                        if type(settings) == 'table' then
+                            print(require('json').encode(settings))
+                        else
+                            print('{}')
+                        end
+                    """.trimIndent()
+        )
+        errorOutput = output
+        standardOutput = output
+        isIgnoreExitValue = true
+        if (windows) environment["PATH"] = windowsPathHelper
+    }
+    if (execResult.exitValue != 0) {
+        throw InvalidUserDataException("Build.settings file could not be parsed: ${output.toString().replace(luaCmd, "")}")
+    }
+    val parsedBuildSettingsFile = Parser.default().parse(StringBuilder(output.toString())) as? JsonObject
+    return@run JsonObject(mapOf("buildSettings" to parsedBuildSettingsFile, "packageName" to coronaAppPackage, "targetedAppStore" to coronaTargetStore))
 }
-parseBuildSettingsFile()
-val coronaMinSdkVersion = try {
-    buildSettings?.obj("buildSettings")?.obj("android")?.let {
-        try {
-            return@let it.string("minSdkVersion")?.toIntOrNull()
-        } catch (ignore: Throwable) {
-        }
-        try {
-            return@let it.int("minSdkVersion")
-        } catch (ignore: Throwable) {
-        }
-        null
-    }
-} catch (ignore: Throwable) {
-    null
-} ?: 15
 
-val coronaVersionName = try {
-    buildSettings?.obj("buildSettings")?.obj("android")?.let {
-        try {
-            return@let it.string("versionName")
-        } catch (ignore: Throwable) {
-        }
-        try {
-            return@let it.int("versionName")?.toString()
-        } catch (ignore: Throwable) {
-        }
-        null
-    }
-} catch (ignore: Throwable) {
-    null
-} ?: project.findProperty("coronaVersionName") as? String ?: "1.0"
+val coronaMinSdkVersion = parsedBuildProperties.lookup<Any?>("buildSettings.android.minSdkVersion").firstOrNull()?.toString()?.toIntOrNull()
+        ?: 15
 
-val coronaVersionCode: Int = try {
-    buildSettings?.obj("buildSettings")?.obj("android")?.let {
-        try {
-            return@let it.string("versionCode")?.toIntOrNull()
-        } catch (ignore: Throwable) {
-        }
-        try {
-            return@let it.int("versionCode")
-        } catch (ignore: Throwable) {
-        }
-        null
-    }
-} catch (ignore: Throwable) {
-    null
-} ?: (project.findProperty("coronaVersionCode") as? String)?.toIntOrNull() ?: 1
+val coronaBuilder = if (windows) {
+    "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
+} else {
+    "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
+}
+
+
+val coronaVersionName =
+        parsedBuildProperties.lookup<Any?>("buildSettings.android.versionName").firstOrNull()?.toString()
+                ?: project.findProperty("coronaVersionName") as? String ?: "1.0"
+
+val coronaVersionCode: Int =
+        parsedBuildProperties.lookup<Any?>("buildSettings.android.versionCode").firstOrNull()?.toString()?.toIntOrNull()
+                ?: (project.findProperty("coronaVersionCode") as? String)?.toIntOrNull() ?: 1
 
 val androidDestPluginPlatform = if (coronaTargetStore.equals("amazon", ignoreCase = true)) {
     "android-kindle"
@@ -155,8 +158,6 @@ val coronaAndroidPluginsCache = file(if (windows) {
 } else {
     "${System.getenv("HOME")}/Library/Application Support/Corona/build cache/$androidDestPluginPlatform"
 })
-val eTagFileName = "${coronaAndroidPluginsCache.parent}/CoronaETags.txt"
-
 
 val pluginDisabledMetadata = mutableSetOf<String>()
 val pluginDisabledDependencies = mutableSetOf<String>()
@@ -314,18 +315,13 @@ fun coronaAssetsCopySpec(spec: CopySpec) {
         file("$coronaTmpDir/excludesfile.properties").takeIf { it.exists() }?.readLines()?.forEach {
             exclude(it)
         }
-        if (coronaTmpDir == null) {
-            parseBuildSettingsFile()
-            try {
-                buildSettings?.obj("buildSettings")?.obj("excludeFiles")?.let {
-                    it.array<String>("all")?.forEach { excludeEntry ->
-                        exclude("**/$excludeEntry")
-                    }
-                    it.array<String>("android")?.forEach { excludeEntry ->
-                        exclude("**/$excludeEntry")
-                    }
-                }
-            } catch (ignore: Throwable) {
+        if (!isSimulatorBuild) {
+            // use build.settings properties only if this is not simulator build
+            parsedBuildProperties.lookup<JsonArray<String>>("buildSettings.excludeFiles.all").firstOrNull()?.forEach {
+                exclude("**/$it")
+            }
+            parsedBuildProperties.lookup<JsonArray<String>>("buildSettings.excludeFiles.android").firstOrNull()?.forEach {
+                exclude("**/$it")
             }
         }
         exclude("**/Icon\r")
@@ -347,11 +343,6 @@ android.applicationVariants.all {
     val compileLuaTask = tasks.create("compileLua${baseName.capitalize()}") {
         description = "If required, compiles Lua and archives it into resource.car"
         val luac = "$nativeDir/Corona/$shortOsName/bin/luac"
-        val coronaBuilder = if (windows) {
-            "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
-        } else {
-            "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
-        }
 
         val srcLuaFiles = fileTree(coronaSrcDir) {
             include("**/*.lua")
@@ -368,10 +359,10 @@ android.applicationVariants.all {
             val compiledDir = "$buildDir/intermediates/compiled_lua/$baseName"
             delete(compiledDir)
             mkdir(compiledDir)
-            val luaFiles = if (coronaTmpDir == null) {
-                srcLuaFiles + pluginLuaFiles
-            } else {
+            val luaFiles = if (isSimulatorBuild) {
                 pluginLuaFiles
+            } else {
+                srcLuaFiles + pluginLuaFiles
             }
             val outputsList = luaFiles.map {
                 val compiled = when {
@@ -397,7 +388,7 @@ android.applicationVariants.all {
                     commandLine(luac, *additionalArguments.toTypedArray(), "-o", "$compiledDir/$compiled", "--", it)
                 }
                 compiled
-            } + if (coronaTmpDir != null) {
+            } + if (isSimulatorBuild) {
                 fileTree(coronaTmpDir!!) {
                     include("*.lu")
                 }
@@ -407,7 +398,7 @@ android.applicationVariants.all {
             val buildId = file(generatedBuildIdPath)
                     .takeIf { it.exists() }?.let {
                         file(generatedBuildIdPath).readText().trim()
-                    } ?: "unknown"
+                    } ?: coronaBuild ?: "unknown"
             val metadataLuaStr = """
                 if not application or type( application ) ~= "table" then
                     application = {}
@@ -481,73 +472,7 @@ android.applicationVariants.all {
     android.sourceSets[name].assets.srcDirs(generatedAssetsDir)
 }
 
-
-fun readETagMap(): Map<String, String> {
-    return file(eTagFileName).takeIf { it.exists() }?.readLines()?.map { s ->
-        val (k, v) = s.split("\t")
-        k to v
-    }?.toMap() ?: mapOf()
-}
-
-fun downloadPluginsBasedOnBuilderOutput(builderOutput: ByteArrayOutputStream, eTagMap: Map<String, String>, newETagMap: MutableMap<String, String>): Int {
-    coronaAndroidPluginsCache.mkdirs()
-    mkdir(generatedPluginsOutput)
-    val builderOutputStr = builderOutput.toString()
-    builderOutputStr.lines()
-            .filter { it.startsWith("SPLASH\t") }
-            .map { it.removePrefix("SPLASH\t").trim() }
-            .lastOrNull()?.let {
-                file(generatedControlPath).writeText(it)
-            }
-    builderOutputStr.lines()
-            .filter { it.startsWith("BUILD\t") }
-            .map { it.removePrefix("BUILD\t").trim() }
-            .lastOrNull()?.let {
-                file(generatedBuildIdPath).writeText(it)
-            }
-    val pluginUrls = builderOutputStr
-            .lines()
-            .filter { it.startsWith("plugin\t") }
-            .map { it.trim().removePrefix("plugin\t").split("\t") }
-    pluginUrls.forEach { (plugin, url) ->
-        val eTagKey = "$androidDestPluginPlatform/$plugin"
-        val existingTag = eTagMap[eTagKey]
-        try {
-            val outputFile = with(DownloadAction(project)) {
-                src(url)
-                dest("$coronaAndroidPluginsCache/$plugin")
-                val outputFile = outputFiles.first()
-                if (existingTag != null && outputFile.exists()) {
-                    header("If-None-Match", existingTag)
-                }
-                responseInterceptor { response, _ ->
-                    val eTag = response.getFirstHeader("ETag")
-                    if (eTag != null) {
-                        newETagMap[eTagKey] = eTag.value
-                    }
-                }
-                execute()
-                outputFile
-            }
-            copy {
-                from(tarTree(outputFile))
-                into("$coronaPlugins/${outputFile.nameWithoutExtension}")
-            }
-        } catch (ex: Exception) {
-            if (ex.message?.equals("Not Found", ignoreCase = true) == true) {
-                logger.error("WARNING: plugin '${plugin.removeSuffix(".tgz")}' was not found for current platform. Consider disabling it with 'supportedPlatforms' field.")
-            } else {
-                logger.error("ERROR: There was a problem downloading plugin '${plugin.removeSuffix(".tgz")}'. Please, try again.")
-                throw ex
-            }
-        }
-    }
-    return pluginUrls.count()
-}
-
 fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
-
-    parseBuildSettingsFile()
 
     val luaVerbosityPlug = if (!logger.isLifecycleEnabled) {
         arrayOf("-e", "printError=print;print=function()end")
@@ -560,76 +485,40 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
     if (reDownloadPlugins) {
 
         delete(coronaPlugins)
+        file(coronaPlugins).mkdirs()
 
-        val coronaBuilder = if (windows) {
-            "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
-        } else {
-            "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
+        val buildDataStr = coronaBuildData?.let { file(it).readText() } ?: run {
+            val fakeBuildData = (parsedBuildProperties.obj("buildSettings") ?: JsonObject())
+            fakeBuildData["targetAppStore"] = coronaTargetStore
+            fakeBuildData["dailyBuildYear"] = dailyBuildYear
+            fakeBuildData["dailyBuildRevision"] = dailyBuildRevision
+            fakeBuildData["appName"] = coronaAppFileName ?: "Corona App"
+            fakeBuildData.toJsonString()
         }
-        val eTagMap = readETagMap()
-        val newETagMap = mutableMapOf<String, String>()
+        val buildParams = JsonObject(mapOf(
+                "appName" to coronaAppFileName,
+                "appPackage" to coronaAppPackage,
+                "build" to dailyBuildRevision,
+                "buildData" to buildDataStr,
+                "modernPlatform" to "android",
+                "platform" to "android",
+                "pluginPlatform" to androidDestPluginPlatform,
+                "destinationDirectory" to coronaPlugins.absolutePath
+        )).toJsonString()
 
-        run {
-            val buildPropsFile = file("$coronaTmpDir/build.properties")
-            val inputSettingsFile = if (buildPropsFile.exists()) {
-                buildPropsFile
-            } else {
-                file("$coronaSrcDir/build.settings")
-            }
-
-            val builderOutput = ByteArrayOutputStream()
-            val execResult = exec {
-                val buildData = coronaBuildData?.let { file(it).readText() } ?: fakeBuildData
-                ?: throw InvalidModelException("Unable to retrieve build.data: '$coronaBuildData', '${file(coronaBuildData
-                        ?: "null")}'")
-                commandLine(coronaBuilder, "plugins", "download", androidDestPluginPlatform, "--build", "$coronaBuild", inputSettingsFile, "--android-build", "--build-data")
-                if (windows) environment["PATH"] = windowsPathHelper
-                standardInput = StringInputStream(buildData)
-                standardOutput = builderOutput
-                isIgnoreExitValue = true
-            }
-            if (execResult.exitValue != 0) {
-                logger.error("Error while fetching plugins")
-                logger.error(builderOutput.toString())
-                execResult.rethrowFailure()
-                throw InvalidPluginException("Error while fetching plugins")
-            }
-            logger.lifecycle("Downloading plugins")
-            delete(generatedControlPath)
-            downloadPluginsBasedOnBuilderOutput(builderOutput, eTagMap, newETagMap)
+        val builderOutput = ByteArrayOutputStream()
+        val execResult = exec {
+            commandLine(coronaBuilder, "plugins", "download", "--android-offline-plugins")
+            if (windows) environment["PATH"] = windowsPathHelper
+            standardInput = StringInputStream(buildParams)
+            standardOutput = builderOutput
+            isIgnoreExitValue = true
         }
-
-        logger.lifecycle("Fetching plugin dependencies")
-        var didDownloadSomething: Boolean
-        do {
-            processPluginGradleScripts()
-            val pluginDirectoriesSet = file(coronaPlugins)
-                    .walk()
-                    .maxDepth(1)
-                    .filter { it.isDirectory && it != coronaPlugins }
-                    .map { it.relativeTo(coronaPlugins).path }
-                    .toSet()
-            val pluginDirectories = (pluginDirectoriesSet - pluginDisabledDependencies).toTypedArray()
-            val builderOutput = ByteArrayOutputStream()
-            val execResult = exec {
-                commandLine(coronaBuilder, "plugins", "download", androidDestPluginPlatform, "--build", "$coronaBuild", "--fetch-dependencies", coronaPlugins, *pluginDirectories)
-                if (windows) environment["PATH"] = windowsPathHelper
-                standardOutput = builderOutput
-                isIgnoreExitValue = true
-            }
-            if (execResult.exitValue != 0) {
-                logger.error("Error while fetching plugin dependencies")
-                logger.error(builderOutput.toString())
-                execResult.rethrowFailure()
-                throw InvalidPluginException("Error while fetching plugin dependencies")
-            }
-            didDownloadSomething = downloadPluginsBasedOnBuilderOutput(builderOutput, eTagMap, newETagMap) > 0
-        } while (didDownloadSomething)
-
-        if (newETagMap.count() > 0) {
-            val combinedETags = readETagMap() + newETagMap
-            file(eTagFileName).writeText(combinedETags.map { it.key + "\t" + it.value }.joinToString("\n"))
+        if (execResult.exitValue != 0) {
+            logger.error("Error while fetching plugins: $builderOutput")
+            throw InvalidPluginException("Error while fetching plugins: $builderOutput")
         }
+        logger.lifecycle("Downloading plugins")
     }
     processPluginGradleScripts()
 
@@ -708,7 +597,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         }.map { it.absolutePath }
         exec {
             if (windows) environment["PATH"] = windowsPathHelper
-            commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
+            commandLine(luaCmd
                     , "-e"
                     , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
                     , *luaVerbosityPlug
@@ -727,7 +616,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             buildPropsFile
         } else {
             val buildPropsOut = file("$buildDir/intermediates/corona.build.props")
-            buildPropsOut.writeText(buildSettings!!.toJsonString())
+            buildPropsOut.writeText(parsedBuildProperties.toJsonString())
             buildPropsOut
         }
 
@@ -735,7 +624,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         file(manifestGenDir).mkdirs()
         exec {
             if (windows) environment["PATH"] = windowsPathHelper
-            commandLine("$nativeDir/Corona/$shortOsName/bin/lua"
+            commandLine(luaCmd
                     , "-e"
                     , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
                     , *luaVerbosityPlug
@@ -832,46 +721,6 @@ tasks.register("processPluginsNoDownload") {
     }
 }
 
-tasks.register("parseBuildSettings") {
-    doLast {
-        parseBuildSettingsFile()
-    }
-}
-
-
-fun parseBuildSettingsFile() {
-    if (buildSettings != null) {
-        return
-    }
-    val buildSettingsFile = file("$coronaSrcDir/build.settings")
-    if (!buildSettingsFile.exists()) {
-        return
-    }
-
-    val output = ByteArrayOutputStream()
-    exec {
-        setWorkingDir("$nativeDir/Corona/$shortOsName/bin")
-        commandLine("$nativeDir/Corona/$shortOsName/bin/lua",
-                "-e",
-                "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path",
-                "-e",
-                """
-                        pcall( function() dofile('${buildSettingsFile.path.replace("\\", "\\\\")}') end )
-                        if type(settings) == 'table' then
-                            print(require('json').encode(settings))
-                        else
-                            print('{}')
-                        end
-                    """.trimIndent()
-        )
-        standardOutput = output
-        if (windows) environment["PATH"] = windowsPathHelper
-    }
-    fakeBuildData = output.toString()
-    val parsedBuildSettingsFile = Parser.default().parse(StringBuilder(fakeBuildData)) as? JsonObject
-    buildSettings = JsonObject(mapOf("buildSettings" to parsedBuildSettingsFile, "packageName" to coronaAppPackage, "targetedAppStore" to coronaTargetStore))
-}
-
 //</editor-fold>
 
 
@@ -940,7 +789,7 @@ tasks.register<Copy>("exportToNativeAppTemplate") {
         })
     }
     doLast {
-        println("Copied to ${file(templateDir).absolutePath}")
+        logger.lifecycle("Copied to ${file(templateDir).absolutePath}")
     }
 }
 
@@ -1149,16 +998,25 @@ tasks.create<Copy>("copySplashScreen") {
     copyCoronaIconFiles.dependsOn(this)
     dependsOn(cleanupIconsDir)
 
-    val control = file(generatedControlPath).takeIf { it.exists() }?.readText()?.trim()
-    if (control == null) {
-        from(projectDir) {
-            include("_corona_splash_screen.png")
+    val enableSplash: Boolean = parsedBuildProperties.lookup<Boolean?>("buildSettings.splashScreen.android.enable").firstOrNull()
+            ?: parsedBuildProperties.lookup<Boolean?>("buildSettings.splashScreen.enable").firstOrNull()
+            ?: true
+    val image: String? = parsedBuildProperties.lookup<String?>("buildSettings.splashScreen.android.image").firstOrNull()
+            ?: parsedBuildProperties.lookup<String?>("buildSettings.splashScreen.image").firstOrNull()
+
+    logger.info("Configured Splash Screen enable: $enableSplash, image: $image.")
+    if (enableSplash) {
+        if (image != null) {
+            from(coronaSrcDir) {
+                include(image)
+            }
+            if (inputs.sourceFiles.isEmpty) throw InvalidUserDataException("Custom Splash Screen file '$image' not found!")
+        } else {
+            from(projectDir) {
+                include("_corona_splash_screen.png")
+            }
+            if (inputs.sourceFiles.isEmpty) throw InvalidUserDataException("Splash screen was not disabled in build.settings but '$projectDir/_corona_splash_screen.png' was not found!")
         }
-    } else if (control != "nil") {
-        from(coronaSrcDir) {
-            include(control)
-        }
-        if (inputs.sourceFiles.isEmpty) throw InvalidUserDataException("Custom Splash Screen file '$control' not found!")
     }
 
     into("$generatedMainIconsAndBannersDir/drawable")

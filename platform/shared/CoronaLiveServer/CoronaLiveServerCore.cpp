@@ -29,8 +29,8 @@
 #include <codecvt>
 #include <io.h>
 #include <stdio.h>
-#pragma comment(lib, "libevent_core.lib")
-#pragma comment(lib, "libevent_extras.lib")
+#pragma comment(lib, "event_core.lib")
+#pragma comment(lib, "event_extra.lib")
 #define open _wopen
 #define close _close
 typedef struct _stat64 statS;
@@ -58,9 +58,11 @@ typedef struct stat statS;
 #define SHA_SERVER_SALT "C@!GEB@v2tLN_CG$e"
 
 #ifdef _WIN32
-#pragma comment(lib, "libevent_openssl.lib")
-#pragma comment(lib, "libeay32.lib")
-#pragma comment(lib, "ssleay32.lib")
+#pragma comment(lib, "event_openssl.lib")
+#pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "Crypt32.lib")
+#pragma comment(lib, "Ws2_32.lib")
 #endif
 
 #include <event2/bufferevent_ssl.h>
@@ -97,11 +99,11 @@ public:
 
 	SSLSetup(evhttp *httpd)
 	{
-		std::call_once(sOnceSSLInit, []{
+		/*std::call_once(sOnceSSLInit, []{
 			SSL_library_init();
 			SSL_load_error_strings();
 			OpenSSL_add_all_algorithms();
-		});
+		});*/
 
 		ctx = SSL_CTX_new(SSLv23_method());
 

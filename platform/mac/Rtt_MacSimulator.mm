@@ -174,7 +174,7 @@ MacSimulator::Initialize(
 
 	AppDelegate *delegate = (AppDelegate*)[[NSApplication sharedApplication] delegate];
 	const AuthorizationTicket *ticket = [delegate ticket];
-	const char *subscription = AuthorizationTicket::StringForSubscription( ticket->GetSubscription() );
+	const char *subscription = ticket?AuthorizationTicket::StringForSubscription( ticket->GetSubscription() ):"";
 	[fProperties setValue:[NSString stringWithExternalString:subscription] forKey:@"subscription"];
 	
 	// Store the simulated device's default font size.

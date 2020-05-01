@@ -265,27 +265,19 @@ BOOL CSimulatorApp::InitInstance()
 		if (m_outputViewerProcessPointer)
 		{
 			auto stdInHandle = m_outputViewerProcessPointer->GetStdInHandle();
-			if (stdInHandle)
-			{
-				// Redirect the C runtime's stdout/stderr to the above app's stdin pipe.
-				BOOL wasRedirected;
-				wasRedirected = ::SetStdHandle(STD_OUTPUT_HANDLE, stdInHandle);
-				wasRedirected = ::SetStdHandle(STD_ERROR_HANDLE, stdInHandle);
-				int fileDescriptor = _open_osfhandle((intptr_t)stdInHandle, _O_TEXT);
-				if (fileDescriptor)
-				{
-					FILE* filePointer = _wfdopen(fileDescriptor, L"wb");
-					if (filePointer)
-					{
-						setvbuf(filePointer, nullptr, _IONBF, 0);
-						*stdout = *filePointer;
-						*stderr = *filePointer;
-					}
-				}
-
-				// Redirect C++ output to the C runtime's stdout.
-				std::ios::sync_with_stdio();
-			}
+			int stdInFD = _open_osfhandle((intptr_t)stdInHandle, _O_TEXT);
+			FILE* stdInFILE = _fdopen(stdInFD, "w");
+			AllocConsole();
+			::SetStdHandle(STD_OUTPUT_HANDLE, stdInHandle);
+			::SetStdHandle(STD_ERROR_HANDLE, stdInHandle);
+			FILE* notused;
+			freopen_s(&notused, "CONOUT$", "w", stdout);
+			freopen_s(&notused, "CONOUT$", "w", stderr);
+			int res = _dup2(_fileno(stdInFILE), _fileno(stdout));
+			res = _dup2(_fileno(stdInFILE), _fileno(stderr));
+			std::ios::sync_with_stdio();
+			_close(stdInFD);
+			FreeConsole();
 		}
 	}
 
@@ -892,6 +884,12 @@ int CSimulatorApp::ExitInstance()
 		// Close the logging window gracefully via a WM_CLOSE message.
 		m_outputViewerProcessPointer->RequestCloseMainWindow();
 		m_outputViewerProcessPointer = nullptr;
+
+		AllocConsole();
+		FILE* notused;
+		freopen_s(&notused, "CONOUT$", "w", stdout);
+		freopen_s(&notused, "CONOUT$", "w", stderr);
+		FreeConsole();
 	}
 
 	// Destroy the progress dialog, if allocated.
@@ -1024,6 +1022,7 @@ BOOL CSimDocManager::DoPromptFileName(CString& fileName, UINT nIDSTitle, DWORD l
 }
 
 // Copied from docmgr.cpp because DoPromptFilename needs it.
+/*
 AFX_STATIC void AFXAPI _AfxAppendFilterSuffix(
 	CString& filter, OPENFILENAME& ofn, CDocTemplate* pTemplate, CString* pstrDefaultExt)
 {
@@ -1076,7 +1075,7 @@ AFX_STATIC void AFXAPI _AfxAppendFilterSuffix(
 		ofn.nMaxCustFilter++;
 	}
 }
-
+*/
 /////////////////////////////////////////////////////////////////////////////////////
 // CLuaFileDialog dialog - only allow selection of main.lua
 /////////////////////////////////////////////////////////////////////////////////////

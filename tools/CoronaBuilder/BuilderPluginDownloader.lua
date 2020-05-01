@@ -307,6 +307,7 @@ function fetchDependenciesForDirectories(root, deps, urlSuffix)
 	return 0
 end
 
+-- in offline build `user` is nil
 function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	if args[1] ~= 'download' then
 		print("ERROR: unknows subcommand to 'plugins' command: '" .. tostring(args[1]) .. "'. Only 'download' is currently supported." )
@@ -321,22 +322,22 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		if args[i] == '--force-load' then
 			table.remove(args, i)
 			forceLoad = true
-		elseif args[i] == '--android-build' then
+		elseif args[i] == '--android-build' then -- this switches into android build mode. Emits output instead of downloading anything
 			table.remove(args, i)
 			verbosity = 0
 			androidBuild = true
-		elseif args[i] == '--build-data' then
+		elseif args[i] == '--build-data' then -- build data contains info about additional plugins and metadata
 			table.remove(args, i)
 			buildData = json.decode(io.read('*all')) or {}
 			buildDataPluginEntry = buildData.plugins or {}
-		elseif args[i] == '--fetch-dependencies' then
+		elseif args[i] == '--fetch-dependencies' then -- scans directory for dependencies
 			table.remove(args, i)
 			verbosity = 0
 			fetchDependencies = true
-		elseif args[i] == '--always-query' then
+		elseif args[i] == '--always-query' then -- forces always to query for available plugins, for test purposes mostly
 			table.remove(args, i)
 			alwaysQuery = true
-		elseif args[i] == '--build' then
+		elseif args[i] == '--build' then --verrides buildYear and buildRevision
 			table.remove(args, i)
 			local build = args[i]
 			table.remove(args, i)
@@ -358,7 +359,8 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		table.remove(args, 1)
 		local root = args[1]
 		table.remove(args, 1)
-		return fetchDependenciesForDirectories(root, args, ('/%s.%s/%s/'):format(buildYear, buildRevision, platform))
+		local urlSuffix = ('/%s.%s/%s/'):format(buildYear, buildRevision, platform)
+		return fetchDependenciesForDirectories(root, args, urlSuffix)
 	end
 
 	if type(platform) ~= 'string' then
@@ -442,34 +444,37 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	end
 	local addedPluginsToDownload = {}
 	if #pluginsToDownload > 0 or alwaysQuery then
-		local authURL = serverBackend .. '/v1/plugins/show/' .. user
-
-		local authorisedPluginsText, msg = builder.fetch(authURL)
-
-		if not authorisedPluginsText then
-			print("ERROR: Unable to retrieve authorised plugins list (" .. msg .. ").")
-			return 1
-		end
-
-		local authPluginsJson = json.decode( authorisedPluginsText )
-		if not authPluginsJson then
-			print("ERROR: Unable to parse authorised plugins list.")
-			return 1
-		end
-
-		if authPluginsJson.status ~= 'success' then
-			print("ERROR: Retrieving authorised plugins was unsuccessful. Info: " .. authorisedPluginsText)
-			return 1
-		end
-
-		if not authPluginsJson.data then
-			print("ERROR: received empty data for authorised plugins.")
-			return 1
-		end
-
 		local authorisedPlugins = {}
-		for _, ap in pairs(authPluginsJson.data) do -- ap : authorisedPlugin
-			authorisedPlugins[ tostring(ap['plugin_name']) .. ' ' .. tostring(ap['plugin_developer'])] = ap['status']
+
+		if user then
+			local authURL = serverBackend .. '/v1/plugins/show/' .. user
+
+			local authorisedPluginsText, msg = builder.fetch(authURL)
+
+			if not authorisedPluginsText then
+				print("ERROR: Unable to retrieve authorised plugins list (" .. msg .. ").")
+				return 1
+			end
+
+			local authPluginsJson = json.decode( authorisedPluginsText )
+			if not authPluginsJson then
+				print("ERROR: Unable to parse authorised plugins list.")
+				return 1
+			end
+
+			if authPluginsJson.status ~= 'success' then
+				print("ERROR: Retrieving authorised plugins was unsuccessful. Info: " .. authorisedPluginsText)
+				return 1
+			end
+
+			if not authPluginsJson.data then
+				print("ERROR: received empty data for authorised plugins.")
+				return 1
+			end
+
+			for _, ap in pairs(authPluginsJson.data) do -- ap : authorisedPlugin
+				authorisedPlugins[ tostring(ap['plugin_name']) .. ' ' .. tostring(ap['plugin_developer'])] = ap['status']
+			end
 		end
 
 		local authErrors = false
@@ -581,13 +586,39 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	end
 
 	if androidBuild then
-		local downloadInfoText, msg = builder.fetch(serverBackend.. "/v1/buildid/native/" .. user)
-		if not downloadInfoText then
-			print("ERROR: unable to fetch build ID: ", msg )
-			return 1
+		if user then
+			local downloadInfoText, msg = builder.fetch(serverBackend.. "/v1/buildid/native/" .. user)
+			if not downloadInfoText then
+				print("ERROR: unable to fetch build ID: ", msg )
+				return 1
+			end
+			print("BUILD\t" .. downloadInfoText)
+		else
+			print("BUILD\tOffline")
 		end
-		print("BUILD\t" .. downloadInfoText)
 	end
 
+	return 0
+end
+
+
+function DownloadAndroidOfflinePlugins(args, user, buildYear, buildRevision)
+	local buildData = json.decode(io.read('*all'))
+	assert(buildData)
+	buildData.build = buildData.build or buildRevision
+	buildData.user = buildData.user or user
+	for i=1, #args do
+		local k,v = args[i]:match('(.+)=(.+)')
+		if k and v then
+			buildData[k] = v
+		end
+	end
+
+	local pluginCollector = require "CoronaBuilderPluginCollector"
+	local result = pluginCollector.collect(buildData)
+	if type(result) == 'string' then
+		print("ERROR: occured while collecting plugins for Android. ", result)
+        return 1
+	end
 	return 0
 end
