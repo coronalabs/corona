@@ -15,6 +15,7 @@ extern "C" {
 int luaopen_lfs (lua_State *L);
 int luaopen_socket_core (lua_State *L);
 int luaopen_mime_core(lua_State *L);
+int luaopen_lpeg (lua_State *L);
 }
 
 namespace Rtt {
@@ -24,6 +25,8 @@ int luaload_dkjson(lua_State *L);
 int luaload_BuilderPluginDownloader(lua_State *L);
 int luaload_CoronaPListSupport(lua_State *L);
 int luaload_CoronaBuilderPluginCollector(lua_State *L);
+int luaload_dkjson(lua_State* L);
+int luaload_json(lua_State* L);
 extern int luaload_luasocket_socket(lua_State *L);
 extern int luaload_luasocket_ftp(lua_State *L);
 extern int luaload_luasocket_headers(lua_State *L);
@@ -136,8 +139,13 @@ int HTTPClient::download( lua_State *L )
 	return 2;
 }
 
+
+
 void HTTPClient::registerFetcherModuleLoaders( lua_State *L )
 {
+	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
+	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
+	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
 	Lua::RegisterModuleLoader( L, "lfs", luaopen_lfs );
 	Lua::RegisterModuleLoader( L, "socket.core", luaopen_socket_core );
 	Lua::RegisterModuleLoader( L, "socket", Lua::Open< luaload_luasocket_socket > );
