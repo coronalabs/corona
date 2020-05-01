@@ -50,7 +50,9 @@
 
 namespace Rtt
 {
+#if defined( Rtt_AUTHORING_SIMULATOR )
 int luaload_CoronaBuilderPluginCollector(lua_State *L);
+#endif
 // ----------------------------------------------------------------------------
 
 // These iterations are reasonable default values. See http://www.box2d.org/forum/viewtopic.php?f=8&t=4396 for discussion.
