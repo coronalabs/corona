@@ -187,6 +187,8 @@
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_HTTPClientCommon.cpp" />
+    <ClCompile Include="..\Corona.Rtt.Library\Rtt_HTTPClientWindows.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.cpp" />
     <ClCompile Include="..\..\android\Rtt_AndroidAppPackager.cpp" />
     <ClCompile Include="..\..\shared\Rtt_LinuxAppPackager.cpp" />
@@ -299,6 +301,7 @@
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_HTTPClient.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.h" />
     <ClInclude Include="..\..\android\Rtt_AndroidAppPackager.h" />
     <ClInclude Include="..\..\shared\Rtt_LinuxAppPackager.h" />

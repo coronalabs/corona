@@ -17,6 +17,7 @@
 
 namespace Rtt
 {
+	int luaload_BuilderPluginDownloader(lua_State* L);
 
 DownloadPluginsMain::DownloadPluginsMain(lua_State *L)
 :	fL( L )
