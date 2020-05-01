@@ -15,7 +15,11 @@ local isWindows = SEP == '\\'
 
 local debugBuildProcess
 if isWindows then
-    debugBuildProcess = 0
+    if os.execute('reg QUERY "HKEY_CURRENT_USER\\Software\\Ansca Corona\\Corona Simulator\\Preferences"  /v debugBuildProcess 2>nul 1>nul') == 0 then
+        debugBuildProcess = 5
+    else
+        debugBuildProcess = 0
+    end
 else
     debugBuildProcess = os.execute("exit $(defaults read com.coronalabs.Corona_Simulator debugBuildProcess 2>/dev/null || echo 0)")
 end
