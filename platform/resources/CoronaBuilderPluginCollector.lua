@@ -10,15 +10,21 @@
 local json = require "json"
 local lfs = require "lfs"
 
-local debugBuildProcess = os.execute("exit $(defaults read com.coronalabs.Corona_Simulator debugBuildProcess 2>/dev/null || echo 0)")
+local SEP = package.config:sub(1,1)
+local isWindows = SEP == '\\'
+
+local debugBuildProcess
+if isWindows then
+    debugBuildProcess = 0
+else
+    debugBuildProcess = os.execute("exit $(defaults read com.coronalabs.Corona_Simulator debugBuildProcess 2>/dev/null || echo 0)")
+end
 function log(...)
     if debugBuildProcess > 1 then
         print(...)
     end
 end
 
-local SEP = package.config:sub(1,1)
-local isWindows = SEP == '\\'
 
 local function isDir(f)
     return lfs.attributes(f, 'mode') == 'directory'
@@ -37,12 +43,16 @@ end
 
 local function mkdirs(path)
     local c = ""
-    path:gsub('[^/]+', function(dir)
-        c = c .. '/' .. dir
+    path:gsub('[^/\\]+', function(dir)
+        if isWindows and c == '' then
+            c = dir
+        else
+            c = c .. SEP .. dir
+        end        
         if isDir(c) then
             -- do nothing, directory already exists
         else
-            assert(lfs.mkdir(c))
+            lfs.mkdir(c)
         end
     end)
 end
@@ -50,9 +60,12 @@ end
 local function exec(cmd)
     log('Running command', cmd)
     if debugBuildProcess < 1 then
-        cmd = cmd .. ' &> /dev/null'
+        if isWindows then
+        else
+            cmd = cmd .. ' &> /dev/null'
+        end
     end
-    assert(0 == os.execute(cmd))
+    return (0 == os.execute(cmd))
 end
 
 local function copyFile(src, dst)
@@ -128,7 +141,7 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
     mkdirs(destination)
     local file, err = params.download(downloadURL, destination .. '/data.tgz')
     if not file then
-        return "Solar2D Directory: unable to download " .. plugin .. '. Code: ' .. err .. 'Error message: ' .. file
+        return "Solar2D Directory: unable to download " .. plugin .. '. Code: ' .. err
     end
     return true
 end
@@ -405,7 +418,7 @@ local function CollectCoronaPlugins(params)
 
     params.pluginLocators = pluginLocators
     if not params.pluginStorage then
-        params.pluginStorage = os.getenv("HOME") .. '/CoronaPlugins'
+        params.pluginStorage = (os.getenv("HOME") or os.getenv("APPDATA")).. '/CoronaPlugins'
     end
     if not params.ignoreMissingMarker then
         params.ignoreMissingMarker = 'IgnoreMissing'
@@ -455,11 +468,21 @@ local function CollectCoronaPlugins(params)
             local pluginDestination = params.extractLocation or (dstDir .. '/' .. plugin)
             local ret
             if params.extractLocation then
-                ret = os.execute('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(params.extractLocation) )
+                if isWindows then
+                    local cmd = '""%CORONA_PATH%\\7za.exe" x ' .. quoteString(pluginArc) .. ' -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o' .. quoteString(params.extractLocation) .. ' 2> nul "'
+                    ret = exec(cmd)
+                else
+                    ret = exec('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(params.extractLocation) )
+                end                
             else
-                ret = os.execute('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(pluginDestination) .. ' metadata.lua')
+                if isWindows then
+                    local cmd = '""%CORONA_PATH%\\7za.exe" x ' .. quoteString(pluginArc) .. ' -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o' .. quoteString(pluginDestination) .. ' metadata.lua  2> nul "'
+                    ret = exec(cmd)
+                else
+                    ret = exec('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(pluginDestination) .. ' metadata.lua')
+                end  
             end
-            if 0 == ret then
+            if ret then
                 local toDownload = {}
                 local metadataFile = pluginDestination .. "/metadata.lua"
                 pcall( function()
