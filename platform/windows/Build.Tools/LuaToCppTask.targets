@@ -49,12 +49,14 @@
           Inputs="%(LuaToCpp.Identity)"
           Outputs="$(ProjectDir)Generated Files\%(LuaToCpp.Filename)_luaload.cpp;$(IntDir)%(LuaToCpp.Filename)_luaload.obj">
 		<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+			<!--
 			<CoronaCompileWithDebugSymbols>/debug</CoronaCompileWithDebugSymbols>
+			-->
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(PlatformToolset)'=='v110_wp80'">
 			<CoronaCompileToCso>/cso</CoronaCompileToCso>
 		</PropertyGroup>
-		<Exec Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Command="$(SolutionDir)Build.Tools\LuaToCppFile.bat &quot;$(SolutionDir)Bin\Lua&quot; &quot;$(ProjectDir)$(IntDir)&quot; &quot;%(LuaToCpp.FullPath)&quot; &quot;$(ProjectDir)Generated Files&quot; /functionName &quot;%(LuaToCpp.BaseFunctionName)&quot; /moduleName &quot;%(LuaToCpp.ModuleName)&quot; $(CoronaCompileWithDebugSymbols) $(CoronaCompileToCso)"/>
+		<Exec Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Command="$(SolutionDir)Build.Tools\LuaToCppFile.bat &quot;$(SolutionDir)Bin\Lua&quot; &quot;$(ProjectDir)$(IntDir)&quot; &quot;%(LuaToCpp.FullPath)&quot; &quot;$(ProjectDir)Generated Files&quot; /functionName &quot;%(LuaToCpp.BaseFunctionName)&quot; /moduleName &quot;%(LuaToCpp.ModuleName)&quot; /debug $(CoronaCompileToCso)"/>
 		<MakeDir Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Directories="$(IntDir)Generated Files"/>
 		<ItemGroup>
 			<ClCompile Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Include="$(ProjectDir)Generated Files\%(LuaToCpp.Filename)_luaload.cpp">
