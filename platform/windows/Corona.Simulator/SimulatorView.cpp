@@ -851,38 +851,6 @@ void CSimulatorView::OnBuildForAndroid()
 		SuspendResumeSimulationWithOverlay(true, false);
 	}
 
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	if (pTicket)
-	{
-		int previousUid = pTicket->GetUid();
-		if (!pAuth->Initialize(true))
-		{
-			// They cancelled their attempt to login so they can't build
-			static std::map<std::string, std::string> keyValues;
-			keyValues["target"] = "android";
-			keyValues["reason"] = "enter-password-failed";
-
-			GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-			return;
-		}
-
-		// Refresh the ticket in case we logged in
-		pTicket = GetWinProperties()->GetTicket();
-		if (pTicket != NULL && pTicket->IsPlaceholder())
-		{
-			// They aren't really logged in so they can't build
-			return;
-		}
-		if (pTicket->GetUid() != previousUid)
-		{
-			// Let analytics know that the UID has changed
-			GetWinProperties()->GetAnalytics()->BeginSession(pTicket->GetUid());
-		}
-	}
-
 	// Display the build window.
 	CBuildAndroidDlg dlg;
 	dlg.SetProject( GetDocument()->GetProject() );
@@ -906,35 +874,6 @@ void CSimulatorView::OnBuildForWeb()
 		SuspendResumeSimulationWithOverlay(true, false);
 	}
 
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
-	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "web";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
-	}
-
 	// Display the build window.
 	CBuildWebDlg dlg;
 	dlg.SetProject( GetDocument()->GetProject() );
@@ -956,35 +895,6 @@ void CSimulatorView::OnBuildForLinux()
 	{
 		buildSuspendedSimulator = true;
 		SuspendResumeSimulationWithOverlay(true, false);
-	}
-
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
-	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "linux";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
 	}
 
 	// Display the build window.
@@ -1026,40 +936,6 @@ void CSimulatorView::OnBuildForWin32()
 	{
 		wasAppRunning = true;
 		SuspendResumeSimulationWithOverlay(true, false);
-	}
-
-	// Force a login if we are not already logged in.
-	int previousUid = 0;
-	auto authorizationPointer = GetWinProperties()->GetAuth();
-	auto ticketPointer = GetWinProperties()->GetTicket();
-	if (ticketPointer)
-	{
-		previousUid = ticketPointer->GetUid();
-	}
-	bool isLoggedIn = authorizationPointer->Initialize(true);
-	if (!isLoggedIn)
-	{
-		// They cancelled their attempt to login, meaning that they can't build.
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "win32";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in.
-	ticketPointer = GetWinProperties()->GetTicket();
-	if (ticketPointer && ticketPointer->IsPlaceholder())
-	{
-		// They aren't really logged in. So, they can't build.
-		return;
-	}
-	if (ticketPointer && (ticketPointer->GetUid() != previousUid))
-	{
-		// Let analytics know that the UID has changed.
-		GetWinProperties()->GetAnalytics()->BeginSession(ticketPointer->GetUid());
 	}
 
 	// Display the build window.
