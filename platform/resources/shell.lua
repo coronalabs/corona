@@ -364,7 +364,7 @@ function PluginSync:addPluginToQueueIfRequired( required_plugin )
 
 	local pluginName = required_plugin.pluginName
 	local publisherId = required_plugin.publisherId
-	local key = publisherId .. '/' .. pluginName
+	local key = tostring(publisherId) .. '/' .. pluginName
 	required_plugin.clientCatalogKey = key
 
 	-- Find reasons to queue the plugin for download.
