@@ -1233,6 +1233,39 @@ SpriteObject::SetPlaying( bool newValue )
 	}
 }
 
+void
+SpriteObject::SetTimeScale( Real newValue ) {
+  // fStartTime = (U64)Rtt_RealDiv(Rtt_RealMul(fStartTime, fTimeScale), newValue);
+
+  SpriteObjectSequence *sequence = GetCurrentSequence();
+
+  if ( sequence )
+  {
+    if ( !IsPlaying() )
+    {
+      Real playTime = sequence->GetTimeForFrame(fCurrentFrame);
+      if ( ! Rtt_RealIsOne( newValue ) )
+      {
+        playTime = Rtt_RealDiv( playTime, newValue );
+      }
+      fPlayTime = Rtt_RealToInt( playTime );
+    }
+    else
+    {
+      U64 curTime = fPlayer.GetAnimationTime();
+      Real timeElapsed = curTime - fStartTime;
+      Real newTimeElapsed = Rtt_RealDiv(Rtt_RealMul(timeElapsed, fTimeScale), newValue);
+      if ( curTime >= Rtt_RealToInt(newTimeElapsed) ) {
+        fStartTime = curTime - Rtt_RealToInt(newTimeElapsed);
+      } else {
+        fStartTime = 0;
+      }
+    }
+  }
+
+  fTimeScale = newValue;
+}
+
 SpriteObjectSequence*
 SpriteObject::GetCurrentSequence() const
 {
