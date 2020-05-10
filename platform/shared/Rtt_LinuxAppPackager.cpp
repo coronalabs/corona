@@ -128,6 +128,14 @@ LinuxAppPackager::~LinuxAppPackager()
 
 int LinuxAppPackager::Build(AppPackagerParams* _params, WebServicesSession& session, const char* tmpDirBase)
 {
+	ReadBuildSettings(_params->GetSrcDir());
+	if (fNeverStripDebugInfo)
+	{
+		Rtt_LogException("Note: debug info is not being stripped from application (settings.build.neverStripDebugInfo = true)\n");
+
+		_params->SetStripDebug(false);
+	}
+
 	LinuxAppPackagerParams *params = (LinuxAppPackagerParams*) _params;
 	Rtt_ASSERT(params);
 
