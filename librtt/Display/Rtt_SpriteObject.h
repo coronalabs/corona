@@ -221,11 +221,11 @@ class SpriteObject : public RectObject
 
 	public:
 		Real GetTimeScale() const { return fTimeScale; }
-		void SetTimeScale( Real newValue ) { fTimeScale = newValue; }
+		void SetTimeScale( Real newValue );
 
 	protected:
-		bool IsProperty( PropertyMask mask ) const { return ( !! ( mask & fProperties ) ); } 
-		void SetProperty( PropertyMask mask, bool value ); 
+		bool IsProperty( PropertyMask mask ) const { return ( !! ( mask & fProperties ) ); }
+		void SetProperty( PropertyMask mask, bool value );
 
 	public:
 		bool IsPlaying() const;
