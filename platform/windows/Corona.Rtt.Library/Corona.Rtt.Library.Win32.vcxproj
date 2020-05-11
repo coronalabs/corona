@@ -282,7 +282,6 @@
     <ClCompile Include="..\..\..\librtt\Rtt_StrokeTesselatorStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_TesselatorStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Transform.cpp" />
-    <ClCompile Include="..\..\..\librtt\Rtt_Verifier.cpp" />
     <ClCompile Include="..\..\..\plugins\ads\shared\CoronaAdsLibrary.cpp" />
     <ClCompile Include="..\..\..\plugins\analytics\shared\CoronaAnalyticsLibrary.cpp" />
     <ClCompile Include="..\..\..\plugins\gameNetwork\shared\CoronaGameNetworkLibrary.cpp" />
@@ -589,8 +588,6 @@
     <ClInclude Include="..\..\..\librtt\Rtt_SurfaceInfo.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_TesselatorStream.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Transform.h" />
-    <ClInclude Include="..\..\..\librtt\Rtt_Verifier.h" />
-    <ClInclude Include="..\..\..\librtt\Rtt_VerifierData.h" />
     <ClInclude Include="..\..\..\plugins\ads\shared\CoronaAdsLibrary.h" />
     <ClInclude Include="..\..\..\plugins\analytics\shared\CoronaAnalyticsLibrary.h" />
     <ClInclude Include="..\..\..\plugins\gameNetwork\shared\CoronaGameNetworkLibrary.h" />

@@ -51,7 +51,6 @@ class MDeviceSimulatorServices
 		virtual int GetAdaptiveScreenWidthInPixels() const = 0;
 		virtual int GetAdaptiveScreenHeightInPixels() const = 0;
 		virtual const char* GetStatusBarImageFilePathFor(Rtt::MPlatform::StatusBarMode value) const = 0;
-		virtual const char* GetAuthorizationTicketString() const = 0;
 		virtual void RotateClockwise() = 0;
 		virtual void RotateCounterClockwise() = 0;
 		virtual void* ShowNativeAlert(

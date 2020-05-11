@@ -25,12 +25,6 @@ namespace Rtt
 
 
 // Authorization functions
-bool appAuthorizeInstance();
-bool appDeauthorize();
-int appLoginToServer(Rtt::WebServicesSession *pSession);
-
-// Build functions
-bool appAllowFullBuild(const Rtt::TargetDevice::Platform targetPlatform);
 CBuildResult appAndroidBuild(Interop::SimulatorRuntimeEnvironment *pSim,
                             const char *srcDir,
                             const char *applicationName, const char *versionName, const char *package,

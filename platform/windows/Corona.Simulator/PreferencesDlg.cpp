@@ -14,9 +14,7 @@
 #include "WinGlobalProperties.h"
 #include "WinString.h"
 #include "Core/Rtt_Build.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_WinPlatformServices.h"
-#include "Rtt_Authorization.h"
 
 IMPLEMENT_DYNAMIC(CPreferencesDlg, CDialog)
 
@@ -39,7 +37,6 @@ void CPreferencesDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 }
 BEGIN_MESSAGE_MAP(CPreferencesDlg, CDialog)
-	ON_BN_CLICKED(IDC_DEAUTHORIZE, &CPreferencesDlg::OnDeauthorize)
 	ON_WM_HELPINFO()
 	ON_WM_SYSCOMMAND()
 END_MESSAGE_MAP()
@@ -55,23 +52,7 @@ BOOL CPreferencesDlg::OnInitDialog()
 	
 	// Fetch application object.
     CSimulatorApp *pApp = (CSimulatorApp *)AfxGetApp();
-	
-	// Determine if the user's license is valid and has not expired.
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	bool isSubscriptionCurrent = pTicket ? pTicket->IsSubscriptionCurrent() : false;
-	
-#if 0
-	// Set up the analytics checkbox.
-	CButton *pAnalytics = (CButton *)GetDlgItem( IDC_ANALYTICS );
-	bool isAnalyticsEnabled = true;
-	if (isSubscriptionCurrent)
-	{
-		isAnalyticsEnabled = pApp->GetProfileInt(REGISTRY_SECTION, REGISTRY_ANALYTICS, REGISTRY_ANALYTICS_DEFAULT) ? true : false;
-	}
-	pAnalytics->EnableWindow(isSubscriptionCurrent ? TRUE : FALSE);
-	pAnalytics->SetCheck(isAnalyticsEnabled ? BST_CHECKED : BST_UNCHECKED);
-#endif
-
+		
 	CButton *pShowRuntimeErrors = (CButton *)GetDlgItem( IDC_SHOW_RUNTIME_ERRORS );
 	bool isShowingRuntimeErrors = true;
 	if (isShowingRuntimeErrors)
@@ -95,32 +76,7 @@ BOOL CPreferencesDlg::OnInitDialog()
     CButton *pNoWelcome = (CButton *)GetDlgItem( IDC_NOWELCOME );
 	bool bIsEnabled = pApp->IsHomeScreenEnabled();
 	pNoWelcome->SetCheck( bIsEnabled ? BST_UNCHECKED : BST_CHECKED );
-	
-	if (pTicket != NULL)
-	{
-		// Display the user's account name.
-		WinString stringConverter;
-		stringConverter.SetUTF8(pTicket->GetUsername());
-		CStatic *pLabel =(CStatic*)GetDlgItem( IDC_USER_ACCOUNT );
-		pLabel->SetWindowText(stringConverter.GetTCHAR());
 
-#if 0
-		// Display the user's subscription name.
-		stringConverter.SetUTF8(Rtt::AuthorizationTicket::DisplayStringForSubscription(pTicket->GetSubscription()));
-		pLabel =(CStatic*)GetDlgItem( IDC_SUBSCRIPTION );
-		pLabel->SetWindowText(stringConverter.GetTCHAR());
-#endif
-	}
-	else {
-		Rtt::String out;
-		GetWinProperties()->GetServices()->GetPreference(Rtt::Authorization::kOfflineModeConfirmed, &out);
-		if (!out.IsEmpty())
-		{
-			CStatic* pLabel = (CStatic*)GetDlgItem(IDC_USER_ACCOUNT);
-			pLabel->SetWindowText(_T("<Offline User>"));
-		}
-	}
-	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -189,31 +145,6 @@ void CPreferencesDlg::OnOK()
 		pApp->SetRelaunchSimStyle(RELAUNCH_SIM_ASK);
 
 	CDialog::OnOK();
-}
-
-// OnDeauthorize - ask user if they're sure, show progress window, connect to
-// server with deauthorize request, exit app if successful.
-void CPreferencesDlg::OnDeauthorize()
-{
-    CString msg;
-
-	// Ask if the user is sure about deauthorizing this machine.
-	msg.LoadString( IDS_DEAUTH_CONFIRM );
-	if (MessageBox( msg, NULL, MB_YESNO | MB_ICONQUESTION ) != IDYES)
-	{
-        return;
-	}
-
-	// Deauthorize this machien. This function display a progress window and message box if it succeeded/failed.
-    bool bDeauthorized =  appDeauthorize();
-
-	// If deauthorization was successful, then close this window and exit the application.
-    if (bDeauthorized)
-	{
-         // Close this window and exit the application.
-         OnCancel();
-		 AfxGetMainWnd()->SendMessage(WM_CLOSE);
-	}
 }
 
 #pragma endregion

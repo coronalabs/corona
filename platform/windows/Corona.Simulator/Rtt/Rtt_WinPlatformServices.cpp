@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 #include "Core\Rtt_Build.h"
-#include "Rtt_WinConnection.h"
 #include "Rtt_WinPlatform.h"
 #include "Rtt_WinPlatformServices.h"
 #include "WinGlobalProperties.h"
@@ -301,12 +300,6 @@ const MPlatform&
 WinPlatformServices::Platform() const
 {
 	return fPlatform;
-}
-
-PlatformConnection*
-WinPlatformServices::CreateConnection( const char* url ) const
-{
-	return Rtt_NEW( & fPlatform.GetAllocator(), WinConnection( * this, url ) );
 }
 
 void

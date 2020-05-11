@@ -11,11 +11,7 @@
 #include "WinGlobalProperties.h"
 #include "Core\Rtt_Build.h"
 #include "Interop\SimulatorRuntimeEnvironment.h"
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_WebServicesSession.h"
-#include "Rtt_WinAuthorizationDelegate.h"
 #include "Rtt_WinPlatform.h"
 #include "Rtt_WinPlatformServices.h"
 #include <string.h>
@@ -38,8 +34,6 @@ WinGlobalProperties::WinGlobalProperties()
 	m_sResourcesDir(nullptr),
 	m_pEnvironment(nullptr),
 	m_pServices(nullptr),
-	m_pAuthDelegate(nullptr),
-	m_pAuth(nullptr),
 	m_pAnalytics(nullptr)
 {
 	// Create a new runtime environment assigned the given window handle. (Used as a parent for native alert dialogs.)
@@ -61,8 +55,6 @@ WinGlobalProperties::WinGlobalProperties()
 
 	// Create authorization objects using the above runtime environment's platform.
 	m_pServices = new Rtt::WinPlatformServices(*platformPointer);
-	m_pAuthDelegate = new Rtt::WinAuthorizationDelegate();
-	m_pAuth = new Rtt::Authorization(*m_pServices, *m_pAuthDelegate);
 
 	// Create an analytics object for the given platform.
 	m_pAnalytics = new Rtt::SimulatorAnalytics(*platformPointer, m_pEnvironment->GetLuaPackageLoaderCallback());
@@ -89,16 +81,6 @@ WinGlobalProperties::~WinGlobalProperties()
 	{
 		delete m_pAnalytics;
 		m_pAnalytics = nullptr;
-	}
-	if (m_pAuth)
-	{
-		delete m_pAuth;
-		m_pAuth = nullptr;
-	}
-	if (m_pAuthDelegate)
-	{
-		delete m_pAuthDelegate;
-		m_pAuthDelegate = nullptr;
 	}
 	if (m_pServices)
 	{
@@ -165,15 +147,6 @@ Rtt::WinPlatform* WinGlobalProperties::GetPlatform()
 	if (m_pEnvironment)
 	{
 		return m_pEnvironment->GetPlatform();
-	}
-	return nullptr;
-}
-
-const Rtt::AuthorizationTicket *WinGlobalProperties::GetTicket()
-{
-	if (m_pAuth)
-	{
-		return m_pAuth->GetTicket();
 	}
 	return nullptr;
 }

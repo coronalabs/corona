@@ -1289,11 +1289,7 @@ void WinPlatform::GetPreference(Category category, Rtt::String * value) const
 			}
 			break;
 		case kSubscription:
-			deviceSimulatorServicesPointer = fEnvironment.GetDeviceSimulatorServices();
-			if (deviceSimulatorServicesPointer)
-			{
-				resultPointer = deviceSimulatorServicesPointer->GetAuthorizationTicketString();
-			}
+			resultPointer = "Solar2D";
 			break;
 		default:
 			resultPointer = nullptr;

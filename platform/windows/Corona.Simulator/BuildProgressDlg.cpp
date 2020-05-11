@@ -14,9 +14,6 @@
 #include "Core\Rtt_Build.h"
 #include "CoronaInterface.h"
 #include "CoronaProject.h"
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 #include "SimulatorView.h"
 #include "WinGlobalProperties.h"
 #include "WinString.h"
@@ -30,7 +27,7 @@ IMPLEMENT_DYNAMIC(CBuildProgressDlg, CDialog)
 /// Creates a new build progress window.
 CBuildProgressDlg::CBuildProgressDlg(CWnd* pParent /*=NULL*/)
  :	CDialog(CBuildProgressDlg::IDD, pParent),
-	fBuildResult(Rtt::WebServicesSession::kBuildError, CString((LPCSTR)IDS_BUILD_FAILED))
+	fBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED))
 {
 	fTargetedAppStorePointer = (Rtt::TargetAndroidAppStore*)&Rtt::TargetAndroidAppStore::kNone;
 }
@@ -219,7 +216,7 @@ void CBuildProgressDlg::BuildForAndroid()
 	// Do not continue if project settings were not provided.
 	if (!fProjectSettingsPointer || !fTargetedAppStorePointer)
 	{
-		fBuildResult = CBuildResult(Rtt::WebServicesSession::kBuildError, CString((LPCSTR)IDS_BUILD_FAILED));
+		fBuildResult = CBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED));
 		CDialog::OnOK();
 		return;
 	}
@@ -271,7 +268,7 @@ void CBuildProgressDlg::BuildForWeb()
 	// Do not continue if project settings were not provided.
 	if (!fProjectSettingsPointer)
 	{
-		fBuildResult = CBuildResult(Rtt::WebServicesSession::kBuildError, CString((LPCSTR)IDS_BUILD_FAILED));
+		fBuildResult = CBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED));
 		CDialog::OnOK();
 		return;
 	}
@@ -317,7 +314,7 @@ void CBuildProgressDlg::BuildForLinux()
 	// Do not continue if project settings were not provided.
 	if (!fProjectSettingsPointer)
 	{
-		fBuildResult = CBuildResult(Rtt::WebServicesSession::kBuildError, CString((LPCSTR)IDS_BUILD_FAILED));
+		fBuildResult = CBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED));
 		CDialog::OnOK();
 		return;
 	}
@@ -361,11 +358,6 @@ void CBuildProgressDlg::OnBnClickedStopBuild()
 	fStatusMessage.SetWindowText(L"Stopping build...");
 
 	pApp->SetStopBuildRequested(true);
-	Rtt::WebServicesSession *session = pApp->GetCurrentWebServicesSession();
-	if (session)
-	{
-		session->CloseConnection();
-	}
 }
 
 // OnDownloadProgressUpdate - 

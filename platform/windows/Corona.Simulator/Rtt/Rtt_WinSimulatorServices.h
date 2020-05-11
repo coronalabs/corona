@@ -65,14 +65,6 @@ class WinSimulatorServices : public MSimulatorServices
 		virtual void SetProjectResourceDirectory(const char *projectResourceDirectory);
 		virtual void SetWindowCloseListener(LuaResource* resource) const;
 		virtual void CloseWindow( ) const;
-
-		/// <summary>Fetches information about the subscription that this system has been authorized with.</summary>
-		/// <param name="expirationTimestamp">
-		///  Pointer to an integer that will receive a UNIX time value for when the subscription will expire.
-		/// </param>
-		/// <returns>Returns the name of the user's subscription such as Indie or Pro.</returns>
-		virtual const char* GetSubscription(S32 *expirationTimestamp) const;
-
 		virtual void GetRecentDocs(LightPtrArray<RecentProjectInfo> *list) const;
 		virtual const char* GetPreference(const char *prefName) const;
 		virtual void SetPreference(const char *prefName, const char *prefValue) const;

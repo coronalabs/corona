@@ -201,7 +201,6 @@ class SimulatorRuntimeEnvironment : public RuntimeEnvironment
 				virtual int GetAdaptiveScreenWidthInPixels() const override;
 				virtual int GetAdaptiveScreenHeightInPixels() const override;
 				virtual const char* GetStatusBarImageFilePathFor(Rtt::MPlatform::StatusBarMode value) const override;
-				virtual const char* GetAuthorizationTicketString() const override;
 				virtual void RotateClockwise() override;
 				virtual void RotateCounterClockwise() override;
 				virtual void* ShowNativeAlert(

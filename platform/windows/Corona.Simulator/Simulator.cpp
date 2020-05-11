@@ -30,7 +30,6 @@
 #include "Core/Rtt_Build.h"
 #include "Interop\Ipc\AsyncPipeReader.h"
 #include "Interop\Storage\RegistryStoredPreferences.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_Version.h"    // Rtt_STRING_BUILD and Rtt_STRING_BUILD_DATE
 #include "Rtt_SimulatorAnalytics.h"
 #include "Rtt_JavaHost.h"   // GetJavaHome()
@@ -623,7 +622,7 @@ CSimulatorApp::InitJavaPaths()
 BOOL CSimulatorApp::AuthorizeInstance()
 {
     // Check for saved ticket and log in if necessary
-	return appAuthorizeInstance() ? TRUE : FALSE;
+	return TRUE;
 }
 
 // ShowProgressWnd - show or hide the modeless progress window.

@@ -42,9 +42,6 @@ namespace Rtt
 {
 	class WinPlatform;
 	class WinPlatformServices;
-	class WinAuthorizationDelegate;
-	class Authorization;
-	class AuthorizationTicket;
 	class SimulatorAnalytics;
 };
 
@@ -71,23 +68,17 @@ class WinGlobalProperties
 		void SetResourcesDir(const char *sDir);
 		Rtt::WinPlatform *GetPlatform();
 		Rtt::WinPlatformServices *GetServices() { return m_pServices; }
-		Rtt::WinAuthorizationDelegate *GetAuthDelegate() { return m_pAuthDelegate; }
-		Rtt::Authorization *GetAuth() { return m_pAuth; }
 		Rtt::SimulatorAnalytics *GetAnalytics() { return m_pAnalytics; }
-		const Rtt::AuthorizationTicket *GetTicket();
 
 		static WinGlobalProperties* GetInstance();
 
 	private:
-		void DeleteAuthObjects();
 
 		char *m_sRegistryKey;
 		char *m_sRegistryProfile;
 		char *m_sResourcesDir;
 		Interop::SimulatorRuntimeEnvironment *m_pEnvironment;
 		Rtt::WinPlatformServices *m_pServices;
-		Rtt::WinAuthorizationDelegate *m_pAuthDelegate;
-		Rtt::Authorization *m_pAuth;
 		Rtt::SimulatorAnalytics *m_pAnalytics;
 };
 

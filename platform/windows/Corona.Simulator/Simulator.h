@@ -21,7 +21,6 @@
 #if USE_JNI
 #include "Rtt_JavaHost.h"
 #endif
-#include "Rtt_WebServicesSession.h"
 #include "afxcmn.h"
 #include "Interop\Ipc\Process.h"
 #include <memory>
@@ -142,8 +141,6 @@ public:
 	static bool InitJavaPaths();
 	static bool CheckJarPath( CString jarPath );
 	std::shared_ptr<Interop::Ipc::Process> GetOutputViewerProcessPointer() { return m_outputViewerProcessPointer; }
-	void SetCurrentWebServicesSession(Rtt::WebServicesSession *session) { m_pWebServicesSession = session; }
-	Rtt::WebServicesSession *GetCurrentWebServicesSession() { return m_pWebServicesSession; }
 
 protected:
 	BOOL AuthorizeInstance();
@@ -166,7 +163,6 @@ protected:
 #endif
 	std::shared_ptr<Interop::Ipc::Process> m_outputViewerProcessPointer;
 	BOOL m_isStopBuildRequested;
-	Rtt::WebServicesSession *m_pWebServicesSession;
 };
 
 extern CSimulatorApp theApp;
