@@ -479,7 +479,7 @@ CoronaBuilder::Build( const BuildParams& params ) const
 					{
 						char resultCode[1024] = {};
 						snprintf(resultCode, 1023, "Unknown build error (%d).", code);
-						msg.Set( appParams->GetBuildMessage() ?: resultCode );
+						msg.Set( appParams->GetBuildMessage() ? appParams->GetBuildMessage()  : resultCode );
 					}
 				}
 			}

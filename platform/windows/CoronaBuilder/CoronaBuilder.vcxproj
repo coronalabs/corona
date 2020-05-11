@@ -178,7 +178,6 @@
     <ClCompile Include="..\..\..\librtt\Rtt_Preference.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceCollection.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceValue.cpp" />
-    <ClCompile Include="..\..\..\tools\app_sign\Rtt_AppSign.cpp" />
     <ClCompile Include="..\..\..\tools\car\Rtt_Car.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerAndroidFactory.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerHTML5Factory.cpp" />
@@ -196,16 +195,12 @@
     <ClCompile Include="..\..\shared\AntHost.cpp" />
     <ClCompile Include="..\..\shared\ListKeyStore.cpp" />
     <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c" />
-    <ClCompile Include="..\..\shared\Rtt_Authorization.cpp" />
-    <ClCompile Include="..\..\shared\Rtt_AuthorizationTicket.cpp" />
     <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp" />
-    <ClCompile Include="..\..\shared\Rtt_PlatformConnection.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformDictionaryWrapper.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformObjectWrapper.cpp" />
     <ClCompile Include="..\..\shared\Rtt_TargetAndroidAppStore.cpp" />
     <ClCompile Include="..\..\shared\Rtt_TargetDevice.cpp" />
-    <ClCompile Include="..\..\shared\Rtt_WebServicesSession.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLine.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunner.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunResult.cpp" />
@@ -215,8 +210,6 @@
     <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp" />
     <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackager.cpp" />
     <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackagerParams.cpp" />
-    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinConnection.cpp" />
-    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinDictionaryWrapper.cpp" />
     <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinPlatformServices.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -224,7 +217,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerFactory.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_BuildParams.cpp" />
-    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_ConsoleAuthorizationDelegate.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilder.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
@@ -296,7 +288,6 @@
     <ClInclude Include="..\..\..\librtt\Rtt_Preference.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceValue.h" />
-    <ClInclude Include="..\..\..\tools\app_sign\Rtt_AppSign.h" />
     <ClInclude Include="..\..\..\tools\car\Rtt_Car.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.h" />
@@ -310,18 +301,13 @@
     <ClInclude Include="..\..\shared\jniUtils.h" />
     <ClInclude Include="..\..\shared\ListKeyStore.h" />
     <ClInclude Include="..\..\shared\Rtt_AndroidSupportTools.h" />
-    <ClInclude Include="..\..\shared\Rtt_Authorization.h" />
-    <ClInclude Include="..\..\shared\Rtt_AuthorizationTicket.h" />
     <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h" />
-    <ClInclude Include="..\..\shared\Rtt_MAuthorizationDelegate.h" />
     <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h" />
-    <ClInclude Include="..\..\shared\Rtt_PlatformConnection.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformDictionaryWrapper.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformObjectWrapper.h" />
     <ClInclude Include="..\..\shared\Rtt_TargetAndroidAppStore.h" />
     <ClInclude Include="..\..\shared\Rtt_TargetDevice.h" />
-    <ClInclude Include="..\..\shared\Rtt_WebServicesSession.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLine.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunner.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunResult.h" />
@@ -333,12 +319,9 @@
     <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackagerParams.h" />
     <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinPlatformServices.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinConnection.h" />
-    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinDictionaryWrapper.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerFactory.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_BuildParams.h" />
-    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_ConsoleAuthorizationDelegate.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilder.h" />
   </ItemGroup>
   <ItemGroup>
@@ -362,14 +345,6 @@
     </ProjectReference>
     <ProjectReference Include="..\Lua.Socket.Library\Lua.Socket.Library.Win32.vcxproj">
       <Project>{4be37d68-ba9e-464a-bc28-510a8b39cccd}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.vcxproj">
-      <Project>{0f11f26d-bcf6-4e63-a255-a577bbd1ae84}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
