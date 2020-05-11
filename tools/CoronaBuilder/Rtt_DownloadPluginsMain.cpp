@@ -25,7 +25,7 @@ DownloadPluginsMain::DownloadPluginsMain(lua_State *L)
 	Lua::DoBuffer( L, &luaload_BuilderPluginDownloader, NULL);
 }
 
-int DownloadPluginsMain::Run(int argc, const char* args[], const char* usr)
+int DownloadPluginsMain::Run(int argc, const char* args[])
 {
 	lua_State *L = fL;
 	
@@ -46,7 +46,7 @@ int DownloadPluginsMain::Run(int argc, const char* args[], const char* usr)
 		lua_pushstring(L, args[i]);
 		lua_rawseti(L, -2, i+1);
 	}
-	lua_pushstring(L, usr);
+	lua_pushnil(L);
 	lua_pushinteger(L, Rtt_BUILD_YEAR);
 	lua_pushinteger(L, Rtt_BUILD_REVISION);
 

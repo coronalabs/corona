@@ -12,8 +12,6 @@
 
 #include "Core/Rtt_String.h"
 
-#include "Rtt_AuthorizationTicket.h"
-
 // ----------------------------------------------------------------------------
 
 struct lua_State;
@@ -21,8 +19,6 @@ struct lua_State;
 namespace Rtt
 {
 
-class Authorization;
-class ConsoleAuthorizationDelegate;
 class MPlatform;
 class MPlatformServices;
 
@@ -39,8 +35,6 @@ class CoronaBuilder
 		typedef enum _Error
 		{
 			kNoError = 0,
-			kAuthorizationError,
-			kDeauthorizationError,
 			kBuildError,
 			
 			kNumErrors
@@ -72,20 +66,8 @@ class CoronaBuilder
 		const MPlatform& GetPlatform() { return fPlatform; }
 		const MPlatformServices& GetServices() { return fServices; }
 
-	private:
-		bool VerifyAuthorization( ConsoleAuthorizationDelegate& delegate ) const;
-
-		bool VerifyPermission(
-			ConsoleAuthorizationDelegate& delegate,
-			Permission perm ) const;
-
 	protected:
-		int Authorize( const char *usr, const char *pwd ) const;
-		int Reauthorize(  ) const;
-		void ReauthorizeAsync(  ) const;
-		int Deauthorize( const char *usr, const char *pwd ) const;
 		int Build( const BuildParams& params ) const;
-		void RecordSuccessfulAuthorization() const;
 		bool CanCustomizeSplashScreen(const char *platformName, const char *bundleID);
 
 	protected:
@@ -94,10 +76,8 @@ class CoronaBuilder
 	private:
 		const MPlatform& fPlatform;
 		const MPlatformServices& fServices;
-		mutable String fUsr;
 		String fCommandPath;
 		lua_State *fL;
-		bool fOfflineMode;
 };
 
 // ----------------------------------------------------------------------------

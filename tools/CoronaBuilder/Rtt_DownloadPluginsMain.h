@@ -34,7 +34,7 @@ class DownloadPluginsMain
 	public:
 		DownloadPluginsMain(lua_State* L);
 
-		int Run(int argc, const char* args[], const char* usr);
+		int Run(int argc, const char* args[]);
 
 	private:
 		lua_State *fL;
