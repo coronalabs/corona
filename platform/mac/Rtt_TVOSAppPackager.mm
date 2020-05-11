@@ -27,7 +27,6 @@ class Rtt::MacSimulatorServices
 #include "Rtt_LuaFrameworks.h"
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_DeviceBuildData.h"
 
@@ -110,9 +109,9 @@ TVOSAppPackager::~TVOSAppPackager()
 }
 
 int
-TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, const char* tmpDirBase )
+TVOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 {
-	int result = WebServicesSession::kBuildError;
+	int result = PlatformAppPackager::kBuildError;
 	const TVOSAppPackagerParams * macParams = (const TVOSAppPackagerParams *) params;
 	time_t startTime = time(NULL);
 
@@ -136,7 +135,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 			char* outputFile = (char*)malloc( outputFileLen );
 			sprintf( outputFile, "%s" LUA_DIRSEP "%s", tmpDir, kOutputName );
 
-			if(session.IsOfflineSession())
+			if(true)
 			{
 				if (fSimulatorServices != NULL)
 				{
@@ -236,30 +235,21 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 				
 				if ( Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
 				{
-					result = WebServicesSession::kNoError;
+					result = PlatformAppPackager::kNoError;
 					if ( lua_isstring( L, -1 ) )
 					{
 						Rtt_TRACE_SIM( ( "BUILD ERROR: %s\n", lua_tostring( L, -1 ) ) );
 						params->SetBuildMessage( lua_tostring( L, -1 ) );
-						result = WebServicesSession::kBuildError;
+						result = PlatformAppPackager::kBuildError;
 					}
 				}
 				else
 				{
-					result = WebServicesSession::kCriticalError;
+					result = PlatformAppPackager::kLocalPackagingError;
 				}
 				lua_pop( L, 1 );
 			}
-			else
-			{
-				if (fSimulatorServices != NULL)
-				{
-					fSimulatorServices->SetBuildMessage("Communicating with build server");
-				}
-				// Send params/input.zip via web api
-				result = session.BeginBuild( params, inputFile, outputFile );
-			}
-			if ( WebServicesSession::kNoError == result )
+			if ( PlatformAppPackager::kNoError == result )
 			{
 				lua_State *L = fVM;
 				lua_getglobal( L, "tvosPostPackage" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
@@ -347,13 +337,13 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 				if ( ! Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
 				{
 					// The packaging script failed to compile
-					result = WebServicesSession::kLocalPackagingError;
+					result = PlatformAppPackager::kLocalPackagingError;
 				}
 				else
 				{
 					if ( lua_isstring( L, -1 ) )
 					{
-						result = WebServicesSession::kLocalPackagingError;
+						result = PlatformAppPackager::kLocalPackagingError;
 						Rtt_TRACE_SIM( ( "BUILD ERROR: %s\n", lua_tostring( L, -1 ) ) );
                         params->SetBuildMessage( lua_tostring( L, -1 ) );
 					}
@@ -378,7 +368,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
                 if (params->GetBuildMessage() == NULL)
                 {
                     // If we don't already have a more precise error, use the XMLRPC layer's error message
-                    params->SetBuildMessage( session.ErrorMessage() );
+                    params->SetBuildMessage( "Unknown Error" );
                 }
             }
 
@@ -394,7 +384,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 exit_gracefully:
     
     // Indicate status in the console
-	if (WebServicesSession::kNoError == result)
+	if (PlatformAppPackager::kNoError == result)
 	{
 		Rtt_LogException("tvOS build succeeded in %ld seconds", (time(NULL) - startTime));
 	}
@@ -409,7 +399,7 @@ exit_gracefully:
 int
 TVOSAppPackager::SendToAppStore( TVOSAppPackagerParams *params, const char *itunesConnectUsername, const char *itunesConnectPassword )
 {
-    int result = WebServicesSession::kNoError;
+    int result = PlatformAppPackager::kNoError;
     lua_State *L = fVM;
     lua_getglobal( L, "TVOSSendToAppStore" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
 
@@ -478,13 +468,13 @@ TVOSAppPackager::SendToAppStore( TVOSAppPackagerParams *params, const char *itun
     if ( ! Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
     {
         // The packaging script failed
-        result = WebServicesSession::kLocalPackagingError;
+        result = PlatformAppPackager::kLocalPackagingError;
     }
     else
     {
         if ( lua_isstring( L, -1 ) )
         {
-            result = WebServicesSession::kLocalPackagingError;
+            result = PlatformAppPackager::kLocalPackagingError;
             Rtt_TRACE_SIM( ( "PACKAGING %s\n", lua_tostring( L, -1 ) ) );
             params->SetBuildMessage( lua_tostring( L, -1 ) );
         }

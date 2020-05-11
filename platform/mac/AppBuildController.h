@@ -10,9 +10,6 @@
 #import <Cocoa/Cocoa.h>
 #import "AppDelegate.h"
 
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_TargetDevice.h"
 #include "Rtt_MacSimulatorServices.h"
 
@@ -20,7 +17,6 @@
 
 namespace Rtt
 {
-	class Authorization;
 	class AppPackagerParams;
 	class MPlatformServices;
 	class PlatformAppPackager;
@@ -48,7 +44,6 @@ namespace Rtt
 		NSString *appName;
 
 	@private
-		const Rtt::Authorization *fAuthorizer;
 		NSString *appVersion;
 		NSString *dstPath;
 		NSString *projectPath;
@@ -71,11 +66,10 @@ namespace Rtt
 @property (nonatomic, readwrite, copy) NSString *progressSheetMessage;
 @property (nonatomic, readwrite, copy) NSString *platformName;
 @property (nonatomic, readwrite, copy) NSString *platformTitle;
-@property (nonatomic, readonly, getter=authorizer, assign) const Rtt::Authorization *fAuthorizer;
 
 + (NSString*)defaultDstDir;
 
-- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath authorizer:(const Rtt::Authorization *)authorizer;
+- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath;
 
 - (const char *)getAppVersion;
 - (const char *)dstDir;
@@ -129,7 +123,6 @@ namespace Rtt
 - (NSModalResponse) showModalSheet:(NSString *)title message:(NSString *)message buttonLabels:(NSArray *)buttonLabels alertStyle:(NSAlertStyle)alertStyle helpURL:(NSString *)helpURL parentWindow:(NSWindow *)parentWindow completionHandler:(void (^)(NSModalResponse returnCode))completionHandler;
 - (void) saveBuildPreferences;
 - (void) restoreBuildPreferences;
-- (BOOL) loginSession:(Rtt::WebServicesSession *)session services:(Rtt::MacPlatformServices *)services ticket:(const Rtt::AuthorizationTicket *)ticket message:(NSString **)message;
 
 - (void) startTailDeviceSyslog:(NSString *)deviceSyslogUtility appBundlePath:(NSString *)appBundlePath deviceID:(NSString *)deviceID;
 - (void) stopTailDeviceSyslog;

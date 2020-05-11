@@ -9,11 +9,6 @@
 
 #include "Core/Rtt_Build.h"
 
-
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
-
 #import "AppBuildController.h"
 
 #import "AppDelegate.h"
@@ -97,7 +92,6 @@ static NSString *kValueNotSet = @"not set";
 @synthesize progressSheetMessage;
 @synthesize platformName;
 @synthesize platformTitle;
-@synthesize fAuthorizer;
 
 + (NSString*)defaultDstDir
 {
@@ -114,8 +108,7 @@ static NSString *kValueNotSet = @"not set";
 }
 
 - (id)initWithWindowNibName:(NSString*)nibFile
-                projectPath:(NSString *)projPath
-                 authorizer:(const Rtt::Authorization *)authorizer;
+                projectPath:(NSString *)projPath;
 {
 	self = [super initWithWindowNibName:nibFile];
 
@@ -126,7 +119,6 @@ static NSString *kValueNotSet = @"not set";
 		fSigningIdentities = nil;
 
         self.projectPath = projPath;
-		fAuthorizer = authorizer;
 
 		fAnalytics = NULL;
 
@@ -571,23 +563,6 @@ static NSString *kValueNotSet = @"not set";
 
 - (void)didPresentError:(BOOL)didRecover contextInfo:(void*)contextInfo
 {
-	size_t code = (size_t)contextInfo;
-	const char *url = NULL;
-	switch( code )
-	{
-		// TODO: Get rid of this switch stmt.  The caller can pass the URL as the contextInfo!
-		case WebServicesSession::kExpiredError:
-			url = Authorization::kUrlRenew;
-			break;
-		case WebServicesSession::kAgreementError:
-			url = Authorization::kUrlAgreement;
-			break;
-	}
-
-	if ( url )
-	{
-		fAuthorizer->GetServices().Platform().OpenURL( url );
-	}
 }
 
 - (IBAction)build:(id)sender
@@ -1113,71 +1088,6 @@ static NSString *kValueNotSet = @"not set";
 
 }
 
-- (BOOL) loginSession:(WebServicesSession *)session services:(MacPlatformServices *)services ticket:(const AuthorizationTicket *)ticket message:(NSString **)message
-{
-	Rtt_ASSERT(session);
-    Rtt_ASSERT(services);
-
-    if(!ticket && services) {
-		return session && session->IsOfflineSession();
-	}
-
-    const char* usr = ticket->GetUsername();
-    Rtt::String encryptedPassword;
-
-    services->GetPreference( usr, &encryptedPassword );
-
-	Rtt_Log("Building %s app for %s with %s", [self.platformTitle UTF8String], usr, Rtt_STRING_BUILD);
-
-    int code = session->LoginWithEncryptedPassword( WebServicesSession::CoronaServerUrl(*services), usr, encryptedPassword.GetString() );
-
-    if ( code != WebServicesSession::kNoError )
-    {
-        NSString *errorMesg = nil;
-
-		if ( appDelegate.stopRequested )
-		{
-			errorMesg = @"Login stopped by request";
-		}
-		else
-		{
-			switch ( code )
-			{
-				case WebServicesSession::kApiKeyError:
-					errorMesg = @"This version is no longer supported for device builds.";
-					break;
-				case WebServicesSession::kTokenExpiredError:
-					errorMesg = @"Your computer's clock has the incorrect date and/or time. Please update with the correct time and try again.";
-					break;
-				case WebServicesSession::kUnverifiedUserError:
-					errorMesg = @"Your account has not been verified yet. A verification e-mail has been sent to you with further instructions on how to validate your account.";
-					break;
-				case WebServicesSession::kLoginError:
-					errorMesg = @"Could not login.  The mostly like cause of this is that the password was incorrect.  If you are getting this message during a build you should deauthorize this computer using the Preferences panel and restart the Corona Simulator.";
-					break;
-				default:
-					errorMesg = [NSString stringWithFormat:@"Unexpected connection error occurred: %d\n\nIf you are not connecting to the internet directly (for example, you connect via a proxy server) you might want to try a direct connection to see if that solves the problem.\n\nCheck the console for more information.", code];
-					break;
-			}
-		}
-
-        // fAnalytics->Log( "build-server-rejection", [[details objectForKey:NSLocalizedDescriptionKey] UTF8String]);
-		if (session->ErrorMessage() != NULL)
-		{
-			NSString *sessionError = [NSString stringWithExternalString:session->ErrorMessage()];
-
-			*message = [[NSString stringWithFormat:@"ERROR: Account: %s\n\n%@\n\n%@", usr, sessionError, errorMesg] retain];
-		}
-		else
-		{
-			*message = [[NSString stringWithFormat:@"%@\n\nAccount: %s", errorMesg, usr] retain];
-		}
-
-        return NO;
-    }
-    
-    return YES;
-}
 
 - (IBAction)stop:(id)sender
 {

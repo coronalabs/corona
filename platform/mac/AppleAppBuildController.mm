@@ -9,9 +9,6 @@
 
 #include "Core/Rtt_Build.h"
 
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_MacConsolePlatform.h"
 #include "Rtt_Assert.h"
 #include "Rtt_MacPlatform.h"
@@ -39,9 +36,9 @@ static double kMinXcodeVersion = 9.0;
 // ----------------------------------------------------------------------------
 @implementation AppleAppBuildController
 
-- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath authorizer:(const Rtt::Authorization *)authorizer;
+- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath;
 {
-	self = [super initWithWindowNibName:nibFile projectPath:projPath authorizer:authorizer];
+	self = [super initWithWindowNibName:nibFile projectPath:projPath];
 
 	if ( self )
 	{

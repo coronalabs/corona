@@ -52,9 +52,6 @@ class MSimulatorServices
 		virtual bool EditProject( const char *name ) const = 0;
 		virtual bool ShowProjectFiles( const char *name ) const = 0;
 		virtual bool ShowProjectSandbox( const char *name ) const = 0;
-
-	public:
-		virtual const char* GetSubscription( S32 *expirationTimestamp ) const = 0;
 };
 
 // ----------------------------------------------------------------------------

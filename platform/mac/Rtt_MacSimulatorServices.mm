@@ -15,7 +15,6 @@
 #import "CoronaWindowController.h"
 #import "NewProjectController.h"
 #import "SampleCodeLocator.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_TargetDevice.h"
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_SimulatorAnalytics.h"
@@ -290,21 +289,6 @@ MacSimulatorServices::SetProjectResourceDirectory(const char *projectResourceDir
         
         platform->SetProjectResourceDirectory(projectResourceDirectory);
     }
-}
-
-const char*
-MacSimulatorServices::GetSubscription( S32 *expirationTimestamp ) const
-{
-	const AuthorizationTicket *ticket = [fOwner ticket];
-
-	if ( ticket && expirationTimestamp )
-	{
-		* expirationTimestamp = ticket->GetExpiration();
-	}
-
-	AuthorizationTicket::Subscription sub =
-		( ticket ? ticket->GetSubscription() : AuthorizationTicket::kUnknownSubscription );
-	return AuthorizationTicket::StringForSubscription( sub );
 }
 
 void

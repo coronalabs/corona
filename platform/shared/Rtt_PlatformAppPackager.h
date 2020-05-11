@@ -25,7 +25,6 @@ class DeviceBuildData;
 class LuaContext;
 class MPlatform;
 class MPlatformServices;
-class WebServicesSession;
 #if !defined( Rtt_NO_GUI )
 	class Runtime;
 #endif
@@ -128,6 +127,12 @@ class AppPackagerParams
 class PlatformAppPackager
 {
 	public:
+	enum {
+		kNoError = 0,
+		kBuildError,
+		kLocalPackagingError,
+	};
+	public:
 		PlatformAppPackager( const MPlatformServices& services, TargetDevice::Platform targetPlatform );
 		virtual ~PlatformAppPackager();
 
@@ -139,7 +144,7 @@ class PlatformAppPackager
 		static bool rmdir( const char *sDir );
 
 		// TODO: caller should make dstDir a unique directory
-		virtual int Build( AppPackagerParams * params, WebServicesSession& session, const char* tmpDirBase );
+		virtual int Build( AppPackagerParams * params, const char* tmpDirBase );
 
 		virtual bool VerifyConfiguration() const;
 

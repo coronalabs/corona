@@ -19,7 +19,6 @@ namespace Rtt
 {
 
 class MPlatform;
-class PlatformConnection;
 
 // ----------------------------------------------------------------------------
 
@@ -27,11 +26,6 @@ class MPlatformServices
 {
 	public:
 		virtual const MPlatform& Platform() const = 0;
-
-	public:
-		// Factory methods
-		// NOTE: Allocations must occur using Rtt_NEW
-		virtual PlatformConnection* CreateConnection( const char* url ) const = 0;
 
 	public:
 		// Preferences methods

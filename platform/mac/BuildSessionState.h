@@ -16,17 +16,13 @@ namespace Rtt
 {
 	class MacConsolePlatform;
 	class MacPlatformServices;
-	class WebServicesSession;
 }
 
 @interface BuildSessionState : NSObject
 {
 	Rtt::MacConsolePlatform* macConsolePlatform;
 	Rtt::MacPlatformServices* macPlatformServices;
-	Rtt::WebServicesSession* webServicesSession;
 }
-
-@property(nonatomic, readonly, assign) Rtt::WebServicesSession* webServicesSession;
 
 @end
 

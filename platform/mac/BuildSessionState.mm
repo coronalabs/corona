@@ -13,11 +13,9 @@
 
 #include "Rtt_MacConsolePlatform.h"
 #include "Rtt_MacPlatform.h"
-#include "Rtt_WebServicesSession.h"
 
 @implementation BuildSessionState
 
-@synthesize webServicesSession;
 
 - (id) init
 {
@@ -26,14 +24,12 @@
 	{
 		macConsolePlatform = new Rtt::MacConsolePlatform;
 		macPlatformServices = new Rtt::MacPlatformServices( *macConsolePlatform );
-		webServicesSession = new Rtt::WebServicesSession( *macPlatformServices );
 	}
 	return self;
 }
 
 - (void) dealloc
 {
-	delete webServicesSession;
 	delete macPlatformServices;
 	delete macConsolePlatform;
 	

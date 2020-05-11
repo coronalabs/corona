@@ -9,9 +9,6 @@
 
 #include "Core/Rtt_Build.h"
 
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_MacConsolePlatform.h"
 #include "Rtt_Assert.h"
 #include "Rtt_MacPlatform.h"
@@ -73,9 +70,9 @@ static NSString *kValueNone = @"None";
 
 @implementation TVOSAppBuildController
 
-- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath authorizer:(const Rtt::Authorization *)authorizer;
+- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath;
 {
-	self = [super initWithWindowNibName:nibFile projectPath:projPath authorizer:authorizer];
+	self = [super initWithWindowNibName:nibFile projectPath:projPath];
 
 	if ( self )
 	{
@@ -337,31 +334,6 @@ static NSString *kValueNone = @"None";
 
     MacConsolePlatform platform;
     MacPlatformServices *services = new MacPlatformServices( platform );
-    WebServicesSession *session = new WebServicesSession( *services );
-    __block NSString *message = nil;
-    __block BOOL loginSuccessful = NO;
-
-    [self setProgressBarLabel:@"Authorizing build…"];
-
-    // Login to the authorization server
-    void (^login)() = ^()
-    {
-        loginSuccessful = [self loginSession:session services:services ticket:[appDelegate ticket] message:&message];
-        [message retain];  // ObjC - it is OK to call stuff on nil :)
-    };
-
-    [self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:NO withBlock:login];
-
-    [message autorelease];
-
-    if (! loginSuccessful)
-    {
-		[self logEvent:@"build-bungled" key:@"reason" value:@"cannot-login"];
-
-        [self showError:@"Cannot Login To Build Server" message:message helpURL:nil parentWindow:[self window]];
-
-        return;
-    }
 
     const char* name = [self.appName UTF8String];
     const char* versionname = NULL;
@@ -470,9 +442,6 @@ static NSString *kValueNone = @"None";
 
     params->SetStripDebug( isStripDebug );
 	params->SetLiveBuild(isLiveBuild);
-	if([appDelegate ticket]) {
-		params->SetCoronaUser([appDelegate ticket]->GetUsername());
-	}
 
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 /*
@@ -494,7 +463,7 @@ static NSString *kValueNone = @"None";
     [self setProgressBarLabel:@"Building for tvOS…"];
 
     // Do the actual build
-    __block size_t code = WebServicesSession::kNoError;
+    __block size_t code = PlatformAppPackager::kNoError;
 
 	[self logEvent:@"build"];
 
@@ -504,7 +473,7 @@ static NSString *kValueNone = @"None";
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         NSString* tmpDirBase = NSTemporaryDirectory();
-        code = packager->Build( params, *session, [tmpDirBase UTF8String] );
+        code = packager->Build( params, [tmpDirBase UTF8String] );
     };
 
     [self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:YES withBlock:performBuild];
@@ -516,7 +485,7 @@ static NSString *kValueNone = @"None";
 		Rtt_Log("WARNING: Build stopped by request");
 		[self showMessage:@"Build Stopped" message:@"Build stopped by request" helpURL:nil parentWindow:[self window]];
 	}
-	else if (code == WebServicesSession::kNoError)
+	else if (code == PlatformAppPackager::kNoError)
     {
 	[self logEvent:@"build-succeeded"];
 
@@ -1108,7 +1077,7 @@ static NSString *kValueNone = @"None";
 {
      [self setProgressBarLabel:@"Sending app to App Store…"];
 
-    __block size_t code = WebServicesSession::kNoError;
+    __block size_t code = PlatformAppPackager::kNoError;
 
 #ifdef USE_APPLICATION_LOADER
 	// All this does is make calls to Application Loader so unless we're using that, it can skipped
@@ -1120,7 +1089,7 @@ static NSString *kValueNone = @"None";
     [self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:NO withBlock:sendToAppStoreBlock];
 #endif // USE_APPLICATION_LOADER
 
-    if (code != WebServicesSession::kNoError)
+    if (code != PlatformAppPackager::kNoError)
     {
 		NSString *buildMsg = nil;
         NSString *title = nil;

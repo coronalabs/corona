@@ -35,11 +35,7 @@
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_RenderingStream.h"
 
-#include "Rtt_AppleConnection.h"
-#include "Rtt_Authorization.h" // used for string contants for preferences
-
 //#include "Rtt_AppleDictionaryWrapper.h"
-#include "Rtt_AppleConnection.h"
 #include "Rtt_MacSimulator.h"
 #include "Rtt_MacExitCallback.h"
 #import "AppDelegate.h"
@@ -2208,12 +2204,6 @@ const MPlatform&
 MacPlatformServices::Platform() const
 {
 	return fPlatform;
-}
-
-PlatformConnection*
-MacPlatformServices::CreateConnection( const char* url ) const
-{
-	return Rtt_NEW( & fPlatform.GetAllocator(), AppleConnection( * this, url ) );
 }
 
 #define Rtt_CORONA_DOMAIN "com.coronalabs.Corona_Simulator"

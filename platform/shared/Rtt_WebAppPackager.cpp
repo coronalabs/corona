@@ -16,7 +16,6 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformDevice.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_LuaLibSocket.h"
 #include "Rtt_Archive.h"
 #include "Rtt_FileSystem.h"
@@ -228,7 +227,7 @@ WebAppPackager::~WebAppPackager()
 {
 }
 
-int WebAppPackager::Build(AppPackagerParams* params, WebServicesSession& session, const char* tmpDirBase)
+int WebAppPackager::Build(AppPackagerParams* params, const char* tmpDirBase)
 {
 	// needs to disable -fno-rtti
 	//const WebAppPackagerParams *webParams = dynamic_cast<WebAppPackagerParams*>(params);
@@ -273,7 +272,7 @@ int WebAppPackager::Build(AppPackagerParams* params, WebServicesSession& session
 
 		Rtt_TRACE_SIM(("%s", tmpString.GetString()));
 		params->SetBuildMessage(tmpString.GetString());
-		return WebServicesSession::kLocalPackagingError;
+		return PlatformAppPackager::kLocalPackagingError;
 	}
 
 	lua_State *L = fVM;
@@ -343,18 +342,18 @@ int WebAppPackager::Build(AppPackagerParams* params, WebServicesSession& session
 	lua_pushcfunction(L, Rtt::CompileScriptsAndMakeCAR);
 	lua_setglobal(L, "compileScriptsAndMakeCAR");
 
-	int result = WebServicesSession::kNoError;
+	int result = PlatformAppPackager::kNoError;
 
 	// call webPostPackage( params )
 	if (!Rtt_VERIFY(0 == Lua::DoCall(L, 1, 1)))
 	{
-		result = WebServicesSession::kLocalPackagingError;
+		result = PlatformAppPackager::kLocalPackagingError;
 	}
 	else
 	{
 		if (lua_isstring(L, -1))
 		{
-			result = WebServicesSession::kLocalPackagingError;
+			result = PlatformAppPackager::kLocalPackagingError;
 			const char* msg = lua_tostring(L, -1);
 			Rtt_Log("%s\n", msg);
 		}

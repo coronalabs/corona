@@ -19,7 +19,6 @@ namespace Rtt
 
 class LuaContext;
 class MPlatformServices;
-class WebServicesSession;
 
 // ----------------------------------------------------------------------------
 
@@ -71,7 +70,7 @@ class LinuxAppPackager : public PlatformAppPackager
 		virtual ~LinuxAppPackager();
 
 	public:
-		virtual int Build( AppPackagerParams *params, WebServicesSession& session, const char *tmpDirBase);
+		virtual int Build( AppPackagerParams *params, const char *tmpDirBase);
 
 	private:
 };
