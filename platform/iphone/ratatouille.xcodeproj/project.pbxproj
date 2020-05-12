@@ -1758,9 +1758,7 @@
 				A43B955915C779EE003E6F9F /* Frameworks */,
 				A43B955A15C779EE003E6F9F /* Resources */,
 				A43B959815C780BF003E6F9F /* Script: Compile */,
-				A43B959915C78111003E6F9F /* Script: app_sign */,
 				A43B959A15C78138003E6F9F /* Script: build.settings to Info.plist */,
-				A43B959B15C78161003E6F9F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1780,9 +1778,7 @@
 				A469356D169D62DA00723568 /* Sources */,
 				A4693594169D62DA00723568 /* Frameworks */,
 				A46935BD169D62DA00723568 /* Script: CopyResources and resource.corona-archive */,
-				A46935BE169D62DA00723568 /* Script: app_sign */,
 				A46935BF169D62DA00723568 /* Script: build.settings to Info.plist */,
-				A46935C0169D62DA00723568 /* Script: touch main.mm */,
 			);
 			buildRules = (
 				A46935C1169D62DA00723568 /* PBXBuildRule */,
@@ -1822,9 +1818,7 @@
 				A4693679169D6A0700723568 /* Sources */,
 				A469367B169D6A0700723568 /* Frameworks */,
 				A469369E169D6A0700723568 /* Script: CopyResources and resource.corona-archive */,
-				A469369F169D6A0700723568 /* Script: app_sign */,
 				A46936A0169D6A0700723568 /* Script: build.settings to Info.plist */,
-				A46936A1169D6A0700723568 /* ShellScript */,
 			);
 			buildRules = (
 				A46936A2169D6A0700723568 /* PBXBuildRule */,
@@ -1948,9 +1942,7 @@
 				A48E9B98183EEC8600F67CB3 /* Frameworks */,
 				A48E9B99183EEC8600F67CB3 /* Resources */,
 				A44F22B6183FFB2700AB1835 /* Script: Compile */,
-				A44F22B7183FFEAF00AB1835 /* Script: app_sign */,
 				A44F22B8183FFF6D00AB1835 /* Script: build.settings to Info.plist */,
-				A44F22B9183FFFA600AB1835 /* ShellScript */,
 				A43E5D3D185EE4CE0055BC21 /* Copy Corona Project Files */,
 			);
 			buildRules = (
@@ -2310,21 +2302,6 @@
 			shellScript = "${PROJECT_DIR}/../../bin/xcode/build_resource_car.sh";
 			showEnvVarsInLog = 0;
 		};
-		A43B959915C78111003E6F9F /* Script: app_sign */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Script: app_sign";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "CORONA_ROOT=\"$HOME/Library/Application Support/Corona/Native\"\n\n\"$CORONA_ROOT\"/Corona/mac/bin/CertifyBuild.sh\n\nif [ $? -ne 0 ]\nthen\n  echo \"Exiting due to errors (above)\"\n  exit -1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
 		A43B959A15C78138003E6F9F /* Script: build.settings to Info.plist */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2338,20 +2315,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\nTOOLSDIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho Running \"$TOOLSDIR\"/lua \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$TOOLSDIR\"/lua \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A43B959B15C78161003E6F9F /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Ensures that next attempt to build actually rebuilds the executable so it can be (re)app_sign(ed)\necho \"Updating modification time of $PROJECT_DIR/main.m to trigger relink of $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\necho \"We need to do this b/c app_sign can only sign an unsigned executable.\"\ntouch \"$PROJECT_DIR/enterprise/TestApp/TestAppMain.mm\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A43E5D3D185EE4CE0055BC21 /* Copy Corona Project Files */ = {
@@ -2399,21 +2362,6 @@
 			shellScript = "## \"$PROJECT_DIR\"/bin-xcode/compile_car.sh";
 			showEnvVarsInLog = 0;
 		};
-		A44F22B7183FFEAF00AB1835 /* Script: app_sign */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Script: app_sign";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "## \"$PROJECT_DIR\"/bin-xcode/app_sign.sh";
-			showEnvVarsInLog = 0;
-		};
 		A44F22B8183FFF6D00AB1835 /* Script: build.settings to Info.plist */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2427,20 +2375,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "## \"$PROJECT_DIR\"/bin-xcode/convert_metadata.sh";
-			showEnvVarsInLog = 0;
-		};
-		A44F22B9183FFFA600AB1835 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Ensures that next attempt to build actually rebuilds the executable so it can be (re)app_sign(ed)\n\n## echo \"Updating modification time of $PROJECT_DIR/main.mm to trigger relink of $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\n## echo \"We need to do this b/c app_sign can only sign an unsigned executable.\"\n## touch \"$PROJECT_DIR/CoronaCards/Test/main.mm\"";
 			showEnvVarsInLog = 0;
 		};
 		A45C4C61186AA3EA00FE59C2 /* Copy to /Users/Shared/CoronaLabs/Frameworks */ = {
@@ -2473,21 +2407,6 @@
 			shellScript = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUAC=\"$TOOLCHAIN_DIR/luac\"\nCAR=\"$TOOLCHAIN_DIR/car\"\n\n# If a folder called assets2 exists, use that instead of assets because assets2 wasn't put accidentally under hg revision control.\necho \"$PROJECT_DIR\"/../test/assets2/main.lua \nif [ -f \"$PROJECT_DIR\"/../test/assets2/main.lua ]; then\n    echo \"$CONFIGURATION: Building resource.corona-archive\"\n\n\t$TOOLCHAIN_DIR/CopyResources.sh $CONFIGURATION \"$PROJECT_DIR\"/../test/assets2 \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\" \"$LUA_DIR\"\n\n    echo \"EXECUTABLE_FOLDER_PATH $EXECUTABLE_FOLDER_PATH\"\n\n    CONFIG_META=\"$BUILT_PRODUCTS_DIR/config.metadata.lua\"\n    PROJECT_NAME=`basename \"$PROJECT_DIR\"`\necho \"Creating $CONFIG_META...\"\ncat <<EOF > \"$CONFIG_META\"\n-- Ensure existence of \"application\" table\nif not application or type( application ) ~= \"table\" then\n    application = {}\nend\n\napplication.metadata = {\n    appName = \"$PROJECT_NAME\",\n    appVersion = \"1.0\",\n    appPackageId = \"com.anscamobile.$PROJECT_NAME\",\n    appId = \"0123456789\",\n    userId = \"345\", -- drupal user id\n    subscription = \"pro\", -- either \"trial\", \"pro\", \"indie-ios\", \"indie-android\"\n    mode = \"developer\", -- either \"developer\" or nil (where nil means distribution/store)\n    build = \"42\",\n}\n\n-- application.launchPad = false -- not set is the same as true\n\nEOF\n\n\techo \"********* user($USER_ID) sub($SUB_TYPE) mode($MODE_TYPE)\"\n\tCONFIG_REQUIRE=\"$PROJECT_DIR\"/../resources/config_require.lua\n\n\t# Write out new config.lu into input dir\n\t# \n\t# Our library restriction code relies on metadata and hijacking of 'require'\n\t# This code is implemented by these 2 blocks: (\"$CONFIG_META\" \"$CONFIG_REQUIRE\").\n\t# \n\t# IMPORTANT: We must _prepend_ this library restriction code at the BEGINNING!\n\t# That is, it must execute BEFORE the original config.lua ($CONFIG_SRC).\n\t# If we put it after the original config.lua, then the developer could bypass\n\t# our restriction code via a 'return' at the end of the original config.lua.\n\t#\n\t# NOTE: Historically, we just appended the original with \"$CONFIG_META\". We\n\t# continue to append $CONFIG_META at the end even though we also prepend at the\n\t# beginning. This is because in the pre-library-restriction world, we always\n\t# appended this, so to avoid any unforseen backward compatibility issues, we \n\t# continue to append it.\n\t# \n\n    # Concatenate config.metadata.lua into config.lu overwriting original config.lu\n    CONFIG_DST=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/config.lu\"\n    CONFIG_SRC=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/config.orig.lu\"\n    if [ ! -e \"$CONFIG_DST\" ];\n    then\n        touch \"$CONFIG_SRC\"\n    else\n        mv \"$CONFIG_DST\" \"$CONFIG_SRC\"\n    fi\n   \n\tif [ -e \"$CONFIG_REQUIRE\" ]\n\tthen\n\t\t# Enforce library restriction\n\t\techo \"********** Enforce Library Restriction *******\"\n        \"$LUAC\" -s -o \"$CONFIG_DST\" \"$CONFIG_META\" \"$CONFIG_REQUIRE\" \"$CONFIG_SRC\" \"$CONFIG_META\"\n\telse\n\t\t# Backwards compatibility for pre-Colossus (pre-Free) era\n\t\techo \"********** Backwards compatibility  *******\"\n        \"$LUAC\" -s -o \"$CONFIG_DST\" \"$CONFIG_SRC\" \"$CONFIG_META\"\n\tfi\n\n    rm \"$CONFIG_SRC\"\n    rm \"$CONFIG_META\"\n\n    # Create resource.corona-archive from *.lu\n\techo Archiving \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/*.lu\" into \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\"\n\t\"$CAR\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"*.lu\n\n\techo Removing: \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/*.lu\"\n\trm -f \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"*.lu\nelse\n\techo \"Skipping creation of resource.corona-archive for template builds\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		A46935BE169D62DA00723568 /* Script: app_sign */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Script: app_sign";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "TOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\nif [ $SUPPRESS_APP_SIGN ]\nthen\n\techo \"Skipping app_sign for template builds for $CONFIGURATION\"\nelse\n\techo \"Running app_sign for $CONFIGURATION\"\n\n\t\"$TOOLCHAIN_DIR/app_sign\" sign \"$PROJECT_DIR/../resources/developerkey.cert\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\" little\n\n\t# If more than one architecture, repeat app_sign for each *additional* architecture (hence $count > 1)\n\tcount=`echo $ARCHS | wc -w | tr -d ' '`\n\twhile (( $count > 1 ))\n\tdo\n\t\t\"$TOOLCHAIN_DIR/app_sign\" sign \"$PROJECT_DIR/../resources/developerkey.cert\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\" little\n\t\t((count--))\n\tdone\n\n\tcode=$?\n\tif [ \"$code\" -ne \"0\" ]\n\tthen\n\t\techo \"*** app_sign cannot resign $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH. Please remove and then build. ***\"\n\t\texit $code \n\tfi\nfi";
-			showEnvVarsInLog = 0;
-		};
 		A46935BF169D62DA00723568 /* Script: build.settings to Info.plist */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2501,21 +2420,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "TOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUA=\"$TOOLCHAIN_DIR/lua\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A46935C0169D62DA00723568 /* Script: touch main.mm */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Script: touch main.mm";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Ensures that next attempt to build actually rebuilds the executable so it can be (re)app_sign(ed)\necho \"Updating modification time of $PROJECT_DIR/main.m to trigger relink of $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\necho \"We need to do this b/c app_sign can only sign an unsigned executable.\"\ntouch \"$PROJECT_DIR/libtemplate/main.mm\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A469369E169D6A0700723568 /* Script: CopyResources and resource.corona-archive */ = {
@@ -2533,21 +2437,6 @@
 			shellScript = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n# If a folder called assets2 exists, use that instead of assets because assets2 wasn't put accidentally under hg revision control.\necho \"$PROJECT_DIR\"/../test/assets2/main.lua \nif [ -f \"$PROJECT_DIR\"/../test/assets2/main.lua ]; then\n    echo \"$CONFIGURATION: Building resource.corona-archive\"\n\n\t$TOOLCHAIN_DIR/CopyResources.sh $CONFIGURATION \"$PROJECT_DIR\"/../test/assets2 \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\" \"$BUILT_PRODUCTS_DIR\"\n\n    echo \"EXECUTABLE_FOLDER_PATH $EXECUTABLE_FOLDER_PATH\"\n\n    CONFIG_META=\"$BUILT_PRODUCTS_DIR/config.metadata.lua\"\n    PROJECT_NAME=`basename \"$PROJECT_DIR\"`\necho \"Creating $CONFIG_META...\"\ncat <<EOF > \"$CONFIG_META\"\n-- Ensure existence of \"application\" table\nif not application or type( application ) ~= \"table\" then\n    application = {}\nend\n\napplication.metadata = {\n    appName = \"$PROJECT_NAME\",\n    appVersion = \"1.0\",\n    appPackageId = \"com.anscamobile.$PROJECT_NAME\",\n    appId = \"0123456789\",\n    userId = \"345\", -- drupal user id\n    subscription = \"pro\", -- either \"trial\", \"pro\", \"indie-ios\", \"indie-android\"\n    mode = \"developer\", -- either \"developer\" or nil (where nil means distribution/store)\n}\nEOF\n\n    # Concatenate config.metadata.lua into config.lu overwriting original config.lu\n    LUAC=$TOOLCHAIN_DIR/luac\n    CONFIG_DST=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/config.lu\"\n    CONFIG_SRC=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/config.orig.lu\"\n    if [ ! -e \"$CONFIG_DST\" ];\n    then\n        touch \"$CONFIG_SRC\"\n    else\n        mv \"$CONFIG_DST\" \"$CONFIG_SRC\"\n    fi\n   \n    \"$LUAC\" -s -o \"$CONFIG_DST\" \"$CONFIG_SRC\" \"$CONFIG_META\"\n    rm \"$CONFIG_SRC\"\n    rm \"$CONFIG_META\"\n\n    # Create resource.corona-archive from *.lu\n\techo Archiving \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/*.lu\" into \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\"\n\t$TOOLCHAIN_DIR/car \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"*.lu\n\n\techo Removing: \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/*.lu\"\n\trm -f \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"*.lu\nelse\n\techo \"Skipping creation of resource.corona-archive for template builds\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		A469369F169D6A0700723568 /* Script: app_sign */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Script: app_sign";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\nif [[ $CONFIGURATION =~ .*template.* ]]\nthen\n\techo \"Skipping app_sign for template builds for $CONFIGURATION\"\nelse\n\techo \"Running app_sign for $CONFIGURATION\"\n\n\t\"$TOOLCHAIN_DIR/app_sign\" sign \"$PROJECT_DIR/../resources/developerkey.cert\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\" little\n\n\t# If more than one architecture, repeat app_sign for each *additional* architecture (hence $count > 1)\n\tcount=`echo $ARCHS | wc -w | tr -d ' '`\n\twhile (( $count > 1 ))\n\tdo\n\t\t\"$TOOLCHAIN_DIR/app_sign\" sign \"$PROJECT_DIR/../resources/developerkey.cert\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\" little\n\t\t((count--))\n\tdone\n\n\tcode=$?\n\tif [ \"$code\" -ne \"0\" ]\n\tthen\n\t\techo \"*** app_sign cannot resign $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH. Please remove and then build. ***\"\n\t\texit $code \n\tfi\nfi";
-			showEnvVarsInLog = 0;
-		};
 		A46936A0169D6A0700723568 /* Script: build.settings to Info.plist */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2561,20 +2450,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$TOOLCHAIN_DIR\"/lua \"TOOLCHAIN_DIR/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$TOOLCHAIN_DIR\"/lua \"$TOOLCHAIN_DIR/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A46936A1169D6A0700723568 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Ensures that next attempt to build actually rebuilds the executable so it can be (re)app_sign(ed)\necho \"Updating modification time of $PROJECT_DIR/main.m to trigger relink of $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\necho \"We need to do this b/c app_sign can only sign an unsigned executable.\"\ntouch \"$PROJECT_DIR/libtemplate/main.mm\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A482FACE183D79A50005831B /* ShellScript */ = {

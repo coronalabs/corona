@@ -102,11 +102,6 @@ LIB_REL_PATH=lib/armeabi-v7a/$LIB_NAME
 unzip -o "$OUTPUT_DIR/template.apk" "$LIB_REL_PATH" -d "$OUTPUT_DIR"
 checkError
 
-if [ -z "$APP_SIGN_PATH" ]
-then
-	APP_SIGN_PATH=$path/app_sign
-fi
-
 LUA=lua
 UNAME=$(uname)
 TIMEOUT=
@@ -118,10 +113,6 @@ then
 else
 	LUA=$path/../../bin/mac/lua
 fi
-
-echo $TIMEOUT $TIMEOUT_SEC "$APP_SIGN_PATH" sign "$4" "$TMP_DIR/resource.car" "$OUTPUT_DIR/$LIB_REL_PATH" "$6"
-$TIMEOUT $TIMEOUT_SEC "$APP_SIGN_PATH" sign "$4" "$TMP_DIR/resource.car" "$OUTPUT_DIR/$LIB_REL_PATH" "$6"
-checkError
 
 pushd "$OUTPUT_DIR" > /dev/null
 

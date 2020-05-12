@@ -32,7 +32,6 @@
 		1F23C322211ABCE40003EBF0 /* Rtt_AppPackagerLinuxFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F23C321211ABCE30003EBF0 /* Rtt_AppPackagerLinuxFactory.cpp */; };
 		A4543F4C15265DE700486F8A /* Rtt_Car.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4543F4A15265DE700486F8A /* Rtt_Car.cpp */; };
 		A4543F4F1526604900486F8A /* Rtt_Archive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4543F4D1526604900486F8A /* Rtt_Archive.cpp */; };
-		A4543F52152660D900486F8A /* Rtt_Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4543F50152660D900486F8A /* Rtt_Message.cpp */; };
 		A47290111AE83E1900BC088D /* CoronaLuaObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = A47290101AE83E1900BC088D /* CoronaLuaObjC.mm */; };
 		A48BC7B514E1DDED00310E8E /* AppSettings.lua in CopyFiles */ = {isa = PBXBuildFile; fileRef = A48BC79A14E1C2EB00310E8E /* AppSettings.lua */; };
 		A4A47DFA14D225D400B5111C /* Rtt_Allocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DCD14D225D400B5111C /* Rtt_Allocator.cpp */; };
@@ -44,8 +43,6 @@
 		A4A47E0014D225D400B5111C /* Rtt_FixedMath.c in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DDE14D225D400B5111C /* Rtt_FixedMath.c */; };
 		A4A47E0114D225D400B5111C /* Rtt_Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DDF14D225D400B5111C /* Rtt_Geometry.cpp */; };
 		A4A47E0214D225D400B5111C /* Rtt_Math.c in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DE314D225D400B5111C /* Rtt_Math.c */; };
-		A4A47E0314D225D400B5111C /* Rtt_MD4.c in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DE514D225D400B5111C /* Rtt_MD4.c */; };
-		A4A47E0414D225D400B5111C /* Rtt_MessageDigest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DE714D225D400B5111C /* Rtt_MessageDigest.cpp */; };
 		A4A47E0514D225D400B5111C /* Rtt_RefCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DEB14D225D400B5111C /* Rtt_RefCount.cpp */; };
 		A4A47E0614D225D400B5111C /* Rtt_ResourceHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DED14D225D400B5111C /* Rtt_ResourceHandle.cpp */; };
 		A4A47E0714D225D400B5111C /* Rtt_String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DEF14D225D400B5111C /* Rtt_String.cpp */; };
@@ -72,10 +69,6 @@
 		A4BABC0714CF44E600696484 /* Rtt_AndroidSupportTools.c in Sources */ = {isa = PBXBuildFile; fileRef = A4BABC0114CF44E600696484 /* Rtt_AndroidSupportTools.c */; };
 		A4BABC1014CF44F100696484 /* ListKeyStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4BABC0D14CF44F100696484 /* ListKeyStore.cpp */; };
 		A4BABC1314CF44FF00696484 /* Rtt_AndroidAppPackager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4BABC1114CF44FF00696484 /* Rtt_AndroidAppPackager.cpp */; };
-		A4BABC1F14CF456700696484 /* prime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4BABC1714CF456700696484 /* prime.cpp */; };
-		A4BABC2014CF456700696484 /* rsa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4BABC1914CF456700696484 /* rsa.cpp */; };
-		A4BABC2114CF456700696484 /* vlong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4BABC1B14CF456700696484 /* vlong.cpp */; };
-		A4BABC2214CF456700696484 /* vlong_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4BABC1D14CF456700696484 /* vlong_io.cpp */; };
 		A4BABCDA14CF4AD200696484 /* Rtt_TargetDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4BABCD614CF4AD100696484 /* Rtt_TargetDevice.cpp */; };
 		A4BABF6914CF4CC900696484 /* hmac_sha2.c in Sources */ = {isa = PBXBuildFile; fileRef = A4BABF6514CF4CC900696484 /* hmac_sha2.c */; };
 		A4BABF6A14CF4CC900696484 /* sha2.c in Sources */ = {isa = PBXBuildFile; fileRef = A4BABF6714CF4CC900696484 /* sha2.c */; };
@@ -408,8 +401,6 @@
 		A4543F4B15265DE700486F8A /* Rtt_Car.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Car.h; path = ../../tools/car/Rtt_Car.h; sourceTree = "<group>"; };
 		A4543F4D1526604900486F8A /* Rtt_Archive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Archive.cpp; path = ../../librtt/Rtt_Archive.cpp; sourceTree = "<group>"; };
 		A4543F4E1526604900486F8A /* Rtt_Archive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Archive.h; path = ../../librtt/Rtt_Archive.h; sourceTree = "<group>"; };
-		A4543F50152660D900486F8A /* Rtt_Message.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Message.cpp; path = ../../librtt/Rtt_Message.cpp; sourceTree = "<group>"; };
-		A4543F51152660D900486F8A /* Rtt_Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Message.h; path = ../../librtt/Rtt_Message.h; sourceTree = "<group>"; };
 		A472900F1AE83E1900BC088D /* CoronaLuaObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjC.h; path = ../apple/CoronaLuaObjC.h; sourceTree = "<group>"; };
 		A47290101AE83E1900BC088D /* CoronaLuaObjC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjC.mm; path = ../apple/CoronaLuaObjC.mm; sourceTree = "<group>"; };
 		A48BC79A14E1C2EB00310E8E /* AppSettings.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = AppSettings.lua; path = ../../platform/resources/AppSettings.lua; sourceTree = "<group>"; };
@@ -437,10 +428,6 @@
 		A4A47DE214D225D400B5111C /* Rtt_Macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Macros.h; path = ../../librtt/Core/Rtt_Macros.h; sourceTree = "<group>"; };
 		A4A47DE314D225D400B5111C /* Rtt_Math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_Math.c; path = ../../librtt/Core/Rtt_Math.c; sourceTree = "<group>"; };
 		A4A47DE414D225D400B5111C /* Rtt_Math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Math.h; path = ../../librtt/Core/Rtt_Math.h; sourceTree = "<group>"; };
-		A4A47DE514D225D400B5111C /* Rtt_MD4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_MD4.c; path = ../../librtt/Core/Rtt_MD4.c; sourceTree = "<group>"; };
-		A4A47DE614D225D400B5111C /* Rtt_MD4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MD4.h; path = ../../librtt/Core/Rtt_MD4.h; sourceTree = "<group>"; };
-		A4A47DE714D225D400B5111C /* Rtt_MessageDigest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_MessageDigest.cpp; path = ../../librtt/Core/Rtt_MessageDigest.cpp; sourceTree = "<group>"; };
-		A4A47DE814D225D400B5111C /* Rtt_MessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MessageDigest.h; path = ../../librtt/Core/Rtt_MessageDigest.h; sourceTree = "<group>"; };
 		A4A47DE914D225D400B5111C /* Rtt_New.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_New.h; path = ../../librtt/Core/Rtt_New.h; sourceTree = "<group>"; };
 		A4A47DEA14D225D400B5111C /* Rtt_Real.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Real.h; path = ../../librtt/Core/Rtt_Real.h; sourceTree = "<group>"; };
 		A4A47DEB14D225D400B5111C /* Rtt_RefCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_RefCount.cpp; path = ../../librtt/Core/Rtt_RefCount.cpp; sourceTree = "<group>"; };
@@ -497,14 +484,6 @@
 		A4BABC1114CF44FF00696484 /* Rtt_AndroidAppPackager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_AndroidAppPackager.cpp; path = ../../platform/android/Rtt_AndroidAppPackager.cpp; sourceTree = "<group>"; };
 		A4BABC1214CF44FF00696484 /* Rtt_AndroidAppPackager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AndroidAppPackager.h; path = ../../platform/android/Rtt_AndroidAppPackager.h; sourceTree = "<group>"; };
 		A4BABC1414CF451600696484 /* iPhonePackageApp.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = iPhonePackageApp.lua; path = ../resources/iPhonePackageApp.lua; sourceTree = "<group>"; };
-		A4BABC1714CF456700696484 /* prime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = prime.cpp; sourceTree = "<group>"; };
-		A4BABC1814CF456700696484 /* prime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = prime.hpp; sourceTree = "<group>"; };
-		A4BABC1914CF456700696484 /* rsa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rsa.cpp; sourceTree = "<group>"; };
-		A4BABC1A14CF456700696484 /* rsa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rsa.hpp; sourceTree = "<group>"; };
-		A4BABC1B14CF456700696484 /* vlong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vlong.cpp; sourceTree = "<group>"; };
-		A4BABC1C14CF456700696484 /* vlong.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vlong.hpp; sourceTree = "<group>"; };
-		A4BABC1D14CF456700696484 /* vlong_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vlong_io.cpp; sourceTree = "<group>"; };
-		A4BABC1E14CF456700696484 /* vlong_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vlong_io.h; sourceTree = "<group>"; };
 		A4BABCD614CF4AD100696484 /* Rtt_TargetDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TargetDevice.cpp; path = ../../platform/shared/Rtt_TargetDevice.cpp; sourceTree = "<group>"; };
 		A4BABCD714CF4AD200696484 /* Rtt_TargetDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TargetDevice.h; path = ../../platform/shared/Rtt_TargetDevice.h; sourceTree = "<group>"; };
 		A4BABF6514CF4CC900696484 /* hmac_sha2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hmac_sha2.c; sourceTree = "<group>"; };
@@ -687,10 +666,6 @@
 				A4A47DE214D225D400B5111C /* Rtt_Macros.h */,
 				A4A47DE314D225D400B5111C /* Rtt_Math.c */,
 				A4A47DE414D225D400B5111C /* Rtt_Math.h */,
-				A4A47DE514D225D400B5111C /* Rtt_MD4.c */,
-				A4A47DE614D225D400B5111C /* Rtt_MD4.h */,
-				A4A47DE714D225D400B5111C /* Rtt_MessageDigest.cpp */,
-				A4A47DE814D225D400B5111C /* Rtt_MessageDigest.h */,
 				A4A47DE914D225D400B5111C /* Rtt_New.h */,
 				03D1C56B1D70D16F00DB02EE /* Rtt_OperationResult.cpp */,
 				03D1C56C1D70D16F00DB02EE /* Rtt_OperationResult.h */,
@@ -725,22 +700,6 @@
 			name = Core;
 			sourceTree = "<group>";
 		};
-		A4BABC1614CF456700696484 /* rsa */ = {
-			isa = PBXGroup;
-			children = (
-				A4BABC1714CF456700696484 /* prime.cpp */,
-				A4BABC1814CF456700696484 /* prime.hpp */,
-				A4BABC1914CF456700696484 /* rsa.cpp */,
-				A4BABC1A14CF456700696484 /* rsa.hpp */,
-				A4BABC1B14CF456700696484 /* vlong.cpp */,
-				A4BABC1C14CF456700696484 /* vlong.hpp */,
-				A4BABC1D14CF456700696484 /* vlong_io.cpp */,
-				A4BABC1E14CF456700696484 /* vlong_io.h */,
-			);
-			name = rsa;
-			path = ../../external/rsa;
-			sourceTree = "<group>";
-		};
 		A4BABC9614CF496700696484 /* librtt */ = {
 			isa = PBXGroup;
 			children = (
@@ -750,8 +709,6 @@
 				A4543F4E1526604900486F8A /* Rtt_Archive.h */,
 				A4ED10D914D2A07B00ECF49E /* Rtt_Lua.cpp */,
 				A4ED10DA14D2A07B00ECF49E /* Rtt_Lua.h */,
-				A4543F50152660D900486F8A /* Rtt_Message.cpp */,
-				A4543F51152660D900486F8A /* Rtt_Message.h */,
 				A4A47E4014D2306500B5111C /* Rtt_PlatformTimer.cpp */,
 				A4A47E4114D2306600B5111C /* Rtt_PlatformTimer.h */,
 				03D1C5811D70D21B00DB02EE /* Rtt_Preference.cpp */,
@@ -770,7 +727,6 @@
 				C29CB5F719525BFA00D1F011 /* lpeg */,
 				A4BABF6414CF4CC900696484 /* hmac */,
 				A4C5209B1551ACA300B77A7E /* luafilesystem */,
-				A4BABC1614CF456700696484 /* rsa */,
 			);
 			name = external;
 			sourceTree = "<group>";
@@ -1368,12 +1324,8 @@
 				A4BABC1014CF44F100696484 /* ListKeyStore.cpp in Sources */,
 				03D1C56D1D70D16F00DB02EE /* Rtt_OperationResult.cpp in Sources */,
 				A4BABC1314CF44FF00696484 /* Rtt_AndroidAppPackager.cpp in Sources */,
-				A4BABC1F14CF456700696484 /* prime.cpp in Sources */,
-				A4BABC2014CF456700696484 /* rsa.cpp in Sources */,
 				C25005EF1BA76836000308A7 /* Rtt_FileSystem.cpp in Sources */,
 				03D1C5881D70D21B00DB02EE /* Rtt_PreferenceCollection.cpp in Sources */,
-				A4BABC2114CF456700696484 /* vlong.cpp in Sources */,
-				A4BABC2214CF456700696484 /* vlong_io.cpp in Sources */,
 				A4BABCDA14CF4AD200696484 /* Rtt_TargetDevice.cpp in Sources */,
 				F58CA29E245658E3002191EA /* Rtt_HTTPClient.mm in Sources */,
 				A4BABF6914CF4CC900696484 /* hmac_sha2.c in Sources */,
@@ -1398,8 +1350,6 @@
 				A4A47E0014D225D400B5111C /* Rtt_FixedMath.c in Sources */,
 				A4A47E0114D225D400B5111C /* Rtt_Geometry.cpp in Sources */,
 				A4A47E0214D225D400B5111C /* Rtt_Math.c in Sources */,
-				A4A47E0314D225D400B5111C /* Rtt_MD4.c in Sources */,
-				A4A47E0414D225D400B5111C /* Rtt_MessageDigest.cpp in Sources */,
 				A4A47E0514D225D400B5111C /* Rtt_RefCount.cpp in Sources */,
 				A4A47E0614D225D400B5111C /* Rtt_ResourceHandle.cpp in Sources */,
 				C27B68C51D01009D00236968 /* Rtt_AppPackagerAndroidFactory.cpp in Sources */,
@@ -1419,7 +1369,6 @@
 				A4543F4C15265DE700486F8A /* Rtt_Car.cpp in Sources */,
 				03D1C5781D70D1AD00DB02EE /* Rtt_SharedCount.cpp in Sources */,
 				A4543F4F1526604900486F8A /* Rtt_Archive.cpp in Sources */,
-				A4543F52152660D900486F8A /* Rtt_Message.cpp in Sources */,
 				A4AEC0E4152CD9DC007A4C83 /* XcodeToolHelper.m in Sources */,
 				A4AEC134152E502E007A4C83 /* main.mm in Sources */,
 				C2AD19CE1C40391300217E3E /* CoronaLog.c in Sources */,

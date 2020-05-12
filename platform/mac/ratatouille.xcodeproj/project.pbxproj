@@ -63,7 +63,6 @@
 		000CE7B912B73EE300D9B6A4 /* Rtt_Matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE70D12B73EE300D9B6A4 /* Rtt_Matrix.h */; };
 		000CE7BA12B73EE300D9B6A4 /* Rtt_MCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE70E12B73EE300D9B6A4 /* Rtt_MCallback.h */; };
 		000CE7BB12B73EE300D9B6A4 /* Rtt_MCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE70F12B73EE300D9B6A4 /* Rtt_MCrypto.h */; };
-		000CE7BD12B73EE300D9B6A4 /* Rtt_Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE71112B73EE300D9B6A4 /* Rtt_Message.cpp */; };
 		000CE7BF12B73EE300D9B6A4 /* Rtt_MIterable.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE71312B73EE300D9B6A4 /* Rtt_MIterable.h */; };
 		000CE7C012B73EE300D9B6A4 /* Rtt_MKeyValueIterable.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE71412B73EE300D9B6A4 /* Rtt_MKeyValueIterable.h */; };
 		000CE7C112B73EE300D9B6A4 /* Rtt_MLuaProxyable.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE71512B73EE300D9B6A4 /* Rtt_MLuaProxyable.h */; };
@@ -118,14 +117,6 @@
 		000CE80412B73EE300D9B6A4 /* Rtt_TesselatorStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE75812B73EE300D9B6A4 /* Rtt_TesselatorStream.cpp */; };
 		000CE80812B73EE300D9B6A4 /* Rtt_Transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE75C12B73EE300D9B6A4 /* Rtt_Transform.cpp */; };
 		000CE8B812B73F7500D9B6A4 /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8AA12B73F7500D9B6A4 /* lsqlite3.c */; settings = {COMPILER_FLAGS = "-Wdeprecated-declarations "; }; };
-		000CE8C612B73F9800D9B6A4 /* prime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8BE12B73F9800D9B6A4 /* prime.cpp */; };
-		000CE8C712B73F9800D9B6A4 /* prime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 000CE8BF12B73F9800D9B6A4 /* prime.hpp */; };
-		000CE8C812B73F9800D9B6A4 /* rsa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8C012B73F9800D9B6A4 /* rsa.cpp */; };
-		000CE8C912B73F9800D9B6A4 /* rsa.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 000CE8C112B73F9800D9B6A4 /* rsa.hpp */; };
-		000CE8CA12B73F9800D9B6A4 /* vlong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8C212B73F9800D9B6A4 /* vlong.cpp */; };
-		000CE8CB12B73F9800D9B6A4 /* vlong.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 000CE8C312B73F9800D9B6A4 /* vlong.hpp */; };
-		000CE8CC12B73F9800D9B6A4 /* vlong_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8C412B73F9800D9B6A4 /* vlong_io.cpp */; };
-		000CE8CD12B73F9800D9B6A4 /* vlong_io.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE8C512B73F9800D9B6A4 /* vlong_io.h */; };
 		000CE8D312B7400900D9B6A4 /* init.lua in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8CE12B7400900D9B6A4 /* init.lua */; };
 		000CE8D412B7400900D9B6A4 /* iPhonePackageApp.lua in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8CF12B7400900D9B6A4 /* iPhonePackageApp.lua */; };
 		000CE8D512B7400900D9B6A4 /* runtime.lua in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8D012B7400900D9B6A4 /* runtime.lua */; };
@@ -253,9 +244,6 @@
 		00B73BF712B71BF20057F594 /* Rtt_FixedBlockAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BCB12B71BF20057F594 /* Rtt_FixedBlockAllocator.h */; };
 		00B73BF812B71BF20057F594 /* Rtt_Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BCC12B71BF20057F594 /* Rtt_Geometry.cpp */; };
 		00B73BFC12B71BF20057F594 /* Rtt_Math.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BD012B71BF20057F594 /* Rtt_Math.c */; };
-		00B73BFE12B71BF20057F594 /* Rtt_MD4.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BD212B71BF20057F594 /* Rtt_MD4.c */; };
-		00B73BFF12B71BF20057F594 /* Rtt_MD4.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BD312B71BF20057F594 /* Rtt_MD4.h */; };
-		00B73C0012B71BF20057F594 /* Rtt_MessageDigest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BD412B71BF20057F594 /* Rtt_MessageDigest.cpp */; };
 		00B73C0412B71BF20057F594 /* Rtt_RefCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BD812B71BF20057F594 /* Rtt_RefCount.cpp */; };
 		00B73C0612B71BF20057F594 /* Rtt_ResourceHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BDA12B71BF20057F594 /* Rtt_ResourceHandle.cpp */; };
 		00B73C0812B71BF20057F594 /* Rtt_String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BDC12B71BF20057F594 /* Rtt_String.cpp */; };
@@ -821,7 +809,6 @@
 		C229E0341B32221B00D87A7C /* Rtt_LuaUserdataProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66B1817726CB00077B2BF /* Rtt_LuaUserdataProxy.h */; };
 		C229E0351B32221B00D87A7C /* Rtt_MCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE70E12B73EE300D9B6A4 /* Rtt_MCallback.h */; };
 		C229E0361B32221B00D87A7C /* Rtt_MCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE70F12B73EE300D9B6A4 /* Rtt_MCrypto.h */; };
-		C229E0371B32221B00D87A7C /* Rtt_MD4.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BD312B71BF20057F594 /* Rtt_MD4.h */; };
 		C229E0381B32221B00D87A7C /* Rtt_MDisplayDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A432880D176A621100ACB6FF /* Rtt_MDisplayDelegate.h */; };
 		C229E0391B32221B00D87A7C /* Rtt_MDrawable.h in Headers */ = {isa = PBXBuildFile; fileRef = A432880E176A621100ACB6FF /* Rtt_MDrawable.h */; };
 		C229E03A1B32221B00D87A7C /* Rtt_MIterable.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE71312B73EE300D9B6A4 /* Rtt_MIterable.h */; };
@@ -836,8 +823,6 @@
 		C229E0431B32221B00D87A7C /* Rtt_Macros.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BCF12B71BF20057F594 /* Rtt_Macros.h */; };
 		C229E0441B32221B00D87A7C /* Rtt_Math.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BD112B71BF20057F594 /* Rtt_Math.h */; };
 		C229E0451B32221B00D87A7C /* Rtt_Matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE70D12B73EE300D9B6A4 /* Rtt_Matrix.h */; };
-		C229E0461B32221B00D87A7C /* Rtt_Message.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE71212B73EE300D9B6A4 /* Rtt_Message.h */; };
-		C229E0471B32221B00D87A7C /* Rtt_MessageDigest.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BD512B71BF20057F594 /* Rtt_MessageDigest.h */; };
 		C229E0481B32221B00D87A7C /* Rtt_New.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BD612B71BF20057F594 /* Rtt_New.h */; };
 		C229E0491B32221B00D87A7C /* Rtt_OpenPath.h in Headers */ = {isa = PBXBuildFile; fileRef = A4328810176A621100ACB6FF /* Rtt_OpenPath.h */; };
 		C229E04A1B32221B00D87A7C /* Rtt_Paint.h in Headers */ = {isa = PBXBuildFile; fileRef = A4328812176A621100ACB6FF /* Rtt_Paint.h */; };
@@ -932,10 +917,6 @@
 		C229E0A71B32221B00D87A7C /* b2Separator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5019605A186145FC0092E97E /* b2Separator.h */; };
 		C229E0A81B32221B00D87A7C /* lua_hash_map.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0054B967138205E300BC962A /* lua_hash_map.hpp */; };
 		C229E0A91B32221B00D87A7C /* luaal.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73C2812B71C320057F594 /* luaal.h */; };
-		C229E0AA1B32221B00D87A7C /* prime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 000CE8BF12B73F9800D9B6A4 /* prime.hpp */; };
-		C229E0AC1B32221B00D87A7C /* rsa.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 000CE8C112B73F9800D9B6A4 /* rsa.hpp */; };
-		C229E0AD1B32221B00D87A7C /* vlong.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 000CE8C312B73F9800D9B6A4 /* vlong.hpp */; };
-		C229E0AE1B32221B00D87A7C /* vlong_io.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE8C512B73F9800D9B6A4 /* vlong_io.h */; };
 		C229E0B01B32221B00D87A7C /* CoronaAssert.c in Sources */ = {isa = PBXBuildFile; fileRef = A491860F1641DD6100A39286 /* CoronaAssert.c */; };
 		C229E0B11B32221B00D87A7C /* CoronaEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A49186111641DD6100A39286 /* CoronaEvent.cpp */; };
 		C229E0B21B32221B00D87A7C /* CoronaLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A49186131641DD6100A39286 /* CoronaLibrary.cpp */; };
@@ -1029,11 +1010,8 @@
 		C229E10C1B32221B00D87A7C /* Rtt_LuaResourceOwner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B71B9113F4BDBF009428CF /* Rtt_LuaResourceOwner.cpp */; };
 		C229E10D1B32221B00D87A7C /* Rtt_LuaTableIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE70A12B73EE300D9B6A4 /* Rtt_LuaTableIterator.cpp */; };
 		C229E10E1B32221B00D87A7C /* Rtt_LuaUserdataProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B66B1717726CA90077B2BF /* Rtt_LuaUserdataProxy.cpp */; };
-		C229E10F1B32221B00D87A7C /* Rtt_MD4.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BD212B71BF20057F594 /* Rtt_MD4.c */; };
 		C229E1101B32221B00D87A7C /* Rtt_Math.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BD012B71BF20057F594 /* Rtt_Math.c */; };
 		C229E1111B32221B00D87A7C /* Rtt_Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE70C12B73EE300D9B6A4 /* Rtt_Matrix.cpp */; };
-		C229E1121B32221B00D87A7C /* Rtt_Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE71112B73EE300D9B6A4 /* Rtt_Message.cpp */; };
-		C229E1131B32221B00D87A7C /* Rtt_MessageDigest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B73BD412B71BF20057F594 /* Rtt_MessageDigest.cpp */; };
 		C229E1141B32221B00D87A7C /* Rtt_OpenPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A432880F176A621100ACB6FF /* Rtt_OpenPath.cpp */; };
 		C229E1151B32221B00D87A7C /* Rtt_Paint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4328811176A621100ACB6FF /* Rtt_Paint.cpp */; };
 		C229E1161B32221B00D87A7C /* Rtt_PaintAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A475032D1773A6820064ABA0 /* Rtt_PaintAdapter.cpp */; };
@@ -1227,10 +1205,8 @@
 		C229E1D51B32221B00D87A7C /* kernel_generator_sunbeams_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = 5087FFBA17C731C10072BC7D /* kernel_generator_sunbeams_gl.lua */; };
 		C229E1D61B32221B00D87A7C /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8AA12B73F7500D9B6A4 /* lsqlite3.c */; settings = {COMPILER_FLAGS = "-Wdeprecated-declarations "; }; };
 		C229E1D71B32221B00D87A7C /* luaal.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B73C2712B71C320057F594 /* luaal.c */; };
-		C229E1D81B32221B00D87A7C /* prime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8BE12B73F9800D9B6A4 /* prime.cpp */; };
 		C229E1DA1B32221B00D87A7C /* re.lua in Sources */ = {isa = PBXBuildFile; fileRef = C26D8DA3195104D7008DE65C /* re.lua */; };
 		C229E1DB1B32221B00D87A7C /* remdebug_engine.lua in Sources */ = {isa = PBXBuildFile; fileRef = 00B73C8612B720C90057F594 /* remdebug_engine.lua */; };
-		C229E1DC1B32221B00D87A7C /* rsa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8C012B73F9800D9B6A4 /* rsa.cpp */; };
 		C229E1DD1B32221B00D87A7C /* runtime.lua in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8D012B7400900D9B6A4 /* runtime.lua */; };
 		C229E1DE1B32221B00D87A7C /* shell.lua in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8D112B7400900D9B6A4 /* shell.lua */; };
 		C229E1DF1B32221B00D87A7C /* shell_default_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = A43288A1176A626B00ACB6FF /* shell_default_gl.lua */; };
@@ -1238,8 +1214,6 @@
 		C229E1E21B32221B00D87A7C /* timer.lua in Sources */ = {isa = PBXBuildFile; fileRef = A41AC0E416A5DAC600AD331A /* timer.lua */; };
 		C229E1E31B32221B00D87A7C /* transition.lua in Sources */ = {isa = PBXBuildFile; fileRef = A41AC0E316A5DAB800AD331A /* transition.lua */; };
 		C229E1E41B32221B00D87A7C /* transition_v1.lua in Sources */ = {isa = PBXBuildFile; fileRef = A482FA1B1836F79C0005831B /* transition_v1.lua */; };
-		C229E1E51B32221B00D87A7C /* vlong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8C212B73F9800D9B6A4 /* vlong.cpp */; };
-		C229E1E61B32221B00D87A7C /* vlong_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CE8C412B73F9800D9B6A4 /* vlong_io.cpp */; };
 		C229E1E71B32221B00D87A7C /* webPackageApp.lua in Sources */ = {isa = PBXBuildFile; fileRef = A425457318E4FD1800EE06A8 /* webPackageApp.lua */; };
 		C229E1E81B32221B00D87A7C /* widget.lua in Sources */ = {isa = PBXBuildFile; fileRef = F86F3307171886AA00F98693 /* widget.lua */; };
 		C229E1E91B32221B00D87A7C /* widget_button.lua in Sources */ = {isa = PBXBuildFile; fileRef = F86F32FA171886AA00F98693 /* widget_button.lua */; };
@@ -1454,7 +1428,6 @@
 		C2DA961F1B46460F00DAF684 /* Rtt_TesselatorRect.h in Headers */ = {isa = PBXBuildFile; fileRef = A46AC87F17820BE000BE6805 /* Rtt_TesselatorRect.h */; };
 		C2DA96201B46460F00DAF684 /* Rtt_VersionTimestamp.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BE612B71BF20057F594 /* Rtt_VersionTimestamp.h */; };
 		C2DA96211B46460F00DAF684 /* Rtt_LuaFrameworks.h in Headers */ = {isa = PBXBuildFile; fileRef = A41AC0F316A5DC6D00AD331A /* Rtt_LuaFrameworks.h */; };
-		C2DA96221B46460F00DAF684 /* Rtt_MessageDigest.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BD512B71BF20057F594 /* Rtt_MessageDigest.h */; };
 		C2DA96231B46460F00DAF684 /* Rtt_Traits.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B73BE212B71BF20057F594 /* Rtt_Traits.h */; };
 		C2DA96241B46460F00DAF684 /* Rtt_DisplayV2.h in Headers */ = {isa = PBXBuildFile; fileRef = A43287F8176A621100ACB6FF /* Rtt_DisplayV2.h */; };
 		C2DA96251B46460F00DAF684 /* Rtt_HitTestObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A43287FE176A621100ACB6FF /* Rtt_HitTestObject.h */; };
@@ -1528,7 +1501,6 @@
 		C2DA966C1B46460F00DAF684 /* Rtt_VertexCache.h in Headers */ = {isa = PBXBuildFile; fileRef = A4328840176A621200ACB6FF /* Rtt_VertexCache.h */; };
 		C2DA966D1B46460F00DAF684 /* Rtt_RuntimeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AB447C143E575D00607F77 /* Rtt_RuntimeDelegate.h */; };
 		C2DA966E1B46460F00DAF684 /* Rtt_TesselatorPolygon.h in Headers */ = {isa = PBXBuildFile; fileRef = A46AC8A5178389C000BE6805 /* Rtt_TesselatorPolygon.h */; };
-		C2DA966F1B46460F00DAF684 /* Rtt_Message.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE71212B73EE300D9B6A4 /* Rtt_Message.h */; };
 		C2DA96701B46460F00DAF684 /* CoronaMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = A491861A1641DD6100A39286 /* CoronaMacros.h */; };
 		C2DA96711B46460F00DAF684 /* CoronaVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = A40C523F16F847EA00AE2ECF /* CoronaVersion.h */; };
 		C2DA96721B46460F00DAF684 /* Rtt_DeviceOrientation.h in Headers */ = {isa = PBXBuildFile; fileRef = 000CE6C912B73EE300D9B6A4 /* Rtt_DeviceOrientation.h */; };
@@ -2267,8 +2239,6 @@
 		000CE70D12B73EE300D9B6A4 /* Rtt_Matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Matrix.h; sourceTree = "<group>"; };
 		000CE70E12B73EE300D9B6A4 /* Rtt_MCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_MCallback.h; sourceTree = "<group>"; };
 		000CE70F12B73EE300D9B6A4 /* Rtt_MCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_MCrypto.h; sourceTree = "<group>"; };
-		000CE71112B73EE300D9B6A4 /* Rtt_Message.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_Message.cpp; sourceTree = "<group>"; };
-		000CE71212B73EE300D9B6A4 /* Rtt_Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Message.h; sourceTree = "<group>"; };
 		000CE71312B73EE300D9B6A4 /* Rtt_MIterable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_MIterable.h; sourceTree = "<group>"; };
 		000CE71412B73EE300D9B6A4 /* Rtt_MKeyValueIterable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_MKeyValueIterable.h; sourceTree = "<group>"; };
 		000CE71512B73EE300D9B6A4 /* Rtt_MLuaProxyable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_MLuaProxyable.h; sourceTree = "<group>"; };
@@ -2329,14 +2299,6 @@
 		000CE75C12B73EE300D9B6A4 /* Rtt_Transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_Transform.cpp; sourceTree = "<group>"; };
 		000CE75D12B73EE300D9B6A4 /* Rtt_Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Transform.h; sourceTree = "<group>"; };
 		000CE8AA12B73F7500D9B6A4 /* lsqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lsqlite3.c; sourceTree = "<group>"; };
-		000CE8BE12B73F9800D9B6A4 /* prime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = prime.cpp; sourceTree = "<group>"; };
-		000CE8BF12B73F9800D9B6A4 /* prime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = prime.hpp; sourceTree = "<group>"; };
-		000CE8C012B73F9800D9B6A4 /* rsa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rsa.cpp; sourceTree = "<group>"; };
-		000CE8C112B73F9800D9B6A4 /* rsa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rsa.hpp; sourceTree = "<group>"; };
-		000CE8C212B73F9800D9B6A4 /* vlong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vlong.cpp; sourceTree = "<group>"; };
-		000CE8C312B73F9800D9B6A4 /* vlong.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vlong.hpp; sourceTree = "<group>"; };
-		000CE8C412B73F9800D9B6A4 /* vlong_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vlong_io.cpp; sourceTree = "<group>"; };
-		000CE8C512B73F9800D9B6A4 /* vlong_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vlong_io.h; sourceTree = "<group>"; };
 		000CE8CE12B7400900D9B6A4 /* init.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = init.lua; path = ../resources/init.lua; sourceTree = SOURCE_ROOT; };
 		000CE8CF12B7400900D9B6A4 /* iPhonePackageApp.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = iPhonePackageApp.lua; path = ../resources/iPhonePackageApp.lua; sourceTree = SOURCE_ROOT; };
 		000CE8D012B7400900D9B6A4 /* runtime.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.lua; path = ../resources/runtime.lua; sourceTree = SOURCE_ROOT; };
@@ -2568,10 +2530,6 @@
 		00B73BCF12B71BF20057F594 /* Rtt_Macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Macros.h; sourceTree = "<group>"; };
 		00B73BD012B71BF20057F594 /* Rtt_Math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Rtt_Math.c; sourceTree = "<group>"; };
 		00B73BD112B71BF20057F594 /* Rtt_Math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Math.h; sourceTree = "<group>"; };
-		00B73BD212B71BF20057F594 /* Rtt_MD4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Rtt_MD4.c; sourceTree = "<group>"; };
-		00B73BD312B71BF20057F594 /* Rtt_MD4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_MD4.h; sourceTree = "<group>"; };
-		00B73BD412B71BF20057F594 /* Rtt_MessageDigest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_MessageDigest.cpp; sourceTree = "<group>"; };
-		00B73BD512B71BF20057F594 /* Rtt_MessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_MessageDigest.h; sourceTree = "<group>"; };
 		00B73BD612B71BF20057F594 /* Rtt_New.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_New.h; sourceTree = "<group>"; };
 		00B73BD712B71BF20057F594 /* Rtt_Real.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Real.h; sourceTree = "<group>"; };
 		00B73BD812B71BF20057F594 /* Rtt_RefCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_RefCount.cpp; sourceTree = "<group>"; };
@@ -3555,22 +3513,6 @@
 			path = "../../external/lsqlite3-7";
 			sourceTree = SOURCE_ROOT;
 		};
-		000CE8BD12B73F9800D9B6A4 /* rsa */ = {
-			isa = PBXGroup;
-			children = (
-				000CE8BE12B73F9800D9B6A4 /* prime.cpp */,
-				000CE8BF12B73F9800D9B6A4 /* prime.hpp */,
-				000CE8C012B73F9800D9B6A4 /* rsa.cpp */,
-				000CE8C112B73F9800D9B6A4 /* rsa.hpp */,
-				000CE8C212B73F9800D9B6A4 /* vlong.cpp */,
-				000CE8C312B73F9800D9B6A4 /* vlong.hpp */,
-				000CE8C412B73F9800D9B6A4 /* vlong_io.cpp */,
-				000CE8C512B73F9800D9B6A4 /* vlong_io.h */,
-			);
-			name = rsa;
-			path = ../../external/rsa;
-			sourceTree = SOURCE_ROOT;
-		};
 		000CE8DA12B7404400D9B6A4 /* shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -4017,8 +3959,6 @@
 				000CE70D12B73EE300D9B6A4 /* Rtt_Matrix.h */,
 				000CE70E12B73EE300D9B6A4 /* Rtt_MCallback.h */,
 				000CE70F12B73EE300D9B6A4 /* Rtt_MCrypto.h */,
-				000CE71112B73EE300D9B6A4 /* Rtt_Message.cpp */,
-				000CE71212B73EE300D9B6A4 /* Rtt_Message.h */,
 				000CE71312B73EE300D9B6A4 /* Rtt_MIterable.h */,
 				000CE71412B73EE300D9B6A4 /* Rtt_MKeyValueIterable.h */,
 				000CE71512B73EE300D9B6A4 /* Rtt_MLuaProxyable.h */,
@@ -4173,10 +4113,6 @@
 				00B73BCF12B71BF20057F594 /* Rtt_Macros.h */,
 				00B73BD012B71BF20057F594 /* Rtt_Math.c */,
 				00B73BD112B71BF20057F594 /* Rtt_Math.h */,
-				00B73BD212B71BF20057F594 /* Rtt_MD4.c */,
-				00B73BD312B71BF20057F594 /* Rtt_MD4.h */,
-				00B73BD412B71BF20057F594 /* Rtt_MessageDigest.cpp */,
-				00B73BD512B71BF20057F594 /* Rtt_MessageDigest.h */,
 				00B73BD612B71BF20057F594 /* Rtt_New.h */,
 				03C89D4D1D6FE764004CD668 /* Rtt_OperationResult.cpp */,
 				03C89D4E1D6FE764004CD668 /* Rtt_OperationResult.h */,
@@ -4218,7 +4154,6 @@
 				006DC6D4136784D3008DDB3D /* DDGReachability */,
 				000CE89A12B73F7500D9B6A4 /* lsqlite3-7 */,
 				00B73C2612B71C320057F594 /* luaal */,
-				000CE8BD12B73F9800D9B6A4 /* rsa */,
 			);
 			name = external;
 			sourceTree = "<group>";
@@ -5555,7 +5490,6 @@
 				C2DA963A1B46460F00DAF684 /* Rtt_LuaUserdataProxy.h in Headers */,
 				000CE7BA12B73EE300D9B6A4 /* Rtt_MCallback.h in Headers */,
 				000CE7BB12B73EE300D9B6A4 /* Rtt_MCrypto.h in Headers */,
-				00B73BFF12B71BF20057F594 /* Rtt_MD4.h in Headers */,
 				F5B248541B57123B0087FFBC /* Rtt_TextureResourceAdapter.h in Headers */,
 				A432886C176A621200ACB6FF /* Rtt_MDisplayDelegate.h in Headers */,
 				A432886D176A621200ACB6FF /* Rtt_MDrawable.h in Headers */,
@@ -5572,8 +5506,6 @@
 				C2DA96401B46460F00DAF684 /* Rtt_Math.h in Headers */,
 				03D1C5641D70CCD400DB02EE /* Rtt_SharedStringPtr.h in Headers */,
 				000CE7B912B73EE300D9B6A4 /* Rtt_Matrix.h in Headers */,
-				C2DA966F1B46460F00DAF684 /* Rtt_Message.h in Headers */,
-				C2DA96221B46460F00DAF684 /* Rtt_MessageDigest.h in Headers */,
 				C2DA96731B46460F00DAF684 /* Rtt_New.h in Headers */,
 				C2DA96261B46460F00DAF684 /* Rtt_OpenPath.h in Headers */,
 				C2DA96171B46460F00DAF684 /* Rtt_Paint.h in Headers */,
@@ -5673,10 +5605,6 @@
 				5019605C186145FC0092E97E /* b2Separator.h in Headers */,
 				0054B975138205E400BC962A /* lua_hash_map.hpp in Headers */,
 				00B73C2A12B71C320057F594 /* luaal.h in Headers */,
-				000CE8C712B73F9800D9B6A4 /* prime.hpp in Headers */,
-				000CE8C912B73F9800D9B6A4 /* rsa.hpp in Headers */,
-				000CE8CB12B73F9800D9B6A4 /* vlong.hpp in Headers */,
-				000CE8CD12B73F9800D9B6A4 /* vlong_io.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5904,7 +5832,6 @@
 				C229E0341B32221B00D87A7C /* Rtt_LuaUserdataProxy.h in Headers */,
 				C229E0351B32221B00D87A7C /* Rtt_MCallback.h in Headers */,
 				C229E0361B32221B00D87A7C /* Rtt_MCrypto.h in Headers */,
-				C229E0371B32221B00D87A7C /* Rtt_MD4.h in Headers */,
 				F5B248551B57123B0087FFBC /* Rtt_TextureResourceAdapter.h in Headers */,
 				C229E0381B32221B00D87A7C /* Rtt_MDisplayDelegate.h in Headers */,
 				C229E0391B32221B00D87A7C /* Rtt_MDrawable.h in Headers */,
@@ -5921,8 +5848,6 @@
 				C229E0441B32221B00D87A7C /* Rtt_Math.h in Headers */,
 				03D1C5631D70CCD300DB02EE /* Rtt_SharedStringPtr.h in Headers */,
 				C229E0451B32221B00D87A7C /* Rtt_Matrix.h in Headers */,
-				C229E0461B32221B00D87A7C /* Rtt_Message.h in Headers */,
-				C229E0471B32221B00D87A7C /* Rtt_MessageDigest.h in Headers */,
 				C229E0481B32221B00D87A7C /* Rtt_New.h in Headers */,
 				C229E0491B32221B00D87A7C /* Rtt_OpenPath.h in Headers */,
 				C229E04A1B32221B00D87A7C /* Rtt_Paint.h in Headers */,
@@ -6023,10 +5948,6 @@
 				C229E0A71B32221B00D87A7C /* b2Separator.h in Headers */,
 				C229E0A81B32221B00D87A7C /* lua_hash_map.hpp in Headers */,
 				C229E0A91B32221B00D87A7C /* luaal.h in Headers */,
-				C229E0AA1B32221B00D87A7C /* prime.hpp in Headers */,
-				C229E0AC1B32221B00D87A7C /* rsa.hpp in Headers */,
-				C229E0AD1B32221B00D87A7C /* vlong.hpp in Headers */,
-				C229E0AE1B32221B00D87A7C /* vlong_io.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6896,11 +6817,8 @@
 				A4B71B9413F4BDC7009428CF /* Rtt_LuaResourceOwner.cpp in Sources */,
 				000CE7B612B73EE300D9B6A4 /* Rtt_LuaTableIterator.cpp in Sources */,
 				A4B66B1917726CB80077B2BF /* Rtt_LuaUserdataProxy.cpp in Sources */,
-				00B73BFE12B71BF20057F594 /* Rtt_MD4.c in Sources */,
 				00B73BFC12B71BF20057F594 /* Rtt_Math.c in Sources */,
 				000CE7B812B73EE300D9B6A4 /* Rtt_Matrix.cpp in Sources */,
-				000CE7BD12B73EE300D9B6A4 /* Rtt_Message.cpp in Sources */,
-				00B73C0012B71BF20057F594 /* Rtt_MessageDigest.cpp in Sources */,
 				A432886E176A621200ACB6FF /* Rtt_OpenPath.cpp in Sources */,
 				A4328870176A621200ACB6FF /* Rtt_Paint.cpp in Sources */,
 				A475032E1773A6840064ABA0 /* Rtt_PaintAdapter.cpp in Sources */,
@@ -7104,10 +7022,8 @@
 				5087FFC117C731D60072BC7D /* kernel_generator_sunbeams_gl.lua in Sources */,
 				000CE8B812B73F7500D9B6A4 /* lsqlite3.c in Sources */,
 				00B73C2912B71C320057F594 /* luaal.c in Sources */,
-				000CE8C612B73F9800D9B6A4 /* prime.cpp in Sources */,
 				C26D8DA51951053F008DE65C /* re.lua in Sources */,
 				C208322D1AA54ADD005D2680 /* remdebug_engine.lua in Sources */,
-				000CE8C812B73F9800D9B6A4 /* rsa.cpp in Sources */,
 				000CE8D512B7400900D9B6A4 /* runtime.lua in Sources */,
 				000CE8D612B7400900D9B6A4 /* shell.lua in Sources */,
 				A43288B9176A67E600ACB6FF /* shell_default_gl.lua in Sources */,
@@ -7115,8 +7031,6 @@
 				A41AC0E816A5DB5C00AD331A /* timer.lua in Sources */,
 				A41AC0E916A5DB5C00AD331A /* transition.lua in Sources */,
 				A482FA221836F8D20005831B /* transition_v1.lua in Sources */,
-				000CE8CA12B73F9800D9B6A4 /* vlong.cpp in Sources */,
-				000CE8CC12B73F9800D9B6A4 /* vlong_io.cpp in Sources */,
 				A425457418E4FD6400EE06A8 /* webPackageApp.lua in Sources */,
 				F86F3315171886AA00F98693 /* widget.lua in Sources */,
 				F86F3308171886AA00F98693 /* widget_button.lua in Sources */,
@@ -7502,11 +7416,8 @@
 				C229E10C1B32221B00D87A7C /* Rtt_LuaResourceOwner.cpp in Sources */,
 				C229E10D1B32221B00D87A7C /* Rtt_LuaTableIterator.cpp in Sources */,
 				C229E10E1B32221B00D87A7C /* Rtt_LuaUserdataProxy.cpp in Sources */,
-				C229E10F1B32221B00D87A7C /* Rtt_MD4.c in Sources */,
 				C229E1101B32221B00D87A7C /* Rtt_Math.c in Sources */,
 				C229E1111B32221B00D87A7C /* Rtt_Matrix.cpp in Sources */,
-				C229E1121B32221B00D87A7C /* Rtt_Message.cpp in Sources */,
-				C229E1131B32221B00D87A7C /* Rtt_MessageDigest.cpp in Sources */,
 				C229E1141B32221B00D87A7C /* Rtt_OpenPath.cpp in Sources */,
 				C229E1151B32221B00D87A7C /* Rtt_Paint.cpp in Sources */,
 				C229E1161B32221B00D87A7C /* Rtt_PaintAdapter.cpp in Sources */,
@@ -7712,10 +7623,8 @@
 				C229E1D51B32221B00D87A7C /* kernel_generator_sunbeams_gl.lua in Sources */,
 				C229E1D61B32221B00D87A7C /* lsqlite3.c in Sources */,
 				C229E1D71B32221B00D87A7C /* luaal.c in Sources */,
-				C229E1D81B32221B00D87A7C /* prime.cpp in Sources */,
 				C229E1DA1B32221B00D87A7C /* re.lua in Sources */,
 				C229E1DB1B32221B00D87A7C /* remdebug_engine.lua in Sources */,
-				C229E1DC1B32221B00D87A7C /* rsa.cpp in Sources */,
 				C229E1DD1B32221B00D87A7C /* runtime.lua in Sources */,
 				C229E1DE1B32221B00D87A7C /* shell.lua in Sources */,
 				C229E1DF1B32221B00D87A7C /* shell_default_gl.lua in Sources */,
@@ -7723,8 +7632,6 @@
 				C229E1E21B32221B00D87A7C /* timer.lua in Sources */,
 				C229E1E31B32221B00D87A7C /* transition.lua in Sources */,
 				C229E1E41B32221B00D87A7C /* transition_v1.lua in Sources */,
-				C229E1E51B32221B00D87A7C /* vlong.cpp in Sources */,
-				C229E1E61B32221B00D87A7C /* vlong_io.cpp in Sources */,
 				C229E1E71B32221B00D87A7C /* webPackageApp.lua in Sources */,
 				C229E1E81B32221B00D87A7C /* widget.lua in Sources */,
 				C229E1E91B32221B00D87A7C /* widget_button.lua in Sources */,

@@ -290,11 +290,6 @@ add_library( corona SHARED
 		${Lua2CppOutputDir}/widget_theme_ios7.cpp
 		${Lua2CppOutputDir}/shell.cpp
 
-		${CORONA_ROOT}/external/rsa/prime.cpp
-		${CORONA_ROOT}/external/rsa/rsa.cpp
-		${CORONA_ROOT}/external/rsa/vlong.cpp
-		${CORONA_ROOT}/external/rsa/vlong_io.cpp
-
 		${CORONA_ROOT}/external/luasocket/src/auxiliar.c
 		${CORONA_ROOT}/external/luasocket/src/compat.c
 		${CORONA_ROOT}/external/luasocket/src/except.c
@@ -334,9 +329,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Core/Rtt_FixedBlockAllocator.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_FixedMath.c
 		${CORONA_ROOT}/librtt/Core/Rtt_Geometry.cpp
-		${CORONA_ROOT}/librtt/Core/Rtt_MD4.c
 		${CORONA_ROOT}/librtt/Core/Rtt_Math.c
-		${CORONA_ROOT}/librtt/Core/Rtt_MessageDigest.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_OperationResult.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_RefCount.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_ResourceHandle.cpp
@@ -482,7 +475,6 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Rtt_LuaTableIterator.cpp
 		${CORONA_ROOT}/librtt/Rtt_LuaUserdataProxy.cpp
 		${CORONA_ROOT}/librtt/Rtt_Matrix.cpp
-		${CORONA_ROOT}/librtt/Rtt_Message.cpp
 		${CORONA_ROOT}/librtt/Rtt_ParticleSystemObject.cpp
 		${CORONA_ROOT}/librtt/Rtt_PhysicsContact.cpp
 		${CORONA_ROOT}/librtt/Rtt_PhysicsContactListener.cpp
