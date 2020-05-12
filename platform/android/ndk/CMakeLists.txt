@@ -519,7 +519,6 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Rtt_RuntimeDelegatePlayer.cpp
 		${CORONA_ROOT}/librtt/Rtt_Scheduler.cpp
 		${CORONA_ROOT}/librtt/Rtt_Transform.cpp
-		${CORONA_ROOT}/librtt/Rtt_Verifier.cpp
 		${Lua2CppOutputDir}/CoronaLibrary.cpp
 		${Lua2CppOutputDir}/CoronaPrototype.cpp
 		${Lua2CppOutputDir}/CoronaProvider.cpp

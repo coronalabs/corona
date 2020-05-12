@@ -321,20 +321,6 @@
 			remoteGlobalIDString = C2D927251ACA098800B7F9AC;
 			remoteInfo = CoronaShell;
 		};
-		C2F98DEB1BB34B8100BDE58B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C2F98DE61BB34B8000BDE58B /* XMLRPC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = XMLRPC;
-		};
-		C2F98DED1BB34B8100BDE58B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C2F98DE61BB34B8000BDE58B /* XMLRPC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 903B0DB612F7574800BD6E09;
-			remoteInfo = libXMLRPC;
-		};
 		F5FBD1DC206961A9009A9D32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A4ED11ED14D350C400ECF49E /* lua.xcodeproj */;
@@ -598,7 +584,6 @@
 		C2C5359D1AE5B8A200BF7A6E /* AndroidValidation.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AndroidValidation.lua; sourceTree = "<group>"; };
 		C2F1BAF71EF48EF500D77BD7 /* CoronaShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CoronaShell.xcodeproj; path = CoronaShell/CoronaShell.xcodeproj; sourceTree = "<group>"; };
 		C2F1BAFD1EF48F2F00D77BD7 /* ratatouille.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = ratatouille.xcodeproj; sourceTree = "<group>"; };
-		C2F98DE61BB34B8000BDE58B /* XMLRPC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XMLRPC.xcodeproj; path = "../../external/osx-xmlrpc/XMLRPC/XMLRPC.xcodeproj"; sourceTree = "<group>"; };
 		F53C328E2404E2C000BC2BED /* CoronaBuilderPluginCollector.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaBuilderPluginCollector.lua; path = ../resources/CoronaBuilderPluginCollector.lua; sourceTree = "<group>"; };
 		F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BuilderPluginDownloader.lua; path = ../../tools/CoronaBuilder/BuilderPluginDownloader.lua; sourceTree = "<group>"; };
 		F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_DownloadPluginsMain.cpp; path = ../../tools/CoronaBuilder/Rtt_DownloadPluginsMain.cpp; sourceTree = "<group>"; };
@@ -965,7 +950,6 @@
 			children = (
 				C2F1BAFD1EF48F2F00D77BD7 /* ratatouille.xcodeproj */,
 				C2F1BAF71EF48EF500D77BD7 /* CoronaShell.xcodeproj */,
-				C2F98DE61BB34B8000BDE58B /* XMLRPC.xcodeproj */,
 				A4ED11ED14D350C400ECF49E /* lua.xcodeproj */,
 				A4A47E1E14D2279A00B5111C /* libffi.dylib */,
 				A4A47E0C14D2274400B5111C /* libssl.dylib */,
@@ -1107,15 +1091,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C2F98DE71BB34B8000BDE58B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				C2F98DEC1BB34B8100BDE58B /* XMLRPC.framework */,
-				C2F98DEE1BB34B8100BDE58B /* libXMLRPC.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1181,10 +1156,6 @@
 				{
 					ProductGroup = C2F1BAFE1EF48F2F00D77BD7 /* Products */;
 					ProjectRef = C2F1BAFD1EF48F2F00D77BD7 /* ratatouille.xcodeproj */;
-				},
-				{
-					ProductGroup = C2F98DE71BB34B8000BDE58B /* Products */;
-					ProjectRef = C2F98DE61BB34B8000BDE58B /* XMLRPC.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1326,20 +1297,6 @@
 			fileType = wrapper.framework;
 			path = CoronaCards.framework;
 			remoteRef = C2F1BB281EF48F3000D77BD7 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		C2F98DEC1BB34B8100BDE58B /* XMLRPC.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = XMLRPC.framework;
-			remoteRef = C2F98DEB1BB34B8100BDE58B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		C2F98DEE1BB34B8100BDE58B /* libXMLRPC.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libXMLRPC.a;
-			remoteRef = C2F98DED1BB34B8100BDE58B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

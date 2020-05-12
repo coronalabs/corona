@@ -734,7 +734,6 @@ LIBRTT_FILES := \
 	$(CORONA_ROOT)/librtt/Rtt_RuntimeDelegatePlayer.cpp \
 	$(CORONA_ROOT)/librtt/Rtt_Scheduler.cpp \
 	$(CORONA_ROOT)/librtt/Rtt_Transform.cpp \
-	$(CORONA_ROOT)/librtt/Rtt_Verifier.cpp \
 	$(CORONA_ROOT)/platform/android/ndk/generated/CoronaLibrary.cpp \
 	$(CORONA_ROOT)/platform/android/ndk/generated/CoronaPrototype.cpp \
 	$(CORONA_ROOT)/platform/android/ndk/generated/CoronaProvider.cpp \

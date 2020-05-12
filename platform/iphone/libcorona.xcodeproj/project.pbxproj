@@ -210,9 +210,6 @@
 		000DCC3E12B05F3E00042A5E /* Rtt_TesselatorStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 000DCB6512B05F3E00042A5E /* Rtt_TesselatorStream.h */; };
 		000DCC4112B05F3E00042A5E /* Rtt_Transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCB6812B05F3E00042A5E /* Rtt_Transform.cpp */; };
 		000DCC4212B05F3E00042A5E /* Rtt_Transform.h in Headers */ = {isa = PBXBuildFile; fileRef = 000DCB6912B05F3E00042A5E /* Rtt_Transform.h */; };
-		000DCC4712B05F3E00042A5E /* Rtt_Verifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCB6E12B05F3E00042A5E /* Rtt_Verifier.cpp */; };
-		000DCC4812B05F3E00042A5E /* Rtt_Verifier.h in Headers */ = {isa = PBXBuildFile; fileRef = 000DCB6F12B05F3E00042A5E /* Rtt_Verifier.h */; };
-		000DCC4912B05F3E00042A5E /* Rtt_VerifierData.h in Headers */ = {isa = PBXBuildFile; fileRef = 000DCB7012B05F3E00042A5E /* Rtt_VerifierData.h */; };
 		000DCC7412B0609700042A5E /* ALmixer.c in Sources */ = {isa = PBXBuildFile; fileRef = 000DCC5812B0609700042A5E /* ALmixer.c */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable -Wno-unreachable-code"; }; };
 		000DCC7512B0609700042A5E /* ALmixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 000DCC5912B0609700042A5E /* ALmixer.h */; };
 		000DCC7612B0609700042A5E /* CircularQueue.c in Sources */ = {isa = PBXBuildFile; fileRef = 000DCC5A12B0609700042A5E /* CircularQueue.c */; };
@@ -1106,9 +1103,6 @@
 		000DCB6512B05F3E00042A5E /* Rtt_TesselatorStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_TesselatorStream.h; sourceTree = "<group>"; };
 		000DCB6812B05F3E00042A5E /* Rtt_Transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_Transform.cpp; sourceTree = "<group>"; };
 		000DCB6912B05F3E00042A5E /* Rtt_Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Transform.h; sourceTree = "<group>"; };
-		000DCB6E12B05F3E00042A5E /* Rtt_Verifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_Verifier.cpp; sourceTree = "<group>"; };
-		000DCB6F12B05F3E00042A5E /* Rtt_Verifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Verifier.h; sourceTree = "<group>"; };
-		000DCB7012B05F3E00042A5E /* Rtt_VerifierData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_VerifierData.h; sourceTree = "<group>"; };
 		000DCC5112B05FF200042A5E /* libalmixer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libalmixer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		000DCC5812B0609700042A5E /* ALmixer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ALmixer.c; sourceTree = "<group>"; };
 		000DCC5912B0609700042A5E /* ALmixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALmixer.h; sourceTree = "<group>"; };
@@ -2096,9 +2090,6 @@
 				000DCB6512B05F3E00042A5E /* Rtt_TesselatorStream.h */,
 				000DCB6812B05F3E00042A5E /* Rtt_Transform.cpp */,
 				000DCB6912B05F3E00042A5E /* Rtt_Transform.h */,
-				000DCB6E12B05F3E00042A5E /* Rtt_Verifier.cpp */,
-				000DCB6F12B05F3E00042A5E /* Rtt_Verifier.h */,
-				000DCB7012B05F3E00042A5E /* Rtt_VerifierData.h */,
 				000DCD2112B072A000042A5E /* external */,
 			);
 			name = librtt;
@@ -3227,8 +3218,6 @@
 				000DCC3C12B05F3E00042A5E /* Rtt_StrokeTesselatorStream.h in Headers */,
 				000DCC3E12B05F3E00042A5E /* Rtt_TesselatorStream.h in Headers */,
 				000DCC4212B05F3E00042A5E /* Rtt_Transform.h in Headers */,
-				000DCC4812B05F3E00042A5E /* Rtt_Verifier.h in Headers */,
-				000DCC4912B05F3E00042A5E /* Rtt_VerifierData.h in Headers */,
 				000DCCEC12B06C7100042A5E /* prime.hpp in Headers */,
 				000DCCEE12B06C7100042A5E /* rsa.hpp in Headers */,
 				075B71F218CA5881006C4956 /* Rtt_CKWorkflow.h in Headers */,
@@ -3889,7 +3878,6 @@
 				000DCC3D12B05F3E00042A5E /* Rtt_TesselatorStream.cpp in Sources */,
 				075B71F318CA5881006C4956 /* Rtt_CKWorkflow.cpp in Sources */,
 				000DCC4112B05F3E00042A5E /* Rtt_Transform.cpp in Sources */,
-				000DCC4712B05F3E00042A5E /* Rtt_Verifier.cpp in Sources */,
 				000DCCEB12B06C7100042A5E /* prime.cpp in Sources */,
 				000DCCED12B06C7100042A5E /* rsa.cpp in Sources */,
 				000DCCEF12B06C7100042A5E /* vlong.cpp in Sources */,

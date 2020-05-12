@@ -209,7 +209,6 @@
 		A4551F7C1BAA182D00FB3BDF /* Rtt_StrokeTesselatorStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F2E1BAA182D00FB3BDF /* Rtt_StrokeTesselatorStream.cpp */; };
 		A4551F7D1BAA182D00FB3BDF /* Rtt_TesselatorStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F311BAA182D00FB3BDF /* Rtt_TesselatorStream.cpp */; };
 		A4551F7E1BAA182D00FB3BDF /* Rtt_Transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F331BAA182D00FB3BDF /* Rtt_Transform.cpp */; };
-		A4551F801BAA182D00FB3BDF /* Rtt_Verifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F371BAA182D00FB3BDF /* Rtt_Verifier.cpp */; };
 		A45520091BAA1B7300FB3BDF /* b2BroadPhase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F911BAA1B7300FB3BDF /* b2BroadPhase.cpp */; };
 		A455200A1BAA1B7300FB3BDF /* b2CollideCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F931BAA1B7300FB3BDF /* b2CollideCircle.cpp */; };
 		A455200B1BAA1B7300FB3BDF /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F941BAA1B7300FB3BDF /* b2CollideEdge.cpp */; };
@@ -636,6 +635,8 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).c",
@@ -647,6 +648,8 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
@@ -658,6 +661,8 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
@@ -1391,9 +1396,6 @@
 		A4551F321BAA182D00FB3BDF /* Rtt_TesselatorStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TesselatorStream.h; path = ../../librtt/Rtt_TesselatorStream.h; sourceTree = "<group>"; };
 		A4551F331BAA182D00FB3BDF /* Rtt_Transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Transform.cpp; path = ../../librtt/Rtt_Transform.cpp; sourceTree = "<group>"; };
 		A4551F341BAA182D00FB3BDF /* Rtt_Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Transform.h; path = ../../librtt/Rtt_Transform.h; sourceTree = "<group>"; };
-		A4551F371BAA182D00FB3BDF /* Rtt_Verifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Verifier.cpp; path = ../../librtt/Rtt_Verifier.cpp; sourceTree = "<group>"; };
-		A4551F381BAA182D00FB3BDF /* Rtt_Verifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Verifier.h; path = ../../librtt/Rtt_Verifier.h; sourceTree = "<group>"; };
-		A4551F391BAA182D00FB3BDF /* Rtt_VerifierData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_VerifierData.h; path = ../../librtt/Rtt_VerifierData.h; sourceTree = "<group>"; };
 		A4551F861BAA1B5500FB3BDF /* libbox2d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libbox2d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4551F911BAA1B7300FB3BDF /* b2BroadPhase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2BroadPhase.cpp; sourceTree = "<group>"; };
 		A4551F921BAA1B7300FB3BDF /* b2BroadPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2BroadPhase.h; sourceTree = "<group>"; };
@@ -2985,9 +2987,6 @@
 				A4551F321BAA182D00FB3BDF /* Rtt_TesselatorStream.h */,
 				A4551F331BAA182D00FB3BDF /* Rtt_Transform.cpp */,
 				A4551F341BAA182D00FB3BDF /* Rtt_Transform.h */,
-				A4551F371BAA182D00FB3BDF /* Rtt_Verifier.cpp */,
-				A4551F381BAA182D00FB3BDF /* Rtt_Verifier.h */,
-				A4551F391BAA182D00FB3BDF /* Rtt_VerifierData.h */,
 			);
 			name = librtt;
 			sourceTree = "<group>";
@@ -3881,6 +3880,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -4562,7 +4562,6 @@
 				A4551DE51BAA17CF00FB3BDF /* Rtt_CompositePaint.cpp in Sources */,
 				A4551D2D1BAA17BE00FB3BDF /* Rtt_ArrayTuple.cpp in Sources */,
 				A4551F741BAA182D00FB3BDF /* Rtt_PlatformVideoPlayer.cpp in Sources */,
-				A4551F801BAA182D00FB3BDF /* Rtt_Verifier.cpp in Sources */,
 				A4551DED1BAA17CF00FB3BDF /* Rtt_EmbossedTextObject.cpp in Sources */,
 				A4551E0E1BAA17CF00FB3BDF /* Rtt_ShapeAdapter.cpp in Sources */,
 				A4551F511BAA182D00FB3BDF /* Rtt_LuaLibPhysics.cpp in Sources */,

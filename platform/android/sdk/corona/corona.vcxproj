@@ -145,7 +145,6 @@
     <ClCompile Include="..\..\..\..\librtt\Rtt_StrokeTesselatorStream.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_TesselatorStream.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_Transform.cpp" />
-    <ClCompile Include="..\..\..\..\librtt\Rtt_Verifier.cpp" />
     <ClCompile Include="..\..\..\..\plugins\shared\CoronaLuaLibraryShared.cpp" />
     <ClCompile Include="..\..\..\shared\Rtt_PlatformConnection.cpp" />
     <ClCompile Include="..\..\..\..\external\b2Separator-cpp\b2Separator.cpp" />
@@ -1013,8 +1012,6 @@
     <ClInclude Include="..\..\..\..\librtt\Rtt_SurfaceInfo.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_TesselatorStream.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_Transform.h" />
-    <ClInclude Include="..\..\..\..\librtt\Rtt_Verifier.h" />
-    <ClInclude Include="..\..\..\..\librtt\Rtt_VerifierData.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_WorkFlowConstants.h" />
     <ClInclude Include="..\..\..\..\plugins\shared\CoronaLuaLibraryMetadata.h" />
     <ClInclude Include="..\..\..\..\plugins\shared\CoronaLuaLibraryShared.h" />

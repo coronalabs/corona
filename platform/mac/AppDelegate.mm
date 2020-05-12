@@ -3269,14 +3269,6 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 		if ( returnCode == kActionDefault )
 		{
 			[sheet close];
-			if ( @selector(deauthorize:) == contextInfo )
-			{
-				[self deauthorize:self];
-			}
-			else
-			{
-				Rtt_ASSERT_NOT_REACHED();
-			}
 		}
 	}
 }

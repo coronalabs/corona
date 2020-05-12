@@ -338,9 +338,6 @@
     <JCompile Include="src\com\ansca\corona\SystemMonitor.java">
       <Filter>src\com\ansca\corona</Filter>
     </JCompile>
-    <JCompile Include="src\com\ansca\corona\SplashScreenBeacon.java">
-      <Filter>src\com\ansca\corona</Filter>
-    </JCompile>
     <JCompile Include="src\com\ansca\corona\SmsSettings.java">
       <Filter>src\com\ansca\corona</Filter>
     </JCompile>

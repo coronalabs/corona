@@ -176,7 +176,6 @@ namespace Rtt
 
 -(BOOL)isRunning;
 -(IBAction)showHelp:(id)sender;
--(void)signin;
 
 -(IBAction)orderFrontStandardAboutPanel:(id)sender;
 
@@ -242,7 +241,6 @@ namespace Rtt
 -(void)notifyRuntimeError:(NSString *)message;
 - (NSString *) getOSVersion;
 
-- (BOOL) isTrial;
 - (BOOL) isDailyBuild;
 
 - (IBAction) presentWelcomeWindow:(id)sender;
@@ -280,6 +278,8 @@ namespace Rtt
 - (void) endLocationUpdating;
 
 -(void)notifyWithTitle:(NSString*)title description:(NSString*)description iconData:(NSImage*)iconData;
+- (void) clearConsole;
+
 @end
 
 @interface CoronaSimulatorApplication : NSApplication
@@ -287,6 +287,5 @@ namespace Rtt
 @property (nonatomic, readwrite) BOOL suppressAttentionRequests;
 
 - (NSInteger)requestUserAttention:(NSRequestUserAttentionType)requestType;
-- (void) clearConsole;
 
 @end
