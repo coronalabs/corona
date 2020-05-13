@@ -500,19 +500,30 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
                 "pluginPlatform" to androidDestPluginPlatform,
                 "destinationDirectory" to coronaPlugins.absolutePath
         )).toJsonString()
-
+        val builderInput = file("$buildDir/tmp/builderInput.json")
+        builderInput.parentFile.mkdirs()
+        builderInput.writeText(buildParams)
         val builderOutput = ByteArrayOutputStream()
         val execResult = exec {
-            commandLine(coronaBuilder, "plugins", "download", "--android-offline-plugins")
-            standardInput = StringInputStream(buildParams)
+            commandLine(coronaBuilder, "plugins", "download", "--android-offline-plugins", "builderInput=${builderInput.absolutePath}")
             standardOutput = builderOutput
+            errorOutput = builderOutput
             isIgnoreExitValue = true
         }
         if (execResult.exitValue != 0) {
             logger.error("Error while fetching plugins: $builderOutput")
             throw InvalidPluginException("Error while fetching plugins: $builderOutput")
         }
-        logger.lifecycle("Downloading plugins")
+        logger.lifecycle("Unpacking plugins")
+        fileTree(coronaPlugins) {
+            include("*/data.tgz")
+        }.forEach { data ->
+            copy {
+                from(tarTree(resources.gzip(data)))
+                into(data.parent)
+            }
+            data.delete()
+        }
     }
     processPluginGradleScripts()
 
