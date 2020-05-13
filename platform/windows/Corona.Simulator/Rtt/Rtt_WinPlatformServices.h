@@ -35,7 +35,6 @@ class WinPlatformServices : public MPlatformServices
 	public:
 		// MPlatformServices
 		virtual const MPlatform& Platform() const;
-		virtual PlatformConnection* CreateConnection( const char* url ) const;
 
 		virtual void GetPreference( const char *key, String * value ) const;
 

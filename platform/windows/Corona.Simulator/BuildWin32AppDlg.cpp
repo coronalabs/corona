@@ -19,7 +19,6 @@
 #include "BrowseDirDialog.h"
 #include "MessageDlg.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_Win32AppPackager.h"
 #include "Rtt_Win32AppPackagerParams.h"
 #include "Rtt_WinPlatform.h"
@@ -384,13 +383,8 @@ void CBuildWin32AppDlg::OnOK()
 		return;
 	}
 
-	// Display a nag window if the user is not authorized to build for the selected app store.
-	// In this case, the build system will create a trial version of the app instead.
-	appAllowFullBuild(Rtt::TargetDevice::kWin32Platform);
-
 	// Create the packager used to build the app.
 	auto platformServicesPointer = GetWinProperties()->GetServices();
-	Rtt::WebServicesSession webSession(*platformServicesPointer);
 	Rtt::Win32AppPackager packager(*platformServicesPointer);
 
 	// Read and validate the project's "build.settings" file.
@@ -475,11 +469,11 @@ void CBuildWin32AppDlg::OnOK()
 
 	// Build the Win32 desktop application.
 	BeginWaitCursor();
-	int buildResultCode = packager.Build(&params, webSession, tempDirectoryPath.GetUTF8());
+	int buildResultCode = packager.Build(&params, tempDirectoryPath.GetUTF8());
 	EndWaitCursor();
 
 	// Display an error message if the build failed.
-	if (buildResultCode != Rtt::WebServicesSession::kNoError)
+	if (buildResultCode != 0)
 	{
 		// Display the error message reported by the build system.
 		CStringW title;

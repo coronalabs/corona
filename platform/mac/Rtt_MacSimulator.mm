@@ -11,7 +11,6 @@
 
 #include "Rtt_MacSimulator.h"
 
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_Lua.h"
 #include "Rtt_MacPlatform.h"
 #include "Rtt_MacSurfaceVideoRecorder.h"
@@ -173,9 +172,7 @@ MacSimulator::Initialize(
 	}
 
 	AppDelegate *delegate = (AppDelegate*)[[NSApplication sharedApplication] delegate];
-	const AuthorizationTicket *ticket = [delegate ticket];
-	const char *subscription = ticket?AuthorizationTicket::StringForSubscription( ticket->GetSubscription() ):"";
-	[fProperties setValue:[NSString stringWithExternalString:subscription] forKey:@"subscription"];
+	[fProperties setValue:@"Solar2D" forKey:@"subscription"];
 	
 	// Store the simulated device's default font size.
 	[fProperties setValue:[NSNumber numberWithFloat:config.defaultFontSize] forKey:@"defaultFontSize"];

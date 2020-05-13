@@ -19,7 +19,6 @@ namespace Rtt
 
 class LuaContext;
 class MPlatformServices;
-class WebServicesSession;
 class Runtime;
 class MacSimulatorServices;
 
@@ -112,7 +111,7 @@ class OSXAppPackager : public PlatformAppPackager
 		virtual ~OSXAppPackager();
 
 	public:
-		virtual int Build( AppPackagerParams *params, WebServicesSession& session, const char *tmpDirBase );
+		virtual int Build( AppPackagerParams *params, const char *tmpDirBase );
 		virtual int PackageForAppStore( OSXAppPackagerParams *osxParams, bool sendToAppStore, const char *itunesConnectUsername, const char *itunesConnectPassword );
 		virtual int PackageForSelfDistribution( OSXAppPackagerParams *osxParams, bool createDMG );
 

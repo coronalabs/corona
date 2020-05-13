@@ -11,6 +11,7 @@
 #define Rtt_ResourceHandle_H
 
 #include "Core/Rtt_Types.h"
+#include "Core/Rtt_Macros.h"
 
 // ----------------------------------------------------------------------------
 

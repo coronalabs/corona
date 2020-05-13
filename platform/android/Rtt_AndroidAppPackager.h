@@ -23,7 +23,6 @@ namespace Rtt
 
 class LuaContext;
 class MPlatformServices;
-class WebServicesSession;
 
 // ----------------------------------------------------------------------------
 
@@ -82,7 +81,7 @@ class AndroidAppPackager : public PlatformAppPackager
 
 	public:
 		// TODO: caller should make dstDir a unique directory
-		virtual int Build( AppPackagerParams *params, WebServicesSession& session, const char *tmpDirBase );
+		virtual int Build( AppPackagerParams *params, const char *tmpDirBase );
 
 		virtual bool VerifyConfiguration() const;
 		bool IsUsingExpansionFile() const { return fIsUsingExpansionFile; }

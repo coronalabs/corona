@@ -18,10 +18,6 @@
 #import "Rtt_LinuxAppPackager.h"
 #import "Rtt_MacPlatform.h"
 
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
-
 #import "Rtt_MacConsolePlatform.h"
 #import "TextEditorSupport.h"
 
@@ -33,9 +29,9 @@ using namespace Rtt;
 
 @implementation LinuxAppBuildController
 
-- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath authorizer:(const Rtt::Authorization *)authorizer;
+- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath;
 {
-	self = [super initWithWindowNibName:nibFile projectPath:projPath authorizer:authorizer];
+	self = [super initWithWindowNibName:nibFile projectPath:projPath];
 
 	if ( self )
 	{
@@ -191,7 +187,6 @@ using namespace Rtt;
 {
 	MacConsolePlatform platform;
 	MacPlatformServices *services = new MacPlatformServices( platform );
-	WebServicesSession *session = new WebServicesSession( *services );
 	
 	if ( ! [self verifyBuildTools:sender] )
 	{
@@ -211,25 +206,6 @@ using namespace Rtt;
 	
 	[self setProgressBarLabel:@"Building for LINUX…"];
 
-	__block NSString *message = nil;
-	__block BOOL loginSuccessful = NO;
-	
-
-	// Login to the authorization server
-	void (^login)() = ^()
-	{
-		loginSuccessful = [self loginSession:session services:services ticket:[appDelegate ticket] message:&message];
-	};
-	
-	[self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:NO withBlock:login];
-	
-	if (! loginSuccessful)
-	{
-		[self logEvent:@"build-bungled" key:@"reason" value:@"cannot-login"];
-		[self showError:@"Cannot Login To Build Server" message:message helpURL:nil parentWindow:[self window]];
-		return;
-	}
-	
 	const char* name = [self.appName UTF8String];
 	const char* versionname = NULL;
 	
@@ -279,8 +255,7 @@ using namespace Rtt;
 		return;
 	}
 
-	const Rtt::AuthorizationTicket *ticket = [appDelegate ticket];
-	NSString *username = ticket?[NSString stringWithExternalString:ticket->GetUsername()]:@"anonymous@corona";
+	NSString *username = @"anonymous@corona";
 	const char* identity = [username UTF8String];
 	
 	bool useStandartResources = (fUseStandartResources.state == NSOnState);
@@ -297,13 +272,13 @@ using namespace Rtt;
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	// Do the actual build
-	__block size_t code = WebServicesSession::kNoError;
+	__block size_t code = PlatformAppPackager::kNoError;
 	
 
 	void (^performBuild)() = ^()
 	{
 		NSString* tmpDirBase = NSTemporaryDirectory();
-		code = packager->Build( params, *session, [tmpDirBase UTF8String] );
+		code = packager->Build( params, [tmpDirBase UTF8String] );
 	};
 	
 	[self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:YES withBlock:performBuild];
@@ -315,7 +290,7 @@ using namespace Rtt;
 		Rtt_Log("WARNING: Build stopped by request");
 		[self showMessage:@"Build Stopped" message:@"Build stopped by request" helpURL:nil parentWindow:[self window]];
 	}
-	else if (code == WebServicesSession::kNoError)
+	else if (code == PlatformAppPackager::kNoError)
 	{
 		[self logEvent:@"build-succeeded"];
 		

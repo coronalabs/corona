@@ -65,9 +65,6 @@ class MacSimulatorServices : public MSimulatorServices
 		virtual bool ShowProjectFiles( const char *name ) const;
 		virtual bool ShowProjectSandbox( const char *name ) const;
 
-	public:
-		virtual const char* GetSubscription( S32 *expirationTimestamp ) const;
-
 	private:
 		AppDelegate *fOwner;
         CoronaWindowController *fWindowController;

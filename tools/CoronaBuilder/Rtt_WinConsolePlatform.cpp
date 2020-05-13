@@ -319,16 +319,9 @@ void WinConsolePlatform::GetPreference(Category category, Rtt::String * value) c
 			}
 			break;
 		}
-#if 0
 		case kSubscription:
-			Interop::MDeviceSimulatorServices *deviceSimulatorServicesPointer;
-			deviceSimulatorServicesPointer = fEnvironment.GetDeviceSimulatorServices();
-			if (deviceSimulatorServicesPointer)
-			{
-				resultPointer = deviceSimulatorServicesPointer->GetAuthorizationTicketString();
-			}
+			resultPointer = "Solar2D";
 			break;
-#endif
 		default:
 			resultPointer = nullptr;
 			Rtt_ASSERT_NOT_REACHED();

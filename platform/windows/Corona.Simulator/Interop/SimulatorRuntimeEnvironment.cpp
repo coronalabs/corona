@@ -14,7 +14,6 @@
 #include "Display\Rtt_Display.h"
 #include "Interop\ApplicationServices.h"
 #include "Resource.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_Lua.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaLibSimulator.h"
@@ -612,21 +611,6 @@ const char* SimulatorRuntimeEnvironment::DeviceSimulatorServices::GetStatusBarIm
 	return nullptr;
 }
 
-const char* SimulatorRuntimeEnvironment::DeviceSimulatorServices::GetAuthorizationTicketString() const
-{
-	const char* stringPointer =
-			Rtt::AuthorizationTicket::StringForSubscription(Rtt::AuthorizationTicket::kUnknownSubscription);
-	auto appProperties = GetWinProperties();
-	if (appProperties)
-	{
-		auto ticket = GetWinProperties()->GetTicket();
-		if (ticket)
-		{
-			stringPointer = Rtt::AuthorizationTicket::StringForSubscription(ticket->GetSubscription());
-		}
-	}
-	return stringPointer;
-}
 
 void SimulatorRuntimeEnvironment::DeviceSimulatorServices::RotateClockwise()
 {

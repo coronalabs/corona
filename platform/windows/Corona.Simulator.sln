@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Corona.Simulator", "Corona.Simulator\Corona.Simulator.vcxproj", "{EAFC16C3-22B1-4C46-BEDE-8828226D926B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -19,8 +19,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Corona.Debugger", "Corona.D
 		{50977859-079E-4375-9B3F-BD598E6F7463} = {50977859-079E-4375-9B3F-BD598E6F7463}
 		{511AE85E-6A1E-4830-BEF1-F695B2855B47} = {511AE85E-6A1E-4830-BEF1-F695B2855B47}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinXmlRpc.Library.Win32", "WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.vcxproj", "{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQLite.Library.Win32", "SQLite.Library\SQLite.Library.Win32.vcxproj", "{AE9CFC36-7BD6-4B1E-B17A-6EC1248EE733}"
 EndProject
@@ -69,7 +67,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ogg.Vorbis.Library.Win32", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Glew.Library.Win32", "Glew.Library.Win32\Glew.Library.Win32.vcxproj", "{16C93EA1-5A41-4097-BC1D-16AA6268BFC5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Corona.OutputViewer", "Corona.OutputViewer\Corona.OutputViewer.vcxproj", "{6FED91A6-2850-4354-BA44-3282D222A25D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Corona.Console", "Corona.OutputViewer\Corona.OutputViewer.vcxproj", "{6FED91A6-2850-4354-BA44-3282D222A25D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Corona.LiveServer", "Corona.LiveServer\Corona.LiveServer.vcxproj", "{5C23484C-6D13-49CB-81FF-51D6149CC151}"
 EndProject
@@ -95,10 +93,6 @@ Global
 		{3F8DDAA9-2A84-4CEE-BAC0-A6A17A7A78EB}.Debug|Win32.Build.0 = Debug|Win32
 		{3F8DDAA9-2A84-4CEE-BAC0-A6A17A7A78EB}.Release|Win32.ActiveCfg = Release|Win32
 		{3F8DDAA9-2A84-4CEE-BAC0-A6A17A7A78EB}.Release|Win32.Build.0 = Release|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug|Win32.Build.0 = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Release|Win32.ActiveCfg = Release|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Release|Win32.Build.0 = Release|Win32
 		{AE9CFC36-7BD6-4B1E-B17A-6EC1248EE733}.Debug|Win32.ActiveCfg = Debug|Win32
 		{AE9CFC36-7BD6-4B1E-B17A-6EC1248EE733}.Debug|Win32.Build.0 = Debug|Win32
 		{AE9CFC36-7BD6-4B1E-B17A-6EC1248EE733}.Release|Win32.ActiveCfg = Release|Win32
@@ -170,5 +164,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {36C5613C-F3B2-4246-9B62-33E68218CC72}
 	EndGlobalSection
 EndGlobal

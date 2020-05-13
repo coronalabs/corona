@@ -48,13 +48,13 @@ class Win32AppPackager : public PlatformAppPackager
 		///  <para>Path cannot be null or empty or else the build will fail.</para>
 		/// </param>
 		/// <returns>
-		///  <para>Returns Rtt::WebServicesSession::kNoError if the build succeeded.</para>
+		///  <para>Returns 0 if the build succeeded.</para>
 		///  <para>
 		///   Returns an error code from the Rtt::WebServiceSession enum if the build failed. The given "paramPointer"
 		///   argument's GetBuildMessage() will provide the reason why the build failed in this case.
 		///  </para>
 		/// </returns>
-		virtual int Build(AppPackagerParams* paramsPointer, WebServicesSession& webSession, const char* tempDirectoryPath);
+		virtual int Build(AppPackagerParams* paramsPointer, const char* tempDirectoryPath);
 
 	protected:
 		/// <summary>Internal build settings required by this class' DoLocalBuild() and DoRemoteBuild() methods.</summary>
@@ -70,7 +70,7 @@ class Win32AppPackager : public PlatformAppPackager
 		/// </summary>
 		/// <param name="buildSettings">Settings required to perform the build.</param>
 		/// <returns>
-		///  <para>Returns Rtt::WebServicesSession::kNoError if the build succeeded.</para>
+		///  <para>Returns 0 if the build succeeded.</para>
 		///  <para>
 		///   Returns an error code from the Rtt::WebServiceSession enum if the build failed. The given "paramPointer"
 		///   argument's GetBuildMessage() will provide the reason why the build failed in this case.
@@ -87,13 +87,13 @@ class Win32AppPackager : public PlatformAppPackager
 		/// <param name="buildSettings">Settings required to perform the build.</param>
 		/// <param name="webSession">Web session needed to perform the remote build.</param>
 		/// <returns>
-		///  <para>Returns Rtt::WebServicesSession::kNoError if the build succeeded.</para>
+		///  <para>Returns 0 if the build succeeded.</para>
 		///  <para>
 		///   Returns an error code from the Rtt::WebServiceSession enum if the build failed. The given "paramPointer"
 		///   argument's GetBuildMessage() will provide the reason why the build failed in this case.
 		///  </para>
 		/// </returns>
-		int DoRemoteBuild(const BuildSettings& buildSettings, WebServicesSession& webSession);
+		int DoRemoteBuild(const BuildSettings& buildSettings);
 
 		/// <summary>
 		///  <para>Called while the base class is reading the "build.settings" file via the ReadBuildSettings() method.</para>

@@ -12,7 +12,6 @@
 #include "Core\Rtt_Build.h"
 #include "Interop\Storage\RegistryStoredPreferences.h"
 #include "SimulatorView.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_WinPlatform.h"
 #include "Rtt_TargetDevice.h"
 #include "Rtt_SimulatorAnalytics.h"
@@ -261,24 +260,6 @@ void WinSimulatorServices::SetCursorRect(const char *cursorName, int x, int y, i
 void WinSimulatorServices::GetRecentDocs(LightPtrArray<RecentProjectInfo> *list) const
 {
 	fSimulatorView.GetRecentDocs(list);
-}
-
-const char* WinSimulatorServices::GetSubscription( S32 *expirationTimestamp ) const
-{
-	// Fetch the subscription's expiration time.
-	const Rtt::AuthorizationTicket *ticketPointer = GetWinProperties()->GetTicket();
-	if (expirationTimestamp && ticketPointer)
-	{
-		*expirationTimestamp = ticketPointer->GetExpiration();
-	}
-
-	// Return the name of the subscription.
-	AuthorizationTicket::Subscription subscriptionType = AuthorizationTicket::kUnknownSubscription;
-	if (ticketPointer)
-	{
-		subscriptionType = ticketPointer->GetSubscription();
-	}
-	return AuthorizationTicket::StringForSubscription(subscriptionType);
 }
 
 // stub to match Mac implementation

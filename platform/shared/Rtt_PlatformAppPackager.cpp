@@ -18,7 +18,6 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformDevice.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
 #	include "Core/Rtt_FileSystem.h"
 #	include "stdafx.h"
@@ -334,9 +333,9 @@ PlatformAppPackager::rmdir( const char *sDir )
 }
 
 int
-PlatformAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, const char* tmpDirBase )
+PlatformAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 {
-	return WebServicesSession::kBuildError;
+	return PlatformAppPackager::kBuildError;
 }
 
 bool

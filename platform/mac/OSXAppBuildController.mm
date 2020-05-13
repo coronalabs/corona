@@ -15,9 +15,6 @@
 #import "ValidationSupportMacUI.h"
 #import "ValidationToolOutputViewController.h"
 
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_MacConsolePlatform.h"
 #include "Rtt_Assert.h"
 #include "Rtt_MacPlatform.h"
@@ -42,10 +39,9 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 @implementation OSXAppBuildController
 
 - (id)initWithWindowNibName:(NSString*)nibFile
-                projectPath:(NSString *)projPath
-                 authorizer:(const Authorization *)authorizer;
+                projectPath:(NSString *)projPath;
 {
-	self = [super initWithWindowNibName:nibFile projectPath:projPath authorizer:authorizer];
+	self = [super initWithWindowNibName:nibFile projectPath:projPath];
 
 	if ( self )
 	{
@@ -309,13 +305,10 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 	}
 
 	// We don't login to build macOS apps so we output this here
-	const char* usr = [appDelegate ticket]?[appDelegate ticket]->GetUsername():"anonymous@corona";
-
-	Rtt_Log("Building %s app for %s with %s", [self.platformTitle UTF8String], usr, Rtt_STRING_BUILD);
+	Rtt_Log("Building %s app with %s", [self.platformTitle UTF8String], Rtt_STRING_BUILD);
 	
 	MacConsolePlatform platform; // TODO: Use fConsolePlatform
 	MacPlatformServices services( platform );
-	WebServicesSession session( services );
 
 	const char* name = [self.appName UTF8String];
 	const char* versionname = NULL;
@@ -457,11 +450,11 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 	[self logEvent:@"build"];
 
 	NSString* tmpDirBase = NSTemporaryDirectory();
-	size_t code = osxPackager->Build( params, session, [tmpDirBase UTF8String] );
+	size_t code = osxPackager->Build( params, [tmpDirBase UTF8String] );
 
 	[self endProgressSheetBanner:[self window]];
 
-	if (code == WebServicesSession::kNoError)
+	if (code == PlatformAppPackager::kNoError)
 	{
 		[self logEvent:@"build-succeeded"];
 
@@ -799,7 +792,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 
 	[self endProgressSheetBanner:[self window]];
 
-	if (code != WebServicesSession::kNoError)
+	if (code != PlatformAppPackager::kNoError)
 	{
 		NSString *buildMsg = nil;
 		NSString *title = nil;
@@ -882,7 +875,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 
 	[self endProgressSheetBanner:[self window]];
 
-	if (code != WebServicesSession::kNoError)
+	if (code != PlatformAppPackager::kNoError)
 	{
         NSString *buildMsg = nil;
 

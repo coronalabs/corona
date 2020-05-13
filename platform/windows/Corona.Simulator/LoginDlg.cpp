@@ -12,8 +12,6 @@
 
 #include "CoronaInterface.h"
 #include "WinString.h"
-#include "Rtt_WinAuthorizationDelegate.h"
-
 #include "ProgressWnd.h"
 #include "LoginDlg.h"
 
@@ -25,9 +23,7 @@ IMPLEMENT_DYNAMIC(CLoginDlg, CDialog)
 CLoginDlg::CLoginDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CLoginDlg::IDD, pParent),
       m_sUser( "" ),
-      m_sPassword( "" ),
-      m_pAuthDelegate( NULL ),
-      m_pAuth( NULL )
+      m_sPassword( "" )
 {
 }
 
@@ -53,15 +49,6 @@ BOOL CLoginDlg::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
-}
-
-void CLoginDlg::SetAuthorizer( Rtt::WinAuthorizationDelegate *pDel, const Rtt::Authorization *pAuth )
-{
-    ASSERT( pDel );
-    ASSERT( pAuth );
-
-    m_pAuthDelegate = pDel;
-    m_pAuth = pAuth;
 }
 
 BEGIN_MESSAGE_MAP(CLoginDlg, CDialog)
@@ -120,12 +107,7 @@ void CLoginDlg::OnOK()  // OnLogin()
 	GetDlgItemText( IDC_LOGIN_EMAIL, m_sUser );
     GetDlgItemText( IDC_LOGIN_PASSWORD, m_sPassword );
 
-	// Log in the user. This displays a progress window and a message box indicating if it succeeded or failed.
-	if (m_pAuthDelegate->Login((Rtt::Authorization*)m_pAuth))
-	{
-		// Log in was successful. Close this dialog.
-		CDialog::OnOK();
-	}
+	CDialog::OnOK();
 }
 
 void CLoginDlg::OnBnClickedLoginRegister()

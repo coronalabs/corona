@@ -39,9 +39,6 @@ $path/car "$appPath/resource.car" "$appPath"/*.lu
 
 rm -f "$appPath"/*.lu
 
-# sign exe with signature of main.lu
-$path/app_sign sign "$4" "$appPath/resource.car" "$exePath" "$6"
-
 # create output.zip in $dst
 cd $dst
 zip -rym output.zip "$appDir"

@@ -16,7 +16,6 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_TargetAndroidAppStore.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_JavaHost.h"
 #include "Rtt_DeviceBuildData.h"
@@ -188,11 +187,53 @@ AndroidAppPackager::EscapeArgument(std::string arg)
 	return result;
 }
 
+#if defined(Rtt_WIN_ENV) && !defined(Rtt_NO_GUI)
+int system_hidden(const char* cmdArgsUtf8)
+{
+	wchar_t cmdArgs[4096] = { 0 };
+	MultiByteToWideChar(CP_UTF8, 0, cmdArgsUtf8, -1, cmdArgs, 4096);
+
+	PROCESS_INFORMATION pinfo;
+	STARTUPINFO sinfo;
+	if (!GetConsoleWindow()) {
+		AllocConsole();
+		ShowWindow(GetConsoleWindow(), SW_HIDE);
+	}
+
+	memset(&sinfo, 0, sizeof(sinfo));
+	sinfo.cb = sizeof(sinfo);
+	CreateProcess(NULL, cmdArgs,
+		NULL, NULL, false,
+		0,
+		NULL, NULL, &sinfo, &pinfo);
+	DWORD ret;
+	while (true)
+	{
+		HANDLE array[1];
+		array[0] = pinfo.hProcess;
+		ret = MsgWaitForMultipleObjects(1, array, false, INFINITE,
+			QS_ALLPOSTMESSAGE);
+		if ((ret == WAIT_FAILED) || (ret == WAIT_OBJECT_0))
+			break;
+		
+		MSG msg;
+		while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+
+	DWORD pret;
+	GetExitCodeProcess(pinfo.hProcess, &pret);
+	return pret;
+}
+#endif
 
 int
-AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & session, const char * tmpDirBase )
+AndroidAppPackager::Build( AppPackagerParams * params, const char * tmpDirBase )
 {
-	int result = WebServicesSession::kBuildError;
+	int result = PlatformAppPackager::kBuildError;
 	time_t startTime = time(NULL);
 
     const char tmpTemplate[] = "CLtmpXXXXXX";
@@ -204,11 +245,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 	{
 		char* inputFile = Prepackage( params, tmpDir );
 
-		String gradleBuildEnabledStr;
-		fServices.GetPreference( "gradleBuild", &gradleBuildEnabledStr );
-		bool gradleBuild = Rtt_StringCompare(gradleBuildEnabledStr, "0")!=0;
-		
-		if (gradleBuild && inputFile) //offline build
+		if (inputFile) //offline build
 		{
 			const AndroidAppPackagerParams * androidParams = (const AndroidAppPackagerParams *)params;
 
@@ -382,304 +419,59 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 				
 				Rtt_Log("Build: running: %s\n", sanitizedCmdBuf.c_str());
 			}
-#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
-			result = system(gradleGo.c_str());
-#else // Windows
-#if !defined(Rtt_NO_GUI)
-			Interop::Ipc::CommandLine::SetOutputCaptureEnabled(true);
-			Interop::Ipc::CommandLine::SetHideWindowEnabled(true);
-			Interop::Ipc::CommandLineRunResult cmdResult = Interop::Ipc::CommandLine::RunShellCommandUntilExit(gradleGo.c_str());
-			result = cmdResult.GetExitCode();
-			if (debugBuildProcess > 1 || result != 0)
-			{
-				std::string output = cmdResult.GetOutput();
-				Rtt_Log("%s", output.c_str());
-			}
+
+#if defined(Rtt_WIN_ENV)
+			gradleGo.append(" < NUL ");
 #else
+			gradleGo.append(" < /dev/null ");
+#endif
+
+#if !defined(Rtt_NO_GUI)
+			gradleGo.insert(0, "(");
+			gradleGo.append(") > ");
+			std::string gradleLogFile(tmpDir);
+			gradleLogFile.append(LUA_DIRSEP);
+			gradleLogFile.append("gradleLogFile.log");
+			gradleGo.append(EscapeArgument(gradleLogFile.c_str()));
+			gradleGo.append(" 2>&1 ");
+#endif
+
+#if defined(Rtt_WIN_ENV)
 			gradleGo.insert(0, "\"");
 			gradleGo.append("\"");
+#if defined(Rtt_NO_GUI)
+			result = system(gradleGo.c_str());
+#else
+			gradleGo.insert(0, "CMD /C ");
+			result = system_hidden(gradleGo.c_str());
+#endif
+#else
 			result = system(gradleGo.c_str());
 #endif
-#endif
-		}
-		else if ( inputFile )
-		{
-			const char kOutputName[] = "output.zip";
-			size_t tmpDirLen = strlen( tmpDir );
-			size_t outputFileLen = tmpDirLen + sizeof(kOutputName) + sizeof( LUA_DIRSEP );
-			char* outputFile = (char*)malloc( outputFileLen );
-			snprintf( outputFile, outputFileLen, "%s" LUA_DIRSEP "%s", tmpDir, kOutputName );
 
-			// Send params/input.zip via web api
-			result = session.BeginBuild( params, inputFile, outputFile );
-
-			if ( WebServicesSession::kNoError == result )
+#if !defined(Rtt_NO_GUI)
+			if (debugBuildProcess >= 1 || result != 0)
 			{
-				const AndroidAppPackagerParams * androidParams = (const AndroidAppPackagerParams *) params;
-
-				// Run Android specific post package script
-
-				std::string liveBuildStr;
-				std::string liveBuildAssetDirStr;
-
-				if (params->IsLiveBuild())
-				{
-					liveBuildStr = "YES";
-					liveBuildAssetDirStr = "corona_live_build_app_";
+				FILE *log = Rtt_FileOpen(gradleLogFile.c_str(), "rb");
+				if (log) {
+					Rtt_FileSeek(log, 0, SEEK_END);
+					long sz = Rtt_FileTell(log);
+					Rtt_FileSeek(log, 0, SEEK_SET);
+					char* buf = new char[sz + 1];
+					long read = Rtt_FileRead(buf, sizeof(char), sz, log);
+					buf[read] = 0;
+					Rtt_Log("%s", buf);
+					delete[] buf;
+					Rtt_FileClose(log);
 				}
-				else
+				else 
 				{
-					liveBuildStr = "NO";
+					Rtt_Log("%s", "Unable to open build log file");
 				}
-
-				std::string javaCmd;
-#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
-				javaCmd = "/usr/bin/java";
-#else // Windows
-				std::string jdkPath = Rtt::JavaHost::GetJdkPath();
-
-				javaCmd = jdkPath + "\\bin\\java.exe";
-#endif
-
-				const char kCmdFormat[] = "\"%s\" -Djava.class.path=%s org.apache.tools.ant.launch.Launcher %s -DTEMP_DIR=%s -DSRC_DIR=%s -DDST_DIR=%s -DUSER_APP_NAME=%s -DBUNDLE_DIR=%s -DLIVE_BUILD=%s -DLIVE_BUILD_ASSET_DIR=%s -DKS=%s -DKP=%s -DKA=%s -DAP=%s -DAV=%s %s -f %s/build.xml build";
-
-				// const char kCmdFormat[] = "javaw -Djava.class.path=\"%s\" org.apache.tools.ant.launch.Launcher %s -DTEMP_DIR=\"%s\" -DSRC_DIR=\"%s\" -DDST_DIR=\"%s\" -DUSER_APP_NAME=\"%s\" -DBUNDLE_DIR=\"%s\" -DLIVE_BUILD=\"%s\" -DLIVE_BUILD_ASSET_DIR=\"%s\" -DKS=\"%s\" -DKP=\"%s\" -DKA=\"%s\" -DAP=\"%s\" -DAV=\"%s\" %s -f \"%s/build.xml\" build";
-
-				char cmdBuf[20480];
-				String appFileName;
-				PlatformAppPackager::EscapeFileName( params->GetAppName(), appFileName );
-
-				std::string tmpDirStr = EscapeArgument(tmpDir);
-				std::string keystoreStr = EscapeArgument(androidParams->GetAndroidKeyStore());
-				std::string keystorePasswordStr = EscapeArgument(androidParams->GetAndroidKeyStorePassword());
-				std::string keyaliasStr = EscapeArgument(androidParams->GetAndroidKeyAlias());
-				std::string srcDirStr = EscapeArgument(params->GetSrcDir());
-				std::string dstDirStr = EscapeArgument(params->GetDstDir());
-				std::string appNameStr = EscapeArgument(appFileName.GetString());
-				std::string resourcesDirStr = EscapeArgument(fResourcesDir.GetString());
-				std::string keyaliasPasswordStr;
-				std::string jarPathStr;
-
-				jarPathStr.append(fResourcesDir.GetString());
-				jarPathStr.append("/");
-				jarPathStr.append("ant.jar");
-#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
-				jarPathStr.append(":");
-#else // Windows
-				jarPathStr.append(";");
-#endif
-				jarPathStr.append(fResourcesDir.GetString());
-				jarPathStr.append("/");
-				jarPathStr.append("ant-launcher.jar" );
-				jarPathStr = EscapeArgument(jarPathStr);
-
-				if (androidParams->GetAndroidKeyAliasPassword() != NULL)
-				{
-					keyaliasPasswordStr = EscapeArgument(androidParams->GetAndroidKeyAliasPassword());
-				}
-
-				const char *antDebugFlag = "-q";
-				String debugBuildProcessPref;
-				int debugBuildProcess = 0;
-				fServices.GetPreference( "debugBuildProcess", &debugBuildProcessPref );
-
-				if (! debugBuildProcessPref.IsEmpty())
-				{
-					debugBuildProcess = (int) strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
-				}
-				else
-				{
-					debugBuildProcess = 0;
-				}
-
-				if (debugBuildProcess >= 2)
-				{
-					antDebugFlag = "-v";
-				}
-				if (debugBuildProcess > 4)
-				{
-					antDebugFlag = "-d";
-				}
-
-				char expansionFileName[255] = { 0 };
-				if (fIsUsingExpansionFile &&
-					params->GetTargetAppStoreName() &&
-					!strcmp(params->GetTargetAppStoreName(), TargetAndroidAppStore::kGoogle.GetStringId()))
-				{
-					snprintf(expansionFileName, sizeof(expansionFileName) - 1, "-DEXPANSION_FILE_NAME=\"main.%d.%s.obb\"",
-							 ((const AndroidAppPackagerParams*)params)->GetVersionCode(), params->GetAppPackage());
-				}
-
-				snprintf(cmdBuf, sizeof(cmdBuf), kCmdFormat,
-						javaCmd.c_str(),
-						jarPathStr.c_str(),
-						antDebugFlag,
-						tmpDirStr.c_str(),
-						srcDirStr.c_str(),
-						dstDirStr.c_str(),
-						appNameStr.c_str(),
-						resourcesDirStr.c_str(),
-						liveBuildStr.c_str(),
-						liveBuildAssetDirStr.c_str(),
-						keystoreStr.c_str(),
-						keystorePasswordStr.c_str(),
-						keyaliasStr.c_str(),
-						keyaliasPasswordStr.c_str(),
-						versionToString( params->GetTargetVersion() ),
-						expansionFileName,
-						resourcesDirStr.c_str() );
-
-				if (debugBuildProcess > 1)
-				{
-					// Obfuscate passwords
-					std::string placeHolder = EscapeArgument("XXXXXX");
-					std::string sanitizedCmdBuf = cmdBuf;
-
-					if (keystorePasswordStr.length() > 0)
-					{
-						ReplaceString(sanitizedCmdBuf, keystorePasswordStr, placeHolder);
-					}
-
-					if (keyaliasPasswordStr.length() > 0)
-					{
-						ReplaceString(sanitizedCmdBuf, keyaliasPasswordStr, placeHolder);
-					}
-
-					Rtt_Log("Build: running: %s\n", sanitizedCmdBuf.c_str());
-				}
-
-#if defined(Rtt_MAC_ENV)
-				result = system( cmdBuf );
-#elif defined(Rtt_LINUX_ENV)
-				result = system( cmdBuf );
-				if (result == 0)
-				{
-					std::string outputBaseApkStr = tmpDir;
-					outputBaseApkStr.append("/MyCoronaActivity-signed-aligned.apk");
-					std::string dstDirStrAppName = params->GetDstDir();
-					appNameStr = dstDirStrAppName.append("/").append(params->GetAppName()).append(".apk");
-
-					int rc = Rtt_CopyFile(outputBaseApkStr.c_str(), appNameStr.c_str());
-					if (rc == false)
-					{
-						result = 1;
-						Rtt_Log("ERROR: Failed to copy built apk to destination directory.");
-					}
-				}
-#else // Windows
-
-				WinString cmdBufStr;
-				cmdBufStr.SetUTF8(cmdBuf);
-				std::wstring utf16CommandLine(cmdBufStr.GetUTF16());
-
-				Interop::Ipc::CommandLine::SetOutputCaptureEnabled(true);
-				Interop::Ipc::CommandLineRunResult cmdResult = Interop::Ipc::CommandLine::RunUntilExit(utf16CommandLine.c_str());
-				result = cmdResult.GetExitCode();
-
-				if (result == 0)
-				{
-					std::string outputBaseApkStr = tmpDir;
-					outputBaseApkStr.append("\\MyCoronaActivity-signed-aligned.apk");
-					std::string dstDirStrAppName = params->GetDstDir();
-					appNameStr = dstDirStrAppName.append("\\").append(params->GetAppName()).append(".apk");
-
-					if (!Rtt_CopyFile(outputBaseApkStr.c_str(), appNameStr.c_str()))
-					{
-						result = 1;
-						Rtt_Log("ERROR: Failed to copy built apk to destination directory.");
-					}
-				}
-
-#if !defined( Rtt_NO_GUI )
-				CSimulatorApp *pApp = ((CSimulatorApp *)AfxGetApp());
-				if (pApp != NULL && pApp->IsStopBuildRequested())
-				{
-					// A request to stop the build was made while the Java was running
-					result = -1;
-				}
-#endif
-
-				if (debugBuildProcess > 1)
-				{
-					std::string output = cmdResult.GetOutput();
-
-					Rtt_Log("%s", output.c_str());
-				}
-
-#endif
-
-
-#if USE_JNI
-				AntHost	antTask;
-
-				char buildFilePath[1024];
-				snprintf( buildFilePath, sizeof(buildFilePath), "%s%sbuild.xml", fResourcesDir.GetString(), LUA_DIRSEP );
-
-				String appFileName;
-				PlatformAppPackager::EscapeFileName( params->GetAppName(), appFileName );
-
-				antTask.SetProperty( "TEMP_DIR", tmpDir );
-				antTask.SetProperty( "SRC_DIR", params->GetSrcDir() );
-				antTask.SetProperty( "DST_DIR", params->GetDstDir() );
-				antTask.SetProperty( "USER_APP_NAME", appFileName.GetString() );
-				antTask.SetProperty( "BUNDLE_DIR", fResourcesDir.GetString() );
-				antTask.SetProperty( "LIVE_BUILD", liveBuildStr.c_str() );
-				antTask.SetProperty( "LIVE_BUILD_ASSET_DIR", liveBuildAssetDirStr.c_str() );
-				antTask.SetProperty( "KS", androidParams->GetAndroidKeyStore() );
-				antTask.SetProperty( "KP", androidParams->GetAndroidKeyStorePassword() );
-				antTask.SetProperty( "KA", androidParams->GetAndroidKeyAlias() );
-				antTask.SetProperty( "AP", androidParams->GetAndroidKeyAliasPassword() );
-				antTask.SetProperty( "AV", versionToString( params->GetTargetVersion() ) );
-
-				String debugBuildProcessPref;
-				int debugBuildProcess = 0;
-				fServices.GetPreference( "debugBuildProcess", &debugBuildProcessPref );
-
-				if (! debugBuildProcessPref.IsEmpty())
-				{
-					debugBuildProcess = (int) strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
-				}
-				else
-				{
-					debugBuildProcess = 0;
-				}
-
-				char expansionFileName[255];
-				if (fIsUsingExpansionFile &&
-				    params->GetTargetAppStoreName() &&
-				    !strcmp(params->GetTargetAppStoreName(), TargetAndroidAppStore::kGoogle.GetStringId()))
-				{
-					snprintf(
-						expansionFileName, sizeof(expansionFileName) - 1, "main.%d.%s.obb",
-						((const AndroidAppPackagerParams*)params)->GetVersionCode(), params->GetAppPackage());
-					antTask.SetProperty( "EXPANSION_FILE_NAME", expansionFileName );
-				}
-
-				String antResult;
-				int antCode;
-
-				antCode = antTask.AntCall( buildFilePath, "build", debugBuildProcess, &antResult );
-
-				// Translate "antCode" to a "WebServicesSession" return code
-				if (antCode != 1)
-				{
-					Rtt_TRACE_SIM( ( "ANT build failed: %s\n", antResult.GetString() ) );
-
-					result = WebServicesSession::kLocalPackagingError;
-
-					String tmpString;
-
-					tmpString.Set("Failed to build APK\n\n");
-					tmpString.Append(antResult.GetString());
-
-					params->SetBuildMessage(tmpString.GetString());
-				}
-#endif // USE_JNI
 			}
-
-			free( outputFile );
-			free( inputFile );
+#endif
 		}
+		
 		// Clean up intermediate files
 		String retainTmpDirStr;
 		fServices.GetPreference( "retainBuildTmpDir", &retainTmpDirStr );
@@ -701,19 +493,13 @@ AndroidAppPackager::Build( AppPackagerParams * params, WebServicesSession & sess
 	}
 
     // Indicate status in the console
-    if (WebServicesSession::kNoError == result)
+    if (PlatformAppPackager::kNoError == result)
     {
 		// This isn't an exception but Rtt_Log() is only defined for debug builds
         Rtt_LogException("Android build succeeded in %ld seconds", (time(NULL) - startTime));
     }
     else
     {
-		if (params->GetBuildMessage() == NULL)
-		{
-			// If we don't already have a more precise error, use the XMLRPC layer's error message
-			params->SetBuildMessage(session.ErrorMessage() != NULL ? session.ErrorMessage() : "Failed to Build" );
-		}
-
 		Rtt_LogException("Android build failed (%d) after %ld seconds", result, (time(NULL) - startTime));
     }
 

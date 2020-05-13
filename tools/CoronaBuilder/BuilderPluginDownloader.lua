@@ -603,7 +603,18 @@ end
 
 
 function DownloadAndroidOfflinePlugins(args, user, buildYear, buildRevision)
-	local buildData = json.decode(io.read('*all'))
+	local buildData
+	table.remove(args, 1)
+	local inputFile = string.match(args[1] or "", "^builderInput=(.+)")
+	if inputFile
+	then
+	    local f = assert(io.open(inputFile, "rb"))
+		table.remove(args, 1)
+		buildData = json.decode(f:read("*all"))
+		f:close()
+  	else
+		buildData = json.decode(io.read('*all'))
+	end
 	assert(buildData)
 	buildData.build = buildData.build or buildRevision
 	buildData.user = buildData.user or user

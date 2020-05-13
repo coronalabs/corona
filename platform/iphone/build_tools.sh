@@ -18,7 +18,3 @@ xcodebuild -project "$path"/../mac/lua.xcodeproj -alltargets -configuration Rele
 
 # car
 xcodebuild -project "$path"/../mac/car.xcodeproj -target car -configuration Release 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
-
-# app_sign
-xcodebuild -project "$path"/../mac/app_sign.xcodeproj -target app_sign -configuration Release 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
-

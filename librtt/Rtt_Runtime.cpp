@@ -32,7 +32,6 @@
 #include "Rtt_PlatformTimer.h"
 #include "Rtt_Scheduler.h"
 #include "Display/Rtt_TextObject.h"
-#include "Rtt_Verifier.h"
 #include "Rtt_LuaFrameworks.h"
 #include "Rtt_HTTPClient.h"
 
@@ -533,25 +532,6 @@ Runtime::InitializeArchive( const char *filePath )
 	// Add loader
 	lua_State *L = fVMContext->L();
 	Lua::InsertPackageLoader( L, & Archive::ResourceLoader, 1 );
-}
-
-bool
-Runtime::VerifyApplication( const char *filePath )
-{
-	#if defined( Rtt_AUTHORING_SIMULATOR ) && !defined( Rtt_PROJECTOR )
-		return Rtt_VERIFY( Verifier::IsValidSubscription( NULL ) );
-    #elif defined( Rtt_DEVICE_SIMULATOR )
-        // To avoid issues with verification on some simulated devices
-        // we skip it if running in the device simulator
-        Rtt_TRACE(("Skipping verification on device simulator\n"));
-		return true;
-	#else
-		bool result = Rtt_VERIFY( filePath ) && Rtt_VERIFY( Verifier::IsValidApplication( filePath ) );
-
-		if ( ! result ) { fprintf( stderr, "Could not verify application\n" ); }
-
-		return result;
-	#endif
 }
 
 static const char kApplication[] = "application";
@@ -1138,30 +1118,6 @@ Runtime::LoadApplication( const LoadParameters& parameters )
 	String filePath( GetAllocator() );
 	
     fPlatform.PathForFile( basename, MPlatform::kSystemResourceDir, MPlatform::kDefaultPathFlags, filePath );
-
-    if ( ! IsProperty( kIsUsingCustomCode | kShouldVerifyLicense ) && ! IsProperty( kIsApplicationNotArchived ) )
-	{
-        if (filePath.GetString() == NULL)
-        {
-            fPlatform.PathForFile( NULL, MPlatform::kSystemResourceDir, 0, filePath );
-			goto exit_gracefully;
-		}
-        
-		if ( ! VerifyApplication( filePath.GetString() ) )
-		{
-			goto exit_gracefully;
-		}
-	}
-    
-	if ( IsProperty( kShouldVerifyLicense ) )
-	{
-		// Do additional checking here...
-		bool verificationFailed = false;
-		if ( verificationFailed )
-		{
-			goto exit_gracefully;
-		}
-	}
 
 	{
 		// Init VM

@@ -17,7 +17,6 @@
 #include "Interop\UI\TaskDialog.h"
 #include "Interop\MDeviceSimulatorServices.h"
 #include "Interop\SimulatorRuntimeEnvironment.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaFile.h"
 #include "Rtt_MPlatform.h"
@@ -27,8 +26,6 @@
 #include "Rtt_RenderingStream.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_WinAuthorizationDelegate.h"
-#include "Rtt_Authorization.h"
 #include "Rtt_WinPlatform.h"
 #include "Rtt_WinSimulatorServices.h"
 #include "Simulator.h"
@@ -1432,16 +1429,10 @@ void CSimulatorView::OnUpdateWindowViewAs( CCmdUI *pCmdUI )
 				bool uhOh = true;
 			}
 
-			// Only "Pro" users get to define custom devices, for business purposes, the ability to
-			// use Daily Builds equates to "Pro and above"
-			const Rtt::AuthorizationTicket *ticket = GetWinProperties()->GetTicket();
-			if ( ticket && ticket->IsDailyBuildAllowed() )
-			{
-				// Separator
-				pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION|MFT_SEPARATOR, 0, _T("-"));
-				++viewAsItemCount;
-				pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION, ID_VIEWAS_CUSTOMDEVICE, _T("Custom Device..."));
-			}
+			// Separator
+			pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION|MFT_SEPARATOR, 0, _T("-"));
+			++viewAsItemCount;
+			pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION, ID_VIEWAS_CUSTOMDEVICE, _T("Custom Device..."));
 		}
 	}
 

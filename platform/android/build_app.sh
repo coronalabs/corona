@@ -161,13 +161,6 @@ dir=$(pwd)
 CORONA_ROOT=$dir
 popd > /dev/null
 
-CERTIFICATE_PATH=${CORONA_ROOT}/platform/resources/developerkey.cert
-
-if [ ! -e "$CERTIFICATE_PATH" ] 
-then
-    echo "Certificate file ($CERTIFICATE_PATH) used by app_sign could not be found"
-    usage
-fi
 
 
 ###############################################################################
@@ -207,10 +200,6 @@ else
 	XCODE_CLEAN_ACTION=
 fi
 
-if [ ! -e "${CORONA_ROOT}/bin/mac/app_sign" ] || [ "$BUILD_TYPE" = "clean" ] ; then
-	echo "xcodebuild -project \"${CORONA_ROOT}/platform/mac/app_sign.xcodeproj\" $XCODE_CLEAN_ACTION build"
-	xcodebuild -project "${CORONA_ROOT}/platform/mac/app_sign.xcodeproj" $XCODE_CLEAN_ACTION build
-fi
 
 if [ ! -e "${CORONA_ROOT}/bin/mac/car" ] || [ "$BUILD_TYPE" = "clean" ] ; then
 	echo "xcodebuild -project \"${CORONA_ROOT}/platform/mac/car.xcodeproj\" $XCODE_CLEAN_ACTION build"
@@ -295,7 +284,6 @@ PROJECT_NAME=$(basename "$PROJECT_PATH" | sed "s/ //g")
 
 TEMPLATE_DIR=$SCRIPT_ROOT/template
 export CAR_PATH=$SCRIPT_ROOT/../../bin/mac/car
-export APP_SIGN_PATH=$SCRIPT_ROOT/../../bin/mac/app_sign
 "$path/build_server_output.sh" "$PROJECT_NAME" "$TEMPLATE_DIR" "$SERVER_TMP_DIR" "$CERTIFICATE_PATH" "$CLIENT_TMP_DIR/input.zip" little
 checkError
 

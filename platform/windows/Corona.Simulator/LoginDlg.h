@@ -9,12 +9,6 @@
 
 #pragma once
 
-namespace Rtt
-{
-	class WinAuthorizationDelegate;
-    class Authorization;
-};
-
 // CLoginDlg dialog
 
 class CLoginDlg : public CDialog
@@ -31,8 +25,6 @@ public:
 	CString GetUser() { return m_sUser; }
 	CString GetPassword() { return m_sPassword; }
 
-	void SetAuthorizer( Rtt::WinAuthorizationDelegate *pDel, const Rtt::Authorization *pAuth );
-
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnChangeInfo();
@@ -43,9 +35,6 @@ protected:
 
     CString m_sUser;
 	CString m_sPassword;
-
-	Rtt::WinAuthorizationDelegate *m_pAuthDelegate;
-	const Rtt::Authorization *m_pAuth;
 
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);

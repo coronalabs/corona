@@ -30,7 +30,6 @@ struct SimulatorOptions
 {
 	bool connectToDebugger;
 	bool isInteractive;
-	bool isEnterprise;
 };
 
 // Base class

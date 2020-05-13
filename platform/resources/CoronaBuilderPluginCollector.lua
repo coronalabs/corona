@@ -40,8 +40,10 @@ end
 
 
 local function quoteString( str )
-    str = str:gsub('\\', '\\\\')
-    str = str:gsub('"', '\\"')
+    if not isWindows then
+        str = str:gsub('\\', '\\\\')
+        str = str:gsub('"', '\\"')
+    end
     return "\"" .. str .. "\""
 end
 

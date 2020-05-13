@@ -154,15 +154,8 @@ show( lua_State *L )
 static int
 getSubscription( lua_State *L )
 {
-	Rtt_ASSERT( lua_islightuserdata( L, lua_upvalueindex( 1 ) ) );
-	const MSimulatorServices *simulator =
-		(const MSimulatorServices *)lua_touserdata( L, lua_upvalueindex( 1 ) );
-
-	S32 timestamp = 0;
-	const char *subscription = simulator->GetSubscription( & timestamp );
-
-	lua_pushstring( L, subscription );
-	lua_pushinteger( L, timestamp );
+	lua_pushstring( L, "Solar2D" );
+	lua_pushinteger( L, 0 );
 
 	return 2;
 }

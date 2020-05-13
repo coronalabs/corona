@@ -46,9 +46,6 @@
 
 namespace Rtt
 {
-	class Authorization;
-	class AuthorizationTicket;
-	class MacAuthorizationDelegate;
 	class MacConsolePlatform;
 	class MacPlatformServices;
 	class MacSimulator;
@@ -145,8 +142,6 @@ namespace Rtt
 	LinuxAppBuildController *fLinuxAppBuildController;
 
 	Rtt::MacPlatformServices *fServices;
-	Rtt::MacAuthorizationDelegate *fAuthorizerDelegate;
-	Rtt::Authorization *fAuthorizer;	
 
 	// Used to synchronize the Open Project accessory view to pick the start skin
 	IBOutlet NSPopUpButton* popupButtonOpenAccessorySkinSelection;
@@ -170,7 +165,6 @@ namespace Rtt
 @property (nonatomic, readwrite, assign) BOOL applicationHasBeenInitialized;
 @property (nonatomic, readwrite, assign) BOOL launchedWithFile;
 @property (nonatomic, readwrite, assign) BOOL allowLuaExit;
-@property (nonatomic, readonly, getter=authorizer) Rtt::Authorization *fAuthorizer;
 @property (nonatomic, readonly, getter=homeScreen) CoronaWindowController *fHomeScreen;
 @property (nonatomic, readonly, retain) GLView* layerHostView;
 @property (nonatomic, readwrite) BOOL stopRequested;
@@ -182,13 +176,10 @@ namespace Rtt
 
 -(BOOL)isRunning;
 -(IBAction)showHelp:(id)sender;
--(void)signin;
 
 -(IBAction)orderFrontStandardAboutPanel:(id)sender;
 
 -(BOOL)isRelaunchable;
-
--(const Rtt::AuthorizationTicket*)ticket;
 
 #if !defined( Rtt_PROJECTOR )
 -(BOOL)isRunnable;
@@ -201,7 +192,6 @@ namespace Rtt
 -(BOOL)isNookStoreBuildAvailable;
 
 -(IBAction)showPreferences:(id)sender;
--(void)deauthorize:(id)sender;
 -(IBAction)deauthorizeConfirm:(id)sender;
 -(IBAction)deauthorizeHelp:(id)sender;
 
@@ -251,7 +241,6 @@ namespace Rtt
 -(void)notifyRuntimeError:(NSString *)message;
 - (NSString *) getOSVersion;
 
-- (BOOL) isTrial;
 - (BOOL) isDailyBuild;
 
 - (IBAction) presentWelcomeWindow:(id)sender;
@@ -278,7 +267,6 @@ namespace Rtt
 
 - (void) runExtension:(NSString *) extName;
 
-// Used by Rtt_MacAuthorizationDelegate.mm
 -(NSString*)getAndReleaseResultFromPasswordSheet;
 - (void)didPresentError:(BOOL)didRecover contextInfo:(void*)contextInfo;
 
@@ -290,6 +278,8 @@ namespace Rtt
 - (void) endLocationUpdating;
 
 -(void)notifyWithTitle:(NSString*)title description:(NSString*)description iconData:(NSImage*)iconData;
+- (void) clearConsole;
+
 @end
 
 @interface CoronaSimulatorApplication : NSApplication
@@ -297,6 +287,5 @@ namespace Rtt
 @property (nonatomic, readwrite) BOOL suppressAttentionRequests;
 
 - (NSInteger)requestUserAttention:(NSRequestUserAttentionType)requestType;
-- (void) clearConsole;
 
 @end

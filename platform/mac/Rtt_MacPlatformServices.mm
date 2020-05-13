@@ -16,9 +16,6 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <netinet/in.h>
 
-#include "Rtt_AppleConnection.h"
-#include "Rtt_Authorization.h" // used for string contants for preferences
-
 /*
 #include "Rtt_LuaLibNative.h"
 #include "Rtt_LuaResource.h"
@@ -143,12 +140,6 @@ MacPlatformServices::Platform() const
 	return fPlatform;
 }
 
-PlatformConnection*
-MacPlatformServices::CreateConnection( const char* url ) const
-{
-	return Rtt_NEW( & fPlatform.GetAllocator(), AppleConnection( * this, url ) );
-}
-
 #define Rtt_CORONA_DOMAIN "com.coronalabs.Corona_Simulator" // "com.anscamobile.ratatouille"
 static const char kCoronaDomainUTF8[] = Rtt_CORONA_DOMAIN;
 static CFStringRef kCoronaDomain = CFSTR( Rtt_CORONA_DOMAIN );
@@ -226,40 +217,8 @@ MacPlatformServices::SetPreference( const char *key, const char *value ) const
 		// TODO: Figure out how to do this on a suite domain
 		NSString *v = ( value ? [[NSString alloc] initWithUTF8String:value] : nil );
 
-#if !defined( Rtt_PROJECTOR )
-		// Check CFPreferences cases first
-		if( ( 0 == strcmp(key, Authorization::kTicketKey) )
-		   || ( 0 == strcmp(key, Authorization::kSuppressFeedbackKey) )
-		   || ( 0 == strcmp(key, Authorization::kVersionKey) )
-		   || ( 0 == strcmp(key, Authorization::kUsernameKey) )
-		   || ( 0 == strcmp(key, Authorization::kRenewalReminderKey) )
-		   || ( 0 == strcmp(key, Authorization::kOfflineModeConfirmed) )
-		   || ( 0 == strcmp(key, "LastUpdateCheck") ) // no external constant to refer to
-		)
-		{
-			CFPreferencesSetAppValue( (CFStringRef)k, (CFPropertyListRef)v, kCoronaDomain );
-			(void)Rtt_VERIFY( CFPreferencesAppSynchronize( kCoronaDomain ) );
-		}
-		else
-		{
-			Rtt::String username;
-			// special case to detect username entry which is in CFPreferences since there is no constant key
-			GetPreference( Authorization::kUsernameKey, &username );
-
-			// Bug: 2589, check for username being NULL particularly for deauthorization.
-			if( ( NULL != username.GetString() ) && ( 0 == strcmp(key, username.GetString() ) ) )
-			{
-				CFPreferencesSetAppValue( (CFStringRef)k, (CFPropertyListRef)v, kCoronaDomain );
-				(void)Rtt_VERIFY( CFPreferencesAppSynchronize( kCoronaDomain ) );
-			}
-			else // fallback to NSUserDefaults
-			{
-				[[NSUserDefaults standardUserDefaults] setObject:v forKey:k];
-			}
-		}
-#else
-		[[NSUserDefaults standardUserDefaults] setObject:v forKey:k];
-#endif
+		CFPreferencesSetAppValue( (CFStringRef)k, (CFPropertyListRef)v, kCoronaDomain );
+		(void)Rtt_VERIFY( CFPreferencesAppSynchronize( kCoronaDomain ) );
 		
 		[v release];
 		[k release];
