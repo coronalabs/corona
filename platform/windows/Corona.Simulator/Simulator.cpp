@@ -265,18 +265,18 @@ BOOL CSimulatorApp::InitInstance()
 		{
 			auto stdInHandle = m_outputViewerProcessPointer->GetStdInHandle();
 			int stdInFD = _open_osfhandle((intptr_t)stdInHandle, _O_TEXT);
-			FILE* stdInFILE = _fdopen(stdInFD, "w");
-			AllocConsole();
+			if (!GetConsoleWindow()) {
+				AllocConsole();
+				ShowWindow(GetConsoleWindow(), SW_HIDE);
+			}
 			::SetStdHandle(STD_OUTPUT_HANDLE, stdInHandle);
 			::SetStdHandle(STD_ERROR_HANDLE, stdInHandle);
 			FILE* notused;
 			freopen_s(&notused, "CONOUT$", "w", stdout);
 			freopen_s(&notused, "CONOUT$", "w", stderr);
-			int res = _dup2(_fileno(stdInFILE), _fileno(stdout));
-			res = _dup2(_fileno(stdInFILE), _fileno(stderr));
+			int res = _dup2(stdInFD, _fileno(stdout));
+			res = _dup2(stdInFD, _fileno(stderr));
 			std::ios::sync_with_stdio();
-			_close(stdInFD);
-			FreeConsole();
 		}
 	}
 
@@ -884,11 +884,13 @@ int CSimulatorApp::ExitInstance()
 		m_outputViewerProcessPointer->RequestCloseMainWindow();
 		m_outputViewerProcessPointer = nullptr;
 
-		AllocConsole();
+		if (!GetConsoleWindow()) {
+			AllocConsole();
+			ShowWindow(GetConsoleWindow(), SW_HIDE);
+		}
 		FILE* notused;
 		freopen_s(&notused, "CONOUT$", "w", stdout);
 		freopen_s(&notused, "CONOUT$", "w", stderr);
-		FreeConsole();
 	}
 
 	// Destroy the progress dialog, if allocated.

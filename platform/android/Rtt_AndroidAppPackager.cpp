@@ -187,6 +187,48 @@ AndroidAppPackager::EscapeArgument(std::string arg)
 	return result;
 }
 
+#if defined(Rtt_WIN_ENV) && !defined(Rtt_NO_GUI)
+int system_hidden(const char* cmdArgsUtf8)
+{
+	wchar_t cmdArgs[4096] = { 0 };
+	MultiByteToWideChar(CP_UTF8, 0, cmdArgsUtf8, -1, cmdArgs, 4096);
+
+	PROCESS_INFORMATION pinfo;
+	STARTUPINFO sinfo;
+	if (!GetConsoleWindow()) {
+		AllocConsole();
+		ShowWindow(GetConsoleWindow(), SW_HIDE);
+	}
+
+	memset(&sinfo, 0, sizeof(sinfo));
+	sinfo.cb = sizeof(sinfo);
+	CreateProcess(NULL, cmdArgs,
+		NULL, NULL, false,
+		0,
+		NULL, NULL, &sinfo, &pinfo);
+	DWORD ret;
+	while (true)
+	{
+		HANDLE array[1];
+		array[0] = pinfo.hProcess;
+		ret = MsgWaitForMultipleObjects(1, array, false, INFINITE,
+			QS_ALLPOSTMESSAGE);
+		if ((ret == WAIT_FAILED) || (ret == WAIT_OBJECT_0))
+			break;
+		
+		MSG msg;
+		while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+
+	DWORD pret;
+	GetExitCodeProcess(pinfo.hProcess, &pret);
+	return pret;
+}
+#endif
 
 int
 AndroidAppPackager::Build( AppPackagerParams * params, const char * tmpDirBase )
@@ -377,24 +419,56 @@ AndroidAppPackager::Build( AppPackagerParams * params, const char * tmpDirBase )
 				
 				Rtt_Log("Build: running: %s\n", sanitizedCmdBuf.c_str());
 			}
-#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
-			result = system(gradleGo.c_str());
-#else // Windows
-#if !defined(Rtt_NO_GUI)
-			Interop::Ipc::CommandLine::SetOutputCaptureEnabled(true);
-			Interop::Ipc::CommandLine::SetHideWindowEnabled(true);
-			Interop::Ipc::CommandLineRunResult cmdResult = Interop::Ipc::CommandLine::RunShellCommandUntilExit(gradleGo.c_str());
-			result = cmdResult.GetExitCode();
-			if (debugBuildProcess > 1 || result != 0)
-			{
-				std::string output = cmdResult.GetOutput();
-				Rtt_Log("%s", output.c_str());
-			}
+
+#if defined(Rtt_WIN_ENV)
+			gradleGo.append(" < NUL ");
 #else
+			gradleGo.append(" < /dev/null ");
+#endif
+
+#if !defined(Rtt_NO_GUI)
+			gradleGo.insert(0, "(");
+			gradleGo.append(") > ");
+			std::string gradleLogFile(tmpDir);
+			gradleLogFile.append(LUA_DIRSEP);
+			gradleLogFile.append("gradleLogFile.log");
+			gradleGo.append(EscapeArgument(gradleLogFile.c_str()));
+			gradleGo.append(" 2>&1 ");
+#endif
+
+#if defined(Rtt_WIN_ENV)
 			gradleGo.insert(0, "\"");
 			gradleGo.append("\"");
+#if defined(Rtt_NO_GUI)
+			result = system(gradleGo.c_str());
+#else
+			gradleGo.insert(0, "CMD /C ");
+			result = system_hidden(gradleGo.c_str());
+#endif
+#else
 			result = system(gradleGo.c_str());
 #endif
+
+#if !defined(Rtt_NO_GUI)
+			if (debugBuildProcess >= 1 || result != 0)
+			{
+				FILE *log = Rtt_FileOpen(gradleLogFile.c_str(), "rb");
+				if (log) {
+					Rtt_FileSeek(log, 0, SEEK_END);
+					long sz = Rtt_FileTell(log);
+					Rtt_FileSeek(log, 0, SEEK_SET);
+					char* buf = new char[sz + 1];
+					long read = Rtt_FileRead(buf, sizeof(char), sz, log);
+					buf[read] = 0;
+					Rtt_Log("%s", buf);
+					delete[] buf;
+					Rtt_FileClose(log);
+				}
+				else 
+				{
+					Rtt_Log("%s", "Unable to open build log file");
+				}
+			}
 #endif
 		}
 		
