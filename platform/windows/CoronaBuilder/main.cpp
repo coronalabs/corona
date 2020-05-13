@@ -32,8 +32,35 @@ int main( int argc, const char *argv[] )
 
 	if (resourceDir.GetLength() == 0)
 	{
-		fprintf(stderr, "CoronaBuilder: cannot find a setting for CORONA_PATH.  Install Corona first\n");
-		return 1;
+		TCHAR builderPath[MAX_PATH];
+		GetModuleFileName(NULL, builderPath, MAX_PATH);
+		TCHAR* end = StrRChr(builderPath, NULL, '\\');
+		if (!end) return 42;
+		end++;
+		StrCpy(end, _T("7za.exe"));
+		if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(builderPath))
+		{
+			end[0] = 0;
+			TCHAR env[MAX_PATH];
+			wsprintf(env, _T("CORONA_PATH=%s"), builderPath);
+			_wputenv(env);
+		} 
+		else
+		{
+			StrCpy(end, _T("..\\..\\..\\..\\7za.exe"));
+			if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(builderPath))
+			{
+				end[12] = 0;
+				TCHAR env[MAX_PATH];
+				wsprintf(env, _T("CORONA_PATH=%s"), builderPath);
+				_wputenv(env);
+			}
+			else
+			{
+				fprintf(stderr, "CoronaBuilder: cannot find a setting for CORONA_PATH.  Install Corona first\n");
+				return 1;
+			}
+		}
 	}
 
 	resourceDir.TrimRight(_T("\\"));

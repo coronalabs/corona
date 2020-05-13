@@ -47,7 +47,6 @@ val nativeDir = if (windows) {
     val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native/").absolutePath }?.takeIf { file(it).exists() }
     resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
 }
-val windowsPathHelper = "${System.getenv("PATH")}${File.pathSeparator}${System.getenv("CORONA_PATH")}"
 
 val coronaPlugins = file("$buildDir/corona-plugins")
 val luaCmd = "$nativeDir/Corona/$shortOsName/bin/lua"
@@ -116,7 +115,6 @@ val parsedBuildProperties: JsonObject = run {
         errorOutput = output
         standardOutput = output
         isIgnoreExitValue = true
-        if (windows) environment["PATH"] = windowsPathHelper
     }
     if (execResult.exitValue != 0) {
         throw InvalidUserDataException("Build.settings file could not be parsed: ${output.toString().replace(luaCmd, "")}")
@@ -384,7 +382,6 @@ android.applicationVariants.all {
                     if (isRelease) {
                         additionalArguments += "-s"
                     }
-                    if (windows) environment["PATH"] = windowsPathHelper
                     commandLine(luac, *additionalArguments.toTypedArray(), "-o", "$compiledDir/$compiled", "--", it)
                 }
                 compiled
@@ -419,7 +416,6 @@ android.applicationVariants.all {
             val configEntries = outputsList.filter { file(it).name == "config.lu" } + metadataConfig
             exec {
                 workingDir = file(compiledDir)
-                if (windows) environment["PATH"] = windowsPathHelper
                 commandLine(luac, "-s", "-o", metadataCompiled, "--", *configEntries.toTypedArray())
             }
             copy {
@@ -433,7 +429,6 @@ android.applicationVariants.all {
             exec {
                 workingDir = file(compiledDir)
                 standardInput = StringInputStream(toArchive.joinToString("\n"))
-                if (windows) environment["PATH"] = windowsPathHelper
                 commandLine(coronaBuilder, "car", "-f", "-", compiledLuaArchive)
             }
         }
@@ -509,7 +504,6 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         val builderOutput = ByteArrayOutputStream()
         val execResult = exec {
             commandLine(coronaBuilder, "plugins", "download", "--android-offline-plugins")
-            if (windows) environment["PATH"] = windowsPathHelper
             standardInput = StringInputStream(buildParams)
             standardOutput = builderOutput
             isIgnoreExitValue = true
@@ -596,7 +590,6 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             }
         }.map { it.absolutePath }
         exec {
-            if (windows) environment["PATH"] = windowsPathHelper
             commandLine(luaCmd
                     , "-e"
                     , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
@@ -623,7 +616,6 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         val manifestGenDir = "$buildDir/intermediates/corona_manifest_gen"
         file(manifestGenDir).mkdirs()
         exec {
-            if (windows) environment["PATH"] = windowsPathHelper
             commandLine(luaCmd
                     , "-e"
                     , "package.path='$nativeDir/Corona/shared/resource/?.lua;'..package.path"
