@@ -119,6 +119,23 @@ BOOL CSimulatorApp::InitInstance()
 	{
 		WinString stringTranscoder(Interop::Storage::RegistryStoredPreferences::kAnscaCoronaKeyName);
 		SetRegistryKey(stringTranscoder.GetTCHAR());
+
+		// Hacks to make life easier
+		CString ret = GetProfileString(L"Preferences", L"debugBuildProcess", L"");
+		if (ret.GetLength() && _wgetenv(L"DEBUG_BUILD_PROCESS") == NULL) {
+			_wputenv_s(L"DEBUG_BUILD_PROCESS", ret);
+		}
+		if (_wgetenv(L"CORONA_PATH") == NULL) {
+			TCHAR coronaDir[MAX_PATH];
+			GetModuleFileName(NULL, coronaDir, MAX_PATH);
+			TCHAR* end = StrRChr(coronaDir, NULL, '\\');
+			if (end) 
+			{
+				end[1] = 0;
+				_wputenv_s(L"CORONA_PATH", coronaDir);
+			}
+
+		}
 	}
 	// Initialize WinGlobalProperties object which mirrors theApp properties
 	// Make sure this is done before accessing any Corona functions

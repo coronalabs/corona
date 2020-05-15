@@ -41,9 +41,7 @@ int main( int argc, const char *argv[] )
 		if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(builderPath))
 		{
 			end[0] = 0;
-			TCHAR env[MAX_PATH];
-			wsprintf(env, _T("CORONA_PATH=%s"), builderPath);
-			_wputenv(env);
+			_wputenv_s(_T("CORONA_PATH"), builderPath);
 		} 
 		else
 		{
@@ -51,9 +49,7 @@ int main( int argc, const char *argv[] )
 			if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(builderPath))
 			{
 				end[12] = 0;
-				TCHAR env[MAX_PATH];
-				wsprintf(env, _T("CORONA_PATH=%s"), builderPath);
-				_wputenv(env);
+				_wputenv_s(_T("CORONA_PATH"), builderPath);
 			}
 			else
 			{

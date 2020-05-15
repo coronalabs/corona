@@ -584,7 +584,6 @@ local function buildTemplate(templateFolder)
 
 	-- hack
 	if windows then
-		local path = os.getenv( "CORONA_ROOT" )
 		cmd = 'z:/corona/link_emscripten.bat'
 	else
 		cmd = '/Users/mymac/link_emscripten.sh'

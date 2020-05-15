@@ -42,7 +42,7 @@ val windows = System.getProperty("os.name").toLowerCase().contains("windows")
 val shortOsName = if (windows) "win" else "mac"
 val nativeDir = if (windows) {
     val resourceDir = coronaResourcesDir?.let { file("$it/../Native/").absolutePath }?.takeIf { file(it).exists() }
-    (resourceDir ?: System.getenv("CORONA_ROOT")).replace("\\", "/")
+    (resourceDir ?: "${System.getenv("CORONA_PATH")}/Native").replace("\\", "/")
 } else {
     val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native/").absolutePath }?.takeIf { file(it).exists() }
     resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
