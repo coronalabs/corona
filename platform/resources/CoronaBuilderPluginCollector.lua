@@ -17,16 +17,7 @@ function fetch() assert(false, "HTTP Fetch is not set!") end
 function download() assert(false, "HTTP Download is not set!") end
 locatorNames = {}
 
-debugBuildProcess = 0
-if isWindows then
-    if os.execute('reg QUERY "HKEY_CURRENT_USER\\Software\\Ansca Corona\\Corona Simulator\\Preferences"  /v debugBuildProcess 2>nul 1>nul') == 0 then
-        debugBuildProcess = 5
-    else
-        debugBuildProcess = 0
-    end
-else
-    debugBuildProcess = os.execute("exit $(defaults read com.coronalabs.Corona_Simulator debugBuildProcess 2>/dev/null || echo 0)")
-end
+debugBuildProcess = tonumber(os.getenv('DEBUG_BUILD_PROCESS') or "0")
 function log(...)
     if debugBuildProcess > 0 then
         print(...)

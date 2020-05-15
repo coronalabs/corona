@@ -311,6 +311,11 @@ CoronaBuilder::Usage( const char *arg0 )
 int
 CoronaBuilder::Main( int argc, const char *argv[] )
 {
+	String debugBuildProcess;
+	fServices.GetPreference("debugBuildProcess", &debugBuildProcess);
+	if(!debugBuildProcess.IsEmpty()) {
+		setenv("DEBUG_BUILD_PROCESS", debugBuildProcess, 0);
+	}
 	int result = -1;
     Rtt::String ticketData;
 

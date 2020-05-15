@@ -514,6 +514,9 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             logger.error("Error while fetching plugins: $builderOutput")
             throw InvalidPluginException("Error while fetching plugins: $builderOutput")
         }
+        if((System.getenv("DEBUG_BUILD_PROCESS")?.toIntOrNull() ?: 0) > 0 ) {
+            logger.lifecycle("Plugins collector output: $builderOutput")
+        }
         logger.lifecycle("Unpacking plugins")
         fileTree(coronaPlugins) {
             include("*/data.tgz")
