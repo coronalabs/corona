@@ -374,6 +374,7 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, pa
 end
 
 local function CollectCoronaPlugins(params)
+    if type(params) == "string" then params = json.decode(params) end
     fetch = params.fetch or pluginCollector_fetch
     download = params.download or pluginCollector_download
     params.fetch = nil

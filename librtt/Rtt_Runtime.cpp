@@ -50,7 +50,80 @@
 namespace Rtt
 {
 #if defined( Rtt_AUTHORING_SIMULATOR )
-int luaload_CoronaBuilderPluginCollector(lua_State *L);
+
+void Runtime::FinalizeWorkingThreadWithEvent(Runtime* runtime, lua_State* L)
+{
+	std::thread* curWorkingThread = runtime->m_fAsyncThread.load();
+	if (curWorkingThread) {
+		curWorkingThread->join();
+		std::string* strResult = runtime->m_fAsyncResultStr.load();
+		Lua::Ref listener = runtime->m_fAsyncListener.load();
+
+		if (L) {
+			Lua::NewEvent(L, "async");
+			if (strResult->empty()) {
+				lua_pushnil(L);
+			} else {
+				lua_pushstring(L, strResult->c_str());
+			}
+			lua_setfield(L, -2, "result");
+			Lua::DispatchEvent(L, listener, 0);
+			Lua::DeleteRef(L, listener);
+		}
+
+		delete curWorkingThread;
+		delete strResult;
+
+		runtime->m_fAsyncListener.store(nullptr);
+		runtime->m_fAsyncResultStr.store(nullptr);
+		runtime->m_fAsyncThread.store(nullptr);
+	}
+}
+
+int Runtime::ShellPluginCollector_Async(lua_State* L)
+{
+	Runtime *runtime = (Runtime*)lua_touserdata(L, lua_upvalueindex(1));
+
+	std::string args(lua_tostring(L, 1));
+	Lua::Ref listener = nullptr;
+	if (lua_type(L, 2) == LUA_TFUNCTION) {
+		listener = Lua::NewRef(L, 2);
+	}
+
+	FinalizeWorkingThreadWithEvent(runtime, L);
+	
+	std::thread* thread = new std::thread([](std::string args, Lua::Ref listener, Runtime* runtime) {
+		lua_State* L = Rtt::Lua::New(true);
+		HTTPClient::registerFetcherModuleLoaders(L);
+		std::string result;
+		lua_getglobal(L, "require");
+		lua_pushstring(L, "CoronaBuilderPluginCollector");
+		int res = lua_pcall(L, 1, 1, NULL);
+		lua_getfield(L, -1, "collect");
+		lua_pushstring(L, args.c_str());
+		res = lua_pcall(L, 1, 1, NULL);
+		if (lua_type(L, -1) == LUA_TSTRING) {
+			result = lua_tostring(L, -1);
+		}
+		Rtt::Lua::Delete(L);
+		runtime->m_fAsyncListener.store(listener);
+		runtime->m_fAsyncResultStr.store(new std::string(result));
+	}, args, listener, runtime);
+
+	if (listener) {
+		lua_pushnil(L);
+		runtime->m_fAsyncListener.store(listener);
+		runtime->m_fAsyncThread.store(thread);
+	}
+	else {
+		thread->join();
+		std::string* result = runtime->m_fAsyncResultStr.load();
+		lua_pushstring(L, result->c_str());
+		FinalizeWorkingThreadWithEvent(runtime, NULL);
+	}
+	return 1;
+}
+
 #endif
 // ----------------------------------------------------------------------------
 
@@ -65,33 +138,38 @@ static const char kFusePublisherId[] = "com.coronalabs";
 
 // ----------------------------------------------------------------------------
 
-Runtime::Runtime( const MPlatform& platform, MCallback *viewCallback )
-:	fAllocator( platform.GetAllocator() ),
-	fPlatform( platform ),
-	fStartTime( Rtt_GetAbsoluteTime() ),
-	fStartTimeCorrection( 0 ),
-	fSuspendTime( 0 ),
-	fResourcesHead( Rtt_NEW( & fAllocator, CachedResource( * this, NULL ) ) ),
-	fDisplay( Rtt_NEW( & fAllocator, Display( * this ) ) ),
-	fVMContext( LuaContext::New( Allocator(), platform, this ) ), 
-	fTimer( platform.CreateTimerWithCallback( viewCallback ? * viewCallback : * this ) ),
-	fScheduler( Rtt_NEW( & fAllocator, Scheduler( * this ) ) ),
-	fArchive( NULL ),
-	fPhysicsWorld( Rtt_NEW( & fAllocator, PhysicsWorld( fAllocator ) ) ),
+Runtime::Runtime(const MPlatform& platform, MCallback* viewCallback)
+	: fAllocator(platform.GetAllocator()),
+	fPlatform(platform),
+	fStartTime(Rtt_GetAbsoluteTime()),
+	fStartTimeCorrection(0),
+	fSuspendTime(0),
+	fResourcesHead(Rtt_NEW(&fAllocator, CachedResource(*this, NULL))),
+	fDisplay(Rtt_NEW(&fAllocator, Display(*this))),
+	fVMContext(LuaContext::New(Allocator(), platform, this)),
+	fTimer(platform.CreateTimerWithCallback(viewCallback ? *viewCallback : *this)),
+	fScheduler(Rtt_NEW(&fAllocator, Scheduler(*this))),
+	fArchive(NULL),
+	fPhysicsWorld(Rtt_NEW(&fAllocator, PhysicsWorld(fAllocator))),
 #ifdef Rtt_USE_ALMIXER
-	fOpenALPlayer( NULL ),
+	fOpenALPlayer(NULL),
 #endif
-	fFPS( 30 ),
-	fIsSuspended( -1 ), // uninitialized
-	fProperties( 0 ),
-	fSuspendOverrideProperties( kSuspendAll ),
-	fFrame( 0 ),
-	fLaunchArgsRef( LUA_NOREF ),
-	fSimulatorPlatformName( NULL ),
-	fDownloadablePluginsRef( LUA_NOREF ),
-	fDownloadablePluginsCount( 0 ),
-	fDelegate( NULL ),
-	fShowingTrialMessages( false ),
+	fFPS(30),
+	fIsSuspended(-1), // uninitialized
+	fProperties(0),
+	fSuspendOverrideProperties(kSuspendAll),
+	fFrame(0),
+	fLaunchArgsRef(LUA_NOREF),
+	fSimulatorPlatformName(NULL),
+	fDownloadablePluginsRef(LUA_NOREF),
+	fDownloadablePluginsCount(0),
+	fDelegate(NULL),
+	fShowingTrialMessages(false),
+#ifdef Rtt_AUTHORING_SIMULATOR
+	m_fAsyncListener(nullptr),
+	m_fAsyncResultStr(nullptr),
+	m_fAsyncThread(nullptr),
+#endif
 	fErrorHandlerRecursionGuard( false )
 {
 	Rtt_TRACE_SIM( ( "\n%s\n", Rtt_STRING_COPYRIGHT ) );
@@ -171,6 +249,9 @@ Runtime::~Runtime()
 #endif
 
 	fResourcesHead->Release();
+#if defined(Rtt_AUTHORING_SIMULATOR)
+	FinalizeWorkingThreadWithEvent(this, nullptr);
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -423,14 +504,9 @@ pushShellArgs( lua_State* L )
 		lua_setfield( L, -2, "plugins" );
 		
 #if defined( Rtt_AUTHORING_SIMULATOR )
-		lua_pushcfunction(L, &HTTPClient::fetch);
-		lua_setfield( L, -2, "pluginCollector_fetch");
-
-		lua_pushcfunction(L, &HTTPClient::download);
-		lua_setfield( L, -2, "pluginCollector_download");
-
-		luaload_CoronaBuilderPluginCollector(L);
-		lua_setfield( L, -2, "pluginCollector");
+		lua_pushlightuserdata(L, runtime);
+		lua_pushcclosure(L, &Runtime::ShellPluginCollector_Async, 1);
+		lua_setfield( L, -2, "shellPluginCollector");
 #endif
 
 		const char *name = runtime->GetSimulatorPlaformName();
@@ -1878,6 +1954,11 @@ Runtime::operator()()
 	}
 	else
 	{
+#if defined(Rtt_AUTHORING_SIMULATOR)
+		if (m_fAsyncResultStr.load()) {
+			FinalizeWorkingThreadWithEvent(this, fVMContext->L());
+		}
+#endif
 		fDisplay->Update();
 
 		++fFrame;

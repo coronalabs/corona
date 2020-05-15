@@ -18,6 +18,11 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_Resource.h"
 
+#if defined(Rtt_AUTHORING_SIMULATOR)
+#include <atomic>
+#include <thread>
+#endif
+
 // TODO: Move VirtualEvent to separate header and then move SystemEvent into Runtime.h
 // Then, we can remove Event.h from the include list here:
 #include "Rtt_Event.h"
@@ -339,6 +344,16 @@ class Runtime : public MCallback,
 	public:
 		// MDisplayDelegate
 		virtual void WillDispatchFrameEvent( const Display& sender );
+
+#if defined(Rtt_AUTHORING_SIMULATOR)
+	public:
+		static int ShellPluginCollector_Async(lua_State* L);
+	private:
+		static void FinalizeWorkingThreadWithEvent(Runtime *runtime, lua_State *L);
+		std::atomic<std::string*> m_fAsyncResultStr;
+		std::atomic<std::thread*> m_fAsyncThread;
+		std::atomic<void*> m_fAsyncListener;
+#endif
 
 	private:
 		String fBuildId;

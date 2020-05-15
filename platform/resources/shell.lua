@@ -387,7 +387,7 @@ function PluginSync:addPluginToQueueIfRequired( required_plugin )
 
 end
 
-local function collectPlugins(localQueue, extractLocation, platform)
+local function collectPlugins(localQueue, extractLocation, platform, continueOnError, asyncOnComplete)
 	local plugins = {}
 	for i=1,#localQueue do
 		local pluginInfo = localQueue[i]
@@ -405,11 +405,9 @@ local function collectPlugins(localQueue, extractLocation, platform)
 		destinationDirectory = system.pathForFile("", system.PluginsDirectory),
 		build = sim_build_number,
 		extractLocation = extractLocation,
-		continueOnError = true,
-		fetch = params.pluginCollector_fetch,
-		download = params.pluginCollector_download,
+		continueOnError = continueOnError,
 	}
-	return params.pluginCollector().collect(collectorParams)
+	return params.shellPluginCollector(json.encode(collectorParams), asyncOnComplete)
 end
 
 function PluginSync:downloadQueuedPlugins( onComplete )
@@ -424,20 +422,21 @@ function PluginSync:downloadQueuedPlugins( onComplete )
 
 	self.onComplete = onComplete
 
-	local result = collectPlugins(self.queue, system.pathForFile("", system.PluginsDirectory), self.platform)
-	local updateTime = self.now
-	if type(result) == 'string' then
-		updateTime = nil
-        print("WARNING: there was an issue whilde downloading simulator plugin placeholders:\n" .. result)
-	end
-	for i=1,#self.queue do
-		local key = self.queue[i].clientCatalogKey
-		self.clientCatalog[ key ] = { lastUpdate = updateTime }
-	end
-	self:UpdateClientCatalog()
+	collectPlugins(self.queue, system.pathForFile("", system.PluginsDirectory), self.platform, true, function(result)
+		local updateTime = self.now
+		if type(result.result) == 'string' then
+			updateTime = nil
+			print("WARNING: there was an issue whilde downloading simulator plugin placeholders:\n" .. result.result)
+		end
+		for i=1,#self.queue do
+			local key = self.queue[i].clientCatalogKey
+			self.clientCatalog[ key ] = { lastUpdate = updateTime }
+		end
+		self:UpdateClientCatalog()
 
-	native.setActivityIndicator( false )
-	self.onComplete()
+		native.setActivityIndicator( false )
+		self.onComplete()
+	end)
 end
 
 local function onInternalRequestUnzipPlugins( event )
@@ -451,7 +450,7 @@ local function onInternalRequestUnzipPlugins( event )
 	if #params.plugins <= 0 then
 		return true
 	end
-	local result = collectPlugins(params.plugins, destinationPath, params.platform)
+	local result = collectPlugins(params.plugins, destinationPath, params.platform, false, nil)
 	print("Collect Result",result)
 	if result == nil then	
 		return true
@@ -469,7 +468,7 @@ Runtime:addEventListener( "_internalQueryAreAllPluginsAvailable", onInternalQuer
 local function loadMain( onComplete )
 
 	PluginSync:initialize( params.platform )
-	if not params.pluginCollector then
+	if not params.shellPluginCollector then
 		-- No way to download.
 		onComplete( )
 		return
