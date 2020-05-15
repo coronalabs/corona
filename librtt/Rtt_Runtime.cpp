@@ -895,6 +895,7 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);
 	
+	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
 	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
 	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
 	lua_getglobal(L, "require");
