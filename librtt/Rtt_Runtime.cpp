@@ -50,6 +50,7 @@
 namespace Rtt
 {
 #if defined( Rtt_AUTHORING_SIMULATOR )
+extern "C" int luaopen_coronabaselib(lua_State * L);
 
 void Runtime::FinalizeWorkingThreadWithEvent(Runtime* runtime, lua_State* L)
 {
@@ -94,6 +95,15 @@ int Runtime::ShellPluginCollector_Async(lua_State* L)
 	
 	std::thread* thread = new std::thread([](std::string args, Lua::Ref listener, Runtime* runtime) {
 		lua_State* L = Rtt::Lua::New(true);
+		lua_pushcfunction(L, luaopen_coronabaselib);
+		lua_pushstring(L, "coronabaselib");
+		lua_call(L, 1, 0);
+		const char* debugBuildProcess = getenv("DEBUG_BUILD_PROCESS");
+		if (debugBuildProcess) {
+			lua_pushstring(L, debugBuildProcess);
+			lua_setglobal(L, "debugBuildProcess");
+		}
+
 		HTTPClient::registerFetcherModuleLoaders(L);
 		std::string result;
 		lua_getglobal(L, "require");

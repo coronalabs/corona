@@ -6,7 +6,7 @@
 -- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
-
+print = coronabaselib.print
 local json = require "json"
 local lfs = require "lfs"
 
@@ -17,7 +17,7 @@ function fetch() assert(false, "HTTP Fetch is not set!") end
 function download() assert(false, "HTTP Download is not set!") end
 locatorNames = {}
 
-debugBuildProcess = tonumber(os.getenv('DEBUG_BUILD_PROCESS') or "0")
+debugBuildProcess = tonumber(debugBuildProcess or os.getenv('DEBUG_BUILD_PROCESS') or "0")
 function log(...)
     if debugBuildProcess > 0 then
         print(...)
@@ -195,8 +195,7 @@ local function pluginLocatorCustomURL(destination, plugin, pluginTable, pluginPl
         return "Custom URL: skipped because no table supportedPlatforms provided for " .. plugin
     end
     if type(pluginTable.supportedPlatforms[pluginPlatform]) ~= 'table' then
-        log("Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "] is not a table. Plugin is not supported by the platform")
-        return true
+        return "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "] is not a table. Plugin is not supported by the platform"
     end
     if type(pluginTable.supportedPlatforms[pluginPlatform].url) ~= 'string' then
         return "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "].url is not a string"
