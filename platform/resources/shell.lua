@@ -451,7 +451,6 @@ local function onInternalRequestUnzipPlugins( event )
 		return true
 	end
 	local result = collectPlugins(params.plugins, destinationPath, params.platform, false, nil)
-	print("Collect Result",result)
 	if result == nil then	
 		return true
 	else

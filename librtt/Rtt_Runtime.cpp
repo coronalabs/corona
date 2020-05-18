@@ -128,7 +128,12 @@ int Runtime::ShellPluginCollector_Async(lua_State* L)
 	else {
 		thread->join();
 		std::string* result = runtime->m_fAsyncResultStr.load();
-		lua_pushstring(L, result->c_str());
+		if (result->empty()) {
+			lua_pushnil(L);
+		}
+		else {
+			lua_pushstring(L, result->c_str());
+		}
 		FinalizeWorkingThreadWithEvent(runtime, NULL);
 	}
 	return 1;
