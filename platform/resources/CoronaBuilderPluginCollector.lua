@@ -7,8 +7,8 @@
 --
 ------------------------------------------------------------------------------
 print = coronabaselib.print
-local json = require "json"
-local lfs = require "lfs"
+json = require "json"
+lfs = require "lfs"
 
 SEP = package.config:sub(1,1)
 isWindows = SEP == '\\'
@@ -399,9 +399,9 @@ local function CollectCoronaPlugins(params)
         local pathBackup = package.path
         package.path = pathJoin(params.customCollectorsDir, "?.lua") .. ';' .. package.path
         for file in lfs.dir(params.customCollectorsDir) do
-            local module = file:match("(.*%).lua")
+            local module = file:match("(.*)%.lua")
             if module then
-                module = pcall(require, module)
+                local err, module = pcall(require, module)
                 if type(module) == 'function' then
                     table.insert(params.pluginLocators, #params.pluginLocators, module)
                 elseif type(module) == 'table' and type(module.collect) == 'function' then
