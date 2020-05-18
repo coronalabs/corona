@@ -148,7 +148,7 @@ jobs:
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
-      - name: Build Corona Native
+      - name: Build Native
         run: ./tools/GHAction/build_native.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
@@ -163,7 +163,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Get Corona Native
+      - name: Get Native
         uses: actions/download-artifact@v1
         with:
           name: Native
@@ -257,7 +257,7 @@ jobs:
           path: docs/SampleCode
       - name: Clean-up docs
         run: rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
-      - name: Get Corona Native
+      - name: Get Native
         uses: actions/download-artifact@v1
         with:
           name: Native
@@ -431,7 +431,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Corona ${{ env.YEAR }}.${{ env.BUILD }}
+          release_name: Solar2D ${{ env.YEAR }}.${{ env.BUILD }}
           body: ${{ env.GIT_LOG }}
       - name: Upload Release Asset for macOS Simulator
         uses: actions/upload-release-asset@v1
@@ -440,7 +440,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./Simulator-macOS/Corona-${{ env.YEAR }}.${{ env.BUILD }}.dmg
-          asset_name: Corona-macOS-${{ env.YEAR }}.${{ env.BUILD }}.dmg
+          asset_name: Solar2D-macOS-${{ env.YEAR }}.${{ env.BUILD }}.dmg
           asset_content_type: application/x-apple-diskimage
       - name: Upload Release Asset for Windows Simulator
         uses: actions/upload-release-asset@v1
@@ -449,7 +449,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./Simulator-Windows/Corona-${{ env.BUILD }}.msi
-          asset_name: Corona-Windows-${{ env.YEAR }}.${{ env.BUILD }}.msi
+          asset_name: Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD }}.msi
           asset_content_type: application/x-msi
       - name: Upload Release Asset for Linux Simulator
         uses: actions/upload-release-asset@v1
@@ -458,7 +458,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./Simulator-Linux/CoronaSimulator-x86-64.tar.gz
-          asset_name: Corona-Linux-${{ env.YEAR }}.${{ env.BUILD }}.tar.gz
+          asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}.tar.gz
           asset_content_type: application/tar+gzip
       - name: Upload Release Asset Corona Cards iOS
         uses: actions/upload-release-asset@v1
