@@ -6,7 +6,8 @@
 -- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
-print = coronabaselib.print
+
+if coronabaselib then print = coronabaselib.print end
 json = require "json"
 lfs = require "lfs"
 
