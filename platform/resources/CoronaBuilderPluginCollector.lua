@@ -408,7 +408,7 @@ local function CollectCoronaPlugins(params)
                 elseif type(module) == 'table' and type(module.collect) == 'function' then
                     table.insert(params.pluginLocators, #params.pluginLocators, module)
                 else
-                    print("WARNING: Invalid locator " .. file .. ". Not a function and does not have 'collect' function field")
+                    print("WARNING: error importing plugin locator " .. file .. ": " .. tostring(module))
                 end
             end
         end
