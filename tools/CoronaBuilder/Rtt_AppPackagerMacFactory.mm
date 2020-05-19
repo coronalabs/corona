@@ -114,7 +114,7 @@ AppPackagerFactory::CreatePackagerParamsInternal(
 
 			NSString *provisionFile = [NSString stringWithUTF8String:certificatePath];
 
-			bool isDistributionBuild = [AppleSigningIdentityController hasProvisionedDevices:provisionFile];
+			bool isDistributionBuild = ![AppleSigningIdentityController hasProvisionedDevices:provisionFile];
 
 			IOSAppPackager packager( fServices );
 
@@ -161,7 +161,7 @@ AppPackagerFactory::CreatePackagerParamsInternal(
 
 			NSString *provisionFile = [NSString stringWithUTF8String:certificatePath];
 
-			bool isDistributionBuild = [AppleSigningIdentityController hasProvisionedDevices:provisionFile];
+			bool isDistributionBuild = ![AppleSigningIdentityController hasProvisionedDevices:provisionFile];
 
 			TVOSAppPackager packager( fServices );
 
