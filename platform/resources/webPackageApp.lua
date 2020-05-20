@@ -8,7 +8,6 @@
 ------------------------------------------------------------------------------
 
 
-webPluginsMetadata = {}
 processExecute = processExecute or os.execute
 
 local lfs = require "lfs"
@@ -16,11 +15,9 @@ local json = require "json"
 local http = require( "socket.http" )
 local debugBuildProcess = 0
 
-local serverBackend = 'https://backendapi.coronalabs.com'
 local dirSeparator = package.config:sub(1,1)
 local windows = (dirSeparator == '\\')
 local buildSettings = nil		-- build.settings
-local hasSplashScreen = false
 
 local function log(...)
 	myprint(...)
@@ -178,21 +175,6 @@ local function pathJoin(p1, p2, ... )
 	end
 end
 
-local function unpackPlugin( archive, dst, tmpDir, plugin)
-	if windows then
---		pipe not working	
---		local cmd = '""%CORONA_PATH%\\7za.exe" x "' .. archive .. '" -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o"' .. dst .. '" 2> nul"'
-		local cmd = '""%CORONA_PATH%\\7za.exe" x "' .. archive .. '" -o"' .. tmpDir .. '"'
-		processExecute(cmd)
-		local cmd = '""%CORONA_PATH%\\7za.exe" x "' .. pathJoin(tmpDir, plugin .. ".tar") .. '" -o"' .. dst .. '"'
-		return processExecute(cmd)
-	else
-		lfs.mkdir(dst)
-		local cmd = '/usr/bin/tar -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst)
-		return os.execute(cmd)
-	end
-end
-
 local function gzip( path, appname, ext, destFile )
 	local dst = pathJoin(path, destFile)
 	if windows then
@@ -273,185 +255,22 @@ local function removeDir( dir )
 	end
 end
 
-local function hasPurchasedSplashScreen(serverBackend, user)
-	local authURL = serverBackend .. '/v1/plugins/show/' .. user
-	local authorisedPluginsText, msg = http.request(authURL)
-
-	if not authorisedPluginsText then
-		return false
-	end
-
-	local authPluginsJson = json.decode( authorisedPluginsText )
-	if not authPluginsJson then
-		return false
-	end
-
-	if authPluginsJson.status ~= 'success' then
-		return false
-	end
-
-	if not authPluginsJson.data then
-		return false
-	end
-
-	for _, ap in pairs(authPluginsJson.data) do
-		if ap['plugin_name'] == "plugin.CoronaSplashControl" then
-			return true
-		end
-	end
-	return false
-end
-
-local function getPluginDirectories(build, pluginsToDownload, tmpDir, appFolder)
-	local platform = 'web'
-	local pluginDirectories = {}
-	for _, pd in pairs(pluginsToDownload) do
-		local plugin, developer, supportedPlatforms = unpack( pd )
-
-		local skip = false
-		if supportedPlatforms then
-			skip = not supportedPlatforms[platform]
-		end
-
-		--log3('skip=',skip, plugin, developer, supportedPlatforms, pd)
-		if not skip then
-			local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. platform
-
-			local downloadInfoText, msg = http.request(downloadInfoURL)
-			if not downloadInfoText then
-				return "ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg 
-			end
-
-			local downloadInfoJSON = json.decode(downloadInfoText)
-			local downloadURL = downloadInfoJSON.url
-			if not downloadURL then
-				return "ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').'
-			end
-
-			log3('Downloading plugin from:', downloadURL)
-			local file, err = http.request(downloadURL)
-			if err ~= 200 then
-				-- log error, ignore it and try to make web app as is
-				log("ERROR: unable to download " .. plugin .. ' ('.. developer.. '). Error message: \n' .. file)
-			else
-				-- put downloaded data in 
-				local pluginArchivePath = pathJoin(tmpDir, plugin .. '_' .. developer .. ".tgz")
-
-				fi = io.open(pluginArchivePath, "wb")
-				if (fi == nil) then
-					return 'ERROR: unable to create tgz' --unpack plugin " .. plugin .. ' (' .. developer .. ').'
-				end
-				fi:write(file)
-				fi:close()
-
-				local ret = unpackPlugin(pluginArchivePath,  pathJoin(tmpDir, plugin), tmpDir, plugin .. '_' .. developer)
-				if ret ~= 0 then
-					return "ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').'
-				end
-
-				-- read metadata
-				local pluginsDir = pathJoin(tmpDir, plugin)
-				local metadataPath = pathJoin(pluginsDir, 'metadata.lua')
-				local metadataChunk = loadfile( metadataPath )
-				if metadataChunk then
-					local metadata = metadataChunk()
-
-					-- Store path to plugin folder
-					metadata.plugin.path = pluginsDir
-
-					-- Add plugin metadata to manifest
-					log("Found native plugin: "..tostring(metadata.plugin.path))
-					webPluginsMetadata[plugin] = metadata.plugin
-				else
-					local metadata = {}
-					metadata.path = pluginsDir
-
-					-- Add plugin metadata to manifest
-					log("Found native plugin: "..tostring(metadata.path), ', no metadata found')
-					webPluginsMetadata[plugin] = metadata
-				end
-
-			end
-		end
-	end
-	return nil
-end
-
-local function webDownloadPlugins(user, buildYear, buildRevision, tmpDir, appFolder)
+local function webDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
 	if type(buildSettings) ~= 'table' then
 		-- no build.settings file, so no plugins to download
 		return nil
 	end
 
-	if type(buildSettings.plugins) ~= 'table' then
-		 buildSettings.plugins = {}
-		 -- No plugins to download
-		return nil 
-	end
-
-	local pluginsToDownload = {}
-
-	for pluginName, pluginTable in pairs(buildSettings.plugins) do
-		local publisherId = pluginTable['publisherId']
-		table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
-	end
-
-	if #pluginsToDownload > 0 then
-		local authURL = serverBackend .. '/v1/plugins/show/' .. user
-
-		--local authorisedPluginsText, msg = builder.fetch(authURL)
-		local authorisedPluginsText, msg = http.request(authURL)
-
-		if not authorisedPluginsText then
-			return "ERROR: Unable to retrieve authorised plugins list (" .. msg .. ")."
-		end
-
-		local authPluginsJson = json.decode( authorisedPluginsText )
-		if not authPluginsJson then
-			return "ERROR: Unable to parse authorised plugins list."
-		end
-
-		if authPluginsJson.status ~= 'success' then
-			return "ERROR: Retrieving authorised plugins was unsuccessful. Info: " .. authorisedPluginsText
-		end
-
-		if not authPluginsJson.data then
-			return "ERROR: received empty data for authorised plugins."
-		end
-
-		local authorisedPlugins = {}
-		for _, ap in pairs(authPluginsJson.data) do
-			if ap['plugin_name'] ~= nil and ap['plugin_developer'] ~= nil then
-				authorisedPlugins[ap['plugin_name'] .. ' ' .. ap['plugin_developer']] = ap['status']
-			end
-		end
-
-		local authErrors = false
-		for _, pd in pairs(pluginsToDownload) do
-			local plugin, developer = unpack( pd )
-			local status = authorisedPlugins[plugin .. ' ' .. developer] or 0
-			if status == 0 then
-				log("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
-				log("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
-				authErrors = true
-			end
-		end
-		if authErrors then
-			return "ERROR: exiting due to plugins above not being activated."
-		end
-	else
-		-- "No plugins to download"
-		return nil 
-	end
-
-	local build = buildYear .. '.' .. buildRevision
-
-	local msg = getPluginDirectories(build, pluginsToDownload, tmpDir, appFolder)
-	if type(msg) == 'string' then
-		return msg
-	end
-
-	return nil
+	local collectorParams = { 
+		pluginPlatform = 'web',
+		plugins = buildSettings.plugins or {},
+		destinationDirectory = tmpDir,
+		build = buildRevision,
+		extractLocation = pluginDstDir,
+	}
+	
+	local pluginCollector = require "CoronaBuilderPluginCollector"
+	return pluginCollector.collect(collectorParams)
 end
 
 local function getExcludePredecate()
@@ -672,8 +491,6 @@ function webPackageApp( args )
 --	local template = '/Users/mymac/corona/main-vitaly/platform/emscripten/webtemplate.zip'
 
 	-- check if user purchased splash screen
-	hasSplashScreen = hasPurchasedSplashScreen(serverBackend, args.user)
-
 	if not template then
 		local coronaRoot
 		if windows then
@@ -745,29 +562,22 @@ function webPackageApp( args )
 	log3('Unzipped ' .. template, ' to ', templateFolder)
 
 	-- dowmload plugins
-	local msg = webDownloadPlugins(args.user, args.buildYear, args.buildRevision, args.tmpDir, appFolder)
+	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
+	lfs.mkdir(pluginDownloadDir)
+	lfs.mkdir(pluginExtractDir)
+	local msg = webDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginExtractDir)
 	if type(msg) == 'string' then
 		return msg
 	end
 
-	-- copy plugins into app folder
-	local useNewTemplate = false
-	for k, metadata in pairs(webPluginsMetadata) do
---		if metadata.format == 'a' then
---			useNewTemplate = true;
---		else
-			-- just copy all files into app folder
-			local pluginDir = metadata.path
-
-			--	check if it is Lua plugin, Lua plugin is in '/lua/lua_51'
-			if dir_exists(pluginDir .. '/lua/lua_51') then
-				pluginDir = pluginDir .. '/lua/lua_51'
-			end
-			copyDir(pluginDir, appFolder)
-
-			-- exclude medata.lua from app
-			os.remove(pathJoin(appFolder, 'metadata.lua'))
---		end
+	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
+	if dir_exists( luaPluginDir ) then
+		copyDir(luaPluginDir, pluginExtractDir)
+		removeDir(pathJoin(pluginExtractDir, 'lua'))
+	end
+	if dir_exists( pluginExtractDir ) then
+		copyDir(pluginExtractDir, appFolder)
 	end
 
 	-- build app specific template
@@ -792,11 +602,12 @@ function webPackageApp( args )
 
 	-- copy html template files
 	local err
-	if hasSplashScreen then
-		err = copyHtmlTemplateFile('index.html', 'index.html', true)
-	else
-		err = copyHtmlTemplateFile('index-nosplash.html', 'index.html', true)
+	err = copyHtmlTemplateFile('index.html', 'index.html', true)
+	if err then
+		return err
 	end
+
+	err = copyHtmlTemplateFile('index-nosplash.html', 'index-nosplash.html', true)
 	if err then
 		return err
 	end

@@ -19,6 +19,7 @@
 #include "Rtt_LuaLibSocket.h"
 #include "Rtt_Archive.h"
 #include "Rtt_FileSystem.h"
+#include "Rtt_HTTPClient.h"
 
 #include <string.h>
 #include <time.h>
@@ -341,6 +342,8 @@ int WebAppPackager::Build(AppPackagerParams* params, const char* tmpDirBase)
 	lua_setglobal(L, "myprint");
 	lua_pushcfunction(L, Rtt::CompileScriptsAndMakeCAR);
 	lua_setglobal(L, "compileScriptsAndMakeCAR");
+	
+	HTTPClient::registerFetcherModuleLoaders(L);
 
 	int result = PlatformAppPackager::kNoError;
 
