@@ -1336,6 +1336,8 @@ PlatformAppPackager::UnzipPlugins( AppPackagerParams *params, Runtime *runtime, 
 	int luaTableIndex = lua_gettop( luaStatePointer );
 	lua_pushstring( luaStatePointer, destinationDirectoryPath );
 	lua_setfield( luaStatePointer, luaTableIndex, "destinationPath" );
+	lua_pushstring( luaStatePointer,  TargetDevice::TagForPlatform(params->GetTargetPlatform()) );
+	lua_setfield( luaStatePointer, -2, "platform" );
 	Lua::DispatchRuntimeEvent( luaStatePointer, 1 );
 
 	// Determine if the runtime unzipped the plugins successfully.

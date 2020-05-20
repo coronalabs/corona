@@ -12,7 +12,6 @@ platformFallbacks = {
     { "macos", "mac-sim" },
     { "win32", "win32-sim" },
     { "html5", "web" },
-    { "macos-sim", "mac-sim" },
     { "*", "lua" },
 }
 

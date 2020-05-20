@@ -450,7 +450,7 @@ local function onInternalRequestUnzipPlugins( event )
 	if #params.plugins <= 0 then
 		return true
 	end
-	local result = collectPlugins(params.plugins, destinationPath, params.platform, false, nil)
+	local result = collectPlugins(params.plugins, destinationPath, event.platform or params.platform, false, nil)
 	if result == nil then	
 		return true
 	else
