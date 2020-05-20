@@ -7,6 +7,15 @@
 --
 ------------------------------------------------------------------------------
 
+platformFallbacks = {
+    { "android-kindle", "android" },
+    { "macos", "mac-sim" },
+    { "win32", "win32-sim" },
+    { "html5", "web" },
+    { "macos-sim", "mac-sim" },
+    { "*", "lua" },
+}
+
 if coronabaselib then print = coronabaselib.print end
 json = require "json"
 lfs = require "lfs"
@@ -341,12 +350,12 @@ local function locatorName(l)
     if type(l) == 'table' and l.name then return l.name end
 end
 
-local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
+local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
     if type(pluginTable.supportedPlatforms) == 'table' and not pluginTable.supportedPlatforms[pluginPlatform] then
         return
     end
     local pluginDestination = pathJoin(dstDir, plugin)
-    local err = "Unable to find plugin '" .. plugin .. "' for " .. (params.modernPlatform or params.pluginPlatform) .. " in:"
+    local err = "Unable to find plugin '" .. plugin .. "' for platform '" .. pluginPlatform .. "':"
     local ok =  false
     for i = 1,#pluginLocators do
         local locator = pluginLocators[i]
@@ -371,6 +380,24 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, pa
     if not ok then
         return err
     end
+end
+
+local function fetchSinglePlugin(dstDir, plugin, pluginTable, basePluginPlatform, params, pluginLocators)
+    local res = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, basePluginPlatform, params, pluginLocators)
+    if not res then return end -- success
+    for i = 1, #platformFallbacks do
+        local base, fallback = unpack(platformFallbacks[i])
+        if base == "*" or base == basePluginPlatform then
+            local fallbackRes = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, fallback, params, pluginLocators)
+            if not fallbackRes then return end -- success
+            if res then
+                res = res .. "\n" .. fallbackRes
+            else
+                res = fallbackRes
+            end
+        end
+    end
+    return res
 end
 
 local function CollectCoronaPlugins(params)
