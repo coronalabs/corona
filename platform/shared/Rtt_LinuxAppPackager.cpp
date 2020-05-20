@@ -19,6 +19,7 @@
 #include "Rtt_LuaLibSocket.h"
 #include "Rtt_Archive.h"
 #include "Rtt_FileSystem.h"
+#include "Rtt_HTTPClient.h"
 
 #include <string.h>
 #include <time.h>
@@ -118,6 +119,7 @@ LinuxAppPackager::LinuxAppPackager( const MPlatformServices& services )
 	Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< luaload_luasocket_ltn12 > );
 #endif
 
+	HTTPClient::registerFetcherModuleLoaders(L);
 	Lua::DoBuffer( fVM, & luaload_linuxPackageApp, NULL );
 }
 
