@@ -1,5 +1,5 @@
 # Solar2D Game Engine
-## rebranded Corona CoronaSDK or Corona
+## Rebranded Corona SDK or Corona
 > Simple to learn and use, completely free and open source 2D game engine.
 
 ![Solar2D Logo](logo.png)
@@ -47,7 +47,7 @@ Solar2D is licensed under [MIT](LICENSE) open source license.
 
 This license gives you the full rights to customize the engine and distribute built apps on your own terms. 
 
-Note that Solar2D incorporates many libraries, both [third-party](sdk/dmg/Corona3rdPartyLicenses.txt) and made by Solar2D Labs. They may have different licenses.
+Note that Solar2D incorporates many libraries, both [third-party](sdk/dmg/Corona3rdPartyLicenses.txt) and made by Solar2D developers. They may have different licenses.
 
 
 ## Contributing
@@ -63,6 +63,6 @@ Due to the open source nature of Solar2D distribution, all contributors would ha
 Entry points for each platform are located in the `platform` directory. Refer to README.md files in its subdirectories.
 
 ## Governance and Code of Conduct
-Solar2D is maintained by community, with principal developer [shchvova](https://github.com/shchvova) organization. Our mission is to make Solar2D the best game engine ever.
+Solar2D is maintained by community, with principal developer [shchvova](https://github.com/shchvova). Our mission is to make Solar2D the best game engine ever.
 
 To participate in the Solar2D community or development you must follow the Solar2D Community Code of Conduct (see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md))
