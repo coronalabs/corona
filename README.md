@@ -1,5 +1,5 @@
 # Solar2D Game Engine
-## Rebranded Corona SDK or Corona
+## Rebranded Corona SDK
 > Simple to learn and use, completely free and open source 2D game engine.
 
 ![Solar2D Logo](logo.png)
