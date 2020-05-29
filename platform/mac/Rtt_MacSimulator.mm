@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -27,7 +11,6 @@
 
 #include "Rtt_MacSimulator.h"
 
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_Lua.h"
 #include "Rtt_MacPlatform.h"
 #include "Rtt_MacSurfaceVideoRecorder.h"
@@ -110,7 +93,7 @@ MacSimulator::~MacSimulator()
 
     [fWindow saveFrameUsingName:fDeviceName];
 	[fWindow close];
-	// Fix case 40335: Simulator crashes sometime after an app with a native textfield runs (http://bugs.anscamobile.com/default.asp?40335)
+	// Fix case 40335: Simulator crashes sometime after an app with a native textfield runs (http://bugs.coronalabs.com/default.asp?40335)
 	[fWindow makeFirstResponder:nil];
 
 	[fWindowController close];
@@ -120,7 +103,7 @@ MacSimulator::~MacSimulator()
 	[fDeviceName release];
 	[fProperties release];
 	[fWindow release];
-	// Fix case 20368: Setting focus on native keyboard crashes simulator (http://bugs.anscamobile.com/default.asp?20368)
+	// Fix case 20368: Setting focus on native keyboard crashes simulator (http://bugs.coronalabs.com/default.asp?20368)
 	fWindow = nil;
 	[fWindowController release];
 
@@ -189,9 +172,7 @@ MacSimulator::Initialize(
 	}
 
 	AppDelegate *delegate = (AppDelegate*)[[NSApplication sharedApplication] delegate];
-	const AuthorizationTicket *ticket = [delegate ticket];
-	const char *subscription = AuthorizationTicket::StringForSubscription( ticket->GetSubscription() );
-	[fProperties setValue:[NSString stringWithExternalString:subscription] forKey:@"subscription"];
+	[fProperties setValue:@"Solar2D" forKey:@"subscription"];
 	
 	// Store the simulated device's default font size.
 	[fProperties setValue:[NSNumber numberWithFloat:config.defaultFontSize] forKey:@"defaultFontSize"];

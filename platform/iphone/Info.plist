@@ -46,10 +46,6 @@
 	<string>NSCameraUsageDescription should be set to a valid usage description</string>
     <key>NSContactsUsageDescription</key>
 	<string>NSContactsUsageDescription should be set to a valid usage description</string>
-    <key>NSHealthShareUsageDescription</key>
-	<string>NSHealthShareUsageDescription should be set to a valid usage description</string>
-    <key>NSHealthUpdateUsageDescription</key>
-	<string>NSHealthUpdateUsageDescription should be set to a valid usage description</string>
     <key>NSHomeKitUsageDescription</key>
 	<string>NSHomeKitUsageDescription should be set to a valid usage description</string>
     <key>NSLocationAlwaysUsageDescription</key>

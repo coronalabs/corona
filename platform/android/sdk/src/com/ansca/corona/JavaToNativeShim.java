@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -98,10 +82,10 @@ public class JavaToNativeShim {
     private static native void nativeOrientationChanged( long bridgeAddress, int newOrientation, int oldOrientation );
     private static native void nativeResizeEvent( long bridgeAddress );
     private static native void nativeAlertCallback( long bridgeAddress, int buttonIndex, boolean cancelled );
-    private static native void nativeSoundEndCallback( long bridgeAddress, int id );
-    private static native void nativeVideoEndCallback( long bridgeAddress, int id );
-    private static native void nativeRecordCallback( long bridgeAddress, int id, int status );
-    private static native void nativeSetAudioRecorderState( long bridgeAddress, int id, boolean isRecording );
+    private static native void nativeSoundEndCallback( long bridgeAddress, long id );
+    private static native void nativeVideoEndCallback( long bridgeAddress, long id );
+    private static native void nativeRecordCallback( long bridgeAddress, long id, int status );
+    private static native void nativeSetAudioRecorderState( long bridgeAddress, long id, boolean isRecording );
     private static native void nativeTextEvent( long bridgeAddress, int id, boolean focusLost, boolean isDone );
 	private static native void nativeTextEditingEvent( long bridgeAddress, int id, int startPos, int numDeleted, String newCharacters, String oldString, String newString );
     private static native void nativeMultitouchEventBegin(long bridgeAddress);
@@ -566,28 +550,28 @@ public class JavaToNativeShim {
 		nativeAlertCallback( runtime.getJavaToNativeBridgeAddress(), buttonIndex, cancelled );
 	}
 	
-	public static void soundEndCallback( CoronaRuntime runtime, int id ) {
+	public static void soundEndCallback( CoronaRuntime runtime, long id ) {
 		if (runtime == null || runtime.wasDisposed()) {
 			return;
 		}
 		nativeSoundEndCallback( runtime.getJavaToNativeBridgeAddress(), id );
 	}
 	
-	public static void videoEndCallback( CoronaRuntime runtime, int id ) {
+	public static void videoEndCallback( CoronaRuntime runtime, long id ) {
 		if (runtime == null || runtime.wasDisposed()) {
 			return;
 		}
 		nativeVideoEndCallback( runtime.getJavaToNativeBridgeAddress(), id );
 	}
 	
-	public static void recordCallback( CoronaRuntime runtime, int id, int status ) {
+	public static void recordCallback( CoronaRuntime runtime, long id, int status ) {
 		if (runtime == null || runtime.wasDisposed()) {
 			return;
 		}
 		nativeRecordCallback( runtime.getJavaToNativeBridgeAddress(), id, status );
 	}
 
-	public static void setAudioRecorderState( CoronaRuntime runtime, int id, boolean isRecording ) {
+	public static void setAudioRecorderState( CoronaRuntime runtime, long id, boolean isRecording ) {
 		if (runtime == null || runtime.wasDisposed()) {
 			return;
 		}
@@ -664,9 +648,10 @@ public class JavaToNativeShim {
 
 	/**
 	 * Creates and sends a video pick event on the native side.
+	 * @param runtime context
 	 * @param selectedVideoFileName The selected video file.  It can be a path or a uri.
 	 * @param duration The number of seconds of the video in milliseconds.  The event created will be in seconds.
-	 * @param duration The size of the video in bytes.
+	 * @param size The size of the video in bytes.
 	 */
 	public static void videoPickerEvent( CoronaRuntime runtime, String selectedVideoFileName, int duration, long size )
 	{

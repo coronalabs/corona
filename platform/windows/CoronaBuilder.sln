@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoronaBuilder", "CoronaBuilder\CoronaBuilder.vcxproj", "{EAFC16C3-22B1-4C46-BEDE-8828226D926B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoronaBuilder", "CoronaBuil
 		{4BE37D68-BA9E-464A-BC28-510A8B39CCCD} = {4BE37D68-BA9E-464A-BC28-510A8B39CCCD}
 		{D0ADD46C-58EE-41AF-8E62-BAB080D7CE21} = {D0ADD46C-58EE-41AF-8E62-BAB080D7CE21}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinXmlRpc.Library.Win32", "WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.vcxproj", "{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pthreads.Library.Win32", "Pthreads.Library.Win32\Pthreads.Library.Win32.vcxproj", "{A2E5AD7E-DE8D-486B-8D92-0F29B24397CC}"
 EndProject
@@ -21,6 +19,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua.Console", "Lua.Console\Lua.Console.vcxproj", "{50977859-079E-4375-9B3F-BD598E6F7463}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua.Compiler", "Lua.Compiler\Lua.Compiler.vcxproj", "{511AE85E-6A1E-4830-BEF1-F695B2855B47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D0ADD46C-58EE-41AF-8E62-BAB080D7CE21} = {D0ADD46C-58EE-41AF-8E62-BAB080D7CE21}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LPeg.Library.Win32", "LPeg.Library\LPeg.Library.Win32.vcxproj", "{EC28B73D-7A9E-46AB-951D-7D528329B994}"
 EndProject
@@ -30,7 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build.Tools", "Build.Tools"
 		Build.Tools\LuaToCppFile.bat = Build.Tools\LuaToCppFile.bat
 		Build.Tools\LuaToCppSchema.xml = Build.Tools\LuaToCppSchema.xml
 		Build.Tools\LuaToCppTask.targets = Build.Tools\LuaToCppTask.targets
-		Build.Tools\TemplateToLua.bat = Build.Tools\TemplateToLua.bat
 		Build.Tools\UpdateProjectFileVersion.vbs = Build.Tools\UpdateProjectFileVersion.vbs
 	EndProjectSection
 EndProject
@@ -38,10 +38,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQLite.Library.Win32", "SQL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luafilesystem_dll", "luafilesystem\luafilesystem_dll.vcxproj", "{61D9B687-BAC9-4571-A43D-F15B2A718E05}"
 	ProjectSection(ProjectDependencies) = postProject
+		{50977859-079E-4375-9B3F-BD598E6F7463} = {50977859-079E-4375-9B3F-BD598E6F7463}
+		{511AE85E-6A1E-4830-BEF1-F695B2855B47} = {511AE85E-6A1E-4830-BEF1-F695B2855B47}
 		{D0ADD46C-58EE-41AF-8E62-BAB080D7CE21} = {D0ADD46C-58EE-41AF-8E62-BAB080D7CE21}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua.Socket.Library.Win32", "Lua.Socket.Library\Lua.Socket.Library.Win32.vcxproj", "{4BE37D68-BA9E-464A-BC28-510A8B39CCCD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50977859-079E-4375-9B3F-BD598E6F7463} = {50977859-079E-4375-9B3F-BD598E6F7463}
+		{511AE85E-6A1E-4830-BEF1-F695B2855B47} = {511AE85E-6A1E-4830-BEF1-F695B2855B47}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,20 +74,6 @@ Global
 		{EAFC16C3-22B1-4C46-BEDE-8828226D926B}.Release.Simulator|Win32.Build.0 = Release|Win32
 		{EAFC16C3-22B1-4C46-BEDE-8828226D926B}.Release|Win32.ActiveCfg = Release|Win32
 		{EAFC16C3-22B1-4C46-BEDE-8828226D926B}.Release|Win32.Build.0 = Release|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug.App|Win32.ActiveCfg = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug.App|Win32.Build.0 = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug.CoronaBuilder|Win32.ActiveCfg = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug.CoronaBuilder|Win32.Build.0 = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug.Simulator|Win32.ActiveCfg = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug.Simulator|Win32.Build.0 = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Debug|Win32.Build.0 = Debug|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Release.App|Win32.ActiveCfg = Release|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Release.App|Win32.Build.0 = Release|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Release.Simulator|Win32.ActiveCfg = Release|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Release.Simulator|Win32.Build.0 = Release|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Release|Win32.ActiveCfg = Release|Win32
-		{0F11F26D-BCF6-4E63-A255-A577BBD1AE84}.Release|Win32.Build.0 = Release|Win32
 		{A2E5AD7E-DE8D-486B-8D92-0F29B24397CC}.Debug.App|Win32.ActiveCfg = Debug|Win32
 		{A2E5AD7E-DE8D-486B-8D92-0F29B24397CC}.Debug.App|Win32.Build.0 = Debug|Win32
 		{A2E5AD7E-DE8D-486B-8D92-0F29B24397CC}.Debug.CoronaBuilder|Win32.ActiveCfg = Debug|Win32
@@ -211,5 +203,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AEF06E1E-2152-4A98-A743-12D82B0DFE69}
 	EndGlobalSection
 EndGlobal

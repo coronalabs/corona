@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -286,19 +270,7 @@ public class CoronaRuntime {
 		}
 
 		// Fetch the path to where this application's native C/C++ libraries are located.
-		String nativeLibraryPath;
-		if (android.os.Build.VERSION.SDK_INT >= 9) {
-			nativeLibraryPath = ApiLevel9.getNativeLibraryDirectoryFrom(CoronaEnvironment.getApplicationContext());
-		}
-		else {
-			nativeLibraryPath = CoronaEnvironment.getApplicationContext().getApplicationInfo().dataDir + "/lib";
-		}
-
-		// Do not continue if the library directory could not be found.
-		// Note: This should never happen, but we should check anyways.
-		if ((nativeLibraryPath == null) || (nativeLibraryPath.length() <= 0)) {
-			return;
-		}
+		String nativeLibraryPath = ApiLevel9.getNativeLibraryDirectoryFrom(CoronaEnvironment.getApplicationContext());
 
 		// Push the Lua "package" table to the top of the stack.
 		fLuaState.getGlobal( "package" );
@@ -313,11 +285,65 @@ public class CoronaRuntime {
 		String cpathNew = nativeLibraryPath + "/lib?.so;" + cpathValue;
 		fLuaState.pushString( cpathNew );
 		fLuaState.setField( -2, cpathKey );
-		
+
+		fLuaState.newTable();
+		int i = 1;
+		android.content.pm.ApplicationInfo ai = CoronaEnvironment.getApplicationContext().getApplicationInfo();
+		String main = ai.sourceDir;
+		if (main != null) {
+			fLuaState.pushString(main);
+			fLuaState.rawSet(-2, i++);
+		}
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			String[] splits = ai.splitSourceDirs;
+			if (splits != null) {
+				for (String split : splits) {
+					fLuaState.pushString(split);
+					fLuaState.rawSet(-2, i++);
+				}
+			}
+		}
+		fLuaState.pushString(android.os.Build.CPU_ABI); // despite promise, SUPPORTED_ABIS[0] is not what we want
+		fLuaState.setField(-2, "abi");
+
+		fLuaState.setField(-2, "APKs");
 		// Pop the Lua "package" table off of the stack.
 		fLuaState.pop( 1 );
+
+        insertFakeNativeLoader();
 	}
 	
+	/**
+	 * This iserts fake loader into package.loaders which just calls System.loadLibrary
+	 * This does not expose symbols to the C, but does something so dlopen starts to work
+	 * on old x64 Androids. Weird workaround, but works.
+	 */
+	private void insertFakeNativeLoader() {
+		fLuaState.getGlobal("table");
+		fLuaState.getField(-1, "insert"); // push function to be called
+
+		fLuaState.getGlobal("package");
+		fLuaState.getField(-1, "loaders"); // push 1st arg: "package.loaders" table
+		fLuaState.remove(-2); // pop "package"
+		fLuaState.pushInteger(2); // position of the fake loader
+		fLuaState.pushJavaFunction(new com.naef.jnlua.JavaFunction() {
+			@Override
+			public int invoke(com.naef.jnlua.LuaState luaState) {
+				try {
+                    // Insert "fake" library loader. This helps to load ARM64 libraries
+                    // on adnroid 5.1 first gen x64 devices for some reason, helps them
+                    // load dependencies
+                    System.loadLibrary(luaState.toString(1));
+				} catch (Throwable ignore) {
+				}
+				return 0;
+			}
+		});
+
+		fLuaState.call(3, 0); // call table.insert( package.loaders, [index,] loader )
+		fLuaState.pop(1); // pop "table"
+	}
+
 	/**
 	 * To be called when the C++ side of the Corona runtime has been created and its Lua state has been initialized.
 	 * This object will generate a LuaState wrapper around the C Lua state instance and then notify all listeners

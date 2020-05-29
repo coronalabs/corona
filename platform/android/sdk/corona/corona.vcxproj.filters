@@ -430,18 +430,6 @@
     <ClCompile Include="..\..\ndk\generated\widget_theme_ios7_sheet.cpp">
       <Filter>generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\rsa\prime.cpp">
-      <Filter>rsa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\external\rsa\rsa.cpp">
-      <Filter>rsa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\external\rsa\vlong.cpp">
-      <Filter>rsa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\external\rsa\vlong_io.cpp">
-      <Filter>rsa</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\external\luasocket\src\tcp.c">
       <Filter>socket</Filter>
     </ClCompile>
@@ -493,9 +481,6 @@
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Math.c">
       <Filter>rtt\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_MD4.c">
-      <Filter>rtt\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Time.c">
       <Filter>rtt\Core</Filter>
     </ClCompile>
@@ -521,9 +506,6 @@
       <Filter>rtt\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_FixedBlockAllocator.cpp">
-      <Filter>rtt\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_MessageDigest.cpp">
       <Filter>rtt\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_OperationResult.cpp">
@@ -988,9 +970,6 @@
     <ClCompile Include="..\..\..\..\librtt\Rtt_Matrix.cpp">
       <Filter>rtt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\librtt\Rtt_Message.cpp">
-      <Filter>rtt</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\librtt\Rtt_ParticleSystemObject.cpp">
       <Filter>rtt</Filter>
     </ClCompile>
@@ -1205,9 +1184,6 @@
       <Filter>rtt</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\librtt\Rtt_Transform.cpp">
-      <Filter>rtt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\librtt\Rtt_Verifier.cpp">
       <Filter>rtt</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\librtt\Corona\CoronaLua.cpp">
@@ -1831,18 +1807,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\external\rsa\vlong.hpp">
-      <Filter>rsa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\external\rsa\vlong_io.h">
-      <Filter>rsa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\external\rsa\prime.hpp">
-      <Filter>rsa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\external\rsa\rsa.hpp">
-      <Filter>rsa</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\external\luasocket\src\select.h">
       <Filter>socket</Filter>
     </ClInclude>
@@ -1937,12 +1901,6 @@
       <Filter>rtt\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Matrix.h">
-      <Filter>rtt\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_MD4.h">
-      <Filter>rtt\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_MessageDigest.h">
       <Filter>rtt\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_New.h">
@@ -2476,9 +2434,6 @@
     <ClInclude Include="..\..\..\..\librtt\Rtt_MCrypto.h">
       <Filter>rtt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\librtt\Rtt_Message.h">
-      <Filter>rtt</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\librtt\Rtt_MIterable.h">
       <Filter>rtt</Filter>
     </ClInclude>
@@ -2687,12 +2642,6 @@
       <Filter>rtt</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\librtt\Rtt_Transform.h">
-      <Filter>rtt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\librtt\Rtt_Verifier.h">
-      <Filter>rtt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\librtt\Rtt_VerifierData.h">
       <Filter>rtt</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\librtt\Rtt_WorkFlowConstants.h">

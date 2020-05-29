@@ -1,16 +1,10 @@
 {
 	"ios": [
 		{
-			"label": "12.1",
-			"xcodeVersion": "12.1",
-			"failMessage": "install or xcode-select Xcode 10.1 to enable",
-			"coronaVersion": 121000
-		},
-		{
-			"label": "12.0",
-			"xcodeVersion": "12.0",
-			"failMessage": "install or xcode-select Xcode 10.0 to enable",
-			"coronaVersion": 120000,
+			"label": "13.5",
+			"xcodeVersion": "13.5",
+			"failMessage": "install or xcode-select Xcode 11.5 to enable",
+			"coronaVersion": 135000,
 			"beta": false
 		}
 	]

@@ -30,10 +30,6 @@
     <ClCompile Include="..\..\..\external\lsqlite3-7\lsqlite3.c" />
     <ClCompile Include="..\..\..\external\luafilesystem\src\lfs.c" />
     <ClCompile Include="..\..\..\external\LuaHashMap\LuaHashMap.c" />
-    <ClCompile Include="..\..\..\external\rsa\prime.cpp" />
-    <ClCompile Include="..\..\..\external\rsa\rsa.cpp" />
-    <ClCompile Include="..\..\..\external\rsa\vlong.cpp" />
-    <ClCompile Include="..\..\..\external\rsa\vlong_io.cpp" />
     <ClCompile Include="..\..\..\external\smoothpolygon\SmoothPolygon.cpp" />
     <ClCompile Include="..\..\..\librtt\b2GLESDebugDraw.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp" />
@@ -48,8 +44,6 @@
     <ClCompile Include="..\..\..\librtt\Core\Rtt_FixedMath.c" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Geometry.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Math.c" />
-    <ClCompile Include="..\..\..\librtt\Core\Rtt_MD4.c" />
-    <ClCompile Include="..\..\..\librtt\Core\Rtt_MessageDigest.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_OperationResult.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_RefCount.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_ResourceHandle.cpp" />
@@ -237,7 +231,6 @@
     <ClCompile Include="..\..\..\librtt\Rtt_LuaTableIterator.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_LuaUserdataProxy.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Matrix.cpp" />
-    <ClCompile Include="..\..\..\librtt\Rtt_Message.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_ParticleSystemObject.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PhysicsContact.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PhysicsContactListener.cpp" />
@@ -271,6 +264,8 @@
     <ClCompile Include="..\..\..\librtt\Rtt_RenderingStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Resource.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Runtime.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_HTTPClientCommon.cpp" />
+    <ClCompile Include="Rtt_HTTPClientWindows.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegate.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegatePlayer.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">..\..\..\external\luasocket\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -280,7 +275,6 @@
     <ClCompile Include="..\..\..\librtt\Rtt_StrokeTesselatorStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_TesselatorStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Transform.cpp" />
-    <ClCompile Include="..\..\..\librtt\Rtt_Verifier.cpp" />
     <ClCompile Include="..\..\..\plugins\ads\shared\CoronaAdsLibrary.cpp" />
     <ClCompile Include="..\..\..\plugins\analytics\shared\CoronaAnalyticsLibrary.cpp" />
     <ClCompile Include="..\..\..\plugins\gameNetwork\shared\CoronaGameNetworkLibrary.cpp" />
@@ -307,10 +301,6 @@
     <ClInclude Include="..\..\..\external\hmac\sha2.h" />
     <ClInclude Include="..\..\..\external\luafilesystem\src\lfs.h" />
     <ClInclude Include="..\..\..\external\LuaHashMap\LuaHashMap.h" />
-    <ClInclude Include="..\..\..\external\rsa\prime.hpp" />
-    <ClInclude Include="..\..\..\external\rsa\rsa.hpp" />
-    <ClInclude Include="..\..\..\external\rsa\vlong.hpp" />
-    <ClInclude Include="..\..\..\external\rsa\vlong_io.h" />
     <ClInclude Include="..\..\..\external\smoothpolygon\SmoothPolygon.h" />
     <ClInclude Include="..\..\..\librtt\b2GLESDebugDraw.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
@@ -331,8 +321,6 @@
     <ClInclude Include="..\..\..\librtt\Core\Rtt_List.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Macros.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Math.h" />
-    <ClInclude Include="..\..\..\librtt\Core\Rtt_MD4.h" />
-    <ClInclude Include="..\..\..\librtt\Core\Rtt_MessageDigest.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_New.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_OperationResult.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Real.h" />
@@ -533,7 +521,6 @@
     <ClInclude Include="..\..\..\librtt\Rtt_MCallback.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_MCriticalSection.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_MCrypto.h" />
-    <ClInclude Include="..\..\..\librtt\Rtt_Message.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_MIterable.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_MKeyValueIterable.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_MLuaProxyable.h" />
@@ -578,6 +565,7 @@
     <ClInclude Include="..\..\..\librtt\Rtt_RenderingStream.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Resource.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Runtime.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_HTTPClient.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegate.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegatePlayer.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Scheduler.h" />
@@ -586,8 +574,6 @@
     <ClInclude Include="..\..\..\librtt\Rtt_SurfaceInfo.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_TesselatorStream.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Transform.h" />
-    <ClInclude Include="..\..\..\librtt\Rtt_Verifier.h" />
-    <ClInclude Include="..\..\..\librtt\Rtt_VerifierData.h" />
     <ClInclude Include="..\..\..\plugins\ads\shared\CoronaAdsLibrary.h" />
     <ClInclude Include="..\..\..\plugins\analytics\shared\CoronaAnalyticsLibrary.h" />
     <ClInclude Include="..\..\..\plugins\gameNetwork\shared\CoronaGameNetworkLibrary.h" />
@@ -629,6 +615,7 @@
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaLibrary.lua" />
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaPrototype.lua" />
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaProvider.lua" />
+    <LuaToCpp Include="..\..\resources\CoronaBuilderPluginCollector.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_add_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_average_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_colorBurn_gl.lua" />
@@ -806,32 +793,32 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -921,6 +908,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -937,6 +925,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

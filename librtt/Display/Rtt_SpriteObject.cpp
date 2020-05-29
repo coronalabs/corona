@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -83,10 +67,6 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 	int start = (int) lua_tointeger( L, -1 );
 	lua_pop( L, 1 );
 
-	lua_getfield( L, index, "time" );
-	Real time = luaL_toreal( L, -1 );
-	lua_pop( L, 1 );
-
 	lua_getfield( L, index, "loopCount" );
 	int loopCount = (int) lua_tointeger( L, -1 );
 	if ( loopCount < 0 )
@@ -99,33 +79,29 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 	lua_getfield( L, index, "loopDirection" );
 	Direction loopDirection = DirectionForString( lua_tostring( L, -1 ) );
 	lua_pop( L, 1 );
-
+	
+	FrameIndex *frames = NULL;
+	int numFrames;
 	if ( start > 0 )
 	{
 		lua_getfield( L, index, "count" );
-		int numFrames = (int) lua_tointeger( L, -1 );
+		numFrames = (int) lua_tointeger( L, -1 );
 		lua_pop( L, 1 );
-
+		
 		if ( numFrames <= 0 )
 		{
 			Rtt_TRACE_SIM( ( "WARNING: Invalid 'count' value(%d) in sequenceData. Assuming the frame count of the sequence is 1.\n", numFrames ) );
 			numFrames = 1;
 		}
-
-		--start; // Lua value was 1-based
-
-		// Consecutive frames
-		result = Rtt_NEW( allocator, SpriteObjectSequence(
-			allocator, name, time, start, numFrames, loopCount, loopDirection ) );
 	}
 	else
 	{
 		lua_getfield( L, index, "frames" );
 		if ( lua_istable( L, -1 ) )
 		{
-			int numFrames = (int) lua_objlen( L, -1 );
-
-			FrameIndex *frames = (FrameIndex *)Rtt_MALLOC( allocator, numFrames * sizeof( FrameIndex ) );
+			numFrames = (int) lua_objlen( L, -1 );
+			
+			frames = (FrameIndex *)Rtt_MALLOC( allocator, numFrames * sizeof( FrameIndex ) );
 			for ( int i = 0; i < numFrames; i++ )
 			{
 				lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
@@ -137,19 +113,66 @@ SpriteObjectSequence::Create( Rtt_Allocator *allocator, lua_State *L, int index 
 				frames[i] = (value - 1); // Lua is 1-based
 				lua_pop( L, 1 );
 			}
-
-			// Non-consecutive
-			result = Rtt_NEW( allocator, SpriteObjectSequence(
-				allocator, name, time, frames, numFrames, loopCount, loopDirection ) );
-		}
-		else
-		{
-			Rtt_TRACE_SIM( ( "ERROR: sequenceData missing data. One of the following must be supplied: a pair of properties 'start'/'count' or an array value for the property 'frames'.\n" ) );
 		}
 		lua_pop( L, 1 );
 	}
-
-
+	
+	Real time = 0;
+	Real *timeArray = NULL;
+	lua_getfield( L, index, "time" );
+	if ( lua_isnumber(L, -1) )
+	{
+		time = luaL_toreal( L, -1 );
+	}
+	else if ( lua_istable( L, -1 ) )
+	{
+		int numFramesInTimeArray = (int) lua_objlen( L, -1 );
+		timeArray = (Real *)Rtt_MALLOC( allocator, numFrames * sizeof( Real ) );
+		
+		for ( int i = 0; i < Min(numFrames, numFramesInTimeArray); i++ ) // Resolve timeArray with available values in given lua array
+		{
+			lua_rawgeti( L, -1, i+1 ); // Lua is 1-based
+			int value = (int)lua_tointeger( L, -1 );
+			if ( value < 1 )
+			{
+				Rtt_TRACE_SIM( ( "WARNING: Invalid value(%d) in 'time' array. Assuming the frame's time is 1\n", value ) );
+				value = 1;
+			}
+			timeArray[i] = value;
+			lua_pop( L, 1 );
+		}
+		
+		if (numFramesInTimeArray > numFrames)
+		{
+			Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be cropped.\n", numFramesInTimeArray, numFrames ) );
+		}
+		else if ( numFramesInTimeArray < numFrames) // If given lua array was smaller, repeat last frame
+		{
+			Rtt_TRACE_SIM( ( "WARNING: Size of 'time' array (%d) in sequenceData differs from number of frames(%d). 'time' array will be extended with last frame time.\n", numFramesInTimeArray, numFrames ) );
+			for ( int i = numFramesInTimeArray - 1; i < numFrames; i++ )
+			{
+				timeArray[i] = timeArray[numFramesInTimeArray - 1];
+			}
+		}
+	}
+	lua_pop( L, 1 );
+	
+	if ( start > 0 )
+	{
+		--start; // Lua value was 1-based
+		result = Rtt_NEW( allocator, SpriteObjectSequence(
+			allocator, name, time, timeArray, start, numFrames, loopCount, loopDirection ) );
+	}
+	else if ( frames != NULL)
+	{
+			result = Rtt_NEW( allocator, SpriteObjectSequence(
+				allocator, name, time, timeArray, frames, numFrames, loopCount, loopDirection ) );
+	}
+	else
+	{
+		Rtt_TRACE_SIM( ( "ERROR: sequenceData missing data. One of the following must be supplied: a pair of properties 'start'/'count' or an array value for the property 'frames'.\n" ) );
+	}
+	
 	if ( result )
 	{
 		ImageSheetUserdata *ud = NULL;
@@ -179,6 +202,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 	Rtt_Allocator *allocator,
 	const char *name,
 	Real time,
+	Real *timeArray,
 	FrameIndex start,
 	FrameIndex numFrames,
 	int loopCount,
@@ -187,6 +211,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 	fSheet(),
 	fName( allocator, name ),
 	fTime( time ),
+	fTimeArray( timeArray ),
 	fTimePerFrame( Rtt_RealDiv( Rtt_IntToReal( time ), Rtt_IntToReal( numFrames ) ) ),
 	fNumFrames( numFrames ),
 	fStart( start ),
@@ -202,6 +227,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 	Rtt_Allocator *allocator,
 	const char *name,
 	Real time,
+	Real *timeArray,
 	FrameIndex *frames,
 	FrameIndex numFrames,
 	int loopCount,
@@ -210,6 +236,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 	fSheet(),
 	fName( allocator, name ),
 	fTime( time ),
+	fTimeArray( timeArray ),
 	fTimePerFrame( Rtt_RealDiv( Rtt_IntToReal( time ), Rtt_IntToReal( numFrames ) ) ),
 	fStart( -1 ),
 	fFrames( frames ),
@@ -223,6 +250,7 @@ SpriteObjectSequence::SpriteObjectSequence(
 SpriteObjectSequence::~SpriteObjectSequence()
 {
 	Rtt_FREE( fFrames );
+	Rtt_FREE( fTimeArray );
 	Rtt_DELETE( fPaint );
 }
 
@@ -277,13 +305,6 @@ SpriteObjectSequence::Verify( const SpriteObject& owner ) const
 	}
 }
 
-Real
-SpriteObjectSequence::GetEffectiveTime() const
-{
-	Real numFrames = Rtt_IntToReal( GetEffectiveNumFrames() );
-	return Rtt_RealMul( numFrames, GetTimePerFrame() );
-}
-
 SpriteObjectSequence::FrameIndex
 SpriteObjectSequence::GetStartFrame() const
 {
@@ -301,6 +322,26 @@ SpriteObjectSequence::GetFrame( int index ) const
 {
 	return ( IsConsecutiveFrames() ? (fStart+index) : fFrames[index] );
 }
+
+int
+SpriteObjectSequence::GetTimeForFrame( int frameIndex ) const
+{
+	Real *timeArray = GetTimeArray();
+	if (timeArray == NULL)
+	{
+		return frameIndex * GetTimePerFrame();
+	}
+	else
+	{
+		Real summedTime = 0;
+		for (int i = 0; i < frameIndex; ++i)
+		{
+			summedTime += timeArray[i];
+		}
+		return summedTime;
+	}
+}
+
 
 SpriteObjectSequence::FrameIndex
 SpriteObjectSequence::GetEffectiveFrame( int index, SpriteEvent::Phase *phase ) const
@@ -554,12 +595,12 @@ SpriteObject::SpriteObject(
 	fPlayer( player ),
 	fTimeScale( Rtt_REAL_1 ),
 	fCurrentSequence( 0 ), // Default is first sequence
-	fSequenceIndex( 0 ),
+	fCurrentFrame( 0 ),
 	fStartTime( 0 ),
 	fPlayTime( 0 ),
 	fProperties( 0 )
 {
-    SetObjectDesc( "SpriteObject" );     // for introspection
+	SetObjectDesc( "SpriteObject" );     // for introspection
 }
 
 SpriteObject::~SpriteObject()
@@ -607,6 +648,7 @@ SpriteObject::AddSequence( SpriteObjectSequence *sequence )
 		// If no sequences have been added
 		if ( 0 == fSequences.Length() )
 		{
+			ResetTimeArrayIteratorCache( sequence );
 			SetBitmapFrame( sequence->GetEffectiveFrame( 0 ) );
 		}
 		fSequences.Append( sequence );
@@ -697,6 +739,50 @@ SpriteObject::SetBitmapFrame( int frameIndex )
 }
 
 void
+SpriteObject::ResetTimeArrayIteratorCache(SpriteObjectSequence *sequence)
+{
+	Real *timeArray = sequence->GetTimeArray();
+	if (timeArray != NULL){
+		fTimeArrayCachedFrame = 0;
+		fTimeArrayCachedNextFrameTime = timeArray[0];
+	}
+}
+
+int
+SpriteObject::GetFrameIndexForDeltaTime( Real dt, SpriteObjectSequence *sequence, int effectiveNumFrames)
+{
+	if (sequence->GetTimeArray() == NULL)
+	{
+		return (int)Rtt_RealDiv( dt, sequence->GetTimePerFrame() );
+	}
+	else if (dt < fTimeArrayCachedNextFrameTime)
+	{
+		return fTimeArrayCachedFrame;
+	}
+	else
+	{
+		int numFrames = sequence->GetNumFrames();
+		Real *timeArray = sequence->GetTimeArray();
+		
+		// Increase cachedFrame until dt is lower than cachedNextFrameTime again OR effectiveNumFrames is reached when using finite loops
+		for (int i = fTimeArrayCachedFrame; (0 == sequence->GetLoopCount() && dt > fTimeArrayCachedNextFrameTime) || i < effectiveNumFrames; ++i)
+		{
+			fTimeArrayCachedFrame += 1;
+			
+			int numSeqFrames = SpriteObjectSequence::kBounce == sequence->GetLoopDirection() ? 2 * (numFrames - 1) : numFrames;
+			int nextFrame = fTimeArrayCachedFrame % numSeqFrames;
+			if ( nextFrame >= numFrames ) {
+				nextFrame = 2 * (numFrames - 1) - nextFrame;
+			}
+			
+			fTimeArrayCachedNextFrameTime += timeArray[nextFrame];
+			if (dt < fTimeArrayCachedNextFrameTime) break;
+		}
+		return fTimeArrayCachedFrame;
+	}
+}
+
+void
 SpriteObject::Update( lua_State *L, U64 milliseconds )
 {
 	if( ! IsPlaying() )
@@ -711,91 +797,85 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 		return;
 	}
 
-	bool shouldDispatch = false;
-	SpriteEvent::Phase phase = SpriteEvent::kNumPhases; // unknown
+	bool shouldDispach = false;
+	SpriteEvent::Phase nextPhase = SpriteEvent::kNumPhases; // unknown
 
 	// By default, assume frame does not advance
-	int i = -1;
+	int nextFrame = -1;
 
 	SpriteObjectSequence *sequence = GetCurrentSequence();
 
-	int numFrames = sequence->GetEffectiveNumFrames();
+	int effectiveNumFrames = sequence->GetEffectiveNumFrames();
 
 	if ( ! IsProperty( kIsPlayingBegan ) )
 	{
 		// Base case: first frame
-		i = fSequenceIndex;
+		nextFrame = fCurrentFrame;
 
 		SetProperty( kIsPlayingBegan, true );
 
 		if ( HasListener( kSpriteListener ) )
 		{
-			shouldDispatch = true;
-			phase = SpriteEvent::kBegan;
+			shouldDispach = true;
+			nextPhase = SpriteEvent::kBegan;
 		}
 	}
 	else
 	{
 		// Inductive step: advance frame
-		if ( sequence->GetTime() > 0 )
+		if ( sequence->GetTime() > 0 || sequence->GetTimeArray() != NULL)
 		{
 			// time-based sequence.
-
 			Real dt = Rtt_IntToReal( (U32) (milliseconds - fStartTime) );
-
 			if ( ! Rtt_RealIsOne( fTimeScale ) )
 			{
 				dt = Rtt_RealMul( dt, fTimeScale );
 			}
+			
+			int frameIndexForDeltaTime = GetFrameIndexForDeltaTime(dt, sequence, effectiveNumFrames);
 
-			// time-based, so frame changes depend on current time
-			Real timePerFrame = sequence->GetTimePerFrame();
-			Real sequenceIndex = Rtt_RealDiv( dt, timePerFrame );
-			int index = (int)sequenceIndex; // truncate fractional part to get index
-
+			// Infinite looping will never let fCurrentFrame > numFrames, finite looping does.
 			bool isInfiniteLooping = ( 0 == sequence->GetLoopCount() );
 			if ( isInfiniteLooping )
 			{
-				bool isFirstLoopDone = ( index >= numFrames );
-
-				// For infinite looping, handle wrap-around
-				index = index % numFrames;
-
-				if ( isFirstLoopDone && index < fSequenceIndex )
+				bool isFirstLoopDone = ( frameIndexForDeltaTime >= effectiveNumFrames );
+				
+				frameIndexForDeltaTime = frameIndexForDeltaTime % effectiveNumFrames;
+				if ( isFirstLoopDone && frameIndexForDeltaTime < fCurrentFrame )
 				{
-					// It's unclear what case this is catching and it impedes debugging
-					// so commenting out until the reason for it is remembered
-					// Rtt_ASSERT( 0 == index );
-
 					if ( HasListener( kSpriteListener ) )
 					{
-						shouldDispatch = true;
-						phase = SpriteEvent::kLoop;
+						shouldDispach = true;
+						nextPhase = SpriteEvent::kLoop;
 					}
 
-					fSequenceIndex = 0;
-					i = 0;
+					if (sequence -> GetTimeArray() != NULL){
+						fTimeArrayCachedFrame = 0; // Just reset fTimeArrayCachedFrame since dt keeps counting.
+					}
+					fCurrentFrame = 0;
+					nextFrame = 0;
 				}
 			}
 
-			if ( index > fSequenceIndex )
+			if ( frameIndexForDeltaTime > fCurrentFrame )
 			{
 				// Only dispatch if we advance.
 				// Assume the phase is 'next' for now, and set to other phases below.
 				if ( HasListener( kSpriteListener ) )
 				{
-					shouldDispatch = true;
-					phase = SpriteEvent::kNext;
+					shouldDispach = true;
+					nextPhase = SpriteEvent::kNext;
 				}
 
+				// Check for "ended" on finite loops
 				if ( ! isInfiniteLooping )
 				{
 					// Handle end condition when we are at the last frame
-					int lastIndex = ( numFrames - 1 );
+					int lastIndex = ( effectiveNumFrames - 1 );
 
-					if ( index >= lastIndex )
+					if ( frameIndexForDeltaTime >= lastIndex )
 					{
-						index = lastIndex;
+						frameIndexForDeltaTime = lastIndex;
 
 						// We're about to advance beyond the last frame
 						if ( ! IsProperty( kIsPlayingEnded ) )
@@ -805,64 +885,64 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 
 							if ( HasListener( kSpriteListener ) )
 							{
-								shouldDispatch = true;
-								phase = SpriteEvent::kEnded;
+								shouldDispach = true;
+								nextPhase = SpriteEvent::kEnded;
 							}
 						}
 					}
 				}
 
-				fSequenceIndex = index;
-				i = index;
+				fCurrentFrame = frameIndexForDeltaTime;
+				nextFrame = frameIndexForDeltaTime;
 			}
 		}
 		else
 		{
 			// frame-based sequence, so every update is an advance
-			i = ++fSequenceIndex;
+			nextFrame = ++fCurrentFrame;
 
 			// Assume the phase is 'next' for now, and set to other phases below.
 			if ( HasListener( kSpriteListener ) )
 			{
-				shouldDispatch = true;
-				phase = SpriteEvent::kNext;
+				shouldDispach = true;
+				nextPhase = SpriteEvent::kNext;
 			}
 
-			if ( 0 == sequence->GetLoopCount() )
+			bool isInfiniteLooping = ( 0 == sequence->GetLoopCount() );
+			if ( isInfiniteLooping )
 			{
 				// For infinite looping, handle wrap-around (no last frame)
-				if ( i >= numFrames )
+				bool isFirstLoopDone = ( nextFrame >= effectiveNumFrames );
+				if ( isFirstLoopDone )
 				{
-					i = 0;
-					fSequenceIndex = i;
+					nextFrame = 0;
+					fCurrentFrame = nextFrame;
 
 					if ( HasListener( kSpriteListener ) )
 					{
-						shouldDispatch = true;
-						phase = SpriteEvent::kLoop;
+						shouldDispach = true;
+						nextPhase = SpriteEvent::kLoop;
 					}
 				}
 			}
 			else
 			{
 				// Handle end condition when we are at the last frame
-				int lastIndex = ( numFrames - 1 );
-
-				if ( i >= lastIndex )
+				int lastIndex = ( effectiveNumFrames - 1 );
+				if ( nextFrame >= lastIndex )
 				{
-					i = lastIndex;
-					fSequenceIndex = i;
-
+					nextFrame = lastIndex;
+					fCurrentFrame = nextFrame;
+					
 					// We're about to advance beyond the last frame
 					if ( ! IsProperty( kIsPlayingEnded ) )
 					{
 						SetPlaying( false );
 						SetProperty( kIsPlayingEnded, true );
-
 						if ( HasListener( kSpriteListener ) )
 						{
-							shouldDispatch = true;
-							phase = SpriteEvent::kEnded;
+							shouldDispach = true;
+							nextPhase = SpriteEvent::kEnded;
 						}
 					}
 				}
@@ -871,26 +951,23 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 	}
 
 	// Advance frame if valid index is set
-	if ( i >= 0 )
+	if ( nextFrame >= 0 && nextFrame < effectiveNumFrames )
 	{
-		if ( i < numFrames )
-		{
-			SpriteEvent::Phase p = SpriteEvent::kNext;
-			int frameIndex = sequence->GetEffectiveFrame( i, & p );
-			SetBitmapFrame( frameIndex );
+		SpriteEvent::Phase defaultPhase = SpriteEvent::kNext;
+		int effectiveFrame = sequence->GetEffectiveFrame( nextFrame, & defaultPhase );
+		SetBitmapFrame( effectiveFrame );
 
-			if ( shouldDispatch
-				 && SpriteEvent::kNext != p			// Did 'p' change from default?
-				 && SpriteEvent::kNext == phase )	// Is 'phase' still the default?
-			{
-				phase = p;
-			}
+		if ( shouldDispach
+			 && SpriteEvent::kNext != defaultPhase // Did 'defaultPhase' change from default within GetEffectiveFrame?
+			 && SpriteEvent::kNext == nextPhase )	// Is 'phase' still the default?
+		{
+			nextPhase = defaultPhase;
 		}
 	}
 
-	if ( shouldDispatch )
+	if ( shouldDispach )
 	{
-		SpriteEvent e( * this, phase );
+		SpriteEvent e( * this, nextPhase );
 		DispatchEvent( L, e );
 	}
 }
@@ -1013,24 +1090,30 @@ SpriteObject::SetFrame( int index )
 		// Clamp: 0 <= index < GetNumFrames()
 		index = Max( index, 0 );
 		index = Min( index, GetNumFrames() );
-
-		if ( sequence->GetTime() > 0 )
+		
+		if ( sequence->GetTime() > 0 || sequence->GetTimeArray() != NULL )
 		{
 			// time-based, so frame changes depend on current time
-			Real timePerFrame = sequence->GetTimePerFrame();
-			Real playTime = timePerFrame * index;
-
+			Real playTime = sequence->GetTimeForFrame(index);
 			if ( ! Rtt_RealIsOne( fTimeScale ) )
 			{
 				playTime = Rtt_RealDiv( playTime, fTimeScale );
 			}
 
-			U64 curTime = fPlayer.GetAnimationTime();
-			fStartTime = curTime - Rtt_RealToInt( playTime );
+			if ( !IsPlaying() )
+			{
+				fPlayTime = Rtt_RealToInt( playTime );
+			}
+			else
+			{
+				U64 curTime = fPlayer.GetAnimationTime();
+				fStartTime = curTime - Rtt_RealToInt( playTime );
+			}
 		}
 
-		fSequenceIndex = index;
-
+		fCurrentFrame = index;
+		ResetTimeArrayIteratorCache(sequence);
+		
 		int frameIndex = sequence->GetEffectiveFrame( index );
 		SetBitmapFrame( frameIndex );
 	}
@@ -1042,7 +1125,7 @@ SpriteObject::GetFrame() const
 {
 	SpriteObjectSequence *sequence = GetCurrentSequence();
 	int numFrames = sequence->GetEffectiveNumFrames();
-	int sequenceIndex = fSequenceIndex;
+	int sequenceIndex = fCurrentFrame;
 	if ( IsProperty( kIsPlayingEnded ) )
 	{
 		--sequenceIndex;
@@ -1080,7 +1163,7 @@ SpriteObject::GetFrame() const
 	else
 	{
 //		int numFrames = sequence->GetEffectiveNumFrames();
-		int sequenceIndex = fSequenceIndex;
+		int currentFrame = fCurrentFrame;
 
 		int rawFrames = GetNumFrames();
 		int numSeqFrames = rawFrames;
@@ -1091,11 +1174,11 @@ SpriteObject::GetFrame() const
 			// base sequence that repeats is: 12345432...
 			numSeqFrames = 2*(rawFrames - 1);
 		}
-		sequenceIndex = sequenceIndex % numSeqFrames;
+		currentFrame = currentFrame % numSeqFrames;
 
 //Rtt_TRACE( ( "seqIndex %d\n", sequenceIndex ) );
 
-		result = sequenceIndex;
+		result = currentFrame;
 		if ( result >= rawFrames )
 		{
 			result = 2*(rawFrames-1) - result;
@@ -1125,11 +1208,11 @@ SpriteObject::IsPlaying() const
 	bool result = IsProperty( kIsPlaying );
 	if ( result )
 	{
-		// For infinite loops, fSequenceIndex will always be in range
-		// For finite loops, fSequenceIndex will eventually be out of range
+		// For infinite loops, fCurrentFrame will always be in range
+		// For finite loops, fCurrentFrame will eventually be out of range
 		// which means the sprite has completed.
 		SpriteObjectSequence *sequence = GetCurrentSequence();
-		result = ( fSequenceIndex < sequence->GetEffectiveNumFrames() );
+		result = ( fCurrentFrame < sequence->GetEffectiveNumFrames() );
 	}
 
 	return result;
@@ -1150,6 +1233,39 @@ SpriteObject::SetPlaying( bool newValue )
 	}
 }
 
+void
+SpriteObject::SetTimeScale( Real newValue ) {
+  // fStartTime = (U64)Rtt_RealDiv(Rtt_RealMul(fStartTime, fTimeScale), newValue);
+
+  SpriteObjectSequence *sequence = GetCurrentSequence();
+
+  if ( sequence )
+  {
+    if ( !IsPlaying() )
+    {
+      Real playTime = sequence->GetTimeForFrame(fCurrentFrame);
+      if ( ! Rtt_RealIsOne( newValue ) )
+      {
+        playTime = Rtt_RealDiv( playTime, newValue );
+      }
+      fPlayTime = Rtt_RealToInt( playTime );
+    }
+    else
+    {
+      U64 curTime = fPlayer.GetAnimationTime();
+      Real timeElapsed = curTime - fStartTime;
+      Real newTimeElapsed = Rtt_RealDiv(Rtt_RealMul(timeElapsed, fTimeScale), newValue);
+      if ( curTime >= Rtt_RealToInt(newTimeElapsed) ) {
+        fStartTime = curTime - Rtt_RealToInt(newTimeElapsed);
+      } else {
+        fStartTime = 0;
+      }
+    }
+  }
+
+  fTimeScale = newValue;
+}
+
 SpriteObjectSequence*
 SpriteObject::GetCurrentSequence() const
 {
@@ -1161,15 +1277,17 @@ void
 SpriteObject::Reset()
 {
 	fProperties = ( kResetMask & fProperties );
-	fSequenceIndex = 0;
+	fCurrentFrame = 0;
 	fStartTime = 0;
 	fPlayTime = 0;
 
 	// Set to initial frame
 	SpriteObjectSequence *sequence = GetCurrentSequence();
+	ResetTimeArrayIteratorCache(sequence);
 	int frameIndex = sequence->GetEffectiveFrame( 0 );
 	SetBitmapFrame( frameIndex );
 }
+	
 
 // ----------------------------------------------------------------------------
 

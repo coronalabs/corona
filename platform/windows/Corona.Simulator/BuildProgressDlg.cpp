@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -30,9 +14,6 @@
 #include "Core\Rtt_Build.h"
 #include "CoronaInterface.h"
 #include "CoronaProject.h"
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 #include "SimulatorView.h"
 #include "WinGlobalProperties.h"
 #include "WinString.h"
@@ -46,7 +27,7 @@ IMPLEMENT_DYNAMIC(CBuildProgressDlg, CDialog)
 /// Creates a new build progress window.
 CBuildProgressDlg::CBuildProgressDlg(CWnd* pParent /*=NULL*/)
  :	CDialog(CBuildProgressDlg::IDD, pParent),
-	fBuildResult(Rtt::WebServicesSession::kBuildError, CString((LPCSTR)IDS_BUILD_FAILED))
+	fBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED))
 {
 	fTargetedAppStorePointer = (Rtt::TargetAndroidAppStore*)&Rtt::TargetAndroidAppStore::kNone;
 }
@@ -235,7 +216,7 @@ void CBuildProgressDlg::BuildForAndroid()
 	// Do not continue if project settings were not provided.
 	if (!fProjectSettingsPointer || !fTargetedAppStorePointer)
 	{
-		fBuildResult = CBuildResult(Rtt::WebServicesSession::kBuildError, CString((LPCSTR)IDS_BUILD_FAILED));
+		fBuildResult = CBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED));
 		CDialog::OnOK();
 		return;
 	}
@@ -287,7 +268,7 @@ void CBuildProgressDlg::BuildForWeb()
 	// Do not continue if project settings were not provided.
 	if (!fProjectSettingsPointer)
 	{
-		fBuildResult = CBuildResult(Rtt::WebServicesSession::kBuildError, CString((LPCSTR)IDS_BUILD_FAILED));
+		fBuildResult = CBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED));
 		CDialog::OnOK();
 		return;
 	}
@@ -333,7 +314,7 @@ void CBuildProgressDlg::BuildForLinux()
 	// Do not continue if project settings were not provided.
 	if (!fProjectSettingsPointer)
 	{
-		fBuildResult = CBuildResult(Rtt::WebServicesSession::kBuildError, CString((LPCSTR)IDS_BUILD_FAILED));
+		fBuildResult = CBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED));
 		CDialog::OnOK();
 		return;
 	}
@@ -377,11 +358,6 @@ void CBuildProgressDlg::OnBnClickedStopBuild()
 	fStatusMessage.SetWindowText(L"Stopping build...");
 
 	pApp->SetStopBuildRequested(true);
-	Rtt::WebServicesSession *session = pApp->GetCurrentWebServicesSession();
-	if (session)
-	{
-		session->CloseConnection();
-	}
 }
 
 // OnDownloadProgressUpdate - 

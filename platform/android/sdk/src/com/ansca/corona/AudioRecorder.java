@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -60,7 +44,7 @@ public class AudioRecorder {
 	private boolean fIsRunning;
 
 	// The id of the current instance
-	private int fId;
+	private long fId;
 
 	// If the current thread is notifying the Runtime
 	private boolean fIsNotifying = false;
@@ -216,7 +200,7 @@ public class AudioRecorder {
 	 * Sets the id for the instance of the object.
 	 * @param id The id to be set to
 	 */
-	public void setId(int id) {
+	public void setId(long id) {
 		fId = id;
 	}
 
@@ -291,7 +275,7 @@ public class AudioRecorder {
 		fIsNotifying = true;
 		fHandler.post(new Runnable() {
 			public void run() {
-				JavaToNativeShim.recordCallback(fCoronaRuntime, status, fId);
+				JavaToNativeShim.recordCallback(fCoronaRuntime, fId, status);
 			}
 		});
 	}
@@ -445,7 +429,7 @@ public class AudioRecorder {
 
 		/**
 		 * Overwrites the totalDataLen and totalAudioLen fields.  The totalDataLen is assumed to be totalAudioLen + 36
-		 * @param totalDataLen The number of bytes of the audio data.
+		 * @param totalAudioLen The number of bytes of the audio data.
 		 */
 		private void overwriteData(String path, long totalAudioLen) {
 			RandomAccessFile randomAccessFile = null;

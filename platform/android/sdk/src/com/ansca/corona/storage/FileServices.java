@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -86,7 +70,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 	/**
 	 * Determines if the given path\file name is an asset file inside of the APK or expansion file.
-	 * @param fileName The path and file name to check if it is an asset file. Cannot be null or empty.
+	 * @param filePath The path and file name to check if it is an asset file. Cannot be null or empty.
 	 * @return Returns true if the given file is inside of the APK or expansion file.
 	 *         <p>
 	 *         Returns false if the given file is an external file, null, or an empty string.
@@ -495,7 +479,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 	/**
 	 * Safely opens an input stream to the given file without exceptions.
-	 * @param filePath The file to be opened.
+	 * @param file The file to be opened.
 	 * @return Returns an input stream to the given file.
 	 *         <p>
 	 *         Returns null if unable to find or access the given file.
@@ -619,6 +603,16 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 									0, android.content.res.AssetFileDescriptor.UNKNOWN_LENGTH);
 						}
 						catch (Exception ex) { }
+						try {
+							// extract file it if was not extracted yet
+							if(descriptor == null && extractAssetFile(filePath) != null) {
+								java.io.File file = getCoronaResourcesFile(filePath);
+								descriptor = new android.content.res.AssetFileDescriptor(
+										android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY),
+										0, android.content.res.AssetFileDescriptor.UNKNOWN_LENGTH);
+							}
+						}
+						catch (Exception ignore) {}
 						if (descriptor == null) {
 							// Attempt to access the file in the APK's "raw" resource directory.
 							try {

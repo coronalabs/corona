@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,10 +16,10 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformDevice.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_LuaLibSocket.h"
 #include "Rtt_Archive.h"
 #include "Rtt_FileSystem.h"
+#include "Rtt_HTTPClient.h"
 
 #include <string.h>
 #include <time.h>
@@ -135,6 +119,7 @@ LinuxAppPackager::LinuxAppPackager( const MPlatformServices& services )
 	Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< luaload_luasocket_ltn12 > );
 #endif
 
+	HTTPClient::registerFetcherModuleLoaders(L);
 	Lua::DoBuffer( fVM, & luaload_linuxPackageApp, NULL );
 }
 
@@ -142,8 +127,16 @@ LinuxAppPackager::~LinuxAppPackager()
 {
 }
 
-int LinuxAppPackager::Build(AppPackagerParams* _params, WebServicesSession& session, const char* tmpDirBase)
+int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 {
+	ReadBuildSettings(_params->GetSrcDir());
+	if (fNeverStripDebugInfo)
+	{
+		Rtt_LogException("Note: debug info is not being stripped from application (settings.build.neverStripDebugInfo = true)\n");
+
+		_params->SetStripDebug(false);
+	}
+
 	LinuxAppPackagerParams *params = (LinuxAppPackagerParams*) _params;
 	Rtt_ASSERT(params);
 
@@ -184,7 +177,7 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, WebServicesSession& sess
 
 		Rtt_TRACE_SIM(("%s", tmpString.GetString()));
 		params->SetBuildMessage(tmpString.GetString());
-		return WebServicesSession::kLocalPackagingError;
+		return PlatformAppPackager::kLocalPackagingError;
 	}
 
 	lua_State *L = fVM;
@@ -256,18 +249,18 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, WebServicesSession& sess
 	lua_pushcfunction(L, Rtt::CompileScriptsAndMakeCAR);
 	lua_setglobal(L, "compileScriptsAndMakeCAR");
 
-	int result = WebServicesSession::kNoError;
+	int result = PlatformAppPackager::kNoError;
 
 	// call linuxPostPackage( params )
 	if (!Rtt_VERIFY(0 == Lua::DoCall(L, 1, 1)))
 	{
-		result = WebServicesSession::kLocalPackagingError;
+		result = PlatformAppPackager::kLocalPackagingError;
 	}
 	else
 	{
 		if (lua_isstring(L, -1))
 		{
-			result = WebServicesSession::kLocalPackagingError;
+			result = PlatformAppPackager::kLocalPackagingError;
 			const char* msg = lua_tostring(L, -1);
 			Rtt_Log("%s\n", msg);
 		}

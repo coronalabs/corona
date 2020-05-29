@@ -1,15 +1,13 @@
--------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 --
--- shell.lua
+-- This file is part of the Corona game engine.
+-- For overview and more information on licensing please refer to README.md 
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
 --
+------------------------------------------------------------------------------
+
 -- Platform dependent initialization for Windows
---
--- Copyright (c) 2017 Corona Labs Inc. All rights reserved.
---
--- Reviewers:
---              Perry, Vlad
---
--------------------------------------------------------------------------------
 
 -- Fetch the launch arguments passed to this script.
 local launchArguments = ...

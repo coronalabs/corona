@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -411,7 +395,7 @@ NativeToJavaBridge::LoadClass( lua_State *L, const char *libName, const char *cl
 	
 	// 2 bigger than the length for the terminating null and the underscore if needed
 	char libraryName[strlen(libName)+2];
-	char * hasNative = strstr(libName, ".native.");
+	const char * hasNative = strstr(libName, ".native.");
 
 
 	if (hasNative) {
@@ -842,7 +826,7 @@ NativeToJavaBridge::CallVoidMethod( const char * method ) const
 }
 
 void
-NativeToJavaBridge::LoadSound( int id, const char * name, bool eventSound )
+NativeToJavaBridge::LoadSound( uintptr_t id, const char * name, bool eventSound )
 {
 	const char * methodName;
 	
@@ -862,13 +846,13 @@ NativeToJavaBridge::LoadSound( int id, const char * name, bool eventSound )
 	if ( bridge.isValid() )
 	{
 		jmethodID mid = bridge.getEnv()->GetStaticMethodID(
-							bridge.getClass(), methodName, "(Lcom/ansca/corona/CoronaRuntime;ILjava/lang/String;)V" );
+							bridge.getClass(), methodName, "(Lcom/ansca/corona/CoronaRuntime;JLjava/lang/String;)V" );
 		if ( mid != NULL )
 		{
 			jstringParam nameJ( bridge.getEnv(), name );
 			if ( nameJ.isValid() )
 			{
-				bridge.getEnv()->CallStaticVoidMethod( bridge.getClass(), mid, fCoronaRuntime, id, nameJ.getValue()  );
+				bridge.getEnv()->CallStaticVoidMethod( bridge.getClass(), mid, fCoronaRuntime, (jlong)id, nameJ.getValue()  );
 				HandleJavaException();
 			}
 		}
@@ -876,7 +860,7 @@ NativeToJavaBridge::LoadSound( int id, const char * name, bool eventSound )
 }
 
 void
-NativeToJavaBridge::PlaySound( int id, const char * name, bool loop )
+NativeToJavaBridge::PlaySound( uintptr_t id, const char * name, bool loop )
 {
 	if ( !name )
 	{
@@ -887,14 +871,14 @@ NativeToJavaBridge::PlaySound( int id, const char * name, bool loop )
 	if ( bridge.isValid() )
 	{
 		jmethodID mid = bridge.getEnv()->GetStaticMethodID(
-							bridge.getClass(), "callPlaySound", "(Lcom/ansca/corona/CoronaRuntime;ILjava/lang/String;Z)V" );
+							bridge.getClass(), "callPlaySound", "(Lcom/ansca/corona/CoronaRuntime;JLjava/lang/String;Z)V" );
 		if ( mid != NULL )
 		{
 			jstringParam nameJ( bridge.getEnv(), name );
 			if ( nameJ.isValid() )
 			{
 				bridge.getEnv()->CallStaticVoidMethod(
-						bridge.getClass(), mid, fCoronaRuntime, id, nameJ.getValue(), (jboolean) loop);
+						bridge.getClass(), mid, fCoronaRuntime, (jlong)id, nameJ.getValue(), (jboolean) loop);
 				HandleJavaException();
 			}
 		}
@@ -902,23 +886,23 @@ NativeToJavaBridge::PlaySound( int id, const char * name, bool loop )
 }
 
 void
-NativeToJavaBridge::StopSound( int id )
+NativeToJavaBridge::StopSound( uintptr_t id )
 {
-	CallIntMethod( "callStopSound", id );
+	CallLongMethod( "callStopSound", id );
 	HandleJavaException();
 }
 
 void
-NativeToJavaBridge::PauseSound( int id )
+NativeToJavaBridge::PauseSound( uintptr_t id )
 {
-	CallIntMethod( "callPauseSound", id );
+	CallLongMethod( "callPauseSound", id );
 	HandleJavaException();
 }
 
 void
-NativeToJavaBridge::ResumeSound( int id )
+NativeToJavaBridge::ResumeSound( uintptr_t id )
 {
-	CallIntMethod( "callResumeSound", id );
+	CallLongMethod( "callResumeSound", id );
 	HandleJavaException();
 }
 
@@ -1030,38 +1014,7 @@ NativeToJavaBridge::LoadImage(
 }
 
 void 
-NativeToJavaBridge::HttpPost( const char* url, const char * key, const char* value )
-{
-	if ( !url || !key || !value )
-		return;
-		
-	NativeTrace trace( "NativeToJavaBridge::HttpPost" );
-
-	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
-	
-	if ( bridge.isValid() ) {
-		
-		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
-			"callHttpPost", "(Lcom/ansca/corona/CoronaRuntime;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
-		
-		if ( mid != NULL ) {
-
-			jstringParam urlJ( bridge.getEnv(), url );
-			jstringParam keyJ( bridge.getEnv(), key );
-			jstringParam valueJ( bridge.getEnv(), value );
-
-			if ( urlJ.isValid() && keyJ.isValid() && valueJ.isValid() )
-			{
-				bridge.getEnv()->CallStaticVoidMethod(
-						bridge.getClass(), mid, fCoronaRuntime, urlJ.getValue(), keyJ.getValue(), valueJ.getValue());
-				HandleJavaException();
-			}
-		}
-	}
-}
-
-void 
-NativeToJavaBridge::PlayVideo( int id, const char * url, bool mediaControlsEnabled )
+NativeToJavaBridge::PlayVideo( uintptr_t id, const char * url, bool mediaControlsEnabled )
 {
 	if ( !url )
 		return;
@@ -1073,14 +1026,14 @@ NativeToJavaBridge::PlayVideo( int id, const char * url, bool mediaControlsEnabl
 	if ( bridge.isValid() )
 	{
 		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
-			"callPlayVideo", "(Lcom/ansca/corona/CoronaRuntime;ILjava/lang/String;Z)V" );
+			"callPlayVideo", "(Lcom/ansca/corona/CoronaRuntime;JLjava/lang/String;Z)V" );
 		if ( mid != NULL )
 		{
 			jstringParam paramJ( bridge.getEnv(),  url );
 			if ( paramJ.isValid() )
 			{
 				bridge.getEnv()->CallStaticVoidMethod(
-						bridge.getClass(), mid, fCoronaRuntime, id, paramJ.getValue(), (jboolean)mediaControlsEnabled);
+						bridge.getClass(), mid, fCoronaRuntime, (jlong)id, paramJ.getValue(), (jboolean)mediaControlsEnabled);
 				HandleJavaException();
 			}
 		}
@@ -1590,6 +1543,33 @@ NativeToJavaBridge::GetStringWithInt( const char *method, int intParameter, Rtt:
 			}
 		}
 	}	
+}
+
+void
+NativeToJavaBridge::GetStringWithLong( const char *method, long longParameter, Rtt::String *outValue )
+{
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+
+	NativeTrace trace( method );
+
+	if ( bridge.isValid() ) {
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(),
+															method, "(JLcom/ansca/corona/CoronaRuntime;)Ljava/lang/String;" );
+
+		if ( mid != NULL ) {
+			jobject jo = bridge.getEnv()->CallStaticObjectMethod( bridge.getClass(), mid, (jlong)longParameter, fCoronaRuntime );
+			HandleJavaException();
+			if (jo)
+			{
+				jstringResult jstr( bridge.getEnv() );
+				jstr.setString( (jstring) jo );
+				if ( jstr.isValidString() )
+				{
+					outValue->Set( jstr.getUTF8() );
+				}
+			}
+		}
+	}
 }
 
 void
@@ -2279,33 +2259,33 @@ NativeToJavaBridge::SetLocationThreshold( double meters )
 }
 
 void 
-NativeToJavaBridge::SetVolume( int id, float volume )
+NativeToJavaBridge::SetVolume( uintptr_t id, float volume )
 {
 	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
 	
 	if ( bridge.isValid() )
 	{
-		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), "callSetVolume", "(Lcom/ansca/corona/CoronaRuntime;IF)V" );
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), "callSetVolume", "(Lcom/ansca/corona/CoronaRuntime;JF)V" );
 		if ( mid != NULL )
 		{
-			bridge.getEnv()->CallStaticVoidMethod( bridge.getClass(), mid, fCoronaRuntime, id, volume );
+			bridge.getEnv()->CallStaticVoidMethod( bridge.getClass(), mid, fCoronaRuntime, (jlong)id, volume );
 			HandleJavaException();
 		}
 	}
 }
 
 float 
-NativeToJavaBridge::GetVolume( int id ) const
+NativeToJavaBridge::GetVolume( uintptr_t id ) const
 {
 	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
 	jfloat result = 0.0f;
 	
 	if ( bridge.isValid() )
 	{
-		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), "callGetVolume", "(Lcom/ansca/corona/CoronaRuntime;I)F" );
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), "callGetVolume", "(Lcom/ansca/corona/CoronaRuntime;J)F" );
 		if ( mid != NULL )
 		{
-			result = bridge.getEnv()->CallStaticFloatMethod( bridge.getClass(), mid, fCoronaRuntime, id );
+			result = bridge.getEnv()->CallStaticFloatMethod( bridge.getClass(), mid, fCoronaRuntime, (jlong)id );
 			HandleJavaException();
 		}
 	}
@@ -2870,7 +2850,7 @@ NativeToJavaBridge::DisplayObjectUpdateScreenBounds( int id, int x, int y, int w
 }
 
 bool
-NativeToJavaBridge::RecordStart( int id, const char * file )
+NativeToJavaBridge::RecordStart( uintptr_t id, const char * file )
 {
 	NativeTrace trace( "NativeToJavaBridge::RecordStart" );
 
@@ -2880,7 +2860,7 @@ NativeToJavaBridge::RecordStart( int id, const char * file )
 	if ( bridge.isValid() )
 	{
 		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
-			"callRecordStart", "(Lcom/ansca/corona/CoronaRuntime;Ljava/lang/String;I)Z" );
+			"callRecordStart", "(Lcom/ansca/corona/CoronaRuntime;Ljava/lang/String;J)Z" );
 		
 		if ( mid != NULL )
 		{
@@ -2893,7 +2873,7 @@ NativeToJavaBridge::RecordStart( int id, const char * file )
 
 			if ( paramJ.isValid() )
 			{
-				result = bridge.getEnv()->CallStaticBooleanMethod( bridge.getClass(), mid, fCoronaRuntime, paramJ.getValue(), id );
+				result = bridge.getEnv()->CallStaticBooleanMethod( bridge.getClass(), mid, fCoronaRuntime, paramJ.getValue(), (jlong)id );
 				HandleJavaException();
 			}
 		}
@@ -2903,14 +2883,14 @@ NativeToJavaBridge::RecordStart( int id, const char * file )
 }
 
 void 
-NativeToJavaBridge::RecordStop( int id )
+NativeToJavaBridge::RecordStop( uintptr_t id )
 {
-	CallIntMethod( "callRecordStop", id );
+	CallLongMethod( "callRecordStop", id );
 	HandleJavaException();
 }
 
 bool 
-NativeToJavaBridge::RecordGetBytes( int id, Rtt::Data<char> & data )
+NativeToJavaBridge::RecordGetBytes( uintptr_t id, Rtt::Data<char> & data )
 {
 	bool result = false;
 	
@@ -2920,16 +2900,16 @@ NativeToJavaBridge::RecordGetBytes( int id, Rtt::Data<char> & data )
 
 	if ( bridge.isValid() ) {
 		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
-			"callRecordGetBytes", "(Lcom/ansca/corona/CoronaRuntime;I)Ljava/nio/ByteBuffer;" );
+			"callRecordGetBytes", "(Lcom/ansca/corona/CoronaRuntime;J)Ljava/nio/ByteBuffer;" );
 		jmethodID mid2 = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
-			"callRecordGetCurrentByteCount", "(Lcom/ansca/corona/CoronaRuntime;I)I" );
+			"callRecordGetCurrentByteCount", "(Lcom/ansca/corona/CoronaRuntime;J)I" );
 		int numBytes = 0;
 
 		if ( mid != NULL ) {
-			jobject jo = bridge.getEnv()->CallStaticObjectMethod( bridge.getClass(), mid, fCoronaRuntime, id );
+			jobject jo = bridge.getEnv()->CallStaticObjectMethod( bridge.getClass(), mid, fCoronaRuntime, (jlong)id );
 			HandleJavaException();
 			if ( jo && mid2 != NULL ) {
-				numBytes = bridge.getEnv()->CallStaticIntMethod( bridge.getClass(), mid2, fCoronaRuntime, id );
+				numBytes = bridge.getEnv()->CallStaticIntMethod( bridge.getClass(), mid2, fCoronaRuntime, (jlong)id );
 				HandleJavaException();
 			}
 
@@ -2953,26 +2933,26 @@ NativeToJavaBridge::RecordGetBytes( int id, Rtt::Data<char> & data )
 }
 
 void 
-NativeToJavaBridge::RecordReleaseCurrentBuffer( int id )
+NativeToJavaBridge::RecordReleaseCurrentBuffer( uintptr_t id )
 {
-	CallIntMethod( "callRecordReleaseCurrentBuffer", id );
+	CallLongMethod( "callRecordReleaseCurrentBuffer", (jlong)id );
 	HandleJavaException();
 }
 
 void 
-NativeToJavaBridge::RecordCallback( int id, int status )
+NativeToJavaBridge::RecordCallback( uintptr_t id, int status )
 {
 	Rtt::LuaLibMedia::RecordCallback( id, status );
 }
 
 void 
-NativeToJavaBridge::SoundEndCallback( int id )
+NativeToJavaBridge::SoundEndCallback( uintptr_t id )
 {
 	Rtt::LuaLibMedia::SoundEndCallback( id );
 }
 
 void 
-NativeToJavaBridge::VideoEndCallback( int id )
+NativeToJavaBridge::VideoEndCallback( uintptr_t id )
 {
 	Rtt::LuaLibMedia::VideoEndCallback( id );
 }
@@ -4011,7 +3991,7 @@ NativeToJavaBridge::NotificationSchedule( lua_State *L, int index )
 	if (bridge.isValid())
 	{
 		jmethodID mid = bridge.getEnv()->GetStaticMethodID(
-				bridge.getClass(), "callNotificationSchedule", "(Lcom/ansca/corona/CoronaRuntime;JI)I");
+				bridge.getClass(), "callNotificationSchedule", "(Lcom/ansca/corona/CoronaRuntime;JI)J");
 		if (mid)
 		{
 			notificationId = (int)bridge.getEnv()->CallStaticIntMethod(

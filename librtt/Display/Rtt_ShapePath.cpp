@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +24,8 @@
 #include "Display/Rtt_TesselatorShape.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_Renderer.h"
+
+#include "Rtt_LuaAux.h"
 
 // ----------------------------------------------------------------------------
 
@@ -117,6 +103,44 @@ ShapePath::~ShapePath()
 }
 
 void
+ShapePath::CalculateUV( ArrayVertex2& texVertices, Paint *paint, bool canTransformTexture )
+{
+	Transform t;
+
+	if ( canTransformTexture
+			|| ! paint->IsValid( Paint::kTextureTransformFlag ) )
+	{
+		paint->SetValid( Paint::kTextureTransformFlag );
+
+		paint->UpdateTransform( t );
+//			BitmapPaint *bitmapPaint = (BitmapPaint*)paint->AsPaint( Paint::kBitmap );
+//			if ( bitmapPaint )
+//			{
+//				t = bitmapPaint->GetTransform();
+//			}
+
+		S32 angle = 0;
+
+		const PlatformBitmap *bitmap = paint->GetBitmap();
+		if ( bitmap )
+		{
+			angle = bitmap->DegreesToUprightBits();
+			fTesselator->SetNormalizationScaleX( bitmap->GetNormalizationScaleX() );
+			fTesselator->SetNormalizationScaleY( bitmap->GetNormalizationScaleY() );
+		}
+
+		if ( 0 != angle )
+		{
+			t.Rotate( Rtt_IntToReal( angle ) );
+		}
+	}
+
+	texVertices.Clear();
+	fTesselator->GenerateFillTexture( texVertices, t );
+	paint->ApplyPaintUVTransformations( texVertices );
+}
+
+void
 ShapePath::TesselateFill()
 {
 	Rtt_ASSERT( HasFill() );
@@ -154,39 +178,8 @@ ShapePath::TesselateFill()
 
 	if ( ! IsValid( kFillSourceTexture ) )
 	{
-		Transform t; // default to identity
+		CalculateUV( fFillSource.TexVertices(), paint, canTransformTexture );
 
-		if ( canTransformTexture
-			 || ! paint->IsValid( Paint::kTextureTransformFlag ) )
-		{
-			paint->SetValid( Paint::kTextureTransformFlag );
-
-			paint->UpdateTransform( t );
-//			BitmapPaint *bitmapPaint = (BitmapPaint*)paint->AsPaint( Paint::kBitmap );
-//			if ( bitmapPaint )
-//			{
-//				t = bitmapPaint->GetTransform();
-//			}
-
-			S32 angle = 0;
-
-			const PlatformBitmap *bitmap = paint->GetBitmap();
-			if ( bitmap )
-			{
-				angle = bitmap->DegreesToUprightBits();
-				fTesselator->SetNormalizationScaleX( bitmap->GetNormalizationScaleX() );
-				fTesselator->SetNormalizationScaleY( bitmap->GetNormalizationScaleY() );
-			}
-
-			if ( 0 != angle )
-			{
-				t.Rotate( Rtt_IntToReal( angle ) );
-			}
-		}
-
-		fFillSource.TexVertices().Clear();
-		fTesselator->GenerateFillTexture( fFillSource.TexVertices(), t );
-		paint->ApplyPaintUVTransformations( fFillSource.TexVertices() );
 		SetValid( kFillSourceTexture );
 
 		// Force renderdata update
@@ -392,6 +385,29 @@ ShapePath::SetSelfBounds( Real width, Real height )
 	}
 
 	return result;
+}
+
+void
+ShapePath::GetTextureVertices( ArrayVertex2& texVertices )
+{
+	Rtt_ASSERT( HasFill() );
+
+	Paint *paint = GetFill();
+
+	CalculateUV( texVertices, paint, paint->CanTransform() );
+}
+
+Rect
+ShapePath::GetTextureExtents( const ArrayVertex2& texVertices ) const
+{
+	Rect extents;
+
+	for (S32 i = 0, iMax = texVertices.Length(); i < iMax; ++i)
+	{
+		extents.Union(texVertices[i]);
+	}
+
+	return extents;
 }
 
 // ----------------------------------------------------------------------------

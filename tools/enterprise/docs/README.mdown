@@ -44,7 +44,7 @@ If you wish to put `CoronaBuilder.app` into another folder then you must also se
 
 ### Activation
 
-You must purchase an **Enterprise Native Extension** subscription to activate this product. Contact sales via our [web form](http://developer.anscamobile.com/forms/enterprise-solutions-support) for more information.
+You must purchase an **Enterprise Native Extension** subscription to activate this product. Contact sales via our [web form](http://developer.coronalabs.com/forms/enterprise-solutions-support) for more information.
 
 To activate, type the following:
 

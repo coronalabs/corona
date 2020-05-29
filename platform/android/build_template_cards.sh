@@ -115,37 +115,6 @@ pushd "$path/sdk" > /dev/null
 	find "$path/sdk/res/raw" -type f -name "corona_asset_*" -delete
 
 	# ----------------------------------------
-	# Splash Screen Beaconing
-	# ----------------------------------------
-	# Burn size of default splash screen into template so we can tell at runtime
-	# whether the default splash screen was shown
-
-	# The value is used to determine whether the app is displaying the default (unpaid) splash screen or one
-	# of their own and this controls whether the "corona splash screen shown" analytics beacon is sent.
-
-	mkdir -p "$path/ndk/generated"
-	SPLASH_SCREEN_TEMPLATE="$path/sdk/SplashScreenBeacon.java.template"
-	SPLASH_SCREEN_JAVA="$path/sdk/src/com/ansca/corona/SplashScreenBeacon.java"
-	SPLASH_IMAGE_FILE="$path/sdk/res/drawable/_corona_splash_screen.png"
-
-	if [ -r "$SPLASH_IMAGE_FILE" ]
-	then
-		DEFAULT_SPLASH_IMAGE_FILE_SIZE_ANDROID="$("${CORONA_ROOT}/tools/get_splash_screen_size.sh" android "${CORONA_ROOT}")"
-		if [[ "$DEFAULT_SPLASH_IMAGE_FILE_SIZE_ANDROID" =~ ^ERROR: ]]
-		then
-			# We got an error, bail
-			echo "$DEFAULT_SPLASH_IMAGE_FILE_SIZE_ANDROID"
-			exit 1
-		fi
-	else
-		DEFAULT_SPLASH_IMAGE_FILE_SIZE_ANDROID=0
-	fi
-
-	echo "Updating $SPLASH_SCREEN_JAVA ..."
-	rm -f "$SPLASH_SCREEN_JAVA"
-	sed -e "s/999/$DEFAULT_SPLASH_IMAGE_FILE_SIZE_ANDROID/" "$SPLASH_SCREEN_TEMPLATE" > "$SPLASH_SCREEN_JAVA"
-
-	# ----------------------------------------
 	# Prepare plugins
 	# ----------------------------------------
 	# preparePlugin "ads-inmobi"

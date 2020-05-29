@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +53,7 @@ jint JNI_OnLoad( JavaVM *vm, void * reserved )
  * @return The bridge object at the specfied address.
  */
 JavaToNativeBridge*
-JavaToNativeBridgeFromMemoryAddress(long bridgeAddress)
+JavaToNativeBridgeFromMemoryAddress(jlong bridgeAddress)
 {
 	JavaToNativeBridge* bridge;
 	bridge = (JavaToNativeBridge*)bridgeAddress;
@@ -432,19 +416,19 @@ Java_com_ansca_corona_JavaToNativeShim_nativeAlertCallback(JNIEnv * env, jclass 
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeSoundEndCallback(JNIEnv * env, jclass cd, jlong bridgeAddress, jint id )
+Java_com_ansca_corona_JavaToNativeShim_nativeSoundEndCallback(JNIEnv * env, jclass cd, jlong bridgeAddress, jlong id )
 {
 	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->SoundEndCallback( id );
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeVideoEndCallback(JNIEnv * env, jclass cd, jlong bridgeAddress, jint id )
+Java_com_ansca_corona_JavaToNativeShim_nativeVideoEndCallback(JNIEnv * env, jclass cd, jlong bridgeAddress, jlong id )
 {
 	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->VideoEndCallback( id );
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeRecordCallback(JNIEnv * env, jclass c, jlong bridgeAddress, jint id, jint status )
+Java_com_ansca_corona_JavaToNativeShim_nativeRecordCallback(JNIEnv * env, jclass c, jlong bridgeAddress, jlong id, jint status )
 {
 #ifdef DEBUG
     __android_log_print(ANDROID_LOG_INFO, "Corona", "record callback %x %d", id, status );
@@ -453,7 +437,7 @@ Java_com_ansca_corona_JavaToNativeShim_nativeRecordCallback(JNIEnv * env, jclass
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeSetAudioRecorderState(JNIEnv * env, jclass cd, jlong bridgeAddress, jint id, jboolean isRecording)
+Java_com_ansca_corona_JavaToNativeShim_nativeSetAudioRecorderState(JNIEnv * env, jclass cd, jlong bridgeAddress, jlong id, jboolean isRecording)
 {
 	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->SetAudioRecorderState( id, isRecording );
 }

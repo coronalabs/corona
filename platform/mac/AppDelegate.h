@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -62,9 +46,6 @@
 
 namespace Rtt
 {
-	class Authorization;
-	class AuthorizationTicket;
-	class MacAuthorizationDelegate;
 	class MacConsolePlatform;
 	class MacPlatformServices;
 	class MacSimulator;
@@ -161,8 +142,6 @@ namespace Rtt
 	LinuxAppBuildController *fLinuxAppBuildController;
 
 	Rtt::MacPlatformServices *fServices;
-	Rtt::MacAuthorizationDelegate *fAuthorizerDelegate;
-	Rtt::Authorization *fAuthorizer;	
 
 	// Used to synchronize the Open Project accessory view to pick the start skin
 	IBOutlet NSPopUpButton* popupButtonOpenAccessorySkinSelection;
@@ -186,7 +165,6 @@ namespace Rtt
 @property (nonatomic, readwrite, assign) BOOL applicationHasBeenInitialized;
 @property (nonatomic, readwrite, assign) BOOL launchedWithFile;
 @property (nonatomic, readwrite, assign) BOOL allowLuaExit;
-@property (nonatomic, readonly, getter=authorizer) Rtt::Authorization *fAuthorizer;
 @property (nonatomic, readonly, getter=homeScreen) CoronaWindowController *fHomeScreen;
 @property (nonatomic, readonly, retain) GLView* layerHostView;
 @property (nonatomic, readwrite) BOOL stopRequested;
@@ -194,15 +172,14 @@ namespace Rtt
 @property (nonatomic, readwrite) BOOL respondsToBackKey;
 @property (nonatomic, readonly, getter=analytics) Rtt::SimulatorAnalytics *fAnalytics;
 
++(BOOL)offlineModeAllowed;
+
 -(BOOL)isRunning;
 -(IBAction)showHelp:(id)sender;
--(void)signin;
 
 -(IBAction)orderFrontStandardAboutPanel:(id)sender;
 
 -(BOOL)isRelaunchable;
-
--(const Rtt::AuthorizationTicket*)ticket;
 
 #if !defined( Rtt_PROJECTOR )
 -(BOOL)isRunnable;
@@ -215,7 +192,6 @@ namespace Rtt
 -(BOOL)isNookStoreBuildAvailable;
 
 -(IBAction)showPreferences:(id)sender;
--(void)deauthorize:(id)sender;
 -(IBAction)deauthorizeConfirm:(id)sender;
 -(IBAction)deauthorizeHelp:(id)sender;
 
@@ -265,7 +241,6 @@ namespace Rtt
 -(void)notifyRuntimeError:(NSString *)message;
 - (NSString *) getOSVersion;
 
-- (BOOL) isTrial;
 - (BOOL) isDailyBuild;
 
 - (IBAction) presentWelcomeWindow:(id)sender;
@@ -292,7 +267,6 @@ namespace Rtt
 
 - (void) runExtension:(NSString *) extName;
 
-// Used by Rtt_MacAuthorizationDelegate.mm
 -(NSString*)getAndReleaseResultFromPasswordSheet;
 - (void)didPresentError:(BOOL)didRecover contextInfo:(void*)contextInfo;
 
@@ -304,12 +278,12 @@ namespace Rtt
 - (void) endLocationUpdating;
 
 -(void)notifyWithTitle:(NSString*)title description:(NSString*)description iconData:(NSImage*)iconData;
+- (void) clearConsole;
+
 @end
 
 @interface CoronaSimulatorApplication : NSApplication
-{
-	NSInteger fAttentionRequestID;
-}
+
 @property (nonatomic, readwrite) BOOL suppressAttentionRequests;
 
 - (NSInteger)requestUserAttention:(NSRequestUserAttentionType)requestType;

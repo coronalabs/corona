@@ -21,8 +21,8 @@ codesign_framework() {
 	export PATH="${DEVELOPER_BASE}/Platforms/AppleTVOS.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 	# --preserve flags per Xcode 7.1
-	echo /usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} --preserve-metadata=identifier,entitlements --timestamp=none "${FRAMEWORK_BINARY}"
-	/usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} --preserve-metadata=identifier,entitlements --timestamp=none "${FRAMEWORK_BINARY}"
+	echo /usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} --preserve-metadata=identifier,entitlements "${FRAMEWORK_BINARY}"
+	/usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} --preserve-metadata=identifier,entitlements "${FRAMEWORK_BINARY}"
 }
 
 
@@ -44,7 +44,7 @@ then
 		# Default is to sign *all* embedded frameworks in .app bundle
 		BINARY_FOLDER=$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH
 
-		echo "Codesign embedded frameworks in folder ($BINARY_FOLDER):"
+		echo "Codesign embedded frameworks in folder ($BINARY_FOLDER):" || true
 
 		for f in "${BINARY_FOLDER}"/*.framework
 		do

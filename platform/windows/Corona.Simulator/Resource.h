@@ -227,6 +227,8 @@
 #define IDS_CREATE_LIVE_BUILD           672
 #define IDS_CREATE_LIVE_BUILD_WARNING   673
 #define IDS_OPEN_URL_HTML               674
+#define IDS_ANDROID_BUILD               675
+#define IDS_ANDROID_SDK_LICENSE         676
 #define IDC_LINK_ANSCAMOBILE            1000
 #define IDC_BUILD_APPNAME               1001
 #define IDC_BUILD_VERSION_CODE          1002

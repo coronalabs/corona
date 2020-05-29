@@ -1,12 +1,16 @@
 #!/bin/bash
+#----------------------------------------------------------------------------
 #
-# build-corona-project
+# This file is part of the Corona game engine.
+# For overview and more information on licensing please refer to README.md 
+# Home page: https://github.com/coronalabs/corona
+# Contact: support@coronalabs.com
 #
+#----------------------------------------------------------------------------
+
 # Copy contents of "Corona" directory in an Xcode project to build target "Resource" directory and
 # compile any Lua files contained within
-#
-# Copyright © 2015 Corona Labs Inc.  All rights reserved
-#
+
 echo "Building Corona project ..."
 set -x
 

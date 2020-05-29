@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -34,6 +18,7 @@
 #include "Rtt_DependencyLoader.h"
 
 #include <android/log.h>
+#include <dlfcn.h>
 
 // ----------------------------------------------------------------------------
 
@@ -57,6 +42,66 @@ JavaLuaLoader( lua_State *L )
 	int result = bridge->LoadClass( L, libName, kClassName );
 
 	return result;
+}
+
+#if !defined(RTLD_NODELETE)
+	#define RTLD_NODELETE 0
+#endif
+
+static int
+AndroidZipSoLoader( lua_State *L )
+{
+	lua_pushliteral(L, "");
+	const char *libName = luaL_checkstring( L, 1 );
+    const char *libNameFlattened = luaL_gsub(L, libName, ".", "_");
+    const char *funcName = lua_pushfstring(L, "luaopen_%s", libNameFlattened);
+
+    lua_getglobal(L, "package");
+
+	lua_CFunction res = (lua_CFunction) dlsym(RTLD_DEFAULT, funcName);
+    if (res == NULL) {
+        lua_pushvalue(L, 2);
+        lua_pushfstring(L, "\n\tno global loaded symbol '%s'", funcName);
+        lua_concat(L, 2);
+        lua_replace(L, 2);
+    }
+
+	lua_getfield(L, -1, "APKs");
+	if(lua_istable(L, -1) && res == NULL)
+	{
+	    lua_getfield(L, -1, "abi");
+	    const char* abi = lua_tostring(L, -1);
+	    if(abi != NULL) {
+            int length = (int) lua_objlen(L, -2);
+            for (int i = 0; i < length && res == NULL; i++) {
+                lua_rawgeti(L, -2, i + 1);
+                const char *apk = luaL_checkstring(L, -1);
+                const char *dlopenName = lua_pushfstring(L, "%s!/lib/%s/lib%s.so", apk, abi, libName);
+                void *handle = dlopen(dlopenName, RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
+                if (handle) {
+                    res = (lua_CFunction) dlsym(handle, funcName);
+                    // dlclose(handle); // this crashes Android
+                }
+                if (res == NULL) {
+                    lua_pushvalue(L, 2);
+                    lua_pushfstring(L, "\n\tno zipped .so symbol at '%s'", dlopenName);
+                    lua_concat(L, 2);
+                    lua_replace(L, 2);
+                }
+                lua_pop(L, 2);
+            }
+        }
+		lua_pop(L, 1); // abi
+	}
+	lua_pop(L, 4);
+
+	if ( res )
+	{
+	    lua_pop(L, 1); // pop error string
+		lua_pushcfunction( L, res );
+	}
+
+	return 1;
 }
 
 static int
@@ -105,6 +150,7 @@ AndroidRuntimeDelegate::DidInitLuaLibraries( const Runtime& sender ) const
 		Lua::InsertPackageLoader( L, & FileLoader, -1, fNativeToJavaBridge );
 	}
 	Lua::InsertPackageLoader( L, & JavaLuaLoader, -1, fNativeToJavaBridge );
+	Lua::InsertPackageLoader( L, & AndroidZipSoLoader, -1 );
 }
 
 bool

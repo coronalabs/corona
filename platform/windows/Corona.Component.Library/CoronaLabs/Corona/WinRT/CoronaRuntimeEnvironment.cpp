@@ -1,12 +1,11 @@
-// ----------------------------------------------------------------------------
-// 
-// CoronaRuntimeEnvironment.cpp
-// Copyright (c) 2014 Corona Labs Inc. All rights reserved.
-// 
-// Reviewers:
-// 		Joshua Quick
+//////////////////////////////////////////////////////////////////////////////
 //
-// ----------------------------------------------------------------------------
+// This file is part of the Corona game engine.
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
 Rtt_DISABLE_WIN_XML_COMMENT_COMPILER_WARNINGS_BEGIN
@@ -62,6 +61,7 @@ Rtt_DISABLE_WIN_XML_COMMENT_COMPILER_WARNINGS_END
 #include "Rtt_WinRTCallback.h"
 #include "Rtt_WinRTPlatform.h"
 #include "Rtt_WinRTRuntimeDelegate.h"
+#include <string>
 
 
 namespace CoronaLabs { namespace Corona { namespace WinRT {
@@ -820,14 +820,25 @@ void CoronaRuntimeEnvironment::RaiseKeyEventFor(Interop::Input::KeyEventArgs^ ar
 
 	// Raise a key event in Lua.
 	Rtt::KeyEvent::Phase phase = isDown ? Rtt::KeyEvent::kDown : Rtt::KeyEvent::kUp;
-	Rtt::KeyEvent event(
+	Rtt::KeyEvent keyEvent(
 					nullptr, phase, args->Key->CoronaNameAsStringPointer,
 					args->Key->NativeKeyCode, args->IsShiftDown, args->IsAltDown,
 					args->IsControlDown, args->IsCommandDown);
-	fRuntimePointer->DispatchEvent(event);
+	fRuntimePointer->DispatchEvent(keyEvent);
+
+	//Raise a character event in Lua.
+	if (isDown)
+	{
+		std::string character = keyInfo.GetCharacter();
+		if (character.length() || isprint(character[0]))
+		{
+			Rtt::CharacterEvent characterEvent(nullptr, character.data());
+			runtimePointer->DispatchEvent(characterEvent);
+		}
+	}
 
 	// Consume the key event if the Lua listener returned true.
-	args->Handled = event.GetResult();
+	args->Handled = keyEvent.GetResult();
 }
 
 void CoronaRuntimeEnvironment::OnReceivedTap(Platform::Object ^sender, Interop::Input::TapEventArgs ^args)

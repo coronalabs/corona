@@ -1,0 +1,480 @@
+name: Daily Build
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  WORKSPACE: ${{ github.workspace }}
+  DEVELOPER_DIR: /Applications/Xcode_11.5.app/Contents/Developer
+
+jobs:
+  source-code:
+    name: Check out and process source code
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Set daily build
+        run: ./tools/GHAction/process_sources.sh
+      - name: Upload Source bundle
+        uses: actions/upload-artifact@v1
+        with:
+          name: SourceCode
+          path: ./output
+
+  iOS-template:
+    needs: source-code
+    runs-on: macos-latest
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build iOS templates
+        working-directory: ./platform/iphone
+        run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Upload iOS templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: iOS-Templates
+          path: ./output
+
+  tvOS-template:
+    needs: source-code
+    runs-on: macos-latest
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build tvOS templates
+        working-directory: ./platform/tvos
+        run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Upload tvOS templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: tvOS-Templates
+          path: ./output
+
+  webtemplate:
+    needs:
+      - source-code
+    runs-on: macos-latest
+    steps:
+      - name: Set up emsdk
+        run: |
+          wget -q --header='Accept:application/octet-stream' https://github.com/coronalabs/emsdk/releases/download/e1.37.22_64bit/emsdk.tar.xz -O emsdk.tar.xz
+          tar -xjf emsdk.tar.xz -C ~/
+          sed -i .bak "s#/Users/jenkins#${HOME}#g" ~/.emscripten
+          TMP_DIR=$(mktemp -d -t EMSCRIPTENXXX)
+          sed -i .bak -E "s#^TEMP_DIR.*#TEMP_DIR = '$TMP_DIR'#g" ~/.emscripten
+          xattr -r -d com.apple.quarantine ~/sdk-emscripten-mac || true
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build webtemplate
+        working-directory: ./platform/emscripten/gmake
+        run: ./build_template.sh
+      - name: Copy result to output
+        run: |
+          mkdir -p output
+          cp -v platform/emscripten/webtemplate.zip output
+      - name: Upload webtemplate artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Webtemplate
+          path: ./output
+
+  linux:
+    needs:
+      - source-code
+    runs-on: ubuntu-latest
+    container:
+      image: coronalabs/linux_builder_rpi
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build linux binaries
+        working-directory: ./platform/linux
+        run: ./build_native_linux.sh
+      - name: Copy result to output
+        run: |
+          mkdir -p output
+          cp -v platform/linux/linuxtemplate.tar.gz output
+          cp -v platform/linux/raspbiantemplate.tar.gz output
+          cp -v platform/linux/CoronaSimulator-x86-64.tar.gz output
+      - name: Upload webtemplate artifact
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: Linux-Templates
+          path: ./output/*template.tar.gz
+      - name: Upload Linux Simulatory artifact
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: Simulator-Linux
+          path: ./output/CoronaSimulator*
+
+  native:
+    needs: source-code
+    runs-on: macos-latest
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build Native
+        run: ./tools/GHAction/build_native.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Upload Corona Native
+        uses: actions/upload-artifact@v1
+        with:
+          name: Native
+          path: ./output
+
+  CoronaCards-Android:
+    needs: native
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Native
+        uses: actions/download-artifact@v1
+        with:
+          name: Native
+      - name: Put native in place
+        run: |
+          tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
+          mv CoronaEnterprise/Corona/android/lib/gradle/Corona.aar ./CoronaCards.aar
+          cp platform/android/sdk/AndroidManifest-Cards.xml ./AndroidManifest.xml
+          zip -o CoronaCards.aar AndroidManifest.xml
+          zip -o CoronaCardsAndroidAAR.zip CoronaCards.aar
+          mkdir -p output
+          mv CoronaCardsAndroidAAR.zip output/
+      - name: Upload Corona Cards Android AAR archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: CoronaCards-Android
+          path: ./output
+
+  CoronaCards-iOS:
+    needs: source-code
+    runs-on: macos-latest
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Corona Cards framework for iOS
+        working-directory: ./platform/iphone
+        run: |
+          xcodebuild -scheme CoronaCards.framework -project ratatouille.xcodeproj -configuration Release -sdk iphoneos build -derivedDataPath "$(pwd)/build"
+          cd build/Build/Products/Release-iphoneos
+          mkdir "${WORKSPACE}/output"
+          zip -r -y -o "${WORKSPACE}/output"/CoronaCards.framework.zip CoronaCards.framework
+      - name: Upload CoronaCards framework archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: CoronaCards-iOS
+          path: ./output
+
+  macOS-Simulator:
+    needs:
+      - source-code
+      - tvOS-template
+      - iOS-template
+      - native
+      - webtemplate
+      - linux
+    runs-on: macos-latest
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Get iOS templates
+        uses: actions/download-artifact@v1
+        with:
+          name: iOS-templates
+      - name: Put iOS templates in place
+        run: cp -v iOS-templates/* platform/resources/iostemplate/
+      - name: Get tvOS templates
+        uses: actions/download-artifact@v1
+        with:
+          name: tvOS-templates
+      - name: Put iOS templates in place
+        run: cp -v tvOS-templates/* platform/resources/iostemplate/
+      - name: Get Webtemplate
+        uses: actions/download-artifact@v1
+        with:
+          name: Webtemplate
+      - name: Put webtemplate in place
+        run: cp -v Webtemplate/webtemplate.zip platform/resources/
+      - name: Get Linux templates
+        uses: actions/download-artifact@v1
+        with:
+          name: Linux-Templates
+      - name: Put webtemplate in place
+        run: |
+          cp -v Linux-Templates/linuxtemplate.tar.gz platform/resources/
+          cp -v Linux-Templates/raspbiantemplate.tar.gz platform/resources/
+      - run: mkdir docs
+      - name: Get Sample Code
+        uses: actions/checkout@v2
+        with:
+          repository: coronalabs/samples-coronasdk
+          path: docs/SampleCode
+      - name: Clean-up docs
+        run: rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
+      - name: Get Native
+        uses: actions/download-artifact@v1
+        with:
+          name: Native
+      - name: install appdmg
+        run: npm install -g appdmg
+      - name: install imagemagick
+        run: brew install imagemagick gs
+      - name: Build DMG
+        run: ./tools/GHAction/build_dmg.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Upload macOS Daily build artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Simulator-macOS
+          path: ./output
+
+  notarize:
+    needs:
+      - macOS-Simulator
+    runs-on: macos-latest
+    steps:
+      - name: Get built simulator
+        uses: actions/download-artifact@v1
+        with:
+          name: Simulator-macOS
+      - name: Notarize
+        run: |
+          if [ -z "$APPLE_AUTH" ]
+          then 
+            echo 'Skipping because no authorization provided'
+            exit 0
+          fi
+          for dmg in ./Simulator-macOS/*.dmg
+          do
+            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH"  --file "$dmg"
+          done
+        env:
+          APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
+
+  Windows-Simulator:
+    needs:
+      - source-code
+      - native
+      - webtemplate
+      - linux
+    runs-on: windows-latest
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: |
+          7z x SourceCode/corona.tgz
+          7z x corona.tar
+      - run: ./tools/GHAction/daily_env.sh
+        shell: bash
+      - run: mkdir -f docs
+      - name: Get Sample Code
+        uses: actions/checkout@v2
+        with:
+          repository: coronalabs/samples-coronasdk
+          path: docs/SampleCode
+      - name: Clean-up docs
+        run: rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
+        shell: bash
+      - name: Move docs outside the directory
+        run: mv docs ../docs
+      - name: Get Webtemplate
+        uses: actions/download-artifact@v1
+        with:
+          name: Webtemplate
+      - name: Put webtemplate in place
+        run: cp -v Webtemplate/webtemplate.zip platform/resources/
+        shell: bash
+      - name: Get Linux templates
+        uses: actions/download-artifact@v1
+        with:
+          name: Linux-Templates
+      - name: Put webtemplate in place
+        run: |
+          cp -v Linux-Templates/linuxtemplate.tar.gz platform/resources/
+          cp -v Linux-Templates/raspbiantemplate.tar.gz platform/resources/
+        shell: bash
+      - name: Get Corona Native
+        uses: actions/download-artifact@v1
+        with:
+          name: Native
+      - name: Put native in place
+        shell: cmd
+        run: |
+          mkdir "%WORKSPACE%\platform\windows\Bin"
+          cd "%WORKSPACE%\platform\windows\Bin"
+          rmdir /s /q "Native"
+          tar -xvzf "%WORKSPACE%\Native\CoronaNative.tar.gz"
+          rm ._CoronaEnterprise
+          mv CoronaEnterprise Native
+          del /q /f /a Native\.*
+          del /q /f /a Native\Icon?
+      - name: Build Corona Simulator
+        shell: cmd
+        run: |
+          cd platform\windows
+          call UpdateFileVersions.bat %BUILD_NUMBER%
+          call Build.Tools\VSVars.bat
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+          devenv "Corona.SDK.sln" /rebuild "Release|x86"
+        env:
+          WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
+      - name: Copy Simulator
+        run: |
+          mkdir output
+          cp -v ./platform/windows/Bin/Corona.SDK.Installer/Corona.msi output/Corona-$BUILD.msi
+        shell: bash
+      - name: Upload Widnows Corona artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Simulator-Windows
+          path: ./output
+
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - Windows-Simulator
+      - macOS-Simulator
+      - linux
+      - CoronaCards-Android
+      - CoronaCards-iOS
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Genearte Change Log
+        run: |
+          git fetch --prune --unshallow
+          git fetch origin '+refs/tags/*:refs/tags/*'
+          GIT_LOG=$(git log --format='* %s (%h)' --ancestry-path $(git describe --tags --abbrev=0 $GITHUB_REF^)..$(git describe --tags --abbrev=0 $GITHUB_REF)) || true
+          if [ -n "$GIT_LOG" ]
+          then
+          GIT_LOG="Changes since previous build:
+          $GIT_LOG
+          "
+          else
+          GIT_LOG='See https://github.com/coronalabs/corona for details
+          '
+          fi
+          GIT_LOG="${GIT_LOG//'%'/'%25'}"
+          GIT_LOG="${GIT_LOG//$'\n'/'%0A'}"
+          GIT_LOG="${GIT_LOG//$'\r'/'%0D'}" 
+          echo "::set-env name=GIT_LOG::$GIT_LOG" 
+          echo "$GIT_LOG"
+      - uses: actions/download-artifact@v1
+        with:
+          name: Simulator-macOS
+      - uses: actions/download-artifact@v1
+        with:
+          name: Simulator-Windows
+      - uses: actions/download-artifact@v1
+        with:
+          name: Simulator-Linux
+      - uses: actions/download-artifact@v1
+        with:
+          name: CoronaCards-iOS
+      - uses: actions/download-artifact@v1
+        with:
+          name: CoronaCards-Android
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Solar2D ${{ env.YEAR }}.${{ env.BUILD }}
+          body: ${{ env.GIT_LOG }}
+      - name: Upload Release Asset for macOS Simulator
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Simulator-macOS/Corona-${{ env.YEAR }}.${{ env.BUILD }}.dmg
+          asset_name: Solar2D-macOS-${{ env.YEAR }}.${{ env.BUILD }}.dmg
+          asset_content_type: application/x-apple-diskimage
+      - name: Upload Release Asset for Windows Simulator
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Simulator-Windows/Corona-${{ env.BUILD }}.msi
+          asset_name: Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD }}.msi
+          asset_content_type: application/x-msi
+      - name: Upload Release Asset for Linux Simulator
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Simulator-Linux/CoronaSimulator-x86-64.tar.gz
+          asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}.tar.gz
+          asset_content_type: application/tar+gzip
+      - name: Upload Release Asset Corona Cards iOS
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./CoronaCards-iOS/CoronaCards.framework.zip
+          asset_name: CoronaCards-iOS-${{ env.YEAR }}.${{ env.BUILD }}.zip
+          asset_content_type: application/zip
+      - name: Upload Release Asset Corona Cards Android
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./CoronaCards-Android/CoronaCardsAndroidAAR.zip
+          asset_name: CoronaCards-Android-${{ env.YEAR }}.${{ env.BUILD }}.zip
+          asset_content_type: application/zip

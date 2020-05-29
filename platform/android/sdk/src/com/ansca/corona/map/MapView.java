@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -591,12 +575,7 @@ public class MapView extends android.widget.FrameLayout {
 	 * <p>
 	 * Setting both arguments "title" and "subtitle" to null or empty string will prevent an annotation
 	 * from being displayed on the marker.
-	 * @param latitude The latitude position to place the marker at.
-	 * @param longitude The longitude position to place the marker at.
-	 * @param title The title text to put on the marker's annotation.
-	 *              Set to null or empty string to not add a title to the annotation.
-	 * @param subtitle The description text to put below the title in the marker's annotation.
-	 *                 Set to null or empty string to not add a description to the annotation.
+	 * @param mapMarker contains description of the map marker
 	 */
 	public void addMarker(final MapMarker mapMarker) {
 		fOperationQueue.add(new Runnable() {

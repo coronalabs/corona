@@ -189,7 +189,6 @@
     <JCompile Include="src\com\ansca\corona\NativeToJavaBridge.java" />
     <JCompile Include="src\com\ansca\corona\package-info.java" />
     <JCompile Include="src\com\ansca\corona\SmsSettings.java" />
-    <JCompile Include="src\com\ansca\corona\SplashScreenBeacon.java" />
     <JCompile Include="src\com\ansca\corona\SystemMonitor.java" />
     <JCompile Include="src\com\ansca\corona\SystemStartupBroadcastReceiver.java" />
     <JCompile Include="src\com\ansca\corona\Ticks.java" />

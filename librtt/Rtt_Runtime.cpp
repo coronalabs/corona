@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -48,7 +32,8 @@
 #include "Rtt_PlatformTimer.h"
 #include "Rtt_Scheduler.h"
 #include "Display/Rtt_TextObject.h"
-#include "Rtt_Verifier.h"
+#include "Rtt_LuaFrameworks.h"
+#include "Rtt_HTTPClient.h"
 
 #ifdef Rtt_USE_ALMIXER
 	#include "Rtt_PlatformOpenALPlayer.h"
@@ -64,7 +49,97 @@
 
 namespace Rtt
 {
+#if defined( Rtt_AUTHORING_SIMULATOR )
+extern "C" int luaopen_coronabaselib(lua_State * L);
 
+void Runtime::FinalizeWorkingThreadWithEvent(Runtime* runtime, lua_State* L)
+{
+	std::thread* curWorkingThread = runtime->m_fAsyncThread.load();
+	if (curWorkingThread) {
+		curWorkingThread->join();
+		std::string* strResult = runtime->m_fAsyncResultStr.load();
+		Lua::Ref listener = runtime->m_fAsyncListener.load();
+
+		if (L) {
+			Lua::NewEvent(L, "async");
+			if (strResult->empty()) {
+				lua_pushnil(L);
+			} else {
+				lua_pushstring(L, strResult->c_str());
+			}
+			lua_setfield(L, -2, "result");
+			Lua::DispatchEvent(L, listener, 0);
+			Lua::DeleteRef(L, listener);
+		}
+
+		delete curWorkingThread;
+		delete strResult;
+
+		runtime->m_fAsyncListener.store(nullptr);
+		runtime->m_fAsyncResultStr.store(nullptr);
+		runtime->m_fAsyncThread.store(nullptr);
+	}
+}
+
+int Runtime::ShellPluginCollector_Async(lua_State* L)
+{
+	Runtime *runtime = (Runtime*)lua_touserdata(L, lua_upvalueindex(1));
+
+	std::string args(lua_tostring(L, 1));
+	Lua::Ref listener = nullptr;
+	if (lua_type(L, 2) == LUA_TFUNCTION) {
+		listener = Lua::NewRef(L, 2);
+	}
+
+	FinalizeWorkingThreadWithEvent(runtime, L);
+	
+	std::thread* thread = new std::thread([](std::string args, Lua::Ref listener, Runtime* runtime) {
+		lua_State* L = Rtt::Lua::New(true);
+		lua_pushcfunction(L, luaopen_coronabaselib);
+		lua_pushstring(L, "coronabaselib");
+		lua_call(L, 1, 0);
+		const char* debugBuildProcess = getenv("DEBUG_BUILD_PROCESS");
+		if (debugBuildProcess) {
+			lua_pushstring(L, debugBuildProcess);
+			lua_setglobal(L, "debugBuildProcess");
+		}
+
+		HTTPClient::registerFetcherModuleLoaders(L);
+		std::string result;
+		lua_getglobal(L, "require");
+		lua_pushstring(L, "CoronaBuilderPluginCollector");
+		int res = lua_pcall(L, 1, 1, NULL);
+		lua_getfield(L, -1, "collect");
+		lua_pushstring(L, args.c_str());
+		res = lua_pcall(L, 1, 1, NULL);
+		if (lua_type(L, -1) == LUA_TSTRING) {
+			result = lua_tostring(L, -1);
+		}
+		Rtt::Lua::Delete(L);
+		runtime->m_fAsyncListener.store(listener);
+		runtime->m_fAsyncResultStr.store(new std::string(result));
+	}, args, listener, runtime);
+
+	if (listener) {
+		lua_pushnil(L);
+		runtime->m_fAsyncListener.store(listener);
+		runtime->m_fAsyncThread.store(thread);
+	}
+	else {
+		thread->join();
+		std::string* result = runtime->m_fAsyncResultStr.load();
+		if (result->empty()) {
+			lua_pushnil(L);
+		}
+		else {
+			lua_pushstring(L, result->c_str());
+		}
+		FinalizeWorkingThreadWithEvent(runtime, NULL);
+	}
+	return 1;
+}
+
+#endif
 // ----------------------------------------------------------------------------
 
 // These iterations are reasonable default values. See http://www.box2d.org/forum/viewtopic.php?f=8&t=4396 for discussion.
@@ -78,32 +153,38 @@ static const char kFusePublisherId[] = "com.coronalabs";
 
 // ----------------------------------------------------------------------------
 
-Runtime::Runtime( const MPlatform& platform, MCallback *viewCallback )
-:	fAllocator( platform.GetAllocator() ),
-	fPlatform( platform ),
-	fStartTime( Rtt_GetAbsoluteTime() ),
-	fStartTimeCorrection( 0 ),
-	fSuspendTime( 0 ),
-	fResourcesHead( Rtt_NEW( & fAllocator, CachedResource( * this, NULL ) ) ),
-	fDisplay( Rtt_NEW( & fAllocator, Display( * this ) ) ),
-	fVMContext( LuaContext::New( Allocator(), platform, this ) ), 
-	fTimer( platform.CreateTimerWithCallback( viewCallback ? * viewCallback : * this ) ),
-	fScheduler( Rtt_NEW( & fAllocator, Scheduler( * this ) ) ),
-	fArchive( NULL ),
-	fPhysicsWorld( Rtt_NEW( & fAllocator, PhysicsWorld( fAllocator ) ) ),
+Runtime::Runtime(const MPlatform& platform, MCallback* viewCallback)
+	: fAllocator(platform.GetAllocator()),
+	fPlatform(platform),
+	fStartTime(Rtt_GetAbsoluteTime()),
+	fStartTimeCorrection(0),
+	fSuspendTime(0),
+	fResourcesHead(Rtt_NEW(&fAllocator, CachedResource(*this, NULL))),
+	fDisplay(Rtt_NEW(&fAllocator, Display(*this))),
+	fVMContext(LuaContext::New(Allocator(), platform, this)),
+	fTimer(platform.CreateTimerWithCallback(viewCallback ? *viewCallback : *this)),
+	fScheduler(Rtt_NEW(&fAllocator, Scheduler(*this))),
+	fArchive(NULL),
+	fPhysicsWorld(Rtt_NEW(&fAllocator, PhysicsWorld(fAllocator))),
 #ifdef Rtt_USE_ALMIXER
-	fOpenALPlayer( NULL ),
+	fOpenALPlayer(NULL),
 #endif
-	fFPS( 30 ),
-	fIsSuspended( -1 ), // uninitialized
-	fProperties( 0 ),
-	fSuspendOverrideProperties( kSuspendAll ),
-	fLaunchArgsRef( LUA_NOREF ),
-	fSimulatorPlatformName( NULL ),
-	fDownloadablePluginsRef( LUA_NOREF ),
-	fDownloadablePluginsCount( 0 ),
-	fDelegate( NULL ),
-	fShowingTrialMessages( false ),
+	fFPS(30),
+	fIsSuspended(-1), // uninitialized
+	fProperties(0),
+	fSuspendOverrideProperties(kSuspendAll),
+	fFrame(0),
+	fLaunchArgsRef(LUA_NOREF),
+	fSimulatorPlatformName(NULL),
+	fDownloadablePluginsRef(LUA_NOREF),
+	fDownloadablePluginsCount(0),
+	fDelegate(NULL),
+	fShowingTrialMessages(false),
+#ifdef Rtt_AUTHORING_SIMULATOR
+	m_fAsyncListener(nullptr),
+	m_fAsyncResultStr(nullptr),
+	m_fAsyncThread(nullptr),
+#endif
 	fErrorHandlerRecursionGuard( false )
 {
 	Rtt_TRACE_SIM( ( "\n%s\n", Rtt_STRING_COPYRIGHT ) );
@@ -183,6 +264,9 @@ Runtime::~Runtime()
 #endif
 
 	fResourcesHead->Release();
+#if defined(Rtt_AUTHORING_SIMULATOR)
+	FinalizeWorkingThreadWithEvent(this, nullptr);
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -433,6 +517,12 @@ pushShellArgs( lua_State* L )
 
 		runtime->PushDownloadablePlugins( L );
 		lua_setfield( L, -2, "plugins" );
+		
+#if defined( Rtt_AUTHORING_SIMULATOR )
+		lua_pushlightuserdata(L, runtime);
+		lua_pushcclosure(L, &Runtime::ShellPluginCollector_Async, 1);
+		lua_setfield( L, -2, "shellPluginCollector");
+#endif
 
 		const char *name = runtime->GetSimulatorPlaformName();
 		if ( name )
@@ -533,25 +623,6 @@ Runtime::InitializeArchive( const char *filePath )
 	// Add loader
 	lua_State *L = fVMContext->L();
 	Lua::InsertPackageLoader( L, & Archive::ResourceLoader, 1 );
-}
-
-bool
-Runtime::VerifyApplication( const char *filePath )
-{
-	#if defined( Rtt_AUTHORING_SIMULATOR ) && !defined( Rtt_PROJECTOR )
-		return Rtt_VERIFY( Verifier::IsValidSubscription( NULL ) );
-    #elif defined( Rtt_DEVICE_SIMULATOR )
-        // To avoid issues with verification on some simulated devices
-        // we skip it if running in the device simulator
-        Rtt_TRACE(("Skipping verification on device simulator\n"));
-		return true;
-	#else
-		bool result = Rtt_VERIFY( filePath ) && Rtt_VERIFY( Verifier::IsValidApplication( filePath ) );
-
-		if ( ! result ) { fprintf( stderr, "Could not verify application\n" ); }
-
-		return result;
-	#endif
 }
 
 static const char kApplication[] = "application";
@@ -881,7 +952,7 @@ Runtime::PopAndClearConfig( lua_State *L )
 void
 Runtime::AddDownloadablePlugin(
 	lua_State *L, const char *pluginName, const char *publisherId,
-	int downloadablePluginsIndex, bool isSupportedOnThisPlatform /*=true*/)
+	int downloadablePluginsIndex, bool isSupportedOnThisPlatform, const char *pluginEntryJSON)
 {
 	Rtt_LUA_STACK_GUARD( L );
 
@@ -895,6 +966,9 @@ Runtime::AddDownloadablePlugin(
 
 		lua_pushboolean( L, isSupportedOnThisPlatform ? 1 : 0 );
 		lua_setfield( L, -2, "isSupportedOnThisPlatform" );
+		
+		lua_pushstring(L, pluginEntryJSON);
+		lua_setfield(L, -2, "json");
 	}
 	++fDownloadablePluginsCount;
 	lua_rawseti( L, downloadablePluginsIndex, fDownloadablePluginsCount );
@@ -910,7 +984,18 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 	// any side effects from the Runtime's L state. Note the separate
 	// 'runtimeL' variable for Runtime's L below.
 	lua_State *L = luaL_newstate();
+	luaL_openlibs(L);
 	
+	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
+	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
+	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
+	lua_getglobal(L, "require");
+	lua_pushstring(L, "json");
+	lua_pcall(L, 1, 1, 0);
+	lua_getfield(L, -1, "encode");
+	lua_setglobal(L, "jsonEncode");
+	lua_pop(L, 1); // pop json
+
 	const char kBuildSettings[] = "build.settings";
 	
 	String filePath( & fPlatform.GetAllocator() );
@@ -968,6 +1053,14 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 					// ensure the stack contains a table at top
 					if (lua_istable(L, -1))
 					{
+						lua_getglobal(L, "jsonEncode");
+						lua_pushvalue(L, -2);
+						lua_pcall(L, 1, 1, 0);
+						const char *pluginJson = lua_tostring(L, -1);
+						String pluginJsonStr;
+						pluginJsonStr.Set(pluginJson);
+						lua_pop(L, 1);
+						
 						// Honor the settings for "supportedPlatforms", if any
 						lua_getfield(L, -1, "supportedPlatforms");
 						{
@@ -1001,7 +1094,7 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 								// Transfer information to Runtime's list of downloadable plugins.
 								// Note, we use runtimeL instead of L here!
 								AddDownloadablePlugin(
-									runtimeL, pluginName, publisherId, downloadablePluginsIndex, availableOnPlatform);
+									runtimeL, pluginName, publisherId, downloadablePluginsIndex, availableOnPlatform, pluginJsonStr.GetString());
 							}
 							lua_pop(L, 1); // pop publisherId
 						}
@@ -1016,7 +1109,7 @@ Runtime::FindDownloadablePlugins( const char *simPlatformName )
 
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 				// Always download the fuse plugin stub
-				AddDownloadablePlugin(runtimeL, kFusePluginName, kFusePublisherId, downloadablePluginsIndex, false);
+				AddDownloadablePlugin(runtimeL, kFusePluginName, kFusePublisherId, downloadablePluginsIndex, false, NULL);
 #endif
 
 				lua_pop(runtimeL, 1); // pop downloadablePlugins table
@@ -1117,30 +1210,6 @@ Runtime::LoadApplication( const LoadParameters& parameters )
 	String filePath( GetAllocator() );
 	
     fPlatform.PathForFile( basename, MPlatform::kSystemResourceDir, MPlatform::kDefaultPathFlags, filePath );
-
-    if ( ! IsProperty( kIsUsingCustomCode | kShouldVerifyLicense ) && ! IsProperty( kIsApplicationNotArchived ) )
-	{
-        if (filePath.GetString() == NULL)
-        {
-            fPlatform.PathForFile( NULL, MPlatform::kSystemResourceDir, 0, filePath );
-			goto exit_gracefully;
-		}
-        
-		if ( ! VerifyApplication( filePath.GetString() ) )
-		{
-			goto exit_gracefully;
-		}
-	}
-    
-	if ( IsProperty( kShouldVerifyLicense ) )
-	{
-		// Do additional checking here...
-		bool verificationFailed = false;
-		if ( verificationFailed )
-		{
-			goto exit_gracefully;
-		}
-	}
 
 	{
 		// Init VM
@@ -1900,7 +1969,14 @@ Runtime::operator()()
 	}
 	else
 	{
+#if defined(Rtt_AUTHORING_SIMULATOR)
+		if (m_fAsyncResultStr.load()) {
+			FinalizeWorkingThreadWithEvent(this, fVMContext->L());
+		}
+#endif
 		fDisplay->Update();
+
+		++fFrame;
 	}
 
 	if ( ! IsProperty( kRenderAsync ) )

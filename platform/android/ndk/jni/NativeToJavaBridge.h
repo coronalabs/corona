@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -63,6 +47,7 @@ class NativeToJavaBridge
 		jobject GetCallbackBridge() const;
 		void GetString( const char *method, Rtt::String *outValue );
 		void GetStringWithInt( const char *method, int param, Rtt::String *outValue );
+		void GetStringWithLong( const char *method, long param, Rtt::String *outValue );
 		void HandleJavaException() const;
 		void HandleJavaExceptionUsing( lua_State *L ) const;
 		void CallVoidMethod( const char * method ) const;
@@ -123,19 +108,19 @@ class NativeToJavaBridge
 		void SetTimer( int milliseconds );
 		void CancelTimer();
 	
-		void LoadSound( int id, const char * name, bool eventSound );
-		void PlaySound( int id, const char * name, bool loop );
-		void StopSound( int id );
-		void PauseSound( int id );
-		void ResumeSound( int id );
-		void SetVolume( int id, float volume );
-		void SoundEndCallback( int id );
-		float GetVolume( int id ) const;
+		void LoadSound( uintptr_t id, const char * name, bool eventSound );
+		void PlaySound( uintptr_t id, const char * name, bool loop );
+		void StopSound( uintptr_t id );
+		void PauseSound( uintptr_t id );
+		void ResumeSound( uintptr_t id );
+		void SetVolume( uintptr_t id, float volume );
+		void SoundEndCallback( uintptr_t id );
+		float GetVolume( uintptr_t id ) const;
 	
 		void HttpPost( const char* url, const char* key, const char* value );
 	
-		void PlayVideo( int id, const char * url, bool mediaControlsEnabled );
-		void VideoEndCallback( int id );
+		void PlayVideo( uintptr_t id, const char * url, bool mediaControlsEnabled );
+		void VideoEndCallback( uintptr_t id );
 	
 		bool CanOpenUrl( const char* url );
 		bool OpenUrl( const char * url );
@@ -230,11 +215,11 @@ class NativeToJavaBridge
 		bool TextFieldIsEditable( int id );
 	
 	public:
-		bool RecordStart( int id, const char * file );
-		void RecordStop( int id );
-		bool RecordGetBytes( int id, Rtt::Data<char> & result );
-		void RecordCallback( int id, int status );
-		void RecordReleaseCurrentBuffer( int id );
+		bool RecordStart( uintptr_t id, const char * file );
+		void RecordStop( uintptr_t id );
+		bool RecordGetBytes( uintptr_t id, Rtt::Data<char> & result );
+		void RecordCallback( uintptr_t id, int status );
+		void RecordReleaseCurrentBuffer( uintptr_t id );
 		
 		void WebViewCreate( int id, int left, int top, int width, int height, bool isPopup, bool autoCancelEnabled );
 		void WebViewRequestLoadUrl( int id, const char * url );

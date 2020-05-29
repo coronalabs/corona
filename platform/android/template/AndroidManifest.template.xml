@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+          package="@USER_ACTIVITY_PACKAGE@"
+          android:installLocation="@USER_INSTALL_LOCATION@">
+
+    @USER_PERMISSIONS@
+
+    @USER_USES_PERMISSIONS@
+
+	@USER_USES_FEATURES@
+
+	@USER_SUPPORTS_SCREENS@
+
+    <!-- Add android:name="CoronaApplication" to reactivate Application Delegate in Native Builds-->
+	<application android:icon="@mipmap/ic_launcher"
+	             android:banner="@drawable/banner"
+	             android:label="@string/app_name"
+	             @USER_LARGE_HEAP@
+	             @USER_IS_GAME@
+	             android:networkSecurityConfig="@xml/network_security_config"
+				 tools:replace="android:icon"
+	             >
+
+		@USER_TARGETED_APP_STORE@
+
+		@USER_USES_EXPANSION_FILE@
+
+		@USER_USES_GOOGLE_PLAY_GAMES@
+
+		@USER_USES_FACEBOOK@
+
+		<!-- The main Corona activity that runs the Corona project. -->
+		<activity android:name="com.ansca.corona.CoronaActivity"
+		          @USER_DEFAULT_ORIENTATION@
+		          android:label="@string/app_name"
+				  @USER_CORONA_ACTIVITY_ATTRIBUTES@
+				  android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"
+				  android:launchMode="singleTask"
+		          android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+			@USER_CORONA_WINDOW_MOVES_WHEN_KEYBOARD_APPEARS@
+			@USER_INITIAL_SYSTEM_UI_VISIBILITY@
+			@USER_REQUESTED_DEFAULT_ORIENTATION@
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				@USER_MAIN_INTENT_FILTER_CATEGORIES@
+			</intent-filter>
+			@USER_INTENT_FILTERS@
+		</activity>
+
+		@USER_APP_CHILD_XML_ELEMENTS@
+
+    </application>
+
+	@USER_MANIFEST_CHILD_XML_ELEMENTS@
+
+</manifest>

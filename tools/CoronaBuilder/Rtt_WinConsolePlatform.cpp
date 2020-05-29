@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -335,16 +319,9 @@ void WinConsolePlatform::GetPreference(Category category, Rtt::String * value) c
 			}
 			break;
 		}
-#if 0
 		case kSubscription:
-			Interop::MDeviceSimulatorServices *deviceSimulatorServicesPointer;
-			deviceSimulatorServicesPointer = fEnvironment.GetDeviceSimulatorServices();
-			if (deviceSimulatorServicesPointer)
-			{
-				resultPointer = deviceSimulatorServicesPointer->GetAuthorizationTicketString();
-			}
+			resultPointer = "Solar2D";
 			break;
-#endif
 		default:
 			resultPointer = nullptr;
 			Rtt_ASSERT_NOT_REACHED();
@@ -489,117 +466,6 @@ const std::wstring WinConsolePlatform::GetDirectoryPath()
 
 	return coronaSDKPath;
 }
-
-bool WinConsolePlatform::HttpDownloadBuffer(const char* url, std::vector<char>& result, String& errorMesg, const std::map<std::string, std::string>& headers) const
-{
-	std::wstring wurl(url, url + strlen(url));		// string ==> wstring
-	result.clear();
-	errorMesg.Set("");
-	bool rc = false;
-
-	// sync access
-	HINTERNET hRequest = NULL;
-	HINTERNET hConnect = NULL;
-	HINTERNET httpSession = WinHttpOpen(NULL, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-	if (httpSession)
-	{
-		URL_COMPONENTS urlInfo;
-		ZeroMemory(&urlInfo, sizeof(urlInfo));
-		urlInfo.dwStructSize = sizeof(urlInfo);
-
-		// Set required component lengths to non-zero so that they are cracked.
-		urlInfo.dwSchemeLength = (DWORD)-1;
-		urlInfo.dwHostNameLength = (DWORD)-1;
-		urlInfo.dwUrlPathLength = (DWORD)-1;
-		urlInfo.dwExtraInfoLength = (DWORD)-1;
-
-		// parse URL
-		if (WinHttpCrackUrl(wurl.c_str(), wurl.size(), 0, &urlInfo))
-		{
-			// connect
-			std::wstring hostName(urlInfo.lpszHostName, urlInfo.dwHostNameLength);
-			hConnect = WinHttpConnect(httpSession, hostName.c_str(), urlInfo.nPort, 0);
-			if (hConnect)
-			{
-				DWORD requestFlags = urlInfo.nScheme == INTERNET_SCHEME_HTTPS ? WINHTTP_FLAG_SECURE : 0;
-				// GET
-				std::wstring resource(urlInfo.lpszUrlPath, urlInfo.dwUrlPathLength);
-				std::wstring extraInfo(urlInfo.lpszExtraInfo, urlInfo.dwExtraInfoLength);
-				hRequest = WinHttpOpenRequest(hConnect, L"GET", (resource+extraInfo).c_str(), NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, requestFlags);
-				if (hRequest)
-				{
-					// read result
-					std::string headersAsString;
-					for (const auto &it : headers)
-					{
-						headersAsString += it.first + ": " + it.second + "\r\n";
-					}
-					std::wstring wheadersAsString(headersAsString.c_str(), headersAsString.c_str() + headersAsString.size());
-
-					if (WinHttpSendRequest(hRequest, wheadersAsString.c_str(), -1, WINHTTP_NO_REQUEST_DATA, 0, 0, NULL) == true)
-					{
-						// read response
-						if (WinHttpReceiveResponse(hRequest, NULL) == true)
-						{
-							// Allocate space for the buffer.
-							int bufsize = 4096;
-							char* buf = (char*)malloc(bufsize + 1);		// ZERO ended
-
-							DWORD readBytes = 0;
-							while (WinHttpReadData(hRequest, buf, bufsize, &readBytes) == true && readBytes > 0)
-							{
-								result.insert(result.end(), buf, buf + readBytes);
-							}
-
-							free(buf);
-							rc = true;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if (hRequest) WinHttpCloseHandle(hRequest);
-	if (hConnect) WinHttpCloseHandle(hConnect);
-	if (httpSession) WinHttpCloseHandle(httpSession);
-
-	return rc;
-}
-
-bool WinConsolePlatform::HttpDownload(const char* url, String& result, String& errorMesg, const std::map<std::string, std::string>& headers) const
-{
-	std::vector<char> data;
-	bool rc = HttpDownloadBuffer(url, data, errorMesg, headers);
-	if (rc)
-	{
-		data.push_back(0);
-		result.Set(data.data());
-	}
-	else
-	{
-		result.Set("");
-	}
-	return rc; 
-}
-
-bool WinConsolePlatform::HttpDownloadFile(const char* url, const char* filename, String& errorMesg, const std::map<std::string, std::string>& headers) const
-{
-	std::vector<char> data;
-	bool rc = HttpDownloadBuffer(url, data, errorMesg, headers);
-	if (rc)
-	{
-		FILE *fp = Rtt_FileOpen(filename, "wb");
-		if (fp != NULL)
-		{
-			size_t charsWritten = fwrite(data.data(), 1, data.size(), fp);
-			Rtt_ASSERT(charsWritten == data.size());
-		}
-		Rtt_FileClose(fp);
-	}
-	return rc;
-}
-
 
 }	// namespace Rtt
 

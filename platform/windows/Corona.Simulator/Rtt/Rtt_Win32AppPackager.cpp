@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +17,6 @@
 #include "Rtt_Archive.h"
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_Win32AppPackagerParams.h"
 #include "WinString.h"
 #include <string>
@@ -60,13 +43,13 @@ Win32AppPackager::~Win32AppPackager()
 
 #pragma region Public Methods
 int Win32AppPackager::Build(
-	AppPackagerParams* paramsPointer, WebServicesSession& webSession, const char* tempDirectoryPath)
+	AppPackagerParams* paramsPointer, const char* tempDirectoryPath)
 {
 	// Validate arguments.
 	if (!paramsPointer)
 	{
 		Rtt_ASSERT(0);
-		return WebServicesSession::kCriticalError;
+		return 2;
 	}
 	auto win32ParamsPointer = dynamic_cast<Rtt::Win32AppPackagerParams*>(paramsPointer);
 	if (!win32ParamsPointer ||
@@ -78,7 +61,7 @@ int Win32AppPackager::Build(
 	{
 		paramsPointer->SetBuildMessage("Build() was given invalid parameters.");
 		Rtt_ASSERT(0);
-		return WebServicesSession::kCriticalError;
+		return 2;
 	}
 	
 	// Read the Corona project's "build.settings" file. This does the following:
@@ -160,7 +143,7 @@ int Win32AppPackager::Build(
 				// Delete the generated temp directory.
 				rmdir(rootTempDirectoryPath.GetUTF8());
 			}
-			return WebServicesSession::kLocalPackagingError;
+			return 3;
 		}
 
 		// The destination directory's files are not locked. Delete the directory.
@@ -191,7 +174,7 @@ int Win32AppPackager::Build(
 	::SHCreateDirectoryExW(nullptr, binResourcesDirectoryPath.GetUTF16(), nullptr);
 
 	// Compile Lua scripts and copy the Win32 binaries to the "bin" directory.
-	int buildResultCode = WebServicesSession::kBuildError;
+	int buildResultCode = 5;
 	Win32AppPackager::BuildSettings buildSettings{};
 	buildSettings.ParamsPointer = win32ParamsPointer;
 	buildSettings.IntermediateDirectoryPath = objDirectoryPath.GetUTF8();
@@ -202,7 +185,7 @@ int Win32AppPackager::Build(
 	//TODO: In the future, support cloud builds via the unfinished DoRemoteBuild() method.
 	buildResultCode = DoRemoteBuild(buildSettings, webSession);
 #endif
-	if (buildResultCode != WebServicesSession::kNoError)
+	if (buildResultCode != 0)
 	{
 		rmdir(tempDirectoryPath);
 		return buildResultCode;
@@ -256,7 +239,7 @@ int Win32AppPackager::Build(
 		{
 			paramsPointer->SetBuildMessage("Failed to load Win32 app template's EXE file.");
 			rmdir(tempDirectoryPath);
-			return WebServicesSession::kCriticalError;
+			return 2;
 		}
 		{
 			WinString appIconPath;
@@ -337,7 +320,7 @@ int Win32AppPackager::Build(
 	}
 	if (!hasCopiedAssets)
 	{
-		return WebServicesSession::kLocalPackagingError;
+		return 3;
 	}
 
 	// First, attempt to move the built Win32 app folder to the destination directory.
@@ -360,7 +343,7 @@ int Win32AppPackager::Build(
 		copySettings.DestinationDirectoryPath = destinationDirectoryPath.GetUTF8();
 		wasMoved = CopyDirectoryTree(copySettings) ? true : false;
 	}
-	buildResultCode = wasMoved ? WebServicesSession::kNoError : WebServicesSession::kLocalPackagingError;
+	buildResultCode = wasMoved ? 0 : 3;
 
 	// Update the system's icon cache.
 	// Note: We need to do this in case the app icon was changed for the same EXE file name.
@@ -388,13 +371,13 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 	if (!buildSettings.ParamsPointer)
 	{
 		Rtt_ASSERT(0);
-		return WebServicesSession::kCriticalError;
+		return 2;
 	}
 	if (!Rtt_FileExists(buildSettings.IntermediateDirectoryPath) || !Rtt_FileExists(buildSettings.BinDirectoryPath))
 	{
 		buildSettings.ParamsPointer->SetBuildMessage("DoLocalBuild() was given invalid parameters.");
 		Rtt_ASSERT(0);
-		return WebServicesSession::kCriticalError;
+		return 2;
 	}
 
 	// Get a UTF-16 path to the bin directory.
@@ -415,7 +398,7 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 				intermediatePluginDirectoryPath.GetUTF8());
 		if (!wasUnzipped)
 		{
-			return WebServicesSession::kLocalPackagingError;
+			return 3;
 		}
 
 		// Compile the Lua plugins to the intermediate directory.
@@ -433,7 +416,7 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 			{
 				buildSettings.ParamsPointer->SetBuildMessage("Failed to compile plugin Lua scripts.");
 			}
-			return WebServicesSession::kBuildError;
+			return 5;
 		}
 
 		// Copy the DLL plugins to the "bin" directory.
@@ -531,7 +514,7 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 						}
 					}
 					buildSettings.ParamsPointer->SetBuildMessage(message.c_str());
-					return WebServicesSession::kLocalPackagingError;
+					return 3;
 				}
 			} while (::FindNextFileW(searchHandle, &findData));
 		}
@@ -557,7 +540,7 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 		{
 			buildSettings.ParamsPointer->SetBuildMessage("Failed to unzip Win32 app template.");
 			Rtt_ASSERT(0);
-			return WebServicesSession::kLocalPackagingError;
+			return 3;
 		}
 	}
 
@@ -569,7 +552,7 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 		{
 			buildSettings.ParamsPointer->SetBuildMessage("Failed to compile Lua scripts.");
 		}
-		return WebServicesSession::kBuildError;
+		return 5;
 	}
 
 	// Bundle all of the compiled Lua scripts in the intermediate directory into a "resource.car" file.
@@ -584,15 +567,15 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 			buildSettings.ParamsPointer->SetBuildMessage(
 					"Failed to package compiled Lua scripts into a \"resource.car\" file.");
 		}
-		return WebServicesSession::kLocalPackagingError;
+		return 3;
 	}
 
 	// Return the build result code.
-	return WebServicesSession::kNoError;
+	return 0;
 }
 
 int Win32AppPackager::DoRemoteBuild(
-	const Win32AppPackager::BuildSettings& buildSettings, WebServicesSession& webSession)
+	const Win32AppPackager::BuildSettings& buildSettings)
 {
 	Rtt_ASSERT_NOT_IMPLEMENTED();
 
@@ -600,26 +583,26 @@ int Win32AppPackager::DoRemoteBuild(
 	if (!buildSettings.ParamsPointer)
 	{
 		Rtt_ASSERT(0);
-		return WebServicesSession::kCriticalError;
+		return 2;
 	}
 	if (!Rtt_FileExists(buildSettings.IntermediateDirectoryPath) || !Rtt_FileExists(buildSettings.BinDirectoryPath))
 	{
 		buildSettings.ParamsPointer->SetBuildMessage("DoRemoteBuild() was given invalid parameters.");
 		Rtt_ASSERT(0);
-		return WebServicesSession::kCriticalError;
+		return 2;
 	}
 
 	// Locally compile the Corona project's Lua scripts and bundle them into an "input.zip" file.
 	auto inputZipFilePath = Prepackage(buildSettings.ParamsPointer, buildSettings.IntermediateDirectoryPath);
 	if (!inputZipFilePath)
 	{
-		return WebServicesSession::kLocalPackagingError;
+		return 3;
 	}
 
 //TODO: Add remote build code here.
 #if 1
 	buildSettings.ParamsPointer->SetBuildMessage("Remote Win32 desktop app builds are not currently supported.");
-	int buildResultCode = WebServicesSession::kBuildError;
+	int buildResultCode = 5;
 #endif
 
 	// Delete the "input.zip" string returned by the Prepackage() method.

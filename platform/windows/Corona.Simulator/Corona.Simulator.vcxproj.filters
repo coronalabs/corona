@@ -47,25 +47,13 @@
     <ClInclude Include="..\..\shared\Rtt_AndroidSupportTools.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_Authorization.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_AuthorizationTicket.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_MAuthorizationDelegate.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_PlatformConnection.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_TargetAndroidAppStore.h">
@@ -75,9 +63,6 @@
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_WebAppPackager.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_WebServicesSession.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_PlatformPlayer.h">
@@ -105,15 +90,6 @@
     <ClInclude Include="Rtt\Rtt_WinSimulatorServices.h">
       <Filter>Rtt</Filter>
     </ClInclude>
-    <ClInclude Include="Rtt\Rtt_WinAuthorizationDelegate.h">
-      <Filter>Rtt</Filter>
-    </ClInclude>
-    <ClInclude Include="Rtt\Rtt_WinConnection.h">
-      <Filter>Rtt</Filter>
-    </ClInclude>
-    <ClInclude Include="Rtt\Rtt_WinDictionaryWrapper.h">
-      <Filter>Rtt</Filter>
-    </ClInclude>
     <ClInclude Include="Rtt\Rtt_WinPlatformServices.h">
       <Filter>Rtt</Filter>
     </ClInclude>
@@ -123,7 +99,7 @@
     <ClInclude Include="..\..\..\external\winutil\BtnST.h">
       <Filter>%28root%29\external\winutil</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\external\winutil\DirDialog.h">
+    <ClInclude Include="..\..\..\external\winutil\BrowseDirDialog.h">
       <Filter>%28root%29\external\winutil</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\external\winutil\dirent.h">
@@ -213,28 +189,16 @@
     <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\Rtt_Authorization.cpp">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\Rtt_AuthorizationTicket.cpp">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\Rtt_PlatformConnection.cpp">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_TargetDevice.cpp">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_WebAppPackager.cpp">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\Rtt_WebServicesSession.cpp">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_PlatformPlayer.cpp">
@@ -259,15 +223,6 @@
     <ClCompile Include="Rtt\Rtt_WinSimulatorServices.cpp">
       <Filter>Rtt</Filter>
     </ClCompile>
-    <ClCompile Include="Rtt\Rtt_WinAuthorizationDelegate.cpp">
-      <Filter>Rtt</Filter>
-    </ClCompile>
-    <ClCompile Include="Rtt\Rtt_WinConnection.cpp">
-      <Filter>Rtt</Filter>
-    </ClCompile>
-    <ClCompile Include="Rtt\Rtt_WinDictionaryWrapper.cpp">
-      <Filter>Rtt</Filter>
-    </ClCompile>
     <ClCompile Include="Rtt\Rtt_WinPlatformServices.cpp">
       <Filter>Rtt</Filter>
     </ClCompile>
@@ -277,7 +232,7 @@
     <ClCompile Include="..\..\..\external\winutil\BtnST.cpp">
       <Filter>%28root%29\external\winutil</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp">
+    <ClCompile Include="..\..\..\external\winutil\BrowseDirDialog.cpp">
       <Filter>%28root%29\external\winutil</Filter>
     </ClCompile>
     <ClCompile Include="BuildWin32AppDlg.cpp" />

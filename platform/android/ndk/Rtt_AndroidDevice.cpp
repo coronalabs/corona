@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -299,44 +283,27 @@ AndroidDevice::GetProductName() const
 const char*
 AndroidDevice::GetArchitectureInfo() const
 {
-	// Test if we are running an ARM built app on an x86 CPU via Intel's "libhoudini.so" translation library.
-	// Note: We do this because there is a known bug in "libhoudini.so" where calling the below CPU functions
-	//       will cause a crash on some version of Intel's library. We work-around this issue by identifying
-	//       if "libhoudini.so" is currently loaded, which means we can assume that we're running on an x86 CPU.
-	static bool sIsUsingArmToX86Translator = false;
-#ifdef __arm__
-	static bool sHasTestedForArmToX86Translator = false;
-	if (!sHasTestedForArmToX86Translator)
+	switch (android_getCpuFamily())
 	{
-		dlerror();
-		void *libraryHandle = dlopen("libhoudini.so", RTLD_LAZY);
-		if (libraryHandle)
-		{
-			sIsUsingArmToX86Translator = true;
-		}
-		sHasTestedForArmToX86Translator = true;
+	    case ANDROID_CPU_FAMILY_ARM:
+            if ((android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0)
+                return "ARM Neon";
+            else
+                return "ARM";
+        case ANDROID_CPU_FAMILY_X86:
+            return "x86";
+        case ANDROID_CPU_FAMILY_MIPS:
+            return "MIPS";
+        case ANDROID_CPU_FAMILY_ARM64:
+            return "ARM64";
+        case ANDROID_CPU_FAMILY_X86_64:
+            return "x86_64";
+        case ANDROID_CPU_FAMILY_MIPS64:
+            return "MIPS64";
+        default:
+            break;
 	}
-#endif
-
-	// Fetch the name of the CPU type we're running on.
-	// Note: Do not call the android_getCpu*() functions while "libhoudini.so" is loaded to avoid a crash.
-	const char *name = "Unknown";
-	if (sIsUsingArmToX86Translator || (android_getCpuFamily() == ANDROID_CPU_FAMILY_X86))
-	{
-		name = "x86";
-	}
-	else if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM)
-	{
-		if ((android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0)
-		{
-			name = "ARM Neon";
-		}
-		else
-		{
-			name = "ARM";
-		}
-	}
-	return name;
+	return "Unknown";
 }
 
 PlatformInputDeviceManager&

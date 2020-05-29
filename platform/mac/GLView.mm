@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1023,52 +1007,47 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
         // The mask contains a few bits set. All must be set to consider the key down.
         if ( ( [event modifierFlags] & mask ) == mask)
         {
-            [self keyDown:event];
+            [self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kDown];
         }
         else
         {
-            [self keyUp:event];
+            [self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kUp];
         }
     }
 }
 
 - (void)keyDown:(NSEvent *)event
 {
-	using namespace Rtt;
-
-	NSUInteger modifierFlags = [event modifierFlags];
-	unsigned short keyCode = [event keyCode];
-	NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
-
-	KeyEvent e(
-		NULL,
-		KeyEvent::kDown,
-		[keyName UTF8String],
-		keyCode,
-		(modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
-        (modifierFlags & NSAlternateKeyMask),
-        (modifierFlags & NSControlKeyMask),
-        (modifierFlags & NSCommandKeyMask) );
-	[self dispatchEvent: ( & e )];
+	[self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kDown];
+	const char* characters = [[event characters] UTF8String];
+	if (strlen(characters) > 1 || isprint(characters[0])) {
+		Rtt::CharacterEvent e(NULL, characters);
+		[self dispatchEvent: ( & e )];
+	}
 }
 
 - (void)keyUp:(NSEvent *)event
 {
-	using namespace Rtt;
+	[self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kUp];
+}
 
+- (void)dispatchKeyEvent:(NSEvent *)event withPhase:(Rtt::KeyEvent::Phase)phase
+{
+	using namespace Rtt;
+	
 	NSUInteger modifierFlags = [event modifierFlags];
 	unsigned short keyCode = [event keyCode];
 	NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
-
+	
 	KeyEvent e(
-		NULL,
-		KeyEvent::kUp,
-		[keyName UTF8String],
-		[event keyCode],
-		(modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
-        (modifierFlags & NSAlternateKeyMask),
-        (modifierFlags & NSControlKeyMask),
-		(modifierFlags & NSCommandKeyMask) );
+			   NULL,
+			   phase,
+			   [keyName UTF8String],
+			   keyCode,
+			   (modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
+			   (modifierFlags & NSAlternateKeyMask),
+			   (modifierFlags & NSControlKeyMask),
+			   (modifierFlags & NSCommandKeyMask) );
 	[self dispatchEvent: ( & e )];
 }
 
@@ -1270,7 +1249,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 }
 
 // Fix the view layering when the app is hidden or minaturized
-// Fixes bug http://bugs.anscamobile.com/default.asp?44953
+// Fixes bug http://bugs.coronalabs.com/default.asp?44953
 - (void) restoreWindowProperties
 {
 	NSArray* subviews = [self subviews];

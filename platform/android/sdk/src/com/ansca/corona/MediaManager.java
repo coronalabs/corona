@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -51,8 +35,8 @@ public class MediaManager {
 	private static final int			SOUNDPOOL_STREAMS = 4;
 	private Context 					myContext;
 	private SoundPool					mySoundPool;
-	private HashMap<Integer,Integer>	myIdToSoundPoolIdMap;
-	private HashMap<Integer,MediaPlayer> myMediaPlayers;
+	private HashMap<Long,Integer>		myIdToSoundPoolIdMap;
+	private HashMap<Long,MediaPlayer>   myMediaPlayers;
 	private float						myVolume;
 	private AudioRecorder				myAudioRecorder;
 	private Handler 					myHandler;
@@ -66,10 +50,10 @@ public class MediaManager {
 
 	public void init()
 	{
-		myIdToSoundPoolIdMap = new HashMap<Integer,Integer>();
+		myIdToSoundPoolIdMap = new HashMap<Long,Integer>();
 		mySoundPool = new SoundPool( SOUNDPOOL_STREAMS, AudioManager.STREAM_MUSIC, 0);
 		
-		myMediaPlayers = new HashMap<Integer,MediaPlayer>();
+		myMediaPlayers = new HashMap<Long,MediaPlayer>();
 
 		// The main looper lives on the main thread of the application.  
 		// This will bind the handler to post all runnables to the main ui thread.
@@ -86,7 +70,7 @@ public class MediaManager {
 		}
 	}
 	
-	public void loadSound( final int id, String soundName )
+	public void loadSound( final long id, String soundName )
 	{
 		try {
 			MediaPlayer mp = null;
@@ -124,7 +108,7 @@ public class MediaManager {
 				public boolean onError(MediaPlayer mp, int what, int extra) {
 					mp.release();
 					if ( myMediaPlayers != null ) {
-						myMediaPlayers.remove( new Integer(id) );
+						myMediaPlayers.remove( id );
 					}
 
 					if (myCoronaRuntime != null) {
@@ -138,7 +122,7 @@ public class MediaManager {
 				public void onCompletion(MediaPlayer mp) {
 					mp.release();
 					if ( myMediaPlayers != null ) {
-						myMediaPlayers.remove( new Integer(id) );
+						myMediaPlayers.remove( id );
 					}
 					
 					if (myCoronaRuntime != null) {
@@ -147,13 +131,13 @@ public class MediaManager {
 				}
 			});
 			
-			myMediaPlayers.put( new Integer(id), mp );
+			myMediaPlayers.put( id, mp );
 		} catch ( Exception e ) {
 				
 		}
 	}
 
-	public void loadEventSound( int id, String inSoundName )
+	public void loadEventSound( long id, String inSoundName )
 	{
 		// Validate.
 		if ((inSoundName == null) || (inSoundName.length() <= 0)) {
@@ -176,16 +160,16 @@ public class MediaManager {
 			final AssetFileDescriptor fd = fileServices.openAssetFileDescriptorFor(inSoundName);
 			if (fd != null) {
 				int soundId = mySoundPool.load( fd, 1 );
-				myIdToSoundPoolIdMap.put(Integer.valueOf(id), Integer.valueOf(soundId));
+				myIdToSoundPoolIdMap.put(id, soundId);
 			}
 		}
 		else {
 			int soundId = mySoundPool.load( inSoundName, 1 );
-			myIdToSoundPoolIdMap.put(Integer.valueOf(id), Integer.valueOf(soundId));
+			myIdToSoundPoolIdMap.put(id, soundId);
 		}
 	}
 	
-	public void playMedia( final int id, boolean loop )
+	public void playMedia( final long id, boolean loop )
 	{
 		// Notify the application that audio is being used.
 		onUsingAudio();
@@ -193,7 +177,7 @@ public class MediaManager {
 		// Play the given audio.
 		MediaPlayer mp = null;
 		if ( myMediaPlayers != null ) {
-			mp = myMediaPlayers.get( new Integer( id ) );
+			mp = myMediaPlayers.get( id );
 		}
 
 		if ( mp != null ) {
@@ -203,7 +187,7 @@ public class MediaManager {
 		} else {
 			Integer soundId = null;
 			if ( myIdToSoundPoolIdMap != null) {
-				soundId = myIdToSoundPoolIdMap.get( new Integer( id ) );
+				soundId = myIdToSoundPoolIdMap.get( id );
 			}
 
 			if ( soundId != null ) {
@@ -219,11 +203,11 @@ public class MediaManager {
 		}
 	}
 	
-    public void stopMedia( final int id )
+    public void stopMedia( final long id )
 	{
 		MediaPlayer mp = null;
 		if ( myMediaPlayers != null ) {
-			mp = myMediaPlayers.get( new Integer( id ) );
+			mp = myMediaPlayers.get( id );
 		}
 
 		if ( mp != null ) {
@@ -231,7 +215,7 @@ public class MediaManager {
 		} else {
 			Integer soundId = null;
 			if ( myIdToSoundPoolIdMap != null) {
-				soundId = myIdToSoundPoolIdMap.get( new Integer( id ) );
+				soundId = myIdToSoundPoolIdMap.get( id );
 			}
 
 			if ( soundId != null ) {
@@ -240,7 +224,7 @@ public class MediaManager {
 		}
 	}
 
-	public void pauseMedia( final int id )
+	public void pauseMedia( final long id )
 	{
 		MediaPlayer mp = null;
 		if ( myMediaPlayers != null ) {
@@ -257,7 +241,7 @@ public class MediaManager {
 		} else {
 			Integer soundId = null;
 			if ( myIdToSoundPoolIdMap != null) {
-				soundId = myIdToSoundPoolIdMap.get( new Integer( id ) );
+				soundId = myIdToSoundPoolIdMap.get( id );
 			}
 
 			if ( soundId != null ) {
@@ -266,7 +250,7 @@ public class MediaManager {
 		}
 	}
 
-	public void resumeMedia( final int id  )
+	public void resumeMedia( final long id  )
 	{
 		MediaPlayer mp = null;
 		if ( myMediaPlayers != null ) {
@@ -283,7 +267,7 @@ public class MediaManager {
 		} else {
 			Integer soundId = null;
 			if ( myIdToSoundPoolIdMap != null) {
-				soundId = myIdToSoundPoolIdMap.get( new Integer( id ) );
+				soundId = myIdToSoundPoolIdMap.get( id );
 			}
 
 			if ( soundId != null ) {
@@ -295,13 +279,13 @@ public class MediaManager {
 	public void pauseAll()
 	{
 		if ( myMediaPlayers != null ) {
-			for ( Integer key : myMediaPlayers.keySet() ) {
+			for ( Long key : myMediaPlayers.keySet() ) {
 				pauseMedia( key );
 			}
 		}
 
 		if ( myIdToSoundPoolIdMap != null ) {
-			for ( Integer key : myIdToSoundPoolIdMap.keySet() ) {
+			for ( Long key : myIdToSoundPoolIdMap.keySet() ) {
 				pauseMedia( key );
 			}
 		}
@@ -311,20 +295,20 @@ public class MediaManager {
 	public void resumeAll()
 	{
 		if ( myMediaPlayers != null ) {
-			for ( Integer key : myMediaPlayers.keySet() ) {
+			for ( Long key : myMediaPlayers.keySet() ) {
 				resumeMedia( key );
 			}
 		}
 
 		if ( myIdToSoundPoolIdMap != null ) {
-			for ( Integer key : myIdToSoundPoolIdMap.keySet() ) {
+			for ( Long key : myIdToSoundPoolIdMap.keySet() ) {
 				resumeMedia( key );
 			}
 		}
 		// mySoundPool.autoResume(); // API level 8
 	}
 	
-	public void playVideo( int id, final String path, final boolean mediaControlsEnabled )
+	public void playVideo( final long id, final String path, final boolean mediaControlsEnabled )
 	{
 		final Context context = myContext;
 		if (context == null) {
@@ -339,20 +323,17 @@ public class MediaManager {
 		pauseAll();
 		
 		// Play the specified video on the main UI thread.
-		final int finalId = id;
-		final String finalPath = path;
-		final boolean finalMediaControlsEnabled = mediaControlsEnabled;
 		myHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				Uri videoUri = createVideoURLFromString(finalPath, context);
+				Uri videoUri = createVideoURLFromString(path, context);
 
 				// Display the video.
 				if (null != videoUri) {
 					android.content.Intent intent = new android.content.Intent(context, VideoActivity.class);
 					intent.putExtra("video_uri", videoUri.toString());
-					intent.putExtra("video_id", finalId);
-					intent.putExtra("media_controls_enabled", finalMediaControlsEnabled);
+					intent.putExtra("video_id", id);
+					intent.putExtra("media_controls_enabled", mediaControlsEnabled);
 					intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION);
 					context.startActivity(intent);
 				}
@@ -360,7 +341,7 @@ public class MediaManager {
 		});
 	}
 	
-	public void setVolume( int id, float volume )
+	public void setVolume( long id, float volume )
 	{
 		if ( volume < 0.0f )
 			volume = 0.0f;
@@ -369,7 +350,7 @@ public class MediaManager {
 		
 		MediaPlayer mp = null;
 		if ( myMediaPlayers != null ) {
-			mp = myMediaPlayers.get( new Integer( id ) );
+			mp = myMediaPlayers.get(id);
 		}
 
 		if ( mp != null )
@@ -378,7 +359,7 @@ public class MediaManager {
 		myVolume = volume;
 	}
 	
-	public float getVolume(int id)
+	public float getVolume(long id)
 	{
 //		MediaPlayer mp = myMediaPlayers.get(id);
 
@@ -386,7 +367,7 @@ public class MediaManager {
 		return myVolume;
 	}
 	
-	public AudioRecorder getAudioRecorder( int id )
+	public AudioRecorder getAudioRecorder( long id )
 	{
 		if ( myAudioRecorder == null && myHandler != null) {
 			myAudioRecorder = new AudioRecorder( myCoronaRuntime, myHandler );

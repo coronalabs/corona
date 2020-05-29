@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -33,6 +17,11 @@
 #include "Rtt_MCriticalSection.h"
 #include "Rtt_MPlatform.h"
 #include "Rtt_Resource.h"
+
+#if defined(Rtt_AUTHORING_SIMULATOR)
+#include <atomic>
+#include <thread>
+#endif
 
 // TODO: Move VirtualEvent to separate header and then move SystemEvent into Runtime.h
 // Then, we can remove Event.h from the include list here:
@@ -206,7 +195,7 @@ class Runtime : public MCallback,
 	protected:
 		void AddDownloadablePlugin(
 				lua_State *L, const char *pluginName, const char *publisherId,
-				int downloadablePluginsIndex, bool isSupportedOnThisPlatform = true);
+				int downloadablePluginsIndex, bool isSupportedOnThisPlatform, const char *pluginEntryJSON);
 
 	public:
 		void FindDownloadablePlugins( const char *simPlatformName );
@@ -285,6 +274,8 @@ class Runtime : public MCallback,
 		U8 GetFPS() const { return fFPS; }
 		float GetFrameInterval() const { return 1.f / ((float)fFPS); }
 
+		U32 GetFrame() const { return fFrame; }
+
 		// Number of ms since app launch
 		double GetElapsedMS() const;
 		Rtt_AbsoluteTime GetElapsedTime() const;
@@ -354,6 +345,16 @@ class Runtime : public MCallback,
 		// MDisplayDelegate
 		virtual void WillDispatchFrameEvent( const Display& sender );
 
+#if defined(Rtt_AUTHORING_SIMULATOR)
+	public:
+		static int ShellPluginCollector_Async(lua_State* L);
+	private:
+		static void FinalizeWorkingThreadWithEvent(Runtime *runtime, lua_State *L);
+		std::atomic<std::string*> m_fAsyncResultStr;
+		std::atomic<std::thread*> m_fAsyncThread;
+		std::atomic<void*> m_fAsyncListener;
+#endif
+
 	private:
 		String fBuildId;
 		Rtt_Allocator& fAllocator;
@@ -377,6 +378,7 @@ class Runtime : public MCallback,
 		S8 fIsSuspended;
 		U16 fProperties;
 		U32 fSuspendOverrideProperties;
+		U32 fFrame;
 		int fLaunchArgsRef;
 		const char *fSimulatorPlatformName;
 		int fDownloadablePluginsRef;

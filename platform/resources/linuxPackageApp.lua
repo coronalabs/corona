@@ -1,29 +1,12 @@
 ------------------------------------------------------------------------------
 --
--- Copyright (C) 2018 Corona Labs Inc.
--- Contact: support@coronalabs.com
---
 -- This file is part of the Corona game engine.
---
--- Commercial License Usage
--- Licensees holding valid commercial Corona licenses may use this file in
--- accordance with the commercial license agreement between you and 
--- Corona Labs Inc. For licensing terms and conditions please contact
--- support@coronalabs.com or visit https://coronalabs.com/com-license
---
--- GNU General Public License Usage
--- Alternatively, this file may be used under the terms of the GNU General
--- Public license version 3. The license is as published by the Free Software
--- Foundation and appearing in the file LICENSE.GPL3 included in the packaging
--- of this file. Please review the following information to ensure the GNU 
--- General Public License requirements will
--- be met: https://www.gnu.org/licenses/gpl-3.0.html
---
--- For overview and more information on licensing please refer to README.md
+-- For overview and more information on licensing please refer to README.md 
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
 
-linuxPluginsMetadata = {}
 processExecute = processExecute or os.execute
 
 local lfs = require "lfs"
@@ -282,8 +265,8 @@ local function createTarGZ(srcDir, tarFile, tarGZFile)
 	end
 end
 
-local function setControlParams(args)
-	local path = pathJoin(args.tmpDir, 'DEBIAN', 'control')
+local function setControlParams(args, localTmpDir)
+	local path = pathJoin(localTmpDir, 'DEBIAN', 'control')
 	local f = io.open(path, "rb")
 	if (f) then
 		local s = f:read("*a")
@@ -402,168 +385,24 @@ local function removeDir( dir )
 	end
 end
 
-
-local function getPluginDirectories(build, pluginsToDownload, tmpDir, appFolder)
-	local platform = 'linux'
-	local pluginDirectories = {}
-	for _, pd in pairs(pluginsToDownload) do
-		local plugin, developer, supportedPlatforms = unpack( pd )
-
-		local skip = false
-		if supportedPlatforms then
-			skip = not supportedPlatforms[platform]
-		end
-
-		--log3('skip=',skip, plugin, developer, supportedPlatforms, pd)
-		if not skip then
-			local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. platform
-			log3('loading plugin:', plugin, 'platform:', platform, 'from: ', downloadInfoURL)
-
-			local downloadInfoText, msg = http.request(downloadInfoURL)
-			if not downloadInfoText then
-				return "ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg 
-			end
-
-			local downloadInfoJSON = json.decode(downloadInfoText)
-			local downloadURL = downloadInfoJSON.url
-			if not downloadURL then
-				return "ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').'
-			end
-
-			log3('Downloading plugin from:', downloadURL)
-			local file, err = http.request(downloadURL)
-			if err ~= 200 then
-				-- log error, ignore it and try to make linux app as is
-				log("ERROR: unable to download " .. plugin .. ' ('.. developer.. '). Error message: \n' .. file)
-			else
-				-- put downloaded data in 
-				local pluginArchivePath = pathJoin(tmpDir, plugin .. '_' .. developer .. ".tgz")
-
-				fi = io.open(pluginArchivePath, "wb")
-				if (fi == nil) then
-					return 'ERROR: unable to create tgz' --unpack plugin " .. plugin .. ' (' .. developer .. ').'
-				end
-				fi:write(file)
-				fi:close()
-
-				local ret = unpackPlugin(pluginArchivePath,  pathJoin(tmpDir, plugin), tmpDir, plugin .. '_' .. developer)
-				if ret ~= 0 then
-					return "ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').'
-				end
-
-				-- read metadata
-				local pluginsDir = pathJoin(tmpDir, plugin)
-				local metadataPath = pathJoin(pluginsDir, 'metadata.lua')
-				local metadataChunk = loadfile( metadataPath )
-				if metadataChunk then
-					local metadata = metadataChunk()
-
-					-- Store path to plugin folder
-					metadata.plugin.path = pluginsDir
-
-					-- Add plugin metadata to manifest
-					log("Found native plugin: "..tostring(metadata.plugin.path))
-					linuxPluginsMetadata[plugin] = metadata.plugin
-				else
-					local metadata = {}
-					metadata.path = pluginsDir
-
-					-- Add plugin metadata to manifest
-					log("Found native plugin: "..tostring(metadata.path), ', no metadata found')
-					linuxPluginsMetadata[plugin] = metadata
-				end
-
-			end
-		else
-			log3('skip loading plugin:', plugin, 'platform:', platform)
-		end
-	end
-	return nil
-end
-
-local function linuxDownloadPlugins(user, buildYear, buildRevision, tmpDir, appFolder)
-	log3('Plugins loader started')
+local function linuxDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
 	if type(buildSettings) ~= 'table' then
-		log3('No build.settings file, so no plugins to download')
+		-- no build.settings file, so no plugins to download
 		return nil
 	end
 
-	if type(buildSettings.plugins) ~= 'table' then
-		 buildSettings.plugins = {}
-		 -- No plugins to download
-		log3('No plugin section in build.settings')
-		return nil 
-	end
-
-	local pluginsToDownload = {}
-
-	for pluginName, pluginTable in pairs(buildSettings.plugins) do
-		local publisherId = pluginTable['publisherId']
-		table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
-	end
-
-	if #pluginsToDownload > 0 then
-		local authURL = serverBackend .. '/v1/plugins/show/' .. user
-
-		log3('authURL to my plugins: ', authURL)
-
-		--local authorisedPluginsText, msg = builder.fetch(authURL)
-		local authorisedPluginsText, msg = http.request(authURL)
-
-		if not authorisedPluginsText then
-			return "ERROR: Unable to retrieve authorised plugins list (" .. msg .. ")."
-		end
-
-		local authPluginsJson = json.decode( authorisedPluginsText )
-		if not authPluginsJson then
-			return "ERROR: Unable to parse authorised plugins list."
-		end
-		log3('decoded plugins list')
-
-		if authPluginsJson.status ~= 'success' then
-			return "ERROR: Retrieving authorised plugins was unsuccessful. Info: " .. authorisedPluginsText
-		end
-
-		if not authPluginsJson.data then
-			return "ERROR: received empty data for authorised plugins."
-		end
-
-		local authorisedPlugins = {}
-		for _, ap in pairs(authPluginsJson.data) do 
-			if ap['plugin_name'] ~= nil and ap['plugin_developer'] ~= nil then
-				local p = ap['plugin_name'] .. ' ' .. ap['plugin_developer']
-				authorisedPlugins[p] = ap['status']
-			end
-		end
-
-		local authErrors = false
-		for _, pd in pairs(pluginsToDownload) do
-			local plugin, developer = unpack( pd )
-			local status = authorisedPlugins[plugin .. ' ' .. developer]
-			log3('plugins to load:', plugin, ', status=', status)
-			if status ~= 2 and status ~= 1 then
-				log("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
-				log("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
-				authErrors = true
-			end
-		end
-		if authErrors then
-			return "ERROR: exiting due to plugins above not being activated."
-		end
-	else
-		log3("No plugins to download for Linux platform")
-		return nil 
-	end
-
-	local build = buildYear .. '.' .. buildRevision
-
-	local msg = getPluginDirectories(build, pluginsToDownload, tmpDir, appFolder)
-	if type(msg) == 'string' then
-		return msg
-	end
-
-	return nil
+	local collectorParams = { 
+		pluginPlatform = 'linux',
+		plugins = buildSettings.plugins or {},
+		destinationDirectory = tmpDir,
+		build = buildRevision,
+		extractLocation = pluginDstDir,
+	}
+	
+	local pluginCollector = require "CoronaBuilderPluginCollector"
+	return pluginCollector.collect(collectorParams)
 end
+
 
 local function getExcludePredecate()
 	local excludes = {
@@ -649,6 +488,7 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
 end
 
 local function makeApp(arch, linuxappFolder, template, args, templateName)
+	local localTmpDir = pathJoin(args.tmpDir, arch)
 	-- sanity check
 
 	local archivesize = lfs.attributes (template, "size")
@@ -657,32 +497,32 @@ local function makeApp(arch, linuxappFolder, template, args, templateName)
 	end
 
 	-- create tmp folder
-	removeDir(args.tmpDir)
-	local success = lfs.mkdir(args.tmpDir)
+	removeDir(localTmpDir)
+	local success = lfs.mkdir(localTmpDir)
 	if not success then
-		log('Failed to create tmpDir: ' .. args.tmpDir)
-		return 'Failed to create tmpDir: ' .. args.tmpDir
+		log('Failed to create tmpDir: ' .. localTmpDir)
+		return 'Failed to create tmpDir: ' .. localTmpDir
 	end
-	log3('Created tmp folder: ' .. args.tmpDir)
+	log3('Created tmp folder: ' .. localTmpDir)
 
-	--local ret = unzip(template, args.tmpDir)
-	local ret = unpackPlugin(template, args.tmpDir, args.tmpDir, templateName)
+	--local ret = unzip(template, localTmpDir)
+	local ret = unpackPlugin(template, localTmpDir, localTmpDir, templateName)
 	if ret ~= 0 then
-		return 'Failed to unpack template ' .. template .. ' to ' .. args.tmpDir ..  ', err=' .. ret
+		return 'Failed to unpack template ' .. template .. ' to ' .. localTmpDir ..  ', err=' .. ret
 	end
-	log3('Unzipped ' .. template, ' to ', args.tmpDir) 
+	log3('Unzipped ' .. template, ' to ', localTmpDir) 
 
 	local binFile = args.applicationName
-	local oldname = pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'bin', 'linux_rtt')
-	local newname = pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'bin', binFile)
+	local oldname = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin', 'linux_rtt')
+	local newname = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin', binFile)
 	os.rename(oldname, newname)
 
 	-- exclude from build
-	os.remove(pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'bin', '.info'))
-	os.remove(pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'share', 'corona', '.info'))
+	os.remove(pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin', '.info'))
+	os.remove(pathJoin(localTmpDir, 'CONTENTS', 'usr', 'share', 'corona', '.info'))
 
-	local appFolder = pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'share', 'corona', args.applicationName)
-	local appBinaryFolder = pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'bin')
+	local appFolder = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'share', 'corona', args.applicationName)
+	local appBinaryFolder = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin')
 
 	local success = lfs.mkdir(appFolder)
 	if not success then
@@ -691,36 +531,19 @@ local function makeApp(arch, linuxappFolder, template, args, templateName)
 	log3('Created app folder: ' .. appFolder)
 
 	-- dowmload plugins
-	local msg = linuxDownloadPlugins(args.user, args.buildYear, args.buildRevision, args.tmpDir, appFolder)
-	if type(msg) == 'string' then
-		return msg
+	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
+
+	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
+	if dir_exists( luaPluginDir ) then
+		copyDir(luaPluginDir, pluginExtractDir)
 	end
-
-	-- copy plugins into app folder
-	for k, metadata in pairs(linuxPluginsMetadata) do
-		-- just copy all files into app folder
-		local pluginDir = metadata.path
-
-		--	check if it is Lua plugin, Lua plugin is in '/lua/lua_51'
-		if dir_exists(pluginDir .. '/lua/lua_51') then
-			pluginDir = pluginDir .. '/lua/lua_51'
-			copyDir(pluginDir, appFolder)
-		else
-			-- shared lib ?
-			if dir_exists(pluginDir .. '/' .. arch) then
-				pluginDir = pluginDir .. '/' .. arch
-				copyDir(pluginDir, appFolder)
-				copyDir(pluginDir, appBinaryFolder)
-			end
-		end
-
-		-- exclude medata.lua from app
-		os.remove(pathJoin(appFolder, 'metadata.lua'))
-
-		-- exclude 
-		os.remove(metadata.path)
+	local binPlugnDir = pathJoin(pluginExtractDir, arch)
+	if dir_exists( binPlugnDir ) then
+		copyDir(binPlugnDir, appFolder)
+		copyDir(binPlugnDir, appBinaryFolder)
 	end
-
+	
 	-- gather files into appFolder (tmp folder)
 	local ret = copyDir( args.srcDir, appFolder )
 	if ret ~= 0 then
@@ -729,7 +552,7 @@ local function makeApp(arch, linuxappFolder, template, args, templateName)
 	log3("Copied app files from ", args.srcDir, ' to ', appFolder)
 
 	-- copy standard resources
-	local widgetsDir = pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'share', 'corona', 'res_widget')
+	local widgetsDir = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'share', 'corona', 'res_widget')
 	if args.useStandartResources then
 		local ret = copyDir(widgetsDir, appFolder)
 		if ret ~= 0 then
@@ -742,7 +565,7 @@ local function makeApp(arch, linuxappFolder, template, args, templateName)
 	removeDir(widgetsDir)
 
 	-- compile .lua
-	local rc = compileScriptsAndMakeCAR(args.linuxParams, appFolder, appFolder, args.tmpDir)
+	local rc = compileScriptsAndMakeCAR(args.linuxParams, appFolder, appFolder, localTmpDir)
 	if not rc then
 		return "Failed to create .car file"
 	end
@@ -752,18 +575,18 @@ local function makeApp(arch, linuxappFolder, template, args, templateName)
 	deleteUnusedFiles(appFolder, getExcludePredecate())
 
 	-- add debian package control file
-	setControlParams(args)
+	setControlParams(args, localTmpDir)
 
 	-- commpress and create deb file
 
-	createTarGZ(pathJoin(args.tmpDir, 'CONTENTS'), 'data.tar', 'data.tar.gz')
-	createTarGZ(pathJoin(args.tmpDir, 'DEBIAN'), 'control.tar', 'control.tar.gz')
+	createTarGZ(pathJoin(localTmpDir, 'CONTENTS'), 'data.tar', 'data.tar.gz')
+	createTarGZ(pathJoin(localTmpDir, 'DEBIAN'), 'control.tar', 'control.tar.gz')
 
 	local debFile = args.applicationName .. '-' .. arch .. '-' .. args.versionName .. '.deb'
-	createDebArchive(debFile, args.tmpDir)
+	createDebArchive(debFile, localTmpDir)
 
 	-- copy .deb to build folder
-	local ret = copyFile(pathJoin(args.tmpDir, debFile), pathJoin(linuxappFolder, debFile))
+	local ret = copyFile(pathJoin(localTmpDir, debFile), pathJoin(linuxappFolder, debFile))
 	if not ret then
 			return "Failed to create Linux deb package "
 	end
@@ -773,8 +596,8 @@ local function makeApp(arch, linuxappFolder, template, args, templateName)
 	-- create portable .zip 
 	--
 
-	local binSrc = pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'bin', binFile)
-	local binFolder = pathJoin(args.tmpDir, 'CONTENTS', 'usr', 'share', 'corona', args.applicationName)
+	local binSrc = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin', binFile)
+	local binFolder = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'share', 'corona', args.applicationName)
 	local binDst = pathJoin(binFolder, binFile)
 	local ret = copyFile(binSrc, binDst)
 	if not ret then
@@ -852,6 +675,15 @@ function linuxPackageApp( args )
 			return 'Failed to create app folder: ' .. linuxappFolder
 		end
 		log3('Created app folder: ' .. linuxappFolder)
+	end
+
+	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
+	lfs.mkdir(pluginDownloadDir)
+	lfs.mkdir(pluginExtractDir)
+	local msg = linuxDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginExtractDir)
+	if type(msg) == 'string' then
+		return msg
 	end
 
 	local rc = makeApp('ubuntu-18.04-x86-64', linuxappFolder, template, args, 'linuxtemplate')

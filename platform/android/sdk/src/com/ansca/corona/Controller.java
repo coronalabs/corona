@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,14 +16,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Locale;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 
 import android.app.AlertDialog;
 import android.app.Activity;
@@ -486,34 +462,6 @@ public class Controller {
 		if (myGLView != null) {
 			myGLView.setNeedsSwap();
 		}
-    }
-    
-    public void httpPost( String url, String key, String value ) {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpContext localContext = new BasicHttpContext();
-
-        HttpPost httpPost = new HttpPost( url );
-
-    	httpPost.setHeader( "Content-Type", "application/x-www-form-urlencoded" );
-
-    	StringEntity entity;
-		try {
-			entity = new StringEntity( key + "=" + value, "UTF-8" );
-
-	    	httpPost.setEntity( entity );
-
-	    	HttpResponse response = httpClient.execute( httpPost, localContext );
-
-//    		if ( response != null ) {
-//        		String result = response.getStatusLine().toString();
-//       	}
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-    	} catch ( ClientProtocolException e ) {
-    		e.printStackTrace();
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	} 
     }
 
 	/**
@@ -2028,7 +1976,8 @@ public class Controller {
 						// 0x00001000 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY lets touch events pass to the corona app
 						// 0x00000002 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION hides any on screen navigation buttons
 						// 0x00000004 View.SYSTEM_UI_FLAG_FULLSCREEN hides the status bar
-						vis = 0x00001000 | 0x00000002 | 0x00000004;
+						// 0x00000200 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION avoids resize event
+						vis = 0x00001000 | 0x00000002 | 0x00000004 | 0x00000200;
 				} else if (visibility.equals("immersive") && (
 					(android.os.Build.VERSION.SDK_INT >= 19) ||
 					(android.os.Build.MANUFACTURER.equals("Amazon") && android.os.Build.VERSION.SDK_INT >= 14))) {
@@ -2037,7 +1986,8 @@ public class Controller {
 						// 0x00000800 View.SYSTEM_UI_FLAG_IMMERSIVE lets touch events pass to the corona app
 						// 0x00000002 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION hides any on screen navigation buttons
 						// 0x00000004 View.SYSTEM_UI_FLAG_FULLSCREEN hides the status bar
-						vis = 0x00000800 | 0x00000002 | 0x00000004;
+						// 0x00000200 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION avoids resize event
+						vis = 0x00000800 | 0x00000002 | 0x00000004 | 0x00000200;
 				} else if (visibility.equals("lowProfile")) {
 					// On API Level 14 and above: View.SYSTEM_UI_FLAG_LOW_PROFILE dims any on screen buttons if they exists
 					// For API Level 11 - 13: View.STATUS_BAR_HIDDEN has the same effect
@@ -2053,6 +2003,19 @@ public class Controller {
 						vis |= ApiLevel11.getSystemUiVisibility(glView) & android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
 					}
 					ApiLevel11.setSystemUiVisibility(glView, vis);
+
+					final int finalVis = vis;
+					glView.setOnSystemUiVisibilityChangeListener(new android.view.View.OnSystemUiVisibilityChangeListener() {
+
+						@Override
+						public void onSystemUiVisibilityChange(int visibilityInt)
+						{
+							if((finalVis & android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) != 0)
+							{
+								ApiLevel11.setSystemUiVisibility(glView, finalVis);
+							}
+						}
+					});
 				}
 			}
 		});

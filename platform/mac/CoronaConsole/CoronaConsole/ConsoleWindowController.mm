@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -427,7 +411,7 @@ static size_t ConsoleRepeatLimit = 50;
 
 	// Output a timestamp
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"MMM dd hh:mm:ss.SSS "];
+	[dateFormat setDateFormat:@"MMM dd HH:mm:ss.SSS "];
 	NSString *timestamp = [dateFormat stringFromDate:[NSDate date]];
 
 	dateFormat = nil;
@@ -488,37 +472,36 @@ static size_t ConsoleRepeatLimit = 50;
 	dispatch_async(dispatch_get_main_queue(), ^{
 		NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:text];
 
-		[attrString addAttributes:boldFontAttr range:NSMakeRange(0, 20)];
-		[attrString addAttributes:timestampAttr range:NSMakeRange(0, 20)];
-		[attrString addAttributes:textAttr range:NSMakeRange(20, [text length]-20)];
-		[attrString addAttributes:paraAttr range:NSMakeRange(0, [text length])];
+		[attrString addAttributes:self->boldFontAttr range:NSMakeRange(0, 20)];
+		[attrString addAttributes:self->timestampAttr range:NSMakeRange(0, 20)];
+		[attrString addAttributes:self->textAttr range:NSMakeRange(20, [text length]-20)];
+		[attrString addAttributes:self->paraAttr range:NSMakeRange(0, [text length])];
 
 		if ([text contains:@"ERROR:"] || [text contains:@"Runtime error"]  )
 		{
-			[attrString addAttributes:errorAttr range:NSMakeRange(20, [text length]-20)];
+			[attrString addAttributes:self->errorAttr range:NSMakeRange(20, [text length]-20)];
 		}
 		else if ([text contains:@"WARNING:"])
 		{
-			[attrString addAttributes:warningAttr range:NSMakeRange(20, [text length]-20)];
+			[attrString addAttributes:self->warningAttr range:NSMakeRange(20, [text length]-20)];
 		}
-
-		NSRect visibleRect = [[_scrollView contentView] documentVisibleRect];
-		NSRect documentRect = [[_scrollView contentView] documentRect];
+		NSRect visibleRect = [self->_textView visibleRect];
+		NSRect documentRect = [[self->_scrollView contentView] documentRect];
 
 		[self.textFinder noteClientStringWillChange];
 
-		[[_textView textStorage] appendAttributedString:attrString];
+		[[self->_textView textStorage] appendAttributedString:attrString];
 		attrString = nil;
-		[_textFinder setFindIndicatorNeedsUpdate:YES];
+		[self->_textFinder setFindIndicatorNeedsUpdate:YES];
 
 		// Scroll to new end if document is scrolled to end (but not if the scrollbar has been adjusted
 		// manually to a point other than the end)
 		if ((visibleRect.size.height + visibleRect.origin.y) == (documentRect.size.height + documentRect.origin.y))
 		{
-			[_textView scrollRangeToVisible:NSMakeRange([[_textView string] length], 0)];
+			[self->_textView scrollToEndOfDocument:nil];
 		}
 
-		NSString *string = [[_textView textStorage] string];
+		NSString *string = [[self->_textView textStorage] string];
 		NSUInteger numberOfLines, index, stringLength = [string length];
 
 		if (stringLength > ConsoleMaxChars)
@@ -534,7 +517,7 @@ static size_t ConsoleRepeatLimit = 50;
 
 			[self.textFinder noteClientStringWillChange];
 
-			[[_textView textStorage] deleteCharactersInRange:NSMakeRange(0, index)];
+			[[self->_textView textStorage] deleteCharactersInRange:NSMakeRange(0, index)];
 		}
 	});
 }

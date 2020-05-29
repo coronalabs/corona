@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-	Copyright (c) 2013 Corona Labs Inc. All rights reserved.
+
+	//////////////////////////////////////////////////////////////////////////////
+	//
+	// This file is part of the Corona game engine.
+	// For overview and more information on licensing please refer to README.md 
+	// Home page: https://github.com/coronalabs/corona
+	// Contact: support@coronalabs.com
+	//
+	//////////////////////////////////////////////////////////////////////////////
 
 	Summary:
 		This is a custom build tool which will automatically compile all Lua files within a Visual Studio project.
@@ -41,12 +49,14 @@
           Inputs="%(LuaToCpp.Identity)"
           Outputs="$(ProjectDir)Generated Files\%(LuaToCpp.Filename)_luaload.cpp;$(IntDir)%(LuaToCpp.Filename)_luaload.obj">
 		<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+			<!--
 			<CoronaCompileWithDebugSymbols>/debug</CoronaCompileWithDebugSymbols>
+			-->
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(PlatformToolset)'=='v110_wp80'">
 			<CoronaCompileToCso>/cso</CoronaCompileToCso>
 		</PropertyGroup>
-		<Exec Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Command="$(SolutionDir)Build.Tools\LuaToCppFile.bat &quot;$(SolutionDir)Bin\Lua&quot; &quot;$(ProjectDir)$(IntDir)&quot; &quot;%(LuaToCpp.FullPath)&quot; &quot;$(ProjectDir)Generated Files&quot; /functionName &quot;%(LuaToCpp.BaseFunctionName)&quot; /moduleName &quot;%(LuaToCpp.ModuleName)&quot; $(CoronaCompileWithDebugSymbols) $(CoronaCompileToCso)"/>
+		<Exec Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Command="$(SolutionDir)Build.Tools\LuaToCppFile.bat &quot;$(SolutionDir)Bin\Lua&quot; &quot;$(ProjectDir)$(IntDir)&quot; &quot;%(LuaToCpp.FullPath)&quot; &quot;$(ProjectDir)Generated Files&quot; /functionName &quot;%(LuaToCpp.BaseFunctionName)&quot; /moduleName &quot;%(LuaToCpp.ModuleName)&quot; /debug $(CoronaCompileToCso)"/>
 		<MakeDir Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Directories="$(IntDir)Generated Files"/>
 		<ItemGroup>
 			<ClCompile Condition="'%(LuaToCpp.ExcludedFromBuild)'!='true'" Include="$(ProjectDir)Generated Files\%(LuaToCpp.Filename)_luaload.cpp">

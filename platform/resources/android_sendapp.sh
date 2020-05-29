@@ -1,11 +1,14 @@
 #!/bin/bash
+#----------------------------------------------------------------------------
 #
-# android_sendapp.sh
+# This file is part of the Corona game engine.
+# For overview and more information on licensing please refer to README.md 
+# Home page: https://github.com/coronalabs/corona
+# Contact: support@coronalabs.com
 #
+#----------------------------------------------------------------------------
+
 # Send an APK to an Android device connected to the computer and optionally launch it
-#
-# Copyright (c) 2015 Corona Labs Inc. All rights reserved.
-#
 
 DEBUG_BUILD_PROCESS=$(defaults read com.coronalabs.Corona_Simulator debugBuildProcess 2>/dev/null)
 

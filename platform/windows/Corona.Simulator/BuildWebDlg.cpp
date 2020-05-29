@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -33,17 +17,14 @@
 #include "BuildResult.h"
 #include "WinGlobalProperties.h"
 #include "WinString.h"
-#include "DirDialog.h"
+#include "BrowseDirDialog.h"
 #include "HtmlMessageDlg.h"
 #include "MessageDlg.h"
 #include "ListKeyStore.h"
 #include "CoronaInterface.h"
 #include "Core/Rtt_Build.h"
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_SimulatorAnalytics.h"
 #include "Rtt_TargetDevice.h"
-#include "Rtt_WebServicesSession.h"
 #include <Shlwapi.h>
 
 // CBuildWebDlg dialog
@@ -81,8 +62,6 @@ BOOL CBuildWebDlg::OnInitDialog()
 {
 	WinString stringConverter;
 	CString stringBuffer;
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = (pAuth != NULL) ? pAuth->GetTicket() : NULL;
 
 	// Initialize base class first.
 	CDialog::OnInitDialog();
@@ -107,24 +86,9 @@ BOOL CBuildWebDlg::OnInitDialog()
     m_nValidFields = 0;
 
 	// If there isn't a package name, create one by reversing the user's email address and adding the app name
-	if (m_pProject->GetPackage().IsEmpty() && pTicket)
+	if (m_pProject->GetPackage().IsEmpty())
 	{
-		CString emailAddr(pTicket->GetUsername());
-		CString delim = _T(".@+:?/=");
-
-		int i = 0;
-		CStringArray saItems;
-		for(CString sItem = emailAddr.Tokenize(delim,i); i >= 0; sItem = emailAddr.Tokenize(delim,i))
-		{
-			saItems.Add( sItem );
-		}
-
-		CString package;
-		for (int i = saItems.GetSize() - 1; i >= 0; --i )
-		{
-			package.Append(saItems.GetAt(i));
-			package.Append(_T("."));
-		}
+		CString package("com.solar2d.app.");
 		package.Append(m_pProject->GetName());
 
 		for (int c = 0; c < package.GetLength(); c++)
@@ -183,13 +147,8 @@ void CBuildWebDlg::OnBrowseSaveto()
 	   sDir.ReleaseBuffer();
    }
 
-   CDirDialog dirDialog;
-   dirDialog.m_strSelDir = sDir;
-   dirDialog.m_strTitle.LoadString(IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION);
-   
-   if( dirDialog.DoBrowse() == IDOK )
+   if (CBrowseDirDialog::Browse(sDir, IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION))
    {
-      sDir = dirDialog.m_strPath;
       SetDlgItemText( IDC_BUILD_SAVETO, sDir );
    }
 }
@@ -282,10 +241,6 @@ void CBuildWebDlg::OnOK()  // OnBuild()
 			return;
 		}
 	}
-	
-	// Display a nag window if the user is not authorized to build for the selected app store.
-	// In this case, the build system will create a trial version of the app instead.
-	appAllowFullBuild(Rtt::TargetDevice::kWebPlatform);
 
 	// Store field settings to project.
 	m_pProject->SetName(sAppName);

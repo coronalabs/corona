@@ -3,7 +3,6 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="..\Corona.Rtt.Library\Corona.Rtt.Library.Simulator.Definitions.props" />
     <Import Project="..\Corona.Native.Library.Win32\Corona.Native.Library.Static.Win32.Externals.props" />
-    <Import Project="..\WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.Externals.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>

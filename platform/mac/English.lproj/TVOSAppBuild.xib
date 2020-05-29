@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1080" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14490.70"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -18,15 +18,15 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Build for tvOS" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="buildForTVOSWindow" animationBehavior="default" id="1">
+        <window title="Build for tvOS" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="buildForTVOSWindow" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES"/>
             <rect key="contentRect" x="1260" y="978" width="540" height="439"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
-            <view key="contentView" misplaced="YES" id="2">
+            <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="540" height="439"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" id="7">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="7">
                         <rect key="frame" x="-11" y="400" width="157" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Application Name:" id="8">
@@ -35,7 +35,7 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="10">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="10">
                         <rect key="frame" x="-11" y="340" width="157" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Project Path:" id="11">
@@ -44,12 +44,12 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="13">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="13">
                         <rect key="frame" x="151" y="366" width="368" height="22"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="14">
                             <font key="font" metaFont="system"/>
-                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
@@ -61,7 +61,7 @@
                             </binding>
                         </connections>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="17">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="17">
                         <rect key="frame" x="-11" y="369" width="157" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Version:" id="18">
@@ -70,7 +70,7 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="25">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="25">
                         <rect key="frame" x="-11" y="284" width="157" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Provisioning Profile:" id="32">
@@ -97,7 +97,7 @@
                             </menu>
                         </popUpButtonCell>
                     </popUpButton>
-                    <textField verticalHuggingPriority="750" id="33">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="33">
                         <rect key="frame" x="-11" y="222" width="157" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Save to Folder:" id="40">
@@ -120,7 +120,7 @@ Gw
                             <action selector="cancelBuild:" target="-2" id="77"/>
                         </connections>
                     </button>
-                    <textField verticalHuggingPriority="750" id="69">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="69">
                         <rect key="frame" x="148" y="340" width="374" height="14"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingHead" selectable="YES" sendsActionOnEndEditing="YES" title="Label" id="70">
@@ -136,12 +136,12 @@ Gw
                             </binding>
                         </connections>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="104">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="104">
                         <rect key="frame" x="151" y="397" width="368" height="22"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="105">
                             <font key="font" metaFont="system"/>
-                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
@@ -163,12 +163,12 @@ Gw
                             <action selector="browseDstPath:" target="-2" id="126"/>
                         </connections>
                     </button>
-                    <textField verticalHuggingPriority="750" id="117">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="117">
                         <rect key="frame" x="151" y="219" width="274" height="22"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="118">
                             <font key="font" metaFont="system"/>
-                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
@@ -196,7 +196,7 @@ Gw
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
-                                <buttonCell type="radio" title="Open in Xcode Apple TV Simulator" imagePosition="left" alignment="left" inset="2" id="189">
+                                <buttonCell type="radio" title="Open in Xcode Simulator" imagePosition="left" alignment="left" inset="2" id="189">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -216,7 +216,7 @@ Gw
                         </cells>
                     </matrix>
                     <popUpButton verticalHuggingPriority="750" id="fQV-dm-ZH6">
-                        <rect key="frame" x="388" y="159" width="135" height="26"/>
+                        <rect key="frame" x="326" y="159" width="197" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="LDJ-IO-9m5">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -224,7 +224,7 @@ Gw
                             <menu key="menu" id="6Dy-Rl-QJ0"/>
                         </popUpButtonCell>
                     </popUpButton>
-                    <textField verticalHuggingPriority="750" id="191">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="191">
                         <rect key="frame" x="-11" y="252" width="157" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="tvOS SDK:" id="195">
@@ -242,7 +242,7 @@ Gw
                             <menu key="menu" title="OtherViews" id="194"/>
                         </popUpButtonCell>
                     </popUpButton>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="203">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="203">
                         <rect key="frame" x="74" y="192" width="73" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="After Build:" id="204">
@@ -265,7 +265,7 @@ DQ
                             <action selector="build:" target="-2" id="76"/>
                         </connections>
                     </button>
-                    <textField verticalHuggingPriority="750" id="CpT-9Y-MAR">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="CpT-9Y-MAR">
                         <rect key="frame" x="-11" y="315" width="157" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Supported Devices:" id="bvC-CL-MbS">
@@ -274,7 +274,7 @@ DQ
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="NUr-we-gLH">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="NUr-we-gLH">
                         <rect key="frame" x="149" y="315" width="60" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Apple TV" id="0gG-E7-BFZ">
@@ -283,7 +283,7 @@ DQ
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <button toolTip="Build with support for automatic syncing of project changes to test devices" misplaced="YES" id="psr-ec-yGW">
+                    <button toolTip="Build with support for automatic syncing of project changes to test devices" id="psr-ec-yGW">
                         <rect key="frame" x="151" y="55" width="370" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <buttonCell key="cell" type="check" title="Create Live Build" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Bl0-Mg-D0M">

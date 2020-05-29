@@ -1,13 +1,19 @@
 #!/bin/bash
+#----------------------------------------------------------------------------
 #
+# This file is part of the Corona game engine.
+# For overview and more information on licensing please refer to README.md 
+# Home page: https://github.com/coronalabs/corona
+# Contact: support@coronalabs.com
+#
+#----------------------------------------------------------------------------
+
 # xcode-sim.sh
 #
 # Start an app in a specified Xcode iOS/tvOS Simulator 
 #
 # The durations of the various "sleep"s are empirically determined and will probably change
 # or become unnecessary with future versions of Xcode
-#
-# Copyright (c) 2015 Corona Labs Inc. All rights reserved.
 #
 
 DEBUG_BUILD_PROCESS=$(defaults read com.coronalabs.Corona_Simulator debugBuildProcess 2>/dev/null)

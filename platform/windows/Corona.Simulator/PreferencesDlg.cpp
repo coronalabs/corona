@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -30,8 +14,7 @@
 #include "WinGlobalProperties.h"
 #include "WinString.h"
 #include "Core/Rtt_Build.h"
-#include "Rtt_AuthorizationTicket.h"
-
+#include "Rtt_WinPlatformServices.h"
 
 IMPLEMENT_DYNAMIC(CPreferencesDlg, CDialog)
 
@@ -54,7 +37,6 @@ void CPreferencesDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 }
 BEGIN_MESSAGE_MAP(CPreferencesDlg, CDialog)
-	ON_BN_CLICKED(IDC_DEAUTHORIZE, &CPreferencesDlg::OnDeauthorize)
 	ON_WM_HELPINFO()
 	ON_WM_SYSCOMMAND()
 END_MESSAGE_MAP()
@@ -70,23 +52,7 @@ BOOL CPreferencesDlg::OnInitDialog()
 	
 	// Fetch application object.
     CSimulatorApp *pApp = (CSimulatorApp *)AfxGetApp();
-	
-	// Determine if the user's license is valid and has not expired.
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	bool isSubscriptionCurrent = pTicket ? pTicket->IsSubscriptionCurrent() : false;
-	
-#if 0
-	// Set up the analytics checkbox.
-	CButton *pAnalytics = (CButton *)GetDlgItem( IDC_ANALYTICS );
-	bool isAnalyticsEnabled = true;
-	if (isSubscriptionCurrent)
-	{
-		isAnalyticsEnabled = pApp->GetProfileInt(REGISTRY_SECTION, REGISTRY_ANALYTICS, REGISTRY_ANALYTICS_DEFAULT) ? true : false;
-	}
-	pAnalytics->EnableWindow(isSubscriptionCurrent ? TRUE : FALSE);
-	pAnalytics->SetCheck(isAnalyticsEnabled ? BST_CHECKED : BST_UNCHECKED);
-#endif
-
+		
 	CButton *pShowRuntimeErrors = (CButton *)GetDlgItem( IDC_SHOW_RUNTIME_ERRORS );
 	bool isShowingRuntimeErrors = true;
 	if (isShowingRuntimeErrors)
@@ -110,23 +76,7 @@ BOOL CPreferencesDlg::OnInitDialog()
     CButton *pNoWelcome = (CButton *)GetDlgItem( IDC_NOWELCOME );
 	bool bIsEnabled = pApp->IsHomeScreenEnabled();
 	pNoWelcome->SetCheck( bIsEnabled ? BST_UNCHECKED : BST_CHECKED );
-	
-	if (pTicket != NULL)
-	{
-		// Display the user's account name.
-		WinString stringConverter;
-		stringConverter.SetUTF8(pTicket->GetUsername());
-		CStatic *pLabel =(CStatic*)GetDlgItem( IDC_USER_ACCOUNT );
-		pLabel->SetWindowText(stringConverter.GetTCHAR());
 
-#if 0
-		// Display the user's subscription name.
-		stringConverter.SetUTF8(Rtt::AuthorizationTicket::DisplayStringForSubscription(pTicket->GetSubscription()));
-		pLabel =(CStatic*)GetDlgItem( IDC_SUBSCRIPTION );
-		pLabel->SetWindowText(stringConverter.GetTCHAR());
-#endif
-	}
-	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -195,31 +145,6 @@ void CPreferencesDlg::OnOK()
 		pApp->SetRelaunchSimStyle(RELAUNCH_SIM_ASK);
 
 	CDialog::OnOK();
-}
-
-// OnDeauthorize - ask user if they're sure, show progress window, connect to
-// server with deauthorize request, exit app if successful.
-void CPreferencesDlg::OnDeauthorize()
-{
-    CString msg;
-
-	// Ask if the user is sure about deauthorizing this machine.
-	msg.LoadString( IDS_DEAUTH_CONFIRM );
-	if (MessageBox( msg, NULL, MB_YESNO | MB_ICONQUESTION ) != IDYES)
-	{
-        return;
-	}
-
-	// Deauthorize this machien. This function display a progress window and message box if it succeeded/failed.
-    bool bDeauthorized =  appDeauthorize();
-
-	// If deauthorization was successful, then close this window and exit the application.
-    if (bDeauthorized)
-	{
-         // Close this window and exit the application.
-         OnCancel();
-		 AfxGetMainWnd()->SendMessage(WM_CLOSE);
-	}
 }
 
 #pragma endregion

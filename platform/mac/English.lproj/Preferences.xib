@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16096" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16096"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
-        <capability name="system font weights other than Regular or Bold" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="AppDelegate">
@@ -15,73 +14,17 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <userDefaultsController representsSharedInstance="YES" id="27"/>
-        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="1">
+        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="272" width="535" height="300"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
-            <view key="contentView" misplaced="YES" id="2">
-                <rect key="frame" x="0.0" y="0.0" width="535" height="300"/>
+            <rect key="contentRect" x="196" y="272" width="535" height="218"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <view key="contentView" id="2">
+                <rect key="frame" x="0.0" y="0.0" width="535" height="218"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" misplaced="YES" allowsCharacterPickerTouchBarItem="NO" id="9">
-                        <rect key="frame" x="18" y="221" width="268" height="34"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="To use this product on another computer, you must deauthorize this computer." id="10">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <button verticalHuggingPriority="750" misplaced="YES" id="5">
-                        <rect key="frame" x="313" y="220" width="176" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="Deauthorize and Quit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="deauthorizeConfirm:" target="-2" id="23"/>
-                        </connections>
-                    </button>
-                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" id="11">
-                        <rect key="frame" x="492" y="224" width="25" height="25"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="12">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="deauthorizeHelp:" target="-2" id="20"/>
-                        </connections>
-                    </button>
-                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="78">
-                        <rect key="frame" x="17" y="263" width="92" height="17"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="right" title="User Account:" id="79">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="80">
-                        <rect key="frame" x="111" y="263" width="407" height="17"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Label" id="81">
-                            <font key="font" metaFont="systemSemibold" size="13"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                        <connections>
-                            <binding destination="-2" name="value" keyPath="preferencesUserName" id="99"/>
-                        </connections>
-                    </textField>
-                    <box verticalHuggingPriority="750" misplaced="YES" boxType="separator" id="13">
-                        <rect key="frame" x="19" y="204" width="493" height="5"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    </box>
-                    <button misplaced="YES" id="69">
-                        <rect key="frame" x="17" y="171" width="463" height="29"/>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="69">
+                        <rect key="frame" x="18" y="171" width="463" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Automatically close the Welcome window when running a project" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="70">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -96,8 +39,8 @@
                             </binding>
                         </connections>
                     </button>
-                    <button misplaced="YES" id="111">
-                        <rect key="frame" x="17" y="140" width="463" height="29"/>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="111">
+                        <rect key="frame" x="18" y="140" width="463" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Automatically open last project " bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="112">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -108,8 +51,8 @@
                             </connections>
                         </buttonCell>
                     </button>
-                    <matrix verticalHuggingPriority="750" misplaced="YES" allowsEmptySelection="NO" id="48">
-                        <rect key="frame" x="32" y="20" width="118" height="58"/>
+                    <matrix verticalHuggingPriority="750" fixedFrame="YES" allowsEmptySelection="NO" translatesAutoresizingMaskIntoConstraints="NO" id="48">
+                        <rect key="frame" x="33" y="20" width="118" height="58"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         <size key="cellSize" width="118" height="18"/>
@@ -138,8 +81,8 @@
                             <binding destination="27" name="selectedTag" keyPath="values.relaunchSimulatorOptionForResourceChangeNotification" id="66"/>
                         </connections>
                     </matrix>
-                    <textField verticalHuggingPriority="750" misplaced="YES" allowsCharacterPickerTouchBarItem="NO" id="53">
-                        <rect key="frame" x="17" y="86" width="292" height="17"/>
+                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="53">
+                        <rect key="frame" x="18" y="86" width="292" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Relaunch Simulator when project is modified?" id="54">
                             <font key="font" metaFont="system"/>
@@ -147,8 +90,8 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <button misplaced="YES" id="125">
-                        <rect key="frame" x="18" y="109" width="463" height="29"/>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="125">
+                        <rect key="frame" x="19" y="109" width="463" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Show Runtime Errors (per app setting in config.lua overrides this)" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="126">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -165,7 +108,7 @@
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="136.5" y="101"/>
+            <point key="canvasLocation" x="136.5" y="60"/>
         </window>
     </objects>
 </document>

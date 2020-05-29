@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +17,6 @@
 #include "Interop\UI\TaskDialog.h"
 #include "Interop\MDeviceSimulatorServices.h"
 #include "Interop\SimulatorRuntimeEnvironment.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaFile.h"
 #include "Rtt_MPlatform.h"
@@ -43,8 +26,6 @@
 #include "Rtt_RenderingStream.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_WinAuthorizationDelegate.h"
-#include "Rtt_Authorization.h"
 #include "Rtt_WinPlatform.h"
 #include "Rtt_WinSimulatorServices.h"
 #include "Simulator.h"
@@ -867,35 +848,6 @@ void CSimulatorView::OnBuildForAndroid()
 		SuspendResumeSimulationWithOverlay(true, false);
 	}
 
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
-	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "android";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
-	}
-
 	// Display the build window.
 	CBuildAndroidDlg dlg;
 	dlg.SetProject( GetDocument()->GetProject() );
@@ -919,35 +871,6 @@ void CSimulatorView::OnBuildForWeb()
 		SuspendResumeSimulationWithOverlay(true, false);
 	}
 
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
-	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "web";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
-	}
-
 	// Display the build window.
 	CBuildWebDlg dlg;
 	dlg.SetProject( GetDocument()->GetProject() );
@@ -969,35 +892,6 @@ void CSimulatorView::OnBuildForLinux()
 	{
 		buildSuspendedSimulator = true;
 		SuspendResumeSimulationWithOverlay(true, false);
-	}
-
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
-	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "linux";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
 	}
 
 	// Display the build window.
@@ -1039,40 +933,6 @@ void CSimulatorView::OnBuildForWin32()
 	{
 		wasAppRunning = true;
 		SuspendResumeSimulationWithOverlay(true, false);
-	}
-
-	// Force a login if we are not already logged in.
-	int previousUid = 0;
-	auto authorizationPointer = GetWinProperties()->GetAuth();
-	auto ticketPointer = GetWinProperties()->GetTicket();
-	if (ticketPointer)
-	{
-		previousUid = ticketPointer->GetUid();
-	}
-	bool isLoggedIn = authorizationPointer->Initialize(true);
-	if (!isLoggedIn)
-	{
-		// They cancelled their attempt to login, meaning that they can't build.
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "win32";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in.
-	ticketPointer = GetWinProperties()->GetTicket();
-	if (ticketPointer && ticketPointer->IsPlaceholder())
-	{
-		// They aren't really logged in. So, they can't build.
-		return;
-	}
-	if (ticketPointer && (ticketPointer->GetUid() != previousUid))
-	{
-		// Let analytics know that the UID has changed.
-		GetWinProperties()->GetAnalytics()->BeginSession(ticketPointer->GetUid());
 	}
 
 	// Display the build window.
@@ -1569,16 +1429,10 @@ void CSimulatorView::OnUpdateWindowViewAs( CCmdUI *pCmdUI )
 				bool uhOh = true;
 			}
 
-			// Only "Pro" users get to define custom devices, for business purposes, the ability to
-			// use Daily Builds equates to "Pro and above"
-			const Rtt::AuthorizationTicket *ticket = GetWinProperties()->GetTicket();
-			if ( ticket && ticket->IsDailyBuildAllowed() )
-			{
-				// Separator
-				pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION|MFT_SEPARATOR, 0, _T("-"));
-				++viewAsItemCount;
-				pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION, ID_VIEWAS_CUSTOMDEVICE, _T("Custom Device..."));
-			}
+			// Separator
+			pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION|MFT_SEPARATOR, 0, _T("-"));
+			++viewAsItemCount;
+			pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION, ID_VIEWAS_CUSTOMDEVICE, _T("Custom Device..."));
 		}
 	}
 

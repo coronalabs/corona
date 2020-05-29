@@ -68,39 +68,73 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\Simulator.ico"
+
 IDI_ANIMATION           ICON                    "res\\exampleAnimationTime.ico"
+
 IDI_BUTTONS             ICON                    "res\\exampleButtonEvents.ico"
+
 IDI_GPS                 ICON                    "res\\exampleGPS.ico"
+
 IDI_MOVIECLIP           ICON                    "res\\exampleMovieClip.ico"
+
 IDI_POLYLINES           ICON                    "res\\examplePolyLines.ico"
+
 IDI_BRIDGE              ICON                    "res\\exampleBridge.ico"
+
 IDI_CHAINS              ICON                    "res\\exampleChains.ico"
+
 IDI_EGGBREAKER          ICON                    "res\\exampleEggBreaker.ico"
+
 IDI_JUNGLESCENE         ICON                    "res\\exampleJungleScene.ico"
+
 IDI_SIMPLEPOOL          ICON                    "res\\exampleSimplePool.ico"
+
 IDI_FACEBOOK            ICON                    "res\\exampleFacebook.ico"
+
 IDI_OPEN_FEINT          ICON                    "res\\exampleOpenFeint.ico"
+
 IDI_MULTITOUCH          ICON                    "res\\exampleMultitouch.ico"
+
 IDI_ALERT               ICON                    "res\\exampleAlert.ico"
+
 IDI_CAMERA              ICON                    "res\\exampleCamera.ico"
+
 IDI_TEXT_INPUT          ICON                    "res\\exampleNativeInput.ico"
+
 IDI_FISHIES             ICON                    "res\\exampleFishies.ico"
+
 IDI_COMPASS             ICON                    "res\\exampleCompass.ico"
+
 IDI_AUDIO               ICON                    "res\\exampleAudio.ico"
+
 IDI_FRUIT               ICON                    "res\\exampleFruit.ico"
+
 IDI_MULTIPUCK           ICON                    "res\\exampleMultipuck.ico"
+
 IDI_CRATE               ICON                    "res\\exampleCrate.ico"
+
 IDI_BALLOON             ICON                    "res\\exampleBalloon.ico"
+
 IDI_PLATFORM            ICON                    "res\\examplePlatform.ico"
+
 IDI_CAN                 ICON                    "res\\exampleCan.ico"
+
 IDI_INTERNET            ICON                    "res\\exampleInternet.ico"
+
 IDI_SPOTLIGHT           ICON                    "res\\exampleSpotlight.ico"
+
 IDI_GLOBE               ICON                    "res\\exampleGlobe.ico"
+
 IDI_ACTIVITY_INDICATOR  ICON                    "res\\exampleActivityIndicator.ico"
+
 IDI_MICROPHONE          ICON                    "res\\exampleMicrophone.ico"
+
 IDI_INNERACTIVE         ICON                    "res\\exampleInneractive.ico"
+
 IDI_TWITTER             ICON                    "res\\exampleTwitter.ico"
+
 IDI_MAIL                ICON                    "res\\exampleMail.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -117,9 +151,9 @@ BEGIN
         POPUP "&Build"
         BEGIN
             MENUITEM "&Android...\tCtrl+B",         ID_BUILD_FOR_ANDROID
-            MENUITEM "&HTML5 (beta)...\tCtrl+Alt+B",       ID_BUILD_FOR_WEB
+            MENUITEM "&HTML5 (beta)...\tCtrl+Alt+B", ID_BUILD_FOR_WEB
             MENUITEM "&Windows...\tCtrl+Shift+B",   ID_BUILD_FOR_WIN32
-            MENUITEM "&Linux (beta)...\tCtrl+Shift+Alt+B",   ID_BUILD_FOR_LINUX
+            MENUITEM "&Linux (beta)...\tCtrl+Shift+Alt+B", ID_BUILD_FOR_LINUX
         END
         MENUITEM "Open in &Editor\tCtrl+Shift+O", ID_FILE_OPENINEDITOR
         MENUITEM "Show Project &Files",         ID_FILE_SHOW_PROJECT_FILES
@@ -202,7 +236,7 @@ IDR_MAINFRAME ACCELERATORS
 BEGIN
     "B",            ID_BUILD_FOR_ANDROID,   VIRTKEY, CONTROL, NOINVERT
     "B",            ID_BUILD_FOR_WIN32,     VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, ALT, CONTROL, NOINVERT
+    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, CONTROL, ALT, NOINVERT
     "B",            ID_BUILD_FOR_LINUX,     VIRTKEY, SHIFT, CONTROL, ALT, NOINVERT
     "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
@@ -340,28 +374,22 @@ BEGIN
     PUSHBUTTON      "Alt",ID_MSG_BUTTON2,75,50,80,14
 END
 
-IDD_PREFERENCES DIALOGEX 0, 0, 272, 168
+IDD_PREFERENCES DIALOGEX 0, 0, 273, 127
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_CONTEXTHELP
 CAPTION "Corona Simulator Preferences"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "Cancel",IDCANCEL,215,146,50,14
-    LTEXT           "User Account:",IDC_STATIC,7,9,47,8,0,WS_EX_RIGHT
-    LTEXT           "Static",IDC_USER_ACCOUNT,66,9,188,8
-    LTEXT           "To use this product on another computer, you must deauthorize this computer.",IDC_STATIC,7,20,136,17
-    PUSHBUTTON      "Deauthorize and Quit",IDC_DEAUTHORIZE,157,21,102,14
-    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,7,40,258,2,WS_EX_CLIENTEDGE | WS_EX_STATICEDGE
-    CONTROL         "Don't show the Welcome screen",IDC_NOWELCOME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,47,252,10
-    CONTROL         "Show Runtime Errors",IDC_SHOW_RUNTIME_ERRORS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,62,252,10
+    PUSHBUTTON      "Cancel",IDCANCEL,216,106,50,14
+    CONTROL         "Don't show the Welcome screen",IDC_NOWELCOME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,252,10
+    CONTROL         "Show Runtime Errors",IDC_SHOW_RUNTIME_ERRORS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,22,252,10
     CONTROL         "Automatically open last project",IDC_AUTO_OPEN_LAST_PROJECT,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,77,252,10
-    LTEXT           "Relaunch Simulator when project is modified?",IDC_STATIC,7,92,251,8
-    CONTROL         "Always",IDC_SIM_RELAUNCH_ALWAYS,"Button",BS_AUTORADIOBUTTON,17,103,79,10
-    CONTROL         "Never",IDC_SIM_RELAUNCH_NEVER,"Button",BS_AUTORADIOBUTTON,17,117,79,10
-    CONTROL         "Ask Every Time",IDC_SIM_RELAUNCH_ASK,"Button",BS_AUTORADIOBUTTON,17,131,79,10
-    DEFPUSHBUTTON   "OK",IDOK,158,146,50,14
-    LTEXT           "User Account:",IDC_STATIC,7,9,47,8,0,WS_EX_RIGHT
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,37,252,10
+    LTEXT           "Relaunch Simulator when project is modified?",IDC_STATIC,7,52,251,8
+    CONTROL         "Always",IDC_SIM_RELAUNCH_ALWAYS,"Button",BS_AUTORADIOBUTTON,17,63,79,10
+    CONTROL         "Never",IDC_SIM_RELAUNCH_NEVER,"Button",BS_AUTORADIOBUTTON,17,77,79,10
+    CONTROL         "Ask Every Time",IDC_SIM_RELAUNCH_ASK,"Button",BS_AUTORADIOBUTTON,17,91,79,10
+    DEFPUSHBUTTON   "OK",IDOK,158,106,50,14
 END
 
 IDD_DEVPASSWORD DIALOGEX 0, 0, 200, 109
@@ -462,8 +490,10 @@ BEGIN
     LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
     EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
-    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
-    CONTROL         "Create FB Instant archive", IDC_CREATE_FB_INSTANT_ARCHIVE, "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,100,181,10
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    CONTROL         "Create FB Instant archive",IDC_CREATE_FB_INSTANT_ARCHIVE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,100,181,10
     DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
 END
@@ -482,7 +512,8 @@ BEGIN
     LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
     EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
-    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
     DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
 END
@@ -646,9 +677,9 @@ BEGIN
     IDD_PREFERENCES, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 265
+        RIGHTMARGIN, 266
         TOPMARGIN, 7
-        BOTTOMMARGIN, 161
+        BOTTOMMARGIN, 120
     END
 
     IDD_DEVPASSWORD, DIALOG
@@ -699,7 +730,7 @@ BEGIN
         BOTTOMMARGIN, 109
     END
 
-		IDD_BUILD_LINUX, DIALOG
+    IDD_BUILD_LINUX, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 306
@@ -732,6 +763,17 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_PREFERENCES AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -781,6 +823,8 @@ BEGIN
     IDS_CREATE_LIVE_BUILD_WARNING 
                             "You must have the Debug keystore selected to create a Live Build.\n\nDo you want to select it now?"
     IDS_OPEN_URL_HTML       "Open in Browser"
+    IDS_ANDROID_BUILD       "Building Android App"
+    IDS_ANDROID_SDK_LICENSE """You are about to build an Android app for the first time with this build system.\nIt uses the Android SDK and you must read and accept its license agreement in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes.\nPress 'Yes' to accept, 'No' to decline or 'Help' to read the license agreement."""
 END
 
 STRINGTABLE

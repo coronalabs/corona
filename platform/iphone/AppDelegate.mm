@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -64,9 +48,6 @@
 #include "CoronaDelegate.h"
 
 #include "Rtt_IPhoneRuntimeDelegate.h"
-
-#import "CoronaBeacon.h"
-#include "DefaultSplashInfo.h"
 
 // ----------------------------------------------------------------------------
 
@@ -906,26 +887,6 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	}
 }
 
-// Corona beacon listener
-static int
-coronaBeaconListener(lua_State *L)
-{
-#ifdef Rtt_DEBUG
-	// We ignore any returned data in production code but it's useful to have
-	// confirmation of receipt of the beacon when debugging
-	if ( lua_istable( L, -1 ) )
-	{
-		lua_getfield( L, -1, "response" );
-		if ( lua_type( L, -1 ) == LUA_TSTRING )
-		{
-			NSLog(@"beaconListener: %s", lua_tostring( L, -1 ) );
-		}
-	}
-#endif
-
-	return 0;
-}
-
 
 - (void)didLoadMain:(id<CoronaRuntime>)runtime
 {
@@ -961,16 +922,6 @@ coronaBeaconListener(lua_State *L)
 	CoronaView *coronaView = (CoronaView *)[self view];
 	[coronaView resume];
 	[coronaView display];  // necessary to avoid magenta flashes in the iOS Simulator
-
-	// TODO: Figure out how to make this work with Enterprise
-
-	// We showed a splash screen ... if it's the default splash screen shown by unpaid apps then ping a beacon
-	NSString *splashImagePath = [[NSBundle mainBundle] pathForResource:@"_CoronaSplashScreen" ofType:@"png"];
-	NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:splashImagePath error: NULL];
-	if ([attrs fileSize] == DEFAULT_SPLASH_IMAGE_FILE_SIZE )
-	{
-		CoronaBeacon::sendDeviceDataToBeacon([self L], "plugin.CoronaSplashControl", "1.0", CoronaBeacon::IMPRESSION, NULL, coronaBeaconListener);
-	}
 }
 
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary*)launchOptions

@@ -19,14 +19,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
@@ -60,7 +60,6 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>mfc120ud.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -86,7 +85,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -110,7 +108,7 @@
     <ClInclude Include="..\..\..\external\sundown\Project\sundown\markdown.h" />
     <ClInclude Include="..\..\..\external\sundown\Project\sundown\stack.h" />
     <ClInclude Include="..\..\..\external\winutil\BtnST.h" />
-    <ClInclude Include="..\..\..\external\winutil\DirDialog.h" />
+    <ClInclude Include="..\..\..\external\winutil\BrowseDirDialog.h" />
     <ClInclude Include="..\..\..\external\winutil\dirent.h" />
     <ClInclude Include="..\..\..\external\winutil\SimpleBrowser.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_JavaHost.h" />
@@ -122,14 +120,10 @@
     <ClInclude Include="..\..\shared\jniUtils.h" />
     <ClInclude Include="..\..\shared\ListKeyStore.h" />
     <ClInclude Include="..\..\shared\Rtt_AndroidSupportTools.h" />
-    <ClInclude Include="..\..\shared\Rtt_Authorization.h" />
-    <ClInclude Include="..\..\shared\Rtt_AuthorizationTicket.h" />
     <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h" />
     <ClInclude Include="..\..\shared\Rtt_LinuxAppPackager.h" />
-    <ClInclude Include="..\..\shared\Rtt_MAuthorizationDelegate.h" />
     <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h" />
-    <ClInclude Include="..\..\shared\Rtt_PlatformConnection.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformDictionaryWrapper.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformObjectWrapper.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformPlayer.h" />
@@ -138,7 +132,6 @@
     <ClInclude Include="..\..\shared\Rtt_TargetAndroidAppStore.h" />
     <ClInclude Include="..\..\shared\Rtt_TargetDevice.h" />
     <ClInclude Include="..\..\shared\Rtt_WebAppPackager.h" />
-    <ClInclude Include="..\..\shared\Rtt_WebServicesSession.h" />
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AnalyticsProvider.h" />
     <ClInclude Include="BuildAndroidDlg.h" />
@@ -165,9 +158,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Rtt\Rtt_Win32AppPackager.h" />
     <ClInclude Include="Rtt\Rtt_Win32AppPackagerParams.h" />
-    <ClInclude Include="Rtt\Rtt_WinAuthorizationDelegate.h" />
-    <ClInclude Include="Rtt\Rtt_WinConnection.h" />
-    <ClInclude Include="Rtt\Rtt_WinDictionaryWrapper.h" />
     <ClInclude Include="Rtt\Rtt_WinPlatformServices.h" />
     <ClInclude Include="Rtt\Rtt_WinSimulatorServices.h" />
     <ClInclude Include="SelectSampleProjectDlg.h" />
@@ -190,7 +180,7 @@
     <ClCompile Include="..\..\..\external\sundown\Project\sundown\markdown.c" />
     <ClCompile Include="..\..\..\external\sundown\Project\sundown\stack.c" />
     <ClCompile Include="..\..\..\external\winutil\BtnST.cpp" />
-    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp" />
+    <ClCompile Include="..\..\..\external\winutil\BrowseDirDialog.cpp" />
     <ClCompile Include="..\..\..\external\winutil\SimpleBrowser.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_JavaHost.cpp" />
     <ClCompile Include="..\..\..\modules\simulator\Rtt_LuaLibSimulator.cpp" />
@@ -198,12 +188,9 @@
     <ClCompile Include="..\..\shared\AntHost.cpp" />
     <ClCompile Include="..\..\shared\ListKeyStore.cpp" />
     <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c" />
-    <ClCompile Include="..\..\shared\Rtt_Authorization.cpp" />
-    <ClCompile Include="..\..\shared\Rtt_AuthorizationTicket.cpp" />
     <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp" />
     <ClCompile Include="..\..\shared\Rtt_LinuxAppPackager.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp" />
-    <ClCompile Include="..\..\shared\Rtt_PlatformConnection.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformDictionaryWrapper.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformObjectWrapper.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformPlayer.cpp" />
@@ -212,7 +199,6 @@
     <ClCompile Include="..\..\shared\Rtt_TargetAndroidAppStore.cpp" />
     <ClCompile Include="..\..\shared\Rtt_TargetDevice.cpp" />
     <ClCompile Include="..\..\shared\Rtt_WebAppPackager.cpp" />
-    <ClCompile Include="..\..\shared\Rtt_WebServicesSession.cpp" />
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="AnalyticsProvider.cpp" />
     <ClCompile Include="BuildAndroidDlg.cpp" />
@@ -238,9 +224,6 @@
     <ClCompile Include="RelaunchPrefDlg.cpp" />
     <ClCompile Include="Rtt\Rtt_Win32AppPackager.cpp" />
     <ClCompile Include="Rtt\Rtt_Win32AppPackagerParams.cpp" />
-    <ClCompile Include="Rtt\Rtt_WinAuthorizationDelegate.cpp" />
-    <ClCompile Include="Rtt\Rtt_WinConnection.cpp" />
-    <ClCompile Include="Rtt\Rtt_WinDictionaryWrapper.cpp" />
     <ClCompile Include="Rtt\Rtt_WinPlatformServices.cpp" />
     <ClCompile Include="Rtt\Rtt_WinSimulatorServices.cpp" />
     <ClCompile Include="SelectSampleProjectDlg.cpp" />
@@ -272,14 +255,6 @@
     <ProjectReference Include="..\Corona.Native.Library.Win32\Corona.Native.Library.Win32.vcxproj">
       <Project>{f9419803-1375-4f35-b198-272c89cca8f9}</Project>
       <Private>false</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="..\WinXmlRpc.Library.Win32\WinXmlRpc.Library.Win32.vcxproj">
-      <Project>{0f11f26d-bcf6-4e63-a255-a577bbd1ae84}</Project>
-      <Private>true</Private>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>

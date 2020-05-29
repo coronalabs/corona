@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +30,6 @@
 #include "Core/Rtt_Build.h"
 #include "Interop\Ipc\AsyncPipeReader.h"
 #include "Interop\Storage\RegistryStoredPreferences.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_Version.h"    // Rtt_STRING_BUILD and Rtt_STRING_BUILD_DATE
 #include "Rtt_SimulatorAnalytics.h"
 #include "Rtt_JavaHost.h"   // GetJavaHome()
@@ -136,6 +119,23 @@ BOOL CSimulatorApp::InitInstance()
 	{
 		WinString stringTranscoder(Interop::Storage::RegistryStoredPreferences::kAnscaCoronaKeyName);
 		SetRegistryKey(stringTranscoder.GetTCHAR());
+
+		// Hacks to make life easier
+		CString ret = GetProfileString(L"Preferences", L"debugBuildProcess", L"");
+		if (ret.GetLength() && _wgetenv(L"DEBUG_BUILD_PROCESS") == NULL) {
+			_wputenv_s(L"DEBUG_BUILD_PROCESS", ret);
+		}
+		if (_wgetenv(L"CORONA_PATH") == NULL) {
+			TCHAR coronaDir[MAX_PATH];
+			GetModuleFileName(NULL, coronaDir, MAX_PATH);
+			TCHAR* end = StrRChr(coronaDir, NULL, '\\');
+			if (end) 
+			{
+				end[1] = 0;
+				_wputenv_s(L"CORONA_PATH", coronaDir);
+			}
+
+		}
 	}
 	// Initialize WinGlobalProperties object which mirrors theApp properties
 	// Make sure this is done before accessing any Corona functions
@@ -281,27 +281,19 @@ BOOL CSimulatorApp::InitInstance()
 		if (m_outputViewerProcessPointer)
 		{
 			auto stdInHandle = m_outputViewerProcessPointer->GetStdInHandle();
-			if (stdInHandle)
-			{
-				// Redirect the C runtime's stdout/stderr to the above app's stdin pipe.
-				BOOL wasRedirected;
-				wasRedirected = ::SetStdHandle(STD_OUTPUT_HANDLE, stdInHandle);
-				wasRedirected = ::SetStdHandle(STD_ERROR_HANDLE, stdInHandle);
-				int fileDescriptor = _open_osfhandle((intptr_t)stdInHandle, _O_TEXT);
-				if (fileDescriptor)
-				{
-					FILE* filePointer = _wfdopen(fileDescriptor, L"wb");
-					if (filePointer)
-					{
-						setvbuf(filePointer, nullptr, _IONBF, 0);
-						*stdout = *filePointer;
-						*stderr = *filePointer;
-					}
-				}
-
-				// Redirect C++ output to the C runtime's stdout.
-				std::ios::sync_with_stdio();
+			int stdInFD = _open_osfhandle((intptr_t)stdInHandle, _O_TEXT);
+			if (!GetConsoleWindow()) {
+				AllocConsole();
+				ShowWindow(GetConsoleWindow(), SW_HIDE);
 			}
+			::SetStdHandle(STD_OUTPUT_HANDLE, stdInHandle);
+			::SetStdHandle(STD_ERROR_HANDLE, stdInHandle);
+			FILE* notused;
+			freopen_s(&notused, "CONOUT$", "w", stdout);
+			freopen_s(&notused, "CONOUT$", "w", stderr);
+			int res = _dup2(stdInFD, _fileno(stdout));
+			res = _dup2(stdInFD, _fileno(stderr));
+			std::ios::sync_with_stdio();
 		}
 	}
 
@@ -647,7 +639,7 @@ CSimulatorApp::InitJavaPaths()
 BOOL CSimulatorApp::AuthorizeInstance()
 {
     // Check for saved ticket and log in if necessary
-	return appAuthorizeInstance() ? TRUE : FALSE;
+	return TRUE;
 }
 
 // ShowProgressWnd - show or hide the modeless progress window.
@@ -908,6 +900,14 @@ int CSimulatorApp::ExitInstance()
 		// Close the logging window gracefully via a WM_CLOSE message.
 		m_outputViewerProcessPointer->RequestCloseMainWindow();
 		m_outputViewerProcessPointer = nullptr;
+
+		if (!GetConsoleWindow()) {
+			AllocConsole();
+			ShowWindow(GetConsoleWindow(), SW_HIDE);
+		}
+		FILE* notused;
+		freopen_s(&notused, "CONOUT$", "w", stdout);
+		freopen_s(&notused, "CONOUT$", "w", stderr);
 	}
 
 	// Destroy the progress dialog, if allocated.
@@ -1040,6 +1040,7 @@ BOOL CSimDocManager::DoPromptFileName(CString& fileName, UINT nIDSTitle, DWORD l
 }
 
 // Copied from docmgr.cpp because DoPromptFilename needs it.
+/*
 AFX_STATIC void AFXAPI _AfxAppendFilterSuffix(
 	CString& filter, OPENFILENAME& ofn, CDocTemplate* pTemplate, CString* pstrDefaultExt)
 {
@@ -1092,7 +1093,7 @@ AFX_STATIC void AFXAPI _AfxAppendFilterSuffix(
 		ofn.nMaxCustFilter++;
 	}
 }
-
+*/
 /////////////////////////////////////////////////////////////////////////////////////
 // CLuaFileDialog dialog - only allow selection of main.lua
 /////////////////////////////////////////////////////////////////////////////////////

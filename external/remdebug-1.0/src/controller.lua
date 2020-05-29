@@ -482,7 +482,7 @@ while true do
 	print("")
     print("Corona Debugger")
     print("version 1.1")
-	print("Copyright © 2008-2013 Corona Labs Inc. All rights reserved.")
+	print("Copyright © 2008-2020 Corona Labs Inc. All rights reserved.")
 	print("")
     print("Portions contain:")
 	print("    Lua, Copyright © 1994-2008 Lua.org, PUC-Rio.")

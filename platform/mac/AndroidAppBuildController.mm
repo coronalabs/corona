@@ -1,33 +1,13 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Core/Rtt_Build.h"
-
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 
 #import "AndroidAppBuildController.h"
 
@@ -35,7 +15,6 @@
 #import "ValidationToolOutputViewController.h"
 
 #import "Rtt_AndroidAppPackager.h"
-#import "Rtt_MacAuthorizationDelegate.h"
 #import "Rtt_MacPlatform.h"
 #import "Rtt_MacConsolePlatform.h"
 #import "TextEditorSupport.h"
@@ -46,6 +25,7 @@
 #include "AntHost.h"
 
 #include "ListKeyStore.h"
+#include "Rtt_MacDialogController.h"
 
 using namespace Rtt;
 
@@ -60,7 +40,10 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
 // ----------------------------------------------------------------------------
 
-@implementation AndroidAppBuildController
+@implementation AndroidAppBuildController {
+	MacConsolePlatform platform;
+	MacPlatformServices *platformServices;
+}
 
 @synthesize androidAppPackage;
 @synthesize appVersionCode;
@@ -70,12 +53,12 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
 - (id)initWithWindowNibName:(NSString*)nibFile
                 projectPath:(NSString *)projPath
-                 authorizer:(const Rtt::Authorization *)authorizer
 {
-	self = [super initWithWindowNibName:nibFile projectPath:projPath authorizer:authorizer];
+	self = [super initWithWindowNibName:nibFile projectPath:projPath];
 
 	if ( self )
 	{
+		platformServices = new MacPlatformServices( platform );
 		platformName = @"android";
 		platformTitle = @"Android";
 
@@ -90,6 +73,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
 - (void)dealloc
 {
+	delete platformServices;
 	[super dealloc];
 }
 
@@ -135,22 +119,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 	if ( [self.androidAppPackage length] == 0 )
 	{
 		// Generate a default package id based on the user's email address + the app name
-		const Rtt::AuthorizationTicket *ticket = [appDelegate ticket];
-		NSString *username = [NSString stringWithExternalString:ticket->GetUsername()];
-		NSArray *nameComponents = [username componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]];
-
-		NSMutableString *tmpPackageName = [[[NSMutableString alloc] init] autorelease];
-
-		// Reverse the order of the components of the email address and concatenate them together
-		// separated by periods for something like: com.coronalabs.perry.MyNewApp
-		for (id component in [nameComponents reverseObjectEnumerator])
-		{
-			[tmpPackageName appendString:component];
-			[tmpPackageName appendString:@"."];
-		}
-
-		// Add the appname having replaced any non-alphanumerics with underscores
-		[tmpPackageName appendString:[[self.appName componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]] componentsJoinedByString:@"_"]];
+		NSString *tmpPackageName = [@"com.coronalabs." stringByAppendingString:[[self.appName componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]] componentsJoinedByString:@"_"]];
 
 		self.androidAppPackage = tmpPackageName;
 	}
@@ -217,9 +186,19 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
 - (IBAction)build:(id)sender
 {
+	BOOL androidSDKAccepted = [[NSUserDefaults standardUserDefaults] boolForKey:@"AndroidSDKAccepted"];
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+	NSString *androidSDKLicensePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Corona/Android Build/sdk/licenses/android-sdk-license"];
+	BOOL androidSDKLicenseExists = [[NSFileManager defaultManager] fileExistsAtPath:androidSDKLicensePath];
+
+	if(!androidSDKLicenseExists || !androidSDKAccepted) {
+		NSModalResponse agreedmentRet = [self showModalSheet:@"Building Android App" message:@"You are about to build an Android app for the first time with this build system.\nIt requires that the Android SDK is installed locally and you must read and accept its [license agreement](https://developer.android.com/studio/terms) in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes." buttonLabels:@[@"I Accept", @"Cancel"] alertStyle:NSWarningAlertStyle helpURL:@"https://developer.android.com/studio/terms" parentWindow:[self window] completionHandler:nil];
+		if(agreedmentRet == NSAlertSecondButtonReturn) return;
+		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"AndroidSDKAccepted"];
+	}
+	
     MacConsolePlatform platform;
     MacPlatformServices *services = new MacPlatformServices( platform );
-    WebServicesSession *session = new WebServicesSession( *services );
     BOOL shouldSendToDevice = ([postBuildRadioGroup selectedRow] == 0); // first item in radio group
     BOOL shouldShowApplication = ([postBuildRadioGroup selectedRow] == 1);
 	BOOL isLiveBuild = (fEnableLiveBuild.state == NSOnState);
@@ -253,28 +232,6 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
     [self setProgressBarLabel:@"Authorizing Android build…"];
 
-    __block NSString *message = nil;
-    __block BOOL loginSuccessful = NO;
-
-    [self setProgressBarLabel:@"Authorizing build…"];
-
-    // Login to the authorization server
-    void (^login)() = ^()
-    {
-        loginSuccessful = [self loginSession:session services:services ticket:[appDelegate ticket] message:&message];
-    };
-
-    [self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:NO withBlock:login];
-
-    if (! loginSuccessful)
-    {
-		[self logEvent:@"build-bungled" key:@"reason" value:@"cannot-login"];
-
-        [self showError:@"Cannot Login To Build Server" message:message helpURL:nil parentWindow:[self window]];
-
-        return;
-    }
-    
     const char* name = [self.appName UTF8String];
     const char* versionname = NULL;
 
@@ -430,14 +387,14 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     // Do the actual build
-    __block size_t code = WebServicesSession::kNoError;
+    __block size_t code = PlatformAppPackager::kNoError;
 
 	[self logEvent:@"build" key:@"store" value:self.targetStoreId];
 
     void (^performBuild)() = ^()
     {
         NSString* tmpDirBase = NSTemporaryDirectory();
-        code = androidPackager->Build( params, *session, [tmpDirBase UTF8String] );
+        code = androidPackager->Build( params, [tmpDirBase UTF8String] );
     };
 
     [self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:YES withBlock:performBuild];
@@ -449,7 +406,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 		Rtt_Log("WARNING: Build stopped by request");
 		[self showMessage:@"Build Stopped" message:@"Build stopped by request" helpURL:nil parentWindow:[self window]];
 	}
-	else if (code == WebServicesSession::kNoError)
+	else if (code == PlatformAppPackager::kNoError)
     {
 	[self logEvent:@"build-succeeded"];
 
@@ -710,8 +667,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 -(void)setKeystorePassword:(NSString *)password forPath:(NSString*)path
 {
 	NSString *key = [NSString stringWithFormat:@"androidKeyStore/%@", path];
-	const Rtt::MPlatformServices& services = self.authorizer->GetServices();
-	services.SetSecurePreference( [key UTF8String], [password UTF8String] );
+	platformServices->SetSecurePreference( [key UTF8String], [password UTF8String] );
 }
 
 -(BOOL)isDebugKeystore
@@ -747,7 +703,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
 	NSString *key = [NSString stringWithFormat:@"androidKeyStore/%@", path];
 	Rtt::String value;
-	self.authorizer->GetServices().GetSecurePreference( [key UTF8String], &value );
+	platformServices->GetSecurePreference( [key UTF8String], &value );
 	const char *p = value.GetString();
 	if ( p )
 	{
@@ -857,9 +813,8 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
     {
         Rtt::String value;
         NSString *key = [NSString stringWithFormat:@"androidKeyAlias/%@", aliasName];
-        const Rtt::MPlatformServices& services = self.authorizer->GetServices();
 
-        services.GetSecurePreference( [key UTF8String], &value );
+        platformServices->GetSecurePreference( [key UTF8String], &value );
 
         // verify pw so we can retry if we need to
         if ( value.GetString() != NULL && aliasName != nil )
@@ -937,7 +892,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 	ListKeyStore listKeyStore;
 	Rtt::String resourcesDir;
 
-	self.authorizer->GetServices().Platform().PathForFile( NULL, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kDefaultPathFlags, resourcesDir );
+	platformServices->Platform().PathForFile( NULL, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kDefaultPathFlags, resourcesDir );
 
 	return listKeyStore.AreKeyStoreAndAliasPasswordsValid(keyStore, keyPW, alias, aliasPW, resourcesDir.GetString());
 
@@ -1025,8 +980,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 				// Save pwd
 				[self setKeystorePassword:password forPath:path];
 				// NSString *key = [NSString stringWithFormat:@"androidKeyStore/%@", path];
-				// Rtt::MacPlatformServices services( *fConsolePlatform );
-				// services.SetSecurePreference( [key UTF8String], [password UTF8String] );
+				// platformServices->SetSecurePreference( [key UTF8String], [password UTF8String] );
 			}
 			else
 			{
@@ -1063,7 +1017,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 			{
 				// Save the key alias password
 				NSString *key = [NSString stringWithFormat:@"androidKeyAlias/%@", keyAlias];
-				self.authorizer->GetServices().SetSecurePreference( [key UTF8String], [androidPwd UTF8String] );
+				platformServices->SetSecurePreference( [key UTF8String], [androidPwd UTF8String] );
 
                 self.androidKeyAliasPassword = androidPwd;
 			}
