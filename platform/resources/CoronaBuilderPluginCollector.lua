@@ -358,17 +358,23 @@ local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginP
     local ok =  false
     for i = 1,#pluginLocators do
         local locator = pluginLocators[i]
-        local result
+        local success, result
         if type(locator) == 'table' then
             if not locator.initialized and type(locator.init) == 'function' then
-                locator:init(params)
+                success, result = pcall(locator.init, locator, params)
+                if not success then
+                    print("WARNING: error initializing plugin locator " .. (locatorName(locator) or "<unknown>") .. ": " .. tostring(result))
+                end
                 locator.initialized = true
             end
-            result = locator:collect(pluginDestination, plugin, pluginTable, pluginPlatform, params)
+            success, result = pcall(locator.collect, locator, pluginDestination, plugin, pluginTable, pluginPlatform, params)
         else
-            result = locator(pluginDestination, plugin, pluginTable, pluginPlatform, params)
+            success, result = pcall(locator, pluginDestination, plugin, pluginTable, pluginPlatform, params)
         end
-        if result == true then
+        if not success then
+            print("WARNING: runtime error while executing plugin locator " .. (locatorName(locator) or "<unknown>") .. ": " .. tostring(result))
+        end
+        if success and result == true then
             log("Located " .. plugin .. " with locator " .. (locatorName(locator) or "<unknown>"))
             ok = true
             break
@@ -462,8 +468,8 @@ local function CollectCoronaPlugins(params)
     local pluginPlatform = params.pluginPlatform
     local collectedPlugins = {}
     for plugin, pluginTable in pairs(plugins) do
-        assert(type(plugin) == 'string', "Plugin is not a string")
-        assert(type(pluginTable) == 'table', 'Invalid plugin table for ' .. plugin)
+        if type(plugin) ~= 'string' then  return "Plugin is not a string" end
+        if type(pluginTable) ~= 'table' then return 'Invalid plugin table for ' .. plugin end
         local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
         if type(result) == 'string'  then
             if params.continueOnError then
