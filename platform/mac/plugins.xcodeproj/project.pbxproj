@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -30,33 +30,42 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+				"$(BUILT_PRODUCTS_DIR)/lua",
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).c",
 			);
-			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $BUILT_PRODUCTS_DIR";
+			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $BUILT_PRODUCTS_DIR\n";
 		};
 		A47B5BA315F9BE38001D60AB /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+				"$(BUILT_PRODUCTS_DIR)/lua",
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).c",
 			);
-			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION";
+			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n";
 		};
 		A491863C1641DDB800A39286 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+				"$(BUILT_PRODUCTS_DIR)/lua",
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).c",
 			);
-			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $BUILT_PRODUCTS_DIR";
+			script = "if [ -e $BUILT_PRODUCTS_DIR/lua ]; then\n    LUA_DIR=\"$BUILT_PRODUCTS_DIR\"\nelse\n    echo \"Could not find proper 32-bit lua build\"\n    exit 1\nfi\n\necho $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $BUILT_PRODUCTS_DIR\n";
 		};
 /* End PBXBuildRule section */
 
@@ -460,6 +469,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = A482DA7815F9B7E70084DC42;

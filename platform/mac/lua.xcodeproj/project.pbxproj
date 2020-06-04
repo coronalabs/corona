@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -170,9 +170,12 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+				"$(BUILT_PRODUCTS_DIR)/lua",
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).cpp",
 			);
 			script = "set -o errexit\n# set -x\necho \"Compiling Lua to CPP: $INPUT_FILE_PATH -> $TARGET_TEMP_DIR/$INPUT_FILE_BASE.cpp\"\n\"$BUILT_PRODUCTS_DIR/lua\" \"$SRCROOT/../../bin/rcc.lua\" -c \"$BUILT_PRODUCTS_DIR\" -O\"$CONFIGURATION\" -o \"$TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu\" \"$INPUT_FILE_PATH\"\n\"$BUILT_PRODUCTS_DIR/lua\" -epackage.path=\"[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]]\" \"$SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua\" -d \"$TARGET_TEMP_DIR\" -o \"$INPUT_FILE_BASE\" -l \"$TARGET_TEMP_DIR/?.lu\" -n \"$INPUT_FILE_BASE\"\n";
 		};
@@ -181,11 +184,14 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+				"$(BUILT_PRODUCTS_DIR)/lua",
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "set -o errexit\n# set -x\necho \"Compiling Lua to CPP: $INPUT_FILE_PATH -> $TARGET_TEMP_DIR/$INPUT_FILE_BASE.cpp\"\n\"$BUILT_PRODUCTS_DIR/lua\" \"$SRCROOT/../../bin/rcc.lua\" -c \"$BUILT_PRODUCTS_DIR\" -O\"$CONFIGURATION\" -o \"$TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu\" \"$INPUT_FILE_PATH\"\n\"$BUILT_PRODUCTS_DIR/lua\" -epackage.path=\"[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]]\" \"$SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua\" -d \"$TARGET_TEMP_DIR\" -o \"$INPUT_FILE_BASE\" -l \"$TARGET_TEMP_DIR/?.lu\" -n -m luasocket \"$INPUT_FILE_BASE\"";
+			script = "set -o errexit\n# set -x\necho \"Compiling Lua to CPP: $INPUT_FILE_PATH -> $TARGET_TEMP_DIR/$INPUT_FILE_BASE.cpp\"\n\"$BUILT_PRODUCTS_DIR/lua\" \"$SRCROOT/../../bin/rcc.lua\" -c \"$BUILT_PRODUCTS_DIR\" -O\"$CONFIGURATION\" -o \"$TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu\" \"$INPUT_FILE_PATH\"\n\"$BUILT_PRODUCTS_DIR/lua\" -epackage.path=\"[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]]\" \"$SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua\" -d \"$TARGET_TEMP_DIR\" -o \"$INPUT_FILE_BASE\" -l \"$TARGET_TEMP_DIR/?.lu\" -n -m luasocket \"$INPUT_FILE_BASE\"\n";
 		};
 /* End PBXBuildRule section */
 
@@ -252,6 +258,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = C24216D61CCACB6600D8E4BE;
 			remoteInfo = libluasocket;
+		};
+		F5EDABDA2488EA5C00D7413F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004CEC261339724E006ACF35 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 004CED2913397858006ACF35;
+			remoteInfo = luac;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -791,6 +804,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F5EDABDB2488EA5C00D7413F /* PBXTargetDependency */,
 				004CED9613397B44006ACF35 /* PBXTargetDependency */,
 			);
 			name = lua;
@@ -912,6 +926,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 004CEC241339724E006ACF35;
@@ -1121,6 +1136,11 @@
 			isa = PBXTargetDependency;
 			target = C24216D61CCACB6600D8E4BE /* libluasocket */;
 			targetProxy = C24217231CCACC9A00D8E4BE /* PBXContainerItemProxy */;
+		};
+		F5EDABDB2488EA5C00D7413F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 004CED2913397858006ACF35 /* luac */;
+			targetProxy = F5EDABDA2488EA5C00D7413F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
