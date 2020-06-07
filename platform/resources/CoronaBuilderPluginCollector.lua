@@ -544,6 +544,15 @@ local function CollectCoronaPlugins(params)
                     else
                         ret = exec('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(params.extractLocation) )
                     end
+                    local lua51Dir = pathJoin(params.extractLocation, "lua_51")
+                    if ret and isDir(lua51Dir) then
+                        if isWindows then
+                            exec("move " .. quoteString(lua51Dir) .. SEP .. "* " .. quoteString(params.extractLocation))
+                        else
+                            exec("mv " .. quoteString(lua51Dir) .. SEP .. "* " .. quoteString(params.extractLocation))
+                        end
+                        exec("rmdir " .. quoteString(pathJoin(params.extractLocation, "lua_51")))
+                    end
                 else
                     if isWindows then
                         local cmd = '""%CORONA_PATH%\\7za.exe" x ' .. quoteString(pluginArc) .. ' -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o' .. quoteString(pluginDestination) .. ' metadata.lua  2> nul "'
