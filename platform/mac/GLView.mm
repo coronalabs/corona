@@ -245,7 +245,7 @@ NSOpenGLPixelFormatAttribute attributes1 [] = {
 		fRuntime = NULL;
 		fDelegate = nil;
 		[self initCommon];
-        fCursorRects = [[NSMutableArray alloc] initWithCapacity:10];
+        fCursorRects = [[NSMutableArray alloc] initWithCapacity:18];
 
 		sendAllMouseEvents = YES;
         inFullScreenTransition = NO;
@@ -1154,7 +1154,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
     // NSDEBUG(@"GLView:setCursor: %@", NSStringFromRect(bounds));
 
     NSCursor *cursor = [NSCursor currentSystemCursor];
-    
+
     if (strcasecmp(cursorName, "arrow") == 0)
     {
         cursor = [NSCursor arrowCursor];
@@ -1167,6 +1167,10 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
     {
         cursor = [NSCursor openHandCursor];
     }
+	else if (strcasecmp(cursorName, "pointingHand") == 0)
+    {
+        cursor = [NSCursor pointingHandCursor];
+    }
     else if (strcasecmp(cursorName, "crosshair") == 0)
     {
         cursor = [NSCursor crosshairCursor];
@@ -1175,30 +1179,69 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
     {
         cursor = [NSCursor operationNotAllowedCursor];
     }
-    else if (strcasecmp(cursorName, "pointingHand") == 0)
+	else if (strcasecmp(cursorName, "beam") == 0)
     {
-        cursor = [NSCursor pointingHandCursor];
+        cursor = [NSCursor IBeamCursor];
     }
-    else
+	else if (strcasecmp(cursorName, "resizeRight") == 0)
     {
-        // Remove any rect with these bounds
-        int currIdx = 0;
-        for (CursorRect *cr in fCursorRects)
-        {
-            if (NSEqualRects(cr.rect, bounds))
-            {
-                [fCursorRects removeObjectAtIndex:currIdx];
-                [self.window invalidateCursorRectsForView:self];
-                break;
-            }
-            ++currIdx;
-        }
-        
-        return;
+        cursor = [NSCursor resizeRightCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeLeft") == 0)
+    {
+        cursor = [NSCursor resizeLeftCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeLeftRight") == 0)
+    {
+        cursor = [NSCursor resizeLeftRightCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeUp") == 0)
+    {
+        cursor = [NSCursor resizeUpCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeDown") == 0)
+    {
+        cursor = [NSCursor resizeDownCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeUpDown") == 0)
+    {
+        cursor = [NSCursor resizeUpDownCursor];
+    }
+	else if (strcasecmp(cursorName, "disappearingItem") == 0)
+    {
+        cursor = [NSCursor disappearingItemCursor];
+    }
+	else if (strcasecmp(cursorName, "beamHorizontal") == 0)
+    {
+        cursor = [NSCursor IBeamCursorForVerticalLayout];
+    }
+	else if (strcasecmp(cursorName, "dragLink") == 0)
+    {
+        cursor = [NSCursor dragLinkCursor];
+    }
+	else if (strcasecmp(cursorName, "dragCopy") == 0)
+    {
+        cursor = [NSCursor dragCopyCursor];
+    }
+	else if (strcasecmp(cursorName, "contextMenu") == 0)
+    {
+        cursor = [NSCursor contextualMenuCursor];
     }
 
+	// Remove any rect with these bounds
+	int currIdx = 0;
+	for (CursorRect *cr in fCursorRects)
+	{
+		if (NSEqualRects(cr.rect, bounds))
+		{
+			[fCursorRects removeObjectAtIndex:currIdx];
+			[self.window invalidateCursorRectsForView:self];
+			break;
+		}
+		++currIdx;
+	}
+
     [fCursorRects addObject:[[[CursorRect alloc] initWithRect:bounds cursor:cursor] autorelease]];
-    
 	[self.window invalidateCursorRectsForView:self];
 }
 

@@ -1961,6 +1961,34 @@ MacPlatform::SetNativeProperty(lua_State *L, const char *key, int valueIndex) co
 			CoronaLuaWarning(L, "native.setProperty(\"mouseCursorVisible\", mode) expected a boolean parameter but got a %s", lua_typename(L, lua_type(L, valueIndex)));
 		}
 	}
+	else if (Rtt_StringCompare(key, "mouseCursor") == 0)
+	{
+		if (lua_type(L, valueIndex) == LUA_TSTRING)
+		{
+			auto requestedStyle = lua_tostring(L, valueIndex);
+			NSRect cursorRect = NSMakeRect(0, 0, fView.frame.size.width, fView.frame.size.height);
+			const char* validStyles[] = {
+				"arrow", "closedHand", "openHand", "pointingHand", "crosshair",
+				"notAllowed", "beam", "resizeRight", "resizeLeft",
+				"resizeLeftRight", "resizeUp", "resizeDown", "resizeUpDown",
+				"disappearingItem", "beamHorizontal", "dragLink", "dragCopy", "contextMenu",
+				NULL
+			};
+
+			for (unsigned long i = 0; i < sizeof(validStyles) / sizeof(const char*); i++)
+			{
+				if (Rtt_StringCompare(requestedStyle, validStyles[i]) == 0)
+				{
+					[fView setCursor:requestedStyle forRect:cursorRect];
+					break;
+				}
+			}
+		}
+		else
+		{
+			CoronaLuaWarning(L, "native.setProperty(\"mouseCursor\", cursor) expected a string parameter but got a %s", lua_typename(L, lua_type(L, valueIndex)));
+		}
+	}
 	else if (Rtt_StringCompare(key, "preferredScreenEdgesDeferringSystemGestures")==0 ||
 			 Rtt_StringCompare(key, "prefersHomeIndicatorAutoHidden")==0 ||
 			 Rtt_StringCompare(key, "androidSystemUiVisibility")==0 ||
