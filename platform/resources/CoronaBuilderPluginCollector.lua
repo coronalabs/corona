@@ -161,8 +161,8 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
         hasPlatform = hasPlatform or vFoundObject[i] == pluginPlatform
     end
     if not hasPlatform then
-        log("Solar2D Directory: skipped plugin " .. plugin .. " because platform is not supported")
-        return true
+        log("Solar2D Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported")
+        return params.canSkip
     end
     local repoName = pluginObject.p or (pluginTable.publisherId .. '-' .. plugin)
     local downloadURL = "https://github.com/" .. repoOwner .. "/" .. repoName .. "/releases/download/" .. pluginObject.r .. "/" .. vFoundBuildName .. "-" .. pluginPlatform .. ".tgz"
@@ -203,11 +203,27 @@ local function pluginLocatorCustomURL(destination, plugin, pluginTable, pluginPl
     if type(pluginTable.supportedPlatforms) ~= 'table' then
         return "Custom URL: skipped because no table supportedPlatforms provided for " .. plugin
     end
+    local canSkip = false
+    if params.canSkip then
+        canSkip = false
+        for platform, ptable in pairs(pluginTable.supportedPlatforms) do
+            if type(ptable) == "table" and type(ptable.url) == "string" then
+                canSkip = true
+            end
+        end
+    end
+
     if type(pluginTable.supportedPlatforms[pluginPlatform]) ~= 'table' then
-        return "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "] is not a table. Plugin is not supported by the platform"
+        if canSkip then
+            log("Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "] is not a table. Plugin is not supported by the platform")
+        end
+        return canSkip or "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "] is not a table. Plugin is not supported by the platform"
     end
     if type(pluginTable.supportedPlatforms[pluginPlatform].url) ~= 'string' then
-        return "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "].url is not a string"
+        if canSkip then
+            log("Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "].url is not a string")
+        end
+        return canSkip or "Custom URL: skipped because supportedPlatforms[" .. pluginPlatform .. "].url is not a string"
     end
     local downloadURL = pluginTable.supportedPlatforms[pluginPlatform].url
     mkdirs(destination)
@@ -256,7 +272,12 @@ local function pluginLocatorFileSystemVersionized(destination, plugin, pluginTab
         copyFile(localPath, destination)
         return true
     else
-        return "Locally: plugin file not found: " .. localPath
+        if params.canSkip then
+            log("Locally: skipped plugin because platform is not supported")
+            return true
+        else
+            return "Locally: plugin file not found: " .. localPath
+        end
     end
     return false
 end
@@ -288,8 +309,9 @@ local function pluginLocatorFileSystem(destination, plugin, pluginTable, pluginP
         mkdirs(destination)
         copyFile(localPath, destination)
         return true
-    elseif isDir(pathJoin(pluginStorage, pluginTable.publisherId, plugin)) then
+    elseif isDir(pathJoin(pluginStorage, pluginTable.publisherId, plugin)) and params.canSkip then
         log('Local lookup determined that plugin ' .. plugin .. ' is not supported by the platform ' ..  pluginPlatform)
+        return true
     else
         return "Locally: no file '".. localPath .. "'"
     end
@@ -349,10 +371,15 @@ local function locatorName(l)
     if type(l) == 'table' and l.name then return l.name end
 end
 
-local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
+local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators, canSkip)
     if type(pluginTable.supportedPlatforms) == 'table' and not pluginTable.supportedPlatforms[pluginPlatform] then
-        return
+        if canSkip then
+            return
+        else
+            return "Unsupported platform " .. pluginPlatform
+        end
     end
+    params.canSkip = canSkip
     local pluginDestination = pathJoin(dstDir, plugin)
     local err = "Unable to find plugin '" .. plugin .. "' for platform '" .. pluginPlatform .. "':"
     local ok =  false
@@ -388,18 +415,22 @@ local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginP
 end
 
 local function fetchSinglePlugin(dstDir, plugin, pluginTable, basePluginPlatform, params, pluginLocators)
-    local res = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, basePluginPlatform, params, pluginLocators)
-    if not res then return end -- success
+    local fallbackChain = {basePluginPlatform, }
     for i = 1, #platformFallbacks do
         local base, fallback = unpack(platformFallbacks[i])
-        if base == "*" or base == basePluginPlatform then
-            local fallbackRes = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, fallback, params, pluginLocators)
-            if not fallbackRes then return end -- success
-            if res then
-                res = res .. "\n" .. fallbackRes
-            else
-                res = fallbackRes
-            end
+        if (base == "*" or base == basePluginPlatform) and fallback ~= basePluginPlatform then
+            fallbackChain[#fallbackChain+1] = fallback
+        end
+    end
+    local numFallbacks = #fallbackChain
+
+    for i = 1, numFallbacks do
+        local fallbackRes = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, fallbackChain[i], params, pluginLocators, i == numFallbacks)
+        if not fallbackRes then return end -- success
+        if res then
+            res = res .. "\n" .. fallbackRes
+        else
+            res = fallbackRes
         end
     end
     return res
@@ -504,20 +535,22 @@ local function CollectCoronaPlugins(params)
         for plugin, _ in pairs(collectedPlugins)  do
             local pluginArc = pathJoin(dstDir, plugin, 'data.tgz')
             local pluginDestination = params.extractLocation or pathJoin(dstDir, plugin)
-            local ret
-            if params.extractLocation then
-                if isWindows then
-                    local cmd = '""%CORONA_PATH%\\7za.exe" x ' .. quoteString(pluginArc) .. ' -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o' .. quoteString(params.extractLocation) .. ' 2> nul "'
-                    ret = exec(cmd)
+            local ret = false
+            if isFile(pluginArc) then
+                if params.extractLocation then
+                    if isWindows then
+                        local cmd = '""%CORONA_PATH%\\7za.exe" x ' .. quoteString(pluginArc) .. ' -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o' .. quoteString(params.extractLocation) .. ' 2> nul "'
+                        ret = exec(cmd)
+                    else
+                        ret = exec('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(params.extractLocation) )
+                    end
                 else
-                    ret = exec('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(params.extractLocation) )
-                end
-            else
-                if isWindows then
-                    local cmd = '""%CORONA_PATH%\\7za.exe" x ' .. quoteString(pluginArc) .. ' -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o' .. quoteString(pluginDestination) .. ' metadata.lua  2> nul "'
-                    ret = exec(cmd)
-                else
-                    ret = exec('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(pluginDestination) .. ' metadata.lua')
+                    if isWindows then
+                        local cmd = '""%CORONA_PATH%\\7za.exe" x ' .. quoteString(pluginArc) .. ' -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o' .. quoteString(pluginDestination) .. ' metadata.lua  2> nul "'
+                        ret = exec(cmd)
+                    else
+                        ret = exec('/usr/bin/tar -xzf ' .. quoteString(pluginArc) .. ' -C ' .. quoteString(pluginDestination) .. ' metadata.lua')
+                    end
                 end
             end
             if ret then
