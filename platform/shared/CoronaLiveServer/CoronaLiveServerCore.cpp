@@ -99,11 +99,11 @@ public:
 
 	SSLSetup(evhttp *httpd)
 	{
-		/*std::call_once(sOnceSSLInit, []{
+		std::call_once(sOnceSSLInit, []{
 			SSL_library_init();
 			SSL_load_error_strings();
 			OpenSSL_add_all_algorithms();
-		});*/
+		});
 
 		ctx = SSL_CTX_new(SSLv23_method());
 
