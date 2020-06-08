@@ -165,8 +165,10 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
         hasPlatform = hasPlatform or vFoundObject[i] == pluginPlatform
     end
     if not hasPlatform then
-        log("Solar2D Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported")
-        return params.canSkip
+        if params.canSkip then
+            log("Solar2D Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported")
+        end
+        return params.canSkip or "Solar2D Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported"
     end
     local repoName = pluginObject.p or (pluginTable.publisherId .. '-' .. plugin)
     local downloadURL = "https://github.com/" .. repoOwner .. "/" .. repoName .. "/releases/download/" .. pluginObject.r .. "/" .. vFoundBuildName .. "-" .. pluginPlatform .. ".tgz"
@@ -562,12 +564,12 @@ local function CollectCoronaPlugins(params)
                     end
                     local lua51Dir = pathJoin(params.extractLocation, "lua_51")
                     if ret and isDir(lua51Dir) then
-                        if isWindows then
-                            exec("move " .. quoteString(lua51Dir) .. SEP .. "* " .. quoteString(params.extractLocation))
-                        else
-                            exec("mv " .. quoteString(lua51Dir) .. SEP .. "* " .. quoteString(params.extractLocation))
+                        for file in lfs.dir(lua51Dir) do
+                            if file ~= "." and file ~= ".." then
+                                os.rename(pathJoin(lua51Dir, file), pathJoin(params.extractLocation, file))
+                            end
                         end
-                        exec("rmdir " .. quoteString(pathJoin(params.extractLocation, "lua_51")))
+                        exec("rmdir " .. quoteString(lua51Dir))
                     end
                 else
                     if isWindows then
