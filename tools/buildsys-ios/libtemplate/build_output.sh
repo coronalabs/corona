@@ -57,7 +57,7 @@ then
 		#	lua/$LUA_VM/plugin/foo/bar/baz.lua -> plugin.foo.bar.baz.lu
 		#	plugin/foo/bar/baz.lua -> plugin.foo.bar.baz.lu
 		find . -type f -name "*.lua" ! -name 'metadata.lua' | while read -r luaFile; do
-			newName=$(echo "$luaFile" | sed -e 's#\./##' -e "s#^lua/$LUA_VM/##" -e 's#\.lua$#\.lu#' | tr '/' '.')
+			newName=$(echo "$luaFile" | sed -e 's#\./##' -e "s#^lua/##" -e "s#^$LUA_VM/##" -e 's#\.lua$#\.lu#' | tr '/' '.')
 			mkdir -p "$collectedLuaPluginsDir"
 			mv "$luaFile" "$collectedLuaPluginsDir/$newName"
 		done
