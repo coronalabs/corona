@@ -1022,7 +1022,7 @@ void CSimulatorView::OnFileOpenInEditor()
 		// If Windows doesn't have a valid file association, then open it with Notepad.
 		if (hasValidFileAssociation)
 		{
-			if (fileAssociation == _T("sublime_text.exe")) {
+			if (fileAssociation == _T("sublime_text.exe") || fileAssociation == _T("Code.exe")) {
 				CString fullPath(GetDocument()->GetPath());
 				index = fullPath.ReverseFind(_T('\\'));
 				if (index > 0)
