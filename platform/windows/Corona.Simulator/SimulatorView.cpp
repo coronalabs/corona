@@ -986,6 +986,7 @@ void CSimulatorView::OnFileOpenInEditor()
 						ASSOCF_INIT_DEFAULTTOSTAR, ASSOCSTR_EXECUTABLE, _T(".lua"),
 						NULL, fileAssociation.GetBuffer(MAX_PATH_LENGTH), &fileAssociationLength);
 		fileAssociation.ReleaseBuffer();
+		CString fullAssociationPath(fileAssociation);
 		if (S_OK == result)
 		{
 			index = fileAssociation.ReverseFind(_T('\\'));
@@ -1021,7 +1022,23 @@ void CSimulatorView::OnFileOpenInEditor()
 		// If Windows doesn't have a valid file association, then open it with Notepad.
 		if (hasValidFileAssociation)
 		{
-			::ShellExecute(nullptr, _T("open"), GetDocument()->GetPath(), nullptr, nullptr, SW_SHOWNORMAL);
+			if (fileAssociation == _T("sublime_text.exe")) {
+				CString fullPath(GetDocument()->GetPath());
+				index = fullPath.ReverseFind(_T('\\'));
+				if (index > 0)
+				{
+					CString dirPath(fullPath);
+					dirPath.Delete(index, dirPath.GetLength() - index);
+					fullPath.Insert(0, _T('"'));
+					fullPath.Append(_T("\" --add \""));
+					fullPath.Append(dirPath);
+					fullPath.Append(_T("\""));
+				}
+				::ShellExecute(nullptr, nullptr, fullAssociationPath, fullPath, nullptr, SW_SHOWNORMAL);
+			}
+			else {
+				::ShellExecute(nullptr, _T("open"), GetDocument()->GetPath(), nullptr, nullptr, SW_SHOWNORMAL);
+			}
 			WinString appName;
 			appName.SetTCHAR(fileAssociation);
 			GetWinProperties()->GetAnalytics()->Log( "open-in-editor", "editor", appName.GetUTF8() );

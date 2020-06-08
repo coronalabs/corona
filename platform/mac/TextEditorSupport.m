@@ -118,7 +118,7 @@ void TextEditorSupport_LaunchTextEditorWithFile(NSString* file_name, NSInteger l
 				[[NSWorkspace sharedWorkspace] openFile:file_name];
 			}
 		}
-		else if([base_app_name isEqualToString:@"Sublime Text 2.app"] || [base_app_name isEqualToString:@"Sublime Text.app"])
+		else if([base_app_name isEqualToString:@"Sublime Text 2.app"] || [base_app_name isEqualToString:@"Sublime Text.app"] || [base_app_name isEqualToString:@"Sublime Text 3.app"] )
 		{
 			// From http://www.sublimetext.com/docs/2/osx_command_line.html
             
