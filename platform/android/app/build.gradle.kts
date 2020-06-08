@@ -374,7 +374,8 @@ android.applicationVariants.all {
                             .segments.drop(1)
                             .joinToString(".")
                             .replaceAfterLast(".", "lu")
-                            .removePrefix("lua.lua_51.")
+                            .removePrefix("lua.")
+                            .removePrefix("lua_51.")
                     else -> throw InvalidUserDataException("Unknown location of Lua file '$it'!")
                 }
                 exec {
@@ -550,6 +551,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         copy {
             from(coronaPlugins) {
                 include("*/lua/lua_51/**/*")
+                include("*/lua_51/**/*")
                 exclude("**/*.lua")
             }
             into("$generatedPluginAssetsDir/.corona-plugins")
