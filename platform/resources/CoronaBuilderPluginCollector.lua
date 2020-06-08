@@ -140,8 +140,12 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
     if not pluginEntry then
         return "Solar2D Directory: plugin " .. plugin .. " was not found at Solar2D Directory"
     end
+
     local pluginObject = pluginEntry.plugin
     local repoOwner = pluginEntry.repo
+    if pluginObject.e then
+        return "! " .. pluginObject.e
+    end
 
     local build = tonumber(params.build)
     local vFoundBuid, vFoundObject, vFoundBuildName
@@ -406,6 +410,9 @@ local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginP
             ok = true
             break
         elseif type(result) == 'string' then
+            if result:sub(1,2) == "! " then
+                return result
+            end    
             err = err .. '\n\t' .. result
         end
     end
@@ -427,6 +434,9 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, basePluginPlatform
     for i = 1, numFallbacks do
         local fallbackRes = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, fallbackChain[i], params, pluginLocators, i == numFallbacks)
         if not fallbackRes then return end -- success
+        if fallbackRes:sub(1,2) == "! " then
+            return fallbackRes
+        end
         if res then
             res = res .. "\n" .. fallbackRes
         else
@@ -503,6 +513,9 @@ local function CollectCoronaPlugins(params)
         if type(pluginTable) ~= 'table' then return 'Invalid plugin table for ' .. plugin end
         local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
         if type(result) == 'string'  then
+            if result:sub(1,2) == "! " then
+                return result:sub(3)
+            end
             if params.continueOnError then
                 ret = (ret or "") .. result .. "\n"
             else
@@ -521,6 +534,9 @@ local function CollectCoronaPlugins(params)
             log("Collecting dependency " .. plugin)
             local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
             if type(result) == 'string'  then
+                if result:sub(1,2) == "! " then
+                    return result:sub(3)
+                end
                 if params.continueOnError then
                     ret = (ret or "") .. result .. "\n"
                 else
