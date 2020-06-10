@@ -1,0 +1,32 @@
+name: Test build
+
+on:
+  push:
+
+
+env:
+  WORKSPACE: ${{ github.workspace }}
+  DEVELOPER_DIR: /Applications/Xcode_11.5.app/Contents/Developer
+
+jobs:
+
+  Windows-Simulator:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build Corona Simulator
+        shell: cmd
+        run: |
+          cd platform\windows
+          call UpdateFileVersions.bat %BUILD_NUMBER%
+          call Build.Tools\VSVars.bat
+          devenv.com "Corona.Shell.sln" /rebuild "Release|Win32"
+          echo Corona.Shell.sln done
+          devenv.com "Corona.Simulator.sln" /build "Release|Win32"
+          echo Corona.Simulator.sln done
+          devenv.com "CoronaBuilder.sln" /build "Release|Win32"
+          echo CoronaBuilder.sln done
+        env:
+          WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
