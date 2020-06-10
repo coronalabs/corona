@@ -30,3 +30,8 @@ jobs:
           echo CoronaBuilder.sln done
         env:
           WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: logs
+          path: ./platform/windows/Corona.OutputViewer/Release/Corona.Console.tlog
