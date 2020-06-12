@@ -17,7 +17,7 @@ jobs:
         shell: cmd
         run: |
           mkdir logs
-          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" export --channelId VisualStudio.16.Release --productId Microsoft.VisualStudio.Product.Community --config logs\before.txt -q
+          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" export --channelId VisualStudio.16.Release --productId Microsoft.VisualStudio.Product.Enterprise --config logs\before.txt -q
       - name: Add Packages
         shell: cmd
         run: |
@@ -25,7 +25,7 @@ jobs:
       - name: After
         shell: cmd
         run: |
-          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" export --channelId VisualStudio.16.Release --productId Microsoft.VisualStudio.Product.Community --config logs\after.txt -q
+          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" export --channelId VisualStudio.16.Release --productId Microsoft.VisualStudio.Product.Enterprise --config logs\after.txt -q
       - uses: actions/upload-artifact@v2
         if: true
         with:
