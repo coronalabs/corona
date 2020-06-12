@@ -360,15 +360,15 @@ jobs:
           tar -xvzf "%WORKSPACE%\Native\CoronaNative.tar.gz"
           rm ._CoronaEnterprise
           mv CoronaEnterprise Native
-          del /q /f /a Native\.*
-          del /q /f /a Native\Icon?
+          del /q /f Native\.*
+          del /q /f Native\Icon?
       - name: Build Corona Simulator
         shell: cmd
         run: |
           cd platform\windows
           call UpdateFileVersions.bat %BUILD_NUMBER%
           call Build.Tools\VSVars.bat
-          devenv "Corona.SDK.sln" /rebuild "Release|x86"
+          devenv "Corona.SDK.sln" /rebuild "Release|x86" 2>&1
         env:
           WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
       - name: Copy Simulator
