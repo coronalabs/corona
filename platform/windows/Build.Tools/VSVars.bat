@@ -5,9 +5,9 @@ for %%V in ("%VS120COMNTOOLS%vsvars32.bat"
            ,"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
            ,"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat" 
            ) do (
-    call %%V
+    if exist %%V call %%V
     where devenv >nul 2>nul
-    if %errorlevel% neq 0 if exist %%V (
+    if %errorlevel% neq 0 (
         echo Using %%V
         break   
     )
@@ -18,4 +18,3 @@ if %errorlevel% neq 0 (
     echo unable to find devenv, exiting
     exit /b 1
 )
-where devenv >nul 2>nul
