@@ -13,29 +13,21 @@ jobs:
   Windows-Simulator:
     runs-on: windows-latest
     steps:
-      - name: Add NuGet
+      - name: Before
+        shell: cmd
+        run: |
+          mkdir logs
+          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" export --channelId VisualStudio.16.Release --productId Microsoft.VisualStudio.Product.Community --config logs\before.txt -q
+      - name: Add Packages
         shell: cmd
         run: |
           "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" modify --channelId VisualStudio.16.Release --productId Microsoft.VisualStudio.Product.Enterprise -q --includeRecommended --add "Microsoft.VisualStudio.Component.VC.ATL" --add "Microsoft.VisualStudio.Component.VC.ATLMFC" --add "Microsoft.VisualStudio.Component.VC.v141.x86.x64" --add "Microsoft.VisualStudio.Component.VC.140" --add "Microsoft.VisualStudio.Component.WinXP" --add "Microsoft.VisualStudio.Component.VC.v141.ATL" --add "Microsoft.VisualStudio.Component.VC.v141.MFC"
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Build Corona Simulator
+      - name: After
         shell: cmd
         run: |
-          cd platform\windows
-          call UpdateFileVersions.bat 2020
-          call Build.Tools\VSVars.bat
-          devenv.com "Corona.Shell.sln" /rebuild "Release|Win32"
-          echo Corona.Shell.sln done
-          devenv.com "Corona.Simulator.sln" /build "Release|Win32"
-          echo Corona.Simulator.sln done
-          devenv.com "CoronaBuilder.sln" /build "Release|Win32"
-          echo CoronaBuilder.sln done
-        env:
-          WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
+          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" export --channelId VisualStudio.16.Release --productId Microsoft.VisualStudio.Product.Community --config logs\after.txt -q
       - uses: actions/upload-artifact@v2
-        if: failure()
+        if: true
         with:
-          name: logs
-          path: ./platform/windows/Corona.OutputViewer/Release/Corona.Console.tlog
+          name: logsBA
+          path: logs
