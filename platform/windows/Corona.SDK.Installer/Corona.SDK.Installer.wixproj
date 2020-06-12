@@ -75,9 +75,9 @@ copy "$(TargetPath)" "$(SolutionDir)Bin\$(ProjectName)"</PostBuildEvent>
    move /y "$(SolutionDir)Bin\Native" "$(SolutionDir)Bin\Corona\"
 
    REM Compile all Corona related projects to the target directory.
-   "$(DevEnvDir)devenv.com" "$(SolutionDir)Corona.Shell.sln" /rebuild "Release|Win32"
-   "$(DevEnvDir)devenv.com" "$(SolutionDir)Corona.Simulator.sln" /build "Release|Win32"
-   "$(DevEnvDir)devenv.com" "$(SolutionDir)CoronaBuilder.sln" /build "Release|Win32"
+   "$(DevEnvDir)devenv" "$(SolutionDir)Corona.Shell.sln" /rebuild "Release|Win32"
+   "$(DevEnvDir)devenv" "$(SolutionDir)Corona.Simulator.sln" /build "Release|Win32"
+   "$(DevEnvDir)devenv" "$(SolutionDir)CoronaBuilder.sln" /build "Release|Win32"
 
    REM Save Corona Simulator.pdb
    copy "$(SolutionDir)Bin\Corona\Corona Simulator.pdb" %25TEMP%25
