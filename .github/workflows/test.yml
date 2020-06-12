@@ -20,7 +20,8 @@ jobs:
         shell: cmd
         run: |
           cd platform\windows
-          call UpdateFileVersions.bat %BUILD_NUMBER%
+          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" modify --channelId VisualStudio.16.Release --productId Microsoft.VisualStudio.Product.Enterprise -q --config windows\Build.Tools\msbuild.vsconfig
+          call UpdateFileVersions.bat 2020
           call Build.Tools\VSVars.bat
           devenv.com "Corona.Shell.sln" /rebuild "Release|Win32"
           echo Corona.Shell.sln done
