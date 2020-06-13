@@ -482,3 +482,32 @@ jobs:
           asset_path: ./CoronaCards-Android/CoronaCardsAndroidAAR.zip
           asset_name: CoronaCards-Android-${{ env.YEAR }}.${{ env.BUILD }}.zip
           asset_content_type: application/zip
+
+  notify-slack:
+    runs-on: ubuntu-latest
+    needs:
+      - release
+    steps:
+      - run: echo ::set-env name=BUILD::"${GITHUB_REF#refs/tags/}"
+      - name: Notify slack Builds channel
+        run: |
+          curl https://slack.com/api/chat.postMessage -X POST -H "Content-type: application/json" -H "Authorization: Bearer $SLACK_BOT_TOKEN" -d  @- << EOF
+          {
+            "channel":"C01629K0E9W",
+            "link_names":true,
+            "text": "New Solar2D build <https://github.com/coronalabs/corona/releases/tag/${{ env.BUILD }}|${{ env.BUILD }}> is @here!"
+          }
+          EOF
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      - name: Notify slack General channel
+        run: |
+          curl https://slack.com/api/chat.postMessage -X POST -H "Content-type: application/json" -H "Authorization: Bearer $SLACK_BOT_TOKEN" -d  @- << EOF
+          {
+            "channel":"C0ASY7G1X",
+            "link_names":true,
+            "text": "New Solar2D Build <https://github.com/coronalabs/corona/releases/tag/${{ env.BUILD }}|${{ env.BUILD }}> is up!"
+          }
+          EOF
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
