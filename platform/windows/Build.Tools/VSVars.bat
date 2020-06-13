@@ -1,20 +1,19 @@
 @echo off
 
 echo Setup command line
-for %%V in (
-            "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+for %%V in ("%VS120COMNTOOLS%vsvars32.bat"
+           ,"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
            ,"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat" 
            ) do (
-    if exist %%V call %%V
-    where devenv >nul 2>nul
-    if %errorlevel% neq 0 (
+    where signtool >nul 2>nul
+    if %errorlevel% neq 0 if exist %%V (
         echo Using %%V
-        break   
+        call %%V
     )
 )   
 
-where devenv >nul 2>nul
+where signtool >nul 2>nul
 if %errorlevel% neq 0 (
-    echo unable to find devenv, exiting
+    echo unable to find signtool, exiting
     exit /b 1
 )

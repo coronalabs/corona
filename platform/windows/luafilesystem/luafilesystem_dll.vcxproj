@@ -135,7 +135,7 @@
       </ProgramDataBaseFileName>
     </ClCompile>
     <PostBuildEvent>
-      <Command>call "$(ProjectDir)..\Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"</Command>
+      <Command>call "$(SolutionDir)Build.Tools\CoronaLabsInc.Sign.bat" "$(TargetPath)"</Command>
     </PostBuildEvent>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
