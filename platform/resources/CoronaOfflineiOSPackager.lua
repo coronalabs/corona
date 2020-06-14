@@ -38,7 +38,7 @@ function findTemplate(params)
     if lfs.attributes(template, 'mode') == 'file' then
         return template
     end
-    template = params.resourceDir .. '/../../../../../../../Corona Simulator.app/Contents/Resources/' .. params.template
+    template = params.resourceDir .. '/../../../../../../../Corona Simulator.app/Contents/Resources/iostemplate/' .. params.template
     if lfs.attributes(template, 'mode') == 'file' then
         return template
     end
