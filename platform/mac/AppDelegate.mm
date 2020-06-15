@@ -1388,10 +1388,7 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	}
 
 	[self checkOpenGLRequirements];
-#if !defined( Rtt_PROJECTOR )
 	[self coronaInit:aNotification];
-	authorizedToLaunch = NO;
-#endif // Rtt_PROJECTOR
 }
 
 - (void) startDebugAndOpenPanel
@@ -2122,14 +2119,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	if(NO == self.applicationHasBeenInitialized)
 	{
 		self.launchedWithFile = YES;
-	}
-
-	// If the user has not agreed to the license terms or some other critera,
-	// we can't let this method bypass the normal startup routine.
-	if( NO == authorizedToLaunch )
-	{
-		// return YES to prevent any dialog errors
-		return YES;
 	}
 	
 	BOOL isDirectory = YES;
@@ -3021,12 +3010,6 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 
 -(void)willOpenForBuild:(id)sender
 {
-	// If we didn't succeed in logging into the build server, bail
-	if ( ! authorizedToLaunch )
-	{
-		return;
-	}
-
 	fBuildProblemNotified = false;
 }
 

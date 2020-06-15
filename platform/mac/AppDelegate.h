@@ -126,7 +126,6 @@ namespace Rtt
 	IBOutlet NSButton* rememberMyPreferenceAccessoryCheckboxView;
 	BOOL relaunchPromptIsOpen;
 	BOOL applicationHasBeenInitialized;
-	BOOL authorizedToLaunch;
 	BOOL launchedWithFile;
 	BOOL allowLuaExit;
 	BOOL fSimulatorWasSuspended;
