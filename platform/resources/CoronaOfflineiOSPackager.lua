@@ -29,7 +29,7 @@ local function exec(cmd)
     if debugBuildProcess < 1 then
         cmd = cmd .. ' &> /dev/null'
     end
-    assert(0 == os.execute(cmd))
+    return (0 == os.execute(cmd))
 end
 
 
@@ -135,7 +135,7 @@ function CreateOfflinePackage(params)
 
     log("Packaging using template", template)
     exec('/usr/bin/tar -xvjf ' .. quoteString(template)  .. ' -C ' .. quoteString(params.tmpDir) ..  '/ --strip-components=2 libtemplate/build_output.sh'  )
-    exec(quoteString(params.tmpDir .. '/build_output.sh')
+    local success = exec(quoteString(params.tmpDir .. '/build_output.sh')
         .. ' ' .. quoteString(params.tmpDir)     -- 1
         .. ' ' .. quoteString(params.inputFile)  -- 2
         .. ' ' .. quoteString(template)          -- 3
@@ -149,7 +149,9 @@ function CreateOfflinePackage(params)
         .. ' ' .. quoteString(splashScreen)      -- 11
         .. ' ' .. quoteString(tvOS)              -- 12
     )
-
+    if not success then
+        return 'Build script failed'
+    end
     if lfs.attributes(params.outputFile, 'mode') ~= 'file' then
         return 'Build script succeeded but produced no result'
     end

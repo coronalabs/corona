@@ -235,7 +235,7 @@ local function pluginLocatorCustomURL(destination, plugin, pluginTable, pluginPl
     mkdirs(destination)
     local file, err = download(downloadURL, pathJoin(destination, 'data.tgz'))
     if not file then
-        return "Custom URL: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Destination: ' .. file .. "; URL: " .. downloadURL
+        return "Custom URL: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Destination: ' .. destination .. "; URL: " .. downloadURL
     end
 
     return true
