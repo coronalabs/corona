@@ -293,7 +293,7 @@ jobs:
           fi
           for dmg in ./Simulator-macOS/*.dmg
           do
-            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH"  --file "$dmg"
+            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH${GITHUB_REF#refs/*/}"  --file "$dmg"
           done
         env:
           APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
