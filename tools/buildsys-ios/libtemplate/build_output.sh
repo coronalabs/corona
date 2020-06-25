@@ -126,8 +126,8 @@ then
 		if [ -d "$buildDst/$pluginName/resources" ]; then
 			EXISTING=$(rsync --dry-run  --recursive --prune-empty-dirs --existing --stats "$buildDst/$pluginName/resources/" template.app/  | grep 'Number of files transferred' | awk '{print $NF}' )
 			if [ "$EXISTING" -gt 0 ]; then
-				touch "$TMP_DIR"/build_output_failure.txt
-				echo "Plugins resource file naming conflict" >> "$TMP_DIR"/build_output_failure.txt
+				touch "$tmpDir"/build_output_failure.txt
+				echo "Plugins resource file naming conflict" >> "$tmpDir"/build_output_failure.txt
 			fi
 			rsync --recursive --ignore-existing "$buildDst/$pluginName/resources/" template.app/
 			rm -r "$buildDst/$pluginName/resources"
