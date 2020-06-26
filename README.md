@@ -1,4 +1,6 @@
 # Solar2D Game Engine
+Download the latest build on the [Releases](https://github.com/coronalabs/corona/releases) page.
+
 ## Rebranded Corona SDK
 > Simple to learn and use, completely free and open source 2D game engine.
 
