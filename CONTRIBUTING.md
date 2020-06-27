@@ -16,7 +16,7 @@ You will keep being the only owner of such copyright and patent.
 Copy of CLA can be found in [CLA.md](CLA.md). You will be asked to sign CLA with your
 Github account when submitting each pull request.
 
-Make sure you have rights to submitted code. Meaning you wrote it yourself. If code
+Make sure you have the rights to the submitted code. Meaning you wrote it yourself. If code
 requires attribution, make sure to provide it.
 
 ## General guidelines for contributing
