@@ -1,5 +1,5 @@
 # Solar2D Game Engine
-Download the latest build on the [Releases](https://github.com/coronalabs/corona/releases) page.
+Download the latest build from the [Releases](https://github.com/coronalabs/corona/releases) page and join the community on [Discord](https://discord.gg/Abf5V9G) and the [forums](https://forums.solar2d.com/).
 
 ## Rebranded Corona SDK
 > Simple to learn and use, completely free and open source 2D game engine.
@@ -27,6 +27,9 @@ Solar2D speeds up the development process. Update your code, save the changes, a
 
 ### Lua-based
 Lua is an open source scripting language designed to be lightweight, fast, yet also powerful. Lua is currently the leading scripting language in games and has been utilized in Roblox, The Elder Scrolls Online, Don't Starve, World of Warcraft ™, Angry Birds ™, Civilization ™, and [many other popular franchises.](https://en.wikipedia.org/wiki/Category:Lua-scripted_video_games)
+
+### Use with your favorite text editor
+You can use Sublime Text([Editor](https://github.com/coronalabs/CoronaSDK-SublimeText#installation-instructions)), Atom([autocomplete-corona](https://atom.io/packages/autocomplete-corona)), Visual Studio Code([Solar2d-companion](https://marketplace.visualstudio.com/items?itemName=M4adan.solar2d-companion)), ZeroBrane Studio and many others.
 
 ### Plugins for all needs
 Select from numerous plugins which extend the Solar2D core for features like in-app advertising, analytics, media, and much more. A vast variety of plugins is available via [Solar2D free directory](https://plugins.solar2d.com/) or third party stores, like [Solar2D Marketplace](https://solar2dmarketplace.com/).
