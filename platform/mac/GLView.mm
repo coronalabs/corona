@@ -1227,18 +1227,21 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
     {
         cursor = [NSCursor contextualMenuCursor];
     }
-
-	// Remove any rect with these bounds
-	int currIdx = 0;
-	for (CursorRect *cr in fCursorRects)
-	{
-		if (NSEqualRects(cr.rect, bounds))
+    else
+    {
+		// Remove any rect with these bounds
+		int currIdx = 0;
+		for (CursorRect *cr in fCursorRects)
 		{
-			[fCursorRects removeObjectAtIndex:currIdx];
-			[self.window invalidateCursorRectsForView:self];
-			break;
+			if (NSEqualRects(cr.rect, bounds))
+			{
+				[fCursorRects removeObjectAtIndex:currIdx];
+				[self.window invalidateCursorRectsForView:self];
+				break;
+			}
+			++currIdx;
 		}
-		++currIdx;
+		return;
 	}
 
     [fCursorRects addObject:[[[CursorRect alloc] initWithRect:bounds cursor:cursor] autorelease]];
