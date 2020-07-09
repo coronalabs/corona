@@ -2438,7 +2438,12 @@ public class NativeToJavaBridge {
 	{
 		runtime.getViewManager().setTextViewFocus(id, focus);
 	}
-	
+
+	protected static boolean callDisplayObjectSetNativeProperty( CoronaRuntime runtime, int id, String key, long luaStateMemoryAddress, int index )
+	{
+		return runtime.getViewManager().setNativeProperty(id, key, luaStateMemoryAddress, index);
+	}
+
 	protected static boolean callRecordStart( CoronaRuntime runtime, String file, long id )
 	{
 		return runtime.getController().getMediaManager().getAudioRecorder( id ).startRecording( file );

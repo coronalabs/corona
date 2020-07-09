@@ -2849,6 +2849,26 @@ NativeToJavaBridge::DisplayObjectUpdateScreenBounds( int id, int x, int y, int w
 	}
 }
 
+bool NativeToJavaBridge::DisplayObjectSetNativeProperty(int id, const char key[], lua_State *L, int valueIndex)
+{
+    bool ret = false;
+	NativeTrace trace( "NativeToJavaBridge::DisplayObjectSetNativeProperty" );
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+
+	if ( bridge.isValid() ) {
+	    jstringParam textJ( bridge.getEnv(), key );
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(),
+			"callDisplayObjectSetNativeProperty", "(Lcom/ansca/corona/CoronaRuntime;ILjava/lang/String;JI)Z" );
+
+		if ( mid != NULL ) {
+			ret = bridge.getEnv()->CallStaticBooleanMethod( bridge.getClass(), mid, fCoronaRuntime, id, textJ.getValue(), (jlong)(uintptr_t)L, valueIndex );
+			HandleJavaException();
+		}
+	}
+	return ret;
+}
+
 bool
 NativeToJavaBridge::RecordStart( uintptr_t id, const char * file )
 {

@@ -190,7 +190,8 @@ class NativeToJavaBridge
 		bool DisplayObjectGetBackground( int id );
 		void DisplayObjectSetFocus( int id, bool focus );
 		void DisplayObjectUpdateScreenBounds( int id, int x, int y, int width, int height );
-			
+        bool DisplayObjectSetNativeProperty(int id, const char key[], lua_State *L, int valueIndex);
+
 		int TextFieldCreate( int id, int left, int top, int width, int height, int isSingleLine );
 		void TextFieldSetReturnKey( int id, const char * imeType );
 		void TextFieldSetSelection( int id, int startPosition, int endPosition );

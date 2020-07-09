@@ -16,6 +16,7 @@ import com.ansca.corona.permissions.PermissionsSettings;
 import com.ansca.corona.permissions.PermissionState;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import android.app.Activity;
 import android.content.Context;
@@ -711,7 +712,75 @@ public class ViewManager {
 			}
 		});
 	}
-	
+
+	private static <T> java.lang.Runnable GetTypedViewMethod(final View view, final String method, final T param) {
+		try {
+			final java.lang.reflect.Method m = view.getClass().getMethod(method, param.getClass());
+			return new java.lang.Runnable() {
+				@Override
+				public void run() {
+					try {
+						m.invoke(view, param);
+					} catch (Throwable ignore) {
+					}
+				}
+			};
+		} catch (Throwable ignore) { }
+		try {
+			Class<?> primitiveType = (Class<?>)param.getClass().getField("TYPE").get(null);
+			final java.lang.reflect.Method m = view.getClass().getMethod(method, primitiveType);
+			return new java.lang.Runnable() {
+				@Override
+				public void run() {
+					try {
+						m.invoke(view, param);
+					} catch (Throwable ignore) {
+					}
+				}
+			};
+		} catch (Throwable ignore) { }
+
+		return null;
+	}
+
+	public boolean setNativeProperty(int id, String key, long luaStateMemoryAddress, int index) {
+		CoronaRuntime runtime = myCoronaRuntime;
+		if (runtime == null) {
+			return false;
+		}
+		com.naef.jnlua.LuaState luaState = runtime.getLuaState();
+		if (luaState == null || CoronaRuntimeProvider.getLuaStateMemoryAddress(luaState) != luaStateMemoryAddress) {
+			return false;
+		}
+		final View view = getDisplayObjectById(id);
+		if (view == null) {
+			return false;
+		}
+		java.lang.Runnable action = null;
+		switch(luaState.type(index)) {
+			case BOOLEAN:
+				action = GetTypedViewMethod(view, key, luaState.toBoolean(index));
+				break;
+			case NUMBER:
+				action = GetTypedViewMethod(view, key, luaState.toInteger(index));
+				if(action == null) action = GetTypedViewMethod(view, key, (long)luaState.toInteger(index));
+				if(action == null) action = GetTypedViewMethod(view, key, (short)luaState.toInteger(index));
+				if(action == null) action = GetTypedViewMethod(view, key, (char)luaState.toInteger(index));
+				if(action == null) action = GetTypedViewMethod(view, key, (byte)luaState.toInteger(index));
+				if(action == null) action = GetTypedViewMethod(view, key, (float)luaState.toNumber(index));
+				if(action == null) action = GetTypedViewMethod(view, key, luaState.toNumber(index));
+				break;
+			case STRING:
+				action = GetTypedViewMethod(view, key, luaState.toString(index));
+				break;
+			default:
+				break;
+		}
+		if (action == null) return false;
+		postOnUiThread(action);
+		return true;
+	}
+
 	public void setDisplayObjectVisible( final int id, final boolean visible ) {
 		postOnUiThread( new Runnable() {
 			public void run() {
