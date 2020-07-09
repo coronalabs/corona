@@ -5,7 +5,7 @@ To contribute code to Solar2D you will need to fork this repository,
 commit and push your changes to it and then create a Github pull request
 with your changes.
 
-Then your changes will be reviewed and possibly accepted to the Corona and
+Then your changes will be reviewed and possibly accepted to Solar2D and
 included in next daily build.
 
 Note, that when submitting code to Solar2D you will have to accept the
@@ -36,4 +36,4 @@ If you're adding a file, make sure to include header in it. File headers are ava
 
 ## Communication
 
-Feel free to join our [Slack](https://coronalabs.com/slack/) #opensource channel or [Forums](https://forums.solar2d.com/c/corona/open-source/119/) to get more information on Solar2D code, tips how to get started and discussion.
+Feel free to join our [Discord](https://discord.gg/Abf5V9G) #open-source channel or [Forums](https://forums.solar2d.com/c/corona/open-source/119/) to get more information on Solar2D code, tips, how to get started and discussion.
