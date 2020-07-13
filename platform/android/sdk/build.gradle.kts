@@ -21,7 +21,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            setPath("../sdk/CMakeLists.txt")
+            path = file("../sdk/CMakeLists.txt")
         }
     }
     useLibrary("org.apache.http.legacy")
