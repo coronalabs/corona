@@ -718,15 +718,20 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 - (void)initializeWithApplication:(UIApplication*)application options:(NSDictionary*)launchOptions
 {
 	// Override point for customization after application launch.
-	self.viewController = [[[AppViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+	self.viewController = [[[AppViewController alloc] initWithNibName:nil bundle:nil] autorelease];//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	self.viewController.wantsFullScreenLayout = YES;
 
 	view = (CoronaView*)viewController.view; Rtt_ASSERT( view );
 
 	[view setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
-
+ 
+        // [LARPOUX] [ESTRELA] needs a Navigation Controller
+        UINavigationController* navigationController = [[UINavigationController alloc]initWithRootViewController: viewController];
+        window.rootViewController = navigationController;
+        [window setRootViewController: navigationController];
 	// Get warnings in iOS 6 if we don't do this.
-	[window setRootViewController:viewController];
+	// [LARPOUX] [ESTRELA] // [window setRootViewController:viewController];
+        
 	[window makeKeyAndVisible];
 
 	[self showSplashScreen];
