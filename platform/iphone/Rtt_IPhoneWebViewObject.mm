@@ -39,6 +39,8 @@
 	#include "Rtt_Runtime.h"
 #endif
 
+#import "CoronaLuaObjC+NSObject.h"
+
 // ----------------------------------------------------------------------------
 
 static CGFloat kAnimationDuration = 0.3;
@@ -69,6 +71,7 @@ static CGFloat kAnimationDuration = 0.3;
 @interface Rtt_iOSWebViewContainer : UIView< WKNavigationDelegate >
 {
 	Rtt::IPhoneWebViewObject *fOwner;
+	WKWebViewConfiguration *fWebViewConfiguration;
 	WKWebView *fWebView;
 	NSURL *fLoadingURL;
 	UIView *fActivityView;
@@ -80,6 +83,7 @@ static CGFloat kAnimationDuration = 0.3;
 
 @property(nonatomic,assign,getter=owner,setter=setOwner:) Rtt::IPhoneWebViewObject *fOwner;
 @property(nonatomic,readonly,getter=webView) WKWebView *fWebView;
+@property(nonatomic,readonly,getter=webViewConfiguration) WKWebViewConfiguration *fWebViewConfiguration;
 @property(nonatomic,readonly) BOOL isOpen;
 
 - (id)initWithFrame:(CGRect)rect;
@@ -103,19 +107,18 @@ static CGFloat kAnimationDuration = 0.3;
 @synthesize fOwner;
 @synthesize fWebView;
 @synthesize isOpen;
+@synthesize fWebViewConfiguration;
 
-- (id)initWithFrame:(CGRect)rect
+-(WKWebView*)webView
 {
-	self = [super initWithFrame:rect];
-	if ( self )
-	{
-		fOwner = nil;
-		fLoadingURL = nil;
-
+	if(fWebView == nil) {
         // Propagate the w,h, but do not propagate the origin, as the parent already accounts for it.
+        CGRect rect = [super frame];
 		CGRect webViewRect = rect;
 		webViewRect.origin = CGPointZero;
-		fWebView = [[WKWebView alloc] initWithFrame:webViewRect];
+		fWebView = [[WKWebView alloc] initWithFrame:webViewRect configuration:fWebViewConfiguration];
+		[fWebViewConfiguration release];
+		fWebViewConfiguration = nil;
 		fWebView.navigationDelegate = self;
 //		fWebView.scalesPageToFit = YES;
         
@@ -123,7 +126,7 @@ static CGFloat kAnimationDuration = 0.3;
 		fActivityView.backgroundColor = [UIColor grayColor];
 		
 		UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-		[fActivityView addSubview:indicator];		
+		[fActivityView addSubview:indicator];
 		[indicator release];
 
 		isOpen = false;
@@ -141,7 +144,24 @@ static CGFloat kAnimationDuration = 0.3;
 
 		CGPoint center = { (CGFloat)0.5f*CGRectGetWidth( rect ), (CGFloat)0.5f*CGRectGetHeight( rect ) };
 		[indicator setCenter:center];
-        
+	}
+	return fWebView;
+}
+
+- (id)initWithFrame:(CGRect)rect
+{
+	self = [super initWithFrame:rect];
+	if ( self )
+	{
+		fWebViewConfiguration = [[WKWebViewConfiguration alloc] init];
+		fOwner = nil;
+		fLoadingURL = nil;
+		fWebView = nil;
+
+		isOpen = false;
+		keyboardShown = NO;
+		isLoading = NO;
+		        
         [self addObservers];
 	}
 
@@ -158,6 +178,7 @@ static CGFloat kAnimationDuration = 0.3;
 	[fWebView setNavigationDelegate:nil];
 	[fWebView stopLoading];
 	[fWebView release];
+	[fWebViewConfiguration release];
 
 	[super dealloc];
 }
@@ -201,7 +222,7 @@ static CGFloat kAnimationDuration = 0.3;
 {
 	if ( isLoading )
 	{
-		[fWebView stopLoading];
+		[self.webView stopLoading];
 	}
 	
 	fLoadingURL = nil;
@@ -209,7 +230,7 @@ static CGFloat kAnimationDuration = 0.3;
 	if(htmlString)
 	{
 		isLoading = true;
-		[fWebView loadHTMLString:htmlString baseURL:baseUrl];
+		[self.webView loadHTMLString:htmlString baseURL:baseUrl];
 	}
 	
 }
@@ -217,7 +238,7 @@ static CGFloat kAnimationDuration = 0.3;
 {
 	if ( isLoading )
 	{
-		[fWebView stopLoading];
+		[self.webView stopLoading];
 	}
 
     
@@ -255,10 +276,10 @@ static CGFloat kAnimationDuration = 0.3;
     
 	[fLoadingURL release];
 	fLoadingURL = [request.URL retain];
-	if([fLoadingURL isFileURL] && baseUrl && [fWebView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
-		[fWebView loadFileURL:request.URL allowingReadAccessToURL:baseUrl];
+	if([fLoadingURL isFileURL] && baseUrl && [self.webView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
+		[self.webView loadFileURL:request.URL allowingReadAccessToURL:baseUrl];
 	} else {
-		[fWebView loadRequest:request];
+		[self.webView loadRequest:request];
 	}
 
     if (false == loadImmediately)
@@ -282,7 +303,7 @@ static CGFloat kAnimationDuration = 0.3;
 
 - (void)stopLoading
 {
-	[fWebView stopLoading];
+	[self.webView stopLoading];
 
 	UIActivityIndicatorView *indicator = [[fActivityView subviews] objectAtIndex:0];
 	[indicator stopAnimating];
@@ -290,11 +311,11 @@ static CGFloat kAnimationDuration = 0.3;
 
 - (BOOL)back
 {
-	BOOL result = fWebView.canGoBack;
+	BOOL result = self.webView.canGoBack;
 
 	if ( result )
 	{
-		[fWebView goBack];
+		[self.webView goBack];
 	}
 
 	return result;
@@ -302,11 +323,11 @@ static CGFloat kAnimationDuration = 0.3;
 
 - (BOOL)forward
 {
-	BOOL result = fWebView.canGoForward;
+	BOOL result = self.webView.canGoForward;
 
 	if ( result )
 	{
-		[fWebView goForward];
+		[self.webView goForward];
 	}
 
 	return result;
@@ -314,14 +335,14 @@ static CGFloat kAnimationDuration = 0.3;
 
 - (void)reload
 {
-	[fWebView reload];
+	[self.webView reload];
 }
 
 - (BOOL)bounces
 {
 	BOOL result = YES;
 
-	for ( id subview in fWebView.subviews )
+	for ( id subview in self.webView.subviews )
 	{
 		if ( [[subview class] isSubclassOfClass:[UIScrollView class]] )
 		{
@@ -335,7 +356,7 @@ static CGFloat kAnimationDuration = 0.3;
 
 - (void)setBounces:(BOOL)newValue
 {
-	for ( id subview in fWebView.subviews )
+	for ( id subview in self.webView.subviews )
 	{
 		if ( [[subview class] isSubclassOfClass:[UIScrollView class]] )
 		{
@@ -346,7 +367,7 @@ static CGFloat kAnimationDuration = 0.3;
 
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
-	if ( ! keyboardShown && [fWebView isFirstResponder] )
+	if ( ! keyboardShown && [self.webView isFirstResponder] )
 	{
 		NSDictionary* info = [aNotification userInfo];
 
@@ -355,7 +376,7 @@ static CGFloat kAnimationDuration = 0.3;
 		NSValue* aValue = [info objectForKey:UIKeyboardBoundsUserInfoKey];
 		CGSize keyboardSize = [aValue CGRectValue].size;
 
-		WKWebView *view = fWebView;
+		WKWebView *view = self.webView;
 
 		// Resize the scroll view (which is the root view of the window)
 		CGRect viewFrame = [view frame];
@@ -369,7 +390,7 @@ static CGFloat kAnimationDuration = 0.3;
 // Called when the UIKeyboardDidHideNotification is sent
 - (void)keyboardWasHidden:(NSNotification*)aNotification
 {
-	if ( [fWebView isFirstResponder] )
+	if ( [self.webView isFirstResponder] )
 	{
 		NSDictionary* info = [aNotification userInfo];
 	 
@@ -377,7 +398,7 @@ static CGFloat kAnimationDuration = 0.3;
 		NSValue* aValue = [info objectForKey:UIKeyboardBoundsUserInfoKey];
 		CGSize keyboardSize = [aValue CGRectValue].size;
 	 
-		WKWebView *view = fWebView;
+		WKWebView *view = self.webView;
 
 		// Reset the height of the scroll view to its original value
 		CGRect viewFrame = [view frame];
@@ -489,8 +510,8 @@ static EventTypeForNavigationType( WKNavigationType t )
 	UIActivityIndicatorView *indicator = [[fActivityView subviews] objectAtIndex:0];
 	[indicator stopAnimating];
 	
-	fWebView.hidden = NO;
-	fWebView.alpha = 1.0;
+	self.webView.hidden = NO;
+	self.webView.alpha = 1.0;
 	fActivityView.alpha = 1.0;
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:kAnimationDuration];
@@ -897,6 +918,37 @@ IPhoneWebViewObject::GetNativeTarget() const
 	Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)GetView();
 	return container.webView;
 }
+
+int
+IPhoneWebViewObject::GetNativeProperty( lua_State *L, const char key[] ) const
+{
+	Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)GetView();
+	id target = container.webViewConfiguration;
+	int result = [target pushLuaValue:L forKey:@(key)];
+
+	if ( 0 == result )
+	{
+		result = Super::GetNativeProperty( L, key );
+	}
+
+	return result;
+}
+
+bool
+IPhoneWebViewObject::SetNativeProperty( lua_State *L, const char key[], int valueIndex )
+{
+	Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)GetView();
+	id target = container.webViewConfiguration;
+	bool result = [target set:L luaValue:valueIndex forKey:@(key)];
+
+	if ( ! result )
+	{
+		result = Super::SetNativeProperty( L, key, valueIndex );
+	}
+
+	return result;
+}
+
 
 // ----------------------------------------------------------------------------
 
