@@ -448,6 +448,21 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, basePluginPlatform
     return res
 end
 
+local function mergeMoveDirectory(src, dst)
+    for file in lfs.dir(src) do
+        if file ~= "." and file ~= ".." then
+            local srcFile = pathJoin(src, file)
+            local dstFile = pathJoin(dst, file)
+            if isDir(srcFile) and isDir(dstFile) then
+                mergeMoveDirectory(srcFile, dstFile)
+            else
+                os.rename(srcFile, dstFile)
+            end 
+        end
+    end
+    exec("rmdir " .. quoteString(src))
+end
+
 local function CollectCoronaPlugins(params)
     if type(params) == "string" then params = json.decode(params) end
     fetch = params.fetch or pluginCollector_fetch
@@ -564,12 +579,7 @@ local function CollectCoronaPlugins(params)
                     end
                     local lua51Dir = pathJoin(params.extractLocation, "lua_51")
                     if ret and isDir(lua51Dir) then
-                        for file in lfs.dir(lua51Dir) do
-                            if file ~= "." and file ~= ".." then
-                                os.rename(pathJoin(lua51Dir, file), pathJoin(params.extractLocation, file))
-                            end
-                        end
-                        exec("rmdir " .. quoteString(lua51Dir))
+                        mergeMoveDirectory(lua51Dir, params.extractLocation)
                     end
                 else
                     if isWindows then
