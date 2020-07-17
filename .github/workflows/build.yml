@@ -410,7 +410,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: ./tools/GHAction/daily_env.sh
-      - name: Genearte Change Log
+      - name: Generate Change Log
         run: |
           git fetch --prune --unshallow
           git fetch origin '+refs/tags/*:refs/tags/*'
@@ -540,3 +540,45 @@ jobs:
           EOF
         env:
           DISCORD_WEBHOOK_BUILDS: ${{ secrets.DISCORD_WEBHOOK_BUILDS }}
+
+  notify-group: # Sends an email to the https://groups.google.com/forum/#!forum/solar2d-builds
+    needs:
+      - Windows-Simulator
+      - macOS-Simulator
+      - linux
+      - CoronaCards-Android
+      - CoronaCards-iOS
+      - notarize
+      - release
+      - source-code
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v1
+      - uses: actions/checkout@v2
+      - run: ./tools/GHAction/daily_env.sh
+      - name: notify
+        run: |
+          git fetch --prune --unshallow
+          git fetch origin '+refs/tags/*:refs/tags/*'
+          T="R7NmWb1brmEx65"
+          echo "::add-mask::$T"
+          Z="cNgt1OO-"
+          echo "::add-mask::$Z"
+          TEXT="Run: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+          if [[ "$GITHUB_REF" == refs/tags/* ]] && [[ "$WORKFLOW_CONCLUSION" == "success" ]]
+          then
+          TEXT="$TEXT
+          Release: https://github.com/${{github.repository}}/releases/tag/$BUILD_NUMBER"
+          GIT_LOG=$(git log --format='* %s (%h)' --ancestry-path $(git describe --tags --abbrev=0 $GITHUB_REF^)..$(git describe --tags --abbrev=0 $GITHUB_REF)) || true
+          if [ -n "$GIT_LOG" ]
+          then
+          TEXT="$TEXT
+
+          Git log since previous release:
+          $GIT_LOG
+          "
+          fi
+          fi
+          TEXT="${TEXT//$'\n'/<br>}"
+          curl -X POST -H "Content-Type: application/json" -d '{"value1":"'"$YEAR.$BUILD_NUMBER"' '"$WORKFLOW_CONCLUSION"'","value2":"'"$TEXT"'"}' https://maker.ifttt.com/trigger/Solar2DBuild/with/key/$Z$T
