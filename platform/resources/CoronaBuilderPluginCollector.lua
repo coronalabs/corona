@@ -171,8 +171,14 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
         return params.canSkip or "Solar2D Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported"
     end
     local repoName = pluginObject.p or (pluginTable.publisherId .. '-' .. plugin)
-    local downloadURL = "https://github.com/" .. repoOwner .. "/" .. repoName .. "/releases/download/" .. pluginObject.r .. "/" .. vFoundBuildName .. "-" .. pluginPlatform .. ".tgz"
+    local downloadURL
 
+    if pluginTable.marketplaceId then
+      downloadURL = "https://solar2dmarketplace.com/marketplacePlugins?pluginType=collector&ID=" .. pluginTable.marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform
+    else
+      downloadURL = "https://github.com/" .. repoOwner .. "/" .. repoName .. "/releases/download/" .. pluginObject.r .. "/" .. vFoundBuildName .. "-" .. pluginPlatform .. ".tgz"
+    end
+	
     local cacheDir = pathJoin(params.pluginStorage, "Caches", "Solar2Directory", repoOwner, pluginTable.publisherId, plugin, pluginPlatform )
     local cacheUrlFile = pathJoin(cacheDir, "info.txt")
     local cacheDestFile = pathJoin(cacheDir, "data.tgz")
