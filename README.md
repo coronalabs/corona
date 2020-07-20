@@ -1,6 +1,8 @@
 # Solar2D Game Engine
 Download the latest build from the [Releases](https://github.com/coronalabs/corona/releases) page and join the community on [Discord](https://discord.gg/Abf5V9G) and the [forums](https://forums.solar2d.com/).
 
+For Linux, we suggest using the actively developed fork [Solar2DTux](https://github.com/DannyGlover/Solar2DTux).
+
 ## Rebranded Corona SDK
 > Simple to learn and use, completely free and open source 2D game engine.
 
@@ -13,16 +15,16 @@ Solar2D is a cross-platform framework ideal for rapidly creating apps and games 
 * Free for everybody – Enterprise features for every developer.
 * The easiest development tool for 2D games and mobile applications.
 * Solar2D allows creating apps easily, up to 10 times faster than other frameworks. 
-* Solar2D is supported by detailed documentation system. 
+* Supported by a detailed documentation system. 
 * Write the code once, run it many different places – Solar2D supports all major mobile platforms.
-* First party and community provided plugins is a constantly growing pool with more than 150 plugins and 300+ ready-to-go app assets. 
-* Solar2D community unites more than 200,000 passionate developers.
+* Constantly growing pool of first-party and community provided plugins and ready-to-go app assets.
+* A vibrant community of both application and game developers.
 * Simulator, which runs the app directly on PC/Mac, simplifies the prototyping process and helps quickly test ideas and concepts.
-* Solar2D has a logical and consistent API that covers over 1000 functions and allows to get things up and running very fast.
+* A logical and consistent API that covers over 1000 functions and allows to get things up and running very fast.
 
 ## Feature highlights
 
-### Solar2D Simulator and Live Builds
+### Simulator and Live Builds
 Solar2D speeds up the development process. Update your code, save the changes, and instantly see the results in our instant-update Simulator. When you're ready to test on real devices, build and deploy your app just once and then see code/assets update automatically, all over your local network. It's like magic.
 
 ### Lua-based
@@ -32,7 +34,7 @@ Lua is an open source scripting language designed to be lightweight, fast, yet a
 You can use Sublime Text([Editor](https://github.com/coronalabs/CoronaSDK-SublimeText#installation-instructions)), Atom([autocomplete-corona](https://atom.io/packages/autocomplete-corona)), Visual Studio Code([Solar2d-companion](https://marketplace.visualstudio.com/items?itemName=M4adan.solar2d-companion)), ZeroBrane Studio and many others.
 
 ### Plugins for all needs
-Select from numerous plugins which extend the Solar2D core for features like in-app advertising, analytics, media, and much more. A vast variety of plugins is available via [Solar2D free directory](https://plugins.solar2d.com/) or third party stores, like [Solar2D Marketplace](https://solar2dmarketplace.com/).
+Select from numerous plugins which extend the Solar2D core for features like in-app advertising, analytics, media, and much more. A vast variety of plugins is available via [Solar2D free directory](https://plugins.solar2d.com/) or third party stores, like [Solar2D Marketplace](https://solar2dmarketplace.com/) and [Solar2D Plugins](https://www.solar2dplugins.com/).
 
 ### Call any native library
 If it’s not already in the core or supported via a plugin, you can call any native (C/C++/Obj-C/Java) library or API using Solar2D Native. It also allows to easily package your code as a plugin.
