@@ -1,6 +1,8 @@
 # Solar2D Game Engine
 Download the latest build from the [Releases](https://github.com/coronalabs/corona/releases) page and join the community on [Discord](https://discord.gg/Abf5V9G) and the [forums](https://forums.solar2d.com/).
 
+For Linux, we suggest using the actively developed fork [Solar2DTux](https://github.com/DannyGlover/Solar2DTux).
+
 ## Rebranded Corona SDK
 > Simple to learn and use, completely free and open source 2D game engine.
 
@@ -22,7 +24,7 @@ Solar2D is a cross-platform framework ideal for rapidly creating apps and games 
 
 ## Feature highlights
 
-### Solar2D Simulator and Live Builds
+### Simulator and Live Builds
 Solar2D speeds up the development process. Update your code, save the changes, and instantly see the results in our instant-update Simulator. When you're ready to test on real devices, build and deploy your app just once and then see code/assets update automatically, all over your local network. It's like magic.
 
 ### Lua-based
