@@ -407,6 +407,7 @@ jobs:
       - linux
       - CoronaCards-Android
       - CoronaCards-iOS
+      - native
     steps:
       - uses: actions/checkout@v2
       - run: ./tools/GHAction/daily_env.sh
@@ -444,6 +445,9 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: CoronaCards-Android
+      - uses: actions/download-artifact@v1
+        with:
+          name: Native
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -497,6 +501,15 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./CoronaCards-Android/CoronaCardsAndroidAAR.zip
           asset_name: CoronaCards-Android-${{ env.YEAR }}.${{ env.BUILD }}.zip
+          asset_content_type: application/zip
+      - name: Upload Release Asset Android Debug Symbols
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Native/AndroidDebugSymbols.zip
+          asset_name: AndroidDebugSymbols-${{ env.YEAR }}.${{ env.BUILD }}.zip
           asset_content_type: application/zip
 
   notify-chats:
