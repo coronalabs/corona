@@ -32,6 +32,7 @@ using namespace Rtt;
 static NSString *kValueNotSet = @"not set";
 static NSString *kValueNone = @"None";
 static double kMinXcodeVersion = 9.0;
+NSString *kAppleDistributionIdentityTag = @"Apple Distribution";
 
 // ----------------------------------------------------------------------------
 @implementation AppleAppBuildController

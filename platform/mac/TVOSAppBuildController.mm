@@ -316,7 +316,7 @@ static NSString *kValueNone = @"None";
 		identity = [currentProvisioningProfileItem.fingerprint UTF8String];
 		provisionFile = [currentProvisioningProfileItem.provisionPath UTF8String];
 
-		if ( [[currentProvisioningProfileItem title] contains:kiPhoneDistributionIdentityTag] )
+		if ( [[currentProvisioningProfileItem title] contains:kiPhoneDistributionIdentityTag] || [[currentProvisioningProfileItem title] contains:kAppleDistributionIdentityTag] )
 		{
 			// Here, we mean distribution build, as in store build,
 			// so a store build is anything that does NOT have provisioned devices
@@ -674,7 +674,7 @@ static NSString *kValueNone = @"None";
             {
 				[self logEvent:@"build-bungled" key:@"reason" value:@"not-distribution-provisioning-profile"];
 
-                [self showError:@"Cannot Send To App Store" message:@"Only apps built with distribution profiles can be sent to the App Store.\n\nChoose a provisioning profile signed with an \"iPhone Distribution\" certificate and note that the provisioning profile used should not specify any devices (i.e. is not \"ad hoc\")." helpURL:@"https://docs.coronalabs.com/guide/distribution/iOSBuild/index.html#build-process" parentWindow:[self window]];
+                [self showError:@"Cannot Send To App Store" message:@"Only apps built with distribution profiles can be sent to the App Store.\n\nChoose a provisioning profile signed with an \"iPhone Distribution\" or \"Apple Distribution\" certificate and note that the provisioning profile used should not specify any devices (i.e. is not \"ad hoc\")." helpURL:@"https://docs.coronalabs.com/guide/distribution/iOSBuild/index.html#build-process" parentWindow:[self window]];
 
                 result = NO;
             }
@@ -748,7 +748,7 @@ static NSString *kValueNone = @"None";
 	using namespace Rtt;
 
 	IdentityMenuItem* item = currentProvisioningProfileItem; Rtt_ASSERT( item != [fSigningIdentities itemAtIndex:0] );
-	BOOL result = ( [[item title] contains:kiPhoneDistributionIdentityTag] );
+	BOOL result = ( [[item title] contains:kiPhoneDistributionIdentityTag]  || [[item title] contains:kAppleDistributionIdentityTag] );
 
 	if ( result )
 	{
@@ -769,7 +769,7 @@ static NSString *kValueNone = @"None";
 	IdentityMenuItem* item = currentProvisioningProfileItem; Rtt_ASSERT( item != [fSigningIdentities itemAtIndex:0] );
 
 	// A developer build does NOT have iPhone Distribution in the prefix
-	BOOL result = ! ( [[item title] contains:kiPhoneDistributionIdentityTag] );
+	BOOL result = ! ( [[item title] contains:kiPhoneDistributionIdentityTag] || [[item title] contains:kAppleDistributionIdentityTag]);
 	return result;
 }
 

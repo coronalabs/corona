@@ -420,7 +420,7 @@ local function isBuildForAppStoreDistribution( options )
 	end
 
 	-- FIXME: Should handle App Store vs. Ad-hoc
-	local retval = string.match( options.signingIdentityName, "3rd Party Mac Developer" )
+	local retval = string.match( options.signingIdentityName, "3rd Party Mac Developer" ) or string.match( options.signingIdentityName, "Apple Distribution" )
 	if retval then
 		return true
 	else

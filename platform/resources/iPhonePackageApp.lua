@@ -604,7 +604,7 @@ local function isBuildForDistribution( options )
 		return false
 	end
 
-	local retval = string.match( options.signingIdentityName, "iPhone Distribution" )
+	local retval = string.match( options.signingIdentityName, "iPhone Distribution" ) or string.match( options.signingIdentityName, "Apple Distribution" )
 	if retval then
 		return true
 	else
@@ -620,7 +620,7 @@ local function isBuildForAppStoreDistribution( options )
 		return false
 	end
 
-	local retval = string.match( options.signingIdentityName, "iPhone Distribution" )
+	local retval = string.match( options.signingIdentityName, "iPhone Distribution" ) or string.match( options.signingIdentityName, "Apple Distribution" )
 	if retval then
 		-- Adhoc profiles have a 'ProvisionedDevices' section, pure distribution profiles do not
 		local hasProvisionedDevices = captureCommandOutput("security cms -D -i '".. options.mobileProvision .."' | fgrep -c 'ProvisionedDevices'")

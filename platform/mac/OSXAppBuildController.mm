@@ -151,7 +151,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 {
     IdentityMenuItem* item = currentProvisioningProfileItem; Rtt_ASSERT( item != [fSigningIdentities itemAtIndex:0] );
 
-    return ( [[item title] contains:k3rdPartyMacDeveloperIdentityTag]
+    return ( ([[item title] contains:k3rdPartyMacDeveloperIdentityTag] || [[item title] contains:kAppleDistributionIdentityTag] )
 			|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"]);
 }
 
@@ -165,7 +165,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 
 - (BOOL)isDeveloperBuild
 {
-    return (! [self isStoreBuild] && ! [self isSelfDistributionBuild]
+	return ((! [self isStoreBuild] && ! [self isSelfDistributionBuild])
 			|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"]);
 }
 
