@@ -3,7 +3,8 @@ plugins {
 }
 
 android {
-    ndkVersion = "18.1.5063045"
+    ndkVersion = "21.3.6528147"
+
     compileSdkVersion(29)
 
     defaultConfig {
