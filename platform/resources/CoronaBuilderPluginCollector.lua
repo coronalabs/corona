@@ -378,13 +378,6 @@ local function locatorName(l)
 end
 
 local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators, canSkip)
-    if type(pluginTable.supportedPlatforms) == 'table' and not pluginTable.supportedPlatforms[pluginPlatform] then
-        if canSkip then
-            return
-        else
-            return "Unsupported platform " .. pluginPlatform
-        end
-    end
     params.canSkip = canSkip
     local pluginDestination = pathJoin(dstDir, plugin)
     local err = "Unable to find plugin '" .. plugin .. "' for platform '" .. pluginPlatform .. "':"
@@ -432,6 +425,22 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, basePluginPlatform
         end
     end
     local numFallbacks = #fallbackChain
+
+    if type(pluginTable.supportedPlatforms) == 'table' then
+        local skip = true
+        local skipped = ""
+        for i = 1, numFallbacks do
+            if pluginTable.supportedPlatforms[fallbackChain[i]] then
+                skip = false
+            else
+                skipped = skipped .. " " .. fallbackChain[i]
+            end
+        end
+        if skip then
+            log("Skipping plugin " .. plugin .. " because supportedPlatforms is not set for any of" .. skipped)
+            return
+        end
+    end
 
     for i = 1, numFallbacks do
         local fallbackRes = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, fallbackChain[i], params, pluginLocators, i == numFallbacks)
