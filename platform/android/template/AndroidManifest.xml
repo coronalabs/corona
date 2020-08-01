@@ -30,7 +30,7 @@
 	             @USER_LARGE_HEAP@
 	             @USER_IS_GAME@
 	             android:hardwareAccelerated="true"
-	             android:name="android.support.multidex.MultiDexApplication"
+	             android:name="androidx.multidex.MultiDexApplication"
 	             android:networkSecurityConfig="@xml/network_security_config"
 	             >
 
