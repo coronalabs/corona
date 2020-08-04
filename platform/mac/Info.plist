@@ -27,22 +27,14 @@
 			<string>Binary</string>
 		</dict>
 		<dict>
-			<key>CFBundleTypeName</key>
-			<string>Folder</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>fold</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
-			<key>LSIsAppleDefaultForType</key>
-			<false/>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSDocumentClass</key>
-			<string>Folder</string>
-			<key>NSPersistentStoreTypeKey</key>
-			<string>Binary</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.directory</string>
+				<string>com.apple.bundle</string>
+				<string>com.apple.resolvable</string>
+			</array>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
