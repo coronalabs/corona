@@ -588,7 +588,7 @@ local function CollectCoronaPlugins(params)
 
     local ret = nil
 
-    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, PluginCollectorSolar2DDirectory, PluginCollectorSolar2DMarketplaceDirectory, pluginLocatorIgnoreMissing }
+    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, PluginCollectorSolar2DMarketplaceDirectory, PluginCollectorSolar2DDirectory, pluginLocatorIgnoreMissing }
 
     local dstDir = params.destinationDirectory
 
