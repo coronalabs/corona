@@ -978,7 +978,7 @@ function buildExe( options )
 	-- Otherwise we assume there is an exe already available.
 	if builderCtor then
 		-- Temporarily modify Lua require path
-		local pathOld = package.path
+		local pathOld = package.path or ""
 		package.path = libtemplateDir .. '/?.lua;' .. pathOld
 
 		-- Instantiate Builder
