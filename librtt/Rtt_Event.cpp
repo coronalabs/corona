@@ -169,7 +169,7 @@ RenderEvent::RenderEvent()
 const char*
 RenderEvent::Name() const
 {
-	static const char kName[] = "onRenderFrame";
+	static const char kName[] = "lateUpdate";
 	return kName;
 }
 
