@@ -139,6 +139,25 @@ class FrameEvent : public VirtualEvent
 		virtual int Push( lua_State *L ) const;
 };
 
+// ============================================================================
+
+// Immediately broadcast to "Runtime"
+class RenderEvent : public VirtualEvent
+{
+	public:
+		typedef VirtualEvent Super;
+
+	public:
+		static const RenderEvent& Constant();
+
+	protected:
+		RenderEvent();
+
+	public:
+		virtual const char* Name() const;
+		virtual int Push( lua_State *L ) const;
+};
+
 // ----------------------------------------------------------------------------
 
 // Immediately broadcast to "Runtime"
