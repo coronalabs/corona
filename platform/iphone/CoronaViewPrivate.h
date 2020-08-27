@@ -49,7 +49,7 @@ class IPhonePlatformBase;
 
 @property (nonatomic, readonly) Rtt::Runtime *runtime;
 @property (nonatomic, readonly) Rtt::CoronaViewRuntimeDelegate *runtimeDelegate;
-@property (nonatomic, readonly) GLKViewController *viewController;
+@property (nonatomic, readonly) MGLKViewController *viewController;
 @property (nonatomic, readwrite, getter=inhibitCount, setter=setInhibitCount:) int fInhibitCount;
 @property (nonatomic, readwrite, getter=tapDelay, setter=setTapDelay:) NSTimeInterval fTapDelay;
 @property (nonatomic, readwrite, getter=getForceTouchSupport, setter=setForceTouchSupport:) BOOL fSupportsForceTouch;

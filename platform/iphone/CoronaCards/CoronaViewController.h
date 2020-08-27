@@ -7,9 +7,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#import <GLKit/GLKit.h>
+#import <MetalANGLE/MGLKit.h>
 
-@interface CoronaViewController : GLKViewController
+@interface CoronaViewController : MGLKViewController
 @end
 
 // ----------------------------------------------------------------------------

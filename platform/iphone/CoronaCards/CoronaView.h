@@ -7,13 +7,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#import <GLKit/GLKit.h>
+#import <MetalANGLE/MGLKit.h>
 
 @protocol CoronaViewDelegate;
 
 // ----------------------------------------------------------------------------
 
-@interface CoronaView : GLKView
+@interface CoronaView : MGLKView
 
 @property (nonatomic, assign) id <CoronaViewDelegate> coronaViewDelegate;
 

@@ -11,14 +11,12 @@
 #define _Rtt_IPhoneScreenSurface_H__
 
 #include "Rtt_PlatformSurface.h"
-
-#import <OpenGLES/ES1/gl.h>
+#import <MetalANGLE/angle_gl.h>
 
 // ----------------------------------------------------------------------------
 
-@class EAGLContext;
-@class EAGLSharegroup;
-@class GLKView;
+@class MGLContext;
+@class MGLKView;
 
 namespace Rtt
 {
@@ -33,7 +31,7 @@ class IPhoneScreenSurface : public PlatformSurface
 		typedef PlatformSurface Super;
 
 	public:
-		IPhoneScreenSurface( GLKView *view );
+		IPhoneScreenSurface( MGLKView *view );
 		virtual ~IPhoneScreenSurface();
 
 	public:
@@ -58,10 +56,10 @@ class IPhoneScreenSurface : public PlatformSurface
 		bool IsUpright() const;
 
 	public:
-		EAGLContext *GetContext() const;
+		MGLContext *GetContext() const;
 
 	private:
-		GLKView *fView;
+		MGLKView *fView;
 		float fScale;
 };
 
