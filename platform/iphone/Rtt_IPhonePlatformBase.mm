@@ -15,7 +15,7 @@
 
 #include "Core/Rtt_String.h"
 
-#import <GLKit/GLKViewController.h>
+#import <MetalANGLE/MGLKViewController.h>
 #import <UIKit/UIAlertView.h>
 #import <UIKit/UIAlertController.h>
 #import <GameController/GameController.h>

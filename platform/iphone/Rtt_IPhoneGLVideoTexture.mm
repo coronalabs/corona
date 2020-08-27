@@ -17,6 +17,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIDevice.h>
 #import <UIKit/UIScreen.h>
+#import <MetalANGLE/MGLContext.h>
 
 // ----------------------------------------------------------------------------
 
@@ -29,7 +30,7 @@
     NSString *_sessionPreset;
     size_t _textureWidth;
     size_t _textureHeight;
-    EAGLContext *_context;
+    MGLContext *_context;
 
 	CGFloat _screenWidth;
 	CGFloat _screenHeight;
@@ -126,10 +127,10 @@
 
 
 	Rtt_ASSERT( nil == _context );
-	_context = [EAGLContext currentContext];
+	_context = [MGLContext currentContext];
 
 	// Create CVOpenGLESTextureCacheRef for optimal CVImageBufferRef to GLES texture conversion.
-	CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
+	CVReturn err = 1;//CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
 
 	if (err)
 	{
@@ -226,7 +227,7 @@
 		didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer 
 		fromConnection:(AVCaptureConnection *)connection
 {
-	Rtt_ASSERT( [EAGLContext currentContext] == _context );
+	Rtt_ASSERT( [MGLContext currentContext] == _context );
 
 	[self cleanUpTextures];
 	

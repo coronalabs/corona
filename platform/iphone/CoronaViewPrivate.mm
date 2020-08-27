@@ -10,7 +10,7 @@
 #include "Core/Rtt_Build.h"
 
 #import <QuartzCore/QuartzCore.h>
-#import <OpenGLES/EAGLDrawable.h>
+#import <MetalANGLE/angle_gl.h>
 #import <CoreLocation/CoreLocation.h>
 
 #import "CoronaViewPrivate.h"
@@ -359,7 +359,7 @@ CoronaViewListenerAdapter( lua_State *L )
 	_gyroscopeObserver = (id< CoronaGyroscopeObserver >)_observerProxy;
 }
 
-- (id)initWithFrame:(CGRect)rect context:(EAGLContext *)context
+- (id)initWithFrame:(CGRect)rect context:(MGLContext *)context
 {
 	if ( (self = [super initWithFrame:rect context:context]) )
 	{
@@ -369,15 +369,15 @@ CoronaViewListenerAdapter( lua_State *L )
 	return self;
 }
 
-- (id)initWithFrame:(CGRect)rect
-{
-	if ( (self = [self initWithFrame:rect context:nil]) )
-	{		
-		[self initCommon];
-	}
-
-	return self;
-}
+//- (id)initWithFrame:(CGRect)rect
+//{
+//	if ( self || (self = [self initWithFrame:rect context:nil]) )
+//	{		
+//		[self initCommon];
+//	}
+//
+//	return self;
+//}
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -458,10 +458,10 @@ CoronaViewListenerAdapter( lua_State *L )
 	}
 }
 
-- (GLKViewController *)viewController
+- (MGLKViewController *)viewController
 {
 	Rtt_ASSERT( [self.delegate isKindOfClass:[UIViewController class]] );
-	return (GLKViewController *)self.delegate;
+	return (MGLKViewController *)self.delegate;
 }
 
 - (void)willBeginRunLoop:(NSDictionary *)params
@@ -554,7 +554,7 @@ CoronaViewListenerAdapter( lua_State *L )
 		// * LoadApplication()
 		// * BeginRunLoop()
 		// go to to the right place
-		[EAGLContext setCurrentContext:self.context];
+		[MGLContext setCurrentContext:self.context];
 		[self bindDrawable];
 
 		fLoadOrientation = orientation;
@@ -607,7 +607,7 @@ CoronaViewListenerAdapter( lua_State *L )
 
 		_runtime->BeginRunLoop();
 		
-		//Forcing immediate blit (outside GlkViewController which normally drives the display update)
+		//Forcing immediate blit (outside MGLKViewController which normally drives the display update)
 		[self display];
 	}
 
@@ -742,14 +742,14 @@ CoronaViewListenerAdapter( lua_State *L )
 - (void)terminate
 {
 	//Grab the view's context
-	EAGLContext *context = self.context;
+	MGLContext *context = self.context;
 	
 	//Grab the active openGL context
-	EAGLContext *openGlContext = [EAGLContext currentContext];
+	MGLContext *openGlContext = [MGLContext currentContext];
 	
 	if ( openGlContext != context)
 	{
-		[EAGLContext setCurrentContext:context];
+		[MGLContext setCurrentContext:context];
 	}
 	
 	[self removeApplicationObserver];
@@ -779,7 +779,7 @@ CoronaViewListenerAdapter( lua_State *L )
 	_gyroscopeObserver = nil;
 	
 	//Restore the context
-	[EAGLContext setCurrentContext:openGlContext];
+	[MGLContext setCurrentContext:openGlContext];
 }
 
 - (id)sendEvent:(NSDictionary *)event
@@ -1263,7 +1263,7 @@ PrintTouches( NSSet *touches, const char *header )
 {
 
 	// Flush
-	Rtt_ASSERT( context == [EAGLContext currentContext] );
+	Rtt_ASSERT( context == [MGLContext currentContext] );
 
 	// This is a check to make sure the correct render buffer is bound.
 	// Normally, this wouldn't ever happen, but there's a check here in

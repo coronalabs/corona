@@ -9,13 +9,13 @@
 
 #import "CoronaCards/CoronaViewController.h"
 
-@class EAGLContext;
+@class MGLContext;
 
 // ----------------------------------------------------------------------------
 
 @interface CoronaViewController()
 
-@property (strong, nonatomic) EAGLContext *context;
+@property (strong, nonatomic) MGLContext *context;
 
 @end
 

@@ -34,6 +34,9 @@
 		078DA95B176FD45500A5193E /* Rtt_AppleTextAlignment.mm in Sources */ = {isa = PBXBuildFile; fileRef = 078DA955176FD1EE00A5193E /* Rtt_AppleTextAlignment.mm */; };
 		0795D2481886008F00B3F4B7 /* Rtt_IPhoneVideoObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E6169DED9200723568 /* Rtt_IPhoneVideoObject.mm */; };
 		0795D25A18861C6600B3F4B7 /* Rtt_IPhoneDisplayObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C8169DED9200723568 /* Rtt_IPhoneDisplayObject.mm */; };
+		0AF1C7B824FA4AEF0013C5FD /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF1C74324FA4ACA0013C5FD /* MetalANGLE.framework */; };
+		0AF1C7BC24FA4B9E0013C5FD /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF1C74324FA4ACA0013C5FD /* MetalANGLE.framework */; };
+		0AF1C7BD24FA4B9E0013C5FD /* MetalANGLE.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF1C74324FA4ACA0013C5FD /* MetalANGLE.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A40D2F5D1887699100B4A354 /* CoronaViewPluginContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A40D2F5B1887699100B4A354 /* CoronaViewPluginContext.h */; };
 		A40D2F5E1887699100B4A354 /* CoronaViewPluginContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = A40D2F5C1887699100B4A354 /* CoronaViewPluginContext.mm */; };
 		A40D2F6818876D5200B4A354 /* CoronaViewPluginContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = A40D2F5C1887699100B4A354 /* CoronaViewPluginContext.mm */; };
@@ -275,6 +278,7 @@
 		C26005721D62A63400C542D0 /* _CoronaSplashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */; };
 		C2A6E5311AB0BEE500509FB2 /* widget_theme_ios7@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = C2A6E5301AB0BEE500509FB2 /* widget_theme_ios7@4x.png */; };
 		C2F911791CDC15F4004A5564 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4359164B1D5200CFE7B3 /* libluasocket.a */; };
+		F50CC2C424C9C19100D1A21C /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50CC2C124C9C19100D1A21C /* MetalANGLE.framework */; };
 		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
@@ -336,6 +340,419 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		0AF1C74224FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A60525323464F51005CEA98;
+			remoteInfo = MetalANGLE;
+		};
+		0AF1C74424FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A93697A244CCFDE00B3497E;
+			remoteInfo = MetalANGLE_static;
+		};
+		0AF1C74624FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936F22244CEFA800B3497E;
+			remoteInfo = angle_base;
+		};
+		0AF1C74824FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A6055C123465399005CEA98;
+			remoteInfo = angle_metal_backend;
+		};
+		0AF1C74A24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A9A6AAA23911BBB006A152A;
+			remoteInfo = angle_gl_backend;
+		};
+		0AF1C74C24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A60602A23466F1C005CEA98;
+			remoteInfo = angle_image_util;
+		};
+		0AF1C74E24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9AA2346F0FA00E0B98C;
+			remoteInfo = glslang;
+		};
+		0AF1C75024FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9B72346F10600E0B98C;
+			remoteInfo = "spirv-cross";
+		};
+		0AF1C75224FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9C42346F30C00E0B98C;
+			remoteInfo = jsoncpp;
+		};
+		0AF1C75424FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFF0234734AD00E0B98C;
+			remoteInfo = angle_util;
+		};
+		0AF1C75624FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2003F23473BDD00E0B98C;
+			remoteInfo = angle_common;
+		};
+		0AF1C75824FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E493234867E9007CA616;
+			remoteInfo = sample_util;
+		};
+		0AF1C75A24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F9BD24065C0C005BA9A8;
+			remoteInfo = MetalANGLE_mac;
+		};
+		0AF1C75C24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936BC4244CD98B00B3497E;
+			remoteInfo = MetalANGLE_static_mac;
+		};
+		0AF1C75E24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A93703D244CF03700B3497E;
+			remoteInfo = angle_base_mac;
+		};
+		0AF1C76024FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F77724065B06005BA9A8;
+			remoteInfo = angle_metal_backend_mac;
+		};
+		0AF1C76224FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F75824065AF8005BA9A8;
+			remoteInfo = angle_gl_backend_mac;
+		};
+		0AF1C76424FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F72B24065ADE005BA9A8;
+			remoteInfo = angle_image_util_mac;
+		};
+		0AF1C76624FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F71F24065ACE005BA9A8;
+			remoteInfo = glslang_mac;
+		};
+		0AF1C76824FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6ED24065AC0005BA9A8;
+			remoteInfo = "spirv-cross_mac";
+		};
+		0AF1C76A24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6DC24065AB5005BA9A8;
+			remoteInfo = jsoncpp_mac;
+		};
+		0AF1C76C24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6D124065AA6005BA9A8;
+			remoteInfo = angle_util_mac;
+		};
+		0AF1C76E24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6BC24065A95005BA9A8;
+			remoteInfo = angle_common_mac;
+		};
+		0AF1C77024FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FA0124065F4B005BA9A8;
+			remoteInfo = sample_util_mac;
+		};
+		0AF1C77224FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF9599A244C7CD700F59740;
+			remoteInfo = MetalANGLE_tvos;
+		};
+		0AF1C77424FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936E0A244CD9AA00B3497E;
+			remoteInfo = MetalANGLE_static_tvos;
+		};
+		0AF1C77624FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A937154244CF04900B3497E;
+			remoteInfo = angle_base_tvos;
+		};
+		0AF1C77824FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95755244C7CC300F59740;
+			remoteInfo = angle_metal_backend_tvos;
+		};
+		0AF1C77A24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95731244C7CB200F59740;
+			remoteInfo = angle_gl_backend_tvos;
+		};
+		0AF1C77C24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956C6244C7C5100F59740;
+			remoteInfo = "spirv-cross_tvos";
+		};
+		0AF1C77E24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956F8244C7C8700F59740;
+			remoteInfo = glslang_tvos;
+		};
+		0AF1C78024FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95704244C7C9300F59740;
+			remoteInfo = angle_image_util_tvos;
+		};
+		0AF1C78224FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956B5244C7BF300F59740;
+			remoteInfo = jsoncpp_tvos;
+		};
+		0AF1C78424FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A03A9C7244C84EE00E5E114;
+			remoteInfo = angle_util_tvos;
+		};
+		0AF1C78624FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A03A9E5244C850000E5E114;
+			remoteInfo = angle_common_tvos;
+		};
+		0AF1C78824FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF959B3244C7D5800F59740;
+			remoteInfo = sample_util_tvos;
+		};
+		0AF1C78A24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFAB2347260000E0B98C;
+			remoteInfo = MetalANGLE_ios_13.0;
+		};
+		0AF1C78C24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFD0234727A400E0B98C;
+			remoteInfo = angle_metal_backend_ios_13.0;
+		};
+		0AF1C78E24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2011A2347465000E0B98C;
+			remoteInfo = hello_triangle;
+		};
+		0AF1C79024FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E46623485DC7007CA616;
+			remoteInfo = multi_texture;
+		};
+		0AF1C79224FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4B62348700D007CA616;
+			remoteInfo = particle_system;
+		};
+		0AF1C79424FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4DB234871B2007CA616;
+			remoteInfo = simple_texture_2d;
+		};
+		0AF1C79624FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4FE23487239007CA616;
+			remoteInfo = simple_texture_cubemap;
+		};
+		0AF1C79824FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E52023487284007CA616;
+			remoteInfo = simple_vertex_shader;
+		};
+		0AF1C79A24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E541234872BA007CA616;
+			remoteInfo = texture_wrap;
+		};
+		0AF1C79C24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E5682348749C007CA616;
+			remoteInfo = mip_map_2d;
+		};
+		0AF1C79E24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E589234874E2007CA616;
+			remoteInfo = stencil_operations;
+		};
+		0AF1C7A024FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0ABF407C235340FE0051488C;
+			remoteInfo = tri_fan_microbench;
+		};
+		0AF1C7A224FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB4F2406D93C005BA9A8;
+			remoteInfo = hello_triangle_mac;
+		};
+		0AF1C7A424FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB742406DB53005BA9A8;
+			remoteInfo = multi_texture_mac;
+		};
+		0AF1C7A624FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB822406DB66005BA9A8;
+			remoteInfo = particle_system_mac;
+		};
+		0AF1C7A824FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB902406DB72005BA9A8;
+			remoteInfo = simple_texture_2d_mac;
+		};
+		0AF1C7AA24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB9E2406DB80005BA9A8;
+			remoteInfo = simple_texture_cubemap_mac;
+		};
+		0AF1C7AC24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBAC2406DB8C005BA9A8;
+			remoteInfo = simple_vertex_shader_mac;
+		};
+		0AF1C7AE24FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBBA2406DB99005BA9A8;
+			remoteInfo = texture_wrap_mac;
+		};
+		0AF1C7B024FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBC82406DBA9005BA9A8;
+			remoteInfo = mip_map_2d_mac;
+		};
+		0AF1C7B224FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBD62406DBB9005BA9A8;
+			remoteInfo = stencil_operations_mac;
+		};
+		0AF1C7B424FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBE42406DBC8005BA9A8;
+			remoteInfo = tri_fan_microbench_mac;
+		};
+		0AF1C7B624FA4ACA0013C5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF959EB244C7EE900F59740;
+			remoteInfo = simple_vertex_shader_tvos;
+		};
 		A40D2FAC1889176000B4A354 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -605,6 +1022,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		0AF1C7BE24FA4B9E0013C5FD /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0AF1C7BD24FA4B9E0013C5FD /* MetalANGLE.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A482FA9E183D74950005831B /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -671,6 +1099,7 @@
 		078DA955176FD1EE00A5193E /* Rtt_AppleTextAlignment.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleTextAlignment.mm; sourceTree = "<group>"; };
 		0795D1E3188494C400B3F4B7 /* IPhoneExports.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IPhoneExports.h; path = libtemplate/IPhoneExports.h; sourceTree = "<group>"; };
 		07BB15CC17614EBE00F55D34 /* Rtt_AppleTextAlignment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleTextAlignment.h; sourceTree = "<group>"; };
+		0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLES.xcodeproj; path = ../../external/metalangle/ios/xcode/OpenGLES.xcodeproj; sourceTree = "<group>"; };
 		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* Rtt_Player.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Player.pch; sourceTree = "<group>"; };
 		A40D2F5B1887699100B4A354 /* CoronaViewPluginContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaViewPluginContext.h; path = platform/iphone/CoronaViewPluginContext.h; sourceTree = "<group>"; };
@@ -863,6 +1292,7 @@
 		C23D8DF21954F30200D6555E /* widget_theme_onOff_mask_android_holo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = widget_theme_onOff_mask_android_holo.png; path = ../../subrepos/widget/widget_theme_onOff_mask_android_holo.png; sourceTree = "<group>"; };
 		C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = _CoronaSplashScreen.png; sourceTree = "<group>"; };
 		C2A6E5301AB0BEE500509FB2 /* widget_theme_ios7@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "widget_theme_ios7@4x.png"; path = "../../subrepos/widget/widget_theme_ios7@4x.png"; sourceTree = "<group>"; };
+		F50CC2C124C9C19100D1A21C /* MetalANGLE.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalANGLE.framework; path = ../../external/MetalANGLE/MetalANGLE.framework; sourceTree = "<group>"; };
 		F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleInputDevice.h; sourceTree = "<group>"; };
 		F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleInputDevice.mm; sourceTree = "<group>"; };
 		F564C36A1BE430F900C241E6 /* Rtt_AppleInputDeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleInputDeviceManager.h; sourceTree = "<group>"; };
@@ -909,6 +1339,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A46935B8169D62DA00723568 /* libobjc.dylib in Frameworks */,
+				0AF1C7BC24FA4B9E0013C5FD /* MetalANGLE.framework in Frameworks */,
 				A47098E4169EAB5C00D31091 /* libplayer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -942,6 +1373,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F50CC2C424C9C19100D1A21C /* MetalANGLE.framework in Frameworks */,
 				A482FB0E183EB7AD0005831B /* libtachyon.a in Frameworks */,
 				A482FB06183EB7980005831B /* libalmixer.a in Frameworks */,
 				A482FB07183EB7980005831B /* libbox2d.a in Frameworks */,
@@ -955,6 +1387,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AF1C7B824FA4AEF0013C5FD /* MetalANGLE.framework in Frameworks */,
 				A46885EA18062D4800381941 /* libtachyon.a in Frameworks */,
 				A44D43FF164B201300CFE7B3 /* libalmixer.a in Frameworks */,
 				A44D4400164B201300CFE7B3 /* libbox2d.a in Frameworks */,
@@ -1161,6 +1594,72 @@
 			name = external;
 			sourceTree = SOURCE_ROOT;
 		};
+		0AF1C70424FA4AC90013C5FD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0AF1C74324FA4ACA0013C5FD /* MetalANGLE.framework */,
+				0AF1C74524FA4ACA0013C5FD /* libMetalANGLE_static.a */,
+				0AF1C74724FA4ACA0013C5FD /* libangle_base.a */,
+				0AF1C74924FA4ACA0013C5FD /* libangle_metal_backend.a */,
+				0AF1C74B24FA4ACA0013C5FD /* libangle_gl_backend.a */,
+				0AF1C74D24FA4ACA0013C5FD /* libangle_image_util.a */,
+				0AF1C74F24FA4ACA0013C5FD /* libglslang.a */,
+				0AF1C75124FA4ACA0013C5FD /* libspirv-cross.a */,
+				0AF1C75324FA4ACA0013C5FD /* libjsoncpp.a */,
+				0AF1C75524FA4ACA0013C5FD /* libangle_util.a */,
+				0AF1C75724FA4ACA0013C5FD /* libangle_common.a */,
+				0AF1C75924FA4ACA0013C5FD /* sample_util.framework */,
+				0AF1C75B24FA4ACA0013C5FD /* MetalANGLE.framework */,
+				0AF1C75D24FA4ACA0013C5FD /* libMetalANGLE_static_mac.a */,
+				0AF1C75F24FA4ACA0013C5FD /* libangle_base_mac.a */,
+				0AF1C76124FA4ACA0013C5FD /* libangle_metal_backend_mac.a */,
+				0AF1C76324FA4ACA0013C5FD /* libangle_gl_backend_mac.a */,
+				0AF1C76524FA4ACA0013C5FD /* libangle_image_util_mac.a */,
+				0AF1C76724FA4ACA0013C5FD /* libglslang_mac.a */,
+				0AF1C76924FA4ACA0013C5FD /* libspirv-cross_mac.a */,
+				0AF1C76B24FA4ACA0013C5FD /* libjsoncpp_mac.a */,
+				0AF1C76D24FA4ACA0013C5FD /* libangle_util_mac.a */,
+				0AF1C76F24FA4ACA0013C5FD /* libangle_common_mac.a */,
+				0AF1C77124FA4ACA0013C5FD /* sample_util_mac.framework */,
+				0AF1C77324FA4ACA0013C5FD /* MetalANGLE.framework */,
+				0AF1C77524FA4ACA0013C5FD /* libMetalANGLE_static_tvos.a */,
+				0AF1C77724FA4ACA0013C5FD /* libangle_base_tvos.a */,
+				0AF1C77924FA4ACA0013C5FD /* libangle_metal_backend_tvos.a */,
+				0AF1C77B24FA4ACA0013C5FD /* libangle_gl_backend_tvos.a */,
+				0AF1C77D24FA4ACA0013C5FD /* libspirv-cross_tvos.a */,
+				0AF1C77F24FA4ACA0013C5FD /* libglslang_tvos.a */,
+				0AF1C78124FA4ACA0013C5FD /* libangle_image_util_tvos.a */,
+				0AF1C78324FA4ACA0013C5FD /* libjsoncpp_tvos.a */,
+				0AF1C78524FA4ACA0013C5FD /* libangle_util_tvos.a */,
+				0AF1C78724FA4ACA0013C5FD /* libangle_common_tvos.a */,
+				0AF1C78924FA4ACA0013C5FD /* sample_util_tvos.framework */,
+				0AF1C78B24FA4ACA0013C5FD /* MetalANGLE_ios_13.0.framework */,
+				0AF1C78D24FA4ACA0013C5FD /* libangle_metal_backend_ios_13.0.a */,
+				0AF1C78F24FA4ACA0013C5FD /* hello_triangle.app */,
+				0AF1C79124FA4ACA0013C5FD /* multi_texture.app */,
+				0AF1C79324FA4ACA0013C5FD /* particle_system.app */,
+				0AF1C79524FA4ACA0013C5FD /* simple_texture_2d.app */,
+				0AF1C79724FA4ACA0013C5FD /* simple_texture_cubemap.app */,
+				0AF1C79924FA4ACA0013C5FD /* simple_vertex_shader.app */,
+				0AF1C79B24FA4ACA0013C5FD /* texture_wrap.app */,
+				0AF1C79D24FA4ACA0013C5FD /* mip_map_2d.app */,
+				0AF1C79F24FA4ACA0013C5FD /* stencil_operations.app */,
+				0AF1C7A124FA4ACA0013C5FD /* tri_fan_microbench.app */,
+				0AF1C7A324FA4ACA0013C5FD /* hello_triangle_mac.app */,
+				0AF1C7A524FA4ACA0013C5FD /* multi_texture_mac.app */,
+				0AF1C7A724FA4ACA0013C5FD /* particle_system_mac.app */,
+				0AF1C7A924FA4ACA0013C5FD /* simple_texture_2d_mac.app */,
+				0AF1C7AB24FA4ACA0013C5FD /* simple_texture_cubemap_mac.app */,
+				0AF1C7AD24FA4ACA0013C5FD /* simple_vertex_shader_mac.app */,
+				0AF1C7AF24FA4ACA0013C5FD /* texture_wrap_mac.app */,
+				0AF1C7B124FA4ACA0013C5FD /* mip_map_2d_mac.app */,
+				0AF1C7B324FA4ACA0013C5FD /* stencil_operations_mac.app */,
+				0AF1C7B524FA4ACA0013C5FD /* tri_fan_microbench_mac.app */,
+				0AF1C7B724FA4ACA0013C5FD /* simple_vertex_shader_tvos.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1190,6 +1689,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */,
 				A4B93F9217596F60003466CC /* libtachyon.xcodeproj */,
 				A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */,
 				A49186961642195200A39286 /* plugins.xcodeproj */,
@@ -1224,6 +1724,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F50CC2C124C9C19100D1A21C /* MetalANGLE.framework */,
 				000DCED912B0824800042A5E /* libobjc.dylib */,
 				A4EF76F61A352B43002D3BEF /* CoronaCards.framework */,
 			);
@@ -1779,6 +2280,7 @@
 				A4693594169D62DA00723568 /* Frameworks */,
 				A46935BD169D62DA00723568 /* Script: CopyResources and resource.corona-archive */,
 				A46935BF169D62DA00723568 /* Script: build.settings to Info.plist */,
+				0AF1C7BE24FA4B9E0013C5FD /* Embed Frameworks */,
 			);
 			buildRules = (
 				A46935C1169D62DA00723568 /* PBXBuildRule */,
@@ -2069,6 +2571,10 @@
 					ProjectRef = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
 				},
 				{
+					ProductGroup = 0AF1C70424FA4AC90013C5FD /* Products */;
+					ProjectRef = 0AF1C70324FA4AC90013C5FD /* OpenGLES.xcodeproj */;
+				},
+				{
 					ProductGroup = A49186971642195200A39286 /* Products */;
 					ProjectRef = A49186961642195200A39286 /* plugins.xcodeproj */;
 				},
@@ -2095,6 +2601,419 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		0AF1C74324FA4ACA0013C5FD /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = 0AF1C74224FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C74524FA4ACA0013C5FD /* libMetalANGLE_static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static.a;
+			remoteRef = 0AF1C74424FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C74724FA4ACA0013C5FD /* libangle_base.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base.a;
+			remoteRef = 0AF1C74624FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C74924FA4ACA0013C5FD /* libangle_metal_backend.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend.a;
+			remoteRef = 0AF1C74824FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C74B24FA4ACA0013C5FD /* libangle_gl_backend.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend.a;
+			remoteRef = 0AF1C74A24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C74D24FA4ACA0013C5FD /* libangle_image_util.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util.a;
+			remoteRef = 0AF1C74C24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C74F24FA4ACA0013C5FD /* libglslang.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang.a;
+			remoteRef = 0AF1C74E24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C75124FA4ACA0013C5FD /* libspirv-cross.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross.a";
+			remoteRef = 0AF1C75024FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C75324FA4ACA0013C5FD /* libjsoncpp.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp.a;
+			remoteRef = 0AF1C75224FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C75524FA4ACA0013C5FD /* libangle_util.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util.a;
+			remoteRef = 0AF1C75424FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C75724FA4ACA0013C5FD /* libangle_common.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common.a;
+			remoteRef = 0AF1C75624FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C75924FA4ACA0013C5FD /* sample_util.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util.framework;
+			remoteRef = 0AF1C75824FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C75B24FA4ACA0013C5FD /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = 0AF1C75A24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C75D24FA4ACA0013C5FD /* libMetalANGLE_static_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static_mac.a;
+			remoteRef = 0AF1C75C24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C75F24FA4ACA0013C5FD /* libangle_base_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base_mac.a;
+			remoteRef = 0AF1C75E24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C76124FA4ACA0013C5FD /* libangle_metal_backend_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_mac.a;
+			remoteRef = 0AF1C76024FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C76324FA4ACA0013C5FD /* libangle_gl_backend_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend_mac.a;
+			remoteRef = 0AF1C76224FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C76524FA4ACA0013C5FD /* libangle_image_util_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util_mac.a;
+			remoteRef = 0AF1C76424FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C76724FA4ACA0013C5FD /* libglslang_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang_mac.a;
+			remoteRef = 0AF1C76624FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C76924FA4ACA0013C5FD /* libspirv-cross_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross_mac.a";
+			remoteRef = 0AF1C76824FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C76B24FA4ACA0013C5FD /* libjsoncpp_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp_mac.a;
+			remoteRef = 0AF1C76A24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C76D24FA4ACA0013C5FD /* libangle_util_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util_mac.a;
+			remoteRef = 0AF1C76C24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C76F24FA4ACA0013C5FD /* libangle_common_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common_mac.a;
+			remoteRef = 0AF1C76E24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C77124FA4ACA0013C5FD /* sample_util_mac.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util_mac.framework;
+			remoteRef = 0AF1C77024FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C77324FA4ACA0013C5FD /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = 0AF1C77224FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C77524FA4ACA0013C5FD /* libMetalANGLE_static_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static_tvos.a;
+			remoteRef = 0AF1C77424FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C77724FA4ACA0013C5FD /* libangle_base_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base_tvos.a;
+			remoteRef = 0AF1C77624FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C77924FA4ACA0013C5FD /* libangle_metal_backend_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_tvos.a;
+			remoteRef = 0AF1C77824FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C77B24FA4ACA0013C5FD /* libangle_gl_backend_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend_tvos.a;
+			remoteRef = 0AF1C77A24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C77D24FA4ACA0013C5FD /* libspirv-cross_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross_tvos.a";
+			remoteRef = 0AF1C77C24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C77F24FA4ACA0013C5FD /* libglslang_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang_tvos.a;
+			remoteRef = 0AF1C77E24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C78124FA4ACA0013C5FD /* libangle_image_util_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util_tvos.a;
+			remoteRef = 0AF1C78024FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C78324FA4ACA0013C5FD /* libjsoncpp_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp_tvos.a;
+			remoteRef = 0AF1C78224FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C78524FA4ACA0013C5FD /* libangle_util_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util_tvos.a;
+			remoteRef = 0AF1C78424FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C78724FA4ACA0013C5FD /* libangle_common_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common_tvos.a;
+			remoteRef = 0AF1C78624FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C78924FA4ACA0013C5FD /* sample_util_tvos.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util_tvos.framework;
+			remoteRef = 0AF1C78824FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C78B24FA4ACA0013C5FD /* MetalANGLE_ios_13.0.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE_ios_13.0.framework;
+			remoteRef = 0AF1C78A24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C78D24FA4ACA0013C5FD /* libangle_metal_backend_ios_13.0.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_ios_13.0.a;
+			remoteRef = 0AF1C78C24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C78F24FA4ACA0013C5FD /* hello_triangle.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = hello_triangle.app;
+			remoteRef = 0AF1C78E24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C79124FA4ACA0013C5FD /* multi_texture.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = multi_texture.app;
+			remoteRef = 0AF1C79024FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C79324FA4ACA0013C5FD /* particle_system.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = particle_system.app;
+			remoteRef = 0AF1C79224FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C79524FA4ACA0013C5FD /* simple_texture_2d.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_2d.app;
+			remoteRef = 0AF1C79424FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C79724FA4ACA0013C5FD /* simple_texture_cubemap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_cubemap.app;
+			remoteRef = 0AF1C79624FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C79924FA4ACA0013C5FD /* simple_vertex_shader.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader.app;
+			remoteRef = 0AF1C79824FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C79B24FA4ACA0013C5FD /* texture_wrap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = texture_wrap.app;
+			remoteRef = 0AF1C79A24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C79D24FA4ACA0013C5FD /* mip_map_2d.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mip_map_2d.app;
+			remoteRef = 0AF1C79C24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C79F24FA4ACA0013C5FD /* stencil_operations.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = stencil_operations.app;
+			remoteRef = 0AF1C79E24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7A124FA4ACA0013C5FD /* tri_fan_microbench.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = tri_fan_microbench.app;
+			remoteRef = 0AF1C7A024FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7A324FA4ACA0013C5FD /* hello_triangle_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = hello_triangle_mac.app;
+			remoteRef = 0AF1C7A224FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7A524FA4ACA0013C5FD /* multi_texture_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = multi_texture_mac.app;
+			remoteRef = 0AF1C7A424FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7A724FA4ACA0013C5FD /* particle_system_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = particle_system_mac.app;
+			remoteRef = 0AF1C7A624FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7A924FA4ACA0013C5FD /* simple_texture_2d_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_2d_mac.app;
+			remoteRef = 0AF1C7A824FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7AB24FA4ACA0013C5FD /* simple_texture_cubemap_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_cubemap_mac.app;
+			remoteRef = 0AF1C7AA24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7AD24FA4ACA0013C5FD /* simple_vertex_shader_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader_mac.app;
+			remoteRef = 0AF1C7AC24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7AF24FA4ACA0013C5FD /* texture_wrap_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = texture_wrap_mac.app;
+			remoteRef = 0AF1C7AE24FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7B124FA4ACA0013C5FD /* mip_map_2d_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mip_map_2d_mac.app;
+			remoteRef = 0AF1C7B024FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7B324FA4ACA0013C5FD /* stencil_operations_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = stencil_operations_mac.app;
+			remoteRef = 0AF1C7B224FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7B524FA4ACA0013C5FD /* tri_fan_microbench_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = tri_fan_microbench_mac.app;
+			remoteRef = 0AF1C7B424FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0AF1C7B724FA4ACA0013C5FD /* simple_vertex_shader_tvos.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader_tvos.app;
+			remoteRef = 0AF1C7B624FA4ACA0013C5FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A44D4353164B1D5200CFE7B3 /* librtt.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -2990,6 +3909,7 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/MetalANGLE";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -3023,7 +3943,7 @@
 					../../external/luasocket/src,
 					"../../external/CoronaBeacon/Beacon-iOS/Release-universal/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = iphoneos;
@@ -3031,6 +3951,7 @@
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 3.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/MetalANGLE";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = (
 					../../librtt,
@@ -3056,6 +3977,7 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/MetalANGLE";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -3089,7 +4011,7 @@
 					../../external/luasocket/src,
 					"../../external/CoronaBeacon/Beacon-iOS/Release-universal/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = iphoneos;
@@ -3097,6 +4019,7 @@
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 3.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/MetalANGLE";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = (
 					../../librtt,
@@ -4815,6 +5738,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/MetalANGLE";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -4848,7 +5772,7 @@
 					../../external/luasocket/src,
 					"../../external/CoronaBeacon/Beacon-iOS/Release-universal/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_CFLAGS[arch=arm64]" = "-fexceptions";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -4857,6 +5781,7 @@
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 3.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/MetalANGLE";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = (
 					../../librtt,
@@ -4882,6 +5807,7 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/MetalANGLE";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -4915,7 +5841,7 @@
 					../../external/luasocket/src,
 					"../../external/CoronaBeacon/Beacon-iOS/Release-universal/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				"OTHER_CFLAGS[arch=arm64]" = (
 					"-fexceptions",
@@ -4927,6 +5853,7 @@
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 3.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/MetalANGLE";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = (
 					../../librtt,

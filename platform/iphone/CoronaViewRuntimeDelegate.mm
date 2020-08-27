@@ -128,7 +128,7 @@ CoronaViewRuntimeDelegate::DidLoadConfig( const Runtime& sender, lua_State *L ) 
 	if (antialias)
 	{
 		// TODO: Re-enable once we get this working properly
-		// GLKView *view = fOwner;
+		// MGLKView *view = fOwner;
 		// view.drawableMultisample = GLKViewDrawableMultisample4X;
 	}
 }

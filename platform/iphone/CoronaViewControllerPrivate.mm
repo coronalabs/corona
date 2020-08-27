@@ -10,7 +10,7 @@
 #import "CoronaViewControllerPrivate.h"
 
 #import "CoronaViewPrivate.h"
-#import <OpenGLES/EAGL.h>
+#import <MetalANGLE/angle_gl.h>
 #import "CoronaRuntime.h"
 #import "CoronaViewPluginContext.h"
 
@@ -46,9 +46,9 @@
 
 - (void)dealloc
 {
-	if ( [EAGLContext currentContext] == self.context )
+	if ( [MGLContext currentContext] == self.context )
 	{
-        [EAGLContext setCurrentContext:nil];
+        [MGLContext setCurrentContext:nil];
     }
     
     [_context release];
@@ -67,8 +67,11 @@
 		// Default to full screen
 		UIScreen *screen = [UIScreen mainScreen];
 		CGRect screenBounds = screen.bounds; // includes status bar
+		
+		if(!self.context) self.context = [[[MGLContext alloc] initWithAPI:kMGLRenderingAPIOpenGLES2] autorelease];
 
-		CoronaView *view = [[CoronaView alloc] initWithFrame:screenBounds context:nil];
+
+		CoronaView *view = [[CoronaView alloc] initWithFrame:screenBounds context:self.context];
 		self.view = view;
 		[view release];
 	}
@@ -81,7 +84,7 @@
 {
     [super viewDidLoad];
     
-    self.context = [[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2] autorelease];
+    if(!self.context) self.context = [[[MGLContext alloc] initWithAPI:kMGLRenderingAPIOpenGLES2] autorelease];
 
     if ( ! self.context )
 	{
@@ -91,7 +94,7 @@
 	CoronaView *view = (CoronaView *)self.view;
 
 	view.context = self.context;
-	view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
+	view.drawableDepthFormat = MGLDrawableDepthFormat24;
 }
 
 #if Rtt_DEBUG_VIEWCONTROLLER
@@ -116,12 +119,12 @@
 	[super viewDidAppear:animated];
 }
 
-// GLKViewControllerDelegate
-- (void)glkViewControllerUpdate:(GLKViewController *)controller
+// MGLKViewControllerDelegate
+- (void)mglkViewControllerUpdate:(MGLKViewController *)controller
 {
 }
 
-- (void)glkViewController:(GLKViewController *)controller willPause:(BOOL)pause
+- (void)mglkViewController:(MGLKViewController *)controller willPause:(BOOL)pause
 {
 }
 
