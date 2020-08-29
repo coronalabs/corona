@@ -4,3 +4,10 @@ To run Corona app on device or Xcode simulator create folder `$CORONA_REPO/platf
 Then open `ratatouille.xcodeproj`, select `template` target and press Run.
 
 Note, that `platform/test/assets2` directory must not be committed to the repo.
+
+# MetalANGLE backend
+To test MetalANGLE backend, run 
+```sh
+external/MetalANGLE/ios/xcode/fetchDependencies.sh
+```
+From the root of the repo and use `template-angle` target.
