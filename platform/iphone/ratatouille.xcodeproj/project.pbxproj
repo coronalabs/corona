@@ -282,7 +282,6 @@
 		F50E7EB624FA923B009F165B /* Corona3rdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 004A5F321368DA41003BD9DA /* Corona3rdPartyLicenses.txt */; };
 		F50E7EB824FA923B009F165B /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
 		F50E7EBA24FA923B009F165B /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 000DCED912B0824800042A5E /* libobjc.dylib */; };
-		F50E7EBB24FA923B009F165B /* libplayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A47098D5169E9F2400D31091 /* libplayer.a */; };
 		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
@@ -303,6 +302,127 @@
 		F5A7521A1BFA401800CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5C36AF324FA93A700775C6E /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; };
 		F5C36AF424FA93A700775C6E /* MetalANGLE.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F5C36BFB24FAB49F00775C6E /* CoronaBeacon.mm in Sources */ = {isa = PBXBuildFile; fileRef = C2074EB91E160FC1009FC33C /* CoronaBeacon.mm */; };
+		F5C36BFC24FAB49F00775C6E /* AppleWeakProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4C3189A1A6EDD4400F186DF /* AppleWeakProxy.mm */; };
+		F5C36BFD24FAB49F00775C6E /* Rtt_IPhonePlatformCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = A415ECAD1BD861A1003E7114 /* Rtt_IPhonePlatformCore.mm */; };
+		F5C36BFE24FAB49F00775C6E /* CoronaSystemResourceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4C318511A67B65100F186DF /* CoronaSystemResourceManager.mm */; };
+		F5C36BFF24FAB49F00775C6E /* Rtt_IPhoneMediaProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = F81D159A180D9F32003FCBF9 /* Rtt_IPhoneMediaProvider.mm */; };
+		F5C36C0024FAB49F00775C6E /* Rtt_AppleAudioRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2912B073A000042A5E /* Rtt_AppleAudioRecorder.mm */; };
+		F5C36C0124FAB49F00775C6E /* Rtt_AppleBitmap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2C12B073A000042A5E /* Rtt_AppleBitmap.mm */; };
+		F5C36C0224FAB49F00775C6E /* Rtt_AppleCallback.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2E12B073A000042A5E /* Rtt_AppleCallback.mm */; };
+		F5C36C0324FAB49F00775C6E /* Rtt_AppleData.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3412B073A000042A5E /* Rtt_AppleData.mm */; };
+		F5C36C0424FAB49F00775C6E /* Rtt_AppleInAppStore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B64B14632D4400EEDF75 /* Rtt_AppleInAppStore.mm */; };
+		F5C36C0524FAB49F00775C6E /* Rtt_AppleInAppStoreApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B64D14632D4400EEDF75 /* Rtt_AppleInAppStoreApple.mm */; };
+		F5C36C0624FAB49F00775C6E /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B64F14632D4400EEDF75 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm */; };
+		F5C36C0724FAB49F00775C6E /* Rtt_ApplePlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3B12B073A000042A5E /* Rtt_ApplePlatform.mm */; };
+		F5C36C0824FAB49F00775C6E /* Rtt_IPhoneOrientation.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B2D52418402BDE001311C9 /* Rtt_IPhoneOrientation.mm */; };
+		F5C36C0924FAB49F00775C6E /* Rtt_AppleReachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00E867DB1366435F00AAFA26 /* Rtt_AppleReachability.mm */; };
+		F5C36C0A24FAB49F00775C6E /* Rtt_AppleTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3D12B073A000042A5E /* Rtt_AppleTimer.mm */; };
+		F5C36C0B24FAB49F00775C6E /* Rtt_AppleAudioPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2712B073A000042A5E /* Rtt_AppleAudioPlayer.cpp */; };
+		F5C36C0C24FAB49F00775C6E /* Rtt_AppleCrypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3112B073A000042A5E /* Rtt_AppleCrypto.cpp */; };
+		F5C36C0D24FAB49F00775C6E /* Rtt_AppleEventSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3712B073A000042A5E /* Rtt_AppleEventSound.cpp */; };
+		F5C36C0E24FAB49F00775C6E /* Rtt_AppleTextDelegateWrapperObjectHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 002078EF13B51A3C00D575C3 /* Rtt_AppleTextDelegateWrapperObjectHelper.m */; };
+		F5C36C0F24FAB49F00775C6E /* CoronaApplicationMain.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4543E7D151AA23A00486F8A /* CoronaApplicationMain.mm */; };
+		F5C36C1024FAB49F00775C6E /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936B4169DED4700723568 /* AppDelegate.mm */; };
+		F5C36C1124FAB49F00775C6E /* Rtt_IPhoneText.mm in Sources */ = {isa = PBXBuildFile; fileRef = A47AB0EF1A72EEA2001D3FFA /* Rtt_IPhoneText.mm */; };
+		F5C36C1224FAB49F00775C6E /* CoronaViewPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936B9169DED6500723568 /* CoronaViewPrivate.mm */; };
+		F5C36C1324FAB49F00775C6E /* Rtt_IPhoneAudioSessionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936BF169DED9200723568 /* Rtt_IPhoneAudioSessionManager.mm */; };
+		F5C36C1424FAB49F00775C6E /* Rtt_IPhoneAudioSessionManagerImplementation.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C1169DED9200723568 /* Rtt_IPhoneAudioSessionManagerImplementation.mm */; };
+		F5C36C1524FAB49F00775C6E /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F5C36C1624FAB49F00775C6E /* CoronaLuaObjC+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A4728FE61AE7F77B00BC088D /* CoronaLuaObjC+NSObject.m */; };
+		F5C36C1724FAB49F00775C6E /* Rtt_IPhoneDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C6169DED9200723568 /* Rtt_IPhoneDevice.mm */; };
+		F5C36C1824FAB49F00775C6E /* Rtt_IPhoneDisplayObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C8169DED9200723568 /* Rtt_IPhoneDisplayObject.mm */; };
+		F5C36C1924FAB49F00775C6E /* Rtt_IPhoneFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936CC169DED9200723568 /* Rtt_IPhoneFont.mm */; };
+		F5C36C1A24FAB49F00775C6E /* CoronaViewRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B2D5371842DBE1001311C9 /* CoronaViewRuntimeDelegate.mm */; };
+		F5C36C1B24FAB49F00775C6E /* Rtt_RuntimeDelegatePlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A48DA9601852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.cpp */; };
+		F5C36C1C24FAB49F00775C6E /* Rtt_IPhoneImageProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936D2169DED9200723568 /* Rtt_IPhoneImageProvider.mm */; };
+		F5C36C1D24FAB49F00775C6E /* Rtt_IPhoneMapViewObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936D8169DED9200723568 /* Rtt_IPhoneMapViewObject.mm */; };
+		F5C36C1E24FAB49F00775C6E /* Rtt_IPhonePlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936DE169DED9200723568 /* Rtt_IPhonePlatform.mm */; };
+		F5C36C1F24FAB49F00775C6E /* CoronaLuaObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4728FEF1AE8176F00BC088D /* CoronaLuaObjC.mm */; };
+		F5C36C2024FAB49F00775C6E /* Rtt_IPhoneScreenSurface.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E0169DED9200723568 /* Rtt_IPhoneScreenSurface.mm */; };
+		F5C36C2124FAB49F00775C6E /* Rtt_IPhoneRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A415ECA51BD86132003E7114 /* Rtt_IPhoneRuntimeDelegate.mm */; };
+		F5C36C2224FAB49F00775C6E /* CoronaAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = F81D63B11A609F8B00C7ADAA /* CoronaAppDelegate.mm */; };
+		F5C36C2324FAB49F00775C6E /* Rtt_IPhoneTextBoxObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E2169DED9200723568 /* Rtt_IPhoneTextBoxObject.mm */; };
+		F5C36C2424FAB49F00775C6E /* Rtt_IPhoneTextFieldObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E4169DED9200723568 /* Rtt_IPhoneTextFieldObject.mm */; };
+		F5C36C2524FAB49F00775C6E /* Rtt_IPhoneVideoObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E6169DED9200723568 /* Rtt_IPhoneVideoObject.mm */; };
+		F5C36C2624FAB49F00775C6E /* Rtt_IPhoneVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E8169DED9200723568 /* Rtt_IPhoneVideoPlayer.mm */; };
+		F5C36C2724FAB49F00775C6E /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */; };
+		F5C36C2824FAB49F00775C6E /* Rtt_IPhoneVideoProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = F87434AB180629540024ECFD /* Rtt_IPhoneVideoProvider.mm */; };
+		F5C36C2924FAB49F00775C6E /* Rtt_TouchInhibitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = A48E9BFB183EFFC500F67CB3 /* Rtt_TouchInhibitor.mm */; };
+		F5C36C2A24FAB49F00775C6E /* Rtt_IPhoneWebPopup.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936EA169DED9200723568 /* Rtt_IPhoneWebPopup.mm */; };
+		F5C36C2B24FAB49F00775C6E /* CoronaViewPluginContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = A40D2F5C1887699100B4A354 /* CoronaViewPluginContext.mm */; };
+		F5C36C2C24FAB49F00775C6E /* Rtt_IPhoneWebViewObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936EC169DED9300723568 /* Rtt_IPhoneWebViewObject.mm */; };
+		F5C36C2D24FAB49F00775C6E /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36F1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm */; };
+		F5C36C2E24FAB49F00775C6E /* CoronaLuaIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = A480725B16CACD6E00960127 /* CoronaLuaIOS.mm */; };
+		F5C36C2F24FAB49F00775C6E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */; };
+		F5C36C3024FAB49F00775C6E /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36B1BE430F900C241E6 /* Rtt_AppleInputDeviceManager.mm */; };
+		F5C36C3124FAB49F00775C6E /* CoronaViewControllerPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A48E9BF5183EF42400F67CB3 /* CoronaViewControllerPrivate.mm */; };
+		F5C36C3224FAB49F00775C6E /* CoronaNativeObjectAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4FA8052170BFEAD002A7FC9 /* CoronaNativeObjectAdapter.mm */; };
+		F5C36C3324FAB49F00775C6E /* Rtt_IPhoneNativeObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4FA8055170BFEFA002A7FC9 /* Rtt_IPhoneNativeObject.mm */; };
+		F5C36C3424FAB49F00775C6E /* Rtt_IPhoneTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0720731117CD2C93004720D2 /* Rtt_IPhoneTimer.mm */; };
+		F5C36C3524FAB49F00775C6E /* Rtt_IPhonePlatformBase.mm in Sources */ = {isa = PBXBuildFile; fileRef = A482FAE9183D7F460005831B /* Rtt_IPhonePlatformBase.mm */; };
+		F5C36C3624FAB49F00775C6E /* Rtt_IPhoneGLVideoTexture.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AF6517D1848A000C432B /* Rtt_IPhoneGLVideoTexture.mm */; };
+		F5C36C3724FAB49F00775C6E /* Rtt_AppleTextAlignment.mm in Sources */ = {isa = PBXBuildFile; fileRef = 078DA955176FD1EE00A5193E /* Rtt_AppleTextAlignment.mm */; };
+		F5C36C3824FAB49F00775C6E /* Rtt_DependencyUtilsApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 070F390B18CE1FD600BC2BEE /* Rtt_DependencyUtilsApple.mm */; };
+		F5C36C3924FAB49F00775C6E /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
+		F5C36C3A24FAB49F00775C6E /* Rtt_DependencyLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 070F390818CE1FD600BC2BEE /* Rtt_DependencyLoader.cpp */; };
+		F5C36C3C24FAB49F00775C6E /* libtachyon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B93F9717596F60003466CC /* libtachyon.a */; };
+		F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435D164B1D5200CFE7B3 /* libalmixer.a */; };
+		F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435B164B1D5200CFE7B3 /* libbox2d.a */; };
+		F5C36C3F24FAB49F00775C6E /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4355164B1D5200CFE7B3 /* liblua.a */; };
+		F5C36C4024FAB49F00775C6E /* libluafilesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4357164B1D5200CFE7B3 /* libluafilesystem.a */; };
+		F5C36C4124FAB49F00775C6E /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4359164B1D5200CFE7B3 /* libluasocket.a */; };
+		F5C36C4224FAB49F00775C6E /* librtt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4353164B1D5200CFE7B3 /* librtt.a */; };
+		F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A49186A91642195200A39286 /* libplugins.a */; };
+		F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A445AA5D16B2049900A9A764 /* libgameNetwork.a */; };
+		F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4F12C2616D4379F002BCCFB /* liblicensing.a */; };
+		F5C36C4624FAB49F00775C6E /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0727BA9E16E6908300981C4B /* libnetwork.a */; };
+		F5C36C4824FAB49F00775C6E /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
+		F5C36C4924FAB49F00775C6E /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
+		F5C36C4A24FAB49F00775C6E /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
+		F5C36C4B24FAB49F00775C6E /* Rtt_IPhoneRuntimeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A415ECA41BD86132003E7114 /* Rtt_IPhoneRuntimeDelegate.h */; };
+		F5C36C4C24FAB49F00775C6E /* CoronaLuaObjC+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A4728FE51AE7F77B00BC088D /* CoronaLuaObjC+NSObject.h */; };
+		F5C36C4D24FAB49F00775C6E /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7F151AA23A00486F8A /* CoronaRuntime.h */; };
+		F5C36C4E24FAB49F00775C6E /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A491870616421FBE00A39286 /* CoronaIOSLoader.h */; };
+		F5C36C4F24FAB49F00775C6E /* CoronaLuaObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = A4728FEE1AE8176F00BC088D /* CoronaLuaObjC.h */; };
+		F5C36C5024FAB49F00775C6E /* CoronaLuaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A48DA97D18531028009D1F93 /* CoronaLuaLibrary.h */; };
+		F5C36C5124FAB49F00775C6E /* CoronaViewControllerPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A48E9BF6183EF42400F67CB3 /* CoronaViewControllerPrivate.h */; };
+		F5C36C5224FAB49F00775C6E /* AppleWeakProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C318991A6EDD4400F186DF /* AppleWeakProxy.h */; };
+		F5C36C5324FAB49F00775C6E /* CoronaSystemResourceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C318501A67B65100F186DF /* CoronaSystemResourceManager.h */; };
+		F5C36C5424FAB49F00775C6E /* CoronaOrientationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C3184B1A67B5B800F186DF /* CoronaOrientationObserver.h */; };
+		F5C36C5524FAB49F00775C6E /* Rtt_IPhonePlatformCore.h in Headers */ = {isa = PBXBuildFile; fileRef = A415ECAC1BD861A1003E7114 /* Rtt_IPhonePlatformCore.h */; };
+		F5C36C5624FAB49F00775C6E /* CoronaAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F81D63B01A609F8B00C7ADAA /* CoronaAppDelegate.h */; };
+		F5C36C5724FAB49F00775C6E /* Rtt_TouchInhibitor.h in Headers */ = {isa = PBXBuildFile; fileRef = A48E9BFA183EFFC500F67CB3 /* Rtt_TouchInhibitor.h */; };
+		F5C36C5824FAB49F00775C6E /* Rtt_RuntimeDelegatePlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = A48DA9611852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.h */; };
+		F5C36C5924FAB49F00775C6E /* Rtt_IPhonePlatformBase.h in Headers */ = {isa = PBXBuildFile; fileRef = A482FAE8183D7F460005831B /* Rtt_IPhonePlatformBase.h */; };
+		F5C36C5A24FAB49F00775C6E /* CoronaGyroscopeObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C318711A69A4E000F186DF /* CoronaGyroscopeObserver.h */; };
+		F5C36C5B24FAB49F00775C6E /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
+		F5C36C5C24FAB49F00775C6E /* CoronaViewPluginContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A40D2F5B1887699100B4A354 /* CoronaViewPluginContext.h */; };
+		F5C36C5D24FAB49F00775C6E /* CoronaViewRuntimeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B2D5361842DBE1001311C9 /* CoronaViewRuntimeDelegate.h */; };
+		F5C36C5E24FAB49F00775C6E /* Rtt_IPhoneOrientation.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B2D52318402BDE001311C9 /* Rtt_IPhoneOrientation.h */; };
+		F5C36C5F24FAB49F00775C6E /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
+		F5C36C6024FAB49F00775C6E /* Rtt_IPhoneText.h in Headers */ = {isa = PBXBuildFile; fileRef = A47AB0EE1A72EEA2001D3FFA /* Rtt_IPhoneText.h */; };
+		F5C36C6124FAB49F00775C6E /* Rtt_IPhoneGLVideoTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = A4D0AF6417D1848A000C432B /* Rtt_IPhoneGLVideoTexture.h */; };
+		F5C36C6224FAB49F00775C6E /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
+		F5C36CAB24FAB4E900775C6E /* Rtt_IPhoneTemplate-Sub.mm in Sources */ = {isa = PBXBuildFile; fileRef = A469881B169E23B200EAA645 /* Rtt_IPhoneTemplate-Sub.mm */; };
+		F5C36CAF24FAB4E900775C6E /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
+		F5C36CB024FAB4E900775C6E /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
+		F5C36CB124FAB4E900775C6E /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
+		F5C36CB224FAB4E900775C6E /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
+		F5C36CB324FAB4E900775C6E /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7F151AA23A00486F8A /* CoronaRuntime.h */; };
+		F5C36CB424FAB4E900775C6E /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A491870616421FBE00A39286 /* CoronaIOSLoader.h */; };
+		F5C36CB524FAB4E900775C6E /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
+		F5C36CC024FAB50800775C6E /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
+		F5C36CC424FAB50800775C6E /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
+		F5C36CC524FAB50800775C6E /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
+		F5C36CC624FAB50800775C6E /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
+		F5C36CC724FAB50800775C6E /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
+		F5C36CC824FAB50800775C6E /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7F151AA23A00486F8A /* CoronaRuntime.h */; };
+		F5C36CC924FAB50800775C6E /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A491870616421FBE00A39286 /* CoronaIOSLoader.h */; };
+		F5C36CCA24FAB50800775C6E /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
+		F5C36CD524FAB55B00775C6E /* liblibplayer-core-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36C6824FAB49F00775C6E /* liblibplayer-core-angle.a */; };
+		F5C36CD624FAB5CC00775C6E /* liblibplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36CBB24FAB4E900775C6E /* liblibplayer-angle.a */; };
+		F5C36CDB24FAB5E500775C6E /* liblibplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36CBB24FAB4E900775C6E /* liblibplayer-angle.a */; };
 		F5FD0AE32373933C0066F6A6 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F804E0EC17E3C4890022E24C /* widget_theme_android.png in Resources */ = {isa = PBXBuildFile; fileRef = F804E0E817E3C4890022E24C /* widget_theme_android.png */; };
 		F804E0ED17E3C4890022E24C /* widget_theme_android@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F804E0E917E3C4890022E24C /* widget_theme_android@2x.png */; };
@@ -625,20 +745,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = A4F2ADFA16E0AF7D00814C7B;
 			remoteInfo = "libtemplate-trial";
-		};
-		F50E7EAE24FA923B009F165B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A4F2ADC316E0AF2E00814C7B;
-			remoteInfo = libtemplate;
-		};
-		F50E7EB024FA923B009F165B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A47098A4169E9F2400D31091;
-			remoteInfo = libplayer;
 		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1053,6 +1159,104 @@
 			remoteGlobalIDString = 0AF959EB244C7EE900F59740;
 			remoteInfo = simple_vertex_shader_tvos;
 		};
+		F5C36BE924FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4B93ED917596543003466CC;
+			remoteInfo = tachyon;
+		};
+		F5C36BEB24FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A48B825B16D594AA00CA01A1;
+			remoteInfo = CoronaResources;
+		};
+		F5C36BED24FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DCA7E12B05CE200042A5E;
+			remoteInfo = librtt;
+		};
+		F5C36BEF24FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DC8D412B04E5400042A5E;
+			remoteInfo = liblua;
+		};
+		F5C36BF124FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00537D7E154F752C008CEF00;
+			remoteInfo = luafilesystem;
+		};
+		F5C36BF324FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C2F9112F1CDC0F20004A5564;
+			remoteInfo = libluasocket;
+		};
+		F5C36BF524FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DC9BE12B05ACC00042A5E;
+			remoteInfo = libbox2d;
+		};
+		F5C36BF724FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DCC5012B05FF200042A5E;
+			remoteInfo = libalmixer;
+		};
+		F5C36BF924FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A49186961642195200A39286 /* plugins.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4FDBF2915DC232600E5001C;
+			remoteInfo = plugins;
+		};
+		F5C36CD124FAB53500775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C36CA724FAB4E900775C6E;
+			remoteInfo = "libplayer-angle";
+		};
+		F5C36CD324FAB55300775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C36BE724FAB49F00775C6E;
+			remoteInfo = "libplayer-core-angle";
+		};
+		F5C36CD724FAB5DD00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C36CA724FAB4E900775C6E;
+			remoteInfo = "libplayer-angle";
+		};
+		F5C36CD924FAB5DD00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C36CBC24FAB50800775C6E;
+			remoteInfo = "libtemplate-angle";
+		};
+		F5C36CDC24FAB65600775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A60525223464F51005CEA98;
+			remoteInfo = MetalANGLE;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1336,6 +1540,9 @@
 		F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = Corona/CoronaLuaObjCHelper.h; sourceTree = SOURCE_ROOT; };
 		F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = Corona/CoronaLuaObjCHelper.mm; sourceTree = SOURCE_ROOT; };
 		F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLES.xcodeproj; path = ../../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj; sourceTree = "<group>"; };
+		F5C36C6824FAB49F00775C6E /* liblibplayer-core-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblibplayer-core-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5C36CBB24FAB4E900775C6E /* liblibplayer-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblibplayer-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5C36CD024FAB50800775C6E /* liblibtemplate-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblibtemplate-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AutoLinkModules.m; path = platform/iphone/AutoLinkModules.m; sourceTree = "<group>"; };
 		F804E0E817E3C4890022E24C /* widget_theme_android.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = widget_theme_android.png; path = ../../subrepos/widget/widget_theme_android.png; sourceTree = "<group>"; };
 		F804E0E917E3C4890022E24C /* widget_theme_android@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "widget_theme_android@2x.png"; path = "../../subrepos/widget/widget_theme_android@2x.png"; sourceTree = "<group>"; };
@@ -1479,9 +1686,43 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5C36CDB24FAB5E500775C6E /* liblibplayer-angle.a in Frameworks */,
 				F50E7EBA24FA923B009F165B /* libobjc.dylib in Frameworks */,
 				F5C36AF324FA93A700775C6E /* MetalANGLE.framework in Frameworks */,
-				F50E7EBB24FA923B009F165B /* libplayer.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36C3B24FAB49F00775C6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36C3C24FAB49F00775C6E /* libtachyon.a in Frameworks */,
+				F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */,
+				F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */,
+				F5C36C3F24FAB49F00775C6E /* liblua.a in Frameworks */,
+				F5C36C4024FAB49F00775C6E /* libluafilesystem.a in Frameworks */,
+				F5C36C4124FAB49F00775C6E /* libluasocket.a in Frameworks */,
+				F5C36C4224FAB49F00775C6E /* librtt.a in Frameworks */,
+				F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */,
+				F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */,
+				F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */,
+				F5C36C4624FAB49F00775C6E /* libnetwork.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CAC24FAB4E900775C6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CD524FAB55B00775C6E /* liblibplayer-core-angle.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CC124FAB50800775C6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CD624FAB5CC00775C6E /* liblibplayer-angle.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1658,6 +1899,9 @@
 				A40D2F721889151E00B4A354 /* CoronaCardsTest-Ad.app */,
 				A4EF76F51A352B43002D3BEF /* CoronaCardsTest-Swift.app */,
 				F50E7EC424FA923B009F165B /* template-angle.app */,
+				F5C36C6824FAB49F00775C6E /* liblibplayer-core-angle.a */,
+				F5C36CBB24FAB4E900775C6E /* liblibplayer-angle.a */,
+				F5C36CD024FAB50800775C6E /* liblibtemplate-angle.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2270,6 +2514,68 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5C36C4724FAB49F00775C6E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36C4824FAB49F00775C6E /* LibPlayerPrefix.pch in Headers */,
+				F5C36C4924FAB49F00775C6E /* CoronaApplicationMain.h in Headers */,
+				F5C36C4A24FAB49F00775C6E /* CoronaDelegate.h in Headers */,
+				F5C36C4B24FAB49F00775C6E /* Rtt_IPhoneRuntimeDelegate.h in Headers */,
+				F5C36C4C24FAB49F00775C6E /* CoronaLuaObjC+NSObject.h in Headers */,
+				F5C36C4D24FAB49F00775C6E /* CoronaRuntime.h in Headers */,
+				F5C36C4E24FAB49F00775C6E /* CoronaIOSLoader.h in Headers */,
+				F5C36C4F24FAB49F00775C6E /* CoronaLuaObjC.h in Headers */,
+				F5C36C5024FAB49F00775C6E /* CoronaLuaLibrary.h in Headers */,
+				F5C36C5124FAB49F00775C6E /* CoronaViewControllerPrivate.h in Headers */,
+				F5C36C5224FAB49F00775C6E /* AppleWeakProxy.h in Headers */,
+				F5C36C5324FAB49F00775C6E /* CoronaSystemResourceManager.h in Headers */,
+				F5C36C5424FAB49F00775C6E /* CoronaOrientationObserver.h in Headers */,
+				F5C36C5524FAB49F00775C6E /* Rtt_IPhonePlatformCore.h in Headers */,
+				F5C36C5624FAB49F00775C6E /* CoronaAppDelegate.h in Headers */,
+				F5C36C5724FAB49F00775C6E /* Rtt_TouchInhibitor.h in Headers */,
+				F5C36C5824FAB49F00775C6E /* Rtt_RuntimeDelegatePlayer.h in Headers */,
+				F5C36C5924FAB49F00775C6E /* Rtt_IPhonePlatformBase.h in Headers */,
+				F5C36C5A24FAB49F00775C6E /* CoronaGyroscopeObserver.h in Headers */,
+				F5C36C5B24FAB49F00775C6E /* Rtt_AppleInputDevice.h in Headers */,
+				F5C36C5C24FAB49F00775C6E /* CoronaViewPluginContext.h in Headers */,
+				F5C36C5D24FAB49F00775C6E /* CoronaViewRuntimeDelegate.h in Headers */,
+				F5C36C5E24FAB49F00775C6E /* Rtt_IPhoneOrientation.h in Headers */,
+				F5C36C5F24FAB49F00775C6E /* CoronaLuaIOS.h in Headers */,
+				F5C36C6024FAB49F00775C6E /* Rtt_IPhoneText.h in Headers */,
+				F5C36C6124FAB49F00775C6E /* Rtt_IPhoneGLVideoTexture.h in Headers */,
+				F5C36C6224FAB49F00775C6E /* CoronaLuaObjCHelper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CAE24FAB4E900775C6E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CAF24FAB4E900775C6E /* LibPlayerPrefix.pch in Headers */,
+				F5C36CB024FAB4E900775C6E /* CoronaApplicationMain.h in Headers */,
+				F5C36CB124FAB4E900775C6E /* CoronaLuaObjCHelper.h in Headers */,
+				F5C36CB224FAB4E900775C6E /* CoronaDelegate.h in Headers */,
+				F5C36CB324FAB4E900775C6E /* CoronaRuntime.h in Headers */,
+				F5C36CB424FAB4E900775C6E /* CoronaIOSLoader.h in Headers */,
+				F5C36CB524FAB4E900775C6E /* CoronaLuaIOS.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CC324FAB50800775C6E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CC424FAB50800775C6E /* LibPlayerPrefix.pch in Headers */,
+				F5C36CC524FAB50800775C6E /* CoronaApplicationMain.h in Headers */,
+				F5C36CC624FAB50800775C6E /* CoronaLuaObjCHelper.h in Headers */,
+				F5C36CC724FAB50800775C6E /* CoronaDelegate.h in Headers */,
+				F5C36CC824FAB50800775C6E /* CoronaRuntime.h in Headers */,
+				F5C36CC924FAB50800775C6E /* CoronaIOSLoader.h in Headers */,
+				F5C36CCA24FAB50800775C6E /* CoronaLuaIOS.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -2567,13 +2873,76 @@
 				F50E7EBE24FA923B009F165B /* PBXBuildRule */,
 			);
 			dependencies = (
-				F50E7EAD24FA923B009F165B /* PBXTargetDependency */,
-				F50E7EAF24FA923B009F165B /* PBXTargetDependency */,
+				F5C36CD824FAB5DD00775C6E /* PBXTargetDependency */,
+				F5C36CDA24FAB5DD00775C6E /* PBXTargetDependency */,
 			);
 			name = "template-angle";
 			productName = ratatouille;
 			productReference = F50E7EC424FA923B009F165B /* template-angle.app */;
 			productType = "com.apple.product-type.application";
+		};
+		F5C36BE724FAB49F00775C6E /* libplayer-core-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C36C6324FAB49F00775C6E /* Build configuration list for PBXNativeTarget "libplayer-core-angle" */;
+			buildPhases = (
+				F5C36BFA24FAB49F00775C6E /* Sources */,
+				F5C36C3B24FAB49F00775C6E /* Frameworks */,
+				F5C36C4724FAB49F00775C6E /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5C36CDD24FAB65600775C6E /* PBXTargetDependency */,
+				F5C36BE824FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BEC24FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BEE24FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF024FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF224FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF424FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF624FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF824FAB49F00775C6E /* PBXTargetDependency */,
+			);
+			name = "libplayer-core-angle";
+			productName = libcorona;
+			productReference = F5C36C6824FAB49F00775C6E /* liblibplayer-core-angle.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		F5C36CA724FAB4E900775C6E /* libplayer-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C36CB624FAB4E900775C6E /* Build configuration list for PBXNativeTarget "libplayer-angle" */;
+			buildPhases = (
+				F5C36CAA24FAB4E900775C6E /* Sources */,
+				F5C36CAC24FAB4E900775C6E /* Frameworks */,
+				F5C36CAE24FAB4E900775C6E /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5C36CD424FAB55300775C6E /* PBXTargetDependency */,
+			);
+			name = "libplayer-angle";
+			productName = libcorona;
+			productReference = F5C36CBB24FAB4E900775C6E /* liblibplayer-angle.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		F5C36CBC24FAB50800775C6E /* libtemplate-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C36CCB24FAB50800775C6E /* Build configuration list for PBXNativeTarget "libtemplate-angle" */;
+			buildPhases = (
+				F5C36CBF24FAB50800775C6E /* Sources */,
+				F5C36CC124FAB50800775C6E /* Frameworks */,
+				F5C36CC324FAB50800775C6E /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5C36CD224FAB53500775C6E /* PBXTargetDependency */,
+			);
+			name = "libtemplate-angle";
+			productName = libcorona;
+			productReference = F5C36CD024FAB50800775C6E /* liblibtemplate-angle.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -2646,10 +3015,13 @@
 			targets = (
 				A48B825B16D594AA00CA01A1 /* CoronaResources */,
 				A4841094151147BE0074BD57 /* libplayer-core */,
+				F5C36BE724FAB49F00775C6E /* libplayer-core-angle */,
 				A47098A4169E9F2400D31091 /* libplayer */,
+				F5C36CA724FAB4E900775C6E /* libplayer-angle */,
 				A469363D169D69EF00723568 /* libplayer-trial */,
 				A43B955B15C779EE003E6F9F /* testplayer-enterprise */,
 				A4F2ADC316E0AF2E00814C7B /* libtemplate */,
+				F5C36CBC24FAB50800775C6E /* libtemplate-angle */,
 				A4F2ADFA16E0AF7D00814C7B /* libtemplate-trial */,
 				A4693558169D62DA00723568 /* template */,
 				F50E7EAC24FA923B009F165B /* template-angle */,
@@ -3753,6 +4125,93 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5C36BFA24FAB49F00775C6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36BFB24FAB49F00775C6E /* CoronaBeacon.mm in Sources */,
+				F5C36BFC24FAB49F00775C6E /* AppleWeakProxy.mm in Sources */,
+				F5C36BFD24FAB49F00775C6E /* Rtt_IPhonePlatformCore.mm in Sources */,
+				F5C36BFE24FAB49F00775C6E /* CoronaSystemResourceManager.mm in Sources */,
+				F5C36BFF24FAB49F00775C6E /* Rtt_IPhoneMediaProvider.mm in Sources */,
+				F5C36C0024FAB49F00775C6E /* Rtt_AppleAudioRecorder.mm in Sources */,
+				F5C36C0124FAB49F00775C6E /* Rtt_AppleBitmap.mm in Sources */,
+				F5C36C0224FAB49F00775C6E /* Rtt_AppleCallback.mm in Sources */,
+				F5C36C0324FAB49F00775C6E /* Rtt_AppleData.mm in Sources */,
+				F5C36C0424FAB49F00775C6E /* Rtt_AppleInAppStore.mm in Sources */,
+				F5C36C0524FAB49F00775C6E /* Rtt_AppleInAppStoreApple.mm in Sources */,
+				F5C36C0624FAB49F00775C6E /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */,
+				F5C36C0724FAB49F00775C6E /* Rtt_ApplePlatform.mm in Sources */,
+				F5C36C0824FAB49F00775C6E /* Rtt_IPhoneOrientation.mm in Sources */,
+				F5C36C0924FAB49F00775C6E /* Rtt_AppleReachability.mm in Sources */,
+				F5C36C0A24FAB49F00775C6E /* Rtt_AppleTimer.mm in Sources */,
+				F5C36C0B24FAB49F00775C6E /* Rtt_AppleAudioPlayer.cpp in Sources */,
+				F5C36C0C24FAB49F00775C6E /* Rtt_AppleCrypto.cpp in Sources */,
+				F5C36C0D24FAB49F00775C6E /* Rtt_AppleEventSound.cpp in Sources */,
+				F5C36C0E24FAB49F00775C6E /* Rtt_AppleTextDelegateWrapperObjectHelper.m in Sources */,
+				F5C36C0F24FAB49F00775C6E /* CoronaApplicationMain.mm in Sources */,
+				F5C36C1024FAB49F00775C6E /* AppDelegate.mm in Sources */,
+				F5C36C1124FAB49F00775C6E /* Rtt_IPhoneText.mm in Sources */,
+				F5C36C1224FAB49F00775C6E /* CoronaViewPrivate.mm in Sources */,
+				F5C36C1324FAB49F00775C6E /* Rtt_IPhoneAudioSessionManager.mm in Sources */,
+				F5C36C1424FAB49F00775C6E /* Rtt_IPhoneAudioSessionManagerImplementation.mm in Sources */,
+				F5C36C1524FAB49F00775C6E /* AutoLinkModules.m in Sources */,
+				F5C36C1624FAB49F00775C6E /* CoronaLuaObjC+NSObject.m in Sources */,
+				F5C36C1724FAB49F00775C6E /* Rtt_IPhoneDevice.mm in Sources */,
+				F5C36C1824FAB49F00775C6E /* Rtt_IPhoneDisplayObject.mm in Sources */,
+				F5C36C1924FAB49F00775C6E /* Rtt_IPhoneFont.mm in Sources */,
+				F5C36C1A24FAB49F00775C6E /* CoronaViewRuntimeDelegate.mm in Sources */,
+				F5C36C1B24FAB49F00775C6E /* Rtt_RuntimeDelegatePlayer.cpp in Sources */,
+				F5C36C1C24FAB49F00775C6E /* Rtt_IPhoneImageProvider.mm in Sources */,
+				F5C36C1D24FAB49F00775C6E /* Rtt_IPhoneMapViewObject.mm in Sources */,
+				F5C36C1E24FAB49F00775C6E /* Rtt_IPhonePlatform.mm in Sources */,
+				F5C36C1F24FAB49F00775C6E /* CoronaLuaObjC.mm in Sources */,
+				F5C36C2024FAB49F00775C6E /* Rtt_IPhoneScreenSurface.mm in Sources */,
+				F5C36C2124FAB49F00775C6E /* Rtt_IPhoneRuntimeDelegate.mm in Sources */,
+				F5C36C2224FAB49F00775C6E /* CoronaAppDelegate.mm in Sources */,
+				F5C36C2324FAB49F00775C6E /* Rtt_IPhoneTextBoxObject.mm in Sources */,
+				F5C36C2424FAB49F00775C6E /* Rtt_IPhoneTextFieldObject.mm in Sources */,
+				F5C36C2524FAB49F00775C6E /* Rtt_IPhoneVideoObject.mm in Sources */,
+				F5C36C2624FAB49F00775C6E /* Rtt_IPhoneVideoPlayer.mm in Sources */,
+				F5C36C2724FAB49F00775C6E /* Rtt_AppleInputDevice.mm in Sources */,
+				F5C36C2824FAB49F00775C6E /* Rtt_IPhoneVideoProvider.mm in Sources */,
+				F5C36C2924FAB49F00775C6E /* Rtt_TouchInhibitor.mm in Sources */,
+				F5C36C2A24FAB49F00775C6E /* Rtt_IPhoneWebPopup.mm in Sources */,
+				F5C36C2B24FAB49F00775C6E /* CoronaViewPluginContext.mm in Sources */,
+				F5C36C2C24FAB49F00775C6E /* Rtt_IPhoneWebViewObject.mm in Sources */,
+				F5C36C2D24FAB49F00775C6E /* Rtt_AppleInputMFiDeviceListener.mm in Sources */,
+				F5C36C2E24FAB49F00775C6E /* CoronaLuaIOS.mm in Sources */,
+				F5C36C2F24FAB49F00775C6E /* Rtt_AppleFont.mm in Sources */,
+				F5C36C3024FAB49F00775C6E /* Rtt_AppleInputDeviceManager.mm in Sources */,
+				F5C36C3124FAB49F00775C6E /* CoronaViewControllerPrivate.mm in Sources */,
+				F5C36C3224FAB49F00775C6E /* CoronaNativeObjectAdapter.mm in Sources */,
+				F5C36C3324FAB49F00775C6E /* Rtt_IPhoneNativeObject.mm in Sources */,
+				F5C36C3424FAB49F00775C6E /* Rtt_IPhoneTimer.mm in Sources */,
+				F5C36C3524FAB49F00775C6E /* Rtt_IPhonePlatformBase.mm in Sources */,
+				F5C36C3624FAB49F00775C6E /* Rtt_IPhoneGLVideoTexture.mm in Sources */,
+				F5C36C3724FAB49F00775C6E /* Rtt_AppleTextAlignment.mm in Sources */,
+				F5C36C3824FAB49F00775C6E /* Rtt_DependencyUtilsApple.mm in Sources */,
+				F5C36C3924FAB49F00775C6E /* CoronaLuaObjCHelper.mm in Sources */,
+				F5C36C3A24FAB49F00775C6E /* Rtt_DependencyLoader.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CAA24FAB4E900775C6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CAB24FAB4E900775C6E /* Rtt_IPhoneTemplate-Sub.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CBF24FAB50800775C6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CC024FAB50800775C6E /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -3896,15 +4355,75 @@
 			target = A4F2ADFA16E0AF7D00814C7B /* libtemplate-trial */;
 			targetProxy = A4F2AE3216E16A6F00814C7B /* PBXContainerItemProxy */;
 		};
-		F50E7EAD24FA923B009F165B /* PBXTargetDependency */ = {
+		F5C36BE824FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A4F2ADC316E0AF2E00814C7B /* libtemplate */;
-			targetProxy = F50E7EAE24FA923B009F165B /* PBXContainerItemProxy */;
+			name = tachyon;
+			targetProxy = F5C36BE924FAB49F00775C6E /* PBXContainerItemProxy */;
 		};
-		F50E7EAF24FA923B009F165B /* PBXTargetDependency */ = {
+		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A47098A4169E9F2400D31091 /* libplayer */;
-			targetProxy = F50E7EB024FA923B009F165B /* PBXContainerItemProxy */;
+			target = A48B825B16D594AA00CA01A1 /* CoronaResources */;
+			targetProxy = F5C36BEB24FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BEC24FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = librtt;
+			targetProxy = F5C36BED24FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BEE24FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = liblua;
+			targetProxy = F5C36BEF24FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF024FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = luafilesystem;
+			targetProxy = F5C36BF124FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF224FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libluasocket;
+			targetProxy = F5C36BF324FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF424FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libbox2d;
+			targetProxy = F5C36BF524FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF624FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libalmixer;
+			targetProxy = F5C36BF724FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF824FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = plugins;
+			targetProxy = F5C36BF924FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CD224FAB53500775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C36CA724FAB4E900775C6E /* libplayer-angle */;
+			targetProxy = F5C36CD124FAB53500775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CD424FAB55300775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C36BE724FAB49F00775C6E /* libplayer-core-angle */;
+			targetProxy = F5C36CD324FAB55300775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CD824FAB5DD00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C36CA724FAB4E900775C6E /* libplayer-angle */;
+			targetProxy = F5C36CD724FAB5DD00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CDA24FAB5DD00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C36CBC24FAB50800775C6E /* libtemplate-angle */;
+			targetProxy = F5C36CD924FAB5DD00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CDD24FAB65600775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE;
+			targetProxy = F5C36CDC24FAB65600775C6E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4740,10 +5259,6 @@
 				DSTROOT = /tmp/libplayer.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4999,10 +5514,6 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6117,6 +6628,331 @@
 			};
 			name = "Release-template-trial";
 		};
+		F5C36C6424FAB49F00775C6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				DSTROOT = "/tmp/libplayer-core.dst";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		F5C36C6524FAB49F00775C6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = "/tmp/libplayer-core.dst";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F5C36C6624FAB49F00775C6E /* Release-template */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = "/tmp/libplayer-core.dst";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-template";
+		};
+		F5C36C6724FAB49F00775C6E /* Release-template-trial */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = "/tmp/libplayer-core.dst";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-template-trial";
+		};
+		F5C36CB724FAB4E900775C6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/libplayer.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)\nRtt_MetalANGLE",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		F5C36CB824FAB4E900775C6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/libplayer.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)\nRtt_MetalANGLE",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F5C36CB924FAB4E900775C6E /* Release-template */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/libplayer.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)\nRtt_MetalANGLE",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-template";
+		};
+		F5C36CBA24FAB4E900775C6E /* Release-template-trial */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/libplayer.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)\nRtt_MetalANGLE",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-template-trial";
+		};
+		F5C36CCC24FAB50800775C6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/libtemplate.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
+					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		F5C36CCD24FAB50800775C6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/libtemplate.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
+					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F5C36CCE24FAB50800775C6E /* Release-template */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/libtemplate.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
+					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-template";
+		};
+		F5C36CCF24FAB50800775C6E /* Release-template-trial */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/libtemplate.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
+					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-template-trial";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -6303,6 +7139,39 @@
 				F50E7EC124FA923B009F165B /* Release */,
 				F50E7EC224FA923B009F165B /* Release-template */,
 				F50E7EC324FA923B009F165B /* Release-template-trial */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C36C6324FAB49F00775C6E /* Build configuration list for PBXNativeTarget "libplayer-core-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C36C6424FAB49F00775C6E /* Debug */,
+				F5C36C6524FAB49F00775C6E /* Release */,
+				F5C36C6624FAB49F00775C6E /* Release-template */,
+				F5C36C6724FAB49F00775C6E /* Release-template-trial */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C36CB624FAB4E900775C6E /* Build configuration list for PBXNativeTarget "libplayer-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C36CB724FAB4E900775C6E /* Debug */,
+				F5C36CB824FAB4E900775C6E /* Release */,
+				F5C36CB924FAB4E900775C6E /* Release-template */,
+				F5C36CBA24FAB4E900775C6E /* Release-template-trial */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C36CCB24FAB50800775C6E /* Build configuration list for PBXNativeTarget "libtemplate-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C36CCC24FAB50800775C6E /* Debug */,
+				F5C36CCD24FAB50800775C6E /* Release */,
+				F5C36CCE24FAB50800775C6E /* Release-template */,
+				F5C36CCF24FAB50800775C6E /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

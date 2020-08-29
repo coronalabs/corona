@@ -7,9 +7,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#import <MetalANGLE/MGLKit.h>
-
-@interface CoronaViewController : MGLKViewController
-@end
+#ifdef Rtt_MetalANGLE
+	#import <MetalANGLE/MGLKit.h>
+	@interface CoronaViewController : MGLKViewController
+	@end
+#else
+	#import <GLKit/GLKit.h>
+	@interface CoronaViewController : GLKViewController
+	@end
+#endif
 
 // ----------------------------------------------------------------------------

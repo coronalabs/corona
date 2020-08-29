@@ -12,9 +12,7 @@
 #include "Rtt_IPhoneScreenSurface.h"
 
 #import <Availability.h>
-#import <MetalANGLE/MGLKView.h>
 #import <UIKit/UIScreen.h>
-#import <MetalANGLE/angle_gl.h>
 #include "Rtt_GPU.h"
 
 #ifdef Rtt_ORIENTATION
@@ -30,7 +28,7 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-IPhoneScreenSurface::IPhoneScreenSurface( MGLKView *view )
+IPhoneScreenSurface::IPhoneScreenSurface( Rtt_GLKView *view )
 :	fView( view ) // NOTE: Weak ref b/c fView owns the Runtime instance that owns this.
 {
 	// NOTE: We assume CoronaView's didMoveToWindow is called already
@@ -45,7 +43,7 @@ IPhoneScreenSurface::~IPhoneScreenSurface()
 void
 IPhoneScreenSurface::SetCurrent() const
 {
-	Rtt_ASSERT( [MGLContext currentContext] == fView.context );
+	Rtt_ASSERT( [Rtt_EAGLContext currentContext] == fView.context );
 //	[MGLContext setCurrentContext:fView.context];
 
 	//glBindFramebufferOES( GL_FRAMEBUFFER_OES, fView.viewFramebuffer );
@@ -138,7 +136,7 @@ IPhoneScreenSurface::IsUpright() const
 	return result;
 }
 
-MGLContext*
+Rtt_EAGLContext*
 IPhoneScreenSurface::GetContext() const
 {
 	return fView.context;

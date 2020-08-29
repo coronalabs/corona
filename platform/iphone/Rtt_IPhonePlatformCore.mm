@@ -11,8 +11,6 @@
 
 #include "Core/Rtt_String.h"
 
-#import <MetalANGLE/MGLKViewController.h>
-
 #include "Rtt_IPhonePlatformCore.h"
 #include "Rtt_IPhoneTimer.h"
 

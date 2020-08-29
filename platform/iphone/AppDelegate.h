@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #import <UIKit/UIKit.h>
-#import <MetalANGLE/MGLKit.h>
 #include <math.h>
 
 //Must include this for isinf usage in mapkit

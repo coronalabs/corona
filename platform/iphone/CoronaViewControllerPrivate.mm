@@ -10,9 +10,9 @@
 #import "CoronaViewControllerPrivate.h"
 
 #import "CoronaViewPrivate.h"
-#import <MetalANGLE/angle_gl.h>
 #import "CoronaRuntime.h"
 #import "CoronaViewPluginContext.h"
+#include "Rtt_MetalAngleTypes.h"
 
 // ----------------------------------------------------------------------------
 
@@ -46,9 +46,9 @@
 
 - (void)dealloc
 {
-	if ( [MGLContext currentContext] == self.context )
+	if ( [Rtt_EAGLContext currentContext] == self.context )
 	{
-        [MGLContext setCurrentContext:nil];
+        [Rtt_EAGLContext setCurrentContext:nil];
     }
     
     [_context release];
@@ -68,7 +68,7 @@
 		UIScreen *screen = [UIScreen mainScreen];
 		CGRect screenBounds = screen.bounds; // includes status bar
 		
-		if(!self.context) self.context = [[[MGLContext alloc] initWithAPI:kMGLRenderingAPIOpenGLES2] autorelease];
+		if(!self.context) self.context = [[[Rtt_EAGLContext alloc] initWithAPI:Rtt_API_GLES2] autorelease];
 
 
 		CoronaView *view = [[CoronaView alloc] initWithFrame:screenBounds context:self.context];
@@ -84,7 +84,7 @@
 {
     [super viewDidLoad];
     
-    if(!self.context) self.context = [[[MGLContext alloc] initWithAPI:kMGLRenderingAPIOpenGLES2] autorelease];
+    if(!self.context) self.context = [[[Rtt_EAGLContext alloc] initWithAPI:Rtt_API_GLES2] autorelease];
 
     if ( ! self.context )
 	{
@@ -94,7 +94,7 @@
 	CoronaView *view = (CoronaView *)self.view;
 
 	view.context = self.context;
-	view.drawableDepthFormat = MGLDrawableDepthFormat24;
+	view.drawableDepthFormat = Rtt_DrawableDepth24;
 }
 
 #if Rtt_DEBUG_VIEWCONTROLLER
@@ -119,6 +119,7 @@
 	[super viewDidAppear:animated];
 }
 
+#if Rtt_MetalANGLE
 // MGLKViewControllerDelegate
 - (void)mglkViewControllerUpdate:(MGLKViewController *)controller
 {
@@ -127,6 +128,16 @@
 - (void)mglkViewController:(MGLKViewController *)controller willPause:(BOOL)pause
 {
 }
+#else
+// GLKViewControllerDelegate
+- (void)glkViewControllerUpdate:(GLKViewController *)controller
+{
+}
+
+- (void)glkViewController:(GLKViewController *)controller willPause:(BOOL)pause
+{
+}
+#endif
 
 #endif // Rtt_DEBUG_VIEWCONTROLLER
 

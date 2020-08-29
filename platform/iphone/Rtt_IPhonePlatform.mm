@@ -208,7 +208,7 @@ PlatformTimer*
 IPhonePlatform::CreateTimerWithCallback( MCallback& callback ) const
 {
 	AppDelegate* delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-	MGLKViewController* viewController = (MGLKViewController*)delegate.viewController;
+	Rtt_GLKViewController* viewController = (Rtt_GLKViewController*)delegate.viewController;
 	
 	return Rtt_NEW( fAllocator, IPhoneTimer( callback, viewController ) );
 }

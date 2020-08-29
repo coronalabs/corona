@@ -8,14 +8,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #import "CoronaCards/CoronaViewController.h"
-
-@class MGLContext;
+#include "Rtt_MetalAngleTypes.h"
 
 // ----------------------------------------------------------------------------
 
 @interface CoronaViewController()
 
-@property (strong, nonatomic) MGLContext *context;
+@property (strong, nonatomic) Rtt_EAGLContext *context;
 
 @end
 
