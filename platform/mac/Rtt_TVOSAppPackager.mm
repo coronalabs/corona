@@ -205,7 +205,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 				lua_setfield(L, -2, "build");
 				
 				char templateZip[255];
-				snprintf(templateZip, 255, "%s_%.1f.tar.bz", platform, params->GetTargetVersion()/10000.0f);
+				snprintf(templateZip, 255, "%s_%.1f%s.tar.bz", platform, params->GetTargetVersion()/10000.0f, params->GetCustomTemplate());
 				lua_pushstring(L, templateZip);
 				lua_setfield(L, -2, "template");
 				

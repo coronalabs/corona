@@ -61,6 +61,30 @@ jobs:
           name: iOS-Templates
           path: ./output
 
+  iOS-template-angle:
+    needs: source-code
+    runs-on: macos-latest
+    env:
+      TEMPLATE_TARGET: template-angle
+    steps:
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build iOS templates
+        working-directory: ./platform/iphone
+        run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Upload iOS templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: iOS-Templates-Angle
+          path: ./output
+
   tvOS-template:
     needs: source-code
     runs-on: macos-latest
@@ -224,6 +248,7 @@ jobs:
       - source-code
       - tvOS-template
       - iOS-template
+      - iOS-template-angle
       - native
       - webtemplate
       - linux
@@ -239,9 +264,15 @@ jobs:
       - name: Get iOS templates
         uses: actions/download-artifact@v1
         with:
-          name: iOS-templates
+          name: iOS-Templates
       - name: Put iOS templates in place
-        run: cp -v iOS-templates/* platform/resources/iostemplate/
+        run: cp -v iOS-Templates/* platform/resources/iostemplate/
+      - name: Get iOS Angle templates
+        uses: actions/download-artifact@v1
+        with:
+          name: iOS-Templates-Angle
+      - name: Put iOS Angle templates in place
+        run: cp -v iOS-Templates-Angle/* platform/resources/iostemplate/
       - name: Get tvOS templates
         uses: actions/download-artifact@v1
         with:

@@ -18,7 +18,7 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 
-IPhoneTimer::IPhoneTimer( MCallback& callback, GLKViewController *viewController )
+IPhoneTimer::IPhoneTimer( MCallback& callback, Rtt_GLKViewController *viewController )
 :	Super( callback ),
 	fViewController(viewController),
 	fInterval( 0x8000000 )
@@ -70,7 +70,7 @@ IPhoneTimer::SetInterval( U32 milliseconds )
 bool
 IPhoneTimer::IsRunning() const
 {
-	return (fViewController.paused == YES);
+	return NO;//(fViewController.paused == YES);
 }
 
 // ----------------------------------------------------------------------------

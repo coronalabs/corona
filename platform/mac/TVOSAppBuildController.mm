@@ -442,6 +442,10 @@ static NSString *kValueNone = @"None";
 
     params->SetStripDebug( isStripDebug );
 	params->SetLiveBuild(isLiveBuild);
+	if(currentSDK.customTemplate)
+	{
+		params->SetCustomTemplate([currentSDK.customTemplate UTF8String]);
+	}
 
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 /*

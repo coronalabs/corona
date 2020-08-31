@@ -17,6 +17,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIDevice.h>
 #import <UIKit/UIScreen.h>
+#include "Rtt_MetalAngleTypes.h"
 
 // ----------------------------------------------------------------------------
 
@@ -29,7 +30,7 @@
     NSString *_sessionPreset;
     size_t _textureWidth;
     size_t _textureHeight;
-    EAGLContext *_context;
+    Rtt_EAGLContext *_context;
 
 	CGFloat _screenWidth;
 	CGFloat _screenHeight;
@@ -126,10 +127,15 @@
 
 
 	Rtt_ASSERT( nil == _context );
-	_context = [EAGLContext currentContext];
+	_context = [Rtt_EAGLContext currentContext];
 
+#ifdef Rtt_MetalANGLE
+	//TODO IMPLEMENT
 	// Create CVOpenGLESTextureCacheRef for optimal CVImageBufferRef to GLES texture conversion.
+	CVReturn err = 1;//CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
+#else
 	CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
+#endif
 
 	if (err)
 	{
@@ -226,7 +232,7 @@
 		didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer 
 		fromConnection:(AVCaptureConnection *)connection
 {
-	Rtt_ASSERT( [EAGLContext currentContext] == _context );
+	Rtt_ASSERT( [Rtt_EAGLContext currentContext] == _context );
 
 	[self cleanUpTextures];
 	

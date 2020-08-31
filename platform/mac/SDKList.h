@@ -30,6 +30,7 @@
 @property (nonatomic, assign) double coronaVersion;
 @property (nonatomic, assign) BOOL beta;
 @property (nonatomic, retain) NSString *failMessage;
+@property (nonatomic, retain) NSString *customTemplate;
 
 + (instancetype)modelObjectWithDictionary:(NSDictionary *)dict;
 - (instancetype)initWithDictionary:(NSDictionary *)dict;

@@ -1,6 +1,14 @@
 {
 	"ios": [
 		{
+			"label": "13.6 Metal",
+			"xcodeVersion": "13.6",
+			"failMessage": "install or xcode-select Xcode 11.6 to enable",
+			"coronaVersion": 136000,
+			"beta": true,
+			"customTemplate": "-angle"
+		},
+		{
 			"label": "13.6",
 			"xcodeVersion": "13.6",
 			"failMessage": "install or xcode-select Xcode 11.6 to enable",

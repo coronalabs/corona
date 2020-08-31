@@ -8,6 +8,9 @@ MONTH=${MONTH:-04}
 DAY=${DAY:-04}
 BUILD=${BUILD:-$YEAR.$BUILD_NUMBER}
 
+: "${TEMPLATE_TARGET:=template}"
+TEMPLATE_TARGET_SUFFIX="${TEMPLATE_TARGET#template}"
+
 PLATFORM_DIR=$(basename "$(cd "$(dirname "$0")" && pwd)")
 if [ "$PLATFORM_DIR" = "tvos" ]
 then
@@ -87,7 +90,7 @@ fi
         for IOS_VER in "$TEMPLATE_DIR/$PLATFORM"/*
         do
             IOS_VER=$(basename "${IOS_VER}")
-            ARCHIVE="$WORKSPACE/platform/$PLATFORM_DIR/${SDK_PLATFORM}_${IOS_VER}.tar.bz"
+            ARCHIVE="$WORKSPACE/platform/$PLATFORM_DIR/${SDK_PLATFORM}_${IOS_VER}${TEMPLATE_TARGET_SUFFIX}.tar.bz"
 
             (
                 set -e
