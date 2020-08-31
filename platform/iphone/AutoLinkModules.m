@@ -16,7 +16,7 @@ otool -l libplayer.a | grep -A 4 LC_LINKER_OPTION | grep string | grep -v '\-fra
 #ifndef Rtt_MetalANGLE
 @import GLKit;
 #else
-@import Metal;
+@import MetalANGLE;
 #endif
 @import MapKit;
 @import MessageUI;
