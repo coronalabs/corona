@@ -270,7 +270,6 @@ options.frameworks = {
 	'MessageUI',
 	'MobileCoreServices',
 	'OpenAL',
-	'OpenGLES',
 	'QuartzCore',
 	'Security',
 	'StoreKit',
