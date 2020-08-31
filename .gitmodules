@@ -69,4 +69,4 @@
 	url = https://github.com/coronalabs/openal-soft.git
 [submodule "external/MetalANGLE"]
 	path = external/MetalANGLE
-	url = https://github.com/kakashidinho/metalangle.git
+	url = https://github.com/coronalabs/metalangle.git
