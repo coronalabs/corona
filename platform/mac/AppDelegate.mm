@@ -681,12 +681,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 #if !defined( Rtt_PROJECTOR )
 
-// -----------------------------------------------------------------------------
-- (BOOL) isDailyBuild
-{
-    // The second test has the effect of making developer "test builds" behave like Daily Builds which is generally desirable
-    return (! Rtt::PlatformAppPackager::IsAppSettingsEmpty( * fConsolePlatform )) || (Rtt_BUILD_REVISION == 9999);
-}
 
 -(void)coronaInit:(NSNotification*)aNotification
 {

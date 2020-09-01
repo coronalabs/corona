@@ -220,7 +220,7 @@ static NSString *kValueNone = @"None";
 
 	[self willChangeValueForKey:@"buildFormComplete"];
 
-	[self populateTargetIOSSDK:[self window] showBeta:[appDelegate isDailyBuild]];
+	[self populateTargetIOSSDK:[self window] showBeta:true];
 
 	[self didChangeValueForKey:@"buildFormComplete"];
 }

@@ -218,7 +218,7 @@ static NSString *kValueNone = @"None";
 		}
 	}
 
-	[self populateTargetSDK:[self window] showBeta:[appDelegate isDailyBuild]];
+	[self populateTargetSDK:[self window] showBeta:true];
 }
 
 - (void) didSelectSimulator:(NSMenuItem *)menuItem
