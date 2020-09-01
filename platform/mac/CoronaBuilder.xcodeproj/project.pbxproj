@@ -139,7 +139,7 @@
 			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).cpp",
 			);
 			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh\n";
 		};

@@ -632,9 +632,9 @@
 			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).c",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).c",
 			);
-			script = "export TOOLCHAIN_DIR=\"${PROJECT_DIR}/../../bin/mac\"\n\n${PROJECT_DIR}/../../bin/xcode/build_rule_lua-plugin.sh";
+			script = "export TOOLCHAIN_DIR=\"${PROJECT_DIR}/../../bin/mac\"\n\n${PROJECT_DIR}/../../bin/xcode/build_rule_lua-plugin.sh\n";
 		};
 		A4DD47271BB2481A00FD988E /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
@@ -645,9 +645,9 @@
 			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh";
+			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh\n";
 		};
 		C2F9118D1CDC4D15004A5564 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
@@ -658,9 +658,9 @@
 			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh -m luasocket";
+			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh -m luasocket\n";
 		};
 /* End PBXBuildRule section */
 
