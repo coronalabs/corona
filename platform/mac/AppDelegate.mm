@@ -3698,7 +3698,7 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 
     if ([self compareOSVersion:currentOSVersion with:kosVersionMinimum] == NSOrderedAscending)
     {
-        NSString *msg = [NSString stringWithFormat:@"This version of macOS (%@) is too old to run Corona.\n\nMinimum supported macOS version is %@", currentOSVersion, kosVersionPrevious];
+        NSString *msg = [NSString stringWithFormat:@"This version of macOS (%@) is too old to run Solar2D.\n\nMinimum supported macOS version is %@", currentOSVersion, kosVersionPrevious];
 
         [alert setMessageText:@"macOS Version Error"];
         [alert setInformativeText:msg];
@@ -3713,7 +3713,7 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
     }
     else if ([self compareOSVersion:currentOSVersion with:kosVersionCurrent] == NSOrderedDescending)
     {
-        NSString *msg = [NSString stringWithFormat:@"This version of macOS (%@) is not supported. It is newer than the one this version of Corona was designed for (%@).\n\nProceed with caution, as some things might not work correctly.\n\nPlease report any issues you find with Corona and the new version of macOS to support@coronalabs.com", currentOSVersion, kosVersionCurrent];
+        NSString *msg = [NSString stringWithFormat:@"This version of macOS (%@) is not supported. It is newer than the one this version of Solar2D was designed for (%@).\n\nProceed with caution, as some things might not work correctly.\n\nPlease report any issues you find to support@solar2d.com", currentOSVersion, kosVersionCurrent];
 
         [alert setMessageText:@"macOS Version Warning"];
         [alert setInformativeText:msg];
@@ -3725,7 +3725,7 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
     }
     else if ([self compareOSVersion:currentOSVersion with:kosVersionPrevious] == NSOrderedAscending)
     {
-        NSString *msg = [NSString stringWithFormat:@"This version of macOS (%@) is not supported. It is older than the one this version of Corona was designed for (%@).\n\nProceed with caution, as some things might not work correctly.", currentOSVersion, kosVersionCurrent];
+        NSString *msg = [NSString stringWithFormat:@"This version of macOS (%@) is not supported. It is older than the one this version of Solar2D was designed for (%@).\n\nProceed with caution, as some things might not work correctly.", currentOSVersion, kosVersionCurrent];
 
         [alert setMessageText:@"macOS Version Warning"];
         [alert setInformativeText:msg];
