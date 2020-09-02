@@ -260,6 +260,7 @@
 		F50E7EB824FA923B009F165B /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
 		F50E7EBA24FA923B009F165B /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 000DCED912B0824800042A5E /* libobjc.dylib */; };
 		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F52611332500142B00671DFE /* libtachyon-angle.a */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3711BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
@@ -341,7 +342,6 @@
 		F5C36C3824FAB49F00775C6E /* Rtt_DependencyUtilsApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 070F390B18CE1FD600BC2BEE /* Rtt_DependencyUtilsApple.mm */; };
 		F5C36C3924FAB49F00775C6E /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F5C36C3A24FAB49F00775C6E /* Rtt_DependencyLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 070F390818CE1FD600BC2BEE /* Rtt_DependencyLoader.cpp */; };
-		F5C36C3C24FAB49F00775C6E /* libtachyon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B93F9717596F60003466CC /* libtachyon.a */; };
 		F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435D164B1D5200CFE7B3 /* libalmixer.a */; };
 		F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435B164B1D5200CFE7B3 /* libbox2d.a */; };
 		F5C36C3F24FAB49F00775C6E /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4355164B1D5200CFE7B3 /* liblua.a */; };
@@ -679,6 +679,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = A4F2ADC316E0AF2E00814C7B;
 			remoteInfo = libtemplate;
+		};
+		F52611322500142B00671DFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F5261130250013F900671DFE;
+			remoteInfo = "tachyon-angle";
+		};
+		F52611712500143100671DFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F5261110250013F900671DFE;
+			remoteInfo = "tachyon-angle";
 		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1092,13 +1106,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 0AF959EB244C7EE900F59740;
 			remoteInfo = simple_vertex_shader_tvos;
-		};
-		F5C36BE924FAB49F00775C6E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A4B93ED917596543003466CC;
-			remoteInfo = tachyon;
 		};
 		F5C36BEB24FAB49F00775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1603,7 +1610,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5C36C3C24FAB49F00775C6E /* libtachyon.a in Frameworks */,
+				F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */,
 				F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */,
 				F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */,
 				F5C36C3F24FAB49F00775C6E /* liblua.a in Frameworks */,
@@ -2129,6 +2136,7 @@
 			isa = PBXGroup;
 			children = (
 				A4B93F9717596F60003466CC /* libtachyon.a */,
+				F52611332500142B00671DFE /* libtachyon-angle.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2713,8 +2721,8 @@
 			);
 			dependencies = (
 				F5C36CDD24FAB65600775C6E /* PBXTargetDependency */,
-				F5C36BE824FAB49F00775C6E /* PBXTargetDependency */,
 				F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */,
+				F52611722500143100671DFE /* PBXTargetDependency */,
 				F5C36BEC24FAB49F00775C6E /* PBXTargetDependency */,
 				F5C36BEE24FAB49F00775C6E /* PBXTargetDependency */,
 				F5C36BF024FAB49F00775C6E /* PBXTargetDependency */,
@@ -2922,6 +2930,13 @@
 			fileType = archive.ar;
 			path = libtachyon.a;
 			remoteRef = A4B93F9617596F60003466CC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F52611332500142B00671DFE /* libtachyon-angle.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libtachyon-angle.a";
+			remoteRef = F52611322500142B00671DFE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F5C36A7E24FA938200775C6E /* MetalANGLE.framework */ = {
@@ -4087,10 +4102,10 @@
 			target = A4F2ADC316E0AF2E00814C7B /* libtemplate */;
 			targetProxy = A4F2AE3016E16A6900814C7B /* PBXContainerItemProxy */;
 		};
-		F5C36BE824FAB49F00775C6E /* PBXTargetDependency */ = {
+		F52611722500143100671DFE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = tachyon;
-			targetProxy = F5C36BE924FAB49F00775C6E /* PBXContainerItemProxy */;
+			name = "tachyon-angle";
+			targetProxy = F52611712500143100671DFE /* PBXContainerItemProxy */;
 		};
 		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
