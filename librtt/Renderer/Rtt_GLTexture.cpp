@@ -36,7 +36,11 @@ namespace /*anonymous*/
 		switch( format )
 		{
 			case Texture::kAlpha:		internalFormat = GL_ALPHA;		sourceFormat = GL_ALPHA;		sourceType = GL_UNSIGNED_BYTE; break;
+#if defined( Rtt_MetalANGLE)
+			case Texture::kLuminance:   internalFormat = GL_RED_EXT;	sourceFormat = GL_RED_EXT;	    sourceType = GL_UNSIGNED_BYTE; break;
+#else
 			case Texture::kLuminance:	internalFormat = GL_LUMINANCE;	sourceFormat = GL_LUMINANCE;	sourceType = GL_UNSIGNED_BYTE; break;
+#endif
 			case Texture::kRGB:			internalFormat = GL_RGB;		sourceFormat = GL_RGB;			sourceType = GL_UNSIGNED_BYTE; break;
 			case Texture::kRGBA:		internalFormat = GL_RGBA;		sourceFormat = GL_RGBA;			sourceType = GL_UNSIGNED_BYTE; break;
 #if defined( Rtt_WIN_PHONE_ENV )

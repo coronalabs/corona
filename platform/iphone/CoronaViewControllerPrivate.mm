@@ -119,7 +119,7 @@
 	[super viewDidAppear:animated];
 }
 
-#if Rtt_MetalANGLE
+#ifdef Rtt_MetalANGLE
 // MGLKViewControllerDelegate
 - (void)mglkViewControllerUpdate:(MGLKViewController *)controller
 {

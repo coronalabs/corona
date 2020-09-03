@@ -70,7 +70,7 @@ IPhoneTimer::SetInterval( U32 milliseconds )
 bool
 IPhoneTimer::IsRunning() const
 {
-	return NO;//(fViewController.paused == YES);
+	return (fViewController.paused == YES);
 }
 
 // ----------------------------------------------------------------------------
