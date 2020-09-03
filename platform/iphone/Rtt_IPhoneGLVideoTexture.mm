@@ -19,13 +19,6 @@
 #import <UIKit/UIScreen.h>
 #include "Rtt_MetalAngleTypes.h"
 
-#ifdef Rtt_MetalANGLE
-#define EGL_EGLEXT_PROTOTYPES
-#import <MetalANGLE/EGL/egl.h>
-#import <MetalANGLE/EGL/eglext.h>
-#import <MetalANGLE/EGL/eglext_angle.h>
-@class MTLDevice;
-#endif
 // ----------------------------------------------------------------------------
 
 @interface AVCaptureController : NSObject< AVCaptureVideoDataOutputSampleBufferDelegate >
@@ -141,22 +134,7 @@
 	_context = [Rtt_EAGLContext currentContext];
 
 #ifdef Rtt_MetalANGLE
-	EGLDisplay display = eglGetDisplay(0);
-	EGLAttrib device = 0;
-    eglQueryDisplayAttribEXT(display, EGL_DEVICE_EXT, &device);
-    if(!device)
-    {
-		NSLog(@"Error in eglQueryDisplayAttribEXT %d", eglGetError());
-		return;
-	}
-	EGLAttrib deviceAttrib = {0};
-    EGLBoolean ret = eglQueryDeviceAttribEXT((EGLDeviceEXT)device, EGL_MTL_DEVICE_ANGLE, &deviceAttrib);
-	if (ret != EGL_TRUE)
-	{
-		NSLog(@"Error in eglQueryDeviceAttribEXT %d", eglGetError());
-		return;
-	}
-	CVReturn err = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, (id <MTLDevice>)deviceAttrib, NULL, &_videoTextureCache);
+	CVReturn err = 0;
 #else
 	// Create CVOpenGLESTextureCacheRef for optimal CVImageBufferRef to GLES texture conversion.
 	CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
@@ -236,7 +214,10 @@
 
 	[self cleanUpTextures];
 
-	CFRelease(_videoTextureCache);
+	if(_videoTextureCache)
+	{
+		CFRelease(_videoTextureCache);
+	}
 	
 	_context = nil;
 }
@@ -251,7 +232,6 @@
 
 	// Periodic texture cache flush every frame
 #ifdef Rtt_MetalANGLE
-	CVMetalTextureCacheFlush(_videoTextureCache, 0);
 #else
 	CVOpenGLESTextureCacheFlush(_videoTextureCache, 0);
 #endif
@@ -270,12 +250,6 @@
 
 	_width = CVPixelBufferGetWidth(_pixelBuffer);
 	_height = CVPixelBufferGetHeight(_pixelBuffer);
-
-	if (!_videoTextureCache)
-	{
-		NSLog(@"No video texture cache");
-		return;
-	}
 }
 
 - (void)bufferToTexture
