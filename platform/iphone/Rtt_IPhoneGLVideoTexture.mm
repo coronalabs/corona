@@ -17,6 +17,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIDevice.h>
 #import <UIKit/UIScreen.h>
+#include "Rtt_MetalAngleTypes.h"
 
 // ----------------------------------------------------------------------------
 
@@ -24,12 +25,16 @@
 {
 	Rtt::IPhoneGLVideoTexture *_owner;
     AVCaptureSession *_session;
+#ifdef Rtt_MetalANGLE
+	CVMetalTextureCacheRef _videoTextureCache;
+#else
     CVOpenGLESTextureCacheRef _videoTextureCache;    
+#endif
 
     NSString *_sessionPreset;
     size_t _textureWidth;
     size_t _textureHeight;
-    EAGLContext *_context;
+    Rtt_EAGLContext *_context;
 
 	CGFloat _screenWidth;
 	CGFloat _screenHeight;
@@ -126,10 +131,14 @@
 
 
 	Rtt_ASSERT( nil == _context );
-	_context = [EAGLContext currentContext];
+	_context = [Rtt_EAGLContext currentContext];
 
+#ifdef Rtt_MetalANGLE
+	CVReturn err = 0;
+#else
 	// Create CVOpenGLESTextureCacheRef for optimal CVImageBufferRef to GLES texture conversion.
 	CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
+#endif
 
 	if (err)
 	{
@@ -205,7 +214,10 @@
 
 	[self cleanUpTextures];
 
-	CFRelease(_videoTextureCache);
+	if(_videoTextureCache)
+	{
+		CFRelease(_videoTextureCache);
+	}
 	
 	_context = nil;
 }
@@ -219,14 +231,17 @@
 	}
 
 	// Periodic texture cache flush every frame
+#ifdef Rtt_MetalANGLE
+#else
 	CVOpenGLESTextureCacheFlush(_videoTextureCache, 0);
+#endif
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput 
 		didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer 
 		fromConnection:(AVCaptureConnection *)connection
 {
-	Rtt_ASSERT( [EAGLContext currentContext] == _context );
+	Rtt_ASSERT( [Rtt_EAGLContext currentContext] == _context );
 
 	[self cleanUpTextures];
 	
@@ -235,12 +250,6 @@
 
 	_width = CVPixelBufferGetWidth(_pixelBuffer);
 	_height = CVPixelBufferGetHeight(_pixelBuffer);
-
-	if (!_videoTextureCache)
-	{
-		NSLog(@"No video texture cache");
-		return;
-	}
 }
 
 - (void)bufferToTexture
@@ -248,8 +257,11 @@
 	if (_pixelBuffer)
 	{
 		CVPixelBufferLockBaseAddress(_pixelBuffer, 0);
-		
+#ifdef Rtt_MetalANGLE
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, (GLsizei)_width, (GLsizei)_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(_pixelBuffer));
+#else
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)_width, (GLsizei)_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(_pixelBuffer));
+#endif
 		
 		CVPixelBufferUnlockBaseAddress(_pixelBuffer, 0);
 	}

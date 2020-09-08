@@ -60,6 +60,8 @@ class IPhoneWebViewObject : public IPhoneDisplayObject
 		virtual int ValueForKey( lua_State *L, const char key[] ) const;
 		virtual bool SetValueForKey( lua_State *L, const char key[], int valueIndex );
 
+		virtual int GetNativeProperty( lua_State *L, const char key[] ) const;
+		virtual bool SetNativeProperty( lua_State *L, const char key[], int valueIndex );
 	protected:
 		virtual id GetNativeTarget() const;
 

@@ -4,10 +4,23 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
+    inputs:
+      buildNumber:
+        description: 'Build Number'
+        required: true
+        default: '9999'
+      buildYear:
+        description: 'Build Year'
+        required: true
+        default: '2100'
+
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_11.5.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_11.6.app/Contents/Developer
+  BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
+  YEAR: ${{ github.event.inputs.buildYear }}
 
 jobs:
   source-code:
@@ -26,9 +39,20 @@ jobs:
           name: SourceCode
           path: ./output
 
-  iOS-template:
+  iOS-template-matrix:
+    strategy:
+      matrix:
+        xcode:
+          - 12_beta
+          - 11.6
+        target:
+          - template
+          - template-angle
     needs: source-code
     runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      TEMPLATE_TARGET: ${{ matrix.target }}
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v1
@@ -45,12 +69,22 @@ jobs:
       - name: Upload iOS templates
         uses: actions/upload-artifact@v1
         with:
-          name: iOS-Templates
+          name: Templates-iOS-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
-  tvOS-template:
+  tvOS-template-matrix:
+    strategy:
+      matrix:
+        xcode:
+          - 12_beta
+          - 11.6
+        target:
+          - template
     needs: source-code
     runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      TEMPLATE_TARGET: ${{ matrix.target }}
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v1
@@ -67,7 +101,27 @@ jobs:
       - name: Upload tvOS templates
         uses: actions/upload-artifact@v1
         with:
-          name: tvOS-Templates
+          name: Templates-iOS-${{ matrix.xcode }}-${{ matrix.target }}
+          path: ./output
+
+  collect-ios-templates:
+    needs:
+      - tvOS-template-matrix
+      - iOS-template-matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+      - name: Collect templates together
+        run: |
+          mkdir -p output
+          for D in Templates-*
+          do
+            mv -v "$D/"* output/
+          done
+      - name: Upload templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: Collected-ios-templates
           path: ./output
 
   webtemplate:
@@ -209,8 +263,7 @@ jobs:
   macOS-Simulator:
     needs:
       - source-code
-      - tvOS-template
-      - iOS-template
+      - collect-ios-templates
       - native
       - webtemplate
       - linux
@@ -223,18 +276,12 @@ jobs:
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
-      - name: Get iOS templates
+      - name: Get collected templates
         uses: actions/download-artifact@v1
         with:
-          name: iOS-templates
-      - name: Put iOS templates in place
-        run: cp -v iOS-templates/* platform/resources/iostemplate/
-      - name: Get tvOS templates
-        uses: actions/download-artifact@v1
-        with:
-          name: tvOS-templates
-      - name: Put iOS templates in place
-        run: cp -v tvOS-templates/* platform/resources/iostemplate/
+          name: Collected-ios-templates
+      - name: Put collected iOS templates in place
+        run: cp -v Collected-ios-templates/* platform/resources/iostemplate/
       - name: Get Webtemplate
         uses: actions/download-artifact@v1
         with:
@@ -291,10 +338,17 @@ jobs:
             echo 'Skipping because no authorization provided'
             exit 0
           fi
+          if [[ "$GITHUB_REF" == refs/tags/* ]]
+          then
+              : "${BUILD_NUMBER:=${GITHUB_REF#refs/tags/}}"
+          else
+              : "${BUILD_NUMBER:=$GITHUB_RUN_NUMBER}"
+          fi
           for dmg in ./Simulator-macOS/*.dmg
           do
-            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH${GITHUB_REF#refs/*/}"  --file "$dmg"
+            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH${BUILD_NUMBER}.$(date +"%b%d")"  --file "$dmg"
           done
+        shell: bash
         env:
           APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
 
@@ -380,6 +434,7 @@ jobs:
           path: ./output
 
   release:
+    if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
     needs:
       - Windows-Simulator
@@ -387,14 +442,15 @@ jobs:
       - linux
       - CoronaCards-Android
       - CoronaCards-iOS
+      - native
     steps:
       - uses: actions/checkout@v2
       - run: ./tools/GHAction/daily_env.sh
-      - name: Genearte Change Log
+      - name: Generate Change Log
         run: |
           git fetch --prune --unshallow
           git fetch origin '+refs/tags/*:refs/tags/*'
-          GIT_LOG=$(git log --format='* %s (%h)' --ancestry-path $(git describe --tags --abbrev=0 $GITHUB_REF^)..$(git describe --tags --abbrev=0 $GITHUB_REF)) || true
+          GIT_LOG=$(git log --format='* %s (%h)' --branches=master --ancestry-path $(git describe --tags --abbrev=0 $GITHUB_REF^)..$(git describe --tags --abbrev=0 $GITHUB_REF)) || true
           if [ -n "$GIT_LOG" ]
           then
           GIT_LOG="Changes since previous build:
@@ -424,6 +480,9 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: CoronaCards-Android
+      - uses: actions/download-artifact@v1
+        with:
+          name: Native
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -478,8 +537,18 @@ jobs:
           asset_path: ./CoronaCards-Android/CoronaCardsAndroidAAR.zip
           asset_name: CoronaCards-Android-${{ env.YEAR }}.${{ env.BUILD }}.zip
           asset_content_type: application/zip
+      - name: Upload Release Asset Android Debug Symbols
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Native/AndroidDebugSymbols.zip
+          asset_name: AndroidDebugSymbols-${{ env.YEAR }}.${{ env.BUILD }}.zip
+          asset_content_type: application/zip
 
   notify-chats:
+    if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
     needs:
       - release
@@ -519,3 +588,45 @@ jobs:
           EOF
         env:
           DISCORD_WEBHOOK_BUILDS: ${{ secrets.DISCORD_WEBHOOK_BUILDS }}
+
+  notify-group: # Sends an email to the https://groups.google.com/forum/#!forum/solar2d-builds
+    needs:
+      - Windows-Simulator
+      - macOS-Simulator
+      - linux
+      - CoronaCards-Android
+      - CoronaCards-iOS
+      - notarize
+      - release
+      - source-code
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v1
+      - uses: actions/checkout@v2
+      - run: ./tools/GHAction/daily_env.sh
+      - name: notify
+        run: |
+          git fetch --prune --unshallow
+          git fetch origin '+refs/tags/*:refs/tags/*'
+          T="R7NmWb1brmEx65"
+          echo "::add-mask::$T"
+          Z="cNgt1OO-"
+          echo "::add-mask::$Z"
+          TEXT="Run: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+          if [[ "$GITHUB_REF" == refs/tags/* ]] && [[ "$WORKFLOW_CONCLUSION" == "success" ]]
+          then
+          TEXT="$TEXT
+          Release: https://github.com/${{github.repository}}/releases/tag/$BUILD_NUMBER"
+          GIT_LOG=$(git log --format='* %s (%h)' --ancestry-path $(git describe --tags --abbrev=0 $GITHUB_REF^)..$(git describe --tags --abbrev=0 $GITHUB_REF)) || true
+          if [ -n "$GIT_LOG" ]
+          then
+          TEXT="$TEXT
+
+          Git log since previous release:
+          $GIT_LOG
+          "
+          fi
+          fi
+          TEXT="${TEXT//$'\n'/<br>}"
+          curl -X POST -H "Content-Type: application/json" -d '{"value1":"'"$YEAR.$BUILD_NUMBER"' '"$WORKFLOW_CONCLUSION"'","value2":"'"$TEXT"'"}' https://maker.ifttt.com/trigger/Solar2DBuild/with/key/$Z$T

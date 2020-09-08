@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 # librtt
 # 
@@ -23,7 +23,7 @@ else
 	MODULE_NAME=""
 fi
 
-DST_DIR=$DERIVED_FILE_DIR
+DST_DIR="${TARGET_TEMP_DIR}/${CURRENT_ARCH}"
 if [ ! -d "$DST_DIR" ]; then		
     mkdir "$DST_DIR"
 fi

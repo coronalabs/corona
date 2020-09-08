@@ -632,9 +632,9 @@
 			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).c",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).c",
 			);
-			script = "export TOOLCHAIN_DIR=\"${PROJECT_DIR}/../../bin/mac\"\n\n${PROJECT_DIR}/../../bin/xcode/build_rule_lua-plugin.sh";
+			script = "export TOOLCHAIN_DIR=\"${PROJECT_DIR}/../../bin/mac\"\n\n${PROJECT_DIR}/../../bin/xcode/build_rule_lua-plugin.sh\n";
 		};
 		A4DD47271BB2481A00FD988E /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
@@ -645,9 +645,9 @@
 			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh";
+			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh\n";
 		};
 		C2F9118D1CDC4D15004A5564 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
@@ -658,9 +658,9 @@
 			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh -m luasocket";
+			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh -m luasocket\n";
 		};
 /* End PBXBuildRule section */
 
@@ -3801,6 +3801,7 @@
 					A4AD17301BAA0D8F00BCF507 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = BG2J43EA88;
+						ProvisioningStyle = Manual;
 					};
 					A4AD17521BAA14A600BCF507 = {
 						CreatedOnToolsVersion = 7.1;
@@ -3820,6 +3821,7 @@
 					A4E075901BD1BC09003A733A = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = BG2J43EA88;
+						ProvisioningStyle = Manual;
 					};
 					A4E075BE1BD1C3E0003A733A = {
 						CreatedOnToolsVersion = 7.1;
@@ -4934,6 +4936,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -4984,6 +4987,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -5013,11 +5017,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -5030,11 +5038,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -5195,9 +5207,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5216,6 +5231,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaCards;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external/lua-5.1.3/src";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -5227,8 +5243,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5243,6 +5262,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaCards;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external/lua-5.1.3/src";
 				VERSIONING_SYSTEM = "apple-generic";

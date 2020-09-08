@@ -1,11 +1,34 @@
 {
 	"ios": [
 		{
-			"label": "13.5",
-			"xcodeVersion": "13.5",
-			"failMessage": "install or xcode-select Xcode 11.5 to enable",
-			"coronaVersion": 135000,
+			"label": "13.6 Metal",
+			"xcodeVersion": "13.6",
+			"failMessage": "install or xcode-select Xcode 11.6 to enable",
+			"coronaVersion": 136000,
+			"beta": true,
+			"customTemplate": "-angle"
+		},
+		{
+			"label": "14.0 Metal",
+			"xcodeVersion": "14.0",
+			"failMessage": "install or xcode-select Xcode 12.0 beta to enable",
+			"coronaVersion": 140000,
+			"beta": true,
+			"customTemplate": "-angle"
+		},		
+		{
+			"label": "13.6",
+			"xcodeVersion": "13.6",
+			"failMessage": "install or xcode-select Xcode 11.6 to enable",
+			"coronaVersion": 136000,
 			"beta": false
+		},
+		{
+			"label": "14.0",
+			"xcodeVersion": "14.0",
+			"failMessage": "install or xcode-select Xcode 12.0 beta to enable",
+			"coronaVersion": 140000,
+			"beta": true
 		}
 	]
 }

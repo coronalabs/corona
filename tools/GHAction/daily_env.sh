@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-BUILD_NUMBER=$GITHUB_RUN_NUMBER
-YEAR="$(date +"%Y")"
+: "${YEAR:=$(date +"%Y")}"
 if [[ "$GITHUB_REF" == refs/tags/* ]]
 then
-    BUILD_NUMBER="${GITHUB_REF#refs/tags/}"
+    : "${BUILD_NUMBER:=${GITHUB_REF#refs/tags/}}"
 else
-    echo ERROR: Tag was not pushed
-    exit 1
+    : "${BUILD_NUMBER:=$GITHUB_RUN_NUMBER}"
 fi
 
 echo ::set-env name=BUILD_NUMBER::"$BUILD_NUMBER"

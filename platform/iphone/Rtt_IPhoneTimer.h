@@ -11,7 +11,7 @@
 #define _Rtt_IPhoneTimer_H__
 
 #include "Rtt_PlatformTimer.h"
-#import <GLKit/GLKit.h>
+#include "Rtt_MetalAngleTypes.h"
 
 // ----------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ class IPhoneTimer : public PlatformTimer
 		typedef PlatformTimer Super;
 
 	public:
-		IPhoneTimer( MCallback& callback, GLKViewController *viewController );
+		IPhoneTimer( MCallback& callback, Rtt_GLKViewController *viewController );
 		virtual ~IPhoneTimer();
 
 	public:
@@ -40,7 +40,7 @@ class IPhoneTimer : public PlatformTimer
 	private:
 		U32 fInterval;
 		U32 fSavedInterval;
-		GLKViewController *fViewController;
+		Rtt_GLKViewController *fViewController;
 };
 
 // ----------------------------------------------------------------------------

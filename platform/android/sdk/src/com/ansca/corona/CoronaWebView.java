@@ -164,6 +164,9 @@ public class CoronaWebView extends WebView {
 		settings.setUseWideViewPort(true);
 		settings.setPluginState(android.webkit.WebSettings.PluginState.ON);
 		settings.setDomStorageEnabled(true);
+		if (android.os.Build.VERSION.SDK_INT >= 17) {
+			settings.setMediaPlaybackRequiresUserGesture(false);
+		}
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			try {
 				java.lang.reflect.Method setEnableSmoothTransitionMethod;
