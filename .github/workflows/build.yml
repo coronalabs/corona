@@ -18,7 +18,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_11.6.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_11.7.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -44,7 +44,7 @@ jobs:
       matrix:
         xcode:
           - 12_beta
-          - 11.6
+          - 11.7
         target:
           - template
           - template-angle
@@ -77,7 +77,7 @@ jobs:
       matrix:
         xcode:
           - 12_beta
-          - 11.6
+          - 11.7
         target:
           - template
     needs: source-code
