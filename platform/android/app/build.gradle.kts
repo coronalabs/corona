@@ -556,7 +556,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             }
             into("$generatedPluginAssetsDir/.corona-plugins")
             eachFile {
-                path = File(path).toPathString().segments.drop(3).joinToString("/")
+                path = File(path).toPathString().segments.drop(2).dropWhile { it == "lua_51" }.joinToString("/")
             }
             includeEmptyDirs = false
         }
