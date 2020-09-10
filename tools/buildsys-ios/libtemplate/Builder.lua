@@ -128,6 +128,7 @@ function M:findLuaPlugins( options )
 
 		-- This path signifies a Lua plugin
 		local assetPath = pluginsDir .. '/' .. pluginName .. '/lua/lua_51/'
+		local assetPath2 = pluginsDir .. '/' .. pluginName .. '/lua_51/'
 
 		if options.verbose then
 			print("Examining plugin: "..tostring(pluginName))
@@ -137,6 +138,12 @@ function M:findLuaPlugins( options )
 		if isLuaPlugin then
 			print("Found Lua plugin: "..tostring(pluginName))
 			table.insert( result, assetPath )
+		end
+
+		local isLuaPlugin = lfs.attributes( assetPath2, "mode" ) == "directory"
+		if isLuaPlugin then
+			print("Found Lua plugin: "..tostring(pluginName))
+			table.insert( result, assetPath2 )
 		end
 	end
 
