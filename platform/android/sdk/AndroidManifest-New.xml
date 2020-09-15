@@ -5,6 +5,7 @@
     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
 
     <application android:hardwareAccelerated="true"
+                 android:requestLegacyExternalStorage="true"
                  android:name="androidx.multidex.MultiDexApplication"
                  android:icon="@mipmap/ic_launcher"
     >
