@@ -177,6 +177,7 @@
 			outputFiles = (
 				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).cpp",
 			);
+			runOncePerArchitecture = 0;
 			script = "set -o errexit\n# set -x\necho \"Compiling Lua to CPP: $INPUT_FILE_PATH -> $TARGET_TEMP_DIR/$INPUT_FILE_BASE.cpp\"\n\"$BUILT_PRODUCTS_DIR/lua\" \"$SRCROOT/../../bin/rcc.lua\" -c \"$BUILT_PRODUCTS_DIR\" -O\"$CONFIGURATION\" -o \"$TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu\" \"$INPUT_FILE_PATH\"\n\"$BUILT_PRODUCTS_DIR/lua\" -epackage.path=\"[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]]\" \"$SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua\" -d \"$TARGET_TEMP_DIR\" -o \"$INPUT_FILE_BASE\" -l \"$TARGET_TEMP_DIR/?.lu\" -n \"$INPUT_FILE_BASE\"\n";
 		};
 		C24217121CCACBF100D8E4BE /* PBXBuildRule */ = {
@@ -191,6 +192,7 @@
 			outputFiles = (
 				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).cpp",
 			);
+			runOncePerArchitecture = 0;
 			script = "set -o errexit\n# set -x\necho \"Compiling Lua to CPP: $INPUT_FILE_PATH -> $TARGET_TEMP_DIR/$INPUT_FILE_BASE.cpp\"\n\"$BUILT_PRODUCTS_DIR/lua\" \"$SRCROOT/../../bin/rcc.lua\" -c \"$BUILT_PRODUCTS_DIR\" -O\"$CONFIGURATION\" -o \"$TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu\" \"$INPUT_FILE_PATH\"\n\"$BUILT_PRODUCTS_DIR/lua\" -epackage.path=\"[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]]\" \"$SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua\" -d \"$TARGET_TEMP_DIR\" -o \"$INPUT_FILE_BASE\" -l \"$TARGET_TEMP_DIR/?.lu\" -n -m luasocket \"$INPUT_FILE_BASE\"\n";
 		};
 /* End PBXBuildRule section */
