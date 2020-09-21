@@ -42,7 +42,7 @@
 	<key>CFBundleIconFile</key>
 	<string>CoronaSimulator.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.coronalabs.${PRODUCT_NAME:identifier}</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -64,8 +64,15 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.7.0</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
@@ -74,11 +81,6 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>CoronaSimulatorApplication</string>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
 	<key>NSSupportsSuddenTermination</key>
 	<string>YES</string>
 </dict>
