@@ -15,7 +15,7 @@
 			"coronaVersion": 140000,
 			"beta": true,
 			"customTemplate": "-angle"
-		},		
+		},
 		{
 			"label": "13.7",
 			"xcodeVersion": "13.7",
@@ -28,7 +28,7 @@
 			"xcodeVersion": "14.0",
 			"failMessage": "install or xcode-select Xcode 12.0 beta to enable",
 			"coronaVersion": 140000,
-			"beta": true
+			"beta": false
 		}
 	]
 }
