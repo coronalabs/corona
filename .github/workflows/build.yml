@@ -25,14 +25,9 @@ env:
 jobs:
   source-code:
     name: Check out and process source code
+    if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
     runs-on: macos-latest
     steps:
-      - name: Exit tag release on forks
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]] && [[ "$GITHUB_REPOSITORY" != "coronalabs/corona" ]]
-          then
-              exit -1
-          fi
       - uses: actions/checkout@v2
         with:
           submodules: recursive
@@ -606,14 +601,8 @@ jobs:
       - release
       - source-code
     runs-on: ubuntu-latest
-    if: always()
+    if: always() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
     steps:
-      - name: Exit tag release on forks
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]] && [[ "$GITHUB_REPOSITORY" != "coronalabs/corona" ]]
-          then
-              exit -1
-          fi
       - uses: technote-space/workflow-conclusion-action@v1
       - uses: actions/checkout@v2
       - run: ./tools/GHAction/daily_env.sh
