@@ -32,8 +32,8 @@ import com.ansca.corona.permissions.PermissionsServices;
 import com.ansca.corona.permissions.PermissionState;
 import com.ansca.corona.permissions.RequestPermissionsResultData;
 import com.ansca.corona.storage.ResourceServices;
-import com.ansca.corona.graphics.opengl.GLSurfaceView;
-
+import android.view.DisplayCutout;
+import android.view.ViewTreeObserver;
 /** 
  * The activity window that hosts the Corona project. 
  * @see <a href="http://developer.android.com/reference/android/app/Activity.html">Activity</a>
@@ -50,6 +50,7 @@ public class CoronaActivity extends Activity {
 	private com.ansca.corona.purchasing.StoreProxy myStore = null;
 	private CoronaStatusBarSettings myStatusBarMode;
 	private android.database.ContentObserver fAutoRotateObserver = null;
+	private DisplayCutout fDisplayCutout = null;
 	
 	private Controller fController;
 	private CoronaRuntime fCoronaRuntime;
@@ -220,7 +221,7 @@ public class CoronaActivity extends Activity {
 		//       We do this because the Android OS does not support ADJUST_PAN when in fullscreen mode.
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		if (isKeyboardAppPanningEnabled == false) {
+		if (!isKeyboardAppPanningEnabled) {
 			getWindow().setFlags(
 					WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
 					WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -615,7 +616,7 @@ public class CoronaActivity extends Activity {
 	/**
 	 * Logs the requested orientation.
 	 * This is an internal method that can only be called by Corona.
-	 * @param orintationToLog The "screen orientation" constant in class ActivityInfo we want to log.
+	 * @param orientationToLog The "screen orientation" constant in class ActivityInfo we want to log.
 	 */
 	void logOrientation(int orientationToLog) {
 		fLoggedOrientation = orientationToLog;
@@ -1114,11 +1115,24 @@ public class CoronaActivity extends Activity {
 		if (mode == myStatusBarMode) {
 			return;
 		}
-		
+		if (android.os.Build.VERSION.SDK_INT >= 28) {
+			getWindow().getDecorView().setOnApplyWindowInsetsListener(new android.view.View.OnApplyWindowInsetsListener() {
+				@Override
+				public android.view.WindowInsets onApplyWindowInsets(android.view.View v, android.view.WindowInsets insets) {
+					v.onApplyWindowInsets(insets);
+					fDisplayCutout = insets.consumeStableInsets().getDisplayCutout();
+					return insets;
+				}
+			} );
+		}
 		// Show/hide the statusbar.
 		if (mode == CoronaStatusBarSettings.HIDDEN) {
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+			if (Build.VERSION.SDK_INT >= 28){
+				getWindow().getAttributes().layoutInDisplayCutoutMode
+						= WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+			}
 
 		} else if (mode == CoronaStatusBarSettings.DEFAULT
 				|| mode == CoronaStatusBarSettings.TRANSLUCENT
@@ -1178,6 +1192,10 @@ public class CoronaActivity extends Activity {
 	
 	CoronaStatusBarSettings getStatusBarMode() {
 		return myStatusBarMode;
+	}
+
+	public android.view.DisplayCutout getDisplayCutout(){
+		return fDisplayCutout;
 	}
 	
 	int getStatusBarHeight() {
@@ -3456,7 +3474,7 @@ public class CoronaActivity extends Activity {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		// Fetch the handler that was assigned the given request code.
-		CoronaActivity.OnRequestPermissionsResultHandler handler = null;
+		CoronaActivity.OnRequestPermissionsResultHandler handler;
 		handler = (CoronaActivity.OnRequestPermissionsResultHandler)fRequestPermissionsResultHandlers.get(Integer.valueOf(requestCode));
 
 		// Do not continue if the given request code is unknown.
@@ -3893,8 +3911,8 @@ public class CoronaActivity extends Activity {
 		 * @param listener The listener reference to be removed. Can be null.
 		 */
 		public static void removeOnGlobalLayoutListener(
-			android.view.ViewTreeObserver viewTreeObserver,
-			android.view.ViewTreeObserver.OnGlobalLayoutListener listener)
+			ViewTreeObserver viewTreeObserver,
+			ViewTreeObserver.OnGlobalLayoutListener listener)
 		{
 			// Validate.
 			if ((viewTreeObserver == null) || (listener == null)) {
@@ -3903,7 +3921,9 @@ public class CoronaActivity extends Activity {
 
 			// Remove the listener.
 			try {
-				viewTreeObserver.removeOnGlobalLayoutListener(listener);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+					viewTreeObserver.removeOnGlobalLayoutListener(listener);
+				}
 			}
 			catch (Exception ex) {}
 		}
