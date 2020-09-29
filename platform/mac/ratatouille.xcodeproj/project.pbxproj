@@ -8299,7 +8299,6 @@
 					../../platform/apple,
 					.,
 				);
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = "Release-template";
 		};
@@ -8356,7 +8355,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				STRIP_STYLE = "non-global";
-				VALID_ARCHS = x86_64;
 			};
 			name = "Release-template";
 		};
@@ -8701,7 +8699,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				STRIP_STYLE = "non-global";
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wno-inconsistent-missing-override",
 					"-Werror=idiomatic-parentheses",
@@ -8762,7 +8759,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				STRIP_STYLE = "non-global";
-				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
@@ -8838,7 +8834,6 @@
 					../../platform/apple,
 					.,
 				);
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wno-inconsistent-missing-override",
 					"-Werror=idiomatic-parentheses",
@@ -8914,7 +8909,6 @@
 					../../platform/apple,
 					.,
 				);
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = "-Wno-inconsistent-missing-override";
 			};
 			name = Release;
