@@ -426,9 +426,13 @@ jobs:
           then
           GIT_LOG="Changes since previous build:
           $GIT_LOG
+
+          For Linux builds see [Solar2DTux](https://solar2dtux.com/).
           "
           else
           GIT_LOG='See https://github.com/coronalabs/corona for details
+
+          For Linux builds see [Solar2DTux](https://solar2dtux.com/).
           '
           fi
           GIT_LOG="${GIT_LOG//'%'/'%25'}"
@@ -481,15 +485,6 @@ jobs:
           asset_path: ./Simulator-Windows/Corona-${{ env.BUILD }}.msi
           asset_name: Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD }}.msi
           asset_content_type: application/x-msi
-      - name: Upload Release Asset for Linux Simulator
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Simulator-Linux/CoronaSimulator-x86-64.tar.gz
-          asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}.tar.gz
-          asset_content_type: application/tar+gzip
       - name: Upload Release Asset Corona Cards iOS
         uses: actions/upload-release-asset@v1
         env:
