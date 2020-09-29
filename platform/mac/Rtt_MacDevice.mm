@@ -142,14 +142,22 @@ MacConsoleDevice::GetPlatformVersion() const
 			NSInteger minorVersion;
 			NSInteger patchVersion;
 		} OperatingSystemVersion;
-		OperatingSystemVersion osVersion;
+        OperatingSystemVersion osVersion = {0};
 		SEL operatingSystemVersionSelector = NSSelectorFromString(@"operatingSystemVersion");
 
 		if ([[NSProcessInfo processInfo] respondsToSelector:operatingSystemVersionSelector])
 		{
 			// this works on 10.10 and above (and, apparently, 10.9)
-			osVersion = ((OperatingSystemVersion(*)(id, SEL))objc_msgSend_stret)([NSProcessInfo processInfo], operatingSystemVersionSelector);
-		}
+            NSMethodSignature *signature = [NSProcessInfo instanceMethodSignatureForSelector:operatingSystemVersionSelector];
+            if(signature)
+            {
+                NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+                [invocation setTarget:[NSProcessInfo processInfo]];
+                [invocation setSelector:operatingSystemVersionSelector];
+                [invocation invoke];
+                [invocation getReturnValue:&osVersion];
+            }
+        }
 		else
 		{
 			// works on 10.8 and below but is now deprecated (actually it doesn't work correctly with "minorVersion" > 9)
