@@ -40,7 +40,7 @@ jobs:
           name: SourceCode
           path: ./output
 
-  iOS-template-matrix:
+  Xcode-template-matrix:
     strategy:
       matrix:
         xcode:
@@ -49,6 +49,9 @@ jobs:
         target:
           - template
           - template-angle
+        platform:
+          - iphone
+          - tvos
     needs: source-code
     runs-on: macos-latest
     env:
@@ -62,53 +65,20 @@ jobs:
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
-      - name: Build iOS templates
-        working-directory: ./platform/iphone
+      - name: Build templates
+        working-directory: ./platform/${{ matrix.platform }}
         run: ./gh_build_templates.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Upload iOS templates
+      - name: Upload templates
         uses: actions/upload-artifact@v1
         with:
-          name: Templates-iOS-${{ matrix.xcode }}-${{ matrix.target }}
-          path: ./output
-
-  tvOS-template-matrix:
-    strategy:
-      matrix:
-        xcode:
-          - Xcode_12
-          - Xcode_11.7
-        target:
-          - template
-    needs: source-code
-    runs-on: macos-latest
-    env:
-      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
-      TEMPLATE_TARGET: ${{ matrix.target }}
-    steps:
-      - name: Get processed code
-        uses: actions/download-artifact@v1
-        with:
-          name: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build tvOS templates
-        working-directory: ./platform/tvos
-        run: ./gh_build_templates.sh
-        env:
-          CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Upload tvOS templates
-        uses: actions/upload-artifact@v1
-        with:
-          name: Templates-iOS-${{ matrix.xcode }}-${{ matrix.target }}
+          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
   collect-ios-templates:
     needs:
-      - tvOS-template-matrix
-      - iOS-template-matrix
+      - Xcode-template-matrix
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v2
