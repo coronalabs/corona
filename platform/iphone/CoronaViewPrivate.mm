@@ -1304,7 +1304,7 @@ PrintTouches( NSSet *touches, const char *header )
 
 	const UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
 
-	if ( orientation != UIDeviceOrientationUnknown )
+	if ( orientation != UIDeviceOrientationUnknown && _runtime)
 	{
 		Runtime *runtime = self.runtime;
 		const MPlatform& platform = runtime->Platform();
