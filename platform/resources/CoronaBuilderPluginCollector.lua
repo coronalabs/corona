@@ -246,6 +246,7 @@ function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin,
 
     local build = tonumber(params.build)
     local vFoundBuid, vFoundObject, vFoundBuildName
+    local pluginVersion = pluginObject.r
     for entryBuild, entryObject in pairs(pluginObject.v) do
         local entryBuildNumber = tonumber(entryBuild:match('^%d+%.(%d+)$'))
         if entryBuildNumber <= build and entryBuildNumber > (vFoundBuid or 0) then
@@ -271,7 +272,7 @@ function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin,
     local downloadURL
 
     if pluginTable.marketplaceId then
-      downloadURL = "https://solar2dmarketplace.com/marketplacePlugins?pluginType=collector&ID=" .. pluginTable.marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform
+      downloadURL = "https://solar2dmarketplace.com/marketplacePlugins?pluginType=collector&ID=" .. pluginTable.marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform.."&version="..pluginVersion
     else
       return "Solar2D Marketplace Directory: skipped plugin marketplaceId not found"
     end
@@ -512,7 +513,7 @@ local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginP
         elseif type(result) == 'string' then
             if result:sub(1,2) == "! " then
                 return result
-            end    
+            end
             err = err .. '\n\t' .. result
         end
     end
@@ -571,7 +572,7 @@ local function mergeMoveDirectory(src, dst)
                 mergeMoveDirectory(srcFile, dstFile)
             else
                 os.rename(srcFile, dstFile)
-            end 
+            end
         end
     end
     exec("rmdir " .. quoteString(src))
@@ -624,13 +625,13 @@ local function CollectCoronaPlugins(params)
         for i=1,#params.pluginLocators do
             copyLocators[params.pluginLocators[i]] = true
         end
-        log("Collecting plugins", json.encode(params, { 
+        log("Collecting plugins", json.encode(params, {
             tables = copyLocators,
             exception = function(reason, value, state, defaultmessage)
                 local cn = locatorName(value)
                 if cn then return "<Collector: " .. cn .. ">" end
                 return quoteString("<" .. defaultmessage .. ">")
-            end 
+            end
         }))
     end
 
