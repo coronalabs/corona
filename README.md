@@ -28,7 +28,7 @@ Solar2D is a cross-platform framework which is ideal for rapidly creating apps a
 Solar2D speeds up the development process - update your code, save the changes, and instantly see the results in our instant-update Simulator. When you're ready to test on real devices, build and deploy your app just once and then see code/assets, update automatically, all over your local network. Just like magic.
 
 ### Lua-based
-Lua is an open source scripting language designed to be lightweight, fast, yet also powerful. Lua is currently the leading scripting language in games and has been utilized in Roblox, The Elder Scrolls Online, Don't Starve, World of Warcraft ™, Angry Birds ™, Civilization ™, and [many other popular franchises.](https://en.wikipedia.org/wiki/Category:Lua-scripted_video_games)
+Lua is an open source scripting language designed to be lightweight, fast, yet also powerful. Lua is currently the leading scripting language in games and has been utilized in Roblox, The Elder Scrolls Online, Don't Starve, World of Warcraft ™, Angry Birds ™, Civilization ™, and [many other popular franchises.](https://en.wikipedia.org/wiki/Category:Lua_(programming_language)-scripted_video_games)
 
 ### Use with your favorite text editor
 You can use Sublime Text([Editor](https://github.com/coronalabs/CoronaSDK-SublimeText#installation-instructions)), Atom([autocomplete-corona](https://atom.io/packages/autocomplete-corona)), Visual Studio Code([Solar2d-companion](https://marketplace.visualstudio.com/items?itemName=M4adan.solar2d-companion)), ZeroBrane Studio and many others.
