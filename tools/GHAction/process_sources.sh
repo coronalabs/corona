@@ -16,9 +16,16 @@ sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_MONTH[[:space:]]*[[:digit:]]*$/#
 sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_DAY[[:space:]]*[[:digit:]]*$/#define Rtt_BUILD_DAY $DAY/" librtt/Core/Rtt_Version.h
 rm -f librtt/Core/Rtt_Version.h.bak
 
-defaults write platform/mac/Info CFBundleVersion "$YEAR"."$BUILD_NUMBER"
-defaults write platform/mac/Info CFBundleShortVersionString "$YEAR"."$BUILD_NUMBER"
-plutil -convert xml1 platform/mac/Info.plist
+function upgradePlist {
+    plutil -replace CFBundleVersion -string "$YEAR.$BUILD_NUMBER"  "$1"
+    plutil -replace CFBundleShortVersionString -string "$YEAR.$BUILD_NUMBER"  "$1"
+    plutil -convert xml1 "$1"
+}
+
+upgradePlist platform/mac/Info.plist
+upgradePlist tools/CoronaBuilder/CoronaBuilder-Info.plist
+upgradePlist platform/mac/CoronaConsole/CoronaConsole/Info.plist
+upgradePlist platform/mac/CoronaLiveServer/CoronaLiveServer/Info.plist
 
 
 COPYFILE_DISABLE=1 tar -czf corona.tgz --exclude '.git' --exclude 'corona.tgz' ./
