@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -ex
 path=$(dirname "$0")
 
 PRODUCT=CoronaEnterprise
@@ -26,23 +27,12 @@ fi
 
 echo "### Full xcodebuild output can be found in $FULL_LOG_FILE"
 
-#
-# Checks exit value for error
-# 
-checkError() {
-	# shellcheck disable=SC2181
-    if [ $? -ne 0 ]
-    then
-        echo "Exiting due to errors (above)"
-        exit -1
-    fi
-}
 
 checkDir() {
 	if [ ! -d "$1" ]
     then
     	echo "ERROR: Directory '$1' does not exist."
-        exit -1
+        exit 255
     fi
 }
 
@@ -96,16 +86,16 @@ fi
 #
 
 #cp -rv "$path"/CoronaSampleApp "$DST_SAMPLES_DIR"/template/ios
-#checkError
 
 
 # 
 # Corona
 # 
 
+SYMROOT="$(cd "$PLATFORM_DIR/iphone" && pwd)/build"
+
 # libplayer
-xcodebuild -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target libplayer clean 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
-checkError
+# xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target libplayer clean 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # Device
 CONFIG=Release
@@ -116,30 +106,40 @@ then
 	XCODE_TARGET=libplayer-trial
 fi
 
-xcodebuild -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
-checkError
+# Classic
+
+xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # Simulator
-xcodebuild -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
-checkError
+xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # create universal binary
-lipo -create "$PLATFORM_DIR"/iphone/build/$CONFIG-iphoneos/${XCODE_TARGET}.a "$PLATFORM_DIR"/iphone/build/$CONFIG-iphonesimulator/${XCODE_TARGET}.a -output "$DST_LIB_DIR"/libplayer.a
-checkError
+lipo -create "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}.a "$SYMROOT"/$CONFIG-iphonesimulator/${XCODE_TARGET}.a -output "$DST_LIB_DIR"/libplayer.a
+
+# Angle
+
+xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+
+# Simulator
+xcodebuild SYMROOT="$SYMROOT" EXCLUDED_ARCHS=arm64 -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+
+# create universal binary
+lipo -create "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}-angle.a "$SYMROOT"/$CONFIG-iphonesimulator/${XCODE_TARGET}-angle.a -output "$DST_LIB_DIR"/libplayer-angle.a
+
+# Create MetalANGLE universal framewok
+cp -vR  "$SYMROOT"/$CONFIG-iphoneos/MetalANGLE.framework "$DST_LIB_DIR/MetalANGLE.framework"
+lipo -create "$SYMROOT"/$CONFIG-iphoneos/MetalANGLE.framework/MetalANGLE "$SYMROOT"/$CONFIG-iphonesimulator/MetalANGLE.framework/MetalANGLE -output "$DST_LIB_DIR"/MetalANGLE.framework/MetalANGLE.combined
+xcrun bitcode_strip -r "$DST_LIB_DIR"/MetalANGLE.framework/MetalANGLE.combined -o "$DST_LIB_DIR"/MetalANGLE.framework/MetalANGLE
+rm "$DST_LIB_DIR"/MetalANGLE.framework/MetalANGLE.combined
 
 # copy headers
 cp -v "$PLATFORM_DIR/iphone/Corona/"*.h "$DST_INCLUDE_IOS_DIR/Corona"
-checkError
 
 # copy resources
 cp -v "$PLATFORM_DIR/iphone/MainWindow.xib" "$DST_RESOURCE_IOS_DIR"
-checkError
 
 cp -v "$PLATFORM_DIR/iphone/_CoronaSplashScreen.png" "$DST_RESOURCE_IOS_DIR"
-checkError
 
 cp -v "$PLATFORM_DIR/iphone/Resources-iPad/MainWindow-iPad.xib" "$DST_RESOURCE_IOS_DIR"
-checkError
 
-cp -rv "$PLATFORM_DIR/iphone/build/$CONFIG-iphoneos"/CoronaResources.bundle "$DST_RESOURCE_IOS_DIR"
-checkError
+cp -rv "$SYMROOT/$CONFIG-iphoneos"/CoronaResources.bundle "$DST_RESOURCE_IOS_DIR"
