@@ -149,7 +149,7 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
 
     local build = tonumber(params.build)
     local vFoundBuid, vFoundObject, vFoundBuildName
-    for entryBuild, entryObject in pairs(pluginObject.v) do
+    for entryBuild, entryObject in pairs(pluginObject.v or {}) do
         local entryBuildNumber = tonumber(entryBuild:match('^%d+%.(%d+)$'))
         if entryBuildNumber <= build and entryBuildNumber > (vFoundBuid or 0) then
             vFoundBuid = entryBuildNumber
@@ -247,7 +247,7 @@ function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin,
     local build = tonumber(params.build)
     local vFoundBuid, vFoundObject, vFoundBuildName
     local pluginVersion = pluginObject.r
-    for entryBuild, entryObject in pairs(pluginObject.v) do
+    for entryBuild, entryObject in pairs(pluginObject.v or {}) do
         local entryBuildNumber = tonumber(entryBuild:match('^%d+%.(%d+)$'))
         if entryBuildNumber <= build and entryBuildNumber > (vFoundBuid or 0) then
             vFoundBuid = entryBuildNumber
