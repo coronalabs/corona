@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --
 -- This file is part of the Corona game engine.
--- For overview and more information on licensing please refer to README.md 
+-- For overview and more information on licensing please refer to README.md
 -- Home page: https://github.com/coronalabs/corona
 -- Contact: support@coronalabs.com
 --
@@ -20,6 +20,8 @@
 -- luacheck: globals transition
 -- luacheck: globals easing
 -- luacheck: globals Runtime
+-- luacheck: globals graphics
+-- luacheck: globals loadstring
 
 local params = ...
 
@@ -41,8 +43,6 @@ local statusBarNames = {
 
 if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 	-- Status bar
-
-	local isGraphicsV1 = ( 1 == display.getDefault( "graphicsCompatibility" ) )
 
 	appOrientation = system.orientation
 	local isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
@@ -98,7 +98,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 			local screenDressingFilename = statusBarFiles.screenDressing
 
 			if screenDressingFilename then
-				local w, h = display.pixelWidth, display.pixelHeight
+				-- local w, h = display.pixelWidth, display.pixelHeight
 				local cx, cy = display.contentScaleX, display.contentScaleY
 				if not appOrientation then
 					appOrientation = system.orientation
@@ -286,7 +286,6 @@ local PluginSync =
 
 }
 
-local lfs = require("lfs")
 local json = require("json")
 
 -- luacheck: push
@@ -396,10 +395,19 @@ local function collectPlugins(localQueue, extractLocation, platform, continueOnE
 			plugins[pluginInfo.pluginName] = json.decode(pluginInfo.json)
 		end
 		plugins[pluginInfo.pluginName].publisherId = pluginInfo.publisherId
+		if continueOnError and asyncOnComplete then
+			if type(plugins[pluginInfo.pluginName].supportedPlatforms) == 'table' then
+				if not plugins[pluginInfo.pluginName].supportedPlatforms[platform] then
+					if plugins[pluginInfo.pluginName].supportedPlatforms[platform] ~= false then
+						plugins[pluginInfo.pluginName].supportedPlatforms[platform] = true
+					end
+				end
+			end
+		end
 	end
 	local _, sim_build_number = string.match( system.getInfo( "build" ), '(%d+)%.(%d+)' )
 
-	local collectorParams = { 
+	local collectorParams = {
 		pluginPlatform = platform,
 		plugins = plugins,
 		destinationDirectory = system.pathForFile("", system.PluginsDirectory),
@@ -452,7 +460,7 @@ local function onInternalRequestUnzipPlugins( event )
 		return true
 	end
 	local result = collectPlugins(params.plugins, destinationPath, event.platform or params.platform, false, nil)
-	if result == nil then	
+	if result == nil then
 		return true
 	else
 		return result
