@@ -5,7 +5,7 @@
 			"xcodeVersion": "14.1",
 			"failMessage": "install or xcode-select Xcode 12.1 to enable",
 			"coronaVersion": 141000,
-			"beta": true,
+			"beta": false,
 			"customTemplate": "-angle"
 		},
 		{
@@ -13,6 +13,13 @@
 			"xcodeVersion": "14.1",
 			"failMessage": "install or xcode-select Xcode 12.1 to enable",
 			"coronaVersion": 141000,
+			"beta": false
+		},
+		{
+			"label": "13.3 (Legacy)",
+			"xcodeVersion": "13.3",
+			"failMessage": "install or xcode-select Xcode 11.3.1 to enable",
+			"coronaVersion": 130000,
 			"beta": false
 		}
 	]
