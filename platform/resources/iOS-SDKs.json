@@ -19,7 +19,7 @@
 			"label": "13.3 (Legacy)",
 			"xcodeVersion": "13.3",
 			"failMessage": "install or xcode-select Xcode 11.3.1 to enable",
-			"coronaVersion": 130000,
+			"coronaVersion": 132000,
 			"beta": false
 		}
 	]
