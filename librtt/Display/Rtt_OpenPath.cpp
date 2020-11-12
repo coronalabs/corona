@@ -248,7 +248,6 @@ OpenPath::IsStrokeVisible() const
 	return result;
 }
 
-// STEVE CHANGE
 bool
 OpenPath::SetStrokeVertexColor( U32 index, U32 color )
 {
@@ -276,7 +275,6 @@ OpenPath::GetStrokeVertexCount() const
 		return verts.Length();
 	}
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

@@ -10,10 +10,8 @@
 #include "Core/Rtt_Build.h"
 
 #include "Renderer/Rtt_Geometry_Renderer.h"
-// STEVE CHANGE
 #include "Display/Rtt_DisplayTypes.h"
 #include "Renderer/Rtt_RenderTypes.h"
-// /STEVE CHANGE
 
 #include <cstring>
 #include <stddef.h>
@@ -104,10 +102,7 @@ namespace Rtt
 #else
 		fStoredOnGPU(true), // Force this to be true if client side arrays are NOT supported
 #endif
-	// STEVE CHANGE
-	//	fUsesPerVertexColors(false),
 		fPerVertexColors(NULL),
-		// /STEVE CHANGE
 		fVertexData(NULL),
 		fIndexData(NULL),
 		fVerticesUsed(0),
@@ -262,14 +257,12 @@ namespace Rtt
 		Resize(vertexCount, 0, copyData);
 	}
 
-	// STEVE CHANGE
 	static void SyncPerVertexColors(ArrayU32* perVertexColors, U32 size)
 	{
 		Rtt_ASSERT(perVertexColors);
 
 		perVertexColors->PadToSize(size, ColorWhite());
 	}
-	// /STEVE CHANGE
 
 	void
 		Geometry::Resize(U32 vertexCount, U32 indexCount, bool copyData)
@@ -313,12 +306,10 @@ namespace Rtt
 			delete[] existingIndexData;
 		}
 
-		// STEVE CHANGE
 		if (fPerVertexColors && fVerticesAllocated > 0)
 		{
 			SyncPerVertexColors(fPerVertexColors, fVerticesAllocated);
 		}
-		// /STEVE CHANGE
 	}
 
 	void
@@ -448,35 +439,7 @@ namespace Rtt
 
 	}
 
-	// STEVE CHANGE
 	// ----------------------------------------------------------------------------
-	/*
-	void
-		Geometry::PopulatePerVertexColors(const U32* colors, S32 n)
-	{
-		Geometry::Vertex* vertices = GetVertexData();
-		S32 iMax = Min((U32)n, GetVerticesUsed());
-
-		for (S32 i = 0; i < iMax; ++i) // assumes #colors = #vertices, else 0
-		{
-			ColorUnion u;
-
-			u.pixel = colors[i];
-
-			Geometry::Vertex& v = vertices[i];
-
-			v.rs = u.rgba.r;
-			v.gs = u.rgba.g;
-			v.bs = u.rgba.b;
-			v.as = u.rgba.a;
-		}
-
-		if (iMax > 0)
-		{
-			fUsesPerVertexColors = true;
-		}
-	}
-	*/
 
 	void
 		Geometry::AttachPerVertexColors(ArrayU32* colors, U32 size)
@@ -514,8 +477,6 @@ namespace Rtt
 
 		return changed;
 	}
-
-	// /STEVE CHANGE
 
 	// ----------------------------------------------------------------------------
 

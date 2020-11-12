@@ -410,7 +410,6 @@ ShapePath::GetTextureExtents( const ArrayVertex2& texVertices ) const
 	return extents;
 }
 
-// STEVE CHANGE
 bool
 ShapePath::SetFillVertexColor( U32 index, U32 color )
 {
@@ -462,7 +461,6 @@ ShapePath::GetStrokeVertexCount() const
 
 	return count;
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

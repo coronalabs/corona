@@ -116,9 +116,7 @@ class LuaLineObjectProxyVTable : public LuaDisplayObjectProxyVTable
 
 	public:
 		static int setStrokeColor( lua_State *L );
-	// STEVE CHANGE
 		static int setStrokeVertexColor( lua_State* L );
-	// /STEVE CHANGE
 		static int setStroke( lua_State *L );
 		static int setStroke( lua_State *L, int valueIndex );
 		static int append( lua_State *L );
@@ -147,10 +145,8 @@ class LuaShapeObjectProxyVTable : public LuaDisplayObjectProxyVTable
 		static int setStrokeColor( lua_State *L );
 		static int setFill( lua_State *L, int valueIndex );
 		static int setStroke( lua_State *L, int valueIndex );
-		// STEVE CHANGE
 		static int setFillVertexColor( lua_State *L );
 		static int setStrokeVertexColor( lua_State *L );
-		// /STEVE CHANGE
 
 	protected:
 		LuaShapeObjectProxyVTable() {}

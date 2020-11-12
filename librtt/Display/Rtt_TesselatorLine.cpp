@@ -20,7 +20,7 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-TesselatorLine::TesselatorLine( const ArrayVertex2& controlPoints, Mode mode ) // <- STEVE CHANGE
+TesselatorLine::TesselatorLine( const ArrayVertex2& controlPoints, Mode mode )
 :	Super(),
 	fControlPoints( controlPoints ),
 	fMode( mode )
