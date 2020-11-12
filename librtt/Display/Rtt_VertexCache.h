@@ -21,29 +21,29 @@ namespace Rtt
 
 class VertexCache
 {
-public:
-	VertexCache(Rtt_Allocator* pAllocator);
+	public:
+		VertexCache(Rtt_Allocator* pAllocator);
 
-public:
-	void Invalidate();
-	bool IsValid() const { return fVertices.Length() > 0; }
+	public:
+		void Invalidate();
+		bool IsValid() const { return fVertices.Length() > 0; }
 
-public:
-	ArrayVertex2& Vertices() { return fVertices; }
-	ArrayVertex2& TexVertices() { return fTexVertices; }
-	Array<U32>& Colors() { return fColors; }
-	ArrayS32& Counts() { return fCounts; }
+	public:
+		ArrayVertex2& Vertices() { return fVertices; }
+		ArrayVertex2& TexVertices() { return fTexVertices; }
+		Array<U32>& Colors() { return fColors; }
+		ArrayS32& Counts() { return fCounts; }
 
-	const ArrayVertex2& Vertices() const { return fVertices; }
-	const ArrayVertex2& TexVertices() const { return fTexVertices; }
-	const Array<U32>& Colors() const { return fColors; }
-	const ArrayS32& Counts() const { return fCounts; }
+		const ArrayVertex2& Vertices() const { return fVertices; }
+		const ArrayVertex2& TexVertices() const { return fTexVertices; }
+		const Array<U32>& Colors() const { return fColors; }
+		const ArrayS32& Counts() const { return fCounts; }
 
-private:
-	ArrayVertex2 fVertices;
-	ArrayVertex2 fTexVertices;
-	Array<U32> fColors;
-	ArrayS32 fCounts;
+	private:
+		ArrayVertex2 fVertices;
+		ArrayVertex2 fTexVertices;
+		Array<U32> fColors;
+		ArrayS32 fCounts;
 };
 
 // ----------------------------------------------------------------------------
