@@ -414,7 +414,7 @@ ShapePath::GetTextureExtents( const ArrayVertex2& texVertices ) const
 bool
 ShapePath::SetFillVertexColor( U32 index, U32 color )
 {
-	fFillGeometry->AttachPerVertexColors( &fFillSource.Colors() );
+	fFillGeometry->AttachPerVertexColors( &fFillSource.Colors(), GetFillVertexCount() );
 
 	return fFillGeometry->SetVertexColor( index, color );
 }
@@ -422,7 +422,7 @@ ShapePath::SetFillVertexColor( U32 index, U32 color )
 bool
 ShapePath::SetStrokeVertexColor( U32 index, U32 color )
 {
-	fStrokeGeometry->AttachPerVertexColors( &fStrokeSource.Colors() );
+	fStrokeGeometry->AttachPerVertexColors( &fStrokeSource.Colors(), GetStrokeVertexCount() );
 
 	return fStrokeGeometry->SetVertexColor( index, color );
 }
@@ -452,7 +452,9 @@ ShapePath::GetStrokeVertexCount() const
 	if (0U == count)
 	{
 		ArrayVertex2 verts( fStrokeSource.Vertices().Allocator() );
-
+		
+		fTesselator->SetInnerWidth( GetInnerStrokeWidth() );
+		fTesselator->SetOuterWidth( GetOuterStrokeWidth() );
 		fTesselator->GenerateStroke( verts );
 
 		count = verts.Length();

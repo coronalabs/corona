@@ -479,7 +479,7 @@ namespace Rtt
 	*/
 
 	void
-		Geometry::AttachPerVertexColors(ArrayU32* colors)
+		Geometry::AttachPerVertexColors(ArrayU32* colors, U32 size)
 	{
 		Rtt_ASSERT(!fPerVertexColors || fPerVertexColors == colors);
 
@@ -489,7 +489,7 @@ namespace Rtt
 
 		if (justBound)
 		{
-			SyncPerVertexColors(fPerVertexColors, fVerticesAllocated);
+			SyncPerVertexColors(fPerVertexColors, size);
 		}
 	}
 
@@ -502,7 +502,7 @@ namespace Rtt
 	bool 
 		Geometry::SetVertexColor(U32 index, U32 color)
 	{
-		if (!fPerVertexColors || index >= fVerticesAllocated)
+		if (!fPerVertexColors || index >= fPerVertexColors->Length())
 		{
 			return false;
 		}

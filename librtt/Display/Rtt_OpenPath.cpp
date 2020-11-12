@@ -252,7 +252,7 @@ OpenPath::IsStrokeVisible() const
 bool
 OpenPath::SetStrokeVertexColor( U32 index, U32 color )
 {
-	fStrokeGeometry->AttachPerVertexColors( &fStrokeSource.Colors() );
+	fStrokeGeometry->AttachPerVertexColors( &fStrokeSource.Colors(), GetStrokeVertexCount() );
 
 	return fStrokeGeometry->SetVertexColor( index, color );
 }
@@ -260,7 +260,21 @@ OpenPath::SetStrokeVertexColor( U32 index, U32 color )
 U32
 OpenPath::GetStrokeVertexCount() const
 {
-	return fStrokeGeometry->GetVerticesAllocated();
+	if (IsValid( kStrokeSource ))
+	{
+		return fStrokeGeometry->GetVerticesAllocated();
+	}
+
+	else
+	{
+		ArrayVertex2 verts( fStrokeSource.Vertices().Allocator() );
+
+		TesselatorLine tesselator( fStrokePoints, TesselatorLine::kLineMode );
+		tesselator.SetWidth( GetWidth() );
+		tesselator.GenerateStroke( verts );
+
+		return verts.Length();
+	}
 }
 // /STEVE CHANGE
 

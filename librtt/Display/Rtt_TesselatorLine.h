@@ -35,7 +35,7 @@ class TesselatorLine : public Tesselator
 		Mode;
 
 	public:
-		TesselatorLine( ArrayVertex2& controlPoints, Mode mode );
+		TesselatorLine( const ArrayVertex2& controlPoints, Mode mode ); // <- STEVE CHANGE
 
 	public:
 		virtual Tesselator::eType GetType(){ return Tesselator::kType_Line; }
@@ -50,7 +50,7 @@ class TesselatorLine : public Tesselator
 		virtual void GetSelfBounds( Rect& rect );
 
 	private:
-		ArrayVertex2& fControlPoints;
+		const ArrayVertex2& fControlPoints; // <- STEVE CHANGE
 		U8 fMode;
 };
 

@@ -13,7 +13,7 @@
 #include "Renderer/Rtt_CPUResource.h"
 #include "Core/Rtt_Types.h"
 // STEVE CHANGE
-#include "Core/Rtt_Array.h"
+#include "Display/Rtt_DisplayTypes.h"
 // /STEVE CHANGE
 #include "Core/Rtt_Real.h" // TODO: Rtt_Real.h depends on Rtt_Types being included before it
 
@@ -113,7 +113,7 @@ namespace Rtt
 	//	bool GetUsesPerVertexColors() const { return fUsesPerVertexColors; }
 	//	void PopulatePerVertexColors(const U32* colors, S32 n);
 
-		void AttachPerVertexColors(Array< U32 >* colors);
+		void AttachPerVertexColors(ArrayU32* colors, U32 size);
 
 		const U32* GetPerVertexColorData() const;
 		bool SetVertexColor(U32 index, U32 color);
@@ -156,7 +156,7 @@ namespace Rtt
 		bool fStoredOnGPU;
 		// STEVE CHANGE
 	//	bool fUsesPerVertexColors;
-		Array< U32 >* fPerVertexColors;
+		ArrayU32* fPerVertexColors;
 		// /STEVE CHANGE
 		Vertex* fVertexData;
 		Index* fIndexData;
