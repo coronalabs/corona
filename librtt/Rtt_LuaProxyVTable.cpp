@@ -1420,7 +1420,7 @@ LuaLineObjectProxyVTable::setStrokeVertexColor( lua_State *L )
 			o->SetStroke( DefaultPaint( L, o->IsByteColorRange() ) );
 		}
 
-		U32 index = lua_tointeger( L, 2 );
+		U32 index = lua_tointeger( L, 2 ) - 1U;
 		Color c = LuaLibDisplay::toColor( L, 3, o->IsByteColorRange() );
 
 		if (path.SetStrokeVertexColor( index, c ))
@@ -1512,7 +1512,7 @@ LuaLineObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object
 	// /STEVE CHANGE
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 0, 0, 0/*9, 30, 4*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 11, 2, 2/*9, 30, 4*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -1650,7 +1650,7 @@ LuaLineObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
 	// /STEVE CHANGE
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 0, 0, 0/*9, 10, 2*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 11, 2, 2/*9, 10, 2*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -1869,7 +1869,7 @@ LuaShapeObjectProxyVTable::setFillVertexColor( lua_State *L )
 			o->SetFill( DefaultPaint( L, o->IsByteColorRange() ) );
 		}
 
-		U32 index = lua_tointeger( L, 2 );
+		U32 index = lua_tointeger( L, 2 ) - 1U;
 		Color c = LuaLibDisplay::toColor( L, 3, o->IsByteColorRange() );
 
 		if (path.SetFillVertexColor( index, c ))
@@ -1896,7 +1896,7 @@ LuaShapeObjectProxyVTable::setStrokeVertexColor( lua_State *L )
 			o->SetStroke( DefaultPaint( L, o->IsByteColorRange() ) );
 		}
 
-		U32 index = lua_tointeger( L, 2 );
+		U32 index = lua_tointeger( L, 2 ) - 1U;
 		Color c = LuaLibDisplay::toColor( L, 3, o->IsByteColorRange() );
 
 		if (path.SetStrokeVertexColor( index, c ))
@@ -1934,7 +1934,7 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
 	// /STEVE CHANGE
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 0, 0, 0/*8, 26, 2*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 12, 11, 2/*8, 26, 2*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
 	StringHash *hash = &sHash;
 	int index = hash->Lookup( key );
 
@@ -2030,6 +2030,9 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
 		break;
 	// STEVE CHANGE
 	case 8:
+		{
+			Lua::PushCachedFunction( L, Self::setFillVertexColor );
+		}
 		break;
 	case 9:
 		{
@@ -2037,6 +2040,9 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
 		}
 		break;
 	case 10:
+		{
+			Lua::PushCachedFunction( L, Self::setStrokeVertexColor );
+		}
 		break;
 	case 11:
 		{

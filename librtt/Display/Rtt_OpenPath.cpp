@@ -260,7 +260,7 @@ OpenPath::SetStrokeVertexColor( U32 index, U32 color )
 U32
 OpenPath::GetStrokeVertexCount() const
 {
-	return fStrokeGeometry->GetVerticesUsed();
+	return fStrokeGeometry->GetVerticesAllocated();
 }
 // /STEVE CHANGE
 

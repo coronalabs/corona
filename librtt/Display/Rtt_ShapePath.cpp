@@ -430,13 +430,13 @@ ShapePath::SetStrokeVertexColor( U32 index, U32 color )
 U32
 ShapePath::GetFillVertexCount() const
 {
-	return fFillGeometry->GetVerticesUsed();
+	return fFillGeometry->GetVerticesAllocated();
 }
 
 U32
 ShapePath::GetStrokeVertexCount() const
 {
-	return fStrokeGeometry->GetVerticesUsed();
+	return fStrokeGeometry->GetVerticesAllocated();
 }
 // /STEVE CHANGE
 

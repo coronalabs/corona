@@ -502,7 +502,7 @@ namespace Rtt
 	bool 
 		Geometry::SetVertexColor(U32 index, U32 color)
 	{
-		if (!fPerVertexColors || index >= fVerticesUsed)
+		if (!fPerVertexColors || index >= fVerticesAllocated)
 		{
 			return false;
 		}
