@@ -76,8 +76,8 @@ class ShapePath : public ClosedPath
 		void SetDelegate( const MShapePathDelegate *delegate ) { fDelegate = delegate; }
 
 	public:
-		bool SetFillVertexColor(U32 index, U32 color);
-		bool SetStrokeVertexColor(U32 index, U32 color);
+		bool SetFillVertexColor( U32 index, U32 color );
+		bool SetStrokeVertexColor( U32 index, U32 color );
 
 		U32 GetFillVertexCount() const;
 		U32 GetStrokeVertexCount() const;

@@ -16,25 +16,25 @@
 namespace Rtt
 {
 
-	// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-	VertexCache::VertexCache(Rtt_Allocator* pAllocator)
-		: fVertices(pAllocator),
-		fTexVertices(pAllocator),
-		fColors(pAllocator),
-		fCounts(pAllocator)
-	{
-	}
+VertexCache::VertexCache( Rtt_Allocator* pAllocator )
+:	fVertices(pAllocator),
+	fTexVertices(pAllocator),
+	fColors(pAllocator),
+	fCounts(pAllocator)
+{
+}
 
-	void
-		VertexCache::Invalidate()
-	{
-		fVertices.Empty();
-		fTexVertices.Empty();
-		fCounts.Empty();
-	}
+void
+VertexCache::Invalidate()
+{
+	fVertices.Empty();
+	fTexVertices.Empty();
+	fCounts.Empty();
+}
 
-	// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 } // namespace Rtt
 
