@@ -430,13 +430,35 @@ ShapePath::SetStrokeVertexColor( U32 index, U32 color )
 U32
 ShapePath::GetFillVertexCount() const
 {
-	return fFillGeometry->GetVerticesAllocated();
+	U32 count = fFillGeometry->GetVerticesAllocated();
+
+	if (0U == count)
+	{
+		ArrayVertex2 verts( fFillSource.Vertices().Allocator() );
+
+		fTesselator->GenerateFill( verts );
+
+		count = verts.Length();
+	}
+
+	return count;
 }
 
 U32
 ShapePath::GetStrokeVertexCount() const
 {
-	return fStrokeGeometry->GetVerticesAllocated();
+	U32 count = fStrokeGeometry->GetVerticesAllocated();
+
+	if (0U == count)
+	{
+		ArrayVertex2 verts( fStrokeSource.Vertices().Allocator() );
+
+		fTesselator->GenerateStroke( verts );
+
+		count = verts.Length();
+	}
+
+	return count;
 }
 // /STEVE CHANGE
 
