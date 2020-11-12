@@ -30,6 +30,9 @@ typedef PtrArray< DisplayObject >		PtrArrayDisplayObject;
 typedef Array< Vertex2 >				ArrayVertex2;
 typedef Array< S32 >					ArrayS32;
 typedef Array< U16 >                    ArrayIndex;
+// STEVE CHANGE
+typedef Array< U32 >					ArrayU32;
+// /STEVE CHANGE
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

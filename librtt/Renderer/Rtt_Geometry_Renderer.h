@@ -12,6 +12,9 @@
 
 #include "Renderer/Rtt_CPUResource.h"
 #include "Core/Rtt_Types.h"
+// STEVE CHANGE
+#include "Core/Rtt_Array.h"
+// /STEVE CHANGE
 #include "Core/Rtt_Real.h" // TODO: Rtt_Real.h depends on Rtt_Types being included before it
 
 // ----------------------------------------------------------------------------
@@ -21,10 +24,10 @@ struct Rtt_Allocator;
 namespace Rtt
 {
 
-// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
 
-class Geometry : public CPUResource
-{
+	class Geometry : public CPUResource
+	{
 	public:
 		typedef CPUResource Super;
 		typedef CPUResource Self;
@@ -40,26 +43,26 @@ class Geometry : public CPUResource
 		}
 		Mode;
 		typedef Mode PrimitiveType; // TODO: Rename Mode to PrimitiveType
-		
+
 		struct Vertex
 		{
 			void Zero();
 
-			void Set( Real x_,
-					  Real y_,
-					  Real u_,
-					  Real v_,
-					  U8* optionalColorScale, /* This is an array of length 4. */
-					  Real* optionalUserData /* This is an array of length 4. */ );
+			void Set(Real x_,
+				Real y_,
+				Real u_,
+				Real v_,
+				U8* optionalColorScale, /* This is an array of length 4. */
+				Real* optionalUserData /* This is an array of length 4. */);
 
-			void SetPos( Real x_,
-						  Real y_ );
+			void SetPos(Real x_,
+				Real y_);
 
 			// 'vertices' is an array of length "vertexCount"
-			static void SetColor4ub( U32 vertexCount, Vertex *vertices,
-									U8 r, U8 g, U8 b, U8 a );
-			static void SetColor( U32 vertexCount, Vertex *vertices,
-									Real red, Real green, Real blue, Real alpha );
+			static void SetColor4ub(U32 vertexCount, Vertex* vertices,
+				U8 r, U8 g, U8 b, U8 a);
+			static void SetColor(U32 vertexCount, Vertex* vertices,
+				Real red, Real green, Real blue, Real alpha);
 
 			Real x, y, z;	     // 12 bytes
 			Real u, v, q;	     // 12 bytes
@@ -90,64 +93,78 @@ class Geometry : public CPUResource
 		// improve performance by avoiding the per-frame copy of data from
 		// main memory to GPU memory. For smaller, frequently changing data
 		// this can actually reduce performance.
-		Geometry( Rtt_Allocator* allocator, PrimitiveType type, U32 vertexCount, U32 indexCount, bool storeOnGPU );
-		Geometry( const Geometry &geometry );
+		Geometry(Rtt_Allocator* allocator, PrimitiveType type, U32 vertexCount, U32 indexCount, bool storeOnGPU);
+		Geometry(const Geometry& geometry);
 		~Geometry();
-		
+
 		virtual ResourceType GetType() const;
 		virtual void Allocate();
 		virtual void Deallocate();
 		virtual bool RequiresCopy() const;
-		
-		void SetPrimitiveType( PrimitiveType primitive_type );
+
+		void SetPrimitiveType(PrimitiveType primitive_type);
 		PrimitiveType GetPrimitiveType() const;
 
 		U32 GetVerticesAllocated() const;
 		U32 GetIndicesAllocated() const;
 		bool GetStoredOnGPU() const;
-		
+
+		// STEVE CHANGE
+	//	bool GetUsesPerVertexColors() const { return fUsesPerVertexColors; }
+	//	void PopulatePerVertexColors(const U32* colors, S32 n);
+
+		void AttachPerVertexColors(Array< U32 >* colors);
+
+		const U32* GetPerVertexColorData() const;
+		bool SetVertexColor(U32 index, U32 color);
+		// /STEVE CHANGE
+
 		// More space may be allocated than is initially needed. By default,
 		// the use count is zero and must be set for Geometry to be useful.
 		U32 GetVerticesUsed() const;
 		U32 GetIndicesUsed() const;
-		
-		void SetVerticesUsed( U32 count );
-		void SetIndicesUsed( U32 count );
+
+		void SetVerticesUsed(U32 count);
+		void SetIndicesUsed(U32 count);
 
 		// To avoid excess copying, vertex data may be manipulated directly.
 		// Invalidate() will result in the data being subloaded to the GPU.
 		Vertex* GetVertexData();
 		Index* GetIndexData();
-		
-		void Resize( U32 vertexCount, bool copyData ); // TODO: Deprecated. Remove.
-		
+
+		void Resize(U32 vertexCount, bool copyData); // TODO: Deprecated. Remove.
+
 		// Resize this Geometry's data store. The original data, or as much
 		// of it as possible, will be copied to the newly allocated memory.
-		void Resize( U32 vertexCount, U32 indexCount, bool copyData );
-		
+		void Resize(U32 vertexCount, U32 indexCount, bool copyData);
+
 		// A convenience function which will insert the given Vertex into the
 		// data buffer immediately following the last "used" Vertex, resizing
 		// as necessary. It is the caller's responsibility to Invalidate().
-		void Append( const Vertex& vertex );
+		void Append(const Vertex& vertex);
 
 	public:
-		bool HitTest( Real x, Real y ) const;
+		bool HitTest(Real x, Real y) const;
 
 	private:
 		// Assignment operator made private until we add copy support.
-		void operator=( const Geometry &geometry ) { };
+		void operator=(const Geometry& geometry) { };
 
 		PrimitiveType fPrimitiveType;
 		U32 fVerticesAllocated;
 		U32 fIndicesAllocated;
 		bool fStoredOnGPU;
+		// STEVE CHANGE
+	//	bool fUsesPerVertexColors;
+		Array< U32 >* fPerVertexColors;
+		// /STEVE CHANGE
 		Vertex* fVertexData;
 		Index* fIndexData;
 		U32 fVerticesUsed;
 		U32 fIndicesUsed;
-};
+	};
 
-// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
 
 } // namespace Rtt
 

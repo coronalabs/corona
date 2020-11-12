@@ -103,6 +103,12 @@ class OpenPath : public DisplayPath
 
 	public:
 		bool IsStrokeVisible() const;
+	// STEVE CHANGE
+	public:
+		bool SetStrokeVertexColor(U32 index, U32 color);
+
+		U32 GetStrokeVertexCount() const;
+	// /STEVE CHANGE
 
 	private:
 		Paint* fStroke;

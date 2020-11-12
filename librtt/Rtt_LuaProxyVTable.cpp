@@ -1391,6 +1391,49 @@ LuaLineObjectProxyVTable::setStrokeColor( lua_State *L )
 	return 0;
 }
 
+// STEVE CHANGE
+
+static Paint*
+DefaultPaint( lua_State *L, bool isBytes )
+{
+	lua_pushnumber( L, 1.0 ); // push white
+
+	Paint* p = LuaLibDisplay::LuaNewColor( L, lua_gettop( L ), isBytes );
+
+	lua_pop( L, 1 );
+
+	return p;
+}
+
+int
+LuaLineObjectProxyVTable::setStrokeVertexColor( lua_State *L )
+{
+	LineObject* o = (LineObject*)LuaProxy::GetProxyableObject( L, 1 );
+
+	Rtt_WARN_SIM_PROXY_TYPE( L, 1, LineObject );
+
+	if ( o )
+	{
+		OpenPath& path = o->GetPath();
+		if ( ! path.GetStroke() )
+		{
+			o->SetStroke( DefaultPaint( L, o->IsByteColorRange() ) );
+		}
+
+		U32 index = lua_tointeger( L, 2 );
+		Color c = LuaLibDisplay::toColor( L, 3, o->IsByteColorRange() );
+
+		if (path.SetStrokeVertexColor( index, c ))
+		{
+			path.GetObserver()->Invalidate( DisplayObject::kGeometryFlag | DisplayObject::kColorFlag );
+		}
+	}
+
+	return 0;
+}
+
+// /STEVE CHANGE
+
 // object.stroke
 int
 LuaLineObjectProxyVTable::setStroke( lua_State *L )
@@ -1463,9 +1506,13 @@ LuaLineObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object
 		"strokeWidth",		// 6
 		"stroke",			// 7
 		"anchorSegments",	// 8
+	// STEVE CHANGE
+		"setStrokeVertexColor", // 9
+		"strokeVertexCount",	// 10
+	// /STEVE CHANGE
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 9, 30, 4, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 0, 0, 0/*9, 30, 4*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -1539,6 +1586,19 @@ LuaLineObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object
 			result = 1;
 		}
         break;
+	// STEVE CHANGE
+	case 9:
+		{
+			Lua::PushCachedFunction( L, Self::setStrokeVertexColor );
+		}
+		break;
+	case 10:
+	{
+		const LineObject& o = static_cast< const LineObject& >( object );
+		lua_pushinteger( L, o.GetPath().GetStrokeVertexCount() );
+	}
+		break;
+	// /STEVE CHANGE
 
 	default:
 		{
@@ -1584,9 +1644,13 @@ LuaLineObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
 		"strokeWidth",		// 6
 		"stroke",			// 7
 		"anchorSegments",	// 8
+	// STEVE CHANGE
+		"strokeVertexCount",	// 9
+		"setStrokeVertexColor",	// 10
+	// /STEVE CHANGE
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 9, 10, 2, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 0, 0, 0/*9, 10, 2*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -1596,6 +1660,9 @@ LuaLineObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
 	case 1:
 	case 2:
 	case 3:
+	// STEVE CHANGE
+	case 10:
+	// /STEVE CHANGE
 		// No-op: cannot set property for method
 		break;
 	case 4:
@@ -1638,6 +1705,11 @@ LuaLineObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
 			setAnchorSegments( L, valueIndex );
 		}
        break;
+	// STEVE CHANGE
+	case 9:
+		// No-op: cannot set vertex count
+		break;
+	// /STEVE CHANGE
 	default:
 		{
 			result = Super::SetValueForKey( L, object, key, valueIndex );
@@ -1781,6 +1853,62 @@ LuaShapeObjectProxyVTable::setStroke( lua_State *L, int valueIndex )
 	return 0;
 }
 
+// STEVE CHANGE
+int
+LuaShapeObjectProxyVTable::setFillVertexColor( lua_State *L )
+{
+	ShapeObject* o = (ShapeObject*)LuaProxy::GetProxyableObject( L, 1 );
+
+	Rtt_WARN_SIM_PROXY_TYPE( L, 1, ShapeObject );
+
+	if ( o )
+	{
+		ShapePath& path = static_cast< ShapePath& >( o->GetPath() );
+		if ( ! path.GetFill() )
+		{
+			o->SetFill( DefaultPaint( L, o->IsByteColorRange() ) );
+		}
+
+		U32 index = lua_tointeger( L, 2 );
+		Color c = LuaLibDisplay::toColor( L, 3, o->IsByteColorRange() );
+
+		if (path.SetFillVertexColor( index, c ))
+		{
+			path.GetObserver()->Invalidate( DisplayObject::kGeometryFlag | DisplayObject::kColorFlag );
+		}
+	}
+
+	return 0;
+}
+
+int
+LuaShapeObjectProxyVTable::setStrokeVertexColor( lua_State *L )
+{
+	ShapeObject* o = (ShapeObject*)LuaProxy::GetProxyableObject( L, 1 );
+
+	Rtt_WARN_SIM_PROXY_TYPE( L, 1, ShapeObject );
+
+	if ( o )
+	{
+		ShapePath& path = static_cast< ShapePath& >( o->GetPath() );
+		if ( ! path.GetStroke() )
+		{
+			o->SetStroke( DefaultPaint( L, o->IsByteColorRange() ) );
+		}
+
+		U32 index = lua_tointeger( L, 2 );
+		Color c = LuaLibDisplay::toColor( L, 3, o->IsByteColorRange() );
+
+		if (path.SetStrokeVertexColor( index, c ))
+		{
+			path.GetObserver()->Invalidate( DisplayObject::kGeometryFlag | DisplayObject::kColorFlag );
+		}
+	}
+
+	return 0;
+}
+// /STEVE CHANGE
+
 int
 LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction /* = false */ ) const
 {
@@ -1798,9 +1926,15 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
 		"setStrokeColor",	// 5
 		"strokeWidth",		// 6
 		"innerstrokeWidth",	// 7
+	// STEVE CHANGE
+		"setFillVertexColor",	// 8
+		"fillVertexCount",		// 9
+		"setStrokeVertexColor", // 10
+		"strokeVertexCount",	// 11
+	// /STEVE CHANGE
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 8, 26, 2, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 0, 0, 0/*8, 26, 2*/, __FILE__, __LINE__ ); // <- STEVE CHANGE
 	StringHash *hash = &sHash;
 	int index = hash->Lookup( key );
 
@@ -1894,6 +2028,22 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
 			lua_pushinteger( L, o.GetInnerStrokeWidth() );		
 		}
 		break;
+	// STEVE CHANGE
+	case 8:
+		break;
+	case 9:
+		{
+			lua_pushinteger( L, static_cast< const ShapePath& >( o.GetPath() ).GetFillVertexCount() );
+		}
+		break;
+	case 10:
+		break;
+	case 11:
+		{
+			lua_pushinteger( L, static_cast< const ShapePath& >( o.GetPath() ).GetStrokeVertexCount() );
+		}
+		break;
+	// /STEVE CHANGE
 	default:
 		{
              result = Super::ValueForKey( L, object, key, overrideRestriction );

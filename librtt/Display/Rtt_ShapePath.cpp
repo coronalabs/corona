@@ -410,6 +410,36 @@ ShapePath::GetTextureExtents( const ArrayVertex2& texVertices ) const
 	return extents;
 }
 
+// STEVE CHANGE
+bool
+ShapePath::SetFillVertexColor( U32 index, U32 color )
+{
+	fFillGeometry->AttachPerVertexColors( &fFillSource.Colors() );
+
+	return fFillGeometry->SetVertexColor( index, color );
+}
+
+bool
+ShapePath::SetStrokeVertexColor( U32 index, U32 color )
+{
+	fStrokeGeometry->AttachPerVertexColors( &fStrokeSource.Colors() );
+
+	return fStrokeGeometry->SetVertexColor( index, color );
+}
+
+U32
+ShapePath::GetFillVertexCount() const
+{
+	return fFillGeometry->GetVerticesUsed();
+}
+
+U32
+ShapePath::GetStrokeVertexCount() const
+{
+	return fStrokeGeometry->GetVerticesUsed();
+}
+// /STEVE CHANGE
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

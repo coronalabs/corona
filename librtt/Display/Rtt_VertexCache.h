@@ -17,12 +17,12 @@
 namespace Rtt
 {
 
-// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
 
-class VertexCache
-{
+	class VertexCache
+	{
 	public:
-		VertexCache( Rtt_Allocator* pAllocator );
+		VertexCache(Rtt_Allocator* pAllocator);
 
 	public:
 		void Invalidate();
@@ -31,19 +31,28 @@ class VertexCache
 	public:
 		ArrayVertex2& Vertices() { return fVertices; }
 		ArrayVertex2& TexVertices() { return fTexVertices; }
+		// STEVE CHANGE
+		Array<U32>& Colors() { return fColors; }
+		// /STEVE CHANGE
 		ArrayS32& Counts() { return fCounts; }
 
 		const ArrayVertex2& Vertices() const { return fVertices; }
 		const ArrayVertex2& TexVertices() const { return fTexVertices; }
+		// STEVE CHANGE
+		const Array<U32>& Colors() const { return fColors; }
+		// /STEVE CHANGE
 		const ArrayS32& Counts() const { return fCounts; }
 
 	private:
 		ArrayVertex2 fVertices;
 		ArrayVertex2 fTexVertices;
+		// STEVE CHANGE
+		Array<U32> fColors;
+		// /STEVE CHANGE
 		ArrayS32 fCounts;
-};
+	};
 
-// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
 
 } // namespace Rtt
 

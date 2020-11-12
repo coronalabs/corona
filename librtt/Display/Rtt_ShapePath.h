@@ -74,7 +74,14 @@ class ShapePath : public ClosedPath
 
 		const MShapePathDelegate *GetDelegate() const { return fDelegate; }
 		void SetDelegate( const MShapePathDelegate *delegate ) { fDelegate = delegate; }
+	// STEVE CHANGE
+	public:
+		bool SetFillVertexColor(U32 index, U32 color);
+		bool SetStrokeVertexColor(U32 index, U32 color);
 
+		U32 GetFillVertexCount() const;
+		U32 GetStrokeVertexCount() const;
+	// /STEVE CHANGE
 	protected:
 		Geometry *fFillGeometry;
 		Geometry *fStrokeGeometry;

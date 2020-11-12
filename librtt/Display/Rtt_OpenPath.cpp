@@ -248,6 +248,22 @@ OpenPath::IsStrokeVisible() const
 	return result;
 }
 
+// STEVE CHANGE
+bool
+OpenPath::SetStrokeVertexColor( U32 index, U32 color )
+{
+	fStrokeGeometry->AttachPerVertexColors( &fStrokeSource.Colors() );
+
+	return fStrokeGeometry->SetVertexColor( index, color );
+}
+
+U32
+OpenPath::GetStrokeVertexCount() const
+{
+	return fStrokeGeometry->GetVerticesUsed();
+}
+// /STEVE CHANGE
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt
