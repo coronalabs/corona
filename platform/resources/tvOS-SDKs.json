@@ -1,18 +1,18 @@
 {
 	"tvos": [
 		{
-			"label": "14.0 Metal",
-			"xcodeVersion": "14.0",
-			"failMessage": "install or xcode-select Xcode 12.1 to enable",
-			"coronaVersion": 140000,
+			"label": "14.2 Metal",
+			"xcodeVersion": "14.2",
+			"failMessage": "install or xcode-select Xcode 12.2 to enable",
+			"coronaVersion": 142000,
 			"beta": false,
 			"customTemplate": "-angle"
 		},
 		{
-			"label": "14.0",
-			"xcodeVersion": "14.0",
-			"failMessage": "install or xcode-select Xcode 12.1 to enable",
-			"coronaVersion": 140000,
+			"label": "14.2",
+			"xcodeVersion": "14.2",
+			"failMessage": "install or xcode-select Xcode 12.2 to enable",
+			"coronaVersion": 142000,
 			"beta": false
 		}
 	]
