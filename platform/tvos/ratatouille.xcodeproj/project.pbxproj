@@ -618,8 +618,11 @@
 		F58011C11BE295070061E021 /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B41BE294F40061E021 /* Rtt_AppleInputDevice.mm */; };
 		F58011C21BE295070061E021 /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B61BE294F40061E021 /* Rtt_AppleInputDeviceManager.mm */; };
 		F58011C31BE295070061E021 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B81BE294F40061E021 /* Rtt_AppleInputMFiDeviceListener.mm */; };
+		F592971F255548860048AF8C /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F59296E3255548860048AF8C /* AVKit.framework */; };
 		F5A752361BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A752351BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F5A752371BFA41C600CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752341BFA41BF00CCDB94 /* CoronaLuaObjCHelper.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5B4469B255543BD000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */; };
+		F5B446AB255543BE000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */; };
 		F5C5E0D7251E112100217C19 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD17351BAA0D8F00BCF507 /* main.mm */; };
 		F5C5E0D8251E112100217C19 /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = C2F9117A1CDC4C31004A5564 /* compat.c */; };
 		F5C5E0D9251E112100217C19 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */; };
@@ -2577,8 +2580,11 @@
 		F58011B61BE294F40061E021 /* Rtt_AppleInputDeviceManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleInputDeviceManager.mm; path = ../apple/Rtt_AppleInputDeviceManager.mm; sourceTree = "<group>"; };
 		F58011B71BE294F40061E021 /* Rtt_AppleInputMFiDeviceListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AppleInputMFiDeviceListener.h; path = ../apple/Rtt_AppleInputMFiDeviceListener.h; sourceTree = "<group>"; };
 		F58011B81BE294F40061E021 /* Rtt_AppleInputMFiDeviceListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleInputMFiDeviceListener.mm; path = ../apple/Rtt_AppleInputMFiDeviceListener.mm; sourceTree = "<group>"; };
+		F59296E3255548860048AF8C /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		F5A752341BFA41BF00CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = ../iphone/Corona/CoronaLuaObjCHelper.h; sourceTree = "<group>"; };
 		F5A752351BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = ../iphone/Corona/CoronaLuaObjCHelper.mm; sourceTree = "<group>"; };
+		F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_IPhoneVideoPlayer.mm; path = ../iphone/Rtt_IPhoneVideoPlayer.mm; sourceTree = "<group>"; };
+		F5B4467A255543A9000BC8A0 /* Rtt_IPhoneVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_IPhoneVideoPlayer.h; path = ../iphone/Rtt_IPhoneVideoPlayer.h; sourceTree = "<group>"; };
 		F5C5E0E9251E112100217C19 /* template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = template.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5C5E149251E114A00217C19 /* CoronaCards.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoronaCards.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5C5E1A2251E115D00217C19 /* libplayer-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2668,6 +2674,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F592971F255548860048AF8C /* AVKit.framework in Frameworks */,
 				A4E075A71BD1C296003A733A /* AudioToolbox.framework in Frameworks */,
 				A4E075A81BD1C296003A733A /* AVFoundation.framework in Frameworks */,
 				A4E075A91BD1C296003A733A /* CoreGraphics.framework in Frameworks */,
@@ -3821,6 +3828,8 @@
 				A4AD30D21BAA377C006A0C97 /* Rtt_IPhoneTimer.mm */,
 				A4AD30D31BAA377C006A0C97 /* Rtt_IPhoneVideoObject.h */,
 				A4AD30D41BAA377C006A0C97 /* Rtt_IPhoneVideoObject.mm */,
+				F5B4467A255543A9000BC8A0 /* Rtt_IPhoneVideoPlayer.h */,
+				F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */,
 				A4AD30DD1BAA377C006A0C97 /* Rtt_TouchInhibitor.h */,
 				A4AD30DE1BAA377C006A0C97 /* Rtt_TouchInhibitor.mm */,
 			);
@@ -4063,6 +4072,7 @@
 		A4DD47261BB247C100FD988E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F59296E3255548860048AF8C /* AVKit.framework */,
 				A40A90521BD984AD001D2038 /* CoreText.framework */,
 				A44496B11BC5FF5E0019DA20 /* CoreMedia.framework */,
 				A46DA3B31BBA1A1D009C3CDF /* GameController.framework */,
@@ -6027,6 +6037,7 @@
 				A4AD30E41BAA377C006A0C97 /* CoronaViewPluginContext.mm in Sources */,
 				A4AD30E91BAA377C006A0C97 /* Rtt_IPhoneDisplayObject.mm in Sources */,
 				A4AD30E61BAA377C006A0C97 /* Rtt_IPhoneAudioSessionManager.mm in Sources */,
+				F5B4469B255543BD000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */,
 				A4AD316C1BAB9E19006A0C97 /* CoronaNativeObjectAdapter.mm in Sources */,
 				F58011C11BE295070061E021 /* Rtt_AppleInputDevice.mm in Sources */,
 				A4AD308D1BAA2B80006A0C97 /* Rtt_ApplePlatform.mm in Sources */,
@@ -6198,6 +6209,7 @@
 				F5C5E175251E115D00217C19 /* CoronaViewPluginContext.mm in Sources */,
 				F5C5E176251E115D00217C19 /* Rtt_IPhoneDisplayObject.mm in Sources */,
 				F5C5E177251E115D00217C19 /* Rtt_IPhoneAudioSessionManager.mm in Sources */,
+				F5B446AB255543BE000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */,
 				F5C5E178251E115D00217C19 /* CoronaNativeObjectAdapter.mm in Sources */,
 				F5C5E179251E115D00217C19 /* Rtt_AppleInputDevice.mm in Sources */,
 				F5C5E17A251E115D00217C19 /* Rtt_ApplePlatform.mm in Sources */,
