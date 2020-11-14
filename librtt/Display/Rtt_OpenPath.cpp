@@ -255,7 +255,7 @@ OpenPath::SetStrokeVertexColor( U32 index, U32 color )
 
 	return fStrokeGeometry->SetVertexColor( index, color );
 }
-
+#include <Corona/CoronaLog.h>
 U32
 OpenPath::GetStrokeVertexCount() const
 {
@@ -266,13 +266,7 @@ OpenPath::GetStrokeVertexCount() const
 
 	else
 	{
-		ArrayVertex2 verts( fStrokeSource.Vertices().Allocator() );
-
-		TesselatorLine tesselator( fStrokePoints, TesselatorLine::kLineMode );
-		tesselator.SetWidth( GetWidth() );
-		tesselator.GenerateStroke( verts );
-
-		return verts.Length();
+		return TesselatorLine::VertexCountFromPoints( fStrokePoints, false );
 	}
 }
 

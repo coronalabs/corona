@@ -134,6 +134,12 @@ static const Rtt_Real kUnitCircleScaleFactor[] =
 #endif
 };
 
+U32
+Tesselator::CountForDepth( int depth )
+{
+	return (1U << depth) - 1U; // 2^depth - 1
+}
+
 // Subdivide circular sector --- assumes unit circle centered at (0,0)
 // http://mathworld.wolfram.com/CircularSector.html
 //
@@ -185,6 +191,12 @@ Tesselator::SubdivideCircleSector(
 
 	vertices.Append( p2 );
 	vertices.Append( kOrigin );
+}
+
+static U32
+SubdivideCircleSectorCount( int maxDepth )
+{
+	return 4U * Tesselator::CountForDepth( maxDepth );
 }
 
 static void
@@ -244,6 +256,14 @@ Tesselator::SubdivideCircleArc( ArrayVertex2& vertices, const Vertex2& p1, const
 		}
 		*/
 	}
+}
+
+static U32
+SubdivideCircleArcCount( int maxDepth, bool appendDuplicate )
+{
+	U32 perArcCount = appendDuplicate ? 2U : 1U;
+
+	return (Tesselator::CountForDepth( maxDepth ) + 1U) * perArcCount;
 }
 
 /// Gets the log2 of the given value.
@@ -391,6 +411,39 @@ Tesselator::AppendCircleArc( ArrayVertex2& vertices, Real radius, U32 options )
 	}
 }
 
+U32
+Tesselator::AppendCircleCount( Real radius, U32 options ) const
+{
+	U32 maxDepth = DepthForRadius( radius );
+
+	return 4U * SubdivideCircleSectorCount( maxDepth ) + 2U;
+}
+
+U32
+Tesselator::AppendCircleQuadrantsCount( Real radius, U32 options ) const
+{
+	U32 maxDepth = DepthForRadius( radius );
+
+	return 4U * SubdivideCircleSectorCount( maxDepth ) + 8U;
+}
+
+U32
+Tesselator::AppendCircleArcCount( Real radius, U32 options ) const
+{
+	bool appendDuplicate = ( !! ( options & kAppendDuplicate ) );
+	bool appendEndPoints = ( !! ( options & kAppendArcEndPoints ) );
+
+	U32 maxDepth = DepthForRadius( radius ), perArcCount = appendDuplicate ? 2U : 1U;
+	U32 count = SubdivideCircleArcCount( maxDepth, appendDuplicate );
+
+	if (appendEndPoints)
+	{
+		count += perArcCount;
+	}
+
+	return 4U * count + perArcCount;
+}
+
 void
 Tesselator::AppendRect( ArrayVertex2& vertices, Real halfW, Real halfH )
 {
@@ -500,6 +553,18 @@ Tesselator::AppendStrokeTextureEndCap( ArrayVertex2& vertices, int numVertices )
 	}
 	vertices.Append( innerEnd );
 	vertices.Append( outerEnd );
+}
+
+U32
+Tesselator::AppendCircleStrokeCount( Real radius, bool appendEndPoints ) const
+{
+	U32 options = kNoScale | kAppendDuplicate;
+	if ( appendEndPoints )
+	{
+		options |= kAppendArcEndPoints;
+	}
+
+	return AppendCircleArcCount( radius, options );
 }
 
 // ----------------------------------------------------------------------------

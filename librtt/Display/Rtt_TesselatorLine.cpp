@@ -27,6 +27,31 @@ TesselatorLine::TesselatorLine( const ArrayVertex2& controlPoints, Mode mode )
 {
 }
 
+U32
+TesselatorLine::StrokeVertexCount() const
+{
+	return VertexCountFromPoints( fControlPoints, false );
+}
+
+U32
+TesselatorLine::VertexCountFromPoints( const ArrayVertex2& vertices, bool isClosed )
+{
+	return VertexCountFromPoints( vertices.Length(), isClosed );
+}
+
+U32
+TesselatorLine::VertexCountFromPoints( U32 count, bool isClosed )
+{
+	/*
+	if (isClosed)
+	{
+	}
+	*/
+
+	return (count + 1) * 2U;
+}
+
+
 static bool
 Normalize( Real& x, Real& y )
 {

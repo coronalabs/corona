@@ -425,7 +425,7 @@ ShapePath::SetStrokeVertexColor( U32 index, U32 color )
 
 	return fStrokeGeometry->SetVertexColor( index, color );
 }
-
+#include <Corona/CoronaLog.h>
 U32
 ShapePath::GetFillVertexCount() const
 {
@@ -433,11 +433,7 @@ ShapePath::GetFillVertexCount() const
 
 	if (0U == count)
 	{
-		ArrayVertex2 verts( fFillSource.Vertices().Allocator() );
-
-		fTesselator->GenerateFill( verts );
-
-		count = verts.Length();
+		return fTesselator->FillVertexCount();
 	}
 
 	return count;
@@ -450,13 +446,7 @@ ShapePath::GetStrokeVertexCount() const
 
 	if (0U == count)
 	{
-		ArrayVertex2 verts( fStrokeSource.Vertices().Allocator() );
-		
-		fTesselator->SetInnerWidth( GetInnerStrokeWidth() );
-		fTesselator->SetOuterWidth( GetOuterStrokeWidth() );
-		fTesselator->GenerateStroke( verts );
-
-		count = verts.Length();
+		return fTesselator->StrokeVertexCount();
 	}
 
 	return count;

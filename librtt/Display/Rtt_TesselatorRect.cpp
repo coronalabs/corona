@@ -315,6 +315,18 @@ TesselatorRect::GetSelfBoundsForAnchor( Rect& rect ) const
 	rect.Initialize( fHalfW, fHalfH );
 }
 
+U32
+TesselatorRect::FillVertexCount() const
+{
+	return 4U;
+}
+
+U32
+TesselatorRect::StrokeVertexCount() const
+{
+	return TesselatorLine::VertexCountFromPoints( 4U, true );
+}
+
 void
 TesselatorRect::SetOffset( RectOffset offset, Real newValue )
 {

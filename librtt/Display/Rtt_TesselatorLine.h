@@ -38,6 +38,13 @@ class TesselatorLine : public Tesselator
 		TesselatorLine( const ArrayVertex2& controlPoints, Mode mode );
 
 	public:
+		virtual U32 StrokeVertexCount() const override;
+
+	public:
+		static U32 VertexCountFromPoints( const ArrayVertex2& vertices, bool isClosed );
+		static U32 VertexCountFromPoints( U32 count, bool isClosed );
+
+	public:
 		virtual Tesselator::eType GetType(){ return Tesselator::kType_Line; }
 
 	protected:
