@@ -13,7 +13,7 @@
 
 #include "Rtt_IPhoneVideoPlayer.h"
 
-#import "AppDelegate.h"
+#include "Rtt_IPhonePlatformBase.h"
 #import <AVKit/AVKit.h>
 #include "Rtt_LuaContext.h"
 #include "Rtt_PlatformAudioSessionManager.h"
@@ -139,15 +139,19 @@ IPhoneVideoPlayer::Play()
 	//	PlatformAudioSessionManager::Get()->PrepareAudioSystemForMoviePlayback();
 	PlatformAudioSessionManager::SharedInstance()->PrepareAudioSystemForMoviePlayback();
 	
-	UIViewController *vc = ((AppDelegate*)[UIApplication sharedApplication].delegate).viewController;
+    UIViewController *vc = [((IPhonePlatformBase*)&GetSessionRuntime()->Platform())->GetView() delegate];
+	
     [vc presentViewController:fMoviePlayerViewController animated:YES completion:^{
 		[fMoviePlayerViewController addObserver:fMovieObserver forKeyPath:@"view.frame" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial) context:nil];
 	}];
     fMoviePlayerViewController.view.frame = vc.view.frame;
+#if defined(Rtt_IPHONE_ENV)
     fMoviePlayerViewController.updatesNowPlayingInfoCenter = NO;
-//    if([fMoviePlayerViewController respondsToSelector:@selector(setPlaybackControlsIncludeInfoViews:)]) {
-//		[fMoviePlayerViewController setPlaybackControlsIncludeInfoViews:NO];
-//    }
+#else
+	if (@available(tvOS 11.0, *)) {
+		fMoviePlayerViewController.playbackControlsIncludeInfoViews = YES;
+	}
+#endif
     [fMoviePlayerViewController.player play];
 }
 
