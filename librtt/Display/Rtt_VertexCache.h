@@ -22,7 +22,7 @@ namespace Rtt
 class VertexCache
 {
 	public:
-		VertexCache( Rtt_Allocator* pAllocator );
+		VertexCache(Rtt_Allocator* pAllocator);
 
 	public:
 		void Invalidate();
@@ -31,15 +31,18 @@ class VertexCache
 	public:
 		ArrayVertex2& Vertices() { return fVertices; }
 		ArrayVertex2& TexVertices() { return fTexVertices; }
+		Array<U32>& Colors() { return fColors; }
 		ArrayS32& Counts() { return fCounts; }
 
 		const ArrayVertex2& Vertices() const { return fVertices; }
 		const ArrayVertex2& TexVertices() const { return fTexVertices; }
+		const Array<U32>& Colors() const { return fColors; }
 		const ArrayS32& Counts() const { return fCounts; }
 
 	private:
 		ArrayVertex2 fVertices;
 		ArrayVertex2 fTexVertices;
+		Array<U32> fColors;
 		ArrayS32 fCounts;
 };
 

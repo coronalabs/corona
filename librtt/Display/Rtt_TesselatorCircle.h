@@ -36,6 +36,9 @@ class TesselatorCircle : public TesselatorShape
 		virtual void GenerateStroke( ArrayVertex2& outVertices );
 		virtual void GetSelfBounds( Rect& rect );
 
+		virtual U32 FillVertexCount() const override;
+		virtual U32 StrokeVertexCount() const override;
+
 	public:
 		Real GetRadius() const { return fRadius; }
 		void SetRadius( Real newValue ) { fRadius = newValue; }

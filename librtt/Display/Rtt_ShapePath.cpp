@@ -410,6 +410,48 @@ ShapePath::GetTextureExtents( const ArrayVertex2& texVertices ) const
 	return extents;
 }
 
+bool
+ShapePath::SetFillVertexColor( U32 index, U32 color )
+{
+	fFillGeometry->AttachPerVertexColors( &fFillSource.Colors(), GetFillVertexCount() );
+
+	return fFillGeometry->SetVertexColor( index, color );
+}
+
+bool
+ShapePath::SetStrokeVertexColor( U32 index, U32 color )
+{
+	fStrokeGeometry->AttachPerVertexColors( &fStrokeSource.Colors(), GetStrokeVertexCount() );
+
+	return fStrokeGeometry->SetVertexColor( index, color );
+}
+#include <Corona/CoronaLog.h>
+U32
+ShapePath::GetFillVertexCount() const
+{
+	U32 count = fFillGeometry->GetVerticesAllocated();
+
+	if (0U == count)
+	{
+		return fTesselator->FillVertexCount();
+	}
+
+	return count;
+}
+
+U32
+ShapePath::GetStrokeVertexCount() const
+{
+	U32 count = fStrokeGeometry->GetVerticesAllocated();
+
+	if (0U == count)
+	{
+		return fTesselator->StrokeVertexCount();
+	}
+
+	return count;
+}
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt
