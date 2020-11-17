@@ -619,6 +619,7 @@
 		F58011C21BE295070061E021 /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B61BE294F40061E021 /* Rtt_AppleInputDeviceManager.mm */; };
 		F58011C31BE295070061E021 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B81BE294F40061E021 /* Rtt_AppleInputMFiDeviceListener.mm */; };
 		F592971F255548860048AF8C /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F59296E3255548860048AF8C /* AVKit.framework */; };
+		F5A539B7256412940020CD1B /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F59296E3255548860048AF8C /* AVKit.framework */; };
 		F5A752361BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A752351BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F5A752371BFA41C600CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752341BFA41BF00CCDB94 /* CoronaLuaObjCHelper.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		F5B4469B255543BD000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */; };
@@ -2730,6 +2731,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5A539B7256412940020CD1B /* AVKit.framework in Frameworks */,
 				F5C5E345251E13E400217C19 /* MetalANGLE.framework in Frameworks */,
 				F5C5E1F5251E128700217C19 /* libplayer-angle.a in Frameworks */,
 				F5C5E113251E114A00217C19 /* AudioToolbox.framework in Frameworks */,
