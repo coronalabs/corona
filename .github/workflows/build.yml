@@ -112,7 +112,7 @@ jobs:
     needs:
       - Xcode-template-matrix
       - Xcode-template-matrix-old
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/download-artifact@v2
       - name: Collect templates together
@@ -164,7 +164,7 @@ jobs:
   linux:
     needs:
       - source-code
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container:
       image: coronalabs/linux_builder_rpi
     steps:
@@ -218,7 +218,7 @@ jobs:
 
   CoronaCards-Android:
     needs: native
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Get Native
@@ -439,7 +439,7 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs:
       - Windows-Simulator
       - macOS-Simulator
@@ -468,10 +468,9 @@ jobs:
           For Linux builds see [Solar2DTux](https://solar2dtux.com/).
           '
           fi
-          GIT_LOG="${GIT_LOG//'%'/'%25'}"
-          GIT_LOG="${GIT_LOG//$'\n'/'%0A'}"
-          GIT_LOG="${GIT_LOG//$'\r'/'%0D'}" 
-          echo "::set-env name=GIT_LOG::$GIT_LOG" 
+          echo 'GIT_LOG<<EOF' >> $GITHUB_ENV
+          echo "$GIT_LOG" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
           echo "$GIT_LOG"
       - uses: actions/download-artifact@v1
         with:
@@ -548,11 +547,11 @@ jobs:
 
   notify-chats:
     if: startsWith(github.ref, 'refs/tags')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs:
       - release
     steps:
-      - run: echo ::set-env name=BUILD::"${GITHUB_REF#refs/tags/}"
+      - run: echo "BUILD=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Notify slack Builds channel
         run: |
           [ -z "$SLACK_BOT_TOKEN" ] &&  exit 0
@@ -598,7 +597,7 @@ jobs:
       - notarize
       - release
       - source-code
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: always() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
     steps:
       - uses: technote-space/workflow-conclusion-action@v1
