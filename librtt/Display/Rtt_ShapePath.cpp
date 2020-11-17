@@ -425,7 +425,7 @@ ShapePath::SetStrokeVertexColor( U32 index, U32 color )
 
 	return fStrokeGeometry->SetVertexColor( index, color );
 }
-#include <Corona/CoronaLog.h>
+
 U32
 ShapePath::GetFillVertexCount() const
 {
