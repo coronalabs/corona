@@ -203,6 +203,8 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
     copyFile(cacheDestFile, destination)
     return true
 end
+
+
 -- Solar2d Marketplace Collector
 local PluginCollectorSolar2DMarketplaceDirectory =  { name = "Solar2d Marketplace Directory"}
 function PluginCollectorSolar2DMarketplaceDirectory:init(params)
@@ -232,6 +234,9 @@ end
 function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin, pluginTable, pluginPlatform, params)
     if not self.pluginsCache then
         return "Solar2D Marketplace Directory: directory was not fetched"
+    end
+    if not pluginTable.marketplaceId then
+        return "Solar2D Marketplace Directory: skipped because marketplaceId is not set"
     end
     local pluginEntry = self.pluginsCache[tostring(pluginTable.publisherId) .. SEP .. plugin]
     if not pluginEntry then
@@ -487,6 +492,7 @@ local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginP
     params.canSkip = canSkip
     local pluginDestination = pathJoin(dstDir, plugin)
     local err = "Unable to find plugin '" .. plugin .. "' for platform '" .. pluginPlatform .. "':"
+    local results = {}
     local ok =  false
     for i = 1,#pluginLocators do
         local locator = pluginLocators[i]
@@ -511,13 +517,17 @@ local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginP
             ok = true
             break
         elseif type(result) == 'string' then
+            results[#results+1] = result
+        end
+    end
+    if not ok then
+        for i = 1,#results do
+            local result = results[i]
             if result:sub(1,2) == "! " then
                 return result
             end
             err = err .. '\n\t' .. result
         end
-    end
-    if not ok then
         return err
     end
 end
@@ -548,16 +558,22 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, basePluginPlatform
         end
     end
 
+    local results = {}
     for i = 1, numFallbacks do
         local fallbackRes = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, fallbackChain[i], params, pluginLocators, i == numFallbacks)
         if not fallbackRes then return end -- success
-        if fallbackRes:sub(1,2) == "! " then
-            return fallbackRes
+        results[#results+1] = fallbackRes
+    end
+    local res
+    for i = 1,#results do
+        local result = results[i]
+        if result:sub(1,2) == "! " then
+            return result
         end
         if res then
-            res = res .. "\n" .. fallbackRes
+            res = res .. "\n" .. result
         else
-            res = fallbackRes
+            res = result
         end
     end
     return res
@@ -646,7 +662,7 @@ local function CollectCoronaPlugins(params)
         local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
         if type(result) == 'string'  then
             if result:sub(1,2) == "! " then
-                return result:sub(3)
+                result = result:sub(3)
             end
             if params.continueOnError then
                 ret = (ret or "") .. result .. "\n"
@@ -667,7 +683,7 @@ local function CollectCoronaPlugins(params)
             local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
             if type(result) == 'string'  then
                 if result:sub(1,2) == "! " then
-                    return result:sub(3)
+                    result = result:sub(3)
                 end
                 if params.continueOnError then
                     ret = (ret or "") .. result .. "\n"
