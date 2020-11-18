@@ -560,7 +560,7 @@ static NSString* const kDefaultPathToCoronaExampleForQuickTestOfSampleDirectory 
 
 #pragma mark Main Window helper methods
 
-// Helper method to help create an NSAttributedString with a drop shadow. Intended for the main "Welcome to Corona" text.
+// Helper method to help create an NSAttributedString with a drop shadow. Intended for the main "Welcome to Solar2D" text.
 - (NSAttributedString*) dropShadowAttributedStringFromAttributedString:(NSAttributedString*)source_string
 {
 	if(nil == source_string)

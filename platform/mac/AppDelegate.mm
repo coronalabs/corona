@@ -1,9 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
-// Contact: support@coronalabs.com
+// Contact: support@solar2d.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -688,7 +688,7 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
     {
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kUserPreferenceDoNotUseSkinnedWindows];
 
-		NSRunAlertPanel( @"Corona Simulator - Deprecated Preference", @"The \"Display device border\" preference is no longer used.  Borderless devices can be chosen in the Window/View As menu instead.", nil, nil, nil );
+		NSRunAlertPanel( @"Solar2D Simulator - Deprecated Preference", @"The \"Display device border\" preference is no longer used.  Borderless devices can be chosen in the Window/View As menu instead.", nil, nil, nil );
     }
     
     // Find the application support directory and the user's Skins directory within it
@@ -1107,7 +1107,7 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
     NSMenu *appMenu = [[NSApplication sharedApplication] mainMenu];
     NSMenuItem *windowMenuItem = [appMenu itemWithTitle:kWindowMenuItemName];
     NSMenu *windowMenu = [windowMenuItem submenu];
-    long welcomeItemIdx = [windowMenu indexOfItemWithTitle:@"Welcome to Corona"];
+    long welcomeItemIdx = [windowMenu indexOfItemWithTitle:@"Welcome to Solar2D"];
 
     if (welcomeItemIdx == -1)
     {
@@ -1320,7 +1320,7 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
     NSMenu *appMenu = [[NSApplication sharedApplication] mainMenu];
     NSMenuItem *windowMenuItem = [appMenu itemWithTitle:kWindowMenuItemName];
     NSMenu *windowMenu = [windowMenuItem submenu];
-    long welcomeItemIdx = [windowMenu indexOfItemWithTitle:@"Welcome to Corona"];
+    long welcomeItemIdx = [windowMenu indexOfItemWithTitle:@"Welcome to Solar2D"];
     
     if (welcomeItemIdx == -1)
     {
@@ -2128,7 +2128,7 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 	if (YES == isDirectory)
 	{
-		// In theory, we should just pass to runApp, but passing an empty directory seems to lead to Corona quiting.
+		// In theory, we should just pass to runApp, but passing an empty directory seems to lead to Solar2D quiting.
 		NSString* mainScriptFile = [NSString stringWithExternalString:Rtt_LUA_SCRIPT_FILE( "main" )];
 		NSString* fullpath = [filepath stringByAppendingPathComponent:mainScriptFile]; 
 		if( ! [[NSFileManager defaultManager] fileExistsAtPath:fullpath] )
@@ -3369,7 +3369,7 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 {
 	if ( !fBuildProblemNotified )
 	{
-		[self notifyWithTitle:@"Corona Simulator" description:message iconData:nil];
+		[self notifyWithTitle:@"Solar2D Simulator" description:message iconData:nil];
 		fBuildProblemNotified = true;
 	}
 }
@@ -3471,7 +3471,7 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 			FileWatch_StopMonitoringFolder(luaResourceFolderMonitor);
 
 			NSAlert* relaunchAlert = [[[NSAlert alloc] init] autorelease];
-			[relaunchAlert setMessageText:@"Corona project has been modified"];
+			[relaunchAlert setMessageText:@"Project has been modified"];
 			[relaunchAlert setInformativeText:@"Would you like to relaunch the Simulator?"];
 			[relaunchAlert addButtonWithTitle:@"Relaunch Simulator"];
 			[relaunchAlert addButtonWithTitle:@"Ignore"];
@@ -3706,14 +3706,14 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 
     if ([self compareOSVersion:currentOSVersion with:kosVersionMinimum] == NSOrderedAscending)
     {
-        NSString *msg = [NSString stringWithFormat:@"This version of macOS (%@) is too old to run Corona.\n\nMinimum supported macOS version is %@", currentOSVersion, kosVersionPrevious];
+        NSString *msg = [NSString stringWithFormat:@"This version of macOS (%@) is too old to run Solar2D.\n\nMinimum supported macOS version is %@", currentOSVersion, kosVersionPrevious];
 
         [alert setMessageText:@"macOS Version Error"];
         [alert setInformativeText:msg];
         [alert setAlertStyle:NSCriticalAlertStyle];
         [alert addButtonWithTitle:@"Exit"];
 
-        NSLog( @"Corona Simulator: %@", msg );
+        NSLog( @"Solar2D Simulator: %@", msg );
 
         [alert runModal];  // we exit when they hit the button so run modally here
         
@@ -3729,7 +3729,7 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
         [alert addButtonWithTitle:@"Continue"];
         [alert setShowsSuppressionButton:YES];
 
-        NSLog( @"Corona Simulator: %@", msg );
+        NSLog( @"Solar2D Simulator: %@", msg );
     }
     else if ([self compareOSVersion:currentOSVersion with:kosVersionPrevious] == NSOrderedAscending)
     {
@@ -3741,7 +3741,7 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
         [alert addButtonWithTitle:@"Continue"];
         [alert setShowsSuppressionButton:YES];
 
-        NSLog( @"Corona Simulator: %@", msg );
+        NSLog( @"Solar2D Simulator: %@", msg );
     }
     else
     {
