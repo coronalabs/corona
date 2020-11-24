@@ -137,6 +137,8 @@
 @property (nonatomic, readonly) bool showWindowTitle;
 @property (nonatomic, readwrite, retain) CoronaWindowController *view;
 
+
+
 - (id) initParams:(NSString *)title path:(NSString *)path width:(int)w height:(int)h resizable:(bool) resizable showWindowTitle:(bool) showWindowTitle;
 
 @end
@@ -557,11 +559,12 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 // ----------------------------------------------------------------------------
 
-@interface AppDelegate ()
+@interface AppDelegate () <NSTouchBarDelegate>
 
 @property (nonatomic, readwrite, copy) NSString* fAppPath;
 @property (nonatomic, readwrite, copy) CLLocationManager *_locationManager;
 @property (nonatomic, readwrite, copy) CLLocation *_currentLocation;
+@property (nonatomic, readwrite, retain) NSTouchBar *touchBar;
 
 -(BOOL)setSkinIfAllowed:(Rtt::TargetDevice::Skin)skin;
 - (void) updateMenuForSkinChange;
@@ -633,6 +636,7 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 		fIsRemote = NO;
 
 		[[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
+        
 		fBuildProblemNotified = FALSE;
 
 		luaResourceFolderMonitor = NULL;
@@ -975,10 +979,67 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
     // Make sure the current skin is checked
     [self updateMenuForSkinChange];
 }
+#pragma mark - NSTouchBarDelegate
+- (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
+    
+    NSCustomTouchBarItem *touchBarItem;
+    touchBarItem = [[NSCustomTouchBarItem alloc] initWithIdentifier:identifier];
+    NSButton *buttonShortcut = [[NSButton alloc] init];
+    [buttonShortcut setTarget:self];
+    if ([identifier isEqualToString:[@"com.solar2d.identifer.relaunch" copy]]) {
+        
+        [buttonShortcut setTitle:@"Relaunch"];
+        [buttonShortcut setAction:@selector(launchSimulator:)];
+        
+    }else if ([identifier isEqualToString:[@"com.solar2d.identifer.buildForAndroid" copy]]) {
+        [buttonShortcut setTitle:@"Build Android"];
+        [buttonShortcut setAction:@selector(openForBuildAndroid:)];
+    }else if ([identifier isEqualToString:[@"com.solar2d.identifer.buildForiOS" copy]]) {
+        
+        [buttonShortcut setTitle:@"Build iOS"];
+        [buttonShortcut setAction:@selector(openForBuildiOS:)];
+        
+    }
+    [touchBarItem setView:buttonShortcut];
+    return touchBarItem;
+}
+- (void)showTouchBar:(NSNotification*)aNotification{
+    if ([self isBuildAvailable] == true)
+    {
+        [NSTouchBar presentSystemModalTouchBar:self.touchBar systemTrayItemIdentifier:nil];
+    }
+    
+}
+-(void)hideTouchBar:(NSNotification*)aNotification{
+    [NSTouchBar minimizeSystemModalTouchBar:self.touchBar];
+}
 
 // TODO: Clean this up.  Total mess
 -(void)applicationDidFinishLaunching:(NSNotification*)aNotification
 {
+    //Touch Bar Support
+    if (@available(macOS 10.12.1, *)) {
+        
+        NSTouchBarItemIdentifier relaunch = @"com.solar2d.identifer.relaunch";
+        NSTouchBarItemIdentifier buildForiOS = @"com.solar2d.identifer.buildForiOS";
+        NSTouchBarItemIdentifier buildForAndroid = @"com.solar2d.identifer.buildForAndroid";
+        [NSApplication sharedApplication].automaticCustomizeTouchBarMenuItemEnabled = YES;
+        self.touchBar = [[NSTouchBar alloc] init];
+        
+        [self.touchBar setDelegate:self];
+        NSMutableArray *identifiersForBar = [[NSMutableArray alloc] init];
+        [identifiersForBar addObject:relaunch];
+        [identifiersForBar addObject:buildForiOS];
+        [identifiersForBar addObject:buildForAndroid];
+        self.touchBar.defaultItemIdentifiers = identifiersForBar;
+        fCustomDeviceWindow.touchBar = self.touchBar;
+        
+        //add events for touchbar to hide or show if window is active or not
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showTouchBar:) name:NSWindowDidBecomeMainNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideTouchBar:) name:NSWindowDidResignKeyNotification
+                                                   object:nil];
+        
+    }
     // If requested, don't display the window that shows the Simulator log.  Useful in IDE environments.
     // (the double access is needed because one specifies the command line parameter to specify a negative)
     // Also don't run the console if we are running as a debugger.
@@ -1578,7 +1639,7 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	applicationIsTerminating = YES;
 
     // This is used by the Simulator Console to know when the session is over
-    NSLog(@"Corona Simulator: Goodbye");
+    NSLog(@"Solar2D Simulator: Goodbye");
 
     if ( fAnalytics )
     {
@@ -1611,9 +1672,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	[self removeObserver:self forKeyPath:@"fSkin"];
 }
 
-- (void)applicationWillResignActive:(NSNotification *)aNotification
-{
-}
 
 -(BOOL)isRelaunchable
 {
@@ -3401,13 +3459,14 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 // This is a private internal implementation used by both presentWelcomeWindow and presentWelcomeWindow:
 - (void) showWelcomeWindow
 {
+    
     [self runExtension:@"welcome"];
+    [self hideTouchBar:nil];
 }
 
 - (IBAction) presentWelcomeWindow:(id)sender
 {
 	[self showWelcomeWindow];
-
 	fAnalytics->Log("show-welcome", "skin", Rtt::TargetDevice::LabelForSkin( (Rtt::TargetDevice::Skin)fSkin ));
 }
 
@@ -3422,6 +3481,7 @@ RunLoopObserverCallback( CFRunLoopObserverRef observer, CFRunLoopActivity activi
 
 - (void) closeWelcomeWindow
 {
+    [self showTouchBar:nil];
 	NSNumber* do_not_close_bool_value = [[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:kDoNotAutoCloseWelcomeWindowOnSimulatorLaunch];
 	if( YES == [do_not_close_bool_value boolValue] )
 	{
@@ -3857,6 +3917,7 @@ static void BringToFrontCallback(CFNotificationCenterRef center, void *observer,
 	[self consoleMenuitem:nil];
 }
 
+
 // -----------------------------------------------------------------------------
 // END: Simulator UI
 // -----------------------------------------------------------------------------
@@ -3913,5 +3974,3 @@ static void BringToFrontCallback(CFNotificationCenterRef center, void *observer,
 
 
 @end
-
-
