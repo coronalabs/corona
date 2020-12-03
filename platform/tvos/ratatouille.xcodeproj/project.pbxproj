@@ -611,6 +611,7 @@
 		F517B79F1C6CEC520042F592 /* NSString+Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = C2756C281C5722A500BE3194 /* NSString+Extensions.h */; };
 		F517B7A01C6CEC580042F592 /* NSString+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C2756C291C5722A500BE3194 /* NSString+Extensions.m */; };
 		F51D55BA1C814021000CE085 /* CoronaGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = F50CA3CC1C8111A300746C98 /* CoronaGraphics.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F51DCB1A257925FD00B75CA0 /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51DCADE257925FD00B75CA0 /* TVServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F54D1E2E1CA36191000B280E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F54D1E2D1CA36191000B280E /* Rtt_AppleFont.mm */; };
 		F574F5FB1CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F574F5F71CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp */; };
 		F574F5FC1CE60D8300FF04F1 /* Rtt_TesselatorMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F574F5F91CE60D8300FF04F1 /* Rtt_TesselatorMesh.cpp */; };
@@ -2570,6 +2571,7 @@
 		F50CA3C61C81114800746C98 /* Rtt_TextureResourceExternalAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceExternalAdapter.h; path = ../../librtt/Display/Rtt_TextureResourceExternalAdapter.h; sourceTree = "<group>"; };
 		F50CA3CB1C8111A300746C98 /* CoronaGraphics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaGraphics.cpp; path = ../../librtt/Corona/CoronaGraphics.cpp; sourceTree = "<group>"; };
 		F50CA3CC1C8111A300746C98 /* CoronaGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaGraphics.h; path = ../../librtt/Corona/CoronaGraphics.h; sourceTree = "<group>"; };
+		F51DCADE257925FD00B75CA0 /* TVServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVServices.framework; path = System/Library/Frameworks/TVServices.framework; sourceTree = SDKROOT; };
 		F54D1E2D1CA36191000B280E /* Rtt_AppleFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleFont.mm; path = ../apple/Rtt_AppleFont.mm; sourceTree = "<group>"; };
 		F574F5F71CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ShapeAdapterMesh.cpp; path = ../../librtt/Display/Rtt_ShapeAdapterMesh.cpp; sourceTree = "<group>"; };
 		F574F5F81CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ShapeAdapterMesh.h; path = ../../librtt/Display/Rtt_ShapeAdapterMesh.h; sourceTree = "<group>"; };
@@ -2722,6 +2724,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F51DCB1A257925FD00B75CA0 /* TVServices.framework in Frameworks */,
 				F5C5E3C9251E237800217C19 /* MetalANGLE.framework in Frameworks */,
 				F5C5E1F2251E126800217C19 /* CoronaCards.framework in Frameworks */,
 			);
@@ -4074,6 +4077,7 @@
 		A4DD47261BB247C100FD988E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F51DCADE257925FD00B75CA0 /* TVServices.framework */,
 				F59296E3255548860048AF8C /* AVKit.framework */,
 				A40A90521BD984AD001D2038 /* CoreText.framework */,
 				A44496B11BC5FF5E0019DA20 /* CoreMedia.framework */,
