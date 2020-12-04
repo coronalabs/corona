@@ -25,6 +25,7 @@
 #include "shellapi.h"  // ShellExecute()
 #include "WinString.h"
 #include "Resource.h"  // error string ids
+#include "Interop/ApplicationServices.h"
 #elif Rtt_MAC_ENV
 #include <dlfcn.h>
 #endif // Rtt_WIN_ENV
@@ -379,6 +380,17 @@ static bool CopyJavaDevelopmentKitRegistryKeyPathTo(WinString* pPath)
 	return false;
 }
 
+bool CheckDirExists(LPCTSTR dirName)
+{
+	WIN32_FIND_DATA  data;
+	HANDLE handle = FindFirstFile(dirName, &data);
+	if (handle != INVALID_HANDLE_VALUE)
+	{
+		FindClose(handle);
+		return (0 != (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY));
+	}
+	return false;
+}
 
 // Fetches the Java Development Kit's JavaHome in registry.
 const char *JavaHost::GetJdkPath()
@@ -387,6 +399,32 @@ const char *JavaHost::GetJdkPath()
 
     if( s_sJdkJavaHome[0] == '\0' )
 	{
+		// try to find bunled JRE
+		TCHAR buffer[MAX_PATH] = _T("");
+		WinString rootPath;
+		GetFullPathName(_T("jre"), MAX_PATH, buffer, NULL);
+		if (buffer[0] && CheckDirExists(buffer)) {
+			rootPath.SetTCHAR(buffer);
+			strcpy_s(s_sJdkJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJdkJavaHome;
+		}
+
+		rootPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
+		rootPath.Append("\\jre");
+		if (CheckDirExists(rootPath.GetUTF16())) {
+			strcpy_s(s_sJdkJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJdkJavaHome;
+		}
+
+		rootPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
+		rootPath.Append("\\..\\..\\..\\..\\jre");
+		GetFullPathName(rootPath.GetTCHAR(), MAX_PATH, buffer, NULL);
+		if (CheckDirExists(rootPath.GetUTF16())) {
+			rootPath.SetTCHAR(buffer);
+			strcpy_s(s_sJdkJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJdkJavaHome;
+		}
+
         WinString sRegistryKeyPath;
 		WinString sValue;
 		if (CopyJavaDevelopmentKitRegistryKeyPathTo(&sRegistryKeyPath))
@@ -407,6 +445,32 @@ const char *JavaHost::GetJrePath()
 
     if( s_sJreJavaHome[0] == '\0' )
 	{
+		// try to find bunled JRE
+		TCHAR buffer[MAX_PATH] = _T("");
+		WinString rootPath;
+		GetFullPathName(_T("jre\\jre"), MAX_PATH, buffer, NULL);
+		if (buffer[0] && CheckDirExists(buffer)) {
+			rootPath.SetTCHAR(buffer);
+			strcpy_s(s_sJreJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJreJavaHome;
+		}
+
+		rootPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
+		rootPath.Append("\\jre\\jre");
+		if (CheckDirExists(rootPath.GetUTF16())) {
+			strcpy_s(s_sJreJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJreJavaHome;
+		}
+
+		rootPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
+		rootPath.Append("\\..\\..\\..\\..\\jre\\jre");
+		GetFullPathName(rootPath.GetTCHAR(), MAX_PATH, buffer, NULL);
+		if (CheckDirExists(rootPath.GetUTF16())) {
+			rootPath.SetTCHAR(buffer);
+			strcpy_s(s_sJreJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJreJavaHome;
+		}
+
         WinString sRegistryKeyPath;
 		WinString sValue;
 		if (CopyJavaRuntimeRegistryKeyPathTo(&sRegistryKeyPath))
