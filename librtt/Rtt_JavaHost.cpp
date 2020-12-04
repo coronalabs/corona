@@ -25,7 +25,12 @@
 #include "shellapi.h"  // ShellExecute()
 #include "WinString.h"
 #include "Resource.h"  // error string ids
+#ifdef Rtt_NO_GUI
+#include "Rtt_WinConsolePlatform.h"
+#else
 #include "Interop/ApplicationServices.h"
+#endif
+
 #elif Rtt_MAC_ENV
 #include <dlfcn.h>
 #endif // Rtt_WIN_ENV
@@ -380,6 +385,15 @@ static bool CopyJavaDevelopmentKitRegistryKeyPathTo(WinString* pPath)
 	return false;
 }
 
+LPCTSTR GetApplicationPath()
+{
+#ifdef Rtt_NO_GUI
+	return WinConsolePlatform::GetDirectoryPath().c_str();
+#else
+	return Interop::ApplicationServices::GetDirectoryPath();
+#endif
+}
+
 bool CheckDirExists(LPCTSTR dirName)
 {
 	WIN32_FIND_DATA  data;
@@ -409,14 +423,14 @@ const char *JavaHost::GetJdkPath()
 			return s_sJdkJavaHome;
 		}
 
-		rootPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
+		rootPath.SetUTF16(GetApplicationPath());
 		rootPath.Append("\\jre");
 		if (CheckDirExists(rootPath.GetUTF16())) {
 			strcpy_s(s_sJdkJavaHome, MAX_PATH, rootPath.GetUTF8());
 			return s_sJdkJavaHome;
 		}
 
-		rootPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
+		rootPath.SetUTF16(GetApplicationPath());
 		rootPath.Append("\\..\\..\\..\\..\\jre");
 		GetFullPathName(rootPath.GetTCHAR(), MAX_PATH, buffer, NULL);
 		if (CheckDirExists(rootPath.GetUTF16())) {
@@ -455,14 +469,14 @@ const char *JavaHost::GetJrePath()
 			return s_sJreJavaHome;
 		}
 
-		rootPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
+		rootPath.SetUTF16(GetApplicationPath());
 		rootPath.Append("\\jre\\jre");
 		if (CheckDirExists(rootPath.GetUTF16())) {
 			strcpy_s(s_sJreJavaHome, MAX_PATH, rootPath.GetUTF8());
 			return s_sJreJavaHome;
 		}
 
-		rootPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
+		rootPath.SetUTF16(GetApplicationPath());
 		rootPath.Append("\\..\\..\\..\\..\\jre\\jre");
 		GetFullPathName(rootPath.GetTCHAR(), MAX_PATH, buffer, NULL);
 		if (CheckDirExists(rootPath.GetUTF16())) {
