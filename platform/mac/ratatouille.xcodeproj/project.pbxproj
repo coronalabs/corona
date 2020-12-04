@@ -6081,6 +6081,7 @@
 				C2FD8EDF19C904DA00CBE369 /* Run Script (copy Skins files) */,
 				C2B5FEF11B336C9000DD49E6 /* Run Script (build OSXAppTemplate.zip) */,
 				C2E454671F844BFC00717681 /* Run Script (copy device-support files) */,
+				F5608E22257AB801000612C1 /* Run Script (copy JRE if exists) */,
 			);
 			buildRules = (
 				001F574112B6018500F52101 /* PBXBuildRule */,
@@ -6698,6 +6699,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "set -x\nmkdir -p \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/Skins\"\n# Copy all Skins .lua files and the associated .png files, excluding dot files and\n# deleting any that no longer exist in the source directory\nrsync -av --delete --include='*.lua' --include='*.png' --include='*.template' --exclude='.*' --exclude='*' \"$SRCROOT/../resources/Skins/\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/Skins/\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F5608E22257AB801000612C1 /* Run Script (copy JRE if exists) */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../../jre",
+			);
+			name = "Run Script (copy JRE if exists)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH_SHALLOW_BUNDLE_YES)/jre",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\nif [ -d  \"$SRCROOT/../../jre\" ]\nthen\n\tcp -r \"$SRCROOT/../../jre\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH_SHALLOW_BUNDLE_YES\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

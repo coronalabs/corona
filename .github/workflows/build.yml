@@ -312,6 +312,11 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: Native
+      - name: Put JRE in place
+        shell: bash
+        run: |
+          curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.macos.tgz -o jre.macos.tgz
+          tar xzf jre.macos.tgz
       - name: install appdmg
         run: npm install -g appdmg
       - name: install imagemagick
@@ -416,14 +421,10 @@ jobs:
           mv CoronaEnterprise Native
           del /q /f /a Native\.*
           del /q /f /a Native\Icon?
-      - name: Fetch JRE
-        uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          repo: "coronalabs/binary-data"
-          version: "latest"
-          file: "jre.win32.7z"
-      - name: Unpack and put JRE in place
+      - name: Put JRE in place
+        shell: bash
         run: |
+          curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.win32.7z -o jre.win32.7z
           7z x jre.win32.7z -o"%WORKSPACE%\platform\windows\Bin"
       - name: Build Corona Simulator
         shell: cmd
