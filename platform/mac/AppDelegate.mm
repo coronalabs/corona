@@ -1387,7 +1387,9 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	
 #ifdef Rtt_AUTHORING_SIMULATOR
 	NSString *jhome = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Contents/jre/jdk/Contents/Home"];
-	setenv("JAVA_HOME", [jhome UTF8String], YES);
+	if([[NSFileManager defaultManager] fileExistsAtPath:jhome]) {
+		setenv("JAVA_HOME", [jhome UTF8String], YES);
+	}
 #endif
 }
 
