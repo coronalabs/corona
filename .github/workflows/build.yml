@@ -316,7 +316,6 @@ jobs:
         shell: bash
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.macos.tgz -o jre.macos.tgz
-          tar xzf jre.macos.tgz
       - name: install appdmg
         run: npm install -g appdmg
       - name: install imagemagick

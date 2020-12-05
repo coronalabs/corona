@@ -6709,7 +6709,7 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../../jre",
+				"$(SRCROOT)/../../jre.macos.tgz",
 			);
 			name = "Run Script (copy JRE if exists)";
 			outputFileListPaths = (
@@ -6719,7 +6719,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -x\n\nif [ -d  \"$SRCROOT/../../jre\" ]\nthen\n\tcp -r \"$SRCROOT/../../jre\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH_SHALLOW_BUNDLE_YES\"\nfi\n";
+			shellScript = "set -x\n\nif [ -f  \"$SRCROOT/../../jre.macos.tgz\" ]\nthen\n\ttar xzf \"$SRCROOT/../../jre.macos.tgz\" -C \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH_SHALLOW_BUNDLE_YES\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
