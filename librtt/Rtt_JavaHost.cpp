@@ -388,7 +388,8 @@ static bool CopyJavaDevelopmentKitRegistryKeyPathTo(WinString* pPath)
 LPCTSTR GetApplicationPath()
 {
 #ifdef Rtt_NO_GUI
-	return WinConsolePlatform::GetDirectoryPath().c_str();
+	static std::wstring ret = WinConsolePlatform::GetDirectoryPath();
+	return ret.c_str();
 #else
 	return Interop::ApplicationServices::GetDirectoryPath();
 #endif
