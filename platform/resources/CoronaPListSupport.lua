@@ -218,7 +218,7 @@ function CoronaPListSupport.modifyPlist( options )
 			infoPlist.CFBundleVersion = os.date("%Y.7%m.7%d%H%M")
 			local datedata = os.date( "!*t")
 			if datedata.year > 2020 then
-				infoPlist.CFBundleVersion = datedata.year .. '.' .. datedata.month.."." .. datedata.day .. os.date("%H%M")
+				infoPlist.CFBundleVersion = datedata.year .. '.' .. datedata.month.."." .. datedata.day .. os.date("!%H%M")
 			end
 		end
 
