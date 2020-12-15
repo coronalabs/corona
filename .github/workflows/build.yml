@@ -76,15 +76,17 @@ jobs:
         shell: bash
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.win32.7z -o jre.win32.7z
-          7z x jre.win32.7z -o"platform\windows\Bin" -y
+          7z x jre.win32.7z -o"platform/windows/Bin" -y
       - name: Build Corona Simulator
         shell: cmd
         run: |
           cd platform\windows
+          dir /b /s
           call UpdateFileVersions.bat %BUILD_NUMBER%
           call Build.Tools\VSVars.bat
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
           devenv "Corona.SDK.sln" /rebuild "Release|x86"
+          dir /b /s
         env:
           WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
       - name: Copy Simulator
