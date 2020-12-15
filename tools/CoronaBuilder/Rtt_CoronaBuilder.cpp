@@ -455,44 +455,40 @@ CoronaBuilder::Build( const BuildParams& params ) const
 		if ( appParams )
 		{
 			AppPackagerContext context( (TargetDevice::Platform)appParams->GetTargetPlatform() );
+			String tmpDir;
+			fPlatform.PathForFile( NULL, MPlatform::kTmpDir, MPlatform::kDefaultPathFlags, tmpDir );
 
+			const char kBuildSettings[] = "build.settings";
+			String buildSettingsPath( & fServices.Platform().GetAllocator() );
+
+			buildSettingsPath.Set( appParams->GetSrcDir() );
+			buildSettingsPath.Append( LUA_DIRSEP );
+			buildSettingsPath.Append( kBuildSettings );
+
+			const char * path = buildSettingsPath.GetString();
+			if ( !fServices.Platform().FileExists( path ) )
 			{
-				{
-					String tmpDir;
-					fPlatform.PathForFile( NULL, MPlatform::kTmpDir, MPlatform::kDefaultPathFlags, tmpDir );
+				path = NULL;
+			}
 
-					const char kBuildSettings[] = "build.settings";
-					String buildSettingsPath( & fServices.Platform().GetAllocator() );
+			appParams->SetBuildSettingsPath( path );
 
-					buildSettingsPath.Set( appParams->GetSrcDir() );
-					buildSettingsPath.Append( LUA_DIRSEP );
-					buildSettingsPath.Append( kBuildSettings );
+			appParams->Print();
+			packager->ReadBuildSettings(appParams->GetSrcDir());
+			int code = packager->Build( appParams, tmpDir.GetString() );
 
-					const char * path = buildSettingsPath.GetString();
-					if ( !fServices.Platform().FileExists( path ) )
-					{
-						path = NULL;
-					}
+			if ( 0 == code )
+			{
+				fprintf( stderr, "\nBuild succeeded [%s]\n",
+					appParams->GetDstDir() );
 
-					appParams->SetBuildSettingsPath( path );
-
-					appParams->Print();
-					int code = packager->Build( appParams, tmpDir.GetString() );
-
-					if ( 0 == code )
-					{
-						fprintf( stderr, "\nBuild succeeded [%s]\n",
-							appParams->GetDstDir() );
-
-						result = kNoError;
-					}
-					else
-					{
-						char resultCode[1024] = {};
-						snprintf(resultCode, 1023, "Unknown build error (%d).", code);
-						msg.Set( appParams->GetBuildMessage() ? appParams->GetBuildMessage()  : resultCode );
-					}
-				}
+				result = kNoError;
+			}
+			else
+			{
+				char resultCode[1024] = {};
+				snprintf(resultCode, 1023, "Unknown build error (%d).", code);
+				msg.Set( appParams->GetBuildMessage() ? appParams->GetBuildMessage()  : resultCode );
 			}
 		}
 		else
