@@ -17,7 +17,7 @@
 		},
 		{
 			"label": "14.3 Metal",
-			"xcodeVersion": "14.2",
+			"xcodeVersion": "14.3",
 			"failMessage": "install or xcode-select Xcode 12.3 to enable",
 			"coronaVersion": 143000,
 			"beta": false,
@@ -25,7 +25,7 @@
 		},
 		{
 			"label": "14.3",
-			"xcodeVersion": "14.2",
+			"xcodeVersion": "14.3",
 			"failMessage": "install or xcode-select Xcode 12.3 to enable",
 			"coronaVersion": 143000,
 			"beta": false
