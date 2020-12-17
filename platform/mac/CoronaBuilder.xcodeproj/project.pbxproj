@@ -48,7 +48,6 @@
 		A4A47E0814D225D400B5111C /* Rtt_StringHash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DF114D225D400B5111C /* Rtt_StringHash.cpp */; };
 		A4A47E0914D225D400B5111C /* Rtt_Time.c in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DF314D225D400B5111C /* Rtt_Time.c */; };
 		A4A47E0A14D225D400B5111C /* Rtt_VersionTimestamp.c in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DF814D225D400B5111C /* Rtt_VersionTimestamp.c */; };
-		A4A47E1F14D2279A00B5111C /* libffi.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A4A47E1E14D2279A00B5111C /* libffi.dylib */; };
 		A4A47E2114D227D000B5111C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4A47E2014D227D000B5111C /* Security.framework */; };
 		A4A47E2614D2280700B5111C /* Rtt_AppleCrypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47E2414D2280700B5111C /* Rtt_AppleCrypto.cpp */; };
 		A4A47E2814D2284400B5111C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4A47E2714D2284300B5111C /* SystemConfiguration.framework */; };
@@ -378,7 +377,6 @@
 		A4543F4E1526604900486F8A /* Rtt_Archive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Archive.h; path = ../../librtt/Rtt_Archive.h; sourceTree = "<group>"; };
 		A472900F1AE83E1900BC088D /* CoronaLuaObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjC.h; path = ../apple/CoronaLuaObjC.h; sourceTree = "<group>"; };
 		A47290101AE83E1900BC088D /* CoronaLuaObjC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjC.mm; path = ../apple/CoronaLuaObjC.mm; sourceTree = "<group>"; };
-		A48BC79A14E1C2EB00310E8E /* AppSettings.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = AppSettings.lua; path = ../../platform/resources/AppSettings.lua; sourceTree = "<group>"; };
 		A4A47DCD14D225D400B5111C /* Rtt_Allocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Allocator.cpp; path = ../../librtt/Core/Rtt_Allocator.cpp; sourceTree = "<group>"; };
 		A4A47DCE14D225D400B5111C /* Rtt_Allocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Allocator.h; path = ../../librtt/Core/Rtt_Allocator.h; sourceTree = "<group>"; };
 		A4A47DCF14D225D400B5111C /* Rtt_Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Array.cpp; path = ../../librtt/Core/Rtt_Array.cpp; sourceTree = "<group>"; };
@@ -420,8 +418,6 @@
 		A4A47DF714D225D400B5111C /* Rtt_Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Version.h; path = ../../librtt/Core/Rtt_Version.h; sourceTree = "<group>"; };
 		A4A47DF814D225D400B5111C /* Rtt_VersionTimestamp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_VersionTimestamp.c; path = ../../librtt/Core/Rtt_VersionTimestamp.c; sourceTree = "<group>"; };
 		A4A47DF914D225D400B5111C /* Rtt_VersionTimestamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_VersionTimestamp.h; path = ../../librtt/Core/Rtt_VersionTimestamp.h; sourceTree = "<group>"; };
-		A4A47E0C14D2274400B5111C /* libssl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.dylib; path = usr/lib/libssl.dylib; sourceTree = SDKROOT; };
-		A4A47E1E14D2279A00B5111C /* libffi.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libffi.dylib; path = usr/lib/libffi.dylib; sourceTree = SDKROOT; };
 		A4A47E2014D227D000B5111C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		A4A47E2414D2280700B5111C /* Rtt_AppleCrypto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_AppleCrypto.cpp; path = ../../platform/apple/Rtt_AppleCrypto.cpp; sourceTree = "<group>"; };
 		A4A47E2514D2280700B5111C /* Rtt_AppleCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AppleCrypto.h; path = ../../platform/apple/Rtt_AppleCrypto.h; sourceTree = "<group>"; };
@@ -479,21 +475,12 @@
 		A4C5209D1551ACB400B77A7E /* lfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lfs.h; path = ../../external/luafilesystem/src/lfs.h; sourceTree = "<group>"; };
 		A4CC24CE14D7409C00A60E1E /* AppleSigningIdentityController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppleSigningIdentityController.h; path = ../../platform/mac/AppleSigningIdentityController.h; sourceTree = "<group>"; };
 		A4CC24CF14D7409C00A60E1E /* AppleSigningIdentityController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppleSigningIdentityController.mm; path = ../../platform/mac/AppleSigningIdentityController.mm; sourceTree = "<group>"; };
-		A4CC24E114D744F100A60E1E /* debug.keystore */ = {isa = PBXFileReference; lastKnownFileType = file; name = debug.keystore; path = ../../platform/android/resources/debug.keystore; sourceTree = "<group>"; };
-		A4E994B114D9132400665C62 /* _coronatest.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; name = _coronatest.jar; path = ../../platform/android/resources/_coronatest.jar; sourceTree = "<group>"; };
-		A4E994B214D9132400665C62 /* build.properties */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = build.properties; path = ../../platform/android/resources/build.properties; sourceTree = "<group>"; };
-		A4E994B314D9132400665C62 /* build.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = build.xml; path = ../../platform/android/resources/build.xml; sourceTree = "<group>"; };
-		A4E994B614D9132400665C62 /* zipalign */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = zipalign; path = ../../platform/android/resources/zipalign; sourceTree = "<group>"; };
 		A4ED10D914D2A07B00ECF49E /* Rtt_Lua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Lua.cpp; path = ../../librtt/Rtt_Lua.cpp; sourceTree = "<group>"; };
 		A4ED10DA14D2A07B00ECF49E /* Rtt_Lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Lua.h; path = ../../librtt/Rtt_Lua.h; sourceTree = "<group>"; };
 		A4ED10DC14D2A0D700ECF49E /* Rtt_AppleDictionaryWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AppleDictionaryWrapper.h; path = ../../platform/apple/Rtt_AppleDictionaryWrapper.h; sourceTree = "<group>"; };
 		A4ED10DD14D2A0D700ECF49E /* Rtt_AppleDictionaryWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleDictionaryWrapper.mm; path = ../../platform/apple/Rtt_AppleDictionaryWrapper.mm; sourceTree = "<group>"; };
 		A4ED11BC14D34A2D00ECF49E /* create_build_properties.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = create_build_properties.lua; path = ../android/create_build_properties.lua; sourceTree = "<group>"; };
 		A4ED11ED14D350C400ECF49E /* lua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = lua.xcodeproj; path = ../../platform/mac/lua.xcodeproj; sourceTree = "<group>"; };
-		A4ED121F14D3E55F00ECF49E /* AntInvoke.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; name = AntInvoke.jar; path = ../../platform/android/project/AntInvoke/AntInvoke.jar; sourceTree = "<group>"; };
-		A4ED122114D3E56800ECF49E /* ListKeyStore.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; name = ListKeyStore.jar; path = ../../platform/android/project/ListKeyStore/ListKeyStore.jar; sourceTree = "<group>"; };
-		A4ED123314D3E5CE00ECF49E /* ant-launcher.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; name = "ant-launcher.jar"; path = "../../external/apache-ant-1.8.1/lib/ant-launcher.jar"; sourceTree = "<group>"; };
-		A4ED123414D3E5CE00ECF49E /* ant.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; name = ant.jar; path = "../../external/apache-ant-1.8.1/lib/ant.jar"; sourceTree = "<group>"; };
 		A4F2AE7816E676B300814C7B /* Rtt_DeviceBuildData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_DeviceBuildData.cpp; path = ../shared/Rtt_DeviceBuildData.cpp; sourceTree = "<group>"; };
 		A4F2AE7916E676B300814C7B /* Rtt_DeviceBuildData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_DeviceBuildData.h; path = ../shared/Rtt_DeviceBuildData.h; sourceTree = "<group>"; };
 		A4FCD3EC14CF417C0004E91D /* CoronaBuilder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoronaBuilder.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -501,11 +488,8 @@
 		A4FCD3F314CF417C0004E91D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		A4FCD3F414CF417C0004E91D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		A4FCD3F514CF417C0004E91D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		A4FCD3F814CF417C0004E91D /* CoronaBuilder-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CoronaBuilder-Info.plist"; path = "../../tools/CoronaBuilder/CoronaBuilder-Info.plist"; sourceTree = "<group>"; };
 		C200AAF019638457005828AA /* CoronaPListSupport.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaPListSupport.lua; path = ../resources/CoronaPListSupport.lua; sourceTree = "<group>"; };
 		C205D56E1C7D2204000A8EE1 /* CoronaBuilder.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaBuilder.lua; path = ../../tools/CoronaBuilder/CoronaBuilder.lua; sourceTree = "<group>"; };
-		C205D5801C7E6AF4000A8EE1 /* iOS-SDKs.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "iOS-SDKs.json"; path = "../resources/iOS-SDKs.json"; sourceTree = "<group>"; };
-		C205D5811C7E6AF4000A8EE1 /* tvOS-SDKs.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "tvOS-SDKs.json"; path = "../resources/tvOS-SDKs.json"; sourceTree = "<group>"; };
 		C217F6CB19525FA400D3BFFE /* dkjson.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dkjson.lua; path = ../resources/dkjson.lua; sourceTree = "<group>"; };
 		C217F6CC19525FA400D3BFFE /* json.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = json.lua; path = ../resources/json.lua; sourceTree = "<group>"; };
 		C22BAF681C1B8D5300EF1795 /* Rtt_TVOSAppPackager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_TVOSAppPackager.mm; sourceTree = "<group>"; };
@@ -514,7 +498,6 @@
 		C22BAF741C1B8DF500EF1795 /* Rtt_TVOSAppPackager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_TVOSAppPackager.h; sourceTree = "<group>"; };
 		C22BAF751C1B8FBD00EF1795 /* OSXPackageApp.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = OSXPackageApp.lua; path = ../resources/OSXPackageApp.lua; sourceTree = "<group>"; };
 		C22BAF761C1B8FBD00EF1795 /* tvosPackageApp.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tvosPackageApp.lua; path = ../resources/tvosPackageApp.lua; sourceTree = "<group>"; };
-		C22BAF851C1B995900EF1795 /* codesign-framework.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "codesign-framework.sh"; path = "../../bin/xcode/codesign-framework.sh"; sourceTree = "<group>"; };
 		C2471D7719882B260076CA1F /* CoronaSimulator.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = CoronaSimulator.icns; sourceTree = "<group>"; };
 		C25005ED1BA76836000308A7 /* Rtt_FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FileSystem.cpp; path = ../../librtt/Core/Rtt_FileSystem.cpp; sourceTree = "<group>"; };
 		C25005EE1BA76836000308A7 /* Rtt_FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FileSystem.h; path = ../../librtt/Core/Rtt_FileSystem.h; sourceTree = "<group>"; };
@@ -535,7 +518,6 @@
 		C2A2E8011EC2637300900729 /* Rtt_LuaLibBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_LuaLibBuilder.cpp; path = ../../tools/CoronaBuilder/Rtt_LuaLibBuilder.cpp; sourceTree = "<group>"; };
 		C2A2E8021EC2637300900729 /* Rtt_LuaLibBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_LuaLibBuilder.h; path = ../../tools/CoronaBuilder/Rtt_LuaLibBuilder.h; sourceTree = "<group>"; };
 		C2AD19CD1C40391300217E3E /* CoronaLog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = CoronaLog.c; path = ../../librtt/Corona/CoronaLog.c; sourceTree = "<group>"; };
-		C2C5359D1AE5B8A200BF7A6E /* AndroidValidation.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AndroidValidation.lua; sourceTree = "<group>"; };
 		C2F1BAF71EF48EF500D77BD7 /* CoronaShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CoronaShell.xcodeproj; path = CoronaShell/CoronaShell.xcodeproj; sourceTree = "<group>"; };
 		C2F1BAFD1EF48F2F00D77BD7 /* ratatouille.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = ratatouille.xcodeproj; sourceTree = "<group>"; };
 		F53C328E2404E2C000BC2BED /* CoronaBuilderPluginCollector.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaBuilderPluginCollector.lua; path = ../resources/CoronaBuilderPluginCollector.lua; sourceTree = "<group>"; };
@@ -563,7 +545,6 @@
 				A4A47E3D14D2302800B5111C /* IOKit.framework in Frameworks */,
 				A4A47E2814D2284400B5111C /* SystemConfiguration.framework in Frameworks */,
 				A4A47E2114D227D000B5111C /* Security.framework in Frameworks */,
-				A4A47E1F14D2279A00B5111C /* libffi.dylib in Frameworks */,
 				A4FCD3F114CF417C0004E91D /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -843,21 +824,7 @@
 		A4DFE6DA14CF439000C2A230 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				C205D5801C7E6AF4000A8EE1 /* iOS-SDKs.json */,
-				C205D5811C7E6AF4000A8EE1 /* tvOS-SDKs.json */,
-				C22BAF851C1B995900EF1795 /* codesign-framework.sh */,
-				A4ED123314D3E5CE00ECF49E /* ant-launcher.jar */,
-				A4ED123414D3E5CE00ECF49E /* ant.jar */,
-				A4ED121F14D3E55F00ECF49E /* AntInvoke.jar */,
 				C2471D7719882B260076CA1F /* CoronaSimulator.icns */,
-				A4ED122114D3E56800ECF49E /* ListKeyStore.jar */,
-				A4E994B114D9132400665C62 /* _coronatest.jar */,
-				A4E994B214D9132400665C62 /* build.properties */,
-				A4E994B314D9132400665C62 /* build.xml */,
-				A4E994B614D9132400665C62 /* zipalign */,
-				A4CC24E114D744F100A60E1E /* debug.keystore */,
-				A4FCD3F814CF417C0004E91D /* CoronaBuilder-Info.plist */,
-				A48BC79A14E1C2EB00310E8E /* AppSettings.lua */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -882,8 +849,6 @@
 				C2F1BAFD1EF48F2F00D77BD7 /* ratatouille.xcodeproj */,
 				C2F1BAF71EF48EF500D77BD7 /* CoronaShell.xcodeproj */,
 				A4ED11ED14D350C400ECF49E /* lua.xcodeproj */,
-				A4A47E1E14D2279A00B5111C /* libffi.dylib */,
-				A4A47E0C14D2274400B5111C /* libssl.dylib */,
 				A4BABCDC14CF4B7B00696484 /* external */,
 				A4BABC9614CF496700696484 /* librtt */,
 				A4DFE6D914CF438400C2A230 /* shared */,
@@ -954,7 +919,6 @@
 			isa = PBXGroup;
 			children = (
 				F5DB5B202113701300EC5CBC /* linuxPackageApp.lua */,
-				C2C5359D1AE5B8A200BF7A6E /* AndroidValidation.lua */,
 				C205D56E1C7D2204000A8EE1 /* CoronaBuilder.lua */,
 				F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */,
 				C200AAF019638457005828AA /* CoronaPListSupport.lua */,
