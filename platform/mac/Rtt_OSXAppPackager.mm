@@ -100,6 +100,19 @@ OSXAppPackager::~OSXAppPackager()
 {
 }
 
+const char*
+OSXAppPackager::GetAppTemplatePath()
+{
+	NSString* path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXAppTemplate.zip"];
+	if(![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+		path = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"/../../../../../../../Corona Simulator.app/Contents/Resources/OSXAppTemplate.zip"] stringByStandardizingPath];
+	}
+	if(![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+		path = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"/../../../Corona Simulator.app/Contents/Resources/OSXAppTemplate.zip"] stringByStandardizingPath];
+	}
+	return [path UTF8String];
+}
+
 int
 OSXAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 {
@@ -179,7 +192,7 @@ OSXAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
                 lua_pushstring( L, TargetDevice::StringForPlatform( osxParams->GetTargetPlatform() ) );
                 lua_setfield( L, -2, "targetPlatform" );
                 
-                lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String] );
+                lua_pushstring( L, GetAppTemplatePath() );
                 lua_setfield( L, -2, "osxAppTemplate" );
                 
 				lua_pushstring( L, Rtt_STRING_BUILD );
@@ -476,7 +489,7 @@ OSXAppPackager::PackageForSelfDistribution( OSXAppPackagerParams *osxParams, boo
 		lua_pushstring( L, TargetDevice::StringForPlatform( osxParams->GetTargetPlatform() ) );
 		lua_setfield( L, -2, "targetPlatform" );
 
-		lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String] );
+		lua_pushstring( L, GetAppTemplatePath() );
 		lua_setfield( L, -2, "osxAppTemplate" );
 
 		lua_pushstring( L, Rtt_STRING_BUILD );

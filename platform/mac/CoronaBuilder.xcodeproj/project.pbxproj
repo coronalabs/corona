@@ -1059,7 +1059,6 @@
 				A4FCD3EA14CF417C0004E91D /* Resources */,
 				A48BC7B414E1DDE200310E8E /* CopyFiles */,
 				C259E4A91BB20B4000DE7BCB /* Copy Frameworks */,
-				C2F1BAF61EF48E7B00D77BD7 /* Run Script (build OSXAppTemplate.zip) */,
 			);
 			buildRules = (
 				A4ED11BE14D34A4900ECF49E /* PBXBuildRule */,
@@ -1279,23 +1278,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		C2F1BAF61EF48E7B00D77BD7 /* Run Script (build OSXAppTemplate.zip) */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script (build OSXAppTemplate.zip)";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"Building OSXAppTemplate.zip ...\"\nif [ \"$CONFIGURATION\" == \"Release\" -a -d \"$BUILD_ROOT/../CoronaShell/build/$CONFIGURATION/CoronaShell.app\" ]\nthen\n# this works for command line builds\nOSX_TEMPLATE_SOURCE_DIR=\"$BUILD_ROOT/../CoronaShell/build/$CONFIGURATION/CoronaShell.app\"\nelif [ -d \"$DSTROOT\" ]\nthen\n# this works for \"Archive\" builds\nOSX_TEMPLATE_SOURCE_DIR=\"$DSTROOT/Applications/CoronaShell.app\"\nelse\n# this works for \"Debug\" builds\nOSX_TEMPLATE_SOURCE_DIR=\"$TARGET_BUILD_DIR/CoronaShell.app\"\nfi\n\necho \"     Source: $OSX_TEMPLATE_SOURCE_DIR\"\necho \"Destination: $BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\"\n( cd \"$OSX_TEMPLATE_SOURCE_DIR\"; ls -lR Contents; zip -ry \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\" Contents --exclude \"Contents/Resources/CoronaShell.icns\" )\nls -l \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A4FCD3E814CF417C0004E91D /* Sources */ = {
