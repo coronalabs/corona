@@ -165,7 +165,7 @@ static const char kStdinPath[] = "";
 
 // Returns path to file with metadata for building. And also format of the file.
 static const char*
-ParseBuildParams( const CoronaBuilderParams& params, BuildParams::Format& outFormat )
+ParseBuildParams( const CoronaBuilderParams& params, BuildParams::Format& outFormat, int &lastArg )
 {
 	const char *result = NULL;
 
@@ -188,6 +188,7 @@ ParseBuildParams( const CoronaBuilderParams& params, BuildParams::Format& outFor
 		else
 		{
 			result = arg;
+			lastArg = i;
 			break;
 		}
 	}
@@ -342,10 +343,11 @@ CoronaBuilder::Main( int argc, const char *argv[] )
 		case CoronaBuilderParams::kBuildCommand:
 			{
 				BuildParams::Format format = BuildParams::kJsonFormat;
-				const char *path = ParseBuildParams( params, format );
+				int lastArg = 0;
+				const char *path = ParseBuildParams( params, format, lastArg );
 
 				printf("CoronaBuilder: building project with '%s'\n", path);
-				BuildParams params( fL, path, format );
+				BuildParams params( fL, path, format, argc-(lastArg+3), argv+(lastArg+3) );
 				if ( params.IsValid() )
 				{
 					result = Build( params );
