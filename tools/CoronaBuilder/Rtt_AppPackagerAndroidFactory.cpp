@@ -65,13 +65,7 @@ AppPackagerFactory::CreatePackagerParamsAndroid(
 			lua_checkstack( L, 5 );
 			int top = lua_gettop( L );
 
-			const char *resourcePath = NULL;
-
-#if defined(Rtt_MAC_ENV)
-			resourcePath = GetResourceDirectoryOSX();
-#elif defined(Rtt_WIN_ENV)
-			resourcePath = GetResourceDirectoryWin();
-#endif
+			const char *resourcePath = GetResourceDirectory();
 
 			// Default to Debug.keystore
 			String keystorePathStr;
@@ -141,12 +135,8 @@ AppPackagerFactory::CreatePackagerParamsAndroid(
 				}
 
 				String scriptPathStr;
-#if defined(Rtt_WIN_ENV)
-				scriptPathStr.Set(GetResourceDirectoryWin());
-#elif defined(Rtt_MAC_ENV)
-				scriptPathStr.Set(GetResourceDirectoryOSX());
-#endif
-				scriptPathStr.Append("/AndroidValidation.lua");
+				scriptPathStr.Set(GetResourceDirectory());
+				scriptPathStr.Append("/AndroidValidation.lu");
 				lua_State* L1 = Rtt_AndroidSupportTools_NewLuaState( scriptPathStr.GetString() );
 				if (L1 == NULL)
 				{

@@ -103,14 +103,7 @@ OSXAppPackager::~OSXAppPackager()
 const char*
 OSXAppPackager::GetAppTemplatePath()
 {
-	NSString* path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXAppTemplate.zip"];
-	if(![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-		path = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"/../../../../../../../Corona Simulator.app/Contents/Resources/OSXAppTemplate.zip"] stringByStandardizingPath];
-	}
-	if(![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-		path = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"/../../../Corona Simulator.app/Contents/Resources/OSXAppTemplate.zip"] stringByStandardizingPath];
-	}
-	return [path UTF8String];
+	return [[[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String];
 }
 
 int
@@ -392,7 +385,7 @@ OSXAppPackager::PackageForAppStore( OSXAppPackagerParams *osxParams, bool sendTo
 		lua_pushstring( L, Rtt_STRING_BUILD );
 		lua_setfield( L, -2, "corona_build_id" );
 
-		lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXApp.xcent"] UTF8String] );
+		lua_pushstring( L, [[[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"OSXApp.xcent"] UTF8String] );
 		lua_setfield( L, -2, "osxAppEntitlements" );
 
 		lua_pushboolean( L, sendToAppStore );

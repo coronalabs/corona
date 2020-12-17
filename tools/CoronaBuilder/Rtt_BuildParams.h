@@ -41,7 +41,7 @@ class BuildParams
 		Format;
 
 	public:
-		BuildParams( lua_State *L, const char *path, Format format );
+		BuildParams( lua_State *L, const char *path, Format format, int argc, const char *argv[] );
 		~BuildParams();
 
 	public:

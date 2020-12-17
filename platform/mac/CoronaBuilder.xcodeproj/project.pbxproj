@@ -33,7 +33,6 @@
 		A4543F4C15265DE700486F8A /* Rtt_Car.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4543F4A15265DE700486F8A /* Rtt_Car.cpp */; };
 		A4543F4F1526604900486F8A /* Rtt_Archive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4543F4D1526604900486F8A /* Rtt_Archive.cpp */; };
 		A47290111AE83E1900BC088D /* CoronaLuaObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = A47290101AE83E1900BC088D /* CoronaLuaObjC.mm */; };
-		A48BC7B514E1DDED00310E8E /* AppSettings.lua in CopyFiles */ = {isa = PBXBuildFile; fileRef = A48BC79A14E1C2EB00310E8E /* AppSettings.lua */; };
 		A4A47DFA14D225D400B5111C /* Rtt_Allocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DCD14D225D400B5111C /* Rtt_Allocator.cpp */; };
 		A4A47DFB14D225D400B5111C /* Rtt_Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DCF14D225D400B5111C /* Rtt_Array.cpp */; };
 		A4A47DFC14D225D400B5111C /* Rtt_Assert.c in Sources */ = {isa = PBXBuildFile; fileRef = A4A47DD114D225D400B5111C /* Rtt_Assert.c */; };
@@ -79,24 +78,14 @@
 		A4BAC08A14CFB07100696484 /* Rtt_AppleCallback.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4BAC08914CFB07100696484 /* Rtt_AppleCallback.mm */; };
 		A4C5209E1551ACB400B77A7E /* lfs.c in Sources */ = {isa = PBXBuildFile; fileRef = A4C5209C1551ACB400B77A7E /* lfs.c */; settings = {COMPILER_FLAGS = "-Wno-unused-variable"; }; };
 		A4CC24D014D7409C00A60E1E /* AppleSigningIdentityController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4CC24CF14D7409C00A60E1E /* AppleSigningIdentityController.mm */; };
-		A4CC24E214D744F100A60E1E /* debug.keystore in Resources */ = {isa = PBXBuildFile; fileRef = A4CC24E114D744F100A60E1E /* debug.keystore */; };
-		A4E994B814D9132400665C62 /* build.properties in Resources */ = {isa = PBXBuildFile; fileRef = A4E994B214D9132400665C62 /* build.properties */; };
-		A4E994B914D9132400665C62 /* build.xml in Resources */ = {isa = PBXBuildFile; fileRef = A4E994B314D9132400665C62 /* build.xml */; };
-		A4E994BC14D9132400665C62 /* zipalign in Resources */ = {isa = PBXBuildFile; fileRef = A4E994B614D9132400665C62 /* zipalign */; };
 		A4ED10DB14D2A07B00ECF49E /* Rtt_Lua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4ED10D914D2A07B00ECF49E /* Rtt_Lua.cpp */; };
 		A4ED10DE14D2A0D700ECF49E /* Rtt_AppleDictionaryWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4ED10DD14D2A0D700ECF49E /* Rtt_AppleDictionaryWrapper.mm */; };
 		A4ED11BF14D34CEF00ECF49E /* create_build_properties.lua in Sources */ = {isa = PBXBuildFile; fileRef = A4ED11BC14D34A2D00ECF49E /* create_build_properties.lua */; };
 		A4ED11C014D34CEF00ECF49E /* iPhonePackageApp.lua in Sources */ = {isa = PBXBuildFile; fileRef = A4BABC1414CF451600696484 /* iPhonePackageApp.lua */; };
-		A4ED122014D3E55F00ECF49E /* AntInvoke.jar in Resources */ = {isa = PBXBuildFile; fileRef = A4ED121F14D3E55F00ECF49E /* AntInvoke.jar */; };
-		A4ED122214D3E56800ECF49E /* ListKeyStore.jar in Resources */ = {isa = PBXBuildFile; fileRef = A4ED122114D3E56800ECF49E /* ListKeyStore.jar */; };
-		A4ED123514D3E5CE00ECF49E /* ant-launcher.jar in Resources */ = {isa = PBXBuildFile; fileRef = A4ED123314D3E5CE00ECF49E /* ant-launcher.jar */; };
-		A4ED123614D3E5CE00ECF49E /* ant.jar in Resources */ = {isa = PBXBuildFile; fileRef = A4ED123414D3E5CE00ECF49E /* ant.jar */; };
 		A4F2AE7A16E676B300814C7B /* Rtt_DeviceBuildData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4F2AE7816E676B300814C7B /* Rtt_DeviceBuildData.cpp */; };
 		A4FCD3F114CF417C0004E91D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4FCD3F014CF417C0004E91D /* Cocoa.framework */; };
 		C200AAF119638457005828AA /* CoronaPListSupport.lua in Sources */ = {isa = PBXBuildFile; fileRef = C200AAF019638457005828AA /* CoronaPListSupport.lua */; };
 		C205D57F1C7D271D000A8EE1 /* CoronaBuilder.lua in Sources */ = {isa = PBXBuildFile; fileRef = C205D56E1C7D2204000A8EE1 /* CoronaBuilder.lua */; };
-		C205D5821C7E6AF4000A8EE1 /* iOS-SDKs.json in Resources */ = {isa = PBXBuildFile; fileRef = C205D5801C7E6AF4000A8EE1 /* iOS-SDKs.json */; };
-		C205D5831C7E6AF4000A8EE1 /* tvOS-SDKs.json in Resources */ = {isa = PBXBuildFile; fileRef = C205D5811C7E6AF4000A8EE1 /* tvOS-SDKs.json */; };
 		C217F6CF19525FC200D3BFFE /* dkjson.lua in Sources */ = {isa = PBXBuildFile; fileRef = C217F6CB19525FA400D3BFFE /* dkjson.lua */; };
 		C217F6D019525FC200D3BFFE /* json.lua in Sources */ = {isa = PBXBuildFile; fileRef = C217F6CC19525FA400D3BFFE /* json.lua */; };
 		C21A81D61AAFC41800128F5E /* liblua-universal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4ED120214D350C400ECF49E /* liblua-universal.a */; };
@@ -104,18 +93,15 @@
 		C22BAF721C1B8D9800EF1795 /* Rtt_OSXAppPackager.mm in Sources */ = {isa = PBXBuildFile; fileRef = C22BAF701C1B8D9800EF1795 /* Rtt_OSXAppPackager.mm */; };
 		C22BAF791C1B8FD000EF1795 /* OSXPackageApp.lua in Sources */ = {isa = PBXBuildFile; fileRef = C22BAF751C1B8FBD00EF1795 /* OSXPackageApp.lua */; };
 		C22BAF7A1C1B8FD000EF1795 /* tvosPackageApp.lua in Sources */ = {isa = PBXBuildFile; fileRef = C22BAF761C1B8FBD00EF1795 /* tvosPackageApp.lua */; };
-		C22BAF861C1B995900EF1795 /* codesign-framework.sh in Resources */ = {isa = PBXBuildFile; fileRef = C22BAF851C1B995900EF1795 /* codesign-framework.sh */; };
 		C2471D7819882B260076CA1F /* CoronaSimulator.icns in Resources */ = {isa = PBXBuildFile; fileRef = C2471D7719882B260076CA1F /* CoronaSimulator.icns */; };
 		C25005EF1BA76836000308A7 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C25005ED1BA76836000308A7 /* Rtt_FileSystem.cpp */; };
 		C2756C4C1C5722DA00BE3194 /* NSString+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C2756C4B1C5722DA00BE3194 /* NSString+Extensions.m */; };
 		C27B68C51D01009D00236968 /* Rtt_AppPackagerAndroidFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C27B68C31D01009D00236968 /* Rtt_AppPackagerAndroidFactory.cpp */; };
 		C27B68C61D01009D00236968 /* Rtt_AppPackagerAppleFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = C27B68C41D01009D00236968 /* Rtt_AppPackagerAppleFactory.mm */; };
-		C2947E141EB29585007AFD48 /* _coronatest.jar in Resources */ = {isa = PBXBuildFile; fileRef = A4E994B114D9132400665C62 /* _coronatest.jar */; };
 		C29CB60619525BFA00D1F011 /* lpeg.c in Sources */ = {isa = PBXBuildFile; fileRef = C29CB5FA19525BFA00D1F011 /* lpeg.c */; };
 		C29CB61219525CD800D1F011 /* re.lua in Sources */ = {isa = PBXBuildFile; fileRef = C29CB60219525BFA00D1F011 /* re.lua */; };
 		C2A2E8031EC2637300900729 /* Rtt_LuaLibBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2E8011EC2637300900729 /* Rtt_LuaLibBuilder.cpp */; };
 		C2AD19CE1C40391300217E3E /* CoronaLog.c in Sources */ = {isa = PBXBuildFile; fileRef = C2AD19CD1C40391300217E3E /* CoronaLog.c */; };
-		C2CF9BA01AE5BFFC00A9A64A /* AndroidValidation.lua in CopyFiles */ = {isa = PBXBuildFile; fileRef = C2C5359D1AE5B8A200BF7A6E /* AndroidValidation.lua */; };
 		F53C329F2404E30900BC2BED /* CoronaBuilderPluginCollector.lua in Sources */ = {isa = PBXBuildFile; fileRef = F53C328E2404E2C000BC2BED /* CoronaBuilderPluginCollector.lua */; };
 		F547C7F61ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */; };
 		F547C7F71ED28BA600C4ED92 /* BuilderPluginDownloader.lua in Sources */ = {isa = PBXBuildFile; fileRef = F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */; };
@@ -324,17 +310,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		A48BC7B414E1DDE200310E8E /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 7;
-			files = (
-				C2CF9BA01AE5BFFC00A9A64A /* AndroidValidation.lua in CopyFiles */,
-				A48BC7B514E1DDED00310E8E /* AppSettings.lua in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C259E4A91BB20B4000DE7BCB /* Copy Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1057,7 +1032,6 @@
 				A4FCD3E814CF417C0004E91D /* Sources */,
 				A4FCD3E914CF417C0004E91D /* Frameworks */,
 				A4FCD3EA14CF417C0004E91D /* Resources */,
-				A48BC7B414E1DDE200310E8E /* CopyFiles */,
 				C259E4A91BB20B4000DE7BCB /* Copy Frameworks */,
 			);
 			buildRules = (
@@ -1261,19 +1235,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C22BAF861C1B995900EF1795 /* codesign-framework.sh in Resources */,
-				A4ED122014D3E55F00ECF49E /* AntInvoke.jar in Resources */,
-				A4ED122214D3E56800ECF49E /* ListKeyStore.jar in Resources */,
-				A4ED123514D3E5CE00ECF49E /* ant-launcher.jar in Resources */,
-				A4ED123614D3E5CE00ECF49E /* ant.jar in Resources */,
-				C2947E141EB29585007AFD48 /* _coronatest.jar in Resources */,
-				A4CC24E214D744F100A60E1E /* debug.keystore in Resources */,
-				A4E994B814D9132400665C62 /* build.properties in Resources */,
-				C205D5831C7E6AF4000A8EE1 /* tvOS-SDKs.json in Resources */,
 				C2471D7819882B260076CA1F /* CoronaSimulator.icns in Resources */,
-				C205D5821C7E6AF4000A8EE1 /* iOS-SDKs.json in Resources */,
-				A4E994B914D9132400665C62 /* build.xml in Resources */,
-				A4E994BC14D9132400665C62 /* zipalign in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

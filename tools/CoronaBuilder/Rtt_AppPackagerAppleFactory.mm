@@ -216,6 +216,13 @@ AppPackagerFactory::CreatePackagerParamsApple(
 			Rtt_ASSERT_NOT_REACHED();
 			break;
 	}
+	
+	lua_getfield(L, index, "customTemplate" );
+	if(lua_type(L, -1) == LUA_TSTRING)
+	{
+		result->SetCustomTemplate(lua_tostring(L, -1));
+	}
+	lua_pop(L, 1);
 
 	if ( ! result )
 	{
@@ -235,7 +242,7 @@ AppPackagerFactory::CreatePackagerParamsApple(
 const char *
 AppPackagerFactory::GetResourceDirectoryOSX() const
 {
-	return [[[NSBundle mainBundle] resourcePath] UTF8String];
+	return [[XcodeToolHelper pathForResources] UTF8String];
 }
 #endif
 
