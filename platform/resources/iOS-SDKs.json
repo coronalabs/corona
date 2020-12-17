@@ -16,6 +16,21 @@
 			"beta": false
 		},
 		{
+			"label": "14.3 Metal",
+			"xcodeVersion": "14.2",
+			"failMessage": "install or xcode-select Xcode 12.3 to enable",
+			"coronaVersion": 143000,
+			"beta": false,
+			"customTemplate": "-angle"
+		},
+		{
+			"label": "14.3",
+			"xcodeVersion": "14.2",
+			"failMessage": "install or xcode-select Xcode 12.3 to enable",
+			"coronaVersion": 143000,
+			"beta": false
+		},
+		{
 			"label": "13.2 (Legacy)",
 			"xcodeVersion": "13.2",
 			"failMessage": "install or xcode-select Xcode 11.3.1 to enable",
