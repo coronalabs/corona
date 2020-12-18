@@ -15,6 +15,7 @@
 #include "Core/Rtt_Build.h"
 
 #import "AppDelegate.h"
+#include <stdlib.h>
 
 #if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_5)
 	#import <Foundation/NSAutoreleasePool.h>
@@ -253,7 +254,7 @@ static const int       kClearProjectSandboxMenuTag = 1001;
 
 NSString *kosVersionMinimum = @"10.9";   // we refuse to run on OSes older than this
 NSString *kosVersionPrevious = @"10.12";  // should be updated as Apple releases new OSes
-NSString *kosVersionCurrent = @"11.0";  // should be updated as Apple releases new OSes; we will run on this one and the previous one
+NSString *kosVersionCurrent = @"11.1";  // should be updated as Apple releases new OSes; we will run on this one and the previous one
 
 // These tags are defined on the various DeviceBuild dialogs in Interface Builder
 enum {
@@ -1383,6 +1384,13 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 	[self checkOpenGLRequirements];
 	[self coronaInit:aNotification];
+	
+#ifdef Rtt_AUTHORING_SIMULATOR
+	NSString *jhome = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Contents/jre/jdk/Contents/Home"];
+	if([[NSFileManager defaultManager] fileExistsAtPath:jhome]) {
+		setenv("JAVA_HOME", [jhome UTF8String], YES);
+	}
+#endif
 }
 
 - (void) startDebugAndOpenPanel

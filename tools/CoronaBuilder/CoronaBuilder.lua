@@ -64,6 +64,9 @@ function CoronaBuilderDetermineTargetSDKVersion( sdkname, platformName, currentS
 		-- print(idx, json.prettify(sdkParams))
 		if sdkParams['coronaVersion'] == params['platformVersion'] then
 			failMessage = sdkParams['failMessage']
+			if params["forceVersion"] then
+				coronaVersion = sdkParams['coronaVersion']
+			end
 		end
 		if sdkParams['xcodeVersion'] == xcodeSDKVersion then
 			coronaVersion = sdkParams['coronaVersion']

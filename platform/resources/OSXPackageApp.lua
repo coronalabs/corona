@@ -732,7 +732,7 @@ function OSXPostPackage( params )
 		end
 
 		-- cleanup signature from the template
-		runScript( "cd ".. options.appBundleFile .. " ; /usr/bin/codesign --remove-signature . ; rm -rf Contents/_CodeSignature " )
+		runScript( "cd ".. options.appBundleFile .. " ; /usr/bin/codesign --remove-signature --deep . " )
 
 		-- If "bundleResourcesDirectory" is set, copy the contents of that directory to the
 		-- application's Resource directory
@@ -856,7 +856,6 @@ function OSXPostPackage( params )
 				runScript( "/bin/ls -Rl '"..appBundleFileUnquoted.."'")
 				return errMsg
 			end
-
 		end
 
 		-- Sometimes macOS gets confused about whether the apps we build are opennable, this

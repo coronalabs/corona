@@ -26,7 +26,7 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 static int
-GetParamsTableRef( lua_State *L, const char *path, BuildParams::Format format )
+GetParamsTableRef( lua_State *L, const char *path, BuildParams::Format format, int argc, const char *argv[] )
 {
 	int result = LUA_NOREF;
 
@@ -35,7 +35,11 @@ GetParamsTableRef( lua_State *L, const char *path, BuildParams::Format format )
 		case BuildParams::kLuaFormat:
 		{
 			int base = lua_gettop( L );
-			Lua::DoFile( L, path, 0, false );
+			for(int i=0; i<argc; i++)
+			{
+				lua_pushstring(L, argv[i]);
+			}
+			Lua::DoFile( L, path, argc, false );
 			if ( lua_istable( L, base + 1 ) )
 			{
 				result = luaL_ref( L, LUA_REGISTRYINDEX );
@@ -86,11 +90,11 @@ GetParamsTableRef( lua_State *L, const char *path, BuildParams::Format format )
 
 // ----------------------------------------------------------------------------
 
-BuildParams::BuildParams( lua_State *L, const char *path, Format format )
+BuildParams::BuildParams( lua_State *L, const char *path, Format format, int argc, const char *argv[] )
 :	fL( L ),
 	fRef( LUA_NOREF )
 {
-	fRef = GetParamsTableRef( L, path, format );
+	fRef = GetParamsTableRef( L, path, format, argc, argv );
 }
 
 BuildParams::~BuildParams()
