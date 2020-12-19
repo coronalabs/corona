@@ -6,14 +6,14 @@ import subprocess
 
 output_dir = sys.argv[1]
 files = sys.argv[2:]
-files = [f for f in files if f.endswith('.json') and f.count('_') == 1]
-files.sort()
+files = [f for f in files if f.endswith('.json') and os.path.basename(f).count('_') == 1]
+files.sort(key=os.path.basename)
 
 out = {}
 def processFile(f):
     with open(f) as fp:
         obj = json.load(fp)
-    out_file = f.split('_')[1] # type: str
+    out_file = os.path.basename(f).split('_')[1] # type: str
     out[out_file] = out.get(out_file, {})
     for platform, entries in obj.items():
         out[out_file][platform] = out[out_file].get(platform, [])
