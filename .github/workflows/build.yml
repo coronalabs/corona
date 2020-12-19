@@ -76,7 +76,7 @@ jobs:
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Build templates JSON spec
-        run: ./tools/GHAction/ios_templates_json.py
+        run: ./tools/GHAction/generate_xcode_json.py
       - name: Upload templates
         uses: actions/upload-artifact@v1
         with:
