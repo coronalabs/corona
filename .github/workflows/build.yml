@@ -40,39 +40,6 @@ jobs:
           name: SourceCode
           path: ./output
 
-  Xcode-template-matrix-old:
-    strategy:
-      matrix:
-        xcode:
-          - Xcode_11.3.1
-        target:
-          - template
-        platform:
-          - iphone
-    needs: source-code
-    runs-on: macos-10.15
-    env:
-      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
-      TEMPLATE_TARGET: ${{ matrix.target }}
-    steps:
-      - name: Get processed code
-        uses: actions/download-artifact@v1
-        with:
-          name: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build templates
-        working-directory: ./platform/${{ matrix.platform }}
-        run: ./gh_build_templates.sh
-        env:
-          CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Upload templates
-        uses: actions/upload-artifact@v1
-        with:
-          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
-          path: ./output
-
   Xcode-template-matrix:
     strategy:
       matrix:
@@ -85,11 +52,16 @@ jobs:
         platform:
           - iphone
           - tvos
+        include:
+          - xcode: Xcode_11.3.1
+            target: template
+            platform: iphone
     needs: source-code
     runs-on: macos-10.15
     env:
       DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
       TEMPLATE_TARGET: ${{ matrix.target }}
+      TEMPLATE_PLATFORM: ${{ matrix.platform }}
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v1
@@ -103,6 +75,8 @@ jobs:
         run: ./gh_build_templates.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Build templates JSON spec
+        run: ./tools/GHAction/ios_templates_json.py
       - name: Upload templates
         uses: actions/upload-artifact@v1
         with:
@@ -112,17 +86,18 @@ jobs:
   collect-ios-templates:
     needs:
       - Xcode-template-matrix
-      - Xcode-template-matrix-old
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/download-artifact@v2
       - name: Collect templates together
         run: |
-          mkdir -p output
+          mkdir -p output/iostemplate
           for D in Templates-*
           do
-            mv -v "$D/"* output/
+            mv -v "$D/"*.tar.bz output/iostemplate
           done
+      - name: Generate template JSON
+        run: find Templates-* -name '*_*-SDKs.json' -exec ./tools/GHAction/aggregate_xcode_jsons.py output {} \+
       - name: Upload templates
         uses: actions/upload-artifact@v1
         with:
@@ -286,7 +261,7 @@ jobs:
         with:
           name: Collected-ios-templates
       - name: Put collected iOS templates in place
-        run: cp -v Collected-ios-templates/* platform/resources/iostemplate/
+        run: cp -v Collected-ios-templates/* platform/resources/
       - name: Get Webtemplate
         uses: actions/download-artifact@v1
         with:
