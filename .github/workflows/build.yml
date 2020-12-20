@@ -264,7 +264,7 @@ jobs:
         with:
           name: Collected-ios-templates
       - name: Put collected iOS templates in place
-        run: cp -v Collected-ios-templates/* platform/resources/
+        run: cp -Rv Collected-ios-templates/* platform/resources/
       - name: Get Webtemplate
         uses: actions/download-artifact@v1
         with:
