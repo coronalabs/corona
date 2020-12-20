@@ -88,6 +88,7 @@ jobs:
       - Xcode-template-matrix
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
       - name: Collect templates together
         run: |
