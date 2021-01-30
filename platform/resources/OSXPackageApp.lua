@@ -726,6 +726,7 @@ function OSXPostPackage( params )
 		setStatus("Unpacking template")
 		-- extract template into dstDir
 		local result, errMsg = runScript( "/usr/bin/ditto -x -k "..quoteString( options.osxAppTemplate ).." "..options.appBundleFile )
+		runScript("find " .. options.appBundleFile .. " -name _CodeSignature -exec rm -vr {} +")
 
 		if result ~= 0 then
 			return "ERROR: unzipping template failed: "..tostring(errMsg)

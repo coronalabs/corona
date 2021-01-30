@@ -30,6 +30,23 @@ package com.ansca.corona.storage;
  * You should never create an instance of this class yourself.
  */
 public class FileContentProvider extends android.content.ContentProvider {
+
+	private void CheckForPathTraversal(android.net.Uri uri) {
+		if(uri == null) {
+			throw new IllegalArgumentException();
+		}
+		try {
+			java.net.URI uriConverter = java.net.URI.create(uri.toString()).normalize();
+			uri = android.net.Uri.parse(uriConverter.toString());
+		}
+		catch (Exception ignore) {
+			throw new IllegalArgumentException();
+		}
+		if(uri.getPath().contains("../")) {
+			throw new IllegalArgumentException();
+		}
+	}
+
 	/**
 	 * Called on application startup if registered in the "AndroidManifest.xml" file. Initializes this object.
 	 * @return Returns true if the provider was successfully loaded. Returns false if not.
@@ -50,12 +67,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 	public android.os.ParcelFileDescriptor openFile(android.net.Uri uri, String mode)
 		throws java.io.FileNotFoundException
 	{
-		// Validate.
-		if (uri == null)
-		{
-			throw new IllegalArgumentException();
-		}
-
+		CheckForPathTraversal(uri);
 		// Retrieve the requested file and pass the file reference to the calling client/application via a parcel.
 		java.io.File dataDir = new java.io.File( getContext().getApplicationInfo().dataDir );
 		java.io.File file = new java.io.File(dataDir, uri.getPath());
@@ -94,13 +106,8 @@ public class FileContentProvider extends android.content.ContentProvider {
 	public android.content.res.AssetFileDescriptor openAssetFile(android.net.Uri uri, String mode)
 		throws java.io.FileNotFoundException
 	{
+		CheckForPathTraversal(uri);
 		android.content.res.AssetFileDescriptor descriptor = null;
-		
-		// Validate.
-		if (uri == null)
-		{
-			throw new IllegalArgumentException();
-		}
 
 		// Resolve relative path symbols such as "." and "..".
 		// We must do this because apk/zip entry lookups must use absolute paths.
@@ -185,7 +192,8 @@ public class FileContentProvider extends android.content.ContentProvider {
 	 * @param selection An optional restriction to apply to rows when deleting.
 	 * @return Returns the number of rows affected.
 	 */
-	@Override
+
+
 	public int delete(android.net.Uri uri, String selection, String[] selectionArgs) {
 		throw new UnsupportedOperationException("Not supported by this provider");
 	}
@@ -199,6 +207,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 	 */
 	@Override
 	public String getType(android.net.Uri uri) {
+		CheckForPathTraversal(uri);
 		FileServices fileServices = new FileServices(getContext());
 		return fileServices.getMimeTypeFrom(uri);
 	}
@@ -232,10 +241,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 	public android.database.Cursor query(
 		android.net.Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
 	{
-		// Validate.
-		if (uri == null) {
-			return null;
-		}
+		CheckForPathTraversal(uri);
 
 		// Resolve relative path symbols such as "." and "..".
 		// We must do this because apk/zip entry lookups must use absolute paths.

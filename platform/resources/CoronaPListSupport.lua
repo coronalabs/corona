@@ -215,11 +215,8 @@ function CoronaPListSupport.modifyPlist( options )
 			-- Apple treats this the build number so, if it hasn't been specified in the build.settings, we
 			-- set it to the current date and time which is unique for the app and human readable
 			bundleVersionSource = (infoPlist.CFBundleVersion == "@BUNDLE_VERSION@") and "set by Simulator" or "set by Info.plist"
-			infoPlist.CFBundleVersion = os.date("%Y.7%m.7%d%H%M")
 			local datedata = os.date( "!*t")
-			if datedata.year > 2020 then
-				infoPlist.CFBundleVersion = datedata.year .. '.' .. datedata.month.."." .. datedata.day .. os.date("!%H%M")
-			end
+			infoPlist.CFBundleVersion = datedata.year .. '.' .. datedata.month.."." .. datedata.day .. os.date("!%H%M")
 		end
 
 		local version = options.bundleversion or "1.0.0"
