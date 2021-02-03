@@ -69,7 +69,23 @@ public class StatusBarBroadcastReceiver extends android.content.BroadcastReceive
 			}
 
 			// Display the Corona activity window if not already visible.
-			intent = new android.content.Intent(context, com.ansca.corona.CoronaActivity.class);
+			Class<?> activityClass = com.ansca.corona.CoronaActivity.class;
+			try {
+				android.content.pm.PackageInfo pi = context.getPackageManager().getPackageInfo(context.getPackageName(), android.content.pm.PackageManager.GET_ACTIVITIES);
+				for (android.content.pm.ActivityInfo ai : pi.activities) {
+					try {
+						Class<?> c = Class.forName(ai.name);
+						if (com.ansca.corona.CoronaActivity.class.isAssignableFrom(c)) {
+							activityClass = c;
+							break;
+						}
+					} catch (Throwable ignore) {
+					}
+				}
+			}
+			catch (Throwable ignore) {
+			}
+			intent = new android.content.Intent(context, activityClass);
 			intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
 			intent.addFlags(android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			intent.putExtra(com.ansca.corona.events.NotificationReceivedTask.NAME, event.toBundle());
