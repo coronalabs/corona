@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --
 -- This file is part of the Corona game engine.
--- For overview and more information on licensing please refer to README.md 
+-- For overview and more information on licensing please refer to README.md
 -- Home page: https://github.com/coronalabs/corona
 -- Contact: support@coronalabs.com
 --
@@ -20,7 +20,7 @@ local simAvail, simulator = pcall(require, "simulator")
 local CoronaPListSupport = require("CoronaPListSupport")
 local captureCommandOutput = CoronaPListSupport.captureCommandOutput
 
-local coronaLiveBuildAppDir = "_corona_live_build_app" -- "PackageApp" -- 
+local coronaLiveBuildAppDir = "_corona_live_build_app" -- "PackageApp" --
 local coronaLiveBuildManifest = "_corona_live_build_manifest.txt"
 local coronaLiveBuildExclude = "_corona_live_build_exclude.txt"
 
@@ -80,13 +80,13 @@ local function isAlpha( val )
 	if val >= "A" and val <= "Z" then
 		return true
 	end
-	
+
 	if val >= "a" and val <= "z" then
 		return true
 	end
-	
+
 	return false	-- not Alpha
-	
+
 end
 
 --------------------------------------------------------------------------------
@@ -102,9 +102,9 @@ local function isNumber( val )
 	if val >= "0" and val <= "9" then
 		return true
 	end
-	
+
 	return false	-- not number
-	
+
 end
 
 --------------------------------------------------------------------------------
@@ -119,17 +119,17 @@ end
 local function isDotDash( val, allowDots )
 
 	local char2 = "-"		-- default is to not test for dot
-	
+
 	if allowDots then
 		char2 = "."		-- test for dot
 	end
-	
+
 	if val == "-" or val == char2 then
 		return true
 	end
-	
+
 	return false	-- not dot or dash
-	
+
 end
 
 --------------------------------------------------------------------------------
@@ -149,12 +149,12 @@ end
 local function sanitizeBundleString( bundleStr, allowDots )
 
 	local newBundleStr	= ""	-- new string
-	
+
 	local val
-	
+
 	for i = 1, string.len( bundleStr ) do
 		val = string.sub( bundleStr, i, i )
-		
+
 		if isAlpha( val ) then
 			newBundleStr = newBundleStr .. val
 		elseif isNumber( val ) then
@@ -164,9 +164,9 @@ local function sanitizeBundleString( bundleStr, allowDots )
 		else
 			newBundleStr = newBundleStr .. "-"
 		end
-		
+
 	end -- do
-	
+
 	return newBundleStr
 
 end
@@ -381,7 +381,7 @@ local function getProductValidateScript( path, itunesConnectUsername, itunesConn
 	-- Apple tells us to use this buried utility to automate Application Loader tasks in
 	-- https://itunesconnect.apple.com/docs/UsingApplicationLoader.pdf
 	local altool = makepath(applicationLoader, "Contents/Frameworks/ITunesSoftwareService.framework/Support/altool")
-	
+
 	-- If the "cmd" generated below fails because it's the wrong path that's very hard to detect amongst all the XML parsing so we do it here
 	if lfs.attributes( altool ) == nil then
 		print("ERROR: cannot find 'altool' utility in "..altool)
@@ -401,7 +401,7 @@ local function getProductUploadScript( path, itunesConnectUsername, itunesConnec
 	-- Apple tells us to use this buried utility to automate Application Loader tasks in
 	-- https://itunesconnect.apple.com/docs/UsingApplicationLoader.pdf
 	local altool = makepath(applicationLoader, "Contents/Frameworks/ITunesSoftwareService.framework/Support/altool")
-	
+
 	-- Removing the "!DOCTYPE" line from the XML stops xpath trying to access the DTD
 	-- The xpath command parses the XML output looking for an error message
 	-- The final sed command adds a newline to the last line of output which xpath omits
@@ -488,7 +488,7 @@ local function generateXcent( options )
 	if debugBuildProcess and debugBuildProcess ~= 0 then
 		print("get_task_allow_setting: ".. tostring(get_task_allow_setting))
 	end
-	
+
 	if get_task_allow_setting ~= "" then
 		-- set the value appropriately
 		if nil ~= string.find( get_task_allow_setting, "1", 1, true ) then
@@ -615,7 +615,7 @@ end
 -- helper function to figure out if building for App Store distribution
 -- returns true or false
 local function isBuildForAppStoreDistribution( options )
-	
+
 	if not options.signingIdentityName then
 		return false
 	end
@@ -633,6 +633,153 @@ local function isBuildForAppStoreDistribution( options )
 		return false
 	end
 end
+
+-- this function moves files from main bundle to target OnDemandResources directory
+local function generateOdrFileStructureScript(bundleDir, destDir, odr, appBundleId)
+	local err = nil
+	if type(odr) ~= "table" then
+		return "", "ERROR: 'onDemandResources' should be array of tables with tag and resource fields."
+	end
+
+  local script = 'SRC_DIR='..quoteString(bundleDir)..'\nDST_DIR='..quoteString(destDir).. [==[
+
+mkdir -p "$DST_DIR"
+]==]
+
+  for i = 1,#odr do
+		local tag, resource = odr[i].tag, odr[i].resource
+		if type(tag)=="string" and type(resource)=="string" then
+	    local tagBundle = appBundleId .. "." .. tag
+	    script = script .. 'BNDL_DIR="$DST_DIR/' .. tagBundle .. '.assetpack"\n'
+	    script = script .. 'BNDL_REL_SRC="' .. resource .. '"\n'
+	    script = script .. [==[
+/bin/mkdir -p "$BNDL_DIR"
+pushd "$SRC_DIR" > /dev/null
+BUNDLE_SUBFOLDER="$(dirname "$BNDL_REL_SRC")"
+popd > /dev/null
+if [ "$BUNDLE_SUBFOLDER" != "." ]
+ then
+  /bin/mkdir -p "$BNDL_DIR/$BUNDLE_SUBFOLDER"
+fi
+/bin/mv "$SRC_DIR"/"$BNDL_REL_SRC" "$BNDL_DIR/$BUNDLE_SUBFOLDER/"
+]==]
+		else
+			err = "ERROR: invalid On-Demand Resources Entry: " .. json.encode(odr[i]) .. "; 'onDemandResources' should be array of tables with tag and resource fields."
+			break
+		end
+  end
+  return script, err
+end
+
+-- generates plists for ODR resources. One describing each bundle and some in app bundle to aggregate them
+local function generateOdrPlists (bundleDir, odrDir, odr, appBundleId)
+
+	odrDir = odrDir .. "/"
+
+  local tagPacks = {}
+  local packResources = {}
+	-- still to figure out how to create self hosted ODR. Uncomment related lines to generate AssetPackManifestTemplate.plist
+  -- local resources = {}
+
+  -- first generate individual bundles Info.plist
+  local c = 1
+	for i = 1,#odr do
+		local tag, resource = odr[i].tag, odr[i].resource
+    local assetBundleDir = odrDir .. appBundleId .. "." .. tag .. '.assetpack'
+    local plistPath = assetBundleDir .. '/Info.plist'
+    local packBundleId = string.format(appBundleId .. ".asset-pack-%013d", c)
+    c = c+1
+
+    tagPacks[tag] = {NSAssetPacks={packBundleId}}
+    packResources[packBundleId] = {resource}
+    -- resources[#resources+1] = {
+    --   URL="http://127.0.0.1" .. assetBundleDir,
+    --   uncompressedSize=tonumber(captureCommandOutput('find "'.. assetBundleDir .. '" -type f -exec ls -l {} \\; | awk \'{sum += $5} END {print sum}\'')) or 0,
+    --   primaryContentHash={
+    --     hash=captureCommandOutput('stat -f"%Sm" -t "%F %T.000" "' .. assetBundleDir .. '"' ),
+    --     strategy="modtime"
+    --   },
+    --   bundleKey=packBundleId,
+    --   isStreamable=true,
+    -- }
+
+    local f = io.open(plistPath, "w")
+		if not f then
+			return "unable to create ODR file " .. plistPath
+		end
+		local resultBundle = {CFBundleIdentifier=packBundleId,Tags={tag}}
+		if odr[i].type == "prefetch" then
+			resultBundle.Priority = 0.5
+		elseif odr[i].type == "install" then
+			resultBundle.Priority = 1
+		end
+    f:write(json.encode(resultBundle))
+    f:close()
+    local result, errMsg = runScript( '/usr/bin/plutil -convert binary1 '..quoteString(plistPath) )
+		if result ~= 0 then
+			return "plutil error: " .. errMsg
+		end
+  end
+
+  -- now aggregate them into OnDemandResources.plist
+  local plistPath = bundleDir .. "/OnDemandResources.plist"
+  local f = io.open(plistPath, "w")
+	if not f then
+		return "unable to create ODR file " .. plistPath
+	end
+  f:write(json.encode( {NSBundleResourceRequestTags=tagPacks, NSBundleResourceRequestAssetPacks=packResources} ))
+  f:close()
+	local result, errMsg = runScript( '/usr/bin/plutil -convert binary1 '..quoteString(plistPath) )
+	if result ~= 0 then
+		return "plutil error: " .. errMsg
+	end
+
+
+  -- -- AssetPackManifestTemplate.plist for self hosted ODRs
+  -- local plistPath = bundleDir .. "/AssetPackManifestTemplate.plist"
+  -- local f = io.open(plistPath, "w")
+	-- if not f then
+	-- 	return "Error while creating ODR file: " .. plistPath
+	-- end
+  -- f:write(json.encode( {resources=resources} ))
+  -- f:close()
+	-- local result, errMsg = runScript( 'plutil -convert binary1 '..quoteString(plistPath) )
+	-- if result ~= 0 then
+	-- 	return errMsg
+	-- end
+
+end
+
+-- this will generate script for signing each bundle individually
+local function generateOdrCodesignScript(destDir, odr, appBundleId, identity, developerBase)
+
+	local codesign_allocate = xcodetoolhelper['codesign_allocate']
+	local codesign = xcodetoolhelper['codesign']
+
+	-- quote for spaces
+	codesign_allocate = quoteString(codesign_allocate)
+	codesign = quoteString(codesign)
+	developerBase = quoteString(developerBase)
+
+	local devbase_shell = "export DEVELOPER_BASE="..developerBase.."\n"
+	local export_path = [==[
+export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVELOPER_BASE/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+]==]
+
+	local allocate_script = 'export CODESIGN_ALLOCATE=' .. codesign_allocate .. '\n\n'
+
+	local script = devbase_shell .. export_path .. allocate_script
+
+	for i = 1,#odr do
+		local tag, resource = odr[i].tag, odr[i].resource
+		local quotedpath = quoteString(makepath(destDir,appBundleId .. "." .. tag .. ".assetpack"))
+		script = script .. codesign .. " --verbose -f -s "..quoteString(identity).." "..quotedpath .. "\n"
+	end
+
+  return script
+end
+
+
 
 --
 -- prePackageApp
@@ -731,6 +878,40 @@ local function packageApp( options )
 	local iPhoneSDKRoot = options.sdkRoot or "/Applications/Xcode.app/Contents/Developer"
 	local builtForAppStore = isBuildForAppStoreDistribution( options )
 
+	-- package on demand resources
+	local odrOutputDir = nil
+	if options.settings and options.settings.iphone and options.settings.iphone.onDemandResources and isBuildForAppStoreDistribution( options ) then
+		setStatus("Generating On-Demand Resource bundles")
+		local odrData = options.settings.iphone.onDemandResources
+
+		-- step 1: move resources into appropriate folders
+		odrOutputDir = captureCommandOutput('mktemp -d -t CLtmpXXXXXX_ODR') .. "/OnDemandResources"
+		local moveFilesScript, errMsg = generateOdrFileStructureScript(appBundleFileUnquoted, odrOutputDir, odrData, options.bundleid)
+		if errMsg then
+			return errMsg
+		end
+		local result, errMsg = runScript( moveFilesScript )
+		if result ~= 0 then
+			errMsg = "ERROR: error while copying On-Demand Resources: "..tostring(errMsg)
+			return errMsg
+		end
+
+		-- step 2: generate necessary Plists
+		local errMsg = generateOdrPlists(appBundleFileUnquoted, odrOutputDir, odrData, options.bundleid)
+		if errMsg then
+			return "ERROR: error while generating On-Demand Resources medatada: "..errMsg
+		end
+
+		-- step 3: codesign ODRs
+		local odrCodesignScript = generateOdrCodesignScript(odrOutputDir, odrData, options.bundleid, options.signingIdentity, iPhoneSDKRoot )
+		local result, errMsg = runScript( odrCodesignScript )
+		if result ~= 0 then
+			errMsg = "ERROR: codesigning On-Demand Resource packages: "..tostring(errMsg)
+			return errMsg
+		end
+	end
+
+
 	-- bundle swift libraries if required
 	local bundleSwiftSupportDir
 	local bundleSwiftSupportParentDir
@@ -745,7 +926,7 @@ local function packageApp( options )
 			platform="iphoneos"
 		}
 		local bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --sign {identity} --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
-		
+
 		if not options.signingIdentity then
 			bundleOptions.identity = "-"
 			bundleOptions.platform = "iphonesimulator"
@@ -782,7 +963,7 @@ local function packageApp( options )
 	-- bundle is now ready to be signed (don't sign if we don't have a signingIdentity, e.g. Xcode Simulator)
 	if options.signingIdentity then
 		-- codesign embedded frameworks before signing the .app
-		local result, errMsg = runScript( getCodesignFrameworkScript( appBundleFileUnquoted, options.signingIdentity, iPhoneSDKRoot ) )		
+		local result, errMsg = runScript( getCodesignFrameworkScript( appBundleFileUnquoted, options.signingIdentity, iPhoneSDKRoot ) )
 		if result ~= 0 then
 			errMsg = "ERROR: code signing embedded frameworks failed: "..tostring(errMsg)
 			return errMsg
@@ -845,7 +1026,7 @@ local function packageApp( options )
 			runScript( "cd " .. quoteString(ipaTmpDir) .. "; zip --symlinks -r " .. appBundleFileIPA .. " *" )
 
 			runScript( "rm -r " .. quoteString(ipaTmpDir) )
-			
+
 			if bundleSwiftSupportParentDir then
 				runScript( "rm -r " .. quoteString(bundleSwiftSupportParentDir) )
 			end
@@ -958,7 +1139,7 @@ function getBundleId( mobileProvision, bundledisplayname, dstFile )
 			return options.bundleid
 		end
 	end
-	
+
 	return nil
 end
 
@@ -1422,4 +1603,3 @@ function IOSSendToAppStore( params )
 
 	return nil
 end
-
