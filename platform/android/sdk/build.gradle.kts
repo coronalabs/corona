@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    buildToolsVersion("29.0.3")
     ndkVersion = "18.1.5063045"
     compileSdkVersion(29)
 
