@@ -403,6 +403,11 @@ jobs:
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.win32.7z -o jre.win32.7z
           7z x jre.win32.7z -o"platform/windows/Bin" -y
+      - name: Put redistributables in place
+        shell: bash
+        run: |
+          curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/redist.win32.7z -o redist.win32.7z
+          7z x redist.win32.7z -o"platform/windows/Bin/redist" -y
       - name: Build Corona Simulator
         shell: cmd
         run: |
