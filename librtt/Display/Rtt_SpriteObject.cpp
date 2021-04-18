@@ -1114,7 +1114,7 @@ SpriteObject::SetFrame( int index )
 
 		fCurrentFrame = index;
 		ResetTimeArrayIteratorCache(sequence);
-		
+
 		int frameIndex = sequence->GetEffectiveFrame( index );
 		SetBitmapFrame( frameIndex );
 	}
@@ -1236,18 +1236,26 @@ SpriteObject::SetPlaying( bool newValue )
 
 void
 SpriteObject::SetTimeScale( Real newValue ) {
-  // fStartTime = (U64)Rtt_RealDiv(Rtt_RealMul(fStartTime, fTimeScale), newValue);
-
   SpriteObjectSequence *sequence = GetCurrentSequence();
 
   if ( sequence )
   {
-		U64 curTime = fPlayer.GetAnimationTime();
-		Real timeElapsed = curTime - fStartTime;
+		if (!IsPlaying()) 
+		{
+			Real playTime = sequence->GetTimeForFrame(fCurrentFrame);
+			Real newTimeElapsed = Rtt_RealDiv(playTime, newValue) - Rtt_IntToReal(fPlayTime);
+			fTimeScaleIncrement = newTimeElapsed;
+		} 
+		else 
+		{
+			U64 curTime = fPlayer.GetAnimationTime();
+			Real timeElapsed = curTime - fStartTime;
 
-		Real newTimeElapsed = Rtt_RealDiv(Rtt_RealMul(timeElapsed + Rtt_IntToReal(fTimeScaleIncrement), fTimeScale), newValue);
-		fTimeScaleIncrement = Rtt_RealToInt(newTimeElapsed - timeElapsed);
-  }
+			Real newTimeElapsed = Rtt_RealDiv(Rtt_RealMul(timeElapsed + Rtt_IntToReal(fTimeScaleIncrement), fTimeScale), newValue);
+			fTimeScaleIncrement = Rtt_RealToInt(newTimeElapsed-timeElapsed);
+		}
+	}
+
 
   fTimeScale = newValue;
 }
