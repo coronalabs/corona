@@ -249,6 +249,7 @@ class SpriteObject : public RectObject
 		int fCurrentFrame; // which frame in sheet are we currently showing
 		U64 fStartTime;
 		U64 fPlayTime; // when paused, stores amount of time played
+		U64 fTimeScaleIncrement; // Stores the extra amount of time it need to be added for a given timeScale
 		int fTimeArrayCachedFrame; // stores iterator state for SpriteObjectSequence::GetFrameIndexForDeltaTime()
 		Real fTimeArrayCachedNextFrameTime; // stores iterator state for SpriteObjectSequence::GetFrameIndexForDeltaTime()
 	
