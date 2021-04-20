@@ -2276,46 +2276,6 @@ public class CoronaActivity extends Activity {
 	 */
 	// TODO: Have this convert the image to the proper format per this bug: http://bugs.coronalabs.com/default.asp?45777
 	void showSelectImageWindowUsing(String destinationFilePath) {
-		// Verify we can read from external storage if needed, requesting permission if we don't have it!
-		// This check only applies to Android 4.1 and above. 
-		// Android 4.0.4 and lower are granted permission to read external storage by default.
-		if (android.os.Build.VERSION.SDK_INT >= 16 && android.os.Build.VERSION.SDK_INT < 19) {
-			PermissionsServices permissionsServices = new PermissionsServices(CoronaEnvironment.getApplicationContext());
-			switch(permissionsServices.getPermissionStateFor(PermissionsServices.Permission.READ_EXTERNAL_STORAGE)) {
-				case MISSING:
-					showPermissionMissingFromManifestAlert(
-							PermissionsServices.Permission.READ_EXTERNAL_STORAGE,
-							"media.selectPhoto() needs Storage access to handle all possible file paths a 3rd party Gallery app might provide!");
-					return;
-				case DENIED:
-					if (!permissionsServices.shouldNeverAskAgain(PermissionsServices.Permission.READ_EXTERNAL_STORAGE)) {
-						// Request the missing permission!
-						PermissionsSettings settings = new PermissionsSettings(PermissionsServices.Permission.READ_EXTERNAL_STORAGE);
-
-						// Register the RequestPermissionsResultHandler and make the request!
-						permissionsServices.requestPermissions(settings,
-							new SelectImageRequestPermissionsResultHandler("media.selectPhoto()", destinationFilePath));
-					} else {
-						// Just send an empy event back to Lua.
-						// Sending an empty/null string indicates that the user canceled out or we don't have permission.
-						if (fCoronaRuntime != null) {
-							CoronaRuntimeTaskDispatcher taskDispatcher = fCoronaRuntime.getTaskDispatcher();
-							if (taskDispatcher != null) {
-								taskDispatcher.send(new com.ansca.corona.events.ImagePickerTask());
-							} else {
-								Log.v("Corona", "media.selectPhoto() cannot continue because there's no Corona Runtime Task Dispatcher!");
-							}
-						} else {
-							Log.v("Corona", "media.selectPhoto() cannot continue because there's no Corona Runtime!");
-						}
-					}
-					return;
-				default:
-					// Permission is granted! Carry on!
-					break;
-			}
-		}
-
 		// Set up the activity result handler.
 		SelectImageActivityResultHandler handler = new SelectImageActivityResultHandler(fCoronaRuntime);
 		handler.setDestinationFilePath(destinationFilePath);
