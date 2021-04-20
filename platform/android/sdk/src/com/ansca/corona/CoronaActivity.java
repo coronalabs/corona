@@ -2279,7 +2279,7 @@ public class CoronaActivity extends Activity {
 		// Verify we can read from external storage if needed, requesting permission if we don't have it!
 		// This check only applies to Android 4.1 and above. 
 		// Android 4.0.4 and lower are granted permission to read external storage by default.
-		if (android.os.Build.VERSION.SDK_INT >= 16) {
+		if (android.os.Build.VERSION.SDK_INT >= 16 && android.os.Build.VERSION.SDK_INT < 19) {
 			PermissionsServices permissionsServices = new PermissionsServices(CoronaEnvironment.getApplicationContext());
 			switch(permissionsServices.getPermissionStateFor(PermissionsServices.Permission.READ_EXTERNAL_STORAGE)) {
 				case MISSING:
@@ -2795,60 +2795,9 @@ public class CoronaActivity extends Activity {
 		android.net.Uri imageUri = null;
 
 		MediaEventGenerator eventGenerator = new ImagePickerEventGenerator();
+		imageUri = com.ansca.corona.storage.FileContentProvider.createContentUriForFile(this.getApplicationContext(), destinationFile);
+		intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
 
-		java.io.File saveDirectory = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_PICTURES);
-
-		PermissionsServices permissionsServices = new PermissionsServices(this);	
-		PermissionState writeExternalStoragePermissionState = permissionsServices.getPermissionStateFor(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE);
-
-		// Creates a uri for the save location of the image file
-		if (canWriteToExternalStorage()) {
-			if (saveDirectory != null) {
-				// Create the directory if it does not already exist.
-				saveDirectory.mkdirs();
-				
-				// Create a unique file name for the media in this directory.
-				com.ansca.corona.storage.UniqueFileNameBuilder builder;
-				builder = new com.ansca.corona.storage.UniqueFileNameBuilder();
-				builder.setDirectory(saveDirectory);
-				builder.setFileNameFormat("Picture");
-				builder.setFileExtension(".jpg");
-
-				java.io.File imageFile = builder.build();
-				if (imageFile == null) {
-					Log.v("Corona", "Failed to generate a unique file name for the camera shot.");
-					if (fCoronaRuntime != null && fCoronaRuntime.isRunning()) {
-						fCoronaRuntime.getTaskDispatcher().send(eventGenerator.generateEvent(""));
-					}
-					return;
-				}
-
-				imageUri = android.net.Uri.fromFile(imageFile);
-				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
-			}
-		} // Check if this app has the WRITE_EXTERNAL_STORAGE permission in the AndroidManifest.xml.
-		else if (writeExternalStoragePermissionState == com.ansca.corona.permissions.PermissionState.MISSING) {
-			// Per our docs: https://docs.coronalabs.com/api/library/media/capturePhoto.html#gotchas, 
-			// this permission is a requirement for media.capturePhoto() & video().
-			if (fController != null) {
-				fController.showPermissionMissingFromManifestAlert(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE, 
-					CoronaEnvironment.getApplicationName() + " is trying to write to external storage, but hasn't registered for access to it.");
-			}
-		}
-		else if (android.os.Build.VERSION.SDK_INT >= 23) {
-			// The failure was because we don't have permission to write to external storage.
-			// Let the C-side know that we're aborting the Camera Window for Images!
-			JavaToNativeShim.abortShowingImageProvider(fCoronaRuntime);
-
-		} // Check for a mounted external storage device.
-		else if (!android.os.Environment.MEDIA_MOUNTED.equals(android.os.Environment.getExternalStorageState())) {
-			// No external storage is mounted.
-			Log.i("Corona", "ERROR: CoronaActivity.showCamerWindowForImage(): There's no external storage available to save photos to! Please mount your external storage");
-		} // something went horribly wrong as this case should never happen.
-		else { 
-			Log.i("Corona", "ERROR: CoronaActivity.showCamerWindowForImage(): Something went horribly wrong when trying to present the camera!");
-		}
-		
 		showCameraWindowUsing(destinationFile, intent, eventGenerator, imageUri);
 	}
 
@@ -2956,8 +2905,6 @@ public class CoronaActivity extends Activity {
 		// Grab some info about the AndroidManifest.xml.
 		PermissionsServices permissionsServices = new PermissionsServices(CoronaEnvironment.getApplicationContext());
 		PermissionState cameraPermissionState = permissionsServices.getPermissionStateFor(PermissionsServices.Permission.CAMERA);
-		PermissionState writeExternalStoragePermissionState = permissionsServices.getPermissionStateFor(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE);
-
 		ResourceServices resourceServices = new ResourceServices(CoronaEnvironment.getApplicationContext());
 
 		// Check if this device has a camera.
@@ -2983,28 +2930,8 @@ public class CoronaActivity extends Activity {
 
 			// We request the permission if applicable, otherwise, just show an alert.
 			if (android.os.Build.VERSION.SDK_INT >= 23) {
-				// Check the WRITE_EXTERNAL_STORAGE permission as well, so we can request both at once if needed.
-				if (writeExternalStoragePermissionState == PermissionState.MISSING) {
-					// Per our docs: https://docs.coronalabs.com/api/library/media/capturePhoto.html#gotchas, 
-					// this permission is a requirement for media.capturePhoto() & video().
-					if (fController != null) {
-						fController.showPermissionMissingFromManifestAlert(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE, 
-							CoronaEnvironment.getApplicationName() + " is trying to write to external storage," + 
-								" but hasn't registered for access to it!");
-					}
-				} else if (writeExternalStoragePermissionState == PermissionState.DENIED) {
-					// Request both CAMERA and WRITE_EXTERNAL_STORAGE permissions!
-					java.util.LinkedHashSet<String> permissionsSet = new java.util.LinkedHashSet<String>();
-					permissionsSet.add(PermissionsServices.Permission.CAMERA);
-					permissionsSet.add(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE);
-					PermissionsSettings settings = new PermissionsSettings(permissionsSet);
-
-					requestPermissions(settings.getPermissions().toArray(new String[0]), 
-						registerRequestPermissionsResultHandler(new DefaultRequestPermissionsResultHandler(), settings));
-				} else {
-					// We just need to request the Camera permission.
-					CameraServices.requestCameraPermission();
-				}
+				// We just need to request the Camera permission.
+				CameraServices.requestCameraPermission();
 			} else if (fController != null) {
 				Log.i("Corona", "WARNING: " + message);
 				// Show an alert saying that we don't have the Camera permission.
@@ -3023,50 +2950,22 @@ public class CoronaActivity extends Activity {
 		}
 		
 		// Display the camera activity.
-		if (canWriteToExternalStorage()) {
-			// Set up the activity result handler.
-			TakeMediaWithExternalActivityResultHandler handler;
-			handler = new TakeMediaWithExternalActivityResultHandler(fCoronaRuntime, eventGenerator);
-			handler.setDestinationFilePath(destinationFilePath);
-			int requestCode = registerActivityResultHandler(handler);
+		// Set up the activity result handler.
+		TakeMediaWithExternalActivityResultHandler handler;
+		handler = new TakeMediaWithExternalActivityResultHandler(fCoronaRuntime, eventGenerator);
+		handler.setDestinationFilePath(destinationFilePath);
+		int requestCode = registerActivityResultHandler(handler);
 
-			if (fileUri != null) {
-				handler.setSourceUri(fileUri);
-			}
-			
-			// In Android 4.3, if a restricted user doesn't have the system Camera activity then launching this intent
-			// will cause a crash unless we check to make sure theres something to handle it
-			if (intent.resolveActivity(getPackageManager()) != null) {
-				startActivityForResult(intent, requestCode);
-			} else {
-				launchCoronaCameraActivity(destinationFilePath);
-			}
-		} // Check if this app has the WRITE_EXTERNAL_STORAGE permission in the AndroidManifest.xml.
-		else if (writeExternalStoragePermissionState == PermissionState.MISSING) {
-			// Per our docs: https://docs.coronalabs.com/api/library/media/capturePhoto.html#gotchas, 
-			// this permission is a requirement for media.capturePhoto() & video().
-			if (fController != null) {
-				fController.showPermissionMissingFromManifestAlert(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE, 
-					CoronaEnvironment.getApplicationName() + " is trying to write to external storage," + 
-						" but hasn't registered for access to it!");
-			}
+		if (fileUri != null) {
+			handler.setSourceUri(fileUri);
 		}
-		else if (android.os.Build.VERSION.SDK_INT >= 23) {
-			// The failure was because we don't have permission to write to external storage. So request it!
 
-			// Create our Permissions Settings to compare against in the handler.
-			PermissionsSettings settings = new PermissionsSettings(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE);
-
-			// Request WRITE_EXTERNAL_STORAGE permission.
-			requestPermissions(settings.getPermissions().toArray(new String[0]), 
-				registerRequestPermissionsResultHandler(new DefaultRequestPermissionsResultHandler(), settings));
-		} // Check for a mounted external storage device.
-		else if (!android.os.Environment.MEDIA_MOUNTED.equals(android.os.Environment.getExternalStorageState())) {
-			// No external storage is mounted. Use internal Corona Camera Activity.
+		// In Android 4.3, if a restricted user doesn't have the system Camera activity then launching this intent
+		// will cause a crash unless we check to make sure theres something to handle it
+		if (intent.resolveActivity(getPackageManager()) != null) {
+			startActivityForResult(intent, requestCode);
+		} else {
 			launchCoronaCameraActivity(destinationFilePath);
-		} // something went horribly wrong as this case should never happen.
-		else { 
-			Log.i("Corona", "ERROR: Could not display Camera Activity for unknown reasons!");
 		}
 	}
 
@@ -3157,7 +3056,11 @@ public class CoronaActivity extends Activity {
 			String selectedFile = "";
 			// Defaults to -1 because it will result in nil being pushed to lua.
 			long fileSize = -1;
-			if ((resultCode == RESULT_OK) && (fSourceUri != null || android.content.ContentResolver.SCHEME_FILE.equals(scheme))) {
+			android.net.Uri directURL = com.ansca.corona.storage.FileContentProvider.createContentUriForFile(activity.getApplicationContext(), fDestinationFile);
+			if((resultCode == RESULT_OK) && directURL.equals(fSourceUri)) {
+				selectedFile = fDestinationFile.getAbsolutePath();
+			}
+			else if ((resultCode == RESULT_OK) && (fSourceUri != null || android.content.ContentResolver.SCHEME_FILE.equals(scheme))) {
 				java.io.File cameraShotSourceFile = new java.io.File(fSourceUri.getPath());
 				if (cameraShotSourceFile.exists()) {
 					fileSize = cameraShotSourceFile.length();
