@@ -2769,61 +2769,19 @@ public class CoronaActivity extends Activity {
 	void showCameraWindowForVideo(int maxTime, int quality) {
 		Intent intent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
 		android.net.Uri videoUri = null;
-
+		android.content.Context context = this.getApplicationContext();
+		String destinationPath = new java.io.File(CoronaEnvironment.getCachesDirectory(context), "Video.3gp").getAbsolutePath();
+		videoUri = com.ansca.corona.storage.FileContentProvider.createContentUriForFile(context, destinationPath);
 		MediaEventGenerator eventGenerator = new VideoPickerEventGenerator();
 
-		PermissionsServices permissionsServices = new PermissionsServices(this);	
-		PermissionState writeExternalStoragePermissionState = permissionsServices.getPermissionStateFor(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE);
-
-		// Creates a uri for the save location of the video file.
-		// On certain devices(SII), if the save location is specified and there is no SD card the camera app crashes for videos which doesn't happen for images.
-		// On Android version 18, we have to set the location because there is a bug in Android where the returned intent in the activity handler is empty.
-		// The only way to get the location of the file is to save it to a known location.
-		if (android.os.Build.VERSION.SDK_INT == 18) {
-
-			java.io.File saveDirectory = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_MOVIES);
-			
-			if (canWriteToExternalStorage()) {
-				if (saveDirectory != null) {
-					// Create the directory if it does not already exist.
-					saveDirectory.mkdirs();
-					
-					// Create a unique file name for the media in this directory.
-					com.ansca.corona.storage.UniqueFileNameBuilder builder;
-					builder = new com.ansca.corona.storage.UniqueFileNameBuilder();
-					builder.setDirectory(saveDirectory);
-					builder.setFileNameFormat("Video");
-					builder.setFileExtension(".3gp");
-
-					java.io.File videoFile = builder.build();
-					if (videoFile == null) {
-						Log.v("Corona", "Failed to generate a unique file name for the camera shot.");
-						if (fCoronaRuntime != null && fCoronaRuntime.isRunning()) {
-							fCoronaRuntime.getTaskDispatcher().send(eventGenerator.generateEvent(""));
-						}
-						return;
-					}
-
-					videoUri = android.net.Uri.fromFile(videoFile);
-					intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, videoUri);
-				}
-			}
-		} else if (!canWriteToExternalStorage() 
-			&& writeExternalStoragePermissionState == com.ansca.corona.permissions.PermissionState.DENIED 
-			&& android.os.Build.VERSION.SDK_INT >= 23) {
-			// We'll need the WRITE_EXTERNAL_STORAGE permission to proceed.
-			// Let the C-side know that we're aborting the Camera Window for Videos!
-			JavaToNativeShim.abortShowingVideoProvider(fCoronaRuntime);
-		}
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, videoUri);
 
 		if (maxTime > 0) {
 			intent.putExtra(android.provider.MediaStore.EXTRA_DURATION_LIMIT, maxTime);
 		}
 		
 		intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, quality);
-
-		// We currently we don't let the user save the video to any place
-		showCameraWindowUsing(null, intent, eventGenerator, videoUri);
+		showCameraWindowUsing(destinationPath, intent, eventGenerator, videoUri);
 	}
 
 	/**

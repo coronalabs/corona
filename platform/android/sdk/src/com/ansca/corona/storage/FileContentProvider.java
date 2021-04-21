@@ -97,7 +97,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 				createDir = true;
 				break;
 			case "rw":
-				nMode = android.os.ParcelFileDescriptor.MODE_READ_WRITE | android.os.ParcelFileDescriptor.MODE_CREATE | android.os.ParcelFileDescriptor.MODE_TRUNCATE;
+				nMode = android.os.ParcelFileDescriptor.MODE_READ_WRITE | android.os.ParcelFileDescriptor.MODE_CREATE ;
 				createDir = true;
 				break;
 			default:
