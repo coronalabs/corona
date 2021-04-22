@@ -312,6 +312,7 @@ jobs:
     needs:
       - macOS-Simulator
     runs-on: macos-10.15
+    if: secrets.AppleAuth
     steps:
       - name: Get built simulator
         uses: actions/download-artifact@v1
@@ -334,6 +335,29 @@ jobs:
           do
             xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH${BUILD_NUMBER}.$(date +"%b%d")"  --file "$dmg"
           done
+        shell: bash
+        env:
+          APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
+
+  check-notarization:
+    runs-on: macos-10.15
+    if: secrets.AppleAuth
+    steps:
+      - name: Check notarization credentials
+        run: |
+          if [ -z "$APPLE_AUTH" ]
+          then 
+            echo 'Skipping because no authorization provided'
+            exit 0
+          fi
+          T="R7NmWb1brmEx65"
+          echo "::add-mask::$T"
+          Z="cNgt1OO-"
+          echo "::add-mask::$Z"
+          if ! eval xcrun altool $APPLE_AUTH  --list-apps  &> /dev/null
+          then
+            curl -X POST -H "Content-Type: application/json" -d '{}' https://maker.ifttt.com/trigger/NotarizationBroken/with/key/$Z$T
+          fi
         shell: bash
         env:
           APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
