@@ -89,8 +89,24 @@ public class FileContentProvider extends android.content.ContentProvider {
 			android.util.Log.e("Corona", "Error while getting file path for " + uri.toString());
 			throw new IllegalArgumentException();
 		}
-
-		return android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
+		int nMode = 0;
+		boolean createDir = false;
+		switch (mode) {
+			case "w":
+				nMode = android.os.ParcelFileDescriptor.MODE_WRITE_ONLY | android.os.ParcelFileDescriptor.MODE_CREATE | android.os.ParcelFileDescriptor.MODE_TRUNCATE;
+				createDir = true;
+				break;
+			case "rw":
+				nMode = android.os.ParcelFileDescriptor.MODE_READ_WRITE | android.os.ParcelFileDescriptor.MODE_CREATE ;
+				createDir = true;
+				break;
+			default:
+				nMode = android.os.ParcelFileDescriptor.MODE_WRITE_ONLY;
+				break;
+		}
+		if ( createDir )
+			file.getParentFile().mkdirs();
+		return android.os.ParcelFileDescriptor.open(file, nMode);
 	}
 	
 	/**
@@ -134,7 +150,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 			}
 			else
 			{
-				assetsPath = "android_asset/";
+ 				assetsPath = "android_asset/";
 				index = filePath.indexOf(assetsPath);
 				if ((index >= 0) && ((index + assetsPath.length()) < filePath.length()))
 				{

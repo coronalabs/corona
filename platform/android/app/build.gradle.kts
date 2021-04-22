@@ -490,7 +490,7 @@ android.applicationVariants.all {
         }
         doFirst {
             if (!file(coronaSrcDir).isDirectory) {
-                throw InvalidUserDataException("Unable to find Corona project to build!")
+                throw InvalidUserDataException("Unable to find Solar2D project (for example platform/test/assets2/main.lua)!")
             }
         }
     }
