@@ -312,7 +312,6 @@ jobs:
     needs:
       - macOS-Simulator
     runs-on: macos-10.15
-    if: secrets.AppleAuth
     steps:
       - name: Get built simulator
         uses: actions/download-artifact@v1
@@ -341,7 +340,6 @@ jobs:
 
   check-notarization:
     runs-on: macos-10.15
-    if: secrets.AppleAuth
     steps:
       - name: Check notarization credentials
         run: |
