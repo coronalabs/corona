@@ -612,6 +612,7 @@
 		F517B7A01C6CEC580042F592 /* NSString+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C2756C291C5722A500BE3194 /* NSString+Extensions.m */; };
 		F51D55BA1C814021000CE085 /* CoronaGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = F50CA3CC1C8111A300746C98 /* CoronaGraphics.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		F51DCB1A257925FD00B75CA0 /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51DCADE257925FD00B75CA0 /* TVServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		F528CB13263312E800EEF385 /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51DCADE257925FD00B75CA0 /* TVServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F54D1E2E1CA36191000B280E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F54D1E2D1CA36191000B280E /* Rtt_AppleFont.mm */; };
 		F574F5FB1CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F574F5F71CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp */; };
 		F574F5FC1CE60D8300FF04F1 /* Rtt_TesselatorMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F574F5F91CE60D8300FF04F1 /* Rtt_TesselatorMesh.cpp */; };
@@ -2628,6 +2629,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F528CB13263312E800EEF385 /* TVServices.framework in Frameworks */,
 				A4E076171BD1D183003A733A /* CoronaCards.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
