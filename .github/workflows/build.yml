@@ -18,7 +18,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_12.4.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_12.5.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -26,7 +26,7 @@ jobs:
   source-code:
     name: Check out and process source code
     if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     steps:
       - uses: actions/checkout@v2
         with:
@@ -43,8 +43,10 @@ jobs:
   Xcode-template-matrix:
     strategy:
       matrix:
+        runner:
+          - macos-11.0
         xcode:
-          - Xcode_12.4
+          - Xcode_12.5
         target:
           - template
           - template-angle
@@ -55,8 +57,9 @@ jobs:
           - xcode: Xcode_11.3.1
             target: template
             platform: iphone
+            runner: macos-10.15
     needs: source-code
-    runs-on: macos-10.15
+    runs-on: ${{ matrix.runner }}
     env:
       DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
       TEMPLATE_TARGET: ${{ matrix.target }}
@@ -107,7 +110,7 @@ jobs:
   webtemplate:
     needs:
       - source-code
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     steps:
       - name: Set up emsdk
         run: |
@@ -173,7 +176,7 @@ jobs:
 
   native:
     needs: source-code
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v1
@@ -218,7 +221,7 @@ jobs:
 
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v1
@@ -247,7 +250,7 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v1
@@ -311,7 +314,7 @@ jobs:
   notarize:
     needs:
       - macOS-Simulator
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     steps:
       - name: Get built simulator
         uses: actions/download-artifact@v1
@@ -339,7 +342,7 @@ jobs:
           APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
 
   check-notarization:
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     steps:
       - name: Check notarization credentials
         run: |
