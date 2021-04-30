@@ -37,7 +37,7 @@
 	#define Rtt_USE_OPENSLES
 	#define Rtt_USE_ALMIXER
 #elif Rtt_NINTENDO_ENV
-	#define Rtt_USE_ALMIXER
+	//#define Rtt_USE_ALMIXER
 #elif Rtt_LINUX_ENV
 	#define Rtt_USE_ALMIXER
 #else
@@ -368,18 +368,18 @@
 
 // stdio
 //#define stat Rtt_FileStatus
-#define lstat Rtt_FileStatus
-#define fopen Rtt_FileOpen
-#define fread Rtt_FileRead
-#define feof Rtt_FileEof
-#define fclose Rtt_FileClose
-#define ferror Rtt_FileError
-#define getc Rtt_FileGetC
-#define ungetc Rtt_FileUngetC
-#define clearerr Rtt_FileClearerr
-#define fseek Rtt_FileSeek
-#define ftell Rtt_FileTell
-#define rewind Rtt_FileRewind
+//#define lstat Rtt_FileStatus
+//#define fopen Rtt_FileOpen
+//#define fread Rtt_FileRead
+//#define feof Rtt_FileEof
+//#define fclose Rtt_FileClose
+//#define ferror Rtt_FileError
+//#define getc Rtt_FileGetC
+//#define ungetc Rtt_FileUngetC
+//#define clearerr Rtt_FileClearerr
+//#define fseek Rtt_FileSeek
+//#define ftell Rtt_FileTell
+//#define rewind Rtt_FileRewind
 
 #endif
 

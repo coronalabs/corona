@@ -27,7 +27,7 @@
 	#else
 		#error TODO: Add path to gl.h header
 	#endif
-#elif defined( Rtt_LINUX_ENV )
+#elif defined( Rtt_LINUX_ENV ) || defined( Rtt_NINTENDO_ENV )
 	#ifdef _WIN32
 		#include <windows.h>
 		#include <GL/glew.h>
@@ -35,7 +35,7 @@
 		#include <GL/gl.h>
 		#include <GL/glext.h>
 	#endif
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV )
   // TODO: Do we have to include windows.h here???
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>

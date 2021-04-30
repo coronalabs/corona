@@ -24,7 +24,7 @@
 #include <string.h>
 #include <fcntl.h>
 
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) // || defined( Rtt_NINTENDO_ENV )
 	#include <io.h>
 	#include <sys/stat.h>
 	static const unsigned S_IRUSR = _S_IREAD;     ///< read by user

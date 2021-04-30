@@ -25,6 +25,30 @@
 	#include <WinGDI.h>
 #endif
 
+#if defined(Rtt_NINTENDO_ENV)
+
+TYPE_glClearColor s_glClearColor = nullptr;
+TYPE_glDeleteTextures s_glDeleteTextures = nullptr;
+TYPE_glGetError s_glGetError = nullptr;
+TYPE_glGetIntegerv s_glGetIntegerv = nullptr;
+TYPE_glGetString s_glGetString = nullptr;
+TYPE_glDisable s_glDisable = nullptr;
+TYPE_glEnable s_glEnable = nullptr;
+TYPE_glBlendFunc s_glBlendFunc = nullptr;
+TYPE_glViewport s_glViewport = nullptr;
+TYPE_glScissor s_glScissor = nullptr;
+TYPE_glClear s_glClear = nullptr;
+TYPE_glDrawArrays s_glDrawArrays = nullptr;
+TYPE_glDrawElements s_glDrawElements = nullptr;
+TYPE_glGenTextures s_glGenTextures = nullptr;
+TYPE_glBindTexture s_glBindTexture = nullptr;
+TYPE_glTexParameteri s_glTexParameteri = nullptr;
+TYPE_glTexImage2D s_glTexImage2D = nullptr;
+TYPE_glTexSubImage2D s_glTexSubImage2D = nullptr;
+TYPE_glReadPixels s_glReadPixels = nullptr;
+
+
+#endif
 // ----------------------------------------------------------------------------
 
 namespace Rtt

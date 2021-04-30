@@ -594,7 +594,7 @@ LuaContext::InitializeLuaPath( lua_State* L, const MPlatform& platform )
 	lua_concat( L, 2 );
 	lua_setfield(L, luaPackageTableIndex, "path");
 	numPushed--;		// Setting the above field pops off the last string.
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV )
 	_putenv_s( LUA_PATH, lua_tostring( L, -1 ) );
 #else
 	Rtt_TRACE(( "LUA_PATH = %s\n", lua_tostring( L, -1 ) ));
@@ -634,7 +634,7 @@ LuaContext::InitializeLuaPath( lua_State* L, const MPlatform& platform )
 	lua_concat( L, 2 );
 	lua_setfield( L, luaPackageTableIndex, "cpath" );
 	numPushed--;		// Setting the above field pops off the last string.
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined(Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV )
 	_putenv_s( LUA_CPATH, lua_tostring( L, -1 ) );
 #else
 	Rtt_TRACE(( "LUA_CPATH = %s\n", lua_tostring( L, -1 ) ));

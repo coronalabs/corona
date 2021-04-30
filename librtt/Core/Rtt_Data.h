@@ -17,6 +17,10 @@
 
 #include <string.h>
 
+#if defined(Rtt_NINTENDO_ENV)
+#define Rtt_FREE( p )						free( (p) )
+#endif
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
