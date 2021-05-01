@@ -888,14 +888,14 @@ LuaContext::DoCall( lua_State* L, int narg, int nresults )
 		errfunc = base;
 	}
 
-#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN)
+#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN) && !defined(Rtt_NINTENDO_ENV)
 	signal(SIGINT, laction);
 #endif
 
 	// The actual call
 	int status = lua_pcall(L, narg, nresults, errfunc);
 
-#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN)
+#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN) && !defined(Rtt_NINTENDO_ENV)
 	signal(SIGINT, SIG_DFL);
 #endif
 

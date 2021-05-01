@@ -21,13 +21,11 @@
 #include <sys/stat.h>
 
 #if defined(Rtt_NINTENDO_ENV )
-	#include <io.h>
-	#include <share.h>
-	#include <windows.h>
-	#include <direct.h>
-	#include <map>
-	#include <memory>
-	std::map< void*, std::shared_ptr<nnFile> > sOpenFiles;
+#	include <map>
+#	include <memory>
+#	include <errno.h>
+#	include <unistd.h>
+std::map< void*, std::shared_ptr<nnFile> > sOpenFiles;
 
 #elif defined( Rtt_WIN_ENV )
 	#include <io.h>
@@ -80,6 +78,9 @@
 
 static void ConvertUtf16ToUtf8(const wchar_t* utf16String, char* utf8String, size_t utf8StringLength)
 {
+#if defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "ConvertUtf16ToUtf8: TODO");
+#else
 	int conversionLength;
 
 	if (utf16String && utf8String && (utf8StringLength > 0))
@@ -90,10 +91,14 @@ static void ConvertUtf16ToUtf8(const wchar_t* utf16String, char* utf8String, siz
 			WideCharToMultiByte(CP_UTF8, 0, utf16String, -1, utf8String, conversionLength, NULL, NULL);
 		}
 	}
+#endif
 }
 
 static void ConvertUtf8ToUtf16(const char* utf8String, wchar_t* utf16String, size_t utf16StringLength)
 {
+#if defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "ConvertUtf8ToUtf16: TODO");
+#else
 	size_t utf8StringLength;
 	int conversionLength;
 
@@ -106,10 +111,14 @@ static void ConvertUtf8ToUtf16(const char* utf8String, wchar_t* utf16String, siz
 			MultiByteToWideChar(CP_UTF8, 0, utf8String, utf8StringLength + 1, utf16String, conversionLength);
 		}
 	}
+#endif
 }
 
 static wchar_t* CreateUtf16StringFrom(const char* utf8String)
 {
+#if defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "CreateUtf16StringFrom: TODO");
+#else
 	wchar_t *utf16String = NULL;
 	int conversionLength;
 
@@ -123,6 +132,7 @@ static wchar_t* CreateUtf16StringFrom(const char* utf8String)
 		}
 	}
 	return utf16String;
+#endif
 }
 
 static void DestroyUtf16String(wchar_t *utf16String)
@@ -365,10 +375,12 @@ Rtt_EXPORT int Rtt_FileDescriptorOpen(const char *filePath, int oflags, int pmod
 {
 	int fileDescriptor = -1;
 
-#ifdef Rtt_WIN_ENV
+#if defined(Rtt_WIN_ENV)
 	wchar_t *utf16Filename = CreateUtf16StringFrom(filePath);
 	errno_t errorCode = _wsopen_s(&fileDescriptor, utf16Filename, oflags, SH_DENYWR, pmode);
 	DestroyUtf16String(utf16Filename);
+#elif defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "Rtt_FileDescriptorOpen: TODO");
 #else
 	fileDescriptor = open(filePath, oflags, pmode);
 #endif // Rtt_WIN_ENV
@@ -378,8 +390,10 @@ Rtt_EXPORT int Rtt_FileDescriptorOpen(const char *filePath, int oflags, int pmod
 
 Rtt_EXPORT void Rtt_FileDescriptorClose(int fileDescriptor)
 {
-#ifdef Rtt_WIN_ENV
+#if defined(Rtt_WIN_ENV)
 	_close(fileDescriptor);
+#elif defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "Rtt_FileDescriptorClose: TODO");
 #else
 	close(fileDescriptor);
 #endif
@@ -406,10 +420,13 @@ Rtt_EXPORT int Rtt_FileIsHidden(const char *filePath)
 
 Rtt_EXPORT int Rtt_FileStatus(const char *filePath, struct stat *buffer)
 {
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV )
 	wchar_t *utf16FilePath = CreateUtf16StringFrom(filePath);
 	int result = _wstat(utf16FilePath, (struct _stat*)buffer);
 	DestroyUtf16String(utf16FilePath);
+#elif defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "Rtt_FileStatus: TODO");
+	int result = -1;
 #else
 	int result = lstat(filePath, buffer);
 #endif // Rtt_WIN_ENV
@@ -599,7 +616,7 @@ Rtt_EXPORT void* Rtt_FileMemoryMap(int fileDescriptor, size_t byteOffset, size_t
 			}
 		}
 #elif defined( Rtt_NINTENDO_ENV )
-		Rtt_LogException("Rtt_FileMemoryMap: TODO\n");
+		Rtt_ASSERT(0 && "Rtt_FileMemoryMap: TODO");
 #else
 		int accessFlags = PROT_READ;
 		if (canWrite)
@@ -630,7 +647,7 @@ Rtt_EXPORT void Rtt_FileMemoryUnmap(const void *memoryMapPointer, size_t byteCou
 			sWindowsMemoryMappedInfoCollection.erase(iter);
 		}
 #elif defined( Rtt_NINTENDO_ENV )
-		Rtt_LogException("Rtt_FileMemoryUnmap: TODO\n");
+		Rtt_ASSERT(0 && "Rtt_FileMemoryUnmap: TODO");
 #else
 		munmap((void*)memoryMapPointer, byteCount);
 #endif // Rtt_WIN_DESKTOP_ENV
@@ -644,7 +661,7 @@ Rtt_EXPORT void Rtt_FileMemoryFlush(const void *memoryMapPointer, size_t byteCou
 #if defined( Rtt_WIN_DESKTOP_ENV )
 		FlushViewOfFile(memoryMapPointer, byteCount);
 #elif defined( Rtt_NINTENDO_ENV )
-		Rtt_LogException("Rtt_FileMemoryFlush: TODO\n");
+		Rtt_ASSERT(0 && "Rtt_FileMemoryFlush: TODO");
 #else
 		msync((void *)memoryMapPointer, byteCount, MS_SYNC);
 #endif // Rtt_WIN_DESKTOP_ENV
@@ -663,6 +680,8 @@ Rtt_EXPORT int Rtt_CopyFile(const char *srcFilePath, const char *dstFilePath)
 
 	DestroyUtf16String(utf16SrcFilePath);
 	DestroyUtf16String(utf16DstFilePath);
+#elif defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "Rtt_CopyFile: TODO");
 #else
 	FILE *inFp = NULL;
 	FILE *outFp = NULL;
@@ -711,6 +730,9 @@ Rtt_EXPORT int Rtt_MakeDirectory(const char *dirPath)
 
 #if defined(_WIN32)
 		int ret = _mkdir(path.c_str());
+#elif defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "Rtt_MakeDirectory: TODO");
+	int ret = 0;		// hack
 #else
 		mode_t mode = 0755;
 		int ret = mkdir(path.c_str(), mode);
@@ -745,6 +767,9 @@ Rtt_EXPORT int Rtt_MakeDirectory(const char *dirPath)
 				// now, try to create again
 #if defined(_WIN32)
 				return 0 == _mkdir(path.c_str());
+#elif defined(Rtt_NINTENDO_ENV)
+			Rtt_ASSERT(0 && "Rtt_MakeDirectory: TODO");
+			return 0;	// fixme
 #else
 				return 0 == mkdir(path.c_str(), mode);
 #endif
@@ -766,6 +791,8 @@ Rtt_EXPORT int Rtt_DeleteFile(const char *filePath)
 #ifdef Rtt_WIN_ENV
 	std::wstring path(filePath, filePath + strlen(filePath));		// string ==> wstring
 	result = DeleteFile(path.c_str());
+#elif defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "Rtt_DeleteFile: TODO");
 #else
 	result = unlink(filePath) == 0;
 #endif
@@ -778,7 +805,7 @@ Rtt_EXPORT int Rtt_IsDirectory(const char *dirPath)
 	bool result = false;
 
 #if defined( Rtt_NINTENDO_ENV )
-	Rtt_LogException("Rtt_IsDirectory: TODO\n");
+	Rtt_ASSERT(0 && "Rtt_IsDirectory: TODO");
 #else
 	#ifdef Rtt_WIN_ENV
 		wchar_t *path = CreateUtf16StringFrom(dirPath);
@@ -948,7 +975,7 @@ void ReplaceString(std::string& subject, const std::string& search, const std::s
 
 Rtt_EXPORT char *Rtt_MakeTempDirectory(char *tmpDirTemplate)
 {
-#if defined(Rtt_WIN_ENV) || defined(Rtt_NINTENDO_ENV )
+#if defined(Rtt_WIN_ENV)
 
 	static char utf8FileName[MAX_PATH];
 	
@@ -985,8 +1012,8 @@ Rtt_EXPORT char *Rtt_MakeTempDirectory(char *tmpDirTemplate)
 	{
 		return NULL;
 	}
-
-
+#elif defined(Rtt_NINTENDO_ENV)
+	Rtt_ASSERT(0 && "Rtt_MakeTempDirectory: TODO");
 #else
 	return mkdtemp(tmpDirTemplate);
 #endif

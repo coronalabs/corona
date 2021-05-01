@@ -25,7 +25,12 @@
 	#elif defined( Rtt_POWERVR_ENV )
 		#include <GLES/egl.h>
 		#include <GLES/gl.h>
-	#else
+	#elif defined(Rtt_NINTENDO_ENV)
+		#include <GLES2/gl2.h>
+		#include <GLES2/gl2ext.h>
+		#include <GLES2/gl2ext_nv.h>
+		#include <GLES2/gl2platform.h>
+#else
 		#error TODO: Add path to gl.h header
 	#endif
 #elif defined(Rtt_LINUX_ENV)
