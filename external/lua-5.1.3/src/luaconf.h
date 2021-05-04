@@ -801,38 +801,38 @@ union luai_Cast { double l_d; long l_l; };
 */
 
 #ifdef NINTENDO_LIB
-#define FT_FILE     void
-#define sprintf  sprintf
-#define fclose	nFileClose
-#define fopen	nFileOpen
-#define freopen	nFileReopen
-#define fdopen	nFileReopen
-#define remove	nFileRemove
-#define rename	nFileRename
-#define rewind nFileRewind
+//#define FT_FILE     void
+//#define sprintf  sprintf
+//#define fclose	nFileClose
+//#define fopen	nFileOpen
+//#define freopen	nFileReopen
+//#define fdopen	nFileReopen
+//#define remove	nFileRemove
+//#define rename	nFileRename
+//#define rewind nFileRewind
 #define tmpfile nFileTmpfile
-#define clearerr nFileClearerr
-#define feof nFileEof
-#define ferror nFileError
-#define fflush nFileFlush
-#define fgetpos nFileFgetpos
-#define fgetc nFileFgetC
-#define fgets nFileFgetS
-#define fputc nFileFputC
-#define fputs nFileFputS
-#define ftell    nFileTell
-#define fseek    nFileSeek
-#define fsetpos   nFileSetpos
-#define fread    nFileRead
-#define fwrite   nFileWrite
-#define getc    nFileGetC
-#define getchar    nFileGetC
-#define putc    nFilePutC
-#define putchar    nFilePutC
-#define fputchar    nFilePutC
-//#define fprintf    nFilePrintf
-#define ungetc    nFileUngetC
-#define lstat nFileStatus
+//#define clearerr nFileClearerr
+//#define feof nFileEof
+//#define ferror nFileError
+//#define fflush nFileFlush
+//#define fgetpos nFileFgetpos
+//#define fgetc nFileFgetC
+//#define fgets nFileFgetS
+//#define fputc nFileFputC
+//#define fputs nFileFputS
+//#define ftell    nFileTell
+//#define fseek    nFileSeek
+//#define fsetpos   nFileSetpos
+//#define fread    nFileRead
+//#define fwrite   nFileWrite
+//#define getc    nFileGetC
+//#define getchar    nFileGetC
+//#define putc    nFilePutC
+//#define putchar    nFilePutC
+//#define fputchar    nFilePutC
+////#define fprintf    nFilePrintf
+//#define ungetc    nFileUngetC
+//#define lstat nFileStatus
 #endif
 
 #ifdef LUA_WIN

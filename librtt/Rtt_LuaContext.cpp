@@ -608,11 +608,18 @@ LuaContext::InitializeLuaPath( lua_State* L, const MPlatform& platform )
 	//      "?.dll" .. ";" .. system.pathForFile( system.SystemResourceDirectory ) .. "/?.dll"
 	//
 	// NOTE: Assumes C modules reside in system resource directory
+#if defined(Rtt_NINTENDO_ENV)
+	lua_pushfstring(L,
+		"%s" LUA_DIRSEP LUA_PATH_MARK "." Rtt_LUA_C_MODULE_FILE_EXTENSION LUA_PATHSEP,
+		absoluteBase.GetString());
+	++numPushed;
+#else
 	lua_pushfstring( L,
 		"." LUA_DIRSEP LUA_PATH_MARK "." Rtt_LUA_C_MODULE_FILE_EXTENSION
 		LUA_PATHSEP "%s" LUA_DIRSEP LUA_PATH_MARK "." Rtt_LUA_C_MODULE_FILE_EXTENSION LUA_PATHSEP,
 			absoluteBase.GetString() );
 	++numPushed;
+#endif
 
 #if defined( Rtt_MAC_ENV ) && ! defined( Rtt_AUTHORING_SIMULATOR )
 	const char *coronaCardsFrameworksDir = "../../Frameworks/CoronaCards.framework/Versions/A/Frameworks";
