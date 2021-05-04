@@ -53,69 +53,7 @@
 // ----------------------------------------------------------------------------
 
 #if defined(Rtt_NINTENDO_ENV)
-#define glDeleteTextures s_glDeleteTextures
-#define glGetError s_glGetError
-#define glGetIntegerv s_glGetIntegerv
-#define glGetString s_glGetString
-#define glDisable s_glDisable
-#define glEnable s_glEnable
-#define glBlendFunc s_glBlendFunc
-#define glViewport s_glViewport
-#define glScissor s_glScissor
-#define glClearColor s_glClearColor
-#define glClear s_glClear
-#define glDrawArrays s_glDrawArrays
-#define glDrawElements s_glDrawElements
-#define glGenTextures s_glGenTextures
-#define glBindTexture s_glBindTexture
-#define glTexParameteri s_glTexParameteri
-#define glTexImage2D s_glTexImage2D
-#define glTexSubImage2D s_glTexSubImage2D
-#define glReadPixels s_glReadPixels
-
-
-typedef void (GLAPIENTRY* TYPE_glClearColor) (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-typedef void (GLAPIENTRY* TYPE_glDeleteTextures) (GLsizei n, const GLuint* textures);
-typedef GLenum(GLAPIENTRY* TYPE_glGetError) (void);
-typedef void (GLAPIENTRY* TYPE_glGetIntegerv) (GLenum pname, GLint* params);
-typedef const GLubyte* (GLAPIENTRY* TYPE_glGetString) (GLenum name);
-typedef void (GLAPIENTRY* TYPE_glDisable) (GLenum cap);
-typedef void (GLAPIENTRY* TYPE_glEnable) (GLenum cap);
-typedef void (GLAPIENTRY* TYPE_glBlendFunc) (GLenum sfactor, GLenum dfactor);
-typedef void (GLAPIENTRY* TYPE_glViewport) (GLint x, GLint y, GLsizei width, GLsizei height);
-typedef void (GLAPIENTRY* TYPE_glScissor) (GLint x, GLint y, GLsizei width, GLsizei height);
-typedef void (GLAPIENTRY* TYPE_glClear) (GLbitfield mask);
-typedef void (GLAPIENTRY* TYPE_glDrawArrays) (GLenum mode, GLint first, GLsizei count);
-typedef void (GLAPIENTRY* TYPE_glDrawElements) (GLenum mode, GLsizei count, GLenum type, const void* indices);
-typedef void (GLAPIENTRY* TYPE_glGenTextures) (GLsizei n, GLuint* textures);
-typedef void (GLAPIENTRY* TYPE_glBindTexture) (GLenum target, GLuint texture);
-typedef void (GLAPIENTRY* TYPE_glTexParameteri) (GLenum target, GLenum pname, GLint param);
-typedef void (GLAPIENTRY* TYPE_glTexImage2D) (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void* pixels);
-typedef void (GLAPIENTRY* TYPE_glTexSubImage2D) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
-typedef void (GLAPIENTRY* TYPE_glReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels);
-
-extern TYPE_glClearColor s_glClearColor;
-extern TYPE_glDeleteTextures s_glDeleteTextures;
-extern TYPE_glGetError s_glGetError;
-extern TYPE_glGetIntegerv s_glGetIntegerv;
-extern TYPE_glGetString s_glGetString;
-extern TYPE_glDisable s_glDisable;
-extern TYPE_glEnable s_glEnable;
-extern TYPE_glBlendFunc s_glBlendFunc;
-extern TYPE_glViewport s_glViewport;
-extern TYPE_glScissor s_glScissor;
-extern TYPE_glClear s_glClear;
-extern TYPE_glDrawArrays s_glDrawArrays;
-extern TYPE_glDrawElements s_glDrawElements;
-extern TYPE_glGenTextures s_glGenTextures;
-extern TYPE_glBindTexture s_glBindTexture;
-extern TYPE_glTexParameteri s_glTexParameteri;
-extern TYPE_glTexImage2D s_glTexImage2D;
-extern TYPE_glTexSubImage2D s_glTexSubImage2D;
-extern TYPE_glReadPixels s_glReadPixels;
-
-
-
+#include "../../platform/switch/Solar2D/Rtt_NX_GL.h"
 #endif
 
 

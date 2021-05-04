@@ -1101,8 +1101,10 @@ nnFile::nnFile(const char *path, const char *mode)
 
 nnFile::~nnFile()
 {
-	nn::fs::CloseFile(fHandle);
-	free(fData);
+	if(fHandle.handle)
+		nn::fs::CloseFile(fHandle);
+	if(fData)
+		free(fData);
 }
 
 bool nnFile::load()
