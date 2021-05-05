@@ -35,7 +35,7 @@
 
 // #include <string.h>
 
-#if defined(Rtt_WIN_ENV) || defined( Rtt_NINTENDO_ENV )
+#if defined(Rtt_WIN_ENV)
 #	include <crtdbg.h> // _CrtIsValidHeapPointer().
 #endif
 
@@ -68,7 +68,7 @@ isValidSoundData(lua_State *L, void *sound_data, const char *caller, size_t expe
 	
 	if (sound_data != NULL)
 	{
-#if defined(Rtt_WIN_ENV) || defined( Rtt_NINTENDO_ENV )
+#if defined(Rtt_WIN_ENV)
 		allocSize = _CrtIsValidHeapPointer(sound_data);
 #elif defined(Rtt_APPLE_ENV)
 		allocSize = malloc_size(sound_data);
