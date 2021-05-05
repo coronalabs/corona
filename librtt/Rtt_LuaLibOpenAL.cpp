@@ -61,7 +61,7 @@ namespace Rtt
 static bool
 isValidSoundData(lua_State *L, void *sound_data, const char *caller, size_t expectedSize = 0)
 {
-#if !defined(Rtt_ANDROID_ENV) && !defined(Rtt_LINUX_ENV)	// Can't do this on Android
+#if !defined(Rtt_ANDROID_ENV) && !defined(Rtt_LINUX_ENV) && !defined(Rtt_NINTENDO_ENV)	// Can't do this on Android
 
 	// Check to see that we have a valid pointer
 	size_t allocSize = 0;
