@@ -28,10 +28,10 @@ jobs:
     if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
     runs-on: macos-11.0
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Set daily build
         run: ./tools/GHAction/process_sources.sh
@@ -66,13 +66,13 @@ jobs:
       TEMPLATE_TARGET: ${{ matrix.target }}
       TEMPLATE_PLATFORM: ${{ matrix.platform }}
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
-      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Build templates
         working-directory: ./platform/${{ matrix.platform }}
@@ -92,8 +92,8 @@ jobs:
       - Xcode-template-matrix
     runs-on: ubuntu-20.04
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v2
-      - run: rm -rf output
       - uses: actions/download-artifact@v2
       - name: Collect templates together
         run: |
@@ -115,6 +115,7 @@ jobs:
       - source-code
     runs-on: macos-11.0
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
         run: |
           wget -q --header='Accept:application/octet-stream' https://github.com/coronalabs/emsdk/releases/download/e1.37.22_64bit/emsdk.tar.xz -O emsdk.tar.xz
@@ -129,7 +130,6 @@ jobs:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
-      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Build webtemplate
         working-directory: ./platform/emscripten/gmake
@@ -151,13 +151,13 @@ jobs:
     container:
       image: coronalabs/linux_builder_rpi
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
-      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Build linux binaries
         working-directory: ./platform/linux
@@ -183,13 +183,13 @@ jobs:
     needs: source-code
     runs-on: macos-11.0
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
-      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Build Native
         run: ./tools/GHAction/build_native.sh
@@ -205,8 +205,8 @@ jobs:
     needs: native
     runs-on: ubuntu-20.04
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v2
-      - run: rm -rf output
       - name: Get Native
         uses: actions/download-artifact@v1
         with:
@@ -230,13 +230,13 @@ jobs:
     needs: source-code
     runs-on: macos-11.0
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
-      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Corona Cards framework for iOS
         working-directory: ./platform/iphone
@@ -260,13 +260,13 @@ jobs:
       - linux
     runs-on: macos-11.0
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
-      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Check for macOS min supported version
         run: exit $( echo  $(cat platform/mac/AppDelegate.mm |  perl -ne 'print for /kosVersionCurrent = @"([0-9.]+)"/') ' < '  $(/usr/bin/xcrun --sdk macosx --show-sdk-version)  | bc )
