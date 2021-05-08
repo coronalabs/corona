@@ -31,6 +31,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Set daily build
         run: ./tools/GHAction/process_sources.sh
@@ -71,6 +72,7 @@ jobs:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
+      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Build templates
         working-directory: ./platform/${{ matrix.platform }}
@@ -91,6 +93,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - run: rm -rf output
       - uses: actions/download-artifact@v2
       - name: Collect templates together
         run: |
@@ -126,6 +129,7 @@ jobs:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
+      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Build webtemplate
         working-directory: ./platform/emscripten/gmake
@@ -153,6 +157,7 @@ jobs:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
+      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Build linux binaries
         working-directory: ./platform/linux
@@ -184,6 +189,7 @@ jobs:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
+      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Build Native
         run: ./tools/GHAction/build_native.sh
@@ -200,6 +206,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - run: rm -rf output
       - name: Get Native
         uses: actions/download-artifact@v1
         with:
@@ -229,6 +236,7 @@ jobs:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
+      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Corona Cards framework for iOS
         working-directory: ./platform/iphone
@@ -258,6 +266,7 @@ jobs:
           name: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
+      - run: rm -rf output
       - run: ./tools/GHAction/daily_env.sh
       - name: Check for macOS min supported version
         run: exit $( echo  $(cat platform/mac/AppDelegate.mm |  perl -ne 'print for /kosVersionCurrent = @"([0-9.]+)"/') ' < '  $(/usr/bin/xcrun --sdk macosx --show-sdk-version)  | bc )
