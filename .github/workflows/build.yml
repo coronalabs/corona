@@ -151,7 +151,6 @@ jobs:
     container:
       image: coronalabs/linux_builder_rpi
     steps:
-      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
