@@ -308,7 +308,7 @@ jobs:
       - name: install appdmg
         run: npm install -g appdmg
       - name: install imagemagick
-        run: brew install imagemagick gs
+        run: brew install imagemagick gs || true
       - name: Build DMG
         run: ./tools/GHAction/build_dmg.sh
         env:
