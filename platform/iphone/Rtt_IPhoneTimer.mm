@@ -18,7 +18,7 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 
-IPhoneTimer::IPhoneTimer( MCallback& callback, GLKViewController *viewController )
+IPhoneTimer::IPhoneTimer( MCallback& callback, Rtt_GLKViewController *viewController )
 :	Super( callback ),
 	fViewController(viewController),
 	fInterval( 0x8000000 )

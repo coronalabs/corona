@@ -1,4 +1,4 @@
-#!/bin/bash -ex	
+#!/bin/bash -ex
 #----------------------------------------------------------------------------
 #
 # This file is part of the Corona game engine.
@@ -151,7 +151,7 @@ then
 	# Custom splash screen, put it in the right place
 	if [ -n "$splashScreen" ]
 	then
-		mv -v -f "template.app/$splashScreen" template.app/_CoronaSplashScreen.png
+		mv -v -f "template.app/$(basename "$splashScreen")" template.app/_CoronaSplashScreen.png
 	fi
 fi
 

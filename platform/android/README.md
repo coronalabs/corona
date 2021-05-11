@@ -1,27 +1,19 @@
-# How to Build Corona's Android Software
-
-___Note:___ gradle builds are still work in progress. Check out `master` branch for current info
+# How to Build Solar2D's Android Software
 
 ## Setup
 
-To run and debug Corona for Android create directory `platform/test/assets2` and put your project there (`platform/test/assets2/main.lua` must exist).
-
 To check out repository on proper branch use this command:
 ```bash
-git clone --recurse-submodules -j8 --branch=gradle https://github.com/coronalabs/corona.git
+git clone --recurse-submodules -j8 https://github.com/coronalabs/corona.git
 ```
 
-If you already have [repo](https://github.com/coronalabs/corona) checked out, you can switch to `gradle` branch:
-```bash
-git checkout gradle
-git submodule update --init -j8
-```
-
-Option `-j8` does work in parallel, but may be not supported on older versions of Git. It can be deleted safely.
+To run and debug Solar2D for Android create directory `platform/test/assets2` and put your project there (`platform/test/assets2/main.lua` must exist).
 
 ## Android Studio
 
-Currently Corona for Android is built with Gradle build system. It is well integrated with Android Studio or IntelliJ IDEA (pro or community) which can be used as IDE. To do this open, start the IDE, in welcome Window click "Open existing Android Studio project" and select `platform/android` directory.
+Currently Solar2D for Android is built with Gradle build system. It is well integrated with Android Studio or IntelliJ IDEA (pro or community) which can be used as IDE. To do this open, start the IDE, in welcome Window click "Open existing Android Studio project" and select `platform/android` directory.
+
+__WARNING:__ Do not update Android Plugin if requested. It would break the build.
 
 ## Command line builds
 

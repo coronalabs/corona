@@ -123,7 +123,7 @@ val parsedBuildProperties: JsonObject = run {
     return@run JsonObject(mapOf("buildSettings" to parsedBuildSettingsFile, "packageName" to coronaAppPackage, "targetedAppStore" to coronaTargetStore))
 }
 
-val coronaMinSdkVersion = parsedBuildProperties.lookup<Any?>("buildSettings.android.minSdkVersion").firstOrNull()?.toString()?.toIntOrNull()
+extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.android.minSdkVersion").firstOrNull()?.toString()?.toIntOrNull()
         ?: 15
 
 val coronaBuilder = if (windows) {
@@ -181,16 +181,20 @@ if (configureCoronaPlugins == "YES") {
 //</editor-fold>
 
 android {
-    compileSdkVersion(28)
+    buildToolsVersion("29.0.3")
+    compileSdkVersion(29)
     defaultConfig {
         applicationId = coronaAppPackage
-        targetSdkVersion(28)
-        minSdkVersion(coronaMinSdkVersion)
+        targetSdkVersion(29)
+        minSdkVersion(extra["minSdkVersion"] as Int)
         versionCode = coronaVersionCode
         versionName = coronaVersionName
         multiDexEnabled = true
     }
-
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility  = JavaVersion.VERSION_1_8
+    }
     coronaKeystore?.let { keystore ->
         signingConfigs {
             create("release") {
@@ -260,6 +264,35 @@ android {
 }
 
 //<editor-fold desc="Packaging Corona App" defaultstate="collapsed">
+val apkFilesSet = mutableSetOf<String>()
+file("$buildDir/intermediates/corona_manifest_gen/CopyToApk.txt").takeIf { it.exists() }?.readLines()?.forEach {
+    apkFilesSet.add(it.trim())
+}
+if (!isSimulatorBuild) {
+    parsedBuildProperties.lookup<JsonArray<String>>("buildSettings.android.apkFiles").firstOrNull()?.forEach {
+        apkFilesSet.add(it.trim())
+    }
+}
+if (apkFilesSet.isNotEmpty()) {
+    val generatedApkFiles = "$buildDir/generated/apkFiles"
+    val coronaCopyApkFiles = tasks.create<Copy>("coronaCopyApkFiles") {
+        description = "Creates new resource directory with raw APK files"
+        into(generatedApkFiles)
+        from(coronaSrcDir) {
+            apkFilesSet.forEach { include(it) }
+        }
+        doFirst {
+            delete(generatedApkFiles)
+        }
+    }
+
+    android.applicationVariants.all {
+        preBuildProvider.configure {
+            dependsOn(coronaCopyApkFiles)
+        }
+        android.sourceSets[name].resources.srcDirs(generatedApkFiles)
+    }
+}
 
 fun processPluginGradleScripts() {
     fileTree(coronaPlugins) {
@@ -457,7 +490,7 @@ android.applicationVariants.all {
         }
         doFirst {
             if (!file(coronaSrcDir).isDirectory) {
-                throw InvalidUserDataException("Unable to find Corona project to build!")
+                throw InvalidUserDataException("Unable to find Solar2D project (for example platform/test/assets2/main.lua)!")
             }
         }
     }
@@ -556,7 +589,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
             }
             into("$generatedPluginAssetsDir/.corona-plugins")
             eachFile {
-                path = File(path).toPathString().segments.drop(3).joinToString("/")
+                path = File(path).toPathString().segments.drop(2).dropWhile { it == "lua_51" }.joinToString("/")
             }
             includeEmptyDirs = false
         }
@@ -805,7 +838,7 @@ tasks.register<Copy>("exportToNativeAppTemplate") {
 val coronaNativeOutputDir = project.findProperty("coronaNativeOutputDir") as? String
         ?: "$nativeDir/Corona"
 
-tasks.register<Copy>("installAppTemplateToNative") {
+tasks.register<Copy>("installAppTemplateToSim") {
     if (coronaBuiltFromSource) group = "Corona-dev"
     enabled = coronaBuiltFromSource
     dependsOn("exportCoronaAppTemplate")
@@ -815,10 +848,10 @@ tasks.register<Copy>("installAppTemplateToNative") {
     into("$coronaNativeOutputDir/android/resource")
 }
 
-tasks.register<Copy>("installAppTemplateAndAARToNative") {
+tasks.register<Copy>("installAppTemplateAndAARToSim") {
     if (coronaBuiltFromSource) group = "Corona-dev"
     enabled = coronaBuiltFromSource
-    dependsOn("installAppTemplateToNative")
+    dependsOn("installAppTemplateToSim")
     dependsOn(":Corona:assembleRelease")
     from("${findProject(":Corona")?.buildDir}/outputs/aar/") {
         include("Corona-release.aar")
@@ -1085,5 +1118,5 @@ dependencies {
     if (file("../plugin").exists()) {
         implementation(project(":plugin"))
     }
-    implementation("com.android.support:multidex:1.0.3")
+    implementation("androidx.multidex:multidex:2.0.1")
 }

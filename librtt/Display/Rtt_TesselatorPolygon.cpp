@@ -198,7 +198,8 @@ TesselatorPolygon::TesselatorPolygon( Rtt_Allocator *allocator )
 	fSelfBounds(),
 	fCenter( kVertexOrigin ),
 	fIsFillValid( false ),
-	fIsBadPolygon( false )
+	fIsBadPolygon( false ),
+	fFillCount( -1 )
 {
 }
 
@@ -279,6 +280,34 @@ Geometry::PrimitiveType
 TesselatorPolygon::GetFillPrimitive() const
 {
 	return Geometry::kTriangles;
+}
+
+U32
+TesselatorPolygon::FillVertexCount() const
+{
+	if ( -1 == fFillCount )
+	{
+		TesselatorPolygon dummy( fContour.Allocator() );
+
+		dummy.fContour.Reserve( fContour.Length() );
+
+		for (int i = 0, iMax = fContour.Length(); i < iMax; ++i)
+		{
+			dummy.fContour.Append( fContour[i] );
+		}
+
+		dummy.Update();
+
+		fFillCount = S32( dummy.fFill.Length() );
+	}
+
+	return U32( fFillCount );
+}
+
+U32
+TesselatorPolygon::StrokeVertexCount() const
+{
+	return TesselatorLine::VertexCountFromPoints( fContour, true );
 }
 
 void

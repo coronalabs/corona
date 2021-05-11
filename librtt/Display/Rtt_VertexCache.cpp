@@ -19,9 +19,10 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 VertexCache::VertexCache( Rtt_Allocator* pAllocator )
-:	fVertices( pAllocator ),
-	fTexVertices( pAllocator ),
-	fCounts( pAllocator )
+:	fVertices(pAllocator),
+	fTexVertices(pAllocator),
+	fColors(pAllocator),
+	fCounts(pAllocator)
 {
 }
 

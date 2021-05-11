@@ -84,6 +84,9 @@ class TesselatorRect : public TesselatorRectBase
 		virtual void GetSelfBounds( Rect& rect );
 		virtual void GetSelfBoundsForAnchor( Rect& rect ) const;
 
+		virtual U32 FillVertexCount() const override;
+		virtual U32 StrokeVertexCount() const override;
+
 	public:
 		bool HasOffset() const { return ( 0 != fOffsetExists ); }
 		Real GetOffset( RectOffset offset ) const { return fOffsets[offset]; }

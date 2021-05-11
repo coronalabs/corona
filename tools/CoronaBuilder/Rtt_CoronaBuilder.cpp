@@ -165,7 +165,7 @@ static const char kStdinPath[] = "";
 
 // Returns path to file with metadata for building. And also format of the file.
 static const char*
-ParseBuildParams( const CoronaBuilderParams& params, BuildParams::Format& outFormat )
+ParseBuildParams( const CoronaBuilderParams& params, BuildParams::Format& outFormat, int &lastArg )
 {
 	const char *result = NULL;
 
@@ -188,6 +188,7 @@ ParseBuildParams( const CoronaBuilderParams& params, BuildParams::Format& outFor
 		else
 		{
 			result = arg;
+			lastArg = i;
 			break;
 		}
 	}
@@ -342,10 +343,11 @@ CoronaBuilder::Main( int argc, const char *argv[] )
 		case CoronaBuilderParams::kBuildCommand:
 			{
 				BuildParams::Format format = BuildParams::kJsonFormat;
-				const char *path = ParseBuildParams( params, format );
+				int lastArg = 0;
+				const char *path = ParseBuildParams( params, format, lastArg );
 
 				printf("CoronaBuilder: building project with '%s'\n", path);
-				BuildParams params( fL, path, format );
+				BuildParams params( fL, path, format, argc-(lastArg+3), argv+(lastArg+3) );
 				if ( params.IsValid() )
 				{
 					result = Build( params );
@@ -455,44 +457,40 @@ CoronaBuilder::Build( const BuildParams& params ) const
 		if ( appParams )
 		{
 			AppPackagerContext context( (TargetDevice::Platform)appParams->GetTargetPlatform() );
+			String tmpDir;
+			fPlatform.PathForFile( NULL, MPlatform::kTmpDir, MPlatform::kDefaultPathFlags, tmpDir );
 
+			const char kBuildSettings[] = "build.settings";
+			String buildSettingsPath( & fServices.Platform().GetAllocator() );
+
+			buildSettingsPath.Set( appParams->GetSrcDir() );
+			buildSettingsPath.Append( LUA_DIRSEP );
+			buildSettingsPath.Append( kBuildSettings );
+
+			const char * path = buildSettingsPath.GetString();
+			if ( !fServices.Platform().FileExists( path ) )
 			{
-				{
-					String tmpDir;
-					fPlatform.PathForFile( NULL, MPlatform::kTmpDir, MPlatform::kDefaultPathFlags, tmpDir );
+				path = NULL;
+			}
 
-					const char kBuildSettings[] = "build.settings";
-					String buildSettingsPath( & fServices.Platform().GetAllocator() );
+			appParams->SetBuildSettingsPath( path );
 
-					buildSettingsPath.Set( appParams->GetSrcDir() );
-					buildSettingsPath.Append( LUA_DIRSEP );
-					buildSettingsPath.Append( kBuildSettings );
+			appParams->Print();
+			packager->ReadBuildSettings(appParams->GetSrcDir());
+			int code = packager->Build( appParams, tmpDir.GetString() );
 
-					const char * path = buildSettingsPath.GetString();
-					if ( !fServices.Platform().FileExists( path ) )
-					{
-						path = NULL;
-					}
+			if ( 0 == code )
+			{
+				fprintf( stderr, "\nBuild succeeded [%s]\n",
+					appParams->GetDstDir() );
 
-					appParams->SetBuildSettingsPath( path );
-
-					appParams->Print();
-					int code = packager->Build( appParams, tmpDir.GetString() );
-
-					if ( 0 == code )
-					{
-						fprintf( stderr, "\nBuild succeeded [%s]\n",
-							appParams->GetDstDir() );
-
-						result = kNoError;
-					}
-					else
-					{
-						char resultCode[1024] = {};
-						snprintf(resultCode, 1023, "Unknown build error (%d).", code);
-						msg.Set( appParams->GetBuildMessage() ? appParams->GetBuildMessage()  : resultCode );
-					}
-				}
+				result = kNoError;
+			}
+			else
+			{
+				char resultCode[1024] = {};
+				snprintf(resultCode, 1023, "Unknown build error (%d).", code);
+				msg.Set( appParams->GetBuildMessage() ? appParams->GetBuildMessage()  : resultCode );
 			}
 		}
 		else

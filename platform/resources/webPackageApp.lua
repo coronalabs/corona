@@ -576,6 +576,11 @@ function webPackageApp( args )
 		copyDir(luaPluginDir, pluginExtractDir)
 		removeDir(pathJoin(pluginExtractDir, 'lua'))
 	end
+	local luaPluginDir = pathJoin(pluginExtractDir, 'lua_51')
+	if dir_exists( luaPluginDir ) then
+		copyDir(luaPluginDir, pluginExtractDir)
+		removeDir(pathJoin(pluginExtractDir, 'lua_51'))
+	end
 	if dir_exists( pluginExtractDir ) then
 		copyDir(pluginExtractDir, appFolder)
 	end

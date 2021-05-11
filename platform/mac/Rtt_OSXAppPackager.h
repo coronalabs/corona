@@ -126,6 +126,7 @@ class OSXAppPackager : public PlatformAppPackager
 
 	private:
 		MacSimulatorServices *fSimulatorServices;
+		const char *GetAppTemplatePath();
 };
 
 // ----------------------------------------------------------------------------

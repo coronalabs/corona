@@ -1597,7 +1597,6 @@
 		F50F51B91B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50F51B61B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp */; };
 		F50F51BA1B700C04006FEF92 /* Rtt_TextureResourceBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = F50F51B71B700C04006FEF92 /* Rtt_TextureResourceBitmap.h */; };
 		F50F51BB1B700C04006FEF92 /* Rtt_TextureResourceBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = F50F51B71B700C04006FEF92 /* Rtt_TextureResourceBitmap.h */; };
-		F52B8271216D7D2100785414 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0077B65F146335DC00EEDF75 /* StoreKit.framework */; };
 		F52CB79E1DA6C4B600529453 /* Corona Live Server.app in Resources */ = {isa = PBXBuildFile; fileRef = F533257E1D9DD2DF003613F7 /* Corona Live Server.app */; };
 		F53594B71B6185EA00C8CAAD /* Rtt_TextureResourceCanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F53594B31B6185EA00C8CAAD /* Rtt_TextureResourceCanvas.cpp */; };
 		F53594B81B6185EA00C8CAAD /* Rtt_TextureResourceCanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F53594B31B6185EA00C8CAAD /* Rtt_TextureResourceCanvas.cpp */; };
@@ -1622,7 +1621,6 @@
 		F57AE2051F051610000A4245 /* Rtt_AppleInAppStore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B6571463359A00EEDF75 /* Rtt_AppleInAppStore.mm */; };
 		F57AE2061F051610000A4245 /* Rtt_AppleInAppStoreApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B6591463359A00EEDF75 /* Rtt_AppleInAppStoreApple.mm */; };
 		F57AE2071F051610000A4245 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B65B1463359A00EEDF75 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm */; };
-		F57AE2101F051620000A4245 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0077B65F146335DC00EEDF75 /* StoreKit.framework */; };
 		F57D17671BE25B1C00AABAC1 /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F57D17661BE25B1C00AABAC1 /* Rtt_AppleInputDeviceManager.mm */; };
 		F57D17681BE25B2800AABAC1 /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F57D17661BE25B1C00AABAC1 /* Rtt_AppleInputDeviceManager.mm */; };
 		F57D176C1BE25C7C00AABAC1 /* Rtt_AppleInputHIDDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F57D176A1BE25C7C00AABAC1 /* Rtt_AppleInputHIDDeviceListener.mm */; };
@@ -1684,6 +1682,7 @@
 		F5FA0AFA1C73D61700E926A7 /* Rtt_TextureResourceExternal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FA0AF71C73D61700E926A7 /* Rtt_TextureResourceExternal.cpp */; };
 		F5FA0AFB1C73D61700E926A7 /* Rtt_TextureResourceExternal.h in Headers */ = {isa = PBXBuildFile; fileRef = F5FA0AF81C73D61700E926A7 /* Rtt_TextureResourceExternal.h */; };
 		F5FA0AFC1C73D61700E926A7 /* Rtt_TextureResourceExternal.h in Headers */ = {isa = PBXBuildFile; fileRef = F5FA0AF81C73D61700E926A7 /* Rtt_TextureResourceExternal.h */; };
+		F5FED0972512248E00AE2911 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5FED0962512248E00AE2911 /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F5FED7091DF8E1C7001CA415 /* AntLiveManifest.jar in Resources */ = {isa = PBXBuildFile; fileRef = F5FED7061DF8DFE2001CA415 /* AntLiveManifest.jar */; };
 		F5FFADBC23FFC7DB004E61A9 /* CoronaOfflineiOSPackager.lua in Sources */ = {isa = PBXBuildFile; fileRef = F5FFADB123FFC798004E61A9 /* CoronaOfflineiOSPackager.lua */; };
 		F5FFADBE23FFC80E004E61A9 /* CoronaOfflineiOSPackager.lua in Sources */ = {isa = PBXBuildFile; fileRef = F5FFADB123FFC798004E61A9 /* CoronaOfflineiOSPackager.lua */; };
@@ -1720,6 +1719,7 @@
 			outputFiles = (
 				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/$(INPUT_FILE_BASE).lu",
 			);
+			runOncePerArchitecture = 0;
 			script = "# This option is used to exit the script as\n# soon as a command returns a non-zero value.\nset -o errexit\necho \"Compiling '$INPUT_FILE_PATH' -> '$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/$INPUT_FILE_BASE.lu'...\"\n$BUILT_PRODUCTS_DIR/lua $SRCROOT/../../bin/rcc.lua -c $BUILT_PRODUCTS_DIR -g -o \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/$INPUT_FILE_BASE.lu\" $INPUT_FILE_PATH\n";
 		};
 		00B73C2C12B71C960057F594 /* PBXBuildRule */ = {
@@ -1734,6 +1734,7 @@
 			outputFiles = (
 				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).cpp",
 			);
+			runOncePerArchitecture = 0;
 			script = "# This option is used to exit the script as\n# soon as a command returns a non-zero value.\nset -o errexit\n\n$BUILT_PRODUCTS_DIR/lua $SRCROOT/../../bin/rcc.lua -c $BUILT_PRODUCTS_DIR -O$CONFIGURATION -o $TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH\n$BUILT_PRODUCTS_DIR/lua -epackage.path=[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]] $SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua -d $TARGET_TEMP_DIR -o $INPUT_FILE_BASE -l $TARGET_TEMP_DIR/?.lu -n $INPUT_FILE_BASE\n";
 		};
 		C229E2021B32221B00D87A7C /* PBXBuildRule */ = {
@@ -1748,6 +1749,7 @@
 			outputFiles = (
 				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).cpp",
 			);
+			runOncePerArchitecture = 0;
 			script = "# This option is used to exit the script as\n# soon as a command returns a non-zero value.\nset -o errexit\n\n$BUILT_PRODUCTS_DIR/lua $SRCROOT/../../bin/rcc.lua -c $BUILT_PRODUCTS_DIR -g -o $TARGET_TEMP_DIR/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH\n$BUILT_PRODUCTS_DIR/lua -epackage.path=[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]] $SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua -d $TARGET_TEMP_DIR -o $INPUT_FILE_BASE -l $TARGET_TEMP_DIR/?.lu -n $INPUT_FILE_BASE\n";
 		};
 /* End PBXBuildRule section */
@@ -2425,7 +2427,6 @@
 		0077B6591463359A00EEDF75 /* Rtt_AppleInAppStoreApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleInAppStoreApple.mm; sourceTree = "<group>"; };
 		0077B65A1463359A00EEDF75 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleInAppStoreAppleTransactionObjectWrapper.h; sourceTree = "<group>"; };
 		0077B65B1463359A00EEDF75 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm; sourceTree = "<group>"; };
-		0077B65F146335DC00EEDF75 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		008955B3133F0EA600699C04 /* AndroidValidation.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AndroidValidation.lua; path = ../resources/AndroidValidation.lua; sourceTree = "<group>"; };
 		0089560F13404E9600699C04 /* Rtt_AndroidSupportTools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Rtt_AndroidSupportTools.c; sourceTree = "<group>"; };
 		0089561013404E9600699C04 /* Rtt_AndroidSupportTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AndroidSupportTools.h; sourceTree = "<group>"; };
@@ -3359,6 +3360,7 @@
 		F5F0542520374CBC007E92B0 /* CoreAudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioKit.framework; path = System/Library/Frameworks/CoreAudioKit.framework; sourceTree = SDKROOT; };
 		F5FA0AF71C73D61700E926A7 /* Rtt_TextureResourceExternal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceExternal.cpp; path = Display/Rtt_TextureResourceExternal.cpp; sourceTree = "<group>"; };
 		F5FA0AF81C73D61700E926A7 /* Rtt_TextureResourceExternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceExternal.h; path = Display/Rtt_TextureResourceExternal.h; sourceTree = "<group>"; };
+		F5FED0962512248E00AE2911 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F5FED7061DF8DFE2001CA415 /* AntLiveManifest.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; name = AntLiveManifest.jar; path = ../android/AntLiveManifest/AntLiveManifest.jar; sourceTree = SOURCE_ROOT; };
 		F5FFADB123FFC798004E61A9 /* CoronaOfflineiOSPackager.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaOfflineiOSPackager.lua; path = ../platform/resources/CoronaOfflineiOSPackager.lua; sourceTree = "<group>"; };
 		F818406817E3C1CE003072C4 /* widget_theme_ios7.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = widget_theme_ios7.lua; path = ../../subrepos/widget/widget_theme_ios7.lua; sourceTree = "<group>"; };
@@ -3426,7 +3428,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F52B8271216D7D2100785414 /* StoreKit.framework in Frameworks */,
 				C2C59B2C1E2812FF001DF51E /* CoreMedia.framework in Frameworks */,
 				C2C59B2A1E2812F9001DF51E /* AVFoundation.framework in Frameworks */,
 				C2C59B2B1E2812F9001DF51E /* AVKit.framework in Frameworks */,
@@ -3477,6 +3478,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5FED0972512248E00AE2911 /* StoreKit.framework in Frameworks */,
 				C2C59B291E2812D6001DF51E /* CoreMedia.framework in Frameworks */,
 				C2C59B271E2812CE001DF51E /* AVFoundation.framework in Frameworks */,
 				C2C59B281E2812CE001DF51E /* AVKit.framework in Frameworks */,
@@ -3500,7 +3502,6 @@
 				C2E993101A6B201F00E99F46 /* Cocoa.framework in Frameworks */,
 				F54D8E321B4B29BD0063F98B /* ForceFeedback.framework in Frameworks */,
 				C2F1CDAA1B4F67D30006DC94 /* CoreLocation.framework in Frameworks */,
-				F57AE2101F051620000A4245 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4452,6 +4453,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F5FED0962512248E00AE2911 /* StoreKit.framework */,
 				F5F0542520374CBC007E92B0 /* CoreAudioKit.framework */,
 				F5F0542320374CB5007E92B0 /* CoreAudio.framework */,
 				C2BD465C1F60C44A00BB728E /* CoreServices.framework */,
@@ -4702,7 +4704,6 @@
 		A41AC1B316A74B9600AD331A /* MacApp */ = {
 			isa = PBXGroup;
 			children = (
-				0077B65F146335DC00EEDF75 /* StoreKit.framework */,
 			);
 			name = MacApp;
 			sourceTree = "<group>";
@@ -6080,6 +6081,7 @@
 				C2FD8EDF19C904DA00CBE369 /* Run Script (copy Skins files) */,
 				C2B5FEF11B336C9000DD49E6 /* Run Script (build OSXAppTemplate.zip) */,
 				C2E454671F844BFC00717681 /* Run Script (copy device-support files) */,
+				F5608E22257AB801000612C1 /* Run Script (copy JRE if exists) */,
 			);
 			buildRules = (
 				001F574112B6018500F52101 /* PBXBuildRule */,
@@ -6666,7 +6668,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Building OSXAppTemplate.zip ...\"\nif [ \"$CONFIGURATION\" == \"Release\" -a -d \"$BUILD_ROOT/../CoronaShell/build/$CONFIGURATION/CoronaShell.app\" ]\nthen\n    # this works for command line builds\n    OSX_TEMPLATE_SOURCE_DIR=\"$BUILD_ROOT/../CoronaShell/build/$CONFIGURATION/CoronaShell.app\"\nelif [ -d \"$DSTROOT\" ]\nthen\n    # this works for \"Archive\" builds\n    OSX_TEMPLATE_SOURCE_DIR=\"$DSTROOT/Applications/CoronaShell.app\"\nelse\n    # this works for \"Debug\" builds\n    OSX_TEMPLATE_SOURCE_DIR=\"$TARGET_BUILD_DIR/CoronaShell.app\"\nfi\n\necho \"     Source: $OSX_TEMPLATE_SOURCE_DIR\"\necho \"Destination: $BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\"\n( cd \"$OSX_TEMPLATE_SOURCE_DIR\"; zip -rqy \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\" Contents --exclude \"Contents/Resources/CoronaShell.icns\" )\nls -l \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\"\n";
+			shellScript = "set -e\necho \"Building OSXAppTemplate.zip ...\"\nif [ \"$CONFIGURATION\" == \"Release\" -a -d \"$BUILD_ROOT/../CoronaShell/build/$CONFIGURATION/CoronaShell.app\" ]\nthen\n    # this works for command line builds\n    OSX_TEMPLATE_SOURCE_DIR=\"$BUILD_ROOT/../CoronaShell/build/$CONFIGURATION/CoronaShell.app\"\nelif [ -d \"$DSTROOT\" ]\nthen\n    # this works for \"Archive\" builds\n    OSX_TEMPLATE_SOURCE_DIR=\"$DSTROOT/Applications/CoronaShell.app\"\nelse\n    # this works for \"Debug\" builds\n    OSX_TEMPLATE_SOURCE_DIR=\"$TARGET_BUILD_DIR/CoronaShell.app\"\nfi\n\necho \"     Source: $OSX_TEMPLATE_SOURCE_DIR\"\necho \"Destination: $BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\"\nrm -f \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\"\n(\n  cd \"$OSX_TEMPLATE_SOURCE_DIR\"\n  zip -rqy \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\" Contents --exclude \"Contents/Resources/CoronaShell.icns\" --exclude \"*.DS_Store\" --exclude \"*_CodeSignature*\"\n  )\nls -l \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/OSXAppTemplate.zip\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C2E454671F844BFC00717681 /* Run Script (copy device-support files) */ = {
@@ -6697,6 +6699,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "set -x\nmkdir -p \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/Skins\"\n# Copy all Skins .lua files and the associated .png files, excluding dot files and\n# deleting any that no longer exist in the source directory\nrsync -av --delete --include='*.lua' --include='*.png' --include='*.template' --exclude='.*' --exclude='*' \"$SRCROOT/../resources/Skins/\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/Skins/\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F5608E22257AB801000612C1 /* Run Script (copy JRE if exists) */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../../jre.macos.tgz",
+			);
+			name = "Run Script (copy JRE if exists)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH_SHALLOW_BUNDLE_YES)/jre",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -x\n\nif [ -f  \"$SRCROOT/../../jre.macos.tgz\" ]\nthen\n\ttar xzf \"$SRCROOT/../../jre.macos.tgz\" -C \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH_SHALLOW_BUNDLE_YES\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -8119,7 +8142,6 @@
 				COMBINE_HIDPI_IMAGES = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = rtt;
 			};
 			name = Debug;
@@ -8130,7 +8152,6 @@
 				COMBINE_HIDPI_IMAGES = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(inherited)",
 					"-fno-operator-names",
@@ -8289,7 +8310,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				SDKROOT = macosx;
@@ -8300,7 +8321,6 @@
 					../../platform/apple,
 					.,
 				);
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = "Release-template";
 		};
@@ -8311,8 +8331,9 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
@@ -8349,13 +8370,13 @@
 					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.Corona_Simulator;
 				PRODUCT_NAME = template;
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				STRIP_STYLE = "non-global";
-				VALID_ARCHS = x86_64;
 			};
 			name = "Release-template";
 		};
@@ -8365,7 +8386,6 @@
 				COMBINE_HIDPI_IMAGES = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(inherited)",
 					"-fno-operator-names",
@@ -8515,7 +8535,6 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -8536,7 +8555,6 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -8557,7 +8575,6 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -8588,7 +8605,6 @@
 					"../../external/osx-xmlrpc",
 					/System/Library/Frameworks/OpenAL.framework/Headers,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -8620,7 +8636,6 @@
 					"../../external/osx-xmlrpc",
 					/System/Library/Frameworks/OpenAL.framework/Headers,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -8648,7 +8663,6 @@
 					"../../external/osx-xmlrpc",
 					/System/Library/Frameworks/OpenAL.framework/Headers,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -8661,67 +8675,9 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
-				COMBINE_HIDPI_IMAGES = NO;
-				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_HARDENED_RUNTIME = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external\"",
-				);
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Rtt_Player.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					Rtt_AUTHORING_SIMULATOR,
-					"$(inherited)",
-				);
-				HEADER_SEARCH_PATHS = (
-					"../../external/b2Separator-cpp",
-					../../external/Box2D,
-					../../external/smoothpolygon,
-					"../../external/osx-xmlrpc",
-					/System/Library/Frameworks/OpenAL.framework/Headers,
-					"../../external/kelan-yrk-spinning-progress-indicator-layer/Code",
-					"../../external/Simple-NSAlert-with-Blocks",
-					../shared,
-				);
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/mac\"",
-					"\"$(SRCROOT)/../../plugins/build-core/licensing/mac\"",
-					/opt/X11/lib,
-					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "Corona Simulator";
-				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx;
-				STRIP_STYLE = "non-global";
-				VALID_ARCHS = x86_64;
-				WARNING_CFLAGS = (
-					"-Wno-inconsistent-missing-override",
-					"-Werror=idiomatic-parentheses",
-				);
-			};
-			name = Debug;
-		};
-		C01FCF4C08A954540054247B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
-				CODE_SIGN_RESOURCE_RULES_PATH = "";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
@@ -8758,13 +8714,73 @@
 					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.Corona_Simulator;
 				PRODUCT_NAME = "Corona Simulator";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				STRIP_STYLE = "non-global";
-				VALID_ARCHS = x86_64;
+				WARNING_CFLAGS = (
+					"-Wno-inconsistent-missing-override",
+					"-Werror=idiomatic-parentheses",
+				);
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_RESOURCE_RULES_PATH = "";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = NO;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external\"",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Rtt_Player.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					Rtt_AUTHORING_SIMULATOR,
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../external/b2Separator-cpp",
+					../../external/Box2D,
+					../../external/smoothpolygon,
+					"../../external/osx-xmlrpc",
+					/System/Library/Frameworks/OpenAL.framework/Headers,
+					"../../external/kelan-yrk-spinning-progress-indicator-layer/Code",
+					"../../external/Simple-NSAlert-with-Blocks",
+					../shared,
+				);
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/mac\"",
+					"\"$(SRCROOT)/../../plugins/build-core/licensing/mac\"",
+					/opt/X11/lib,
+					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.Corona_Simulator;
+				PRODUCT_NAME = "Corona Simulator";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				STRIP_STYLE = "non-global";
 			};
 			name = Release;
 		};
@@ -8828,7 +8844,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -8840,7 +8856,6 @@
 					../../platform/apple,
 					.,
 				);
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wno-inconsistent-missing-override",
 					"-Werror=idiomatic-parentheses",
@@ -8905,7 +8920,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				SDKROOT = macosx;
@@ -8916,7 +8931,6 @@
 					../../platform/apple,
 					.,
 				);
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = "-Wno-inconsistent-missing-override";
 			};
 			name = Release;
@@ -8930,7 +8944,6 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "rtt-simulator";
 			};
 			name = Debug;
@@ -8944,7 +8957,6 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(inherited)",
 					"-fno-operator-names",
@@ -8963,7 +8975,6 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(inherited)",
 					"-fno-operator-names",
@@ -9017,7 +9028,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -9070,7 +9080,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -9123,7 +9132,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

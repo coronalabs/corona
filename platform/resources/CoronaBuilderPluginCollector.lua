@@ -149,7 +149,7 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
 
     local build = tonumber(params.build)
     local vFoundBuid, vFoundObject, vFoundBuildName
-    for entryBuild, entryObject in pairs(pluginObject.v) do
+    for entryBuild, entryObject in pairs(pluginObject.v or {}) do
         local entryBuildNumber = tonumber(entryBuild:match('^%d+%.(%d+)$'))
         if entryBuildNumber <= build and entryBuildNumber > (vFoundBuid or 0) then
             vFoundBuid = entryBuildNumber
@@ -205,6 +205,117 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
 end
 
 
+-- Solar2d Marketplace Collector
+local PluginCollectorSolar2DMarketplaceDirectory =  { name = "Solar2d Marketplace Directory"}
+function PluginCollectorSolar2DMarketplaceDirectory:init(params)
+  local t = {}
+	local directoryPluginsText, msg = fetch("https://solar2dmarketplace.com/getAllPlugins")
+  if not directoryPluginsText then
+        log("Solar2D Marketplace: error initializing directory " .. tostring(msg))
+		return
+	end
+	local directoryPlugins = json.decode( directoryPluginsText )
+	if not directoryPlugins then
+		return
+    end
+
+    self.pluginsCache = {}
+
+    for repoOwner, repoObject in pairs(directoryPlugins) do
+        for providerName,providerObject  in pairs(repoObject) do
+            for pluginName, pluginObject in pairs(providerObject) do
+                self.pluginsCache[providerName .. SEP .. pluginName] = {repo = repoOwner, plugin = pluginObject}
+            end
+        end
+	end
+	return true
+end
+
+function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin, pluginTable, pluginPlatform, params)
+    if not self.pluginsCache then
+        return "Solar2D Marketplace Directory: directory was not fetched"
+    end
+    if not pluginTable.marketplaceId then
+        return "Solar2D Marketplace Directory: skipped because marketplaceId is not set"
+    end
+    local pluginEntry = self.pluginsCache[tostring(pluginTable.publisherId) .. SEP .. plugin]
+    if not pluginEntry then
+        return "Solar2D Marketplace Directory: plugin " .. plugin .. " was not found at Solar2D Marketplace Directory"
+    end
+
+    local pluginObject = pluginEntry.plugin
+    local repoOwner = pluginEntry.repo
+    if pluginObject.e then
+        return "! " .. pluginObject.e
+    end
+
+    local build = tonumber(params.build)
+    local vFoundBuid, vFoundObject, vFoundBuildName
+    local pluginVersion = pluginObject.r
+    for entryBuild, entryObject in pairs(pluginObject.v or {}) do
+        local entryBuildNumber = tonumber(entryBuild:match('^%d+%.(%d+)$'))
+        if entryBuildNumber <= build and entryBuildNumber > (vFoundBuid or 0) then
+            vFoundBuid = entryBuildNumber
+            vFoundObject = entryObject
+            vFoundBuildName = entryBuild
+        end
+    end
+    if not vFoundBuid then
+        return "Solar2D Marketplace Directory: unable to find compatible version for " .. plugin .. "."
+    end
+    local hasPlatform = false
+    for i=1,#vFoundObject do
+        hasPlatform = hasPlatform or vFoundObject[i] == pluginPlatform
+    end
+    if not hasPlatform then
+        if params.canSkip then
+            log("Solar2D Marketplace Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported")
+        end
+        return params.canSkip or "Solar2D Marketplace Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported"
+    end
+    local repoName = pluginObject.p or (pluginTable.publisherId .. '-' .. plugin)
+    local downloadURL
+
+    if pluginTable.marketplaceId then
+      downloadURL = "https://solar2dmarketplace.com/marketplacePlugins?pluginType=collector&ID=" .. pluginTable.marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform.."&version="..pluginVersion
+    else
+      return "Solar2D Marketplace Directory: skipped plugin marketplaceId not found"
+    end
+
+    local cacheDir = pathJoin(params.pluginStorage, "Caches", "Solar2DMarketplaceDirectory", repoOwner, pluginTable.publisherId, plugin, pluginPlatform )
+    local cacheUrlFile = pathJoin(cacheDir, "info.txt")
+    local cacheDestFile = pathJoin(cacheDir, "data.tgz")
+    local validCache = false
+    if isFile(cacheUrlFile) and isFile(cacheDestFile) then
+        local f = io.open(cacheUrlFile, "rb")
+        if f then
+            validCache = f:read("*all") == downloadURL
+            f:close()
+        end
+    end
+
+
+    if not validCache then
+        mkdirs(cacheDir)
+        local result, err = download(downloadURL, cacheDestFile)
+        if not result then
+            return "Solar2D Marketplace Directory: unable to download " .. plugin .. '. Code: ' .. err
+        end
+        local f = io.open(cacheUrlFile, "wb")
+        if f then
+            f:write(downloadURL)
+            f:close()
+        end
+    else
+        log("Solar2D Marketplace Directory: cache hit " .. plugin)
+    end
+
+    mkdirs(destination)
+    copyFile(cacheDestFile, destination)
+    return true
+end
+
+
 local function pluginLocatorCustomURL(destination, plugin, pluginTable, pluginPlatform, params)
     if type(pluginTable.supportedPlatforms) ~= 'table' then
         return "Custom URL: skipped because no table supportedPlatforms provided for " .. plugin
@@ -235,7 +346,7 @@ local function pluginLocatorCustomURL(destination, plugin, pluginTable, pluginPl
     mkdirs(destination)
     local file, err = download(downloadURL, pathJoin(destination, 'data.tgz'))
     if not file then
-        return "Custom URL: unable to download " .. plugin .. ' ('.. developer.. '). Code: ' .. err .. 'Destination: ' .. destination .. "; URL: " .. downloadURL
+        return "Custom URL: unable to download " .. tostring(plugin) .. '. Code: ' .. tostring(err) .. 'Destination: ' .. tostring(destination) .. "; URL: " .. tostring(downloadURL)
     end
 
     return true
@@ -378,16 +489,10 @@ local function locatorName(l)
 end
 
 local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators, canSkip)
-    if type(pluginTable.supportedPlatforms) == 'table' and not pluginTable.supportedPlatforms[pluginPlatform] then
-        if canSkip then
-            return
-        else
-            return "Unsupported platform " .. pluginPlatform
-        end
-    end
     params.canSkip = canSkip
     local pluginDestination = pathJoin(dstDir, plugin)
     local err = "Unable to find plugin '" .. plugin .. "' for platform '" .. pluginPlatform .. "':"
+    local results = {}
     local ok =  false
     for i = 1,#pluginLocators do
         local locator = pluginLocators[i]
@@ -412,13 +517,17 @@ local function fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, pluginP
             ok = true
             break
         elseif type(result) == 'string' then
-            if result:sub(1,2) == "! " then
-                return result
-            end    
-            err = err .. '\n\t' .. result
+            results[#results+1] = result
         end
     end
     if not ok then
+        for i = 1,#results do
+            local result = results[i]
+            if result:sub(1,2) == "! " then
+                return result
+            end
+            err = err .. '\n\t' .. result
+        end
         return err
     end
 end
@@ -433,19 +542,56 @@ local function fetchSinglePlugin(dstDir, plugin, pluginTable, basePluginPlatform
     end
     local numFallbacks = #fallbackChain
 
+    if type(pluginTable.supportedPlatforms) == 'table' then
+        local skip = true
+        local skipped = ""
+        for i = 1, numFallbacks do
+            if pluginTable.supportedPlatforms[fallbackChain[i]] then
+                skip = false
+            else
+                skipped = skipped .. " " .. fallbackChain[i]
+            end
+        end
+        if skip then
+            log("Skipping plugin " .. plugin .. " because supportedPlatforms is not set for any of" .. skipped)
+            return
+        end
+    end
+
+    local results = {}
     for i = 1, numFallbacks do
         local fallbackRes = fetchSinglePluginNoFallbacks(dstDir, plugin, pluginTable, fallbackChain[i], params, pluginLocators, i == numFallbacks)
         if not fallbackRes then return end -- success
-        if fallbackRes:sub(1,2) == "! " then
-            return fallbackRes
+        results[#results+1] = fallbackRes
+    end
+    local res
+    for i = 1,#results do
+        local result = results[i]
+        if result:sub(1,2) == "! " then
+            return result
         end
         if res then
-            res = res .. "\n" .. fallbackRes
+            res = res .. "\n" .. result
         else
-            res = fallbackRes
+            res = result
         end
     end
     return res
+end
+
+local function mergeMoveDirectory(src, dst)
+    for file in lfs.dir(src) do
+        if file ~= "." and file ~= ".." then
+            local srcFile = pathJoin(src, file)
+            local dstFile = pathJoin(dst, file)
+            if isDir(srcFile) and isDir(dstFile) then
+                mergeMoveDirectory(srcFile, dstFile)
+            else
+                os.rename(srcFile, dstFile)
+            end
+        end
+    end
+    exec("rmdir " .. quoteString(src))
 end
 
 local function CollectCoronaPlugins(params)
@@ -459,7 +605,7 @@ local function CollectCoronaPlugins(params)
 
     local ret = nil
 
-    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, PluginCollectorSolar2DDirectory, pluginLocatorIgnoreMissing }
+    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, PluginCollectorSolar2DMarketplaceDirectory, PluginCollectorSolar2DDirectory, pluginLocatorIgnoreMissing }
 
     local dstDir = params.destinationDirectory
 
@@ -495,13 +641,13 @@ local function CollectCoronaPlugins(params)
         for i=1,#params.pluginLocators do
             copyLocators[params.pluginLocators[i]] = true
         end
-        log("Collecting plugins", json.encode(params, { 
+        log("Collecting plugins", json.encode(params, {
             tables = copyLocators,
             exception = function(reason, value, state, defaultmessage)
                 local cn = locatorName(value)
                 if cn then return "<Collector: " .. cn .. ">" end
                 return quoteString("<" .. defaultmessage .. ">")
-            end 
+            end
         }))
     end
 
@@ -516,7 +662,7 @@ local function CollectCoronaPlugins(params)
         local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
         if type(result) == 'string'  then
             if result:sub(1,2) == "! " then
-                return result:sub(3)
+                result = result:sub(3)
             end
             if params.continueOnError then
                 ret = (ret or "") .. result .. "\n"
@@ -537,7 +683,7 @@ local function CollectCoronaPlugins(params)
             local result = fetchSinglePlugin(dstDir, plugin, pluginTable, pluginPlatform, params, pluginLocators)
             if type(result) == 'string'  then
                 if result:sub(1,2) == "! " then
-                    return result:sub(3)
+                    result = result:sub(3)
                 end
                 if params.continueOnError then
                     ret = (ret or "") .. result .. "\n"
@@ -564,12 +710,7 @@ local function CollectCoronaPlugins(params)
                     end
                     local lua51Dir = pathJoin(params.extractLocation, "lua_51")
                     if ret and isDir(lua51Dir) then
-                        for file in lfs.dir(lua51Dir) do
-                            if file ~= "." and file ~= ".." then
-                                os.rename(pathJoin(lua51Dir, file), pathJoin(params.extractLocation, file))
-                            end
-                        end
-                        exec("rmdir " .. quoteString(lua51Dir))
+                        mergeMoveDirectory(lua51Dir, params.extractLocation)
                     end
                 else
                     if isWindows then

@@ -72,6 +72,10 @@
             argument = "/Users/vlad/Desktop/recepie.lua"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "iOS"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction

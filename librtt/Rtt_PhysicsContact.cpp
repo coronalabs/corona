@@ -87,6 +87,12 @@ PhysicsContact::ValueForKey( lua_State *L )
 		{
 			lua_pushnumber( L, contact->GetRestitution() );
 		}
+// STEVE CHANGE
+		else if ( 0 == strcmp( "tangentSpeed", key ) )
+		{
+			lua_pushnumber( L, contact->GetTangentSpeed() );
+		}
+// /STEVE CHANGE
 		else
 		{
 			result = 0;
@@ -117,6 +123,12 @@ PhysicsContact::SetValueForKey( lua_State *L )
 		{
 			contact->SetRestitution( lua_tonumber( L, 3 ) );
 		}
+// STEVE CHANGE
+		else if ( 0 == strcmp( "tangentSpeed", key ) )
+		{
+			contact->SetTangentSpeed( lua_tonumber( L, 3 ) );
+		}
+// /STEVE CHANGE
 	}
 
 	return 0;

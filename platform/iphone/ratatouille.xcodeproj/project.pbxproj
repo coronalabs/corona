@@ -81,16 +81,6 @@
 		A4693569169D62DA00723568 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 000DCD9612B0759700042A5E /* MainWindow-iPad.xib */; };
 		A469356B169D62DA00723568 /* Corona3rdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 004A5F321368DA41003BD9DA /* Corona3rdPartyLicenses.txt */; };
 		A46935B8169D62DA00723568 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 000DCED912B0824800042A5E /* libobjc.dylib */; };
-		A4693643169D69EF00723568 /* libplayer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4841095151147BE0074BD57 /* libplayer-core.a */; };
-		A4693645169D69EF00723568 /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
-		A4693646169D69EF00723568 /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
-		A4693647169D69EF00723568 /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
-		A4693648169D69EF00723568 /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7F151AA23A00486F8A /* CoronaRuntime.h */; };
-		A469364A169D69EF00723568 /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A491870616421FBE00A39286 /* CoronaIOSLoader.h */; };
-		A4693674169D6A0700723568 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
-		A4693675169D6A0700723568 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 000DCD9612B0759700042A5E /* MainWindow-iPad.xib */; };
-		A4693677169D6A0700723568 /* Corona3rdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 004A5F321368DA41003BD9DA /* Corona3rdPartyLicenses.txt */; };
-		A4693698169D6A0700723568 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 000DCED912B0824800042A5E /* libobjc.dylib */; };
 		A46936B7169DED4700723568 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936B4169DED4700723568 /* AppDelegate.mm */; };
 		A46936BC169DED6500723568 /* CoronaViewPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936B9169DED6500723568 /* CoronaViewPrivate.mm */; };
 		A46936F0169DED9300723568 /* Rtt_IPhoneAudioSessionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936BF169DED9200723568 /* Rtt_IPhoneAudioSessionManager.mm */; };
@@ -108,10 +98,7 @@
 		A469372D169DED9300723568 /* Rtt_IPhoneVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E8169DED9200723568 /* Rtt_IPhoneVideoPlayer.mm */; };
 		A4693730169DED9300723568 /* Rtt_IPhoneWebPopup.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936EA169DED9200723568 /* Rtt_IPhoneWebPopup.mm */; };
 		A4693733169DED9300723568 /* Rtt_IPhoneWebViewObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936EC169DED9300723568 /* Rtt_IPhoneWebViewObject.mm */; };
-		A469881F169E24A500EAA645 /* Rtt_IPhoneTemplate-Trial.mm in Sources */ = {isa = PBXBuildFile; fileRef = A469881A169E23A000EAA645 /* Rtt_IPhoneTemplate-Trial.mm */; };
-		A4698826169E31E300EAA645 /* libplayer-trial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A469366F169D69EF00723568 /* libplayer-trial.a */; };
 		A4698839169E642E00EAA645 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
-		A469883A169E642E00EAA645 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
 		A47098A8169E9F2400D31091 /* Rtt_IPhoneTemplate-Sub.mm in Sources */ = {isa = PBXBuildFile; fileRef = A469881B169E23B200EAA645 /* Rtt_IPhoneTemplate-Sub.mm */; };
 		A47098AA169E9F2400D31091 /* libplayer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4841095151147BE0074BD57 /* libplayer-core.a */; };
 		A47098AC169E9F2400D31091 /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
@@ -133,7 +120,6 @@
 		A47AB0F11A72EEA2001D3FFA /* Rtt_IPhoneText.mm in Sources */ = {isa = PBXBuildFile; fileRef = A47AB0EF1A72EEA2001D3FFA /* Rtt_IPhoneText.mm */; };
 		A480725C16CACD6E00960127 /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
 		A480725D16CACD6E00960127 /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
-		A480725E16CACD6E00960127 /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
 		A480725F16CACD6E00960127 /* CoronaLuaIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = A480725B16CACD6E00960127 /* CoronaLuaIOS.mm */; };
 		A482FAA6183D74950005831B /* CoronaCards.h in Copy Files */ = {isa = PBXBuildFile; fileRef = A482FAA5183D74950005831B /* CoronaCards.h */; };
 		A482FACD183D75070005831B /* CoronaCards.h in Headers */ = {isa = PBXBuildFile; fileRef = A482FAA5183D74950005831B /* CoronaCards.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -165,7 +151,6 @@
 		A48B827216D5950700CA01A1 /* widget_theme_pickerWheel_mask.png in Resources */ = {isa = PBXBuildFile; fileRef = A48B826E16D5950700CA01A1 /* widget_theme_pickerWheel_mask.png */; };
 		A48B827316D595B600CA01A1 /* CoronaResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A48B825C16D594AA00CA01A1 /* CoronaResources.bundle */; };
 		A48B827416D595C100CA01A1 /* CoronaResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A48B825C16D594AA00CA01A1 /* CoronaResources.bundle */; };
-		A48B827516D595C900CA01A1 /* CoronaResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A48B825C16D594AA00CA01A1 /* CoronaResources.bundle */; };
 		A48DA9621852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A48DA9601852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.cpp */; };
 		A48DA9631852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = A48DA9611852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.h */; };
 		A48DA9791853094C009D1F93 /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A48DA9771853094C009D1F93 /* CoronaIOSLoader.h */; };
@@ -247,14 +232,6 @@
 		A4F2ADEF16E0AF2E00814C7B /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
 		A4F2ADF816E0AF5F00814C7B /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
 		A4F2ADF916E0AF6F00814C7B /* libplayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A47098D5169E9F2400D31091 /* libplayer.a */; };
-		A4F2ADFE16E0AF7D00814C7B /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
-		A4F2AE0216E0AF7D00814C7B /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
-		A4F2AE0316E0AF7D00814C7B /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
-		A4F2AE0416E0AF7D00814C7B /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
-		A4F2AE0516E0AF7D00814C7B /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7F151AA23A00486F8A /* CoronaRuntime.h */; };
-		A4F2AE0616E0AF7D00814C7B /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A491870616421FBE00A39286 /* CoronaIOSLoader.h */; };
-		A4F2AE2616E0AF7D00814C7B /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
-		A4F2AE2F16E0AF9E00814C7B /* libplayer-trial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A469366F169D69EF00723568 /* libplayer-trial.a */; };
 		A4F5C39F184536A000E5ED54 /* AppDelegateTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F5C39C184536A000E5ED54 /* AppDelegateTest.mm */; };
 		A4F5C3A0184536A000E5ED54 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F5C39E184536A000E5ED54 /* ViewController.mm */; };
 		A4F5C3A5184536D900E5ED54 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F5C3A4184536D900E5ED54 /* main.mm */; };
@@ -275,7 +252,15 @@
 		C26005721D62A63400C542D0 /* _CoronaSplashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */; };
 		C2A6E5311AB0BEE500509FB2 /* widget_theme_ios7@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = C2A6E5301AB0BEE500509FB2 /* widget_theme_ios7@4x.png */; };
 		C2F911791CDC15F4004A5564 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4359164B1D5200CFE7B3 /* libluasocket.a */; };
+		F50E7EB224FA923B009F165B /* _CoronaSplashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */; };
+		F50E7EB324FA923B009F165B /* CoronaResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A48B825C16D594AA00CA01A1 /* CoronaResources.bundle */; };
+		F50E7EB424FA923B009F165B /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		F50E7EB524FA923B009F165B /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 000DCD9612B0759700042A5E /* MainWindow-iPad.xib */; };
+		F50E7EB624FA923B009F165B /* Corona3rdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 004A5F321368DA41003BD9DA /* Corona3rdPartyLicenses.txt */; };
+		F50E7EB824FA923B009F165B /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
+		F50E7EBA24FA923B009F165B /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 000DCED912B0824800042A5E /* libobjc.dylib */; };
 		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F52611332500142B00671DFE /* libtachyon-angle.a */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3711BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
@@ -290,9 +275,130 @@
 		F5A7520E1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A7520F1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F5A752151BFA401000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
-		F5A752181BFA401700CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A752191BFA401800CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
-		F5A7521A1BFA401800CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
+		F5C36AF324FA93A700775C6E /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; };
+		F5C36AF424FA93A700775C6E /* MetalANGLE.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F5C36BFB24FAB49F00775C6E /* CoronaBeacon.mm in Sources */ = {isa = PBXBuildFile; fileRef = C2074EB91E160FC1009FC33C /* CoronaBeacon.mm */; };
+		F5C36BFC24FAB49F00775C6E /* AppleWeakProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4C3189A1A6EDD4400F186DF /* AppleWeakProxy.mm */; };
+		F5C36BFD24FAB49F00775C6E /* Rtt_IPhonePlatformCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = A415ECAD1BD861A1003E7114 /* Rtt_IPhonePlatformCore.mm */; };
+		F5C36BFE24FAB49F00775C6E /* CoronaSystemResourceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4C318511A67B65100F186DF /* CoronaSystemResourceManager.mm */; };
+		F5C36BFF24FAB49F00775C6E /* Rtt_IPhoneMediaProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = F81D159A180D9F32003FCBF9 /* Rtt_IPhoneMediaProvider.mm */; };
+		F5C36C0024FAB49F00775C6E /* Rtt_AppleAudioRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2912B073A000042A5E /* Rtt_AppleAudioRecorder.mm */; };
+		F5C36C0124FAB49F00775C6E /* Rtt_AppleBitmap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2C12B073A000042A5E /* Rtt_AppleBitmap.mm */; };
+		F5C36C0224FAB49F00775C6E /* Rtt_AppleCallback.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2E12B073A000042A5E /* Rtt_AppleCallback.mm */; };
+		F5C36C0324FAB49F00775C6E /* Rtt_AppleData.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3412B073A000042A5E /* Rtt_AppleData.mm */; };
+		F5C36C0424FAB49F00775C6E /* Rtt_AppleInAppStore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B64B14632D4400EEDF75 /* Rtt_AppleInAppStore.mm */; };
+		F5C36C0524FAB49F00775C6E /* Rtt_AppleInAppStoreApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B64D14632D4400EEDF75 /* Rtt_AppleInAppStoreApple.mm */; };
+		F5C36C0624FAB49F00775C6E /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B64F14632D4400EEDF75 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm */; };
+		F5C36C0724FAB49F00775C6E /* Rtt_ApplePlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3B12B073A000042A5E /* Rtt_ApplePlatform.mm */; };
+		F5C36C0824FAB49F00775C6E /* Rtt_IPhoneOrientation.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B2D52418402BDE001311C9 /* Rtt_IPhoneOrientation.mm */; };
+		F5C36C0924FAB49F00775C6E /* Rtt_AppleReachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00E867DB1366435F00AAFA26 /* Rtt_AppleReachability.mm */; };
+		F5C36C0A24FAB49F00775C6E /* Rtt_AppleTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3D12B073A000042A5E /* Rtt_AppleTimer.mm */; };
+		F5C36C0B24FAB49F00775C6E /* Rtt_AppleAudioPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2712B073A000042A5E /* Rtt_AppleAudioPlayer.cpp */; };
+		F5C36C0C24FAB49F00775C6E /* Rtt_AppleCrypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3112B073A000042A5E /* Rtt_AppleCrypto.cpp */; };
+		F5C36C0D24FAB49F00775C6E /* Rtt_AppleEventSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3712B073A000042A5E /* Rtt_AppleEventSound.cpp */; };
+		F5C36C0E24FAB49F00775C6E /* Rtt_AppleTextDelegateWrapperObjectHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 002078EF13B51A3C00D575C3 /* Rtt_AppleTextDelegateWrapperObjectHelper.m */; };
+		F5C36C0F24FAB49F00775C6E /* CoronaApplicationMain.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4543E7D151AA23A00486F8A /* CoronaApplicationMain.mm */; };
+		F5C36C1024FAB49F00775C6E /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936B4169DED4700723568 /* AppDelegate.mm */; };
+		F5C36C1124FAB49F00775C6E /* Rtt_IPhoneText.mm in Sources */ = {isa = PBXBuildFile; fileRef = A47AB0EF1A72EEA2001D3FFA /* Rtt_IPhoneText.mm */; };
+		F5C36C1224FAB49F00775C6E /* CoronaViewPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936B9169DED6500723568 /* CoronaViewPrivate.mm */; };
+		F5C36C1324FAB49F00775C6E /* Rtt_IPhoneAudioSessionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936BF169DED9200723568 /* Rtt_IPhoneAudioSessionManager.mm */; };
+		F5C36C1424FAB49F00775C6E /* Rtt_IPhoneAudioSessionManagerImplementation.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C1169DED9200723568 /* Rtt_IPhoneAudioSessionManagerImplementation.mm */; };
+		F5C36C1524FAB49F00775C6E /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F5C36C1624FAB49F00775C6E /* CoronaLuaObjC+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A4728FE61AE7F77B00BC088D /* CoronaLuaObjC+NSObject.m */; };
+		F5C36C1724FAB49F00775C6E /* Rtt_IPhoneDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C6169DED9200723568 /* Rtt_IPhoneDevice.mm */; };
+		F5C36C1824FAB49F00775C6E /* Rtt_IPhoneDisplayObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C8169DED9200723568 /* Rtt_IPhoneDisplayObject.mm */; };
+		F5C36C1924FAB49F00775C6E /* Rtt_IPhoneFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936CC169DED9200723568 /* Rtt_IPhoneFont.mm */; };
+		F5C36C1A24FAB49F00775C6E /* CoronaViewRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B2D5371842DBE1001311C9 /* CoronaViewRuntimeDelegate.mm */; };
+		F5C36C1B24FAB49F00775C6E /* Rtt_RuntimeDelegatePlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A48DA9601852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.cpp */; };
+		F5C36C1C24FAB49F00775C6E /* Rtt_IPhoneImageProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936D2169DED9200723568 /* Rtt_IPhoneImageProvider.mm */; };
+		F5C36C1D24FAB49F00775C6E /* Rtt_IPhoneMapViewObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936D8169DED9200723568 /* Rtt_IPhoneMapViewObject.mm */; };
+		F5C36C1E24FAB49F00775C6E /* Rtt_IPhonePlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936DE169DED9200723568 /* Rtt_IPhonePlatform.mm */; };
+		F5C36C1F24FAB49F00775C6E /* CoronaLuaObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4728FEF1AE8176F00BC088D /* CoronaLuaObjC.mm */; };
+		F5C36C2024FAB49F00775C6E /* Rtt_IPhoneScreenSurface.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E0169DED9200723568 /* Rtt_IPhoneScreenSurface.mm */; };
+		F5C36C2124FAB49F00775C6E /* Rtt_IPhoneRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A415ECA51BD86132003E7114 /* Rtt_IPhoneRuntimeDelegate.mm */; };
+		F5C36C2224FAB49F00775C6E /* CoronaAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = F81D63B11A609F8B00C7ADAA /* CoronaAppDelegate.mm */; };
+		F5C36C2324FAB49F00775C6E /* Rtt_IPhoneTextBoxObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E2169DED9200723568 /* Rtt_IPhoneTextBoxObject.mm */; };
+		F5C36C2424FAB49F00775C6E /* Rtt_IPhoneTextFieldObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E4169DED9200723568 /* Rtt_IPhoneTextFieldObject.mm */; };
+		F5C36C2524FAB49F00775C6E /* Rtt_IPhoneVideoObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E6169DED9200723568 /* Rtt_IPhoneVideoObject.mm */; };
+		F5C36C2624FAB49F00775C6E /* Rtt_IPhoneVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E8169DED9200723568 /* Rtt_IPhoneVideoPlayer.mm */; };
+		F5C36C2724FAB49F00775C6E /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */; };
+		F5C36C2824FAB49F00775C6E /* Rtt_IPhoneVideoProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = F87434AB180629540024ECFD /* Rtt_IPhoneVideoProvider.mm */; };
+		F5C36C2924FAB49F00775C6E /* Rtt_TouchInhibitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = A48E9BFB183EFFC500F67CB3 /* Rtt_TouchInhibitor.mm */; };
+		F5C36C2A24FAB49F00775C6E /* Rtt_IPhoneWebPopup.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936EA169DED9200723568 /* Rtt_IPhoneWebPopup.mm */; };
+		F5C36C2B24FAB49F00775C6E /* CoronaViewPluginContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = A40D2F5C1887699100B4A354 /* CoronaViewPluginContext.mm */; };
+		F5C36C2C24FAB49F00775C6E /* Rtt_IPhoneWebViewObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936EC169DED9300723568 /* Rtt_IPhoneWebViewObject.mm */; };
+		F5C36C2D24FAB49F00775C6E /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36F1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm */; };
+		F5C36C2E24FAB49F00775C6E /* CoronaLuaIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = A480725B16CACD6E00960127 /* CoronaLuaIOS.mm */; };
+		F5C36C2F24FAB49F00775C6E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */; };
+		F5C36C3024FAB49F00775C6E /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36B1BE430F900C241E6 /* Rtt_AppleInputDeviceManager.mm */; };
+		F5C36C3124FAB49F00775C6E /* CoronaViewControllerPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A48E9BF5183EF42400F67CB3 /* CoronaViewControllerPrivate.mm */; };
+		F5C36C3224FAB49F00775C6E /* CoronaNativeObjectAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4FA8052170BFEAD002A7FC9 /* CoronaNativeObjectAdapter.mm */; };
+		F5C36C3324FAB49F00775C6E /* Rtt_IPhoneNativeObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4FA8055170BFEFA002A7FC9 /* Rtt_IPhoneNativeObject.mm */; };
+		F5C36C3424FAB49F00775C6E /* Rtt_IPhoneTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0720731117CD2C93004720D2 /* Rtt_IPhoneTimer.mm */; };
+		F5C36C3524FAB49F00775C6E /* Rtt_IPhonePlatformBase.mm in Sources */ = {isa = PBXBuildFile; fileRef = A482FAE9183D7F460005831B /* Rtt_IPhonePlatformBase.mm */; };
+		F5C36C3624FAB49F00775C6E /* Rtt_IPhoneGLVideoTexture.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AF6517D1848A000C432B /* Rtt_IPhoneGLVideoTexture.mm */; };
+		F5C36C3724FAB49F00775C6E /* Rtt_AppleTextAlignment.mm in Sources */ = {isa = PBXBuildFile; fileRef = 078DA955176FD1EE00A5193E /* Rtt_AppleTextAlignment.mm */; };
+		F5C36C3824FAB49F00775C6E /* Rtt_DependencyUtilsApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 070F390B18CE1FD600BC2BEE /* Rtt_DependencyUtilsApple.mm */; };
+		F5C36C3924FAB49F00775C6E /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
+		F5C36C3A24FAB49F00775C6E /* Rtt_DependencyLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 070F390818CE1FD600BC2BEE /* Rtt_DependencyLoader.cpp */; };
+		F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435D164B1D5200CFE7B3 /* libalmixer.a */; };
+		F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435B164B1D5200CFE7B3 /* libbox2d.a */; };
+		F5C36C3F24FAB49F00775C6E /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4355164B1D5200CFE7B3 /* liblua.a */; };
+		F5C36C4024FAB49F00775C6E /* libluafilesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4357164B1D5200CFE7B3 /* libluafilesystem.a */; };
+		F5C36C4124FAB49F00775C6E /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4359164B1D5200CFE7B3 /* libluasocket.a */; };
+		F5C36C4224FAB49F00775C6E /* librtt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4353164B1D5200CFE7B3 /* librtt.a */; };
+		F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A49186A91642195200A39286 /* libplugins.a */; };
+		F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A445AA5D16B2049900A9A764 /* libgameNetwork.a */; };
+		F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4F12C2616D4379F002BCCFB /* liblicensing.a */; };
+		F5C36C4624FAB49F00775C6E /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0727BA9E16E6908300981C4B /* libnetwork.a */; };
+		F5C36C4824FAB49F00775C6E /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
+		F5C36C4924FAB49F00775C6E /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
+		F5C36C4A24FAB49F00775C6E /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
+		F5C36C4B24FAB49F00775C6E /* Rtt_IPhoneRuntimeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A415ECA41BD86132003E7114 /* Rtt_IPhoneRuntimeDelegate.h */; };
+		F5C36C4C24FAB49F00775C6E /* CoronaLuaObjC+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A4728FE51AE7F77B00BC088D /* CoronaLuaObjC+NSObject.h */; };
+		F5C36C4D24FAB49F00775C6E /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7F151AA23A00486F8A /* CoronaRuntime.h */; };
+		F5C36C4E24FAB49F00775C6E /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A491870616421FBE00A39286 /* CoronaIOSLoader.h */; };
+		F5C36C4F24FAB49F00775C6E /* CoronaLuaObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = A4728FEE1AE8176F00BC088D /* CoronaLuaObjC.h */; };
+		F5C36C5024FAB49F00775C6E /* CoronaLuaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A48DA97D18531028009D1F93 /* CoronaLuaLibrary.h */; };
+		F5C36C5124FAB49F00775C6E /* CoronaViewControllerPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A48E9BF6183EF42400F67CB3 /* CoronaViewControllerPrivate.h */; };
+		F5C36C5224FAB49F00775C6E /* AppleWeakProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C318991A6EDD4400F186DF /* AppleWeakProxy.h */; };
+		F5C36C5324FAB49F00775C6E /* CoronaSystemResourceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C318501A67B65100F186DF /* CoronaSystemResourceManager.h */; };
+		F5C36C5424FAB49F00775C6E /* CoronaOrientationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C3184B1A67B5B800F186DF /* CoronaOrientationObserver.h */; };
+		F5C36C5524FAB49F00775C6E /* Rtt_IPhonePlatformCore.h in Headers */ = {isa = PBXBuildFile; fileRef = A415ECAC1BD861A1003E7114 /* Rtt_IPhonePlatformCore.h */; };
+		F5C36C5624FAB49F00775C6E /* CoronaAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F81D63B01A609F8B00C7ADAA /* CoronaAppDelegate.h */; };
+		F5C36C5724FAB49F00775C6E /* Rtt_TouchInhibitor.h in Headers */ = {isa = PBXBuildFile; fileRef = A48E9BFA183EFFC500F67CB3 /* Rtt_TouchInhibitor.h */; };
+		F5C36C5824FAB49F00775C6E /* Rtt_RuntimeDelegatePlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = A48DA9611852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.h */; };
+		F5C36C5924FAB49F00775C6E /* Rtt_IPhonePlatformBase.h in Headers */ = {isa = PBXBuildFile; fileRef = A482FAE8183D7F460005831B /* Rtt_IPhonePlatformBase.h */; };
+		F5C36C5A24FAB49F00775C6E /* CoronaGyroscopeObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C318711A69A4E000F186DF /* CoronaGyroscopeObserver.h */; };
+		F5C36C5B24FAB49F00775C6E /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
+		F5C36C5C24FAB49F00775C6E /* CoronaViewPluginContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A40D2F5B1887699100B4A354 /* CoronaViewPluginContext.h */; };
+		F5C36C5D24FAB49F00775C6E /* CoronaViewRuntimeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B2D5361842DBE1001311C9 /* CoronaViewRuntimeDelegate.h */; };
+		F5C36C5E24FAB49F00775C6E /* Rtt_IPhoneOrientation.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B2D52318402BDE001311C9 /* Rtt_IPhoneOrientation.h */; };
+		F5C36C5F24FAB49F00775C6E /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
+		F5C36C6024FAB49F00775C6E /* Rtt_IPhoneText.h in Headers */ = {isa = PBXBuildFile; fileRef = A47AB0EE1A72EEA2001D3FFA /* Rtt_IPhoneText.h */; };
+		F5C36C6124FAB49F00775C6E /* Rtt_IPhoneGLVideoTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = A4D0AF6417D1848A000C432B /* Rtt_IPhoneGLVideoTexture.h */; };
+		F5C36C6224FAB49F00775C6E /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
+		F5C36CAB24FAB4E900775C6E /* Rtt_IPhoneTemplate-Sub.mm in Sources */ = {isa = PBXBuildFile; fileRef = A469881B169E23B200EAA645 /* Rtt_IPhoneTemplate-Sub.mm */; };
+		F5C36CAF24FAB4E900775C6E /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
+		F5C36CB024FAB4E900775C6E /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
+		F5C36CB124FAB4E900775C6E /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
+		F5C36CB224FAB4E900775C6E /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
+		F5C36CB324FAB4E900775C6E /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7F151AA23A00486F8A /* CoronaRuntime.h */; };
+		F5C36CB424FAB4E900775C6E /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A491870616421FBE00A39286 /* CoronaIOSLoader.h */; };
+		F5C36CB524FAB4E900775C6E /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
+		F5C36CC024FAB50800775C6E /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4698837169E642E00EAA645 /* main.mm */; };
+		F5C36CC424FAB50800775C6E /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
+		F5C36CC524FAB50800775C6E /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
+		F5C36CC624FAB50800775C6E /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
+		F5C36CC724FAB50800775C6E /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
+		F5C36CC824FAB50800775C6E /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7F151AA23A00486F8A /* CoronaRuntime.h */; };
+		F5C36CC924FAB50800775C6E /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A491870616421FBE00A39286 /* CoronaIOSLoader.h */; };
+		F5C36CCA24FAB50800775C6E /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A480725A16CACD6D00960127 /* CoronaLuaIOS.h */; };
+		F5C36CD524FAB55B00775C6E /* libplayer-core-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */; };
+		F5C36CD624FAB5CC00775C6E /* libplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */; };
+		F5C36CDB24FAB5E500775C6E /* libplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */; };
+		F5EC1D6424FCF2720041F6F8 /* Rtt_MetalAngleTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F5EC1D2624FCF2720041F6F8 /* Rtt_MetalAngleTypes.h */; };
 		F5FD0AE32373933C0066F6A6 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F804E0EC17E3C4890022E24C /* widget_theme_android.png in Resources */ = {isa = PBXBuildFile; fileRef = F804E0E817E3C4890022E24C /* widget_theme_android.png */; };
 		F804E0ED17E3C4890022E24C /* widget_theme_android@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F804E0E917E3C4890022E24C /* widget_theme_android@2x.png */; };
@@ -319,7 +425,7 @@
 			runOncePerArchitecture = 0;
 			script = "TOOLSDIR=\"$PROJECT_DIR/../../bin/mac\"\nif [ -e \"$TOOLSDIR/lua\" ]; then\n    LUA_DIR=\"$TOOLSDIR\"\nelse\n    echo \"ERROR: cannot find 'lua' in $TOOLSDIR\"\n    exit 1\nfi\n\n\"$LUA_DIR\"/lua $SRCROOT/../../bin/rcc.lua -c \"$LUA_DIR\" -O$CONFIGURATION -o \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\"/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH\n";
 		};
-		A46936A2169D6A0700723568 /* PBXBuildRule */ = {
+		F50E7EBE24FA923B009F165B /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
@@ -448,20 +554,6 @@
 			remoteGlobalIDString = A4B93ED917596543003466CC;
 			remoteInfo = tachyon;
 		};
-		A46936AB169D6A6C00723568 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A4841094151147BE0074BD57;
-			remoteInfo = libplayer;
-		};
-		A4698824169E31D900EAA645 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A469363D169D69EF00723568;
-			remoteInfo = "libtemplate-trial";
-		};
 		A47098D6169EA0F400D31091 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -581,13 +673,6 @@
 			remoteGlobalIDString = A47098A4169E9F2400D31091;
 			remoteInfo = libplayer;
 		};
-		A4F2AE2D16E0AF9500814C7B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A469363D169D69EF00723568;
-			remoteInfo = "libplayer-trial";
-		};
 		A4F2AE3016E16A6900814C7B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -595,12 +680,523 @@
 			remoteGlobalIDString = A4F2ADC316E0AF2E00814C7B;
 			remoteInfo = libtemplate;
 		};
-		A4F2AE3216E16A6F00814C7B /* PBXContainerItemProxy */ = {
+		F52611322500142B00671DFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F5261130250013F900671DFE;
+			remoteInfo = "tachyon-angle";
+		};
+		F52611712500143100671DFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F5261110250013F900671DFE;
+			remoteInfo = "tachyon-angle";
+		};
+		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A60525323464F51005CEA98;
+			remoteInfo = MetalANGLE;
+		};
+		F5C36A7F24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A93697A244CCFDE00B3497E;
+			remoteInfo = MetalANGLE_static;
+		};
+		F5C36A8124FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936F22244CEFA800B3497E;
+			remoteInfo = angle_base;
+		};
+		F5C36A8324FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A6055C123465399005CEA98;
+			remoteInfo = angle_metal_backend;
+		};
+		F5C36A8524FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A9A6AAA23911BBB006A152A;
+			remoteInfo = angle_gl_backend;
+		};
+		F5C36A8724FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A60602A23466F1C005CEA98;
+			remoteInfo = angle_image_util;
+		};
+		F5C36A8924FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9AA2346F0FA00E0B98C;
+			remoteInfo = glslang;
+		};
+		F5C36A8B24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9B72346F10600E0B98C;
+			remoteInfo = "spirv-cross";
+		};
+		F5C36A8D24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9C42346F30C00E0B98C;
+			remoteInfo = jsoncpp;
+		};
+		F5C36A8F24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFF0234734AD00E0B98C;
+			remoteInfo = angle_util;
+		};
+		F5C36A9124FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2003F23473BDD00E0B98C;
+			remoteInfo = angle_common;
+		};
+		F5C36A9324FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E493234867E9007CA616;
+			remoteInfo = sample_util;
+		};
+		F5C36A9524FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F9BD24065C0C005BA9A8;
+			remoteInfo = MetalANGLE_mac;
+		};
+		F5C36A9724FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936BC4244CD98B00B3497E;
+			remoteInfo = MetalANGLE_static_mac;
+		};
+		F5C36A9924FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A93703D244CF03700B3497E;
+			remoteInfo = angle_base_mac;
+		};
+		F5C36A9B24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F77724065B06005BA9A8;
+			remoteInfo = angle_metal_backend_mac;
+		};
+		F5C36A9D24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F75824065AF8005BA9A8;
+			remoteInfo = angle_gl_backend_mac;
+		};
+		F5C36A9F24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F72B24065ADE005BA9A8;
+			remoteInfo = angle_image_util_mac;
+		};
+		F5C36AA124FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F71F24065ACE005BA9A8;
+			remoteInfo = glslang_mac;
+		};
+		F5C36AA324FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6ED24065AC0005BA9A8;
+			remoteInfo = "spirv-cross_mac";
+		};
+		F5C36AA524FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6DC24065AB5005BA9A8;
+			remoteInfo = jsoncpp_mac;
+		};
+		F5C36AA724FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6D124065AA6005BA9A8;
+			remoteInfo = angle_util_mac;
+		};
+		F5C36AA924FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6BC24065A95005BA9A8;
+			remoteInfo = angle_common_mac;
+		};
+		F5C36AAB24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FA0124065F4B005BA9A8;
+			remoteInfo = sample_util_mac;
+		};
+		F5C36AAD24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF9599A244C7CD700F59740;
+			remoteInfo = MetalANGLE_tvos;
+		};
+		F5C36AAF24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936E0A244CD9AA00B3497E;
+			remoteInfo = MetalANGLE_static_tvos;
+		};
+		F5C36AB124FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A937154244CF04900B3497E;
+			remoteInfo = angle_base_tvos;
+		};
+		F5C36AB324FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95755244C7CC300F59740;
+			remoteInfo = angle_metal_backend_tvos;
+		};
+		F5C36AB524FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95731244C7CB200F59740;
+			remoteInfo = angle_gl_backend_tvos;
+		};
+		F5C36AB724FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956C6244C7C5100F59740;
+			remoteInfo = "spirv-cross_tvos";
+		};
+		F5C36AB924FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956F8244C7C8700F59740;
+			remoteInfo = glslang_tvos;
+		};
+		F5C36ABB24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95704244C7C9300F59740;
+			remoteInfo = angle_image_util_tvos;
+		};
+		F5C36ABD24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956B5244C7BF300F59740;
+			remoteInfo = jsoncpp_tvos;
+		};
+		F5C36ABF24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A03A9C7244C84EE00E5E114;
+			remoteInfo = angle_util_tvos;
+		};
+		F5C36AC124FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A03A9E5244C850000E5E114;
+			remoteInfo = angle_common_tvos;
+		};
+		F5C36AC324FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF959B3244C7D5800F59740;
+			remoteInfo = sample_util_tvos;
+		};
+		F5C36AC524FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFAB2347260000E0B98C;
+			remoteInfo = MetalANGLE_ios_13.0;
+		};
+		F5C36AC724FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFD0234727A400E0B98C;
+			remoteInfo = angle_metal_backend_ios_13.0;
+		};
+		F5C36AC924FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2011A2347465000E0B98C;
+			remoteInfo = hello_triangle;
+		};
+		F5C36ACB24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E46623485DC7007CA616;
+			remoteInfo = multi_texture;
+		};
+		F5C36ACD24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4B62348700D007CA616;
+			remoteInfo = particle_system;
+		};
+		F5C36ACF24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4DB234871B2007CA616;
+			remoteInfo = simple_texture_2d;
+		};
+		F5C36AD124FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4FE23487239007CA616;
+			remoteInfo = simple_texture_cubemap;
+		};
+		F5C36AD324FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E52023487284007CA616;
+			remoteInfo = simple_vertex_shader;
+		};
+		F5C36AD524FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E541234872BA007CA616;
+			remoteInfo = texture_wrap;
+		};
+		F5C36AD724FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E5682348749C007CA616;
+			remoteInfo = mip_map_2d;
+		};
+		F5C36AD924FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E589234874E2007CA616;
+			remoteInfo = stencil_operations;
+		};
+		F5C36ADB24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0ABF407C235340FE0051488C;
+			remoteInfo = tri_fan_microbench;
+		};
+		F5C36ADD24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB4F2406D93C005BA9A8;
+			remoteInfo = hello_triangle_mac;
+		};
+		F5C36ADF24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB742406DB53005BA9A8;
+			remoteInfo = multi_texture_mac;
+		};
+		F5C36AE124FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB822406DB66005BA9A8;
+			remoteInfo = particle_system_mac;
+		};
+		F5C36AE324FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB902406DB72005BA9A8;
+			remoteInfo = simple_texture_2d_mac;
+		};
+		F5C36AE524FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB9E2406DB80005BA9A8;
+			remoteInfo = simple_texture_cubemap_mac;
+		};
+		F5C36AE724FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBAC2406DB8C005BA9A8;
+			remoteInfo = simple_vertex_shader_mac;
+		};
+		F5C36AE924FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBBA2406DB99005BA9A8;
+			remoteInfo = texture_wrap_mac;
+		};
+		F5C36AEB24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBC82406DBA9005BA9A8;
+			remoteInfo = mip_map_2d_mac;
+		};
+		F5C36AED24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBD62406DBB9005BA9A8;
+			remoteInfo = stencil_operations_mac;
+		};
+		F5C36AEF24FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBE42406DBC8005BA9A8;
+			remoteInfo = tri_fan_microbench_mac;
+		};
+		F5C36AF124FA938200775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF959EB244C7EE900F59740;
+			remoteInfo = simple_vertex_shader_tvos;
+		};
+		F5C36BEB24FAB49F00775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = A4F2ADFA16E0AF7D00814C7B;
-			remoteInfo = "libtemplate-trial";
+			remoteGlobalIDString = A48B825B16D594AA00CA01A1;
+			remoteInfo = CoronaResources;
+		};
+		F5C36BED24FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DCA7E12B05CE200042A5E;
+			remoteInfo = librtt;
+		};
+		F5C36BEF24FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DC8D412B04E5400042A5E;
+			remoteInfo = liblua;
+		};
+		F5C36BF124FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00537D7E154F752C008CEF00;
+			remoteInfo = luafilesystem;
+		};
+		F5C36BF324FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C2F9112F1CDC0F20004A5564;
+			remoteInfo = libluasocket;
+		};
+		F5C36BF524FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DC9BE12B05ACC00042A5E;
+			remoteInfo = libbox2d;
+		};
+		F5C36BF724FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DCC5012B05FF200042A5E;
+			remoteInfo = libalmixer;
+		};
+		F5C36BF924FAB49F00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A49186961642195200A39286 /* plugins.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4FDBF2915DC232600E5001C;
+			remoteInfo = plugins;
+		};
+		F5C36CD124FAB53500775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C36CA724FAB4E900775C6E;
+			remoteInfo = "libplayer-angle";
+		};
+		F5C36CD324FAB55300775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C36BE724FAB49F00775C6E;
+			remoteInfo = "libplayer-core-angle";
+		};
+		F5C36CD724FAB5DD00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C36CA724FAB4E900775C6E;
+			remoteInfo = "libplayer-angle";
+		};
+		F5C36CD924FAB5DD00775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C36CBC24FAB50800775C6E;
+			remoteInfo = "libtemplate-angle";
+		};
+		F5C36CDC24FAB65600775C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A60525223464F51005CEA98;
+			remoteInfo = MetalANGLE;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -614,6 +1210,17 @@
 				A482FAA6183D74950005831B /* CoronaCards.h in Copy Files */,
 			);
 			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36AF524FA93A700775C6E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F5C36AF424FA93A700775C6E /* MetalANGLE.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -715,8 +1322,6 @@
 		A4586812183EE425004C260A /* CoronaView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoronaView.h; sourceTree = "<group>"; };
 		A4586813183EE425004C260A /* CoronaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoronaViewController.h; sourceTree = "<group>"; };
 		A46935C7169D62DA00723568 /* template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = template.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A469366F169D69EF00723568 /* libplayer-trial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-trial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A46936A8169D6A0700723568 /* template-trial.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "template-trial.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A46936B3169DED4700723568 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		A46936B4169DED4700723568 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = SOURCE_ROOT; };
 		A46936B8169DED6500723568 /* CoronaViewPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaViewPrivate.h; path = platform/iphone/CoronaViewPrivate.h; sourceTree = "<group>"; };
@@ -836,7 +1441,6 @@
 		A4EFF1E5169D4AB400EC7EEE /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		A4F12C2616D4379F002BCCFB /* liblicensing.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblicensing.a; path = "../../plugins/build-core/licensing/ios/liblicensing.a"; sourceTree = "<group>"; };
 		A4F2ADF516E0AF2E00814C7B /* libtemplate.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtemplate.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		A4F2AE2C16E0AF7D00814C7B /* libtemplate-trial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libtemplate-trial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4F5C39B184536A000E5ED54 /* AppDelegateTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegateTest.h; path = CoronaCards/Test/AppDelegateTest.h; sourceTree = SOURCE_ROOT; };
 		A4F5C39C184536A000E5ED54 /* AppDelegateTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegateTest.mm; path = CoronaCards/Test/AppDelegateTest.mm; sourceTree = SOURCE_ROOT; };
 		A4F5C39D184536A000E5ED54 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = CoronaCards/Test/ViewController.h; sourceTree = SOURCE_ROOT; };
@@ -863,6 +1467,7 @@
 		C23D8DF21954F30200D6555E /* widget_theme_onOff_mask_android_holo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = widget_theme_onOff_mask_android_holo.png; path = ../../subrepos/widget/widget_theme_onOff_mask_android_holo.png; sourceTree = "<group>"; };
 		C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = _CoronaSplashScreen.png; sourceTree = "<group>"; };
 		C2A6E5301AB0BEE500509FB2 /* widget_theme_ios7@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "widget_theme_ios7@4x.png"; path = "../../subrepos/widget/widget_theme_ios7@4x.png"; sourceTree = "<group>"; };
+		F50E7EC424FA923B009F165B /* template-angle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "template-angle.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleInputDevice.h; sourceTree = "<group>"; };
 		F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleInputDevice.mm; sourceTree = "<group>"; };
 		F564C36A1BE430F900C241E6 /* Rtt_AppleInputDeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleInputDeviceManager.h; sourceTree = "<group>"; };
@@ -872,6 +1477,11 @@
 		F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleFont.mm; sourceTree = "<group>"; };
 		F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = Corona/CoronaLuaObjCHelper.h; sourceTree = SOURCE_ROOT; };
 		F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = Corona/CoronaLuaObjCHelper.mm; sourceTree = SOURCE_ROOT; };
+		F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLES.xcodeproj; path = ../../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj; sourceTree = "<group>"; };
+		F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-core-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5C36CD024FAB50800775C6E /* libtemplate-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libtemplate-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5EC1D2624FCF2720041F6F8 /* Rtt_MetalAngleTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MetalAngleTypes.h; path = platform/iphone/Rtt_MetalAngleTypes.h; sourceTree = "<group>"; };
 		F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AutoLinkModules.m; path = platform/iphone/AutoLinkModules.m; sourceTree = "<group>"; };
 		F804E0E817E3C4890022E24C /* widget_theme_android.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = widget_theme_android.png; path = ../../subrepos/widget/widget_theme_android.png; sourceTree = "<group>"; };
 		F804E0E917E3C4890022E24C /* widget_theme_android@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "widget_theme_android@2x.png"; path = "../../subrepos/widget/widget_theme_android@2x.png"; sourceTree = "<group>"; };
@@ -910,23 +1520,6 @@
 			files = (
 				A46935B8169D62DA00723568 /* libobjc.dylib in Frameworks */,
 				A47098E4169EAB5C00D31091 /* libplayer.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A4693642169D69EF00723568 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A4693643169D69EF00723568 /* libplayer-core.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A469367B169D6A0700723568 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A4693698169D6A0700723568 /* libobjc.dylib in Frameworks */,
-				A4698826169E31E300EAA645 /* libplayer-trial.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1003,11 +1596,47 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A4F2ADFF16E0AF7D00814C7B /* Frameworks */ = {
+		F50E7EB924FA923B009F165B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4F2AE2F16E0AF9E00814C7B /* libplayer-trial.a in Frameworks */,
+				F5C36CDB24FAB5E500775C6E /* libplayer-angle.a in Frameworks */,
+				F50E7EBA24FA923B009F165B /* libobjc.dylib in Frameworks */,
+				F5C36AF324FA93A700775C6E /* MetalANGLE.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36C3B24FAB49F00775C6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */,
+				F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */,
+				F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */,
+				F5C36C3F24FAB49F00775C6E /* liblua.a in Frameworks */,
+				F5C36C4024FAB49F00775C6E /* libluafilesystem.a in Frameworks */,
+				F5C36C4124FAB49F00775C6E /* libluasocket.a in Frameworks */,
+				F5C36C4224FAB49F00775C6E /* librtt.a in Frameworks */,
+				F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */,
+				F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */,
+				F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */,
+				F5C36C4624FAB49F00775C6E /* libnetwork.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CAC24FAB4E900775C6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CD524FAB55B00775C6E /* libplayer-core-angle.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CC124FAB50800775C6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CD624FAB5CC00775C6E /* libplayer-angle.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1148,6 +1777,7 @@
 				A46936EC169DED9300723568 /* Rtt_IPhoneWebViewObject.mm */,
 				A48E9BFA183EFFC500F67CB3 /* Rtt_TouchInhibitor.h */,
 				A48E9BFB183EFFC500F67CB3 /* Rtt_TouchInhibitor.mm */,
+				F5EC1D2624FCF2720041F6F8 /* Rtt_MetalAngleTypes.h */,
 			);
 			name = iphone;
 			path = ../..;
@@ -1172,17 +1802,18 @@
 				A4841095151147BE0074BD57 /* libplayer-core.a */,
 				A43B955C15C779EE003E6F9F /* testplayer-enterprise.app */,
 				A46935C7169D62DA00723568 /* template.app */,
-				A469366F169D69EF00723568 /* libplayer-trial.a */,
-				A46936A8169D6A0700723568 /* template-trial.app */,
 				A47098D5169E9F2400D31091 /* libplayer.a */,
 				A48B825C16D594AA00CA01A1 /* CoronaResources.bundle */,
 				A4F2ADF516E0AF2E00814C7B /* libtemplate.a */,
-				A4F2AE2C16E0AF7D00814C7B /* libtemplate-trial.a */,
 				A482FAA0183D74950005831B /* libCoronaCards.a */,
 				A48E9B9B183EEC8600F67CB3 /* CoronaCardsTest.app */,
 				A48DA9CA18580415009D1F93 /* CoronaCardsTest-Tabs.app */,
 				A40D2F721889151E00B4A354 /* CoronaCardsTest-Ad.app */,
 				A4EF76F51A352B43002D3BEF /* CoronaCardsTest-Swift.app */,
+				F50E7EC424FA923B009F165B /* template-angle.app */,
+				F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */,
+				F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */,
+				F5C36CD024FAB50800775C6E /* libtemplate-angle.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1190,6 +1821,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */,
 				A4B93F9217596F60003466CC /* libtachyon.xcodeproj */,
 				A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */,
 				A49186961642195200A39286 /* plugins.xcodeproj */,
@@ -1504,6 +2136,7 @@
 			isa = PBXGroup;
 			children = (
 				A4B93F9717596F60003466CC /* libtachyon.a */,
+				F52611332500142B00671DFE /* libtachyon-angle.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1617,23 +2250,75 @@
 			path = CoronaCards/Test/en.lproj;
 			sourceTree = SOURCE_ROOT;
 		};
+		F5C36A3F24FA938100775C6E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F5C36A7E24FA938200775C6E /* MetalANGLE.framework */,
+				F5C36A8024FA938200775C6E /* libMetalANGLE_static.a */,
+				F5C36A8224FA938200775C6E /* libangle_base.a */,
+				F5C36A8424FA938200775C6E /* libangle_metal_backend.a */,
+				F5C36A8624FA938200775C6E /* libangle_gl_backend.a */,
+				F5C36A8824FA938200775C6E /* libangle_image_util.a */,
+				F5C36A8A24FA938200775C6E /* libglslang.a */,
+				F5C36A8C24FA938200775C6E /* libspirv-cross.a */,
+				F5C36A8E24FA938200775C6E /* libjsoncpp.a */,
+				F5C36A9024FA938200775C6E /* libangle_util.a */,
+				F5C36A9224FA938200775C6E /* libangle_common.a */,
+				F5C36A9424FA938200775C6E /* sample_util.framework */,
+				F5C36A9624FA938200775C6E /* MetalANGLE.framework */,
+				F5C36A9824FA938200775C6E /* libMetalANGLE_static_mac.a */,
+				F5C36A9A24FA938200775C6E /* libangle_base_mac.a */,
+				F5C36A9C24FA938200775C6E /* libangle_metal_backend_mac.a */,
+				F5C36A9E24FA938200775C6E /* libangle_gl_backend_mac.a */,
+				F5C36AA024FA938200775C6E /* libangle_image_util_mac.a */,
+				F5C36AA224FA938200775C6E /* libglslang_mac.a */,
+				F5C36AA424FA938200775C6E /* libspirv-cross_mac.a */,
+				F5C36AA624FA938200775C6E /* libjsoncpp_mac.a */,
+				F5C36AA824FA938200775C6E /* libangle_util_mac.a */,
+				F5C36AAA24FA938200775C6E /* libangle_common_mac.a */,
+				F5C36AAC24FA938200775C6E /* sample_util_mac.framework */,
+				F5C36AAE24FA938200775C6E /* MetalANGLE.framework */,
+				F5C36AB024FA938200775C6E /* libMetalANGLE_static_tvos.a */,
+				F5C36AB224FA938200775C6E /* libangle_base_tvos.a */,
+				F5C36AB424FA938200775C6E /* libangle_metal_backend_tvos.a */,
+				F5C36AB624FA938200775C6E /* libangle_gl_backend_tvos.a */,
+				F5C36AB824FA938200775C6E /* libspirv-cross_tvos.a */,
+				F5C36ABA24FA938200775C6E /* libglslang_tvos.a */,
+				F5C36ABC24FA938200775C6E /* libangle_image_util_tvos.a */,
+				F5C36ABE24FA938200775C6E /* libjsoncpp_tvos.a */,
+				F5C36AC024FA938200775C6E /* libangle_util_tvos.a */,
+				F5C36AC224FA938200775C6E /* libangle_common_tvos.a */,
+				F5C36AC424FA938200775C6E /* sample_util_tvos.framework */,
+				F5C36AC624FA938200775C6E /* MetalANGLE_ios_13.0.framework */,
+				F5C36AC824FA938200775C6E /* libangle_metal_backend_ios_13.0.a */,
+				F5C36ACA24FA938200775C6E /* hello_triangle.app */,
+				F5C36ACC24FA938200775C6E /* multi_texture.app */,
+				F5C36ACE24FA938200775C6E /* particle_system.app */,
+				F5C36AD024FA938200775C6E /* simple_texture_2d.app */,
+				F5C36AD224FA938200775C6E /* simple_texture_cubemap.app */,
+				F5C36AD424FA938200775C6E /* simple_vertex_shader.app */,
+				F5C36AD624FA938200775C6E /* texture_wrap.app */,
+				F5C36AD824FA938200775C6E /* mip_map_2d.app */,
+				F5C36ADA24FA938200775C6E /* stencil_operations.app */,
+				F5C36ADC24FA938200775C6E /* tri_fan_microbench.app */,
+				F5C36ADE24FA938200775C6E /* hello_triangle_mac.app */,
+				F5C36AE024FA938200775C6E /* multi_texture_mac.app */,
+				F5C36AE224FA938200775C6E /* particle_system_mac.app */,
+				F5C36AE424FA938200775C6E /* simple_texture_2d_mac.app */,
+				F5C36AE624FA938200775C6E /* simple_texture_cubemap_mac.app */,
+				F5C36AE824FA938200775C6E /* simple_vertex_shader_mac.app */,
+				F5C36AEA24FA938200775C6E /* texture_wrap_mac.app */,
+				F5C36AEC24FA938200775C6E /* mip_map_2d_mac.app */,
+				F5C36AEE24FA938200775C6E /* stencil_operations_mac.app */,
+				F5C36AF024FA938200775C6E /* tri_fan_microbench_mac.app */,
+				F5C36AF224FA938200775C6E /* simple_vertex_shader_tvos.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		A4693644169D69EF00723568 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A4693645169D69EF00723568 /* LibPlayerPrefix.pch in Headers */,
-				A4693646169D69EF00723568 /* CoronaApplicationMain.h in Headers */,
-				F5A752181BFA401700CCDB94 /* CoronaLuaObjCHelper.h in Headers */,
-				A4693647169D69EF00723568 /* CoronaDelegate.h in Headers */,
-				A4693648169D69EF00723568 /* CoronaRuntime.h in Headers */,
-				A469364A169D69EF00723568 /* CoronaIOSLoader.h in Headers */,
-				A480725E16CACD6E00960127 /* CoronaLuaIOS.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A47098AB169E9F2400D31091 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1685,6 +2370,7 @@
 				A4C3184C1A67B5B800F186DF /* CoronaOrientationObserver.h in Headers */,
 				A415ECAE1BD861A1003E7114 /* Rtt_IPhonePlatformCore.h in Headers */,
 				F81D63B21A609F8B00C7ADAA /* CoronaAppDelegate.h in Headers */,
+				F5EC1D6424FCF2720041F6F8 /* Rtt_MetalAngleTypes.h in Headers */,
 				A48E9BFC183EFFC500F67CB3 /* Rtt_TouchInhibitor.h in Headers */,
 				A48DA9631852FFBC009D1F93 /* Rtt_RuntimeDelegatePlayer.h in Headers */,
 				A482FAEA183D7F460005831B /* Rtt_IPhonePlatformBase.h in Headers */,
@@ -1714,17 +2400,65 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A4F2AE0116E0AF7D00814C7B /* Headers */ = {
+		F5C36C4724FAB49F00775C6E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4F2AE0216E0AF7D00814C7B /* LibPlayerPrefix.pch in Headers */,
-				A4F2AE0316E0AF7D00814C7B /* CoronaApplicationMain.h in Headers */,
-				F5A7521A1BFA401800CCDB94 /* CoronaLuaObjCHelper.h in Headers */,
-				A4F2AE0416E0AF7D00814C7B /* CoronaDelegate.h in Headers */,
-				A4F2AE0516E0AF7D00814C7B /* CoronaRuntime.h in Headers */,
-				A4F2AE0616E0AF7D00814C7B /* CoronaIOSLoader.h in Headers */,
-				A4F2AE2616E0AF7D00814C7B /* CoronaLuaIOS.h in Headers */,
+				F5C36C4824FAB49F00775C6E /* LibPlayerPrefix.pch in Headers */,
+				F5C36C4924FAB49F00775C6E /* CoronaApplicationMain.h in Headers */,
+				F5C36C4A24FAB49F00775C6E /* CoronaDelegate.h in Headers */,
+				F5C36C4B24FAB49F00775C6E /* Rtt_IPhoneRuntimeDelegate.h in Headers */,
+				F5C36C4C24FAB49F00775C6E /* CoronaLuaObjC+NSObject.h in Headers */,
+				F5C36C4D24FAB49F00775C6E /* CoronaRuntime.h in Headers */,
+				F5C36C4E24FAB49F00775C6E /* CoronaIOSLoader.h in Headers */,
+				F5C36C4F24FAB49F00775C6E /* CoronaLuaObjC.h in Headers */,
+				F5C36C5024FAB49F00775C6E /* CoronaLuaLibrary.h in Headers */,
+				F5C36C5124FAB49F00775C6E /* CoronaViewControllerPrivate.h in Headers */,
+				F5C36C5224FAB49F00775C6E /* AppleWeakProxy.h in Headers */,
+				F5C36C5324FAB49F00775C6E /* CoronaSystemResourceManager.h in Headers */,
+				F5C36C5424FAB49F00775C6E /* CoronaOrientationObserver.h in Headers */,
+				F5C36C5524FAB49F00775C6E /* Rtt_IPhonePlatformCore.h in Headers */,
+				F5C36C5624FAB49F00775C6E /* CoronaAppDelegate.h in Headers */,
+				F5C36C5724FAB49F00775C6E /* Rtt_TouchInhibitor.h in Headers */,
+				F5C36C5824FAB49F00775C6E /* Rtt_RuntimeDelegatePlayer.h in Headers */,
+				F5C36C5924FAB49F00775C6E /* Rtt_IPhonePlatformBase.h in Headers */,
+				F5C36C5A24FAB49F00775C6E /* CoronaGyroscopeObserver.h in Headers */,
+				F5C36C5B24FAB49F00775C6E /* Rtt_AppleInputDevice.h in Headers */,
+				F5C36C5C24FAB49F00775C6E /* CoronaViewPluginContext.h in Headers */,
+				F5C36C5D24FAB49F00775C6E /* CoronaViewRuntimeDelegate.h in Headers */,
+				F5C36C5E24FAB49F00775C6E /* Rtt_IPhoneOrientation.h in Headers */,
+				F5C36C5F24FAB49F00775C6E /* CoronaLuaIOS.h in Headers */,
+				F5C36C6024FAB49F00775C6E /* Rtt_IPhoneText.h in Headers */,
+				F5C36C6124FAB49F00775C6E /* Rtt_IPhoneGLVideoTexture.h in Headers */,
+				F5C36C6224FAB49F00775C6E /* CoronaLuaObjCHelper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CAE24FAB4E900775C6E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CAF24FAB4E900775C6E /* LibPlayerPrefix.pch in Headers */,
+				F5C36CB024FAB4E900775C6E /* CoronaApplicationMain.h in Headers */,
+				F5C36CB124FAB4E900775C6E /* CoronaLuaObjCHelper.h in Headers */,
+				F5C36CB224FAB4E900775C6E /* CoronaDelegate.h in Headers */,
+				F5C36CB324FAB4E900775C6E /* CoronaRuntime.h in Headers */,
+				F5C36CB424FAB4E900775C6E /* CoronaIOSLoader.h in Headers */,
+				F5C36CB524FAB4E900775C6E /* CoronaLuaIOS.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CC324FAB50800775C6E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CC424FAB50800775C6E /* LibPlayerPrefix.pch in Headers */,
+				F5C36CC524FAB50800775C6E /* CoronaApplicationMain.h in Headers */,
+				F5C36CC624FAB50800775C6E /* CoronaLuaObjCHelper.h in Headers */,
+				F5C36CC724FAB50800775C6E /* CoronaDelegate.h in Headers */,
+				F5C36CC824FAB50800775C6E /* CoronaRuntime.h in Headers */,
+				F5C36CC924FAB50800775C6E /* CoronaIOSLoader.h in Headers */,
+				F5C36CCA24FAB50800775C6E /* CoronaLuaIOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1790,46 +2524,6 @@
 			name = template;
 			productName = ratatouille;
 			productReference = A46935C7169D62DA00723568 /* template.app */;
-			productType = "com.apple.product-type.application";
-		};
-		A469363D169D69EF00723568 /* libplayer-trial */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A469366A169D69EF00723568 /* Build configuration list for PBXNativeTarget "libplayer-trial" */;
-			buildPhases = (
-				A4693640169D69EF00723568 /* Sources */,
-				A4693642169D69EF00723568 /* Frameworks */,
-				A4693644169D69EF00723568 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A46936AC169D6A6C00723568 /* PBXTargetDependency */,
-			);
-			name = "libplayer-trial";
-			productName = libcorona;
-			productReference = A469366F169D69EF00723568 /* libplayer-trial.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		A4693670169D6A0700723568 /* template-trial */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A46936A3169D6A0700723568 /* Build configuration list for PBXNativeTarget "template-trial" */;
-			buildPhases = (
-				A4693673169D6A0700723568 /* Resources */,
-				A4693679169D6A0700723568 /* Sources */,
-				A469367B169D6A0700723568 /* Frameworks */,
-				A469369E169D6A0700723568 /* Script: CopyResources and resource.corona-archive */,
-				A46936A0169D6A0700723568 /* Script: build.settings to Info.plist */,
-			);
-			buildRules = (
-				A46936A2169D6A0700723568 /* PBXBuildRule */,
-			);
-			dependencies = (
-				A4F2AE3316E16A6F00814C7B /* PBXTargetDependency */,
-				A4698825169E31D900EAA645 /* PBXTargetDependency */,
-			);
-			name = "template-trial";
-			productName = ratatouille;
-			productReference = A46936A8169D6A0700723568 /* template-trial.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A47098A4169E9F2400D31091 /* libplayer */ = {
@@ -1992,22 +2686,90 @@
 			productReference = A4F2ADF516E0AF2E00814C7B /* libtemplate.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		A4F2ADFA16E0AF7D00814C7B /* libtemplate-trial */ = {
+		F50E7EAC24FA923B009F165B /* template-angle */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A4F2AE2716E0AF7D00814C7B /* Build configuration list for PBXNativeTarget "libtemplate-trial" */;
+			buildConfigurationList = F50E7EBF24FA923B009F165B /* Build configuration list for PBXNativeTarget "template-angle" */;
 			buildPhases = (
-				A4F2ADFD16E0AF7D00814C7B /* Sources */,
-				A4F2ADFF16E0AF7D00814C7B /* Frameworks */,
-				A4F2AE0116E0AF7D00814C7B /* Headers */,
+				F50E7EB124FA923B009F165B /* Resources */,
+				F50E7EB724FA923B009F165B /* Sources */,
+				F50E7EB924FA923B009F165B /* Frameworks */,
+				F50E7EBC24FA923B009F165B /* Script: CopyResources and resource.corona-archive */,
+				F50E7EBD24FA923B009F165B /* Script: build.settings to Info.plist */,
+				F5C36AF524FA93A700775C6E /* Embed Frameworks */,
+			);
+			buildRules = (
+				F50E7EBE24FA923B009F165B /* PBXBuildRule */,
+			);
+			dependencies = (
+				F5C36CD824FAB5DD00775C6E /* PBXTargetDependency */,
+				F5C36CDA24FAB5DD00775C6E /* PBXTargetDependency */,
+			);
+			name = "template-angle";
+			productName = ratatouille;
+			productReference = F50E7EC424FA923B009F165B /* template-angle.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F5C36BE724FAB49F00775C6E /* libplayer-core-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C36C6324FAB49F00775C6E /* Build configuration list for PBXNativeTarget "libplayer-core-angle" */;
+			buildPhases = (
+				F5C36BFA24FAB49F00775C6E /* Sources */,
+				F5C36C3B24FAB49F00775C6E /* Frameworks */,
+				F5C36C4724FAB49F00775C6E /* Headers */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				A4F2AE2E16E0AF9500814C7B /* PBXTargetDependency */,
+				F5C36CDD24FAB65600775C6E /* PBXTargetDependency */,
+				F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */,
+				F52611722500143100671DFE /* PBXTargetDependency */,
+				F5C36BEC24FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BEE24FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF024FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF224FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF424FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF624FAB49F00775C6E /* PBXTargetDependency */,
+				F5C36BF824FAB49F00775C6E /* PBXTargetDependency */,
 			);
-			name = "libtemplate-trial";
+			name = "libplayer-core-angle";
 			productName = libcorona;
-			productReference = A4F2AE2C16E0AF7D00814C7B /* libtemplate-trial.a */;
+			productReference = F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		F5C36CA724FAB4E900775C6E /* libplayer-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C36CB624FAB4E900775C6E /* Build configuration list for PBXNativeTarget "libplayer-angle" */;
+			buildPhases = (
+				F5C36CAA24FAB4E900775C6E /* Sources */,
+				F5C36CAC24FAB4E900775C6E /* Frameworks */,
+				F5C36CAE24FAB4E900775C6E /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5C36CD424FAB55300775C6E /* PBXTargetDependency */,
+			);
+			name = "libplayer-angle";
+			productName = libcorona;
+			productReference = F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		F5C36CBC24FAB50800775C6E /* libtemplate-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C36CCB24FAB50800775C6E /* Build configuration list for PBXNativeTarget "libtemplate-angle" */;
+			buildPhases = (
+				F5C36CBF24FAB50800775C6E /* Sources */,
+				F5C36CC124FAB50800775C6E /* Frameworks */,
+				F5C36CC324FAB50800775C6E /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5C36CD224FAB53500775C6E /* PBXTargetDependency */,
+			);
+			name = "libtemplate-angle";
+			productName = libcorona;
+			productReference = F5C36CD024FAB50800775C6E /* libtemplate-angle.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -2023,7 +2785,6 @@
 						DevelopmentTeam = BG2J43EA88;
 					};
 					A4693558169D62DA00723568 = {
-						DevelopmentTeam = BG2J43EA88;
 						LastSwiftMigration = 0820;
 					};
 					A47098A4169E9F2400D31091 = {
@@ -2070,6 +2831,10 @@
 					ProjectRef = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
 				},
 				{
+					ProductGroup = F5C36A3F24FA938100775C6E /* Products */;
+					ProjectRef = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+				},
+				{
 					ProductGroup = A49186971642195200A39286 /* Products */;
 					ProjectRef = A49186961642195200A39286 /* plugins.xcodeproj */;
 				},
@@ -2078,13 +2843,14 @@
 			targets = (
 				A48B825B16D594AA00CA01A1 /* CoronaResources */,
 				A4841094151147BE0074BD57 /* libplayer-core */,
+				F5C36BE724FAB49F00775C6E /* libplayer-core-angle */,
 				A47098A4169E9F2400D31091 /* libplayer */,
-				A469363D169D69EF00723568 /* libplayer-trial */,
+				F5C36CA724FAB4E900775C6E /* libplayer-angle */,
 				A43B955B15C779EE003E6F9F /* testplayer-enterprise */,
 				A4F2ADC316E0AF2E00814C7B /* libtemplate */,
-				A4F2ADFA16E0AF7D00814C7B /* libtemplate-trial */,
+				F5C36CBC24FAB50800775C6E /* libtemplate-angle */,
 				A4693558169D62DA00723568 /* template */,
-				A4693670169D6A0700723568 /* template-trial */,
+				F50E7EAC24FA923B009F165B /* template-angle */,
 				A482FA9F183D74950005831B /* CoronaCards */,
 				A482FADF183D7B860005831B /* CoronaCards.framework */,
 				A48E9B9A183EEC8600F67CB3 /* CoronaCardsTest */,
@@ -2166,6 +2932,426 @@
 			remoteRef = A4B93F9617596F60003466CC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		F52611332500142B00671DFE /* libtachyon-angle.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libtachyon-angle.a";
+			remoteRef = F52611322500142B00671DFE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A7E24FA938200775C6E /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A8024FA938200775C6E /* libMetalANGLE_static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static.a;
+			remoteRef = F5C36A7F24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A8224FA938200775C6E /* libangle_base.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base.a;
+			remoteRef = F5C36A8124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A8424FA938200775C6E /* libangle_metal_backend.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend.a;
+			remoteRef = F5C36A8324FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A8624FA938200775C6E /* libangle_gl_backend.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend.a;
+			remoteRef = F5C36A8524FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A8824FA938200775C6E /* libangle_image_util.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util.a;
+			remoteRef = F5C36A8724FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A8A24FA938200775C6E /* libglslang.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang.a;
+			remoteRef = F5C36A8924FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A8C24FA938200775C6E /* libspirv-cross.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross.a";
+			remoteRef = F5C36A8B24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A8E24FA938200775C6E /* libjsoncpp.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp.a;
+			remoteRef = F5C36A8D24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A9024FA938200775C6E /* libangle_util.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util.a;
+			remoteRef = F5C36A8F24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A9224FA938200775C6E /* libangle_common.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common.a;
+			remoteRef = F5C36A9124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A9424FA938200775C6E /* sample_util.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util.framework;
+			remoteRef = F5C36A9324FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A9624FA938200775C6E /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = F5C36A9524FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A9824FA938200775C6E /* libMetalANGLE_static_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static_mac.a;
+			remoteRef = F5C36A9724FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A9A24FA938200775C6E /* libangle_base_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base_mac.a;
+			remoteRef = F5C36A9924FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A9C24FA938200775C6E /* libangle_metal_backend_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_mac.a;
+			remoteRef = F5C36A9B24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36A9E24FA938200775C6E /* libangle_gl_backend_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend_mac.a;
+			remoteRef = F5C36A9D24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AA024FA938200775C6E /* libangle_image_util_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util_mac.a;
+			remoteRef = F5C36A9F24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AA224FA938200775C6E /* libglslang_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang_mac.a;
+			remoteRef = F5C36AA124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AA424FA938200775C6E /* libspirv-cross_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross_mac.a";
+			remoteRef = F5C36AA324FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AA624FA938200775C6E /* libjsoncpp_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp_mac.a;
+			remoteRef = F5C36AA524FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AA824FA938200775C6E /* libangle_util_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util_mac.a;
+			remoteRef = F5C36AA724FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AAA24FA938200775C6E /* libangle_common_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common_mac.a;
+			remoteRef = F5C36AA924FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AAC24FA938200775C6E /* sample_util_mac.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util_mac.framework;
+			remoteRef = F5C36AAB24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AAE24FA938200775C6E /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = F5C36AAD24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AB024FA938200775C6E /* libMetalANGLE_static_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static_tvos.a;
+			remoteRef = F5C36AAF24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AB224FA938200775C6E /* libangle_base_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base_tvos.a;
+			remoteRef = F5C36AB124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AB424FA938200775C6E /* libangle_metal_backend_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_tvos.a;
+			remoteRef = F5C36AB324FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AB624FA938200775C6E /* libangle_gl_backend_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend_tvos.a;
+			remoteRef = F5C36AB524FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AB824FA938200775C6E /* libspirv-cross_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross_tvos.a";
+			remoteRef = F5C36AB724FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ABA24FA938200775C6E /* libglslang_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang_tvos.a;
+			remoteRef = F5C36AB924FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ABC24FA938200775C6E /* libangle_image_util_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util_tvos.a;
+			remoteRef = F5C36ABB24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ABE24FA938200775C6E /* libjsoncpp_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp_tvos.a;
+			remoteRef = F5C36ABD24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AC024FA938200775C6E /* libangle_util_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util_tvos.a;
+			remoteRef = F5C36ABF24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AC224FA938200775C6E /* libangle_common_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common_tvos.a;
+			remoteRef = F5C36AC124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AC424FA938200775C6E /* sample_util_tvos.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util_tvos.framework;
+			remoteRef = F5C36AC324FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AC624FA938200775C6E /* MetalANGLE_ios_13.0.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE_ios_13.0.framework;
+			remoteRef = F5C36AC524FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AC824FA938200775C6E /* libangle_metal_backend_ios_13.0.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_ios_13.0.a;
+			remoteRef = F5C36AC724FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ACA24FA938200775C6E /* hello_triangle.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = hello_triangle.app;
+			remoteRef = F5C36AC924FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ACC24FA938200775C6E /* multi_texture.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = multi_texture.app;
+			remoteRef = F5C36ACB24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ACE24FA938200775C6E /* particle_system.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = particle_system.app;
+			remoteRef = F5C36ACD24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AD024FA938200775C6E /* simple_texture_2d.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_2d.app;
+			remoteRef = F5C36ACF24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AD224FA938200775C6E /* simple_texture_cubemap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_cubemap.app;
+			remoteRef = F5C36AD124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AD424FA938200775C6E /* simple_vertex_shader.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader.app;
+			remoteRef = F5C36AD324FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AD624FA938200775C6E /* texture_wrap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = texture_wrap.app;
+			remoteRef = F5C36AD524FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AD824FA938200775C6E /* mip_map_2d.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mip_map_2d.app;
+			remoteRef = F5C36AD724FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ADA24FA938200775C6E /* stencil_operations.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = stencil_operations.app;
+			remoteRef = F5C36AD924FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ADC24FA938200775C6E /* tri_fan_microbench.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = tri_fan_microbench.app;
+			remoteRef = F5C36ADB24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36ADE24FA938200775C6E /* hello_triangle_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = hello_triangle_mac.app;
+			remoteRef = F5C36ADD24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AE024FA938200775C6E /* multi_texture_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = multi_texture_mac.app;
+			remoteRef = F5C36ADF24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AE224FA938200775C6E /* particle_system_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = particle_system_mac.app;
+			remoteRef = F5C36AE124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AE424FA938200775C6E /* simple_texture_2d_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_2d_mac.app;
+			remoteRef = F5C36AE324FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AE624FA938200775C6E /* simple_texture_cubemap_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_cubemap_mac.app;
+			remoteRef = F5C36AE524FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AE824FA938200775C6E /* simple_vertex_shader_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader_mac.app;
+			remoteRef = F5C36AE724FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AEA24FA938200775C6E /* texture_wrap_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = texture_wrap_mac.app;
+			remoteRef = F5C36AE924FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AEC24FA938200775C6E /* mip_map_2d_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mip_map_2d_mac.app;
+			remoteRef = F5C36AEB24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AEE24FA938200775C6E /* stencil_operations_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = stencil_operations_mac.app;
+			remoteRef = F5C36AED24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AF024FA938200775C6E /* tri_fan_microbench_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = tri_fan_microbench_mac.app;
+			remoteRef = F5C36AEF24FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C36AF224FA938200775C6E /* simple_vertex_shader_tvos.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader_tvos.app;
+			remoteRef = F5C36AF124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -2201,17 +3387,6 @@
 				A4693568169D62DA00723568 /* MainWindow.xib in Resources */,
 				A4693569169D62DA00723568 /* MainWindow-iPad.xib in Resources */,
 				A469356B169D62DA00723568 /* Corona3rdPartyLicenses.txt in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A4693673169D6A0700723568 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A48B827516D595C900CA01A1 /* CoronaResources.bundle in Resources */,
-				A4693674169D6A0700723568 /* MainWindow.xib in Resources */,
-				A4693675169D6A0700723568 /* MainWindow-iPad.xib in Resources */,
-				A4693677169D6A0700723568 /* Corona3rdPartyLicenses.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2267,6 +3442,18 @@
 				A4EF77271A352B44002D3BEF /* Images.xcassets in Resources */,
 				A4EF772A1A352B44002D3BEF /* LaunchScreen.xib in Resources */,
 				A4EF77251A352B44002D3BEF /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50E7EB124FA923B009F165B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F50E7EB224FA923B009F165B /* _CoronaSplashScreen.png in Resources */,
+				F50E7EB324FA923B009F165B /* CoronaResources.bundle in Resources */,
+				F50E7EB424FA923B009F165B /* MainWindow.xib in Resources */,
+				F50E7EB524FA923B009F165B /* MainWindow-iPad.xib in Resources */,
+				F50E7EB624FA923B009F165B /* Corona3rdPartyLicenses.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2422,36 +3609,6 @@
 			shellScript = "TOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUA=\"$TOOLCHAIN_DIR/lua\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A469369E169D6A0700723568 /* Script: CopyResources and resource.corona-archive */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Script: CopyResources and resource.corona-archive";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n# If a folder called assets2 exists, use that instead of assets because assets2 wasn't put accidentally under hg revision control.\necho \"$PROJECT_DIR\"/../test/assets2/main.lua \nif [ -f \"$PROJECT_DIR\"/../test/assets2/main.lua ]; then\n    echo \"$CONFIGURATION: Building resource.corona-archive\"\n\n\t$TOOLCHAIN_DIR/CopyResources.sh $CONFIGURATION \"$PROJECT_DIR\"/../test/assets2 \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\" \"$BUILT_PRODUCTS_DIR\"\n\n    echo \"EXECUTABLE_FOLDER_PATH $EXECUTABLE_FOLDER_PATH\"\n\n    CONFIG_META=\"$BUILT_PRODUCTS_DIR/config.metadata.lua\"\n    PROJECT_NAME=`basename \"$PROJECT_DIR\"`\necho \"Creating $CONFIG_META...\"\ncat <<EOF > \"$CONFIG_META\"\n-- Ensure existence of \"application\" table\nif not application or type( application ) ~= \"table\" then\n    application = {}\nend\n\napplication.metadata = {\n    appName = \"$PROJECT_NAME\",\n    appVersion = \"1.0\",\n    appPackageId = \"com.anscamobile.$PROJECT_NAME\",\n    appId = \"0123456789\",\n    userId = \"345\", -- drupal user id\n    subscription = \"pro\", -- either \"trial\", \"pro\", \"indie-ios\", \"indie-android\"\n    mode = \"developer\", -- either \"developer\" or nil (where nil means distribution/store)\n}\nEOF\n\n    # Concatenate config.metadata.lua into config.lu overwriting original config.lu\n    LUAC=$TOOLCHAIN_DIR/luac\n    CONFIG_DST=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/config.lu\"\n    CONFIG_SRC=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/config.orig.lu\"\n    if [ ! -e \"$CONFIG_DST\" ];\n    then\n        touch \"$CONFIG_SRC\"\n    else\n        mv \"$CONFIG_DST\" \"$CONFIG_SRC\"\n    fi\n   \n    \"$LUAC\" -s -o \"$CONFIG_DST\" \"$CONFIG_SRC\" \"$CONFIG_META\"\n    rm \"$CONFIG_SRC\"\n    rm \"$CONFIG_META\"\n\n    # Create resource.corona-archive from *.lu\n\techo Archiving \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/*.lu\" into \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\"\n\t$TOOLCHAIN_DIR/car \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"*.lu\n\n\techo Removing: \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/*.lu\"\n\trm -f \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"*.lu\nelse\n\techo \"Skipping creation of resource.corona-archive for template builds\"\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		A46936A0169D6A0700723568 /* Script: build.settings to Info.plist */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Script: build.settings to Info.plist";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$TOOLCHAIN_DIR\"/lua \"TOOLCHAIN_DIR/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$TOOLCHAIN_DIR\"/lua \"$TOOLCHAIN_DIR/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
-			showEnvVarsInLog = 0;
-		};
 		A482FACE183D79A50005831B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2494,6 +3651,36 @@
 			shellPath = /bin/sh;
 			shellScript = "echo \"Copying Corona\"\nditto -V \"$PROJECT_DIR\"/../test/assets2 \"$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH\"";
 		};
+		F50E7EBC24FA923B009F165B /* Script: CopyResources and resource.corona-archive */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Script: CopyResources and resource.corona-archive";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUAC=\"$TOOLCHAIN_DIR/luac\"\nCAR=\"$TOOLCHAIN_DIR/car\"\n\n# If a folder called assets2 exists, use that instead of assets because assets2 wasn't put accidentally under hg revision control.\necho \"$PROJECT_DIR\"/../test/assets2/main.lua \nif [ -f \"$PROJECT_DIR\"/../test/assets2/main.lua ]; then\n    echo \"$CONFIGURATION: Building resource.corona-archive\"\n\n\t$TOOLCHAIN_DIR/CopyResources.sh $CONFIGURATION \"$PROJECT_DIR\"/../test/assets2 \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\" \"$LUA_DIR\"\n\n    echo \"EXECUTABLE_FOLDER_PATH $EXECUTABLE_FOLDER_PATH\"\n\n    CONFIG_META=\"$BUILT_PRODUCTS_DIR/config.metadata.lua\"\n    PROJECT_NAME=`basename \"$PROJECT_DIR\"`\necho \"Creating $CONFIG_META...\"\ncat <<EOF > \"$CONFIG_META\"\n-- Ensure existence of \"application\" table\nif not application or type( application ) ~= \"table\" then\n    application = {}\nend\n\napplication.metadata = {\n    appName = \"$PROJECT_NAME\",\n    appVersion = \"1.0\",\n    appPackageId = \"com.anscamobile.$PROJECT_NAME\",\n    appId = \"0123456789\",\n    userId = \"345\", -- drupal user id\n    subscription = \"pro\", -- either \"trial\", \"pro\", \"indie-ios\", \"indie-android\"\n    mode = \"developer\", -- either \"developer\" or nil (where nil means distribution/store)\n    build = \"42\",\n}\n\n-- application.launchPad = false -- not set is the same as true\n\nEOF\n\n\techo \"********* user($USER_ID) sub($SUB_TYPE) mode($MODE_TYPE)\"\n\tCONFIG_REQUIRE=\"$PROJECT_DIR\"/../resources/config_require.lua\n\n\t# Write out new config.lu into input dir\n\t# \n\t# Our library restriction code relies on metadata and hijacking of 'require'\n\t# This code is implemented by these 2 blocks: (\"$CONFIG_META\" \"$CONFIG_REQUIRE\").\n\t# \n\t# IMPORTANT: We must _prepend_ this library restriction code at the BEGINNING!\n\t# That is, it must execute BEFORE the original config.lua ($CONFIG_SRC).\n\t# If we put it after the original config.lua, then the developer could bypass\n\t# our restriction code via a 'return' at the end of the original config.lua.\n\t#\n\t# NOTE: Historically, we just appended the original with \"$CONFIG_META\". We\n\t# continue to append $CONFIG_META at the end even though we also prepend at the\n\t# beginning. This is because in the pre-library-restriction world, we always\n\t# appended this, so to avoid any unforseen backward compatibility issues, we \n\t# continue to append it.\n\t# \n\n    # Concatenate config.metadata.lua into config.lu overwriting original config.lu\n    CONFIG_DST=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/config.lu\"\n    CONFIG_SRC=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/config.orig.lu\"\n    if [ ! -e \"$CONFIG_DST\" ];\n    then\n        touch \"$CONFIG_SRC\"\n    else\n        mv \"$CONFIG_DST\" \"$CONFIG_SRC\"\n    fi\n   \n\tif [ -e \"$CONFIG_REQUIRE\" ]\n\tthen\n\t\t# Enforce library restriction\n\t\techo \"********** Enforce Library Restriction *******\"\n        \"$LUAC\" -s -o \"$CONFIG_DST\" \"$CONFIG_META\" \"$CONFIG_REQUIRE\" \"$CONFIG_SRC\" \"$CONFIG_META\"\n\telse\n\t\t# Backwards compatibility for pre-Colossus (pre-Free) era\n\t\techo \"********** Backwards compatibility  *******\"\n        \"$LUAC\" -s -o \"$CONFIG_DST\" \"$CONFIG_SRC\" \"$CONFIG_META\"\n\tfi\n\n    rm \"$CONFIG_SRC\"\n    rm \"$CONFIG_META\"\n\n    # Create resource.corona-archive from *.lu\n\techo Archiving \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/*.lu\" into \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\"\n\t\"$CAR\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/resource.corona-archive\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"*.lu\n\n\techo Removing: \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/*.lu\"\n\trm -f \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"*.lu\nelse\n\techo \"Skipping creation of resource.corona-archive for template builds\"\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		F50E7EBD24FA923B009F165B /* Script: build.settings to Info.plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Script: build.settings to Info.plist";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUA=\"$TOOLCHAIN_DIR/lua\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -2522,22 +3709,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4698839169E642E00EAA645 /* main.mm in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A4693640169D69EF00723568 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A469881F169E24A500EAA645 /* Rtt_IPhoneTemplate-Trial.mm in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A4693679169D6A0700723568 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A469883A169E642E00EAA645 /* main.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2713,11 +3884,98 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A4F2ADFD16E0AF7D00814C7B /* Sources */ = {
+		F50E7EB724FA923B009F165B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4F2ADFE16E0AF7D00814C7B /* main.mm in Sources */,
+				F50E7EB824FA923B009F165B /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36BFA24FAB49F00775C6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36BFB24FAB49F00775C6E /* CoronaBeacon.mm in Sources */,
+				F5C36BFC24FAB49F00775C6E /* AppleWeakProxy.mm in Sources */,
+				F5C36BFD24FAB49F00775C6E /* Rtt_IPhonePlatformCore.mm in Sources */,
+				F5C36BFE24FAB49F00775C6E /* CoronaSystemResourceManager.mm in Sources */,
+				F5C36BFF24FAB49F00775C6E /* Rtt_IPhoneMediaProvider.mm in Sources */,
+				F5C36C0024FAB49F00775C6E /* Rtt_AppleAudioRecorder.mm in Sources */,
+				F5C36C0124FAB49F00775C6E /* Rtt_AppleBitmap.mm in Sources */,
+				F5C36C0224FAB49F00775C6E /* Rtt_AppleCallback.mm in Sources */,
+				F5C36C0324FAB49F00775C6E /* Rtt_AppleData.mm in Sources */,
+				F5C36C0424FAB49F00775C6E /* Rtt_AppleInAppStore.mm in Sources */,
+				F5C36C0524FAB49F00775C6E /* Rtt_AppleInAppStoreApple.mm in Sources */,
+				F5C36C0624FAB49F00775C6E /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */,
+				F5C36C0724FAB49F00775C6E /* Rtt_ApplePlatform.mm in Sources */,
+				F5C36C0824FAB49F00775C6E /* Rtt_IPhoneOrientation.mm in Sources */,
+				F5C36C0924FAB49F00775C6E /* Rtt_AppleReachability.mm in Sources */,
+				F5C36C0A24FAB49F00775C6E /* Rtt_AppleTimer.mm in Sources */,
+				F5C36C0B24FAB49F00775C6E /* Rtt_AppleAudioPlayer.cpp in Sources */,
+				F5C36C0C24FAB49F00775C6E /* Rtt_AppleCrypto.cpp in Sources */,
+				F5C36C0D24FAB49F00775C6E /* Rtt_AppleEventSound.cpp in Sources */,
+				F5C36C0E24FAB49F00775C6E /* Rtt_AppleTextDelegateWrapperObjectHelper.m in Sources */,
+				F5C36C0F24FAB49F00775C6E /* CoronaApplicationMain.mm in Sources */,
+				F5C36C1024FAB49F00775C6E /* AppDelegate.mm in Sources */,
+				F5C36C1124FAB49F00775C6E /* Rtt_IPhoneText.mm in Sources */,
+				F5C36C1224FAB49F00775C6E /* CoronaViewPrivate.mm in Sources */,
+				F5C36C1324FAB49F00775C6E /* Rtt_IPhoneAudioSessionManager.mm in Sources */,
+				F5C36C1424FAB49F00775C6E /* Rtt_IPhoneAudioSessionManagerImplementation.mm in Sources */,
+				F5C36C1524FAB49F00775C6E /* AutoLinkModules.m in Sources */,
+				F5C36C1624FAB49F00775C6E /* CoronaLuaObjC+NSObject.m in Sources */,
+				F5C36C1724FAB49F00775C6E /* Rtt_IPhoneDevice.mm in Sources */,
+				F5C36C1824FAB49F00775C6E /* Rtt_IPhoneDisplayObject.mm in Sources */,
+				F5C36C1924FAB49F00775C6E /* Rtt_IPhoneFont.mm in Sources */,
+				F5C36C1A24FAB49F00775C6E /* CoronaViewRuntimeDelegate.mm in Sources */,
+				F5C36C1B24FAB49F00775C6E /* Rtt_RuntimeDelegatePlayer.cpp in Sources */,
+				F5C36C1C24FAB49F00775C6E /* Rtt_IPhoneImageProvider.mm in Sources */,
+				F5C36C1D24FAB49F00775C6E /* Rtt_IPhoneMapViewObject.mm in Sources */,
+				F5C36C1E24FAB49F00775C6E /* Rtt_IPhonePlatform.mm in Sources */,
+				F5C36C1F24FAB49F00775C6E /* CoronaLuaObjC.mm in Sources */,
+				F5C36C2024FAB49F00775C6E /* Rtt_IPhoneScreenSurface.mm in Sources */,
+				F5C36C2124FAB49F00775C6E /* Rtt_IPhoneRuntimeDelegate.mm in Sources */,
+				F5C36C2224FAB49F00775C6E /* CoronaAppDelegate.mm in Sources */,
+				F5C36C2324FAB49F00775C6E /* Rtt_IPhoneTextBoxObject.mm in Sources */,
+				F5C36C2424FAB49F00775C6E /* Rtt_IPhoneTextFieldObject.mm in Sources */,
+				F5C36C2524FAB49F00775C6E /* Rtt_IPhoneVideoObject.mm in Sources */,
+				F5C36C2624FAB49F00775C6E /* Rtt_IPhoneVideoPlayer.mm in Sources */,
+				F5C36C2724FAB49F00775C6E /* Rtt_AppleInputDevice.mm in Sources */,
+				F5C36C2824FAB49F00775C6E /* Rtt_IPhoneVideoProvider.mm in Sources */,
+				F5C36C2924FAB49F00775C6E /* Rtt_TouchInhibitor.mm in Sources */,
+				F5C36C2A24FAB49F00775C6E /* Rtt_IPhoneWebPopup.mm in Sources */,
+				F5C36C2B24FAB49F00775C6E /* CoronaViewPluginContext.mm in Sources */,
+				F5C36C2C24FAB49F00775C6E /* Rtt_IPhoneWebViewObject.mm in Sources */,
+				F5C36C2D24FAB49F00775C6E /* Rtt_AppleInputMFiDeviceListener.mm in Sources */,
+				F5C36C2E24FAB49F00775C6E /* CoronaLuaIOS.mm in Sources */,
+				F5C36C2F24FAB49F00775C6E /* Rtt_AppleFont.mm in Sources */,
+				F5C36C3024FAB49F00775C6E /* Rtt_AppleInputDeviceManager.mm in Sources */,
+				F5C36C3124FAB49F00775C6E /* CoronaViewControllerPrivate.mm in Sources */,
+				F5C36C3224FAB49F00775C6E /* CoronaNativeObjectAdapter.mm in Sources */,
+				F5C36C3324FAB49F00775C6E /* Rtt_IPhoneNativeObject.mm in Sources */,
+				F5C36C3424FAB49F00775C6E /* Rtt_IPhoneTimer.mm in Sources */,
+				F5C36C3524FAB49F00775C6E /* Rtt_IPhonePlatformBase.mm in Sources */,
+				F5C36C3624FAB49F00775C6E /* Rtt_IPhoneGLVideoTexture.mm in Sources */,
+				F5C36C3724FAB49F00775C6E /* Rtt_AppleTextAlignment.mm in Sources */,
+				F5C36C3824FAB49F00775C6E /* Rtt_DependencyUtilsApple.mm in Sources */,
+				F5C36C3924FAB49F00775C6E /* CoronaLuaObjCHelper.mm in Sources */,
+				F5C36C3A24FAB49F00775C6E /* Rtt_DependencyLoader.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CAA24FAB4E900775C6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CAB24FAB4E900775C6E /* Rtt_IPhoneTemplate-Sub.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C36CBF24FAB50800775C6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C36CC024FAB50800775C6E /* main.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2773,16 +4031,6 @@
 			isa = PBXTargetDependency;
 			name = tachyon;
 			targetProxy = A46885E818062D3E00381941 /* PBXContainerItemProxy */;
-		};
-		A46936AC169D6A6C00723568 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A4841094151147BE0074BD57 /* libplayer-core */;
-			targetProxy = A46936AB169D6A6C00723568 /* PBXContainerItemProxy */;
-		};
-		A4698825169E31D900EAA645 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A469363D169D69EF00723568 /* libplayer-trial */;
-			targetProxy = A4698824169E31D900EAA645 /* PBXContainerItemProxy */;
 		};
 		A47098D7169EA0F400D31091 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2849,20 +4097,80 @@
 			target = A47098A4169E9F2400D31091 /* libplayer */;
 			targetProxy = A4F2ADF616E0AF4500814C7B /* PBXContainerItemProxy */;
 		};
-		A4F2AE2E16E0AF9500814C7B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A469363D169D69EF00723568 /* libplayer-trial */;
-			targetProxy = A4F2AE2D16E0AF9500814C7B /* PBXContainerItemProxy */;
-		};
 		A4F2AE3116E16A6900814C7B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A4F2ADC316E0AF2E00814C7B /* libtemplate */;
 			targetProxy = A4F2AE3016E16A6900814C7B /* PBXContainerItemProxy */;
 		};
-		A4F2AE3316E16A6F00814C7B /* PBXTargetDependency */ = {
+		F52611722500143100671DFE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A4F2ADFA16E0AF7D00814C7B /* libtemplate-trial */;
-			targetProxy = A4F2AE3216E16A6F00814C7B /* PBXContainerItemProxy */;
+			name = "tachyon-angle";
+			targetProxy = F52611712500143100671DFE /* PBXContainerItemProxy */;
+		};
+		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A48B825B16D594AA00CA01A1 /* CoronaResources */;
+			targetProxy = F5C36BEB24FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BEC24FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = librtt;
+			targetProxy = F5C36BED24FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BEE24FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = liblua;
+			targetProxy = F5C36BEF24FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF024FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = luafilesystem;
+			targetProxy = F5C36BF124FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF224FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libluasocket;
+			targetProxy = F5C36BF324FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF424FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libbox2d;
+			targetProxy = F5C36BF524FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF624FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libalmixer;
+			targetProxy = F5C36BF724FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36BF824FAB49F00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = plugins;
+			targetProxy = F5C36BF924FAB49F00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CD224FAB53500775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C36CA724FAB4E900775C6E /* libplayer-angle */;
+			targetProxy = F5C36CD124FAB53500775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CD424FAB55300775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C36BE724FAB49F00775C6E /* libplayer-core-angle */;
+			targetProxy = F5C36CD324FAB55300775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CD824FAB5DD00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C36CA724FAB4E900775C6E /* libplayer-angle */;
+			targetProxy = F5C36CD724FAB5DD00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CDA24FAB5DD00775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C36CBC24FAB50800775C6E /* libtemplate-angle */;
+			targetProxy = F5C36CD924FAB5DD00775C6E /* PBXContainerItemProxy */;
+		};
+		F5C36CDD24FAB65600775C6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE;
+			targetProxy = F5C36CDC24FAB65600775C6E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2974,138 +4282,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		000DC8B212B046E800042A5E /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = NO;
-				DEPLOYMENT_POSTPROCESSING = YES;
-				ENABLE_BITCODE = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
-				GCC_ENABLE_PASCAL_STRINGS = NO;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 2;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					Rtt_IPHONE_ENV,
-					NDEBUG,
-					LUA_USE_OBJC_EXCEPTIONS,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
-				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_SIGN_COMPARE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"../../external/b2Separator-cpp",
-					../../external/Box2D,
-					../../external/smoothpolygon,
-					/System/Library/Frameworks/OpenAL.framework/Headers,
-					../../external/luasocket/src,
-					"../../external/CoronaBeacon/Beacon-iOS/Release-universal/include",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				SDKROOT = iphoneos;
-				SEPARATE_STRIP = YES;
-				SKIP_INSTALL = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = (
-					../../librtt,
-					.,
-				);
-			};
-			name = "Release-template";
-		};
-		000DC8B412B046F600042A5E /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = NO;
-				DEPLOYMENT_POSTPROCESSING = YES;
-				ENABLE_BITCODE = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
-				GCC_ENABLE_PASCAL_STRINGS = NO;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 2;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					Rtt_IPHONE_ENV,
-					Rtt_TRIAL,
-					NDEBUG,
-					LUA_USE_OBJC_EXCEPTIONS,
-				);
-				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
-				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_SIGN_COMPARE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"../../external/b2Separator-cpp",
-					../../external/Box2D,
-					../../external/smoothpolygon,
-					/System/Library/Frameworks/OpenAL.framework/Headers,
-					../../external/luasocket/src,
-					"../../external/CoronaBeacon/Beacon-iOS/Release-universal/include",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				SDKROOT = iphoneos;
-				SEPARATE_STRIP = YES;
-				SKIP_INSTALL = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = (
-					../../librtt,
-					.,
-				);
-			};
-			name = "Release-template-trial";
-		};
 		A40D2F9F1889152400B4A354 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3171,68 +4347,6 @@
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
-		};
-		A40D2FA11889152400B4A354 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoronaCards/Test-Ad/CoronaCardsTest-Ad-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "CoronaCards/Test-Ad/CoronaCardsTest-Ad-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
-			};
-			name = "Release-template";
-		};
-		A40D2FA21889152400B4A354 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoronaCards/Test-Ad/CoronaCardsTest-Ad-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "CoronaCards/Test-Ad/CoronaCardsTest-Ad-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
-			};
-			name = "Release-template-trial";
 		};
 		A43B956E15C779EE003E6F9F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3304,78 +4418,14 @@
 			};
 			name = Release;
 		};
-		A43B957015C779EE003E6F9F /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios\"",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "enterprise/TestApp/TestApp-Prefix.pch";
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "enterprise/TestApp/Testapp-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-				);
-				OTHER_LDFLAGS = (
-					"-Obj-C",
-					"-all_load",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
-			};
-			name = "Release-template";
-		};
-		A43B957115C779EE003E6F9F /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios\"",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "enterprise/TestApp/TestApp-Prefix.pch";
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "enterprise/TestApp/Testapp-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-				);
-				OTHER_LDFLAGS = (
-					"-Obj-C",
-					"-all_load",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
-			};
-			name = "Release-template-trial";
-		};
 		A46935C3169D62DA00723568 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
@@ -3391,6 +4441,7 @@
 				);
 				PRODUCT_NAME = template;
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = ios;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				SWIFT_VERSION = 3.0;
@@ -3402,7 +4453,9 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
@@ -3418,266 +4471,13 @@
 				);
 				PRODUCT_NAME = template;
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = ios;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				SWIFT_VERSION = 3.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		A46935C5169D62DA00723568 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEAD_CODE_STRIPPING = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				INFOPLIST_FILE = Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-all_load",
-				);
-				PRODUCT_NAME = template;
-				PROVISIONING_PROFILE = "";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A46935C6169D62DA00723568 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEAD_CODE_STRIPPING = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				INFOPLIST_FILE = Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-all_load",
-				);
-				PRODUCT_NAME = template;
-				PROVISIONING_PROFILE = "";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
-		};
-		A469366B169D69EF00723568 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = "/tmp/libplayer-trial.dst";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "player-trial";
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		A469366C169D69EF00723568 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = "/tmp/libplayer-trial.dst";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "player-trial";
-				SKIP_INSTALL = YES;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		A469366D169D69EF00723568 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = "/tmp/libplayer-trial.dst";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "player-trial";
-				SKIP_INSTALL = YES;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A469366E169D69EF00723568 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = "/tmp/libplayer-trial.dst";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "player-trial";
-				SKIP_INSTALL = YES;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
-		};
-		A46936A4169D6A0700723568 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios\"",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-all_load",
-				);
-				PRODUCT_NAME = "template-trial";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-			};
-			name = Debug;
-		};
-		A46936A5169D6A0700723568 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios\"",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-all_load",
-				);
-				PRODUCT_NAME = "template-trial";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		A46936A6169D6A0700723568 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios\"",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-all_load",
-				);
-				PRODUCT_NAME = "template-trial";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A46936A7169D6A0700723568 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios\"",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-all_load",
-				);
-				PRODUCT_NAME = "template-trial";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
 		};
 		A47098D1169E9F2400D31091 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3686,10 +4486,6 @@
 				DSTROOT = /tmp/libplayer.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3721,46 +4517,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		A47098D3169E9F2400D31091 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = /tmp/libplayer.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = player;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A47098D4169E9F2400D31091 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = /tmp/libplayer.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = player;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
 		};
 		A482FABD183D74960005831B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3836,78 +4592,6 @@
 			};
 			name = Release;
 		};
-		A482FABF183D74960005831B /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = /tmp/CoronaCards.dst;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoronaCards/CoronaCards-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRIP_STYLE = debugging;
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A482FAC0183D74960005831B /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = /tmp/CoronaCards.dst;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoronaCards/CoronaCards-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRIP_STYLE = debugging;
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
-		};
 		A482FAE1183D7B870005831B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3922,20 +4606,6 @@
 			};
 			name = Release;
 		};
-		A482FAE3183D7B870005831B /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = "Release-template";
-		};
-		A482FAE4183D7B870005831B /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = "Release-template-trial";
-		};
 		A484109D151147BF0074BD57 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3945,10 +4615,6 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3993,60 +4659,6 @@
 			};
 			name = Release;
 		};
-		A484109F151147BF0074BD57 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_MODULES = YES;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = "/tmp/libplayer-core.dst";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "player-core";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A48410A0151147BF0074BD57 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_MODULES = YES;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = "/tmp/libplayer-core.dst";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
-					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "player-core";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
-		};
 		A48B826716D594AA00CA01A1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4088,44 +4700,6 @@
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
-		};
-		A48B826916D594AA00CA01A1 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = "Release-template";
-		};
-		A48B826A16D594AA00CA01A1 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = "Release-template-trial";
 		};
 		A48DA9F918580418009D1F93 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -4194,70 +4768,6 @@
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
-		};
-		A48DA9FB18580418009D1F93 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoronaCards/Test-Tabs/CoronaCardsTabs-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "CoronaCards/Test-Tabs/CoronaCardsTabs-Info.plist";
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
-			};
-			name = "Release-template";
-		};
-		A48DA9FC18580418009D1F93 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoronaCards/Test-Tabs/CoronaCardsTabs-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "CoronaCards/Test-Tabs/CoronaCardsTabs-Info.plist";
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
-			};
-			name = "Release-template-trial";
 		};
 		A48E9BD0183EEC8A00F67CB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -4328,72 +4838,6 @@
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
-		};
-		A48E9BD2183EEC8A00F67CB3 /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = NO;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoronaCards/Test/CoronaCardsTest-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/CoronaCards/Test/CoronaCardsTest-Info.plist";
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
-			};
-			name = "Release-template";
-		};
-		A48E9BD3183EEC8A00F67CB3 /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = NO;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoronaCards/Test/CoronaCardsTest-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/CoronaCards/Test/CoronaCardsTest-Info.plist";
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
-			};
-			name = "Release-template-trial";
 		};
 		A4EF77371A352B44002D3BEF /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -4496,102 +4940,6 @@
 			};
 			name = Release;
 		};
-		A4EF77391A352B44002D3BEF /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					/Users/Shared/CoronaLabs/ios/,
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = "CoronaCards/Test-Swift/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lobjc",
-					"-lsqlite3",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				SWIFT_OBJC_BRIDGING_HEADER = "${SOURCE_ROOT}/CoronaCards/Test-Swift/Swift-Interoperability/CoronaCards-Bridging-Header.h";
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A4EF773A1A352B44002D3BEF /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					/Users/Shared/CoronaLabs/ios/,
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = "CoronaCards/Test-Swift/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lobjc",
-					"-lsqlite3",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				STRIP_STYLE = "non-global";
-				SWIFT_OBJC_BRIDGING_HEADER = "${SOURCE_ROOT}/CoronaCards/Test-Swift/Swift-Interoperability/CoronaCards-Bridging-Header.h";
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
-		};
 		A4F2ADF116E0AF2E00814C7B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4643,149 +4991,6 @@
 			};
 			name = Release;
 		};
-		A4F2ADF316E0AF2E00814C7B /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = /tmp/libtemplate.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = template;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A4F2ADF416E0AF2E00814C7B /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = /tmp/libtemplate.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = template;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
-		};
-		A4F2AE2816E0AF7D00814C7B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = "/tmp/libtemplate-trial.dst";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "template-trial";
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		A4F2AE2916E0AF7D00814C7B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = "/tmp/libtemplate-trial.dst";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "template-trial";
-				SKIP_INSTALL = YES;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		A4F2AE2A16E0AF7D00814C7B /* Release-template */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = "/tmp/libtemplate-trial.dst";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "template-trial";
-				SKIP_INSTALL = YES;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template";
-		};
-		A4F2AE2B16E0AF7D00814C7B /* Release-template-trial */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DSTROOT = "/tmp/libtemplate-trial.dst";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
-					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
-					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
-					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "template-trial";
-				SKIP_INSTALL = YES;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Release-template-trial";
-		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4804,6 +5009,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -4871,6 +5077,7 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -4924,6 +5131,236 @@
 			};
 			name = Release;
 		};
+		F50E7EC024FA923B009F165B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "template-angle";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = ios;
+				SKIP_INSTALL = NO;
+				STRIP_STYLE = "non-global";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		F50E7EC124FA923B009F165B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "template-angle";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = ios;
+				SKIP_INSTALL = NO;
+				STRIP_STYLE = "non-global";
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F5C36C6424FAB49F00775C6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				DSTROOT = "/tmp/libplayer-core.dst";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "player-core-angle";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		F5C36C6524FAB49F00775C6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = "/tmp/libplayer-core.dst";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
+					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "player-core-angle";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F5C36CB724FAB4E900775C6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/libplayer.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)\nRtt_MetalANGLE",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "player-angle";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		F5C36CB824FAB4E900775C6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/libplayer.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)\nRtt_MetalANGLE",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "player-angle";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F5C36CCC24FAB50800775C6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/libtemplate.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
+					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "template-angle";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		F5C36CCD24FAB50800775C6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/libtemplate.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/InMobi/iOS/InMobi iOS SDK Bundle\"",
+					"\"$(SRCROOT)/../../plugins/build/ads-iads/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/facebook/ios\"",
+					"\"$(SRCROOT)/../../plugins/build/native-popup-twitter/ios\"",
+					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios/FacebookSDK.framework/Versions/A\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "template-angle";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4932,8 +5369,6 @@
 			buildConfigurations = (
 				A40D2F9F1889152400B4A354 /* Debug */,
 				A40D2FA01889152400B4A354 /* Release */,
-				A40D2FA11889152400B4A354 /* Release-template */,
-				A40D2FA21889152400B4A354 /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -4943,8 +5378,6 @@
 			buildConfigurations = (
 				A43B956E15C779EE003E6F9F /* Debug */,
 				A43B956F15C779EE003E6F9F /* Release */,
-				A43B957015C779EE003E6F9F /* Release-template */,
-				A43B957115C779EE003E6F9F /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -4954,30 +5387,6 @@
 			buildConfigurations = (
 				A46935C3169D62DA00723568 /* Debug */,
 				A46935C4169D62DA00723568 /* Release */,
-				A46935C5169D62DA00723568 /* Release-template */,
-				A46935C6169D62DA00723568 /* Release-template-trial */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A469366A169D69EF00723568 /* Build configuration list for PBXNativeTarget "libplayer-trial" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A469366B169D69EF00723568 /* Debug */,
-				A469366C169D69EF00723568 /* Release */,
-				A469366D169D69EF00723568 /* Release-template */,
-				A469366E169D69EF00723568 /* Release-template-trial */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A46936A3169D6A0700723568 /* Build configuration list for PBXNativeTarget "template-trial" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A46936A4169D6A0700723568 /* Debug */,
-				A46936A5169D6A0700723568 /* Release */,
-				A46936A6169D6A0700723568 /* Release-template */,
-				A46936A7169D6A0700723568 /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -4987,8 +5396,6 @@
 			buildConfigurations = (
 				A47098D1169E9F2400D31091 /* Debug */,
 				A47098D2169E9F2400D31091 /* Release */,
-				A47098D3169E9F2400D31091 /* Release-template */,
-				A47098D4169E9F2400D31091 /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -4998,8 +5405,6 @@
 			buildConfigurations = (
 				A482FABD183D74960005831B /* Debug */,
 				A482FABE183D74960005831B /* Release */,
-				A482FABF183D74960005831B /* Release-template */,
-				A482FAC0183D74960005831B /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5009,8 +5414,6 @@
 			buildConfigurations = (
 				A482FAE1183D7B870005831B /* Debug */,
 				A482FAE2183D7B870005831B /* Release */,
-				A482FAE3183D7B870005831B /* Release-template */,
-				A482FAE4183D7B870005831B /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5020,8 +5423,6 @@
 			buildConfigurations = (
 				A484109D151147BF0074BD57 /* Debug */,
 				A484109E151147BF0074BD57 /* Release */,
-				A484109F151147BF0074BD57 /* Release-template */,
-				A48410A0151147BF0074BD57 /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5031,8 +5432,6 @@
 			buildConfigurations = (
 				A48B826716D594AA00CA01A1 /* Debug */,
 				A48B826816D594AA00CA01A1 /* Release */,
-				A48B826916D594AA00CA01A1 /* Release-template */,
-				A48B826A16D594AA00CA01A1 /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5042,8 +5441,6 @@
 			buildConfigurations = (
 				A48DA9F918580418009D1F93 /* Debug */,
 				A48DA9FA18580418009D1F93 /* Release */,
-				A48DA9FB18580418009D1F93 /* Release-template */,
-				A48DA9FC18580418009D1F93 /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5053,8 +5450,6 @@
 			buildConfigurations = (
 				A48E9BD0183EEC8A00F67CB3 /* Debug */,
 				A48E9BD1183EEC8A00F67CB3 /* Release */,
-				A48E9BD2183EEC8A00F67CB3 /* Release-template */,
-				A48E9BD3183EEC8A00F67CB3 /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5064,8 +5459,6 @@
 			buildConfigurations = (
 				A4EF77371A352B44002D3BEF /* Debug */,
 				A4EF77381A352B44002D3BEF /* Release */,
-				A4EF77391A352B44002D3BEF /* Release-template */,
-				A4EF773A1A352B44002D3BEF /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5075,19 +5468,6 @@
 			buildConfigurations = (
 				A4F2ADF116E0AF2E00814C7B /* Debug */,
 				A4F2ADF216E0AF2E00814C7B /* Release */,
-				A4F2ADF316E0AF2E00814C7B /* Release-template */,
-				A4F2ADF416E0AF2E00814C7B /* Release-template-trial */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A4F2AE2716E0AF7D00814C7B /* Build configuration list for PBXNativeTarget "libtemplate-trial" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A4F2AE2816E0AF7D00814C7B /* Debug */,
-				A4F2AE2916E0AF7D00814C7B /* Release */,
-				A4F2AE2A16E0AF7D00814C7B /* Release-template */,
-				A4F2AE2B16E0AF7D00814C7B /* Release-template-trial */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5097,8 +5477,42 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
-				000DC8B212B046E800042A5E /* Release-template */,
-				000DC8B412B046F600042A5E /* Release-template-trial */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F50E7EBF24FA923B009F165B /* Build configuration list for PBXNativeTarget "template-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F50E7EC024FA923B009F165B /* Debug */,
+				F50E7EC124FA923B009F165B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C36C6324FAB49F00775C6E /* Build configuration list for PBXNativeTarget "libplayer-core-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C36C6424FAB49F00775C6E /* Debug */,
+				F5C36C6524FAB49F00775C6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C36CB624FAB4E900775C6E /* Build configuration list for PBXNativeTarget "libplayer-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C36CB724FAB4E900775C6E /* Debug */,
+				F5C36CB824FAB4E900775C6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C36CCB24FAB50800775C6E /* Build configuration list for PBXNativeTarget "libtemplate-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C36CCC24FAB50800775C6E /* Debug */,
+				F5C36CCD24FAB50800775C6E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

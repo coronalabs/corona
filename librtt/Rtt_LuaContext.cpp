@@ -338,13 +338,16 @@ LuaContext::handleError( lua_State* L, const char *errorType, bool callErrorList
 
 	// Preventing recursive custom error handler call! Errors in error handle will not be handled by itself.
 	// Application environment is used for this
-	Runtime* runtime = LuaContext::GetRuntime(L);
-	if (runtime->fErrorHandlerRecursionGuard == true)
+	if(Self::HasRuntime(L))
 	{
-		CORONA_LOG_ERROR("Preventing recursive custom error handler call! Errors in error handle will not be handled by itself.\n");
-		return 1;
+		Runtime* runtime = Self::GetRuntime(L);
+		if (runtime->fErrorHandlerRecursionGuard == true)
+		{
+			CORONA_LOG_ERROR("Preventing recursive custom error handler call! Errors in error handle will not be handled by itself.\n");
+			return 1;
+		}
+		runtime->fErrorHandlerRecursionGuard = true;
 	}
-	runtime->fErrorHandlerRecursionGuard = true;
 
 	int bail = true;
 	
@@ -405,9 +408,9 @@ LuaContext::handleError( lua_State* L, const char *errorType, bool callErrorList
             
             exit(0);
         }
+		runtime->fErrorHandlerRecursionGuard = false;
     }
 	
-	runtime->fErrorHandlerRecursionGuard = false;
 	return 1;
 }
 

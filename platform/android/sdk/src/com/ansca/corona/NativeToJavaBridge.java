@@ -47,6 +47,7 @@ import android.os.Environment;
 import android.location.Location;
 import android.util.Base64;
 import android.util.Log;
+import android.view.DisplayCutout;
 
 import dalvik.system.DexClassLoader;
 
@@ -1561,21 +1562,30 @@ public class NativeToJavaBridge {
 					result[ 1 ] = result[ 2 ] = (float)Math.floor(contentWidth * 0.05f);
 				}
 				else {
-					result[ 0 ] = (statusBarMode != CoronaStatusBarSettings.HIDDEN) ? listener.getStatusBarHeight() : 0;
-					if (hasNavigationBar && runtime.getController().getSystemUiVisibility().contains("immersive"))
-					{
-						result[ 1 ] = result[ 2 ] = result[ 3 ] = 0;
-					} else {
-						int navBarIndex = 4;
-						if ((statusBarMode == CoronaStatusBarSettings.LIGHT_TRANSPARENT || 
-							 statusBarMode == CoronaStatusBarSettings.DARK_TRANSPARENT) && hasNavigationBar){
-								WindowOrientation currentOrientation = WindowOrientation.fromCurrentWindowUsing(runtime.getController().getContext());
-								navBarIndex = (currentOrientation == WindowOrientation.PORTRAIT_UPRIGHT) ? 3 : 2;
-						}
-						for (int i = 1; i < 4; i++) {
-							result[ i ] = (i == navBarIndex) ? listener.getNavigationBarHeight() : 0;
-						}
+					DisplayCutout cutout = CoronaEnvironment.getCoronaActivity().getDisplayCutout();
+					if ((android.os.Build.VERSION.SDK_INT >= 26) && (cutout != null)){
+
+						result[0] = cutout.getSafeInsetTop();
+						result[1] = cutout.getSafeInsetLeft();
+						result[2] = cutout.getSafeInsetRight();
+						result[3] = cutout.getSafeInsetBottom();
 					}
+					else {
+                        result[0] = (statusBarMode != CoronaStatusBarSettings.HIDDEN) ? listener.getStatusBarHeight() : 0;
+                        if (hasNavigationBar && runtime.getController().getSystemUiVisibility().contains("immersive")) {
+                            result[1] = result[2] = result[3] = 0;
+                        } else {
+                            int navBarIndex = 4;
+                            if ((statusBarMode == CoronaStatusBarSettings.LIGHT_TRANSPARENT ||
+                                    statusBarMode == CoronaStatusBarSettings.DARK_TRANSPARENT) && hasNavigationBar) {
+                                WindowOrientation currentOrientation = WindowOrientation.fromCurrentWindowUsing(runtime.getController().getContext());
+                                navBarIndex = (currentOrientation == WindowOrientation.PORTRAIT_UPRIGHT) ? 3 : 2;
+                            }
+                            for (int i = 1; i < 4; i++) {
+                                result[i] = (i == navBarIndex) ? listener.getNavigationBarHeight() : 0;
+                            }
+                        }
+                    }
 				}
 			}
 			else { 
