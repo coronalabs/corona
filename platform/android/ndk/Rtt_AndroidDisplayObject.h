@@ -53,6 +53,7 @@ class AndroidDisplayObject : public PlatformDisplayObject
 		// MLuaTableBridge
 		virtual int ValueForKey( lua_State *L, const char key[] ) const;
 		virtual bool SetValueForKey( lua_State *L, const char key[], int valueIndex );
+		virtual bool SetNativeProperty( lua_State *L, const char key[], int valueIndex );
 
 	protected:
 		void * GetView() const { return fView; }
