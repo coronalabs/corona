@@ -9,16 +9,6 @@
 
 package com.ansca.corona;
 
-import com.ansca.corona.maps.MapView;
-import com.ansca.corona.maps.MapType;
-import com.ansca.corona.permissions.PermissionsServices;
-import com.ansca.corona.permissions.PermissionsSettings;
-import com.ansca.corona.permissions.PermissionState;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -29,13 +19,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.widget.AbsoluteLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.view.MotionEvent;
-import android.view.inputmethod.EditorInfo;
+
+import com.ansca.corona.maps.MapType;
+import com.ansca.corona.maps.MapView;
+import com.ansca.corona.permissions.PermissionState;
+import com.ansca.corona.permissions.PermissionsServices;
+import com.ansca.corona.permissions.PermissionsSettings;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ViewManager {
 	private java.util.ArrayList<android.view.View> myDisplayObjects;
@@ -713,7 +710,7 @@ public class ViewManager {
 		});
 	}
 
-	private static <T> java.lang.Runnable GetTypedViewMethod(final View view, final String method, final T param) {
+	private static <T> java.lang.Runnable GetTypedViewMethod(final Object view, final String method, final T param) {
 		try {
 			final java.lang.reflect.Method m = view.getClass().getMethod(method, param.getClass());
 			return new java.lang.Runnable() {
@@ -722,6 +719,7 @@ public class ViewManager {
 					try {
 						m.invoke(view, param);
 					} catch (Throwable ignore) {
+						ignore.printStackTrace();
 					}
 				}
 			};
@@ -735,6 +733,7 @@ public class ViewManager {
 					try {
 						m.invoke(view, param);
 					} catch (Throwable ignore) {
+						ignore.printStackTrace();
 					}
 				}
 			};
@@ -743,41 +742,102 @@ public class ViewManager {
 		return null;
 	}
 
-	public boolean setNativeProperty(int id, String key, long luaStateMemoryAddress, int index) {
+	public boolean setNativeProperty(final int id, final String key, long luaStateMemoryAddress, int index) {
 		CoronaRuntime runtime = myCoronaRuntime;
 		if (runtime == null) {
+			return false;
+		}
+		if (key == null) {
 			return false;
 		}
 		com.naef.jnlua.LuaState luaState = runtime.getLuaState();
 		if (luaState == null || CoronaRuntimeProvider.getLuaStateMemoryAddress(luaState) != luaStateMemoryAddress) {
 			return false;
 		}
-		final View view = getDisplayObjectById(id);
-		if (view == null) {
-			return false;
-		}
-		java.lang.Runnable action = null;
-		switch(luaState.type(index)) {
+		final com.naef.jnlua.LuaType lt = luaState.type(index);
+		final boolean booleanValue;
+		final String stringValue;
+		final int integerValue;
+		final double doubleValue;
+		switch (lt) {
 			case BOOLEAN:
-				action = GetTypedViewMethod(view, key, luaState.toBoolean(index));
+				booleanValue = luaState.toBoolean(index);
+				integerValue = 0;
+				doubleValue = 0;
+				stringValue = null;
 				break;
 			case NUMBER:
-				action = GetTypedViewMethod(view, key, luaState.toInteger(index));
-				if(action == null) action = GetTypedViewMethod(view, key, (long)luaState.toInteger(index));
-				if(action == null) action = GetTypedViewMethod(view, key, (short)luaState.toInteger(index));
-				if(action == null) action = GetTypedViewMethod(view, key, (char)luaState.toInteger(index));
-				if(action == null) action = GetTypedViewMethod(view, key, (byte)luaState.toInteger(index));
-				if(action == null) action = GetTypedViewMethod(view, key, (float)luaState.toNumber(index));
-				if(action == null) action = GetTypedViewMethod(view, key, luaState.toNumber(index));
+				booleanValue = false;
+				integerValue = luaState.toInteger(index);
+				doubleValue = luaState.toNumber(index);
+				stringValue = null;
 				break;
 			case STRING:
-				action = GetTypedViewMethod(view, key, luaState.toString(index));
+				booleanValue = false;
+				integerValue = 0;
+				doubleValue = 0;
+				stringValue = luaState.toString(index);
 				break;
 			default:
+				booleanValue = false;
+				integerValue = 0;
+				doubleValue = 0;
+				stringValue = null;
 				break;
 		}
-		if (action == null) return false;
-		postOnUiThread(action);
+
+		postOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				final Object rootObject = getDisplayObjectById(id);
+				if (rootObject == null) {
+					return;
+				}
+				List<Object> responders;
+				if (rootObject instanceof NativePropertyResponder) {
+					responders = ((NativePropertyResponder) rootObject).getNativePropertyResponder();
+				} else {
+					responders = new LinkedList<Object>();
+					responders.add(rootObject);
+				}
+				java.lang.Runnable action = null;
+				for (Object view : responders) {
+					switch (lt) {
+						case BOOLEAN:
+							action = GetTypedViewMethod(view, key, booleanValue);
+							break;
+						case NUMBER:
+							action = GetTypedViewMethod(view, key, integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (long) integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (short) integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (char) integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (byte) integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (float) doubleValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, doubleValue);
+							break;
+						case STRING:
+							action = GetTypedViewMethod(view, key, stringValue);
+							break;
+						default:
+							break;
+					}
+					if (action != null) break;
+				}
+				if (action == null) {
+					Log.e("Corona", "Unable to setNativeProperty " + key);
+					return;
+				}
+				try {
+					action.run();
+				} catch (Throwable ignore) {ignore.printStackTrace();}
+			}
+		});
 		return true;
 	}
 
