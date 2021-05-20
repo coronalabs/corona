@@ -793,15 +793,19 @@ public class ViewManager {
 				if (rootObject == null) {
 					return;
 				}
-				List<Object> responders;
+				List<Object> responders = null;
+				java.lang.Runnable action = null;
 				if (rootObject instanceof NativePropertyResponder) {
-					responders = ((NativePropertyResponder) rootObject).getNativePropertyResponder();
-				} else {
+					NativePropertyResponder npr = (NativePropertyResponder)rootObject;
+					responders = npr.getNativePropertyResponder();
+					action = npr.getCustomPropertyAction(key, booleanValue, stringValue, integerValue, doubleValue);
+				}
+				if(responders == null) {
 					responders = new LinkedList<Object>();
 					responders.add(rootObject);
 				}
-				java.lang.Runnable action = null;
 				for (Object view : responders) {
+					if(action!=null) break;
 					switch (lt) {
 						case BOOLEAN:
 							action = GetTypedViewMethod(view, key, booleanValue);
@@ -827,7 +831,6 @@ public class ViewManager {
 						default:
 							break;
 					}
-					if (action != null) break;
 				}
 				if (action == null) {
 					Log.e("Corona", "Unable to setNativeProperty " + key);
@@ -835,7 +838,9 @@ public class ViewManager {
 				}
 				try {
 					action.run();
-				} catch (Throwable ignore) {ignore.printStackTrace();}
+				} catch (Throwable ignore) {
+					ignore.printStackTrace();
+				}
 			}
 		});
 		return true;

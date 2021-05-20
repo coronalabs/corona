@@ -618,4 +618,17 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		out.add(getSettings());
 		return out;
 	}
+
+	@Override
+	public Runnable getCustomPropertyAction(String key, boolean booleanValue, String stringValue, int integerValue, double doubleValue) {
+		if(key.equalsIgnoreCase("http.agent") && stringValue.equalsIgnoreCase("system")) {
+			return new Runnable() {
+				@Override
+				public void run() {
+					getSettings().setUserAgentString(System.getProperty("http.agent"));
+				}
+			};
+		}
+		return null;
+	}
 }

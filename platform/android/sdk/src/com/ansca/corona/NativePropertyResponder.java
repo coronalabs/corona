@@ -11,4 +11,5 @@ package com.ansca.corona;
 
 public interface NativePropertyResponder {
 	java.util.List<Object> getNativePropertyResponder();
+	java.lang.Runnable getCustomPropertyAction(String key, boolean booleanValue, String stringValue, int integerValue, double doubleValue);
 }
