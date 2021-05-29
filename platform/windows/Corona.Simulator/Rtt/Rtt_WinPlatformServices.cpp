@@ -14,6 +14,7 @@
 #include "WinGlobalProperties.h"
 #include "WinString.h"
 
+#include <wincrypt.h>
 
 namespace Rtt
 {

@@ -11,6 +11,7 @@
 #include <Winver.h>
 #include <gdiplus.h>
 #include <io.h>
+#include <ios>
 #include <Fcntl.h>
 
 #include "Simulator.h"

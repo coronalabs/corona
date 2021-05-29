@@ -14,6 +14,7 @@
 #include "Rtt_DeviceOrientation.h"
 #include <map>
 #include <set>
+#include <string>
 extern "C"
 {
 	struct lua_State;
