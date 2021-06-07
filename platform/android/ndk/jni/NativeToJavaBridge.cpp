@@ -950,6 +950,7 @@ NativeToJavaBridge::RenderText(
 void 
 NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt::Real &bottom, Rtt::Real &right)
 {
+	top = left = bottom = right = 0;
 	NativeTrace trace( "NativeToJavaBridge::GetSafeAreaInsetsPixels" );
 	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
 	if ( bridge.isValid() ) 
@@ -960,6 +961,7 @@ NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt
 		{
 			jobject objArray = bridge.getEnv()->CallStaticObjectMethod( bridge.getClass(), methodId, fCoronaRuntime );
 			jfloatArray * jfArray = reinterpret_cast< jfloatArray* >( & objArray );
+			if(objArray == NULL) return;
 			jsize len = bridge.getEnv()->GetArrayLength( *jfArray );
 			float* data = bridge.getEnv()->GetFloatArrayElements( *jfArray, 0 );
 			if ( len == 4 )
@@ -968,10 +970,6 @@ NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt
 				left 	= data [ 1 ];
 				right 	= data [ 2 ];
 				bottom  = data [ 3 ];
-			}
-			else 
-			{
-				top = left = bottom = right = 0;
 			}
 			bridge.getEnv()->ReleaseFloatArrayElements( *jfArray, data, 0 );
 			bridge.getEnv()->DeleteLocalRef( *jfArray );
@@ -2847,6 +2845,26 @@ NativeToJavaBridge::DisplayObjectUpdateScreenBounds( int id, int x, int y, int w
 			HandleJavaException();
 		}
 	}
+}
+
+bool NativeToJavaBridge::DisplayObjectSetNativeProperty(int id, const char key[], lua_State *L, int valueIndex)
+{
+    bool ret = false;
+	NativeTrace trace( "NativeToJavaBridge::DisplayObjectSetNativeProperty" );
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+
+	if ( bridge.isValid() ) {
+	    jstringParam textJ( bridge.getEnv(), key );
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(),
+			"callDisplayObjectSetNativeProperty", "(Lcom/ansca/corona/CoronaRuntime;ILjava/lang/String;JI)Z" );
+
+		if ( mid != NULL ) {
+			ret = bridge.getEnv()->CallStaticBooleanMethod( bridge.getClass(), mid, fCoronaRuntime, id, textJ.getValue(), (jlong)(uintptr_t)L, valueIndex );
+			HandleJavaException();
+		}
+	}
+	return ret;
 }
 
 bool

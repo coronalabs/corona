@@ -2751,11 +2751,36 @@ public class CoronaActivity extends Activity {
 	}
 
 	void showCameraWindowForImage(String destinationFile) {
+		MediaEventGenerator eventGenerator = new ImagePickerEventGenerator();
+		String outputFile = destinationFile;
+		if(outputFile == null) {
+			java.io.File saveDirectory = this.getApplicationContext().getCacheDir();
+			saveDirectory.mkdirs();
+
+			// Create a unique file name for the media in this directory.
+			com.ansca.corona.storage.UniqueFileNameBuilder builder;
+			builder = new com.ansca.corona.storage.UniqueFileNameBuilder();
+			builder.setDirectory(saveDirectory);
+			builder.setFileNameFormat("Picture");
+			builder.setFileExtension(".jpg");
+
+			java.io.File imageFile = builder.build();
+			if (imageFile == null) {
+				Log.v("Corona", "Failed to generate a unique file name for the camera shot.");
+				if (fCoronaRuntime != null && fCoronaRuntime.isRunning()) {
+					fCoronaRuntime.getTaskDispatcher().send(eventGenerator.generateEvent(""));
+				}
+				return;
+			}
+
+			outputFile = imageFile.getAbsolutePath();
+
+		}
+
 		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 		android.net.Uri imageUri = null;
 
-		MediaEventGenerator eventGenerator = new ImagePickerEventGenerator();
-		imageUri = com.ansca.corona.storage.FileContentProvider.createContentUriForFile(this.getApplicationContext(), destinationFile);
+		imageUri = com.ansca.corona.storage.FileContentProvider.createContentUriForFile(this.getApplicationContext(), outputFile);
 		intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
 
 		showCameraWindowUsing(destinationFile, intent, eventGenerator, imageUri);
@@ -2974,12 +2999,19 @@ public class CoronaActivity extends Activity {
 			String selectedFile = "";
 			// Defaults to -1 because it will result in nil being pushed to lua.
 			long fileSize = -1;
-			android.net.Uri directURL = com.ansca.corona.storage.FileContentProvider.createContentUriForFile(activity.getApplicationContext(), fDestinationFile);
-			if((resultCode == RESULT_OK) && directURL.equals(fSourceUri)) {
+			android.net.Uri directURL = null;
+			try {
+				directURL = com.ansca.corona.storage.FileContentProvider.createContentUriForFile(activity.getApplicationContext(), fDestinationFile);
+			} catch (Throwable ignore){};
+			if ((resultCode == RESULT_OK) && directURL != null && directURL.equals(fSourceUri)) {
 				selectedFile = fDestinationFile.getAbsolutePath();
 			}
 			else if ((resultCode == RESULT_OK) && (fSourceUri != null || android.content.ContentResolver.SCHEME_FILE.equals(scheme))) {
 				java.io.File cameraShotSourceFile = new java.io.File(fSourceUri.getPath());
+				if(fSourceUri != null && fSourceUri.getScheme().equals(android.content.ContentResolver.SCHEME_CONTENT)) {
+					java.io.File dataDir = new java.io.File(  CoronaEnvironment.getApplicationContext().getApplicationInfo().dataDir );
+					cameraShotSourceFile = new java.io.File(dataDir, fSourceUri.getPath());
+				}
 				if (cameraShotSourceFile.exists()) {
 					fileSize = cameraShotSourceFile.length();
 					if (fDestinationFile != null) {

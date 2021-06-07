@@ -211,6 +211,12 @@ AndroidDisplayObject::SetValueForKey( lua_State *L, const char key[], int valueI
 	return result;
 }
 
+bool
+AndroidDisplayObject::SetNativeProperty( lua_State *L, const char key[], int valueIndex )
+{
+	return fNativeToJavaBridge->DisplayObjectSetNativeProperty( fId, key, L, valueIndex );
+}
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt
