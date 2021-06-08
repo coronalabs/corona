@@ -83,3 +83,5 @@ lint/tmp/
 android.ipr
 android.iws
 /sdk/.cxx/
+
+preloadedAssets/src/
