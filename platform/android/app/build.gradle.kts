@@ -17,7 +17,7 @@ val coronaResourcesDir: String? by project
 val coronaDstDir: String? by project
 val coronaTmpDir: String? by project
 val coronaAppFileName: String? by project
-val coronaAppPackage = project.findProperty("coronaAppPackage") as? String ?: "com.corona.test"
+val coronaAppPackage = project.findProperty("coronaAppPackage") as? String ?: "com.corona.app"
 val coronaKeystore: String? by project
 val coronaKeystorePassword: String? by project
 val coronaKeyAlias: String? by project
@@ -244,6 +244,9 @@ android {
     }
     aaptOptions {
         additionalParameters("--extra-packages", extraPackages.filter { it.isNotBlank() }.joinToString(":"))
+    }
+    if (isExpansionFileRequired) {
+        assetPacks.add(":preloadedAssets")
     }
     // This is dirty hack because Android Assets refuse to copy assets which start with . or _
     if (!isExpansionFileRequired) {
@@ -779,6 +782,7 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
         exclude("app/build/**", "app/CMakeLists.txt")
         exclude("**/*.iml", "**/\\.*")
         include("setup.sh", "setup.bat")
+        include("preloadedAssets/build.gradle.kts")
         into("template")
     }
     from(android.sdkDirectory) {
@@ -816,7 +820,7 @@ tasks.register<Copy>("exportToNativeAppTemplate") {
     from(rootDir) {
         include("app/build.gradle.kts")
         filter {
-            it.replace("com.corona.test", "com.mycompany.app")
+            it.replace("com.corona.app", "com.mycompany.app")
         }
     }
 
