@@ -245,7 +245,7 @@ Rtt_VLogException(const char *format, va_list ap)
 int
 Rtt_Log( const char *format, ... )
 {
-	int result;
+	int result = 0;
 
 	if (Rtt_LogIsEnabled())
 	{
