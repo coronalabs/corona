@@ -44,7 +44,7 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <GL/glew.h>
 #elif defined(Rtt_NINTENDO_ENV)
-	#include <Rtt_NX_GL.h>
+	#include "../../platform/switch/Solar2D/Rtt_NX_GL.h"
 #else
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
