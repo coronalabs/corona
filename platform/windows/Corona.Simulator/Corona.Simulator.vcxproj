@@ -136,6 +136,7 @@
     <ClInclude Include="AnalyticsProvider.h" />
     <ClInclude Include="BuildAndroidDlg.h" />
     <ClInclude Include="BuildLinuxDlg.h" />
+    <ClInclude Include="BuildNintendoDlg.h" />
     <ClInclude Include="BuildProgressDlg.h" />
     <ClInclude Include="BuildResult.h" />
     <ClInclude Include="BuildWebDlg.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="AnalyticsProvider.cpp" />
     <ClCompile Include="BuildAndroidDlg.cpp" />
     <ClCompile Include="BuildLinuxDlg.cpp" />
+    <ClCompile Include="BuildNintendoDlg.cpp" />
     <ClCompile Include="BuildProgressDlg.cpp" />
     <ClCompile Include="BuildResult.cpp" />
     <ClCompile Include="BuildWebDlg.cpp" />

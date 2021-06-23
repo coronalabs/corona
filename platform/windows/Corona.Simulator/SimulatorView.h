@@ -135,6 +135,7 @@ class CSimulatorView : public CView
 		afx_msg void OnBuildForAndroid();
 		afx_msg void OnBuildForWeb();
 		afx_msg void OnBuildForLinux();
+		afx_msg void OnBuildForNintendo();
 		afx_msg void OnBuildForWin32();
 		afx_msg void OnFileOpenInEditor();
 		afx_msg void OnFileRelaunch();

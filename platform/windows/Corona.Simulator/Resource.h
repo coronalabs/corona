@@ -10,6 +10,7 @@
 #define IDS_BUILDWEBUPSELL              129
 #define IDS_INVALID_WEB_APP_VERSION_NUMBER 130
 #define IDS_INVALID_LINUX_APP_VERSION_NUMBER 131
+#define IDS_INVALID_NINTENDO_APP_VERSION_NUMBER 132
 #define IDD_BUILD_DROID                 311
 #define IDD_LOGIN                       313
 #define IDD_LICENSE                     314
@@ -61,6 +62,7 @@
 #define IDD_CUSTOM_DEVICE               377
 #define IDD_BUILD_WIN32_APP             378
 #define IDD_HTML_MESSAGE                379
+#define IDD_BUILD_NINTENDO              382
 #define IDS_OPENFORBUILD_s              500
 #define IDS_OPENMAINLUA                 501
 #define IDS_ONLYMAINLUA                 502
@@ -353,6 +355,7 @@
 #define ID_FILE_CLEARPROJECTSANDBOX     32818
 #define ID_VIEW_CONSOLE                 32819
 #define ID_BUILD_FOR_LINUX              32820
+#define ID_BUILD_FOR_NINTENDO           32821
 #define ID_VIEWAS_BEGIN                 32900
 #define ID_VIEWAS_CUSTOMDEVICE          32998
 #define ID_VIEWAS_END                   32999
@@ -361,9 +364,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        381
+#define _APS_NEXT_RESOURCE_VALUE        383
 #define _APS_NEXT_COMMAND_VALUE         32820
 #define _APS_NEXT_CONTROL_VALUE         1104
-#define _APS_NEXT_SYMED_VALUE           380
+#define _APS_NEXT_SYMED_VALUE           382
 #endif
 #endif

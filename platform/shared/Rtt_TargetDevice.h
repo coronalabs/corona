@@ -40,6 +40,7 @@ class TargetDevice
 			kWinPhoneSilverlightPlatform = 7, // Windows Phone 8 Silverlight App
 			kTVOSPlatform = 8, // tvOS
 			kLinuxPlatform = 9, // Linux desktop
+			kNintendoPlatform = 10, // Nintendo switch app
 
 			kNumPlatforms
 		}

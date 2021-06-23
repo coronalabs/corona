@@ -36,6 +36,7 @@
 #include "BuildAndroidDlg.h"
 #include "BuildWebDlg.h"
 #include "BuildLinuxDlg.h"
+#include "BuildNintendoDlg.h"
 #include "BuildWin32AppDlg.h"
 #include "NewProjectDlg.h"
 #include "SelectSampleProjectDlg.h"
@@ -108,6 +109,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_COMMAND(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnBuildForAndroid)
 	ON_COMMAND(ID_BUILD_FOR_WEB, &CSimulatorView::OnBuildForWeb)
 	ON_COMMAND(ID_BUILD_FOR_LINUX, &CSimulatorView::OnBuildForLinux)
+	ON_COMMAND(ID_BUILD_FOR_NINTENDO, &CSimulatorView::OnBuildForNintendo)
 	ON_COMMAND(ID_BUILD_FOR_WIN32, &CSimulatorView::OnBuildForWin32)
 	ON_COMMAND(ID_FILE_OPENINEDITOR, &CSimulatorView::OnFileOpenInEditor)
 	ON_COMMAND(ID_FILE_RELAUNCH, &CSimulatorView::OnFileRelaunch)
@@ -125,6 +127,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_WEB, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_LINUX, &CSimulatorView::OnUpdateBuildMenuItem)
+	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_NINTENDO, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_WIN32, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENINEDITOR, &CSimulatorView::OnUpdateFileOpenInEditor)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SHOW_PROJECT_FILES, &CSimulatorView::OnUpdateShowProjectFiles)
@@ -897,6 +900,29 @@ void CSimulatorView::OnBuildForLinux()
 	// Display the build window.
 	CBuildLinuxDlg dlg;
 	dlg.SetProject( GetDocument()->GetProject() );
+	dlg.DoModal();
+	if (buildSuspendedSimulator)
+	{
+		// Toggle suspend
+		SuspendResumeSimulationWithOverlay(true, false);
+	}
+}
+
+/// <summary>Opens a dialog to build the currently selected project as an Nintendo Switch app.</summary>
+void CSimulatorView::OnBuildForNintendo()
+{
+	// If app is running, suspend it during the build
+	bool buildSuspendedSimulator = false;
+	bool isSuspended = IsSimulationSuspended();
+	if (false == isSuspended)
+	{
+		buildSuspendedSimulator = true;
+		SuspendResumeSimulationWithOverlay(true, false);
+	}
+
+	// Display the build window.
+	CBuildNintendoDlg dlg;
+	dlg.SetProject(GetDocument()->GetProject());
 	dlg.DoModal();
 	if (buildSuspendedSimulator)
 	{
