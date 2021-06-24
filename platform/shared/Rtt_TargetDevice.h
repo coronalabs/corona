@@ -84,7 +84,8 @@ class TargetDevice
 			kAndroidOS2_3_3	=  123300,
 			kAndroidOS4_0_3 =  140300,
 			kWeb1_0         =   10000,
-			kLinux         =   160000,
+			kLinux					=	160000,
+			kNintendo				= 170000,
 		} Version;
 
 		static Version VersionForPlatform( Platform platform ); // Return current stable version

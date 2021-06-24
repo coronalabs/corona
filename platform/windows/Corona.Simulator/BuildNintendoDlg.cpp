@@ -25,22 +25,20 @@
 #include "Core/Rtt_Build.h"
 #include "Rtt_SimulatorAnalytics.h"
 #include "Rtt_TargetDevice.h"
-#include <Shlwapi.h>
 
 // CBuildNintendoDlg dialog
 
 IMPLEMENT_DYNAMIC(CBuildNintendoDlg, CDialog)
 
 CBuildNintendoDlg::CBuildNintendoDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CBuildNintendoDlg::IDD, pParent),
-    m_pProject( NULL ),
-	m_nValidFields( 0 )
+	: CDialog(CBuildNintendoDlg::IDD, pParent)
+	, m_pProject(NULL)
+	, m_nValidFields(0)
 {
 }
 
 CBuildNintendoDlg::~CBuildNintendoDlg()
 {
-
 }
 
 void CBuildNintendoDlg::DoDataExchange(CDataExchange* pDX)
@@ -82,7 +80,7 @@ BOOL CBuildNintendoDlg::OnInitDialog()
 	((CEdit*)GetDlgItem(IDC_BUILD_SAVETO))->SetLimitText(MAX_PATH - 1);
 
 
-    m_nValidFields = 0;
+	m_nValidFields = 0;
 
 	// If there isn't a package name, create one by reversing the user's email address and adding the app name
 	if (m_pProject->GetPackage().IsEmpty())
@@ -104,14 +102,14 @@ BOOL CBuildNintendoDlg::OnInitDialog()
 	}
 
 	stringBuffer.Format(_T("%d"), m_pProject->GetAndroidVersionCode());
-	SetDlgItemText( IDC_BUILD_APPNAME, m_pProject->GetName() );
-	SetDlgItemText( IDC_BUILD_VERSION_CODE, stringBuffer );
-	SetDlgItemText( IDC_BUILD_VERSION_NAME, m_pProject->GetAndroidVersionName() );
-	SetDlgItemText( IDC_BUILD_PACKAGE, m_pProject->GetPackage() );
-	SetDlgItemText( IDC_BUILD_PROJECTPATH, m_pProject->GetDir() );
+	SetDlgItemText(IDC_BUILD_APPNAME, m_pProject->GetName());
+	SetDlgItemText(IDC_BUILD_VERSION_CODE, stringBuffer);
+	SetDlgItemText(IDC_BUILD_VERSION_NAME, m_pProject->GetAndroidVersionName());
+	SetDlgItemText(IDC_BUILD_PACKAGE, m_pProject->GetPackage());
+	SetDlgItemText(IDC_BUILD_PROJECTPATH, m_pProject->GetDir());
 
 	// Initialize build destination directory.
-	SetDlgItemText( IDC_BUILD_SAVETO, m_pProject->GetSaveDir() );
+	SetDlgItemText(IDC_BUILD_SAVETO, m_pProject->GetSaveDir());
 
 	// Set up checkboxs
 	CheckDlgButton(IDC_INCLUDE_STANDART_RESOURCES, m_pProject->GetUseStandartResources() ? BST_CHECKED : BST_UNCHECKED);
@@ -121,28 +119,28 @@ BOOL CBuildNintendoDlg::OnInitDialog()
 }
 
 // SetProject - called before DoModal to set the associated project.
-void CBuildNintendoDlg::SetProject( const std::shared_ptr<CCoronaProject>& pProject )
+void CBuildNintendoDlg::SetProject(const std::shared_ptr<CCoronaProject>& pProject)
 {
-    m_pProject = pProject;  // leave unchanged until OnOK()
+	m_pProject = pProject;  // leave unchanged until OnOK()
 }
 
 // OnBrowseSaveto - show directory selection dialog for build destination dir
 void CBuildNintendoDlg::OnBrowseSaveto()
 {
-   CString sDir = _T("");
-   GetDlgItemText( IDC_BUILD_SAVETO, sDir );
-   
-   // Default to the system's Documents if the above field is empty.
-   if (sDir.IsEmpty())
-   {
-	   ::SHGetFolderPath(nullptr, CSIDL_MYDOCUMENTS, nullptr, 0, sDir.GetBuffer(MAX_PATH));
-	   sDir.ReleaseBuffer();
-   }
+	CString sDir = _T("");
+	GetDlgItemText(IDC_BUILD_SAVETO, sDir);
 
-   if (CBrowseDirDialog::Browse(sDir, IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION))
-   {
-      SetDlgItemText( IDC_BUILD_SAVETO, sDir );
-   }
+	// Default to the system's Documents if the above field is empty.
+	if (sDir.IsEmpty())
+	{
+		::SHGetFolderPath(nullptr, CSIDL_MYDOCUMENTS, nullptr, 0, sDir.GetBuffer(MAX_PATH));
+		sDir.ReleaseBuffer();
+	}
+
+	if (CBrowseDirDialog::Browse(sDir, IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION))
+	{
+		SetDlgItemText(IDC_BUILD_SAVETO, sDir);
+	}
 }
 
 void CBuildNintendoDlg::OnClickedIncludeStandartResources()
@@ -158,7 +156,7 @@ void CBuildNintendoDlg::OnClickedIncludeStandartResources()
 void CBuildNintendoDlg::OnOK()  // OnBuild()
 {
 	WinString stringBuffer;
-    CString sValue;
+	CString sValue;
 	CString sBuildDir;
 	CString sVersionName;
 	CString sPackageName;
@@ -166,22 +164,22 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 	int iVersionCode;
 
 	// Fetch and validate field values.
-    GetDlgItemText(IDC_BUILD_APPNAME, sAppName);
+	GetDlgItemText(IDC_BUILD_APPNAME, sAppName);
 	sAppName.Trim();
 	if (sAppName.IsEmpty())
 	{
 		DisplayWarningMessage(IDS_BUILD_APP_NAME_NOT_PROVIDED);
 		GetDlgItem(IDC_BUILD_APPNAME)->SetFocus();
-		LogAnalytics( "build-bungled", "reason", "BUILD_APP_NAME_NOT_PROVIDED" );
+		LogAnalytics("build-bungled", "reason", "BUILD_APP_NAME_NOT_PROVIDED");
 		return;
 	}
-    GetDlgItemText(IDC_BUILD_VERSION_CODE, sValue);
+	GetDlgItemText(IDC_BUILD_VERSION_CODE, sValue);
 	sValue.Trim();
 	if (sValue.IsEmpty())
 	{
 		DisplayWarningMessage(IDS_BUILD_VERSION_NUMBER_NOT_PROVIDED);
 		GetDlgItem(IDC_BUILD_VERSION_CODE)->SetFocus();
-		LogAnalytics( "build-bungled", "reason", "BUILD_APP_VERSION_NUMBER_NOT_PROVIDED" );
+		LogAnalytics("build-bungled", "reason", "BUILD_APP_VERSION_NUMBER_NOT_PROVIDED");
 		return;
 	}
 	iVersionCode = _ttoi(sValue);
@@ -189,21 +187,21 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 	{
 		DisplayWarningMessage(IDS_INVALID_NINTENDO_APP_VERSION_NUMBER);
 		GetDlgItem(IDC_BUILD_VERSION_CODE)->SetFocus();
-		LogAnalytics( "build-bungled", "reason", "INVALID_NINTENDO_APP_VERSION_NUMBER" );
+		LogAnalytics("build-bungled", "reason", "INVALID_NINTENDO_APP_VERSION_NUMBER");
 		return;
 	}
 
 	//Version code is version name
 	sVersionName = sValue;
 
-	
-    GetDlgItemText(IDC_BUILD_SAVETO, sBuildDir);
+
+	GetDlgItemText(IDC_BUILD_SAVETO, sBuildDir);
 	sBuildDir.Trim();
 	if (sBuildDir.IsEmpty())
 	{
 		DisplayWarningMessage(IDS_BUILD_PATH_NOT_PROVIDED);
 		GetDlgItem(IDC_BUILD_SAVETO)->SetFocus();
-		LogAnalytics( "build-bungled", "reason", "BUILD_PATH_NOT_PROVIDED" );
+		LogAnalytics("build-bungled", "reason", "BUILD_PATH_NOT_PROVIDED");
 		return;
 	}
 
@@ -211,7 +209,7 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 	{
 		DisplayWarningMessage(IDS_BUILD_PATH_INVALID);
 		GetDlgItem(IDC_BUILD_SAVETO)->SetFocus();
-		LogAnalytics( "build-bungled", "reason", "BUILD_PATH_INVALID" );
+		LogAnalytics("build-bungled", "reason", "BUILD_PATH_INVALID");
 		return;
 	}
 
@@ -224,18 +222,18 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 		{
 			DisplayWarningMessage(IDS_BUILD_PATH_CREATION_FAILED);
 			GetDlgItem(IDC_BUILD_SAVETO)->SetFocus();
-			LogAnalytics( "build-bungled", "reason", "BUILD_PATH_CREATION_FAILED" );
+			LogAnalytics("build-bungled", "reason", "BUILD_PATH_CREATION_FAILED");
 			return;
 		}
 	}
-	
+
 	// Store field settings to project.
 	m_pProject->SetName(sAppName);
 	m_pProject->SetSaveDir(sBuildDir);
 
 	// Save all project settings and then build the project.
 
-	LogAnalytics( "build" );
+	LogAnalytics("build");
 
 	m_pProject->Save();
 	CBuildProgressDlg buildDialog;
@@ -257,17 +255,17 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 	}
 
 	// The build has succeeded. Inform the user.
-    CMessageDlg messageDlg(this);
-    messageDlg.SetText( IDS_BUILD_SUCCEEDED );
-    messageDlg.SetDefaultText( IDS_DONE );
-    messageDlg.SetAltText( IDS_VIEW_EXPLORER );
-    messageDlg.SetFolder( m_pProject->GetSaveDir() );
-    messageDlg.SetIconStyle( MB_ICONINFORMATION );
+	CMessageDlg messageDlg(this);
+	messageDlg.SetText(IDS_BUILD_SUCCEEDED);
+	messageDlg.SetDefaultText(IDS_DONE);
+	messageDlg.SetAltText(IDS_VIEW_EXPLORER);
+	messageDlg.SetFolder(m_pProject->GetSaveDir());
+	messageDlg.SetIconStyle(MB_ICONINFORMATION);
 	messageDlg.SetButton3Text(IDS_OPEN_URL_HTML);
 	if (messageDlg.DoModal() == ID_MSG_BUTTON3)
 	{
 		// start live server with URL
-		CString sCoronaLiveServerExe = ((CSimulatorApp *)AfxGetApp())->GetApplicationDir() + _T("\\Corona.LiveServer.exe");
+		CString sCoronaLiveServerExe = ((CSimulatorApp*)AfxGetApp())->GetApplicationDir() + _T("\\Corona.LiveServer.exe");
 		try
 		{
 			CString sAppPath = CString(_T("html5:")) + m_pProject->GetSaveDir() + _T("\\") + m_pProject->GetName();
@@ -299,15 +297,15 @@ void CBuildNintendoDlg::DisplayWarningMessage(UINT nMessageID)
 	MessageBox(message, title, MB_OK | MB_ICONWARNING);
 }
 
-void CBuildNintendoDlg::LogAnalytics(const char *eventName, const char *key, const char *value)
+void CBuildNintendoDlg::LogAnalytics(const char* eventName, const char* key, const char* value)
 {
 	Rtt_ASSERT(GetWinProperties()->GetAnalytics() != NULL);
 	Rtt_ASSERT(eventName != NULL && strlen(eventName) > 0);
 
 	// NEEDSWORK: this is horrible
 	size_t numItems = 2;
-	char **dataKeys = (char **)calloc(sizeof(char *), numItems);
-	char **dataValues = (char **)calloc(sizeof(char *), numItems);
+	char** dataKeys = (char**)calloc(sizeof(char*), numItems);
+	char** dataValues = (char**)calloc(sizeof(char*), numItems);
 
 	dataKeys[0] = _strdup("target");
 	dataValues[0] = _strdup("linux");

@@ -147,6 +147,9 @@
     </ClInclude>
     <ClInclude Include="BuildLinuxDlg.h" />
     <ClInclude Include="BuildNintendoDlg.h" />
+    <ClInclude Include="..\..\shared\Rtt_NintendoAppPackager.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -281,6 +284,9 @@
     </ClCompile>
     <ClCompile Include="BuildLinuxDlg.cpp" />
     <ClCompile Include="BuildNintendoDlg.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_NintendoAppPackager.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="res">
@@ -357,6 +363,9 @@
       <Filter>%28root%29\platform\resources</Filter>
     </LuaToCpp>
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua">
+      <Filter>%28root%29\platform\resources</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\nintendoPackageApp.lua">
       <Filter>%28root%29\platform\resources</Filter>
     </LuaToCpp>
   </ItemGroup>

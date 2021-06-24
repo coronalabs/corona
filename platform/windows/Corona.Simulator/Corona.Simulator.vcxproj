@@ -123,6 +123,7 @@
     <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h" />
     <ClInclude Include="..\..\shared\Rtt_LinuxAppPackager.h" />
     <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h" />
+    <ClInclude Include="..\..\shared\Rtt_NintendoAppPackager.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformDictionaryWrapper.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformObjectWrapper.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c" />
     <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp" />
     <ClCompile Include="..\..\shared\Rtt_LinuxAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_NintendoAppPackager.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformDictionaryWrapper.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformObjectWrapper.cpp" />
@@ -249,6 +251,7 @@
     <LuaToCpp Include="..\..\android\create_build_properties.lua" />
     <LuaToCpp Include="..\..\resources\CoronaPListSupport.lua" />
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
+    <LuaToCpp Include="..\..\resources\nintendoPackageApp.lua" />
     <LuaToCpp Include="..\..\resources\shell.lua" />
     <LuaToCpp Include="..\..\resources\simulatorAnalytics.lua" />
     <LuaToCpp Include="..\..\resources\webPackageApp.lua" />

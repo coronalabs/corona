@@ -47,11 +47,18 @@ CBuildResult appWebBuild(Interop::SimulatorRuntimeEnvironment *pSim,
 						 const char * targetos, bool isDistribution, int versionCode,
 						 bool useStandartResources, bool createFBInstantArchive);
 
-CBuildResult appLinuxBuild(Interop::SimulatorRuntimeEnvironment *pSim,
-						 const char *srcDir,
-						 const char *applicationName, const char *versionName,
-						 const char *dstDir,
-						 const Rtt::TargetDevice::Platform targetPlatform,
-						 const char * targetos, bool isDistribution, int versionCode, bool useStandartResources);
+CBuildResult appLinuxBuild(Interop::SimulatorRuntimeEnvironment* pSim,
+						const char* srcDir,
+						const char* applicationName, const char* versionName,
+						const char* dstDir,
+						const Rtt::TargetDevice::Platform targetPlatform,
+						const char* targetos, bool isDistribution, int versionCode, bool useStandartResources);
+
+CBuildResult appNintendoBuild(Interop::SimulatorRuntimeEnvironment* pSim,
+						const char* srcDir,
+						const char* applicationName, const char* versionName,
+						const char* dstDir,
+						const Rtt::TargetDevice::Platform targetPlatform,
+						const char* targetos, bool isDistribution, int versionCode, bool useStandartResources);
 
 void appEndNativeAlert(void *pLuaResource, int nButtonIndex, bool bCanceled);
