@@ -2779,6 +2779,7 @@ public class CoronaActivity extends Activity {
 
 		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 		android.net.Uri imageUri = null;
+		intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
 		imageUri = com.ansca.corona.storage.FileContentProvider.createContentUriForFile(this.getApplicationContext(), outputFile);
 		intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
@@ -2793,6 +2794,7 @@ public class CoronaActivity extends Activity {
 	 */
 	void showCameraWindowForVideo(int maxTime, int quality) {
 		Intent intent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
+		intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 		android.net.Uri videoUri = null;
 		android.content.Context context = this.getApplicationContext();
 		String destinationPath = new java.io.File(CoronaEnvironment.getCachesDirectory(context), "Video.3gp").getAbsolutePath();
