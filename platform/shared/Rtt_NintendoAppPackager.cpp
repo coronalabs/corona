@@ -159,7 +159,7 @@ int NintendoAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBas
 
 	String debugBuildProcessPref;
 	GetServices().GetPreference("debugBuildProcess", &debugBuildProcessPref);
-	int debugBuildProcess = 3; // 0;
+	int debugBuildProcess = 0;
 	if (!debugBuildProcessPref.IsEmpty())
 	{
 		debugBuildProcess = (int) strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
@@ -267,7 +267,7 @@ int NintendoAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBas
 	}
 
 	// Clean up intermediate files
-	//vv rmdir(tmpDir);
+	rmdir(tmpDir);
 
 	return result;
 }

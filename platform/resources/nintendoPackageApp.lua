@@ -305,9 +305,9 @@ local function getExcludePredecate()
 			excludes[i] = globToPattern(excludes[i])
 		end
 
-		for i = 1, #excludes do
-			logd('Exclude rule: ', excludes[i])
-		end
+--		for i = 1, #excludes do
+--			logd('Exclude rule: ', excludes[i])
+--		end
 
 		return
 
@@ -371,7 +371,7 @@ local function GetFileExtension(url)
 end
 
 local function deleteUnusedFiles(srcDir, excludePredicate)
-	logd('Deleting unused assets from ' .. srcDir)
+	-- logd('Deleting unused assets from ' .. srcDir)
 	for file in lfs.dir(srcDir) do
 		local f = pathJoin(srcDir, file)
 		if excludePredicate(file) then
@@ -410,7 +410,7 @@ function nintendoPackageApp( args )
 	local template = args.nintendotemplateLocation
 
 -- for debugging
-	local template = 'e:/nintendotemplate.zip'
+--	local template = 'e:/nintendotemplate.zip'
 
 	-- check if user purchased splash screen
 	if not template then
@@ -425,6 +425,11 @@ function nintendoPackageApp( args )
 		end
 		template = pathJoin(coronaRoot , 'Resources', 'nintendotemplate.zip')
 	end
+	logd("template location: " .. template);
+
+	if not file_exists(template) then
+		return 'Missing ' .. template
+	end
 
 	-- read settings
 	local buildSettingsFile = pathJoin(args.srcDir, 'build.settings')
@@ -437,15 +442,13 @@ function nintendoPackageApp( args )
 	local success = false;
 
 	-- create app folder if it does not exists
-	local nintendoappFolder = pathJoin(args.dstDir, args.applicationName)
-	if not dir_exists(nintendoappFolder) then
-		success = lfs.mkdir(nintendoappFolder)
-		if not success then
-			return 'Failed to create app folder: ' .. nintendoappFolder
-		end
-		logd('Created app folder: ' .. nintendoappFolder)
+	local nintendoappFolder = pathJoin(args.dstDir, args.applicationName .. '.NX64')
+	removeDir(nintendoappFolder)	-- clear
+	success = lfs.mkdir(nintendoappFolder)
+	if not success then
+		return 'Failed to create App folder: ' .. nintendoappFolder
 	end
-	logd('nintendoappFolder: ' .. nintendoappFolder)
+	logd('AppFolder: ' .. nintendoappFolder)
 
 	local appFolder = pathJoin(args.tmpDir, 'nintendoapp')
 	success = removeDir(appFolder)	-- clear
@@ -513,16 +516,16 @@ function nintendoPackageApp( args )
 	-- build App 
 	-- sample: AuthoringTool.exe creatensp -o C:/corona/platform/switch/NX64/Release/Rtt.nsp --meta C:/corona/platform/switch/Solar2D/rtt.nmeta --type Application --desc C:/Nintendo\vitaly/NintendoSDK/Resources/SpecFiles/Application.desc--program C:/corona/platform/switch/NX64/Release/Rtt.nspd/program0.ncd/code C:\corona\platform\test\assets2
 
-	local metafile = args.srcDir .. '\\' .. args.applicationName .. '.nmeta'
+	local metafile = pathJoin(args.srcDir, args.applicationName .. '.nmeta')
 	if not file_exists(metafile) then
 		return 'Missing ' .. metafile .. ' file'
 	end
 	log('Using ' .. metafile)
 
-	local nspfile = args.dstDir .. '\\'.. args.applicationName ..'.nsp'
-	local descfile = nintendoRoot .. "\\Resources\\SpecFiles\\Application.desc"
-	local solar2Dfile = args.tmpDir .. '\\nintendotemplate\\code'
-	local assets = args.tmpDir .. '\\nintendoapp'
+	local nspfile = pathJoin(nintendoappFolder, args.applicationName ..'.nsp')
+	local descfile = pathJoin(nintendoRoot, "\\Resources\\SpecFiles\\Application.desc")
+	local solar2Dfile = pathJoin(args.tmpDir, '\\nintendotemplate\\code')
+	local assets = pathJoin(args.tmpDir, '\\nintendoapp')
 
 	local cmd = '"' .. nintendoRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
@@ -532,12 +535,13 @@ function nintendoPackageApp( args )
 	cmd = cmd .. ' "' .. assets .. '"'
 	cmd = 'cmd /c "'.. cmd .. '"'
 	
-	logd('Running ',cmd)
-	local rc = processExecute(cmd);
-	if rc ~=0 then
+	logd('Building ... ', cmd)
+	processExecute(cmd);
+
+	if not file_exists(nspfile) then
 		log('Failed to build Nintendo Switch App')
 	else
-		log(nspfile .. ' is built')
+		log('Build succeeded: ' .. nspfile)
 	end
 
 	return nil 

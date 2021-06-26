@@ -261,7 +261,7 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 	messageDlg.SetAltText(IDS_VIEW_EXPLORER);
 	messageDlg.SetFolder(m_pProject->GetSaveDir());
 	messageDlg.SetIconStyle(MB_ICONINFORMATION);
-	messageDlg.SetButton3Text(IDS_OPEN_URL_HTML);
+//	messageDlg.SetButton3Text(IDS_OPEN_URL_HTML);
 	if (messageDlg.DoModal() == ID_MSG_BUTTON3)
 	{
 		// start live server with URL
