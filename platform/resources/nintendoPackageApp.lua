@@ -1,12 +1,9 @@
-------------------------------------------------------------------------------
 --
 -- This file is part of the Corona game engine.
 -- For overview and more information on licensing please refer to README.md 
 -- Home page: https://github.com/coronalabs/corona
 -- Contact: support@coronalabs.com
 --
-------------------------------------------------------------------------------
-
 
 processExecute = processExecute or os.execute
 
@@ -23,7 +20,7 @@ local function log(...)
 	myprint(...)
 end
 
-local function log3(...)
+local function logd(...)
 	if debugBuildProcess >= 3 then
 		myprint(...)
 	end
@@ -175,44 +172,10 @@ local function pathJoin(p1, p2, ... )
 	end
 end
 
-local function gzip( path, appname, ext, destFile )
-	local dst = pathJoin(path, destFile)
-	if windows then
-		local src = ''
-		for i = 1, #ext do	
-			src = src .. '"' .. pathJoin(path, appname .. ext[i]) .. '"'
-			src = src .. ' '
-		end
-		local cmd = '""%CORONA_PATH%\\7za.exe" a -tzip "' .. dst .. '" ' ..  src
-		processExecute(cmd);
-	else
-		local src = ''
-		for i = 1, #ext do	
-			src = src .. appname .. ext[i]
-			src = src .. ' '
-		end
-		local cmd = 'cd '.. quoteString(path) .. ' && /usr/bin/zip "' .. dst .. '" ' .. src
-		os.execute(cmd)
-	end
-
-	for i = 1, #ext do	
-		os.remove(pathJoin(path, appname .. ext[i]))
-	end
-end
-
-local function zip( folder, zipfile )
-	if windows then
-		local cmd = '""%CORONA_PATH%\\7za.exe" a ' .. zipfile .. ' ' ..  folder .. '/*"'
-		return processExecute(cmd)
-	else
-		local cmd = 'cd '.. folder .. ' && /usr/bin/zip -r -X ' .. zipfile .. ' ' .. '*'
-		return os.execute(cmd)
-	end
-end
-
 local function unzip( archive, dst )
 	if windows then
 		local cmd = '""%CORONA_PATH%\\7za.exe" x -aoa "' .. archive .. '" -o"' ..  dst .. '"'
+		logd('processExecute: ' .. cmd)
 		return processExecute(cmd)
 	else
 		return os.execute('/usr/bin/unzip -o -q ' .. quoteString(archive) .. ' -d ' ..  quoteString(dst))
@@ -317,7 +280,7 @@ local function getExcludePredecate()
 		end
 
 		for i = 1, #excludes do
-			log3('Exclude rule: ', excludes[i])
+			logd('Exclude rule: ', excludes[i])
 		end
 
 		return
@@ -335,7 +298,7 @@ end
 
 -- copy all assets except .lua, .lu files into .data
 local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate)
-	log3('Pulling assets from ' .. srcDir .. ' to ' .. dstDir)
+	logd('Pulling assets from ' .. srcDir .. ' to ' .. dstDir)
 	for file in lfs.dir(srcDir) do
 		local xf = dstDir .. file
 		xf = xf:sub(2)
@@ -362,13 +325,13 @@ local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate
 
 					-- keep, it will be used later to generate .js
 					dataFiles[#dataFiles+1] = { name=dstDir..file, size=attr.size };
-					log3('Added ' .. f .. ' into .data')
+					logd('Added ' .. f .. ' into .data')
 				else
 					log('Failed to add ' .. f .. ' into .data')
 				end
 			end
 		else
-			log3('Excluded ' .. f)
+			logd('Excluded ' .. f)
     end
 	end
 end
@@ -381,114 +344,18 @@ function GetFileExtension(url)
   return url:match("^.+(%..+)$")
 end
 
-local function buildTemplate(templateFolder)
---[[
-	-- get plugin files
-
-	local pluginFiles = {}
-	local exportedFunctions = {}
-	for k, metadata in pairs(nintendoPluginsMetadata) do
-		if metadata.format == 'a' then
-			for i = 1, #metadata.exportedFunctions do	
-				table.insert(exportedFunctions, metadata.exportedFunctions[i])
-			end
-			for file in lfs.dir(metadata.path) do
-				local ext = GetFileExtension(file)
-				if ext == '.a' or ext == '.o' then
-					table.insert(pluginFiles, quoteString(pathJoin(metadata.path, file)))
-				end
-			end
-		end
-	end
-
-	-- hack
-	if windows then
-		cmd = 'z:/corona/link_emscripten.bat'
-	else
-		cmd = '/Users/mymac/link_emscripten.sh'
-	end
-	cmd = cmd .. ' -O2'
-
-	-- get bin files
-
-	local binFolder = templateFolder .. '/bin'
-	local binFiles = {}
-	for file in lfs.dir(binFolder) do
-		local ext = GetFileExtension(file)
-		if ext == '.a' or ext == '.o' then
-			table.insert(binFiles, quoteString(pathJoin(binFolder, file)))
-		end
-		if ext == '.js' then
-			table.insert(binFiles, '--js-library ' .. quoteString(pathJoin(binFolder, file)))
-		end
-	end
-
-	-- bin files
-	for i = 1, #binFiles do	
-		cmd = cmd .. ' ' .. binFiles[i]
-	end
-	-- plugins
-	for i = 1, #pluginFiles do	
-		cmd = cmd .. ' ' .. pluginFiles[i]
-	end
-
-	cmd = cmd .. " -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']\""
-
-	local exportedFunctionsString = " -s \"EXPORTED_FUNCTIONS=['_main'"
-	for i = 1, #exportedFunctions do	
-		exportedFunctionsString = exportedFunctionsString .. ",'" .. exportedFunctions[i] .. "'"
-	end
-	exportedFunctionsString = exportedFunctionsString .. "]\""
-
-	cmd = cmd .. exportedFunctionsString
-	cmd = cmd .. " -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s ALLOW_MEMORY_GROWTH=1 --use-preload-plugins"
-
-	-- generate empty data
-	lfs.mkdir(pathJoin(templateFolder, 'data'))
-	lfs.mkdir(pathJoin(templateFolder, 'data', 'subfolder'))
-	copyFile(pathJoin(templateFolder, 'html/emscripten.html'), pathJoin(templateFolder, 'data/emscripten.html'))
-
-	local preloadFile = quoteString(pathJoin(templateFolder, 'data'))
-	cmd = cmd .. " --preload-file " .. preloadFile
-
-	lfs.mkdir(pathJoin(templateFolder, 'newhtml'))
-	local outputFile = quoteString(pathJoin(templateFolder, 'newhtml/emscripten.html'))
-	cmd = cmd .. " -o " .. outputFile
-
-	 log3(cmd)
-	 local rc = 0
-	if windows then
---		processExecute(cmd)
-		rc = os.execute(cmd)
-	else
-		rc = os.execute(cmd)
-	end
-
-	if rc == 0 then
-		-- replace .js and .mem in old template
-		copyFile(pathJoin(templateFolder, 'newhtml/emscripten.js'), pathJoin(templateFolder, 'html/emscripten.js'))
-		copyFile(pathJoin(templateFolder, 'newhtml/emscripten.data'), pathJoin(templateFolder, 'html/emscripten.data'))
-		copyFile(pathJoin(templateFolder, 'newhtml/emscripten.html.mem'), pathJoin(templateFolder, 'html/emscripten.html.mem'))
-
---		local template = quoteString(pathJoin(templateFolder, 'newtemplate.zip'))
---		zip(quoteString(templateFolder), template)
-	end
---]]
-end
-
 --
 -- global script to call from C++
----
+-- 
 function nintendoPackageApp( args )
 	debugBuildProcess = args.debugBuildProcess
-	log('HTML5 builder started')
-	log3(json.prettify(args))
+	log('Nintendo Switch App builder started')
+	logd(json.prettify(args))
 
 	local template = args.nintendotemplateLocation
 
 -- for debugging
---	local template = 'z:/nintendotemplate.zip'
---	local template = '/Users/mymac/corona/main-vitaly/platform/emscripten/nintendotemplate.zip'
+	local template = 'e:/nintendotemplate.zip'
 
 	-- check if user purchased splash screen
 	if not template then
@@ -521,8 +388,9 @@ function nintendoPackageApp( args )
 		if not success then
 			return 'Failed to create app folder: ' .. nintendoappFolder
 		end
-		log3('Created app folder: ' .. nintendoappFolder)
+		logd('Created app folder: ' .. nintendoappFolder)
 	end
+	logd('nintendoappFolder: ' .. nintendoappFolder)
 
 	local appFolder = pathJoin(args.tmpDir, 'nintendoapp')
 	success = removeDir(appFolder)	-- clear
@@ -534,9 +402,10 @@ function nintendoPackageApp( args )
 	if not success then
 		return 'Failed to create tmp folder: ' .. appFolder
 	end
-	log3('TMP folder: ' .. appFolder)
+	logd('appFolder: ' .. appFolder)
 
 	-- unzip standard template
+
 	local templateFolder = pathJoin(args.tmpDir, 'nintendotemplate')
 	success = removeDir(templateFolder)	
 --	if not success then
@@ -547,7 +416,7 @@ function nintendoPackageApp( args )
 	if not success then
 		return 'Failed to create template folder: ' .. templateFolder
 	end
-	log3('Template folder: ' .. templateFolder)
+	logd('templateFolder: ' .. templateFolder)
 
 	-- sanity check
 	local archivesize = lfs.attributes (template, "size")
@@ -559,92 +428,21 @@ function nintendoPackageApp( args )
 	if ret ~= 0 then
 		return 'Failed to unpack template ' .. template .. ' to ' .. templateFolder ..  ', err=' .. ret
 	end
-	log3('Unzipped ' .. template, ' to ', templateFolder)
-
-	-- dowmload plugins
-	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
-	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
-	lfs.mkdir(pluginDownloadDir)
-	lfs.mkdir(pluginExtractDir)
-	local msg = nintendoDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginExtractDir)
-	if type(msg) == 'string' then
-		return msg
-	end
-
-	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
-	if dir_exists( luaPluginDir ) then
-		copyDir(luaPluginDir, pluginExtractDir)
-		removeDir(pathJoin(pluginExtractDir, 'lua'))
-	end
-	local luaPluginDir = pathJoin(pluginExtractDir, 'lua_51')
-	if dir_exists( luaPluginDir ) then
-		copyDir(luaPluginDir, pluginExtractDir)
-		removeDir(pathJoin(pluginExtractDir, 'lua_51'))
-	end
-	if dir_exists( pluginExtractDir ) then
-		copyDir(pluginExtractDir, appFolder)
-	end
-
-	-- build app specific template
-	if useNewTemplate then
-		buildTemplate(templateFolder)
-		log('Builder used custom template')
-	end
-
-	local function copyHtmlTemplateFile(srcFileName, dstFileName, skipIfExists)
-		local destinationFile = pathJoin(nintendoappFolder, dstFileName)
-		if skipIfExists and file_exists(dstFileName) then
-			log('Using existing ', dstFileName)
-		else
-			local templateFile = pathJoin(templateFolder, 'html', srcFileName)
-			local ret = copyFile(templateFile, destinationFile)
-			if not ret then
-					return "Failed to copy " .. templateFile .. ' to ' .. destinationFile
-			end
-			log3("Copied " .. templateFile .. ' to ' .. destinationFile)
-		end
-	end
-
-	-- copy html template files
-	local err
-	err = copyHtmlTemplateFile('index.html', 'index.html', true)
-	if err then
-		return err
-	end
-
-	err = copyHtmlTemplateFile('index-nosplash.html', 'index-nosplash.html', true)
-	if err then
-		return err
-	end
-
-	local err = copyHtmlTemplateFile('index-debug.html', 'index-debug.html', true)
-	if err then
-		return err
-	end
-
-	local err = copyHtmlTemplateFile('coronaHtml5App.js', 'coronaHtml5App.js')
-	if err then
-		return err
-	end
-
-	local err = copyHtmlTemplateFile('coronaHtml5App.html.mem', 'coronaHtml5App.html.mem')
-	if err then
-		return err
-	end
+	logd('Unzipped ' .. template, ' to ', templateFolder)
 
 	-- gather files into appFolder (tmp folder)
 	local ret = copyDir( args.srcDir, appFolder )
 	if ret ~= 0 then
 		return "Failed to copy " .. args.srcDir .. ' to ' .. appFolder
 	end
-	log3("Copied ", args.srcDir, ' to ', appFolder)
+	logd("Copied ", args.srcDir, ' to ', appFolder)
 
 	if args.useStandartResources then
 		local ret = copyDir( pathJoin(templateFolder, 'res_widget'), appFolder )
 		if ret ~= 0 then
 			return "Failed to copy standard resources"
 		end
-		log3("Copied startard resources")
+		logd("Copied startard resources")
 	end
 
 	-- compile .lua
@@ -652,246 +450,36 @@ function nintendoPackageApp( args )
 	if not rc then
 		return "Failed to create .car file"
 	end
-	log3("Created .car file")
+	logd("Created .car file")
 
-	-- open emscripten .data for output
+	-- sample: AuthoringTool.exe creatensp -o C:/corona/platform/switch/NX64/Release/Rtt.nsp --meta C:/corona/platform/switch/Solar2D/rtt.nmeta --type Application --desc C:/Nintendo\vitaly/NintendoSDK/Resources/SpecFiles/Application.desc--program C:/corona/platform/switch/NX64/Release/Rtt.nspd/program0.ncd/code C:\corona\platform\test\assets2
+	-- build App 
+	local nspfile = "C:\\corona\\platform\\switch\\NX64\\Release\\Rtt.nsp"
+	local metafile = "C:\\corona\\platform\\switch\\Solar2D\\rtt.nmeta"
+	local descfile = "C:\\Nintendo\\vitaly\\NintendoSDK\\Resources\\SpecFiles\\Application.desc"
+	local solar2Dfile = "C:\\corona\\platform\\switch\\NX64\\Release\\Rtt.nspd\\program0.ncd\\code"
+	local assets = "C:\\corona\\platform\\test\\assets2"
 
-	local outPath = pathJoin(nintendoappFolder, args.applicationName .. ".data")
-	local out = io.open(outPath, "wb");
-	if out == nil then
-		return 'Failed to create .data file';
+	local nintendoRoot = os.getenv("NINTENDO_SDK_ROOT")
+	if not nintendoRoot then
+		return "no NINTENDO_SDK_ROOT, please install Nintendo SDK"
 	end
-	log3("Created .data file")
+
+	local cmd = '"' .. nintendoRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
+	cmd = cmd .. ' -o "' ..  nspfile .. '"'
+	cmd = cmd .. ' --meta "' ..  metafile .. '"'
+	cmd = cmd .. ' --desc "' ..  descfile .. '"'
+	cmd = cmd .. ' --program "' ..  solar2Dfile .. '"'
+	cmd = cmd .. ' "' .. assets .. '"'
+	cmd = 'cmd /c "'.. cmd .. '"'
 	
-	local dataFiles = {};
-	local folders = {};
-
-	pullDir(appFolder, "/", dataFiles, folders, out, getExcludePredecate());
-	out:close();
-
-	if #dataFiles == 0 then
-		return 'No files in ' .. appFolder;
+	logd('Running ',cmd)
+	local rc = processExecute(cmd);
+	if rc ~=0 then
+		log('Nintendo Switch App build failed, retcode ', rc)
+	else
+		log('Nintendo Switch App build success')
 	end
-
-	--log3('DataFiles: size=', #dataFiles, json.prettify(dataFiles))
-	--log3('folders: size=', #folders, json.prettify(folders))
-
-	--generate new loadPackaghe for .js
-
-	local loadPackage = 'loadPackage({"files":[';
-	local pos = 0
-
-	log('.data file map (size/name)');
-	local totalDataSize = 0;
-	for i = 1, #dataFiles do
-		-- {"audio":0,"start":0,"crunched":0,"end":5,"filename":"/main.lua"}
-		loadPackage = loadPackage .. '{"audio":0,';
-		loadPackage = loadPackage .. '"start":' .. pos .. ','; 
-		pos = pos + dataFiles[i].size
-		loadPackage = loadPackage .. '"crunched":0,';
-		loadPackage = loadPackage .. '"end":' .. pos .. ',';
-		loadPackage = loadPackage .. '"filename":"' .. dataFiles[i].name ..'"}';
-		if i == #dataFiles then loadPackage = loadPackage .. ']' else loadPackage = loadPackage .. "," end
-
-		-- print log
-		local s = dataFiles[i].size;
-		while string.len(s) < 7 do
-			s = ' ' .. s
-		end
-		log('Size = ' .. s .. ', ' .. dataFiles[i].name);
-		totalDataSize = totalDataSize + dataFiles[i].size;
-	end
-	log('Total data file size = ' .. totalDataSize .. ' = ' .. math.floor(totalDataSize / 1024) .. 'KB = ' .. math.floor(totalDataSize / 1024 / 1024) .. 'MB');
-
-	-- ,"remote_package_size":5,"package_uuid":"134361ad-01a4-42aa-aea6-5b48c05818f7"})
-	loadPackage = loadPackage .. ',"remote_package_size":' .. pos;
-
-	-- fixme UUID
-	loadPackage = loadPackage .. ',"package_uuid":"134361ad-01a4-42aa-aea6-5b48c05818f7"})';
-	--log3('loadPackage:', loadPackage);
-
-	--generate new FS_createPath for .js
-	
-	local createPaths = ''
-	for i = 1, #folders do
-		createPaths = createPaths .. 'Module["FS_createPath"]("'
-		createPaths = createPaths .. folders[i].parent
-		createPaths = createPaths .. '","'
-		createPaths = createPaths .. folders[i].name
-		createPaths = createPaths .. '",true,true);'
-	end
-	--log3('FS_createPath:',createPaths);
-
-	-- generate .js
-
-	-- read template, source
-	local fi = io.open(pathJoin(nintendoappFolder, "coronaHtml5App.js"), 'rb')
-	if (fi == nil) then
-		return 'Failed not open ' .. 'coronaHtml5App.js'
-	end
-	local src = fi:read("*a")	-- .js file
-	fi:close()
-
-	-- seek loadPackage({"files":[{"audio":0,"start":0,"crunched":0,"end":359,"filename":"/main.lua"},{"audio":0,"start":359,"crunched":0,"end":718,"filename":"/zzz/main.lua"}],"remote_package_size":718,"package_uuid":"be67bd33-1e30-46ab-85c8-ab4d3f06cf1d"})
-	local count
- 	src, count = src:gsub('loadPackage%b()', loadPackage, 1)
- 	if count < 1 then
-		return 'Source .js file does not contain loadPackage(...)';
- 	end
-
-	-- seek Module["FS_createPath"]("/","CORONA_FOLDER_PLACEHOLDER",true,true);
- 	src, count = src:gsub('Module%["FS_createPath"]%b();', createPaths, 1)
- 	if count < 1 then
-		return 'Source .js file does not contain FS_createPath()';
- 	end
-
- 	-- rename
- 	src, count = src:gsub('coronaHtml5App.data', args.applicationName .. ".data")
- 	if count < 1 then
-		return 'Source .js file does not contain coronaHtml5App.data';
- 	end
-
-	-- write .js
-	local outPath = pathJoin(nintendoappFolder, "coronaHtml5App.js");
-	local out = io.open(outPath, "wb");
-	if (out == nil) then
-		return 'Failed to create .js file';
-	end
-
-	out:write(src)
-	out:close()
-	log3('Created ', outPath)
-
-	-- prepare index.html
-
-	-- read file
-	local fi = io.open(pathJoin(nintendoappFolder, "index.html"), 'rb')
-	if (fi == nil) then
-		return 'Failed to open index.html';
-	end
-	local s = fi:read("*a")	-- read file
-	fi:close()
-
-	local count
- 	s, count = s:gsub('coronaHtml5App.bin', args.applicationName .. ".bin", 1)
-	if count > 0 then
-		-- replace title
-		s = s:gsub('Corona HTML5 App', 'Downloading: ' .. args.applicationName)
-
-		-- rewrite file
-		local outPath = pathJoin(nintendoappFolder, "index.html");
-		local out = io.open(outPath, "wb");
-		if (out == nil) then
-			return 'Failed to renew index.html';
-		end
-		out:write(s)
-		out:close() 	
-		log3('Created ', outPath)
-	end
-
-	-- prepare index-debug.html
-
-	-- read file
-	local fi = io.open(pathJoin(nintendoappFolder, "index-debug.html"), 'rb')
-	if (fi == nil) then
-		return 'Failed to open index-debug.html';
-	end
-	local s = fi:read("*a")	-- read file
-	fi:close()
-
-	local count
- 	s, count = s:gsub('coronaHtml5App.bin', args.applicationName .. ".bin", 1)
-	if count > 0 then
-		-- replace title
-		s = s:gsub('Corona HTML5 App', 'Downloading: ' .. args.applicationName)
-
-		-- rewrite file
-		local outPath = pathJoin(nintendoappFolder, "index-debug.html");
-		local out = io.open(outPath, "wb");
-		if (out == nil) then
-			return 'Failed to renew index-debug.html';
-		end
-		out:write(s)
-		out:close() 	
-		log3('Created ', outPath)
-	end
-
-	-- compress .js & .mem into .bin
-	gzip(nintendoappFolder, "coronaHtml5App" , {'.js', '.html.mem'}, args.applicationName..'.bin')
-
-	--
-	-- build FB Instant app
-	--
-	if args.createFBInstantArchive then
-		-- create tmp folder for fb app
-		local appFolder = pathJoin(args.tmpDir, 'fbapp')
-		success = removeDir(appFolder)	-- clear
-		success = lfs.mkdir(appFolder)
-		if not success then
-			return 'Failed to create tmp folder: ' .. appFolder
-		end
-		log3('TMP folder: ' .. appFolder)
-
-		-- copy template files into appFolder (tmp folder)
-		local srcDir =  pathJoin(templateFolder, 'fbinstant')
-		local ret = copyDir(srcDir, appFolder)
-		if ret ~= 0 then
-			return "Failed to copy " ..  srcDir .. ' to ' .. appFolder
-		end
-		log3("Copied ", srcDir, ' to ', appFolder)
-
-		-- copy .data
-		local src = pathJoin(nintendoappFolder, args.applicationName .. '.data')
-		local dst = pathJoin(appFolder, args.applicationName .. '.data')
-		local ret = copyFile(src, dst)
-		if not ret then
-				return "Failed to copy " .. src .. ' to ' .. dst
-		end
-		log3("Copied " .. src .. ' to ' .. dst)
-
-		-- copy .js and .mem files
-		local src = pathJoin(nintendoappFolder, args.applicationName .. '.bin')
-		local ret = unzip(src, appFolder)
-		if ret ~= 0 then
-			return 'Failed to unpack ' .. src .. ' to ' .. appFolder ..  ', err=' .. ret
-		end
-		log3('Unzipped ' .. src, ' to ', appFolder)
-
-		-- replace  coronaHtml5App.data
-		-- read file
-		local src = pathJoin(appFolder, "index.html")
-		local fi = io.open(src, 'rb')
-		if (fi == nil) then
-			return 'Failed to open ' .. src
-		end
-		local s = fi:read("*a")	-- read file
-		fi:close()
-
-		local count
- 		s, count = s:gsub('coronaHtml5App.data', args.applicationName .. ".data", 1)
-		if count > 0 then
-			-- rewrite file
-			local out = io.open(src, "wb");
-			if (out == nil) then
-				return 'Failed to renew ' .. src
-			end
-			out:write(s)
-			out:close() 	
-			log3('Created ', src)
-		end
-
-		-- compress folder
-		local src = quoteString(appFolder)
-		local dst = quoteString(pathJoin(nintendoappFolder, args.applicationName .. '_fbinstant_app.zip'))
-		local ret = zip(src, dst)
-		if ret ~= 0 then
-			return 'Failed to create ' .. dst
-		end
-		log3('Created FB instant app: ', dst)
-
-	end
-
-	log('HTML5 builder ended')
 
 	return nil 
 end

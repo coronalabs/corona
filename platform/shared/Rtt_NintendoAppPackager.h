@@ -43,20 +43,20 @@ class NintendoAppPackagerParams : public AppPackagerParams
 			const char * productId,
 			const char * appPackage,
 			bool isDistributionBuild,
-			const char * debtemplate,
+			const char * nintendotemplate,
 			bool useStandartResources
 			)
 		: AppPackagerParams( 
 			appName, version, identity, provisionFile, srcDir, dstDir, sdkRoot,
-			targetPlatform, (char*)"linux", targetVersion, targetDevice, customBuildId, productId,
+			targetPlatform, (char*)"nintendo", targetVersion, targetDevice, customBuildId, productId,
 			appPackage, isDistributionBuild )
-		, fDebTemplate(debtemplate)
+		, fNintendoTemplate(nintendotemplate)
 		, fUseStandartResources(useStandartResources)
 		{
 		}
 
 	public:
-		const String fDebTemplate;
+		const String fNintendoTemplate;
 		const bool fUseStandartResources;
 };
 

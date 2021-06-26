@@ -159,7 +159,7 @@ int NintendoAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBas
 
 	String debugBuildProcessPref;
 	GetServices().GetPreference("debugBuildProcess", &debugBuildProcessPref);
-	int debugBuildProcess = 0;
+	int debugBuildProcess = 3; // 0;
 	if (!debugBuildProcessPref.IsEmpty())
 	{
 		debugBuildProcess = (int) strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
@@ -188,7 +188,7 @@ int NintendoAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBas
 	{
 		String resourceDir;
 		const MPlatform& platform = GetServices().Platform();
-		const char *platformName = fServices.Platform().GetDevice().GetPlatformName();
+		const char *platformName = fServices.Platform().GetDevice().GetPlatformName(); 
 
 		platform.PathForFile(NULL, MPlatform::kSystemResourceDir, 0, resourceDir);
 
@@ -229,10 +229,10 @@ int NintendoAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBas
 		const NintendoAppPackagerParams* nintendoParams = (NintendoAppPackagerParams*) params;
 		
 		Rtt_ASSERT(nintendoParams);
-		String templateLocation(nintendoParams->fDebTemplate.GetString());
+		String templateLocation(nintendoParams->fNintendoTemplate.GetString());
 		if(templateLocation.IsEmpty())
 		{
-			fServices.Platform().PathForFile( "linuxtemplate.tar.gz", MPlatform::kSystemResourceDir, 0, templateLocation );
+			fServices.Platform().PathForFile( "nintendotemplate.zip", MPlatform::kSystemResourceDir, 0, templateLocation );
 		}
 		lua_pushstring( L, templateLocation.GetString() );
 		lua_setfield( L, -2, "templateLocation" );
@@ -267,8 +267,7 @@ int NintendoAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBas
 	}
 
 	// Clean up intermediate files
-	rmdir(tmpDir);
-
+	//vv rmdir(tmpDir);
 
 	return result;
 }
