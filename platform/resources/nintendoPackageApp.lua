@@ -32,19 +32,19 @@ local function quoteString( str )
 	return "\"" .. str .. "\""
 end
 
-function dir_exists(path)
+local function dir_exists(path)
     local cd = lfs.currentdir()
     local is = lfs.chdir(path) and true or false
     lfs.chdir(cd)
     return is
 end
 
-function file_exists(name)
+local function file_exists(name)
    local f = io.open(name,"r")
    if f~=nil then io.close(f) return true else return false end
 end
 
-function globToPattern(g)
+local function globToPattern(g)
   local p = "^"  -- pattern being built
   local i = 0    -- index in g
   local c        -- char at index i in g.
@@ -182,6 +182,30 @@ local function unzip( archive, dst )
 	end
 end
 
+local function isDir(f)
+    return lfs.attributes(f, 'mode') == 'directory'
+end
+
+local function isFile(f)
+    return lfs.attributes(f, 'mode') == 'file'
+end
+
+local function mkdirs(path)
+    local c = ""
+    path:gsub('[^/\\]+', function(dir)
+        if windows and c == '' then
+            c = dir
+        else
+            c = c .. dirSeparator .. dir
+        end
+        if isDir(c) then
+            -- do nothing, directory already exists
+        else
+            lfs.mkdir(c)
+        end
+    end)
+end
+
 local function copyFile(src, dst)
 	local fi = io.open(src, "rb")
 	if (fi) then
@@ -193,8 +217,10 @@ local function copyFile(src, dst)
 			fi:close()
 			return true;
 		end
+		logd('copyFile: Failed to read ' .. src)
 		return false;
 	end
+	logd('copyFile: Failed to write ' .. dst)
 	return false;
 end
 
@@ -336,18 +362,47 @@ local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate
 	end
 end
 
-function GetFileName(url)
+local function GetFileName(url)
   return url:match("^.+/(.+)$")
 end
 
-function GetFileExtension(url)
+local function GetFileExtension(url)
   return url:match("^.+(%..+)$")
+end
+
+local function deleteUnusedFiles(srcDir, excludePredicate)
+	logd('Deleting unused assets from ' .. srcDir)
+	for file in lfs.dir(srcDir) do
+		local f = pathJoin(srcDir, file)
+		if excludePredicate(file) then
+			local attr = lfs.attributes (f)
+			if attr.mode == "directory" then
+				deleteUnusedFiles( pathJoin(srcDir, file), excludePredicate)
+			else
+			end
+		else
+			if file ~= '..' and file ~= '.' then
+				local result, reason = os.remove(f);
+				if result then
+--					logd('Excluded ' .. f)
+				else
+					logd("Failed to exclude" .. f) 
+				end
+			end
+    end
+	end
 end
 
 --
 -- global script to call from C++
 -- 
 function nintendoPackageApp( args )
+
+	local nintendoRoot = os.getenv("NINTENDO_SDK_ROOT")
+	if not nintendoRoot then
+		return "Nintendo SDK not found"
+	end
+
 	debugBuildProcess = args.debugBuildProcess
 	log('Nintendo Switch App builder started')
 	logd(json.prettify(args))
@@ -452,18 +507,22 @@ function nintendoPackageApp( args )
 	end
 	logd("Created .car file")
 
-	-- sample: AuthoringTool.exe creatensp -o C:/corona/platform/switch/NX64/Release/Rtt.nsp --meta C:/corona/platform/switch/Solar2D/rtt.nmeta --type Application --desc C:/Nintendo\vitaly/NintendoSDK/Resources/SpecFiles/Application.desc--program C:/corona/platform/switch/NX64/Release/Rtt.nspd/program0.ncd/code C:\corona\platform\test\assets2
-	-- build App 
-	local nspfile = "C:\\corona\\platform\\switch\\NX64\\Release\\Rtt.nsp"
-	local metafile = "C:\\corona\\platform\\switch\\Solar2D\\rtt.nmeta"
-	local descfile = "C:\\Nintendo\\vitaly\\NintendoSDK\\Resources\\SpecFiles\\Application.desc"
-	local solar2Dfile = "C:\\corona\\platform\\switch\\NX64\\Release\\Rtt.nspd\\program0.ncd\\code"
-	local assets = "C:\\corona\\platform\\test\\assets2"
+		-- delete .lua, .lu, etc
+	deleteUnusedFiles(appFolder, getExcludePredecate())
 
-	local nintendoRoot = os.getenv("NINTENDO_SDK_ROOT")
-	if not nintendoRoot then
-		return "no NINTENDO_SDK_ROOT, please install Nintendo SDK"
+	-- build App 
+	-- sample: AuthoringTool.exe creatensp -o C:/corona/platform/switch/NX64/Release/Rtt.nsp --meta C:/corona/platform/switch/Solar2D/rtt.nmeta --type Application --desc C:/Nintendo\vitaly/NintendoSDK/Resources/SpecFiles/Application.desc--program C:/corona/platform/switch/NX64/Release/Rtt.nspd/program0.ncd/code C:\corona\platform\test\assets2
+
+	local metafile = args.srcDir .. '\\' .. args.applicationName .. '.nmeta'
+	if not file_exists(metafile) then
+		return 'Missing ' .. metafile .. ' file'
 	end
+	log('Using ' .. metafile)
+
+	local nspfile = args.dstDir .. '\\'.. args.applicationName ..'.nsp'
+	local descfile = nintendoRoot .. "\\Resources\\SpecFiles\\Application.desc"
+	local solar2Dfile = args.tmpDir .. '\\nintendotemplate\\code'
+	local assets = args.tmpDir .. '\\nintendoapp'
 
 	local cmd = '"' .. nintendoRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
@@ -476,9 +535,9 @@ function nintendoPackageApp( args )
 	logd('Running ',cmd)
 	local rc = processExecute(cmd);
 	if rc ~=0 then
-		log('Nintendo Switch App build failed, retcode ', rc)
+		log('Failed to build Nintendo Switch App')
 	else
-		log('Nintendo Switch App build success')
+		log(nspfile .. ' is built')
 	end
 
 	return nil 
