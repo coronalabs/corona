@@ -973,7 +973,7 @@ Archive::Archive( Rtt_Allocator& allocator, const char *srcPath )
 #endif
 	fData( NULL )
 {
-#if defined( Rtt_WIN_PHONE_ENV )
+#if defined( Rtt_WIN_PHONE_ENV ) || defined(Rtt_NINTENDO_ENV)
 	FILE* filePointer = Rtt_FileOpen(srcPath, "rb");
 	if (filePointer)
 	{
