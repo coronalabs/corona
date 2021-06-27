@@ -535,13 +535,14 @@ function nintendoPackageApp( args )
 	cmd = cmd .. ' "' .. assets .. '"'
 	cmd = 'cmd /c "'.. cmd .. '"'
 	
-	logd('Building ... ', cmd)
-	processExecute(cmd);
+	logd('\nBuilding ... ', cmd)
+	local rc, stdout = processExecute2(cmd);
+	logd('\nAuthoringTool retcode ' .. rc ..'\nAuthoringTool Output\n' .. stdout)
 
 	if not file_exists(nspfile) then
-		log('Failed to build Nintendo Switch App')
+		return 'Failed to build Nintendo Switch App'
 	else
-		log('Build succeeded: ' .. nspfile)
+		log('\nBuild succeeded: ' .. nspfile)
 	end
 
 	return nil 
