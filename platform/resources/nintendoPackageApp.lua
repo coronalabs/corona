@@ -536,9 +536,9 @@ function nintendoPackageApp( args )
 	cmd = 'cmd /c "'.. cmd .. '"'
 	
 	logd('\nBuilding ... ', cmd)
-	local rc, stdout = processExecute2(cmd);
+	local rc, stdout = processExecute(cmd, true);
 	log('\nAuthoringTool retcode ' .. rc)
-	if string.len(stdout) > 0 then
+	if type(stdout) == 'string' and string.len(stdout) > 0 then
 		log('\nAuthoringTool output\n' .. stdout)
 	end
 
