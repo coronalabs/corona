@@ -154,7 +154,7 @@ BEGIN
             MENUITEM "&HTML5 (beta)...\tCtrl+Alt+B", ID_BUILD_FOR_WEB
             MENUITEM "&Windows...\tCtrl+Shift+B",   ID_BUILD_FOR_WIN32
             MENUITEM "&Linux (beta)...\tCtrl+Shift+Alt+B", ID_BUILD_FOR_LINUX
-            MENUITEM "&Nintendo Switch...\tCtrl+Shift+Alt+B", ID_BUILD_FOR_NINTENDO
+            MENUITEM "&Nintendo Switch...\tCtrl+Shift+N", ID_BUILD_FOR_NINTENDO
       END
         MENUITEM "Open in &Editor\tCtrl+Shift+O", ID_FILE_OPENINEDITOR
         MENUITEM "Show Project &Files",         ID_FILE_SHOW_PROJECT_FILES
@@ -239,7 +239,7 @@ BEGIN
     "B",            ID_BUILD_FOR_WIN32,     VIRTKEY, SHIFT, CONTROL, NOINVERT
     "B",            ID_BUILD_FOR_WEB,       VIRTKEY, CONTROL, ALT, NOINVERT
     "B",            ID_BUILD_FOR_LINUX,     VIRTKEY, SHIFT, CONTROL, ALT, NOINVERT
-    "B",            ID_BUILD_FOR_NINTENDO,  VIRTKEY, SHIFT, CONTROL, ALT, NOINVERT
+    "N",            ID_BUILD_FOR_NINTENDO,  VIRTKEY, CONTROL, SHIFT, NOINVERT
     "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
