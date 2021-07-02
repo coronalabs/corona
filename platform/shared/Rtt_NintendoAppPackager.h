@@ -35,6 +35,7 @@ class NintendoAppPackagerParams : public AppPackagerParams
 			const char* provisionFile,
 			const char* srcDir,
 			const char* dstDir,
+			const char* nmetaPath,
 			const char* sdkRoot,
 			TargetDevice::Platform targetPlatform,
 			S32 targetVersion,
@@ -52,12 +53,14 @@ class NintendoAppPackagerParams : public AppPackagerParams
 			appPackage, isDistributionBuild )
 		, fNintendoTemplate(nintendotemplate)
 		, fUseStandartResources(useStandartResources)
+		, fNmetaPath(nmetaPath)
 		{
 		}
 
 	public:
 		const String fNintendoTemplate;
 		const bool fUseStandartResources;
+		const String fNmetaPath;
 };
 
 class NintendoAppPackager : public PlatformAppPackager

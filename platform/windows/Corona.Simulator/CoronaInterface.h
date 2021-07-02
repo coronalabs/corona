@@ -56,6 +56,7 @@ CBuildResult appLinuxBuild(Interop::SimulatorRuntimeEnvironment* pSim,
 
 CBuildResult appNintendoBuild(Interop::SimulatorRuntimeEnvironment* pSim,
 						const char* srcDir,
+						const char* nmetaPath,
 						const char* applicationName, const char* versionName,
 						const char* dstDir,
 						const Rtt::TargetDevice::Platform targetPlatform,

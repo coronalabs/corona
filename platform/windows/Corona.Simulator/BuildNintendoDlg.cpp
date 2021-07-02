@@ -58,7 +58,6 @@ END_MESSAGE_MAP()
 BOOL CBuildNintendoDlg::OnInitDialog()
 {
 	WinString stringConverter;
-	CString stringBuffer;
 
 	// Initialize base class first.
 	CDialog::OnInitDialog();
@@ -75,10 +74,8 @@ BOOL CBuildNintendoDlg::OnInitDialog()
 
 	// Limit the text length of CEdit boxes.
 	((CEdit*)GetDlgItem(IDC_BUILD_APPNAME))->SetLimitText(128);
-	((CEdit*)GetDlgItem(IDC_BUILD_VERSION_CODE))->SetLimitText(9);
-	//((CEdit*)GetDlgItem(IDC_BUILD_PACKAGE))->SetLimitText(128);
+	((CEdit*)GetDlgItem(IDC_BUILD_NMETA_PATH))->SetLimitText(MAX_PATH - 1);
 	((CEdit*)GetDlgItem(IDC_BUILD_SAVETO))->SetLimitText(MAX_PATH - 1);
-
 
 	m_nValidFields = 0;
 
@@ -101,10 +98,14 @@ BOOL CBuildNintendoDlg::OnInitDialog()
 		m_pProject->SetPackage(package);
 	}
 
-	stringBuffer.Format(_T("%d"), m_pProject->GetAndroidVersionCode());
+	fNmetaPath.SetString(L"");
+	fNmetaPath.Append(m_pProject->GetDir());
+	fNmetaPath.Append(L"\\");
+	fNmetaPath.Append(m_pProject->GetName());
+	fNmetaPath.Append(L".nmeta");
+
 	SetDlgItemText(IDC_BUILD_APPNAME, m_pProject->GetName());
-	SetDlgItemText(IDC_BUILD_VERSION_CODE, stringBuffer);
-	SetDlgItemText(IDC_BUILD_VERSION_NAME, m_pProject->GetAndroidVersionName());
+	SetDlgItemText(IDC_BUILD_NMETA_PATH, fNmetaPath);
 	SetDlgItemText(IDC_BUILD_PACKAGE, m_pProject->GetPackage());
 	SetDlgItemText(IDC_BUILD_PROJECTPATH, m_pProject->GetDir());
 
@@ -158,12 +159,13 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 	WinString stringBuffer;
 	CString sValue;
 	CString sBuildDir;
-	CString sVersionName;
+	CString sNmetaPath;
 	CString sPackageName;
 	CString sAppName;
 	int iVersionCode;
 
 	// Fetch and validate field values.
+
 	GetDlgItemText(IDC_BUILD_APPNAME, sAppName);
 	sAppName.Trim();
 	if (sAppName.IsEmpty())
@@ -173,27 +175,16 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 		LogAnalytics("build-bungled", "reason", "BUILD_APP_NAME_NOT_PROVIDED");
 		return;
 	}
-	GetDlgItemText(IDC_BUILD_VERSION_CODE, sValue);
-	sValue.Trim();
-	if (sValue.IsEmpty())
+
+	GetDlgItemText(IDC_BUILD_NMETA_PATH, sNmetaPath);
+	sNmetaPath.Trim();
+	if (sNmetaPath.IsEmpty())
 	{
-		DisplayWarningMessage(IDS_BUILD_VERSION_NUMBER_NOT_PROVIDED);
-		GetDlgItem(IDC_BUILD_VERSION_CODE)->SetFocus();
-		LogAnalytics("build-bungled", "reason", "BUILD_APP_VERSION_NUMBER_NOT_PROVIDED");
+		DisplayWarningMessage(IDS_BUILD_NMETA_NAME_NOT_PROVIDED);
+		GetDlgItem(IDC_BUILD_NMETA_PATH)->SetFocus();
+		LogAnalytics("build-bungled", "reason", "BUILD_NMETA_NAME_NOT_PROVIDED");
 		return;
 	}
-	iVersionCode = _ttoi(sValue);
-	if (iVersionCode < 1)
-	{
-		DisplayWarningMessage(IDS_INVALID_NINTENDO_APP_VERSION_NUMBER);
-		GetDlgItem(IDC_BUILD_VERSION_CODE)->SetFocus();
-		LogAnalytics("build-bungled", "reason", "INVALID_NINTENDO_APP_VERSION_NUMBER");
-		return;
-	}
-
-	//Version code is version name
-	sVersionName = sValue;
-
 
 	GetDlgItemText(IDC_BUILD_SAVETO, sBuildDir);
 	sBuildDir.Trim();
@@ -230,6 +221,7 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 	// Store field settings to project.
 	m_pProject->SetName(sAppName);
 	m_pProject->SetSaveDir(sBuildDir);
+	m_pProject->SetKeystorePath(sNmetaPath);		// really it's .nmeta path
 
 	// Save all project settings and then build the project.
 
@@ -308,7 +300,7 @@ void CBuildNintendoDlg::LogAnalytics(const char* eventName, const char* key, con
 	char** dataValues = (char**)calloc(sizeof(char*), numItems);
 
 	dataKeys[0] = _strdup("target");
-	dataValues[0] = _strdup("linux");
+	dataValues[0] = _strdup("nintendo");
 	if (key != NULL && value != NULL)
 	{
 		dataKeys[1] = _strdup(key);

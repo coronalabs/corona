@@ -363,20 +363,23 @@ void CBuildProgressDlg::BuildForNintendo()
 	CWaitCursor waitCursor;
 
 	// Get copy of string settings.
-	WinString strSrcDir, strName, strVersion, strPackage;
+	WinString strSrcDir, strName, strVersion, strPackage, strNmetaPath;
 	WinString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
 
 	strSrcDir.SetTCHAR(fProjectSettingsPointer->GetDir());
 	strName.SetTCHAR(fProjectSettingsPointer->GetName());
-	strVersion.SetTCHAR(fProjectSettingsPointer->GetAndroidVersionName());
+	strNmetaPath.SetTCHAR(fProjectSettingsPointer->GetKeystorePath());		// it's .nmeta path
 	strSaveDir.SetTCHAR(fProjectSettingsPointer->GetSaveDir());
 	CFrameWnd* pFrameWnd = (CFrameWnd*)AfxGetApp()->GetMainWnd();
 	CSimulatorView* pView = (CSimulatorView*)pFrameWnd->GetActiveView();
 
 	// Build the project. (This is a blocking call.)
 	fBuildResult = appNintendoBuild(
-		pView->GetRuntimeEnvironment(), strSrcDir.GetUTF8(),
-		strName.GetUTF8(), strVersion.GetUTF8(),
+		pView->GetRuntimeEnvironment(), 
+		strSrcDir.GetUTF8(),
+		strNmetaPath.GetUTF8(),
+		strName.GetUTF8(), 
+		strVersion.GetUTF8(),
 		strSaveDir.GetUTF8(),
 		Rtt::TargetDevice::kNintendoPlatform,
 		strTargetOS.GetUTF8(),

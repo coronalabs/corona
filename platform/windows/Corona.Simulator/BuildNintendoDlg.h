@@ -38,32 +38,26 @@ class CBuildNintendoDlg : public CDialog
 	DECLARE_DYNAMIC(CBuildNintendoDlg)
 
 public:
-	CBuildNintendoDlg(CWnd* pParent = NULL);   // standard constructor
-	virtual ~CBuildNintendoDlg();
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_BUILD_NINTENDO };
 
-public:
-	void SetProject( const std::shared_ptr<CCoronaProject>& pProject );
-
-protected:
-    std::shared_ptr<CCoronaProject> m_pProject;  // stored info about project being built
-    int m_nValidFields;
-
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
-	DECLARE_MESSAGE_MAP()
-protected:
-	virtual void OnOK();
-	virtual void OnCancel();
-	void OnClickedIncludeStandartResources();
-public:
+	CBuildNintendoDlg(CWnd* pParent = NULL);   // standard constructor
+	virtual ~CBuildNintendoDlg();
+	void SetProject(const std::shared_ptr<CCoronaProject>& pProject);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBrowseSaveto();
 
 protected:
+	std::shared_ptr<CCoronaProject> m_pProject;  // stored info about project being built
+	int m_nValidFields;
+	CString fNmetaPath;
+
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	DECLARE_MESSAGE_MAP()
+	virtual void OnOK();
+	virtual void OnCancel();
+	void OnClickedIncludeStandartResources();
 	void DisplayWarningMessage(UINT nMessageID);
-	void LogAnalytics(const char *eventName, const char *key = NULL, const char *value = NULL);
+	void LogAnalytics(const char* eventName, const char* key = NULL, const char* value = NULL);
 };

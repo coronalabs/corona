@@ -410,6 +410,7 @@ CBuildResult appLinuxBuild(
 CBuildResult appNintendoBuild(
 	Interop::SimulatorRuntimeEnvironment* pSim,
 	const char* srcDir,
+	const char* nmetaPath,
 	const char* applicationName, const char* versionName,
 	const char* dstDir,
 	const Rtt::TargetDevice::Platform targetPlatform,
@@ -452,7 +453,7 @@ CBuildResult appNintendoBuild(
 	// Package build settings parameters.
 	Rtt::NintendoAppPackagerParams params(
 		applicationName, versionName, NULL, NULL,
-		srcDir, dstDir, NULL,
+		srcDir, dstDir, nmetaPath, NULL,
 		targetPlatform, targetVersion,
 		Rtt::TargetDevice::kNintendo, customBuildId,
 		NULL, bundleId, isDistribution, NULL, useStandartResources);

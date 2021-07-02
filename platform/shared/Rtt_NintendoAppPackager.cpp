@@ -36,33 +36,10 @@ Rtt_EXPORT int luaopen_lfs(lua_State* L);
 extern "C" {
 	int luaopen_socket_core(lua_State* L);
 	int luaopen_mime_core(lua_State* L);
-#ifdef Rtt_LINUX_ENV
-	int luaopen_socket_core(lua_State* L);
-	int CoronaPluginLuaLoad_ftp(lua_State* L);
-	int CoronaPluginLuaLoad_socket(lua_State* L);
-	int CoronaPluginLuaLoad_headers(lua_State* L);
-	int CoronaPluginLuaLoad_http(lua_State* L);
-	int CoronaPluginLuaLoad_mbox(lua_State* L);
-	int CoronaPluginLuaLoad_smtp(lua_State* L);
-	int CoronaPluginLuaLoad_tp(lua_State* L);
-	int CoronaPluginLuaLoad_url(lua_State* L);
-	int CoronaPluginLuaLoad_mime(lua_State* L);
-	int CoronaPluginLuaLoad_ltn12(lua_State* L);
-#endif
 }
 
 namespace Rtt
 {
-#ifndef Rtt_LINUX_ENV
-	extern int luaload_luasocket_socket(lua_State* L);
-	extern int luaload_luasocket_ftp(lua_State* L);
-	extern int luaload_luasocket_headers(lua_State* L);
-	extern int luaload_luasocket_http(lua_State* L);
-	extern int luaload_luasocket_url(lua_State* L);
-	extern int luaload_luasocket_mime(lua_State* L);
-	extern int luaload_luasocket_ltn12(lua_State* L);
-#endif
-
 	bool CompileScriptsInDirectory(lua_State* L, AppPackagerParams& params, const char* dstDir, const char* srcDir);
 	bool FetchDirectoryTreeFilePaths(const char* directoryPath, std::vector<std::string>& filePathCollection);
 
@@ -86,22 +63,6 @@ namespace Rtt
 		: Super(services, TargetDevice::kNintendoPlatform)
 	{
 		lua_State* L = fVM;
-
-#ifdef Rtt_LINUX_ENV
-		Lua::RegisterModuleLoader(L, "lpeg", luaopen_lpeg);
-		Lua::RegisterModuleLoader(L, "dkjson", Lua::Open< luaload_dkjson >);
-		Lua::RegisterModuleLoader(L, "json", Lua::Open< luaload_json >);
-		Lua::RegisterModuleLoader(L, "lfs", luaopen_lfs);
-		Lua::RegisterModuleLoader(L, "socket.core", luaopen_socket_core);
-		Lua::RegisterModuleLoader(L, "socket", Lua::Open< CoronaPluginLuaLoad_socket >);
-		Lua::RegisterModuleLoader(L, "socket.ftp", Lua::Open< CoronaPluginLuaLoad_ftp >);
-		Lua::RegisterModuleLoader(L, "socket.headers", Lua::Open< CoronaPluginLuaLoad_headers >);
-		Lua::RegisterModuleLoader(L, "socket.http", Lua::Open< CoronaPluginLuaLoad_http >);
-		Lua::RegisterModuleLoader(L, "socket.url", Lua::Open< CoronaPluginLuaLoad_url >);
-		Lua::RegisterModuleLoader(L, "mime.core", luaopen_mime_core);
-		Lua::RegisterModuleLoader(L, "mime", Lua::Open< CoronaPluginLuaLoad_mime >);
-		Lua::RegisterModuleLoader(L, "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 >);
-#else
 		Lua::RegisterModuleLoader(L, "lpeg", luaopen_lpeg);
 		Lua::RegisterModuleLoader(L, "dkjson", Lua::Open< luaload_dkjson >);
 		Lua::RegisterModuleLoader(L, "json", Lua::Open< luaload_json >);
@@ -115,7 +76,6 @@ namespace Rtt
 		Lua::RegisterModuleLoader(L, "mime.core", luaopen_mime_core);
 		Lua::RegisterModuleLoader(L, "mime", Lua::Open< luaload_luasocket_mime >);
 		Lua::RegisterModuleLoader(L, "ltn12", Lua::Open< luaload_luasocket_ltn12 >);
-#endif
 
 		HTTPClient::registerFetcherModuleLoaders(L);
 		Lua::DoBuffer(fVM, &luaload_nintendoPackageApp, NULL);
@@ -199,6 +159,9 @@ namespace Rtt
 			lua_pushstring(L, params->GetDstDir());
 			lua_setfield(L, -2, "dstDir");
 
+			lua_pushstring(L, params->fNmetaPath);
+			lua_setfield(L, -2, "nmetaPath");
+
 			lua_pushstring(L, params->GetAppName());
 			lua_setfield(L, -2, "applicationName");
 
@@ -245,7 +208,7 @@ namespace Rtt
 		lua_setglobal(L, "compileScriptsAndMakeCAR");
 
 		int result = PlatformAppPackager::kNoError;
-
+		
 		// call nintendoPostPackage( params )
 		if (!Rtt_VERIFY(0 == Lua::DoCall(L, 1, 1)))
 		{

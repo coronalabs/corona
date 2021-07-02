@@ -516,7 +516,7 @@ function nintendoPackageApp( args )
 	-- build App 
 	-- sample: AuthoringTool.exe creatensp -o C:/corona/platform/switch/NX64/Release/Rtt.nsp --meta C:/corona/platform/switch/Solar2D/rtt.nmeta --type Application --desc C:/Nintendo\vitaly/NintendoSDK/Resources/SpecFiles/Application.desc--program C:/corona/platform/switch/NX64/Release/Rtt.nspd/program0.ncd/code C:\corona\platform\test\assets2
 
-	local metafile = pathJoin(args.srcDir, args.applicationName .. '.nmeta')
+	local metafile = args.nmetaPath
 	if not file_exists(metafile) then
 		return 'Missing ' .. metafile .. ' file'
 	end

@@ -231,6 +231,7 @@
 #define IDS_OPEN_URL_HTML               674
 #define IDS_ANDROID_BUILD               675
 #define IDS_ANDROID_SDK_LICENSE         676
+#define IDS_BUILD_NMETA_NAME_NOT_PROVIDED 677
 #define IDC_LINK_ANSCAMOBILE            1000
 #define IDC_BUILD_APPNAME               1001
 #define IDC_BUILD_VERSION_CODE          1002
@@ -318,6 +319,7 @@
 #define IDC_STOP_BUILD                  1103
 #define IDC_INCLUDE_STANDART_RESOURCES  1104
 #define IDC_CREATE_FB_INSTANT_ARCHIVE   1105
+#define IDC_BUILD_NMETA_PATH            1106
 #define ID_Menu                         32771
 #define ID_FILE_OPENFORBUILD            32772
 #define ID_FILE_RELAUNCH                32774
