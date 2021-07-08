@@ -96,7 +96,11 @@ namespace Rtt
 {
 
 #ifdef Rtt_EMSCRIPTEN_ENV
-	void LuaLibWebAudio_Initialize(lua_State *L);
+	void LuaLibWebAudio_Initialize(lua_State* L);
+#endif
+#ifdef Rtt_NINTENDO_ENV
+	int luaload_nnTextField(lua_State* L);
+	int luaload_nnTextBox(lua_State* L);
 #endif
 
 // ----------------------------------------------------------------------------
@@ -792,6 +796,11 @@ LuaContext::InitializeLuaCore( lua_State* L )
 		{ "mime.core", luaopen_mime_core },
 		{ "mime", Lua::Open< CoronaPluginLuaLoad_mime > },
 		{ "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 > },
+#endif
+
+#if defined(Rtt_NINTENDO_ENV)
+		{ "nnTextField", Lua::Open< luaload_nnTextField > },
+		{ "nnTextBox", Lua::Open< luaload_nnTextBox > },
 #endif
 
 		{NULL, NULL}
