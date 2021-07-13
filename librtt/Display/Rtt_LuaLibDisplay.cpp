@@ -1478,69 +1478,32 @@ DisplayLibrary::newEmbossedText( lua_State *L )
 	return CreateTextObject( L, isEmbossed );
 }
 
-// display.newGroup( [child1 [, child2 [, child3 ... ]]] )
+// display.newGroup( [parent], [x, y] )
 // With no args, create an empty group and set parent to root
-// 
-// The following is EXPERIMENTAL and undocumented:
-// When a child is passed, create a new group whose parent is the child's, 
-// set the (x,y) to be the child's, insert the child into the new group, and
-// reset the child's transform.  For subsequent child arguments, only
-// insert into new group if each of those children has the same parent as the
-// first one.
 // TODO: What about other transforms (rotations, scale)?  Do these matter?
 int
 DisplayLibrary::newGroup( lua_State *L )
 {
 	Self *library = ToLibrary( L );
 	Display& display = library->GetDisplay();
+
+	int nextArg = 1;
+	GroupObject *parent = GetParent( L, nextArg );
+
 	Rtt_Allocator* context = display.GetAllocator();
 
 	GroupObject *o = Rtt_NEW( context, GroupObject( context, NULL ) );
-	GroupObject *parent = NULL; // Default parent is root
-
-	DisplayObject *child = NULL;
-	if ( ! lua_isnone( L, 1 ) )
+	if (lua_isnumber(L, nextArg) && lua_isnumber(L, nextArg + 1))
 	{
-		child = (DisplayObject*)LuaProxy::GetProxyableObject( L, 1 );
-
-		// First child determines the parent and origin of group
-		parent = child->GetParent();
+		Real x = luaL_checkreal( L, nextArg++ );
+		Real y = luaL_checkreal( L, nextArg++ );
+		o->Translate(x, y);
 	}
 
 	// Fetch num arguments *before* pushing result
 
 	int numArgs = lua_gettop( L );
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, o, parent );
-
-	if ( child )
-	{
-		// If there are child arguments, then add them to the group "o"
-		// Note that these must be done after o's parent is assigned.  
-		// This ensures that o's stage is properly set before the children get
-		// re-parented; otherwise the children's stage will be NULL.
-
-		Real x = child->GetGeometricProperty( kOriginX );
-		Real y = child->GetGeometricProperty( kOriginY );
-
-		for ( int i = 1; i <= numArgs; i++ )
-		{
-			child = (DisplayObject*)LuaProxy::GetProxyableObject( L, i );
-
-			if ( child && child->GetParent() == parent )
-			{
-				Rtt_WARN_SIM_PROXY_TYPE( L, i, DisplayObject );
-				o->Insert( -1, child, false );
-				child->Translate( -x, -y );
-			}
-			else
-			{
-				CoronaLuaWarning( L, "display.newGroup() argument #%d not added to group because "
-								 "its parent differs from the first argument's original parent", i );
-			}
-		}
-
-		o->Translate( x, y );
-	}
 
 	return result;
 }
