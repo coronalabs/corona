@@ -249,8 +249,15 @@ DeviceBuildData::ReadBuildSettings( lua_State *L, const char *buildSettingsPath 
 				while ( lua_next( L, index ) != 0 )
 				{
 					// key is at -2. value is at -1
-					const char *moduleName = lua_tostring( L, -2 );
-					AddPlugin( L, moduleName, -1 );
+					if(lua_type(L, -2) == LUA_TSTRING) // prevent crash on digit ideces on next iteration due to tostring
+					{
+						const char *moduleName = lua_tostring( L, -2 );
+						AddPlugin( L, moduleName, -1 );
+					}
+					else
+					{
+						Rtt_LogException("WARNING: plugins table in build.settings contains numeric indices or array");
+					}
 					lua_pop( L, 1 ); // pop value. keeps key for next iteration
 				}
 			}
