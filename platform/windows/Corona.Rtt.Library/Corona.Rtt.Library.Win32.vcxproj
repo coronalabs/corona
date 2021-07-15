@@ -868,12 +868,29 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>vulkan-1.lib;shaderc_combinedd.lib;spirv-cross-cored.lib;spirv-cross-glsld.lib;</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
+    <PreBuildEvent>
+      <Command>set DIRECTORY=$(ProjectDir)../../../external/vulkan/Lib32
+set LIBRARYROOT=%DIRECTORY%/shaderc_combinedd
+set LIBRARY=%LIBRARYROOT%.lib
+set ARCHIVE=%LIBRARYROOT%.7z
+set ZIP=$(ProjectDir)../Build.Tools/7za
+
+if NOT EXIST %LIBRARY% (
+  %ZIP% e %ARCHIVE% -o%DIRECTORY%
+)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">
     <ClCompile>
@@ -881,11 +898,18 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>vulkan-1.lib;shaderc_combinedd.lib;spirv-cross-cored.lib;spirv-cross-glsld.lib;</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">
     <ClCompile>
@@ -909,6 +933,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -916,6 +941,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>shaderc_combined.lib;spirv-cross-core.lib;spirv-cross-glsl.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">
     <ClCompile>
@@ -926,6 +957,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -933,6 +965,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>shaderc_combined.lib;spirv-cross-core.lib;spirv-cross-glsl.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

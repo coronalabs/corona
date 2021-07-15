@@ -1,0 +1,1 @@
+Lib32 and Include come from Vulkan SDK 1.2.162.1.
