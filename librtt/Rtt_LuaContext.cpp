@@ -101,6 +101,7 @@ namespace Rtt
 #ifdef Rtt_NINTENDO_ENV
 	int luaload_nnTextField(lua_State* L);
 	int luaload_nnTextBox(lua_State* L);
+	int luaload_nnNativeAlert(lua_State* L);
 #endif
 
 // ----------------------------------------------------------------------------
@@ -801,6 +802,8 @@ LuaContext::InitializeLuaCore( lua_State* L )
 #if defined(Rtt_NINTENDO_ENV)
 		{ "nnTextField", Lua::Open< luaload_nnTextField > },
 		{ "nnTextBox", Lua::Open< luaload_nnTextBox > },
+		{ "nnNativeAlert", Lua::Open< luaload_nnNativeAlert > },
+	
 #endif
 
 		{NULL, NULL}
