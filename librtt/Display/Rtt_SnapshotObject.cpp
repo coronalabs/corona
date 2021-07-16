@@ -205,7 +205,7 @@ SnapshotObject::Initialize( lua_State *L, Display& display, Real contentW, Real 
 
 	if (!fFrameBufferObject)
 	{
-		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture() ), false );
+		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture(), false ) );
 	}
 }
 

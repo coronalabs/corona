@@ -68,7 +68,7 @@ TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factor
 							   TextureVolatile( display.GetAllocator(), texWidth, texHeight, format, filter, wrap, wrap ) );
 	
 	FrameBufferObject * fbo = Rtt_NEW( pAllocator,
-									  FrameBufferObject( pAllocator, texture ), false );
+									  FrameBufferObject( pAllocator, texture, false ) );
 
 	GroupObject *cache = Rtt_NEW( pAllocator,
 								 GroupObject(display.GetAllocator(), display.GetStageOffscreen() ) );
