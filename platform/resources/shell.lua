@@ -435,7 +435,7 @@ function PluginSync:downloadQueuedPlugins( onComplete )
 		if type(result.result) == 'string' then
 			updateTime = nil
 			local res = result.result:gsub('%[(.-)%]%((https?://.-)%)', '%1 (%2)')
-			print("WARNING: there was an issue whilde downloading simulator plugin placeholders:\n" .. res)
+			print("WARNING: there was an issue while downloading simulator plugin placeholders:\n" .. res)
 		end
 		for i=1,#self.queue do
 			local key = self.queue[i].clientCatalogKey
