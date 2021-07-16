@@ -597,7 +597,7 @@ BEGIN
             VALUE "FileDescription", "Solar2D Simulator"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "Solar2D Simulator"
-            VALUE "LegalCopyright", "Copyright © 2020 Solar2D"
+            VALUE "LegalCopyright", "Copyright © 2020-2021 Solar2D"
             VALUE "OriginalFilename", "Solar2D Simulator"
             VALUE "ProductName", "Solar2D Simulator"
             VALUE "ProductVersion", "1.0.0.1"

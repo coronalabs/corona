@@ -42,7 +42,7 @@
 		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2012-2020 Corona Labs Inc. All rights reserved.</string>
+	<string>Copyright © 2012-2021 Solar2D. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>
