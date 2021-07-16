@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Renderer/Rtt_FrameBufferObject.h"
+#include "Renderer/Rtt_Texture.h"
 
 // ----------------------------------------------------------------------------
 
@@ -16,10 +17,12 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-FrameBufferObject::FrameBufferObject( Rtt_Allocator* allocator, Texture* texture )
+FrameBufferObject::FrameBufferObject( Rtt_Allocator* allocator, Texture* texture, bool mustClear )
 :	CPUResource( allocator ),
-	fTexture( texture )
+	fTexture( texture ),
+	fMustClear( mustClear )
 {
+	fTexture->SetTarget( true );
 }
 
 CPUResource::ResourceType FrameBufferObject::GetType() const

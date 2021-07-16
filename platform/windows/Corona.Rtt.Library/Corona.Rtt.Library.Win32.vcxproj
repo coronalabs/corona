@@ -31,6 +31,7 @@
     <ClCompile Include="..\..\..\external\luafilesystem\src\lfs.c" />
     <ClCompile Include="..\..\..\external\LuaHashMap\LuaHashMap.c" />
     <ClCompile Include="..\..\..\external\smoothpolygon\SmoothPolygon.cpp" />
+    <ClCompile Include="..\..\..\external\vulkan\utils\volk.c" />
     <ClCompile Include="..\..\..\librtt\b2GLESDebugDraw.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Array.cpp" />
@@ -188,11 +189,19 @@
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_RenderTypes.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderBinary.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderBinaryVersions.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderCode.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Texture.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_TextureBitmap.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_TextureVolatile.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Uniform.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VideoTexture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanContext.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanFrameBufferObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanGeometry.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanProgram.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanRenderer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanTexture.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Archive.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_CachedPath.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_CKWorkflow.cpp" />
@@ -302,6 +311,7 @@
     <ClInclude Include="..\..\..\external\luafilesystem\src\lfs.h" />
     <ClInclude Include="..\..\..\external\LuaHashMap\LuaHashMap.h" />
     <ClInclude Include="..\..\..\external\smoothpolygon\SmoothPolygon.h" />
+    <ClInclude Include="..\..\..\external\vulkan\utils\volk.h" />
     <ClInclude Include="..\..\..\librtt\b2GLESDebugDraw.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Array.h" />
@@ -468,12 +478,22 @@
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_RenderTypes.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderBinary.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderBinaryVersions.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderCode.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Texture.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_TextureBitmap.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_TextureVolatile.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Uniform.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VideoSource.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VideoTexture.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanCommandBuffer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanContext.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanExports.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanFrameBufferObject.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanGeometry.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanIncludes.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanProgram.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanRenderer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanTexture.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Archive.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_CachedPath.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Callback.h" />
@@ -600,6 +620,7 @@
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua">
       <FileType>Document</FileType>
     </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\shell_default_vulkan.lua" />
     <LuaToCpp Include="..\..\resources\ValidateSettings.lua" />
     <LuaToCpp Include="..\..\resources\valid_build_settings.lua" />
     <LuaToCpp Include="..\..\resources\valid_config_lua.lua" />
@@ -869,6 +890,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -899,6 +921,7 @@ if NOT EXIST %LIBRARY% (
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -934,6 +957,7 @@ if NOT EXIST %LIBRARY% (
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -958,6 +982,7 @@ if NOT EXIST %LIBRARY% (
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

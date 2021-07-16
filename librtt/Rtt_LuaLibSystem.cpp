@@ -157,6 +157,11 @@ LuaLibSystem::getInfo( lua_State *L )
 	{
 		lua_pushstring( L, "2.0" );
 	}
+	else if (Rtt_StringCompare( key, "graphicsBackend" ) == 0 )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		lua_pushstring( L, runtime->GetBackend() );
+	}
 	else if ( Rtt_StringCompare( key, "architectureInfo" ) == 0 )
 	{
 		lua_pushstring( L, device.GetArchitectureInfo() );

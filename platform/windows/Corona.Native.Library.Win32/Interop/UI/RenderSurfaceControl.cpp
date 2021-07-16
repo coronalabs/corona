@@ -36,7 +36,7 @@ RenderSurfaceControl::RenderSurfaceControl(HWND windowHandle, const Params & par
 	GetReceivedMessageEventHandlers().Add(&fReceivedMessageEventHandler);
 
 	// Create an OpenGL context and bind it to the given control.
-	CreateContext();
+	CreateContext(params);
 }
 
 RenderSurfaceControl::~RenderSurfaceControl()

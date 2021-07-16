@@ -205,7 +205,7 @@ SnapshotObject::Initialize( lua_State *L, Display& display, Real contentW, Real 
 
 	if (!fFrameBufferObject)
 	{
-		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture() ) );
+		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture() ), false );
 	}
 }
 
@@ -344,7 +344,8 @@ SnapshotObject::RenderToFBO(
 			const Real inv255 = 1.f / 255.f;
 			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255 );
 		}
-
+		
+		renderer.BeginDrawing();
 		object.Draw( renderer );
 	}
 	renderer.PopMaskCount();
