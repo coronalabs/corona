@@ -154,8 +154,8 @@ BEGIN
             MENUITEM "&HTML5 (beta)...\tCtrl+Alt+B", ID_BUILD_FOR_WEB
             MENUITEM "&Windows...\tCtrl+Shift+B",   ID_BUILD_FOR_WIN32
             MENUITEM "&Linux (beta)...\tCtrl+Shift+Alt+B", ID_BUILD_FOR_LINUX
-            MENUITEM "&Nintendo Switch...\tCtrl+Z", ID_BUILD_FOR_NINTENDO
-      END
+            MENUITEM "&Nintendo Switch...\tShift+Alt+B", ID_BUILD_FOR_NINTENDO
+        END
         MENUITEM "Open in &Editor\tCtrl+Shift+O", ID_FILE_OPENINEDITOR
         MENUITEM "Show Project &Files",         ID_FILE_SHOW_PROJECT_FILES
         MENUITEM "Show Project &Sandbox",       ID_FILE_SHOWPROJECTSANDBOX
@@ -236,15 +236,16 @@ END
 IDR_MAINFRAME ACCELERATORS
 BEGIN
     "B",            ID_BUILD_FOR_ANDROID,   VIRTKEY, CONTROL, NOINVERT
-    "B",            ID_BUILD_FOR_WIN32,     VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, CONTROL, ALT, NOINVERT
     "B",            ID_BUILD_FOR_LINUX,     VIRTKEY, SHIFT, CONTROL, ALT, NOINVERT
-    "Z",            ID_BUILD_FOR_NINTENDO,  VIRTKEY, CONTROL, NOINVERT
+    "B",            ID_BUILD_FOR_NINTENDO,  VIRTKEY, SHIFT, ALT, NOINVERT
+    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, CONTROL, ALT, NOINVERT
+    "B",            ID_BUILD_FOR_WIN32,     VIRTKEY, SHIFT, CONTROL, NOINVERT
     "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPENINEDITOR,   VIRTKEY, SHIFT, CONTROL, NOINVERT
     "R",            ID_FILE_RELAUNCH,       VIRTKEY, CONTROL, NOINVERT
+    VK_LEFT,        ID_VIEW_NAVIGATE_BACK,  VIRTKEY, ALT, NOINVERT
     VK_LEFT,        ID_VIEW_ROTATELEFT,     VIRTKEY, CONTROL, NOINVERT
     VK_RIGHT,       ID_VIEW_ROTATERIGHT,    VIRTKEY, CONTROL, NOINVERT
     VK_UP,          ID_VIEW_SHAKE,          VIRTKEY, CONTROL, NOINVERT
@@ -254,7 +255,6 @@ BEGIN
     VK_OEM_PLUS,    ID_WINDOW_ZOOMIN,       VIRTKEY, CONTROL, NOINVERT
     VK_OEM_MINUS,   ID_WINDOW_ZOOMOUT,      VIRTKEY, CONTROL, NOINVERT
     VK_SUBTRACT,    ID_WINDOW_ZOOMOUT,      VIRTKEY, CONTROL, NOINVERT
-    VK_LEFT,        ID_VIEW_NAVIGATE_BACK,  VIRTKEY, ALT, NOINVERT
 END
 
 
@@ -525,19 +525,19 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Nintendo Switch App Build Setup"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-LTEXT           "Application Name :", IDC_STATIC, 6, 11, 78, 10, 0, WS_EX_RIGHT
-EDITTEXT        IDC_BUILD_APPNAME, 90, 11, 250, 14, ES_AUTOHSCROLL
-LTEXT           ".nmeta file :", IDC_STATIC, 6, 29, 78, 10, 0, WS_EX_RIGHT
-EDITTEXT        IDC_BUILD_NMETA_PATH, 90, 29, 250, 14, ES_AUTOHSCROLL
-LTEXT           "Project Path :", IDC_STATIC, 6, 47, 78, 10, 0, WS_EX_RIGHT
-EDITTEXT        IDC_BUILD_PROJECTPATH, 90, 47, 250, 14, ES_AUTOHSCROLL | ES_READONLY
-LTEXT           "Save to Folder :", IDC_STATIC, 6, 69, 78, 10, 0, WS_EX_RIGHT
-EDITTEXT        IDC_BUILD_SAVETO, 90, 65, 156, 14, ES_AUTOHSCROLL
-PUSHBUTTON      "Browse...", IDC_BUILD_BROWSE_SAVETO, 252, 65, 54, 14
-CONTROL         "Include Standard Resources", IDC_INCLUDE_STANDART_RESOURCES,
-"Button", BS_AUTOCHECKBOX | WS_TABSTOP, 90, 85, 181, 10
-DEFPUSHBUTTON   "OK", IDOK, 205, 125, 50, 14
-PUSHBUTTON      "Cancel", IDCANCEL, 256, 125, 50, 14
+    LTEXT           "Application Name :",IDC_STATIC,6,11,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_APPNAME,90,11,250,14,ES_AUTOHSCROLL
+    LTEXT           ".nmeta file :",IDC_STATIC,6,29,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_NMETA_PATH,90,29,250,14,ES_AUTOHSCROLL
+    LTEXT           "Project Path :",IDC_STATIC,6,47,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_PROJECTPATH,90,47,250,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
 END
 
 IDD_CUSTOM_DEVICE DIALOGEX 0, 0, 293, 101
@@ -855,6 +855,7 @@ BEGIN
     IDS_OPEN_URL_HTML       "Open in Browser"
     IDS_ANDROID_BUILD       "Building Android App"
     IDS_ANDROID_SDK_LICENSE """You are about to build an Android app for the first time with this build system.\nIt uses the Android SDK and you must read and accept its license agreement in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes.\nPress 'Yes' to accept, 'No' to decline or 'Help' to read the license agreement."""
+    IDS_BUILD_NMETA_NAME_NOT_PROVIDED "You must provide path to .nmeta file."
 END
 
 STRINGTABLE
@@ -1092,8 +1093,7 @@ BEGIN
                             "Failed to build because the installed Solar2D version is too old. Please download the newest Solar2D build at https://github.com/coronalabs/corona/releases and try again."
     IDS_BUILD_ERROR_FORMAT_MESSAGE "[Build Error #%d]\r\n%s"
     IDS_BUILD_APP_NAME_NOT_PROVIDED "You must provide an application name."
-    IDS_BUILD_NMETA_NAME_NOT_PROVIDED "You must provide path to .nmeta file."
-    IDS_BUILD_VERSION_NUMBER_NOT_PROVIDED
+    IDS_BUILD_VERSION_NUMBER_NOT_PROVIDED 
                             "You must provide a version code for your application."
     IDS_BUILD_PACKAGE_NAME_NOT_PROVIDED 
                             "You must provide a unique package name."

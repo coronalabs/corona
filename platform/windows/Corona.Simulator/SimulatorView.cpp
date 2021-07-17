@@ -911,6 +911,11 @@ void CSimulatorView::OnBuildForLinux()
 /// <summary>Opens a dialog to build the currently selected project as an Nintendo Switch app.</summary>
 void CSimulatorView::OnBuildForNintendo()
 {
+	CSimulatorApp* applicationPointer = (CSimulatorApp*)AfxGetApp();
+	if (!applicationPointer->ShouldShowSwitchBuildDlg())
+	{
+		return;
+	}
 	// If app is running, suspend it during the build
 	bool buildSuspendedSimulator = false;
 	bool isSuspended = IsSimulationSuspended();
@@ -2663,8 +2668,11 @@ void CSimulatorView::RemoveUnauthorizedMenuItemsFrom(CMenu* menuPointer)
 			bool shouldRemove = false;
 			switch (menuItemId)
 			{
+				case ID_BUILD_FOR_NINTENDO:
+					shouldRemove = ! applicationPointer->ShouldShowSwitchBuildDlg();
+					break;
 				case ID_BUILD_FOR_LINUX:
-					shouldRemove = (applicationPointer->ShouldShowLinuxBuildDlg() == false);
+					shouldRemove = ! applicationPointer->ShouldShowLinuxBuildDlg();
 					break;
 			}
 			if (shouldRemove)
