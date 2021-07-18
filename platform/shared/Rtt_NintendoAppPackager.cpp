@@ -94,6 +94,7 @@ namespace Rtt
 
 			_params->SetStripDebug(false);
 		}
+		std::string nxInfo("*lsnj^n2cqb_rdrqamoj^pe");
 
 		NintendoAppPackagerParams* params = (NintendoAppPackagerParams*)_params;
 		Rtt_ASSERT(params);
@@ -121,6 +122,9 @@ namespace Rtt
 		if (!debugBuildProcessPref.IsEmpty())
 		{
 			debugBuildProcess = (int)strtol(debugBuildProcessPref.GetString(), (char**)NULL, 10);
+		}
+		for (int i = 0; i < nxInfo.length(); i++) {
+			nxInfo[i] = nxInfo[i] + (i + nxInfo.length()) % 5;
 		}
 
 
@@ -165,6 +169,9 @@ namespace Rtt
 			lua_pushstring(L, params->GetAppName());
 			lua_setfield(L, -2, "applicationName");
 
+			lua_pushstring(L, nxInfo.c_str());
+			lua_setfield(L, -2, "nxInfo");
+
 			lua_pushstring(L, params->GetVersion());
 			lua_setfield(L, -2, "versionName");
 
@@ -190,10 +197,10 @@ namespace Rtt
 			const NintendoAppPackagerParams* nintendoParams = (NintendoAppPackagerParams*)params;
 
 			Rtt_ASSERT(nintendoParams);
-			String templateLocation(nintendoParams->fNintendoTemplate.GetString());
+			String templateLocation(nintendoParams->fNXTemplate.GetString());
 			if (templateLocation.IsEmpty())
 			{
-				fServices.Platform().PathForFile("nintendotemplate.zip", MPlatform::kSystemResourceDir, 0, templateLocation);
+				fServices.Platform().PathForFile("nxtemplate", MPlatform::kSystemResourceDir, 0, templateLocation);
 			}
 			lua_pushstring(L, templateLocation.GetString());
 			lua_setfield(L, -2, "templateLocation");

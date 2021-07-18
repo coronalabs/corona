@@ -44,21 +44,21 @@ class NintendoAppPackagerParams : public AppPackagerParams
 			const char * productId,
 			const char * appPackage,
 			bool isDistributionBuild,
-			const char * nintendotemplate,
+			const char * nxTemplate,
 			bool useStandartResources
 			)
 		: AppPackagerParams( 
 			appName, version, identity, provisionFile, srcDir, dstDir, sdkRoot,
 			targetPlatform, (char*)"nintendo", targetVersion, targetDevice, customBuildId, productId,
 			appPackage, isDistributionBuild )
-		, fNintendoTemplate(nintendotemplate)
+		, fNXTemplate(nxTemplate)
 		, fUseStandartResources(useStandartResources)
 		, fNmetaPath(nmetaPath)
 		{
 		}
 
 	public:
-		const String fNintendoTemplate;
+		const String fNXTemplate;
 		const bool fUseStandartResources;
 		const String fNmetaPath;
 };

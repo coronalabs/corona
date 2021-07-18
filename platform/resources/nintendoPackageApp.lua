@@ -172,10 +172,9 @@ local function pathJoin(p1, p2, ... )
 	end
 end
 
-local function unzip( archive, dst )
+local function unzip( archive, dst, p )
 	if windows then
-		local cmd = '""%CORONA_PATH%\\7za.exe" x -aoa "' .. archive .. '" -o"' ..  dst .. '"'
-		logd('processExecute: ' .. cmd)
+		local cmd = '""%CORONA_PATH%\\7za.exe" x -aoa "' .. archive .. '" -o"' ..  dst .. '" ' .. (p or "") .. '"'
 		return processExecute(cmd)
 	else
 		return os.execute('/usr/bin/unzip -o -q ' .. quoteString(archive) .. ' -d ' ..  quoteString(dst))
@@ -405,14 +404,11 @@ function nintendoPackageApp( args )
 
 	debugBuildProcess = args.debugBuildProcess
 	log('Nintendo Switch App builder started')
+	local nxInfo = args.nxInfo
+	args.nxInfo = nil
 	logd(json.prettify(args))
 
-	local template = args.nintendotemplateLocation
-
--- for debugging
---	local template = 'e:/nintendotemplate.zip'
-
-	-- check if user purchased splash screen
+	local template = args.templateLocation
 	if not template then
 		local coronaRoot
 		if windows then
@@ -423,12 +419,12 @@ function nintendoPackageApp( args )
 				coronaRoot = coronaDir .. "../Corona Simulator.app/Contents"
 			end
 		end
-		template = pathJoin(coronaRoot , 'Resources', 'nintendotemplate.zip')
+		template = pathJoin(coronaRoot , 'Resources', 'nxtemplate')
 	end
 	logd("template location: " .. template);
 
 	if not file_exists(template) then
-		return 'Missing ' .. template
+		return 'Missing template: ' .. template
 	end
 
 	-- read settings
@@ -464,7 +460,7 @@ function nintendoPackageApp( args )
 
 	-- unzip standard template
 
-	local templateFolder = pathJoin(args.tmpDir, 'nintendotemplate')
+	local templateFolder = pathJoin(args.tmpDir, 'nxtemplate')
 	success = removeDir(templateFolder)	
 --	if not success then
 --		return 'Failed to clear template folder: ' .. templateFolder
@@ -482,7 +478,7 @@ function nintendoPackageApp( args )
 		return 'Failed to open template: ' .. template
 	end
 
-	local ret = unzip(template, templateFolder)
+	local ret = unzip(template, templateFolder, nxInfo)
 	if ret ~= 0 then
 		return 'Failed to unpack template ' .. template .. ' to ' .. templateFolder ..  ', err=' .. ret
 	end
@@ -524,7 +520,7 @@ function nintendoPackageApp( args )
 
 	local nspfile = pathJoin(nintendoappFolder, args.applicationName ..'.nsp')
 	local descfile = pathJoin(nintendoRoot, "\\Resources\\SpecFiles\\Application.desc")
-	local solar2Dfile = pathJoin(args.tmpDir, '\\nintendotemplate\\code')
+	local solar2Dfile = pathJoin(args.tmpDir, '\\nxtemplate\\code')
 	local assets = pathJoin(args.tmpDir, '\\nintendoapp')
 
 	local cmd = '"' .. nintendoRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
