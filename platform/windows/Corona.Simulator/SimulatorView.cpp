@@ -912,7 +912,7 @@ void CSimulatorView::OnBuildForLinux()
 void CSimulatorView::OnBuildForNintendo()
 {
 	CSimulatorApp* applicationPointer = (CSimulatorApp*)AfxGetApp();
-	if (!applicationPointer->ShouldShowSwitchBuildDlg())
+	if (!applicationPointer->ShouldShowNXBuildDlg())
 	{
 		return;
 	}
@@ -2669,7 +2669,7 @@ void CSimulatorView::RemoveUnauthorizedMenuItemsFrom(CMenu* menuPointer)
 			switch (menuItemId)
 			{
 				case ID_BUILD_FOR_NINTENDO:
-					shouldRemove = ! applicationPointer->ShouldShowSwitchBuildDlg();
+					shouldRemove = ! applicationPointer->ShouldShowNXBuildDlg();
 					break;
 				case ID_BUILD_FOR_LINUX:
 					shouldRemove = ! applicationPointer->ShouldShowLinuxBuildDlg();

@@ -809,9 +809,9 @@ bool CSimulatorApp::ShouldShowLinuxBuildDlg()
 	bool show = GetProfileInt(REGISTRY_SECTION, REGISTRY_SHOWLINUXBUILD, REGISTRY_SHOWLINUXBUILD_DEFAULT) ? true : false;
 	return show;
 }
-bool CSimulatorApp::ShouldShowSwitchBuildDlg()
+bool CSimulatorApp::ShouldShowNXBuildDlg()
 {
-	bool show = GetProfileInt(REGISTRY_SECTION, REGISTRY_SHOWSWITCHBUILD, REGISTRY_SHOWSWITCHBUILD_DEFAULT) ? true : false;
+	bool show = GetProfileInt(REGISTRY_SECTION, REGISTRY_SHOWNXSBUILD, REGISTRY_SHOWNXSBUILD_DEFAULT) ? true : false;
 	return show;
 }
 
