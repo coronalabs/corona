@@ -109,7 +109,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_COMMAND(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnBuildForAndroid)
 	ON_COMMAND(ID_BUILD_FOR_WEB, &CSimulatorView::OnBuildForWeb)
 	ON_COMMAND(ID_BUILD_FOR_LINUX, &CSimulatorView::OnBuildForLinux)
-	ON_COMMAND(ID_BUILD_FOR_NINTENDO, &CSimulatorView::OnBuildForNintendo)
+	ON_COMMAND(ID_BUILD_FOR_NXS, &CSimulatorView::OnBuildForNintendo)
 	ON_COMMAND(ID_BUILD_FOR_WIN32, &CSimulatorView::OnBuildForWin32)
 	ON_COMMAND(ID_FILE_OPENINEDITOR, &CSimulatorView::OnFileOpenInEditor)
 	ON_COMMAND(ID_FILE_RELAUNCH, &CSimulatorView::OnFileRelaunch)
@@ -127,7 +127,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_WEB, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_LINUX, &CSimulatorView::OnUpdateBuildMenuItem)
-	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_NINTENDO, &CSimulatorView::OnUpdateBuildMenuItem)
+	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_NXS, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_WIN32, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENINEDITOR, &CSimulatorView::OnUpdateFileOpenInEditor)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SHOW_PROJECT_FILES, &CSimulatorView::OnUpdateShowProjectFiles)
@@ -2668,7 +2668,7 @@ void CSimulatorView::RemoveUnauthorizedMenuItemsFrom(CMenu* menuPointer)
 			bool shouldRemove = false;
 			switch (menuItemId)
 			{
-				case ID_BUILD_FOR_NINTENDO:
+				case ID_BUILD_FOR_NXS:
 					shouldRemove = ! applicationPointer->ShouldShowNXBuildDlg();
 					break;
 				case ID_BUILD_FOR_LINUX:

@@ -802,13 +802,13 @@ Lua::DoCall( lua_State* L, int narg, int nresults )
 
 	sLuaContext = L;
 
-#if !defined(EMSCRIPTEN) && !defined(Rtt_NINTENDO_ENV)
+#if !defined(EMSCRIPTEN) && !defined(Rtt_NXS_ENV)
 	signal(SIGINT, LuaAction);
 #endif
 
     int status = lua_pcall(L, narg, nresults, errfunc);
 	
-#if !defined(EMSCRIPTEN) && !defined(Rtt_NINTENDO_ENV)
+#if !defined(EMSCRIPTEN) && !defined(Rtt_NXS_ENV)
 	signal(SIGINT, SIG_DFL);
 #endif
 	

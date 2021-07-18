@@ -3770,7 +3770,7 @@ PNG_EXTERN png_voidp png_calloc PNGARG((png_structp png_ptr,
 #endif /* PNG_VERSION_INFO_ONLY */
 
 
-#ifdef NINTENDO_LIB
+#ifdef NXS_LIB
 #define fclose	nFileClose
 #define fopen	nFileOpen
 #define freopen	nFileReopen

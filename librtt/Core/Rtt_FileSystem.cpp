@@ -440,7 +440,7 @@ Rtt_EXPORT void* Rtt_FileMemoryMap(int fileDescriptor, size_t byteOffset, size_t
 				}
 			}
 		}
-#elif defined(Rtt_NINTENDO_ENV)
+#elif defined(Rtt_NXS_ENV)
 		return NULL;
 #else
 		int accessFlags = PROT_READ;

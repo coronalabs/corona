@@ -1618,7 +1618,7 @@ Display::WindowSizeChanged()
 			// need to be swapped to match the content w,h. 
 			S32 screenW = fTarget->DeviceWidth();
 			S32 screenH = fTarget->DeviceHeight();
-#if defined(Rtt_WIN_ENV) || defined(Rtt_NINTENDO_ENV)
+#if defined(Rtt_WIN_ENV) || defined(Rtt_NXS_ENV)
 			Rtt::DeviceOrientation::Type orientation = GetContentOrientation();
 #else
 			//TODO: Determine if we can do this the above Windows way on all platforms.
@@ -1708,7 +1708,7 @@ Display::GetElapsedTime() const
 void
 Display::GetViewProjectionMatrix(glm::mat4 &viewMatrix, glm::mat4 &projMatrix)
 {
-#if defined(Rtt_WIN_ENV) || defined(EMSCRIPTEN) || defined( Rtt_NINTENDO_ENV )
+#if defined(Rtt_WIN_ENV) || defined(EMSCRIPTEN) || defined( Rtt_NXS_ENV )
 	viewMatrix = glm::lookAt( glm::vec3( 0.0, 0.0, 0.5 ),
 								glm::vec3( 0.0, 0.0, 0.0 ),
 								glm::vec3( 0.0, 1.0, 0.0 ) );

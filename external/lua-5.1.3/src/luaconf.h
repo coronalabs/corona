@@ -800,7 +800,7 @@ union luai_Cast { double l_d; long l_l; };
 ** without modifying the main part of the file.
 */
 
-#ifdef NINTENDO_LIB
+#ifdef NXS_LIB
 //#define FT_FILE     void
 //#define sprintf  sprintf
 //#define fclose	nFileClose

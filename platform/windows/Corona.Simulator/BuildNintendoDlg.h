@@ -17,7 +17,7 @@ extern "C"
 }
 
 // registry section for whole dialog
-#define REGISTRY_BUILD_NINTENDO				_T("BuildNintendo")
+#define REGISTRY_BUILD_NXS				_T("BuildNXDialog")
 
 // registry keys for whole dialog
 #define REGISTRY_TARGETOS				_T("TargetOS")
@@ -40,7 +40,7 @@ class CBuildNintendoDlg : public CDialog
 public:
 
 	// Dialog Data
-	enum { IDD = IDD_BUILD_NINTENDO };
+	enum { IDD = IDD_BUILD_NXS };
 
 	CBuildNintendoDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CBuildNintendoDlg();

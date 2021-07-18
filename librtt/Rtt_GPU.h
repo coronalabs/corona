@@ -27,7 +27,7 @@
 	#else
 		#error TODO: Add path to gl.h header
 	#endif
-#elif defined( Rtt_LINUX_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_LINUX_ENV ) || defined( Rtt_NXS_ENV )
 	#ifdef _WIN32
 		#include <windows.h>
 		#include <GL/glew.h>

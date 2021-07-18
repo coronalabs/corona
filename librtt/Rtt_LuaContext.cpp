@@ -92,7 +92,7 @@ extern "C" {
 }
 #endif
 
-#ifdef Rtt_NINTENDO_ENV
+#ifdef Rtt_NXS_ENV
 	int luaopen_network(lua_State* L);
 #endif
 
@@ -103,7 +103,7 @@ namespace Rtt
 	void LuaLibWebAudio_Initialize(lua_State* L);
 #endif
 
-#ifdef Rtt_NINTENDO_ENV
+#ifdef Rtt_NXS_ENV
 	int luaload_nnTextField(lua_State* L);
 	int luaload_nnTextBox(lua_State* L);
 	int luaload_nnNativeAlert(lua_State* L);
@@ -618,7 +618,7 @@ LuaContext::InitializeLuaPath( lua_State* L, const MPlatform& platform )
 	//      "?.dll" .. ";" .. system.pathForFile( system.SystemResourceDirectory ) .. "/?.dll"
 	//
 	// NOTE: Assumes C modules reside in system resource directory
-#if defined(Rtt_NINTENDO_ENV)
+#if defined(Rtt_NXS_ENV)
 	lua_pushfstring(L,
 		"%s" LUA_DIRSEP LUA_PATH_MARK "." Rtt_LUA_C_MODULE_FILE_EXTENSION LUA_PATHSEP,
 		absoluteBase.GetString());
@@ -804,7 +804,7 @@ LuaContext::InitializeLuaCore( lua_State* L )
 		{ "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 > },
 #endif
 
-#if defined(Rtt_NINTENDO_ENV)
+#if defined(Rtt_NXS_ENV)
 		{ "network", luaopen_network },
 		{ "nnTextField", Lua::Open< luaload_nnTextField > },
 		{ "nnTextBox", Lua::Open< luaload_nnTextBox > },
@@ -913,14 +913,14 @@ LuaContext::DoCall( lua_State* L, int narg, int nresults )
 		errfunc = base;
 	}
 
-#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN) && !defined(Rtt_NINTENDO_ENV)
+#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN) && !defined(Rtt_NXS_ENV)
 	signal(SIGINT, laction);
 #endif
 
 	// The actual call
 	int status = lua_pcall(L, narg, nresults, errfunc);
 
-#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN) && !defined(Rtt_NINTENDO_ENV)
+#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN) && !defined(Rtt_NXS_ENV)
 	signal(SIGINT, SIG_DFL);
 #endif
 

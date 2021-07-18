@@ -36,7 +36,7 @@
 #elif Rtt_ANDROID_ENV
 	#define Rtt_USE_OPENSLES
 	#define Rtt_USE_ALMIXER
-#elif Rtt_NINTENDO_ENV
+#elif Rtt_NXS_ENV
 	//#define Rtt_USE_ALMIXER
 #elif Rtt_LINUX_ENV
 	#define Rtt_USE_ALMIXER
@@ -353,7 +353,7 @@
 //
 // Nintendo 
 //
-#if defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_NXS_ENV )
 
 #define Rtt_USE_GLOBAL_VARIABLES
 #define Rtt_VPRINTF_SUPPORTED

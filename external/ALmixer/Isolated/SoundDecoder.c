@@ -61,7 +61,7 @@ static SoundElement s_linkedDecoders[] =
 		{ 0, &__Sound_DecoderFunctions_CoreAudio },
 #else /* All other platforms. */
 #	if ( (defined(_WIN32) && !defined(WINAPI_FAMILY)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)) && !defined(Rtt_ANDROID_ENV) )
-	#if (!defined(NINTENDO_LIB))
+	#if (!defined(NXS_LIB))
 		{ 0, &__Sound_DecoderFunctions_DirectX },
 	#endif
 #	endif
