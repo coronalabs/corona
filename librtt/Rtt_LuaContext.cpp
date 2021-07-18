@@ -92,12 +92,17 @@ extern "C" {
 }
 #endif
 
+#ifdef Rtt_NINTENDO_ENV
+	int luaopen_network(lua_State* L);
+#endif
+
 namespace Rtt
 {
 
 #ifdef Rtt_EMSCRIPTEN_ENV
 	void LuaLibWebAudio_Initialize(lua_State* L);
 #endif
+
 #ifdef Rtt_NINTENDO_ENV
 	int luaload_nnTextField(lua_State* L);
 	int luaload_nnTextBox(lua_State* L);
@@ -800,6 +805,7 @@ LuaContext::InitializeLuaCore( lua_State* L )
 #endif
 
 #if defined(Rtt_NINTENDO_ENV)
+		{ "network", luaopen_network },
 		{ "nnTextField", Lua::Open< luaload_nnTextField > },
 		{ "nnTextBox", Lua::Open< luaload_nnTextBox > },
 		{ "nnNativeAlert", Lua::Open< luaload_nnNativeAlert > },
