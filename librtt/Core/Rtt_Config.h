@@ -351,7 +351,7 @@
 #endif
 
 //
-// Nintendo 
+// NxS 
 //
 #if defined( Rtt_NXS_ENV )
 

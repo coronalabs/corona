@@ -9,7 +9,7 @@
 
 #include "Core/Rtt_Build.h"
 
-#include "Rtt_NintendoAppPackager.h"
+#include "Rtt_NxSAppPackager.h"
 
 #include "Rtt_Lua.h"
 #include "Rtt_LuaFrameworks.h"
@@ -55,12 +55,12 @@ namespace Rtt
 	// webPackageApp.lua is pre-compiled into bytecodes and then placed in a byte array
 	// constant in a generated .cpp file. The file also contains the definition of the 
 	// following function which loads the bytecodes via luaL_loadbuffer.
-	int luaload_nintendoPackageApp(lua_State* L);
+	int luaload_nxsPackageApp(lua_State* L);
 
 #define kDefaultNumBytes 128
 
-	NintendoAppPackager::NintendoAppPackager(const MPlatformServices& services)
-		: Super(services, TargetDevice::kNintendoPlatform)
+	NxSAppPackager::NxSAppPackager(const MPlatformServices& services)
+		: Super(services, TargetDevice::kNxSPlatform)
 	{
 		lua_State* L = fVM;
 		Lua::RegisterModuleLoader(L, "lpeg", luaopen_lpeg);
@@ -78,14 +78,14 @@ namespace Rtt
 		Lua::RegisterModuleLoader(L, "ltn12", Lua::Open< luaload_luasocket_ltn12 >);
 
 		HTTPClient::registerFetcherModuleLoaders(L);
-		Lua::DoBuffer(fVM, &luaload_nintendoPackageApp, NULL);
+		Lua::DoBuffer(fVM, &luaload_nxsPackageApp, NULL);
 	}
 
-	NintendoAppPackager::~NintendoAppPackager()
+	NxSAppPackager::~NxSAppPackager()
 	{
 	}
 
-	int NintendoAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
+	int NxSAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 	{
 		ReadBuildSettings(_params->GetSrcDir());
 		if (fNeverStripDebugInfo)
@@ -96,7 +96,7 @@ namespace Rtt
 		}
 		std::string nxInfo("*lsnj^n2cqb_rdrqamoj^pe");
 
-		NintendoAppPackagerParams* params = (NintendoAppPackagerParams*)_params;
+		NxSAppPackagerParams* params = (NxSAppPackagerParams*)_params;
 		Rtt_ASSERT(params);
 
 		time_t startTime = time(NULL);
@@ -133,7 +133,7 @@ namespace Rtt
 		{
 			// Note that the failing mkdir() that brought us here is a member of the AndroidAppPackager class
 			String tmpString;
-			tmpString.Set("NintendoAppPackager::Build: failed to create temporary directory\n\n");
+			tmpString.Set("NxSAppPackager::Build: failed to create temporary directory\n\n");
 			tmpString.Append(tmpDir);
 			tmpString.Append("\n");
 
@@ -143,7 +143,7 @@ namespace Rtt
 		}
 
 		lua_State* L = fVM;
-		lua_getglobal(L, "nintendoPackageApp"); Rtt_ASSERT(lua_isfunction(L, -1));
+		lua_getglobal(L, "nxsPackageApp"); Rtt_ASSERT(lua_isfunction(L, -1));
 
 		// params
 		lua_newtable(L);
@@ -191,13 +191,13 @@ namespace Rtt
 			lua_setfield(L, -2, "debugBuildProcess");
 
 			lua_pushlightuserdata(L, (void*)params);		// keep for compileScriptsAndMakeCAR
-			lua_setfield(L, -2, "nintendoParams");
+			lua_setfield(L, -2, "nxsParams");
 
 			// needs to disable -fno-rtti
-			const NintendoAppPackagerParams* nintendoParams = (NintendoAppPackagerParams*)params;
+			const NxSAppPackagerParams* nxsParams = (NxSAppPackagerParams*)params;
 
-			Rtt_ASSERT(nintendoParams);
-			String templateLocation(nintendoParams->fNXTemplate.GetString());
+			Rtt_ASSERT(nxsParams);
+			String templateLocation(nxsParams->fNXTemplate.GetString());
 			if (templateLocation.IsEmpty())
 			{
 				fServices.Platform().PathForFile("nxtemplate", MPlatform::kSystemResourceDir, 0, templateLocation);
@@ -216,7 +216,7 @@ namespace Rtt
 
 		int result = PlatformAppPackager::kNoError;
 		
-		// call nintendoPostPackage( params )
+		// call nxsPostPackage( params )
 		if (!Rtt_VERIFY(0 == Lua::DoCall(L, 1, 1)))
 		{
 			result = PlatformAppPackager::kLocalPackagingError;

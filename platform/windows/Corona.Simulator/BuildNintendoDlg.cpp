@@ -12,7 +12,7 @@
 #include "SimulatorView.h"
 #include "Resource.h"
 #include "CoronaProject.h"
-#include "BuildNintendoDlg.h"
+#include "BuildNxSDlg.h"
 #include "BuildProgressDlg.h"
 #include "BuildResult.h"
 #include "WinGlobalProperties.h"
@@ -26,36 +26,36 @@
 #include "Rtt_SimulatorAnalytics.h"
 #include "Rtt_TargetDevice.h"
 
-// CBuildNintendoDlg dialog
+// CBuildNxSDlg dialog
 
-IMPLEMENT_DYNAMIC(CBuildNintendoDlg, CDialog)
+IMPLEMENT_DYNAMIC(CBuildNxSDlg, CDialog)
 
-CBuildNintendoDlg::CBuildNintendoDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CBuildNintendoDlg::IDD, pParent)
+CBuildNxSDlg::CBuildNxSDlg(CWnd* pParent /*=NULL*/)
+	: CDialog(CBuildNxSDlg::IDD, pParent)
 	, m_pProject(NULL)
 	, m_nValidFields(0)
 {
 }
 
-CBuildNintendoDlg::~CBuildNintendoDlg()
+CBuildNxSDlg::~CBuildNxSDlg()
 {
 }
 
-void CBuildNintendoDlg::DoDataExchange(CDataExchange* pDX)
+void CBuildNxSDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 }
 
 
-BEGIN_MESSAGE_MAP(CBuildNintendoDlg, CDialog)
-	ON_BN_CLICKED(IDC_BUILD_BROWSE_SAVETO, &CBuildNintendoDlg::OnBrowseSaveto)
-	ON_BN_CLICKED(IDC_INCLUDE_STANDART_RESOURCES, &CBuildNintendoDlg::OnClickedIncludeStandartResources)
+BEGIN_MESSAGE_MAP(CBuildNxSDlg, CDialog)
+	ON_BN_CLICKED(IDC_BUILD_BROWSE_SAVETO, &CBuildNxSDlg::OnBrowseSaveto)
+	ON_BN_CLICKED(IDC_INCLUDE_STANDART_RESOURCES, &CBuildNxSDlg::OnClickedIncludeStandartResources)
 END_MESSAGE_MAP()
 
 // OnInitDialog - restore settings from m_pProject if available.
 // Choose likely defaults for non-saved settings.
 // Check for trial users, who can only use installed debug.keystore
-BOOL CBuildNintendoDlg::OnInitDialog()
+BOOL CBuildNxSDlg::OnInitDialog()
 {
 	WinString stringConverter;
 
@@ -69,8 +69,8 @@ BOOL CBuildNintendoDlg::OnInitDialog()
 		return TRUE;
 	}
 
-	//Set inital project type now that we have Android/Nintendo (used by the BuildProgressDlg - does not indicate target app store)
-	m_pProject->SetTargetPlatform(Rtt::TargetDevice::kNintendoPlatform);
+	//Set inital project type now that we have Android/NxS (used by the BuildProgressDlg - does not indicate target app store)
+	m_pProject->SetTargetPlatform(Rtt::TargetDevice::kNxSPlatform);
 
 	// Limit the text length of CEdit boxes.
 	((CEdit*)GetDlgItem(IDC_BUILD_APPNAME))->SetLimitText(128);
@@ -120,13 +120,13 @@ BOOL CBuildNintendoDlg::OnInitDialog()
 }
 
 // SetProject - called before DoModal to set the associated project.
-void CBuildNintendoDlg::SetProject(const std::shared_ptr<CCoronaProject>& pProject)
+void CBuildNxSDlg::SetProject(const std::shared_ptr<CCoronaProject>& pProject)
 {
 	m_pProject = pProject;  // leave unchanged until OnOK()
 }
 
 // OnBrowseSaveto - show directory selection dialog for build destination dir
-void CBuildNintendoDlg::OnBrowseSaveto()
+void CBuildNxSDlg::OnBrowseSaveto()
 {
 	CString sDir = _T("");
 	GetDlgItemText(IDC_BUILD_SAVETO, sDir);
@@ -144,7 +144,7 @@ void CBuildNintendoDlg::OnBrowseSaveto()
 	}
 }
 
-void CBuildNintendoDlg::OnClickedIncludeStandartResources()
+void CBuildNxSDlg::OnClickedIncludeStandartResources()
 {
 	m_pProject->SetUseStandartResources(IsDlgButtonChecked(IDC_INCLUDE_STANDART_RESOURCES) == BST_CHECKED);
 }
@@ -154,7 +154,7 @@ void CBuildNintendoDlg::OnClickedIncludeStandartResources()
 // get key alias password if necessary
 // test key alias password
 // call core code to package project and send to server for building
-void CBuildNintendoDlg::OnOK()  // OnBuild()
+void CBuildNxSDlg::OnOK()  // OnBuild()
 {
 	WinString stringBuffer;
 	CString sValue;
@@ -272,14 +272,14 @@ void CBuildNintendoDlg::OnOK()  // OnBuild()
 }
 
 // OnCancel - clean up, exit
-void CBuildNintendoDlg::OnCancel()
+void CBuildNxSDlg::OnCancel()
 {
 	CDialog::OnCancel();
 }
 
 // Display a warning message box with the given message.
 // Argument "nMessageID" is a unique ID to a string in the resource file's string table.
-void CBuildNintendoDlg::DisplayWarningMessage(UINT nMessageID)
+void CBuildNxSDlg::DisplayWarningMessage(UINT nMessageID)
 {
 	CString title;
 	CString message;
@@ -289,7 +289,7 @@ void CBuildNintendoDlg::DisplayWarningMessage(UINT nMessageID)
 	MessageBox(message, title, MB_OK | MB_ICONWARNING);
 }
 
-void CBuildNintendoDlg::LogAnalytics(const char* eventName, const char* key, const char* value)
+void CBuildNxSDlg::LogAnalytics(const char* eventName, const char* key, const char* value)
 {
 	Rtt_ASSERT(GetWinProperties()->GetAnalytics() != NULL);
 	Rtt_ASSERT(eventName != NULL && strlen(eventName) > 0);
@@ -300,7 +300,7 @@ void CBuildNintendoDlg::LogAnalytics(const char* eventName, const char* key, con
 	char** dataValues = (char**)calloc(sizeof(char*), numItems);
 
 	dataKeys[0] = _strdup("target");
-	dataValues[0] = _strdup("nintendo");
+	dataValues[0] = _strdup("nxs");
 	if (key != NULL && value != NULL)
 	{
 		dataKeys[1] = _strdup(key);

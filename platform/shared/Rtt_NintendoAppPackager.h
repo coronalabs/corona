@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Rtt_NintendoAppPackager_H__
-#define _Rtt_NintendoAppPackager_H__
+#ifndef _Rtt_NxSAppPackager_H__
+#define _Rtt_NxSAppPackager_H__
 
 // ----------------------------------------------------------------------------
 
@@ -22,13 +22,13 @@ class MPlatformServices;
 
 // ----------------------------------------------------------------------------
 
-class NintendoAppPackagerParams : public AppPackagerParams
+class NxSAppPackagerParams : public AppPackagerParams
 {
 	public:
 		typedef AppPackagerParams Super;
 
 	public:
-		NintendoAppPackagerParams( 
+		NxSAppPackagerParams( 
 			const char* appName, 
 			const char* version,
 			const char* identity,
@@ -49,7 +49,7 @@ class NintendoAppPackagerParams : public AppPackagerParams
 			)
 		: AppPackagerParams( 
 			appName, version, identity, provisionFile, srcDir, dstDir, sdkRoot,
-			targetPlatform, (char*)"nintendo", targetVersion, targetDevice, customBuildId, productId,
+			targetPlatform, (char*)"nx", targetVersion, targetDevice, customBuildId, productId,
 			appPackage, isDistributionBuild )
 		, fNXTemplate(nxTemplate)
 		, fUseStandartResources(useStandartResources)
@@ -63,14 +63,14 @@ class NintendoAppPackagerParams : public AppPackagerParams
 		const String fNmetaPath;
 };
 
-class NintendoAppPackager : public PlatformAppPackager
+class NxSAppPackager : public PlatformAppPackager
 {
 	public:
 		typedef PlatformAppPackager Super;
 
 	public:
-		NintendoAppPackager( const MPlatformServices& services );
-		virtual ~NintendoAppPackager();
+		NxSAppPackager( const MPlatformServices& services );
+		virtual ~NxSAppPackager();
 
 	public:
 		virtual int Build( AppPackagerParams *params, const char *tmpDirBase);
@@ -84,4 +84,4 @@ class NintendoAppPackager : public PlatformAppPackager
 
 // ----------------------------------------------------------------------------
 
-#endif // _Rtt_NintendoAppPackager_H__
+#endif // _Rtt_NxSAppPackager_H__

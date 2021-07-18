@@ -40,7 +40,7 @@ class TargetDevice
 			kWinPhoneSilverlightPlatform = 7, // Windows Phone 8 Silverlight App
 			kTVOSPlatform = 8, // tvOS
 			kLinuxPlatform = 9, // Linux desktop
-			kNintendoPlatform = 10, // Nintendo switch app
+			kNxSPlatform = 10, // NxS switch app
 
 			kNumPlatforms
 		}
@@ -85,7 +85,7 @@ class TargetDevice
 			kAndroidOS4_0_3 =  140300,
 			kWeb1_0         =   10000,
 			kLinux					=	160000,
-			kNintendo				= 170000,
+			kNxS				= 170000,
 		} Version;
 
 		static Version VersionForPlatform( Platform platform ); // Return current stable version

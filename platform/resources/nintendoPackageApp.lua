@@ -243,14 +243,14 @@ local function removeDir( dir )
 	end
 end
 
-local function nintendoDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
+local function nxsDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
 	if type(buildSettings) ~= 'table' then
 		-- no build.settings file, so no plugins to download
 		return nil
 	end
 
 	local collectorParams = { 
-		pluginPlatform = 'nintendo',
+		pluginPlatform = 'nx',
 		plugins = buildSettings.plugins or {},
 		destinationDirectory = tmpDir,
 		build = buildRevision,
@@ -281,7 +281,7 @@ local function getExcludePredecate()
 			"build.properties",
 		}
 
-		-- append 'all:' and 'nintendo:'
+		-- append 'all:' and 'nx:'
 		if buildSettings and buildSettings.excludeFiles then
 			if buildSettings.excludeFiles.all then
 				-- append excludes from 'all:'
@@ -290,9 +290,9 @@ local function getExcludePredecate()
 					excludes[#excludes + 1] = excl[i]
 				end
 			end
-			if buildSettings.excludeFiles.nintendo then
-				-- append excludes from 'nintendo:'
-				local excl = buildSettings.excludeFiles.nintendo
+			if buildSettings.excludeFiles.nx then
+				-- append excludes from 'nx:'
+				local excl = buildSettings.excludeFiles.nx
 				for i = 1, #excl do	
 					excludes[#excludes + 1] = excl[i]
 				end
@@ -395,15 +395,15 @@ end
 --
 -- global script to call from C++
 -- 
-function nintendoPackageApp( args )
+function nxsPackageApp( args )
 
-	local nintendoRoot = os.getenv("NINTENDO_SDK_ROOT")
-	if not nintendoRoot then
-		return "Nintendo SDK not found"
+	local nxsRoot = os.getenv("NINTENDO_SDK_ROOT")
+	if not nxsRoot then
+		return "NX SDK not found"
 	end
 
 	debugBuildProcess = args.debugBuildProcess
-	log('Nintendo Switch App builder started')
+	log('NX Switch App builder started')
 	local nxInfo = args.nxInfo
 	args.nxInfo = nil
 	logd(json.prettify(args))
@@ -438,15 +438,15 @@ function nintendoPackageApp( args )
 	local success = false;
 
 	-- create app folder if it does not exists
-	local nintendoappFolder = pathJoin(args.dstDir, args.applicationName .. '.NX64')
-	removeDir(nintendoappFolder)	-- clear
-	success = lfs.mkdir(nintendoappFolder)
+	local nxsappFolder = pathJoin(args.dstDir, args.applicationName .. '.NX64')
+	removeDir(nxsappFolder)	-- clear
+	success = lfs.mkdir(nxsappFolder)
 	if not success then
-		return 'Failed to create App folder: ' .. nintendoappFolder
+		return 'Failed to create App folder: ' .. nxsappFolder
 	end
-	logd('AppFolder: ' .. nintendoappFolder)
+	logd('AppFolder: ' .. nxsappFolder)
 
-	local appFolder = pathJoin(args.tmpDir, 'nintendoapp')
+	local appFolder = pathJoin(args.tmpDir, 'nxsapp')
 	success = removeDir(appFolder)	-- clear
 --	if not success then
 --		return 'Failed to clear tmp folder: ' .. appFolder
@@ -500,7 +500,7 @@ function nintendoPackageApp( args )
 	end
 
 	-- compile .lua
-	local rc = compileScriptsAndMakeCAR(args.nintendoParams, appFolder, appFolder, args.tmpDir)
+	local rc = compileScriptsAndMakeCAR(args.nxsParams, appFolder, appFolder, args.tmpDir)
 	if not rc then
 		return "Failed to create .car file"
 	end
@@ -510,7 +510,7 @@ function nintendoPackageApp( args )
 	deleteUnusedFiles(appFolder, getExcludePredecate())
 
 	-- build App 
-	-- sample: AuthoringTool.exe creatensp -o C:/corona/platform/switch/NX64/Release/Rtt.nsp --meta C:/corona/platform/switch/Solar2D/rtt.nmeta --type Application --desc C:/Nintendo\vitaly/NintendoSDK/Resources/SpecFiles/Application.desc--program C:/corona/platform/switch/NX64/Release/Rtt.nspd/program0.ncd/code C:\corona\platform\test\assets2
+	-- sample: AuthoringTool.exe creatensp -o Rtt.nsp --metartt.nmeta --type Application --desc Application.desc--program program0.ncd/code assets2
 
 	local metafile = args.nmetaPath
 	if not file_exists(metafile) then
@@ -518,12 +518,12 @@ function nintendoPackageApp( args )
 	end
 	log('Using ' .. metafile)
 
-	local nspfile = pathJoin(nintendoappFolder, args.applicationName ..'.nsp')
-	local descfile = pathJoin(nintendoRoot, "\\Resources\\SpecFiles\\Application.desc")
+	local nspfile = pathJoin(nxsappFolder, args.applicationName ..'.nsp')
+	local descfile = pathJoin(nxsRoot, "\\Resources\\SpecFiles\\Application.desc")
 	local solar2Dfile = pathJoin(args.tmpDir, '\\nxtemplate\\code')
-	local assets = pathJoin(args.tmpDir, '\\nintendoapp')
+	local assets = pathJoin(args.tmpDir, '\\nxsapp')
 
-	local cmd = '"' .. nintendoRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
+	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
 	cmd = cmd .. ' --meta "' ..  metafile .. '"'
 	cmd = cmd .. ' --desc "' ..  descfile .. '"'
@@ -539,7 +539,7 @@ function nintendoPackageApp( args )
 	end
 
 	if not file_exists(nspfile) then
-		return 'Failed to build Nintendo Switch App'
+		return 'Failed to build NX Switch App'
 	else
 		log('\nBuild succeeded: ' .. nspfile)
 	end

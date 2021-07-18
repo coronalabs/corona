@@ -199,9 +199,9 @@ void CBuildProgressDlg::BuildForPlatform()
 		{
 			BuildForLinux();
 		}
-		else if (fProjectSettingsPointer->GetTargetPlatform() == Rtt::TargetDevice::kNintendoPlatform)
+		else if (fProjectSettingsPointer->GetTargetPlatform() == Rtt::TargetDevice::kNxSPlatform)
 		{
-			BuildForNintendo();
+			BuildForNxS();
 		}
 		else
 		{
@@ -349,7 +349,7 @@ void CBuildProgressDlg::BuildForLinux()
 	PostMessage(WMU_BUILD_COMPLETE, 0, 0);
 }
 
-void CBuildProgressDlg::BuildForNintendo()
+void CBuildProgressDlg::BuildForNxS()
 {
 	// Do not continue if project settings were not provided.
 	if (!fProjectSettingsPointer)
@@ -374,14 +374,14 @@ void CBuildProgressDlg::BuildForNintendo()
 	CSimulatorView* pView = (CSimulatorView*)pFrameWnd->GetActiveView();
 
 	// Build the project. (This is a blocking call.)
-	fBuildResult = appNintendoBuild(
+	fBuildResult = appNxSBuild(
 		pView->GetRuntimeEnvironment(), 
 		strSrcDir.GetUTF8(),
 		strNmetaPath.GetUTF8(),
 		strName.GetUTF8(), 
 		strVersion.GetUTF8(),
 		strSaveDir.GetUTF8(),
-		Rtt::TargetDevice::kNintendoPlatform,
+		Rtt::TargetDevice::kNxSPlatform,
 		strTargetOS.GetUTF8(),
 		fProjectSettingsPointer->IsDistribution(),
 		fProjectSettingsPointer->GetAndroidVersionCode(),

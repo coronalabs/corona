@@ -44,7 +44,7 @@ private:
 	void BuildForAndroid();
 	void BuildForWeb();
 	void BuildForLinux();
-	void BuildForNintendo();
+	void BuildForNxS();
 	LRESULT OnBuildComplete(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnDownloadProgressUpdate(WPARAM wParam, LPARAM lParam);
 

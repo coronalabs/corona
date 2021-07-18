@@ -229,7 +229,7 @@ static const char kWin32PlatformString[] = "Win32";
 static const char kOSXPlatformString[] = "OSX";
 static const char kWinPhoneSilverlightPlatformString[] = "WinPhoneSilverlight";
 static const char kTVOSPlatformString[] = "tvOS";
-static const char kSwitchPlatformString[] = "Nintendo Switch";
+static const char kSwitchPlatformString[] = "NxS Switch";
 
 const char*
 TargetDevice::StringForPlatform( TargetDevice::Platform platform )
@@ -339,7 +339,6 @@ static const char kOSXPlatformTag1[] = "osx";
 static const char kOSXPlatformTag2[] = "macos";
 static const char kWinPhoneSilverlightPlatformTag[] = "winphonesilverlight";
 static const char kTVOSPlatformTag[] = "tvos";
-static const char kSwitchPlatformTag[] = "nintendo";
 
 const char*
 TargetDevice::TagForPlatform( TargetDevice::Platform platform )

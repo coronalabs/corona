@@ -36,7 +36,7 @@
 #include "BuildAndroidDlg.h"
 #include "BuildWebDlg.h"
 #include "BuildLinuxDlg.h"
-#include "BuildNintendoDlg.h"
+#include "BuildNxSDlg.h"
 #include "BuildWin32AppDlg.h"
 #include "NewProjectDlg.h"
 #include "SelectSampleProjectDlg.h"
@@ -109,7 +109,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_COMMAND(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnBuildForAndroid)
 	ON_COMMAND(ID_BUILD_FOR_WEB, &CSimulatorView::OnBuildForWeb)
 	ON_COMMAND(ID_BUILD_FOR_LINUX, &CSimulatorView::OnBuildForLinux)
-	ON_COMMAND(ID_BUILD_FOR_NXS, &CSimulatorView::OnBuildForNintendo)
+	ON_COMMAND(ID_BUILD_FOR_NXS, &CSimulatorView::OnBuildForNxS)
 	ON_COMMAND(ID_BUILD_FOR_WIN32, &CSimulatorView::OnBuildForWin32)
 	ON_COMMAND(ID_FILE_OPENINEDITOR, &CSimulatorView::OnFileOpenInEditor)
 	ON_COMMAND(ID_FILE_RELAUNCH, &CSimulatorView::OnFileRelaunch)
@@ -908,8 +908,8 @@ void CSimulatorView::OnBuildForLinux()
 	}
 }
 
-/// <summary>Opens a dialog to build the currently selected project as an Nintendo Switch app.</summary>
-void CSimulatorView::OnBuildForNintendo()
+/// <summary>Opens a dialog to build the currently selected project as an NxS Switch app.</summary>
+void CSimulatorView::OnBuildForNxS()
 {
 	CSimulatorApp* applicationPointer = (CSimulatorApp*)AfxGetApp();
 	if (!applicationPointer->ShouldShowNXBuildDlg())
@@ -926,7 +926,7 @@ void CSimulatorView::OnBuildForNintendo()
 	}
 
 	// Display the build window.
-	CBuildNintendoDlg dlg;
+	CBuildNxSDlg dlg;
 	dlg.SetProject(GetDocument()->GetProject());
 	dlg.DoModal();
 	if (buildSuspendedSimulator)

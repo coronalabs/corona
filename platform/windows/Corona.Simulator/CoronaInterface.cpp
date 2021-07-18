@@ -23,7 +23,7 @@
 #include "Rtt_AndroidAppPackager.h"
 #include "Rtt_WebAppPackager.h"
 #include "Rtt_LinuxAppPackager.h"
-#include "Rtt_NintendoAppPackager.h"
+#include "Rtt_NxSAppPackager.h"
 #include "Rtt_WinAudioPlayer.h"
 #include "Rtt_PlatformPlayer.h"
 #include "Rtt_LuaContext.h"
@@ -407,7 +407,7 @@ CBuildResult appLinuxBuild(
 	return CBuildResult(code, statusMessage);
 }
 
-CBuildResult appNintendoBuild(
+CBuildResult appNxSBuild(
 	Interop::SimulatorRuntimeEnvironment* pSim,
 	const char* srcDir,
 	const char* nmetaPath,
@@ -420,16 +420,16 @@ CBuildResult appNintendoBuild(
 
 
 	// Translate targetOS in BuildAndroidDlg.h into enum from Rtt_PlatformAppPackager.h
-	int targetVersion = Rtt::TargetDevice::kNintendo;
+	int targetVersion = Rtt::TargetDevice::kNxS;
 
 	// Create the app packager.
-	Rtt::NintendoAppPackager packager(*pServices);
+	Rtt::NxSAppPackager packager(*pServices);
 
 	// Read the application's "build.settings" file.
 	bool wasSuccessful = packager.ReadBuildSettings(srcDir);
 	if (!wasSuccessful)
 	{
-		LogAnalytics("Nintendo", "build-bungled", "reason", "bad-build-settings");
+		LogAnalytics("NxS", "build-bungled", "reason", "bad-build-settings");
 
 		CString message;
 		message.LoadString(IDS_BUILD_SETTINGS_FILE_ERROR);
@@ -443,7 +443,7 @@ CBuildResult appNintendoBuild(
 	{
 		Rtt_Log("\nUsing custom Build Id %s\n", customBuildId);
 
-		LogAnalytics("Nintendo", "build-with-custom-id", customBuildId);
+		LogAnalytics("NxS", "build-with-custom-id", customBuildId);
 	}
 
 	// these are currently unused
@@ -451,11 +451,11 @@ CBuildResult appNintendoBuild(
 	const char* sdkRoot = "";
 
 	// Package build settings parameters.
-	Rtt::NintendoAppPackagerParams params(
+	Rtt::NxSAppPackagerParams params(
 		applicationName, versionName, NULL, NULL,
 		srcDir, dstDir, nmetaPath, NULL,
 		targetPlatform, targetVersion,
-		Rtt::TargetDevice::kNintendo, customBuildId,
+		Rtt::TargetDevice::kNxS, customBuildId,
 		NULL, bundleId, isDistribution, NULL, useStandartResources);
 
 	// Select build template
@@ -486,7 +486,7 @@ CBuildResult appNintendoBuild(
 	{
 		statusMessage.LoadString(GetStatusMessageResourceIdFor(code));
 
-		LogAnalytics("Nintendo", "build-succeeded");
+		LogAnalytics("NxS", "build-succeeded");
 	}
 	else
 	{
@@ -499,7 +499,7 @@ CBuildResult appNintendoBuild(
 
 		CStringA logMesg;
 		logMesg.Format("[%ld] %s", code, params.GetBuildMessage());
-		LogAnalytics("Nintendo", "build-failed", "reason", logMesg);
+		LogAnalytics("NxS", "build-failed", "reason", logMesg);
 	}
 	return CBuildResult(code, statusMessage);
 }

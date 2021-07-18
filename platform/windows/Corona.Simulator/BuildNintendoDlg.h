@@ -31,19 +31,19 @@ extern "C"
 #define MASK_PACKAGE    0x04
 #define MASK_SAVETO     0x20
 
-// BuildNintendoDlg dialog
+// BuildNxSDlg dialog
 
-class CBuildNintendoDlg : public CDialog
+class CBuildNxSDlg : public CDialog
 {
-	DECLARE_DYNAMIC(CBuildNintendoDlg)
+	DECLARE_DYNAMIC(CBuildNxSDlg)
 
 public:
 
 	// Dialog Data
 	enum { IDD = IDD_BUILD_NXS };
 
-	CBuildNintendoDlg(CWnd* pParent = NULL);   // standard constructor
-	virtual ~CBuildNintendoDlg();
+	CBuildNxSDlg(CWnd* pParent = NULL);   // standard constructor
+	virtual ~CBuildNxSDlg();
 	void SetProject(const std::shared_ptr<CCoronaProject>& pProject);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBrowseSaveto();
