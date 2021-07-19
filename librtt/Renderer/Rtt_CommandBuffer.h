@@ -47,6 +47,10 @@ class CommandBuffer
 			kNumQueryableParams,
 		}
 		QueryableParams;
+	
+	public:
+		void ReadBytes( void * value, size_t size );
+		void WriteBytes( const void * value, size_t size );
 		
 	public:
 		static size_t GetMaxVertexTextureUnits();
@@ -87,6 +91,8 @@ class CommandBuffer
 		virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
 		virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
 		virtual S32 GetCachedParam( CommandBuffer::QueryableParams param ) = 0;
+
+		virtual void WillRender() {}
 		
 		// Execute the generated command buffer. This function should only be
 		// called from a thread with an active rendering context. If requested

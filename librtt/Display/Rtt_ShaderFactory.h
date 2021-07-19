@@ -49,7 +49,7 @@ class ShaderFactory
 		static void RegisterBuiltin( lua_State *L, ShaderTypes::Category category );
 
 	public:
-		ShaderFactory( Display& owner, const ProgramHeader& programHeader );
+		ShaderFactory( Display& owner, const ProgramHeader& programHeader, const char * backend );
 		~ShaderFactory();
 
 	protected:
@@ -126,6 +126,7 @@ class ShaderFactory
 		Program *fDefaultShell;
 		Program *fDefaultKernel;
 		ProgramHeader *fProgramHeader;
+		const char *fBackend;
 };
 
 // ----------------------------------------------------------------------------

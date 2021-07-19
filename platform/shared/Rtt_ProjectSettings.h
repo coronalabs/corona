@@ -344,6 +344,13 @@ class ProjectSettings
 		 */
 		bool IsWindowTitleShown() const;
 
+		/**
+		 * Get a string describing the backend status.
+		 * @return
+		 * Returns one of "gl", "vulkanWanted", "vulkanRequired".
+		 */
+		const std::string & Backend() const;
+
 	protected:
 		/**
 		 * Called after the LoadFromDirectory() method has successfully loaded information from the
@@ -481,6 +488,9 @@ class ProjectSettings
 
 		/** Set to true if the Corona window should display its title. False to not show it.*/
 		bool fIsWindowTitleShown;
+
+		/** One of the following: "gl", "wantVulkan", "requireVulkan".*/
+		std::string fBackend;
 };
 
 } // namespace Rtt
