@@ -123,6 +123,7 @@
     <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h" />
     <ClInclude Include="..\..\shared\Rtt_LinuxAppPackager.h" />
     <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h" />
+    <ClInclude Include="..\..\shared\Rtt_NxSAppPackager.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformDictionaryWrapper.h" />
     <ClInclude Include="..\..\shared\Rtt_PlatformObjectWrapper.h" />
@@ -136,6 +137,7 @@
     <ClInclude Include="AnalyticsProvider.h" />
     <ClInclude Include="BuildAndroidDlg.h" />
     <ClInclude Include="BuildLinuxDlg.h" />
+    <ClInclude Include="BuildNxSDlg.h" />
     <ClInclude Include="BuildProgressDlg.h" />
     <ClInclude Include="BuildResult.h" />
     <ClInclude Include="BuildWebDlg.h" />
@@ -190,6 +192,7 @@
     <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c" />
     <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp" />
     <ClCompile Include="..\..\shared\Rtt_LinuxAppPackager.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_NxSAppPackager.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformDictionaryWrapper.cpp" />
     <ClCompile Include="..\..\shared\Rtt_PlatformObjectWrapper.cpp" />
@@ -203,6 +206,7 @@
     <ClCompile Include="AnalyticsProvider.cpp" />
     <ClCompile Include="BuildAndroidDlg.cpp" />
     <ClCompile Include="BuildLinuxDlg.cpp" />
+    <ClCompile Include="BuildNxSDlg.cpp" />
     <ClCompile Include="BuildProgressDlg.cpp" />
     <ClCompile Include="BuildResult.cpp" />
     <ClCompile Include="BuildWebDlg.cpp" />
@@ -247,6 +251,7 @@
     <LuaToCpp Include="..\..\android\create_build_properties.lua" />
     <LuaToCpp Include="..\..\resources\CoronaPListSupport.lua" />
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
+    <LuaToCpp Include="..\..\resources\nxsPackageApp.lua" />
     <LuaToCpp Include="..\..\resources\shell.lua" />
     <LuaToCpp Include="..\..\resources\simulatorAnalytics.lua" />
     <LuaToCpp Include="..\..\resources\webPackageApp.lua" />

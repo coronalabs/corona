@@ -56,6 +56,7 @@
 #define REGISTRY_RELAUNCHSIM _T("RelaunchSimulatorWhenProjectModified")
 #define REGISTRY_SHOWWEBBUILD _T("ShowWebBuild")
 #define REGISTRY_SHOWLINUXBUILD _T("ShowLinuxBuild")
+#define REGISTRY_SHOWNXSBUILD _T("ShowSwitchBuild")
 #define REGISTRY_SHOWWIN32BUILD _T("ShowWin32Build")
 #define REGISTRY_CUSTOM_DEVICE_NAME		_T("CustomDeviceName")
 #define REGISTRY_CUSTOM_DEVICE_WIDTH	_T("CustomDeviceWidth")
@@ -79,6 +80,7 @@
 #define REGISTRY_RELAUNCHSIM_DEFAULT RELAUNCH_SIM_ASK // ask every time
 #define REGISTRY_SHOWWEBBUILD_DEFAULT 0
 #define REGISTRY_SHOWLINUXBUILD_DEFAULT 0
+#define REGISTRY_SHOWNXSBUILD_DEFAULT 0
 #define REGISTRY_DEBUG_MONETIZATION_PLUGIN_DEFAULT 0
 #define REGISTRY_DM_FIRST_RUN_COMPLETE_DEFAULT 0
 
@@ -124,6 +126,7 @@ public:
 	void SetRelaunchSimStyle(int relaunchSimStyle);
 	int GetRelaunchSimStyle();
 	bool ShouldShowWebBuildDlg();
+	bool ShouldShowNXBuildDlg();
 	bool ShouldShowLinuxBuildDlg();
 	int IsStopBuildRequested() { return m_isStopBuildRequested; }
 	void SetStopBuildRequested(int stopBuildRequested)  { m_isStopBuildRequested = stopBuildRequested; }

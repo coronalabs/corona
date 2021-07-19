@@ -92,11 +92,21 @@ extern "C" {
 }
 #endif
 
+#ifdef Rtt_NXS_ENV
+	int luaopen_network(lua_State* L);
+#endif
+
 namespace Rtt
 {
 
 #ifdef Rtt_EMSCRIPTEN_ENV
-	void LuaLibWebAudio_Initialize(lua_State *L);
+	void LuaLibWebAudio_Initialize(lua_State* L);
+#endif
+
+#ifdef Rtt_NXS_ENV
+	int luaload_nnTextField(lua_State* L);
+	int luaload_nnTextBox(lua_State* L);
+	int luaload_nnNativeAlert(lua_State* L);
 #endif
 
 // ----------------------------------------------------------------------------
@@ -594,7 +604,7 @@ LuaContext::InitializeLuaPath( lua_State* L, const MPlatform& platform )
 	lua_concat( L, 2 );
 	lua_setfield(L, luaPackageTableIndex, "path");
 	numPushed--;		// Setting the above field pops off the last string.
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV )
 	_putenv_s( LUA_PATH, lua_tostring( L, -1 ) );
 #else
 	Rtt_TRACE(( "LUA_PATH = %s\n", lua_tostring( L, -1 ) ));
@@ -608,11 +618,18 @@ LuaContext::InitializeLuaPath( lua_State* L, const MPlatform& platform )
 	//      "?.dll" .. ";" .. system.pathForFile( system.SystemResourceDirectory ) .. "/?.dll"
 	//
 	// NOTE: Assumes C modules reside in system resource directory
+#if defined(Rtt_NXS_ENV)
+	lua_pushfstring(L,
+		"%s" LUA_DIRSEP LUA_PATH_MARK "." Rtt_LUA_C_MODULE_FILE_EXTENSION LUA_PATHSEP,
+		absoluteBase.GetString());
+	++numPushed;
+#else
 	lua_pushfstring( L,
 		"." LUA_DIRSEP LUA_PATH_MARK "." Rtt_LUA_C_MODULE_FILE_EXTENSION
 		LUA_PATHSEP "%s" LUA_DIRSEP LUA_PATH_MARK "." Rtt_LUA_C_MODULE_FILE_EXTENSION LUA_PATHSEP,
 			absoluteBase.GetString() );
 	++numPushed;
+#endif
 
 #if defined( Rtt_MAC_ENV ) && ! defined( Rtt_AUTHORING_SIMULATOR )
 	const char *coronaCardsFrameworksDir = "../../Frameworks/CoronaCards.framework/Versions/A/Frameworks";
@@ -634,7 +651,7 @@ LuaContext::InitializeLuaPath( lua_State* L, const MPlatform& platform )
 	lua_concat( L, 2 );
 	lua_setfield( L, luaPackageTableIndex, "cpath" );
 	numPushed--;		// Setting the above field pops off the last string.
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined(Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV )
 	_putenv_s( LUA_CPATH, lua_tostring( L, -1 ) );
 #else
 	Rtt_TRACE(( "LUA_CPATH = %s\n", lua_tostring( L, -1 ) ));
@@ -787,6 +804,14 @@ LuaContext::InitializeLuaCore( lua_State* L )
 		{ "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 > },
 #endif
 
+#if defined(Rtt_NXS_ENV)
+		{ "network", luaopen_network },
+		{ "nnTextField", Lua::Open< luaload_nnTextField > },
+		{ "nnTextBox", Lua::Open< luaload_nnTextBox > },
+		{ "nnNativeAlert", Lua::Open< luaload_nnNativeAlert > },
+	
+#endif
+
 		{NULL, NULL}
 	};
 
@@ -888,14 +913,14 @@ LuaContext::DoCall( lua_State* L, int narg, int nresults )
 		errfunc = base;
 	}
 
-#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN)
+#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN) && !defined(Rtt_NXS_ENV)
 	signal(SIGINT, laction);
 #endif
 
 	// The actual call
 	int status = lua_pcall(L, narg, nresults, errfunc);
 
-#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN)
+#if (defined( Rtt_DEBUG ) || defined( Rtt_DEBUGGER )) && !defined(EMSCRIPTEN) && !defined(Rtt_NXS_ENV)
 	signal(SIGINT, SIG_DFL);
 #endif
 

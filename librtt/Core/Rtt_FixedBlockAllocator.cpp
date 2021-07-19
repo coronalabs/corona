@@ -63,7 +63,7 @@ Alloc( )
 		result = memalign( sysconf( _SC_PAGESIZE ), kSize );
 	#elif defined( Rtt_WEBOS_ENV ) || (defined( Rtt_EMSCRIPTEN_ENV ) && !defined(WIN32))
 		result = valloc( kSize );
-	#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NINTENDO_ENV )
+	#elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NXS_ENV )
 		result = malloc( kSize );
 		// TODO: Need to return page-aligned memory block or else we'll crash
 		Rtt_ASSERT_NOT_IMPLEMENTED();

@@ -29,6 +29,12 @@ if EXIST "%WORKSPACE%\..\webtemplate.zip" (
     echo WARNING! webtemplate is not found!
 )
 
+if EXIST "%WORKSPACE%\..\nxtemplate" (
+    echo Copying nxtemplate
+    copy "%WORKSPACE%\..\nxtemplate" "%WORKSPACE%\platform\resources" /Y
+) else (
+    echo WARNING! nxtemplate is not found!
+)
 
 if EXIST "%WORKSPACE%\..\linuxtemplate.tar.gz" (
     echo Copying linuxtemplate.tar.gz

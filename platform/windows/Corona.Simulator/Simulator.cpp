@@ -809,6 +809,11 @@ bool CSimulatorApp::ShouldShowLinuxBuildDlg()
 	bool show = GetProfileInt(REGISTRY_SECTION, REGISTRY_SHOWLINUXBUILD, REGISTRY_SHOWLINUXBUILD_DEFAULT) ? true : false;
 	return show;
 }
+bool CSimulatorApp::ShouldShowNXBuildDlg()
+{
+	bool show = GetProfileInt(REGISTRY_SECTION, REGISTRY_SHOWNXSBUILD, REGISTRY_SHOWNXSBUILD_DEFAULT) ? true : false;
+	return show;
+}
 
 // CheckPathExists - return true if the file/directory exists.
 // Make sure paths don't have trailing backslashes

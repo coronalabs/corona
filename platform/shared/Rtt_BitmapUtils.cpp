@@ -252,7 +252,7 @@ Uint32 getSurfacePixel(SDL_Surface *surface, int x, int y)
 
 uint8_t* bitmapUtil::loadBMP(const char* path, int& w, int& h, Rtt::PlatformBitmap::Format& format)
 {
-#ifndef Rtt_LINUX_ENV
+#if !defined(Rtt_LINUX_ENV) && !defined(Rtt_NXS_ENV)
 	SDL_Surface* img = SDL_LoadBMP(path);
 	if (img)
 	{

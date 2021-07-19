@@ -137,7 +137,7 @@ SimpleThread* SimpleThread_CreateThread(int (*user_function)(void*), void* user_
 
 size_t SimpleThread_GetCurrentThreadID()
 {
-#ifdef NINTENDO_LIB
+#ifdef NXS_LIB
 	return (size_t)pthread_self().p;
 #else
 	return (size_t)pthread_self();

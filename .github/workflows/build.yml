@@ -407,6 +407,10 @@ jobs:
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip platform/resources/
         shell: bash
+      - name: Get NX Template
+        shell: bash
+        run: |
+          curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/nxtemplate > platform/resources/nxtemplate
       - name: Get Linux templates
         uses: actions/download-artifact@v1
         with:

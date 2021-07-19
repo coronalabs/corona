@@ -39,7 +39,7 @@ Rtt_StringCompareNoCase( const char * s1, const char * s2 )
 			return -1;
 		return 1;
 	}
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV )
 	return _stricmp( s1, s2 );
 #else
 	return strcasecmp( s1, s2 );

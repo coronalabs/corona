@@ -114,7 +114,7 @@ PlatformSurface::SetDelegate( PlatformSurfaceDelegate* delegate )
 // ----------------------------------------------------------------------------
 
 // TODO: Replace platform ifdef's with a feature ifdef: Rtt_OFFSCREEN_SURFACE in Rtt_Config.h
-#if ! defined( Rtt_ANDROID_ENV ) && !defined( Rtt_WIN_ENV ) && !defined( Rtt_EMSCRIPTEN_ENV ) && !defined( Rtt_NINTENDO_ENV )
+#if ! defined( Rtt_ANDROID_ENV ) && !defined( Rtt_WIN_ENV ) && !defined( Rtt_EMSCRIPTEN_ENV ) && !defined( Rtt_NXS_ENV )
 
 OffscreenGPUSurface::OffscreenGPUSurface( const PlatformSurface& parent )
 :	fWidth( parent.Width() ),
