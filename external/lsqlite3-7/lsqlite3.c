@@ -38,6 +38,22 @@
 	#include "emscripten/emscripten.h"	
 #endif
 
+#if defined(Rtt_NXS_ENV) 
+  extern const char* sSaveMountPoint;
+  extern const char* sTmpMountPoint;
+
+# define SQLITE_NLIB_DATA_DIRECTORY_TYPE (1)
+# define SQLITE_NLIB_TEMP_DIRECTORY_TYPE (2)
+  int sqlite3_nlib_set_directory(int type, const char* dir);
+
+  typedef struct sqlite3_context sqlite3_context;
+  int sqlite3_aggregate_count(sqlite3_context*) { return 0; }
+
+  typedef struct sqlite3 sqlite3;
+  void* sqlite3_trace(sqlite3* ctx, void(*xTrace)(void*, const char*), void* db) { sqlite3_trace_v2(ctx, xTrace, db, NULL); }
+
+#endif
+
 #if LUA_VERSION_NUM > 501
 /*
 ** Lua 5.2
@@ -1286,7 +1302,7 @@ static int db_trace(lua_State *L) {
         db->trace_udata = LUA_NOREF;
 
         /* clear trace handler */
-        sqlite3_trace(db->db, NULL, NULL);
+	    	sqlite3_trace(db->db, NULL, NULL);
     }
     else {
         luaL_checktype(L, 2, LUA_TFUNCTION);
@@ -2092,10 +2108,31 @@ static int lsqlite_temp_directory(lua_State *L) {
 static int lsqlite_do_open(lua_State *L, const char *filename, int flags) {
     sdb *db = newdb(L); /* create and leave in stack */
 
+#if defined(Rtt_NXS_ENV)
+    {
+      char dbdir[64];
+      char tmpdir[64];
+      snprintf(dbdir, sizeof(dbdir),  "%s:/", sSaveMountPoint);
+      sqlite3_nlib_set_directory(SQLITE_NLIB_DATA_DIRECTORY_TYPE, dbdir);
+      snprintf(tmpdir, sizeof(tmpdir), "%s:/", sTmpMountPoint);
+      sqlite3_nlib_set_directory(SQLITE_NLIB_TEMP_DIRECTORY_TYPE, tmpdir);
+
+      // db can be created only in save:/ folder
+
+      if (strncmp(filename, dbdir, strlen(dbdir)) == 0)
+      {
+        if (SQLITE3_OPEN(filename + strlen(dbdir), &db->db, flags) == SQLITE_OK) {
+          /* database handle already in the stack - return it */
+          return 1;
+        }
+      }
+    }
+#else
     if (SQLITE3_OPEN(filename, &db->db, flags) == SQLITE_OK) {
         /* database handle already in the stack - return it */
         return 1;
     }
+#endif
 
     /* failed to open database */
     lua_pushnil(L);                             /* push nil */

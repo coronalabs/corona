@@ -362,6 +362,7 @@
 #define Rtt_ALLOCATOR_SYSTEM
 #define Rtt_LUA_LFS
 #define Rtt_NETWORK
+#define Rtt_SQLITE
 
 #include <sys/stat.h>
 #include "Rtt_FileSystem.h"
