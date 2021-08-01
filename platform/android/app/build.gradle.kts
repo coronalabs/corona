@@ -184,11 +184,10 @@ android {
     lintOptions {
         isCheckReleaseBuilds = false
     }
-    buildToolsVersion("29.0.3")
-    compileSdkVersion(29)
+    compileSdkVersion(30)
     defaultConfig {
         applicationId = coronaAppPackage
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         minSdkVersion(extra["minSdkVersion"] as Int)
         versionCode = coronaVersionCode
         versionName = coronaVersionName
