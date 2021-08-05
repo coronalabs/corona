@@ -115,14 +115,20 @@ xcodebuild -project "${PROJECT_FILE_PATH}" -target "${TARGET_XCODE}" -configurat
 
 
 # STEP 6. Make xcframework
+DSYM_PATH="${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework.dSYM"
+if [ -d "$DSYM_PATH" ]
+then
+	DSYM_COMMAND=(-debug-symbols "$DSYM_PATH")
+fi
 rm -rf "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.xcframework"
 xcodebuild -create-xcframework -framework "${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework" \
 							   -framework "${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework" \
+							   "${DSYM_COMMAND[@]}" \
 							   -output "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.xcframework"
 
 
 # STEP 7. Convenience step to open the project's directory in Finder
 if [ -z "${SUPPRESS_GUI}" ]
 then
-	open "${OUTPUT_DIR}"
+	open "${UNIVERSAL_OUTPUTFOLDER}"
 fi
