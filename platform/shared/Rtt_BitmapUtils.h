@@ -19,7 +19,7 @@ namespace bitmapUtil
 	uint8_t* loadJPG(FILE* infile, int& w, int& h);
 	uint8_t* loadBMP(const char* path, int& w, int& h, Rtt::PlatformBitmap::Format& format);
 	bool savePNG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format);
-	bool saveJPG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format);
+	bool saveJPG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format, float jpegQuality);
 };
 
 #endif		// _Rtt_BitmapUtils_H

@@ -9,6 +9,7 @@
 
 #include "Core/Rtt_Types.h"
 #include "Rtt_BitmapUtils.h"
+#include "Rtt_Math.h"
 #include <png.h>
 #include <jpeglib.h>
 #include <cstring>		// for memcpy
@@ -109,7 +110,7 @@ namespace bitmapUtil
 	}
 #endif
 
-	bool	saveJPG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format)
+	bool	saveJPG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format, float jpegQuality)
 	{
 		FILE* outfile = fopen(filename, "wb");
 		if (!outfile)
@@ -134,7 +135,7 @@ namespace bitmapUtil
 		jpeg_stdio_dest(&cinfo, outfile);
 		cinfo.image_width = width;
 		cinfo.image_height = height;
-		jpeg_set_quality(&cinfo, 100, TRUE);
+		jpeg_set_quality(&cinfo, Rtt::Clamp((int)(jpegQuality * 100), 1, 100), TRUE);
 
 		row_stride = width * 3; // JSAMPLEs per row in image_buffer 
 		cinfo.input_components = 3;       // # of color components per pixel 
@@ -143,32 +144,50 @@ namespace bitmapUtil
 		jpeg_set_defaults(&cinfo);
 		jpeg_start_compress(&cinfo, TRUE);
 
-		uint8_t* rgb = NULL;
+		std::unique_ptr<uint8_t> rgb;
 		switch (format)
 		{
 		case Rtt::PlatformBitmap::Format::kRGB:
 			break;
 
 		case Rtt::PlatformBitmap::Format::kRGBA:
+		{
+			// convert to RGB
+			rgb.reset((uint8_t*)malloc(width * height * 3));
+			uint8_t* src = data;
+			uint8_t* dst = rgb.get();
+			for (int i = 0; i < width * height; i++)
+			{
+				*dst++ = *src++;
+				*dst++ = *src++;
+				*dst++ = *src++;
+				src++;
+			}
+			data = rgb.get();
+			break;
+		}
 		case Rtt::PlatformBitmap::Format::kABGR:
 		case Rtt::PlatformBitmap::Format::kARGB:
 			Rtt_ASSERT(0); //todo
 			break;
 
 		case Rtt::PlatformBitmap::Format::kBGRA:
-			rgb = (uint8_t*)malloc(width * height * 3);
+		{
+			// convert to RGB
+			rgb.reset((uint8_t*)malloc(width * height * 3));
 			uint8_t* src = data;
-			uint8_t* dst = rgb;
+			uint8_t* dst = rgb.get();
 			for (int i = 0; i < width * height; i++)
 			{
-				dst[0] = src[0];
-				dst[1] = src[1];
-				dst[2] = src[2];
-				dst += 3;
-				src += 4;
+				// hmmmm, actually src contains ARGB format!
+				src++;
+				*dst++ = *src++;
+				*dst++ = *src++;
+				*dst++ = *src++;
 			}
-			data = rgb;
+			data = rgb.get();
 			break;
+		}
 		}
 
 		while (cinfo.next_scanline < cinfo.image_height)
@@ -180,8 +199,6 @@ namespace bitmapUtil
 		jpeg_finish_compress(&cinfo);
 		fclose(outfile);
 		jpeg_destroy_compress(&cinfo);
-
-		free(rgb);
 		return true;
 	}
 
@@ -220,7 +237,7 @@ namespace bitmapUtil
 					}
 					dst += 4;
 				}
-}
+			}
 			SDL_UnlockSurface(img);
 			SDL_FreeSurface(img);
 
