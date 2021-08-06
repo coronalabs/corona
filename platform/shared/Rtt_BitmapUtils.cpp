@@ -208,7 +208,7 @@ namespace bitmapUtil
 
 	uint8_t* loadBMP(const char* path, int& w, int& h, Rtt::PlatformBitmap::Format& format)
 	{
-#if !defined(Rtt_LINUX_ENV) && !defined(Rtt_NXS_ENV)
+#if !defined(Rtt_LINUX_ENV)
 		SDL_Surface* img = SDL_LoadBMP(path);
 		if (img)
 		{

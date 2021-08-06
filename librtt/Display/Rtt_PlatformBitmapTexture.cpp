@@ -77,8 +77,8 @@ PlatformBitmapTexture::ConvertFormat( PlatformBitmap::Format format )
 			// the gray value across all 4 channels. Compare:
 			// * Luminance: (a,a,a,a)
 			// * Alpha:     (0,0,0,a)
-#if defined(Rtt_NXS_ENV) || defined(Rtt_LINUX_ENV)
-			// NN SDK does not support Luminance & Alpha.. weird
+#if defined(Rtt_LINUX_ENV)
+			// not supported Luminance & Alpha
 			result = Texture::kRGBA;
 #else
 			result = Texture::kLuminance;
