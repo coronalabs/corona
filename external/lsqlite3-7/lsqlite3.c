@@ -47,7 +47,7 @@
   int sqlite3_nlib_set_directory(int type, const char* dir);
 
   typedef struct sqlite3_context sqlite3_context;
-  int sqlite3_aggregate_count(sqlite3_context*) { return 0; }
+  int sqlite3_aggregate_count(sqlite3_context* ctx) { return 0; }
 
   typedef struct sqlite3 sqlite3;
   void* sqlite3_trace(sqlite3* ctx, void(*xTrace)(void*, const char*), void* db) { sqlite3_trace_v2(ctx, xTrace, db, NULL); }
