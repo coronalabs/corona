@@ -743,8 +743,8 @@ public class Controller {
 			context.startActivity(intent);
 			hasSucceeded = true;
 		}
-		catch (Exception ex) {
-			ex.printStackTrace();
+		catch (Exception ignore) {
+			// Nothing to do here, intent can't be handled.
 		}
 		return hasSucceeded;
 	}
