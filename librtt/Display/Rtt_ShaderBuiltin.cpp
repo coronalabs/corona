@@ -585,6 +585,7 @@ static const char kCompositeSoftLightString[] = "softLight";
 static const char kCompositeSubtractString[] = "subtract";
 static const char kCompositeVividLightString[] = "vividLight";
 static const char kCompositeYUV420fString[] = "yuv420f";
+static const char kCompositeYUV420VString[] = "yuv420v";
 /*
 			kCompositeColor,
 			kCompositeGlow,
@@ -623,7 +624,8 @@ int luaload_kernel_composite_screen_gl( lua_State *L );
 int luaload_kernel_composite_softLight_gl( lua_State *L );
 int luaload_kernel_composite_subtract_gl( lua_State *L );
 int luaload_kernel_composite_vividLight_gl( lua_State *L );
-int luaload_kernel_composite_yuv420f_gl( lua_State *L );
+int luaload_kernel_composite_yuv420f_gl(lua_State* L);
+int luaload_kernel_composite_yuv420v_gl(lua_State* L);
 
 static const luaL_Reg kBuiltInCompositeFuncs[] =
 {
@@ -656,6 +658,7 @@ static const luaL_Reg kBuiltInCompositeFuncs[] =
 	{ kCompositeSubtractString,						Corona::Lua::Open< luaload_kernel_composite_subtract_gl > },
 	{ kCompositeVividLightString,					Corona::Lua::Open< luaload_kernel_composite_vividLight_gl > },
 	{ kCompositeYUV420fString,						Corona::Lua::Open< luaload_kernel_composite_yuv420f_gl > },
+	{ kCompositeYUV420VString,						Corona::Lua::Open< luaload_kernel_composite_yuv420v_gl > },
 
 	{ NULL, NULL }
 };
