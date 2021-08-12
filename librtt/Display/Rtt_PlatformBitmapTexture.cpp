@@ -84,6 +84,9 @@ PlatformBitmapTexture::ConvertFormat( PlatformBitmap::Format format )
 			result = Texture::kLuminance;
 #endif
 			break;
+		case PlatformBitmap::kLUMINANCE_ALPHA:
+			result = Texture::kLuminanceAlpha;
+			break;
 		default:
 			Rtt_ASSERT_NOT_IMPLEMENTED();
 			break;

@@ -26,7 +26,11 @@ P_COLOR vec4 FragmentKernel( P_UV vec2 texCoord )
     P_COLOR vec3 yuv;
     
     yuv.x = texture2D(u_FillSampler0, texCoord).r;
-    yuv.yz = texture2D(u_FillSampler1, texCoord).rg - vec2(0.5, 0.5);
+
+    // Each element is an luminance/alpha double. 
+    // The GL converts each component to floating point, 
+    // clamps to the range [0,1], and assembles them into an RGBA element by placing the luminance value in the red, green and blue channels.
+    yuv.yz = texture2D(u_FillSampler1, texCoord).ra - vec2(0.5, 0.5);
     
     P_COLOR vec3 rgb = kColorMap * yuv;
     
