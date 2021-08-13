@@ -12,7 +12,6 @@ local params = ...
 
 -- Variables that cross the boundaries between different components handled by shell.lua
 local onShellComplete = params.onShellComplete
-local handleCheckingForExpansionFiles
 local onShellCompleteCalled = false
 
 -- Arrange to call onShellComplete() only once
@@ -100,6 +99,32 @@ local function isModuleAvailable(name)
 	end
 end
 
+
+
+local function checkLicense()
+	-- we aren't targeting the google play store then assume we don't need expansion files 
+	if system.getInfo("targetAppStore") ~= "google" then
+		callOnShellComplete(nil)
+		return
+	end
+
+	local licensing = require("licensing")
+	local initSuccess = false
+	pcall( function() initSuccess = licensing.init("google") end )
+	if not initSuccess then
+		callOnShellComplete(nil)
+		return
+	end
+
+	licensing.verify(function(event)
+		if event.isError then
+			native.showAlert("Error", event.response, {"Ok"})
+			return
+		end
+	end, true)
+
+end
+
 local usingGooglePlayServices = isModuleAvailable("shared.google.play.services.base")
 if usingGooglePlayServices then
 
@@ -109,7 +134,7 @@ if usingGooglePlayServices then
 		gps.clearAvailabilityListener()
 
 		-- Now handle checking for expansion files
-		handleCheckingForExpansionFiles()
+		checkLicense()
 	end
 
 	-- Set a listener to fire when it does become available.
@@ -118,23 +143,6 @@ if usingGooglePlayServices then
 	-- Checks if Google Play Services is available and attempts to make it available if it's not.
 	gps.handleGooglePlayServicesAvailability()
 
+else
+	checkLicense()
 end
-
----------------------------------------------------------------------------------------------------
--- This part is used to check for expansion files
----------------------------------------------------------------------------------------------------
-
-handleCheckingForExpansionFiles = function()
-	callOnShellComplete(nil)
-end
-
-
-if not usingGooglePlayServices then
-	-- Move on to Expansion files if needed.
-	handleCheckingForExpansionFiles()
-end
-
--- following line is commented out because callOnShellComplete should be
--- invoked when expansion file is done expanding
--- callOnShellComplete(nil)
-
