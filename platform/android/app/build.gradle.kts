@@ -875,9 +875,11 @@ fun copyWithAppFilename(dest: String, appName: String?) {
         android.applicationVariants.matching {
             it.name.equals("release", true)
         }.all {
-            copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
-                include("*.apk")
-                exclude("*unsigned*")
+            if(!isExpansionFileRequired) {
+                copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
+                    include("*.apk")
+                    exclude("*unsigned*")
+                }
             }
             copyTask.from("$buildDir/outputs/bundle/$name") {
                 include("*.aab")
@@ -910,10 +912,6 @@ tasks.create("buildCoronaApp") {
                 }
             }
             delete("$it/$coronaExpansionFileName")
-            copy {
-                from("$buildDir/outputs/$coronaExpansionFileName")
-                into(it)
-            }
         }
     }
 }
