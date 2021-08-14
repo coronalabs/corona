@@ -1,0 +1,2 @@
+rootProject.name = "Google Licensing"
+include("plugin")

@@ -184,11 +184,10 @@ android {
     lintOptions {
         isCheckReleaseBuilds = false
     }
-    buildToolsVersion("29.0.3")
-    compileSdkVersion(29)
+    compileSdkVersion(30)
     defaultConfig {
         applicationId = coronaAppPackage
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         minSdkVersion(extra["minSdkVersion"] as Int)
         versionCode = coronaVersionCode
         versionName = coronaVersionName
@@ -876,9 +875,11 @@ fun copyWithAppFilename(dest: String, appName: String?) {
         android.applicationVariants.matching {
             it.name.equals("release", true)
         }.all {
-            copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
-                include("*.apk")
-                exclude("*unsigned*")
+            if(!isExpansionFileRequired) {
+                copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
+                    include("*.apk")
+                    exclude("*unsigned*")
+                }
             }
             copyTask.from("$buildDir/outputs/bundle/$name") {
                 include("*.aab")
@@ -911,10 +912,6 @@ tasks.create("buildCoronaApp") {
                 }
             }
             delete("$it/$coronaExpansionFileName")
-            copy {
-                from("$buildDir/outputs/$coronaExpansionFileName")
-                into(it)
-            }
         }
     }
 }
