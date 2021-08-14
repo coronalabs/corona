@@ -658,7 +658,9 @@ static const luaL_Reg kBuiltInCompositeFuncs[] =
 	{ kCompositeSubtractString,						Corona::Lua::Open< luaload_kernel_composite_subtract_gl > },
 	{ kCompositeVividLightString,					Corona::Lua::Open< luaload_kernel_composite_vividLight_gl > },
 	{ kCompositeYUV420fString,						Corona::Lua::Open< luaload_kernel_composite_yuv420f_gl > },
+#if defined( Rtt_NXS_ENV )
 	{ kCompositeYUV420VString,						Corona::Lua::Open< luaload_kernel_composite_yuv420v_gl > },
+#endif
 
 	{ NULL, NULL }
 };
