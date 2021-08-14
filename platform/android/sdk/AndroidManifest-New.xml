@@ -60,4 +60,10 @@
         <receiver android:name="com.ansca.corona.notifications.AlarmManagerBroadcastReceiver" />
         <receiver android:name="com.ansca.corona.notifications.StatusBarBroadcastReceiver" />
     </application>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
 </manifest> 
