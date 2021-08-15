@@ -5468,7 +5468,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"$PROJECT_DIR\"/../../bin/xcode/universal-framework.sh \"appletv\"";
+			shellScript = "\"$PROJECT_DIR\"/../../bin/xcode/universal-framework.sh \"appletv\"\n";
 		};
 		F5C5E0DF251E112100217C19 /* Script: touch CoronaCards.framework */ = {
 			isa = PBXShellScriptBuildPhase;
