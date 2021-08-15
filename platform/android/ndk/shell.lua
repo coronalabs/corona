@@ -121,6 +121,7 @@ local function checkLicense()
 			native.showAlert("Error", event.response, {"Ok"})
 			return
 		end
+		callOnShellComplete(nil)
 	end, true)
 
 end
