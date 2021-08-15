@@ -365,6 +365,7 @@
 #define Rtt_SQLITE
 
 #include <sys/stat.h>
+#include "Rtt_NX_Allocator.h"
 #include "Rtt_FileSystem.h"
 
 #endif
