@@ -37,6 +37,9 @@ class TesselatorPolygon : public TesselatorShape
 		virtual void GetSelfBounds( Rect& rect );
 		virtual Geometry::PrimitiveType GetFillPrimitive() const;
 
+		virtual U32 FillVertexCount() const override;
+		virtual U32 StrokeVertexCount() const override;
+
 	public:
 		// Call when the contour has changed
 		void Invalidate();
@@ -54,6 +57,7 @@ class TesselatorPolygon : public TesselatorShape
 		Vertex2 fCenter;
 		bool fIsFillValid;
 		bool fIsBadPolygon;
+		mutable S32 fFillCount;
 };
 
 // ----------------------------------------------------------------------------

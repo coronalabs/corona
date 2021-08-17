@@ -60,7 +60,7 @@ class String;
 typedef void *NativeAlertRef;
 typedef std::map<std::string, Real> FontMetricsMap;
 
-#if defined( Rtt_WIN_ENV ) || defined(Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV ) || defined(Rtt_NXS_ENV )
 #undef CreateFont  // <windows.h> defines this
 #endif
 

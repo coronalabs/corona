@@ -35,7 +35,7 @@
 
 // #include <string.h>
 
-#if defined(Rtt_WIN_ENV) || defined( Rtt_NINTENDO_ENV )
+#if defined(Rtt_WIN_ENV)
 #	include <crtdbg.h> // _CrtIsValidHeapPointer().
 #endif
 
@@ -50,7 +50,7 @@ namespace Rtt
 	
 #ifdef Rtt_USE_ALMIXER
 
-#if defined(Rtt_WIN_ENV ) || defined(Rtt_ANDROID_ENV) || defined(Rtt_NINTENDO_ENV ) || defined(Rtt_LINUX_ENV )
+#if defined(Rtt_WIN_ENV ) || defined(Rtt_ANDROID_ENV) || defined(Rtt_NXS_ENV ) || defined(Rtt_LINUX_ENV )
 #include <malloc.h>
 #else
 	#ifndef EMSCRIPTEN
@@ -61,14 +61,14 @@ namespace Rtt
 static bool
 isValidSoundData(lua_State *L, void *sound_data, const char *caller, size_t expectedSize = 0)
 {
-#if !defined(Rtt_ANDROID_ENV) && !defined(Rtt_LINUX_ENV)	// Can't do this on Android
+#if !defined(Rtt_ANDROID_ENV) && !defined(Rtt_LINUX_ENV) && !defined(Rtt_NXS_ENV)	// Can't do this on Android
 
 	// Check to see that we have a valid pointer
 	size_t allocSize = 0;
 	
 	if (sound_data != NULL)
 	{
-#if defined(Rtt_WIN_ENV) || defined( Rtt_NINTENDO_ENV )
+#if defined(Rtt_WIN_ENV)
 		allocSize = _CrtIsValidHeapPointer(sound_data);
 #elif defined(Rtt_APPLE_ENV)
 		allocSize = malloc_size(sound_data);

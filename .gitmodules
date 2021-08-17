@@ -1,69 +1,96 @@
 [submodule "external/Box2D"]
 	path = external/Box2D
 	url = https://github.com/coronalabs/submodule-box2d.git
+	branch = master
 [submodule "external/CryptoPP"]
 	path = external/CryptoPP
 	url = https://github.com/coronalabs/submodule-CryptoPP.git
+	branch = master
 [submodule "external/freetype-2.9"]
 	path = external/freetype-2.9
 	url = https://github.com/coronalabs/submodule-freetype.git
+	branch = master
 [submodule "external/live-libs"]
 	path = external/live-libs
 	url = https://github.com/coronalabs/submodule-live-libs.git
+	branch = master
 [submodule "external/luafilesystem"]
 	path = external/luafilesystem
 	url = https://github.com/coronalabs/submodule-lfs.git
+	branch = master
 [submodule "external/luasocket"]
 	path = external/luasocket
 	url = https://github.com/coronalabs/submodule-luasocket.git
+	branch = master
 [submodule "external/mojoAL"]
 	path = external/mojoAL
 	url = https://github.com/coronalabs/submodule-mojoAL.git
+	branch = master
 [submodule "external/openal-soft_apportable"]
 	path = external/openal-soft_apportable
 	url = https://github.com/coronalabs/submodule-openal-soft_apportable.git
+	branch = master
 [submodule "platform/emscripten"]
 	path = platform/emscripten
 	url = https://github.com/coronalabs/submodule-platform-emscripten.git
+	branch = master
 [submodule "platform/linux"]
 	path = platform/linux
 	url = https://github.com/coronalabs/submodule-platform-linux.git
+	branch = master
 [submodule "plugins/build"]
 	path = plugins/build
 	url = https://github.com/coronalabs/submodule-plugins-build.git
+	branch = master
 [submodule "plugins/build-core"]
 	path = plugins/build-core
 	url = https://github.com/coronalabs/submodule-plugins-build-core.git
+	branch = master
 [submodule "plugins/gameNetwork"]
 	path = plugins/gameNetwork
 	url = https://github.com/coronalabs/submodule-plugins-gameNetwork.git
+	branch = master
 [submodule "plugins/licensing"]
 	path = plugins/licensing
 	url = https://github.com/coronalabs/submodule-plugins-licensing
+	branch = master
 [submodule "plugins/network"]
 	path = plugins/network
 	url = https://github.com/coronalabs/submodule-plugins-network
+	branch = master
 [submodule "simulator-extensions/welcomescreen"]
 	path = simulator-extensions/welcomescreen
 	url = https://github.com/coronalabs/submodule-welcomescreen.git
+	branch = master
 [submodule "subrepos/enterprise"]
 	path = subrepos/enterprise
 	url = https://github.com/coronalabs/submodule-native.git
+	branch = master
 [submodule "subrepos/easing"]
 	path = subrepos/easing
 	url = https://github.com/coronalabs/framework-easing.git
+	branch = master
 [submodule "subrepos/transition"]
 	path = subrepos/transition
 	url = https://github.com/coronalabs/framework-transition.git
+	branch = master
 [submodule "subrepos/widget"]
 	path = subrepos/widget
 	url = https://github.com/coronalabs/framework-widget.git
+	branch = master
 [submodule "subrepos/timer"]
 	path = subrepos/timer
 	url = https://github.com/coronalabs/framework-timer.git
+	branch = master
 [submodule "subrepos/composer"]
 	path = subrepos/composer
 	url = https://github.com/coronalabs/framework-composer.git
+	branch = master
 [submodule "external/openal-soft"]
 	path = external/openal-soft
 	url = https://github.com/coronalabs/openal-soft.git
+	branch = master
+[submodule "external/MetalANGLE"]
+	path = external/MetalANGLE
+	url = https://github.com/coronalabs/metalangle.git
+	branch = master

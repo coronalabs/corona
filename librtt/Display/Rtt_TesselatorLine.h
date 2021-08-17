@@ -35,7 +35,14 @@ class TesselatorLine : public Tesselator
 		Mode;
 
 	public:
-		TesselatorLine( ArrayVertex2& controlPoints, Mode mode );
+		TesselatorLine( const ArrayVertex2& controlPoints, Mode mode );
+
+	public:
+		virtual U32 StrokeVertexCount() const override;
+
+	public:
+		static U32 VertexCountFromPoints( const ArrayVertex2& vertices, bool isClosed );
+		static U32 VertexCountFromPoints( U32 count, bool isClosed );
 
 	public:
 		virtual Tesselator::eType GetType(){ return Tesselator::kType_Line; }
@@ -50,7 +57,7 @@ class TesselatorLine : public Tesselator
 		virtual void GetSelfBounds( Rect& rect );
 
 	private:
-		ArrayVertex2& fControlPoints;
+		const ArrayVertex2& fControlPoints;
 		U8 fMode;
 };
 

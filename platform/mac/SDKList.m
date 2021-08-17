@@ -140,6 +140,7 @@ NSString *const kSDKItemXcodeVersion = @"xcodeVersion";
 NSString *const kSDKItemCoronaVersion = @"coronaVersion";
 NSString *const kIosBeta = @"beta";
 NSString *const kIosFailMessage = @"failMessage";
+NSString *const kCustomTemplate = @"customTemplate";
 
 @interface SDKItem ()
 
@@ -154,6 +155,7 @@ NSString *const kIosFailMessage = @"failMessage";
 @synthesize coronaVersion = _coronaVersion;
 @synthesize beta = _beta;
 @synthesize failMessage = _failMessage;
+@synthesize customTemplate = _customTemplate;
 
 + (instancetype)modelObjectWithDictionary:(NSDictionary *)dict
 {
@@ -173,6 +175,7 @@ NSString *const kIosFailMessage = @"failMessage";
 		self.coronaVersion = [[self objectOrNilForKey:kSDKItemCoronaVersion fromDictionary:dict] doubleValue];
 		self.beta = [[self objectOrNilForKey:kIosBeta fromDictionary:dict] boolValue];
 		self.failMessage = [self objectOrNilForKey:kIosFailMessage fromDictionary:dict];
+		self.customTemplate = [self objectOrNilForKey:kCustomTemplate fromDictionary:dict];
 	}
 
 	return self;
@@ -187,6 +190,7 @@ NSString *const kIosFailMessage = @"failMessage";
 	[mutableDict setValue:[NSNumber numberWithDouble:self.coronaVersion] forKey:kSDKItemCoronaVersion];
     [mutableDict setValue:[NSNumber numberWithBool:self.beta] forKey:kIosBeta];
 	[mutableDict setValue:self.failMessage forKey:kIosFailMessage];
+	[mutableDict setValue:self.customTemplate forKey:kCustomTemplate];
 
 	return [NSDictionary dictionaryWithDictionary:mutableDict];
 }
@@ -215,6 +219,7 @@ NSString *const kIosFailMessage = @"failMessage";
 	self.coronaVersion = [aDecoder decodeDoubleForKey:kSDKItemCoronaVersion];
 	self.beta = [aDecoder decodeBoolForKey:kIosBeta];
 	self.failMessage = [aDecoder decodeObjectForKey:kIosFailMessage];
+	self.customTemplate = [aDecoder decodeObjectForKey:kCustomTemplate];
 
 	return self;
 }
@@ -227,6 +232,7 @@ NSString *const kIosFailMessage = @"failMessage";
     [aCoder encodeDouble:_coronaVersion forKey:kSDKItemCoronaVersion];
 	[aCoder encodeBool:_beta forKey:kIosBeta];
 	[aCoder encodeObject:_failMessage forKey:kIosFailMessage];
+	[aCoder encodeObject:_customTemplate forKey:kCustomTemplate];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -241,6 +247,7 @@ NSString *const kIosFailMessage = @"failMessage";
         copy.coronaVersion = self.coronaVersion;
 		copy.beta = self.beta;
 		copy.failMessage = [self.failMessage copyWithZone:zone];
+		copy.customTemplate = [self.customTemplate copyWithZone:zone];
     }
     
     return copy;
@@ -252,6 +259,7 @@ NSString *const kIosFailMessage = @"failMessage";
     [_label release];
     [_xcodeVersion release];
 	[_failMessage release];
+	[_customTemplate release];
     [super dealloc];
 }
 

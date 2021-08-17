@@ -203,7 +203,7 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 	}
 
 	// No override in effect. Do the normal thing.
-	toolpath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ios_sendapp.sh"];
+	toolpath = [[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"ios_sendapp.sh"];
 
 	if ( [[NSFileManager defaultManager] fileExistsAtPath:toolpath] == NO )
 	{
@@ -224,7 +224,7 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 		return toolpath;
 	}
 
-	toolpath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ios_syslog.sh"];
+	toolpath = [[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"ios_syslog.sh"];
 
 	if ( [[NSFileManager defaultManager] fileExistsAtPath:toolpath] == NO )
 	{
@@ -246,7 +246,7 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 	}
 
 	// No override in effect. Do the normal thing.
-	toolpath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"xcodesim_sendapp.sh"];
+	toolpath = [[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"xcodesim_sendapp.sh"];
 
 	if ( [[NSFileManager defaultManager] fileExistsAtPath:toolpath] == NO )
 	{
@@ -267,7 +267,7 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 		return toolpath;
 	}
 
-	toolpath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"xcodesim_syslog.sh"];
+	toolpath = [[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"xcodesim_syslog.sh"];
 
 	if ( [[NSFileManager defaultManager] fileExistsAtPath:toolpath] == NO )
 	{
@@ -288,7 +288,7 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 		return toolpath;
 	}
 
-	toolpath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"android_sendapp.sh"];
+	toolpath = [[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"android_sendapp.sh"];
 
 	if ( [[NSFileManager defaultManager] fileExistsAtPath:toolpath] == NO )
 	{
@@ -309,7 +309,7 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 		return toolpath;
 	}
 
-	toolpath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"android_syslog.sh"];
+	toolpath = [[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"android_syslog.sh"];
 
 	if ( [[NSFileManager defaultManager] fileExistsAtPath:toolpath] == NO )
 	{
@@ -342,6 +342,27 @@ static const NSString* kXcodeToolHelperUserDefaultsPrefix = @"XcodeOverrideTool_
 {
     return [[self launchTaskAndReturnOutput:@"/bin/sh" arguments:@[@"-c", @"/usr/bin/xcodebuild -version | sed -n '1s/Xcode //'p"] printWarning:NO] doubleValue];
 }
+
++ (NSString*) pathForResources
+{
+	NSString* path;
+	NSString* bundleResources = [[NSBundle mainBundle] resourcePath];
+	path = [[bundleResources stringByAppendingPathComponent:@"/../../../../../../../Corona Simulator.app/Contents/Resources"] stringByStandardizingPath];
+	if([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+		return path;
+	}
+	path = [[bundleResources stringByAppendingPathComponent:@"/../../../Corona Simulator.app/Contents/Resources"] stringByStandardizingPath];
+	if([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+		return path;
+	}
+	return bundleResources;
+}
+
++ (NSString*) pathForCodesignFramework
+{
+	return [[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"codesign-framework.sh"];
+}
+
 
 //
 // Launch a command and capture its output and return it as a string

@@ -17,8 +17,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /** View for displaying web pages. */
-public class CoronaWebView extends WebView {
+public class CoronaWebView extends WebView  implements NativePropertyResponder {
 	/**
 	 * Class providing URL request source type IDs matching Corona's C++ UrlRequestEvent::Type enum.
 	 * These types indicate where the URL request came from such as via a tapped link, reload, etc.
@@ -164,6 +167,9 @@ public class CoronaWebView extends WebView {
 		settings.setUseWideViewPort(true);
 		settings.setPluginState(android.webkit.WebSettings.PluginState.ON);
 		settings.setDomStorageEnabled(true);
+		if (android.os.Build.VERSION.SDK_INT >= 17) {
+			settings.setMediaPlaybackRequiresUserGesture(false);
+		}
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			try {
 				java.lang.reflect.Method setEnableSmoothTransitionMethod;
@@ -603,5 +609,26 @@ public class CoronaWebView extends WebView {
 				settings.setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 			}
 		}
+	}
+
+	@Override
+	public List<Object> getNativePropertyResponder() {
+		List<Object> out = new LinkedList<Object>();
+		out.add(this);
+		out.add(getSettings());
+		return out;
+	}
+
+	@Override
+	public Runnable getCustomPropertyAction(String key, boolean booleanValue, String stringValue, int integerValue, double doubleValue) {
+		if(key.equalsIgnoreCase("http.agent") && stringValue.equalsIgnoreCase("system")) {
+			return new Runnable() {
+				@Override
+				public void run() {
+					getSettings().setUserAgentString(System.getProperty("http.agent"));
+				}
+			};
+		}
+		return null;
 	}
 }

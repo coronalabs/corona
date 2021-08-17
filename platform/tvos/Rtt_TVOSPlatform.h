@@ -43,6 +43,7 @@ class TVOSPlatform : public IPhonePlatformBase
 
 	public:
 		virtual PlatformStoreProvider* GetStoreProvider( const ResourceHandle<lua_State>& handle ) const;
+		virtual PlatformVideoPlayer* GetVideoPlayer( const ResourceHandle<lua_State> & handle ) const;
 
 		virtual void SetActivityIndicator( bool visible ) const;
 
@@ -58,7 +59,7 @@ class TVOSPlatform : public IPhonePlatformBase
 
 	private:
 		TVOSDevice fDevice;
-//		mutable IPhoneVideoPlayer *fVideoPlayer;
+		mutable IPhoneVideoPlayer *fVideoPlayer;
 		mutable AppleStoreProvider *fInAppStoreProvider;
 		UIView *fActivityView;
 		id fPopupControllerDelegate;

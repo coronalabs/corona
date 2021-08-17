@@ -55,6 +55,7 @@ copy "..\..\android\resources\debug.keystore" "$(OutDir)Resources" /Y
 copy "..\..\resources\AndroidValidation.lua" "$(OutDir)Resources" /Y
 copy "..\..\resources\AppSettings.lua" "$(OutDir)Resources" /Y
 copy "..\..\resources\webtemplate.zip" "$(OutDir)Resources" /Y
+copy "..\..\resources\nxtemplate" "$(OutDir)Resources" /Y
 copy "..\..\resources\linuxtemplate.tar.gz" "$(OutDir)Resources" /Y
 copy "..\..\resources\raspbiantemplate.tar.gz" "$(OutDir)Resources" /Y
 copy "..\..\..\external\apache-ant-1.8.1\APACHE LICENSE" "$(OutDir)" /Y

@@ -151,6 +151,26 @@ TesselatorRoundedRect::GetSelfBounds( Rect& rect )
 	rect.Initialize( fHalfW, fHalfH );
 }
 
+U32
+TesselatorRoundedRect::FillVertexCount() const
+{
+	Real radius = Clamp( fRadius, 0.f, Min(fHalfW, fHalfH) );
+	if ( Rtt_RealIsZero( radius ) )
+	{
+		return 4U;
+	}
+	else
+	{ 
+		return 6U + AppendCircleQuadrantsCount( radius, 0 );
+	}
+}
+
+U32
+TesselatorRoundedRect::StrokeVertexCount() const
+{
+	return AppendCircleStrokeCount( fRadius, true );
+}
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

@@ -1,4 +1,4 @@
-#!/bin/bash -ex	
+#!/bin/bash -ex
 #----------------------------------------------------------------------------
 #
 # This file is part of the Corona game engine.
@@ -57,7 +57,7 @@ then
 		#	lua/$LUA_VM/plugin/foo/bar/baz.lua -> plugin.foo.bar.baz.lu
 		#	plugin/foo/bar/baz.lua -> plugin.foo.bar.baz.lu
 		find . -type f -name "*.lua" ! -name 'metadata.lua' | while read -r luaFile; do
-			newName=$(echo "$luaFile" | sed -e 's#\./##' -e "s#^lua/$LUA_VM/##" -e 's#\.lua$#\.lu#' | tr '/' '.')
+			newName=$(echo "$luaFile" | sed -e 's#\./##' -e "s#^lua/##" -e "s#^$LUA_VM/##" -e 's#\.lua$#\.lu#' | tr '/' '.')
 			mkdir -p "$collectedLuaPluginsDir"
 			mv "$luaFile" "$collectedLuaPluginsDir/$newName"
 		done
@@ -126,8 +126,8 @@ then
 		if [ -d "$buildDst/$pluginName/resources" ]; then
 			EXISTING=$(rsync --dry-run  --recursive --prune-empty-dirs --existing --stats "$buildDst/$pluginName/resources/" template.app/  | grep 'Number of files transferred' | awk '{print $NF}' )
 			if [ "$EXISTING" -gt 0 ]; then
-				touch "$TMP_DIR"/build_output_failure.txt
-				echo "Plugins resource file naming conflict" >> "$TMP_DIR"/build_output_failure.txt
+				touch "$tmpDir"/build_output_failure.txt
+				echo "Plugins resource file naming conflict" >> "$tmpDir"/build_output_failure.txt
 			fi
 			rsync --recursive --ignore-existing "$buildDst/$pluginName/resources/" template.app/
 			rm -r "$buildDst/$pluginName/resources"
@@ -151,7 +151,7 @@ then
 	# Custom splash screen, put it in the right place
 	if [ -n "$splashScreen" ]
 	then
-		mv -v -f "template.app/$splashScreen" template.app/_CoronaSplashScreen.png
+		mv -v -f "template.app/$(basename "$splashScreen")" template.app/_CoronaSplashScreen.png
 	fi
 fi
 

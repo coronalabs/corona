@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,11 +18,15 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+				"$(SRCROOT)/../../bin/mac/lua",
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
+				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).c",
 			);
-			script = "LUA_EXE_DIR=\"$BUILT_PRODUCTS_DIR\"\nif [ ! -e \"$LUA_EXE_DIR/lua\" ]\nthen\n  # TODO: Figure out why we have to use this backup location for Jenkins Simulator builds\n  LUA_EXE_DIR=\"$SRCROOT/../../platform/mac/build/Release\"\n  if [ ! -e \"$LUA_EXE_DIR/lua\" ]\n  then\n    echo \"Could not find proper 32-bit lua build: $BUILT_PRODUCTS_DIR/lua to compile '$INPUT_FILE_PATH'\"\n    exit 1\n  fi\nfi\n\necho Building: $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $LUA_EXE_DIR\n\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $LUA_EXE_DIR";
+			runOncePerArchitecture = 0;
+			script = "LUA_EXE_DIR=\"$SRCROOT/../../bin/mac\"\nif [ ! -e \"$LUA_EXE_DIR/lua\" ]\nthen\n  exit 1\nfi\n\necho Building: $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $LUA_EXE_DIR\n\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $LUA_EXE_DIR\n";
 		};
 /* End PBXBuildRule section */
 
@@ -201,6 +205,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 00D5A5C61566DF6200718681;

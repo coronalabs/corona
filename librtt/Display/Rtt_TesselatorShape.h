@@ -36,6 +36,8 @@ class TesselatorShape : public Tesselator
 		virtual void GenerateStrokeTexture( ArrayVertex2& outTexCoords, int numVertices );
 		virtual Geometry::PrimitiveType GetFillPrimitive() const;
 
+		virtual U32 FillVertexCount() const = 0;
+
 		virtual bool SetSelfBounds( Real width, Real height );
 
 	public:

@@ -1327,7 +1327,7 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	
 	if ([alertView.title hasSuffix:@" error"])
 	{
-		[NSException raise:@"Corona Runtime Error" format:@"%@", alertView.message];
+		[NSException raise:@"Solar2D Runtime Error" format:@"%@", alertView.message];
 	}
 }
 

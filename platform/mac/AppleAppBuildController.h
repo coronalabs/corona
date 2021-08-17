@@ -11,6 +11,7 @@
 #import "AppleSigningIdentityController.h"
 
 // ----------------------------------------------------------------------------
+extern NSString *kAppleDistributionIdentityTag;
 
 @interface AppleAppBuildController : AppBuildController
 {

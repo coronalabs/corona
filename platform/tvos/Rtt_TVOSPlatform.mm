@@ -28,7 +28,7 @@
 #include "Rtt_IPhoneTextBoxObject.h"
 #include "Rtt_IPhoneTextFieldObject.h"
 #include "Rtt_IPhoneVideoObject.h"
-//#include "Rtt_IPhoneVideoPlayer.h"
+#include "Rtt_IPhoneVideoPlayer.h"
 
 #include "Rtt_LuaLibNative.h"
 #include "Rtt_LuaLibSystem.h"
@@ -105,7 +105,7 @@ namespace Rtt
 TVOSPlatform::TVOSPlatform( CoronaView *view )
 :	Super( view ),
 	fDevice( GetAllocator(), view ),
-//	fVideoPlayer( NULL ),
+	fVideoPlayer( NULL ),
 	fInAppStoreProvider( NULL )
 {
 	UIScreen *screen = [UIScreen mainScreen];
@@ -140,7 +140,7 @@ TVOSPlatform::~TVOSPlatform()
 {
 	[fActivityView release];
 	Rtt_DELETE( fInAppStoreProvider );
-//	Rtt_DELETE( fVideoPlayer );
+	Rtt_DELETE( fVideoPlayer );
 }
 
 // =====================================================================
@@ -153,6 +153,16 @@ TVOSPlatform::GetDevice() const
 }
 
 // =====================================================================
+PlatformVideoPlayer*
+TVOSPlatform::GetVideoPlayer( const ResourceHandle<lua_State> & handle ) const
+{
+	if ( ! fVideoPlayer )
+	{
+		fVideoPlayer = Rtt_NEW( fAllocator, IPhoneVideoPlayer( handle ) );
+	}
+
+	return fVideoPlayer;
+}
 
 PlatformStoreProvider*
 TVOSPlatform::GetStoreProvider( const ResourceHandle<lua_State>& handle ) const

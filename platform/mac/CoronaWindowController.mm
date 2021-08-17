@@ -341,7 +341,7 @@ RuntimeDelegateWrapper::SetDelegate( RuntimeDelegate *delegate )
         [self setWindowFrameAutosaveName:@"CoronaWelcomeWindow"];
 
         window_title = [NSString stringWithFormat:@"%@ (Build %@)",
-                        NSLocalizedString(@"Welcome to Corona", @"Welcome Window Title Bar Text Base"),
+                        NSLocalizedString(@"Welcome to Solar2D", @"Welcome Window Title Bar Text Base"),
                         [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]
                         ];
     }

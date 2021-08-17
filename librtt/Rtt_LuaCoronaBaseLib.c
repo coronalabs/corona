@@ -84,7 +84,7 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 	return 0;
 }
 
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV )
 
 #include "Core\Rtt_Assert.h"
 #include <windows.h>

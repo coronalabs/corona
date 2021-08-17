@@ -420,7 +420,7 @@ local function isBuildForAppStoreDistribution( options )
 	end
 
 	-- FIXME: Should handle App Store vs. Ad-hoc
-	local retval = string.match( options.signingIdentityName, "3rd Party Mac Developer" )
+	local retval = string.match( options.signingIdentityName, "3rd Party Mac Developer" ) or string.match( options.signingIdentityName, "Apple Distribution" )
 	if retval then
 		return true
 	else
@@ -726,13 +726,14 @@ function OSXPostPackage( params )
 		setStatus("Unpacking template")
 		-- extract template into dstDir
 		local result, errMsg = runScript( "/usr/bin/ditto -x -k "..quoteString( options.osxAppTemplate ).." "..options.appBundleFile )
+		runScript("find " .. options.appBundleFile .. " -name _CodeSignature -exec rm -vr {} +")
 
 		if result ~= 0 then
 			return "ERROR: unzipping template failed: "..tostring(errMsg)
 		end
 
 		-- cleanup signature from the template
-		runScript( "cd ".. options.appBundleFile .. " ; /usr/bin/codesign --remove-signature . ; rm -rf Contents/_CodeSignature " )
+		runScript( "cd ".. options.appBundleFile .. " ; /usr/bin/codesign --remove-signature --deep . " )
 
 		-- If "bundleResourcesDirectory" is set, copy the contents of that directory to the
 		-- application's Resource directory
@@ -856,7 +857,6 @@ function OSXPostPackage( params )
 				runScript( "/bin/ls -Rl '"..appBundleFileUnquoted.."'")
 				return errMsg
 			end
-
 		end
 
 		-- Sometimes macOS gets confused about whether the apps we build are opennable, this

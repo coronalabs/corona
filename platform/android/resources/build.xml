@@ -88,8 +88,8 @@
 	</condition>	
 	<target name="check-gradle-bundle">
 		<available file="${corona.native.android}/resource/android-template.zip" property="gradle.bundle.exists"/>
-	</target>	
-	<target name="setup-gradle-builds" if="gradle.bundle.exists" depends="check-gradle-bundle">
+	</target>
+	<target name="setup-gradle-builds" depends="check-gradle-bundle">
 		<sequential>
 			<delete dir="${TEMP_DIR}/template"/>
 			<unzip src="${corona.native.android}/resource/android-template.zip" dest="${TEMP_DIR}" />

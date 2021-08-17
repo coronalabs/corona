@@ -151,7 +151,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 {
     IdentityMenuItem* item = currentProvisioningProfileItem; Rtt_ASSERT( item != [fSigningIdentities itemAtIndex:0] );
 
-    return ( [[item title] contains:k3rdPartyMacDeveloperIdentityTag]
+    return ( ([[item title] contains:k3rdPartyMacDeveloperIdentityTag] || [[item title] contains:kAppleDistributionIdentityTag] )
 			|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"]);
 }
 
@@ -165,7 +165,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 
 - (BOOL)isDeveloperBuild
 {
-    return (! [self isStoreBuild] && ! [self isSelfDistributionBuild]
+	return ((! [self isStoreBuild] && ! [self isSelfDistributionBuild])
 			|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"]);
 }
 
@@ -518,21 +518,13 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
         // Display the error
         if (params->GetBuildMessage() != NULL)
         {
-            msg = @"Build Failed\n\n";
-            msg = [msg stringByAppendingString:[NSString stringWithExternalString:params->GetBuildMessage()]];
-            msg = [msg stringByAppendingString:@"\n\n"];
+            msg = [NSString stringWithExternalString:params->GetBuildMessage()];
         }
         else
         {
-            msg = @"Unexpected build error.\n\n";
-            msg = [msg stringByAppendingString:[NSString stringWithFormat:@"Error code: %ld\n\n", code]];
+            msg = [NSString stringWithFormat:@"Unexpected build error.\n\nError code: %ld", code];
         }
-        
-        details = [[NSDictionary alloc] initWithObjectsAndKeys:msg, NSLocalizedDescriptionKey, nil];
-        error = [[NSError alloc] initWithDomain:@"CoronaSimulator" code:101 userInfo:details];
-        [NSApp presentError:error modalForWindow:[self window] delegate:self didPresentSelector:@selector(didPresentErrorWithRecovery:contextInfo:) contextInfo:(void*)code];
-        [error release];
-        [details release];        
+        [self showError:@"Build Failed" message:msg helpURL:nil parentWindow:[self window]];
     }
 
     [self saveBuildPreferences];
