@@ -68,6 +68,8 @@ Scheduler::Delete(Task* e)
 			fTasks.Remove(i, 1, false);
 			Rtt_DELETE(t);
 		}
+		else
+			i++;
 	}
 }
 
