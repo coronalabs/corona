@@ -102,48 +102,24 @@ end
 
 
 local function checkLicense()
-	-- we aren't targeting the google play store then assume we don't need expansion files 
-	if system.getInfo("targetAppStore") ~= "google" then
-		callOnShellComplete(nil)
-		return
+	if system.getInfo("targetAppStore") == "google" then
+		pcall( function()
+			local licensing = require("licensing")
+			licensing.init("google")
+		end )
 	end
-
-	local licensing = require("licensing")
-	local initSuccess = false
-	pcall( function() initSuccess = licensing.init("google") end )
-	if not initSuccess then
-		callOnShellComplete(nil)
-		return
-	end
-
-	licensing.verify(function(event)
-		if event.isError then
-			native.showAlert("Error", event.response, {"Ok"})
-			return
-		end
-		callOnShellComplete(nil)
-	end, true)
-
+	callOnShellComplete(nil)
 end
 
 local usingGooglePlayServices = isModuleAvailable("shared.google.play.services.base")
 if usingGooglePlayServices then
-
 	local gps = require("shared.google.play.services.base")
-
 	local function googlePlayServicesAvailabileListener( event )
 		gps.clearAvailabilityListener()
-
-		-- Now handle checking for expansion files
 		checkLicense()
 	end
-
-	-- Set a listener to fire when it does become available.
 	gps.setAvailabilityListener(googlePlayServicesAvailabileListener)
-
-	-- Checks if Google Play Services is available and attempts to make it available if it's not.
 	gps.handleGooglePlayServicesAvailability()
-
 else
 	checkLicense()
 end
