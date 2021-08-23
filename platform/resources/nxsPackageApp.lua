@@ -251,8 +251,8 @@ end
 
 local function getExcludePredecate()
 	local excludes = {
-			"*.nro",
-			"*.nrr",
+--			"*.nro",
+--			"*.nrr",
 			"*.config",
 			"*.lu",
 			"*.lua",
@@ -519,14 +519,14 @@ function nxsPackageApp( args )
 	if ret ~= 0 then
 		return 'Failed to unpack template ' .. template .. ' to ' .. templateFolder ..  ', err=' .. ret
 	end
-	logd('Unzipped ' .. template, ' to ', templateFolder)
+	logd('Unzipped ' .. template .. ' to ' .. templateFolder)
 
 	-- gather files into appFolder (tmp folder)
 	local ret = copyDir( args.srcDir, appFolder )
 	if ret ~= 0 then
 		return "Failed to copy " .. args.srcDir .. ' to ' .. appFolder
 	end
-	logd("Copied ", args.srcDir, ' to ', appFolder)
+	logd("Copied " .. args.srcDir .. ' to ' .. appFolder)
 
 	if args.useStandartResources then
 		local ret = copyDir( pathJoin(templateFolder, 'res_widget'), appFolder )
