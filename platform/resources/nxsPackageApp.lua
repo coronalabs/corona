@@ -472,29 +472,6 @@ function nxsPackageApp( args )
 		copyDir(pluginExtractDir, appFolder)
 	end
 
-	-- process native plugins
-	local exportedFunctions = {}
-	for file in lfs.dir(pluginDownloadDir)	do
-		local pluginArc = pathJoin(pluginDownloadDir, file, "data.tgz")
-		if isFile(pluginArc) then
-			local cmd = '""%CORONA_PATH%\\7za.exe" x ' .. quoteString(pluginArc) .. ' -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o' .. quoteString(pluginDownloadDir) .. ' metadata.lua  2> nul "'
-			if os.execute(cmd) == 0 then
-                local metadataFile = pathJoin(pluginDownloadDir, "metadata.lua")
-                if isFile(metadataFile) then
-                    pcall( function()
-                        local metadata = dofile(metadataFile)
-						for _, v in ipairs(metadata.plugin.exportedFunctions) do
-                            if type(v) == "string" then
-                                exportedFunctions[#exportedFunctions+1] = v
-                            end
-                        end
-                    end	)
-                    os.remove(metadataFile)
-                end
-			end
-		end
-	end
-	logd("EXPORTED FUNCTIONS: ", json.prettify(exportedFunctions))
 	-- unzip standard template
 
 	local templateFolder = pathJoin(args.tmpDir, 'nxtemplate')
