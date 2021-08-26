@@ -118,6 +118,9 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 			kIsAnchorChildren = 0x200, // Group-specific property
 			kIsRenderedOffscreen = 0x400,
 			kIsRestricted = 0x800,
+            // STEVE CHANGE
+            kIsDummyStageBounds = 0x1000,
+            // /STEVE CHANGE
 
 			// NOTE: Current maximum of 16 PropertyMasks!!!
 		};
@@ -181,6 +184,9 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 
 	public:
 		virtual bool CanCull() const;
+        // STEVE CHANGE
+        virtual bool CanHitTest() const;
+        // /STEVE CHANGE
 
 	public:
 		// MLuaProxyable
@@ -191,6 +197,10 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 	public:
 		virtual void AddedToParent( lua_State * L, GroupObject * parent );
 		virtual void RemovedFromParent( lua_State * L, GroupObject * parent );
+    
+        // STEVE CHANGE
+        virtual void SendMessage( const char * message, const void * payload, U32 size ) const {}
+        // /STEVE CHANGE
 
 	public:
 		virtual const LuaProxyVTable& ProxyVTable() const;
@@ -351,6 +361,11 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 
 		Rtt_INLINE bool IsForceDraw() const { return (fProperties & kIsForceDraw) != 0; }
 		Rtt_INLINE void SetForceDraw( bool newValue ) { SetProperty( kIsForceDraw, newValue ); }
+    
+        // STEVE CHANGE
+        Rtt_INLINE bool IsDummyStageBounds() const { return (fProperties & kIsDummyStageBounds) != 0; }
+        Rtt_INLINE void SetDummyStageBounds( bool newValue ) { SetProperty( kIsDummyStageBounds, newValue ); }
+        // /STEVE CHANGE
 
 		Rtt_INLINE bool IsOffScreen() const { return (fProperties & kIsOffScreen) != 0; }
 		Rtt_INLINE void SetOffScreen( bool newValue ) { SetProperty( kIsOffScreen, newValue ); }
@@ -380,7 +395,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 		{
 			return ( ! IsDirty() && IsNotHidden() ) || IsForceDraw();
 		}
-		bool ShouldPrepare() const{ return IsDirty() && ShouldHitTest(); }
+        bool ShouldPrepare() const { return IsDirty() && ( ShouldHitTest() || IsDummyStageBounds() ); } // <- STEVE CHANGE
 
 		void SetTransform( const Transform& newValue );
 		const Transform& GetTransform() const { return fTransform; }
