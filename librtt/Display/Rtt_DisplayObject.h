@@ -67,6 +67,12 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 	public:
 		typedef DisplayObject Self;
 
+        // STEVE CHANGE
+        struct BoxedFunction {
+            void * fFunc;
+        };
+        // /STEVE CHANGE
+    
 		enum RenderFlag
 		{
 			kGeometryFlag = 0x01,

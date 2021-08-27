@@ -385,12 +385,8 @@ PushFactory( lua_State * L, const char * name )
     return true;
 }
 
-struct FunctionPointerBox {
-    void * fFunc;
-};
-
 static bool
-CallNewFactory( lua_State * L, const char * name, FunctionPointerBox * funcBox  )
+CallNewFactory( lua_State * L, const char * name, Rtt::DisplayObject::BoxedFunction * funcBox  )
 {
     if (PushFactory( L, name ) ) // stream, ...[, factories, factory]
     {
@@ -603,7 +599,7 @@ int PushObject( lua_State * L, void * userData, const CoronaObjectParams * param
     sStreamAndUserData.stream = (unsigned char *)lua_touserdata( L, 1 );
     sStreamAndUserData.userData = userData;
 
-    FunctionPointerBox funcBox = { *(void **)&func }; // https://stackoverflow.com/a/16682718
+    Rtt::DisplayObject::BoxedFunction funcBox = { *(void **)&func }; // https://stackoverflow.com/a/16682718
     
     if (CallNewFactory( L, name, &funcBox )) // stream[, object]
     {
@@ -1591,8 +1587,6 @@ int CoronaGroupObjectGetNumChildren( const CoronaGroupObjectHandle groupObject )
 CORONA_API
 int CoronaObjectSendMessage( const CoronaDisplayObjectHandle object, const char * message, const void * payload, unsigned int size )
 {
-//    const Rtt::DisplayObject * displayObject = static_cast< const Rtt::GroupObject * >( CoronaExtractConstantDisplayObject( object ) );
-    
     auto * displayObject = Extract< Rtt::DisplayObject >( object );
 
     if (displayObject)

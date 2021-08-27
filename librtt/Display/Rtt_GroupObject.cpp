@@ -136,13 +136,24 @@ GroupObject::UpdateTransform( const Matrix& parentToDstSpace )
 			child->UpdateTransform( xform );
 
 			// Only cull objects that are hit-testable and allow culling
-			if ( child->ShouldHitTest() && child->CanCull() )
+            // STEVE CHANGE
+            bool willHaveProperStageBounds = child->ShouldHitTest() && child->CanCull();
+
+            if ( willHaveProperStageBounds || child->IsDummyStageBounds() )
+            // /STEVE CHANGE
 			{
 				// Only leaf nodes are culled, so we only need to build stage bounds
 				// of leaf nodes to determine if they should be culled.
 // TODO: BuildStageBounds is expensive --- accumulate iteratively if numChildren is large
 				child->BuildStageBounds();
-				child->CullOffscreen( screenBounds );
+                // STEVE CHANGE
+                if (willHaveProperStageBounds)
+                {
+                // /STEVE CHANGE
+                child->CullOffscreen( screenBounds );
+                // STEVE CHANGE
+                }
+                // /STEVE CHANGE
 			}
 		}
 	}
