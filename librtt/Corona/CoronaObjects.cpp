@@ -18,7 +18,7 @@
 #include "Rtt_LuaProxyVTable.h"
 #include "Rtt_Runtime.h"
 
-//#include "Corona/CoronaPluginSupportInternal.h"
+#include "Display/Rtt_ObjectHandle.h"
 
 #include "Display/Rtt_ContainerObject.h"
 #include "Display/Rtt_Display.h"
@@ -35,6 +35,130 @@
 
 #include <vector>
 #include <stddef.h>
+
+// ----------------------------------------------------------------------------
+
+namespace Rtt
+{
+
+// ----------------------------------------------------------------------------
+
+ObjectHandleNode::ObjectHandleNode( CoronaObject * handle, const void * object, int type )
+:   fHandle( handle ),
+    fObject( const_cast< void * >( object ) ),
+    fType( type )
+{
+}
+
+ObjectHandleList::ObjectHandleList()
+{
+}
+    
+ObjectHandleList::~ObjectHandleList()
+{
+    for (ObjectHandleNode & node : fNodes)
+    {
+        node.fHandle->internal[0] = NULL;
+    }
+}
+
+static ObjectHandleList *
+ListFromHandle( const CoronaObject * handle )
+{
+    return const_cast< ObjectHandleList * >( (const ObjectHandleList *)handle->internal[0] );
+}
+
+const ObjectHandleNode *
+ObjectHandleList::ToNode( const CoronaObject * handle )
+{
+    const ObjectHandleList * list = ListFromHandle( handle );
+    
+    if (NULL == list)
+    {
+        return NULL;
+    }
+    
+    size_t index;
+
+    memcpy( &index, handle->internal[1], sizeof( size_t ) );
+    
+    return index < list->fNodes.size() ? &list->fNodes[index] : NULL;
+}
+
+void *
+ObjectHandleNode::ToObject( CoronaObject * handle, int type )
+{
+    const ObjectHandleNode * node = ObjectHandleList::ToNode( handle );
+
+    if (NULL != node && node->CanGetObject( type ))
+    {
+        return const_cast< ObjectHandleNode * >( node )->fObject;
+    }
+    
+    return NULL;
+}
+
+const void *
+ObjectHandleNode::ToObject( const CoronaObject * handle, int type )
+{
+    const ObjectHandleNode * node = ObjectHandleList::ToNode( handle );
+    
+    if (NULL != node && node->CanGetObject( type ))
+    {
+        return node->fObject;
+    }
+    
+    return NULL;
+}
+
+template<typename T, typename H>
+T * Extract ( H * handle )
+{
+    return (T *)ObjectHandleNode::ToObject( (CoronaObject *)handle, H::kType );
+}
+
+template<typename T, typename H>
+const T * Extract ( const H * handle )
+{
+    return (const T *)ObjectHandleNode::ToObject( (const CoronaObject *)handle, H::kType );
+}
+
+static void
+AddIndexToHandle( CoronaObject * handle, size_t index )
+{
+    memcpy( &handle->internal[1], &index, sizeof( size_t ) );
+}
+
+void
+ObjectHandleList::AddHandle( CoronaObject * handle, const void * object, int type )
+{
+    handle->internal[0] = this;
+    handle->internal[1] = NULL;
+    
+    for (size_t i = 0; i < fNodes.size(); ++i)
+    {
+        const ObjectHandleNode & node = fNodes[i];
+        
+        if (node.fObject == object && node.fType == type)
+        {
+            AddIndexToHandle( handle, i );
+           
+            return;
+        }
+    }
+    
+    ObjectHandleNode node( handle, object, type );
+    
+    fNodes.push_back( node );
+    
+    AddIndexToHandle( handle, fNodes.size() );
+}
+
+// ----------------------------------------------------------------------------
+
+} // namespace Rtt
+
+// ----------------------------------------------------------------------------
 
 #define CORONA_OBJECTS_STREAM_METATABLE_NAME "CoronaObjectsStream"
 
@@ -99,151 +223,16 @@ FindParams( const unsigned char * stream, unsigned short method, size_t offset )
     return out;
 }
 
-struct CoronaDisplayObject : CoronaHandle { enum { kType = 0 }; };
-struct CoronaGroupObject : CoronaHandle { enum { kType = 1 }; };
-struct CoronaRenderer : CoronaHandle { enum { kType = 2 }; };
-
-struct Node {
-    Node( CoronaHandle * handle, const void * object, int type )
-:   fHandle( handle ),
-    fObject( const_cast< void * >( object ) ),
-    fType( type )
-    {
-    }
-    
-    CoronaHandle * fHandle;
-    void * fObject;
-    int fType;
-};
-
-struct List {
-    List()
-    {
-    }
-    
-    ~List()
-    {
-        for (Node & node : fNodes)
-        {
-            node.fHandle->internal[0] = NULL;
-        }
-    }
-    
-    std::vector< Node > fNodes;
-};
-
-static List *
-ListFromHandle( const CoronaHandle * handle )
-{
-    return const_cast< List * >( (const List *)handle->internal[0] );
-}
-
-static const Node *
-NodeFromHandle( const CoronaHandle * handle )
-{
-    const List * list = ListFromHandle( handle );
-    
-    if (NULL == list)
-    {
-        return NULL;
-    }
-    
-    size_t index;
-    
-    memcpy( &index, handle->internal[1], sizeof( size_t ) );
-    
-    return index < list->fNodes.size() ? &list->fNodes[index] : NULL;
-}
-
-static void *
-ObjectFromHandle( CoronaHandle * handle, int type )
-{
-    const Node * node = NodeFromHandle( handle );
-    
-    if (NULL != node && type == node->fType)
-    {
-        return const_cast< Node * >( node )->fObject;
-    }
-    
-    return NULL;
-}
-
-static const void *
-ObjectFromHandle( const CoronaHandle * handle, int type )
-{
-    const Node * node = NodeFromHandle( handle );
-    
-    if (NULL != node && type == node->fType)
-    {
-        return node->fObject;
-    }
-    
-    return NULL;
-}
-
-template<typename T, typename H>
-T * Extract ( H * handle )
-{
-    return (T *)ObjectFromHandle( (CoronaHandle *)handle, H::kType );
-}
-
-template<typename T, typename H>
-const T * Extract ( const H * handle )
-{
-    return (const T *)ObjectFromHandle( (const CoronaHandle *)handle, H::kType );
-}
-
-static void
-AddIndexToHandle( CoronaHandle * handle, size_t index )
-{
-    memcpy( &handle->internal[1], &index, sizeof( size_t ) );
-}
-
-static void
-AddHandleToList( List * list, CoronaHandle * handle, const void * object, int type )
-{
-    handle->internal[0] = list;
-    handle->internal[1] = NULL;
-    
-    for (size_t i = 0; i < list->fNodes.size(); ++i)
-    {
-        const Node & node = list->fNodes[i];
-        
-        if (node.fObject == object && node.fType == type)
-        {
-            AddIndexToHandle( handle, i );
-           
-            return;
-        }
-    }
-    
-    Node node( handle, object, type );
-    
-    list->fNodes.push_back( node );
-    
-    AddIndexToHandle( handle, list->fNodes.size() );
-}
-
-template<typename T>
-T StoreObject( List * list, const void * object )
-{
-    T handle = {};
-    
-    AddHandleToList( list, (CoronaHandle *)&handle, object, T::kType );
-    
-    return handle;
-}
-
-#define STORE_DISPLAY_OBJECT( name, object ) auto name = StoreObject< CoronaDisplayObject >( &list, object )
+// ----------------------------------------------------------------------------
 
 static bool
 ValuePrologue( lua_State * L, const Rtt::MLuaProxyable& object, const char key[], void * userData, const CoronaObjectValueParams & params, int * result )
 {
     if (params.before)
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedObject, &object );
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, &object );
         
         params.before( &storedObject, userData, L, key, result );
 
@@ -263,9 +252,9 @@ ValueEpilogue( lua_State * L, const Rtt::MLuaProxyable& object, const char key[]
 {
     if (params.after)
     {
-        List list;
-        
-        STORE_DISPLAY_OBJECT( storedObject, &object );
+        Rtt::ObjectHandleList list;
+    
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, &object );
 
         params.after( &storedObject, userData, L, key, &result ); // n.b. `result` previous values still on stack
     }
@@ -273,14 +262,16 @@ ValueEpilogue( lua_State * L, const Rtt::MLuaProxyable& object, const char key[]
     return result;
 }
 
+// ----------------------------------------------------------------------------
+
 static bool
 SetValuePrologue( lua_State * L, Rtt::MLuaProxyable& object, const char key[], int valueIndex, void * userData, const CoronaObjectSetValueParams & params, int * result )
 {
     if (params.before)
     {
-        List list;
+        Rtt::ObjectHandleList list;
         
-        STORE_DISPLAY_OBJECT( storedObject, &object );
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, &object );
 
         params.before( &storedObject, userData, L, key, valueIndex, result );
 
@@ -300,15 +291,17 @@ SetValueEpilogue( lua_State * L, Rtt::MLuaProxyable& object, const char key[], i
 {
     if (params.after)
     {
-        List list;
+        Rtt::ObjectHandleList list;
         
-        STORE_DISPLAY_OBJECT( storedObject, &object );
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, &object );
 
         params.after( &storedObject, userData, L, key, valueIndex, &result );
     }
 
     return result;
 }
+
+// ----------------------------------------------------------------------------
 
 template<typename Proxy2, typename BaseProxyVTable>
 class Proxy2VTable : public BaseProxyVTable
@@ -370,6 +363,8 @@ public:
 
 #undef AFTER_HEADER_OFFSET
 
+// ----------------------------------------------------------------------------
+
 static bool
 PushFactory( lua_State * L, const char * name )
 {
@@ -401,6 +396,8 @@ CallNewFactory( lua_State * L, const char * name, Rtt::DisplayObject::BoxedFunct
 
     return false;
 }
+
+// ----------------------------------------------------------------------------
 
 static void
 GetSizes( unsigned short method, size_t & fullSize, size_t & paramSize )
@@ -578,7 +575,6 @@ GetStream( lua_State * L, const CoronaObjectsParams * params )
     return hasStream;
 }
 
-
 struct StreamAndUserData {
     unsigned char * stream;
     void * userData;
@@ -629,6 +625,8 @@ int PushObject( lua_State * L, void * userData, const CoronaObjectParams * param
 
     return 0;
 }
+
+// ----------------------------------------------------------------------------
 
 using FPtr = void (*)();
 
@@ -731,16 +729,15 @@ OnCreate( const void * object, void * userData, const unsigned char * stream )
 
     if (params.action)
     {
-        List list;
+        Rtt::ObjectHandleList list;
         
-        STORE_DISPLAY_OBJECT( storedObject, object );
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, object );
 
         params.action( &storedObject, userData );
     }
 }
 
-#define STORE_GROUP_OBJECT( name, object ) auto name = StoreObject< CoronaGroupObject >( &list, object )
-#define STORE_RENDERER( name, object ) auto name = StoreObject< CoronaRenderer >( &list, object )
+// ----------------------------------------------------------------------------
 
 template<typename Base, typename ProxyVTableType, typename... Args>
 struct CoronaObjectsInterface : public Base {
@@ -765,10 +762,10 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void AddedToParent( lua_State * L, Rtt::GroupObject * parent )
     {
-        List list;
+        Rtt::ObjectHandleList list;
         
-        STORE_DISPLAY_OBJECT( storedThis, this );
-        STORE_GROUP_OBJECT( parentStored, parent );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_STORE( GroupObject, parentStored, parent );
         CORONA_OBJECTS_GET_PARAMS( AddedToParent );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, L, &parentStored );
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( AddedToParent, L, parent );
@@ -777,9 +774,9 @@ struct CoronaObjectsInterface : public Base {
 
     virtual bool CanCull() const
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( CanCull, BooleanResult );
         CORONA_OBJECTS_METHOD_BEFORE_WITH_BOOLEAN_RESULT( FIRST_ARGS )
         CORONA_OBJECTS_METHOD_CORE_WITH_RESULT( CanCull )
@@ -790,9 +787,9 @@ struct CoronaObjectsInterface : public Base {
 
     virtual bool CanHitTest() const
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( CanHitTest, BooleanResult );
         CORONA_OBJECTS_METHOD_BEFORE_WITH_BOOLEAN_RESULT( FIRST_ARGS )
         CORONA_OBJECTS_METHOD_CORE_WITH_RESULT( CanHitTest )
@@ -803,18 +800,18 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void DidMoveOffscreen()
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( DidMoveOffscreen, Basic );
         CORONA_OBJECTS_METHOD( DidMoveOffscreen )
     }
 
     virtual void DidUpdateTransform( Rtt::Matrix & srcToDst )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( DidUpdateTransform, Matrix );
         CORONA_OBJECTS_MATRIX_BOOKEND_METHOD( before )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( DidUpdateTransform, srcToDst )
@@ -823,10 +820,10 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void Draw( Rtt::Renderer & renderer ) const
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
-        STORE_RENDERER( rendererStored, &renderer );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_STORE( Renderer, rendererStored, &renderer );
         CORONA_OBJECTS_GET_PARAMS( Draw );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, &rendererStored );
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( Draw, renderer );
@@ -835,9 +832,9 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void FinalizeSelf( lua_State * L )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( OnFinalize, Lifetime );
 
         if (params.action)
@@ -852,9 +849,9 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void GetSelfBounds( Rtt::Rect & rect ) const
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( GetSelfBounds, RectResult );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, &rect.xMin, &rect.yMin, &rect.xMax, &rect.yMax )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( GetSelfBounds, rect )
@@ -863,9 +860,9 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void GetSelfBoundsForAnchor( Rtt::Rect & rect ) const
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( GetSelfBoundsForAnchor, RectResult );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, &rect.xMin, &rect.yMin, &rect.xMax, &rect.yMax )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( GetSelfBoundsForAnchor, rect )
@@ -874,9 +871,9 @@ struct CoronaObjectsInterface : public Base {
 
     virtual bool HitTest( Rtt::Real contentX, Rtt::Real contentY )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( HitTest, BooleanResultPoint );
         CORONA_OBJECTS_METHOD_BEFORE_WITH_BOOLEAN_RESULT( FIRST_ARGS, contentX, contentY )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS_AND_RESULT( HitTest, contentX, contentY )
@@ -887,19 +884,19 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void Prepare( const Rtt::Display & display )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( Prepare, Basic );
         CORONA_OBJECTS_METHOD_STRIP_ARGUMENT( Prepare, display )
     }
 
     virtual void RemovedFromParent( lua_State * L, Rtt::GroupObject * parent )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
-        STORE_GROUP_OBJECT( parentStored, parent );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_STORE( GroupObject, parentStored, parent );
         CORONA_OBJECTS_GET_PARAMS( RemovedFromParent );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, L, &parentStored );
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( AddedToParent, L, parent );
@@ -908,27 +905,27 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void Rotate( Rtt::Real deltaTheta )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS( Rotate );
         CORONA_OBJECTS_METHOD_WITH_ARGS( Rotate, deltaTheta )
     }
 
     virtual void Scale( Rtt::Real sx, Rtt::Real sy, bool isNewValue )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS( Scale );
         CORONA_OBJECTS_METHOD_WITH_ARGS( Scale, sx, sy, isNewValue )
     }
 
     virtual void SendMessage( const char * message, const void * payload, U32 size ) const
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS( OnMessage );
 
         if (params.action)
@@ -939,18 +936,18 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void Translate( Rtt::Real deltaX, Rtt::Real deltaY )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS( Translate );
         CORONA_OBJECTS_METHOD_WITH_ARGS( Translate, deltaX, deltaY )
     }
 
     virtual bool UpdateTransform( const Rtt::Matrix & parentToDstSpace )
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_INIT_MATRIX( parentToDstSpace );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( UpdateTransform, BooleanResultMatrix );
         CORONA_OBJECTS_METHOD_BEFORE_WITH_BOOLEAN_RESULT( FIRST_ARGS, matrix )
@@ -962,9 +959,9 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void WillMoveOnscreen()
     {
-        List list;
+        Rtt::ObjectHandleList list;
 
-        STORE_DISPLAY_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( WillMoveOnscreen, Basic );
         CORONA_OBJECTS_METHOD( WillMoveOnscreen )
     }
@@ -975,6 +972,8 @@ struct CoronaObjectsInterface : public Base {
     mutable void * fUserData;
     int fRef;
 };
+
+// ----------------------------------------------------------------------------
 
 CORONA_API
 int CoronaObjectsBuildMethodStream( lua_State * L, const CoronaObjectParamsHeader * head )
@@ -987,12 +986,16 @@ int CoronaObjectsBuildMethodStream( lua_State * L, const CoronaObjectParamsHeade
     return LUA_REFNIL;
 }
 
+// ----------------------------------------------------------------------------
+
 #define CORONA_OBJECTS_CLASS_INTERFACE(OBJECT_KIND) \
     Rtt_CLASS_NO_COPIES( OBJECT_KIND##2 )            \
                                                     \
 public:                                        \
     typedef OBJECT_KIND##2 Self;            \
     typedef OBJECT_KIND##Interface Super
+
+// ----------------------------------------------------------------------------
 
 /**
 TODO
@@ -1027,6 +1030,8 @@ int CoronaObjectsPushCircle( lua_State * L, void * userData, const CoronaObjectP
     CORONA_OBJECTS_PUSH( Circle );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1059,6 +1064,8 @@ int CoronaObjectsPushContainer( lua_State * L, void * userData, const CoronaObje
 {
     CORONA_OBJECTS_PUSH( Container );
 }
+
+// ----------------------------------------------------------------------------
 
 /**
 TODO
@@ -1093,6 +1100,8 @@ int CoronaObjectsPushEmbossedText( lua_State * L, void * userData, const CoronaO
     CORONA_OBJECTS_PUSH( EmbossedText );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1126,6 +1135,8 @@ int CoronaObjectsPushEmitter( lua_State * L, void * userData, const CoronaObject
     CORONA_OBJECTS_PUSH( Emitter );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1155,18 +1166,18 @@ protected:
 public:
     virtual void DidInsert( bool childParentChanged )
     {
-        List list;
+        Rtt::ObjectHandleList list;
         
-        STORE_GROUP_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( GroupObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS( DidInsert );
         CORONA_OBJECTS_METHOD_WITH_ARGS( DidInsert, childParentChanged )
     }
 
     virtual void DidRemove()
     {
-        List list;
+        Rtt::ObjectHandleList list;
         
-        STORE_GROUP_OBJECT( storedThis, this );
+        OBJECT_HANDLE_STORE( GroupObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( DidRemove, GroupBasic );
         CORONA_OBJECTS_METHOD( DidRemove )
     }
@@ -1177,6 +1188,8 @@ int CoronaObjectsPushGroup( lua_State * L, void * userData, const CoronaObjectPa
 {
     CORONA_OBJECTS_PUSH( Group );
 }
+
+// ----------------------------------------------------------------------------
 
 /**
 TODO
@@ -1213,6 +1226,8 @@ int CoronaObjectsPushImage( lua_State * L, void * userData, const CoronaObjectPa
     CORONA_OBJECTS_PUSH( Image );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1248,6 +1263,8 @@ int CoronaObjectsPushImageRect( lua_State * L, void * userData, const CoronaObje
     CORONA_OBJECTS_PUSH( ImageRect );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1280,6 +1297,8 @@ int CoronaObjectsPushLine( lua_State * L, void * userData, const CoronaObjectPar
 {
     CORONA_OBJECTS_PUSH( Line );
 }
+
+// ----------------------------------------------------------------------------
 
 /**
 TODO
@@ -1314,6 +1333,8 @@ int CoronaObjectsPushMesh( lua_State * L, void * userData, const CoronaObjectPar
     CORONA_OBJECTS_PUSH( Mesh );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1346,6 +1367,8 @@ int CoronaObjectsPushPolygon( lua_State * L, void * userData, const CoronaObject
 {
     CORONA_OBJECTS_PUSH( Polygon );
 }
+
+// ----------------------------------------------------------------------------
 
 /**
 TODO
@@ -1382,6 +1405,8 @@ int CoronaObjectsPushRect( lua_State * L, void * userData, const CoronaObjectPar
     CORONA_OBJECTS_PUSH( Rect );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1414,6 +1439,8 @@ int CoronaObjectsPushRoundedRect( lua_State * L, void * userData, const CoronaOb
 {
     CORONA_OBJECTS_PUSH( RoundedRect );
 }
+
+// ----------------------------------------------------------------------------
 
 /**
 TODO
@@ -1448,6 +1475,8 @@ int CoronaObjectsPushSnapshot( lua_State * L, void * userData, const CoronaObjec
     CORONA_OBJECTS_PUSH( Snapshot );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1481,6 +1510,8 @@ int CoronaObjectsPushSprite( lua_State * L, void * userData, const CoronaObjectP
     CORONA_OBJECTS_PUSH( Sprite );
 }
 
+// ----------------------------------------------------------------------------
+
 /**
 TODO
 */
@@ -1508,14 +1539,18 @@ protected:
     }
 };
 
+// ----------------------------------------------------------------------------
+
 CORONA_API
 int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectParams * params )
 {
     CORONA_OBJECTS_PUSH( Text );
 }
 
+// ----------------------------------------------------------------------------
+
 CORONA_API
-int CoronaObjectsShouldDraw( const CoronaDisplayObjectHandle object, int * shouldDraw )
+int CoronaObjectsShouldDraw( const CoronaDisplayObject * object, int * shouldDraw )
 {
     // TODO: look for proxy on stack, validate object?
     // If so, then *shouldDraw = ((DisplayObject *)object)->shouldDraw()
@@ -1523,10 +1558,12 @@ int CoronaObjectsShouldDraw( const CoronaDisplayObjectHandle object, int * shoul
     return 0;
 }
 
+// ----------------------------------------------------------------------------
+
 CORONA_API
-int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObjectHandle object, int hasBounds )
+int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObject * object, int hasBounds )
 {
-    auto * displayObject = Extract< Rtt::DisplayObject >( object );
+    auto * displayObject = OBJECT_HANDLE_LOAD( DisplayObject, object );
 
     if (displayObject)
     {
@@ -1538,16 +1575,18 @@ int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObjectHandle object, int h
     return 0;
 }
 
+// ----------------------------------------------------------------------------
+
 CORONA_API
-const int CoronaObjectGetParent( const CoronaDisplayObjectHandle object, CoronaHandle * parent )
+const int CoronaObjectGetParent( const CoronaDisplayObject * object, CoronaObject * parent )
 {
-    auto * displayObject = Extract< Rtt::DisplayObject >( object );
+    auto * displayObject = OBJECT_HANDLE_LOAD( DisplayObject, object );
     
     if (displayObject)
     {
-        List & list = *ListFromHandle( (CoronaHandle *)displayObject );
+        Rtt::ObjectHandleList & list = *Rtt::ListFromHandle( (CoronaObject *)displayObject );
         
-        STORE_GROUP_OBJECT( temp, displayObject->GetParent() );
+        OBJECT_HANDLE_STORE( GroupObject, temp, displayObject->GetParent() );
         
         memcpy( parent, &temp, sizeof( CoronaGroupObject ) );
 
@@ -1557,16 +1596,18 @@ const int CoronaObjectGetParent( const CoronaDisplayObjectHandle object, CoronaH
     return 0;
 }
 
+// ----------------------------------------------------------------------------
+
 CORONA_API
-const int CoronaGroupObjectGetChild( const CoronaGroupObjectHandle groupObject, int index, CoronaHandle * object )
+const int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, CoronaObject * object )
 {
-    auto * go = Extract< Rtt::GroupObject >( groupObject );
+    auto * go = OBJECT_HANDLE_LOAD( GroupObject, groupObject );
 
     if (go && index >= 0 && index < go->NumChildren())
     {
-        List & list = *ListFromHandle( (CoronaHandle *)groupObject );
+        Rtt::ObjectHandleList & list = *Rtt::ListFromHandle( (CoronaObject *)groupObject );
         
-        STORE_DISPLAY_OBJECT( temp, &go->ChildAt( index ) );
+        OBJECT_HANDLE_STORE( DisplayObject, temp, &go->ChildAt( index ) );
 
         memcpy( object, &temp, sizeof( CoronaDisplayObject ) );
 
@@ -1576,18 +1617,22 @@ const int CoronaGroupObjectGetChild( const CoronaGroupObjectHandle groupObject, 
     return 0;
 }
 
+// ----------------------------------------------------------------------------
+
 CORONA_API
-int CoronaGroupObjectGetNumChildren( const CoronaGroupObjectHandle groupObject )
+int CoronaGroupObjectGetNumChildren( const CoronaGroupObject * groupObject )
 {
-    auto * go = Extract< Rtt::GroupObject >( groupObject );
+    auto * go = OBJECT_HANDLE_LOAD( GroupObject, groupObject );
 
     return go ? go->NumChildren() : 0;
 }
 
+// ----------------------------------------------------------------------------
+
 CORONA_API
-int CoronaObjectSendMessage( const CoronaDisplayObjectHandle object, const char * message, const void * payload, unsigned int size )
+int CoronaObjectSendMessage( const CoronaDisplayObject * object, const char * message, const void * payload, unsigned int size )
 {
-    auto * displayObject = Extract< Rtt::DisplayObject >( object );
+    auto * displayObject = OBJECT_HANDLE_LOAD( DisplayObject, object );
 
     if (displayObject)
     {
@@ -1598,6 +1643,8 @@ int CoronaObjectSendMessage( const CoronaDisplayObjectHandle object, const char 
 
     return 0;
 }
+
+// ----------------------------------------------------------------------------
 
 #undef PARAMS
 #undef AFTER_HEADER_STRUCT

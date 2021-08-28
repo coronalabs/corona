@@ -149,9 +149,9 @@ GroupObject::UpdateTransform( const Matrix& parentToDstSpace )
                 // STEVE CHANGE
                 if (willHaveProperStageBounds)
                 {
-                // /STEVE CHANGE
-                child->CullOffscreen( screenBounds );
-                // STEVE CHANGE
+                    // /STEVE CHANGE
+                    child->CullOffscreen( screenBounds );
+                    // STEVE CHANGE
                 }
                 // /STEVE CHANGE
 			}

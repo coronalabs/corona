@@ -11,15 +11,15 @@
 #ifndef _CoronaPublicTypes_H__
 #define _CoronaPublicTypes_H__
 
-struct CoronaHandle {
+struct CoronaObject {
     void * internal[2];
 };
 
-typedef struct CoronaRenderer * CoronaRendererHandle;
-typedef struct CoronaRenderData * CoronaRenderDataHandle;
-typedef struct CoronaShader * CoronaShaderHandle;
-typedef struct CoronaShaderData * CoronaShaderDataHandle;
-typedef struct CoronaDisplayObject * CoronaDisplayObjectHandle;
-typedef struct CoronaGroupObject * CoronaGroupObjectHandle;
+struct CoronaRenderer;
+struct CoronaRenderData;
+struct CoronaShader;
+struct CoronaShaderData;
+struct CoronaDisplayObject;
+struct CoronaGroupObject;
 
 #endif // _CoronaPublicTypes_H__

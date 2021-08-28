@@ -84,17 +84,17 @@ typedef struct CoronaObjectParamsHeader {
         CoronaObject##NAME##Bookend before, after;  \
     } CoronaObject##NAME##Params
 
-CORONA_OBJECTS_BOOKENDED_PARAMS( Basic, const CoronaDisplayObjectHandle object, void * userData ); // CoronaObjectBasicBookend, CoronaObjectBasicParams...
-CORONA_OBJECTS_BOOKENDED_PARAMS( AddedToParent, const CoronaDisplayObjectHandle object, void * userData, lua_State * L, CoronaGroupObjectHandle groupObject ); // ...and so on
-CORONA_OBJECTS_BOOKENDED_PARAMS( Matrix, const CoronaDisplayObjectHandle object, void * userData, float matrix[6] );
-CORONA_OBJECTS_BOOKENDED_PARAMS( Draw, const CoronaDisplayObjectHandle object, void * userData, CoronaRendererHandle renderer );
-CORONA_OBJECTS_BOOKENDED_PARAMS( RectResult, const CoronaDisplayObjectHandle object, void * userData, float * xMin, float * yMin, float * xMax, float * yMax );
-CORONA_OBJECTS_BOOKENDED_PARAMS( RemovedFromParent, const CoronaDisplayObjectHandle object, void * userData, lua_State * L, CoronaGroupObjectHandle groupObject );
-CORONA_OBJECTS_BOOKENDED_PARAMS( Rotate, const CoronaDisplayObjectHandle object, void * userData, float delta );
-CORONA_OBJECTS_BOOKENDED_PARAMS( Scale, const CoronaDisplayObjectHandle object, void * userData, float sx, float sy, int isNew );
-CORONA_OBJECTS_BOOKENDED_PARAMS( Translate, const CoronaDisplayObjectHandle object, void * userData, float x, float y );
-CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, CoronaGroupObjectHandle groupObject, void * userData, int childParentChanged );
-CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObjectHandle groupObject, void * userData );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Basic, const CoronaDisplayObject * object, void * userData ); // CoronaObjectBasicBookend, CoronaObjectBasicParams...
+CORONA_OBJECTS_BOOKENDED_PARAMS( AddedToParent, const CoronaDisplayObject * object, void * userData, lua_State * L, CoronaGroupObject * groupObject ); // ...and so on
+CORONA_OBJECTS_BOOKENDED_PARAMS( Matrix, const CoronaDisplayObject * object, void * userData, float matrix[6] );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Draw, const CoronaDisplayObject * object, void * userData, CoronaRenderer * renderer );
+CORONA_OBJECTS_BOOKENDED_PARAMS( RectResult, const CoronaDisplayObject * object, void * userData, float * xMin, float * yMin, float * xMax, float * yMax );
+CORONA_OBJECTS_BOOKENDED_PARAMS( RemovedFromParent, const CoronaDisplayObject * object, void * userData, lua_State * L, CoronaGroupObject * groupObject );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Rotate, const CoronaDisplayObject * object, void * userData, float delta );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Scale, const CoronaDisplayObject * object, void * userData, float sx, float sy, int isNew );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Translate, const CoronaDisplayObject * object, void * userData, float x, float y );
+CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, CoronaGroupObject * groupObject, void * userData, int childParentChanged );
+CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObject * groupObject, void * userData );
 
 #define CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS(NAME, ...)    \
     typedef void (*CoronaObject##NAME##Bookend) (__VA_ARGS__);      \
@@ -105,11 +105,11 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObjectHandle group
         CoronaObject##NAME##Bookend before, after;          \
     } CoronaObject##NAME##Params
 
-CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResult, const CoronaDisplayObjectHandle object, void * userData, int * result );
-CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultPoint, const CoronaDisplayObjectHandle object, void * userData, float x, float y, int * result );
-CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultMatrix, const CoronaDisplayObjectHandle object, void * userData, const float matrix[6], int * result );
+CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResult, const CoronaDisplayObject * object, void * userData, int * result );
+CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultPoint, const CoronaDisplayObject * object, void * userData, float x, float y, int * result );
+CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultMatrix, const CoronaDisplayObject * object, void * userData, const float matrix[6], int * result );
 
-typedef void (*CoronaObjectSetValueBookend) ( const CoronaDisplayObjectHandle object, void * userData, lua_State * L, const char key[], int valueIndex, int * result );
+typedef void (*CoronaObjectSetValueBookend) ( const CoronaDisplayObject * object, void * userData, lua_State * L, const char key[], int valueIndex, int * result );
 
 typedef struct CoronaObjectSetValueParams {
     CoronaObjectParamsHeader header;
@@ -117,7 +117,7 @@ typedef struct CoronaObjectSetValueParams {
     CoronaObjectSetValueBookend before, after;
 } CoronaObjectSetValueParams;
 
-typedef void (*CoronaObjectValueBookend) ( const CoronaDisplayObjectHandle object, void * userData, lua_State * L, const char key[], int * result );
+typedef void (*CoronaObjectValueBookend) ( const CoronaDisplayObject * object, void * userData, lua_State * L, const char key[], int * result );
 
 typedef struct CoronaObjectValueParams {
     CoronaObjectParamsHeader header;
@@ -127,12 +127,12 @@ typedef struct CoronaObjectValueParams {
 
 typedef struct CoronaObjectLifetimeParams {
     CoronaObjectParamsHeader header;
-    void (*action)( CoronaDisplayObjectHandle object, void * userData );
+    void (*action)( CoronaDisplayObject * object, void * userData );
 } CoronaObjectLifetimeParams;
 
 typedef struct CoronaObjectOnMessageParams {
     CoronaObjectParamsHeader header;
-    void (*action)( const CoronaDisplayObjectHandle object, void * userData, const char * message, const void * data, unsigned int size );
+    void (*action)( const CoronaDisplayObject * object, void * userData, const char * message, const void * data, unsigned int size );
 } CoronaObjectOnMessageParams;
 
 typedef struct CoronaObjectParams {
@@ -189,21 +189,21 @@ CORONA_API
 int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectParams * params ) CORONA_PUBLIC_SUFFIX;
 
 CORONA_API
-int CoronaObjectsShouldDraw( const CoronaDisplayObjectHandle object, int * shouldDraw ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectsShouldDraw( const CoronaDisplayObject * object, int * shouldDraw ) CORONA_PUBLIC_SUFFIX;
 
 CORONA_API
-int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObjectHandle object, int hasBounds ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObject * object, int hasBounds ) CORONA_PUBLIC_SUFFIX;
 
 CORONA_API
-const int CoronaObjectGetParent( const CoronaDisplayObjectHandle object, CoronaHandle * parent ) CORONA_PUBLIC_SUFFIX;
+const int CoronaObjectGetParent( const CoronaDisplayObject * object, CoronaObject * parent ) CORONA_PUBLIC_SUFFIX;
 
 CORONA_API
-const int CoronaGroupObjectGetChild( const CoronaGroupObjectHandle groupObject, int index, CoronaHandle * child ) CORONA_PUBLIC_SUFFIX;
+const int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, CoronaObject * child ) CORONA_PUBLIC_SUFFIX;
 
 CORONA_API
-int CoronaGroupObjectGetNumChildren( const CoronaGroupObjectHandle groupObject ) CORONA_PUBLIC_SUFFIX;
+int CoronaGroupObjectGetNumChildren( const CoronaGroupObject * groupObject ) CORONA_PUBLIC_SUFFIX;
 
 CORONA_API
-int CoronaObjectSendMessage( const CoronaDisplayObjectHandle object, const char * message, const void * payload, unsigned int size ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectSendMessage( const CoronaDisplayObject * object, const char * message, const void * payload, unsigned int size ) CORONA_PUBLIC_SUFFIX;
 
 #endif // _CoronaObjects_H__
