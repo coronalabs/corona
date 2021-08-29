@@ -8,26 +8,33 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef _Rtt_ObjectHandleList_h__
-#define _Rtt_ObjectHandleList_h__
+#ifndef _Rtt_ObjectBoxList_h__
+#define _Rtt_ObjectBoxList_h__
 
 // ----------------------------------------------------------------------------
 
 #include "Corona/CoronaPublicTypes.h"
 #include "Core/Rtt_Macros.h"
-#include <vector>
+#include <list>
 
 // ----------------------------------------------------------------------------
+
+struct CoronaObject {
+    void * fList;
+    void * fObject;
+    int fType;
+};
 
 namespace Rtt
 {
 
 // ----------------------------------------------------------------------------
 
-class ObjectHandleNode {
+class ObjectBoxList {
 public:
-    ObjectHandleNode( CoronaObject * handle, const void * object, int type );
-
+    ObjectBoxList();
+    ~ObjectBoxList();
+    
 public:
     enum {
         kRenderer,
@@ -37,38 +44,21 @@ public:
         kDisplayObject,
         kGroupObject
     };
-    
-public:
-    static void * ToObject( CoronaObject * handle, int type );
-    static const void * ToObject( const CoronaObject * handle, int type );
-    
-public:
-    bool CanGetObject (int type) const
-    {
-        return type == fType || (kGroupObject == fType && kDisplayObject == type);
-    }
-    
-private:
-    CoronaObject * fHandle;
-    void * fObject;
-    int fType;
-    
-    friend class ObjectHandleList;
-};
 
-class ObjectHandleList {
 public:
-    ObjectHandleList();
-    ~ObjectHandleList();
-  
-public:
-    static const ObjectHandleNode * ToNode(  const CoronaObject * handle );
+    static bool CanGetObject ( const CoronaObject * box, int type);
     
 public:
-    void AddHandle( CoronaObject * handle, const void * object, int type );
+    static ObjectBoxList * GetList( CoronaObject * box );
+    static const ObjectBoxList * GetList( const CoronaObject * box );
+    static void * GetObject( CoronaObject * box, int type );
+    static const void * GetObject( const CoronaObject * box, int type );
+    
+public:
+    CoronaObject * Add( const void * object, int type );
     
 private:
-    std::vector< ObjectHandleNode > fNodes;
+    std::list< CoronaObject > fBoxes;
 };
 
 // ----------------------------------------------------------------------------
@@ -84,12 +74,12 @@ struct CoronaShaderData : CoronaObject {};
 struct CoronaDisplayObject : CoronaObject {};
 struct CoronaGroupObject : CoronaObject {};
 
-template<typename T> Rtt_INLINE T * ObjectHandleLoadPtr( void * ptr ) { return (T *)ptr; }
-template<typename T> Rtt_INLINE const T * ObjectHandleLoadPtr( const void * ptr ) { return (const T *)ptr; }
+template<typename T> Rtt_INLINE T * ObjectBoxCast( void * ptr ) { return (T *)ptr; }
+template<typename T> Rtt_INLINE const T * ObjectBoxCast( const void * ptr ) { return (const T *)ptr; }
 
-#define OBJECT_HANDLE_STORE(TYPE, NAME, OBJECT) Corona##TYPE NAME = {}; list.AddHandle( (CoronaObject *)&NAME, OBJECT, Rtt::ObjectHandleNode::k##TYPE )
-#define OBJECT_HANDLE_LOAD(TYPE, HANDLE) ObjectHandleLoadPtr< Rtt::TYPE >( Rtt::ObjectHandleNode::ToObject( HANDLE, Rtt::ObjectHandleNode::k##TYPE ) )
+#define OBJECT_BOX_STORE(TYPE, NAME, OBJECT) auto * NAME = ObjectBoxCast< Corona##TYPE >( list.Add( OBJECT, Rtt::ObjectBoxList::k##TYPE ) )
+#define OBJECT_BOX_LOAD(TYPE, BOX) ObjectBoxCast< Rtt::TYPE >( Rtt::ObjectBoxList::GetObject( BOX, Rtt::ObjectBoxList::k##TYPE ) )
 
 // ----------------------------------------------------------------------------
 
-#endif // _Rtt_ObjectHandleList_h__
+#endif // _Rtt_ObjectBoxList_h__

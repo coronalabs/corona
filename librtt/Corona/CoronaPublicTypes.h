@@ -11,10 +11,10 @@
 #ifndef _CoronaPublicTypes_H__
 #define _CoronaPublicTypes_H__
 
-struct CoronaObject {
-    void * internal[2];
-};
+// base type
+struct CoronaObject;
 
+// derived types
 struct CoronaRenderer;
 struct CoronaRenderData;
 struct CoronaShader;
