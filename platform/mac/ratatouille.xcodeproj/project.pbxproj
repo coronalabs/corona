@@ -688,6 +688,14 @@
 		A4FBC5681A2D5915004D9A01 /* Rtt_MacDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00B73CED12B720C90057F594 /* Rtt_MacDevice.mm */; };
 		A4FBC5691A2D5919004D9A01 /* Rtt_MacDeviceIdentifier.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B73CEF12B720C90057F594 /* Rtt_MacDeviceIdentifier.c */; };
 		A4FBC56A1A2D59F4004D9A01 /* Rtt_PlatformObjectWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CEA1512B7469B00D9B6A4 /* Rtt_PlatformObjectWrapper.cpp */; };
+		AAAA47F226D58963008C2552 /* CoronaObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = AAAA47E726D5863D008C2552 /* CoronaObjects.h */; };
+		AAAA47F326D58963008C2552 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAAA47E826D58748008C2552 /* CoronaObjects.cpp */; };
+		AAAA47F426D58963008C2552 /* CoronaPublicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AAAA47E626D585F7008C2552 /* CoronaPublicTypes.h */; };
+		AAAA47FE26D58964008C2552 /* CoronaObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = AAAA47E726D5863D008C2552 /* CoronaObjects.h */; };
+		AAAA47FF26D58964008C2552 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAAA47E826D58748008C2552 /* CoronaObjects.cpp */; };
+		AAAA480026D58964008C2552 /* CoronaPublicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AAAA47E626D585F7008C2552 /* CoronaPublicTypes.h */; };
+		AAAA480B26D991DB008C2552 /* Rtt_ObjectBoxList.h in Headers */ = {isa = PBXBuildFile; fileRef = AAAA480A26D991DB008C2552 /* Rtt_ObjectBoxList.h */; };
+		AAAA480C26D991DB008C2552 /* Rtt_ObjectBoxList.h in Headers */ = {isa = PBXBuildFile; fileRef = AAAA480A26D991DB008C2552 /* Rtt_ObjectBoxList.h */; };
 		C200AAEA19626D86005828AA /* CoronaPListSupport.lua in Resources */ = {isa = PBXBuildFile; fileRef = C200AAE919626D86005828AA /* CoronaPListSupport.lua */; };
 		C200AAEB19627074005828AA /* CoronaPListSupport.lua in Sources */ = {isa = PBXBuildFile; fileRef = C200AAE919626D86005828AA /* CoronaPListSupport.lua */; };
 		C2038B101DDCF1970071594F /* AnalyticsProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = C2038B0F1DDCF1970071594F /* AnalyticsProvider.mm */; };
@@ -3195,6 +3203,10 @@
 		A4F36553146C44200019808D /* AndroidAppBuildController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AndroidAppBuildController.h; sourceTree = "<group>"; };
 		A4F36554146C44200019808D /* AndroidAppBuildController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AndroidAppBuildController.mm; sourceTree = "<group>"; };
 		A4FBC4F71A2D5479004D9A01 /* libCoronaCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCoronaCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAAA47E626D585F7008C2552 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
+		AAAA47E726D5863D008C2552 /* CoronaObjects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaObjects.h; path = Corona/CoronaObjects.h; sourceTree = "<group>"; };
+		AAAA47E826D58748008C2552 /* CoronaObjects.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
+		AAAA480A26D991DB008C2552 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
 		C200AAE919626D86005828AA /* CoronaPListSupport.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaPListSupport.lua; path = ../platform/resources/CoronaPListSupport.lua; sourceTree = "<group>"; };
 		C2038B0F1DDCF1970071594F /* AnalyticsProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AnalyticsProvider.mm; sourceTree = "<group>"; };
 		C2038B111DDCF1BD0071594F /* AnalyticsProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AnalyticsProvider.h; sourceTree = "<group>"; };
@@ -4782,6 +4794,7 @@
 				A432880C176A621100ACB6FF /* Rtt_LuaLibGraphics.h */,
 				A432880D176A621100ACB6FF /* Rtt_MDisplayDelegate.h */,
 				A432880E176A621100ACB6FF /* Rtt_MDrawable.h */,
+				AAAA480A26D991DB008C2552 /* Rtt_ObjectBoxList.h */,
 				A432880F176A621100ACB6FF /* Rtt_OpenPath.cpp */,
 				A4328810176A621100ACB6FF /* Rtt_OpenPath.h */,
 				A4328811176A621100ACB6FF /* Rtt_Paint.cpp */,
@@ -5039,6 +5052,9 @@
 				A491861C1641DD6100A39286 /* CoronaProvider.lua */,
 				A40C523E16F847EA00AE2ECF /* CoronaVersion.c */,
 				A40C523F16F847EA00AE2ECF /* CoronaVersion.h */,
+				AAAA47E626D585F7008C2552 /* CoronaPublicTypes.h */,
+				AAAA47E726D5863D008C2552 /* CoronaObjects.h */,
+				AAAA47E826D58748008C2552 /* CoronaObjects.cpp */,
 			);
 			name = Corona;
 			path = ../../librtt;
@@ -5415,6 +5431,7 @@
 				C2DA96551B46460F00DAF684 /* Rtt_ArrayTupleStruct.h in Headers */,
 				00B73BEC12B71BF20057F594 /* Rtt_Assert.h in Headers */,
 				00B73BED12B71BF20057F594 /* Rtt_AutoPtr.h in Headers */,
+				AAAA47F226D58963008C2552 /* CoronaObjects.h in Headers */,
 				F5A752271BFA40F000CCDB94 /* CoronaLuaObjCHelper.h in Headers */,
 				00B73BEF12B71BF20057F594 /* Rtt_AutoResource.h in Headers */,
 				C2DA96361B46460F00DAF684 /* Rtt_BitmapMask.h in Headers */,
@@ -5564,6 +5581,7 @@
 				C2DA96561B46460F00DAF684 /* Rtt_ShaderDataAdapter.h in Headers */,
 				A4328881176A621200ACB6FF /* Rtt_ShaderFactory.h in Headers */,
 				A4328883176A621200ACB6FF /* Rtt_ShaderName.h in Headers */,
+				AAAA47F426D58963008C2552 /* CoronaPublicTypes.h in Headers */,
 				F50F51BA1B700C04006FEF92 /* Rtt_TextureResourceBitmap.h in Headers */,
 				C2DA96751B46460F00DAF684 /* Rtt_ShapeAdapter.h in Headers */,
 				C2DA96641B46460F00DAF684 /* Rtt_ShapeAdapterCircle.h in Headers */,
@@ -5600,6 +5618,7 @@
 				C2DA962F1B46460F00DAF684 /* Rtt_Types.h in Headers */,
 				C2DA963E1B46460F00DAF684 /* Rtt_UseCount.h in Headers */,
 				C2DA963F1B46460F00DAF684 /* Rtt_Version.h in Headers */,
+				AAAA480B26D991DB008C2552 /* Rtt_ObjectBoxList.h in Headers */,
 				C2DA96201B46460F00DAF684 /* Rtt_VersionTimestamp.h in Headers */,
 				C2DA966C1B46460F00DAF684 /* Rtt_VertexCache.h in Headers */,
 				C2DA961D1B46460F00DAF684 /* Rtt_WeakCount.h in Headers */,
@@ -5770,6 +5789,7 @@
 				C229DFF91B32221B00D87A7C /* Rtt_CompositeObject.h in Headers */,
 				C229DFFA1B32221B00D87A7C /* Rtt_CompositePaint.h in Headers */,
 				C229DFFB1B32221B00D87A7C /* Rtt_Config.h in Headers */,
+				AAAA47FE26D58964008C2552 /* CoronaObjects.h in Headers */,
 				C229DFFC1B32221B00D87A7C /* Rtt_ContainerObject.h in Headers */,
 				C229DFFD1B32221B00D87A7C /* Rtt_DeviceOrientation.h in Headers */,
 				C229DFFE1B32221B00D87A7C /* Rtt_Display.h in Headers */,
@@ -5864,6 +5884,7 @@
 				C229E0511B32221B00D87A7C /* Rtt_PlatformAudioPlayer.h in Headers */,
 				C229E0521B32221B00D87A7C /* Rtt_PlatformAudioRecorder.h in Headers */,
 				C229E0531B32221B00D87A7C /* Rtt_PlatformAudioSessionManager.h in Headers */,
+				AAAA480026D58964008C2552 /* CoronaPublicTypes.h in Headers */,
 				C229E0541B32221B00D87A7C /* Rtt_PlatformBitmap.h in Headers */,
 				C229E0551B32221B00D87A7C /* Rtt_PlatformBitmapTexture.h in Headers */,
 				C229E0561B32221B00D87A7C /* Rtt_PlatformData.h in Headers */,
@@ -5937,6 +5958,7 @@
 				C229E0941B32221B00D87A7C /* Rtt_TextObject.h in Headers */,
 				C229E0951B32221B00D87A7C /* Rtt_TextureFactory.h in Headers */,
 				C229E0961B32221B00D87A7C /* Rtt_TextureResource.h in Headers */,
+				AAAA480C26D991DB008C2552 /* Rtt_ObjectBoxList.h in Headers */,
 				C229E0971B32221B00D87A7C /* Rtt_Time.h in Headers */,
 				C229E0981B32221B00D87A7C /* Rtt_Traits.h in Headers */,
 				C229E0991B32221B00D87A7C /* Rtt_Transform.h in Headers */,
@@ -6836,6 +6858,7 @@
 				000CE7A212B73EE300D9B6A4 /* Rtt_LuaLibOpenAL.cpp in Sources */,
 				000CE7A612B73EE300D9B6A4 /* Rtt_LuaLibPhysics.cpp in Sources */,
 				000CE7AC12B73EE300D9B6A4 /* Rtt_LuaLibSQLite.cpp in Sources */,
+				AAAA47F326D58963008C2552 /* CoronaObjects.cpp in Sources */,
 				000CE7AE12B73EE300D9B6A4 /* Rtt_LuaLibSystem.cpp in Sources */,
 				000CE7B012B73EE300D9B6A4 /* Rtt_LuaProxy.cpp in Sources */,
 				000CE7B212B73EE300D9B6A4 /* Rtt_LuaProxyVTable.cpp in Sources */,
@@ -7682,6 +7705,7 @@
 				C229E1FB1B32221B00D87A7C /* widget_theme_android_sheet.lua in Sources */,
 				C229E1FC1B32221B00D87A7C /* widget_theme_ios.lua in Sources */,
 				C229E1FD1B32221B00D87A7C /* widget_theme_ios7.lua in Sources */,
+				AAAA47FF26D58964008C2552 /* CoronaObjects.cpp in Sources */,
 				C229E1FE1B32221B00D87A7C /* widget_theme_ios7_sheet.lua in Sources */,
 				C229E1FF1B32221B00D87A7C /* widget_theme_ios_sheet.lua in Sources */,
 			);
@@ -8675,12 +8699,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = QPJBCSV3E8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

@@ -19,12 +19,6 @@
 
 // ----------------------------------------------------------------------------
 
-struct CoronaObject {
-    void * fList;
-    void * fObject;
-    int fType;
-};
-
 namespace Rtt
 {
 
@@ -34,6 +28,14 @@ class ObjectBoxList {
 public:
     ObjectBoxList();
     ~ObjectBoxList();
+
+public:
+    struct Box {
+        void * fList;
+        void * fObject;
+        int fType;
+    };
+
     
 public:
     enum {
@@ -46,19 +48,19 @@ public:
     };
 
 public:
-    static bool CanGetObject ( const CoronaObject * box, int type);
+    static bool CanGetObject ( const Box * box, int type);
     
 public:
-    static ObjectBoxList * GetList( CoronaObject * box );
-    static const ObjectBoxList * GetList( const CoronaObject * box );
-    static void * GetObject( CoronaObject * box, int type );
-    static const void * GetObject( const CoronaObject * box, int type );
+    static ObjectBoxList * GetList( Box * box );
+    static ObjectBoxList * GetList( const Box * box );
+    static void * GetObject( Box * box, int type );
+    static const void * GetObject( const Box * box, int type );
     
 public:
-    CoronaObject * Add( const void * object, int type );
+    Box * Add( const void * object, int type );
     
 private:
-    std::list< CoronaObject > fBoxes;
+    std::list< Box > fBoxes;
 };
 
 // ----------------------------------------------------------------------------
@@ -67,12 +69,12 @@ private:
 
 // ----------------------------------------------------------------------------
 
-struct CoronaRenderer : CoronaObject {};
-struct CoronaRenderData : CoronaObject {};
-struct CoronaShader : CoronaObject {};
-struct CoronaShaderData : CoronaObject {};
-struct CoronaDisplayObject : CoronaObject {};
-struct CoronaGroupObject : CoronaObject {};
+struct CoronaRenderer : Rtt::ObjectBoxList::Box {};
+struct CoronaRenderData : Rtt::ObjectBoxList::Box {};
+struct CoronaShader : Rtt::ObjectBoxList::Box {};
+struct CoronaShaderData : Rtt::ObjectBoxList::Box {};
+struct CoronaDisplayObject : Rtt::ObjectBoxList::Box {};
+struct CoronaGroupObject : Rtt::ObjectBoxList::Box {};
 
 template<typename T> Rtt_INLINE T * ObjectBoxCast( void * ptr ) { return (T *)ptr; }
 template<typename T> Rtt_INLINE const T * ObjectBoxCast( const void * ptr ) { return (const T *)ptr; }

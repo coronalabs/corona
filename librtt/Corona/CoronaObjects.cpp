@@ -49,43 +49,45 @@ ObjectBoxList::ObjectBoxList()
     
 ObjectBoxList::~ObjectBoxList()
 {
-    for (CoronaObject & box : fBoxes)
+    for (Box & box : fBoxes)
     {
         box.fObject = NULL;
     }
 }
 
 bool
-ObjectBoxList::CanGetObject( const CoronaObject * box, int type )
+ObjectBoxList::CanGetObject( const Box * box, int type )
 {
     return type == box->fType || (kGroupObject == box->fType && kDisplayObject == type);
 }
 
 ObjectBoxList *
-ObjectBoxList::GetList( CoronaObject * box )
+ObjectBoxList::GetList( Box * box )
 {
     return ( ObjectBoxList * )box->fList;
 }
 
-const ObjectBoxList *
-ObjectBoxList::GetList( const CoronaObject * box )
+ObjectBoxList *
+ObjectBoxList::GetList( const Box * box )
 {
-    return ( const ObjectBoxList * )box->fList;
+    void * list = const_cast< void * >( box->fList );
+    
+    return ( ObjectBoxList * )list;
 }
 
 void *
-ObjectBoxList::GetObject( CoronaObject * box, int type )
+ObjectBoxList::GetObject( Box * box, int type )
 {
     if (NULL != box && NULL != box->fObject && CanGetObject( box, type ))
     {
-        return const_cast< CoronaObject * >( box )->fObject;
+        return const_cast< Box * >( box )->fObject;
     }
     
     return NULL;
 }
 
 const void *
-ObjectBoxList::GetObject( const CoronaObject * box, int type )
+ObjectBoxList::GetObject( const Box * box, int type )
 {
     if (NULL != box && NULL != box->fObject && CanGetObject( box, type ))
     {
@@ -95,10 +97,10 @@ ObjectBoxList::GetObject( const CoronaObject * box, int type )
     return NULL;
 }
 
-CoronaObject *
+ObjectBoxList::Box *
 ObjectBoxList::Add( const void * object, int type )
 {
-    for (CoronaObject & box : fBoxes)
+    for (Box & box : fBoxes)
     {
         Rtt_ASSERT( box.fList == this );
         
@@ -108,9 +110,9 @@ ObjectBoxList::Add( const void * object, int type )
         }
     }
     
-    fBoxes.push_back( CoronaObject{} );
+    fBoxes.push_back( Box{} );
     
-    CoronaObject & newBox = fBoxes.back();
+    Box & newBox = fBoxes.back();
     
     newBox.fList = this;
     newBox.fObject = const_cast< void * >( object );
@@ -142,12 +144,11 @@ union GenericParams {
 
     AFTER_HEADER_STRUCT( Basic );
     AFTER_HEADER_STRUCT( GroupBasic );
-    AFTER_HEADER_STRUCT( AddedToParent );
+    AFTER_HEADER_STRUCT( Parent );
     AFTER_HEADER_STRUCT( DidInsert );
     AFTER_HEADER_STRUCT( Matrix );
     AFTER_HEADER_STRUCT( Draw );
     AFTER_HEADER_STRUCT( RectResult );
-    AFTER_HEADER_STRUCT( RemovedFromParent );
     AFTER_HEADER_STRUCT( Rotate );
     AFTER_HEADER_STRUCT( Scale );
     AFTER_HEADER_STRUCT( Translate );
@@ -384,6 +385,11 @@ GetSizes( unsigned short method, size_t & fullSize, size_t & paramSize )
         GET_SIZES( Basic );
 
         break;
+    case kAugmentedMethod_AddedToParent:
+    case kAugmentedMethod_RemovedFromParent:
+        GET_SIZES( Parent );
+            
+        break;
     case kAugmentedMethod_CanCull:
     case kAugmentedMethod_CanHitTest:
         GET_SIZES( BooleanResult );
@@ -411,15 +417,11 @@ GetSizes( unsigned short method, size_t & fullSize, size_t & paramSize )
         GET_SIZES( BooleanResultMatrix );
 
         break;
-    case UNIQUE_METHOD( AddedToParent );
-        break;
     case UNIQUE_METHOD( DidInsert );
         break;
     case UNIQUE_METHOD( Draw );
         break;
     case UNIQUE_METHOD( OnMessage );
-        break;
-    case UNIQUE_METHOD( RemovedFromParent );
         break;
     case UNIQUE_METHOD( Rotate );
         break;
@@ -552,6 +554,8 @@ int PushObject( lua_State * L, void * userData, const CoronaObjectParams * param
 {
     if (!GetStream( L, params )) // ...[, stream]
     {
+        lua_settop( L, 0 ); // (empty)
+        
         return 0;
     }
 
@@ -585,7 +589,7 @@ int PushObject( lua_State * L, void * userData, const CoronaObjectParams * param
 
     else
     {
-        lua_pop( L, 1 ); // ...
+        lua_settop( L, 0 ); // (empty)
     }
 
     return 0;
@@ -731,7 +735,7 @@ struct CoronaObjectsInterface : public Base {
         
         OBJECT_BOX_STORE( DisplayObject, storedThis, this );
         OBJECT_BOX_STORE( GroupObject, parentStored, parent );
-        CORONA_OBJECTS_GET_PARAMS( AddedToParent );
+        CORONA_OBJECTS_GET_PARAMS_SPECIFIC( AddedToParent, Parent );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, L, parentStored );
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( AddedToParent, L, parent );
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, L, parentStored );
@@ -862,9 +866,9 @@ struct CoronaObjectsInterface : public Base {
 
         OBJECT_BOX_STORE( DisplayObject, storedThis, this );
         OBJECT_BOX_STORE( GroupObject, parentStored, parent );
-        CORONA_OBJECTS_GET_PARAMS( RemovedFromParent );
+        CORONA_OBJECTS_GET_PARAMS_SPECIFIC( RemovedFromParent, Parent );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, L, parentStored );
-        CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( AddedToParent, L, parent );
+        CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( RemovedFromParent, L, parent );
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, L, parentStored );
     }
 
@@ -1549,7 +1553,7 @@ CoronaGroupObject * CoronaObjectGetParent( const CoronaDisplayObject * object )
     
     if (displayObject)
     {
-        Rtt::ObjectBoxList & list = *Rtt::ObjectBoxList::GetList( (CoronaObject *)displayObject );
+        Rtt::ObjectBoxList & list = *Rtt::ObjectBoxList::GetList( object );
         
         OBJECT_BOX_STORE( GroupObject, parent, displayObject->GetParent() );
         
@@ -1562,13 +1566,13 @@ CoronaGroupObject * CoronaObjectGetParent( const CoronaDisplayObject * object )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-CoronaObject * CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index )
+CoronaDisplayObject * CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index )
 {
     auto * go = OBJECT_BOX_LOAD( GroupObject, groupObject );
 
     if (go && index >= 0 && index < go->NumChildren())
     {
-        Rtt::ObjectBoxList & list = *Rtt::ObjectBoxList::GetList( (CoronaObject *)groupObject );
+        Rtt::ObjectBoxList & list = *Rtt::ObjectBoxList::GetList( groupObject );
         
         OBJECT_BOX_STORE( DisplayObject, child, &go->ChildAt( index ) );
 
