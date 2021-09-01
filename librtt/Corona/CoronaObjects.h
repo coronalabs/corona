@@ -83,97 +83,102 @@ typedef enum {
     kAugmentedMethod_Value,
 
     /**
-      (TODO)
+     This method is invoked just before an object is destroyed, with `CoronaObjectLifetimeParams`.
     */
-    kAugmentedMethod_OnFinalize, // Lifetime
+    kAugmentedMethod_OnFinalize,
 
     //
     // The following operations have no obvious use case frequencies.
     //
 
     /**
-      (TODO)
+     This method is invoked after a new object is added to a group (possibly the stage) but before
+     any of its Lua-side presence is established, with `CoronaObjectParentParams`.
     */
     kAugmentedMethod_AddedToParent,
 
     /**
-      (TODO)
+     This method is invoked when the object stops being visible, with `CoronaObjectBasicParams`.
     */
-    kAugmentedMethod_DidMoveOffscreen, // Basic
+    kAugmentedMethod_DidMoveOffscreen,
 
     /**
-      (TODO)
+     This method is invoked following an `UpdateTransform()` and some of its subsequent steps,
+     with `CoronaObjectMatrixParams`.
     */
-    kAugmentedMethod_DidUpdateTransform, // Matrix
+    kAugmentedMethod_DidUpdateTransform,
 
     /**
-      (TODO)
+     This method is invoked when an object must calculate its bounds, with `CoronaObjectRectResultParams`.
     */
-    kAugmentedMethod_GetSelfBounds, // RectResult
+    kAugmentedMethod_GetSelfBounds,
 
     /**
-      (TODO)
+     This method is invoked when an object must calculate its anchor-related bounds, with `CoronaObjectRectResultParams`.
     */
-    kAugmentedMethod_GetSelfBoundsForAnchor, // RectResult
+    kAugmentedMethod_GetSelfBoundsForAnchor,
 
     /**
-      (TODO)
+     This method is invoked when an object is hit-tested for touch purposes, with `CoronaObjectBooleanResultPointParams`.
     */
-    kAugmentedMethod_HitTest, // BooleanResultPoint
+    kAugmentedMethod_HitTest,
 
     /**
-      (TODO)
+     This method is invoked after an object has been constructed and set up, with
+     `CoronaObjectLifetimeParams`.
     */
-    kAugmentedMethod_OnCreate, // Lifetime
+    kAugmentedMethod_OnCreate,
 
     /**
-      (TODO)
+     This method is invoked when an object is setting up some resources it needs, with `CoronaObjectBasicParams`.
     */
-    kAugmentedMethod_Prepare, // Basic
+    kAugmentedMethod_Prepare,
 
     /**
-      (TODO)
+     This method is invoked just before an object is removed, while still belonging to a parent
+     (possibly the stage), with `CoronaObjectParentParams`.
     */
     kAugmentedMethod_RemovedFromParent,
 
     /**
-      (TODO)
+     This method is invoked when the object's rotation is assigned or updated, with `CoronaObjectRotateParams`.
     */
     kAugmentedMethod_Rotate,
 
     /**
-      (TODO)
+     This method is invoked when the object's scale is assigned or updated, with `CoronaObjectScaleParams`.
     */
     kAugmentedMethod_Scale,
 
     /**
-      (TODO)
+     This method is invoked when the object's position is assigned or updated, with `CoronaObjectTranslateParams`.
     */
     kAugmentedMethod_Translate,
 
     /**
-      (TODO)
+     This method is invoked in various circumstances where the object's transformation matrix has
+     been updated, with `CoronaObjectBooleanResultMatrix` params.
     */
-    kAugmentedMethod_UpdateTransform, // BooleanResultMatrix
+    kAugmentedMethod_UpdateTransform,
 
     /**
-      (TODO)
+     This method is invoked when the object becomes visible, with `CoronaObjectBasicParams`.
     */
-    kAugmentedMethod_WillMoveOnscreen, // Basic
+    kAugmentedMethod_WillMoveOnscreen,
 
     //
     // The following operations are relevant to groups.
     //
 
     /**
-      (TODO)
+     This method is invoked after inserting a child into a group, with `CoronaObjectDidInsertParams`.
     */
     kAugmentedMethod_DidInsert,
 
     /**
-      (TODO)
+     This method is invoked after removing a child from a group, with `CoronaObjectGroupBasicParams`.
     */
-    kAugmentedMethod_DidRemove, // Basic
+    kAugmentedMethod_DidRemove,
 
     /**
      The number of valid augmentable methods.
@@ -251,7 +256,7 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Parent, const CoronaDisplayObject * self, void 
  
  Inherits from IgnorableMethodParams.
 
- (TODO)
+ These are method params that provide an input/output matrix, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float matrix[6] )`.
 */
 CORONA_OBJECTS_BOOKENDED_PARAMS( Matrix, const CoronaDisplayObject * self, void * userData, float matrix[6] );
 
@@ -260,7 +265,7 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Matrix, const CoronaDisplayObject * self, void 
  
  Inherits from IgnorableMethodParams.
 
- (TODO)
+ These are method params related to draw opportunities, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, CoronaRenderer * renderer )`.
 */
 CORONA_OBJECTS_BOOKENDED_PARAMS( Draw, const CoronaDisplayObject * self, void * userData, CoronaRenderer * renderer );
 
@@ -269,7 +274,7 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Draw, const CoronaDisplayObject * self, void * 
  
  Inherits from IgnorableMethodParams.
 
- (TODO)
+ These are method params related to rectangular outputs, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float * xMin, float * yMin, float * xMax, float * yMax )`.
 */
 CORONA_OBJECTS_BOOKENDED_PARAMS( RectResult, const CoronaDisplayObject * self, void * userData, float * xMin, float * yMin, float * xMax, float * yMax );
 
@@ -278,7 +283,7 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( RectResult, const CoronaDisplayObject * self, v
  
  Inherits from IgnorableMethodParams.
 
- (TODO)
+ These are method params related to rotations, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float delta )`.
 */
 CORONA_OBJECTS_BOOKENDED_PARAMS( Rotate, const CoronaDisplayObject * self, void * userData, float delta );
 
@@ -287,7 +292,7 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Rotate, const CoronaDisplayObject * self, void 
  
  Inherits from IgnorableMethodParams.
 
- (TODO)
+ These are method params related to scalings, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float sx, float sy, int isNew )`.
 */
 CORONA_OBJECTS_BOOKENDED_PARAMS( Scale, const CoronaDisplayObject * self, void * userData, float sx, float sy, int isNew );
 
@@ -295,8 +300,8 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Scale, const CoronaDisplayObject * self, void *
  CoronaObjectTranslateParams
  
  Inherits from IgnorableMethodParams.
-
- (TODO)
+ 
+ These are method params related to translations, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float x, float y )`.
 */
 CORONA_OBJECTS_BOOKENDED_PARAMS( Translate, const CoronaDisplayObject * self, void * userData, float x, float y );
 
@@ -305,7 +310,7 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Translate, const CoronaDisplayObject * self, vo
  
  Inherits from IgnorableMethodParams.
 
- (TODO)
+ These are method params related to insertions, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, int childParentChanged )`.
 */
 CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, CoronaGroupObject * self, void * userData, int childParentChanged );
 
@@ -366,7 +371,7 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObject * self, voi
  
  Inherits from EarlyOutableIgnorableMethodParams.
 
- (TODO)
+ These are method params related to boolean outputs, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, int * result )`.
 */
 CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResult, const CoronaDisplayObject * self, void * userData, int * result );
 
@@ -375,7 +380,8 @@ CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResult, const CoronaDispla
  
  Inherits from EarlyOutableIgnorableMethodParams.
 
- (TODO)
+ These are method params related to point inputs and boolean outputs, whose functions have
+ signature `method( const CoronaDisplayObject * self, void * userData, float x, float y, int * result )`.
 */
 CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultPoint, const CoronaDisplayObject * self, void * userData, float x, float y, int * result );
 
@@ -383,8 +389,9 @@ CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultPoint, const CoronaD
  CoronaObjectBooleanResultMatrixParams
  
  Inherits from EarlyOutableIgnorableMethodParams.
-
- (TODO)
+ 
+ These are method params related to matrix inputs and boolean outputs, whose functions have
+ signature `method( const CoronaDisplayObject * self, void * userData, const float matrix[6], int * result )`.
 */
 CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultMatrix, const CoronaDisplayObject * self, void * userData, const float matrix[6], int * result );
 
@@ -733,13 +740,14 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
 // int CoronaObjectsShouldDraw( const CoronaDisplayObject * object, int * shouldDraw ) CORONA_PUBLIC_SUFFIX;
 
 /**
- (TODO)
- @param object
- @params hasBounds
- @return
+ @param object Boxed display object.
+ @params hasBounds If non-0, set dummy bounds (the full content region), else clear them.
+ @return If non-0, the bounds were set.
 */
 CORONA_API
 int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObject * object, int hasBounds ) CORONA_PUBLIC_SUFFIX;
+
+// TODO: ^^ replaced CanHitTest()? did that have shortcomings?
 
 // ----------------------------------------------------------------------------
 
