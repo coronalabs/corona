@@ -740,13 +740,11 @@ public class Controller {
 		// Attempt to execute the given URL.
 		boolean hasSucceeded = false;
 		try {
-			if (canShowActivityFor(intent)) {
-				context.startActivity(intent);
-				hasSucceeded = true;
-			}
+			context.startActivity(intent);
+			hasSucceeded = true;
 		}
-		catch (Exception ex) {
-			ex.printStackTrace();
+		catch (Exception ignore) {
+			// Nothing to do here, intent can't be handled.
 		}
 		return hasSucceeded;
 	}

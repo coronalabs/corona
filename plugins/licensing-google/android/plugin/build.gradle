@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+    buildFeatures {
+        buildConfig = false
+    }
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    implementation ':Corona@aar'
+}
+
+task extractPluginJar() {
+    group "Solar2Dev"
+    dependsOn assemble
+    doLast {
+        copy {
+            from {
+                zipTree("$buildDir/outputs/aar/${project.name}-release.aar").matching {
+                    include 'classes.jar'
+                }.singleFile
+            }
+            into "$buildDir/outputs/"
+            rename "classes.jar", "licensing.jar"
+        }
+    }
+}
