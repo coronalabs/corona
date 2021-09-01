@@ -55,7 +55,9 @@ namespace /*anonymous*/
 			// case Texture::kBGRA:		internalFormat = GL_RGBA;		sourceFormat = GL_RGBA;			sourceType = GL_UNSIGNED_BYTE; break;
 			// case Texture::kABGR:		internalFormat = GL_RGBA;		sourceFormat = GL_RGBA;			sourceType = GL_UNSIGNED_BYTE; break;
 #endif
-
+#ifdef Rtt_NXS_ENV
+			case Texture::kLuminanceAlpha:		internalFormat = GL_LUMINANCE_ALPHA;	sourceFormat = GL_LUMINANCE_ALPHA;		sourceType = GL_UNSIGNED_BYTE; break;
+#endif
 			default: Rtt_ASSERT_NOT_REACHED();
 		}
 	}

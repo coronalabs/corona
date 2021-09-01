@@ -355,14 +355,17 @@
 //
 #if defined( Rtt_NXS_ENV )
 
+#define Rtt_OPENGL_CLIENT_SIDE_ARRAYS 1
 #define Rtt_USE_GLOBAL_VARIABLES
 #define Rtt_VPRINTF_SUPPORTED
 #define Rtt_USE_LIMITS
 #define Rtt_ALLOCATOR_SYSTEM
 #define Rtt_LUA_LFS
 #define Rtt_NETWORK
+#define Rtt_SQLITE
 
 #include <sys/stat.h>
+#include "Rtt_NX_Allocator.h"
 #include "Rtt_FileSystem.h"
 
 #endif

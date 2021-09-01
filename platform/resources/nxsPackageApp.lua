@@ -32,18 +32,6 @@ local function quoteString( str )
 	return "\"" .. str .. "\""
 end
 
-local function dir_exists(path)
-    local cd = lfs.currentdir()
-    local is = lfs.chdir(path) and true or false
-    lfs.chdir(cd)
-    return is
-end
-
-local function file_exists(name)
-   local f = io.open(name,"r")
-   if f~=nil then io.close(f) return true else return false end
-end
-
 local function globToPattern(g)
   local p = "^"  -- pattern being built
   local i = 0    -- index in g
@@ -249,20 +237,22 @@ local function nxsDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
 		return nil
 	end
 
-	local collectorParams = { 
-		pluginPlatform = 'nx',
+	local collectorParams = {
+		pluginPlatform = 'nx64',
 		plugins = buildSettings.plugins or {},
 		destinationDirectory = tmpDir,
 		build = buildRevision,
 		extractLocation = pluginDstDir,
 	}
-	
+
 	local pluginCollector = require "CoronaBuilderPluginCollector"
 	return pluginCollector.collect(collectorParams)
 end
 
 local function getExcludePredecate()
 	local excludes = {
+--			"*.nro",
+--			"*.nrr",
 			"*.config",
 			"*.lu",
 			"*.lua",
@@ -308,9 +298,7 @@ local function getExcludePredecate()
 --			logd('Exclude rule: ', excludes[i])
 --		end
 
-		return
-
-		function(fileName)
+		return function(fileName)
 			for i = 1, #excludes do
 				local rc = fileName:find(excludes[i])
 				if rc ~= nil then
@@ -388,13 +376,13 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
 					logd("Failed to exclude" .. f) 
 				end
 			end
-    end
+		end
 	end
 end
 
 --
 -- global script to call from C++
--- 
+--
 function nxsPackageApp( args )
 
 	local nxsRoot = os.getenv("NINTENDO_SDK_ROOT")
@@ -423,7 +411,7 @@ function nxsPackageApp( args )
 	end
 	logd("template location: " .. template);
 
-	if not file_exists(template) then
+	if not isFile(template) then
 		return 'Missing template: ' .. template
 	end
 
@@ -458,6 +446,32 @@ function nxsPackageApp( args )
 	end
 	logd('appFolder: ' .. appFolder)
 
+
+	-- Download plugins
+	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
+	lfs.mkdir(pluginDownloadDir)
+	lfs.mkdir(pluginExtractDir)
+	local msg = nxsDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginExtractDir)
+	if type(msg) == 'string' then
+		return msg
+	end
+
+	-- Copy lua plugins over to the app folder
+	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
+	if isDir( luaPluginDir ) then
+		copyDir(luaPluginDir, pluginExtractDir)
+		removeDir(pathJoin(pluginExtractDir, 'lua'))
+	end
+	luaPluginDir = pathJoin(pluginExtractDir, 'lua_51')
+	if isDir( luaPluginDir ) then
+		copyDir(luaPluginDir, pluginExtractDir)
+		removeDir(pathJoin(pluginExtractDir, 'lua_51'))
+	end
+	if isDir( pluginExtractDir ) then
+		copyDir(pluginExtractDir, appFolder)
+	end
+
 	-- unzip standard template
 
 	local templateFolder = pathJoin(args.tmpDir, 'nxtemplate')
@@ -482,14 +496,14 @@ function nxsPackageApp( args )
 	if ret ~= 0 then
 		return 'Failed to unpack template ' .. template .. ' to ' .. templateFolder ..  ', err=' .. ret
 	end
-	logd('Unzipped ' .. template, ' to ', templateFolder)
+	logd('Unzipped ' .. template .. ' to ' .. templateFolder)
 
 	-- gather files into appFolder (tmp folder)
 	local ret = copyDir( args.srcDir, appFolder )
 	if ret ~= 0 then
 		return "Failed to copy " .. args.srcDir .. ' to ' .. appFolder
 	end
-	logd("Copied ", args.srcDir, ' to ', appFolder)
+	logd("Copied " .. args.srcDir .. ' to ' .. appFolder)
 
 	if args.useStandartResources then
 		local ret = copyDir( pathJoin(templateFolder, 'res_widget'), appFolder )
@@ -513,7 +527,7 @@ function nxsPackageApp( args )
 	-- sample: AuthoringTool.exe creatensp -o Rtt.nsp --metartt.nmeta --type Application --desc Application.desc--program program0.ncd/code assets2
 
 	local metafile = args.nmetaPath
-	if not file_exists(metafile) then
+	if not isFile(metafile) then
 		return 'Missing ' .. metafile .. ' file'
 	end
 	log('Using ' .. metafile)
@@ -538,7 +552,7 @@ function nxsPackageApp( args )
 		log('\nAuthoringTool output\n' .. stdout)
 	end
 
-	if not file_exists(nspfile) then
+	if not isFile(nspfile) then
 		return 'Failed to build NX Switch App'
 	else
 		log('\nBuild succeeded: ' .. nspfile)

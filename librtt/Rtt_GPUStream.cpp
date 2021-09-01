@@ -1479,9 +1479,6 @@ GPUStream::CaptureFrameBuffer( BufferBitmap& outBuffer, S32 xScreen, S32 yScreen
 	GLenum kType = GPU_GetPixelType( format );
 #endif
 
-#if defined(Rtt_NXS_ENV)
-	Rtt_ASSERT(0 && "glReadPixels: TODO");
-#else
 	glReadPixels( xScreen,
 					yScreen,
 					wScreen,
@@ -1489,7 +1486,6 @@ GPUStream::CaptureFrameBuffer( BufferBitmap& outBuffer, S32 xScreen, S32 yScreen
 					kFormat,
 					kType,
 					outBuffer.WriteAccess() );
-#endif
 }
 
 void
