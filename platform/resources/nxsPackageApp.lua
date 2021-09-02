@@ -227,7 +227,7 @@ local function removeDir( dir )
 		local cmd = 'rmdir /s/q "' .. dir .. '"'
 		return processExecute(cmd)
 	else
-		os.execute("rm -f -r " .. quoteString(dir))
+		return os.execute("rm -f -r " .. quoteString(dir))
 	end
 end
 
@@ -358,7 +358,7 @@ local function GetFileExtension(url)
 end
 
 local function deleteUnusedFiles(srcDir, excludePredicate)
-	-- logd('Deleting unused assets from ' .. srcDir)
+--	 logd('Deleting unused assets from ' .. srcDir)
 	for file in lfs.dir(srcDir) do
 		local f = pathJoin(srcDir, file)
 		if excludePredicate(file) then
@@ -369,7 +369,12 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
 			end
 		else
 			if file ~= '..' and file ~= '.' then
-				local result, reason = os.remove(f);
+				local result
+				if isDir(f) then
+					result = removeDir(f)
+				else
+					result, reason = os.remove(f);
+				end
 				if result then
 --					logd('Excluded ' .. f)
 				else
