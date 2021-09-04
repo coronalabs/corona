@@ -62,7 +62,9 @@ typedef enum {
     kAugmentedMethod_CanCull,
 
     /**
-      (TODO) not implemented?!?!
+     This method is invoked during touch events and prepares, to ask whether an object
+     should undergo a hit test: if not, it will always be hit, even if hidden. It is available, with
+     default result `false`, through `CoronaObjectBooleanResultParams`.     
     */
     kAugmentedMethod_CanHitTest, // BooleanResult
 
@@ -505,8 +507,9 @@ typedef struct CoronaObjectOnMessageParams {
 typedef struct CoronaObjectParams {
     union {
         /**
-         A chain of method parameters. This is suitable for temporary cases, e.g. the parameters
-         might be on the stack. A dedicated method stream is built for the object when pushed.
+         A chain of method parameters. This is suitable for temporary situations, for instance
+         if the parameters are on the stack. A dedicated method stream is built for the object
+         when pushed.
         */
         CoronaObjectParamsHeader * head;
 
@@ -746,8 +749,6 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
 */
 CORONA_API
 int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObject * object, int hasBounds ) CORONA_PUBLIC_SUFFIX;
-
-// TODO: ^^ replaced CanHitTest()? did that have shortcomings?
 
 // ----------------------------------------------------------------------------
 

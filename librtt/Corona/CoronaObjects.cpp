@@ -100,6 +100,17 @@ ObjectBoxList::GetObject( const Box * box, int type )
 ObjectBoxList::Box *
 ObjectBoxList::Add( const void * object, int type )
 {
+    if (kDisplayObject == type)
+    {
+        void * nonConst = const_cast< void * >( object );
+        DisplayObject * displayObject = static_cast< DisplayObject * >( nonConst );
+        
+        if (NULL != displayObject->AsGroupObject())
+        {
+            type = kGroupObject;
+        }
+    }
+    
     for (Box & box : fBoxes)
     {
         Rtt_ASSERT( box.fList == this );

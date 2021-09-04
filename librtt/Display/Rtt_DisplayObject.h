@@ -396,7 +396,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 		void UpdateAlphaCumulative( U8 alphaCumulativeFromAncestors );
 
 		Rtt_INLINE bool IsNotHidden() const { return IsVisible() && Alpha() > 0; }
-		Rtt_INLINE bool ShouldHitTest() const { return IsNotHidden() || IsHitTestable(); }
+        Rtt_INLINE bool ShouldHitTest() const { return (IsNotHidden() || IsHitTestable()) && CanHitTest(); } // <- STEVE CHANGE
 		bool ShouldDraw() const
 		{
 			return ( ! IsDirty() && IsNotHidden() ) || IsForceDraw();
