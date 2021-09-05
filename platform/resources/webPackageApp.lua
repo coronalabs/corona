@@ -19,6 +19,9 @@ local dirSeparator = package.config:sub(1,1)
 local windows = (dirSeparator == '\\')
 local buildSettings = nil		-- build.settings
 
+local webappFolder
+local args  -- args from C++ builder
+
 local function log(...)
 	myprint(...)
 end
@@ -477,10 +480,40 @@ local function buildTemplate(templateFolder)
 --]]
 end
 
+local function makeHtmlFile(name)
+	local htmlFile = pathJoin(webappFolder, name..".html")
+	log3(htmlFile)
+	local fi = io.open(htmlFile, 'rb')
+	if (fi == nil) then
+		return 'Failed to open '..htmlFile;
+	end
+	local s = fi:read("*a")	-- read file
+	fi:close()
+
+	local count
+ 	s, count = s:gsub('coronaHtml5App.bin', args.applicationName .. ".bin", 1)
+	if count > 0 then
+		-- replace title
+		s = s:gsub('Corona HTML5 App', args.applicationName)
+
+		-- rewrite file
+		local out = io.open(htmlFile, "wb");
+		if (out == nil) then
+			return 'Failed to update '..htmlFile
+		end
+		out:write(s)
+		out:close() 	
+		log3('Created ' .. htmlFile)
+		return nil
+	end
+	return "Invalid "..htmlFile
+end
+
 --
 -- global script to call from C++
 ---
-function webPackageApp( args )
+function webPackageApp( options )
+	args = options	-- keep for local functions
 	debugBuildProcess = args.debugBuildProcess
 	log('HTML5 builder started')
 	log3(json.prettify(args))
@@ -488,7 +521,7 @@ function webPackageApp( args )
 	local template = args.webtemplateLocation
 
 -- for debugging
---	local template = 'g:/webtemplate/webtemplate.zip'
+	local template = 'g:/webtemplate/webtemplate.zip'
 --	local template = '/Users/mymac/corona/main-vitaly/platform/emscripten/webtemplate.zip'
 
 	-- check if user purchased splash screen
@@ -516,7 +549,7 @@ function webPackageApp( args )
 	local success = false;
 
 	-- create app folder if it does not exists
-	local webappFolder = pathJoin(args.dstDir, args.applicationName)
+	webappFolder = pathJoin(args.dstDir, args.applicationName)
 	if not dir_exists(webappFolder) then
 		success = lfs.mkdir(webappFolder)
 		if not success then
@@ -560,7 +593,7 @@ function webPackageApp( args )
 	if ret ~= 0 then
 		return 'Failed to unpack template ' .. template .. ' to ' .. templateFolder ..  ', err=' .. ret
 	end
-	log3('Unzipped ' .. template, ' to ', templateFolder)
+	log3('Unzipped ' .. template .. ' to ' .. templateFolder)
 
 	-- dowmload plugins
 	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
@@ -638,7 +671,7 @@ function webPackageApp( args )
 	if ret ~= 0 then
 		return "Failed to copy " .. args.srcDir .. ' to ' .. appFolder
 	end
-	log3("Copied ", args.srcDir, ' to ', appFolder)
+	log3("Copied " .. args.srcDir .. ' to ' .. appFolder)
 
 	if args.useStandartResources then
 		local ret = copyDir( pathJoin(templateFolder, 'res_widget'), appFolder )
@@ -772,87 +805,13 @@ function webPackageApp( args )
 	out:close()
 	log3('Created ' .. jsfile)
 
-	-- prepare index.html
-
-	-- read file
-	local fi = io.open(pathJoin(webappFolder, "index.html"), 'rb')
-	if (fi == nil) then
-		return 'Failed to open index.html';
-	end
-	local s = fi:read("*a")	-- read file
-	fi:close()
-
-	local count
- 	s, count = s:gsub('coronaHtml5App.bin', args.applicationName .. ".bin", 1)
-	if count > 0 then
-		-- replace title
-		s = s:gsub('Corona HTML5 App', 'Downloading: ' .. args.applicationName)
-
-		-- rewrite file
-		local outPath = pathJoin(webappFolder, "index.html");
-		local out = io.open(outPath, "wb");
-		if (out == nil) then
-			return 'Failed to renew index.html';
-		end
-		out:write(s)
-		out:close() 	
-		log3('Created ' .. outPath)
-	end
-
-	-- prepare index-debug.html
-
-	-- read file
-	local fi = io.open(pathJoin(webappFolder, "index-debug.html"), 'rb')
-	if (fi == nil) then
-		return 'Failed to open index-debug.html';
-	end
-	local s = fi:read("*a")	-- read file
-	fi:close()
-
-	local count
- 	s, count = s:gsub('coronaHtml5App.bin', args.applicationName .. ".bin", 1)
-	if count > 0 then
-		-- replace title
-		s = s:gsub('Corona HTML5 App', 'Downloading: ' .. args.applicationName)
-
-		-- rewrite file
-		local outPath = pathJoin(webappFolder, "index-debug.html");
-		local out = io.open(outPath, "wb");
-		if (out == nil) then
-			return 'Failed to renew index-debug.html';
-		end
-		out:write(s)
-		out:close() 	
-		log3('Created ' .. outPath)
-	end
-
-	-- prepare index-nosplash.html
-
-	-- read file
-	local fi = io.open(pathJoin(webappFolder, "index-nosplash.html"), 'rb')
-	if (fi == nil) then
-		return 'Failed to open index-nosplash.html';
-	end
-	local s = fi:read("*a")	-- read file
-	fi:close()
-
-	local count
- 	s, count = s:gsub('coronaHtml5App.bin', args.applicationName .. ".bin", 1)
-	if count > 0 then
-		-- replace title
-		s = s:gsub('Corona HTML5 App', 'Downloading: ' .. args.applicationName)
-
-		-- rewrite file
-		local outPath = pathJoin(webappFolder, "index-nosplash.html");
-		local out = io.open(outPath, "wb");
-		if (out == nil) then
-			return 'Failed to renew index-nosplash.html';
-		end
-		out:write(s)
-		out:close() 	
-		log3('Created ' .. outPath)
-	end
-
+	-- make index.html 
+	local err = makeHtmlFile("index")
+	if (res ~= nil) then return res end
+	err = makeHtmlFile("index-debug")
+	if (res ~= nil) then return res end
+	err = makeHtmlFile("index-nosplash")
+	if (res ~= nil) then return res end
 
 	-- compress .js & .wasm into .bin
 	gzip(webappFolder, args.applicationName , {'.js', '.wasm'}, args.applicationName .. '.bin')
@@ -876,7 +835,7 @@ function webPackageApp( args )
 		if ret ~= 0 then
 			return "Failed to copy " ..  srcDir .. ' to ' .. appFolder
 		end
-		log3("Copied ", srcDir, ' to ', appFolder)
+		log3("Copied " .. srcDir .. ' to ' .. appFolder)
 
 		-- copy .data
 		local src = pathJoin(webappFolder, args.applicationName .. '.data')
