@@ -521,7 +521,7 @@ function webPackageApp( options )
 	local template = args.webtemplateLocation
 
 -- for debugging
-	local template = 'g:/webtemplate/webtemplate.zip'
+--	local template = 'g:/webtemplate/webtemplate.zip'
 --	local template = '/Users/mymac/corona/main-vitaly/platform/emscripten/webtemplate.zip'
 
 	-- check if user purchased splash screen
