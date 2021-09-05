@@ -195,6 +195,7 @@ local function gzip( path, appname, ext, destFile )
 		os.execute(cmd)
 	end
 
+	-- delete source files
 	for i = 1, #ext do	
 		os.remove(pathJoin(path, appname .. ext[i]))
 	end
@@ -487,7 +488,7 @@ function webPackageApp( args )
 	local template = args.webtemplateLocation
 
 -- for debugging
---	local template = 'z:/webtemplate.zip'
+--	local template = 'g:/webtemplate/webtemplate.zip'
 --	local template = '/Users/mymac/corona/main-vitaly/platform/emscripten/webtemplate.zip'
 
 	-- check if user purchased splash screen
@@ -622,12 +623,12 @@ function webPackageApp( args )
 		return err
 	end
 
-	local err = copyHtmlTemplateFile('coronaHtml5App.js', 'coronaHtml5App.js')
+	local err = copyHtmlTemplateFile('coronaHtml5App.js', args.applicationName ..".js")
 	if err then
 		return err
 	end
 
-	local err = copyHtmlTemplateFile('coronaHtml5App.html.mem', 'coronaHtml5App.html.mem')
+	local err = copyHtmlTemplateFile('coronaHtml5App.wasm', args.applicationName ..".wasm")
 	if err then
 		return err
 	end
@@ -720,14 +721,15 @@ function webPackageApp( args )
 		createPaths = createPaths .. folders[i].name
 		createPaths = createPaths .. '",true,true);'
 	end
-	--log3('FS_createPath:',createPaths);
+	log3('FS_createPath:',createPaths);
 
 	-- generate .js
 
-	-- read template, source
-	local fi = io.open(pathJoin(webappFolder, "coronaHtml5App.js"), 'rb')
+	-- read template .js file
+	local jsfile = pathJoin(webappFolder, args.applicationName ..".js")
+	local fi = io.open(jsfile, 'rb')
 	if (fi == nil) then
-		return 'Failed not open ' .. 'coronaHtml5App.js'
+		return 'Failed not open ' .. jsfile
 	end
 	local src = fi:read("*a")	-- .js file
 	fi:close()
@@ -740,27 +742,35 @@ function webPackageApp( args )
  	end
 
 	-- seek Module["FS_createPath"]("/","CORONA_FOLDER_PLACEHOLDER",true,true);
- 	src, count = src:gsub('Module%["FS_createPath"]%b();', createPaths, 1)
+ 	src, count = src:gsub("Module%['FS_createPath']%b();", createPaths, 1)
  	if count < 1 then
-		return 'Source .js file does not contain FS_createPath()';
+	 	src, count = src:gsub('Module%["FS_createPath"]%b();', createPaths, 1)
+	 	if count < 1 then
+			return 'Source .js file does not contain FS_createPath()';
+		end
  	end
 
- 	-- rename
+ 	-- rename .data
  	src, count = src:gsub('coronaHtml5App.data', args.applicationName .. ".data")
  	if count < 1 then
 		return 'Source .js file does not contain coronaHtml5App.data';
  	end
 
+ 	-- rename .wasm
+ 	src, count = src:gsub('coronaHtml5App.wasm', args.applicationName .. ".wasm")
+ 	if count < 1 then
+		return 'Source .js file does not contain coronaHtml5App.wasm';
+ 	end
+
 	-- write .js
-	local outPath = pathJoin(webappFolder, "coronaHtml5App.js");
-	local out = io.open(outPath, "wb");
+	local out = io.open(jsfile, "wb");
 	if (out == nil) then
-		return 'Failed to create .js file';
+		return 'Failed to update ' .. jsfile
 	end
 
 	out:write(src)
 	out:close()
-	log3('Created ', outPath)
+	log3('Created ' .. jsfile)
 
 	-- prepare index.html
 
@@ -786,7 +796,7 @@ function webPackageApp( args )
 		end
 		out:write(s)
 		out:close() 	
-		log3('Created ', outPath)
+		log3('Created ' .. outPath)
 	end
 
 	-- prepare index-debug.html
@@ -813,12 +823,40 @@ function webPackageApp( args )
 		end
 		out:write(s)
 		out:close() 	
-		log3('Created ', outPath)
+		log3('Created ' .. outPath)
 	end
 
-	-- compress .js & .mem into .bin
-	gzip(webappFolder, "coronaHtml5App" , {'.js', '.html.mem'}, args.applicationName..'.bin')
+	-- prepare index-nosplash.html
 
+	-- read file
+	local fi = io.open(pathJoin(webappFolder, "index-nosplash.html"), 'rb')
+	if (fi == nil) then
+		return 'Failed to open index-nosplash.html';
+	end
+	local s = fi:read("*a")	-- read file
+	fi:close()
+
+	local count
+ 	s, count = s:gsub('coronaHtml5App.bin', args.applicationName .. ".bin", 1)
+	if count > 0 then
+		-- replace title
+		s = s:gsub('Corona HTML5 App', 'Downloading: ' .. args.applicationName)
+
+		-- rewrite file
+		local outPath = pathJoin(webappFolder, "index-nosplash.html");
+		local out = io.open(outPath, "wb");
+		if (out == nil) then
+			return 'Failed to renew index-nosplash.html';
+		end
+		out:write(s)
+		out:close() 	
+		log3('Created ' .. outPath)
+	end
+
+
+	-- compress .js & .wasm into .bin
+	gzip(webappFolder, args.applicationName , {'.js', '.wasm'}, args.applicationName .. '.bin')
+	log3('Created ' .. args.applicationName .. '.bin')
 	--
 	-- build FB Instant app
 	--
@@ -877,7 +915,7 @@ function webPackageApp( args )
 			end
 			out:write(s)
 			out:close() 	
-			log3('Created ', src)
+			log3('Created ' .. src)
 		end
 
 		-- compress folder
@@ -887,7 +925,7 @@ function webPackageApp( args )
 		if ret ~= 0 then
 			return 'Failed to create ' .. dst
 		end
-		log3('Created FB instant app: ', dst)
+		log3('Created FB instant app: ' .. dst)
 
 	end
 
