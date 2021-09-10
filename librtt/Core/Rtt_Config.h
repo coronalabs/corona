@@ -335,7 +335,9 @@
 	#define Rtt_USE_LIMITS
 	#define Rtt_VPRINTF_SUPPORTED
 	#define Rtt_NETWORK
-	#define Rtt_SQLITE
+
+	// disabled in order to reduce app size
+	// #define Rtt_SQLITE
 
 	#if EMSCRIPTEN
 		#define Rtt_OPENGLES
