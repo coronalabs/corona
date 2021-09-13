@@ -64,7 +64,7 @@ typedef enum {
     /**
      This method is invoked during touch events and prepares, to ask whether an object
      should undergo a hit test: if not, it will always be hit, even if hidden. It is available, with
-     default result `false`, through `CoronaObjectBooleanResultParams`.     
+     default result `false`, through `CoronaObjectBooleanResultParams`.
     */
     kAugmentedMethod_CanHitTest, // BooleanResult
 
@@ -736,11 +736,6 @@ CORONA_API
 int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectParams * params ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
-
-// NYI
-
-// CORONA_API
-// int CoronaObjectsShouldDraw( const CoronaDisplayObject * object, int * shouldDraw ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param object Boxed display object.

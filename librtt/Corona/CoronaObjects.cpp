@@ -55,6 +55,28 @@ ObjectBoxList::~ObjectBoxList()
     }
 }
 
+const char *
+ObjectBoxList::StringForType (int type)
+{
+    switch (type)
+    {
+    case kRenderer:
+        return "Renderer";
+    case kRenderData:
+        return "RenderData";
+    case kShader:
+        return "Shader";
+    case kShaderData:
+        return "ShaderData";
+    case kDisplayObject:
+        return "DisplayObject";
+    case kGroupObject:
+        return "GroupObject";
+    default:
+        return "Unknown";
+    }
+}
+
 bool
 ObjectBoxList::CanGetObject( const Box * box, int type )
 {
@@ -75,43 +97,76 @@ ObjectBoxList::GetList( const Box * box )
     return ( ObjectBoxList * )list;
 }
 
+bool
+ObjectBoxList::CheckObject( const Box * box, int type )
+{
+    bool ok = false;
+
+    if (NULL == box)
+    {
+        CORONA_LOG_ERROR( "NULL %s supplied", StringForType( type ) );
+    }
+
+    else if (NULL == box->fObject)
+    {
+        CORONA_LOG_ERROR( "%s object has been invalidated", StringForType( type ) );
+    }
+
+    else if (!CanGetObject( box, type ))
+    {
+        CORONA_LOG_ERROR( "Expected %s but have %s", StringForType( type ), StringForType( box->fType ) );
+    }
+    
+    else
+    {
+        ok = true;
+    }
+    
+    return ok;
+}
+
 void *
 ObjectBoxList::GetObject( Box * box, int type )
 {
-    if (NULL != box && NULL != box->fObject && CanGetObject( box, type ))
+    if (CheckObject( box, type ))
     {
         return const_cast< Box * >( box )->fObject;
     }
     
-    return NULL;
+    else
+    {
+        return NULL;
+    }
 }
 
 const void *
 ObjectBoxList::GetObject( const Box * box, int type )
 {
-    if (NULL != box && NULL != box->fObject && CanGetObject( box, type ))
+    if (CheckObject( box, type ))
     {
         return box->fObject;
     }
     
-    return NULL;
+    else
+    {
+        return NULL;
+    }
 }
-
 ObjectBoxList::Box *
 ObjectBoxList::Add( const void * object, int type )
 {
-    if (kDisplayObject == type)
+    if (kDisplayObject == type) // might be a group...
     {
         void * nonConst = const_cast< void * >( object );
         DisplayObject * displayObject = static_cast< DisplayObject * >( nonConst );
         
-        if (NULL != displayObject->AsGroupObject())
+        if (NULL != displayObject->AsGroupObject()) // ...if so, promote it
         {
             type = kGroupObject;
         }
     }
     
-    for (Box & box : fBoxes)
+    for (Box & box : fBoxes) // already boxed?
     {
         Rtt_ASSERT( box.fList == this );
         
@@ -121,6 +176,7 @@ ObjectBoxList::Add( const void * object, int type )
         }
     }
     
+    // new entry
     fBoxes.push_back( Box{} );
     
     Box & newBox = fBoxes.back();
@@ -457,6 +513,8 @@ BuildMethodStream( lua_State * L, const CoronaObjectParamsHeader * head )
 {
     if (!head)
     {
+        CORONA_LOG_ERROR( "NULL method list" );
+        
         return false;
     }
 
@@ -472,6 +530,8 @@ BuildMethodStream( lua_State * L, const CoronaObjectParamsHeader * head )
 
     if (params.empty())
     {
+        CORONA_LOG_ERROR( "No method conversions supplied" );
+        
         return false;
     }
 
@@ -480,6 +540,8 @@ BuildMethodStream( lua_State * L, const CoronaObjectParamsHeader * head )
 
     if (params.back()->method >= (unsigned short)( kAugmentedMethod_Count )) // has bogus method(s)?
     {
+        CORONA_LOG_ERROR( "Invalid methods supplied" );
+        
         return false;
     }
 
@@ -490,6 +552,8 @@ BuildMethodStream( lua_State * L, const CoronaObjectParamsHeader * head )
     {
         if (header->method == prev)
         {
+            CORONA_LOG_ERROR( "Method `%u` was supplied more than once", (unsigned int)prev );
+            
             return false;
         }
 
@@ -540,6 +604,8 @@ GetStream( lua_State * L, const CoronaObjectsParams * params )
 
             else
             {
+                CORONA_LOG_ERROR( "Invalid method stream" );
+                
                 lua_pop( L, 1 ); // ...
             }
         }
@@ -977,9 +1043,6 @@ public:                                        \
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::ShapeObject,
     Proxy2VTable< class Circle2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1012,9 +1075,6 @@ int CoronaObjectsPushCircle( lua_State * L, void * userData, const CoronaObjectP
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::ContainerObject,
     Proxy2VTable< class Container2, Rtt::LuaGroupObjectProxyVTable >,
@@ -1047,9 +1107,6 @@ int CoronaObjectsPushContainer( lua_State * L, void * userData, const CoronaObje
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::EmbossedTextObject,
     Proxy2VTable< class EmbossedText2, Rtt::LuaEmbossedTextObjectProxyVTable >,
@@ -1082,9 +1139,6 @@ int CoronaObjectsPushEmbossedText( lua_State * L, void * userData, const CoronaO
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::EmitterObject,
     Proxy2VTable< class Emitter2, Rtt::LuaEmitterObjectProxyVTable >
@@ -1117,9 +1171,6 @@ int CoronaObjectsPushEmitter( lua_State * L, void * userData, const CoronaObject
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::GroupObject,
     Proxy2VTable< class Group2, Rtt::LuaGroupObjectProxyVTable >,
@@ -1171,9 +1222,6 @@ int CoronaObjectsPushGroup( lua_State * L, void * userData, const CoronaObjectPa
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::ShapeObject,
     Proxy2VTable< class Image2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1208,9 +1256,6 @@ int CoronaObjectsPushImage( lua_State * L, void * userData, const CoronaObjectPa
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::ShapeObject,
     Proxy2VTable< class ImageRect2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1245,9 +1290,6 @@ int CoronaObjectsPushImageRect( lua_State * L, void * userData, const CoronaObje
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::LineObject,
     Proxy2VTable< class Line2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1280,9 +1322,6 @@ int CoronaObjectsPushLine( lua_State * L, void * userData, const CoronaObjectPar
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::ShapeObject,
     Proxy2VTable< class Mesh2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1315,9 +1354,6 @@ int CoronaObjectsPushMesh( lua_State * L, void * userData, const CoronaObjectPar
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::ShapeObject,
     Proxy2VTable< class Polygon2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1350,9 +1386,6 @@ int CoronaObjectsPushPolygon( lua_State * L, void * userData, const CoronaObject
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::ShapeObject,
     Proxy2VTable< class Rect2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1387,9 +1420,6 @@ int CoronaObjectsPushRect( lua_State * L, void * userData, const CoronaObjectPar
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::ShapeObject,
     Proxy2VTable< class RoundedRect2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1422,9 +1452,6 @@ int CoronaObjectsPushRoundedRect( lua_State * L, void * userData, const CoronaOb
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::SnapshotObject,
     Proxy2VTable< class Snapshot2, Rtt::LuaShapeObjectProxyVTable >,
@@ -1457,9 +1484,6 @@ int CoronaObjectsPushSnapshot( lua_State * L, void * userData, const CoronaObjec
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::SpriteObject,
     Proxy2VTable< class Sprite2, Rtt::LuaSpriteObjectProxyVTable >,
@@ -1492,9 +1516,6 @@ int CoronaObjectsPushSprite( lua_State * L, void * userData, const CoronaObjectP
 
 // ----------------------------------------------------------------------------
 
-/**
-TODO
-*/
 typedef CoronaObjectsInterface<
     Rtt::TextObject,
     Proxy2VTable< class Text2, Rtt::LuaTextObjectProxyVTable >,
@@ -1527,17 +1548,6 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
     CORONA_OBJECTS_PUSH( Text );
 }
 
-// ----------------------------------------------------------------------------
-/*
-CORONA_API
-int CoronaObjectsShouldDraw( const CoronaDisplayObject * object, int * shouldDraw )
-{
-    // TODO: look for proxy on stack, validate object?
-    // If so, then *shouldDraw = ((DisplayObject *)object)->shouldDraw()
-
-    return 0;
-}
-*/
 // ----------------------------------------------------------------------------
 
 CORONA_API
