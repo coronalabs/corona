@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -13,6 +13,7 @@
 
 #include "Rtt_Event.h"
 #include "Rtt_Runtime.h"
+#include "Rtt_IPhoneOrientation.h"
 
 #import "CoronaLua.h"
 #import "CoronaViewPrivate.h"
@@ -60,7 +61,7 @@
 			}
 		}
 	}
-	
+
 	return result;
 }
 
@@ -73,18 +74,18 @@
 		// These delegates don't have access to
 		// - (BOOL)application:willFinishLaunchingWithOptions:
 		NSMutableArray *dels = [[NSMutableArray alloc] init];
-		
+
 		_fEnterpriseDelegate = enterpriseDelegate;
 		if ( _fEnterpriseDelegate )
 		{
 			[dels addObject:_fEnterpriseDelegate];
 		}
-		
+
 		// Get the classes for plugins which should be instanciated before its actually loaded.
 		// Needed for things like remote notifications so it can be registered ahead of time.
 		NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
 		NSArray* delegates = [infoDict objectForKey:@"CoronaDelegates"];
-		
+
 		for ( NSString *delegate in delegates )
 		{
 			Class c = NSClassFromString(delegate);
@@ -93,9 +94,9 @@
 				[dels addObject:[[c alloc] init]];
 			}
 		}
-		
+
 		_fCoronaPluginDelegates = dels;
-		
+
 		_fRespondsToSelectorCache = [[NSMutableDictionary alloc] init];
 	}
 	return self;
@@ -145,19 +146,19 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
 	BOOL result = NO;
-	
+
 	for ( id delegate in _fCoronaPluginDelegates ) {
 		if ( [delegate respondsToSelector:_cmd] && delegate != _fEnterpriseDelegate )
 		{
 			[delegate application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 		}
 	}
-	
+
 	if ( [_fEnterpriseDelegate respondsToSelector:_cmd] )
 	{
 		result = [_fEnterpriseDelegate application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 	}
-	
+
 	return result;
 }
 #endif // Rtt_TVOS_ENV
@@ -165,21 +166,21 @@
 - (BOOL)application:(UIApplication*)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	Rtt_ASSERT_NOT_REACHED();
-	
+
 	return NO;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	BOOL result = [CoronaAppDelegate handlesUrl:[launchOptions valueForKey:UIApplicationLaunchOptionsURLKey]];
-	
+
 	[self performSelector:_cmd withObject:application withObject:launchOptions skip:_fEnterpriseDelegate];
-	
+
 	if ( [_fEnterpriseDelegate respondsToSelector:_cmd] )
 	{
 		result = [_fEnterpriseDelegate application:application didFinishLaunchingWithOptions:launchOptions];
 	}
-	
+
 	return result;
 }
 
@@ -188,12 +189,31 @@
 - (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)windowArg
 {
 	NSUInteger result = UIInterfaceOrientationMaskAll;
-	
+	//Set default orientation to match build.settings
+  NSBundle *bundle = [NSBundle mainBundle];
+  id value = [bundle objectForInfoDictionaryKey:@"CoronaViewSupportedInterfaceOrientations"];
+  if ( value && [value isKindOfClass:[NSArray class]])
+  {
+      if ([value count] > 0)
+      {
+          NSString* curOrientation = [value objectAtIndex:0];
+          UIInterfaceOrientationMask supportedOrientations = Rtt::IPhoneOrientation::OrientationMaskForString( curOrientation );
+          for(int i = 0; i < (int)[value count]; i++)
+          {
+              curOrientation = [value objectAtIndex:i];
+              supportedOrientations |= Rtt::IPhoneOrientation::OrientationMaskForString( curOrientation );
+
+          }
+
+          result = supportedOrientations;
+      }
+  }
+
 	if ( [_fEnterpriseDelegate respondsToSelector:_cmd] )
 	{
 		result = [_fEnterpriseDelegate application:application supportedInterfaceOrientationsForWindow:windowArg];
 	}
-	
+
 	return result;
 }
 #endif
@@ -205,13 +225,13 @@
 	if ( [key isEqualToString:@"pushLaunchArgs"] )
 	{
 		using namespace Rtt;
-		
+
 		CoronaView *view = [param objectForKey:@"CoronaView"];
 		NSDictionary *launchOptions = [param objectForKey:@"launchOptions"];
 		Runtime *rttRuntime = view.runtime;
 //TODO clear CoronaView key
 		lua_State *L = runtime.L;
-		
+
 		for ( id delegate in _fCoronaPluginDelegates )
 		{
 			if ( [delegate respondsToSelector:@selector(execute:command:param:)] )
@@ -243,7 +263,7 @@
 	{
 		NSString *key = NSStringFromSelector( aSelector );
 		NSNumber *value = self.fRespondsToSelectorCache[key];
-		
+
 		if ( value )
 		{
 			result = [value boolValue];
@@ -260,7 +280,7 @@
 					break;
 				}
 			}
-			
+
 			// Add value to cache
 			value = [NSNumber numberWithBool:result];
 			self.fRespondsToSelectorCache[key] = value;
@@ -272,9 +292,9 @@
 
 // NOTE: This forwards delegate calls to each element in _fCoronaPluginDelegates
 // If you implement one of the methods in the CoronaDelegate protocol, you must call:
-// 
+//
 //    - (void)performSelector:(SEL)aSelector withObject:(id)anObject withObject:(id)anotherObject skip:(id)value
-// 
+//
 - (void)forwardInvocation:(NSInvocation *)anInvocation
 {
 	SEL aSelector = [anInvocation selector];
