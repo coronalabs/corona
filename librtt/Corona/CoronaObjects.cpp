@@ -152,6 +152,7 @@ ObjectBoxList::GetObject( const Box * box, int type )
         return NULL;
     }
 }
+
 ObjectBoxList::Box *
 ObjectBoxList::Add( const void * object, int type )
 {
@@ -259,12 +260,14 @@ FindParams( const unsigned char * stream, unsigned short method, size_t offset )
 // ----------------------------------------------------------------------------
 
 static bool
-ValuePrologue( lua_State * L, const Rtt::MLuaProxyable& object, const char key[], void * userData, const CoronaObjectValueParams & params, int * result )
+ValuePrologue( lua_State * L, const Rtt::MLuaProxyable& o, const char key[], void * userData, const CoronaObjectValueParams & params, int * result )
 {
     if (params.before)
     {
         Rtt::ObjectBoxList list;
 
+        const Rtt::DisplayObject& object = static_cast< const Rtt::DisplayObject& >( o );
+        
         OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
     
         params.before( storedObject, userData, L, key, result );
@@ -281,12 +284,14 @@ ValuePrologue( lua_State * L, const Rtt::MLuaProxyable& object, const char key[]
 }
 
 static int
-ValueEpilogue( lua_State * L, const Rtt::MLuaProxyable& object, const char key[], void * userData, const CoronaObjectValueParams & params, int result )
+ValueEpilogue( lua_State * L, const Rtt::MLuaProxyable& o, const char key[], void * userData, const CoronaObjectValueParams & params, int result )
 {
     if (params.after)
     {
         Rtt::ObjectBoxList list;
     
+        const Rtt::DisplayObject& object = static_cast< const Rtt::DisplayObject& >( o );
+        
         OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
 
         params.after( storedObject, userData, L, key, &result ); // n.b. `result` previous values still on stack
@@ -298,11 +303,13 @@ ValueEpilogue( lua_State * L, const Rtt::MLuaProxyable& object, const char key[]
 // ----------------------------------------------------------------------------
 
 static bool
-SetValuePrologue( lua_State * L, Rtt::MLuaProxyable& object, const char key[], int valueIndex, void * userData, const CoronaObjectSetValueParams & params, int * result )
+SetValuePrologue( lua_State * L, Rtt::MLuaProxyable& o, const char key[], int valueIndex, void * userData, const CoronaObjectSetValueParams & params, int * result )
 {
     if (params.before)
     {
         Rtt::ObjectBoxList list;
+        
+        Rtt::DisplayObject& object = static_cast< Rtt::DisplayObject& >( o );
         
         OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
 
@@ -320,11 +327,13 @@ SetValuePrologue( lua_State * L, Rtt::MLuaProxyable& object, const char key[], i
 }
 
 static bool
-SetValueEpilogue( lua_State * L, Rtt::MLuaProxyable& object, const char key[], int valueIndex, void * userData, const CoronaObjectSetValueParams & params, int result )
+SetValueEpilogue( lua_State * L, Rtt::MLuaProxyable& o, const char key[], int valueIndex, void * userData, const CoronaObjectSetValueParams & params, int result )
 {
     if (params.after)
     {
         Rtt::ObjectBoxList list;
+
+        Rtt::DisplayObject& object = static_cast< Rtt::DisplayObject& >( o );
         
         OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
 
