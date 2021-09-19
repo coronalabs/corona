@@ -65,5 +65,10 @@
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
         </intent>
+        
+        <!--Needed for checking for Camera Intent in Android 11 -->
+		<intent>
+			<action android:name="android.media.action.IMAGE_CAPTURE" />
+		</intent>
     </queries>
 </manifest> 
