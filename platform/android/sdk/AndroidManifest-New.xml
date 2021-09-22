@@ -67,8 +67,21 @@
         </intent>
         
         <!--Needed for checking for Camera Intent in Android 11 -->
-		<intent>
-			<action android:name="android.media.action.IMAGE_CAPTURE" />
-		</intent>
+	<intent>
+		<action android:name="android.media.action.IMAGE_CAPTURE" />
+	</intent>
+	<intent>
+		<action android:name="android.media.action.VIDEO_CAPTURE" />
+	</intent>
+	<!-- Needed for checking for Image Picker Intent in Android 11 -->
+	<intent>
+		<action android:name="android.intent.action.GET_CONTENT" />
+		<data android:mimeType="image/*" />
+	</intent>
+	<!-- Needed for checking for Image Picker Intent in Android 11 -->
+	<intent>
+		<action android:name="android.intent.action.GET_CONTENT" />
+		<data android:mimeType="image/*" />
+	</intent>
     </queries>
 </manifest> 
