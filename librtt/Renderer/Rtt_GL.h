@@ -25,7 +25,12 @@
 	#elif defined( Rtt_POWERVR_ENV )
 		#include <GLES/egl.h>
 		#include <GLES/gl.h>
-	#else
+	#elif defined(Rtt_NXS_ENV)
+		#include <GLES2/gl2.h>
+		#include <GLES2/gl2ext.h>
+		#include <GLES2/gl2ext_nv.h>
+		#include <GLES2/gl2platform.h>
+#else
 		#error TODO: Add path to gl.h header
 	#endif
 #elif defined(Rtt_LINUX_ENV)
@@ -35,9 +40,11 @@
 		#include <GL/gl.h>
 		#include <GL/glext.h>
 	#endif
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV )
 	#define WIN32_LEAN_AND_MEAN
 	#include <GL/glew.h>
+#elif defined(Rtt_NXS_ENV)
+	#include "../../platform/switch/Solar2D/Rtt_NX_GL.h"
 #else
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>

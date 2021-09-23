@@ -44,6 +44,8 @@ class Tesselator
 		virtual void GetSelfBounds( Rect& rect ) = 0;
 		virtual Geometry::PrimitiveType GetStrokePrimitive() const;
 
+		virtual U32 StrokeVertexCount() const = 0;
+
 	public:
 		enum eType
 		{
@@ -76,6 +78,9 @@ class Tesselator
 	protected:
 		void ApplyTransform( ArrayVertex2& vertices, const Vertex2& origin );
 
+	public:
+		static U32 CountForDepth( int depth );
+
 	private:
 		void SubdivideCircleSector( ArrayVertex2& vertices, const Vertex2& p1, const Vertex2& p2, int depth );
 		void SubdivideCircleArc( ArrayVertex2& vertices, const Vertex2& p1, const Vertex2& p2, int depth, bool appendDuplicate );
@@ -93,6 +98,10 @@ class Tesselator
 		void AppendCircleQuadrants( ArrayVertex2& vertices, Real radius, U32 options );
 		void AppendCircleArc( ArrayVertex2& vertices, Real radius, U32 options );
 
+		U32 AppendCircleCount( Real radius, U32 options ) const;
+		U32 AppendCircleQuadrantsCount( Real radius, U32 options ) const;
+		U32 AppendCircleArcCount( Real radius, U32 options ) const;
+
 		static void AppendRect( ArrayVertex2& vertices, Real halfW, Real halfH );
 
 		static void MoveCenterToOrigin( ArrayVertex2& vertices, Vertex2 currentCenter );
@@ -105,6 +114,8 @@ class Tesselator
 				bool appendEndPoints );
 		void AppendStrokeTextureClosed( ArrayVertex2& vertices, int numVertices );
 		void AppendStrokeTextureEndCap( ArrayVertex2& vertices, int numVertices );
+
+		U32 AppendCircleStrokeCount( Real radius, bool appendEndPoints ) const;
 
 	private:
 		int fMaxSubdivideDepth;

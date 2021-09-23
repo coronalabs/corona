@@ -47,6 +47,7 @@ class AppPackagerParams
 		String fCertType;
 		String fTargetAppStoreName;
 		String fBuildMessage;
+		String fCustomTemplate;
 		TargetDevice::Platform fTargetPlatform;
 		S32 fTargetVersion;
 		S32 fTargetDevice;
@@ -85,6 +86,8 @@ class AppPackagerParams
 		const char * GetDstDir() const { return fDstDir.GetString(); }
 		const char * GetSdkRoot() const { return fSdkRoot.GetString(); }
 		const char * GetTargetAppStoreName() const { return fTargetAppStoreName.GetString(); }
+		void SetCustomTemplate( const char * newValue ) { fCustomTemplate.Set( newValue ); }
+		const char * GetCustomTemplate() const { return fCustomTemplate.IsEmpty() ? "" : fCustomTemplate.GetString(); }
 		TargetDevice::Platform GetTargetPlatform() const { return fTargetPlatform; }
 		S32 GetTargetVersion() const { return fTargetVersion; }
 		S32 GetTargetDevice() const { return fTargetDevice; }

@@ -29,6 +29,7 @@ template class PtrArray< DisplayObject >;
 template class LightPtrArray< DisplayObject >;
 template class Array< Vertex2 >;
 template class Array< S32 >;
+template class Array< U32 >;
 template class ResourceHandle< lua_State >;
 template class ResourceHandleOwner< lua_State >;
 

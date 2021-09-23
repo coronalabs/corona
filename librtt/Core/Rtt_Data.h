@@ -17,6 +17,11 @@
 
 #include <string.h>
 
+#if defined(Rtt_NXS_ENV)
+#define Rtt_FREE( p )						free( (p) )
+#define Rtt_MALLOC( null, size )	malloc( (size) )
+#endif
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt

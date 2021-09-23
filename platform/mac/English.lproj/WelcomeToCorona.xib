@@ -53,7 +53,7 @@
 				<int key="NSWindowBacking">2</int>
 				<string key="NSWindowRect">{{360, 214}, {960, 600}}</string>
 				<int key="NSWTFlags">544736256</int>
-				<string key="NSWindowTitle">Welcome to Corona</string>
+				<string key="NSWindowTitle">Welcome to Solar2D</string>
 				<string key="NSWindowClass">WelcomeWindow</string>
 				<nil key="NSViewClass"/>
 				<object class="NSView" key="NSWindowView" id="1006">

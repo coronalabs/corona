@@ -27,22 +27,14 @@
 			<string>Binary</string>
 		</dict>
 		<dict>
-			<key>CFBundleTypeName</key>
-			<string>Folder</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>fold</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
-			<key>LSIsAppleDefaultForType</key>
-			<false/>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSDocumentClass</key>
-			<string>Folder</string>
-			<key>NSPersistentStoreTypeKey</key>
-			<string>Binary</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.directory</string>
+				<string>com.apple.bundle</string>
+				<string>com.apple.resolvable</string>
+			</array>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -50,7 +42,7 @@
 	<key>CFBundleIconFile</key>
 	<string>CoronaSimulator.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.coronalabs.${PRODUCT_NAME:identifier}</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -72,21 +64,23 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.7.0</string>
-	<key>NSHighResolutionCapable</key>
-	<true/>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2009-2020 Corona Labs Inc. All rights reserved.</string>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
-	<key>NSPrincipalClass</key>
-	<string>CoronaSimulatorApplication</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2020-2021 Solar2D. All rights reserved.</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>CoronaSimulatorApplication</string>
 	<key>NSSupportsSuddenTermination</key>
 	<string>YES</string>
 </dict>

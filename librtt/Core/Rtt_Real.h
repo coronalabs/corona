@@ -16,7 +16,7 @@
 #include "Core/Rtt_Macros.h"
 #include "Core/Rtt_Fixed.h"
 
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NXS_ENV )
 #define M_PI 3.1415926535897932384626f
 #endif
 

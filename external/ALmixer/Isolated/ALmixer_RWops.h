@@ -113,7 +113,7 @@ extern "C" {
 }
 #endif
 
-#ifdef NINTENDO_LIB
+#ifdef NXS_LIB
 #define fclose	nFileClose
 #define fopen	nFileOpen
 #define freopen	nFileReopen

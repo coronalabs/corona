@@ -77,6 +77,18 @@ TesselatorCircle::GetSelfBounds( Rect& rect )
 	rect.Initialize( fRadius, fRadius );
 }
 
+U32
+TesselatorCircle::FillVertexCount() const
+{
+	return AppendCircleCount( fRadius, 0 );
+}
+
+U32
+TesselatorCircle::StrokeVertexCount() const
+{
+	return AppendCircleStrokeCount( fRadius, false );
+}
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

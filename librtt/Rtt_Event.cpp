@@ -155,6 +155,41 @@ FrameEvent::Push( lua_State *L ) const
 
 // ----------------------------------------------------------------------------
 
+const RenderEvent&
+RenderEvent::Constant()
+{
+	static const RenderEvent kEvent;
+	return kEvent;
+}
+
+RenderEvent::RenderEvent()
+{
+}
+
+const char*
+RenderEvent::Name() const
+{
+	static const char kName[] = "lateUpdate";
+	return kName;
+}
+
+int
+RenderEvent::Push( lua_State *L ) const
+{
+	if ( Rtt_VERIFY( Super::Push( L ) ) )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		lua_pushnumber( L, runtime->GetFrame() );
+		lua_setfield( L, -2, "frame" );
+		lua_pushnumber( L, runtime->GetElapsedMS() );
+		lua_setfield( L, -2, "time" );
+	}
+
+	return 1;
+}
+
+// ----------------------------------------------------------------------------
+
 const char*
 SystemEvent::StringForType( Type type )
 {

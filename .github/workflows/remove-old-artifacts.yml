@@ -4,6 +4,7 @@ on:
   repository_dispatch:
     types:
       - purge
+  workflow_dispatch:
 
 jobs:
   remove-old-artifacts:

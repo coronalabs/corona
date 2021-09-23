@@ -90,6 +90,7 @@ local function infuseStringsWithGoogleServicesJson(android, srcDir, package)
 	addString("google_api_key", client, {"api_key", 1, "current_key"})
 	addString("google_crash_reporting_api_key", client, {"api_key", 1, "current_key"})
 	addString("google_storage_bucket", gs, {"project_info", "storage_bucket"})
+	addString("project_id", gs, {"project_info", "project_id"})
 
 end
 

@@ -126,7 +126,6 @@ namespace Rtt
 	IBOutlet NSButton* rememberMyPreferenceAccessoryCheckboxView;
 	BOOL relaunchPromptIsOpen;
 	BOOL applicationHasBeenInitialized;
-	BOOL authorizedToLaunch;
 	BOOL launchedWithFile;
 	BOOL allowLuaExit;
 	BOOL fSimulatorWasSuspended;
@@ -240,8 +239,6 @@ namespace Rtt
 -(IBAction)openForBuildTVOS:(id)sender;
 -(void)notifyRuntimeError:(NSString *)message;
 - (NSString *) getOSVersion;
-
-- (BOOL) isDailyBuild;
 
 - (IBAction) presentWelcomeWindow:(id)sender;
 - (void) closeWelcomeWindow;

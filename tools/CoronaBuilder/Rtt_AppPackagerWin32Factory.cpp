@@ -60,13 +60,7 @@ AppPackagerFactory::CreatePackagerParamsWin32(
 			lua_checkstack( L, 5 );
 			int top = lua_gettop( L );
 
-			const char *resourcePath = NULL;
-
-#if defined(Rtt_MAC_ENV)
-			resourcePath = GetResourceDirectoryOSX();
-#elif defined(Rtt_WIN_ENV)
-			resourcePath = GetResourceDirectoryWin();
-#endif
+			const char *resourcePath = GetResourceDirectoryWin();
 
 			bool isDistributionBuild = false;
 
@@ -176,10 +170,6 @@ AppPackagerFactory::CreatePackagerParamsWin32(
 			params->SetIncludeBuildSettings(true);
 			params->SetStripDebug(true);
 
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-			params.SetIncludeFusePlugins(false);
-			params.SetUsesMonetization(false);
-#endif
 			params->SetRuntime(NULL); // NEEDSWORK:  runtimeEnvironmentPointer->GetRuntime());
 
 			WinString projectDirectoryPath = projectPath;

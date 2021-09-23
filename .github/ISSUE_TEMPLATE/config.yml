@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Solar2D Community Forums
+    url: http://forums.solar2d.com/
+    about: Make sure to check in here before reporting an issue
+  - name: Solar2D Discord chat
+    url: https://discord.gg/WMtCemc
+    about: Best place to discuss Solar2D issues in real time

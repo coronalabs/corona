@@ -205,7 +205,8 @@ TVOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 				lua_setfield(L, -2, "build");
 				
 				char templateZip[255];
-				snprintf(templateZip, 255, "%s_%.1f.tar.bz", platform, params->GetTargetVersion()/10000.0f);
+				setlocale(LC_NUMERIC, "en_US");
+				snprintf(templateZip, 255, "%s_%.1f%s.tar.bz", platform, params->GetTargetVersion()/10000.0f, params->GetCustomTemplate());
 				lua_pushstring(L, templateZip);
 				lua_setfield(L, -2, "template");
 				
@@ -308,7 +309,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
                         NSString* copypng = [XcodeToolHelper pathForCopyPngUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
                         NSString* codesign = [XcodeToolHelper pathForCodesignUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
                         NSString* codesign_allocate = [XcodeToolHelper pathForCodesignAllocateUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
-						NSString *codesign_framework = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"codesign-framework.sh"];
+						NSString *codesign_framework = [XcodeToolHelper pathForCodesignFramework];
 						
                         lua_pushstring( L, [sdkRoot UTF8String] );
                         lua_setfield( L, -2, "sdkRoot" );

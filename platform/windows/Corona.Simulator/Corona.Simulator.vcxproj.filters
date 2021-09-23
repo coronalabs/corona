@@ -146,6 +146,10 @@
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="BuildLinuxDlg.h" />
+    <ClInclude Include="BuildNxSDlg.h" />
+    <ClInclude Include="..\..\shared\Rtt_NxSAppPackager.h">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -279,6 +283,10 @@
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
     <ClCompile Include="BuildLinuxDlg.cpp" />
+    <ClCompile Include="BuildNxSDlg.cpp" />
+    <ClCompile Include="..\..\shared\Rtt_NxSAppPackager.cpp">
+      <Filter>%28root%29\platform\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="res">
@@ -355,6 +363,9 @@
       <Filter>%28root%29\platform\resources</Filter>
     </LuaToCpp>
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua">
+      <Filter>%28root%29\platform\resources</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\nxsPackageApp.lua">
       <Filter>%28root%29\platform\resources</Filter>
     </LuaToCpp>
   </ItemGroup>

@@ -23,6 +23,16 @@ int main( int argc, const char *argv[] )
 	int result = 0;
 	@autoreleasepool
 	{
+		NSString *jhome = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"../../../../../Corona Simulator.app/Contents/jre/jdk/Contents/Home"] stringByStandardizingPath];
+		if([[NSFileManager defaultManager] fileExistsAtPath:jhome]) {
+			setenv("JAVA_HOME", [jhome UTF8String], YES);
+		} else {
+			jhome = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"../Corona Simulator.app/Contents/jre/jdk/Contents/Home"] stringByStandardizingPath];
+			if([[NSFileManager defaultManager] fileExistsAtPath:jhome]) {
+				setenv("JAVA_HOME", [jhome UTF8String], YES);
+			}
+		}
+	
 		MacConsolePlatform platform;
 		MacPlatformServices services( platform );
 

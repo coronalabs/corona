@@ -14,7 +14,7 @@
 
 #include "Rtt_Macros.h"
 
-#if defined( Rtt_APPLE_ENV ) || defined( Rtt_ANDROID_ENV ) || defined( Rtt_WEBOS_ENV ) || defined( Rtt_EMSCRIPTEN_ENV ) || defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NINTENDO_ENV ) || defined( Rtt_LINUX_ENV )
+#if defined( Rtt_APPLE_ENV ) || defined( Rtt_ANDROID_ENV ) || defined( Rtt_WEBOS_ENV ) || defined( Rtt_EMSCRIPTEN_ENV ) || defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NXS_ENV ) || defined( Rtt_LINUX_ENV )
 	#include <stdint.h>
 	typedef uint64_t Rtt_AbsoluteTime;
 #elif defined( Rtt_SYMBIAN_ENV )

@@ -56,6 +56,24 @@ Scheduler::Append( Task* e )
 }
 
 void
+Scheduler::Delete(Task* e)
+{
+	int i = 0;
+	while (i < fTasks.Length())
+	{
+		Task* t = fTasks[i];
+		if (t == e)
+		{
+			// "pop event"
+			fTasks.Remove(i, 1, false);
+			Rtt_DELETE(t);
+		}
+		else
+			i++;
+	}
+}
+
+void
 Scheduler::Run()
 {
 	fProcessing = true;

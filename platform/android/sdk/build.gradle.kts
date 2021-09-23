@@ -2,14 +2,13 @@ plugins {
     id("com.android.library")
 }
 
-@Suppress("OldTargetApi")
 android {
-    compileSdkVersion(28)
-    buildToolsVersion("28.0.3")
+    ndkVersion = "18.1.5063045"
+    compileSdkVersion(30)
 
     defaultConfig {
         minSdkVersion(15)
-        targetSdkVersion(28)
+        targetSdkVersion(30)
         versionCode = 1
         versionName = "1.0"
     }
@@ -21,7 +20,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            setPath("../sdk/CMakeLists.txt")
+            path = file("../sdk/CMakeLists.txt")
         }
     }
     useLibrary("org.apache.http.legacy")

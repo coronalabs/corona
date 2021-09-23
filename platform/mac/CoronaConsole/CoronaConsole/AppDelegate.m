@@ -10,39 +10,32 @@
 #import "AppDelegate.h"
 #import "ConsoleWindowController.h"
 
-static void SignalHandler(int signal)
-{
-	// When we receive a SIGHUP, move ourselves to the top of the window order
-	// (we need this because the interfaces Cocoa supplies (like [NSRunningApplication activateWithOptions:])
-	// all affect the activation state of the app and we don't want to activate just to show the window)
-	// Needs to be dispatched on the main thread because it's doing UI stuff
-	dispatch_async(dispatch_get_main_queue(), ^{
-		AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
 
+static void NotificationCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+{
+	AppDelegate *appDelegate = (__bridge AppDelegate*)observer;
+	if(!appDelegate || !name)
+	{
+		return;
+	}
+	else if(CFStringCompare(name, CFSTR("CoronaConsole.bringToFront"), 0) == kCFCompareEqualTo)
+	{
 		[appDelegate bringToFront];
-	});
-}
+		CFNotificationCenterPostNotification( CFNotificationCenterGetDistributedCenter(), CFSTR("CoronaSimulator.bringToFront"), NULL, NULL, YES);
 
-static void ClearConsoleSig(int signal)
-{
-	// When we receive a SIGIO clear console
-	dispatch_async(dispatch_get_main_queue(), ^{
-		AppDelegate *appDelegate = (AppDelegate*)[NSApp delegate];
-
+	}
+	else if(CFStringCompare(name, CFSTR("CoronaConsole.clearConsole"), 0) == kCFCompareEqualTo)
+	{
 		[appDelegate clearConsole];
-	});
+	}
 }
 
 @implementation AppDelegate
 
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
-	// Catch SIGHUP (see handler above)
-	struct sigaction action = { 0 };
-	action.sa_handler = SignalHandler;
-	sigaction(SIGHUP, &action, NULL);
-	action.sa_handler = ClearConsoleSig;
-	sigaction(SIGIO, &action, NULL);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(), (__bridge const void *)(self), NotificationCallback, CFSTR("CoronaConsole.clearConsole"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(), (__bridge const void*)(self), NotificationCallback, CFSTR("CoronaConsole.bringToFront"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -84,7 +77,7 @@ static void ClearConsoleSig(int signal)
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-	// Insert code here to tear down your application
+	CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(), (__bridge const void *)(self), NULL, NULL);
 }
 
 - (IBAction)performFindAction:(id)action

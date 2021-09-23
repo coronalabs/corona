@@ -248,6 +248,28 @@ OpenPath::IsStrokeVisible() const
 	return result;
 }
 
+bool
+OpenPath::SetStrokeVertexColor( U32 index, U32 color )
+{
+	fStrokeGeometry->AttachPerVertexColors( &fStrokeSource.Colors(), GetStrokeVertexCount() );
+
+	return fStrokeGeometry->SetVertexColor( index, color );
+}
+
+U32
+OpenPath::GetStrokeVertexCount() const
+{
+	if (IsValid( kStrokeSource ))
+	{
+		return fStrokeGeometry->GetVerticesAllocated();
+	}
+
+	else
+	{
+		return TesselatorLine::VertexCountFromPoints( fStrokePoints, false );
+	}
+}
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt
