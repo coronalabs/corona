@@ -80,7 +80,7 @@ ObjectBoxList::StringForType (int type)
 bool
 ObjectBoxList::CanGetObject( const Box * box, int type )
 {
-    return type == box->fType || (kGroupObject == box->fType && kDisplayObject == type);
+    return type == box->fType || (kGroupObject == box->fType && kDisplayObject == type); // see Add() method
 }
 
 ObjectBoxList *
@@ -156,7 +156,8 @@ ObjectBoxList::GetObject( const Box * box, int type )
 ObjectBoxList::Box *
 ObjectBoxList::Add( const void * object, int type )
 {
-    if (kDisplayObject == type) // might be a group...
+    if (kDisplayObject == type) // some objects need to be more specific...
+                                // this is complemented by CanGetObject()
     {
         void * nonConst = const_cast< void * >( object );
         DisplayObject * displayObject = static_cast< DisplayObject * >( nonConst );
@@ -266,6 +267,10 @@ ValuePrologue( lua_State * L, const Rtt::MLuaProxyable& o, const char key[], voi
     {
         Rtt::ObjectBoxList list;
 
+        // on some platforms, passing &o works fine, others not,
+        // owing to different virtual method implementations; so
+        // ensure we're looking at the object itself (we do this
+        // in the next several functions too)
         const Rtt::DisplayObject& object = static_cast< const Rtt::DisplayObject& >( o );
         
         OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
