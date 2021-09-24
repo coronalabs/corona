@@ -205,7 +205,8 @@ ObjectBoxList::Add( const void * object, int type )
 union GenericParams {
     #define AFTER_HEADER_OFFSET(NAME) offsetof( PARAMS( NAME ), action )
 
-    AFTER_HEADER_STRUCT( Lifetime );
+    AFTER_HEADER_STRUCT( OnCreate );
+    AFTER_HEADER_STRUCT( OnFinalize );
     AFTER_HEADER_STRUCT( OnMessage );
 
     #undef AFTER_HEADER_OFFSET
@@ -476,11 +477,6 @@ GetSizes( unsigned short method, size_t & fullSize, size_t & paramSize )
         GET_SIZES( BooleanResult );
 
         break;
-    case kAugmentedMethod_OnCreate:
-    case kAugmentedMethod_OnFinalize:
-        GET_SIZES( Lifetime );
-
-        break;
     case kAugmentedMethod_GetSelfBounds:
     case kAugmentedMethod_GetSelfBoundsForAnchor:
         GET_SIZES( RectResult );
@@ -501,6 +497,10 @@ GetSizes( unsigned short method, size_t & fullSize, size_t & paramSize )
     case UNIQUE_METHOD( DidInsert );
         break;
     case UNIQUE_METHOD( Draw );
+        break;
+    case UNIQUE_METHOD( OnCreate );
+        break;
+    case UNIQUE_METHOD( OnFinalize );
         break;
     case UNIQUE_METHOD( OnMessage );
         break;
@@ -785,7 +785,7 @@ const auto params = FindParams< PARAMS( NAME ) >( fStream, kAugmentedMethod_##ME
 static void
 OnCreate( const void * object, void * userData, const unsigned char * stream )
 {
-    const auto params = FindParams< CoronaObjectLifetimeParams >( stream, kAugmentedMethod_OnCreate, sizeof( CoronaObjectLifetimeParams ) - sizeof( GenericParams::Lifetime ) );
+    const auto params = FindParams< CoronaObjectOnCreateParams >( stream, kAugmentedMethod_OnCreate, sizeof( CoronaObjectOnCreateParams ) - sizeof( GenericParams::OnCreate ) );
 
     if (params.action)
     {
@@ -793,7 +793,7 @@ OnCreate( const void * object, void * userData, const unsigned char * stream )
         
         OBJECT_BOX_STORE( DisplayObject, storedObject, object );
 
-        params.action( storedObject, userData );
+        params.action( storedObject, &userData );
     }
 }
 
@@ -895,7 +895,7 @@ struct CoronaObjectsInterface : public Base {
         Rtt::ObjectBoxList list;
 
         OBJECT_BOX_STORE( DisplayObject, storedThis, this );
-        CORONA_OBJECTS_GET_PARAMS_SPECIFIC( OnFinalize, Lifetime );
+        CORONA_OBJECTS_GET_PARAMS( OnFinalize );
 
         if (params.action)
         {

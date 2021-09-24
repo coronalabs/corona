@@ -85,7 +85,7 @@ typedef enum {
     kAugmentedMethod_Value,
 
     /**
-     This method is invoked just before an object is destroyed, with `CoronaObjectLifetimeParams`.
+     This method is invoked just before an object is destroyed, with `CoronaObjectOnFinalizeParams`.
     */
     kAugmentedMethod_OnFinalize,
 
@@ -127,7 +127,7 @@ typedef enum {
 
     /**
      This method is invoked after an object has been constructed and set up, with
-     `CoronaObjectLifetimeParams`.
+     `CoronaObjectOnCreateParams`.
     */
     kAugmentedMethod_OnCreate,
 
@@ -485,13 +485,25 @@ typedef struct CoronaObjectValueParams {
 // ----------------------------------------------------------------------------
 
 /**
- These are method params related to lifetime events, whose `action` has signature
+ These are method params related to create events, whose `action` has signature
+ `method( CoronaDisplayObject * self, void ** userData )`.
+ 
+ The original value of `*userData` comes from the argument to a `CoronaObjectsPush*` function;
+ its value after this method concludes will be used by any subsequent methods.
+*/
+typedef struct CoronaObjectOnCreateParams {
+    CoronaObjectParamsHeader header;
+    void (*action)( CoronaDisplayObject * self, void ** userData );
+} CoronaObjectOnCreateParams;
+
+/**
+ These are method params related to finalize events, whose `action` has signature
  `method( CoronaDisplayObject * self, void * userData )`.
 */
-typedef struct CoronaObjectLifetimeParams {
+typedef struct CoronaObjectOnFinalizeParams {
     CoronaObjectParamsHeader header;
     void (*action)( CoronaDisplayObject * self, void * userData );
-} CoronaObjectLifetimeParams;
+} CoronaObjectOnFinalizeParams;
 
 /**
 These method params belong to messages, with `action` having signature `method( const CoronaDisplayObject * self, void * userData, const char * message, const void * data, unsigned int size )`.
