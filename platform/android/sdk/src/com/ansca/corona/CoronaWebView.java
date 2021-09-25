@@ -167,6 +167,7 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		settings.setUseWideViewPort(true);
 		settings.setPluginState(android.webkit.WebSettings.PluginState.ON);
 		settings.setDomStorageEnabled(true);
+		settings.setAllowFileAccess(true);
 		if (android.os.Build.VERSION.SDK_INT >= 17) {
 			settings.setMediaPlaybackRequiresUserGesture(false);
 		}
