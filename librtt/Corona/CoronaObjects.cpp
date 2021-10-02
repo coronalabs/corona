@@ -782,7 +782,7 @@ const auto params = FindParams< PARAMS( NAME ) >( fStream, kAugmentedMethod_##ME
 
 #define CORONA_OBJECTS_GET_PARAMS(PARAMS_TYPE) CORONA_OBJECTS_GET_PARAMS_SPECIFIC( PARAMS_TYPE, PARAMS_TYPE )
 
-static void
+static void *
 OnCreate( const void * object, void * userData, const unsigned char * stream )
 {
     const auto params = FindParams< CoronaObjectOnCreateParams >( stream, kAugmentedMethod_OnCreate, sizeof( CoronaObjectOnCreateParams ) - sizeof( GenericParams::OnCreate ) );
@@ -795,6 +795,8 @@ OnCreate( const void * object, void * userData, const unsigned char * stream )
 
         params.action( storedObject, &userData );
     }
+    
+    return userData;
 }
 
 // ----------------------------------------------------------------------------
@@ -817,7 +819,7 @@ struct CoronaObjectsInterface : public Base {
         sStreamAndUserData.stream = NULL;
         sStreamAndUserData.userData = NULL;
 
-        OnCreate( this, fUserData, fStream );
+        fUserData = OnCreate( this, fUserData, fStream );
     }
 
     virtual void AddedToParent( lua_State * L, Rtt::GroupObject * parent )
