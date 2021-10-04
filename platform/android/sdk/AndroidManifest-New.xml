@@ -37,10 +37,19 @@
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
 
-        <provider
-            android:name="com.ansca.corona.storage.FileContentProvider"
+        <provider android:name="com.ansca.corona.storage.FileContentProvider"
             android:authorities="${applicationId}.files"
-            android:exported="true" />
+            android:exported="true">
+        </provider>
+        <provider android:name="com.ansca.corona.camera.FileProvider"
+            android:authorities="${applicationId}.photos"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- Corona service used to perform background operations such as managing notifications. -->
         <service android:name="com.ansca.corona.CoronaService" />
 
@@ -78,10 +87,15 @@
 		<action android:name="android.intent.action.GET_CONTENT" />
 		<data android:mimeType="image/*" />
 	</intent>
+<<<<<<< HEAD
 	<!-- Needed for checking for Image Picker Intent in Android 11 -->
 	<intent>
 		<action android:name="android.intent.action.GET_CONTENT" />
 		<data android:mimeType="image/*" />
 	</intent>
+=======
+>>>>>>> 3391044996328faeebb75d9582766f3b6595c856
     </queries>
-</manifest> 
+</manifest>
+
+
