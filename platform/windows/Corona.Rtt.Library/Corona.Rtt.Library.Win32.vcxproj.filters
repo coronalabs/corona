@@ -1811,6 +1811,9 @@
     <ClInclude Include="..\..\..\librtt\Corona\CoronaPublicTypes.h">
       <Filter>librtt\Corona</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ObjectBoxList.h">
+      <Filter>librtt\Display</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <LuaToCpp Include="..\..\resources\loader_callback.lua">

@@ -2559,6 +2559,7 @@
 		AA2ED7912708257E00CEE021 /* CoronaObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaObjects.h; path = ../../librtt/Corona/CoronaObjects.h; sourceTree = "<group>"; };
 		AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = ../../librtt/Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
 		AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = ../../librtt/Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
+		AAA58168270D399C002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = ../../librtt/Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
 		C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FileSystem.cpp; path = ../../librtt/Core/Rtt_FileSystem.cpp; sourceTree = "<group>"; };
 		C221F5601D4BE37F00F45E77 /* Rtt_FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FileSystem.h; path = ../../librtt/Core/Rtt_FileSystem.h; sourceTree = "<group>"; };
 		C231BDE21C0F80D200494B37 /* launchpad.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = launchpad.lua; path = ../resources/launchpad.lua; sourceTree = "<group>"; };
@@ -2995,6 +2996,7 @@
 				A4551D7B1BAA17CF00FB3BDF /* Rtt_MCPUResourceObserver.h */,
 				A4551D7C1BAA17CF00FB3BDF /* Rtt_MDisplayDelegate.h */,
 				A4551D7D1BAA17CF00FB3BDF /* Rtt_MDrawable.h */,
+				AAA58168270D399C002A51A7 /* Rtt_ObjectBoxList.h */,
 				A4551D7E1BAA17CF00FB3BDF /* Rtt_OpenPath.cpp */,
 				A4551D7F1BAA17CF00FB3BDF /* Rtt_OpenPath.h */,
 				A4551D801BAA17CF00FB3BDF /* Rtt_Paint.cpp */,
@@ -3201,9 +3203,6 @@
 		A4551E831BAA17F800FB3BDF /* Corona */ = {
 			isa = PBXGroup;
 			children = (
-				AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */,
-				AA2ED7912708257E00CEE021 /* CoronaObjects.h */,
-				AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */,
 				A4551E841BAA180C00FB3BDF /* CoronaAssert.c */,
 				A4551E851BAA180C00FB3BDF /* CoronaAssert.h */,
 				A4551E861BAA180C00FB3BDF /* CoronaEvent.cpp */,
@@ -3220,8 +3219,11 @@
 				F5A752341BFA41BF00CCDB94 /* CoronaLuaObjCHelper.h */,
 				F5A752351BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm */,
 				A4551E8F1BAA180C00FB3BDF /* CoronaMacros.h */,
+				AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */,
+				AA2ED7912708257E00CEE021 /* CoronaObjects.h */,
 				A4551E901BAA180C00FB3BDF /* CoronaPrototype.lua */,
 				A4551E911BAA180C00FB3BDF /* CoronaProvider.lua */,
+				AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */,
 				A4551E921BAA180C00FB3BDF /* CoronaVersion.c */,
 				A4551E931BAA180C00FB3BDF /* CoronaVersion.h */,
 			);
