@@ -51,9 +51,7 @@
 	#include "CoronaLuaObjCHelper.h"
 	#include "CoronaEvent.h"
 	#include "Corona/CoronaGraphics.h"
-// STEVE CHANGE
     #include "Corona/CoronaObjects.h"
-// /STEVE CHANGE
 
 	volatile void* fakeVariableToPreventSymbolStripping[] __attribute__((used)) = {
 		(void*)CoronaEventNameKey,
@@ -74,7 +72,7 @@
 		(void*)CoronaExternalPushTexture,
 		(void*)CoronaExternalGetUserData,
 		(void*)CoronaExternalFormatBPP,
-    // STEVE CHANGE
+
         (void*)CoronaObjectsBuildMethodStream,
         (void*)CoronaObjectsPushContainer,
         (void*)CoronaObjectsPushEmbossedText,
@@ -95,7 +93,6 @@
         (void*)CoronaGroupObjectGetChild,
         (void*)CoronaGroupObjectGetNumChildren,
         (void*)CoronaObjectSendMessage
-    // /STEVE CHANGE
 	};
 
 #endif

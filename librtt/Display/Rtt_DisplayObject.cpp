@@ -387,7 +387,7 @@ DisplayObject::UpdateTransform( const Matrix& parentToDstSpace )
 	bool result = false;
 
 	// Only update if the object is hit-testable
-    if ( ShouldHitTest() || IsDummyStageBounds() ) // <- STEVE CHANGE
+    if ( ShouldHitTest() || IsDummyStageBounds() )
 	{
 		// (1) If the build is valid, then IsValid( kTransformFlag ) == true
 		// (2) If the build is not valid, then IsValid( kTransformFlag ) can be either true or false
@@ -616,13 +616,11 @@ DisplayObject::CanCull() const
 	return true;
 }
 
-// STEVE CHANGE
 bool
 DisplayObject::CanHitTest() const
 {
     return true;
 }
-// /STEVE CHANGE
 
 void
 DisplayObject::InitProxy( lua_State *L )

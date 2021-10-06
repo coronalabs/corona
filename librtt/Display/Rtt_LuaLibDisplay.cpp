@@ -79,7 +79,6 @@
 #undef CreateFont
 #endif
 
-// STEVE CHANGE
 FactoryReplacement
 GetFactoryReplacement( lua_State * L )
 {
@@ -95,7 +94,6 @@ GetFactoryReplacement( lua_State * L )
         return NULL;
     }
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -251,9 +249,7 @@ DisplayLibrary::Open( lua_State *L )
 	// Set library as upvalue for each library function
 	Self *library = Rtt_NEW( & display->GetRuntime().GetAllocator(), Self( * display ) );
 
-    // STEVE CHANGE
     display->GatherObjectFactories( kVTable, library );
-    // /STEVE CHANGE
 
 	// Store the library singleton in the registry so it persists
 	// using kMetatableName as the unique key.
@@ -610,10 +606,8 @@ DisplayLibrary::PushImage(
 	Real w,
 	Real h )
 {
-    // STEVE CHANGE
     auto * rectFactory = GetObjectFactory( L, &RectObject::NewRect );
-    ShapeObject* v = /*RectObject::NewRect*/rectFactory( display.GetAllocator(), w, h );
-    // /STEVE CHANGE
+    ShapeObject* v = rectFactory( display.GetAllocator(), w, h );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 	if ( Rtt_VERIFY( result ) )
@@ -722,13 +716,11 @@ DisplayLibrary::PushImage(
 	return v;
 }
 
-// STEVE CHANGE
 static ShapeObject *
 NewShape( Rtt_Allocator * allocator, ClosedPath * path )
 {
     return Rtt_NEW( allocator, ShapeObject( path ) );
 }
-// /STEVE CHANGE
 
 int
 DisplayLibrary::newCircle( lua_State *L )
@@ -744,10 +736,9 @@ DisplayLibrary::newCircle( lua_State *L )
 	Real r = luaL_checkreal( L, nextArg++ );
 
 	ShapePath *path = ShapePath::NewCircle( display.GetAllocator(), r );
-    // STEVE CHANGE
+
     auto * circleFactory = GetObjectFactory( L, &NewShape );
-    ShapeObject *v = circleFactory( display.GetAllocator(), path );//Rtt_NEW( display.GetAllocator(), ShapeObject( path ) );
-    // /STEVE CHANGE
+    ShapeObject *v = circleFactory( display.GetAllocator(), path );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 	AssignDefaultFillColor( display, * v );
@@ -775,10 +766,8 @@ DisplayLibrary::newPolygon( lua_State *L )
 	TesselatorPolygon *tesselator = (TesselatorPolygon *)path->GetTesselator();
 	if ( ShapeAdapterPolygon::InitializeContour( L, nextArg, * tesselator ) )
 	{
-        // STEVE CHANGE
         auto * polygonFactory = GetObjectFactory( L, &NewShape );
-        ShapeObject *v = polygonFactory( display.GetAllocator(), path );//Rtt_NEW( display.GetAllocator(), ShapeObject( path ) );
-        // /STEVE CHANGE
+        ShapeObject *v = polygonFactory( display.GetAllocator(), path );
 
 		result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 		AssignDefaultFillColor( display, * v );
@@ -859,10 +848,8 @@ DisplayLibrary::newMesh( lua_State *L )
 	TesselatorMesh *tesselator = (TesselatorMesh *)path->GetTesselator();
 	if ( ShapeAdapterMesh::InitializeMesh( L, nextArg, * tesselator ) )
 	{
-        // STEVE CHANGE
         auto * meshFactory = GetObjectFactory( L, &NewShape );
-        ShapeObject *v = meshFactory( display.GetAllocator(), path );//Rtt_NEW( display.GetAllocator(), ShapeObject( path ) );
-        // /STEVE CHANGE
+        ShapeObject *v = meshFactory( display.GetAllocator(), path );
 
 		if (tesselator->GetFillPrimitive() == Geometry::kIndexedTriangles)
 		{
@@ -900,10 +887,10 @@ DisplayLibrary::newRect( lua_State *L )
 	Real w = luaL_checkreal( L, nextArg++ );
 	Real h = luaL_checkreal( L, nextArg++ );
 
-    // STEVE CHANGE
+
     auto * rectFactory = GetObjectFactory( L, &RectObject::NewRect );
-    ShapeObject* v = /*RectObject::NewRect*/rectFactory( display.GetAllocator(), w, h );
-    // /STEVE CHANGE
+    ShapeObject* v = rectFactory( display.GetAllocator(), w, h );
+
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 
 	if ( display.GetDefaults().IsV1Compatibility() )
@@ -933,10 +920,9 @@ DisplayLibrary::newRoundedRect( lua_State *L )
 	Real r = luaL_checkreal( L, nextArg++ );
 
 	ShapePath *path = ShapePath::NewRoundedRect( display.GetAllocator(), w, h, r );
-    // STEVE CHANGE
+
     auto * roundedRectFactory = GetObjectFactory( L, &NewShape );
-    ShapeObject *v = roundedRectFactory( display.GetAllocator(), path );//Rtt_NEW( display.GetAllocator(), ShapeObject( path ) );
-    // /STEVE CHANGE
+    ShapeObject *v = roundedRectFactory( display.GetAllocator(), path );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 
@@ -951,13 +937,11 @@ DisplayLibrary::newRoundedRect( lua_State *L )
 	return result;
 }
 
-// STEVE CHANGE
 LineObject *
 NewLine( Rtt_Allocator * allocator, OpenPath * path )
 {
     return Rtt_NEW( allocator, LineObject( path ) );
 }
-// /STEVE CHANGE
 
 int
 DisplayLibrary::newLine( lua_State *L )
@@ -1022,10 +1006,9 @@ DisplayLibrary::newLine( lua_State *L )
 
 	int result = 0;
 	{
-        // STEVE CHANGE
         auto * lineFactory = GetObjectFactory( L, &NewLine );
-        LineObject* o = lineFactory( pAllocator, path );// Rtt_NEW(pAllocator, LineObject(path));
-        // /STEVE CHANGE
+        LineObject* o = lineFactory( pAllocator, path );
+        
 		result = LuaLibDisplay::AssignParentAndPushResult( L, display, o, parent );
 		o->Translate( translate_to_origin.x, translate_to_origin.y );
 
@@ -1280,13 +1263,11 @@ DisplayLibrary::newImageRect( lua_State *L )
 	return result;
 }
 
-// STEVE CHANGE
 static EmitterObject *
 NewEmitter( Rtt_Allocator * allocator )
 {
     return Rtt_NEW( allocator, EmitterObject );
 }
-// /STEVE CHANGE
 
 // display.newEmitter( [parentGroup,] params_table, w, h )
 int
@@ -1302,10 +1283,9 @@ DisplayLibrary::newEmitter( lua_State *L )
 
 	int result = 0;
 
-    // STEVE CHANGE
     auto * emitterFactory = GetObjectFactory( L, &NewEmitter );
-    EmitterObject *eo = emitterFactory( /*runtime.Allocator()*/NULL );// Rtt_NEW( runtime.Allocator(), EmitterObject );
-    // /STEVE CHANGE
+    EmitterObject *eo = emitterFactory( /*runtime.Allocator()*/NULL );
+    
 	if( eo->Initialize( L, display ) )
 	{
 		result = LuaLibDisplay::AssignParentAndPushResult( L, display, eo, NULL );
@@ -1320,7 +1300,6 @@ DisplayLibrary::newEmitter( lua_State *L )
 	return result;
 }
 
-// STEVE CHANGE
 static TextObject *
 NewEmbossedText( Rtt_Allocator * allocator, Display& display, const char text[], PlatformFont *font, Real w, Real h, const char alignment[] )
 {
@@ -1332,7 +1311,6 @@ NewText(  Rtt_Allocator * allocator, Display& display, const char text[], Platfo
 {
     return Rtt_NEW( allocator, TextObject( display, text, font, w, h, alignment ) );
 }
-// /STEVE CHANGE
 
 static int CreateTextObject( lua_State *L, bool isEmbossed )
 {
@@ -1511,17 +1489,13 @@ static int CreateTextObject( lua_State *L, bool isEmbossed )
 	TextObject* textObject;
 	if (isEmbossed)
 	{
-        // STEVE CHANGE
         auto * textFactory = GetObjectFactory( L, &NewEmbossedText );
-        textObject = textFactory( runtime.Allocator(), display, str, font, w, h, alignment );// Rtt_NEW( runtime.Allocator(), EmbossedTextObject( display, str, font, w, h, alignment ) );
-        // /STEVE CHANGE
+        textObject = textFactory( runtime.Allocator(), display, str, font, w, h, alignment );
 	}
 	else
 	{
-        // STEVE CHANGE
         auto * textFactory = GetObjectFactory( L, &NewText );
-        textObject = textFactory( runtime.Allocator(), display, str, font, w, h, alignment );// Rtt_NEW( runtime.Allocator(), Rtt_NEW( runtime.Allocator(), TextObject( display, str, font, w, h, alignment ) );
-        // /STEVE CHANGE
+        textObject = textFactory( runtime.Allocator(), display, str, font, w, h, alignment );
 	}
 	result = LuaLibDisplay::AssignParentAndPushResult( L, display, textObject, parent );
 	
@@ -1568,13 +1542,11 @@ DisplayLibrary::newEmbossedText( lua_State *L )
 	return CreateTextObject( L, isEmbossed );
 }
 
-// STEVE CHANGE
 static GroupObject *
 NewGroup( Rtt_Allocator * context )
 {
     return Rtt_NEW( context, GroupObject( context, NULL ) );
 }
-// STEVE CHANGE
 
 // display.newGroup( [child1 [, child2 [, child3 ... ]]] )
 // With no args, create an empty group and set parent to root
@@ -1593,10 +1565,8 @@ DisplayLibrary::newGroup( lua_State *L )
 	Display& display = library->GetDisplay();
 	Rtt_Allocator* context = display.GetAllocator();
 
-    // STEVE CHANGE
     auto * groupFactory = GetObjectFactory( L, &NewGroup );
-    GroupObject *o = groupFactory( context );//Rtt_NEW( context, GroupObject( context, NULL ) );
-    // /STEVE CHANGE
+    GroupObject *o = groupFactory( context );
 	GroupObject *parent = NULL; // Default parent is root
 
 	DisplayObject *child = NULL;
@@ -1646,13 +1616,11 @@ DisplayLibrary::newGroup( lua_State *L )
 	return result;
 }
 
-// STEVE CHANGE
 static ContainerObject *
 NewContainer( Rtt_Allocator * context, Rtt::StageObject * stageObject, Real w, Real h )
 {
     return Rtt_NEW( context, ContainerObject( context, stageObject, w, h ) );
 }
-// STEVE CHANGE
 
 // display.newContainer( [parent, ] w, h )
 int
@@ -1684,10 +1652,9 @@ DisplayLibrary::_newContainer( lua_State *L )
 	Real w = luaL_checkreal( L, nextArg++ );
 	Real h = luaL_checkreal( L, nextArg++ );
 
-    // STEVE CHANGE
     auto * containerFactory = GetObjectFactory( L, &NewContainer );
-    ContainerObject *o = containerFactory( context, NULL, w, h );// Rtt_NEW( context, ContainerObject( context, NULL, w, h ) )
-    // /STEVE CHANGE
+    ContainerObject *o = containerFactory( context, NULL, w, h );
+    
 	o->Initialize( display );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, o, parent );
@@ -1695,13 +1662,11 @@ DisplayLibrary::_newContainer( lua_State *L )
 	return result;
 }
 
-// STEVE CHANGE
 static SnapshotObject *
 NewSnapshot( Rtt_Allocator * context, Display & display, Real w, Real h )
 {
     return Rtt_NEW( context, SnapshotObject( context, display, w, h ) );
 }
-// STEVE CHANGE
 
 // display.newSnapshot( [parent, ] w, h )
 int
@@ -1726,10 +1691,8 @@ DisplayLibrary::newSnapshot( lua_State *L )
 	Real w = luaL_checkreal( L, nextArg++ );
 	Real h = luaL_checkreal( L, nextArg++ );
 
-    // STEVE CHANGE
     auto * snapshotFactory = GetObjectFactory( L, &NewSnapshot );
-    SnapshotObject *o = snapshotFactory( context, display, w, h );//Rtt_NEW( context, SnapshotObject( context, display, w, h ) );
-    // /STEVE CHANGE
+    SnapshotObject *o = snapshotFactory( context, display, w, h );
 
 	if ( display.GetDefaults().IsV1Compatibility() )
 	{
@@ -1766,7 +1729,8 @@ DisplayLibrary::newSprite( lua_State *L )
 			Rtt_Allocator *context = display.GetAllocator();
 
 			SpritePlayer& player = display.GetSpritePlayer();
-            SpriteObject *o = SpriteObject::Create( L, context, ud->GetSheet(), player ); // <- STEVE CHANGE
+            SpriteObject *o = SpriteObject::Create( L, context, ud->GetSheet(), player );
+            
 			if ( o )
 			{
 				// Need to assign parent so we can call Initialize()

@@ -85,7 +85,6 @@ class LuaLibDisplay
 
 } // namespace Rtt
 
-// STEVE CHANGE
 typedef void (*FactoryReplacement)();
 
 FactoryReplacement GetFactoryReplacement( lua_State * L );
@@ -98,7 +97,6 @@ GetObjectFactory( lua_State * L, F * defaultFactory )
 
     return replacement ? replacement : defaultFactory;
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

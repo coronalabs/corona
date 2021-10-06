@@ -206,9 +206,7 @@ Display::Display( Runtime& owner )
 	fStream( Rtt_NEW( owner.GetAllocator(), GPUStream( owner.GetAllocator() ) ) ),
 	fTarget( owner.Platform().CreateScreenSurface() ),
 	fImageSuffix( LUA_REFNIL ),
-    // STEVE CHANGE
     fObjectFactories( LUA_REFNIL ),
-    // /STEVE CHANGE
 	fDrawMode( kDefaultDrawMode ),
 	fIsAntialiased( false ),
 	fIsCollecting( false ),
@@ -227,9 +225,7 @@ Display::~Display()
 	if ( L )
 	{
 		luaL_unref( L, LUA_REGISTRYINDEX, fImageSuffix );
-        // STEVE CHANGE
         luaL_unref( L, LUA_REGISTRYINDEX, fObjectFactories );
-        // /STEVE CHANGE
 	}
 
     //Needs to be done before deletes, because it uses scene etc
@@ -1188,7 +1184,6 @@ Display::PushImageSuffixTable() const
 	return wasPushed;
 }
 
-// STEVE CHANGE
 void
 Display::GatherObjectFactories( const luaL_Reg funcs[], void * library )
 {
@@ -1228,7 +1223,6 @@ Display::PushObjectFactories() const
     }
     return wasPushed;
 }
-// /STEVE CHANGE
 
 GroupObject *
 Display::Overlay()

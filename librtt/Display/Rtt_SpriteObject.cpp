@@ -22,9 +22,7 @@
 #include "Rtt_LuaProxyVTable.h"
 #include "Display/Rtt_SpritePlayer.h"
 
-// STEVE CHANGE
 #include "Display/Rtt_LuaLibDisplay.h"
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -553,19 +551,15 @@ SpriteObjectSequence::GetEffectiveNumFrames() const
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
 static SpriteObject *
 NewSprite( Rtt_Allocator * allocator, RectPath * path, const AutoPtr< ImageSheet > & sheet, SpritePlayer & player )
 {
     return Rtt_NEW( allocator, SpriteObject( path, allocator, sheet, player ) );
 }
-// /STEVE CHANGE
 
 SpriteObject*
 SpriteObject::Create(
-    // STEVE CHANGE
     lua_State * L,
-    // /STEVE CHANGE
 	Rtt_Allocator *pAllocator,
 	const AutoPtr< ImageSheet >& sheet,
 	SpritePlayer& player )
@@ -583,10 +577,8 @@ SpriteObject::Create(
 
 			RectPath *path = RectPath::NewRect( pAllocator, width, height );
 
-            // STEVE CHANGE
             auto * spriteFactory = GetObjectFactory( L, &NewSprite );
-            result = spriteFactory( pAllocator, path, sheet, player );// Rtt_NEW( pAllocator, SpriteObject( path, pAllocator, sheet, player ) )
-            // /STEVE CHANGE
+            result = spriteFactory( pAllocator, path, sheet, player );
 		}
 		else
 		{
