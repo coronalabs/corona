@@ -724,9 +724,17 @@ int CoronaObjectsPushText(lua_State* L, void* userData, const CoronaObjectParams
 }
 
 CORONA_API
-int CoronaObjectSetHasDummyStageBounds(CoronaDisplayObject* object, int hasBounds)
+int CoronaObjectInvalidate(const CoronaDisplayObject* object)
 {
-	typedef int(*CoronaCallbackType)(CoronaDisplayObject*, int);
+    typedef int(*CoronaCallbackType)(const CoronaDisplayObject*);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(object);
+}
+
+CORONA_API
+int CoronaObjectSetHasDummyStageBounds(const CoronaDisplayObject* object, int hasBounds)
+{
+	typedef int(*CoronaCallbackType)(const CoronaDisplayObject*, int);
 	CoronaCallbackLoad();
 	return CoronaCallbackInvoke(object, hasBounds);
 }

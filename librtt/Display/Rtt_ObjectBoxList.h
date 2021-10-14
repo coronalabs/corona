@@ -54,11 +54,9 @@ public:
     static bool CanGetObject ( const Box * box, int type);
     
 public:
-    static ObjectBoxList * GetList( Box * box );
     static ObjectBoxList * GetList( const Box * box );
     static bool CheckObject( const Box * box, int type );
-    static void * GetObject( Box * box, int type );
-    static const void * GetObject( const Box * box, int type );
+    static void * GetObject( const Box * box, int type );
     
 public:
     Box * Add( const void * object, int type );

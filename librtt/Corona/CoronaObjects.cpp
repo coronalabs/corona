@@ -84,12 +84,6 @@ ObjectBoxList::CanGetObject( const Box * box, int type )
 }
 
 ObjectBoxList *
-ObjectBoxList::GetList( Box * box )
-{
-    return ( ObjectBoxList * )box->fList;
-}
-
-ObjectBoxList *
 ObjectBoxList::GetList( const Box * box )
 {
     void * list = const_cast< void * >( box->fList );
@@ -126,20 +120,6 @@ ObjectBoxList::CheckObject( const Box * box, int type )
 }
 
 void *
-ObjectBoxList::GetObject( Box * box, int type )
-{
-    if (CheckObject( box, type ))
-    {
-        return const_cast< Box * >( box )->fObject;
-    }
-    
-    else
-    {
-        return NULL;
-    }
-}
-
-const void *
 ObjectBoxList::GetObject( const Box * box, int type )
 {
     if (CheckObject( box, type ))
@@ -1567,7 +1547,22 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObject * object, int hasBounds )
+int CoronaObjectInvalidate( const CoronaDisplayObject * object )
+{
+    auto * displayObject = OBJECT_BOX_LOAD( DisplayObject, object );
+
+    if (displayObject)
+    {
+        displayObject->InvalidateDisplay();
+
+        return 1;
+    }
+
+    return 0;
+}
+
+CORONA_API
+int CoronaObjectSetHasDummyStageBounds( const CoronaDisplayObject * object, int hasBounds )
 {
     auto * displayObject = OBJECT_BOX_LOAD( DisplayObject, object );
 

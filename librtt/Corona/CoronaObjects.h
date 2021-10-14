@@ -267,9 +267,9 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Matrix, const CoronaDisplayObject * self, void 
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to draw opportunities, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, CoronaRenderer * renderer )`.
+ These are method params related to draw opportunities, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, const CoronaRenderer * renderer )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Draw, const CoronaDisplayObject * self, void * userData, CoronaRenderer * renderer );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Draw, const CoronaDisplayObject * self, void * userData, const CoronaRenderer * renderer );
 
 /**
  CoronaObjectRectResultParams
@@ -486,23 +486,23 @@ typedef struct CoronaObjectValueParams {
 
 /**
  These are method params related to create events, whose `action` has signature
- `method( CoronaDisplayObject * self, void ** userData )`.
+ `method( const CoronaDisplayObject * self, void ** userData )`.
  
  The original value of `*userData` comes from the argument to a `CoronaObjectsPush*` function;
  its value after this method concludes will be used by any subsequent methods.
 */
 typedef struct CoronaObjectOnCreateParams {
     CoronaObjectParamsHeader header;
-    void (*action)( CoronaDisplayObject * self, void ** userData );
+    void (*action)( const CoronaDisplayObject * self, void ** userData );
 } CoronaObjectOnCreateParams;
 
 /**
  These are method params related to finalize events, whose `action` has signature
- `method( CoronaDisplayObject * self, void * userData )`.
+ `method( const CoronaDisplayObject * self, void * userData )`.
 */
 typedef struct CoronaObjectOnFinalizeParams {
     CoronaObjectParamsHeader header;
-    void (*action)( CoronaDisplayObject * self, void * userData );
+    void (*action)( const CoronaDisplayObject * self, void * userData );
 } CoronaObjectOnFinalizeParams;
 
 /**
@@ -750,12 +750,20 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
 // ----------------------------------------------------------------------------
 
 /**
+ Invalidate an object in the display hierachy.
+ @param object Boxed display object.
+ @return If non-0, the object was invalidated.
+*/
+CORONA_API
+int CoronaObjectInvalidate( const CoronaDisplayObject * object ) CORONA_PUBLIC_SUFFIX;
+
+/**
  @param object Boxed display object.
  @params hasBounds If non-0, set dummy bounds (the full content region), else clear them.
  @return If non-0, the bounds were set.
 */
 CORONA_API
-int CoronaObjectsSetHasDummyStageBounds( CoronaDisplayObject * object, int hasBounds ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectSetHasDummyStageBounds( const CoronaDisplayObject * object, int hasBounds ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 
