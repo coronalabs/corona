@@ -51,6 +51,7 @@ class AndroidDevice : public MPlatformDevice
 
 	public:
 		virtual void Vibrate(const char * hapticType, const char* hapticStyle) const;
+		virtual void Vibrate() const { Vibrate(NULL, NULL); }
 
 	public:
 		virtual void BeginNotifications( EventType type ) const;
