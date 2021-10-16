@@ -325,17 +325,14 @@ IPhoneDevice::GetUniqueIdentifier( IdentifierType t ) const
 void
 IPhoneDevice::Vibrate(const char * hapticType, const char* hapticStyle) const
 {
-    
     NSString * type = nil;
     if(hapticType){
        type = [[NSString alloc] initWithUTF8String:hapticType];
     }
     NSString * style = nil;
     if(hapticStyle){
-       
        style = [[NSString alloc] initWithUTF8String:hapticStyle];
     }
-        
    if([type isEqualToString:@"impact"]){
        UIImpactFeedbackStyle feedbackStyle = UIImpactFeedbackStyleMedium; // default
          if (style != nil) {
@@ -374,6 +371,7 @@ IPhoneDevice::Vibrate(const char * hapticType, const char* hapticStyle) const
        [feedback notificationOccurred:feedbackType];
        feedback = nil;
    }else{
+       if(type != nil){Rtt_Log("WARNING: invalid hapticType");} //just in case user misspells or puts a wrong type
        AudioServicesPlaySystemSound( kSystemSoundID_Vibrate );
    }
 }
