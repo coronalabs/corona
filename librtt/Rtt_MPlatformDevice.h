@@ -96,7 +96,8 @@ class MPlatformDevice
 		virtual PlatformInputDeviceManager& GetInputDeviceManager() = 0;
 
 	public:
-		virtual void Vibrate(const char * hapticType = NULL, const char* hapticStyle = NULL) const = 0;
+		virtual void Vibrate(const char* hapticType, const char* hapticStyle = NULL) const { Vibrate(); };
+		virtual void Vibrate() const = 0;
 
 	public:
 		virtual void BeginNotifications( EventType type ) const = 0;
