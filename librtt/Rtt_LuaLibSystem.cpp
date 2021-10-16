@@ -326,14 +326,20 @@ getTimer( lua_State *L )
 static int
 vibrate( lua_State *L )
 {
-    if ( lua_type( L, 1 ) == LUA_TSTRING && lua_type( L, 2 ) == LUA_TNONE)
+	const char* hapticType = NULL;
+	const char* hapticStyle = NULL;
+
+    if ( lua_type( L, 1 ) == LUA_TSTRING)
     {
-        LuaContext::GetPlatform( L ).GetDevice().Vibrate(lua_tostring( L,1 ));
-    } else if(lua_type( L, 1 ) == LUA_TSTRING && lua_type( L, 2 ) == LUA_TSTRING){
-        LuaContext::GetPlatform( L ).GetDevice().Vibrate(lua_tostring( L, 1 ), lua_tostring( L, 2 ));
-    }else{
-        LuaContext::GetPlatform( L ).GetDevice().Vibrate();
+		hapticType = lua_tostring(L, 1);
+    } 
+	if(lua_type( L, 2 ) == LUA_TSTRING)
+	{
+		hapticStyle = lua_tostring(L, 2);
     }
+
+    LuaContext::GetPlatform( L ).GetDevice().Vibrate(hapticType, hapticStyle);
+    
 	return 0;
 }
 
