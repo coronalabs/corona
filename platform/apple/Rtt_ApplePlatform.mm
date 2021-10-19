@@ -51,6 +51,7 @@
 	#include "CoronaLuaObjCHelper.h"
 	#include "CoronaEvent.h"
 	#include "Corona/CoronaGraphics.h"
+    #include "Corona/CoronaObjects.h"
 
 	volatile void* fakeVariableToPreventSymbolStripping[] __attribute__((used)) = {
 		(void*)CoronaEventNameKey,
@@ -71,6 +72,36 @@
 		(void*)CoronaExternalPushTexture,
 		(void*)CoronaExternalGetUserData,
 		(void*)CoronaExternalFormatBPP,
+
+        (void*)CoronaRendererScheduleEndFrameOp,
+        (void*)CoronaRendererCancelEndFrameOp,
+        (void*)CoronaRendererInstallClearOp,
+        (void*)CoronaRendererRemoveClearOp,
+        (void*)CoronaRendererDo,
+        (void*)CoronaRendererRegisterCommand,
+        (void*)CoronaRendererIssueCommand,
+
+        (void*)CoronaObjectsBuildMethodStream,
+        (void*)CoronaObjectsPushContainer,
+        (void*)CoronaObjectsPushEmbossedText,
+        (void*)CoronaObjectsPushEmitter,
+        (void*)CoronaObjectsPushGroup,
+        (void*)CoronaObjectsPushImage,
+        (void*)CoronaObjectsPushImageRect,
+        (void*)CoronaObjectsPushLine,
+        (void*)CoronaObjectsPushMesh,
+        (void*)CoronaObjectsPushPolygon,
+        (void*)CoronaObjectsPushRect,
+        (void*)CoronaObjectsPushRoundedRect,
+        (void*)CoronaObjectsPushSnapshot,
+        (void*)CoronaObjectsPushSprite,
+        (void*)CoronaObjectsPushText,
+        (void*)CoronaObjectInvalidate,
+        (void*)CoronaObjectSetHasDummyStageBounds,
+        (void*)CoronaObjectGetParent,
+        (void*)CoronaGroupObjectGetChild,
+        (void*)CoronaGroupObjectGetNumChildren,
+        (void*)CoronaObjectSendMessage
 	};
 
 #endif

@@ -14,11 +14,13 @@
 
 #include "Rtt_LuaContext.h"
 
+#include "Display/Rtt_ObjectBoxList.h"
 #include "Display/Rtt_TextureResource.h"
 #include "Core/Rtt_SharedPtr.h"
 #include "Display/Rtt_TextureFactory.h"
 #include "Rtt_Runtime.h"
 #include "Display/Rtt_Display.h"
+#include "Renderer/Rtt_Renderer.h"
 
 #include "Display/Rtt_TextureResourceExternalAdapter.h"
 
@@ -80,6 +82,190 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 	}
 }
 
+// ----------------------------------------------------------------------------
+
+static Rtt::Renderer &
+GetRenderer( lua_State * L )
+{
+    return Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetRenderer();
+}
+
+static Rtt::Renderer *
+GetRenderer( CoronaRendererOpParams * params )
+{
+    Rtt::Renderer * renderer = NULL;
+    
+    if (params)
+    {
+        if (params->useLuaState)
+        {
+            renderer = &GetRenderer( params->u.luaState );
+        }
+        
+        else
+        {
+            renderer = OBJECT_BOX_LOAD( Renderer, params->u.renderer );
+        }
+    }
+    
+    return renderer;
+}
+
+CORONA_API
+int CoronaRendererScheduleEndFrameOp( CoronaRendererOpParams * params, CoronaRendererOp onEndFrame, void * userData, unsigned long * opID )
+{
+    Rtt::Renderer * renderer = GetRenderer( params );
+    
+    if (renderer)
+    {
+        U16 index = renderer->AddEndFrameOp( onEndFrame, userData );
+        
+        if (index)
+        {
+            if (opID)
+            {
+                *opID = index;
+            }
+            
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+CORONA_API
+int CoronaRendererCancelEndFrameOp( CoronaRendererOpParams * params, unsigned long opID )
+{
+    Rtt::Renderer * renderer = GetRenderer( params );
+    
+    if (renderer && opID)
+    {
+        Rtt::Array< Rtt::Renderer::CustomOp > & endFrameOps = renderer->GetEndFrameOps();
+        
+        if (opID <= (unsigned long)endFrameOps.Length())
+        {
+            endFrameOps[opID - 1].fAction = NULL;
+            
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+CORONA_API
+int CoronaRendererInstallClearOp( CoronaRendererOpParams * params, CoronaRendererOp onClear, void * userData, unsigned long * opID )
+{
+    Rtt::Renderer * renderer = GetRenderer( params );
+    
+    if (renderer)
+    {
+        U16 index = renderer->AddClearOp( onClear, userData );
+        
+        if (index)
+        {
+            Rtt::Array< Rtt::Renderer::CustomOp > & clearOps = renderer->GetClearOps();
+            
+            static unsigned long id;
+            
+            clearOps[index - 1].fID = id;
+            
+            if (opID)
+            {
+                *opID = id;
+            }
+            
+            id++;
+            
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+static S32
+FindClearOp( Rtt::Array< Rtt::Renderer::CustomOp > & clearOps, unsigned long opID )
+{
+    for (S32 i = 0; i < clearOps.Length(); ++i)
+    {
+        if (opID == clearOps[i].fID)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
+CORONA_API
+int CoronaRendererRemoveClearOp( CoronaRendererOpParams * params, unsigned long opID )
+{
+    Rtt::Renderer * renderer = GetRenderer( params );
+
+    if (renderer)
+    {
+        S32 index = FindClearOp( renderer->GetClearOps(), opID );
+        
+        if (index >= 0)
+        {
+            renderer->GetClearOps().Remove( index, 1 );
+            
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+CORONA_API
+int CoronaRendererDo( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData )
+{
+    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    
+    if (rendererObject && action)
+    {
+        rendererObject->Inject( renderer, action, userData );
+
+        return 1;
+    }
+
+    return 0;
+}
+
+CORONA_API
+int CoronaRendererRegisterCommand( lua_State * L, const CoronaCommand * command, unsigned long * commandID )
+{
+    Rtt::Renderer & renderer = GetRenderer( L );
+    
+    if (command)
+    {
+        U16 id = renderer.AddCustomCommand( *command );
+        
+        if (id)
+        {
+            *commandID = id;
+            
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+CORONA_API
+int CoronaRendererIssueCommand( const CoronaRenderer * renderer, unsigned long commandID, void * data, unsigned int size )
+{
+    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+
+    if (rendererObject && commandID && rendererObject->IssueCustomCommand( commandID - 1U, data, size ))
+    {
+        return 1;
+    }
+    
+    return 0;
+}
 
 // ----------------------------------------------------------------------------
 

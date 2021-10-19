@@ -26,6 +26,7 @@
 #include "Core/Rtt_Math.h"
 #include "Core/Rtt_Types.h"
 #include "Renderer/Rtt_MCPUResourceObserver.h"
+#include "Display/Rtt_ObjectBoxList.h"
 
 #define ENABLE_DEBUG_PRINT	0
 
@@ -133,6 +134,10 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fTexelSize( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec4 ) ) ),
 	fContentScale( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec2 ) ) ),
 	fViewProjectionMatrix( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kMat4 ) ) ),
+    fPendingCommands( allocator ),
+    fClearOps( allocator ),
+    fEndFrameOps( allocator ),
+    fCommandCount( 0U ),
 	fMaskCountIndex( 0 ),
 	fMaskCount( allocator ),
 	fCurrentProgramMaskCount( 0 ),
@@ -173,6 +178,22 @@ Renderer::Initialize()
 {
 	fBackCommandBuffer->Initialize();
 	fFrontCommandBuffer->Initialize();
+}
+
+static void
+CallOps( Rtt::Renderer * renderer, Rtt::Array< Renderer::CustomOp > & ops, Rtt::ObjectBoxList & list )
+{
+    OBJECT_BOX_STORE( Renderer, ref, renderer );
+
+    for (S32 i = 0; i < ops.Length(); ++i)
+    {
+        Renderer::CustomOp & op = ops[i];
+
+        if (op.fAction)
+        {
+            op.fAction( ref, op.fUserData );
+        }
+    }
 }
 
 void 
@@ -223,6 +244,12 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real c
 void
 Renderer::EndFrame()
 {
+    ObjectBoxList list;
+    
+    CallOps( this, fEndFrameOps, list );
+
+    fEndFrameOps.Clear();
+
 	CheckAndInsertDrawCommand();
 	fStatistics.fPreparationTime = STOP_TIMING(fStartTime);
 	
@@ -392,6 +419,10 @@ Renderer::Clear( Real r, Real g, Real b, Real a )
 	fBackCommandBuffer->Clear( r, g, b, a );
 	
 	DEBUG_PRINT( "Clear: r=%f, g=%f, b=%f, a=%f\n", r, g, b, a );
+
+    ObjectBoxList list;
+    
+    CallOps( this, fClearOps, list );
 }
 
 void 
@@ -789,6 +820,14 @@ Renderer::Swap()
 	fFrontCommandBuffer = fBackCommandBuffer;
 	fBackCommandBuffer = temp;
 	fGeometryPool->Swap();
+
+    // Add pending commands
+    for (int i = 0; i < fPendingCommands.Length(); ++i)
+    {
+        fBackCommandBuffer->AddCommand( fPendingCommands[i] );
+    }
+
+    fPendingCommands.Clear();
 }
 
 void
@@ -833,6 +872,72 @@ Renderer::TallyTimeDependency( bool usesTime )
 	{
 		++fTimeDependencyCount;
 	}
+}
+
+U16
+Renderer::AddCustomCommand( const CoronaCommand & command )
+{
+    if (0xFFFF == fCommandCount)
+    {
+        return 0U;
+    }
+
+    fBackCommandBuffer->AddCommand( command );
+
+    fPendingCommands.Append( command );
+
+    return ++fCommandCount;
+}
+
+static U16
+AddOp( Rtt::Array< Renderer::CustomOp > & arr, CoronaRendererOp action, void * userData )
+{
+    if (0xFFFF == arr.Length())
+    {
+        return 0U;
+    }
+
+    Renderer::CustomOp op = {};
+    
+    op.fAction = action;
+    op.fUserData = userData;
+
+    arr.Append( op );
+
+    return arr.Length();
+}
+
+U16
+Renderer::AddClearOp( CoronaRendererOp action, void * userData )
+{
+    return AddOp( fClearOps, action, userData );
+}
+
+U16
+Renderer::AddEndFrameOp( CoronaRendererOp action, void * userData )
+{
+    return AddOp( fEndFrameOps, action, userData );
+}
+
+void
+Renderer::Inject( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData )
+{
+    CheckAndInsertDrawCommand();
+    
+    action( renderer, userData );
+}
+
+bool
+Renderer::IssueCustomCommand( U16 id, const void * data, U32 size )
+{
+    if (id < fCommandCount)
+    {
+        fBackCommandBuffer->IssueCommand( id, data, size );
+
+        return true;
+    }
+
+    return false;
 }
 
 void 
@@ -989,6 +1094,8 @@ Renderer::CheckAndInsertDrawCommand()
 					Rtt_ASSERT_NOT_REACHED();
 			};
 		}
+
+        fCurrentGeometry = NULL;
 		fRenderDataCount = 0;
 	}
 }
@@ -1004,7 +1111,11 @@ Renderer::FlushBatch()
 void
 Renderer::UpdateBatch( bool batch, bool enoughSpace, bool storedOnGPU, U32 verticesRequired )
 {
-	CheckAndInsertDrawCommand();
+    Geometry * was = enoughSpace ? fCurrentGeometry : NULL;
+
+    CheckAndInsertDrawCommand();
+
+    fCurrentGeometry = was;
 
 	if( storedOnGPU && !fWireframeEnabled )
 	{
