@@ -30,6 +30,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.MediaStore.Images;
 import android.provider.Settings.Secure;
@@ -1846,15 +1847,70 @@ public class Controller {
 	public void setEventNotification( int eventType, boolean enable ) {
 		mySensorManager.setEventNotification(eventType, enable);
 	}
-
-	public void vibrate() {
+	
+	public void vibrate(String hapticType, String hapticStyle) {
 		Context context = myContext;
 		if (context == null) {
 			return;
 		}
 
 		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-		v.vibrate( 100 );
+		String type = "";
+		if(hapticType != null){
+			type = hapticType;
+		}
+		String style = "";
+		if(hapticStyle != null){
+			style = hapticType;
+		}
+		long[] timings = new long[]{};
+		int[] amplitudes= new int[]{};
+		long[] oldPattern= new long[]{};
+		if(type.equals("impact")){
+			if(style.equals("light")){
+				timings = new long[]{0, 50};
+				amplitudes = new int[]{0, 110};
+				oldPattern = new long[]{0, 20};
+			}
+			else if(style.equals("heavy")){
+				timings = new long[]{0, 60};
+				amplitudes = new int[]{0, 255};
+				oldPattern = new long[]{0, 61};
+			}
+			else{//medium
+				timings = new long[]{0, 43};
+				amplitudes = new int[]{0, 180};
+				oldPattern = new long[]{0, 43};
+			}
+		}else if(type.equals("selection")){
+			timings = new long[]{0, 100};
+			amplitudes = new int[]{0, 100};
+			oldPattern = new long[]{0, 70};
+		}else if(type.equals("notification")){
+			if(style.equals("warning")) {
+				timings = new long[]{0, 30, 40, 30, 50, 60};
+				amplitudes = new int[]{255, 255, 255, 255, 255, 255};
+				oldPattern = new long[]{0, 30, 40, 30, 50, 60};
+			}else if(style.equals("error")){
+				timings = new long[]{0, 27, 45, 50};
+				amplitudes = new int[]{0, 120, 0, 250};
+				oldPattern = new long[]{0, 27, 45, 50};
+			}else{//success
+				timings = new long[]{0, 35, 65, 21};
+				amplitudes = new int[]{0, 250, 0, 180};
+				oldPattern = new long[]{0, 35, 65, 21};
+			}
+		}else{
+			if(!type.isEmpty()){ Log.i("Corona", "WARNING: invalid hapticType");} //just in case user misspells or puts a wrong type
+			v.vibrate( 100 );
+		}
+		if(timings.length != 0 && amplitudes.length != 0 && oldPattern.length != 0) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				v.vibrate(VibrationEffect.createWaveform(timings, amplitudes, -1));
+			}else{
+				v.vibrate(oldPattern, -1);
+			}
+		}
 	}
 
 	public String getManufacturerName() {

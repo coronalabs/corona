@@ -62,9 +62,9 @@ AndroidDevice::SetOrientation( DeviceOrientation::Type orientation )
 }
 
 void
-AndroidDevice::Vibrate() const
+AndroidDevice::Vibrate(const char * hapticType, const char* hapticStyle) const
 {
-	fNativeToJavaBridge->Vibrate();
+	fNativeToJavaBridge->Vibrate(hapticType, hapticStyle);
 }
 
 void

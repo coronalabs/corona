@@ -111,14 +111,14 @@ end
 
 local PluginCollectorSolar2DDirectory =  { name = "Solar2D Free Directory"}
 function PluginCollectorSolar2DDirectory:init(params)
-    local t = {}
-	local directoryPluginsText, msg = fetch("https://plugins.solar2d.com/plugins.json")
+
+    local directoryPluginsText, msg = fetch("https://plugins.solar2d.com/plugins.json")
     if not directoryPluginsText then
         log("Solar2D Directory: error initializing directory " .. tostring(msg))
 		return
 	end
 	local directoryPlugins = json.decode( directoryPluginsText )
-	if not directoryPlugins then
+	if type(directoryPlugins) ~= "table" then
 		return
     end
 
@@ -209,15 +209,18 @@ end
 
 -- Solar2d Marketplace Collector
 local PluginCollectorSolar2DMarketplaceDirectory =  { name = "Solar2d Marketplace Directory"}
-function PluginCollectorSolar2DMarketplaceDirectory:init(params)
-  local t = {}
-	local directoryPluginsText, msg = fetch("https://solar2dmarketplace.com/getAllPlugins")
-  if not directoryPluginsText then
+
+function PluginCollectorSolar2DMarketplaceDirectory:lazyInit()
+    if self.lazyInitDone then return end
+    self.lazyInitDone = true
+
+    local directoryPluginsText, msg = fetch("https://solar2dmarketplace.com/getAllPlugins")
+    if not directoryPluginsText then
         log("Solar2D Marketplace: error initializing directory " .. tostring(msg))
 		return
 	end
 	local directoryPlugins = json.decode( directoryPluginsText )
-	if not directoryPlugins then
+	if type(directoryPlugins) ~= "table" then
 		return
     end
 
@@ -230,16 +233,22 @@ function PluginCollectorSolar2DMarketplaceDirectory:init(params)
             end
         end
 	end
+end
+
+function PluginCollectorSolar2DMarketplaceDirectory:init(params)
 	return true
 end
 
 function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin, pluginTable, pluginPlatform, params)
-    if not self.pluginsCache then
-        return "Solar2D Marketplace Directory: directory was not fetched"
-    end
     if not pluginTable.marketplaceId then
         return "Solar2D Marketplace Directory: skipped because marketplaceId is not set"
     end
+
+    self:lazyInit()
+    if not self.pluginsCache then
+        return "Solar2D Marketplace Directory: directory was not fetched"
+    end
+
     local pluginEntry = self.pluginsCache[tostring(pluginTable.publisherId) .. SEP .. plugin]
     if not pluginEntry then
         return "Solar2D Marketplace Directory: plugin " .. plugin .. " was not found at Solar2D Marketplace Directory"
