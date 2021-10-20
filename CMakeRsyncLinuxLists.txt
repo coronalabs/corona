@@ -1,0 +1,17 @@
++ CMake*.*
++ bin/***
++ plugins/***
++ platform/
++ platform/linux/***
++ platform/resources/***
++ platform/shared/***
++ platform/lpng1256/***
++ subrepos/***
++ librtt/***
++ external/
++ external/ALmixer/***
++ external/lua-5.1.3/***
++ external/lpeg/***
++ external/luasocket/***
++ external/LuaHashMap/***
+- *
