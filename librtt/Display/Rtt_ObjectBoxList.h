@@ -44,7 +44,8 @@ public:
         kShader,
         kShaderData,
         kDisplayObject,
-        kGroupObject
+        kGroupObject,
+        kCommandBuffer
     };
 
 public:
@@ -77,6 +78,7 @@ struct CoronaShader : Rtt::ObjectBoxList::Box {};
 struct CoronaShaderData : Rtt::ObjectBoxList::Box {};
 struct CoronaDisplayObject : Rtt::ObjectBoxList::Box {};
 struct CoronaGroupObject : Rtt::ObjectBoxList::Box {};
+struct CoronaCommandBuffer : Rtt::ObjectBoxList::Box {};
 
 template<typename T> Rtt_INLINE T * ObjectBoxCast( void * ptr ) { return (T *)ptr; }
 template<typename T> Rtt_INLINE const T * ObjectBoxCast( const void * ptr ) { return (const T *)ptr; }

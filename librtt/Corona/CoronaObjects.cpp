@@ -72,6 +72,8 @@ ObjectBoxList::StringForType (int type)
         return "DisplayObject";
     case kGroupObject:
         return "GroupObject";
+    case kCommandBuffer:
+        return "CommandBuffer";
     default:
         return "Unknown";
     }

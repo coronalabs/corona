@@ -17,5 +17,6 @@ struct CoronaShader;
 struct CoronaShaderData;
 struct CoronaDisplayObject;
 struct CoronaGroupObject;
+struct CoronaCommandBuffer;
 
 #endif // _CoronaPublicTypes_H__
