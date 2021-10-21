@@ -20,6 +20,7 @@
 #include "Renderer/Rtt_Texture.h"
 #include "Renderer/Rtt_Uniform.h"
 #include "Display/Rtt_ShaderResource.h"
+#include "Display/Rtt_ObjectBoxList.h"
 #include "Core/Rtt_Config.h"
 #include "Core/Rtt_Allocator.h"
 #include "Core/Rtt_Assert.h"
@@ -672,6 +673,8 @@ GLCommandBuffer::AddCommand( const CoronaCommand & command )
 void
 GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
 {
+    ObjectBoxList list;
+
     Command custom = Command( kNumCommands + id );
 
     WRITE_COMMAND( custom );
@@ -679,7 +682,9 @@ GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
 
     U8 * buffer = Reserve( size );
 
-    fCustomCommands[id].writer( buffer, data, size );
+    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    
+    fCustomCommands[id].writer( commandBuffer, buffer, data, size );
 }
 
 Real 
@@ -713,6 +718,10 @@ GLCommandBuffer::Execute( bool measureGPU )
 	}
 #endif
 
+    ObjectBoxList list;
+    
+    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    
 	// Reset the offset pointer to the start of the buffer.
 	// This is safe to do here, as preparation work is done
 	// on another CommandBuffer while this one is executing.
@@ -967,7 +976,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                 {
                     U32 size = Read< U32 >();
 
-                    fCustomCommands[id].reader( fOffset, size );
+                    fCustomCommands[id].reader( commandBuffer, fOffset, size );
 
                     fOffset += size;
                 }
