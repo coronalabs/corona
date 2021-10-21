@@ -270,12 +270,12 @@ int CoronaRendererDo( const CoronaRenderer * renderer, CoronaRendererOp action, 
 /**
  Operation that responds to data read from a command's buffer.
 */
-typedef void (*CoronaCommandReader)( const unsigned char * from, unsigned int size );
+typedef void (*CoronaCommandReader)( const CoronaCommandBuffer * commandBuffer, const unsigned char * from, unsigned int size );
 
 /**
  Operation that writes data into a command's buffer.
 */
-typedef void (*CoronaCommandWriter)( unsigned char * to, const void * data, unsigned int size );
+typedef void (*CoronaCommandWriter)( const CoronaCommandBuffer * commandBuffer, unsigned char * to, const void * data, unsigned int size );
 
 /**
  IO operations that constitute a command.
