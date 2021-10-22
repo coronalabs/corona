@@ -14,6 +14,7 @@ add_definitions(
 )
 
 include_directories (
+	/usr/include/AL
 	${CORONA_ROOT}
 	${CORONA_ROOT}/external/sqlite3
 	${LuaIncludePath}
@@ -38,7 +39,7 @@ include_directories (
 )
 
 SET( LUA_SOURCES
-	"${CORONA_ROOT}/platform/android/ndk/shell.lua"
+	"${CORONA_ROOT}/platform/linux/shell.lua"
 	"${CORONA_ROOT}/platform/resources/init.lua"
 	"${CORONA_ROOT}/platform/resources/json.lua"
 	"${CORONA_ROOT}/platform/resources/dkjson.lua"
@@ -271,7 +272,7 @@ add_executable( Solar2D
 		${CORONA_ROOT}/librtt/Core/Rtt_AutoResource.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_FileSystem.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_Fixed.c
-		${CORONA_ROOT}/librtt/Core/Rtt_FixedBlockAllocator.cpp
+#		${CORONA_ROOT}/librtt/Core/Rtt_FixedBlockAllocator.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_FixedMath.c
 		${CORONA_ROOT}/librtt/Core/Rtt_Geometry.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_Math.c
@@ -577,8 +578,8 @@ add_executable( Solar2D
 		${CORONA_ROOT}/plugins/shared/CoronaLuaLibrary.cpp
 		${CORONA_ROOT}/plugins/shared/CoronaLuaLibraryMetadata.cpp
 
-		${CORONA_ROOT}/platform/shared/Rtt_DependencyLoader.cpp
-		${CORONA_ROOT}/platform/shared/Rtt_DependencyUtilsAndroid.cpp
+#		${CORONA_ROOT}/platform/shared/Rtt_DependencyLoader.cpp
+#		${CORONA_ROOT}/platform/shared/Rtt_DependencyUtilsAndroid.cpp
 
 		${CORONA_ROOT}/external/lpng1256/png.c
 		${CORONA_ROOT}/external/lpng1256/pngerror.c
@@ -709,6 +710,8 @@ add_executable( Solar2D
 		${CORONA_ROOT}/external/libjpeg/jmem-android.c
 		${CORONA_ROOT}/external/libjpeg/jidctint.c
 		${CORONA_ROOT}/external/libjpeg/jidctfst.c
+
+		#linux platform specific files
 
 		${CORONA_ROOT}/platform/linux/NetworkLibrary.cpp
 		${CORONA_ROOT}/platform/linux/NetworkSupport.cpp

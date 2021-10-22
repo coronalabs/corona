@@ -1,17 +1,32 @@
 + CMake*.*
+
 + bin/***
++ subrepos/***
++ librtt/***
 + plugins/***
+
 + platform/
 + platform/linux/***
 + platform/resources/***
 + platform/shared/***
 + platform/lpng1256/***
-+ subrepos/***
-+ librtt/***
+
 + external/
 + external/ALmixer/***
 + external/lua-5.1.3/***
 + external/lpeg/***
 + external/luasocket/***
 + external/LuaHashMap/***
++ external/lpng1256/***
++ external/luafilesystem/***
++ external/sqlite3/***
++ external/lsqlite3-7/***
++ external/Box2D/***
++ external/b2Separator-cpp/***
++ external/smoothpolygon/***
++ external/libjpeg/***
++ external/loop-2.3-beta/
++ external/loop-2.3-beta/lua/***
++ external/ALmixer/***
+
 - *
