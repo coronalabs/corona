@@ -44,8 +44,8 @@ include_directories (
   ${CORONA_ROOT}/external/libjpeg
 	${CORONA_ROOT}/external/b2Separator-cpp
   ${CORONA_ROOT}/external/smoothpolygon
-  ${CORONA_ROOT}/platform/linux/curl-7.61.0/include
   ${CORONA_ROOT}/modules/simulator
+  ${CORONA_ROOT}/platform/android
 )
 
 SET( LUA_SOURCES
@@ -179,6 +179,10 @@ SET( LUA_SOURCES
 	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_sunbeams_gl.lua"
 	"${CORONA_ROOT}/librtt/Display/Shader/shell_default_gl.lua"
 	"${CORONA_ROOT}/external/lpeg/re.lua"
+	"${CORONA_ROOT}/platform/resources/linuxPackageApp.lua"
+	"${CORONA_ROOT}/platform/resources/webPackageApp.lua"
+	"${CORONA_ROOT}/plugins/network/shared/network.lua"
+	"${CORONA_ROOT}/platform/linux/CoronaSimulator/Resources/create_build_properties.lua"
 )
 
 SET( LUA_SOCKET_SOURCES
@@ -558,6 +562,10 @@ add_executable( Solar2D
 		${Lua2CppOutputDir}/kernel_generator_stripes_gl.cpp
 		${Lua2CppOutputDir}/kernel_generator_sunbeams_gl.cpp
 		${Lua2CppOutputDir}/shell_default_gl.cpp
+		${Lua2CppOutputDir}/linuxPackageApp.cpp
+		${Lua2CppOutputDir}/webPackageApp.cpp
+		${Lua2CppOutputDir}/network.cpp
+		${Lua2CppOutputDir}/create_build_properties.cpp
 
 		${CORONA_ROOT}/librtt/Renderer/Rtt_CommandBuffer.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_CPUResource.cpp
@@ -587,9 +595,6 @@ add_executable( Solar2D
 
 		${CORONA_ROOT}/plugins/shared/CoronaLuaLibrary.cpp
 		${CORONA_ROOT}/plugins/shared/CoronaLuaLibraryMetadata.cpp
-
-#		${CORONA_ROOT}/platform/shared/Rtt_DependencyLoader.cpp
-#		${CORONA_ROOT}/platform/shared/Rtt_DependencyUtilsAndroid.cpp
 
 		${CORONA_ROOT}/external/lpng1256/png.c
 		${CORONA_ROOT}/external/lpng1256/pngerror.c
@@ -809,8 +814,28 @@ add_executable( Solar2D
 		${CORONA_ROOT}/platform/linux/Rtt_LinuxVideoProvider.cpp
 		${CORONA_ROOT}/platform/linux/Rtt_LinuxWebPopup.cpp
 		${CORONA_ROOT}/platform/linux/Rtt_LinuxWebView.cpp
+		${CORONA_ROOT}/platform/linux/NetworkLibrary.cpp
+		${CORONA_ROOT}/platform/linux/NetworkSupport.cpp
+
+		# Simulator
 		${CORONA_ROOT}/modules/simulator/Rtt_LuaLibSimulator.cpp
+		${CORONA_ROOT}/platform/android/Rtt_AndroidAppPackager.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_DeviceBuildData.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_LinuxAppPackager.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_PlatformAppPackager.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_PlatformDictionaryWrapper.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_PlatformObjectWrapper.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_TargetAndroidAppStore.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_TargetDevice.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_WebAppPackager.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_HTTPClientLinux.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxSimulatorServices.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxSimulatorView.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxContextNewProject.cpp
+
 )
 
-target_link_libraries(Solar2D	dl GL z pthread openal ssl crypto gdk-3 freetype png 
+target_link_libraries(Solar2D	dl GL z pthread openal ssl crypto gdk-3 freetype png cryptopp curl
 	wx_baseu-3.1 wx_gtk3u_adv-3.1 wx_gtk3u_gl-3.1 wx_gtk3u_media-3.1 wx_gtk3u_core-3.1 wx_gtk3u_html-3.1)
+
+	#sudo apt-get install libcrypto++-dev

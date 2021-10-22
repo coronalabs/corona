@@ -8,6 +8,7 @@
 
 + platform/
 + platform/linux/***
++ platform/android/***
 + platform/resources/***
 + platform/shared/***
 + platform/lpng1256/***
