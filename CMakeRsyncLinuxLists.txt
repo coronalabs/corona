@@ -4,6 +4,7 @@
 + subrepos/***
 + librtt/***
 + plugins/***
++ modules/***
 
 + platform/
 + platform/linux/***
@@ -28,5 +29,7 @@
 + external/loop-2.3-beta/
 + external/loop-2.3-beta/lua/***
 + external/ALmixer/***
++ external/mpg123-1.13.1/***
++ external/tremor/***
 
 - *

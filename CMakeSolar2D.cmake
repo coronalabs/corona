@@ -14,7 +14,12 @@ add_definitions(
 )
 
 include_directories (
+	
 	/usr/include/AL
+	/usr/include/freetype2
+	/usr/local/lib/wx/include/gtk3-unicode-3.1
+	/usr/local/include/wx-3.1
+
 	${CORONA_ROOT}
 	${CORONA_ROOT}/external/sqlite3
 	${LuaIncludePath}
@@ -29,6 +34,10 @@ include_directories (
 	${CORONA_ROOT}/external/luafilesystem/src
 	${CORONA_ROOT}/librtt
 	${CORONA_ROOT}/librtt/Corona
+	${CORONA_ROOT}/librtt/Core
+	${CORONA_ROOT}/librtt/Display
+	${CORONA_ROOT}/librtt/input
+	${CORONA_ROOT}/librtt/Renderer
 	${CORONA_ROOT}/plugins/shared
 	${CORONA_ROOT}/platform/shared
 	${CORONA_ROOT}/external/Box2D
@@ -36,6 +45,7 @@ include_directories (
 	${CORONA_ROOT}/external/b2Separator-cpp
   ${CORONA_ROOT}/external/smoothpolygon
   ${CORONA_ROOT}/platform/linux/curl-7.61.0/include
+  ${CORONA_ROOT}/modules/simulator
 )
 
 SET( LUA_SOURCES
@@ -269,7 +279,7 @@ add_executable( Solar2D
 		${CORONA_ROOT}/librtt/Core/Rtt_Array.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_ArrayTuple.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_Assert.c
-		${CORONA_ROOT}/librtt/Core/Rtt_AutoResource.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_AutoResource.cpp 
 		${CORONA_ROOT}/librtt/Core/Rtt_FileSystem.cpp
 		${CORONA_ROOT}/librtt/Core/Rtt_Fixed.c
 #		${CORONA_ROOT}/librtt/Core/Rtt_FixedBlockAllocator.cpp
@@ -711,11 +721,96 @@ add_executable( Solar2D
 		${CORONA_ROOT}/external/libjpeg/jidctint.c
 		${CORONA_ROOT}/external/libjpeg/jidctfst.c
 
-		#linux platform specific files
+		# Lua
+    ${CORONA_ROOT}/external/lua-5.1.3/src/lapi.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lauxlib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lbaselib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lcode.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ldblib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ldebug.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ldo.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ldump.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lfunc.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lgc.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/linit.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/liolib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/llex.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lmathlib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lmem.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/loadlib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lobject.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lopcodes.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/loslib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lparser.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lstate.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lstring.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lstrlib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ltable.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ltablib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ltm.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/luac.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lundump.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lvm.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lzio.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/print.c
 
-		${CORONA_ROOT}/platform/linux/NetworkLibrary.cpp
-		${CORONA_ROOT}/platform/linux/NetworkSupport.cpp
+		# ALmixer
+		${CORONA_ROOT}/external/ALmixer/ALmixer.c
+		${CORONA_ROOT}/external/ALmixer/CircularQueue.c
+		${CORONA_ROOT}/external/ALmixer/LinkedList.c
+		${CORONA_ROOT}/external/ALmixer/luaal.c
+		${CORONA_ROOT}/external/ALmixer/ALmixer.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/ALmixer_RWops.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/SimpleMutex.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/tErrorLib.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/SoundDecoder.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/SimpleThreadPosix.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/LGPL/mpg123.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/LGPL/oggtremor.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/LGPL/wav.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/LGPL/SDL_sound_minimal.c
+		${CORONA_ROOT}/external/tremor/Tremor/bitwise.c
+		${CORONA_ROOT}/external/tremor/Tremor/codebook.c
+		${CORONA_ROOT}/external/tremor/Tremor/dsp.c
+		${CORONA_ROOT}/external/tremor/Tremor/floor0.c
+		${CORONA_ROOT}/external/tremor/Tremor/floor1.c
+		${CORONA_ROOT}/external/tremor/Tremor/floor_lookup.c
+		${CORONA_ROOT}/external/tremor/Tremor/framing.c
+		${CORONA_ROOT}/external/tremor/Tremor/info.c
+		${CORONA_ROOT}/external/tremor/Tremor/mapping0.c
+		${CORONA_ROOT}/external/tremor/Tremor/mdct.c
+		${CORONA_ROOT}/external/tremor/Tremor/misc.c
+		${CORONA_ROOT}/external/tremor/Tremor/res012.c
+		${CORONA_ROOT}/external/tremor/Tremor/vorbisfile.c
 
+
+		# Solar2D Linux specific files
+		${CORONA_ROOT}/platform/linux/main.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_Freetype.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxAudioRecorder.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxBitmap.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxContainer.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxContext.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxContextNewProject.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxCrypto.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxData.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxDevice.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxDisplayObject.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxFont.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxImageProvider.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxInputDevice.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxInputDeviceManager.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxPlatform.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxRuntimeDelegate.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxScreenSurface.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxTextBoxObject.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxVideoObject.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxVideoPlayer.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxVideoProvider.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxWebPopup.cpp
+		${CORONA_ROOT}/platform/linux/Rtt_LinuxWebView.cpp
+		${CORONA_ROOT}/modules/simulator/Rtt_LuaLibSimulator.cpp
 )
 
-#target_link_libraries ( corona lua jnlua5.1 mpg123 OpenAL almixer cpufeatures GLESv2 EGL jnigraphics dl log z OpenSLES )
+target_link_libraries(Solar2D	dl GL z pthread openal ssl crypto gdk-3 freetype png 
+	wx_baseu-3.1 wx_gtk3u_adv-3.1 wx_gtk3u_gl-3.1 wx_gtk3u_media-3.1 wx_gtk3u_core-3.1 wx_gtk3u_html-3.1)
