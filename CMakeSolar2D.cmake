@@ -205,7 +205,7 @@ message("${LUA_FILE}")
 ENDFOREACH()
 
 FOREACH(LUA_FILE ${LUA_SOCKET_SOURCES})
-	lua_2_cpp("${LUA_FILE}" luasocket)
+	lua_2_c("${LUA_FILE}" luasocket)
 ENDFOREACH()
 
 
@@ -266,17 +266,17 @@ add_executable( Solar2D
 		${CORONA_ROOT}/external/luasocket/src/udp.c
 		${CORONA_ROOT}/external/luasocket/src/usocket.c
 
-		${Lua2CppOutputDir}/ftp.cpp
-		${Lua2CppOutputDir}/headers.cpp
-		${Lua2CppOutputDir}/http.cpp
-		${Lua2CppOutputDir}/ltn12.cpp
-		${Lua2CppOutputDir}/mbox.cpp
-		${Lua2CppOutputDir}/mime.cpp
-		${Lua2CppOutputDir}/smtp.cpp
-		${Lua2CppOutputDir}/socket.cpp
-		${Lua2CppOutputDir}/ssl.cpp
-		${Lua2CppOutputDir}/tp.cpp
-		${Lua2CppOutputDir}/url.cpp
+		${Lua2CppOutputDir}/ftp.c
+		${Lua2CppOutputDir}/headers.c
+		${Lua2CppOutputDir}/http.c
+		${Lua2CppOutputDir}/ltn12.c
+		${Lua2CppOutputDir}/mbox.c
+		${Lua2CppOutputDir}/mime.c
+		${Lua2CppOutputDir}/smtp.c
+		${Lua2CppOutputDir}/socket.c
+		${Lua2CppOutputDir}/ssl.c
+		${Lua2CppOutputDir}/tp.c
+		${Lua2CppOutputDir}/url.c
 		
 		${CORONA_ROOT}/external/LuaHashMap/LuaHashMap.c
 		${CORONA_ROOT}/librtt/Core/Rtt_Allocator.cpp
