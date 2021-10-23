@@ -1,3 +1,7 @@
+#
+# list of files used by rsync for Linux platform
+#
+
 + CMake*.*
 
 + bin/***
