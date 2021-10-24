@@ -8,6 +8,8 @@ else()
 	message(FATAL_ERROR "No valid CMAKE_BUILD_TYPE (${CMAKE_BUILD_TYPE})" )
 endif()
 
+set(Lua2CppOutputDir "${CMAKE_CURRENT_BINARY_DIR}/generated_src")
+file(MAKE_DIRECTORY "${Lua2CppOutputDir}")
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
 

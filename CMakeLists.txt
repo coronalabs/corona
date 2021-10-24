@@ -22,8 +22,6 @@ message("CORONA_ROOT: " ${CORONA_ROOT})
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
 	
 	set(ALSOFT_NATIVE_TOOLS_PATH "${CORONA_ROOT}/bin/linux" CACHE STRING "Path to prebuilt native tools (leave blank to auto-build)" FORCE)
-	set(Lua2CppOutputDir "${CMAKE_CURRENT_BINARY_DIR}/generated_src")
-	set(LuaIncludePath "${CORONA_ROOT}/external/lua-5.1.3/src")
 
 	include(CMakeGenLua.cmake)
 	include(platform/linux/CMakeList.txt)
