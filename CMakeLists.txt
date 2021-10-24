@@ -25,7 +25,7 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
 
 	include(CMakeGenLua.cmake)
 	include(platform/linux/CMakeList.txt)
-	include(platform/linux/CMakeBuildTemplate.cmake)
+
 
 else()
 	message(FATAL_ERROR "CMakeList.txt is not ported to current OS: ${CMAKE_HOST_SYSTEM_NAME}")
