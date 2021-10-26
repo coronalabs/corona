@@ -49,6 +49,25 @@ using namespace Rtt;
 #define MFi_KEY_CODE_DOWN 13
 
 
+static void setUpDPadButtons(Rtt::AppleInputDevice *devicePointer, GCControllerDirectionPad *dpad, AppleInputMFiDeviceListener *weakSelf) {
+	dpad.up.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+		KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kUp, MFi_KEY_CODE_UP, false, false, false, false);
+		weakSelf.runtime->DispatchEvent(event);
+	};
+	dpad.down.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+		KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kDown, MFi_KEY_CODE_DOWN, false, false, false, false);
+		weakSelf.runtime->DispatchEvent(event);
+	};
+	dpad.left.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+		KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kLeft, MFi_KEY_CODE_LEFT, false, false, false, false);
+		weakSelf.runtime->DispatchEvent(event);
+	};
+	dpad.right.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+		KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kRight, MFi_KEY_CODE_RIGHT, false, false, false, false);
+		weakSelf.runtime->DispatchEvent(event);
+	};
+}
+
 -(void)connectedController:(GCController*)controller andSendEvent:(BOOL)sendEvent
 {	
 	AppleInputDevice* devicePointer = self.dm->GetByMFiDevice(controller);
@@ -160,22 +179,7 @@ using namespace Rtt;
 		};
 		
 		// D-Pad buttons
-		gp.dpad.up.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kUp, MFi_KEY_CODE_UP, false, false, false, false);
-			weakSelf.runtime->DispatchEvent(event);
-		};
-		gp.dpad.down.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kDown, MFi_KEY_CODE_DOWN, false, false, false, false);
-			weakSelf.runtime->DispatchEvent(event);
-		};
-		gp.dpad.left.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kLeft, MFi_KEY_CODE_LEFT, false, false, false, false);
-			weakSelf.runtime->DispatchEvent(event);
-		};
-		gp.dpad.right.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kRight, MFi_KEY_CODE_RIGHT, false, false, false, false);
-			weakSelf.runtime->DispatchEvent(event);
-		};
+		setUpDPadButtons(devicePointer, gp.dpad, weakSelf);
 		
 		// Axes
 		
@@ -268,22 +272,7 @@ using namespace Rtt;
 		};
 		
 		// D-Pad buttons
-		gp.dpad.up.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kUp, MFi_KEY_CODE_UP, false, false, false, false);
-			weakSelf.runtime->DispatchEvent(event);
-		};
-		gp.dpad.down.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kDown, MFi_KEY_CODE_DOWN, false, false, false, false);
-			weakSelf.runtime->DispatchEvent(event);
-		};
-		gp.dpad.left.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kLeft, MFi_KEY_CODE_LEFT, false, false, false, false);
-			weakSelf.runtime->DispatchEvent(event);
-		};
-		gp.dpad.right.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kRight, MFi_KEY_CODE_RIGHT, false, false, false, false);
-			weakSelf.runtime->DispatchEvent(event);
-		};
+		setUpDPadButtons(devicePointer, gp.dpad, weakSelf);
 	}
 	
 #ifdef Rtt_TVOS_ENV
@@ -291,8 +280,26 @@ using namespace Rtt;
 	{
 		devicePointer->fMFiProfile = AppleInputDevice::sMFiProfileMicroGamepad;
 		GCMicroGamepad* gp = controller.microGamepad;
+		GCControllerButtonInput *buttonA = gp.buttonA;
 
-		gp.buttonA.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+	    if(@available(tvOS 15, *)) {
+			if([gp isKindOfClass:[GCDirectionalGamepad class]]) {
+				devicePointer->fMFiProfile = AppleInputDevice::sMFiProfileDirectionalGamepad;
+				GCDeviceElement *el;
+
+				el = gp[GCInputDirectionalCardinalDpad];
+				if([el isKindOfClass:[GCControllerDirectionPad class]]) {
+					setUpDPadButtons(devicePointer, (GCControllerDirectionPad*)el, weakSelf);
+				}
+
+				el = gp[GCInputDirectionalCenterButton];
+				if([el isKindOfClass:[GCControllerButtonInput class]]) {
+					buttonA = (GCControllerButtonInput*)el;
+				}
+			}
+		}
+
+		buttonA.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
 			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kButtonA, MFi_KEY_CODE_A, false, false, false, false);
 			weakSelf.runtime->DispatchEvent(event);
 		};
@@ -301,6 +308,13 @@ using namespace Rtt;
 			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kButtonX, MFi_KEY_CODE_X, false, false, false, false);
 			weakSelf.runtime->DispatchEvent(event);
 		};
+
+		if(@available(macOS 10.15, iOS 13, tvOS 13, *)) {
+			gp.buttonMenu.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+				KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kMenu, MFi_KEY_CODE_X, false, false, false, false);
+				weakSelf.runtime->DispatchEvent(event);
+			};
+		}
 		
 		{ // Left X
 			PlatformInputAxis * xAxis = devicePointer->AddAxis();
