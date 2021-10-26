@@ -23,7 +23,7 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
 	
 	set(ALSOFT_NATIVE_TOOLS_PATH "${CORONA_ROOT}/bin/linux" CACHE STRING "Path to prebuilt native tools (leave blank to auto-build)" FORCE)
 
-	include(CMakeGenLua.cmake)
+	include(platform/linux/CMakeGenLua.cmake)
 	include(platform/linux/CMakeList.txt)
 
 

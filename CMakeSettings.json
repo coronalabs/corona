@@ -24,7 +24,7 @@
 			"remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
 			"remoteInstallRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/install/${name}",
 			"remoteCopySources": true,
-			"rsyncCommandArgs": "-a --delete --delete-excluded --include-from=CMakeRsyncLinuxLists.txt",
+			"rsyncCommandArgs": "-a --delete --delete-excluded --include-from=platform/linux/CMakeRsyncLinuxLists.txt",
 			"remoteCopyBuildOutput": false,
 			"remoteCopySourcesMethod": "rsync"
 		}
