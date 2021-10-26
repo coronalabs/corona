@@ -281,7 +281,7 @@ static void setUpDPadButtons(Rtt::AppleInputDevice *devicePointer, GCControllerD
 		devicePointer->fMFiProfile = AppleInputDevice::sMFiProfileMicroGamepad;
 		GCMicroGamepad* gp = controller.microGamepad;
 		GCControllerButtonInput *buttonA = gp.buttonA;
-
+#if __clang_major__ >= 13
 	    if(@available(tvOS 15, *)) {
 			if([gp isKindOfClass:[GCDirectionalGamepad class]]) {
 				devicePointer->fMFiProfile = AppleInputDevice::sMFiProfileDirectionalGamepad;
@@ -298,6 +298,7 @@ static void setUpDPadButtons(Rtt::AppleInputDevice *devicePointer, GCControllerD
 				}
 			}
 		}
+#endif
 
 		buttonA.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
 			KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kButtonA, MFi_KEY_CODE_A, false, false, false, false);
@@ -309,13 +310,6 @@ static void setUpDPadButtons(Rtt::AppleInputDevice *devicePointer, GCControllerD
 			weakSelf.runtime->DispatchEvent(event);
 		};
 
-		if(@available(macOS 10.15, iOS 13, tvOS 13, *)) {
-			gp.buttonMenu.pressedChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
-				KeyEvent event = KeyEvent(devicePointer, pressed?KeyEvent::kDown:KeyEvent::kUp , KeyName::kMenu, MFi_KEY_CODE_X, false, false, false, false);
-				weakSelf.runtime->DispatchEvent(event);
-			};
-		}
-		
 		{ // Left X
 			PlatformInputAxis * xAxis = devicePointer->AddAxis();
 			xAxis->SetType(InputAxisType::kX);
