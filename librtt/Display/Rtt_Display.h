@@ -30,6 +30,7 @@
 // ----------------------------------------------------------------------------
 
 struct lua_State;
+struct luaL_Reg;
 
 namespace Rtt
 {
@@ -186,6 +187,9 @@ class Display
 		virtual void GetImageSuffix( String& outSuffix ) const;
 		virtual bool GetImageFilename( const char *filename, MPlatform::Directory baseDir, String& outFilename ) const;
 		virtual bool PushImageSuffixTable() const;
+    
+        void GatherObjectFactories( const luaL_Reg funcs[], void * library );
+        bool PushObjectFactories() const;
 
 	public:
 		virtual GroupObject *Overlay();
@@ -322,7 +326,8 @@ class Display
 		static U32 GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
-		static size_t GetMaxVertexTextureUnits();
+        static U32 GetMaxUniformVectorsCount();
+		static U32 GetMaxVertexTextureUnits();
 
 	public:
 		Scene& GetScene() { return *fScene; }
@@ -386,6 +391,8 @@ class Display
 		RenderingStream *fStream;
 		PlatformSurface *fTarget;
 		int fImageSuffix;
+    
+        int fObjectFactories;
 
 		U8 fDrawMode; // stores current physics drawing mode; ranges from 0-2
 		bool fIsAntialiased;

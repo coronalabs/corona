@@ -12,12 +12,12 @@
 #define _CoronaGraphics_H__
 
 #include "CoronaMacros.h"
-
+#include "CoronaPublicTypes.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-	typedef struct lua_State lua_State;
+    typedef struct lua_State lua_State;
 #ifdef __cplusplus
 }
 #endif
@@ -28,29 +28,29 @@ extern "C" {
  RGBA format uses premultiplied alpha. This means that if "raw" values of channels are r,g,b and a, red channel should be r*(a/255)
 */
 typedef enum {
-	/**
-	 If not defined, RGBA would be used
-	*/
-	kExternalBitmapFormat_Undefined = 0, // kExternalBitmapFormat_RGBA would be used
-	
-	/**
-	 Textures with bitmaps of this format can be used only as masks
-	 Alpha, 1 byte per pixel
-	 Important: if this format is used, width must be multiple of 4
-	*/
-	kExternalBitmapFormat_Mask,
-	
-	/**
-	 RGB, 3 bytes per pixel
-	*/
-	kExternalBitmapFormat_RGB,
-	
-	/**
-	 RGBA, 4 bytes per pixel
-	 Important: Red, Green and Blue channels must have premultiplied alpha
-	 */
-	kExternalBitmapFormat_RGBA,
-	
+    /**
+     If not defined, RGBA would be used
+    */
+    kExternalBitmapFormat_Undefined = 0, // kExternalBitmapFormat_RGBA would be used
+    
+    /**
+     Textures with bitmaps of this format can be used only as masks
+     Alpha, 1 byte per pixel
+     Important: if this format is used, width must be multiple of 4
+    */
+    kExternalBitmapFormat_Mask,
+    
+    /**
+     RGB, 3 bytes per pixel
+    */
+    kExternalBitmapFormat_RGB,
+    
+    /**
+     RGBA, 4 bytes per pixel
+     Important: Red, Green and Blue channels must have premultiplied alpha
+     */
+    kExternalBitmapFormat_RGBA,
+    
 } CoronaExternalBitmapFormat;
 
 
@@ -81,76 +81,76 @@ typedef enum {
 */
 typedef struct CoronaExternalTextureCallbacks
 {
-	/**
-	 Required
-	 When creating instance of this type set this member to `size = sizeof(CoronaExternalTextureCallbacks)`.
-	 This is required for identifying version of API used.
-	*/
-	unsigned long size;
-	
-	/**
-	 Required
-	 called when Texture bitmap's width is required
-	 @param userData Pointer passed to CoronaExternalPushTexture
-	 @return The width of Texture's bitmap; Important: if it is a Mask, width should be a multiple of 4
-	*/
-	unsigned int (*getWidth)(void* userData);
-	
-	/**
-	 Required
-	 called when Texture bitmap's height is required
-	 @param userData Pointer passed to CoronaExternalPushTexture
-	 @return The width of Texture's height
-	*/
-	unsigned int (*getHeight)(void* userData);
-	
-	/**
-	 Required
-	 called when Texture bitmap's data is required. Always followed by @see onReleaseBitmap call.
-	 @param userData Pointer passed to CoronaExternalPushTexture
-	 @return Valid pointer to data containing bitmap information. Corona expects bitmap data to be row-by-row array of pixels
-	         starting from top of the image, each pixel represented by `bpp = CoronaExternalFormatBPP(getFormat())` bytes.
-	         Each channel use 1 byte and ordered same as format name, left to right. So, with RGBA format, R index is 0
-	         Overall size of memory must me at least `getWidth()*getHeight()*bpp`
-	         Accessing left most (R in RGBA) value of bitmap could be written as
-	         `((unsigned char*)onRequestBitmap())[ (Y*getWidth() + X) * CoronaExternalFormatBPP(getFormat()) ]`
-	         RGBA format (default) uses premultiplied alpha
-	*/
-	const void* (*onRequestBitmap)(void* userData);
-	
-	/**
-	 Optional
-	 Called when Texture bitmap's data is no longer required.
-	 After this callback is invoked, pointer returned by `onRequestBitmap` need not longer be valid
-	 @param userData Pointer passed to CoronaExternalPushTexture
-	*/
-	void (*onReleaseBitmap)(void* userData);
+    /**
+     Required
+     When creating instance of this type set this member to `size = sizeof(CoronaExternalTextureCallbacks)`.
+     This is required for identifying version of API used.
+    */
+    unsigned long size;
+    
+    /**
+     Required
+     called when Texture bitmap's width is required
+     @param userData Pointer passed to CoronaExternalPushTexture
+     @return The width of Texture's bitmap; Important: if it is a Mask, width should be a multiple of 4
+    */
+    unsigned int (*getWidth)(void* userData);
+    
+    /**
+     Required
+     called when Texture bitmap's height is required
+     @param userData Pointer passed to CoronaExternalPushTexture
+     @return The width of Texture's height
+    */
+    unsigned int (*getHeight)(void* userData);
+    
+    /**
+     Required
+     called when Texture bitmap's data is required. Always followed by @see onReleaseBitmap call.
+     @param userData Pointer passed to CoronaExternalPushTexture
+     @return Valid pointer to data containing bitmap information. Corona expects bitmap data to be row-by-row array of pixels
+             starting from top of the image, each pixel represented by `bpp = CoronaExternalFormatBPP(getFormat())` bytes.
+             Each channel use 1 byte and ordered same as format name, left to right. So, with RGBA format, R index is 0
+             Overall size of memory must me at least `getWidth()*getHeight()*bpp`
+             Accessing left most (R in RGBA) value of bitmap could be written as
+             `((unsigned char*)onRequestBitmap())[ (Y*getWidth() + X) * CoronaExternalFormatBPP(getFormat()) ]`
+             RGBA format (default) uses premultiplied alpha
+    */
+    const void* (*onRequestBitmap)(void* userData);
+    
+    /**
+     Optional
+     Called when Texture bitmap's data is no longer required.
+     After this callback is invoked, pointer returned by `onRequestBitmap` need not longer be valid
+     @param userData Pointer passed to CoronaExternalPushTexture
+    */
+    void (*onReleaseBitmap)(void* userData);
 
-	/**
-	 Optional
-	 called when Texture bitmap's format is required
-	 @param userData Pointer passed to CoronaExternalPushTexture
-	 @return One of the CoronaExternalBitmapFormat entries. Default format is RGBA (kExternalBitmapFormat_RGBA)
-	*/
-	CoronaExternalBitmapFormat (*getFormat)(void* userData);
-	
-	/**
-	 Optional
-	 Called when TextureResource is about to be destroyed
-	 After this callback is invoked, no callbacks or returned bitmap pointers would be accessed
-	 @param userData Pointer passed to CoronaExternalPushTexture
-	*/
-	void (*onFinalize)(void *userData);     // optional; texture will not be used again
-	
-	/**
-	 Optional
-	 Called when unknown property of Texture is requested from Lua
-	 @param L Lua state pointer
-	 @param field String containing name of requested field
-	 @param userData Pointer passed to CoronaExternalPushTexture
-	 @return number of values pushed on Lua stack
-	*/
-	int (*onGetField)(lua_State *L, const char *field, void* userData);   // optional; called Lua texture property lookup
+    /**
+     Optional
+     called when Texture bitmap's format is required
+     @param userData Pointer passed to CoronaExternalPushTexture
+     @return One of the CoronaExternalBitmapFormat entries. Default format is RGBA (kExternalBitmapFormat_RGBA)
+    */
+    CoronaExternalBitmapFormat (*getFormat)(void* userData);
+    
+    /**
+     Optional
+     Called when TextureResource is about to be destroyed
+     After this callback is invoked, no callbacks or returned bitmap pointers would be accessed
+     @param userData Pointer passed to CoronaExternalPushTexture
+    */
+    void (*onFinalize)(void *userData);     // optional; texture will not be used again
+    
+    /**
+     Optional
+     Called when unknown property of Texture is requested from Lua
+     @param L Lua state pointer
+     @param field String containing name of requested field
+     @param userData Pointer passed to CoronaExternalPushTexture
+     @return number of values pushed on Lua stack
+    */
+    int (*onGetField)(lua_State *L, const char *field, void* userData);   // optional; called Lua texture property lookup
 } CoronaExternalTextureCallbacks;
 
 // C API
@@ -185,5 +185,705 @@ void* CoronaExternalGetUserData( lua_State *L, int index ) CORONA_PUBLIC_SUFFIX;
 CORONA_API
 int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format) CORONA_PUBLIC_SUFFIX;
 
+// ----------------------------------------------------------------------------
+
+/**
+  This structure accounts for renderer APIs that make sense from different call sites.
+*/
+typedef struct CoronaRendererOpParams
+{
+    union {
+        /**
+         A renderer supplied from a draw-related method.
+        */
+        const CoronaRenderer * renderer;
+        
+        /**
+         A state belonging to a plugin API.
+        */
+        lua_State * luaState;
+    } u;
+
+    /**
+     If non-0, the renderer is available through `luaState`; else `renderer`.
+    */
+    int useLuaState;
+} CoronaRendererOpParams;
+
+/**
+ Operation that uses a boxed renderer.
+*/
+typedef void (*CoronaRendererOp)( const CoronaRenderer * renderer, void * userData );
+
+/**
+ Schedule an operation for the end of the frame, e.g. to ensure a state is restored.
+ @param renderer Renderer access.
+ @param onEndFrame Operation to call.
+ @param userData Arbitrary data supplied to `onEndFrame`.
+ @param opID Optional. If non-NULL, this is populated with a non-0 ID on success.
+ @return If non-0, the operation was scheduled.
+*/
+CORONA_API
+int CoronaRendererScheduleEndFrameOp( CoronaRendererOpParams * renderer, CoronaRendererOp onEndFrame, void * userData, unsigned long * opID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Cancel an operation scheduled for the end of the frame.
+ @param renderer Renderer access.
+ @param opID An ID returned by `CoronaRendererScheduleEndFrameOp` on this frame.
+ @return If non-0, the operation was cancelled.
+*/
+CORONA_API
+int CoronaRendererCancelEndFrameOp( CoronaRendererOpParams * renderer, unsigned long opID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Add an operation to be called when the renderer performs a clear, e.g. to wipe some buffer.
+ @param renderer Renderer access.
+ @param onClear Operation to call.
+ @param userData Arbitrary data supplied to `onClear`.
+ @param opID Optional. If non-NULL, this is populated with a non-0 ID on success.
+ @return If non-0, the operation was installed.
+*/
+CORONA_API
+int CoronaRendererInstallClearOp( CoronaRendererOpParams * renderer, CoronaRendererOp onClear, void * userData, unsigned long * opID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Remove an installed clear operation.
+ @param renderer Renderer access.
+ @param opID An ID returned by `CoronaRendererInstallClearOp`.
+ @return If non-0, the operation was removed.
+*/
+CORONA_API
+int CoronaRendererRemoveClearOp( CoronaRendererOpParams * renderer, unsigned long opID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Do some action after first committing any in-progress rendering operations.
+ Should be avoided in shader bind callbacks, using the raw operation instead. (TODO: should this be considered a bug?)
+ @param renderer Boxed renderer.
+ @param action Action to perform.
+ @param userData Arbitrary data supplied to `action`.
+ @return If non-0, the action was done.
+*/
+CORONA_API
+int CoronaRendererDo( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Invalidate the display hierarchy.
+ @param L Lua state.
+*/
+CORONA_API
+void CoronaRendererInvalidate( lua_State * L ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+ Operation that responds to data read from a command's buffer.
+*/
+typedef void (*CoronaCommandReader)( const CoronaCommandBuffer * commandBuffer, const unsigned char * from, unsigned int size );
+
+/**
+ Operation that writes data into a command's buffer.
+*/
+typedef void (*CoronaCommandWriter)( const CoronaCommandBuffer * commandBuffer, unsigned char * to, const void * data, unsigned int size );
+
+/**
+ IO operations that constitute a command.
+*/
+typedef struct CoronaCommand {
+    /**
+     The operation where the command executes, given the data written earlier.
+    */
+    CoronaCommandReader reader;
+    
+    /**
+     When the command is issued, a range of bytes are allocated and this is called to write
+     into them from a data source.
+    */
+    CoronaCommandWriter writer;
+} CoronaCommand;
+
+/**
+ Permanently register a custom graphics command.
+ @param L Lua state pointer.
+ @param command Command operations. If `writer` is NULL, data will be `memcpy()`'d.
+ @param commandID This is populated with a non-0 ID on success.
+ @return If non-0, the command was registered.
+*/
+CORONA_API
+int CoronaRendererRegisterCommand( lua_State * L, const CoronaCommand * command, unsigned long * commandID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Issue a registered graphics command, adding it to the command buffer being built.
+ @param renderer Boxed renderer.
+ @param commandID An ID returned by `CoronaRendererRegisterCommand`.
+ @param data Data source used by the command's writer.
+ @param size Size in bytes to reserve for the command's payload. Used by the command's writer.
+ @return If non-0, the command was issued.
+*/
+CORONA_API
+int CoronaRendererIssueCommand( const CoronaRenderer * renderer, unsigned long commandID, void * data, unsigned int size ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+ Get the current base address of the command buffer's working memory.
+ During a given command buffer execution, the address is stable among `reader` operations; while
+ building the buffer up, on the other hand, it may change from one `writer` to the next, owing to
+ reallocations. In the latter case, subtracting the base address from the `to` parameter will give the
+ relative offset, which is invariant during buildup and the subsequent execution.
+ Both `from` and `to` will point at a command's payload, not its own base address, so the relative
+ offsets in these cases will be > 0.
+ @param commandBuffer Boxed command buffer.
+ @return If non-NULL, the base address.
+*/
+CORONA_API
+const unsigned char * CoronaCommandBufferGetBaseAddress( const CoronaCommandBuffer * commandBuffer ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ This structure accounts for different uniform writing needs.
+*/
+typedef struct CoronaWriteUniformParams {
+    union {
+        /**
+         Memory data source.
+        */
+        const void * data;
+        
+        /**
+         Offset in command buffer's working memory that holds the data, cf. the details for
+         `CoronaCommandBufferGetBaseAddress`.
+        */
+        unsigned long offset;
+    } u;
+    
+    /**
+     If non-0, the data is available through `offset; else `data`.
+    */
+    int useOffset;
+} CoronaWriteUniformParams;
+
+/**
+ Attempt to write data into one of the currently bound shader's uniforms. In particular, this is meant to allow
+ use of uniforms outside of Solar's dedicated set, including arrays. Since updates are done explicitly through
+ this API, changes will persist; any display object using the shader will see these same uniforms, as opposed
+ to per-object uniform userdata.
+ This sharing does not apply across shader versions or mods.
+ If the uniform exists, `Type` is one of `{ float, vec2/3/4, mat2/3/4 }`, and the name is not unusually long, the
+ write will proceed. The `Count` is also determined in this process: >= 1 in the case of an array, 1 otherwise.
+ Uniform data is interpreted as a `Type` array. On success, `min( Count, size / sizeof( Type ) )` items are written.
+ It is meant to be called from a `CoronaCommand` reader.
+ Solar's own built-in uniforms are not supported.
+ @param commandBuffer Boxed command buffer.
+ @param uniformName Name of uniform.
+ @param params Uniform write configuration.
+ @param size Size of uniform data, in bytes.
+ @return If non-0, the write occurred.
+*/
+CORONA_API
+int CoronaCommandBufferWriteNamedUniform( const CoronaCommandBuffer * commandBuffer, const char * uniformName, const CoronaWriteUniformParams * params, unsigned int size ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+ Primitive types used by Solar's vertex geometry.
+*/
+typedef enum {
+    /**
+     8-bit unsigned integer.
+    */
+    kAttributeType_Byte,
+
+    /**
+     Single-precision floating point.
+    */
+    kAttributeType_Float,
+
+    /**
+     Number of available types.
+    */
+    kAttributeType_Count
+} CoronaGeometryAttributeType;
+
+/**
+ Structured form to allow reads / writes of geometry data, in particular specific vertex components.
+*/
+typedef struct CoronaGeometryMappingLayout {
+    /**
+     Number of primitives (1, 3, or 4) that constitute the value.
+    */
+    unsigned int count;
+    
+    /**
+     Offset in bytes to first value in mapped memory.
+    */
+    unsigned int offset;
+    
+    /**
+     Size of memory region.
+    */
+    unsigned int size;
+    
+    /**
+     Number of bytes from the offset of one value to the next.
+    */
+    unsigned int stride;
+    
+    /**
+     Primitive type of value.
+    */
+    CoronaGeometryAttributeType type;
+} CoronaGeometryMappingLayout;
+
+/**
+ Copy the mapped part of a data source to the mapped part of a data target.
+ The source and destination must each provide a size > 0 and agree in both count and type.
+ The destination must provide a stride > 0. Its offset + count * attributeSize must not exceed the stride.
+ The source may provide a stride = 0, in which case the first element in the data source is repeated. In
+ that case, the offset + count * attributeSize must not exceed the size; otherwise the destination's
+ constraint is imposed.
+ If both strides are > 0, the number of copied elements is the minimum of the two `size / stride` results.
+ Otherwise, the destination's result is used.
+ @param dst Data whose components will be written.
+ @param dstLayout Mapping of `dst`.
+ @param src Data whose components will be read.
+ @param srcLayout Mapping of `src`.
+ @return If non-0, the copy was performed.
+*/
+CORONA_API
+unsigned int CoronaGeometryCopyData( void * dst, const CoronaGeometryMappingLayout * dstLayout, const void * src, const CoronaGeometryMappingLayout * srcLayout ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Map part of a render data's geometry vertex stream for reading, writing, or copying.
+ @param renderData Boxed render data.
+ @param name One of the following:
+  "position", "texCoord", "color", "userData" (full attributes)
+  "x", "y", "z" (position components)
+  "u", "v", "q" (texCoord components)
+  "r", "g", "b", "a" (color components)
+  "ux", "uy", "uz", "uw" (userData components)
+ @param layout On success, the layout corresponding to the named property.
+ @return If non-NULL, the render data's geometry vertex stream, as mapped by the layout.
+*/
+CORONA_API
+void * CoronaGeometryGetMappingFromRenderData( const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+ Read-only details that may be provided to `graphics.defineEffect()`. These are made available
+ to shell transform and data type callbacks in particular, in order to allow user-defined tuning.
+*/
+typedef struct CoronaEffectDetail {
+    /**
+     Name of some property the effect or transform might understand.
+    */
+    const char * name;
+
+    /**
+     Value to associate with the named property.
+    */
+    const char * value;
+} CoronaEffectDetail;
+
+/**
+ Query some user-provided details about the shader's effect.
+ @param shader Boxed shader.
+ @param index 0-based detail index.
+ @param detail On success, populated.
+ @return If non-0, the detail was found.
+*/
+CORONA_API
+int CoronaShaderGetEffectDetail( const CoronaShader * shader, int index, CoronaEffectDetail * detail ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+ Any structure that extends `CoronaShellTransformParams` will take this as its first member, to effect C-style inheritance.
+*/
+typedef struct CoronaShellTransformParamsExtensionHeader {
+    /**
+     Link to the next extension structure, or `NULL` if this is the last one.
+    */
+    struct CoronaShellTransformParamsExtensionHeader * next;
+    
+    /**
+     An identifier for the extension structure type.
+    */
+    unsigned short type;
+} CoronaShellTransformParamsExtensionHeader;
+
+/**
+ This is populated and then passed to a shell transform callback.
+*/
+typedef struct CoronaShellTransformParams {
+    /**
+     One of "vertex" or "fragment".
+    */
+    const char * type;
+    
+    /**
+     Snippets that will be pieced together, in order, to yield the final shader source. More
+     specifically, the contents of the array pointed to by `sources` after the transform
+     callback will be used to do so: this is the crux of the "transformation".
+     If the original array is left intact, only its "vertexSource" / "fragmentSource" pieces
+     may be modified.
+     Otherwise, the caller must replace it with a new array, although this may include
+     strings from the original.
+    */
+    const char ** sources;
+
+    /**
+     When a callback transform begins, these are one-to-one with `sources`. Each
+     string gives a little description of the corresponding source piece, the most
+     useful being "vertexSource" / "fragmentSource". (The general idea is to not
+     hard-code the indices of any piece.)
+    */
+    const char ** hints;
+    
+    /**
+     Details as provided to `graphics.defineEffect()`.
+    */
+    const CoronaEffectDetail * details;
+    
+    /**
+     Arbitrary value provided to `CoronaShellTransform`.
+    */
+    const void * userData;
+    
+    /**
+     Number of strings in the `sources` and `hints` arrays.
+     If the transform changes the number of strings in `sources`, this must be updated to match.
+    */
+    unsigned int nsources; // n.b. must agree with output after call
+    
+    /**
+     Number of elements in `details` array.
+    */
+    unsigned int ndetails;
+    
+    /**
+     Not yet used; for possible future expansion.
+    */
+    CoronaShellTransformParamsExtensionHeader * next;
+} CoronaShellTransformParams;
+
+/**
+ Callback where the transformation occurs, i.e. an updated list of shader source snippets is compiled.
+ The workspace is a user-defined. If a new array and / or strings need to be allocated, for example, it
+ can be used to provide some data structure. Similarly, the key can be used to identify the set of
+ transformations in progress.
+*/
+typedef const char ** (*CoronaShellTransformBegin)( CoronaShellTransformParams * params, void * workSpaceData, void * key );
+
+/**
+ Callback following transformation, after the strings have been consumed.
+ This is meant to allow for workspace cleanup.
+*/
+typedef void (*CoronaShellTransformFinish)( void * workSpaceData, void * key );
+
+/**
+ Callback after all transformations have concluded.
+ This is meant for any "final" workspace cleanup.
+*/
+typedef void (*CoronaShellTransformStateCleanup)( void * key );
+
+/**
+ Configuration for shell transform registration.
+*/
+typedef struct CoronaShellTransform {
+    /**
+     Required
+     When creating an instance of this type, set this member to `size = sizeof(CoronaShellTransform)`.
+     This is required for identifying the API version used.
+    */
+    unsigned long size;
+
+    /**
+     Optional
+     If non-0, the size of a region to be allocated and provided to each of the transform's callbacks.
+    */
+    unsigned int workSpace;
+
+    /**
+     Required
+     Called before compiling a shader, to update its source.
+    */
+    CoronaShellTransformBegin begin;
+
+    /**
+     Optional
+     Called after compiling a shader, successful or not, to release resources.
+    */
+    CoronaShellTransformFinish finish;
+
+    /**
+     Optional
+     Called after all shader compilations, to clean up master resources.
+    */
+    CoronaShellTransformStateCleanup cleanup;
+
+    /**
+     Optional
+     Arbitrary data made available during `begin` callback.
+     It is assumed to exist until any relevant shaders have been compiled. Since transforms are
+     never unloaded, this could mean indefinitely.
+    */
+    void * userData;
+} CoronaShellTransform;
+
+/**
+ Register a shell transform, i.e. a mutation of an effect's shader source before final compilation.
+ The "shell" nomenclature is used since the backend's shader shell is what a user typically wants to
+ modify--the effect kernels after all, are user-provided, so could be "transformed" already--but is not
+ strictly accurate.
+ @param L Lua state.
+ @param name Unused transform name.
+ @param transform Transform configuration.
+ @return If non-0, the transform was registered.
+*/
+CORONA_API
+int CoronaShaderRegisterShellTransform( lua_State * L, const char * name, const CoronaShellTransform * transform ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+typedef void (*CoronaShaderDrawBookend)( const CoronaShader * shader, void * userData, const CoronaRenderer * renderer, const CoronaRenderData * renderData );
+
+/**
+ This may be used to augment and/or override how a shader draws an object.
+ 
+ With a given method, this can take on the form:
+ 
+ ```
+   before( ... )
+   original( ... )
+   after( ... )
+ ```
+ 
+ where all three functions take the same arguments.
+
+ The `before` and `after` functions may be NULL, in which case the respective function is
+ not called. Similarly, the stock behavior is skipped if `ignoreOriginal` is non-0.
+*/
+typedef struct CoronaShaderDrawParams {
+    /**
+     Optional
+     If non-0, skip the regular draw behavior.
+    */
+    unsigned int ignoreOriginal;
+    
+    /**
+     Optional
+     Actions to perform before and / or after the regular draw behavior.
+    */
+    CoronaShaderDrawBookend before, after;
+} CoronaShaderDrawParams;
+
+/**
+ Draw an instance of the current render data.
+ It is meant to be called from a `CoronaShaderDrawBookend`.
+ @param shader Boxed shader.
+ @param renderData Boxed render data.
+ @param renderer Boxed renderer.
+ @return If non-0, the draw was performed.
+ */
+CORONA_API
+int CoronaShaderRawDraw( const CoronaShader * shader, const CoronaRenderData * renderData, const CoronaRenderer * renderer ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Get the version that the shader is prepared to draw..
+ @param renderData Boxed render data.
+ @param renderer Boxed renderer.
+ @param version On success, the shader version.
+ @return -1 on error; otherwise, the version.
+*/
+CORONA_API
+int CoronaShaderGetVersion( const CoronaRenderData * renderData, const CoronaRenderer * renderer ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Operation called when a particular mod / version of a shader becomes bound.
+ This can happen via a regular draw or during a `CoronaShaderRawDraw()`.
+ In this and the many operations that follow, if extra space was requested for the data type, `userData` will point to it.
+*/
+typedef void (*CoronaShaderBind)( const CoronaRenderer * renderer, void * userData );
+
+/**
+ Operation called when a shader is detached from a paint, say to clean up resources.
+*/
+typedef void (*CoronaShaderDetach)( const CoronaShader * shader, void * userData );
+
+/**
+ Operation called before a shader mod is used to draw, say to set up some resources.
+*/
+typedef void (*CoronaShaderPrepare)( const CoronaShader * shader, void * userData, const CoronaRenderData * renderData, int w, int h, int mod );
+
+/**
+ Operation called if `name` is not found in the vertex data / uniform userdata. A return value >= 0 is a "data index",
+ cf. `CoronaEffectGetData` and `CoronaEffectSetData`.
+*/
+typedef int (*CoronaEffectNameToIndex)( const char * name );
+
+/**
+ Operation called to return a custom result from an object's effect. It must 1 if it pushed a result, 0 otherwise.
+ If `hadError` was 0 (the default), a pushed result is treated as the retrieved data.
+ Otherwise, an error message is printed and nothing is returned. If there was a pushed object and it was a
+ string, it will be incorporated into the message.
+*/
+typedef int (*CoronaEffectGetData)( lua_State * L, int dataIndex, void * userData, int * hadError );
+
+/**
+ Operation called to assign a custom value to an object's effect.
+ If `hadError` was 0 (the default), a non-0 return value indicates an assignment occurred.
+ Otherwise, an error message is printed. A non-0 value says an object was pushed onto the stack, and is
+ incorporated into the message if it was a string.
+*/
+typedef int (*CoronaEffectSetData)( lua_State * L, int dataIndex, int valueIndex, void * userData, int * shouldInvalidate, int * hadError );
+
+/**
+ Any structure that extends `CoronaEffectCallbacks` will take this as its first member, to effect C-style inheritance.
+*/
+typedef struct CoronaEffectCallbacksExtensionHeader {
+    /**
+     Link to the next extension structure, or `NULL` if this is the last one.
+    */
+    struct CoronaObjectParamsHeader * next;
+    
+    /**
+     An identifier for the extension structure type.
+    */
+    unsigned short type;
+} CoronaEffectCallbacksExtensionHeader;
+
+/**
+ Configuration for effect data type.
+*/
+typedef struct CoronaEffectCallbacks {
+    /**
+     Required
+     When creating an instance of this type, set this member to `size = sizeof(CoronaEffectCallbacks)`.
+     This is required for identifying the API version used.
+    */
+    unsigned long size;
+
+    /**
+     Optional
+     Called after a shader variant is bound.
+    */
+    CoronaShaderBind shaderBind;
+    
+    /**
+     Optional
+     Called when an effect is detached from an object.
+    */
+    CoronaShaderDetach shaderDetach;
+    
+    /**
+     Optional
+     Called before an effect is used to draw an object.
+    */
+    CoronaShaderPrepare prepare;
+
+    /**
+     Optional
+     Used when drawing an object with the effect attached.
+    */
+    CoronaShaderDrawParams drawParams;
+
+    /**
+     Optional
+     Called when reading or writing an effect instance with a name not belonging to
+     the vertex data / uniform userdata.
+    */
+    CoronaEffectNameToIndex getDataIndex;
+
+    /**
+     Optional
+     Called when a custom data index is provided when reading from an effect instance.
+    */
+    CoronaEffectGetData getData;
+
+    /**
+     Optional
+     Called when a custom data index is provided when writing to an effect instance.
+    */
+    CoronaEffectSetData setData;
+    
+    /**
+     Optional
+     If > 0, each effect instance will get a userdata with this many bytes.
+    */
+    unsigned int extraSpace;
+    
+    /**
+     Not yet used; for possible future expansion.
+    */
+    CoronaEffectCallbacksExtensionHeader * next;
+} CoronaEffectCallbacks;
+
+/**
+ Register an effect data type, i.e. a set of operations that augment and / or override the stock behaviors
+ an effect will perform when attached to a display object.
+ @param L Lua state.
+ @param name Unused data type.
+ @param callbacks Data type callbacks.
+ @return If non-0, the data type was registered.
+*/
+CORONA_API
+int CoronaShaderRegisterEffectDataType( lua_State * L, const char * name, const CoronaEffectCallbacks * callbacks ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+ A 4-by-4 matrix.
+*/
+typedef float CoronaMatrix4x4[16];
+
+/**
+ Multiply two matrices.
+ @param m1 Left-hand matrix.
+ @param m2 Right-hand matrix.
+ @param result Populated with product.
+*/
+CORONA_API
+void CoronaMultiplyMatrix4x4( const CoronaMatrix4x4 m1, const CoronaMatrix4x4 m2, CoronaMatrix4x4 result ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ A 3-component vector, i.e. x, y, z.
+*/
+typedef float CoronaVector3[3];
+
+/**
+ Construct a view matrix.
+ @param eye Eye or camera position.
+ @param center Center position. A look-at direction is derived from `eye` to `center`.
+ @param up Fixed up vector.
+ @param result Populated with view matrix.
+*/
+CORONA_API
+void CoronaCreateViewMatrix( const CoronaVector3 eye, const CoronaVector3 center, const CoronaVector3 up, CoronaMatrix4x4 result ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Construct an orthographic projection matrix.
+ @param left Distance to vertical clipping plane to the left.
+ @param right Distance to vertical clipping plane to the right.
+ @param bottom Distance to horizontal clipping plane below.
+ @param top Distance to horizontal clipping plane above.
+ @param zNear Distance from eye to near clipping plane.
+ @param zFar Distance from eye to far clipping plane.
+ @param result Populated with projection matrix.
+*/
+CORONA_API
+void CoronaCreateOrthoMatrix( float left, float right, float bottom, float top, float zNear, float zFar, CoronaMatrix4x4 result ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Construct a perspective projection matrix.
+ @param fovy The y field-of-view, in degrees.
+ @param aspectRatio Ratio of width to height; determines the x field-of-view.
+ @param zNear Distance from eye to near clipping plane.
+ @param zFar Distance from eye to far clipping plane.
+ @param result Populated with projection matrix.
+*/
+CORONA_API
+void CoronaCreatePerspectiveMatrix( float fovy, float aspectRatio, float zNear, float zFar, CoronaMatrix4x4 result ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
 
 #endif // _CoronaGraphics_H__

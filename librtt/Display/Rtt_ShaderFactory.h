@@ -16,6 +16,8 @@
 #include "Display/Rtt_ShaderComposite.h"
 #include "Display/Rtt_ShaderTypes.h"
 
+#include "CoronaGraphics.h"
+
 // ----------------------------------------------------------------------------
 
 struct lua_State;
@@ -80,6 +82,9 @@ class ShaderFactory
 		// Helper methods to instantiate Shader
 		bool BindVertexDataMap( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 		bool BindUniformDataMap( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
+        void BindDataType( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
+        void BindDetails( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
+        void BindShellTransform( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
 		void BindTimeTransform( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 		void InitializeBindings( lua_State *L, int shaderIndex, const SharedPtr< ShaderResource >& resource );
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
@@ -100,6 +105,9 @@ class ShaderFactory
 	public:
 		bool DefineEffect( lua_State *L, int shaderIndex );
 		Shader *NewShaderGraph( lua_State *L, int index);
+
+        bool RegisterDataType( const char * name, const CoronaEffectCallbacks & callbacks );
+        bool RegisterShellTransform( const char * name, const CoronaShellTransform & transform );
 				
 	protected:
 		const Shader *FindPrototype( ShaderTypes::Category category, const char *name ) const;

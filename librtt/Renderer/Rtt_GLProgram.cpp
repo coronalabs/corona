@@ -23,6 +23,11 @@
 	#include <GLES2/gl2ext.h>
 #endif
 
+#include "Display/Rtt_ShaderResource.h"
+#include "Corona/CoronaLog.h"
+
+#include <string>
+#include <vector>
 
 // To reduce memory consumption and startup cost, defer the
 // creation of GL shaders and programs until they're needed.
@@ -92,8 +97,7 @@ namespace /*anonymous*/
 		"void main()" \
 		"{" \
 			"gl_FragColor = vec4(1.0);" \
-		"}";
-}
+		"}";}
 
 // ----------------------------------------------------------------------------
 
@@ -102,7 +106,28 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+struct GLProgramUniformInfo {
+    GLProgramUniformInfo()
+    {
+        for (int i = 0; i < Program::kNumVersions; ++i)
+        {
+            fLocations[i] = -1;
+        }
+    }
+    
+    GLint fLocations[Program::kNumVersions];
+    GLint size;
+    GLenum type;
+    std::string fName;
+};
+
+struct GLProgramUniformsCache {
+    std::vector< GLProgramUniformInfo > fInfo;
+};
+
 GLProgram::GLProgram()
+:   fCleanupShellTransform( NULL ),
+    fUniformsCache( NULL )
 {
 	for( U32 i = 0; i < Program::kNumVersions; ++i )
 	{
@@ -122,6 +147,15 @@ GLProgram::Create( CPUResource* resource )
 			Create( fData[i], i );
 		}
 	#endif
+    
+    Program* program = static_cast<Program*>( fResource );
+    ShaderResource* shaderResource = program->GetShaderResource();
+    const CoronaShellTransform * transform = shaderResource->GetShellTransform();
+
+    if (transform && transform->cleanup)
+    {
+        fCleanupShellTransform = transform->cleanup;
+    }
 }
 
 void
@@ -152,6 +186,15 @@ GLProgram::Destroy()
 			Reset( data );
 		}
 	}
+    
+    if (fCleanupShellTransform)
+    {
+        fCleanupShellTransform( &fCleanupShellTransform ); // n.b. used as own key
+    }
+
+    Rtt_DELETE( fUniformsCache );
+    
+    fUniformsCache = NULL;
 }
 
 void
@@ -204,6 +247,33 @@ CountLines( const char **segments, int numSegments )
 	return result;
 }
 
+static void
+SetShaderSource( GLuint shader, CoronaShellTransformParams & params, const CoronaShellTransform * xform, void * userData, void * key )
+{
+    const char ** strings = params.sources, ** old = strings;
+
+    if (xform)
+    {
+        Rtt_ASSERT( xform->begin );
+        
+        strings = xform->begin( &params, userData, key );
+
+        if (!strings)
+        {
+            strings = old;
+        }
+    }
+
+    glShaderSource( shader, params.nsources, strings, NULL );
+
+    if (xform && xform->finish)
+    {
+        xform->finish( userData, key );
+    }
+
+    GL_CHECK_ERROR();
+}
+
 void
 GLProgram::UpdateShaderSource( Program* program, Program::Version version, VersionData& data )
 {
@@ -239,27 +309,59 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
 		int numSegments = sizeof( shader_source ) / sizeof( shader_source[0] ) - 1;
 		data.fHeaderNumLines = CountLines( shader_source, numSegments );
 	}
+    
+    ShaderResource * shaderResource = program->GetShaderResource();
+    const CoronaShellTransform * shellTransform = shaderResource->GetShellTransform();
+    CoronaShellTransformParams params = {};
+    const char * hints[] = { "header", "highpSupport", "mask", "texCoordZ", NULL };
+    void * shellTransformKey = &fCleanupShellTransform; // n.b. done to make cleanup robust
+
+    params.hints = hints;
+
+    std::vector< CoronaEffectDetail > details;
+    CoronaEffectDetail detail;
+
+    for (int i = 0; shaderResource->GetEffectDetail( i, detail ); ++i)
+    {
+        details.push_back( detail );
+    }
+
+    params.details = details.data();
+    params.ndetails = details.size();
+    params.userData = shellTransform ? shellTransform->userData : NULL;
+
+    std::vector< U8 > space;
+    U8 * spaceData = NULL;
+
+    if (shellTransform && shellTransform->workSpace)
+    {
+        space.resize( shellTransform->workSpace );
+
+        spaceData = space.data();
+    }
 
 	// Vertex shader.
 	{
 		shader_source[4] = program->GetVertexShaderSource();
 
-		glShaderSource( data.fVertexShader,
-						( sizeof(shader_source) / sizeof(shader_source[0]) ),
-						shader_source,
-						NULL );
-		GL_CHECK_ERROR();
+        hints[4] = "vertexSource";
+        params.type = "vertex";
+        params.sources = shader_source;
+        params.nsources = sizeof(shader_source) / sizeof(shader_source[0]);
+
+        SetShaderSource( data.fVertexShader, params, shellTransform, spaceData, shellTransformKey );
 	}
 
 	// Fragment shader.
 	{
 		shader_source[4] = ( version == Program::kWireframe ) ? kWireframeSource : program->GetFragmentShaderSource();
 
-		glShaderSource( data.fFragmentShader,
-						( sizeof(shader_source) / sizeof(shader_source[0]) ),
-						shader_source,
-						NULL );
-		GL_CHECK_ERROR();
+        hints[4] = "fragmentSource";
+        params.type = "fragment";
+        params.sources = shader_source;
+        params.nsources = sizeof(shader_source) / sizeof(shader_source[0]);
+
+        SetShaderSource( data.fFragmentShader, params, shellTransform, spaceData, shellTransformKey );
 	}
 #endif
 }
@@ -379,6 +481,171 @@ GLProgram::Reset( VersionData& data )
 	}
 	
 	data.fHeaderNumLines = 0;
+}
+
+GLProgram::ExtraUniforms::ExtraUniforms()
+:   fVersion( Program::kNumVersions ),
+    fVersionData( NULL ),
+    fCache( NULL )
+{
+}
+
+GLProgram::ExtraUniforms::ExtraUniforms( Program::Version version, const VersionData * versionData, GLProgramUniformsCache ** cache )
+:   fVersion( version ),
+    fVersionData( versionData ),
+    fCache( cache )
+{
+}
+
+GLint
+GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
+{
+    if (!fCache)
+    {
+        CoronaLog( "Extra uniforms cache not yet initialized" );
+        
+        return -1;
+    }
+    
+    // Has this name ever been found?
+    int entryIndex = -1;
+    
+    if (*fCache)
+    {
+        for (int i = 0; i < (*fCache)->fInfo.size(); ++i)
+        {
+            const auto & pos = (*fCache)->fInfo[i];
+            
+            if (0 == strcmp( pos.fName.c_str(), name ))
+            {
+                entryIndex = i;
+                
+                if (pos.fLocations[fVersion] >= 0) // version as well?
+                {
+                    size = pos.size;
+                    type = pos.type;
+                    
+                    return pos.fLocations[fVersion];
+                }
+                
+                break;
+            }
+        }
+    }
+
+    // Does the uniform even exist?
+    const VersionData & versionData = fVersionData[fVersion];
+    GLint location = glGetUniformLocation( versionData.fProgram, reinterpret_cast< const GLchar * >( name ) );
+
+    if (-1 == location)
+    {
+        CoronaLog( "WARNING: uniform `%s` not found in effect", name );
+        
+        return -1;
+    }
+    
+    // No entry yet?
+    if (-1 == entryIndex)
+    {
+        // Not a built-in?
+        if (name[0] && name[1] && 'u' == name[0] && '_' == name[1])
+        {
+            for (int i = 0; i < Uniform::kNumBuiltInVariables; ++i)
+            {
+                if (versionData.fUniformLocations[i] == location)
+                {
+                    CoronaLog( "WARNING: `%s` is a built-in uniform", name );
+                    
+                    return -1;
+                }
+            }
+        }
+        
+        // Gather details.
+        GLint count;
+        
+        glGetProgramiv( versionData.fProgram, GL_ACTIVE_UNIFORMS, &count );
+        
+        GLchar nameBuf[kUniformNameBufferSize];
+        GLsizei length;
+        GLint uniformIndex;
+        
+        for (uniformIndex = 0; uniformIndex < count; ++uniformIndex)
+        {
+            glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
+
+            const char * bracket = strchr( nameBuf, '[' );
+            
+            if (bracket)
+            {
+                length = bracket - nameBuf;
+            }
+            
+            if (0 == strncmp( name, nameBuf, length ))
+            {
+                break;
+            }
+        }
+        
+        if (uniformIndex == count)
+        {
+            CoronaLog( "Location of uniform `%s` found, but no active info: name too long?", name );
+            
+            return -1;
+        }
+        
+        switch (type)
+        {
+        case GL_FLOAT:
+        case GL_FLOAT_VEC2:
+        case GL_FLOAT_VEC3:
+        case GL_FLOAT_VEC4:
+        case GL_FLOAT_MAT2:
+        case GL_FLOAT_MAT3:
+        case GL_FLOAT_MAT4:
+            break;
+        default:
+            CoronaLog( "Location of uniform `%s` found, but type unsupported", name );
+                
+            return -1;
+        }
+          
+        // No cache yet?
+        if (!*fCache)
+        {
+            *fCache = Rtt_NEW( NULL, GLProgramUniformsCache );
+        }
+    
+        // Install the details.
+        entryIndex = (int)(*fCache)->fInfo.size();
+        
+        (*fCache)->fInfo.push_back( GLProgramUniformInfo{} );
+        
+        GLProgramUniformInfo & newInfo = (*fCache)->fInfo.back();
+        
+        newInfo.size = size;
+        newInfo.type = type;
+        newInfo.fName = name;
+    }
+    
+    else
+    {
+        size = (*fCache)->fInfo[entryIndex].size;
+        type = (*fCache)->fInfo[entryIndex].type;
+    }
+    
+    // Register the location and return it.
+    (*fCache)->fInfo[entryIndex].fLocations[fVersion] = location;
+    
+    return location;
+}
+
+GLProgram::ExtraUniforms
+GLProgram::GetExtraUniformsInfo( Program::Version version )
+{
+    ExtraUniforms extraUniforms( version, fData, &fUniformsCache );
+    
+    return extraUniforms;
 }
 
 // ----------------------------------------------------------------------------

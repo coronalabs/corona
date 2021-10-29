@@ -22,6 +22,8 @@
 #include "Core/Rtt_Real.h"
 #include "Core/Rtt_Time.h"
 
+#include "Corona/CoronaGraphics.h"
+
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
@@ -34,6 +36,7 @@ class FrameBufferObject;
 class GeometryPool;
 class Texture;
 class Uniform;
+class ShaderData;
 
 // ----------------------------------------------------------------------------
 
@@ -128,7 +131,7 @@ class Renderer
 
 		// Generate the minimum set of commands needed to ensure that the given
 		// RenderData is properly drawn on the next call to Render().
-		void Insert( const RenderData* data );
+		void Insert( const RenderData* data, const ShaderData * shaderData = NULL );
 
 		// Render all data added since the last call to swap(). It is both safe
 		// and expected that Render() is called while another thread is adding
@@ -167,7 +170,8 @@ class Renderer
 		static U32 GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
-		static size_t GetMaxVertexTextureUnits();
+        static U32 GetMaxUniformVectorsCount();
+		static U32 GetMaxVertexTextureUnits();
 
 		struct Statistics
 		{
@@ -223,6 +227,24 @@ class Renderer
 		// whether or not objects *on*screen need to be re-blitted
 		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
 		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
+    
+        struct CustomOp {
+            CoronaRendererOp fAction;
+            unsigned long fID;
+            void * fUserData;
+        };
+
+        U16 AddCustomCommand( const CoronaCommand & command );
+        U16 AddClearOp( CoronaRendererOp action, void * userData );
+        U16 AddEndFrameOp( CoronaRendererOp action, void * userData );
+
+        void Inject( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData );
+
+        bool IssueCustomCommand( U16 id, const void * data, U32 size );
+    
+    public:
+        Array< CustomOp > & GetClearOps() { return fClearOps; }
+        Array< CustomOp > & GetEndFrameOps() { return fEndFrameOps; }
 
 	protected:
 		// Destroys all queued GPU resources passed into the DestroyQueue() method.
@@ -255,6 +277,9 @@ class Renderer
 		// Returns count at top of the mask count stack
 		const U32& MaskCount() const { return fMaskCount[fMaskCountIndex]; }
 		U32& MaskCount() { return fMaskCount[fMaskCountIndex]; }
+
+    public:
+        int GetVersionCode( bool addingMask ) const;
 
 	protected:
 		Rtt_Allocator* fAllocator;
@@ -311,6 +336,12 @@ class Renderer
 		Real fContentScaleY; // Temporary holder.
 
 		U32 fTimeDependencyCount;
+    
+        Array< CoronaCommand > fPendingCommands;
+        Array< CustomOp > fClearOps;
+        Array< CustomOp > fEndFrameOps;
+
+        U16 fCommandCount;
 };
 
 // ----------------------------------------------------------------------------
