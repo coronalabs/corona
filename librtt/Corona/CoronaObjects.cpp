@@ -150,6 +150,15 @@ ObjectBoxList::Add( const void * object, int type )
         }
     }
     
+    // STEVE CHANGE
+    // TODO?: with certain types (so far, probably just display / group
+    // objects), in some extreme cases the list could become quite dense:
+    // if that ever becomes a problem, we might consider something like a
+    // bloom filter (https://en.wikipedia.org/wiki/Bloom_filter) or a
+    // Roaring bitmap (https://github.com/RoaringBitmap/CRoaring) paired
+    // with a map.
+    // /STEVE CHANGE
+    
     for (Box & box : fBoxes) // already boxed?
     {
         Rtt_ASSERT( box.fList == this );
