@@ -26,7 +26,8 @@
 			"remoteCopySources": true,
 			"rsyncCommandArgs": "-a --delete --delete-excluded --include-from=platform/linux/CMakeRsyncLinuxLists.txt",
 			"remoteCopyBuildOutput": false,
-			"remoteCopySourcesMethod": "rsync"
+			"remoteCopySourcesMethod": "rsync",
+			"buildCommandArgs": "-j4"
 		},
 		{
 			"name": "WSL-GCC-Debug",
@@ -39,8 +40,7 @@
 			"buildCommandArgs": "",
 			"ctestCommandArgs": "",
 			"inheritEnvironments": [ "linux_x64" ],
-			"wslPath": "${defaultWSLPath}",
-			"variables": []
+			"wslPath": "${defaultWSLPath}"
 		}
 	]
 }
