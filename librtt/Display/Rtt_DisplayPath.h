@@ -56,6 +56,9 @@ class DisplayPath
 			const Matrix& srcToDstSpace,
 			U32 flags,
 		    ArrayIndex *indices );
+    
+        static const void * ZKey();
+        static const void * IndicesKey();
 
 	public:
 		DisplayPath();

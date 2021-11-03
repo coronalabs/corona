@@ -66,7 +66,7 @@ ShapeAdapterMesh::GetMeshMode(lua_State *L, int index)
 }
 	
 bool
-ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tesselator )
+ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tesselator, bool hasZ )
 {
 	if ( !lua_istable( L, index ) )
 	{
@@ -79,13 +79,15 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 	lua_getfield( L, index, "vertices" );
 	if (lua_istable( L, -1))
 	{
-		Rtt_ASSERT (lua_objlen( L, -1 ) % 2 == 0);
-		U32 numVertices = (U32)lua_objlen( L, -1 )/2;
+        int componentCount = hasZ ? 3 : 2;
+
+        Rtt_ASSERT (lua_objlen( L, -1 ) % componentCount == 0);
+        U32 numVertices = (U32)lua_objlen( L, -1 )/componentCount;
 		mesh.Reserve( numVertices );
 		for(U32 i=0; i<numVertices; i++)
 		{
-			lua_rawgeti( L, -1, 2*i+1 );
-			lua_rawgeti( L, -2, 2*i+2 );
+            lua_rawgeti( L, -1, componentCount*i+1 );
+            lua_rawgeti( L, -2, componentCount*i+2 );
 			if ( lua_type( L, -2 ) == LUA_TNUMBER &&
 			     lua_type( L, -1 ) == LUA_TNUMBER )
 			{
@@ -285,9 +287,26 @@ int ShapeAdapterMesh::setVertex( lua_State *L )
 	x -= offset.x;
 	y -= offset.y;
 
+    VertexCache & cache = path->GetFillSource();
+    ArrayFloat * floatArray = cache.ExtraFloatArray( DisplayPath::ZKey() );
+
+    bool zChanged = false;
+
+    if (floatArray && lua_isnumber( L, nextArg ))
+    {
+        Real z = luaL_toreal( L, nextArg );
+        Real & origZ = (*floatArray)[vertIndex];
+
+        if ( !Rtt_RealEqual( z, origZ ) )
+        {
+            origZ = z;
+            zChanged = true;
+        }
+    }
+
 	Vertex2& orig = tesselator->GetMesh().WriteAccess()[vertIndex];
 	
-	if( !Rtt_RealEqual(x, orig.x) || !Rtt_RealEqual(y, orig.y))
+    if( !Rtt_RealEqual(x, orig.x) || !Rtt_RealEqual(y, orig.y) || zChanged)
 	{
 		orig.x = x;
 		orig.y = y;
@@ -329,6 +348,16 @@ int ShapeAdapterMesh::getVertex( lua_State *L )
 		lua_pushnumber( L, vert.x+offset.x );
 		lua_pushnumber( L, vert.y+offset.y );
 		result = 2;
+
+        VertexCache & cache = path->GetFillSource();
+        ArrayFloat * floatArray = cache.ExtraFloatArray( DisplayPath::ZKey() );
+
+        if (floatArray)
+        {
+            lua_pushnumber( L, (*floatArray)[vertIndex] );
+
+            result = 3;
+        }
 	}
 	
 	return result;
