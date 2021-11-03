@@ -19,52 +19,59 @@
 #include "Rtt_Archive.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_HTTPClient.h"
-#include <pwd.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
-Rtt_EXPORT int luaopen_lfs(lua_State *L);
+#if defined(Rtt_LINUX_ENV)
+#	include <pwd.h>
+#	include <unistd.h>
+#elif defined(Rtt_WIN_ENV)
+#	include "Interop/Ipc/CommandLine.h"
+# include <userenv.h>
+#	pragma comment(lib, "Userenv.lib")
+#endif
 
 extern "C" {
-	int luaopen_socket_core(lua_State *L);
-	int luaopen_mime_core(lua_State *L);
-	int luaopen_socket_core(lua_State *L);
-	int CoronaPluginLuaLoad_ftp(lua_State *L);
-	int CoronaPluginLuaLoad_socket(lua_State *L);
-	int CoronaPluginLuaLoad_headers(lua_State *L);
-	int CoronaPluginLuaLoad_http(lua_State *L);
-	int CoronaPluginLuaLoad_mbox(lua_State *L);
-	int CoronaPluginLuaLoad_smtp(lua_State *L);
-	int CoronaPluginLuaLoad_tp(lua_State *L);
-	int CoronaPluginLuaLoad_url(lua_State *L);
-	int CoronaPluginLuaLoad_mime(lua_State *L);
-	int CoronaPluginLuaLoad_ltn12(lua_State *L);
+	int luaopen_lfs(lua_State* L);
+	int luaopen_socket_core(lua_State* L);
+	int luaopen_mime_core(lua_State* L);
+	int luaopen_socket_core(lua_State* L);
 }
 
 namespace Rtt
 {
-	bool CompileScriptsInDirectory(lua_State *L, AppPackagerParams &params, const char *dstDir, const char *srcDir);
-	bool FetchDirectoryTreeFilePaths(const char* directoryPath, std::vector<std::string> &filePathCollection);
-	int processExecute(lua_State *L);
+	 int luaload_luasocket_ftp(lua_State* L);
+	 int luaload_luasocket_headers(lua_State* L);
+	 int luaload_luasocket_http(lua_State* L);
+	 int luaload_luasocket_ltn12(lua_State* L);
+	 int luaload_luasocket_mbox(lua_State* L);
+	 int luaload_luasocket_mime(lua_State* L);
+	 int luaload_luasocket_smtp(lua_State* L);
+	 int luaload_luasocket_socket(lua_State* L);
+	 int luaload_luasocket_tp(lua_State* L);
+	 int luaload_luasocket_url(lua_State* L);
+
+	bool CompileScriptsInDirectory(lua_State* L, AppPackagerParams& params, const char* dstDir, const char* srcDir);
+	bool FetchDirectoryTreeFilePaths(const char* directoryPath, std::vector<std::string>& filePathCollection);
+	int processExecute(lua_State* L);
 	int luaload_linuxPackageApp(lua_State* L);
 
-	int GenerateResourceCar(lua_State *L)
+	int GenerateResourceCar(lua_State* L)
 	{
 		Rtt_ASSERT(lua_isuserdata(L, 1));
-		AppPackagerParams* p =  (AppPackagerParams*) lua_touserdata( L, 1);
+		AppPackagerParams* p = (AppPackagerParams*)lua_touserdata(L, 1);
 		Rtt_ASSERT(lua_isstring(L, 2));
-		const char* srcDir = lua_tostring( L, 2);
+		const char* srcDir = lua_tostring(L, 2);
 		Rtt_ASSERT(lua_isstring(L, 3));
-		const char* dstDir = lua_tostring( L, 3);
+		const char* dstDir = lua_tostring(L, 3);
 		Rtt_ASSERT(lua_isstring(L, 4));
-		const char* tmpDir = lua_tostring( L, 4);
+		const char* tmpDir = lua_tostring(L, 4);
 
 		// Package build settings parameters.
-		Rtt::AppPackagerParams params(p->GetAppName(), p->GetVersion(), p->GetIdentity(), NULL, srcDir, dstDir, NULL, p->GetTargetPlatform(), NULL,	0, 0, NULL, NULL, NULL, true);
+		Rtt::AppPackagerParams params(p->GetAppName(), p->GetVersion(), p->GetIdentity(), NULL, srcDir, dstDir, NULL, p->GetTargetPlatform(), NULL, 0, 0, NULL, NULL, NULL, true);
 		params.SetStripDebug(p->IsStripDebug());
 
 		bool rc = CompileScriptsInDirectory(L, params, dstDir, srcDir);
@@ -85,7 +92,7 @@ namespace Rtt
 			if (wasSuccessful && sourceFilePathCollection.empty() == false)
 			{
 				// Allocate enough space for ALL file paths to a string array.
-				const char** sourceFilePathArray = new const char*[sourceFilePathCollection.size()];
+				const char** sourceFilePathArray = new const char* [sourceFilePathCollection.size()];
 				int fileToIncludeCount = 0;
 
 				for (int fileIndex = (int)sourceFilePathCollection.size() - 1; fileIndex >= 0; fileIndex--)
@@ -120,64 +127,57 @@ namespace Rtt
 		return 1;
 	}
 
-	static int luaPrint(lua_State *L)
+	static int luaPrint(lua_State* L)
 	{
-		const char *message = lua_tostring(L, 1);
-		char buffer[(strlen(message) * sizeof(const char *)) + 100];
+		const char* message = lua_tostring(L, 1);
+		char* buffer = (char*)malloc((strlen(message) * sizeof(const char*)) + 100);
 		sprintf(buffer, "%s\n", message);
 		Rtt_Log(buffer);
-
+		free(buffer);
 		return 0;
 	}
 
-// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
 
 #define kDefaultNumBytes 128
 
-	LinuxAppPackager::LinuxAppPackager(const MPlatformServices &services)
-		:	Super(services, TargetDevice::kLinuxPlatform)
+	LinuxAppPackager::LinuxAppPackager(const MPlatformServices& services)
+		: Super(services, TargetDevice::kLinuxPlatform)
 	{
-		lua_State *L = fVM;
+		lua_State* L = fVM;
 		Lua::RegisterModuleLoader(L, "lpeg", luaopen_lpeg);
 		Lua::RegisterModuleLoader(L, "dkjson", Lua::Open<luaload_dkjson>);
 		Lua::RegisterModuleLoader(L, "json", Lua::Open<luaload_json>);
 		Lua::RegisterModuleLoader(L, "lfs", luaopen_lfs);
 		Lua::RegisterModuleLoader(L, "socket.core", luaopen_socket_core);
-		Lua::RegisterModuleLoader(L, "socket", Lua::Open<CoronaPluginLuaLoad_socket>);
-		Lua::RegisterModuleLoader(L, "socket.ftp", Lua::Open<CoronaPluginLuaLoad_ftp>);
-		Lua::RegisterModuleLoader(L, "socket.headers", Lua::Open<CoronaPluginLuaLoad_headers>);
-		Lua::RegisterModuleLoader(L, "socket.http", Lua::Open<CoronaPluginLuaLoad_http>);
-		Lua::RegisterModuleLoader(L, "socket.url", Lua::Open<CoronaPluginLuaLoad_url>);
+		Lua::RegisterModuleLoader(L, "socket", Lua::Open<luaload_luasocket_socket>);
+		Lua::RegisterModuleLoader(L, "socket.ftp", Lua::Open<luaload_luasocket_ftp>);
+		Lua::RegisterModuleLoader(L, "socket.headers", Lua::Open<luaload_luasocket_headers>);
+		Lua::RegisterModuleLoader(L, "socket.http", Lua::Open<luaload_luasocket_http>);
+		Lua::RegisterModuleLoader(L, "socket.url", Lua::Open<luaload_luasocket_url>);
 		Lua::RegisterModuleLoader(L, "mime.core", luaopen_mime_core);
-		Lua::RegisterModuleLoader(L, "mime", Lua::Open<CoronaPluginLuaLoad_mime>);
-		Lua::RegisterModuleLoader(L, "ltn12", Lua::Open<CoronaPluginLuaLoad_ltn12>);
+		Lua::RegisterModuleLoader(L, "mime", Lua::Open<luaload_luasocket_mime>);
+		Lua::RegisterModuleLoader(L, "ltn12", Lua::Open<luaload_luasocket_ltn12>);
 		HTTPClient::registerFetcherModuleLoaders(L);
-		Lua::DoBuffer(fVM, & luaload_linuxPackageApp, NULL);
+		Lua::DoBuffer(fVM, &luaload_linuxPackageApp, NULL);
 	}
 
 	LinuxAppPackager::~LinuxAppPackager()
 	{
 	}
 
-	int LinuxAppPackager::Build(AppPackagerParams *_params, const char * tmpDirBase)
+	int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 	{
-		LinuxAppPackagerParams *params = (LinuxAppPackagerParams *)_params;
+		LinuxAppPackagerParams* params = (LinuxAppPackagerParams*)_params;
 		Rtt_ASSERT(params);
 		bool useWidgetResources = params->fUseWidgetResources;
 		bool runAfterBuild = params->fRunAfterBuild;
 		bool onlyGetPlugins = params->fOnlyGetPlugins;
-		const char *homeDir = NULL;
-		struct passwd *pw = getpwuid(getuid());
 		time_t startTime = time(NULL);
 		int debugBuildProcess = 0;
 		String debugBuildProcessPref;
 
 		ReadBuildSettings(_params->GetSrcDir());
-
-		if ((homeDir = getenv("HOME")) == NULL)
-		{
-			homeDir = getpwuid(getuid())->pw_dir;
-		}
 
 		if (fNeverStripDebugInfo && !onlyGetPlugins)
 		{
@@ -185,17 +185,35 @@ namespace Rtt
 			_params->SetStripDebug(false);
 		}
 
-		std::string tmpDir(homeDir);
-		tmpDir.append("/Documents/Solar2D Built Apps/").append(params->GetAppName());
+
+		std::string tmpDir;
+#if defined(Rtt_LINUX_ENV)
+		const char* homeDir = NULL;
+		if ((homeDir = getenv("HOME")) == NULL)
+		{
+			struct passwd* pw = getpwuid(getuid());
+			homeDir = getpwuid(getuid())->pw_dir;
+			tmpDir = homeDir;
+			tmpDir.append("/Documents/Solar2D Built Apps/").append(params->GetAppName());
+	}
+#else
+		char homeDir[1024];
+		DWORD bufsize = sizeof(homeDir);
+		if (GetProfilesDirectoryA(homeDir, &bufsize))
+			tmpDir = homeDir;
+		else
+			Rtt_ASSERT_NOT_REACHED();
+#endif
+
 
 		GetServices().GetPreference("debugBuildProcess", &debugBuildProcessPref);
 
 		if (!debugBuildProcessPref.IsEmpty())
 		{
-			debugBuildProcess = (int)strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
+			debugBuildProcess = (int)strtol(debugBuildProcessPref.GetString(), (char**)NULL, 10);
 		}
 
-		lua_State *L = fVM;
+		lua_State* L = fVM;
 		lua_getglobal(L, "linuxPackageApp");
 		Rtt_ASSERT(lua_isfunction(L, -1));
 
@@ -204,7 +222,7 @@ namespace Rtt
 		{
 			String resourceDir;
 			const MPlatform& platform = GetServices().Platform();
-			const char *platformName = fServices.Platform().GetDevice().GetPlatformName();
+			const char* platformName = fServices.Platform().GetDevice().GetPlatformName();
 			platform.PathForFile(NULL, MPlatform::kSystemResourceDir, 0, resourceDir);
 
 			lua_pushstring(L, tmpDir.c_str());
@@ -243,7 +261,7 @@ namespace Rtt
 			lua_pushinteger(L, debugBuildProcess);
 			lua_setfield(L, -2, "debugBuildProcess");
 
-			lua_pushlightuserdata(L, (void*) params); // keep for GenerateResourceCar
+			lua_pushlightuserdata(L, (void*)params); // keep for GenerateResourceCar
 			lua_setfield(L, -2, "linuxParams");
 
 			const LinuxAppPackagerParams* linuxParams = (LinuxAppPackagerParams*)params;
@@ -293,5 +311,5 @@ namespace Rtt
 		}
 
 		return result;
-	}
+}
 } // namespace Rtt
