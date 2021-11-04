@@ -69,9 +69,9 @@ namespace Rtt
 				return luaL_error(L, LUA_QL("tostring") " must return a string to " LUA_QL("print"));
 
 			if (i > 1)
-				Rtt_LogException("\t");
+				Rtt_Log("\t");
 
-			Rtt_LogException("%s", s);
+			Rtt_Log("%s\n", s);
 			lua_pop(L, 1);  /* pop result */
 		}
 		return 0;
