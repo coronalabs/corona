@@ -196,6 +196,20 @@ namespace Rtt
 			tmpDir = homeDir;
 			tmpDir.append("/Documents/Solar2D Built Apps/").append(params->GetAppName());
 	}
+#elif defined (Rtt_MAC_ENV)
+	const char tmpTemplate[] = "CLtmpXXXXXX";
+	char ctmpDir[kDefaultNumBytes]; Rtt_ASSERT(kDefaultNumBytes > (strlen(tmpDirBase) + strlen(tmpTemplate)));
+
+	const char* lastChar = tmpDirBase + strlen(tmpDirBase) - 1;
+	if (lastChar[0] == LUA_DIRSEP[0])
+	{
+		snprintf(ctmpDir, kDefaultNumBytes, "%s%s", tmpDirBase, tmpTemplate);
+	}
+	else
+	{
+		snprintf(ctmpDir, kDefaultNumBytes, "%s" LUA_DIRSEP "%s", tmpDirBase, tmpTemplate);
+	}
+	tmpDir = ctmpDir;
 #else
 		char homeDir[1024];
 		DWORD bufsize = sizeof(homeDir);
