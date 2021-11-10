@@ -78,9 +78,6 @@ class GraphicsLibrary
 		static int newOutline( lua_State *L ); // This returns an outline in texels.
 		static int newTexture( lua_State *L );
 		static int releaseTextures( lua_State *L );
-    // STEVE CHANGE
-        static int undefineEffect( lua_State *L );
-    // /STEVE CHANGE
         static int getFontMetrics( lua_State *L );
 
 	private:
@@ -123,9 +120,6 @@ GraphicsLibrary::Open( lua_State *L )
 		{ "newOutline", newOutline }, // This returns an outline in texels.
 		{ "newTexture", newTexture },
 		{ "releaseTextures", releaseTextures },
-        // STEVE CHANGE
-        { "undefineEffect", undefineEffect },
-        // /STEVE CHANGE
         { "getFontMetrics", getFontMetrics },
 
 		{ NULL, NULL }
@@ -792,26 +786,7 @@ GraphicsLibrary::releaseTextures( lua_State *L )
 	
 	return result;
 }
-
-// STEVE CHANGE
-// ----------------------------------------------------------------------------
-
-int
-GraphicsLibrary::undefineEffect( lua_State *L )
-{
-    GraphicsLibrary *library = GraphicsLibrary::ToLibrary( L );
-    Display& display = library->GetDisplay();
-
-    int index = 1; // index of params
-    
-    ShaderFactory& factory = display.GetShaderFactory();
-
-    lua_pushboolean( L, factory.UndefineEffect( L, index ) );
-
-    return 1;
-}
-// /STEVE CHANGE
-
+	
 // ----------------------------------------------------------------------------
 
 int

@@ -99,9 +99,6 @@ class ShaderFactory
 
 	public:
 		bool DefineEffect( lua_State *L, int shaderIndex );
-    // STEVE CHANGE
-        bool UndefineEffect( lua_State *L, int nameIndex );
-    // /STEVE CHANGE
 		Shader *NewShaderGraph( lua_State *L, int index);
 				
 	protected:

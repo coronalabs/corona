@@ -1002,59 +1002,6 @@ ShaderFactory::DefineEffect( lua_State *L, int index )
 	return ( NULL != shader );
 }
 
-// STEVE CHANGE
-bool ShaderFactory::UndefineEffect( lua_State *L, int nameIndex )
-{
-    if (LUA_TSTRING != lua_type( L, nameIndex ))
-    {
-        CORONA_LOG_ERROR( "Could not undefine custom effect: name is not a string" );
-        
-        return false;
-    }
-
-    const char *fullName = lua_tostring( L, nameIndex );
-    ShaderTypes::Category category = ShaderName( fullName ).GetCategory();
-
-    if (ShaderTypes::kCategoryDefault == category)
-    {
-        CORONA_LOG_ERROR( "Could not undefine custom effect (%s): bad category", fullName );
-        
-        return false;
-    }
-    
-    const char *categoryName = ShaderTypes::StringForCategory( category );
-    const char *remainder = fullName + strlen( categoryName ) + 1; // skip category and '.'
-
-    if (ShaderBuiltin::Exists( category, remainder ))
-    {
-        CORONA_LOG_ERROR( "Could not undefine built-in effect (%s)", remainder );
-        
-        return false;
-    }
-
-    if (NULL == FindPrototype( category, remainder ))
-    {
-        CORONA_LOG_ERROR( "Could not undefine custom effect (%s): not found", remainder );
-        
-        return false;
-    }
-    
-    lua_State *factoryL = fL;
-  
-    lua_getfield( factoryL, LUA_REGISTRYINDEX, categoryName ); // categoryFuncs
-    
-    if (!lua_isnil( factoryL, -1 ))
-    {
-        lua_pushnil( factoryL ); // categoryFuncs, nil
-        lua_setfield( factoryL, -2, remainder ); // categoryFuncs = { ..., [name] = nil }
-    }
-    
-    lua_pop( factoryL, 1 );
-
-    return true;
-}
-// /STEVE CHANGE
-
 void ShaderFactory::LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode)
 {
 	if (nodeKey == "paint1" || nodeKey == "paint2")
