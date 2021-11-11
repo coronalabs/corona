@@ -150,11 +150,11 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 	}
 	lua_pop( L, 1);
 	
-	int indecesStart = 1;
+	int indicesStart = 1;
 	lua_getfield( L, index, "zeroBasedIndices" );
 	if (lua_type( L, -1) == LUA_TBOOLEAN && lua_toboolean( L, -1)) // TODO: add parsing
 	{
-		indecesStart = 0;
+		indicesStart = 0;
 	}
 	lua_pop( L, 1);
 	
@@ -169,7 +169,7 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 			lua_rawgeti( L, -1, i+1 );
 			if ( lua_type( L, -1 ) == LUA_TNUMBER )
 			{
-				U16 index = lua_tointeger(L, -1) - indecesStart;
+				U16 index = lua_tointeger(L, -1) - indicesStart;
 				indices.Append(index);
 			}
 			lua_pop( L, 1 );
