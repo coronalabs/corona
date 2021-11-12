@@ -224,7 +224,8 @@ ShaderFactory::NewProgram(ShaderBinaryVersions &compiledShaders, ShaderResource:
 SharedPtr< ShaderResource >
 ShaderFactory::NewShaderResource(
 	ShaderTypes::Category category, const char *name,
-	ShaderBinaryVersions &compiledDefaultShaders, ShaderBinaryVersions &compiled25DShaders)
+	ShaderBinaryVersions &compiledDefaultShaders, ShaderBinaryVersions &compiled25DShaders,
+                                 int localStubsIndex ) // <- STEVE CHANGE
 {
 	// Caller is not allowed to create a "default" shader.
 	if (ShaderTypes::kCategoryDefault == category)
@@ -234,7 +235,7 @@ ShaderFactory::NewShaderResource(
 
 	// Check if the given shader was already created.
 	// Note: Caller should check for existence and avoid creating a duplicate shader resource.
-	Rtt_ASSERT( NULL == FindPrototype( category, name ) );
+	Rtt_ASSERT( NULL == FindPrototype( category, name, localStubsIndex ) ); // <- STEVE CHANGE
 
 	// Create a new resource object and have it store the given compiled shaders.
 	Program *program = NewProgram( compiledDefaultShaders, ShaderResource::kDefault );
@@ -336,7 +337,8 @@ ShaderFactory::NewShaderResource(
 	ShaderTypes::Category category,
 	const char *name,
 	const char *kernelVert,
-	const char *kernelFrag )
+	const char *kernelFrag,
+                                 int localStubsIndex ) // <- STEVE CHANGE
 {
 	// Cannot create default
 	if ( ShaderTypes::kCategoryDefault == category )
@@ -345,7 +347,7 @@ ShaderFactory::NewShaderResource(
 	}
 
 	// Caller should check for existence
-	Rtt_ASSERT( NULL == FindPrototype( category, name ) );
+	Rtt_ASSERT( NULL == FindPrototype( category, name, localStubsIndex ) ); // <- STEVE CHANGE
 
 	if ( ! kernelVert )
 	{
@@ -817,10 +819,10 @@ ShaderFactory::LoadCompiledShaderVersions(lua_State *L, int modeTableIndex, Shad
 
 
 ShaderComposite *
-ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *name)
+ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *name, int localStubsIndex ) // <- STEVE CHANGE
 {
 	ShaderComposite *result = NULL;
-    
+
 	// Lazily load built-ins
 	const char *key = ShaderBuiltin::KeyForCategory( category );
 	if ( key )
@@ -831,8 +833,43 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 
 		PushTable( L, key ); // push loaders ( = registry[key] )
 		{
+            // STEVE CHANGE
+            lua_CFunction f = NULL;
+
+            if (localStubsIndex)
+            {
+                lua_getfield( L, localStubsIndex, ShaderTypes::StringForCategory( category ) ); // categoryStubs?
+                
+                if (!lua_isnil( L, -1 ))
+                {
+                    lua_getfield( L, -1, name ); // categoryStubs, stub?
+
+                    if (!lua_isnil( L, -1 ))
+                    {
+                        lua_getfield( L, -1, "kernel" ); // categoryStubs, stub, func?
+                        lua_remove( L, -2 ); // categoryStubs, func?
+                    }
+                    
+                    f = lua_tocfunction( L, -1 );
+
+                    lua_remove( L, -2 ); // func?
+                }
+                
+                if (!f)
+                {
+                    lua_pop( L, 1 ); // (clear)
+                }
+            }
+
+            if (!f)
+            {
+        // /STEVE CHANGE
 			lua_getfield( L, -1, name ); // loaders[name]
-			lua_CFunction f = lua_tocfunction( L, -1 );
+			/*lua_CFunction*/ f = lua_tocfunction( L, -1 );
+        // STEVE CHANGE
+            }
+
+        // /STEVE CHANGE
 			if ( f )
 			{
 				// NOTE: DoCall will automatically pop function
@@ -858,7 +895,7 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 													L, lua_gettop( L ), compiledDefaultShaders, compiled25DShaders );
 							if ( wasLoaded )
 							{
-								resource = NewShaderResource( category, name, compiledDefaultShaders, compiled25DShaders );
+								resource = NewShaderResource( category, name, compiledDefaultShaders, compiled25DShaders, localStubsIndex ); // <- STEVE CHANGE
 							}
 							lua_pop( L, 1 );
 
@@ -869,7 +906,7 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 							lua_getfield( L, tableIndex, "fragment" );
 							const char *kernelFrag = lua_tostring( L, -1 );
 
-							resource = NewShaderResource( category, name, kernelVert, kernelFrag );
+							resource = NewShaderResource( category, name, kernelVert, kernelFrag, localStubsIndex ); // <- STEVE CHANGE
 							lua_pop( L, 2 ); // pop 2 strings
 #endif
 
@@ -890,8 +927,15 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 							Rtt_LUA_STACK_GUARD( L );
 
 							int graphIndex = lua_gettop( L );
+                            // STEVE CHANGE
+                            int localStubsIndex = tableIndex + 1;
+                            if (lua_isnil( L, localStubsIndex ))
+                            {
+                                localStubsIndex = 0;
+                            }
+                            // /STEVE CHANGE
 							
-							result = (ShaderComposite*)NewShaderGraph( L, graphIndex, graphIndex - 1 ); // <- STEVE CHANGE
+							result = (ShaderComposite*)NewShaderGraph( L, graphIndex, localStubsIndex ); // <- STEVE CHANGE
 						}
 					}
 					lua_pop( L, 1 ); // pop table (graph)
@@ -910,50 +954,6 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 	return result;	
 }
 
-// STEVE CHANGE
-static const char kPendingEffects[] = "shaderFactory.pending";
-
-static bool
-FindPendingTable( lua_State *L, const char *categoryName )
-{
-    lua_getfield( L, LUA_REGISTRYINDEX, kPendingEffects ); // ..., pending?
-    
-    bool found = false;
-    
-    if (!lua_isnil( L, -1 ))
-    {
-        lua_getfield( L, -1, categoryName ); // ..., pending, categoryPending?
-        lua_remove( L, -2 ); // ..., categoryPending?
-        
-        found = !lua_isnil( L, -1 );
-    }
-
-    if (!found)
-    {
-        lua_pop( L, 1 ); // ...
-    }
-
-    return found;
-}
-
-static void
-ResolveIfStubPending( lua_State *L, const char *categoryName, const char *name )
-{
-   if (FindPendingTable( L, categoryName )) // shader[, categoryPending]
-   {
-       lua_getfield( L, -1, name ); // shader, categoryPending, stub?
-            
-       if (!lua_isnil( L, -1 ))
-       {
-           lua_pushvalue( L, -3 ); // shader, categoryPending, stub, shader
-           lua_setfield( L, -2, "shader" ); // shader, categoryPending, stub = { shader = shader }
-       }
-            
-       lua_pop( L, 2 ); // shader
-   }
-}
-// /STEVE CHANGE
-
 void
 ShaderFactory::AddShader( Shader *shader, const char *name )
 {
@@ -965,9 +965,6 @@ ShaderFactory::AddShader( Shader *shader, const char *name )
 	PushTable( L, categoryName ); // push registry[categoryName]
 	{
 		CoronaLuaPushUserdata( L, shader, kMetatableName ); // push shader
-    // STEVE CHANGE
-        ResolveIfStubPending( L, categoryName, name );
-    // /STEVE CHANGE
 		lua_setfield( L, -2, name ); // registry[categoryName][name] = shader
 	}
 	lua_pop( L, 1 );
@@ -983,99 +980,94 @@ KernelWrapper( lua_State *L )
 }
 
 // STEVE CHANGE
-bool
-ShaderFactory::ResolveNodeEffects( lua_State *L )
+static const char kGlobalStubs[] = "shaderFactory.stubs";
+
+static void
+GetStubCategoryTable( lua_State *L, int tableIndex, const char *categoryName )
 {
-    bool hasResolvedTable = false;
+    tableIndex = CoronaLuaNormalize( L, tableIndex );
+    
+    lua_getfield( L, tableIndex, categoryName ); // ..., stubs, ..., categoryStubs?
+    
+    if (lua_isnil( L, -1 ))
+    {
+        lua_pop( L, 1 ); // ..., stubs, ...
+        lua_newtable( L ); // ..., stubs, ..., categoryStubs
+        lua_pushvalue( L, -1 ); // ..., stubs, ..., categoryStubs, categoryStubs
+        lua_setfield( L, tableIndex, categoryName ); // ..., stubs = { ..., [categoryName] = categoryStubs }, ..., categoryStubs
+    }
+}
+
+static void
+PrepareStubTables( lua_State *L )
+{
+    lua_getfield( L, LUA_REGISTRYINDEX, kGlobalStubs ); // ..., globalStubs?
+    
+    if (lua_isnil( L, -1 ))
+    {
+        lua_pop( L, 1 ); // ...
+        lua_createtable( L, 0, 3 ); // ..., globalStubs
+        lua_pushvalue( L, -1 ); // ..., globalStubs, globalStubs
+        lua_setfield( L, LUA_REGISTRYINDEX, kGlobalStubs ); // ..., globalStubs; registry[kGlobalStubs] = globalStubs
+    }
+
+    lua_createtable( L, 0, 3 ); // ..., globalStubs, localStubs
+}
+
+bool
+ShaderFactory::GatherEffectStubs( lua_State *L )
+{
+    bool hasStubsTable = false;
 
     lua_getfield( L, -1, "nodes" ); // M (main stack): ..., graph, nodes
     if (lua_istable( L, -1 ))
     {
         for (lua_pushnil( L ); lua_next( L, -2 ); lua_pop( L, 1 ))
         {
+            EffectInfo info = {};
+            
             if (lua_istable( L, -1 ))
             {
                 lua_getfield( L, -1, "effect" ); // M: ..., graph, nodes, k, v, effectName
                 
                 if (lua_isstring( L, -1 ))
                 {
-                    lua_State *factoryL = fL;
                     const char *fullName = lua_tostring( L, -1 );
-                    EffectInfo info = GetEffectInfo( fullName );
                     
-                    if (info.fEffectName && !info.fIsBuiltIn) // worth resolving?
-                    {
-                        if (!hasResolvedTable)
-                        {
-                            lua_getfield( factoryL, LUA_REGISTRYINDEX, kPendingEffects ); // F (factory stack): ..., pending?
-                            
-                            if (lua_isnil( factoryL, -1 ))
-                            {
-                                lua_pop( factoryL, 1 ); // F: ...
-                                lua_createtable( factoryL, 0, 3 ); // F: ..., pending
-                                lua_pushvalue( factoryL, -1 ); // F: ..., pending, pending
-                                lua_setfield( factoryL, LUA_REGISTRYINDEX, kPendingEffects ); // F: ..., pending; registry[kPendingEffects] = pending
-                            }
-                            
-                            lua_getfield( factoryL, -1, info.fCategoryName ); // F: ..., pending, categoryPending?
-                            
-                            if (lua_isnil( factoryL, -1 ))
-                            {
-                                lua_pop( factoryL, 1 ); // F: ..., pending
-                                lua_newtable( factoryL ); // F: ..., pending, categoryPending
-                                lua_pushvalue( factoryL, -1 ); // F: ..., pending, categoryPending, categoryPending
-                                lua_setfield( factoryL, -3, info.fCategoryName ); // F: ..., pending = { ..., [categoryName] = categoryPending }, categoryPending
-                            }
-                            
-                            lua_replace( factoryL, -2 ); // F: ..., categoryPending
-                            lua_createtable( factoryL, 0, 3 ); // F: ..., categoryPending, resolved
-                            
-                            hasResolvedTable = true;
-                        }
-                        
-                        lua_getfield( factoryL, -1, info.fCategoryName ); // F: ..., categoryPending, resolved, categoryResolved
-                        
-                        if (lua_isnil( factoryL, -1 ))
-                        {
-                            lua_pop( factoryL, 1 ); // F: ..., categoryPending, resolved
-                            lua_newtable( factoryL ); // F: ..., categoryPending, resolved, categoryResolved
-                            lua_pushvalue( factoryL, -1 ); // F: ..., categoryPending, resolved, categoryResolved, categoryResolved
-                            lua_setfield( factoryL, -3, info.fCategoryName ); // F: ..., categoryPending, resolved = { ..., [categoryName] = categoryResolved }, categoryResolved
-                        }
-                        
-                        if (info.fPrototype) // already loaded?
-                        {
-                            lua_getfield( factoryL, LUA_REGISTRYINDEX, info.fCategoryName ); // F: ..., categoryPending, resolved, categoryResolved, categoryEffects
-                            lua_getfield( factoryL, -1, info.fEffectName ); // F: ..., categoryPending, resolved, categoryResolved, categoryEffects, shader
-                            lua_setfield( factoryL, -3, info.fEffectName ); // F: ..., categoryPending, resolved, categoryResolved = { ..., [effectName] = shader }, categoryEffects
-                            lua_pop( factoryL, 1 ); // F: ..., categoryPending, resolved, categoryResolved
-                        }
-                        
-                        else
-                        {
-                            lua_createtable( factoryL, 0, 1 ); // F: ..., categoryPending, resolved, categoryResolved, stub
-                            lua_pushvalue( factoryL, -1 ); // F: ..., categoryPending, resolved, categoryResolved, stub, stub
-                            lua_setfield( factoryL, -3, info.fEffectName ); // F: ..., categoryPending, resolved, categoryResolved = { ..., [effectName] = stub }, stub
-                            lua_setfield( factoryL, -4, info.fEffectName ); // F: ..., categoryPending = { ..., [effectName] = stub }, resolved, categoryResolved
-                        }
-                        
-                        lua_pop( factoryL, 1 ); // F: ..., categoryPending, resolved
-                    }
+                    info = GetEffectInfo( fullName );
                 }
                 
                 lua_pop( L, 1 ); // M: ..., graph, nodes, k, v
+            }
+            
+            if (info.fEffectName && !info.fIsBuiltIn)
+            {
+                if (!hasStubsTable)
+                {
+                    PrepareStubTables( fL ); // F (factory stack): ..., globalStubs, localStubs
+                    
+                    hasStubsTable = true;
+                }
+ 
+                GetStubCategoryTable( fL, -2, info.fCategoryName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs
+                GetStubCategoryTable( fL, -2, info.fCategoryName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs
+                lua_createtable( fL, 0, 1 ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs, stub
+                lua_pushvalue( fL, -1 ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs, stub, stub
+                lua_setfield( fL, -3, info.fEffectName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs = { ..., [effectName] = stub }, stub
+                lua_setfield( fL, -3, info.fEffectName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs = { ..., [effectName] = stub }, categoryLocalStubs
+                lua_pop( fL, 2 ); // F: ..., globalStubs, localStubs
             }
         }
     }
     
     lua_pop( L, 1 ); // M: ..., graph
     
-    if (hasResolvedTable)
+    if (hasStubsTable)
     {
-        lua_remove( fL, -2 ); // F: ..., resolved
+        lua_remove( fL, -2 ); // F: ..., localStubs
     }
     
-    return hasResolvedTable;
+    return hasStubsTable;
 }
 // /STEVE CHANGE
 
@@ -1108,11 +1100,10 @@ ShaderFactory::DefineEffect( lua_State *L, int index )
         
 		const char *fullName = lua_pushfstring( L, "%s.%s", group, name );
 
-		if ( NULL == FindPrototype( category, fullName )
+		if ( NULL == FindPrototype( category, fullName, 0 ) // <- STEVE CHANGE
 			 && ! ShaderBuiltin::Exists( category, fullName ) )
 		{
 			lua_State *factoryL = fL;
-			
 			Lua::CopyTable(factoryL, L, index);
 			int tableIndex = lua_gettop( factoryL );
 			{
@@ -1128,14 +1119,14 @@ ShaderFactory::DefineEffect( lua_State *L, int index )
                     // STEVE CHANGE
                     lua_getfield( L, index, "graph" );
                     
-                    bool hasResolvedTable = false;
+                    bool hasStubsTable = false;
                     
                     if (lua_istable( L, -1 ))
                     {
-                        hasResolvedTable = ResolveNodeEffects( L );
+                        hasStubsTable = GatherEffectStubs( L );
                     }
                     
-                    if (!hasResolvedTable)
+                    if (!hasStubsTable)
                     {
                         lua_pushnil( factoryL );
                     }
@@ -1168,26 +1159,16 @@ ShaderFactory::DefineEffect( lua_State *L, int index )
 // STEVE CHANGE
 ShaderFactory::EffectInfo ShaderFactory::GetEffectInfo( const char * fullName )
 {
-    ShaderTypes::Category category = ShaderName( fullName ).GetCategory();
-    const char * categoryName = NULL, * effectName = NULL;
-    bool isBuiltIn = false;
-  
-    if (ShaderTypes::kCategoryDefault != category)
-    {
-        categoryName = ShaderTypes::StringForCategory( category );
-        effectName = fullName + strlen( categoryName ) + 1; // skip category and '.'
-        isBuiltIn = ShaderBuiltin::Exists( category, effectName );
-    }
-  
-    bool exists = effectName && !isBuiltIn;
-    const Shader * prototype = exists ? FindPrototype( category, effectName ) : NULL;
+    EffectInfo info = {};
 
-    EffectInfo info( prototype );
-    
-    info.fCategory = category;
-    info.fCategoryName = categoryName;
-    info.fEffectName = effectName;
-    info.fIsBuiltIn = isBuiltIn;
+    info.fCategory = ShaderName( fullName ).GetCategory();
+
+    if (ShaderTypes::kCategoryDefault != info.fCategory)
+    {
+        info.fCategoryName = ShaderTypes::StringForCategory( info.fCategory );
+        info.fEffectName = fullName + strlen( info.fCategoryName ) + 1; // skip category and '.'
+        info.fIsBuiltIn = ShaderBuiltin::Exists( info.fCategory, info.fEffectName );
+    }
     
     return info;
 }
@@ -1218,46 +1199,71 @@ bool ShaderFactory::UndefineEffect( lua_State *L, int nameIndex )
         return false;
     }
 
-    if (!info.fPrototype)
+    lua_State *factoryL = fL;
+    
+    lua_getfield( factoryL, LUA_REGISTRYINDEX, ShaderBuiltin::KeyForCategory( info.fCategory ) ); // categoryKernels
+    
+    bool exists = false;
+
+    if (!lua_isnil( factoryL, -1 ))
     {
+        lua_getfield( factoryL, -1, info.fEffectName ); // categoryKernels, kernel
+        
+        exists = lua_toboolean( factoryL, -1 );
+        
+        lua_replace( factoryL, -2 ); // kernel?
+    }
+    /*
+    if (exists)
+    {
+        lua_pushnil( factoryL ); // categoryKernels, nil
+        lua_setfield( factoryL, -2, info.fEffectName ); // categoryKernels = { ..., [effectName] = nil }
+    }
+*/
+    if (!exists)
+    {
+        lua_pop( factoryL, 1 ); // (clear)
+
         CORONA_LOG_ERROR( "Could not undefine custom effect (%s): not found", info.fEffectName );
 
         return false;
     }
-
-    lua_State *factoryL = fL;
-
-    lua_getfield( factoryL, LUA_REGISTRYINDEX, info.fCategoryName ); // categoryFuncs
+    
+    lua_getfield( factoryL, LUA_REGISTRYINDEX, info.fCategoryName ); // kernel, categoryFuncs
 
     if (!lua_isnil( factoryL, -1 ))
     {
-        lua_pushnil( factoryL ); // categoryFuncs, nil
-        lua_setfield( factoryL, -2, info.fEffectName ); // categoryFuncs = { ..., [name] = nil }
+        lua_pushnil( factoryL ); // kernel, categoryFuncs, nil
+        lua_setfield( factoryL, -2, info.fEffectName ); // kernel, categoryFuncs = { ..., [name] = nil }
     }
 
-    lua_getfield( factoryL, LUA_REGISTRYINDEX, kPendingEffects ); // categoryFuncs, pendingEffects?
+    lua_getfield( factoryL, LUA_REGISTRYINDEX, kGlobalStubs ); // kernel, categoryFuncs, globalStubs?
     
     if (!lua_isnil( factoryL, -1 ))
     {
-        lua_getfield( factoryL, -1, info.fCategoryName ); // categoryFuncs, pendingEffects, categoryPending?
+        lua_getfield( factoryL, -1, info.fCategoryName ); // kernel, categoryFuncs, globalStubs, categoryGlobalStubs?
         
         if (!lua_isnil( factoryL, -1 ))
         {
-            lua_pushnil( factoryL ); // categoryFuncs, pendingEffects, categoryPending, nil
-            lua_setfield( factoryL, -2, info.fEffectName ); // categoryFuncs, pendingEffects, categoryPending = { ..., [effectName] = nil }
+            lua_getfield( factoryL, -1, info.fEffectName ); // kernel, categoryFuncs, globalStubs, categoryGlobalStubs, stub
+            lua_pushvalue( factoryL, -5 ); // kernel, categoryFuncs, globalStubs, categoryGlobalStubs, stub, kernel
+            lua_setfield( factoryL, -2, "kernel" ); // kernel, categoryFuncs, globalStubs, categoryGlobalStubs, stub = { kernel = kernel }
+            lua_pop( factoryL, 1 ); // kernel, categoryFuncs, globalStubs, categoryGlobalStubs
+            lua_pushnil( factoryL ); // kernel, categoryFuncs, globalStubs, categoryGlobalStubs, nil
+            lua_setfield( factoryL, -2, info.fEffectName ); // kernel, categoryFuncs, globalStubs, categoryGlobalStubs = { ..., [effectName] = nil }
         }
         
-        lua_pop( factoryL, 1 ); // categoryFuncs, pendingEffects
+        lua_pop( factoryL, 1 ); // kernel, categoryFuncs, globalStubs
     }
     
-    lua_pop( factoryL, 2 );
-
+    lua_pop( factoryL, 3 ); // (clear)
+    
     return true;
 }
 // /STEVE CHANGE
 
 
-void ShaderFactory::LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode, int resolvedIndex) // <- STEVE CHANGE
+void ShaderFactory::LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode, int localStubsIndex) // <- STEVE CHANGE
 {
 	if (nodeKey == "paint1" || nodeKey == "paint2")
 	{
@@ -1277,53 +1283,19 @@ void ShaderFactory::LoadDependency(LuaMap *nodeGraph, std::string nodeKey, Shade
 	
 	LuaString *input1 = static_cast<LuaString*>(keyedEffectInfo->GetData("input1"));
 	if (input1)
-	{
-		LoadDependency(nodeGraph, input1->GetString(), inputNodes, true, resolvedIndex); // <- STEVE CHANGE
+    {
+		LoadDependency(nodeGraph, input1->GetString(), inputNodes, true, localStubsIndex); // <- STEVE CHANGE
 	}
 	
 	LuaString *input2 = static_cast<LuaString*>(keyedEffectInfo->GetData("input2"));
 	if (input2 != NULL)
 	{
-		LoadDependency(nodeGraph, input2->GetString(), inputNodes, true, resolvedIndex); // <- STEVE CHANGE
+		LoadDependency(nodeGraph, input2->GetString(), inputNodes, true, localStubsIndex); // <- STEVE CHANGE
 	}
 	
 	if (createNode)
 	{
-        // STEVE CHANGE
-        Shader *shader = NULL;
-	//	ShaderComposite *
-        if (!lua_isnil( fL, resolvedIndex ))
-        {
-            ShaderTypes::Category category = shaderName.GetCategory();
-            
-            lua_getfield( fL, resolvedIndex, ShaderTypes::StringForCategory( category ) ); // ..., resolved, ..., resolvedCategory
-            
-            if (!lua_isnil( fL, -1 ))
-            {
-                lua_getfield( fL, -1, shaderName.GetName() ); // ..., resolved, ..., resolvedCategory, shader / stub?
-                                
-                if (lua_istable( fL, -1 )) // is this a (possibly resolved) stub?
-                {CoronaLog("!!! stub: %s", shaderName.GetName() );
-                    lua_getfield( fL, -1, "shader" ); // ..., resolved, ..., resolvedCategory, stub, shader?
-                    lua_remove( fL, -2 ); // ..., resolved, ..., resolvedCategory, shader?
-                }
-
-                if (lua_isuserdata( fL, -1 ))
-                {
-                    shader = (Shader *)CoronaLuaToUserdata( fL, -1 );
-                }
-                
-                lua_pop( fL, 1 ); // ..., resolved, ..., resolvedCategory
-            }
-            
-            lua_pop( fL, 1 ); // ..., resolved, ...
-        }
-        
-        if (!shader)
-        {
-            shader = FindOrLoadGraph( shaderName.GetCategory(), shaderName.GetName(), true );
-        }
-        // /STEVE CHANGE
+		ShaderComposite *shader = FindOrLoadGraph( shaderName.GetCategory(), shaderName.GetName(), true, localStubsIndex ); // <- STEVE CHANGE
 		SharedPtr< Shader > namedShader( shader );
 		inputNodes[nodeKey] = namedShader;
 	}
@@ -1378,7 +1350,7 @@ void ShaderFactory::ConnectLocalNodes(ShaderMap &inputNodes, LuaMap *nodeGraph, 
 }
 
 Shader*
-ShaderFactory::NewShaderGraph( lua_State *L, int index, int resolvedIndex ) // <- STEVE CHANGE
+ShaderFactory::NewShaderGraph( lua_State *L, int index, int localStubsIndex ) // <- STEVE CHANGE
 {
 	Rtt_LUA_STACK_GUARD(L);
 	LuaMap nodeGraph(L,index);
@@ -1387,12 +1359,12 @@ ShaderFactory::NewShaderGraph( lua_State *L, int index, int resolvedIndex ) // <
 	ShaderMap inputNodes;
 	LuaString *terminalName = static_cast<LuaString*>(nodeGraph.GetData("output"));
 	std::string terminalNodeName = terminalName->GetString();
-	LoadDependency(nodes, terminalNodeName, inputNodes, false, resolvedIndex); // <- STEVE CHANGE
+	LoadDependency(nodes, terminalNodeName, inputNodes, false, localStubsIndex); // <- STEVE CHANGE
 	
 	LuaMap *keyedEffectInfo = static_cast<LuaMap*>(nodes->GetData(terminalNodeName));
 	LuaString *effectName = static_cast<LuaString*>(keyedEffectInfo->GetData("effect"));
 	ShaderName shaderName(effectName->GetString().c_str());
-	ShaderComposite *terminalNode = FindOrLoadGraph( shaderName.GetCategory(), shaderName.GetName(), true );
+	ShaderComposite *terminalNode = FindOrLoadGraph( shaderName.GetCategory(), shaderName.GetName(), true, localStubsIndex ); // <- STEVE CHANGE
 
 	ConnectLocalNodes(inputNodes, nodes, terminalNodeName, terminalNode);
 
@@ -1404,7 +1376,7 @@ ShaderFactory::NewShaderGraph( lua_State *L, int index, int resolvedIndex ) // <
 }
 
 const Shader *
-ShaderFactory::FindPrototype( ShaderTypes::Category category, const char *name ) const
+ShaderFactory::FindPrototype( ShaderTypes::Category category, const char *name, int localStubsIndex ) const // <- STEVE CHANGE
 {
 	const Shader *result = NULL;
 
@@ -1415,8 +1387,39 @@ ShaderFactory::FindPrototype( ShaderTypes::Category category, const char *name )
 	else
 	{
 		const char *categoryName = ShaderTypes::StringForCategory( category );
-
+        
 		lua_State *L = fL;
+    // STEVE CHANGE
+        if (localStubsIndex)
+        {
+            bool exists = false;
+
+            lua_getfield( L, localStubsIndex, categoryName ); // categoryLocalStubs?
+            
+            if (!lua_isnil( L, -1 ))
+            {
+                lua_getfield( L, -1, name ); // categoryLocalStubs, stub?
+                
+                if (!lua_isnil( L, -1 ))
+                {
+                    lua_getfield( L, -1, "kernel" ); // categoryLocalStubs, stub, kernel?
+                    
+                    exists = lua_iscfunction( L, -1 );
+                    
+                    lua_pop( L, 1 ); // categoryLocalStubs, stub
+                }
+                
+                lua_pop( L, 1 ); // categoryLocalStubs
+            }
+            
+            lua_pop( L, 1 ); // (clear)
+            
+            if (exists)
+            {
+                return NULL;
+            }
+        }
+    // /STEVE CHANGE
 		PushTable( L, categoryName ); // push registry[categoryName]
 		{
 			lua_getfield( L, -1, name ); // push ud = registry[categoryName][name]
@@ -1457,20 +1460,20 @@ ShaderFactory::GetDefaultColorShader() const
 }
 		
 ShaderComposite *
-ShaderFactory::FindOrLoadGraph( ShaderTypes::Category category, const char *name, bool shouldFallback )
+ShaderFactory::FindOrLoadGraph( ShaderTypes::Category category, const char *name, bool shouldFallback, int localStubsIndex ) // <- STEVE CHANGE
 {
 	ShaderComposite *result = NULL;
 
-	const ShaderComposite *prototype = (ShaderComposite*)FindPrototype( category, name );
+	const ShaderComposite *prototype = (ShaderComposite*)FindPrototype( category, name, localStubsIndex ); // <- STEVE CHANGE
 	if ( prototype )
-	{
+    {
 		result = (ShaderComposite*)prototype->Clone( fAllocator );
 	}
 
 	if ( ! result && name )
     {
 		// Lazily instantiate built-in
-		result = NewShaderBuiltin( category, name );
+		result = NewShaderBuiltin( category, name, localStubsIndex ); // <- STEVE CHANGE
 	}
 
 	// Fallback to default if nothing found
@@ -1488,7 +1491,7 @@ ShaderFactory::FindOrLoadGraph( ShaderTypes::Category category, const char *name
 Shader *
 ShaderFactory::FindOrLoad( ShaderTypes::Category category, const char *name )
 {
-	return FindOrLoadGraph( category, name, false );
+	return FindOrLoadGraph( category, name, false, 0 ); // <- STEVE CHANGE (TODO: okay?)
 }
 
 void
