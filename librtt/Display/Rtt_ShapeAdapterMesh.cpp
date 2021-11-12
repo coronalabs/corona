@@ -150,11 +150,11 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 	}
 	lua_pop( L, 1);
 	
-	int indecesStart = 1;
+	int indicesStart = 1;
 	lua_getfield( L, index, "zeroBasedIndices" );
 	if (lua_type( L, -1) == LUA_TBOOLEAN && lua_toboolean( L, -1)) // TODO: add parsing
 	{
-		indecesStart = 0;
+		indicesStart = 0;
 	}
 	lua_pop( L, 1);
 	
@@ -169,7 +169,7 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 			lua_rawgeti( L, -1, i+1 );
 			if ( lua_type( L, -1 ) == LUA_TNUMBER )
 			{
-				U16 index = lua_tointeger(L, -1) - indecesStart;
+				U16 index = lua_tointeger(L, -1) - indicesStart;
 				indices.Append(index);
 			}
 			lua_pop( L, 1 );
@@ -201,15 +201,16 @@ ShapeAdapterMesh::ShapeAdapterMesh()
 StringHash *
 ShapeAdapterMesh::GetHash( lua_State *L ) const
 {
-	static const char *keys[] = 
+	static const char *keys[] =
 	{
 		"setVertex",       // 0
 		"getVertex",       // 1
 		"setUV",		   // 2
 		"getUV",           // 3
 		"getVertexOffset", // 4
+		"update",		   // 5
 	};
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, sizeof( keys ) / sizeof( const char * ), 5, 14, 7, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, sizeof( keys ) / sizeof( const char * ), 6, 15, 7, __FILE__, __LINE__ );
 	return &sHash;
 }
 
@@ -249,6 +250,9 @@ ShapeAdapterMesh::ValueForKey(
 			break;
 		case 4:
 			Lua::PushCachedFunction( L, getVertexOffset );
+			break;
+		case 5:
+			Lua::PushCachedFunction(L, update);
 			break;
 		default:
 			result = Super::ValueForKey( sender, L, key );
@@ -400,6 +404,165 @@ int ShapeAdapterMesh::setUV( lua_State *L )
 	return 0;
 }
 
+int ShapeAdapterMesh::update(lua_State *L)
+{
+	int result = 0;
+	int nextArg = 1;
+
+	bool updated = false;
+	int pathInvalidated = 0;
+	int observerInvalidated = 0;
+
+	LuaUserdataProxy *sender = LuaUserdataProxy::ToProxy(L, nextArg++);
+	if(!sender) { return result; }
+	
+	ShapePath *path = (ShapePath *)sender->GetUserdata();
+	if ( ! path ) { return result; }
+	
+	TesselatorMesh *tesselator =
+	static_cast< TesselatorMesh * >( path->GetTesselator() );
+	if ( ! tesselator ) { return result; }
+
+	if (lua_istable(L, nextArg))
+		{
+
+			lua_getfield(L, -1, "vertices");
+			if (lua_istable(L, -1))
+			{
+				U32 numVertices = (U32)lua_objlen(L, -1) / 2;
+				Vertex2 *mesh = tesselator->GetMesh().WriteAccess();
+				if(numVertices == (U32)tesselator->GetMesh().Length())
+				{
+					updated = true;
+					for (U32 i = 0; i < numVertices; i++)
+					{
+						lua_rawgeti(L, -1, 2 * i +1);
+						lua_rawgeti(L, -2, 2 * i +2);
+
+						mesh[i].x = luaL_checkreal(L, -2);
+						mesh[i].y = luaL_checkreal(L, -1);
+
+						lua_pop(L, 2);
+					}
+
+					pathInvalidated = pathInvalidated | ClosedPath::kFillSource |
+									  ClosedPath::kStrokeSource;
+
+					observerInvalidated = observerInvalidated | DisplayObject::kGeometryFlag |
+																DisplayObject::kStageBoundsFlag |
+																DisplayObject::kTransformFlag;
+					Rect r;
+					for (U32 i = 0; i < numVertices; i++)
+					{
+						r.Union(mesh[i]);
+					}
+
+					Vertex2 vertexOffset = {0, 0};
+
+					if (!r.IsEmpty())
+					{
+						r.GetCenter(vertexOffset);
+						for (U32 i = 0; i < numVertices; i++)
+						{
+							mesh[i].x -= vertexOffset.x;
+							mesh[i].y -= vertexOffset.y;
+						}
+					}
+
+					tesselator->SetVertexOffset(vertexOffset);
+				}
+				else
+				{
+					CoronaLuaWarning(L, "Vertices not updated: the amount of vertices in the mesh is not equal to the amount of vertices in the table");
+				}
+
+			}
+
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "uvs");
+			if (lua_istable(L, -1))
+			{
+				U32 numUVs = (U32)lua_objlen(L, -1) / 2;
+				Vertex2 *uvs = tesselator->GetUV().WriteAccess();
+				if (numUVs == (U32)tesselator->GetUV().Length())
+				{
+					updated = true;
+					for (U32 i = 0; i < numUVs; i++)
+					{
+						lua_rawgeti(L, -1, 2 * i + 1);
+						lua_rawgeti(L, -2, 2 * i + 2);
+
+						uvs[i].x = luaL_checkreal(L, -2);
+						uvs[i].y = luaL_checkreal(L, -1);
+
+						lua_pop(L, 2);
+					}
+					pathInvalidated = pathInvalidated | ClosedPath::kFillSourceTexture;
+					observerInvalidated = observerInvalidated | DisplayObject::kGeometryFlag;
+				}
+				else
+				{
+					CoronaLuaWarning(L, "UVS not updated: the amount of UVS in the mesh is not equal to the amount of UVS in the table");
+				}
+
+				lua_pop(L, 1);
+
+				int indicesStart = 1;
+				lua_getfield(L, -1, "zeroBasedIndices");
+				if (lua_type(L, -1) == LUA_TBOOLEAN && lua_toboolean(L, -1)) // TODO: add parsing
+				{
+					indicesStart = 0;
+				}
+				lua_pop(L, 1);
+
+				lua_getfield(L, -1, "indices");
+				if (lua_istable(L, -1))
+				{
+					U16 *indices = tesselator->GetIndices().WriteAccess();
+					U32 numIndices = (U32)lua_objlen(L, -1);
+					if (numIndices == (U32)tesselator->GetIndices().Length())
+					{
+						bool changed = false;
+						for (U32 i = 0; i < numIndices; i++)
+						{
+							lua_rawgeti(L, -1, i + 1);
+							U16 index = (U16)luaL_checkinteger(L, -1) - indicesStart;
+							if (indices[i] != index)
+							{
+								changed = true;
+								indices[i] = index;
+							}
+							lua_pop(L, 1);
+						}
+
+						if (changed)
+						{
+							updated = true;
+							pathInvalidated = pathInvalidated | ClosedPath::kFillSourceIndices;
+							observerInvalidated = observerInvalidated | DisplayObject::kGeometryFlag |
+													DisplayObject::kStageBoundsFlag |
+													DisplayObject::kTransformFlag;
+						}
+					}
+					else
+					{
+						CoronaLuaWarning(L, "Indices not updated: the amount of Indices in the mesh is not equal to the amount of UVS in the table");
+					}
+				}
+
+				lua_pop(L, 1);
+			}
+
+			if (updated)
+			{
+				path->Invalidate(pathInvalidated);
+				path->GetObserver()->Invalidate(observerInvalidated);
+			}
+		}
+
+		return 0;
+	}
 
 int ShapeAdapterMesh::getVertexOffset( lua_State *L )
 {
