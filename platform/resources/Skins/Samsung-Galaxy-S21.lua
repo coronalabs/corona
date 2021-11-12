@@ -11,11 +11,7 @@ simulator =
 {
 	device = "android-phone",
 	screenOriginX = 50,
-<<<<<<< HEAD
-	screenOriginY = 70,
-=======
 	screenOriginY = 65,
->>>>>>> 3391044996328faeebb75d9582766f3b6595c856
 	screenWidth = 1080,
 	screenHeight = 2400,
 	safeScreenInsetTop = 30*3,
