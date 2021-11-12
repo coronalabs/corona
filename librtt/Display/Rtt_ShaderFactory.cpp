@@ -976,7 +976,7 @@ KernelWrapper( lua_State *L )
 {
 	lua_pushvalue( L, lua_upvalueindex( 1 ) );
     lua_pushvalue( L, lua_upvalueindex( 2 ) ); // <- STEVE CHANGE
-    return 2;//1; <- STEVE CHANGE
+    return 2; // <- STEVE CHANGE
 }
 
 // STEVE CHANGE
@@ -1051,10 +1051,23 @@ ShaderFactory::GatherEffectStubs( lua_State *L )
  
                 GetStubCategoryTable( fL, -2, info.fCategoryName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs
                 GetStubCategoryTable( fL, -2, info.fCategoryName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs
-                lua_createtable( fL, 0, 1 ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs, stub
-                lua_pushvalue( fL, -1 ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs, stub, stub
-                lua_setfield( fL, -3, info.fEffectName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs = { ..., [effectName] = stub }, stub
-                lua_setfield( fL, -3, info.fEffectName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs = { ..., [effectName] = stub }, categoryLocalStubs
+                
+                lua_getfield( fL, -2, info.fEffectName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs, stub?
+                
+                if (!lua_isnil( fL, -1 )) // stub already exists? share it locally too
+                {
+                    lua_setfield( fL, -2, info.fEffectName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs = { ..., [effectName] = stub
+                }
+                
+                else // make a new one, shared between both stub category tables
+                {
+                    lua_pop( fL, 1 ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs
+                    lua_createtable( fL, 0, 1 ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs, stub
+                    lua_pushvalue( fL, -1 ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs, stub, stub
+                    lua_setfield( fL, -3, info.fEffectName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs, categoryLocalStubs = { ..., [effectName] = stub }, stub
+                    lua_setfield( fL, -3, info.fEffectName ); // F: ..., globalStubs, localStubs, categoryGlobalStubs = { ..., [effectName] = stub }, categoryLocalStubs
+                }
+            
                 lua_pop( fL, 2 ); // F: ..., globalStubs, localStubs
             }
         }
@@ -1123,12 +1136,12 @@ ShaderFactory::DefineEffect( lua_State *L, int index )
                     
                     if (lua_istable( L, -1 ))
                     {
-                        hasStubsTable = GatherEffectStubs( L );
+                        hasStubsTable = GatherEffectStubs( L ); // might push table...
                     }
                     
                     if (!hasStubsTable)
                     {
-                        lua_pushnil( factoryL );
+                        lua_pushnil( factoryL ); // ...otherwise add dummy upvalue
                     }
                     
                     lua_pop( L, 1 );
@@ -1199,8 +1212,10 @@ bool ShaderFactory::UndefineEffect( lua_State *L, int nameIndex )
         return false;
     }
 
+    // At this point we potentially have a legitimate effect. If a kernel exists,
+    // the effect was at least defined.
     lua_State *factoryL = fL;
-    
+ 
     lua_getfield( factoryL, LUA_REGISTRYINDEX, ShaderBuiltin::KeyForCategory( info.fCategory ) ); // categoryKernels
     
     bool exists = false;
@@ -1213,13 +1228,7 @@ bool ShaderFactory::UndefineEffect( lua_State *L, int nameIndex )
         
         lua_replace( factoryL, -2 ); // kernel?
     }
-    /*
-    if (exists)
-    {
-        lua_pushnil( factoryL ); // categoryKernels, nil
-        lua_setfield( factoryL, -2, info.fEffectName ); // categoryKernels = { ..., [effectName] = nil }
-    }
-*/
+
     if (!exists)
     {
         lua_pop( factoryL, 1 ); // (clear)
@@ -1229,6 +1238,7 @@ bool ShaderFactory::UndefineEffect( lua_State *L, int nameIndex )
         return false;
     }
     
+    // If the effect was ever instantiated, remove its prototype.
     lua_getfield( factoryL, LUA_REGISTRYINDEX, info.fCategoryName ); // kernel, categoryFuncs
 
     if (!lua_isnil( factoryL, -1 ))
@@ -1237,6 +1247,9 @@ bool ShaderFactory::UndefineEffect( lua_State *L, int nameIndex )
         lua_setfield( factoryL, -2, info.fEffectName ); // kernel, categoryFuncs = { ..., [name] = nil }
     }
 
+    // If it was named as a sub-effect by a multi-pass effect, save the kernel
+    // to the still-shared stub. Remove the global version of the stub to sever
+    // that sharing; any new use of the name will belong to a redefinition.
     lua_getfield( factoryL, LUA_REGISTRYINDEX, kGlobalStubs ); // kernel, categoryFuncs, globalStubs?
     
     if (!lua_isnil( factoryL, -1 ))
@@ -1390,7 +1403,7 @@ ShaderFactory::FindPrototype( ShaderTypes::Category category, const char *name, 
         
 		lua_State *L = fL;
     // STEVE CHANGE
-        if (localStubsIndex)
+        if (localStubsIndex) // we might have an undefined effect that takes precedence?
         {
             bool exists = false;
 
@@ -1414,7 +1427,7 @@ ShaderFactory::FindPrototype( ShaderTypes::Category category, const char *name, 
             
             lua_pop( L, 1 ); // (clear)
             
-            if (exists)
+            if (exists) // replacement effect found?
             {
                 return NULL;
             }
