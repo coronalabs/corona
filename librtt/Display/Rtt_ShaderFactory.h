@@ -61,7 +61,7 @@ class ShaderFactory
 				const char *name,
 				ShaderBinaryVersions &compiledDefaultShaders,
 				ShaderBinaryVersions &compiled25DShaders,
-                                                      int localStubsIndex ); // <- STEVE CHANGE
+                int localStubsIndex );
 #else
 		Program *NewProgram(
 				const char *shellVert,
@@ -74,7 +74,7 @@ class ShaderFactory
 				const char *name,
 				const char *kernelVert,
 				const char *kernelFrag,
-                                                      int localStubsIndex ); // <- STEVE CHANGE
+                int localStubsIndex );
 #endif
 		Shader *NewShaderPrototype( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 
@@ -93,13 +93,12 @@ class ShaderFactory
 
 	protected:
 //		Shader *NewShader( lua_State *L, int index );
-		ShaderComposite *NewShaderBuiltin( ShaderTypes::Category category, const char *name, int localStubsIndex ); // <- STEVE CHANGE
+		ShaderComposite *NewShaderBuiltin( ShaderTypes::Category category, const char *name, int localStubsIndex );
 		void AddShader( Shader *shader, const char *name );
 		
-		void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode, int localStubsIndex ); // <- STEVE CHANGE
+		void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode, int localStubsIndex );
 		void ConnectLocalNodes(ShaderMap &inputNodes, LuaMap *nodeGraph, std::string terminalNodeKey, ShaderComposite *terminalNode);
 
-    // STEVE CHANGE
     private:
         struct EffectInfo {
             ShaderTypes::Category fCategory;
@@ -111,19 +110,16 @@ class ShaderFactory
         EffectInfo GetEffectInfo( const char * fullName );
     
         bool GatherEffectStubs( lua_State * L );
-    // /STEVE CHANGE
     
 	public:
 		bool DefineEffect( lua_State *L, int shaderIndex );
-    // STEVE CHANGE
         bool UndefineEffect( lua_State *L, int nameIndex );
-    // /STEVE CHANGE
-		Shader *NewShaderGraph( lua_State *L, int index, int localStubsIndex ); // <- STEVE CHANGE
+		Shader *NewShaderGraph( lua_State *L, int index, int localStubsIndex );
 				
 	protected:
-		const Shader *FindPrototype( ShaderTypes::Category category, const char *name, int localStubsIndex ) const; // <- STEVE CHANGE
+		const Shader *FindPrototype( ShaderTypes::Category category, const char *name, int localStubsIndex ) const;
 
-		ShaderComposite *FindOrLoadGraph( ShaderTypes::Category category, const char *name, bool shouldFallback, int localStubsIndex ); // <- STEVE CHANGE
+		ShaderComposite *FindOrLoadGraph( ShaderTypes::Category category, const char *name, bool shouldFallback, int localStubsIndex );
 
 	public:
 		Shader *FindOrLoad( const ShaderName& shaderName );
