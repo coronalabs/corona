@@ -210,7 +210,7 @@ ShapeAdapterMesh::GetHash( lua_State *L ) const
 		"getVertexOffset", // 4
 		"update",		   // 5
 	};
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, sizeof( keys ) / sizeof( const char * ), 5, 14, 7, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, sizeof( keys ) / sizeof( const char * ), 6, 15, 7, __FILE__, __LINE__ );
 	return &sHash;
 }
 
