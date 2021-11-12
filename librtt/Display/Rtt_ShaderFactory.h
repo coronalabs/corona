@@ -94,15 +94,34 @@ class ShaderFactory
 		ShaderComposite *NewShaderBuiltin( ShaderTypes::Category category, const char *name);
 		void AddShader( Shader *shader, const char *name );
 		
-		void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode);
+		void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode, int resolvedIndex ); // <- STEVE CHANGE
 		void ConnectLocalNodes(ShaderMap &inputNodes, LuaMap *nodeGraph, std::string terminalNodeKey, ShaderComposite *terminalNode);
 
+    // STEVE CHANGE
+    private:
+        struct EffectInfo {
+            EffectInfo( const Shader * prototype )
+            :   fPrototype( prototype )
+            {}
+
+            ShaderTypes::Category fCategory;
+            const char * fCategoryName;
+            const char * fEffectName;
+            const Shader * fPrototype;
+            bool fIsBuiltIn;
+        };
+    
+        EffectInfo GetEffectInfo( const char * fullName );
+    
+        bool ResolveNodeEffects( lua_State * L );
+    // /STEVE CHANGE
+    
 	public:
 		bool DefineEffect( lua_State *L, int shaderIndex );
     // STEVE CHANGE
         bool UndefineEffect( lua_State *L, int nameIndex );
     // /STEVE CHANGE
-		Shader *NewShaderGraph( lua_State *L, int index);
+		Shader *NewShaderGraph( lua_State *L, int index, int resolvedIndex ); // <- STEVE CHANGE
 				
 	protected:
 		const Shader *FindPrototype( ShaderTypes::Category category, const char *name ) const;
