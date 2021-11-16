@@ -147,25 +147,31 @@ jobs:
     needs:
       - source-code
     runs-on: ubuntu-20.04
-    container:
-      image: coronalabs/linux_builder_rpi
+    # container:
+    #   image: coronalabs/linux_builder_rpi
     steps:
-      - name: Get processed code
-        uses: actions/download-artifact@v1
-        with:
-          name: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build linux binaries
-        working-directory: ./platform/linux
-        run: ./build_native_linux.sh
-      - name: Copy result to output
+      # - name: Get processed code
+      #   uses: actions/download-artifact@v1
+      #   with:
+      #     name: SourceCode
+      # - name: Unpack source code
+      #   run: tar -xzf SourceCode/corona.tgz
+      # - run: ./tools/GHAction/daily_env.sh
+      # - name: Build linux binaries
+      #   working-directory: ./platform/linux
+      #   run: ./build_native_linux.sh
+      # - name: Copy result to output
+      #   run: |
+      #     mkdir -p output
+      #     cp -v platform/linux/linuxtemplate.tar.gz output
+      #     cp -v platform/linux/raspbiantemplate.tar.gz output
+      #     cp -v platform/linux/CoronaSimulator-x86-64.tar.gz output
+      - name: Fake outputs
         run: |
           mkdir -p output
-          cp -v platform/linux/linuxtemplate.tar.gz output
-          cp -v platform/linux/raspbiantemplate.tar.gz output
-          cp -v platform/linux/CoronaSimulator-x86-64.tar.gz output
+          touch output/linuxtemplate.tar.gz
+          touch output/raspbiantemplate.tar.gz
+          touch output/CoronaSimulator-x86-64.tar.gz
       - name: Upload webtemplate artifact
         uses: actions/upload-artifact@v2-preview
         with:
