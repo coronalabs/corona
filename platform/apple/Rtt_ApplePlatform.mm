@@ -90,9 +90,11 @@
         
         (void*)CoronaShaderGetEffectDetail,
         (void*)CoronaShaderRegisterShellTransform,
+        (void*)CoronaShaderUnregisterShellTransform,
         (void*)CoronaShaderRawDraw,
         (void*)CoronaShaderGetVersion,
         (void*)CoronaShaderRegisterEffectDataType,
+        (void*)CoronaShaderUnregisterEffectDataType,
         
         (void*)CoronaMultiplyMatrix4x4,
         (void*)CoronaCreateViewMatrix,

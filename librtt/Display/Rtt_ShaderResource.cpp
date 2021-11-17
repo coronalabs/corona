@@ -116,6 +116,9 @@ ShaderResource::~ShaderResource()
 	{
 		Rtt_DELETE( fTimeTransform );
 	}
+
+    SetEffectCallbacks( NULL );
+    SetShellTransform( NULL );
 }
 
 void
@@ -155,6 +158,38 @@ Program *
 ShaderResource::GetProgramMod(ProgramMod mod) const
 {
 	return fPrograms[mod];
+}
+
+void
+ShaderResource::SetEffectCallbacks( CoronaEffectCallbacks * callbacks )
+{
+    if (NULL != fEffectCallbacks)
+    {
+        Rtt_DELETE( fEffectCallbacks );
+        
+        fEffectCallbacks = NULL;
+    }
+    
+    if (NULL != callbacks) // clone to allow removal of original
+    {
+        fEffectCallbacks = Rtt_NEW( NULL, CoronaEffectCallbacks( *callbacks ) );
+    }
+}
+
+void
+ShaderResource::SetShellTransform( CoronaShellTransform * shellTransform )
+{
+    if (NULL != fShellTransform)
+    {
+        Rtt_DELETE( fShellTransform );
+        
+        fShellTransform = NULL;
+    }
+    
+    if (NULL != shellTransform) // clone to allow removal of original
+    {
+        fShellTransform = Rtt_NEW( NULL, CoronaShellTransform( *shellTransform ) );
+    }
 }
 
 int

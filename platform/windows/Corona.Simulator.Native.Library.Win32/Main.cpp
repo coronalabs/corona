@@ -723,6 +723,14 @@ int CoronaShaderRegisterShellTransform(lua_State * L, const char * name, const C
 }
 
 CORONA_API
+int CoronaShaderUnregisterShellTransform(lua_State * L, const char * name)
+{
+    typedef int(*CoronaCallbackType)(lua_State *, const char *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, name);
+}
+
+CORONA_API
 int CoronaShaderRawDraw(const CoronaShader * shader, const CoronaRenderData * renderData, const CoronaRenderer * renderer)
 {
     typedef int(*CoronaCallbackType)(const CoronaShader *, const CoronaRenderData *, const CoronaRenderer *);
@@ -744,6 +752,14 @@ int CoronaShaderRegisterEffectDataType(lua_State * L, const char * name, const C
     typedef int(*CoronaCallbackType)(lua_State *, const char *, const CoronaEffectCallbacks *);
     CoronaCallbackLoad();
     return CoronaCallbackInvoke(L, name, callbacks);
+}
+
+CORONA_API
+int CoronaShaderUnregisterEffectDataType(lua_State * L, const char * name)
+{
+    typedef int(*CoronaCallbackType)(lua_State *, const char *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, name);
 }
 
 #pragma endregion

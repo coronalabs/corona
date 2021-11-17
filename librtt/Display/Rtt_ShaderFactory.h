@@ -108,7 +108,10 @@ class ShaderFactory
 
         bool RegisterDataType( const char * name, const CoronaEffectCallbacks & callbacks );
         bool RegisterShellTransform( const char * name, const CoronaShellTransform & transform );
-				
+
+        bool UnregisterDataType( const char * name );
+        bool UnregisterShellTransform( const char * name );
+    
 	protected:
 		const Shader *FindPrototype( ShaderTypes::Category category, const char *name ) const;
 

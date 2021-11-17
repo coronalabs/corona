@@ -1353,6 +1353,41 @@ ShaderFactory::RegisterShellTransform( const char * name, const CoronaShellTrans
     }
 }
 
+static bool Unregister( lua_State *L, void * cookie, const char *name )
+{
+    lua_pushlightuserdata( L, cookie ); // ..., cookie
+    lua_rawget( L, LUA_REGISTRYINDEX ); // ..., set?
+
+    bool found = false;
+
+    if (!lua_isnil( L, -1 ))
+    {
+        lua_getfield( L, -1, name ); // ..., set, item?
+        
+        found = !lua_isnil( L, -1 );
+        
+        lua_pushnil( L ); // ..., set, item?, nil
+        lua_setfield( L, -3, name ); // ..., set = { ..., [name] = nil }, item?
+        lua_pop( L, 1 ); // ..., set
+    }
+
+    lua_pop( L, 1 ); // ...
+
+    return found;
+}
+
+bool
+ShaderFactory::UnregisterDataType( const char * name )
+{
+    return Unregister( fL, &sDataTypeCookie, name );
+}
+
+bool
+ShaderFactory::UnregisterShellTransform( const char * name )
+{
+    return Unregister( fL, &sShellTransformCookie, name );
+}
+
 const Shader *
 ShaderFactory::FindPrototype( ShaderTypes::Category category, const char *name ) const
 {

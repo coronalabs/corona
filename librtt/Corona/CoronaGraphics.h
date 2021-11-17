@@ -643,6 +643,16 @@ typedef struct CoronaShellTransform {
 CORONA_API
 int CoronaShaderRegisterShellTransform( lua_State * L, const char * name, const CoronaShellTransform * transform ) CORONA_PUBLIC_SUFFIX;
 
+/**
+ Unregister a shell transform. @see CoronaShaderRegisterShellTransform
+ Effects currently using the transform are unaffected. 
+ @param L Lua state.
+ @param name Name of registered transform.
+ @return If non-0, the transform was unregistered.
+*/
+CORONA_API
+int CoronaShaderUnregisterShellTransform( lua_State * L, const char * name ) CORONA_PUBLIC_SUFFIX;
+
 // ----------------------------------------------------------------------------
 
 typedef void (*CoronaShaderDrawBookend)( const CoronaShader * shader, void * userData, const CoronaRenderer * renderer, const CoronaRenderData * renderData );
@@ -828,6 +838,16 @@ typedef struct CoronaEffectCallbacks {
 */
 CORONA_API
 int CoronaShaderRegisterEffectDataType( lua_State * L, const char * name, const CoronaEffectCallbacks * callbacks ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Unregister an effect data type. @see CoronaShaderRegisterEffectDataType
+ Effects currently using the data type are unaffected.
+ @param L Lua state.
+ @param name Name of registered data type.
+ @return If non-0, the data type was unregistered.
+*/
+CORONA_API
+int CoronaShaderUnregisterEffectDataType( lua_State * L, const char * name ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 

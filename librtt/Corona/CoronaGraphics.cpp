@@ -563,6 +563,12 @@ int CoronaShaderRegisterShellTransform( lua_State * L, const char * name, const 
     return 0;
 }
 
+CORONA_API
+int CoronaShaderUnregisterShellTransform( lua_State * L, const char * name )
+{
+    return Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetShaderFactory().UnregisterShellTransform( name );
+}
+
 // ----------------------------------------------------------------------------
 
 CORONA_API
@@ -600,6 +606,12 @@ CORONA_API
 int CoronaShaderRegisterEffectDataType( lua_State * L, const char * name, const CoronaEffectCallbacks * callbacks )
 {
     return Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetShaderFactory().RegisterDataType( name, *callbacks );
+}
+
+CORONA_API
+int CoronaShaderUnregisterEffectDataType( lua_State * L, const char * name )
+{
+    return Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetShaderFactory().UnregisterDataType( name );
 }
 
 // ----------------------------------------------------------------------------

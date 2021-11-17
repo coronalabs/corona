@@ -86,9 +86,9 @@ class ShaderResource
 		void SetUsesTime( bool newValue ) { fUsesTime = newValue; }
     
         const CoronaEffectCallbacks * GetEffectCallbacks() const { return fEffectCallbacks; }
-        void SetEffectCallbacks( CoronaEffectCallbacks * callbacks ) { fEffectCallbacks = callbacks; }
+        void SetEffectCallbacks( CoronaEffectCallbacks * callbacks );
         const CoronaShellTransform * GetShellTransform() const { return fShellTransform; }
-        void SetShellTransform( CoronaShellTransform * shellTransform ) { fShellTransform = shellTransform; }
+        void SetShellTransform( CoronaShellTransform * shellTransform );
         void AddEffectDetail( const char * name, const char * value );
 
         int GetEffectDetail( int index, CoronaEffectDetail & detail ) const;
