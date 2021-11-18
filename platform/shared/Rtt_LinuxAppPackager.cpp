@@ -274,13 +274,21 @@ namespace Rtt
 			Rtt_ASSERT(linuxParams);
 			String templateLocation(linuxParams->fDebTemplate.GetString());
 
+			const char* templateFile = "linuxtemplate_x64.tgz";
 			if (templateLocation.IsEmpty() && !onlyGetPlugins)
 			{
-				fServices.Platform().PathForFile("template_x64.tgz", MPlatform::kSystemResourceDir, 0, templateLocation);
+				fServices.Platform().PathForFile(templateFile, MPlatform::kSystemResourceDir, 0, templateLocation);
 			}
 
-			lua_pushstring(L, templateLocation.GetString());
-			lua_setfield(L, -2, "templateLocation");
+			if (!templateLocation.IsEmpty())
+			{
+				lua_pushstring(L, templateLocation.GetString());
+				lua_setfield(L, -2, "templateLocation");
+			}
+			else
+			{
+				Rtt_LogException("%s not found\n", templateFile);
+			}
 		}
 
 #ifndef Rtt_NO_GUI

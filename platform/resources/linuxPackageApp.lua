@@ -363,7 +363,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 			end
 
 			if (dirExists(downloadDir)) then
-				os.execute(sFormat("rm -rf %s", downloadDir))
+				removeDir(downloadDir)
 			end
 		end
 
@@ -703,7 +703,7 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
 				
 				if (excludePredicate(dir)) then
 					--printf("removing directory: %s", dir)
-					os.execute(sFormat('rm -rf "%s"', dir))
+					removeDir(dir)
 				end
 			end
 
@@ -781,11 +781,11 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 		return sFormat('%s failed to unpack template %s to %s - error: %s', linuxBuilderPrefx, template, linuxAppFolder, ret)
 	end
 
-	printf('%s unzipped %s to %s', linuxBuilderPrefx, template, linuxAppFolder)
+	printf('%s unpacked %s to %s', linuxBuilderPrefx, template, linuxAppFolder)
 
 	-- copy binary
-	local binaryPath = sFormat("%s/%s", linuxAppFolder, "template_x64")
-	printf("%s renaming binary from %s to %s", linuxBuilderPrefx, templateName, args.applicationName)
+	local binaryPath = sFormat("%s/%s", linuxAppFolder, "Solar2D")
+	printf("%s renaming binary to %s", linuxBuilderPrefx, args.applicationName)
 	os.rename(binaryPath, sFormat("%s/%s", linuxAppFolder , args.applicationName))
 
 	-- dowmload plugins
@@ -799,54 +799,53 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 	end
 	
 	if (dirExists(binPlugnDir)) then
-		copyDir(binPlugnDir, linuxAppFolder)
-		copyDir(binPlugnDir, linuxAppFolder)
+		copyDir(binPlugnDir, resourcesFolder)
+		copyDir(binPlugnDir, resourcesFolder)
 	end
 	
-	-- gather files into appFolder
-	ret = copyDir(args.srcDir, linuxAppFolder)
+	-- gather files into appFolder/Resources
+	local resourcesFolder = pathJoin(linuxAppFolder, "Resources")
+	lfs.mkdir(resourcesFolder)
 
+	ret = copyDir(args.srcDir, resourcesFolder)
 	if (ret ~= 0) then
-		return sFormat("%s failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, linuxAppFolder)
+		return sFormat("%s failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder)
 	end
-
-	printf(sFormat("%s copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, linuxAppFolder))
+	printf(sFormat("%s copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder))
 
 	-- compile .lua
-	local rc = compileScriptsAndMakeCAR(args.linuxParams, linuxAppFolder, linuxAppFolder, linuxAppFolder)
+	local rc = compileScriptsAndMakeCAR(args.linuxParams, resourcesFolder, resourcesFolder, resourcesFolder)
 
 	if (not rc) then
 		return sFormat("%s failed to create resource.car file", linuxBuilderPrefx)
 	end
-
-	lfs.mkdir(pathJoin(linuxAppFolder, "Resources"))
-	os.rename(pathJoin(linuxAppFolder, "resource.car"), pathJoin(linuxAppFolder, "Resources", "resource.car"))
 	printf("%s created resource.car", linuxBuilderPrefx)
 
 	-- copy default font
 	local defaultFontPath = sFormat("%s/%s", templatePath, "FreeSans.ttf")
-	copyFile(defaultFontPath, pathJoin(linuxAppFolder, "Resources", "FreeSans.ttf"))
+	copyFile(defaultFontPath, pathJoin(resourcesFolder, "FreeSans.ttf"))
 
 	-- copy standard resources
 	if (args.useWidgetResources) then
 		for file in lfs.dir(templatePath) do
 			if (file ~= "." and file ~= "..") then
 				if (file:find("widget_")) then
-					copyFile(pathJoin(templatePath, file), pathJoin(linuxAppFolder, "Resources", file))
+					copyFile(pathJoin(templatePath, file), pathJoin(resourcesFolder, file))
 				end
 			end
 		end
-
 		printf("%s copied widget resources", linuxBuilderPrefx)
 	end
 
 	-- delete unused files
-	deleteUnusedFiles(linuxAppFolder, getExcludePredecate())
+	deleteUnusedFiles(resourcesFolder, getExcludePredecate())
+
 	-- remove plugin dirs
-	os.execute(sFormat('rm -rf "%s"', pluginDownloadDir))
-	os.execute(sFormat('rm -rf "%s"', pluginExtractDir))
+	removeDir(pluginDownloadDir)
+	removeDir(pluginExtractDir)
+
 	-- remove empty folders
-	os.execute(sFormat('find "%s" -type d -empty -delete', linuxAppFolder))
+--fixme	os.execute(sFormat('find "%s" -type d -empty -delete', linuxAppFolder))
 end
 
 -- global script to call from C++
@@ -891,7 +890,7 @@ function linuxPackageApp(args)
 		if not ok then
 			return 'Failed to create app folder: ' .. linuxAppFolder
 		end
-		log3('App folder: ' .. linuxAppFolder)
+		printf("%s App folder %s", linuxBuilderPrefx, linuxAppFolder)
 
 		local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
 		local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
