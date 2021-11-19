@@ -18,6 +18,7 @@ local dirSeparator = package.config:sub(1,1)
 local buildSettings = nil
 local sFormat = string.format
 local linuxBuilderPrefx = "Linux Builder:"
+local windows = (dirSeparator == '\\')
 
 local function fileExists(name)
 	local f = io.open(name, "r")
@@ -66,6 +67,11 @@ local function dirExists(path)
     return is
 end
 
+function fileExists(name)
+   local f = io.open(name,"r")
+   if f~=nil then io.close(f) return true else return false end
+end
+
 local function pathJoin(p1, p2, ... )
 	local res
 	local p1s = p1:sub(-1) == dirSeparator
@@ -88,42 +94,55 @@ end
 
 local function extractTar(archive, dst)
 	lfs.mkdir(dst)
-	local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst .. "/") 
+	local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst .. dirSeparator) 
 	--printf("extract tar cmd: %s", cmd)
 	
 	return os.execute(cmd)
 end
 
-local function gzip(path, appname, ext, destFile)
+local function gzip( path, appname, ext, destFile )
 	local dst = pathJoin(path, destFile)
-	local src = ''
-	
-	for i = 1, #ext do	
-		src = src .. appname .. ext[i]
-		src = src .. ' '
+	if windows then
+		local src = ''
+		for i = 1, #ext do	
+			src = src .. '"' .. pathJoin(path, appname .. ext[i]) .. '"'
+			src = src .. ' '
+		end
+		local cmd = '""%CORONA_PATH%\\7za.exe" a -tzip "' .. dst .. '" ' ..  src
+		processExecute(cmd);
+	else
+		local src = ''
+		for i = 1, #ext do	
+			src = src .. appname .. ext[i]
+			src = src .. ' '
+		end
+		local cmd = 'cd '.. quoteString(path) .. ' && /usr/bin/zip "' .. dst .. '" ' .. src
+		os.execute(cmd)
 	end
-	
-	local cmd = 'cd '.. quoteString(path) .. ' && /usr/bin/zip "' .. dst .. '" ' .. src
-	log3('gzip', cmd)
-	os.execute(cmd)
 
+	-- delete source files
 	for i = 1, #ext do	
 		os.remove(pathJoin(path, appname .. ext[i]))
 	end
 end
 
-local function zip(folder, zipfile)
-	local cmd = 'cd '.. folder .. ' && /usr/bin/zip -r -X ' .. zipfile .. ' ' .. '*'
-	log3('zip:', cmd)
-	
-	return os.execute(cmd)
+local function zip( folder, zipfile )
+	if windows then
+		local cmd = '""%CORONA_PATH%\\7za.exe" a ' .. zipfile .. ' ' ..  folder .. '/*"'
+		return processExecute(cmd)
+	else
+		local cmd = 'cd '.. folder .. ' && /usr/bin/zip -r -X ' .. zipfile .. ' ' .. '*'
+		return os.execute(cmd)
+	end
 end
 
-local function unzip(archive, dst)
-	local cmd = '/usr/bin/unzip -o -q ' .. quoteString(archive) .. ' -d ' ..  quoteString(dst)
-	log3('inzip:', cmd)
-	
-	return os.execute(cmd)
+local function unzip( archive, dst )
+	if windows then
+		local cmd = '""%CORONA_PATH%\\7za.exe" x -aoa "' .. archive .. '" -o"' ..  dst .. '"'
+		return processExecute(cmd)
+	else
+		return os.execute('/usr/bin/unzip -o -q ' .. quoteString(archive) .. ' -d ' ..  quoteString(dst))
+	end
 end
 
 local function createTarGZ(srcDir, tarFile, tarGZFile)
@@ -247,18 +266,23 @@ local function copyFile(src, dst)
 	return false;
 end
 
-local function copyDir(src, dst)
-	local cmd = 'cp -R ' .. quoteString(src) .. '/. ' ..  quoteString(dst)
-	log3('copydir:', cmd)
-
-	return os.execute(cmd)
+local function copyDir( src, dst )
+	if windows then
+		local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst.. '" /e 2> nul'
+		return processExecute(cmd)>7 and 1 or 0
+	else
+		local cmd = 'cp -R ' .. quoteString(src) .. '/. ' ..  quoteString(dst)
+		return os.execute(cmd)
+	end
 end
 
-local function removeDir(dir)
-	local cmd = "rm -f -r " .. quoteString(dir)
-	log3('removeDir:', cmd)
-
-	os.execute(cmd)
+local function removeDir( dir )
+	if windows then
+		local cmd = 'rmdir /s/q "' .. dir .. '"'
+		return processExecute(cmd)
+	else
+		os.execute("rm -f -r " .. quoteString(dir))
+	end
 end
 
 local function loadTable(path)
@@ -307,6 +331,12 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 		return nil
 	end
 
+	-- fixme: port to windows
+	if (1) then
+		log('fix linuxDownloadPlugins')
+		return nil
+	end
+
 	local pluginMessagePrefix = "Linux Plugin Manager:"
 	local publisherIDKey = "publisherId"
 	local supportedPlatformsKey = "supportedPlatforms"
@@ -333,7 +363,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 			end
 
 			if (dirExists(downloadDir)) then
-				os.execute(sFormat("rm -rf %s", downloadDir))
+				removeDir(downloadDir)
 			end
 		end
 
@@ -673,7 +703,7 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
 				
 				if (excludePredicate(dir)) then
 					--printf("removing directory: %s", dir)
-					os.execute(sFormat('rm -rf "%s"', dir))
+					removeDir(dir)
 				end
 			end
 
@@ -716,7 +746,7 @@ local function getPathFromString(str)
 	local pathIndexes = {}
 
 	for i = 1, #str do
-		if (str:sub(i, i) == "/") then
+		if (str:sub(i, i) == dirSeparator) then
 			pathIndexes[#pathIndexes + 1] = i
 		end
 	end
@@ -728,7 +758,7 @@ local function getLastPathComponent(str)
 	local pathIndexes = {}
 
 	for i = 1, #str do
-		if (str:sub(i, i) == "/") then
+		if (str:sub(i, i) == dirSeparator) then
 			pathIndexes[#pathIndexes + 1] = i
 		end
 	end
@@ -751,11 +781,11 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 		return sFormat('%s failed to unpack template %s to %s - error: %s', linuxBuilderPrefx, template, linuxAppFolder, ret)
 	end
 
-	printf('%s unzipped %s to %s', linuxBuilderPrefx, template, linuxAppFolder)
+	printf('%s unpacked %s to %s', linuxBuilderPrefx, template, linuxAppFolder)
 
 	-- copy binary
-	local binaryPath = sFormat("%s/%s", linuxAppFolder, "template_x64")
-	printf("%s renaming binary from %s to %s", linuxBuilderPrefx, templateName, args.applicationName)
+	local binaryPath = sFormat("%s/%s", linuxAppFolder, "Solar2D")
+	printf("%s renaming binary to %s", linuxBuilderPrefx, args.applicationName)
 	os.rename(binaryPath, sFormat("%s/%s", linuxAppFolder , args.applicationName))
 
 	-- dowmload plugins
@@ -769,62 +799,66 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 	end
 	
 	if (dirExists(binPlugnDir)) then
-		copyDir(binPlugnDir, linuxAppFolder)
-		copyDir(binPlugnDir, linuxAppFolder)
+		copyDir(binPlugnDir, resourcesFolder)
+		copyDir(binPlugnDir, resourcesFolder)
 	end
 	
-	-- gather files into appFolder
-	ret = copyDir(args.srcDir, linuxAppFolder)
+	-- gather files into appFolder/Resources
+	local resourcesFolder = pathJoin(linuxAppFolder, "Resources")
+	lfs.mkdir(resourcesFolder)
 
+	ret = copyDir(args.srcDir, resourcesFolder)
 	if (ret ~= 0) then
-		return sFormat("%s failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, linuxAppFolder)
+		return sFormat("%s failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder)
 	end
-
-	printf(sFormat("%s copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, linuxAppFolder))
+	printf(sFormat("%s copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder))
 
 	-- compile .lua
-	local rc = compileScriptsAndMakeCAR(args.linuxParams, linuxAppFolder, linuxAppFolder, linuxAppFolder)
+	local rc = compileScriptsAndMakeCAR(args.linuxParams, resourcesFolder, resourcesFolder, resourcesFolder)
 
 	if (not rc) then
 		return sFormat("%s failed to create resource.car file", linuxBuilderPrefx)
 	end
-
-	lfs.mkdir(pathJoin(linuxAppFolder, "Resources"))
-	os.rename(pathJoin(linuxAppFolder, "resource.car"), pathJoin(linuxAppFolder, "Resources", "resource.car"))
 	printf("%s created resource.car", linuxBuilderPrefx)
 
 	-- copy default font
 	local defaultFontPath = sFormat("%s/%s", templatePath, "FreeSans.ttf")
-	copyFile(defaultFontPath, pathJoin(linuxAppFolder, "Resources", "FreeSans.ttf"))
+	copyFile(defaultFontPath, pathJoin(resourcesFolder, "FreeSans.ttf"))
 
 	-- copy standard resources
 	if (args.useWidgetResources) then
 		for file in lfs.dir(templatePath) do
 			if (file ~= "." and file ~= "..") then
 				if (file:find("widget_")) then
-					copyFile(pathJoin(templatePath, file), pathJoin(linuxAppFolder, "Resources", file))
+					copyFile(pathJoin(templatePath, file), pathJoin(resourcesFolder, file))
 				end
 			end
 		end
-
 		printf("%s copied widget resources", linuxBuilderPrefx)
 	end
 
 	-- delete unused files
-	deleteUnusedFiles(linuxAppFolder, getExcludePredecate())
+	deleteUnusedFiles(resourcesFolder, getExcludePredecate())
+
 	-- remove plugin dirs
-	os.execute(sFormat('rm -rf "%s"', pluginDownloadDir))
-	os.execute(sFormat('rm -rf "%s"', pluginExtractDir))
+	removeDir(pluginDownloadDir)
+	removeDir(pluginExtractDir)
+
 	-- remove empty folders
-	os.execute(sFormat('find "%s" -type d -empty -delete', linuxAppFolder))
+--fixme	os.execute(sFormat('find "%s" -type d -empty -delete', linuxAppFolder))
 end
 
 -- global script to call from C++
 function linuxPackageApp(args)
 	debugBuildProcess = args.debugBuildProcess
 
+	log('Linux builder started')
+	log3(json.prettify(args))
+
 	local template = args.templateLocation
-	local templateArm = template
+	if (template == nil) then
+			return 'No templateLocation'
+	end
 
 	-- read settings
 	local buildSettingsFile = pathJoin(args.srcDir, 'build.settings')
@@ -844,31 +878,27 @@ function linuxPackageApp(args)
 		end
 	else
 		local startTime = os.time()
-		templateArm = templateArm:gsub('template_x64.tgz', 'template_arm.tgz')
-		printf("%s build started", linuxBuilderPrefx)
-		--print(json.prettify(args))
-		--printf("%s template: %s", linuxBuilderPrefx, getLastPathComponent(args.templateLocation))
-
-		printf("%s template location: %s", linuxBuilderPrefx, getPathFromString(args.templateLocation))
 
 		-- create app folder
-		local linuxAppFolder = pathJoin(args.dstDir, args.applicationName)
-
-		os.execute(sFormat('rm -rf "%s"', linuxAppFolder))
-
-		local success = lfs.mkdir(getPathFromString(linuxAppFolder))
-		success = lfs.mkdir(linuxAppFolder)
-		if (not success) then
-			return sFormat('%s failed to create app folder: %s', linuxBuilderPrefx, linuxAppFolder)
+		local linuxAppFolder = pathJoin(args.dstDir, args.applicationName) .. '.Linux'
+		if dirExists(linuxAppFolder) then
+			removeDir(linuxAppFolder)
+			log("Deleting existing directory " .. linuxAppFolder)
 		end
 
-		printf("%s created app folder: %s", linuxBuilderPrefx, linuxAppFolder)
+		local ok,err = lfs.mkdir(linuxAppFolder)
+		if not ok then
+			return 'Failed to create app folder: ' .. linuxAppFolder
+		end
+		printf("%s App folder %s", linuxBuilderPrefx, linuxAppFolder)
 
 		local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
 		local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
 		lfs.mkdir(pluginDownloadDir)
 		lfs.mkdir(pluginExtractDir)
+
 		local templateFilename = getLastPathComponent(template);
+		log3('templateFilename: ' .. templateFilename)
 
 		local rc = makeApp('x86-64', linuxAppFolder, template, args, templateFilename:sub(1, templateFilename:len() - 4))
 
@@ -884,6 +914,7 @@ function linuxPackageApp(args)
 
 		printf("%s build finished in %s seconds", linuxBuilderPrefx, os.difftime(os.time(), startTime))
 	end
-
+	
+	log('Linux builder ended')
 	return nil 
 end

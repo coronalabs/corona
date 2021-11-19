@@ -185,7 +185,6 @@ namespace Rtt
 			_params->SetStripDebug(false);
 		}
 
-
 		std::string tmpDir;
 #if defined(Rtt_LINUX_ENV)
 		const char* homeDir = NULL;
@@ -196,7 +195,7 @@ namespace Rtt
 			tmpDir = homeDir;
 			tmpDir.append("/Documents/Solar2D Built Apps/").append(params->GetAppName());
 	}
-#elif defined (Rtt_MAC_ENV)
+#else
 	const char tmpTemplate[] = "CLtmpXXXXXX";
 	char ctmpDir[kDefaultNumBytes]; Rtt_ASSERT(kDefaultNumBytes > (strlen(tmpDirBase) + strlen(tmpTemplate)));
 
@@ -210,15 +209,7 @@ namespace Rtt
 		snprintf(ctmpDir, kDefaultNumBytes, "%s" LUA_DIRSEP "%s", tmpDirBase, tmpTemplate);
 	}
 	tmpDir = ctmpDir;
-#else
-		char homeDir[1024];
-		DWORD bufsize = sizeof(homeDir);
-		if (GetProfilesDirectoryA(homeDir, &bufsize))
-			tmpDir = homeDir;
-		else
-			Rtt_ASSERT_NOT_REACHED();
 #endif
-
 
 		GetServices().GetPreference("debugBuildProcess", &debugBuildProcessPref);
 
@@ -283,13 +274,21 @@ namespace Rtt
 			Rtt_ASSERT(linuxParams);
 			String templateLocation(linuxParams->fDebTemplate.GetString());
 
+			const char* templateFile = "linuxtemplate_x64.tgz";
 			if (templateLocation.IsEmpty() && !onlyGetPlugins)
 			{
-				fServices.Platform().PathForFile("template_x64.tgz", MPlatform::kSystemResourceDir, 0, templateLocation);
+				fServices.Platform().PathForFile(templateFile, MPlatform::kSystemResourceDir, 0, templateLocation);
 			}
 
-			lua_pushstring(L, templateLocation.GetString());
-			lua_setfield(L, -2, "templateLocation");
+			if (!templateLocation.IsEmpty())
+			{
+				lua_pushstring(L, templateLocation.GetString());
+				lua_setfield(L, -2, "templateLocation");
+			}
+			else
+			{
+				Rtt_LogException("%s not found\n", templateFile);
+			}
 		}
 
 #ifndef Rtt_NO_GUI

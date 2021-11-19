@@ -97,7 +97,7 @@ namespace Rtt
 		Interop::Ipc::CommandLineRunResult result = Interop::Ipc::CommandLine::RunShellCommandUntilExit(cmdBuf);
 		ret = result.HasFailed() ? result.GetExitCode() : 0;
 		output = result.GetOutput();
-#elif defined(Rtt_LINUX_ENV)
+#elif defined(Rtt_LINUX_ENV) || defined(Rtt_MAC_ENV_ENV)
 		ret = system(cmdBuf);
 #endif
 

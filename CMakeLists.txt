@@ -4,8 +4,7 @@ project("Solar2D")
 
 # Set a default build type if none was specified
 
-#set(default_build_type "Release")
-set(default_build_type "Debug")
+set(default_build_type "Release")
 if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
 
