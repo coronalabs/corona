@@ -881,12 +881,14 @@ function linuxPackageApp(args)
 
 		-- create app folder
 		local linuxAppFolder = pathJoin(args.dstDir, args.applicationName) .. '.Linux'
-		local ok = removeDir(linuxAppFolder)
-		if not ok then
-			return 'Failed to clear app folder: ' .. linuxAppFolder
+		if dirExists(linuxAppFolder) then
+			local ok = removeDir(linuxAppFolder)
+			if not ok then
+				return 'Failed to clear app folder: ' .. linuxAppFolder
+			end
 		end
 
-		ok = lfs.mkdir(linuxAppFolder)
+		local ok,err = lfs.mkdir(linuxAppFolder)
 		if not ok then
 			return 'Failed to create app folder: ' .. linuxAppFolder
 		end
