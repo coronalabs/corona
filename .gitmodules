@@ -30,10 +30,6 @@
 	path = external/openal-soft_apportable
 	url = https://github.com/coronalabs/submodule-openal-soft_apportable.git
 	branch = master
-[submodule "platform/emscripten"]
-	path = platform/emscripten
-	url = https://github.com/coronalabs/submodule-platform-emscripten.git
-	branch = master
 [submodule "platform/linux"]
 	path = platform/linux
 	url = https://github.com/coronalabs/submodule-platform-linux.git
