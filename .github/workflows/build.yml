@@ -48,13 +48,12 @@ jobs:
     # container:
     #   image: coronalabs/linux_builder_rpi
     steps:
-       - name: Install dependencies
-         run: |
+      - name: Install dependencies
+        run: |
           apt-get update
           apt-get install -y cmake build-essential dos2unix libwxgtk3.0-gtk3-dev zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev libopenal-dev libfreetype6-dev libpng-dev libcrypto++-dev
           apt-get install -y libcurl4-openssl-dev libpng-dev libjpeg-dev libssl-dev libvorbis-dev libogg-dev uuid-dev zlib1g-dev 
           apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
-
       # - name: Get processed code
       #   uses: actions/download-artifact@v1
       #   with:
@@ -77,14 +76,14 @@ jobs:
       #    touch output/linuxtemplate.tar.gz
       #    touch output/raspbiantemplate.tar.gz
       #    touch output/CoronaSimulator-x86-64.tar.gz
-      - name: Upload webtemplate artifact
-        uses: actions/upload-artifact@v2-preview
-        with:
-          name: Linux-Templates
-          path: ./output/*template.tar.gz
-      - name: Upload Linux Simulatory artifact
-        uses: actions/upload-artifact@v2-preview
-        with:
-          name: Simulator-Linux
-          path: ./output/CoronaSimulator*
+      #- name: Upload webtemplate artifact
+      #  uses: actions/upload-artifact@v2-preview
+      #  with:
+      #    name: Linux-Templates
+      #    path: ./output/*template.tar.gz
+      #- name: Upload Linux Simulatory artifact
+      #  uses: actions/upload-artifact@v2-preview
+      #  with:
+      #    name: Simulator-Linux
+      #    path: ./output/CoronaSimulator*
 
