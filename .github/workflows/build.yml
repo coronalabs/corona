@@ -65,6 +65,7 @@ jobs:
           sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
           sudo apt-get install -y libgtk-3-dev libreadline-dev
           sudo ln -s /usr/lib/libreadline.so /usr/lib/libreadline.so.7
+          sudo ldconfig
           # install wxWidgets-3.1.4
           wxurl=https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/wxWidgets-3.1.4.tar.bz2
           wxtar=~/wxWidgets-3.1.4.tar.bz2
