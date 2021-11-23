@@ -73,7 +73,7 @@ jobs:
           fi
       - name: Build binaries
         run: |
-          cd "%WORKSPACE%"
+          cd "${WORKSPACE}"
           rm -rf build
           mkdir build
           cd build
