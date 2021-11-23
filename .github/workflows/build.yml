@@ -48,37 +48,38 @@ jobs:
     # container:
     #   image: coronalabs/linux_builder_rpi
     steps:
-      - name: Install dependencies
-        run: |
+      #- name: Install dependencies
+      #  run: |
           # The Linux and macOS virtual machines both run using passwordless sudo
-          sudo apt-get update
-          sudo apt-get install -y cmake build-essential dos2unix libwxgtk3.0-gtk3-dev zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev libopenal-dev libfreetype6-dev libpng-dev libcrypto++-dev
-          sudo apt-get install -y libcurl4-openssl-dev libpng-dev libjpeg-dev libssl-dev libvorbis-dev libogg-dev uuid-dev zlib1g-dev 
-          sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
-          sudo apt-get install -y libgtk-3-dev
+          #sudo apt-get update
+          #sudo apt-get install -y cmake build-essential dos2unix libwxgtk3.0-gtk3-dev zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev libopenal-dev libfreetype6-dev libpng-dev libcrypto++-dev
+          #sudo apt-get install -y libcurl4-openssl-dev libpng-dev libjpeg-dev libssl-dev libvorbis-dev libogg-dev uuid-dev zlib1g-dev 
+          #sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+          #sudo apt-get install -y libgtk-3-dev
           # install wxWidgets-3.1.4
-          wxurl=https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/wxWidgets-3.1.4.tar.bz2
-          wxtar=~/wxWidgets-3.1.4.tar.bz2
-          if [ -f "$wxtar" ]; then
-            echo "Using existing wxWidgets"
-          else
-            wget "$wxurl" -O "$wxtar"
-            tar -xf "$wxtar" -C ~/
-            cd ~/wxWidgets-3.1.4
-            mkdir buildgtk
-            cd buildgtk
-            ../configure --with-gtk
-            make -j4
-            sudo make install
-          fi
+          #wxurl=https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/wxWidgets-3.1.4.tar.bz2
+          #wxtar=~/wxWidgets-3.1.4.tar.bz2
+          #if [ -f "$wxtar" ]; then
+          #  echo "Using existing wxWidgets"
+          #else
+          #  wget "$wxurl" -O "$wxtar"
+          #  tar -xf "$wxtar" -C ~/
+          #  cd ~/wxWidgets-3.1.4
+          #  mkdir buildgtk
+          #  cd buildgtk
+          #  ../configure --with-gtk
+          #  make -j4
+          #  sudo make install
+          #fi
       - name: Build binaries
         run: |
           cd "${WORKSPACE}"
-          rm -rf build
-          mkdir build
-          cd build
-          cmake ..
-          make -j4
+          ls
+          #rm -rf build
+          #mkdir build
+          #cd build
+          #cmake ..
+          #make -j4
       # - name: Get processed code
       #   uses: actions/download-artifact@v1
       #   with:
