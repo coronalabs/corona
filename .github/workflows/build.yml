@@ -73,13 +73,13 @@ jobs:
           #fi
       - name: Build binaries
         run: |
-          cd "${WORKSPACE}"
-          ls
-          #rm -rf build
-          #mkdir build
-          #cd build
-          #cmake ..
-          #make -j4
+          #cd "${WORKSPACE}"
+          #ls
+          rm -rf build
+          mkdir build
+          cd build
+          cmake ..
+          make -j4
       # - name: Get processed code
       #   uses: actions/download-artifact@v1
       #   with:
