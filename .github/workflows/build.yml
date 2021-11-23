@@ -59,7 +59,7 @@ jobs:
           # install wxWidgets-3.1.4
           wxurl=https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/wxWidgets-3.1.4.tar.bz2
           wxtar=~/wxWidgets-3.1.4.tar.bz2
-          if [ -f "$wxtar" ]; then
+          if [ -f /usr/local/include/wx-3.1/wx/wx.h ]; then
             echo "Using existing wxWidgets"
           else
             wget "$wxurl" -O "$wxtar"
