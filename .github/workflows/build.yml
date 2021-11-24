@@ -87,8 +87,9 @@ jobs:
           rm -rf build
           mkdir build
           cd build
-          cmake ..
+          cmake -DCMAKE_INSTALL_PREFIX=/tmp/Solar2D ..
           make -j4
+          make install
       - name: Copy result to output
         run: |
          mkdir -p output
