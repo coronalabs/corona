@@ -84,6 +84,9 @@ jobs:
           fi
       - name: Build binaries
         run: |
+          pushd platform/linux
+          git checkout master
+          popd
           rm -rf build
           mkdir build
           cd build
