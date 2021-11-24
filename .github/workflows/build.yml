@@ -79,7 +79,7 @@ jobs:
             mkdir buildgtk
             cd buildgtk
             ../configure --with-gtk
-            make -j4
+            make -j8
             sudo make install
           fi
       - name: Build binaries
@@ -88,7 +88,8 @@ jobs:
           mkdir build
           cd build
           cmake -DCMAKE_INSTALL_PREFIX=/tmp/Solar2D ..
-          make -j8 && make install
+          make -j8
+          sudo make install
        - name: Copy result to output
          run: |
            mkdir -p output
