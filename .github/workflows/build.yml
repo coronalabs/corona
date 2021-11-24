@@ -95,7 +95,7 @@ jobs:
          mkdir -p output
          cd /tmp/Solar2D/bin
          tar -czvf "${WORKSPACE}"/output/CoronaSimulator-x86-64.tgz ./
-         cp -v /tmp/Solar2D/bin/Solar2D//Resources/linuxtemplate_x64.tgz output
+         cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz output
       #- name: Fake outputs
       #  run: |
       #    mkdir -p output
