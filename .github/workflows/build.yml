@@ -84,9 +84,6 @@ jobs:
           fi
       - name: Build binaries
         run: |
-          pushd platform/linux
-          git checkout master
-          popd
           rm -rf build
           mkdir build
           cd build
@@ -99,7 +96,6 @@ jobs:
          cd /tmp/Solar2D/bin
          tar -czvf "${WORKSPACE}"/output/CoronaSimulator-x86-64.tgz ./
          cd Solar2D/Resources
-         echo $(ls)
          cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz "${WORKSPACE}"/output
       #- name: Fake outputs
       #  run: |
