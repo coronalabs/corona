@@ -79,7 +79,7 @@ jobs:
             mkdir buildgtk
             cd buildgtk
             ../configure --with-gtk
-            make -j8
+            make -j4
             sudo make install
           fi
       - name: Build binaries
@@ -87,15 +87,14 @@ jobs:
           rm -rf build
           mkdir build
           cd build
-          cmake -DCMAKE_INSTALL_PREFIX=/tmp/Solar2D ..
-          make -j8
-          sudo make install
-       - name: Copy result to output
-         run: |
-           mkdir -p output
-           cp -v platform/linux/Resources/linuxtemplate_x64.tgz output
-           cd /tmp/Solar2D/bin
-           tar -czvf "${WORKSPACE}"/output/CoronaSimulator-x86-64.tgz ./
+          cmake ..
+          make -j4
+      - name: Copy result to output
+        run: |
+         mkdir -p output
+         cp -v platform/linux/Resources/linuxtemplate_x64.tgz output
+         cd /tmp/Solar2D/bin
+         tar -czvf "${WORKSPACE}"/output/CoronaSimulator-x86-64.tgz ./
       #- name: Fake outputs
       #  run: |
       #    mkdir -p output
