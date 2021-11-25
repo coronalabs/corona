@@ -421,6 +421,7 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: Simulator-Linux-Template
+      - name: Unpack CoronaSimulator tgz
         run: |
           mkdir simulator
           tar -xvzf Simulator-Linux-Template/CoronaSimulator-x86-64.tgz -C simulator
