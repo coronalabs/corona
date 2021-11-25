@@ -107,10 +107,46 @@ jobs:
         uses: actions/upload-artifact@v2-preview
         with:
           name: Linux-Templates
-          path: ./output/*template.tgz
-      - name: Upload Linux Simulator
+          path: ./output/linuxtemplate_x64.tgz
+      - name: Upload Linux Simulator template
         uses: actions/upload-artifact@v2-preview
         with:
-          name: Simulator-Linux
+          name: Simulator-Linux-Template
           path: ./output/CoronaSimulator*
 
+  Linux-Simulator:
+    needs:
+      - native
+      - webtemplate
+      - linux
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Get Linux Simulator template
+        uses: actions/download-artifact@v1
+        with:
+          name: Simulator-Linux-Template
+        run: |
+          mkdir simulator
+          tar -xvzf Simulator-Linux-Template/CoronaSimulator-x86-64.tgz -C simulator
+      - name: Get Webtemplate
+        uses: actions/download-artifact@v1
+        with:
+          name: Webtemplate
+      - name: Put webtemplate in place
+        run: cp -v Webtemplate/webtemplate.zip simulator/Resources/
+      - name: Get Native
+        uses: actions/download-artifact@v1
+        with:
+          name: Native
+      - name: Put Android template in place
+        run: cp -v Native/Corona/android/resource/android-template.zip simulator/Resources/
+      - name: Put Linux Simulator in place
+        run: |
+         mkdir -p output
+         cd simulator
+         tar -czvf ../output/CoronaSimulator-x86-64.tgz ./
+      - name: Upload Linux Simulator artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Simulator-Linux
+          path: ./output/CoronaSimulator-x86-64.tgz
