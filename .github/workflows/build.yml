@@ -206,15 +206,15 @@ jobs:
       #    touch output/linuxtemplate.tar.gz
       #    touch output/raspbiantemplate.tar.gz
       #    touch output/CoronaSimulator-x86-64.tar.gz
-      - name: Upload linuxtemplate
+      - name: Upload Linux-Template
         uses: actions/upload-artifact@v2-preview
         with:
-          name: Linux-Templates
+          name: Linux-Template
           path: ./output/linuxtemplate_x64.tgz
-      - name: Upload Linux Simulator template
+      - name: Upload Linux Linux-Simulator-Template
         uses: actions/upload-artifact@v2-preview
         with:
-          name: Simulator-Linux-Template
+          name: Linux-Simulator-Template
           path: ./output/CoronaSimulator*
 
   native:
@@ -320,14 +320,13 @@ jobs:
           name: Webtemplate
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip platform/resources/
-      - name: Get Linux templates
+      - name: Get Linux template
         uses: actions/download-artifact@v1
         with:
-          name: Linux-Templates
+          name: Linux-Template
       - name: Put webtemplate in place
         run: |
-          cp -v Linux-Templates/linuxtemplate.tar.gz platform/resources/
-          cp -v Linux-Templates/raspbiantemplate.tar.gz platform/resources/
+          cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
       - run: mkdir docs
       - name: Get Sample Code
         uses: actions/checkout@v2
@@ -420,11 +419,11 @@ jobs:
       - name: Get Linux Simulator template
         uses: actions/download-artifact@v1
         with:
-          name: Simulator-Linux-Template
+          name: Linux-Simulator-Template
       - name: Unpack CoronaSimulator tgz
         run: |
           mkdir simulator
-          tar -xvzf Simulator-Linux-Template/CoronaSimulator-x86-64.tgz -C simulator
+          tar -xvzf Linux-Simulator-Template/CoronaSimulator-x86-64.tgz -C simulator
       - name: Get Webtemplate
         uses: actions/download-artifact@v1
         with:
@@ -436,7 +435,7 @@ jobs:
         with:
           name: Native
       - name: Put Android template in place
-        run: cp -v Native/Corona/android/resource/android-template.zip simulator/Resources/
+        run: cp -v Native/Corona/android/resource/android-template.zip simulator/Resources/Native/Corona/android/resource/
       - name: Put Linux Simulator in place
         run: |
          mkdir -p output
@@ -491,11 +490,10 @@ jobs:
       - name: Get Linux templates
         uses: actions/download-artifact@v1
         with:
-          name: Linux-Templates
+          name: Linux-Template
       - name: Put webtemplate in place
         run: |
-          cp -v Linux-Templates/linuxtemplate.tar.gz platform/resources/
-          cp -v Linux-Templates/raspbiantemplate.tar.gz platform/resources/
+          cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
         shell: bash
       - name: Get Corona Native
         uses: actions/download-artifact@v1
