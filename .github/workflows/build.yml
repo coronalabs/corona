@@ -180,22 +180,26 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: Linux-Simulator-Template
-      - name: Unpack CoronaSimulator tgz
-        run: |
-          mkdir simulator
-          tar -xvzf Linux-Simulator-Template/CoronaSimulator-x86-64.tgz -C simulator
       - name: Get Webtemplate
         uses: actions/download-artifact@v1
         with:
           name: Webtemplate
-      - name: Put webtemplate in place
-        run: cp -v Webtemplate/webtemplate.zip simulator/Resources/
       - name: Get Native
         uses: actions/download-artifact@v1
         with:
           name: Native
-      - name: Put Android template in place
-        run: cp -v Native/Corona/android/resource/android-template.zip simulator/Resources/Native/Corona/android/resource/
+      - name: Unpack CoronaSimulator tgz
+        run: |
+          mkdir simulator
+          tar -xvzf Linux-Simulator-Template/CoronaSimulator-x86-64.tgz -C simulator
+      - name: Put webtemplate in place
+        run: cp -v Webtemplate/webtemplate.zip simulator/Resources/
+      - name: Put Android resources in place
+        run: |
+          tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/resource/android-template.zip          
+          cp -v CoronaEnterprise/Corona/android/resource/android-template.zip simulator/Resources/Native/Corona/android/resource/
+          tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
+          cp -v CoronaEnterprise/Corona/android/lib/gradle/Corona.aar simulator/Resources/Native/Corona/android/lib/gradle/
       - name: Put Linux Simulator in place
         run: |
          mkdir -p output
@@ -206,4 +210,3 @@ jobs:
         with:
           name: Simulator-Linux
           path: ./output/CoronaSimulator-x86-64.tgz
-
