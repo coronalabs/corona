@@ -197,8 +197,10 @@ jobs:
       - name: Put Android resources in place
         run: |
           tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/resource/android-template.zip          
+          mkdir -p simulator/Solar2D/Resources/Native/Corona/android/resource
           cp -v CoronaEnterprise/Corona/android/resource/android-template.zip simulator/Solar2D/Resources/Native/Corona/android/resource/
           tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
+          mkdir -p simulator/Solar2D/Resources/Native/Corona/android/lib/gradle
           cp -v CoronaEnterprise/Corona/android/lib/gradle/Corona.aar simulator/Solar2D/Resources/Native/Corona/android/lib/gradle/
       - name: Put Linux Simulator in place
         run: |
