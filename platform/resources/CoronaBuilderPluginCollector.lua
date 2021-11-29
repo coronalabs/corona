@@ -13,6 +13,7 @@ platformFallbacks = {
     { "android-kindle", "android" },
     { "macos", "mac-sim" },
     { "win32", "win32-sim" },
+    { "linux", "linux-sim" },
     { "html5", "web" },
     { "*", "lua" },
 }
@@ -647,6 +648,7 @@ local function CollectCoronaPlugins(params)
         package.path = path
     end
 
+    debugBuildProcess = tonumber(debugBuildProcess) or 0
     if debugBuildProcess > 0 then
         local copyLocators = {}
         for i=1,#params.pluginLocators do
