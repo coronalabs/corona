@@ -850,7 +850,7 @@ end
 
 -- global script to call from C++
 function linuxPackageApp(args)
-	debugBuildProcess = args.debugBuildProcess
+	debugBuildProcess = tonumber(args.debugBuildProcess) or 0
 
 	log('Linux builder started')
 	log3(json.prettify(args))

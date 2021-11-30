@@ -514,7 +514,7 @@ end
 ---
 function webPackageApp( options )
 	args = options	-- keep for local functions
-	debugBuildProcess = args.debugBuildProcess
+	debugBuildProcess = tonumber(args.debugBuildProcess) or 0
 	log('HTML5 builder started')
 	log3(json.prettify(args))
 
@@ -551,7 +551,7 @@ function webPackageApp( options )
 	local success = false;
 
 	-- create app folder if it does not exists
-	webappFolder = pathJoin(args.dstDir, args.applicationName)
+	webappFolder = pathJoin(args.dstDir, args.applicationName .. '.html5')
 	if not dir_exists(webappFolder) then
 		success = lfs.mkdir(webappFolder)
 		if not success then
