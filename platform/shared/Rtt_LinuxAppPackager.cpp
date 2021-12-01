@@ -19,6 +19,7 @@
 #include "Rtt_Archive.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_HTTPClient.h"
+#include "Rtt_LinuxContext.h"
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
@@ -274,10 +275,9 @@ namespace Rtt
 			Rtt_ASSERT(linuxParams);
 			String templateLocation(linuxParams->fDebTemplate.GetString());
 
-			const char* templateFile = "linuxtemplate_x64.tgz";
 			if (templateLocation.IsEmpty() && !onlyGetPlugins)
 			{
-				fServices.Platform().PathForFile(templateFile, MPlatform::kSystemResourceDir, 0, templateLocation);
+				fServices.Platform().PathForFile(TEMPLATE_FILENAME, MPlatform::kSystemResourceDir, 0, templateLocation);
 			}
 
 			if (!templateLocation.IsEmpty())
@@ -287,7 +287,7 @@ namespace Rtt
 			}
 			else
 			{
-				Rtt_LogException("%s not found\n", templateFile);
+//				Rtt_LogException("%s not found\n", TEMPLATE_FILENAME);
 			}
 		}
 
