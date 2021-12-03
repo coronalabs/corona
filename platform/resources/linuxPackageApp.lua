@@ -59,12 +59,12 @@ local function quoteString(str)
 end
 
 local function dirExists(path)
-    local cd = lfs.currentdir()
+	local cd = lfs.currentdir()
 	local is = lfs.chdir(path) and true or false
 
 	lfs.chdir(cd)
 	
-    return is
+	return is
 end
 
 function fileExists(name)
@@ -332,11 +332,12 @@ local function linuxDownloadPlugins(buildRevision, tmpDir, pluginDstDir, platfor
 	end
 
 	local collectorParams = { 
-		pluginPlatform = platform,
+		pluginPlatform = 'linux',
 		plugins = buildSettings.plugins or {},
 		destinationDirectory = tmpDir,
 		build = buildRevision,
 		extractLocation = pluginDstDir,
+		pluginStorage = pathJoin(os.getenv("HOME"), ".Solar2D")
 	}
 	
 	local pluginCollector = require "CoronaBuilderPluginCollector"
@@ -597,17 +598,15 @@ function linuxPackageApp(args)
 	local success = false;
 
 		-- dowmload plugins
-	local pluginDownloadDir = sFormat("%s/xxx/pluginDownloadDir", os.getenv("HOME")) -- pathJoin(args.tmpDir, "pluginDownloadDir")
-	local pluginExtractDir = sFormat("%s/xxx/pluginExtractDir", os.getenv("HOME")) -- pathJoin(args.tmpDir, "pluginExtractDir")
-	printf("zzz %s, %s", pluginDownloadDir, pluginExtractDir)
+	local pluginsFolder = sFormat("%s/.Solar2D/Plugins", os.getenv("HOME"))
+	local pluginDownloadDir = sFormat("%s/.Solar2D/pluginDownloadDir", os.getenv("HOME")) -- pathJoin(args.tmpDir, "pluginDownloadDir")
 	lfs.mkdir(pluginDownloadDir)
-	lfs.mkdir(pluginExtractDir)
-	platform = "web"
-	local msg = linuxDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginExtractDir, platform)
+	lfs.mkdir(pluginsFolder)
+	local msg = linuxDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginsFolder)
 	if type(msg) == 'string' then
 		return msg
 	end
-
+	
 	if (args.onlyGetPlugins) then
 		return msg
 	else 
