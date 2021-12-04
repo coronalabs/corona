@@ -607,6 +607,9 @@ function linuxPackageApp(args)
 		return msg
 	end
 	
+	local x86_pluginsFolder = pathJoin(pluginsFolder, "x86-64")
+	copyDir( x86_pluginsFolder, pluginsFolder )
+
 	if (args.onlyGetPlugins) then
 		return msg
 	else 

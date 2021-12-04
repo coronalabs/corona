@@ -19,7 +19,6 @@
 #include "Rtt_Archive.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_HTTPClient.h"
-#include "Rtt_LinuxContext.h"
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
@@ -277,6 +276,7 @@ namespace Rtt
 
 			if (templateLocation.IsEmpty() && !onlyGetPlugins)
 			{
+				const char* TEMPLATE_FILENAME = "linuxtemplate_x64.tgz";
 				fServices.Platform().PathForFile(TEMPLATE_FILENAME, MPlatform::kSystemResourceDir, 0, templateLocation);
 			}
 
