@@ -1,4 +1,4 @@
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 --
 -- This file is part of the Corona game engine.
 -- For overview and more information on licensing please refer to README.md 
@@ -13,7 +13,7 @@ local lfs = require("lfs")
 local json = require("json")
 local http = require("socket.http")
 local ltn12 = require("ltn12")
-local debugBuildProcess = 0
+debugBuildProcess = 0
 local dirSeparator = package.config:sub(1,1)
 local buildSettings = nil
 local sFormat = string.format
@@ -95,8 +95,7 @@ end
 local function extractTar(archive, dst)
 	lfs.mkdir(dst)
 	local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst .. dirSeparator) 
-	--printf("extract tar cmd: %s", cmd)
-	
+--	printf("extract tar cmd: %s", cmd)
 	return os.execute(cmd)
 end
 
@@ -264,6 +263,20 @@ local function copyFile(src, dst)
 
 	log3('copyFile failed to read: ', src, dst)
 	return false;
+end
+
+local function copyFiles(srcFolder, dstFolder)
+	for file in lfs.dir(srcFolder) do
+		if (file ~= "." and file ~= "..") then
+			fullPath = pathJoin(srcFolder, file)
+			attributes = lfs.attributes(fullPath)
+			if (attributes) then
+				if (attributes.mode == "file") then
+					copyFile(fullPath, pathJoin(dstFolder, file))
+				end
+			end
+		end
+	end
 end
 
 local function copyDir( src, dst )
@@ -501,44 +514,42 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 	if (archivesize == nil or archivesize == 0) then
 		return sFormat('%s failed to open template: %s', linuxBuilderPrefx, template)
 	end
-
+	
 	local ret = extractTar(template, linuxAppFolder)
 
 	if (ret ~= 0) then
 		return sFormat('%s failed to unpack template %s to %s - error: %s', linuxBuilderPrefx, template, linuxAppFolder, ret)
 	end
 
-	printf('%s unpacked %s to %s', linuxBuilderPrefx, template, linuxAppFolder)
+	printf('%s extractTar %s to %s', linuxBuilderPrefx, template, linuxAppFolder)
 
 	-- copy binary
-	local binaryPath = sFormat("%s/%s", linuxAppFolder, "Solar2D")
-	printf("%s renaming binary to %s", linuxBuilderPrefx, args.applicationName)
+	local binaryPath = pathJoin(linuxAppFolder, "Solar2D")
+	printf("%s Renaming binary to %s", linuxBuilderPrefx, args.applicationName)
 	os.rename(binaryPath, sFormat("%s/%s", linuxAppFolder , args.applicationName))
 
-	-- dowmload plugins
-	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
-	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
-	local binPlugnDir = pathJoin(pluginExtractDir, arch)
-	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
-
-	if (dirExists(luaPluginDir)) then
-		copyDir(luaPluginDir, pluginExtractDir)
-	end
-	
-	if (dirExists(binPlugnDir)) then
-		copyDir(binPlugnDir, resourcesFolder)
-		copyDir(binPlugnDir, resourcesFolder)
-	end
-	
 	-- gather files into appFolder/Resources
 	local resourcesFolder = pathJoin(linuxAppFolder, "Resources")
 	lfs.mkdir(resourcesFolder)
 
+	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+	local pluginExtractDir = pathJoin(args.tmpDir, "Plugins")
+	local binPlugnDir = pathJoin(pluginExtractDir, arch)
+	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
+
+	if (dirExists(luaPluginDir)) then
+		copyDir(luaPluginDir, resourcesFolder)
+	end
+	
+	if (dirExists(binPlugnDir)) then
+		copyDir(binPlugnDir, linuxAppFolder)
+	end
+
 	ret = copyDir(args.srcDir, resourcesFolder)
 	if (ret ~= 0) then
-		return sFormat("%s failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder)
+		return sFormat("%s Failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder)
 	end
-	printf(sFormat("%s copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder))
+	printf(sFormat("%s Copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder))
 
 	-- compile .lua
 	local rc = compileScriptsAndMakeCAR(args.linuxParams, resourcesFolder, resourcesFolder, resourcesFolder)
@@ -598,19 +609,30 @@ function linuxPackageApp(args)
 	local success = false;
 
 		-- dowmload plugins
-	local pluginsFolder = sFormat("%s/.Solar2D/Plugins", os.getenv("HOME"))
-	local pluginDownloadDir = sFormat("%s/.Solar2D/pluginDownloadDir", os.getenv("HOME")) -- pathJoin(args.tmpDir, "pluginDownloadDir")
-	lfs.mkdir(pluginDownloadDir)
+	local pluginsFolder = pathJoin(args.tmpDir, "Plugins")
 	lfs.mkdir(pluginsFolder)
+	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+	lfs.mkdir(pluginDownloadDir)
+	debugBuildProcess = 1		-- hack
 	local msg = linuxDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginsFolder)
 	if type(msg) == 'string' then
 		return msg
 	end
-	
-	local x86_pluginsFolder = pathJoin(pluginsFolder, "x86-64")
-	copyDir( x86_pluginsFolder, pluginsFolder )
 
 	if (args.onlyGetPlugins) then
+
+		local simulatorPluginsFolder = pathJoin(os.getenv("HOME"), ".Solar2D", "Plugins")
+		local binPlugnDir = pathJoin(pluginsFolder, 'x86-64')
+		local luaPluginDir = pathJoin(pluginsFolder, 'lua', 'lua_51')
+
+		if (dirExists(luaPluginDir)) then
+			copyDir(luaPluginDir, simulatorPluginsFolder)
+		end
+	
+		if (dirExists(binPlugnDir)) then
+			copyDir(binPlugnDir, simulatorPluginsFolder)
+		end
+
 		return msg
 	else 
 		local startTime = os.time()

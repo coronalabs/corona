@@ -185,31 +185,15 @@ namespace Rtt
 			_params->SetStripDebug(false);
 		}
 
-		std::string tmpDir;
-#if defined(Rtt_LINUX_ENV)
-		const char* homeDir = NULL;
-		if ((homeDir = getenv("HOME")) == NULL)
+		const char tmpTemplate[] = "CLtmpXXXXXX";
+		char tmpDir[1024];
+		snprintf(tmpDir, sizeof(tmpDir), "%s/%s", tmpDirBase, tmpTemplate);
+		
+		if (mkdir(mktemp(tmpDir)) == false)
 		{
-			struct passwd* pw = getpwuid(getuid());
-			homeDir = getpwuid(getuid())->pw_dir;
-			tmpDir = homeDir;
-			tmpDir.append("/Documents/Solar2D Built Apps/").append(params->GetAppName());
-	}
-#else
-	const char tmpTemplate[] = "CLtmpXXXXXX";
-	char ctmpDir[kDefaultNumBytes]; Rtt_ASSERT(kDefaultNumBytes > (strlen(tmpDirBase) + strlen(tmpTemplate)));
-
-	const char* lastChar = tmpDirBase + strlen(tmpDirBase) - 1;
-	if (lastChar[0] == LUA_DIRSEP[0])
-	{
-		snprintf(ctmpDir, kDefaultNumBytes, "%s%s", tmpDirBase, tmpTemplate);
-	}
-	else
-	{
-		snprintf(ctmpDir, kDefaultNumBytes, "%s" LUA_DIRSEP "%s", tmpDirBase, tmpTemplate);
-	}
-	tmpDir = ctmpDir;
-#endif
+			Rtt_LogException("%s\n", strerror(errno));
+			return PlatformAppPackager::kLocalPackagingError;
+		}
 
 		GetServices().GetPreference("debugBuildProcess", &debugBuildProcessPref);
 
@@ -230,7 +214,7 @@ namespace Rtt
 			const char* platformName = fServices.Platform().GetDevice().GetPlatformName();
 			platform.PathForFile(NULL, MPlatform::kSystemResourceDir, 0, resourceDir);
 
-			lua_pushstring(L, tmpDir.c_str());
+			lua_pushstring(L, tmpDir);
 			lua_setfield(L, -2, "tmpDir");
 
 			lua_pushstring(L, params->GetSrcDir());
@@ -323,6 +307,7 @@ namespace Rtt
 			lua_pop(L, 1);
 		}
 
+		Rtt_DeleteDirectory(tmpDir);
 		return result;
 }
 } // namespace Rtt
