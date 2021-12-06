@@ -7,6 +7,7 @@
 --
 ------------------------------------------------------------------------------
 
+local pluginCollector = require "CoronaBuilderPluginCollector"
 processExecute = processExecute or os.execute
 
 local lfs = require("lfs")
@@ -20,20 +21,10 @@ local sFormat = string.format
 local linuxBuilderPrefx = "Linux Builder:"
 local windows = (dirSeparator == '\\')
 
-local function fileExists(name)
-	local f = io.open(name, "r")
-
-	if (f ~= nil) then
-		io.close(f) return true
-	else 
-		return false 
-	end
-end
-
 -- check if /usr/bin/tar exists, it is in Mac but not in Linux
 local tar = "/usr/bin/tar"
 
-if (fileExists(tar) == false) then
+if (isFile(tar) == false) then
 	tar = "tar"   -- for linux
 end
 
@@ -58,20 +49,6 @@ local function quoteString(str)
 	return sFormat("\"%s\"", str)
 end
 
-local function dirExists(path)
-	local cd = lfs.currentdir()
-	local is = lfs.chdir(path) and true or false
-
-	lfs.chdir(cd)
-	
-	return is
-end
-
-function fileExists(name)
-   local f = io.open(name,"r")
-   if f~=nil then io.close(f) return true else return false end
-end
-
 local function pathJoin(p1, p2, ... )
 	local res
 	local p1s = p1:sub(-1) == dirSeparator
@@ -93,7 +70,7 @@ local function pathJoin(p1, p2, ... )
 end
 
 local function extractTar(archive, dst)
-	lfs.mkdir(dst)
+	mkdirs(dst)
 	local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst .. dirSeparator) 
 --	printf("extract tar cmd: %s", cmd)
 	return os.execute(cmd)
@@ -352,8 +329,6 @@ local function linuxDownloadPlugins(buildRevision, tmpDir, pluginDstDir, platfor
 		extractLocation = pluginDstDir,
 		pluginStorage = pathJoin(os.getenv("HOME"), ".Solar2D")
 	}
-	
-	local pluginCollector = require "CoronaBuilderPluginCollector"
 	return pluginCollector.collect(collectorParams)
 end
 
@@ -530,18 +505,18 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 
 	-- gather files into appFolder/Resources
 	local resourcesFolder = pathJoin(linuxAppFolder, "Resources")
-	lfs.mkdir(resourcesFolder)
+	mkdirs(resourcesFolder)
 
 	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
 	local pluginExtractDir = pathJoin(args.tmpDir, "Plugins")
 	local binPlugnDir = pathJoin(pluginExtractDir, arch)
 	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
 
-	if (dirExists(luaPluginDir)) then
+	if (isDir(luaPluginDir)) then
 		copyDir(luaPluginDir, resourcesFolder)
 	end
 	
-	if (dirExists(binPlugnDir)) then
+	if (isDir(binPlugnDir)) then
 		copyDir(binPlugnDir, linuxAppFolder)
 	end
 
@@ -610,10 +585,9 @@ function linuxPackageApp(args)
 
 		-- dowmload plugins
 	local pluginsFolder = pathJoin(args.tmpDir, "Plugins")
-	lfs.mkdir(pluginsFolder)
+	mkdirs(pluginsFolder)
 	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
-	lfs.mkdir(pluginDownloadDir)
-	debugBuildProcess = 1		-- hack
+	mkdirs(pluginDownloadDir)
 	local msg = linuxDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginsFolder)
 	if type(msg) == 'string' then
 		return msg
@@ -625,7 +599,7 @@ function linuxPackageApp(args)
 		local binPlugnDir = pathJoin(pluginsFolder, 'x86-64')
 		local luaPluginDir = pathJoin(pluginsFolder, 'lua', 'lua_51')
 
-		if (dirExists(luaPluginDir)) then
+		if (isDir(luaPluginDir)) then
 			copyDir(luaPluginDir, simulatorPluginsFolder)
 		end
 	
@@ -639,12 +613,12 @@ function linuxPackageApp(args)
 
 		-- create app folder
 		local linuxAppFolder = pathJoin(args.dstDir, args.applicationName) .. '.Linux'
-		if dirExists(linuxAppFolder) then
+		if isDir(linuxAppFolder) then
 			removeDir(linuxAppFolder)
 			log("Deleting existing directory " .. linuxAppFolder)
 		end
 
-		local ok,err = lfs.mkdir(linuxAppFolder)
+		local ok,err = mkdirs(linuxAppFolder)
 		if not ok then
 			return 'Failed to create app folder: ' .. linuxAppFolder
 		end
