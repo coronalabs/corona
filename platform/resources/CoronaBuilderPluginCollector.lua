@@ -95,7 +95,7 @@ function exec(cmd)
             cmd = cmd .. ' &> /dev/null'
         end
     end
-    local ret = (0 == os.execute(cmd))
+    local ret = (0 == os.execute2(cmd))
     return ret
 end
 
