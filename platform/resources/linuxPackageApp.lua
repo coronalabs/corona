@@ -599,12 +599,11 @@ function linuxPackageApp(args)
 		local binPlugnDir = pathJoin(pluginsFolder, 'x86-64')
 		local luaPluginDir = pathJoin(pluginsFolder, 'lua', 'lua_51')
 
+		if (isDir(binPlugnDir)) then
+			copyDir(binPlugnDir, simulatorPluginsFolder)
+		end
 		if (isDir(luaPluginDir)) then
 			copyDir(luaPluginDir, simulatorPluginsFolder)
-		end
-	
-		if (dirExists(binPlugnDir)) then
-			copyDir(binPlugnDir, simulatorPluginsFolder)
 		end
 
 		return msg
