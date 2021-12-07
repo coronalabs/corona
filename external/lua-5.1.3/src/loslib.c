@@ -52,17 +52,14 @@ static int os_execute2(lua_State* L) {
   if (f)
   {
     char ch;
-    while ((ch = fgetc(f)) != EOF)
-    {
-      //      putchar(ch);
-    }
+    while ((ch = fgetc(f)) != EOF) {}
     ret = pclose(f);
   }
   lua_pushinteger(L, ret);
-#else
-  lua_pushinteger(L, system(luaL_optstring(L, 1, NULL)));
-#endif
   return 1;
+#else
+  return os_execute(L);
+#endif
 }
 
 static int os_remove (lua_State *L) {
