@@ -176,6 +176,7 @@ jobs:
       - linux
     runs-on: ubuntu-20.04
     steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get Linux Simulator template
         uses: actions/download-artifact@v1
         with:
@@ -196,8 +197,8 @@ jobs:
         run: cp -v Webtemplate/webtemplate.zip simulator/Solar2D/Resources/
       - name: Put readme & install.sh in place
         run: |
-         cp -v platform/linux/README.md simulator/Solar2D/
          cp -v platform/linux/install_dependencies.sh simulator/Solar2D/
+         cp -v platform/linux/README.md simulator/Solar2D/
       - name: Put Android resources in place
         run: |
           tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/resource/android-template.zip          
