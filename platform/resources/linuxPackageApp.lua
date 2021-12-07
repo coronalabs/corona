@@ -617,10 +617,7 @@ function linuxPackageApp(args)
 			log("Deleting existing directory " .. linuxAppFolder)
 		end
 
-		local ok,err = mkdirs(linuxAppFolder)
-		if not ok then
-			return 'Failed to create app folder: ' .. linuxAppFolder
-		end
+		mkdirs(linuxAppFolder)
 		printf("%s App folder %s", linuxBuilderPrefx, linuxAppFolder)
 
 		local templateFilename = getLastPathComponent(template);
