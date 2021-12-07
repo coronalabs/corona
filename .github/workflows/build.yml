@@ -171,12 +171,17 @@ jobs:
 
   Linux-Simulator:
     needs:
+      - source-code
       - native
       - webtemplate
       - linux
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
       - name: Get Linux Simulator template
         uses: actions/download-artifact@v1
         with:
@@ -189,6 +194,8 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: Native
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
       - name: Unpack CoronaSimulator tgz
         run: |
           mkdir simulator
