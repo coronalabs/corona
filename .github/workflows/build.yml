@@ -123,19 +123,29 @@ jobs:
           cmake -DCMAKE_INSTALL_PREFIX=/tmp/Solar2D ..
           make -j4
           make install
-      - name: Copy result to output
+      - name: Copy results to output
         run: |
          mkdir -p output
          cd /tmp/Solar2D/bin
          tar -czvf "${WORKSPACE}"/output/CoronaSimulator-x86-64.tgz ./
          cd Solar2D/Resources
          cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz "${WORKSPACE}"/output
-      #- name: Fake outputs
-      #  run: |
-      #    mkdir -p output
-      #    touch output/linuxtemplate.tar.gz
-      #    touch output/raspbiantemplate.tar.gz
-      #    touch output/CoronaSimulator-x86-64.tar.gz
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v1          
+      - name: Build snap
+        run: |
+          mkdir -p platform/linux/snapcraft/bin
+          cp -Rv /tmp/Solar2D/bin/Solar2D/* platform/linux/snapcraft/bin
+          mkdir -p platform/linux/snapcraft/usr/local/lib
+          cp -Rv /usr/local/lib/* platform/linux/snapcraft/usr/local/lib
+          mkdir -p platform/linux/snapcraft/usr/local/share
+          cp -Rv /usr/local/share/* platform/linux/snapcraft/usr/local/share
+          mkdir -p platform/linux/snapcraft/usr/local/bin
+          cp -Rv /usr/local/bin/* platform/linux/snapcraft/usr/local/bin
+          ln -sf ../lib/wx/config/gtk3-unicode-3.1 wx-config
+          cd platform/linux/snapcraft
+          snapcraft 
+          cp -v *.snap "${WORKSPACE}"/output
       - name: Upload Linux-Template
         uses: actions/upload-artifact@v2-preview
         with:
@@ -146,6 +156,11 @@ jobs:
         with:
           name: Linux-Simulator-Template
           path: ./output/CoronaSimulator*
+      - name: Upload snap
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: Snap
+          path: ./output/*.snap
 
   native:
     needs: source-code
@@ -171,17 +186,11 @@ jobs:
 
   Linux-Simulator:
     needs:
-      - source-code
       - native
       - webtemplate
       - linux
     runs-on: ubuntu-20.04
     steps:
-      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - name: Get processed code
-        uses: actions/download-artifact@v1
-        with:
-          name: SourceCode
       - name: Get Linux Simulator template
         uses: actions/download-artifact@v1
         with:
@@ -194,20 +203,12 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: Native
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
       - name: Unpack CoronaSimulator tgz
         run: |
           mkdir simulator
           tar -xvzf Linux-Simulator-Template/CoronaSimulator-x86-64.tgz -C simulator
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip simulator/Solar2D/Resources/
-      - name: Put readme & install.sh in place
-        run: |
-         echo $(cat platform/linux/install_dependencies.sh)
-         echo $(ls simulator/Solar2D)
-         cp -v platform/linux/install_dependencies.sh simulator/Solar2D/
-         cp -v platform/linux/README.md simulator/Solar2D/
       - name: Put Android resources in place
         run: |
           tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/resource/android-template.zip          
