@@ -130,10 +130,8 @@ jobs:
          tar -czvf "${WORKSPACE}"/output/CoronaSimulator-x86-64.tgz ./
          cd Solar2D/Resources
          cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz "${WORKSPACE}"/output
-      - name: Install Snapcraft with LXD
+      - name: Install Snapcraft
         uses: samuelmeuli/action-snapcraft@v1
-        with:
-          use_lxd: true
       - name: Build snap
         run: |
           mkdir -p platform/linux/snapcraft/bin
@@ -151,7 +149,7 @@ jobs:
           cd platform/linux/snapcraft/usr/local/bin
           ln -sf ../lib/wx/config/gtk3-unicode-3.1 wx-config
           cd ../../../
-          sg lxd -c 'snapcraft --use-lxd'
+          sudo snapcraft --use-lxd
           cp -v *.snap "${WORKSPACE}"/output
       - name: Upload Linux-Template
         uses: actions/upload-artifact@v2-preview
