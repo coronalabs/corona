@@ -23,15 +23,6 @@ env:
   YEAR: ${{ github.event.inputs.buildYear }}
 
 jobs:
-
-  test:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Install Snapcraft with LXD
-        uses: samuelmeuli/action-snapcraft@v1
-        with:
-          use_lxd: true
-
   source-code:
     name: Check out and process source code
     if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
@@ -139,8 +130,6 @@ jobs:
          tar -czvf "${WORKSPACE}"/output/CoronaSimulator-x86-64.tgz ./
          cd Solar2D/Resources
          cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz "${WORKSPACE}"/output
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
       - name: Build snap
         run: |
           mkdir -p platform/linux/snapcraft/bin
