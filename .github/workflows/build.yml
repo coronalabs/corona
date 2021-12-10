@@ -145,11 +145,12 @@ jobs:
           mkdir -p platform/linux/snapcraft/usr/local/share/aclocal
           mkdir -p platform/linux/snapcraft/usr/local/share/locale
           cp -Rv /usr/local/share/aclocal/wx* platform/linux/snapcraft/usr/local/share/aclocal
-          cp --parents `find /usr/local/share/locale -name wx*` platform/linux/snapcraft/usr/local/share/locale
+          cp --parents `find /usr/local/share/locale -name 'wx*'` platform/linux/snapcraft/usr/local/share/locale
           mkdir -p platform/linux/snapcraft/usr/local/bin
           cp -Rv /usr/local/bin/wx* platform/linux/snapcraft/usr/local/bin
+          cd platform/linux/snapcraft/usr/local/bin
           ln -sf ../lib/wx/config/gtk3-unicode-3.1 wx-config
-          cd platform/linux/snapcraft
+          cd ../../../
           sg lxd -c 'snapcraft --use-lxd'
           cp -v *.snap "${WORKSPACE}"/output
       - name: Upload Linux-Template
