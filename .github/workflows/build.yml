@@ -134,6 +134,7 @@ jobs:
         uses: samuelmeuli/action-snapcraft@v1.2.0          
       - name: Build snap
         run: |
+          sudo snap install multipass
           mkdir -p platform/linux/snapcraft/bin
           cp -Rv /tmp/Solar2D/bin/Solar2D/* platform/linux/snapcraft/bin
           mkdir -p platform/linux/snapcraft/usr/local/lib
