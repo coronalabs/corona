@@ -131,17 +131,21 @@ jobs:
          cd Solar2D/Resources
          cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz "${WORKSPACE}"/output
       - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1          
+        uses: samuelmeuli/action-snapcraft@v1.2.0          
       - name: Build snap
         run: |
           mkdir -p platform/linux/snapcraft/bin
           cp -Rv /tmp/Solar2D/bin/Solar2D/* platform/linux/snapcraft/bin
           mkdir -p platform/linux/snapcraft/usr/local/lib
-          cp -Rv /usr/local/lib/* platform/linux/snapcraft/usr/local/lib
-          mkdir -p platform/linux/snapcraft/usr/local/share
-          cp -Rv /usr/local/share/* platform/linux/snapcraft/usr/local/share
+          mkdir -p platform/linux/snapcraft/usr/local/lib/wx
+          cp -Rv /usr/local/lib/libwx* platform/linux/snapcraft/usr/local/lib
+          cp -Rv /usr/local/lib/wx/* platform/linux/snapcraft/usr/local/lib/wx
+          mkdir -p platform/linux/snapcraft/usr/local/share/aclocal
+          mkdir -p platform/linux/snapcraft/usr/local/share/locale
+          cp -Rv /usr/local/share/aclocal/wx* platform/linux/snapcraft/usr/local/share/aclocal
+          cp --parents `find /usr/local/share/locale -name wx*` platform/linux/snapcraft/usr/local/share/locale
           mkdir -p platform/linux/snapcraft/usr/local/bin
-          cp -Rv /usr/local/bin/* platform/linux/snapcraft/usr/local/bin
+          cp -Rv /usr/local/bin/wx* platform/linux/snapcraft/usr/local/bin
           ln -sf ../lib/wx/config/gtk3-unicode-3.1 wx-config
           cd platform/linux/snapcraft
           snapcraft 
