@@ -150,8 +150,15 @@ jobs:
           cd platform/linux/snapcraft/usr/local/bin
           ln -sf ../lib/wx/config/gtk3-unicode-3.1 wx-config
           cd ../../../
+          
+          # set version
+          sed -i "s|YEAR|$YEAR|g" snap/snapcraft.yaml
+          sed -i "s|BUILD_NUMBER|$BUILD_NUMBER|g" snap/snapcraft.yaml
+
+          # build snap
           sudo snapcraft --use-lxd
           cp -v *.snap "${WORKSPACE}"/output
+
       - name: Upload Linux-Template
         uses: actions/upload-artifact@v2-preview
         with:
