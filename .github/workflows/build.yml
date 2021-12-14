@@ -220,12 +220,6 @@ jobs:
         with:
           name: Snap
           path: ./output/*.snap
-      - name: Upload to snapstore
-        uses: snapcore/action-publish@v1
-        with:
-        store_login: ${{ secrets.SNAP_STORE_LOGIN }}
-        snap: ./output/*.snap
-        release: stable
 
   Linux-Simulator:
     needs:
