@@ -169,6 +169,7 @@ jobs:
         run: |
           mkdir -p platform/linux/snapcraft/bin
           cp -Rv /tmp/Solar2D/bin/Solar2D/* platform/linux/snapcraft/bin
+          chmod -R a+r platform/linux/snapcraft/bin/Resources
 
           # Put webtemplate in snap
           cp -v Webtemplate/webtemplate.zip platform/linux/snapcraft/bin/Resources/
