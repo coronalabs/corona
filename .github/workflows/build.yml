@@ -210,16 +210,25 @@ jobs:
         with:
           name: Linux-Template
           path: ./output/linuxtemplate_x64.tgz
+
       - name: Upload Linux Linux-Simulator-Template
         uses: actions/upload-artifact@v2-preview
         with:
           name: Linux-Simulator-Template
           path: ./output/CoronaSimulator*
+
       - name: Upload snap
         uses: actions/upload-artifact@v2-preview
         with:
           name: Snap
           path: ./output/*.snap
+
+      - name: Publish snap
+        uses: snapcore/action-publish@v1
+        with:
+          store_login: ${{ secrets.SNAP_STORE_LOGIN }}
+          snap: ./output/*.snap
+          release: stable
 
   Linux-Simulator:
     needs:
