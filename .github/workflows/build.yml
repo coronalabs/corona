@@ -223,12 +223,13 @@ jobs:
           name: Snap
           path: ./output/*.snap
 
-      - name: Publish snap
-        uses: snapcore/action-publish@v1
-        with:
-          store_login: ${{ secrets.SNAP_STORE_LOGIN }}
-          snap: ./output/solar2d_${{ github.event.inputs.buildYear }}.${{ github.event.inputs.buildNumber }}_amd64.snap
-          release: stable
+# fixme
+#      - name: Publish snap
+#        uses: snapcore/action-publish@v1
+#        with:
+#          store_login: ${{ secrets.SNAP_STORE_LOGIN }}
+#          snap: ./output/solar2d_${{ github.event.inputs.buildYear }}.${{ github.event.inputs.buildNumber }}_amd64.snap
+#          release: stable
 
   Linux-Simulator:
     needs:
