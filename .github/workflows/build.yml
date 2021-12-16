@@ -158,6 +158,17 @@ jobs:
           cmake -DCMAKE_INSTALL_PREFIX=/tmp/Solar2D ..
           make -j4
           make install
+
+      # Put SampleCode in Resources
+      - run: mkdir -p /tmp/Solar2D/bin/Solar2D/Resources/SampleCode
+      - name: Get Sample Code
+        uses: actions/checkout@v2
+        with:
+          repository: coronalabs/samples-coronasdk
+          path: /tmp/Solar2D/bin/Solar2D/Resources/SampleCode
+      - name: Clean-up docs
+        run: rm -rf  /tmp/Solar2D/bin/Solar2D/Resources/SampleCode/.git /tmp/Solar2D/bin/Solar2D/Resources/SampleCode/.gitignore      
+
       - name: Copy results to output
         run: |
          mkdir -p output
