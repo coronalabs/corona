@@ -22,10 +22,6 @@
 	path = external/luasocket
 	url = https://github.com/coronalabs/submodule-luasocket.git
 	branch = master
-[submodule "external/mojoAL"]
-	path = external/mojoAL
-	url = https://github.com/coronalabs/submodule-mojoAL.git
-	branch = master
 [submodule "external/openal-soft_apportable"]
 	path = external/openal-soft_apportable
 	url = https://github.com/coronalabs/submodule-openal-soft_apportable.git
