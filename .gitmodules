@@ -26,10 +26,6 @@
 	path = external/openal-soft_apportable
 	url = https://github.com/coronalabs/submodule-openal-soft_apportable.git
 	branch = master
-[submodule "platform/linux"]
-	path = platform/linux
-	url = https://github.com/coronalabs/submodule-platform-linux.git
-	branch = master
 [submodule "plugins/build"]
 	path = plugins/build
 	url = https://github.com/coronalabs/submodule-plugins-build.git
