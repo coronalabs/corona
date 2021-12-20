@@ -47,7 +47,6 @@ jobs:
         runner:
           - macos-11
         xcode:
-          - Xcode_12.5.1
           - Xcode_13.2
         target:
           - template
