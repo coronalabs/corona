@@ -1,0 +1,61 @@
+name: solar2d
+base: core20
+version: 'YEAR.BUILD_NUMBER'
+summary: Solar2D
+description: Solar2D is a Lua based game engine with focus on ease of iterations and usage
+grade: stable
+confinement: classic
+architectures:
+  - amd64
+
+apps:
+  solar2d:
+    command: bin/Solar2DSimulator
+    environment:
+      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
+    plugs:
+      - network
+      - network-bind 
+      - camera
+      - x11
+      - alsa
+      - audio-playback
+      - audio-record
+      - home
+
+  builder:
+    command: bin/Solar2DBuilder
+    environment:
+      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
+    plugs:
+      - network
+      - network-bind 
+      - camera
+      - x11
+      - alsa
+      - audio-playback
+      - audio-record
+      - home      
+
+parts:
+  solar2d:
+    plugin: dump
+    source: .
+    stage: [bin, usr]
+    stage-packages:
+      - libfreetype6
+      - libpng16-16 
+      - libjpeg8
+      - libgl1
+      - libogg0
+      - libcrypto++6
+      - libcurl4
+      - openjdk-8-jdk-headless
+      - openjdk-8-jre-headless
+      - zlib1g
+      - libopenal1
+      - libpango-1.0-0
+      - libpangocairo-1.0-0 
+      - libpangoft2-1.0-0 
+      - libwebkit2gtk-4.0-37
+      - libsm6
