@@ -86,8 +86,14 @@ ln -sf ../lib/wx/config/gtk3-unicode-3.1 wx-config
 cd ../../../
 
 # set version
-sed -i "s|YEAR|$YEAR|g" snap/snapcraft.yaml
-sed -i "s|BUILD_NUMBER|$BUILD_NUMBER|g" snap/snapcraft.yaml
+sed -i "s|YEAR|$YEAR|" snap/snapcraft.yaml 
+if [[ "$BUILD_NUMBER" == "9999" ]]
+then
+    sed -i "s|BUILD_NUMBER|$BUILD_NUMBER.${GITHUB_SHA::7}|" snap/snapcraft.yaml
+    sed -i "s|stable|devel|"  snap/snapcraft.yaml
+else
+    sed -i "s|BUILD_NUMBER|$BUILD_NUMBER|" snap/snapcraft.yaml
+fi
 
 # build snap
 sudo snapcraft --use-lxd

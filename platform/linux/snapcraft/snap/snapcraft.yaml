@@ -1,7 +1,15 @@
 name: solar2d
+title: Solar2D
+contact: https://github.com/coronalabs/corona/issues/
+donation: https://github.com/coronalabs/corona?sponsor=1
+issues: https://github.com/coronalabs/corona/issues/
+source-code: https://github.com/coronalabs/corona/
+website: https://solar2d.com/
+license: MIT
+icon: snap/gui/solar2d.svg
 base: core20
 version: 'YEAR.BUILD_NUMBER'
-summary: Solar2D
+summary: Solar2D Game Engine
 description: Solar2D is a Lua based game engine with focus on ease of iterations and usage
 grade: stable
 confinement: classic
