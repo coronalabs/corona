@@ -11,7 +11,7 @@
 #include "Rtt_CoronaBuilder.h"
 #include "Rtt_LinuxConsolePlatform.h"
 #include "Rtt_LinuxSimulatorView.h"
-#include "Rtt_LinuxFileUtils.h"
+#include "Rtt_LinuxUtils.h"
 #include <string>
 
 using namespace std;
@@ -33,7 +33,7 @@ int main(int argc, const char *argv[])
 	cachesDir.append("/CachedFiles");
 	systemCachesDir.append("/.system");
 
-	Rtt::LinuxConsolePlatform *platform = new Rtt::LinuxConsolePlatform(pathToApp.c_str(), documentsDir.c_str(), temporaryDir.c_str(), cachesDir.c_str(), systemCachesDir.c_str(), skinDir.c_str(), Rtt::LinuxFileUtils::GetStartupPath(NULL));
+	Rtt::LinuxConsolePlatform *platform = new Rtt::LinuxConsolePlatform(pathToApp.c_str(), documentsDir.c_str(), temporaryDir.c_str(), cachesDir.c_str(), systemCachesDir.c_str(), skinDir.c_str(), GetStartupPath(NULL));
 	Rtt::LinuxPlatformServices services(platform);
 
 	Rtt::CoronaBuilder builder(*platform, services);

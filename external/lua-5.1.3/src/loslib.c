@@ -44,6 +44,23 @@ static int os_execute (lua_State *L) {
   return 1;
 }
 
+static int os_execute2(lua_State* L) {
+#if defined(LUA_USE_POPEN) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
+  const char* cmd = luaL_optstring(L, 1, NULL);
+  int ret = -1;
+  FILE* f = popen(cmd, "r");
+  if (f)
+  {
+    char ch;
+    while ((ch = fgetc(f)) != EOF) {}
+    ret = pclose(f);
+  }
+  lua_pushinteger(L, ret);
+  return 1;
+#else
+  return os_execute(L);
+#endif
+}
 
 static int os_remove (lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
@@ -230,6 +247,7 @@ static const luaL_Reg syslib[] = {
   {"date",      os_date},
   {"difftime",  os_difftime},
   {"execute",   os_execute},
+  {"execute2",   os_execute2},
   {"exit",      os_exit},
   {"getenv",    os_getenv},
   {"remove",    os_remove},

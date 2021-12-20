@@ -1,4 +1,4 @@
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 --
 -- This file is part of the Corona game engine.
 -- For overview and more information on licensing please refer to README.md 
@@ -7,33 +7,24 @@
 --
 ------------------------------------------------------------------------------
 
+local pluginCollector = require "CoronaBuilderPluginCollector"
 processExecute = processExecute or os.execute
 
 local lfs = require("lfs")
 local json = require("json")
 local http = require("socket.http")
 local ltn12 = require("ltn12")
-local debugBuildProcess = 0
+debugBuildProcess = 0
 local dirSeparator = package.config:sub(1,1)
 local buildSettings = nil
 local sFormat = string.format
 local linuxBuilderPrefx = "Linux Builder:"
 local windows = (dirSeparator == '\\')
 
-local function fileExists(name)
-	local f = io.open(name, "r")
-
-	if (f ~= nil) then
-		io.close(f) return true
-	else 
-		return false 
-	end
-end
-
 -- check if /usr/bin/tar exists, it is in Mac but not in Linux
 local tar = "/usr/bin/tar"
 
-if (fileExists(tar) == false) then
+if (isFile(tar) == false) then
 	tar = "tar"   -- for linux
 end
 
@@ -58,20 +49,6 @@ local function quoteString(str)
 	return sFormat("\"%s\"", str)
 end
 
-local function dirExists(path)
-    local cd = lfs.currentdir()
-	local is = lfs.chdir(path) and true or false
-
-	lfs.chdir(cd)
-	
-    return is
-end
-
-function fileExists(name)
-   local f = io.open(name,"r")
-   if f~=nil then io.close(f) return true else return false end
-end
-
 local function pathJoin(p1, p2, ... )
 	local res
 	local p1s = p1:sub(-1) == dirSeparator
@@ -93,10 +70,9 @@ local function pathJoin(p1, p2, ... )
 end
 
 local function extractTar(archive, dst)
-	lfs.mkdir(dst)
+	mkdirs(dst)
 	local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst .. dirSeparator) 
-	--printf("extract tar cmd: %s", cmd)
-	
+--	printf("extract tar cmd: %s", cmd)
 	return os.execute(cmd)
 end
 
@@ -266,6 +242,20 @@ local function copyFile(src, dst)
 	return false;
 end
 
+local function copyFiles(srcFolder, dstFolder)
+	for file in lfs.dir(srcFolder) do
+		if (file ~= "." and file ~= "..") then
+			fullPath = pathJoin(srcFolder, file)
+			attributes = lfs.attributes(fullPath)
+			if (attributes) then
+				if (attributes.mode == "file") then
+					copyFile(fullPath, pathJoin(dstFolder, file))
+				end
+			end
+		end
+	end
+end
+
 local function copyDir( src, dst )
 	if windows then
 		local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst.. '" /e 2> nul'
@@ -325,297 +315,22 @@ local function saveTable(t, path)
 	end
 end
 
-local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
-	if (type(buildSettings) ~= 'table') then
+local function linuxDownloadPlugins(buildRevision, tmpDir, pluginDstDir, platform)
+	if type(buildSettings) ~= 'table' then
 		-- no build.settings file, so no plugins to download
 		return nil
 	end
 
-	-- fixme: port to windows
-	if (1) then
-		log('fix linuxDownloadPlugins')
-		return nil
-	end
-
-	local pluginMessagePrefix = "Linux Plugin Manager:"
-	local publisherIDKey = "publisherId"
-	local supportedPlatformsKey = "supportedPlatforms"
-	local linuxKey = "linux"
-	local linuxSimKey = "linux-sim"
-	local androidKey = "android"
-	local pluginBaseDir = sFormat("%s/.Solar2DPlugins", os.getenv("HOME"))
-	local pluginCatalogPath = sFormat("%s/.Solar2D/Plugins/catalog.json", os.getenv("HOME"))
-	local pluginCatalog = loadTable(pluginCatalogPath)
-	local updateTime = 1800 -- 30 minutes
-
-	local function downloadPlugin(options)
-		local url = options.url
-		local pluginName = options.pluginName
-		local downloadDir = options.downloadDir
-		local pluginPath = options.pluginPath
-		local pluginCatalogKey = options.pluginCatalogKey
-		local pluginArchiveDir = sFormat("%sdata.tgz", downloadDir)
-		local isLuaPlugin = options.isLuaPlugin
-
-		local function removeOldPlugin()
-			if (fileExists(pluginPath)) then
-				os.remove(pluginPath)
-			end
-
-			if (dirExists(downloadDir)) then
-				removeDir(downloadDir)
-			end
-		end
-
-		removeOldPlugin()
-		local success, reason = lfs.mkdir(downloadDir)
-
-		if (not success) then
-			printf("%s failed to create directory %s, reason: %s - Aborting", pluginMessagePrefix, downloadDir, reason)
-			return
-		end
-
-		printf("%s trying to download %s from %s", pluginMessagePrefix, pluginName, url)
-		
-		local code, response = _download(url, pluginArchiveDir)
-
-		if (code == 0 and fileExists(pluginArchiveDir)) then
-			printf("%s downloaded %s successfully", pluginMessagePrefix, pluginName)
-
-			local ret = extractTar(pluginArchiveDir, pluginDestinationDir)
-
-			if (ret ~= 0) then
-				return sFormat('%s failed to unpack plugin %s to %s - curl error code: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, code)
-			end
-
-			if (fileExists(pluginPath)) then
-				pluginCatalog[pluginCatalogKey] = {lastUpdate = os.time()}
-				saveTable(pluginCatalog, pluginCatalogPath)
-			end
-
-			if (isLuaPlugin) then
-				copyDir(sFormat("%s/.Solar2D/Plugins/lua_51/plugin", os.getenv("HOME")), sFormat("%s/.Solar2D/Plugins/plugin/", os.getenv("HOME")))
-				removeDir(sFormat("%s/.Solar2D/Plugins/lua_51", os.getenv("HOME")))
-			end
-		else
-			removeOldPlugin()
-			printf("%s Failed to download %s. err: %s, %s", pluginMessagePrefix, pluginName, code, err)
-		end
-	end
-
-	local function getPluginFromRepo(options)
-		local pluginName = options.pluginName
-		local publisherID = options.publisherID
-		local downloadDir = options.downloadDir
-		local pluginCatalogKey = options.pluginCatalogKey
-		local url = "https://plugins.solar2d.com/plugins.json"
-		local repoCatalogPath = sFormat("%s/.Solar2D/Plugins/repo.json", os.getenv("HOME"))
-
-		printf("%s looking for %s in plugin repo", pluginMessagePrefix, pluginName)
-		
-		local code, response = _fetch(url)
-
-		if (code == 0) then
-			local file = io.open(repoCatalogPath, 'w')
-			file:write(response)
-			file:close()
-		end
-
-		if (fileExists(repoCatalogPath)) then
-			printf("%s found catalog file", pluginMessagePrefix)
-			local repoData = loadTable(repoCatalogPath)
-			local publisherKey = "solar2d"
-			local publisherTable = repoData["solar2d"][publisherID]
-
-			if (publisherTable == nil) then
-				publisherTable = repoData["coronalabs"][publisherID]
-				publisherKey = "coronalabs"
-			end
-
-			local pluginTable = publisherTable[pluginName]
-
-			if (pluginTable ~= nil) then
-				printf("%s found plugin %s in plugin repo", pluginMessagePrefix, pluginName)
-
-				print(json.prettify(pluginTable))
-				print("------------------------")
-
-				local pluginInfo = {
-					name = pluginName,
-					publisherID = publisherID,
-				}
-
-				for k, v in pairs(pluginTable) do
-					if (k == "r") then
-						pluginInfo.releaseVersion = v
-					end
-
-					if (type(v) == "table") then
-						for buildKey, buildValue in pairs(v) do
-							if (buildKey:gmatch("?(%d.%d)")) then
-								pluginInfo.supportedBuildNumber = buildKey
-							end
-
-							if (type(buildValue) == "table") then
-								for _, platform in pairs(buildValue) do
-
-									if (platform == "lua") then
-										pluginInfo.isLuaPlugin = true
-									elseif (platform == androidKey) then
-										pluginInfo.platformKey = platform
-										pluginInfo.isAndroidPlugin = true
-									elseif (platform == linuxKey or platform == linuxSimKey) then
-										pluginInfo.platformKey = platform
-										pluginInfo.isNativePlugin = true
-									end
-								end
-							end
-						end
-					end
-				end
-				
-				print(json.prettify(pluginInfo))
-				local pluginPath = pluginDestinationDir
-				local url = nil
-
-				if (pluginInfo.isLuaPlugin) then
-					url = sFormat("https://github.com/%s/%s-%s/releases/download/%s/%s-lua.tgz", publisherKey, publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber)
-					pluginPath = downloadDir .. pluginName:sub(8) .. ".lua"
-				elseif (pluginInfo.isAndroidPlugin) then
-					-- plugin stubs are in short supply for Linux, so we download the win32-sim stubs instead.
-					url = sFormat("https://github.com/%s/%s-%s/releases/download/%s/%s-%s.tgz", publisherKey, publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber, "win32-sim")
-					pluginPath = downloadDir .. pluginName:sub(8) .. ".lua"
-				elseif (pluginInfo.isNativePlugin) then
-					url = sFormat("https://github.com/%s/%s-%s/releases/download/%s/%s-%s.tgz", publisherKey, publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber, pluginInfo.platformKey)
-					pluginPath = downloadDir .. pluginName:sub(8) .. ".so"
-				end
-
-				printf("%s plugin url from repo is: %s", pluginMessagePrefix, url)
-				printf("%s plugin path: %s, plugin download dir: %s", pluginMessagePrefix, pluginPath, downloadDir)
-
-				downloadPlugin(
-				{
-					url = url,
-					pluginName = pluginName,
-					pluginPath = pluginPath,
-					downloadDir = downloadDir,
-					pluginCatalogKey = pluginCatalogKey,
-					isLuaPlugin = pluginInfo.isLuaPlugin
-				})
-			end
-			--https://github.com/solar2d/provider-plugin.name/releases/download/version/SOLARVERSION-lua.tgz
-			--https://github.com/solar2d/com.schroederapps-plugin.progressRing/releases/download/v1/2017.3032-lua.tgz
-		end
-	end
-
-	-- gather the plugins
-	if (type(buildSettings.plugins) == "table") then
-		printf("%s gathering plugins", pluginMessagePrefix)
-
-		for k, v in pairs(buildSettings.plugins) do
-			if (type(v) == "table") then
-				local pluginName = k
-				local pluginPath = sFormat("%s/.Solar2D/Plugins/%s.so", os.getenv("HOME"), pluginName)
-
-				for pluginKey, pluginValue in pairs(v) do
-					if (pluginKey == publisherIDKey) then
-						local publisherID = pluginValue
-						local pluginCatalogKey = sFormat("%s/%s", publisherID, pluginName)
-						local shouldDownloadPlugin = true
-
-						-- only download the plugin again if it's time to refresh it
-						if (not forceDownload and pluginCatalog[pluginCatalogKey] ~= nil) then
-							if (pluginCatalog[pluginCatalogKey].lastUpdate ~= nil) then
-								if (os.time() - pluginCatalog[pluginCatalogKey].lastUpdate < updateTime) then
-									printf("%s not downloading %s again, it has only been %s seconds since it was last updated", pluginMessagePrefix, pluginName, os.time() - pluginCatalog[pluginCatalogKey].lastUpdate)
-									shouldDownloadPlugin = false
-								end
-							end
-						end
-
-						-- only download the plugin again if it doesn't exist
-						if (not forceDownload and not fileExists(pluginPath)) then
-							shouldDownloadPlugin = true
-						end
-					
-						-- look for the plugin
-						local pluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, pluginName, linuxKey)
-						local otherPluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, pluginName, linuxSimKey)
-						local androidPluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, pluginName, androidKey)
-						local pluginDownloadDir = sFormat("%s/.Solar2D/Plugins/%s/", os.getenv("HOME"), pluginName)
-
-						if (shouldDownloadPlugin) then
-							-- check local plugin storage first
-							if (fileExists(pluginDir)) then
-								printf("%s found %s at path %s", pluginMessagePrefix, pluginName, pluginDir)
-								local ret = extractTar(pluginDir, pluginDestinationDir)
-
-								if (ret ~= 0) then
-									return sFormat('%s failed to unpack plugin %s to %s - error: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, ret)
-								end
-
-								pluginCatalog[pluginCatalogKey] = {lastUpdate = os.time()}
-								saveTable(pluginCatalog, pluginCatalogPath)
-							elseif (fileExists(otherPluginDir)) then
-								printf("%s found %s at path %s", pluginMessagePrefix, pluginName, otherPluginDir)
-								local ret = extractTar(otherPluginDir, pluginDestinationDir)
-
-								if (ret ~= 0) then
-									return sFormat('%s failed to unpack plugin %s to %s - error: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, ret)
-								end
-
-								pluginCatalog[pluginCatalogKey] = {lastUpdate = os.time()}
-								saveTable(pluginCatalog, pluginCatalogPath)
-							-- plugin doesn't exist in local storage, look for it online
-							else
-								local supportedPlatforms = v[supportedPlatformsKey]
-								printf("%s %s does not exist in local storage", pluginMessagePrefix, pluginName)
-
-								if (supportedPlatforms ~= nil and type(supportedPlatforms) == "table") then
-									local linuxTable = supportedPlatforms[linuxKey]
-
-									if (linuxTable == nil) then
-										linuxTable = supportedPlatforms[linuxSimKey]
-									end
-
-									if (linuxTable == nil) then
-										linuxTable = supportedPlatforms[androidKey]
-									end
-
-									if (linuxTable ~= nil and type(linuxTable) == "table") then
-										local url = linuxTable["url"]
-
-										if (url ~= nil and type(url) == "string") then
-											downloadPlugin(
-											{
-												url = url,
-												pluginName = pluginName,
-												pluginPath = pluginPath,
-												downloadDir = pluginDownloadDir,
-												pluginCatalogKey = pluginCatalogKey
-											})
-										end
-									end
-									-- search the repo for lua plugins
-								else
-									printf("%s time to check the plugin repo for %s plugin by %s", pluginMessagePrefix, pluginName, publisherID)
-									getPluginFromRepo(
-									{
-										pluginName = pluginName,
-										publisherID = publisherID,
-										downloadDir = pluginDownloadDir,
-										pluginCatalogKey = pluginCatalogKey
-									})
-								end
-							end
-						end
-					end
-				end
-			end
-		end
-	end
+	local collectorParams = { 
+		pluginPlatform = 'linux',
+		plugins = buildSettings.plugins or {},
+		destinationDirectory = tmpDir,
+		build = buildRevision,
+		extractLocation = pluginDstDir,
+		pluginStorage = pathJoin(os.getenv("HOME"), ".Solar2D")
+	}
+	return pluginCollector.collect(collectorParams)
 end
-
 
 local function getExcludePredecate()
 	local excludes = 
@@ -774,44 +489,42 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 	if (archivesize == nil or archivesize == 0) then
 		return sFormat('%s failed to open template: %s', linuxBuilderPrefx, template)
 	end
-
+	
 	local ret = extractTar(template, linuxAppFolder)
 
 	if (ret ~= 0) then
 		return sFormat('%s failed to unpack template %s to %s - error: %s', linuxBuilderPrefx, template, linuxAppFolder, ret)
 	end
 
-	printf('%s unpacked %s to %s', linuxBuilderPrefx, template, linuxAppFolder)
+	printf('%s extractTar %s to %s', linuxBuilderPrefx, template, linuxAppFolder)
 
 	-- copy binary
-	local binaryPath = sFormat("%s/%s", linuxAppFolder, "Solar2D")
-	printf("%s renaming binary to %s", linuxBuilderPrefx, args.applicationName)
+	local binaryPath = pathJoin(linuxAppFolder, "Solar2D")
+	printf("%s Renaming binary to %s", linuxBuilderPrefx, args.applicationName)
 	os.rename(binaryPath, sFormat("%s/%s", linuxAppFolder , args.applicationName))
 
-	-- dowmload plugins
+	-- gather files into appFolder/Resources
+	local resourcesFolder = pathJoin(linuxAppFolder, "Resources")
+	mkdirs(resourcesFolder)
+
 	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
-	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
+	local pluginExtractDir = pathJoin(args.tmpDir, "Plugins")
 	local binPlugnDir = pathJoin(pluginExtractDir, arch)
 	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
 
-	if (dirExists(luaPluginDir)) then
-		copyDir(luaPluginDir, pluginExtractDir)
+	if (isDir(luaPluginDir)) then
+		copyDir(luaPluginDir, resourcesFolder)
 	end
 	
-	if (dirExists(binPlugnDir)) then
-		copyDir(binPlugnDir, resourcesFolder)
-		copyDir(binPlugnDir, resourcesFolder)
+	if (isDir(binPlugnDir)) then
+		copyDir(binPlugnDir, linuxAppFolder)
 	end
-	
-	-- gather files into appFolder/Resources
-	local resourcesFolder = pathJoin(linuxAppFolder, "Resources")
-	lfs.mkdir(resourcesFolder)
 
 	ret = copyDir(args.srcDir, resourcesFolder)
 	if (ret ~= 0) then
-		return sFormat("%s failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder)
+		return sFormat("%s Failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder)
 	end
-	printf(sFormat("%s copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder))
+	printf(sFormat("%s Copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, resourcesFolder))
 
 	-- compile .lua
 	local rc = compileScriptsAndMakeCAR(args.linuxParams, resourcesFolder, resourcesFolder, resourcesFolder)
@@ -850,13 +563,13 @@ end
 
 -- global script to call from C++
 function linuxPackageApp(args)
-	debugBuildProcess = args.debugBuildProcess
+	debugBuildProcess = tonumber(args.debugBuildProcess) or 0
 
 	log('Linux builder started')
 	log3(json.prettify(args))
 
 	local template = args.templateLocation
-	if (template == nil) then
+	if template == nil and args.onlyGetPlugins == false then
 			return 'No templateLocation'
 	end
 
@@ -870,32 +583,42 @@ function linuxPackageApp(args)
 
 	local success = false;
 
-	if (args.onlyGetPlugins) then
-		local msg = linuxDownloadPlugins(sFormat("%s/.Solar2D/Plugins", os.getenv("HOME")))
+		-- dowmload plugins
+	local pluginsFolder = pathJoin(args.tmpDir, "Plugins")
+	mkdirs(pluginsFolder)
+	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+	mkdirs(pluginDownloadDir)
+	local msg = linuxDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginsFolder)
+	if type(msg) == 'string' then
+		return msg
+	end
 
-		if (type(msg) == 'string') then
-			return msg
+	if (args.onlyGetPlugins) then
+
+		local simulatorPluginsFolder = pathJoin(os.getenv("HOME"), ".Solar2D", "Plugins")
+		local binPlugnDir = pathJoin(pluginsFolder, 'x86-64')
+		local luaPluginDir = pathJoin(pluginsFolder, 'lua', 'lua_51')
+
+		if (isDir(binPlugnDir)) then
+			copyDir(binPlugnDir, simulatorPluginsFolder)
 		end
-	else
+		if (isDir(luaPluginDir)) then
+			copyDir(luaPluginDir, simulatorPluginsFolder)
+		end
+
+		return msg
+	else 
 		local startTime = os.time()
 
 		-- create app folder
 		local linuxAppFolder = pathJoin(args.dstDir, args.applicationName) .. '.Linux'
-		if dirExists(linuxAppFolder) then
+		if isDir(linuxAppFolder) then
 			removeDir(linuxAppFolder)
 			log("Deleting existing directory " .. linuxAppFolder)
 		end
 
-		local ok,err = lfs.mkdir(linuxAppFolder)
-		if not ok then
-			return 'Failed to create app folder: ' .. linuxAppFolder
-		end
+		mkdirs(linuxAppFolder)
 		printf("%s App folder %s", linuxBuilderPrefx, linuxAppFolder)
-
-		local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
-		local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
-		lfs.mkdir(pluginDownloadDir)
-		lfs.mkdir(pluginExtractDir)
 
 		local templateFilename = getLastPathComponent(template);
 		log3('templateFilename: ' .. templateFilename)
@@ -905,13 +628,6 @@ function linuxPackageApp(args)
 		if (rc ~= nil) then
 			return rc
 		end
-
-		local msg = linuxDownloadPlugins(linuxAppFolder, true)
-
-		if (type(msg) == 'string') then
-			return msg
-		end
-
 		printf("%s build finished in %s seconds", linuxBuilderPrefx, os.difftime(os.time(), startTime))
 	end
 	
