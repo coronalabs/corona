@@ -31,6 +31,7 @@ else
 fi
 
 echo Build binaries
+cd "$WORKSPACE"
 
 rm -rf build
 mkdir build
@@ -41,6 +42,8 @@ make install
 
 
 echo Clean-up docs
+cd "$WORKSPACE"
+
 rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
 
 echo Copy results to output
@@ -54,6 +57,7 @@ cd Solar2D/Resources
 cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz "${WORKSPACE}"/output
 
 echo Build snap
+cd "$WORKSPACE"
 
 mkdir -p platform/linux/snapcraft/bin
 cp -Rv /tmp/Solar2D/bin/Solar2D/* platform/linux/snapcraft/bin
