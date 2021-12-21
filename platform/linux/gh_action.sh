@@ -7,21 +7,23 @@ sudo apt-get update
 sudo snap install snapcraft --classic
 # sudo snap install lxd
 sudo lxd init --minimal
-sudo apt-get install -y cmake build-essential dos2unix libwxgtk3.0-gtk3-dev zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev libopenal-dev libfreetype6-dev libpng-dev libcrypto++-dev
-sudo apt-get install -y libcurl4-openssl-dev libpng-dev libjpeg-dev libssl-dev libvorbis-dev libogg-dev uuid-dev zlib1g-dev 
-sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libwebkit2gtk-4.0-dev libgtk-3-dev
+sudo apt-get install -y cmake build-essential dos2unix libwxgtk3.0-gtk3-dev zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev \
+                                libopenal-dev libfreetype6-dev libpng-dev libcrypto++-dev libcurl4-openssl-dev  \
+                                libpng-dev libjpeg-dev libssl-dev libvorbis-dev libogg-dev uuid-dev zlib1g-dev \
+                                libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libwebkit2gtk-4.0-dev libgtk-3-dev
+
 TEMP_DEB="$(mktemp)" &&
 wget -O "$TEMP_DEB" 'http://mirrors.kernel.org/ubuntu/pool/main/r/readline/libreadline7_7.0-3_amd64.deb' &&
 sudo dpkg -i "$TEMP_DEB"
 rm -f "$TEMP_DEB"
+
 # install wxWidgets-3.1.4
-wxurl=https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/wxWidgets-3.1.4.tar.bz2
-wxtar=~/wxWidgets-3.1.4.tar.bz2
 if [ -f /usr/local/include/wx-3.1/wx/wx.h ]; then
     echo "Using existing wxWidgets"
 else
-    wget "$wxurl" -O "$wxtar"
-    tar -xf "$wxtar" -C ~/
+    cd "$WORKSPACE"
+    wget "https://github.com/coronalabs/binary-data/releases/download/1.0/wxWidgets-3.1.4.tar.bz2" -O "wxWidgets-3.1.4.tar.bz2"
+    tar -xf "wxWidgets-3.1.4.tar.bz2" -C ~/
     cd ~/wxWidgets-3.1.4
     mkdir buildgtk
     cd buildgtk
@@ -32,7 +34,6 @@ fi
 
 echo Build binaries
 cd "$WORKSPACE"
-
 rm -rf build
 mkdir build
 cd build
@@ -40,14 +41,11 @@ cmake -DCMAKE_INSTALL_PREFIX=/tmp/Solar2D ..
 make -j4
 make install
 
-
 echo Clean-up docs
 cd "$WORKSPACE"
-
 rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
 
 echo Copy results to output
-
 mkdir -p /tmp/Solar2D/bin/Solar2D/Resources/SampleCode
 cp -Rv docs/SampleCode/* /tmp/Solar2D/bin/Solar2D/Resources/SampleCode
 mkdir -p output
@@ -58,7 +56,6 @@ cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz "${WORKSPACE}"/ou
 
 echo Build snap
 cd "$WORKSPACE"
-
 mkdir -p platform/linux/snapcraft/bin
 cp -Rv /tmp/Solar2D/bin/Solar2D/* platform/linux/snapcraft/bin
 chmod -R a+r platform/linux/snapcraft/bin/Resources
@@ -101,4 +98,4 @@ fi
 
 # build snap
 sudo snapcraft --use-lxd
-cp -v *.snap "${WORKSPACE}"/output
+cp -v ./*.snap "${WORKSPACE}"/output
