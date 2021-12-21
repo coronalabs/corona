@@ -1,10 +1,10 @@
 name: solar2d
 title: Solar2D
-contact: https://github.com/coronalabs/corona/issues/
-donation: https://github.com/coronalabs/corona?sponsor=1
-issues: https://github.com/coronalabs/corona/issues/
-source-code: https://github.com/coronalabs/corona/
-website: https://solar2d.com/
+#contact: https://github.com/coronalabs/corona/issues/
+#donation: https://github.com/coronalabs/corona?sponsor=1
+#issues: https://github.com/coronalabs/corona/issues/
+#source-code: https://github.com/coronalabs/corona/
+#website: https://solar2d.com/
 license: MIT
 icon: snap/gui/solar2d.svg
 base: core20
@@ -21,35 +21,21 @@ apps:
     command: bin/Solar2DSimulator
     environment:
       LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
-    plugs:
-      - network
-      - network-bind 
-      - camera
-      - x11
-      - alsa
-      - audio-playback
-      - audio-record
-      - home
 
   builder:
     command: bin/Solar2DBuilder
     environment:
       LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
-    plugs:
-      - network
-      - network-bind 
-      - camera
-      - x11
-      - alsa
-      - audio-playback
-      - audio-record
-      - home      
 
 parts:
   solar2d:
     plugin: dump
     source: .
     stage: [bin, usr]
+    build-packages:
+      - ca-certificates
+      - ca-certificates-java
+      - openjdk-8-jre-headless
     stage-packages:
       - libfreetype6
       - libpng16-16 
