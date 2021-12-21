@@ -47,19 +47,19 @@ jobs:
         runner:
           - macos-11
         xcode:
-          # - Xcode_12.5.1
+          - Xcode_12.5.1
           - Xcode_13.2
         target:
           - template
-          # - template-angle
+          - template-angle
         platform:
           - iphone
-          # - tvos
-        # include:
-        #   - xcode: Xcode_11.3.1
-        #     target: template
-        #     platform: iphone
-        #     runner: macos-10.15
+          - tvos
+        include:
+          - xcode: Xcode_11.3.1
+            target: template
+            platform: iphone
+            runner: macos-10.15
     needs: source-code
     runs-on: ${{ matrix.runner }}
     env:
