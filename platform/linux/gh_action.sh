@@ -1,10 +1,9 @@
 #!/bin/bash
 set -ex
-export SHELLOPTS
-echo "$SHELLOPTS"
 
 echo Install dependencies
 (
+    set -ex
     # The Linux and macOS virtual machines both run using passwordless sudo
     sudo apt-get update
     sudo snap install snapcraft --classic
@@ -23,6 +22,7 @@ echo Install dependencies
 
 # install wxWidgets-3.1.4
 (
+    set -ex
     if [ -f /usr/local/include/wx-3.1/wx/wx.h ]; then
         echo "Using existing wxWidgets"
     else
@@ -39,6 +39,7 @@ echo Install dependencies
 
 echo Build binaries
 (
+    set -ex
     rm -rf build
     mkdir build
     cd build
@@ -52,6 +53,7 @@ rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
 
 echo Copy results to output
 (
+    set -ex
     mkdir -p /tmp/Solar2D/bin/Solar2D/Resources/SampleCode
     cp -Rv docs/SampleCode/* /tmp/Solar2D/bin/Solar2D/Resources/SampleCode
     mkdir -p output
@@ -63,7 +65,7 @@ echo Copy results to output
 
 echo Build snap
 (
-
+    set -ex
     mkdir -p platform/linux/snapcraft/bin
     cp -Rv /tmp/Solar2D/bin/Solar2D/* platform/linux/snapcraft/bin
     chmod -R a+r platform/linux/snapcraft/bin/Resources
