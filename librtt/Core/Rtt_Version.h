@@ -20,10 +20,16 @@
 
 #define Rtt_LOCAL_BUILD_REVISION 9999
 
-#define Rtt_BUILD_YEAR 2100
+#ifndef Rtt_BUILD_YEAR
+#	define Rtt_BUILD_YEAR 2100
+#endif
+
 #define Rtt_BUILD_MONTH 1
 #define Rtt_BUILD_DAY 1
-#define Rtt_BUILD_REVISION Rtt_LOCAL_BUILD_REVISION
+
+#ifndef Rtt_BUILD_REVISION
+#	define Rtt_BUILD_REVISION Rtt_LOCAL_BUILD_REVISION
+#endif
 
 // If this is a public release, this should be 0
 #define Rtt_IS_DAILYBUILD	1

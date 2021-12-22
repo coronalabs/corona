@@ -2,6 +2,22 @@
 
 project("Solar2D")
 
+# Set version
+
+if (DEFINED ENV{BUILD_NUMBER})
+  set(BUILD_NUMBER $ENV{BUILD_NUMBER})
+else()
+  set(BUILD_NUMBER 9999)
+endif()
+if (DEFINED ENV{YEAR})
+  set(YEAR $ENV{YEAR})
+else()
+  set(YEAR 2100)
+endif()
+
+message("YEAR: " ${YEAR})
+message("BUILD_NUMBER: " ${BUILD_NUMBER})
+
 # Set a default build type if none was specified
 
 set(default_build_type "Release")
