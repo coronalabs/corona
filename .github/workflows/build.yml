@@ -529,6 +529,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - linux
+      - release
     steps:
       - uses: actions/download-artifact@v1
         with:
@@ -542,12 +543,12 @@ jobs:
             export SNAP_RELEASE=stable
           fi
           echo "SNAP_RELEASE=$SNAP_RELEASE" >> $GITHUB_ENV
-          mv -v Snap/*.snap s2d.snap
+          find Snap -name '*.snap' -execdir mv -v {} s2d.snap \; -quit
       - uses: snapcore/action-publish@v1
-        if: false
+        continue-on-error: true
         with:
           store_login: ${{ secrets.SNAP_STORE_LOGIN }}
-          snap: s2d.snap
+          snap: ./Snap/s2d.snap
           release: ${{ env.SNAP_RELEASE }}
 
 
@@ -607,6 +608,7 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: Snap
+      - run: find Snap -name '*.snap' -execdir mv -v {} s2d.snap \; -quit
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -640,8 +642,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Snap/solar2d_${{ env.YEAR }}.${{ env.BUILD }}.snap
-          asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}.snap
+          asset_path: ./Snap/s2d.snap
+          asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.snap
           asset_content_type: application/octet-stream
       - name: Upload Release Asset for Linux Simulator Binaries
         uses: actions/upload-release-asset@v1
