@@ -256,8 +256,7 @@ void LinuxMenuEvents::OnAbout(wxCommandEvent &WXUNUSED(event))
 {
 	wxAboutDialogInfo info;
 	string version("Version: ");
-	version.append(to_string(Rtt_BUILD_YEAR)).append(".").append(to_string(Rtt_LOCAL_BUILD_REVISION));
-	info.SetName("Solar2D Simulator");
+	version.append(Rtt_STRING_BUILD);	info.SetName("Solar2D Simulator");
 	info.SetVersion(version);
 	info.SetCopyright(Rtt_STRING_COPYRIGHT);
 	info.AddDeveloper("Danny Glover, Robert Craig. Based on initial port by the CoronaLabs team.");
