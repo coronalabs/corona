@@ -50,7 +50,7 @@ class ShapeAdapterMesh : public ShapeAdapter
 		static int setUV( lua_State *L );
 		static int getUV( lua_State *L );
 		static int getVertexOffset( lua_State *L );
-
+		static int update(lua_State *L);
 };
 
 // ----------------------------------------------------------------------------

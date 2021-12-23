@@ -323,9 +323,57 @@ IPhoneDevice::GetUniqueIdentifier( IdentifierType t ) const
 }
 	
 void
-IPhoneDevice::Vibrate() const
+IPhoneDevice::Vibrate(const char * hapticType, const char* hapticStyle) const
 {
-	AudioServicesPlaySystemSound( kSystemSoundID_Vibrate );
+    NSString * type = nil;
+    if(hapticType){
+       type = [[NSString alloc] initWithUTF8String:hapticType];
+    }
+    NSString * style = nil;
+    if(hapticStyle){
+       style = [[NSString alloc] initWithUTF8String:hapticStyle];
+    }
+   if([type isEqualToString:@"impact"]){
+       UIImpactFeedbackStyle feedbackStyle = UIImpactFeedbackStyleMedium; // default
+         if (style != nil) {
+           if ([style isEqualToString:@"light"]) {
+               feedbackStyle = UIImpactFeedbackStyleLight;
+           } else if ([style isEqualToString:@"heavy"]) {
+               feedbackStyle = UIImpactFeedbackStyleHeavy;
+           } else if ([style isEqualToString:@"rigid"]) {
+               if (@available(iOS 13.0, *)) {
+                feedbackStyle = UIImpactFeedbackStyleRigid;
+               }//else we use medium
+           } else if ([style isEqualToString:@"soft"]) {
+               if (@available(iOS 13.0, *)) {
+                   feedbackStyle = UIImpactFeedbackStyleSoft;
+               }//else we use medium
+           }
+         }
+       UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:feedbackStyle];
+       [feedback prepare];
+       [feedback impactOccurred];
+       feedback = nil;
+   }else if([type isEqualToString:@"selection"]){
+       UISelectionFeedbackGenerator *generator = [UISelectionFeedbackGenerator new];
+       [generator selectionChanged];
+   }else if([type isEqualToString:@"notification"]){
+       UINotificationFeedbackType feedbackType = UINotificationFeedbackTypeSuccess; // default
+       if (style != nil) {
+           if ([style isEqualToString:@"warning"]) {
+             feedbackType = UINotificationFeedbackTypeWarning;
+           } else if ([style isEqualToString:@"error"]) {
+             feedbackType = UINotificationFeedbackTypeError;
+           }
+       }
+       UINotificationFeedbackGenerator *feedback = [UINotificationFeedbackGenerator new];
+       [feedback prepare];
+       [feedback notificationOccurred:feedbackType];
+       feedback = nil;
+   }else{
+       if(type != nil){Rtt_Log("WARNING: invalid hapticType");} //just in case user misspells or puts a wrong type
+       AudioServicesPlaySystemSound( kSystemSoundID_Vibrate );
+   }
 }
 
 bool

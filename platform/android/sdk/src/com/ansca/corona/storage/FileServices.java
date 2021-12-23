@@ -98,7 +98,21 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	 *         Returns false if the file could not be found.
 	 */
 	public boolean doesAssetFileExist(String filePath) {
-		return (getAssetFileLocation(filePath) != null);
+		if (getAssetFileLocation(filePath) != null) {
+			return true;
+		}
+		android.content.res.AssetManager assetManager = getApplicationContext().getAssets();
+		java.io.InputStream is = null;
+		try {
+			is = assetManager.open(filePath, android.content.res.AssetManager.ACCESS_BUFFER);
+		} catch (Throwable ignore){};
+		if(is != null) {
+			try {
+				is.close();
+			} catch (Throwable ignore) {}
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -155,7 +169,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	 * that the asset is not compressed. This is particularly usefull if the asset needs to be
 	 * accessed from native C/C++ code or from a 3rd party library that does not support Android's
 	 * AssetManager class.
-	 * @param filePath Relative path to the assset file.
+	 * @param filePath Relative path to the asset file.
 	 * @return Returns information about where the given asset is located.
 	 *         <p>
 	 *         Returns null if the asset could not be found or if given an invalid argument.

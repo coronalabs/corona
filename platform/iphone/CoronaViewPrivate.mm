@@ -326,7 +326,13 @@ CoronaViewListenerAdapter( lua_State *L )
 	fShouldInvalidate = false;
 	fLoadOrientation = Rtt::DeviceOrientation::kUpright;
 	fParams = nil;
-	[self setForceTouchSupport:NO];
+	// iPad may use Apple Pencil which supports pressure
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && [[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
+		// Todo: build Pencil support outmore return UItouchType for pencil, angle, etc
+		[self setForceTouchSupport:YES];
+	}else{
+		[self setForceTouchSupport:NO];
+	}
 
 	// TextField/TextBox
 	{

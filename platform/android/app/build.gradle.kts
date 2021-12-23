@@ -17,7 +17,7 @@ val coronaResourcesDir: String? by project
 val coronaDstDir: String? by project
 val coronaTmpDir: String? by project
 val coronaAppFileName: String? by project
-val coronaAppPackage = project.findProperty("coronaAppPackage") as? String ?: "com.corona.test"
+val coronaAppPackage = project.findProperty("coronaAppPackage") as? String ?: "com.corona.app"
 val coronaKeystore: String? by project
 val coronaKeystorePassword: String? by project
 val coronaKeyAlias: String? by project
@@ -38,11 +38,16 @@ val coronaSrcDir = project.findProperty("coronaSrcDir") as? String
             "$rootDir/../Corona"
         }
 val coronaBuiltFromSource = file("CMakeLists.txt").exists() && file("../sdk").exists()
+
 val windows = System.getProperty("os.name").toLowerCase().contains("windows")
-val shortOsName = if (windows) "win" else "mac"
+val linux = System.getProperty("os.name").toLowerCase().contains("linux")
+val shortOsName = if (windows) "win" else if (linux) "linux" else "mac"
+
 val nativeDir = if (windows) {
     val resourceDir = coronaResourcesDir?.let { file("$it/../Native/").absolutePath }?.takeIf { file(it).exists() }
     (resourceDir ?: "${System.getenv("CORONA_PATH")}/Native").replace("\\", "/")
+} else if (linux) {
+    "$coronaResourcesDir/Native"    
 } else {
     val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native/").absolutePath }?.takeIf { file(it).exists() }
     resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
@@ -128,10 +133,11 @@ extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.andro
 
 val coronaBuilder = if (windows) {
     "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
+} else if (linux) {
+    "$coronaResourcesDir/../Solar2DBuilder"    
 } else {
     "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
 }
-
 
 val coronaVersionName =
         parsedBuildProperties.lookup<Any?>("buildSettings.android.versionName").firstOrNull()?.toString()
@@ -181,11 +187,13 @@ if (configureCoronaPlugins == "YES") {
 //</editor-fold>
 
 android {
-    buildToolsVersion("29.0.3")
-    compileSdkVersion(29)
+    lintOptions {
+        isCheckReleaseBuilds = false
+    }
+    compileSdkVersion(30)
     defaultConfig {
         applicationId = coronaAppPackage
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         minSdkVersion(extra["minSdkVersion"] as Int)
         versionCode = coronaVersionCode
         versionName = coronaVersionName
@@ -244,6 +252,9 @@ android {
     }
     aaptOptions {
         additionalParameters("--extra-packages", extraPackages.filter { it.isNotBlank() }.joinToString(":"))
+    }
+    if (isExpansionFileRequired) {
+        assetPacks.add(":preloadedAssets")
     }
     // This is dirty hack because Android Assets refuse to copy assets which start with . or _
     if (!isExpansionFileRequired) {
@@ -779,6 +790,7 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
         exclude("app/build/**", "app/CMakeLists.txt")
         exclude("**/*.iml", "**/\\.*")
         include("setup.sh", "setup.bat")
+        include("preloadedAssets/build.gradle.kts")
         into("template")
     }
     from(android.sdkDirectory) {
@@ -816,7 +828,7 @@ tasks.register<Copy>("exportToNativeAppTemplate") {
     from(rootDir) {
         include("app/build.gradle.kts")
         filter {
-            it.replace("com.corona.test", "com.mycompany.app")
+            it.replace("com.corona.app", "com.mycompany.app")
         }
     }
 
@@ -869,9 +881,11 @@ fun copyWithAppFilename(dest: String, appName: String?) {
         android.applicationVariants.matching {
             it.name.equals("release", true)
         }.all {
-            copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
-                include("*.apk")
-                exclude("*unsigned*")
+            if(!isExpansionFileRequired) {
+                copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
+                    include("*.apk")
+                    exclude("*unsigned*")
+                }
             }
             copyTask.from("$buildDir/outputs/bundle/$name") {
                 include("*.aab")
@@ -904,10 +918,6 @@ tasks.create("buildCoronaApp") {
                 }
             }
             delete("$it/$coronaExpansionFileName")
-            copy {
-                from("$buildDir/outputs/$coronaExpansionFileName")
-                into(it)
-            }
         }
     }
 }

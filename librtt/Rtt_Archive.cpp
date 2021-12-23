@@ -24,7 +24,7 @@
 #include <string.h>
 #include <fcntl.h>
 
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) // || defined( Rtt_NXS_ENV )
 	#include <io.h>
 	#include <sys/stat.h>
 	static const unsigned S_IRUSR = _S_IREAD;     ///< read by user
@@ -451,7 +451,7 @@ ArchiveReader::Initialize( const void* data, size_t numBytes )
 {
 	const U8 kHeader[] = { 'r', 'a', 'c', ArchiveWriter::kVersion };
 	const size_t kHeaderSize = sizeof( kHeader );
-	bool result = ( numBytes > kHeaderSize && 0 == memcmp( data, kHeader, kHeaderSize ) );
+	bool result = ( data && numBytes > kHeaderSize && 0 == memcmp( data, kHeader, kHeaderSize ) );
 	if ( result )
 	{
 		fPos = ((U8*)data) + kHeaderSize;
@@ -973,7 +973,7 @@ Archive::Archive( Rtt_Allocator& allocator, const char *srcPath )
 #endif
 	fData( NULL )
 {
-#if defined( Rtt_WIN_PHONE_ENV )
+#if defined( Rtt_WIN_PHONE_ENV ) || defined(Rtt_NXS_ENV)
 	FILE* filePointer = Rtt_FileOpen(srcPath, "rb");
 	if (filePointer)
 	{
@@ -1107,7 +1107,7 @@ Archive::Archive( Rtt_Allocator& allocator, const char *srcPath )
 
 Archive::~Archive()
 {
-#if defined( Rtt_ANDROID_ENV ) || defined( Rtt_EMSCRIPTEN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_ANDROID_ENV ) || defined( Rtt_EMSCRIPTEN_ENV ) || defined( Rtt_NXS_ENV )
 	// Do nothing.
 #elif defined( Rtt_WIN_PHONE_ENV )
 	Rtt_FREE((void*)fData);

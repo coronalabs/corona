@@ -29,21 +29,19 @@ if EXIST "%WORKSPACE%\..\webtemplate.zip" (
     echo WARNING! webtemplate is not found!
 )
 
+if EXIST "%WORKSPACE%\..\nxtemplate" (
+    echo Copying nxtemplate
+    copy "%WORKSPACE%\..\nxtemplate" "%WORKSPACE%\platform\resources" /Y
+) else (
+    echo WARNING! nxtemplate is not found!
+)
 
-if EXIST "%WORKSPACE%\..\linuxtemplate.tar.gz" (
-    echo Copying linuxtemplate.tar.gz
-    copy "%WORKSPACE%\..\linuxtemplate.tar.gz" "%WORKSPACE%\platform\resources" /Y
+if EXIST "%WORKSPACE%\..\linuxtemplate_x64.tgz" (
+    echo Copying linuxtemplate_x64.tgz
+    copy "%WORKSPACE%\..\linuxtemplate_x64.tgz" "%WORKSPACE%\platform\resources" /Y
 ) else (
     echo WARNING! linuxtemplate is not found!
 )
-
-if EXIST "%WORKSPACE%\..\raspbiantemplate.tar.gz" (
-    echo Copying raspbiantemplate.tar.gz
-    copy "%WORKSPACE%\..\raspbiantemplate.tar.gz" "%WORKSPACE%\platform\resources" /Y
-) else (
-    echo WARNING! linuxtemplate is not found!
-)
-
 
 cd "%WORKSPACE%\..\docs"
 c:\cygwin\bin\find ./SampleCode \( -iname '*.lua' -or -iname '*.txt' -or -iname '*.settings' \) -print0 | xargs -0 -n1 -P4 unix2dos

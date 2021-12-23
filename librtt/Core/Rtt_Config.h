@@ -36,8 +36,8 @@
 #elif Rtt_ANDROID_ENV
 	#define Rtt_USE_OPENSLES
 	#define Rtt_USE_ALMIXER
-#elif Rtt_NINTENDO_ENV
-	#define Rtt_USE_ALMIXER
+#elif Rtt_NXS_ENV
+	//#define Rtt_USE_ALMIXER
 #elif Rtt_LINUX_ENV
 	#define Rtt_USE_ALMIXER
 #else
@@ -336,53 +336,42 @@
 	#define Rtt_VPRINTF_SUPPORTED
 	#define Rtt_NETWORK
 
+	// disabled in order to reduce app size
+	// #define Rtt_SQLITE
+
 	#if EMSCRIPTEN
 		#define Rtt_OPENGLES
 		#define Rtt_EGL
-
 		#define Rtt_BROWSER_ENV
 	#else
 		#define Rtt_OPENGL_EXT_APPLE
 		#define Rtt_LUA_C_MODULE_DYLIB
 	#endif
-
-	//#define Rtt_SQLITE
-
 #endif
 
 //
-// Nintendo 
+// NxS 
 //
+#if defined( Rtt_NXS_ENV )
 
-#if defined( Rtt_NINTENDO_ENV )
-
-//#define USE_STATIC_MIXER
+#define Rtt_OPENGL_CLIENT_SIDE_ARRAYS 1
 #define Rtt_USE_GLOBAL_VARIABLES
 #define Rtt_VPRINTF_SUPPORTED
 #define Rtt_USE_LIMITS
 #define Rtt_ALLOCATOR_SYSTEM
 #define Rtt_LUA_LFS
+#define Rtt_NETWORK
+#define Rtt_SQLITE
 
 #include <sys/stat.h>
+#include "Rtt_NX_Allocator.h"
 #include "Rtt_FileSystem.h"
-
-// stdio
-//#define stat Rtt_FileStatus
-#define lstat Rtt_FileStatus
-#define fopen Rtt_FileOpen
-#define fread Rtt_FileRead
-#define feof Rtt_FileEof
-#define fclose Rtt_FileClose
-#define ferror Rtt_FileError
-#define getc Rtt_FileGetC
-#define ungetc Rtt_FileUngetC
-#define clearerr Rtt_FileClearerr
-#define fseek Rtt_FileSeek
-#define ftell Rtt_FileTell
-#define rewind Rtt_FileRewind
 
 #endif
 
+//
+// Linux
+//
 #if defined( Rtt_LINUX_ENV )
 	#define GL_GLEXT_PROTOTYPES
 	#define Rtt_USE_GLOBAL_VARIABLES

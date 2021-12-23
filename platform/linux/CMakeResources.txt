@@ -1,0 +1,58 @@
+#
+# build Resources folder, in config time
+#
+
+SET(RESOURCES "${CMAKE_CURRENT_BINARY_DIR}/Resources")
+
+# create Resources folder
+file(MAKE_DIRECTORY ${RESOURCES})
+
+# copy common widget*.png
+file(GLOB WIDGETS ${CORONA_ROOT}/subrepos/widget/widget*.png)
+foreach(pngFile IN LISTS WIDGETS)
+  file(COPY ${pngFile} DESTINATION ${RESOURCES})
+endforeach()
+
+# copy Android resources
+
+#file(COPY "${CORONA_ROOT}/platform/resources/CoronaBuilderPluginCollector.lua" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_WRITE OWNER_READ)
+
+file(COPY "${CORONA_ROOT}/platform/resources/json.lua" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/resources/dkjson.lua" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/resources/CoronaPListSupport.lua" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/resources/AppSettings.lua" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_WRITE OWNER_READ)
+
+file(COPY "${CORONA_ROOT}/platform/android/create_build_properties.lua" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/android/resources/build.xml" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/android/resources/_coronatest.jar" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/android/resources/debug.keystore" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/android/project/ListKeyStore/ListKeyStore.jar" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/android/project/AntInvoke/AntInvoke.jar" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/platform/android/AntLiveManifest/AntLiveManifest.jar" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/external/apache-ant-1.8.1/lib/ant.jar" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+file(COPY "${CORONA_ROOT}/external/apache-ant-1.8.1/lib/ant-launcher.jar" DESTINATION ${RESOURCES} FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+
+# copy Skins
+file(COPY "${CORONA_ROOT}/platform/resources/Skins" DESTINATION ${RESOURCES})
+file(COPY "${CORONA_ROOT}/platform/linux/Resources/Skins" DESTINATION ${RESOURCES})
+
+# copy plugins/licensing-google
+file(MAKE_DIRECTORY "${RESOURCES}/Native/plugins")
+file(COPY "${CORONA_ROOT}/plugins/licensing-google" DESTINATION ${RESOURCES}/Native/plugins)
+
+# copy bin/shared
+file(COPY "${CORONA_ROOT}/bin/shared" DESTINATION ${RESOURCES})
+
+# copy headers
+file(MAKE_DIRECTORY "${RESOURCES}/include")
+file(COPY "${CORONA_ROOT}/librtt/Corona" DESTINATION ${RESOURCES}/include  FILES_MATCHING PATTERN "*.h")
+file(MAKE_DIRECTORY "${RESOURCES}/include/lua")
+file(COPY "${CORONA_ROOT}/external/lua-5.1.3/src/" DESTINATION ${RESOURCES}/include/lua FILES_MATCHING PATTERN "*.h")
+
+# homescreen
+file(COPY "${CORONA_ROOT}/simulator-extensions/welcomescreen" DESTINATION ${RESOURCES}) 
+file(REMOVE_RECURSE ${RESOURCES}/homescreen) 
+file(RENAME ${RESOURCES}/welcomescreen ${RESOURCES}/homescreen)
+
+# icon
+file(COPY "${CORONA_ROOT}/platform/linux/snapcraft/snap/gui/solar2d.png" DESTINATION ${RESOURCES}) 

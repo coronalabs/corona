@@ -950,6 +950,7 @@ NativeToJavaBridge::RenderText(
 void 
 NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt::Real &bottom, Rtt::Real &right)
 {
+	top = left = bottom = right = 0;
 	NativeTrace trace( "NativeToJavaBridge::GetSafeAreaInsetsPixels" );
 	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
 	if ( bridge.isValid() ) 
@@ -960,6 +961,7 @@ NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt
 		{
 			jobject objArray = bridge.getEnv()->CallStaticObjectMethod( bridge.getClass(), methodId, fCoronaRuntime );
 			jfloatArray * jfArray = reinterpret_cast< jfloatArray* >( & objArray );
+			if(objArray == NULL) return;
 			jsize len = bridge.getEnv()->GetArrayLength( *jfArray );
 			float* data = bridge.getEnv()->GetFloatArrayElements( *jfArray, 0 );
 			if ( len == 4 )
@@ -968,10 +970,6 @@ NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt
 				left 	= data [ 1 ];
 				right 	= data [ 2 ];
 				bottom  = data [ 3 ];
-			}
-			else 
-			{
-				top = left = bottom = right = 0;
 			}
 			bridge.getEnv()->ReleaseFloatArrayElements( *jfArray, data, 0 );
 			bridge.getEnv()->DeleteLocalRef( *jfArray );
@@ -2069,10 +2067,29 @@ NativeToJavaBridge::MakeLowerCase(Rtt::String *stringToConvert)
 }
 
 void
-NativeToJavaBridge::Vibrate()
+NativeToJavaBridge::Vibrate(const char * hapticType, const char* hapticStyle)
 {
-	CallVoidMethod( "callVibrate" );
 	HandleJavaException();
+	NativeTrace trace( "NativeToJavaBridge::Vibrate" );
+
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+
+	if ( bridge.isValid() ) {
+
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(),
+															"callVibrate", "(Lcom/ansca/corona/CoronaRuntime;Ljava/lang/String;Ljava/lang/String;)V" );
+
+		if ( mid != NULL ) {
+			jstringParam hapticTypeJ( bridge.getEnv(), hapticType );
+			jstringParam hapticStyleJ( bridge.getEnv(), hapticStyle );
+
+			bridge.getEnv()->CallStaticVoidMethod(
+					bridge.getClass(), mid, fCoronaRuntime, hapticTypeJ.getValue(), hapticStyleJ.getValue());
+			HandleJavaException();
+
+		}
+	}
 }
 
 void

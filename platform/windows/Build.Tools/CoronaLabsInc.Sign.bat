@@ -20,19 +20,19 @@ call "%~dp0VSVars.bat"
 REM Digitally sign the given file.
 echo Digitally signing file: %~1
 
-signtool sign /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.digicert.com %programNameArgument% "%~1"
+signtool sign /fd sha1 /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.digicert.com %programNameArgument% "%~1"
 if errorlevel 0 goto:eof
 echo "Signin failed. Using fallback timestamp server 1!"
-signtool sign /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.verisign.com/scripts/timestamp.dll %programNameArgument% "%~1"
+signtool sign /fd sha1 /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.verisign.com/scripts/timestamp.dll %programNameArgument% "%~1"
 if errorlevel 0 goto:eof
 echo "Signin failed. Using fallback timestamp server 2!"
-signtool sign /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.globalsign.com/scripts/timestamp.dll %programNameArgument% "%~1"
+signtool sign /fd sha1 /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.globalsign.com/scripts/timestamp.dll %programNameArgument% "%~1"
 if errorlevel 0 goto:eof
 echo "Signin failed. Using fallback timestamp server 3!"
-signtool sign /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://tsa.starfieldtech.com %programNameArgument% "%~1"
+signtool sign /fd sha1 /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://tsa.starfieldtech.com %programNameArgument% "%~1"
 if errorlevel 0 goto:eof
 echo "Signin failed. Using fallback timestamp server 4!"
-signtool sign /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.geotrust.com/tsa %programNameArgument% "%~1"
+signtool sign /fd sha1 /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.geotrust.com/tsa %programNameArgument% "%~1"
 if errorlevel 0 goto:eof
 echo "NO TIMESTAMP FALLBACK WORKED!"
 exit /b 1

@@ -373,8 +373,8 @@ function PluginSync:addPluginToQueueIfRequired( required_plugin )
 	should_queue = should_queue or ( not manifest )
 	if type(manifest) == 'table' and type(manifest.lastUpdate) == 'number'  then
 		local age = os.difftime(self.now, manifest.lastUpdate)
-		-- update plugins every 30 minutes or so
-		should_queue = should_queue or ( age > 60*30 )
+		-- update plugins every 24 hours or so
+		should_queue = should_queue or ( age > 86400 )
 	else
 		should_queue = true
 	end
@@ -435,7 +435,7 @@ function PluginSync:downloadQueuedPlugins( onComplete )
 		if type(result.result) == 'string' then
 			updateTime = nil
 			local res = result.result:gsub('%[(.-)%]%((https?://.-)%)', '%1 (%2)')
-			print("WARNING: there was an issue whilde downloading simulator plugin placeholders:\n" .. res)
+			print("WARNING: there was an issue while downloading simulator plugin placeholders:\n" .. res)
 		end
 		for i=1,#self.queue do
 			local key = self.queue[i].clientCatalogKey
