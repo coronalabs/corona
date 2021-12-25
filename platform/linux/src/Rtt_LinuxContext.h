@@ -110,14 +110,13 @@ namespace Rtt
 class SolarGLCanvas : public wxGLCanvas
 {
 public:
-	SolarGLCanvas(SolarFrame *parent, const wxGLAttributes &canvasAttrs);
+	SolarGLCanvas(SolarFrame *parent, const int* vAttrs);
 	~SolarGLCanvas();
 
 	void OnChar(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 	bool IsGLContextAvailable() { return fGLContext != NULL; } // used to know if we must end now because OGL 3.2 isn't available
-	void OnPaint(wxPaintEvent &event);
-	void OnWindowCreate(wxWindowCreateEvent &event);
+	void Render();
 	void OnSize(wxSizeEvent &event);
 	void StartTimer(float duration);
 

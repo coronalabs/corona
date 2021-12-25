@@ -828,17 +828,17 @@ LinuxPlatform* SolarApp::GetPlatform() const
 
 // setup frame events
 wxBEGIN_EVENT_TABLE(SolarFrame, wxFrame)
-EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarFrame::OnOpenWelcome)
-EVT_MENU(ID_MENU_RELAUNCH_PROJECT, SolarFrame::OnRelaunch)
-EVT_MENU(ID_MENU_SUSPEND, SolarFrame::OnSuspendOrResume)
-EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarFrame::OnOpenWelcome)
-EVT_MENU(ID_MENU_ZOOM_IN, SolarFrame::OnZoomIn)
-EVT_MENU(ID_MENU_ZOOM_OUT, SolarFrame::OnZoomOut)
-EVT_COMMAND(wxID_ANY, eventOpenProject, SolarFrame::OnOpen)
-EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarFrame::OnRelaunch)
-EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarFrame::OnOpenWelcome)
-EVT_ICONIZE(SolarFrame::OnIconized)
-EVT_CLOSE(SolarFrame::OnClose)
+	EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarFrame::OnOpenWelcome)
+	EVT_MENU(ID_MENU_RELAUNCH_PROJECT, SolarFrame::OnRelaunch)
+	EVT_MENU(ID_MENU_SUSPEND, SolarFrame::OnSuspendOrResume)
+	EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarFrame::OnOpenWelcome)
+	EVT_MENU(ID_MENU_ZOOM_IN, SolarFrame::OnZoomIn)
+	EVT_MENU(ID_MENU_ZOOM_OUT, SolarFrame::OnZoomOut)
+	EVT_COMMAND(wxID_ANY, eventOpenProject, SolarFrame::OnOpen)
+	EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarFrame::OnRelaunch)
+	EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarFrame::OnOpenWelcome)
+	EVT_ICONIZE(SolarFrame::OnIconized)
+	EVT_CLOSE(SolarFrame::OnClose)
 wxEND_EVENT_TABLE()
 
 SolarFrame::SolarFrame(int style)
@@ -849,28 +849,13 @@ SolarFrame::SolarFrame(int style)
 	SetIcon(simulator_xpm);
 #endif
 
-	wxGLAttributes vAttrs;
-	vAttrs.PlatformDefaults().Defaults().EndList();
 	suspendedPanel = NULL;
 	fRelaunchedViaFileEvent = false;
-	bool accepted = wxGLCanvas::IsDisplaySupported(vAttrs);
 
-	if (!accepted)
-	{
-		// try again without sample buffers
-		vAttrs.Reset();
-		vAttrs.PlatformDefaults().RGBA().DoubleBuffer().Depth(16).EndList();
-
-		accepted = wxGLCanvas::IsDisplaySupported(vAttrs);
-
-		if (!accepted)
-		{
-			Rtt_LogException("Failed to init OpenGL");
-			return;
-		}
-	}
 
 	CreateMenus();
+
+	int vAttrs[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
 	fSolarGLCanvas = new SolarGLCanvas(this, vAttrs);
 	fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
 	const char* homeDir = GetHomePath();
@@ -1635,24 +1620,20 @@ void SolarFrame::OnOpen(wxCommandEvent& event)
 
 // setup glcanvas events
 wxBEGIN_EVENT_TABLE(SolarGLCanvas, wxGLCanvas)
-EVT_PAINT(SolarGLCanvas::OnPaint)
-EVT_TIMER(TIMER_ID, SolarGLCanvas::OnTimer)
-EVT_WINDOW_CREATE(SolarGLCanvas::OnWindowCreate)
-EVT_SIZE(SolarGLCanvas::OnSize)
+	EVT_TIMER(TIMER_ID, SolarGLCanvas::OnTimer)
+	EVT_SIZE(SolarGLCanvas::OnSize)
 wxEND_EVENT_TABLE()
 
-SolarGLCanvas::SolarGLCanvas(SolarFrame* parent, const wxGLAttributes& canvasAttrs)
-	: wxGLCanvas(parent, canvasAttrs), fContext(NULL), fTimer(this, TIMER_ID)
+SolarGLCanvas::SolarGLCanvas(SolarFrame* parent, const int* vAttrs)
+	: wxGLCanvas(parent, wxID_ANY, vAttrs, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
+	, fSolarFrame(parent)
+	, fContext(NULL)
+	, fTimer(this, TIMER_ID)
 {
-	fSolarFrame = parent;
-	fGLContext = new wxGLContext(this, NULL, 0);
-	SetSize(parent->GetSize());
+	fGLContext = new wxGLContext(this);
+	Rtt_ASSERT(fGLContext->IsOK());
 
-	if (!fGLContext->IsOK())
-	{
-		delete fGLContext;
-		fGLContext = NULL;
-	}
+	SetSize(parent->GetSize());
 
 	Bind(wxEVT_CHAR, &LinuxKeyListener::OnChar);
 	Bind(wxEVT_KEY_DOWN, &LinuxKeyListener::OnKeyDown);
@@ -1674,10 +1655,7 @@ SolarGLCanvas::~SolarGLCanvas()
 {
 	if (fGLContext)
 	{
-		SetCurrent(*fGLContext);
-
 		delete fGLContext;
-		fGLContext = NULL;
 	}
 }
 
@@ -1695,7 +1673,6 @@ void SolarGLCanvas::OnTimer(wxTimerEvent& event)
 	}
 
 	Rtt::Runtime* runtime = fContext->GetRuntime();
-
 	if (!runtime->IsSuspended())
 	{
 		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)fContext->GetPlatform()->GetDevice().GetInputDeviceManager();
@@ -1703,37 +1680,27 @@ void SolarGLCanvas::OnTimer(wxTimerEvent& event)
 
 		// advance engine
 		(*runtime)();
+
+		Render();
 	}
 }
 
-void SolarGLCanvas::OnPaint(wxPaintEvent& WXUNUSED(event))
+void SolarGLCanvas::Render()
 {
+	SetCurrent(*fGLContext);
 	if (fWindowHeight > 0)
 	{
 		SwapBuffers();
 	}
 }
 
-void SolarGLCanvas::OnWindowCreate(wxWindowCreateEvent& event)
-{
-	// SetCurrent() must have an active window created before being called, making this hte perfect place to do it.
-	Rtt_ASSERT(fGLContext);
-	// the current context must be set before we get OGL pointers
-	SetCurrent(*fGLContext);
-	Refresh(true);
-}
-
 void SolarGLCanvas::OnSize(wxSizeEvent& event)
 {
-	event.Skip();
-
-	// if the window is not fully initialized, return
-	if (!IsShownOnScreen())
+	// if the window is fully initialized
+	if (IsShownOnScreen())
 	{
-		return;
+		fWindowHeight = event.GetSize().y;
+		Refresh(true);
+		Render();
 	}
-
-	fWindowHeight = event.GetSize().y;
-
-	Refresh(true);
 }
