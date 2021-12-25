@@ -182,18 +182,14 @@ namespace Rtt
 				delete fWindow;
 			}
 
-			fWindow = new myMediaCtrl(this, wxGetApp().GetParent(), 0, 0, fBounds.Width(), fBounds.Height());
-			myMediaCtrl *video = dynamic_cast<myMediaCtrl*>(fWindow);
-			bool rc = isRemote ? video->Load(wxURI(source)) : video->Load(source);
+			fWindow = new myMediaCtrl(this);
+			myMediaCtrl* video = dynamic_cast<myMediaCtrl*>(fWindow);
+			video->Create(wxGetApp().GetParent(), wxID_ANY, "", wxPoint(fBounds.xMin, fBounds.yMin), wxSize(fBounds.Width(), fBounds.Height()));
+			video->Connect(wxEVT_MEDIA_LOADED, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
+			video->Connect(wxEVT_MEDIA_STOP, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
 
-			if (rc)
-			{
-				if (fAutoPlay)
-				{
-					video->Play();
-				}
-			}
-			else
+			bool ok = isRemote ? video->Load(wxURI(source)) : video->Load(source);
+			if (!ok)
 			{
 				Rtt_LogException("Failed to load video from %s\n", source);
 			}
@@ -208,7 +204,6 @@ namespace Rtt
 		if (o)
 		{
 			wxMediaCtrl *video = dynamic_cast<wxMediaCtrl*>(o->fWindow);
-
 			if (video)
 			{
 				video->Play();
@@ -226,7 +221,6 @@ namespace Rtt
 		if (o)
 		{
 			wxMediaCtrl *video = dynamic_cast<wxMediaCtrl*>(o->fWindow);
-
 			if (video)
 			{
 				video->Pause();
@@ -286,13 +280,10 @@ namespace Rtt
 	}
 
 	//  myMediaCtrl
-	LinuxVideoObject::myMediaCtrl::myMediaCtrl(LinuxVideoObject *parent, wxWindow *panel, float x, float y, float w, float h)
-		: wxMediaCtrl(panel, wxID_ANY, "", wxPoint(x, y), wxSize(w, h))
-		, fParent(parent)
+	LinuxVideoObject::myMediaCtrl::myMediaCtrl(LinuxVideoObject *parent)
+		: fParent(parent)
 		, fLuaReference(NULL)
 	{
-		Connect(wxEVT_MEDIA_LOADED, wxCommandEventHandler(myMediaCtrl::onMediaEvent));
-		Connect(wxEVT_MEDIA_STOP, wxCommandEventHandler(myMediaCtrl::onMediaEvent));
 	}
 
 	LinuxVideoObject::myMediaCtrl::~myMediaCtrl()
@@ -306,7 +297,7 @@ namespace Rtt
 		}
 	}
 
-	void LinuxVideoObject::myMediaCtrl::onMediaEvent(wxCommandEvent& e)
+	void LinuxVideoObject::myMediaCtrl::onMediaEvent(wxMediaEvent& e)
 	{
 		wxEventType eType = e.GetEventType();
 		const char *phase = NULL;

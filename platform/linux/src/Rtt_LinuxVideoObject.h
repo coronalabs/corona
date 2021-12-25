@@ -24,11 +24,11 @@ namespace Rtt
 	public:
 		struct myMediaCtrl : public wxMediaCtrl
 		{
-			myMediaCtrl(LinuxVideoObject *parent, wxWindow *panel, float x, float y, float w, float h);
+			myMediaCtrl(LinuxVideoObject *parent);
 			virtual ~myMediaCtrl();
 
 			void dispatch(wxCommandEvent &e);
-			void onMediaEvent(wxCommandEvent &e);
+			void onMediaEvent(wxMediaEvent&e);
 
 			LinuxVideoObject *fParent;
 			CoronaLuaRef fLuaReference;
@@ -47,7 +47,6 @@ namespace Rtt
 		void dispatch(int eventID);
 		void load(const char *source, bool isRemote);
 
-	public:
 		bool fAutoPlay;
 		Rect fBounds;
 
