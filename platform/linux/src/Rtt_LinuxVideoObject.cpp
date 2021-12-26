@@ -24,25 +24,41 @@
 
 namespace Rtt
 {
-	LinuxVideoObject::LinuxVideoObject(const Rect &bounds)
+	LinuxVideoObject::LinuxVideoObject(const Rect& bounds)
 		: Super(bounds, "video")
-		, fAutoPlay(true)
+		, fMediaCtrl(NULL)
+		, fLuaReference(NULL)
 	{
 	}
 
 	LinuxVideoObject::~LinuxVideoObject()
 	{
+		if (fHandle && fHandle->IsValid())
+		{
+			CoronaLuaDeleteRef(fHandle->Dereference(), fLuaReference);
+			fLuaReference = NULL;
+		}
+
+		if (wxTheApp)
+		{
+			delete fMediaCtrl;
+		}
 	}
 
 	bool LinuxVideoObject::Initialize()
 	{
+		Rtt_ASSERT(fMediaCtrl == NULL);
 		if (Super::Initialize())
 		{
-			// todo: check if video available
-			fBounds = StageBounds();
+			Rect outBounds;
+			GetScreenBounds(outBounds);
+
+			fMediaCtrl = new myMediaCtrl(this);
+			fMediaCtrl->Create(wxGetApp().GetParent(), wxID_ANY, "", wxPoint(outBounds.xMin, outBounds.yMin), wxSize(outBounds.Width(), outBounds.Height()));
+			fMediaCtrl->Connect(wxEVT_MEDIA_LOADED, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
+			fMediaCtrl->Connect(wxEVT_MEDIA_STOP, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
 			return true;
 		}
-
 		return false;
 	}
 
@@ -51,19 +67,17 @@ namespace Rtt
 		return PlatformDisplayObject::GetVideoObjectProxyVTable();
 	}
 
-	int LinuxVideoObject::ValueForKey(lua_State *L, const char key[]) const
+	int LinuxVideoObject::ValueForKey(lua_State* L, const char key[]) const
 	{
 		Rtt_ASSERT(key);
 
 		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
-		LinuxVideoObject* obj = (LinuxVideoObject *)luaL_todisplayobject(L, 1, table);
+		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
+		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
 
 		int result = 1;
-
 		if (strcmp("currentTime", key) == 0)
 		{
-			myMediaCtrl *video = dynamic_cast<myMediaCtrl*>(obj->fWindow);
-
 			if (video)
 			{
 				double val = video->Tell() / 1000.0f;  // in seconds
@@ -72,8 +86,6 @@ namespace Rtt
 		}
 		else if (strcmp("totalTime", key) == 0)
 		{
-			myMediaCtrl *video = dynamic_cast<myMediaCtrl*>(obj->fWindow);
-
 			if (video)
 			{
 				double val = video->Length() / 1000.0; // in seconds
@@ -82,8 +94,6 @@ namespace Rtt
 		}
 		else if (strcmp("isMuted", key) == 0)
 		{
-			myMediaCtrl *video = dynamic_cast<myMediaCtrl*>(obj->fWindow);
-
 			if (video)
 			{
 				double vol = video->GetVolume();
@@ -121,27 +131,24 @@ namespace Rtt
 		{
 			result = Super::ValueForKey(L, key);
 		}
-
 		return result;
 	}
 
-	bool LinuxVideoObject::SetValueForKey(lua_State *L, const char key[], int valueIndex)
+	bool LinuxVideoObject::SetValueForKey(lua_State* L, const char key[], int valueIndex)
 	{
 		Rtt_ASSERT(key);
 
-		const LuaProxyVTable &table = PlatformDisplayObject::GetVideoObjectProxyVTable();
-		LinuxVideoObject *obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
+		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
+		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
+		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
 
 		bool result = true;
-
 		if (strcmp("isToggleEnabled", key) == 0)
 		{
 		}
 		else if (strcmp("isMuted", key) == 0)
 		{
 			bool val = lua_toboolean(L, valueIndex);
-			myMediaCtrl *video = dynamic_cast<myMediaCtrl*>(obj->fWindow);
-
 			if (video)
 			{
 				video->SetVolume(val ? 0 : 1);
@@ -154,41 +161,30 @@ namespace Rtt
 		{
 			result = Super::SetValueForKey(L, key, valueIndex);
 		}
-
 		return result;
 	}
 
-	int LinuxVideoObject::LuaLoad(lua_State *L)
+	int LinuxVideoObject::LuaLoad(lua_State* L)
 	{
-		const LuaProxyVTable &table = PlatformDisplayObject::GetVideoObjectProxyVTable();
-		LinuxVideoObject *o = (LinuxVideoObject *)luaL_todisplayobject(L, 1, table);
-
-		// Get the absolute path to this file and pass it to Java.
-		int nextArg = 2;
-		String sourceWithPath;
-		bool isRemote = false;
-		const char* source = LuaLibMedia::GetLocalOrRemotePath(L, nextArg, sourceWithPath, isRemote);
-
-		o->load(source, isRemote);
+		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
+		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
+		if (obj)
+		{
+			// Get the absolute path to this file and pass it to Java.
+			int nextArg = 2;
+			String sourceWithPath;
+			bool isRemote = false;
+			const char* source = LuaLibMedia::GetLocalOrRemotePath(L, nextArg, sourceWithPath, isRemote);
+			obj->load(source, isRemote);
+		}
 		return 0;
 	}
 
-	void LinuxVideoObject::load(const char *source, bool isRemote)
+	void LinuxVideoObject::load(const char* source, bool isRemote)
 	{
-		if (source)
+		if (source && fMediaCtrl)
 		{
-			if (fWindow)
-			{
-				delete fWindow;
-			}
-
-			fWindow = new myMediaCtrl(this);
-			myMediaCtrl* video = dynamic_cast<myMediaCtrl*>(fWindow);
-			video->Create(wxGetApp().GetParent(), wxID_ANY, "", wxPoint(fBounds.xMin, fBounds.yMin), wxSize(fBounds.Width(), fBounds.Height()));
-			video->Connect(wxEVT_MEDIA_LOADED, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
-			video->Connect(wxEVT_MEDIA_STOP, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
-
-			bool ok = isRemote ? video->Load(wxURI(source)) : video->Load(source);
+			bool ok = isRemote ? fMediaCtrl->Load(wxURI(source)) : fMediaCtrl->Load(source);
 			if (!ok)
 			{
 				Rtt_LogException("Failed to load video from %s\n", source);
@@ -196,128 +192,74 @@ namespace Rtt
 		}
 	}
 
-	int LinuxVideoObject::Play(lua_State *L)
+	int LinuxVideoObject::Play(lua_State* L)
 	{
 		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
-		LinuxVideoObject *o = (LinuxVideoObject *)luaL_todisplayobject(L, 1, table);
+		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
 
-		if (o)
+		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
+		if (video)
 		{
-			wxMediaCtrl *video = dynamic_cast<wxMediaCtrl*>(o->fWindow);
-			if (video)
-			{
-				video->Play();
-			}
-		}
-
-		return 0;
-	}
-
-	int LinuxVideoObject::Pause(lua_State *L)
-	{
-		const LuaProxyVTable &table = PlatformDisplayObject::GetVideoObjectProxyVTable();
-		LinuxVideoObject *o = (LinuxVideoObject *)luaL_todisplayobject(L, 1, table);
-
-		if (o)
-		{
-			wxMediaCtrl *video = dynamic_cast<wxMediaCtrl*>(o->fWindow);
-			if (video)
-			{
-				video->Pause();
-			}
-		}
-
-		return 0;
-	}
-
-	int LinuxVideoObject::Seek(lua_State *L)
-	{
-		const LuaProxyVTable &table = PlatformDisplayObject::GetVideoObjectProxyVTable();
-		LinuxVideoObject *o = (LinuxVideoObject *)luaL_todisplayobject(L, 1, table);
-
-		int seekTo = -1;
-
-		if (lua_isnumber(L, 2))
-		{
-			seekTo = (int)lua_tonumber(L, 2);
-		}
-
-		if (o && seekTo > -1)
-		{
-			wxMediaCtrl *video = dynamic_cast<wxMediaCtrl*>(o->fWindow);
-
-			if (video)
-			{
-				//	video->Seek(seekTo * 1000);
-			}
+			video->Play();
 		}
 		return 0;
 	}
 
-	int LinuxVideoObject::addEventListener(lua_State *L)
+	int LinuxVideoObject::Pause(lua_State* L)
 	{
-		const LuaProxyVTable &table = PlatformDisplayObject::GetVideoObjectProxyVTable();
-		LinuxVideoObject *o = (LinuxVideoObject *)luaL_todisplayobject(L, 1, table);
+		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
+		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
 
-		if (o && lua_isstring(L, 2))
+		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
+		if (video)
 		{
-			const char *eventName = lua_tostring(L, 2);
-			myMediaCtrl *media = dynamic_cast<myMediaCtrl*>(o->fWindow);
+			video->Pause();
+		}
+		return 0;
+	}
+
+	int LinuxVideoObject::Seek(lua_State* L)
+	{
+		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
+		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
+
+		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
+		if (video)
+		{
+			int seekTo = lua_isnumber(L, 2) ? (int)lua_tonumber(L, 2) : -1;
+			//	video->Seek(seekTo * 1000);
+		}
+		return 0;
+	}
+
+	int LinuxVideoObject::addEventListener(lua_State* L)
+	{
+		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
+		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
+
+		if (obj && lua_isstring(L, 2))
+		{
+			const char* eventName = lua_tostring(L, 2);
 
 			// Store callback
-			if (media && CoronaLuaIsListener(L, 3, eventName))
+			if (CoronaLuaIsListener(L, 3, eventName))
 			{
 				// deleted old
-				if (media->fLuaReference)
+				if (obj->fLuaReference)
 				{
-					CoronaLuaDeleteRef(L, media->fLuaReference);
+					CoronaLuaDeleteRef(L, obj->fLuaReference);
 				}
-				media->fLuaReference = CoronaLuaNewRef(L, 3); // listenerIndex=3
+				obj->fLuaReference = CoronaLuaNewRef(L, 3); // listenerIndex=3
 			}
 		}
-
 		return 0;
 	}
 
-	//  myMediaCtrl
-	LinuxVideoObject::myMediaCtrl::myMediaCtrl(LinuxVideoObject *parent)
-		: fParent(parent)
-		, fLuaReference(NULL)
+	void LinuxVideoObject::dispatch(const char* phase)
 	{
-	}
-
-	LinuxVideoObject::myMediaCtrl::~myMediaCtrl()
-	{
-		Disconnect(wxEVT_MEDIA_STOP);
-
-		if (fParent->fHandle && fParent->fHandle->IsValid())
+		if (fHandle && fHandle->IsValid())
 		{
-			CoronaLuaDeleteRef(fParent->fHandle->Dereference(), fLuaReference);
-			fLuaReference = NULL;
-		}
-	}
-
-	void LinuxVideoObject::myMediaCtrl::onMediaEvent(wxMediaEvent& e)
-	{
-		wxEventType eType = e.GetEventType();
-		const char *phase = NULL;
-
-		if (eType == wxEVT_MEDIA_LOADED)
-		{
-			phase = "ready";
-		}
-		else if (eType == wxEVT_MEDIA_STOP)
-		{
-			phase = "ended";
-		}
-		else
-		{
-			return;
-		}
-
-		if (fParent->fHandle && fParent->fHandle->IsValid())
-		{
-			lua_State *L = fParent->fHandle->Dereference();
+			lua_State* L = fHandle->Dereference();
 			CoronaLuaNewEvent(L, "video"); //fEventName.c_str());
 			int luaTableStackIndex = lua_gettop(L);
 			int nPushed = 0;
@@ -327,13 +269,41 @@ namespace Rtt
 			nPushed++;
 
 			// Add 'self' to the event table
-			fParent->GetProxy()->PushTable(L);
+			GetProxy()->PushTable(L);
 			lua_setfield(L, -2, "target");
 			nPushed++;
 
 			CoronaLuaDispatchEvent(L, fLuaReference, 0);
 		}
 	}
+
+	//
+	//
+	//
+
+	myMediaCtrl::myMediaCtrl(LinuxVideoObject* parent)
+		: fLinuxVideoObject(parent)
+	{
+	}
+
+	myMediaCtrl::~myMediaCtrl()
+	{
+		Disconnect(wxEVT_MEDIA_STOP);
+	}
+
+	void myMediaCtrl::onMediaEvent(wxMediaEvent& e)
+	{
+		wxEventType eType = e.GetEventType();
+		if (eType == wxEVT_MEDIA_LOADED)
+		{
+			fLinuxVideoObject->dispatch("ready");
+		}
+		else if (eType == wxEVT_MEDIA_STOP)
+		{
+			fLinuxVideoObject->dispatch("ended");
+		}
+	}
+
 }; // namespace Rtt
 
 #endif

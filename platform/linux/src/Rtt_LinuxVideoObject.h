@@ -19,21 +19,21 @@
 
 namespace Rtt
 {
+	class LinuxVideoObject;
+
+	struct myMediaCtrl : public wxMediaCtrl
+	{
+		myMediaCtrl(LinuxVideoObject* fLinuxVideoObject);
+		virtual ~myMediaCtrl();
+
+		void onMediaEvent(wxMediaEvent& e);
+
+		LinuxVideoObject* fLinuxVideoObject;
+	};
+
 	class LinuxVideoObject : public LinuxDisplayObject
 	{
 	public:
-		struct myMediaCtrl : public wxMediaCtrl
-		{
-			myMediaCtrl(LinuxVideoObject *parent);
-			virtual ~myMediaCtrl();
-
-			void dispatch(wxCommandEvent &e);
-			void onMediaEvent(wxMediaEvent&e);
-
-			LinuxVideoObject *fParent;
-			CoronaLuaRef fLuaReference;
-			wxString fURL;
-		};
 
 		typedef LinuxVideoObject Self;
 		typedef LinuxDisplayObject Super;
@@ -44,11 +44,8 @@ namespace Rtt
 		virtual const LuaProxyVTable &ProxyVTable() const;
 		virtual int ValueForKey(lua_State *L, const char key[]) const;
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex);
-		void dispatch(int eventID);
 		void load(const char *source, bool isRemote);
-
-		bool fAutoPlay;
-		Rect fBounds;
+		void dispatch(const char* ev);
 
 	protected:
 		static int LuaLoad(lua_State *L);
@@ -56,7 +53,12 @@ namespace Rtt
 		static int Pause(lua_State *L);
 		static int Seek(lua_State *L);
 		static int addEventListener(lua_State *L);
+
+	private:
+		myMediaCtrl* fMediaCtrl;
+		CoronaLuaRef fLuaReference;
 	};
+
 }; // namespace Rtt
 
 #endif
