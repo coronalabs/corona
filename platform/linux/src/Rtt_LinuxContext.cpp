@@ -523,7 +523,7 @@ namespace Rtt
 	void SolarAppContext::Flush()
 	{
 		fRuntime->GetDisplay().Invalidate();
-		fCanvas->Refresh(false);
+		fCanvas->Render();
 	}
 
 	void SolarAppContext::Pause()
@@ -1680,8 +1680,6 @@ void SolarGLCanvas::OnTimer(wxTimerEvent& event)
 
 		// advance engine
 		(*runtime)();
-
-		Render();
 	}
 }
 
