@@ -167,8 +167,9 @@ namespace Rtt
 		{
 			Rect outBounds;
 			GetScreenBounds(outBounds);
-			fWindow->Move(outBounds.xMin, outBounds.yMin);
+			fWindow->SetPosition((wxPoint(outBounds.xMin, outBounds.yMin)));
 			fWindow->SetSize(outBounds.Width(), outBounds.Height());
+			fWindow->Show();
 		}
 	}
 

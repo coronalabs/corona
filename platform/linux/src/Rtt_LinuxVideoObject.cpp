@@ -39,6 +39,7 @@ namespace Rtt
 		if (Super::Initialize())
 		{
 			fWindow = new myMediaCtrl(this);
+			fWindow->Hide();
 			return true;
 		}
 		return false;

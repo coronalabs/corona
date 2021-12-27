@@ -24,24 +24,23 @@ namespace Rtt
 
 		struct myTextCtrl : public wxTextCtrl
 		{
-			myTextCtrl(LinuxTextBoxObject *parent, int x, int y, int w, int h, bool singleLine);
+			myTextCtrl(LinuxTextBoxObject *parent, bool singleLine);
 			virtual ~myTextCtrl();
-			void dispatch(wxCommandEvent &e);
 			void onTextEvent(wxCommandEvent &e);
 
-			LinuxTextBoxObject *fParent;
-			CoronaLuaRef fLuaReference;
-			wxString fOldValue;
+		private:
+			LinuxTextBoxObject* fLinuxTextBoxObject;
 		};
 
 		LinuxTextBoxObject(const Rect &bounds, bool isSingleLine);
 		virtual ~LinuxTextBoxObject();
+
 		virtual bool Initialize();
-		virtual const LuaProxyVTable &ProxyVTable() const;
+		virtual const LuaProxyVTable& ProxyVTable() const;
 		virtual int ValueForKey(lua_State *L, const char key[]) const;
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex);
-		virtual void Prepare(const Display &display) override;
 		static int addEventListener(lua_State *L);
+		void dispatch(const char* phase);
 
 	protected:
 		static int SetTextColor(lua_State *L);
@@ -49,8 +48,12 @@ namespace Rtt
 		static int SetSelection(lua_State *L);
 
 	private:
+
 		/// Set TRUE if this is a single line text field. Set FALSE for a multiline text box.
 		/// This value is not expected to change after initialization.
 		bool fIsSingleLine;
+
+		myTextCtrl* getTextCtrl() const { return dynamic_cast<myTextCtrl*>(fWindow); }
+		wxString fOldValue;
 	};
 }; // namespace Rtt
