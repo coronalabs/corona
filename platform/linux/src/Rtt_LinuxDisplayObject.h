@@ -11,6 +11,7 @@
 
 #include "Core/Rtt_Build.h"
 #include "Core/Rtt_Geometry.h"
+#include "CoronaLua.h"
 #include "Rtt_PlatformDisplayObject.h"
 #include "Rtt_LinuxContainer.h"
 #include <wx/window.h>
@@ -37,17 +38,13 @@ namespace Rtt
 	public:
 		LinuxDisplayObject(const Rect &bounds, const char *elementType);
 		virtual ~LinuxDisplayObject();
-		void SetFocus();
-		bool HasBackground() const;
 		void SetBackgroundVisible(bool isVisible);
-		virtual void DidMoveOffscreen(StageObject *oldStage);
-		virtual void WillMoveOnscreen(StageObject *newStage);
 		virtual bool CanCull() const;
-		virtual void Draw(Renderer &renderer) const;
+		virtual void Draw(Renderer& renderer) const override {}
 		virtual void GetSelfBounds(Rect &rect) const;
 		virtual int ValueForKey(lua_State *L, const char key[]) const;
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex);
-		virtual bool Initialize();
+		virtual bool Initialize() override { return true; };
 		virtual void Prepare(const Display &display);
 		lua_State *GetLuaState() const { return fLuaState; }
 		int GetListenerRef() const { return fListenerRef; }
@@ -55,9 +52,13 @@ namespace Rtt
 		void setBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
 	protected:
+
+		void addEventListener(lua_State* L);
 		wxWindow *fWindow;
+		CoronaLuaRef fLuaReference;
 
 	private:
+
 		Rect fSelfBounds;
 		int fListenerRef;
 		lua_State *fLuaState;

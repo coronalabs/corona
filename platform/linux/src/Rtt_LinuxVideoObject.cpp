@@ -26,37 +26,19 @@ namespace Rtt
 {
 	LinuxVideoObject::LinuxVideoObject(const Rect& bounds)
 		: Super(bounds, "video")
-		, fMediaCtrl(NULL)
-		, fLuaReference(NULL)
 	{
 	}
 
 	LinuxVideoObject::~LinuxVideoObject()
 	{
-		if (fHandle && fHandle->IsValid())
-		{
-			CoronaLuaDeleteRef(fHandle->Dereference(), fLuaReference);
-			fLuaReference = NULL;
-		}
-
-		if (wxTheApp)
-		{
-			delete fMediaCtrl;
-		}
 	}
 
 	bool LinuxVideoObject::Initialize()
 	{
-		Rtt_ASSERT(fMediaCtrl == NULL);
+		Rtt_ASSERT(fWindow == NULL);
 		if (Super::Initialize())
 		{
-			Rect outBounds;
-			GetScreenBounds(outBounds);
-
-			fMediaCtrl = new myMediaCtrl(this);
-			fMediaCtrl->Create(wxGetApp().GetParent(), wxID_ANY, "", wxPoint(outBounds.xMin, outBounds.yMin), wxSize(outBounds.Width(), outBounds.Height()));
-			fMediaCtrl->Connect(wxEVT_MEDIA_LOADED, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
-			fMediaCtrl->Connect(wxEVT_MEDIA_STOP, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
+			fWindow = new myMediaCtrl(this);
 			return true;
 		}
 		return false;
@@ -73,7 +55,7 @@ namespace Rtt
 
 		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
 		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
-		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
+		myMediaCtrl* video = obj ? obj->getMediaCtrl() : NULL;
 
 		int result = 1;
 		if (strcmp("currentTime", key) == 0)
@@ -140,7 +122,7 @@ namespace Rtt
 
 		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
 		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
-		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
+		myMediaCtrl* video = obj ? obj->getMediaCtrl() : NULL;
 
 		bool result = true;
 		if (strcmp("isToggleEnabled", key) == 0)
@@ -182,9 +164,9 @@ namespace Rtt
 
 	void LinuxVideoObject::load(const char* source, bool isRemote)
 	{
-		if (source && fMediaCtrl)
+		if (source && fWindow)
 		{
-			bool ok = isRemote ? fMediaCtrl->Load(wxURI(source)) : fMediaCtrl->Load(source);
+			bool ok = isRemote ? getMediaCtrl()->Load(wxURI(source)) : getMediaCtrl()->Load(source);
 			if (!ok)
 			{
 				Rtt_LogException("Failed to load video from %s\n", source);
@@ -197,7 +179,7 @@ namespace Rtt
 		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
 		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
 
-		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
+		myMediaCtrl* video = obj ? obj->getMediaCtrl() : NULL;
 		if (video)
 		{
 			video->Play();
@@ -210,7 +192,7 @@ namespace Rtt
 		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
 		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
 
-		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
+		myMediaCtrl* video = obj ? obj->getMediaCtrl() : NULL;
 		if (video)
 		{
 			video->Pause();
@@ -223,7 +205,7 @@ namespace Rtt
 		const LuaProxyVTable& table = PlatformDisplayObject::GetVideoObjectProxyVTable();
 		LinuxVideoObject* obj = (LinuxVideoObject*)luaL_todisplayobject(L, 1, table);
 
-		myMediaCtrl* video = obj ? obj->fMediaCtrl : NULL;
+		myMediaCtrl* video = obj ? obj->getMediaCtrl() : NULL;
 		if (video)
 		{
 			int seekTo = lua_isnumber(L, 2) ? (int)lua_tonumber(L, 2) : -1;
@@ -278,20 +260,23 @@ namespace Rtt
 	}
 
 	//
-	//
+	// myMediaCtrl
 	//
 
-	myMediaCtrl::myMediaCtrl(LinuxVideoObject* parent)
+	LinuxVideoObject::myMediaCtrl::myMediaCtrl(LinuxVideoObject* parent)
 		: fLinuxVideoObject(parent)
 	{
+		Create(wxGetApp().GetParent(), wxID_ANY);
+		Connect(wxEVT_MEDIA_LOADED, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
+		Connect(wxEVT_MEDIA_STOP, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
 	}
 
-	myMediaCtrl::~myMediaCtrl()
+	LinuxVideoObject::myMediaCtrl::~myMediaCtrl()
 	{
 		Disconnect(wxEVT_MEDIA_STOP);
 	}
 
-	void myMediaCtrl::onMediaEvent(wxMediaEvent& e)
+	void LinuxVideoObject::myMediaCtrl::onMediaEvent(wxMediaEvent& e)
 	{
 		wxEventType eType = e.GetEventType();
 		if (eType == wxEVT_MEDIA_LOADED)

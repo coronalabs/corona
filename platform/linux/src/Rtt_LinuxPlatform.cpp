@@ -698,7 +698,7 @@ namespace Rtt
 	{
 		if (textObject)
 		{
-			((LinuxDisplayObject *)textObject)->SetFocus();
+//			((LinuxDisplayObject *)textObject)->SetFocus();
 		}
 		else
 		{

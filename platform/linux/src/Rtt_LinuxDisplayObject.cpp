@@ -22,6 +22,7 @@ namespace Rtt
 		: PlatformDisplayObject()
 		, fSelfBounds(bounds)
 		, fWindow(NULL)
+		, fLuaReference(NULL)
 	{
 		// Note: Setting the reference point to center is not done in any of the other implementations because
 		// fSelfBounds is already centered/converted unlike this implementation.
@@ -58,19 +59,14 @@ namespace Rtt
 		if (wxTheApp)
 		{
 			delete fWindow;
+			fWindow = NULL;
 		}
-	}
 
-	void LinuxDisplayObject::SetFocus()
-	{
-	}
-
-	void LinuxDisplayObject::DidMoveOffscreen(StageObject *oldStage)
-	{
-	}
-
-	void LinuxDisplayObject::WillMoveOnscreen(StageObject *newStage)
-	{
+		if (fHandle && fHandle->IsValid())
+		{
+			CoronaLuaDeleteRef(fHandle->Dereference(), fLuaReference);
+			fLuaReference = NULL;
+		}
 	}
 
 	bool LinuxDisplayObject::CanCull() const
@@ -81,18 +77,9 @@ namespace Rtt
 		return false;
 	}
 
-	void LinuxDisplayObject::Draw(Renderer &renderer) const
-	{
-	}
-
 	void LinuxDisplayObject::GetSelfBounds(Rect &rect) const
 	{
 		rect = fSelfBounds;
-	}
-
-	bool LinuxDisplayObject::HasBackground() const
-	{
-		return true;
 	}
 
 	void LinuxDisplayObject::SetBackgroundVisible(bool isVisible)
@@ -120,13 +107,12 @@ namespace Rtt
 		}
 		else if (strcmp("hasBackground", key) == 0)
 		{
-			lua_pushboolean(L, HasBackground() ? 1 : 0);
+			lua_pushboolean(L, true);
 		}
 		else
 		{
 			result = 0;
 		}
-
 		return result;
 	}
 
@@ -141,7 +127,6 @@ namespace Rtt
 	bool LinuxDisplayObject::SetValueForKey(lua_State *L, const char key[], int valueIndex)
 	{
 		Rtt_ASSERT(key);
-
 		if (fWindow == NULL)
 		{
 			return false;
@@ -164,7 +149,6 @@ namespace Rtt
 		{
 			result = false;
 		}
-
 		return result;
 	}
 
@@ -176,20 +160,34 @@ namespace Rtt
 		}
 	}
 
-	bool LinuxDisplayObject::Initialize()
-	{
-		return true;
-	}
-
 	void LinuxDisplayObject::Prepare(const Display &display)
 	{
 		Super::Prepare(display);
-
 		if (ShouldPrepare() && fWindow)
 		{
-			Rect outBounds = StageBounds();
+			Rect outBounds;
+			GetScreenBounds(outBounds);
 			fWindow->Move(outBounds.xMin, outBounds.yMin);
 			fWindow->SetSize(outBounds.Width(), outBounds.Height());
 		}
 	}
+
+	void LinuxDisplayObject::addEventListener(lua_State* L)
+	{
+		// Store callback
+		if (lua_isstring(L, 2))
+		{
+			const char* eventName = lua_tostring(L, 2);
+			if (CoronaLuaIsListener(L, 3, eventName))
+			{
+				// deleted old
+				if (fLuaReference)
+				{
+					CoronaLuaDeleteRef(L, fLuaReference);
+				}
+				fLuaReference = CoronaLuaNewRef(L, 3); // listenerIndex=3
+			}
+		}
+	}
+
 } // namespace Rtt
