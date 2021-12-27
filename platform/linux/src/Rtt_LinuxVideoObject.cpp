@@ -210,7 +210,7 @@ namespace Rtt
 		if (video)
 		{
 			int seekTo = lua_isnumber(L, 2) ? (int)lua_tonumber(L, 2) : -1;
-			//	video->Seek(seekTo * 1000);
+			video->Seek(seekTo * 1000);
 		}
 		return 0;
 	}
