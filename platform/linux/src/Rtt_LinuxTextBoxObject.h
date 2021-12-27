@@ -49,11 +49,12 @@ namespace Rtt
 
 	private:
 
+		myTextCtrl* getTextCtrl() const { return dynamic_cast<myTextCtrl*>(fWindow); }
+
 		/// Set TRUE if this is a single line text field. Set FALSE for a multiline text box.
 		/// This value is not expected to change after initialization.
 		bool fIsSingleLine;
 
-		myTextCtrl* getTextCtrl() const { return dynamic_cast<myTextCtrl*>(fWindow); }
 		wxString fOldValue;
 	};
 }; // namespace Rtt

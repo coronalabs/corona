@@ -38,6 +38,7 @@ namespace Rtt
 	public:
 		LinuxDisplayObject(const Rect &bounds, const char *elementType);
 		virtual ~LinuxDisplayObject();
+
 		void SetBackgroundVisible(bool isVisible);
 		virtual bool CanCull() const;
 		virtual void Draw(Renderer& renderer) const override {}
@@ -45,9 +46,7 @@ namespace Rtt
 		virtual int ValueForKey(lua_State *L, const char key[]) const;
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex);
 		virtual bool Initialize() override { return true; };
-		virtual void Prepare(const Display &display);
-		lua_State *GetLuaState() const { return fLuaState; }
-		int GetListenerRef() const { return fListenerRef; }
+		virtual void Prepare(const Display &display) override;
 		void showControls(bool val);
 		void setBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
@@ -60,7 +59,5 @@ namespace Rtt
 	private:
 
 		Rect fSelfBounds;
-		int fListenerRef;
-		lua_State *fLuaState;
 	};
 }; // namespace Rtt
