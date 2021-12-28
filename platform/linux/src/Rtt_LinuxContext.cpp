@@ -82,7 +82,6 @@ namespace Rtt
 		, fMode("normal")
 		, fIsDebApp(false)
 		, fSimulator(NULL)
-		, fIsStarted(false)
 		, fProjectSettings(new ProjectSettings())
 	{
 		string exeFileName;
@@ -1658,16 +1657,11 @@ SolarGLCanvas::~SolarGLCanvas()
 void SolarGLCanvas::StartTimer(float frameDuration)
 {
 	fTimer.Start((int)frameDuration);
+	fContext->GetRuntime()->BeginRunLoop();
 }
 
 void SolarGLCanvas::OnTimer(wxTimerEvent& event)
 {
-	if (!fContext->fIsStarted)
-	{
-		fContext->fIsStarted = true;
-		fContext->GetRuntime()->BeginRunLoop();
-	}
-
 	Rtt::Runtime* runtime = fContext->GetRuntime();
 	if (!runtime->IsSuspended())
 	{

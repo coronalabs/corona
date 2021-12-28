@@ -83,8 +83,6 @@ namespace Rtt
 		const LinuxRuntimeDelegate *GetRuntimeDelegate() const { return fRuntimeDelegate; }
 		static int Print(lua_State* L);		// re-defined global.print
 
-		bool fIsStarted;
-
 	private:
 		std::string fTitle;
 		LinuxRuntime *fRuntime;
