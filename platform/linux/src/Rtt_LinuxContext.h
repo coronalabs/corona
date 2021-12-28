@@ -189,7 +189,6 @@ public:
 	~SolarApp();
 
 	bool OnInit() wxOVERRIDE;
-	void OnEventLoopEnter(wxEventLoopBase *WXUNUSED(loop));
 	SolarFrame *GetFrame() { return fSolarFrame; }
 	SolarGLCanvas *GetCanvas() const { return fSolarFrame->GetCanvas(); }
 	wxWindow *GetParent();

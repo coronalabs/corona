@@ -785,35 +785,27 @@ bool SolarApp::OnInit()
 			}
 
 			wxInitAllImageHandlers();
+
+			wxCommandEvent eventOpen(eventOpenProject);
+
+			if (LinuxSimulatorView::IsRunningOnSimulator())
+			{
+				if (LinuxSimulatorView::Config::openLastProject && !LinuxSimulatorView::Config::lastProjectDirectory.IsEmpty())
+				{
+					wxString fullPath(LinuxSimulatorView::Config::lastProjectDirectory);
+					fullPath.append("/main.lua");
+					eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
+					eventOpen.SetString(fullPath);
+				}
+			}
+
+			fSolarFrame->OnOpen(eventOpen);
+
 			return true;
 		}
 	}
 
 	return false;
-}
-
-void SolarApp::OnEventLoopEnter(wxEventLoopBase* WXUNUSED(loop))
-{
-	static bool firstRun = true;
-
-	if (firstRun)
-	{
-		wxCommandEvent eventOpen(eventOpenProject);
-
-		if (LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			if (LinuxSimulatorView::Config::openLastProject && !LinuxSimulatorView::Config::lastProjectDirectory.IsEmpty())
-			{
-				wxString fullPath(LinuxSimulatorView::Config::lastProjectDirectory);
-				fullPath.append("/main.lua");
-				eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
-				eventOpen.SetString(fullPath);
-			}
-		}
-
-		fSolarFrame->OnOpen(eventOpen);
-		firstRun = false;
-	}
 }
 
 wxWindow* SolarApp::GetParent()
@@ -828,17 +820,17 @@ LinuxPlatform* SolarApp::GetPlatform() const
 
 // setup frame events
 wxBEGIN_EVENT_TABLE(SolarFrame, wxFrame)
-	EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarFrame::OnOpenWelcome)
-	EVT_MENU(ID_MENU_RELAUNCH_PROJECT, SolarFrame::OnRelaunch)
-	EVT_MENU(ID_MENU_SUSPEND, SolarFrame::OnSuspendOrResume)
-	EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarFrame::OnOpenWelcome)
-	EVT_MENU(ID_MENU_ZOOM_IN, SolarFrame::OnZoomIn)
-	EVT_MENU(ID_MENU_ZOOM_OUT, SolarFrame::OnZoomOut)
-	EVT_COMMAND(wxID_ANY, eventOpenProject, SolarFrame::OnOpen)
-	EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarFrame::OnRelaunch)
-	EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarFrame::OnOpenWelcome)
-	EVT_ICONIZE(SolarFrame::OnIconized)
-	EVT_CLOSE(SolarFrame::OnClose)
+EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarFrame::OnOpenWelcome)
+EVT_MENU(ID_MENU_RELAUNCH_PROJECT, SolarFrame::OnRelaunch)
+EVT_MENU(ID_MENU_SUSPEND, SolarFrame::OnSuspendOrResume)
+EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarFrame::OnOpenWelcome)
+EVT_MENU(ID_MENU_ZOOM_IN, SolarFrame::OnZoomIn)
+EVT_MENU(ID_MENU_ZOOM_OUT, SolarFrame::OnZoomOut)
+EVT_COMMAND(wxID_ANY, eventOpenProject, SolarFrame::OnOpen)
+EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarFrame::OnRelaunch)
+EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarFrame::OnOpenWelcome)
+EVT_ICONIZE(SolarFrame::OnIconized)
+EVT_CLOSE(SolarFrame::OnClose)
 wxEND_EVENT_TABLE()
 
 SolarFrame::SolarFrame(int style)
@@ -1618,8 +1610,8 @@ void SolarFrame::OnOpen(wxCommandEvent& event)
 
 // setup glcanvas events
 wxBEGIN_EVENT_TABLE(SolarGLCanvas, wxGLCanvas)
-	EVT_TIMER(TIMER_ID, SolarGLCanvas::OnTimer)
-	EVT_SIZE(SolarGLCanvas::OnSize)
+EVT_TIMER(TIMER_ID, SolarGLCanvas::OnTimer)
+EVT_SIZE(SolarGLCanvas::OnSize)
 wxEND_EVENT_TABLE()
 
 SolarGLCanvas::SolarGLCanvas(SolarFrame* parent, const int* vAttrs)
