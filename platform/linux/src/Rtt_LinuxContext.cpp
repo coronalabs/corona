@@ -71,10 +71,19 @@ extern "C"
 
 namespace Rtt
 {
-	static ProjectSettings* fProjectSettings;
 
 	SolarAppContext::SolarAppContext(const char* path)
-		: fRuntime(NULL), fRuntimeDelegate(new LinuxRuntimeDelegate()), fMouseListener(NULL), fKeyListener(NULL), fPlatform(NULL), fTouchDeviceExist(false), fMode("normal"), fIsDebApp(false), fSimulator(NULL), fIsStarted(false)
+		: fRuntime(NULL)
+		, fRuntimeDelegate(new LinuxRuntimeDelegate())
+		, fMouseListener(NULL)
+		, fKeyListener(NULL)
+		, fPlatform(NULL)
+		, fTouchDeviceExist(false)
+		, fMode("normal")
+		, fIsDebApp(false)
+		, fSimulator(NULL)
+		, fIsStarted(false)
+		, fProjectSettings(new ProjectSettings())
 	{
 		string exeFileName;
 		const char* homeDir = GetHomePath();
@@ -155,23 +164,13 @@ namespace Rtt
 
 	SolarAppContext::~SolarAppContext()
 	{
-		Close();
-	}
-
-	void SolarAppContext::Close()
-	{
 		delete fMouseListener;
-		fMouseListener = NULL;
 		delete fKeyListener;
-		fKeyListener = NULL;
 		delete fRuntime;
-		fRuntime = NULL;
 		delete fRuntimeDelegate;
-		fRuntimeDelegate = NULL;
 		delete fPlatform;
-		fPlatform = NULL;
 		delete fSimulator;
-		fSimulator = NULL;
+		delete fProjectSettings;
 
 		setGlyphProvider(NULL);
 	}
@@ -575,6 +574,7 @@ namespace Rtt
 
 // App implementation
 SolarApp::SolarApp()
+	: fSolarFrame(NULL)
 {
 	const char* homeDir = GetHomePath();
 	string basePath(homeDir);
@@ -664,28 +664,29 @@ bool SolarApp::OnInit()
 			projectPath.append("/Resources");
 		}
 
-		fProjectSettings = new ProjectSettings();
-		fProjectSettings->LoadFromDirectory(projectPath.c_str());
+		// homescreen settings
+		ProjectSettings homeScreenProjectSettings;
+		homeScreenProjectSettings.LoadFromDirectory(projectPath.c_str());
 
 		// grab the required config settings (we only need width/height at this stage)
-		if (fProjectSettings->HasConfigLua())
+		if (homeScreenProjectSettings.HasConfigLua())
 		{
-			width = fProjectSettings->GetContentWidth();
-			height = fProjectSettings->GetContentHeight();
+			width = homeScreenProjectSettings.GetContentWidth();
+			height = homeScreenProjectSettings.GetContentHeight();
 		}
 
 		// grab the build settings (we only need width/height at this stage)
-		if (fProjectSettings->HasBuildSettings())
+		if (homeScreenProjectSettings.HasBuildSettings())
 		{
-			const Rtt::NativeWindowMode* nativeWindowMode = fProjectSettings->GetDefaultWindowMode();
-			bool isWindowMinimizeButtonEnabled = fProjectSettings->IsWindowMinimizeButtonEnabled();
-			bool isWindowMaximizeButtonEnabled = fProjectSettings->IsWindowMaximizeButtonEnabled();
-			bool isWindowCloseButtonEnabled = fProjectSettings->IsWindowCloseButtonEnabled();
-			bool isWindowResizable = fProjectSettings->IsWindowResizable();
-			width = fProjectSettings->GetDefaultWindowViewWidth();
-			height = fProjectSettings->GetDefaultWindowViewHeight();
-			minWidth = fProjectSettings->GetMinWindowViewWidth();
-			minHeight = fProjectSettings->GetMinWindowViewHeight();
+			const Rtt::NativeWindowMode* nativeWindowMode = homeScreenProjectSettings.GetDefaultWindowMode();
+			bool isWindowMinimizeButtonEnabled = homeScreenProjectSettings.IsWindowMinimizeButtonEnabled();
+			bool isWindowMaximizeButtonEnabled = homeScreenProjectSettings.IsWindowMaximizeButtonEnabled();
+			bool isWindowCloseButtonEnabled = homeScreenProjectSettings.IsWindowCloseButtonEnabled();
+			bool isWindowResizable = homeScreenProjectSettings.IsWindowResizable();
+			width = homeScreenProjectSettings.GetDefaultWindowViewWidth();
+			height = homeScreenProjectSettings.GetDefaultWindowViewHeight();
+			minWidth = homeScreenProjectSettings.GetMinWindowViewWidth();
+			minHeight = homeScreenProjectSettings.GetMinWindowViewHeight();
 
 			if (*nativeWindowMode == Rtt::NativeWindowMode::kNormal)
 			{
@@ -894,8 +895,6 @@ SolarFrame::~SolarFrame()
 
 	delete fWatcher;
 	delete fSolarGLCanvas;
-
-	fContext->Close();
 	delete fContext;
 
 	SetMenuBar(NULL);
@@ -1653,10 +1652,7 @@ SolarGLCanvas::SolarGLCanvas(SolarFrame* parent, const int* vAttrs)
 
 SolarGLCanvas::~SolarGLCanvas()
 {
-	if (fGLContext)
-	{
-		delete fGLContext;
-	}
+	delete fGLContext;
 }
 
 void SolarGLCanvas::StartTimer(float frameDuration)

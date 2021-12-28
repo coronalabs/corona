@@ -52,11 +52,8 @@ namespace Rtt
 		SolarAppContext(const char *path);
 		~SolarAppContext();
 
-		void Close();
 		bool Init();
 		bool IsInitialized() const { return NULL != fRuntime; }
-		void Start();
-		void EnumerateFontFiles(const char *dir, std::vector<std::string> &fileList);
 
 		Runtime *GetRuntime() { return fRuntime; }
 		LinuxRuntimeDelegate *GetDelegate() { return fRuntimeDelegate; }
@@ -103,6 +100,8 @@ namespace Rtt
 		bool fIsDebApp;
 		LinuxSimulatorServices *fSimulator;
 		std::string fSaveFolder;
+		ProjectSettings* fProjectSettings;
+
 	};
 }; // namespace Rtt
 
@@ -201,5 +200,6 @@ public:
 
 private:
 	SolarFrame *fSolarFrame;
+
 };
 #endif // Rtt_LINUX_CONTEXT_H
