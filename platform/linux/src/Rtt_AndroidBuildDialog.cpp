@@ -291,7 +291,7 @@ namespace Rtt
 
 	void AndroidBuildDialog::OnBuildClicked(wxCommandEvent &event)
 	{
-		LinuxPlatform *platform = wxGetApp().GetPlatform();
+		LinuxPlatform *platform = solarApp->GetPlatform();
 		MPlatformServices *service = new LinuxPlatformServices(platform);
 		Rtt::Runtime *runtimePointer = fAppContext->GetRuntime();
 		wxString appName(appNameTextCtrl->GetValue());
@@ -314,7 +314,7 @@ namespace Rtt
 		bool isDistribution = true;
 		const char kBuildSettings[] = "build.settings";
 		Rtt::String buildSettingsPath;
-		wxMessageDialog *resultDialog = new wxMessageDialog(wxGetApp().GetFrame(), wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
+		wxMessageDialog *resultDialog = new wxMessageDialog(solarApp, wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
 
 		// setup paths
 		androidTemplate.append("/Resources");
@@ -512,7 +512,7 @@ namespace Rtt
 		}
 
 		EndModal(wxID_OK);
-		wxGetApp().GetFrame()->RemoveSuspendedPanel();
+		solarApp->RemoveSuspendedPanel();
 
 
 		int dialogResultFlags = buildResult == 0 ? wxOK | wxICON_INFORMATION : wxOK | wxICON_ERROR;
@@ -545,7 +545,7 @@ namespace Rtt
 
 	void AndroidBuildDialog::OnCancelClicked(wxCommandEvent &event)
 	{
-		wxGetApp().GetFrame()->RemoveSuspendedPanel();
+		solarApp->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);
 	}
 };

@@ -267,7 +267,7 @@ namespace Rtt
 	LinuxVideoObject::myMediaCtrl::myMediaCtrl(LinuxVideoObject* parent)
 		: fLinuxVideoObject(parent)
 	{
-		Create(wxGetApp().GetParent(), wxID_ANY);
+		Create(solarApp, wxID_ANY);
 		Connect(wxEVT_MEDIA_LOADED, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
 		Connect(wxEVT_MEDIA_STOP, wxMediaEventHandler(myMediaCtrl::onMediaEvent));
 	}

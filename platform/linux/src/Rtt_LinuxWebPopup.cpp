@@ -79,7 +79,7 @@ namespace Rtt
 		if (!fWebBrowserPointer)
 		{
 			// Fetch the bounds of this display object converted from Corona coordinates to native screen coordinates.
-			Runtime *runtimePointer = wxGetApp().GetRuntime();
+			Runtime *runtimePointer = solarApp->GetRuntime();
 
 			if (!runtimePointer)
 			{
@@ -91,7 +91,7 @@ namespace Rtt
 			Preinitialize(display);
 			GetScreenBounds(display, screenBounds);
 
-			fWebBrowserPointer = wxWebView::New(wxGetApp().GetParent(), wxID_ANY, "", wxPoint(screenBounds.xMin, screenBounds.yMin), wxSize(screenBounds.Width(), screenBounds.Height()));
+			fWebBrowserPointer = wxWebView::New(solarApp, wxID_ANY, "", wxPoint(screenBounds.xMin, screenBounds.yMin), wxSize(screenBounds.Width(), screenBounds.Height()));
 			fWebBrowserPointer->Bind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent, wxID_ANY, wxID_ANY, new eventArg(this));
 			fWebBrowserPointer->Bind(wxEVT_WEBVIEW_NAVIGATED, onWebPopupNavigatedEvent, wxID_ANY, wxID_ANY, new eventArg(this));
 			fWebBrowserPointer->Bind(wxEVT_WEBVIEW_LOADED, onWebPopupLoadedEvent, wxID_ANY, wxID_ANY, new eventArg(this));
@@ -104,7 +104,7 @@ namespace Rtt
 		if (fBaseDirectory != MPlatform::kUnknownDir)
 		{
 			Rtt::String filePath;
-			LinuxPlatform *platform = wxGetApp().GetPlatform();
+			LinuxPlatform *platform = solarApp->GetPlatform();
 			platform->PathForFile(url, fBaseDirectory, MPlatform::kDefaultPathFlags, filePath);
 
 			if (!filePath.IsEmpty())
@@ -136,9 +136,7 @@ namespace Rtt
 	bool LinuxWebPopup::Close()
 	{
 		// Do not continue if there is no web browser to close.
-		wxApp *app = &wxGetApp();
-
-		if (fWebBrowserPointer && app != NULL)
+		if (fWebBrowserPointer && solarApp != NULL)
 		{
 			// Remove event handlers.
 			fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent);

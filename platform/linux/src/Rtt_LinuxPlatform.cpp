@@ -538,7 +538,7 @@ namespace Rtt
 	{
 		if (Rtt_StringCompareNoCase(actionName, "exitApplication") == 0)
 		{
-			wxGetApp().GetFrame()->Close(true);
+			solarApp->Close(true);
 			return true;
 		}
 
@@ -624,7 +624,7 @@ namespace Rtt
 
 	void LinuxPlatform::SetActivityIndicator(bool visible) const
 	{
-		wxGetApp().GetParent()->SetCursor(visible ? *wxHOURGLASS_CURSOR : *wxSTANDARD_CURSOR);
+		solarApp->SetCursor(visible ? *wxHOURGLASS_CURSOR : *wxSTANDARD_CURSOR);
 	}
 
 	PlatformWebPopup *LinuxPlatform::GetWebPopup() const
@@ -838,27 +838,27 @@ namespace Rtt
 					}
 					else if (Rtt_StringCompare(windowMode, "minimized") == 0)
 					{
-						wxGetApp().GetFrame()->Iconize(true);
+						solarApp->Iconize(true);
 					}
 					else if (Rtt_StringCompare(windowMode, "maximized") == 0)
 					{
 						/*
-						bool isFullScreen = wxGetApp().GetFrame()->IsFullScreen();
+						bool isFullScreen = solarApp->IsFullScreen();
 
 						if (isFullScreen)
 						{
-							wxGetApp().GetFrame()->ShowFullScreen(false);
+							solarApp->ShowFullScreen(false);
 						}
 						else
 						{
-							wxGetApp().GetFrame()->Maximize(true);
+							solarApp->Maximize(true);
 						}*/
 					}
 					else if (Rtt_StringCompare(windowMode, "fullscreen") == 0)
 					{
 						// note: seems to need the frame set to wxDEFAULT_FRAME_STYLE to work
 						// commenting out as it isn't enough to just set the window to fullscreen for this to work
-						//wxGetApp().GetFrame()->ShowFullScreen(true, wxFULLSCREEN_ALL);
+						//solarApp->ShowFullScreen(true, wxFULLSCREEN_ALL);
 					}
 				}
 			}
@@ -872,7 +872,7 @@ namespace Rtt
 
 				if (windowTitle != NULL)
 				{
-					wxGetApp().GetFrame()->SetTitle(windowTitle);
+					solarApp->SetTitle(windowTitle);
 				}
 			}
 		}
@@ -884,7 +884,7 @@ namespace Rtt
 				bool cursorVisible = lua_toboolean(L, valueIndex);
 				isMouseCursorVisible = cursorVisible;
 				wxCursor cursor = cursorVisible ? *wxSTANDARD_CURSOR : wxCURSOR_BLANK;
-				wxGetApp().GetFrame()->SetCursor(cursor);
+				solarApp->SetCursor(cursor);
 			}
 		}
 		// mouse cursor type
@@ -976,7 +976,7 @@ namespace Rtt
 					cursor = wxCURSOR_WAIT;
 				}
 
-				wxGetApp().GetFrame()->SetCursor(cursor);
+				solarApp->SetCursor(cursor);
 			}
 		}
 	}
@@ -994,14 +994,14 @@ namespace Rtt
 		// Push the requested native property information to Lua.
 		if (Rtt_StringCompare(key, "windowTitleText") == 0)
 		{
-			lua_pushstring(L, wxGetApp().GetFrame()->GetTitle().ToStdString().c_str());
+			lua_pushstring(L, solarApp->GetTitle().ToStdString().c_str());
 			pushedValues = 1;
 		}
 		else if (Rtt_StringCompare(key, "windowMode") == 0)
 		{
-			bool isFullScreen = wxGetApp().GetFrame()->IsFullScreen();
-			bool isMinimized = wxGetApp().GetFrame()->IsIconized();
-			bool isMaximized = wxGetApp().GetFrame()->IsMaximized();
+			bool isFullScreen = solarApp->IsFullScreen();
+			bool isMinimized = solarApp->IsIconized();
+			bool isMaximized = solarApp->IsMaximized();
 			bool isNormal = !isFullScreen || !isMinimized || !isMaximized;
 			const char *windowMode = NULL;
 
@@ -1066,7 +1066,7 @@ namespace Rtt
 		if (Rtt_StringCompare(key, "appName") == 0)
 		{
 			// Fetch the application's name.
-			lua_pushstring(L, wxGetApp().GetFrame()->GetContext()->GetAppName().c_str());
+			lua_pushstring(L, solarApp->GetContext()->GetAppName().c_str());
 		}
 		else if (Rtt_StringCompare(key, "appVersionString") == 0)
 		{
@@ -1296,7 +1296,7 @@ namespace Rtt
 // for native.showAlert
 //
 	msgBox::msgBox(const char *title, const char *msg, const char **buttonLabels, U32 numButtons, LuaResource *resource)
-		: wxFrame(wxGetApp().GetFrame(), wxID_ANY, title, wxDefaultPosition, wxSize(520, 180), wxCAPTION | wxCLOSE_BOX), fCallback(resource)
+		: wxFrame(solarApp, wxID_ANY, title, wxDefaultPosition, wxSize(520, 180), wxCAPTION | wxCLOSE_BOX), fCallback(resource)
 	{
 		wxSize sz = GetSize();
 		wxPanel *panel = new wxPanel(this, wxID_ANY);

@@ -362,7 +362,7 @@ namespace Rtt
 	//
 
 	LinuxTextBoxObject::myTextCtrl::myTextCtrl(LinuxTextBoxObject* parent, bool singleLine)
-		: wxTextCtrl(wxGetApp().GetParent(), -1, "", wxDefaultPosition, wxDefaultSize, singleLine ? wxTE_MULTILINE : wxTE_MULTILINE)
+		: wxTextCtrl(solarApp, -1, "", wxDefaultPosition, wxDefaultSize, singleLine ? wxTE_MULTILINE : wxTE_MULTILINE)
 		, fLinuxTextBoxObject(parent)
 	{
 		Connect(wxEVT_TEXT, wxCommandEventHandler(myTextCtrl::onTextEvent));

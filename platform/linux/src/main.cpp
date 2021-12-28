@@ -13,4 +13,23 @@
 
 #include "Rtt_LinuxContext.h"
 
-wxIMPLEMENT_APP_CONSOLE(SolarApp);
+// global
+SolarApp* solarApp = NULL;
+
+class app : public wxApp
+{
+	bool OnInit() wxOVERRIDE
+	{
+		// create the main application window
+		solarApp = new SolarApp();
+		return true;
+	}
+
+	virtual ~app()
+	{
+		// Don't delete frame, it deleted by Core of wxWidgets
+		solarApp = NULL;
+	}
+};
+
+wxIMPLEMENT_APP_CONSOLE(app);

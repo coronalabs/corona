@@ -36,7 +36,6 @@
 #define HOMESCREEN_ID "homescreen"
 
 class SolarApp;
-class SolarFrame;
 class SolarGLCanvas;
 
 wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
@@ -107,7 +106,7 @@ namespace Rtt
 class SolarGLCanvas : public wxGLCanvas
 {
 public:
-	SolarGLCanvas(SolarFrame *parent, const int* vAttrs);
+	SolarGLCanvas(SolarApp *parent, const int* vAttrs);
 	~SolarGLCanvas();
 
 	void OnChar(wxKeyEvent &event);
@@ -117,7 +116,7 @@ public:
 	void OnSize(wxSizeEvent &event);
 	void StartTimer(float duration);
 
-	SolarFrame *fSolarFrame;
+	SolarApp *solarApp;
 	wxGLContext *fGLContext;
 	int fWindowHeight;
 	Rtt::SolarAppContext *fContext;
@@ -126,11 +125,14 @@ public:
 };
 
 // the main frame
-class SolarFrame : public wxFrame
+class SolarApp : public wxFrame
 {
 public:
-	SolarFrame(int style);
-	virtual ~SolarFrame();
+	SolarApp();
+	virtual ~SolarApp();
+
+	Rtt::Runtime* GetRuntime() { return fContext->GetRuntime(); }
+	Rtt::LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
 	void OnFileSystemEvent(wxFileSystemWatcherEvent &event);
 	void OnOpen(wxCommandEvent &event);
@@ -181,22 +183,6 @@ public:
 	wxDECLARE_EVENT_TABLE();
 };
 
-wxDECLARE_APP(SolarApp);
-class SolarApp : public wxApp
-{
-public:
-	SolarApp();
-	~SolarApp();
+extern SolarApp* solarApp;
 
-	bool OnInit() wxOVERRIDE;
-	SolarFrame *GetFrame() { return fSolarFrame; }
-	SolarGLCanvas *GetCanvas() const { return fSolarFrame->GetCanvas(); }
-	wxWindow *GetParent();
-	Rtt::LinuxPlatform *GetPlatform() const;
-	Rtt::Runtime *GetRuntime() { return fSolarFrame->GetContext()->GetRuntime(); };
-
-private:
-	SolarFrame *fSolarFrame;
-
-};
 #endif // Rtt_LINUX_CONTEXT_H
