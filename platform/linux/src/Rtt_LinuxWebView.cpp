@@ -15,7 +15,7 @@
 #include "Rtt_LuaProxy.h"
 #include "Rtt_LuaProxyVTable.h"
 #include "Rtt_Runtime.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 #include "Rtt_LinuxPlatform.h"
 #include "CoronaLua.h"
 #include "Rtt_LuaResource.h"

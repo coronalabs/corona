@@ -1,6 +1,6 @@
 #include "Rtt_LinuxKeyListener.h"
 #include "Rtt_KeyName.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 
 namespace Rtt
 {

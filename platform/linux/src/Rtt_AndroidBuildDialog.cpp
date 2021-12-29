@@ -16,6 +16,7 @@
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_AndroidAppPackager.h"
 #include "Rtt_TargetAndroidAppStore.h"
+#include "Rtt_LinuxApp.h"
 #include "ListKeyStore.h"
 #include "Core/Rtt_FileSystem.h"
 #include <string.h>

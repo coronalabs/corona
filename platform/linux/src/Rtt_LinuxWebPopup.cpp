@@ -18,7 +18,7 @@
 #include "Rtt_PlatformPlayer.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_LinuxPlatform.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 
 #if ( wxUSE_WEBVIEW == 1)
 

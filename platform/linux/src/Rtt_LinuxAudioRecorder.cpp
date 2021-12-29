@@ -14,7 +14,7 @@
 #include "Rtt_LuaContext.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_LinuxPlatform.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 
 namespace Rtt
 {

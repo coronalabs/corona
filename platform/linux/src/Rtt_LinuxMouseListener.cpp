@@ -1,6 +1,6 @@
 #include "Rtt_LinuxMouseListener.h"
 #include "Rtt_MPlatformDevice.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 
 namespace Rtt
 {

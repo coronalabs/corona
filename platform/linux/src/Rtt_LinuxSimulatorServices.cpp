@@ -12,7 +12,7 @@
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_TargetDevice.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxUtils.h"

@@ -32,6 +32,7 @@
 #include "Rtt_LinuxWebView.h"
 #include "Rtt_LinuxContainer.h"
 #include "Rtt_LinuxUtils.h"
+#include "Rtt_LinuxApp.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
 #include "wx/wx.h"

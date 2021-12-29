@@ -12,6 +12,7 @@
 #include "Rtt_LinuxClearSandboxDialog.h"
 #include "Rtt_ConsoleApp.h"
 #include "Rtt_LinuxUtils.h"
+#include "Rtt_LinuxApp.h"
 #include "wx/aboutdlg.h"
 
 using namespace std;

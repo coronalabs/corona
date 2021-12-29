@@ -15,7 +15,7 @@
 #include "Rtt_LuaLibNative.h"
 #include "Rtt_LuaProxy.h"
 #include "Rtt_LuaProxyVTable.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 #include "Display/Rtt_Display.h"
 #include "Rtt_Freetype.h"
 #include <string.h>

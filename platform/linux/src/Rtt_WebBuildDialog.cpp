@@ -10,6 +10,7 @@
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxSimulatorView.h"
+#include "Rtt_LinuxApp.h"
 #include "Rtt_WebBuildDialog.h"
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_WebAppPackager.h"

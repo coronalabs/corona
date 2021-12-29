@@ -18,7 +18,7 @@
 #include "Rtt_Event.h"
 #include "wx/app.h"
 #include "wx/url.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 
 #if (wxUSE_MEDIACTRL == 1)
 

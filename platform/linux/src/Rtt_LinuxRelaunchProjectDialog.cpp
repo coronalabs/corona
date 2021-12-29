@@ -1,5 +1,5 @@
 #include "Rtt_LinuxRelaunchProjectDialog.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 #include <string.h>
 
 using namespace std;

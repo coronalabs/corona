@@ -11,7 +11,7 @@
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the library"
 #endif
 
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 
 // global
 SolarApp* solarApp = NULL;
