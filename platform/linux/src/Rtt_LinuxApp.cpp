@@ -84,13 +84,13 @@ EVT_CLOSE(SolarApp::OnClose)
 EVT_TIMER(TIMER_ID, SolarApp::OnTimer)
 wxEND_EVENT_TABLE()
 
-SolarApp::SolarApp()
+SolarApp::SolarApp(const string& resourcesDir)
 	: fSolarGLCanvas(NULL)
 	, fContext(NULL)
 	, fMenuMain(NULL)
 	, fMenuProject(NULL)
 	, fWatcher(NULL)
-	,	fProjectPath("")
+	, fProjectPath("")
 	, fTimer(this, TIMER_ID)
 {
 #ifdef Rtt_SIMULATOR
@@ -146,21 +146,6 @@ SolarApp::SolarApp()
 	if (!Rtt_IsDirectory(projectCreationPath.c_str()))
 	{
 		Rtt_MakeDirectory(projectCreationPath.c_str());
-	}
-
-	// start the console immediately
-	if (LinuxSimulatorView::IsRunningOnSimulator())
-	{
-		if (ConsoleApp::isStarted())
-		{
-			ConsoleApp::Clear();
-		}
-		else
-		{
-			std::string cmd(GetStartupPath(NULL));
-			cmd.append("/Solar2DConsole");
-			wxExecute(cmd);
-		}
 	}
 
 	// set window
@@ -1100,7 +1085,7 @@ void SolarApp::OnTimer(wxTimerEvent& event)
 //
 // Solar GLCanvas, mouse & key listener
 // 
- 
+
 wxBEGIN_EVENT_TABLE(SolarGLCanvas, wxGLCanvas)
 EVT_SIZE(SolarGLCanvas::OnSize)
 wxEND_EVENT_TABLE()

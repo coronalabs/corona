@@ -45,7 +45,7 @@ class SolarGLCanvas;
 class SolarApp : public wxFrame
 {
 public:
-	SolarApp();
+	SolarApp(const std::string& resourcesDir);
 	virtual ~SolarApp();
 
 	Rtt::Runtime* GetRuntime() { return fContext->GetRuntime(); }
