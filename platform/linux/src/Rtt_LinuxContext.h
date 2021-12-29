@@ -23,14 +23,6 @@
 #include "Rtt_LinuxRuntimeDelegate.h"
 #include "Rtt_LinuxKeyListener.h"
 #include "Rtt_LinuxMouseListener.h"
-#include "Rtt_LinuxRelaunchProjectDialog.h"
-#include "wx/app.h"
-#include "wx/frame.h"
-#include "wx/panel.h"
-#include "wx/stattext.h"
-#include "wx/glcanvas.h"
-#include "wx/timer.h"
-#include "wx/fswatcher.h"
 #include <string>
 
 #define HOMESCREEN_ID "homescreen"

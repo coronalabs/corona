@@ -81,6 +81,7 @@ EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarApp::OnRelaunch)
 EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarApp::OnOpenWelcome)
 EVT_ICONIZE(SolarApp::OnIconized)
 EVT_CLOSE(SolarApp::OnClose)
+EVT_TIMER(TIMER_ID, SolarApp::OnTimer)
 wxEND_EVENT_TABLE()
 
 SolarApp::SolarApp()
@@ -90,6 +91,7 @@ SolarApp::SolarApp()
 	, fMenuProject(NULL)
 	, fWatcher(NULL)
 	,	fProjectPath("")
+	, fTimer(this, TIMER_ID)
 {
 #ifdef Rtt_SIMULATOR
 	SetIcon(simulator_xpm);
@@ -842,13 +844,12 @@ void SolarApp::OnRelaunch(wxCommandEvent& event)
 
 		fContext->LoadApp(fSolarGLCanvas);
 		ResetSize();
-		fSolarGLCanvas->fContext = fContext;
 		fContext->SetCanvas(fSolarGLCanvas);
 		SetMenu(fAppPath.c_str());
 		SetTitle(newWindowTitle);
 
 		fContext->RestartRenderer();
-		fSolarGLCanvas->StartTimer(1000.0f / (float)fContext->GetFPS());
+		StartTimer(1000.0f / (float)fContext->GetFPS());
 		fFileSystemEventTimestamp = wxGetUTCTimeMillis();
 	}
 }
@@ -1042,11 +1043,9 @@ void SolarApp::OnOpen(wxCommandEvent& event)
 
 	fContext->LoadApp(fSolarGLCanvas);
 	ResetSize();
-	fSolarGLCanvas->fContext = fContext;
 	fContext->SetCanvas(fSolarGLCanvas);
 	SetMenu(path.c_str());
 
-	// Vitaly: for what this ?
 	// restore home screen zoom level
 //	if (IsHomeScreen(appName))
 //	{
@@ -1057,7 +1056,7 @@ void SolarApp::OnOpen(wxCommandEvent& event)
 
 	fContext->RestartRenderer();
 	GetCanvas()->Refresh(true);
-	fSolarGLCanvas->StartTimer(1000.0f / (float)fContext->GetFPS());
+	StartTimer(1000.0f / (float)fContext->GetFPS());
 
 	if (LinuxSimulatorView::IsRunningOnSimulator())
 	{
@@ -1079,17 +1078,35 @@ void SolarApp::OnOpen(wxCommandEvent& event)
 	SetTitle(newWindowTitle);
 }
 
-// setup glcanvas events
+void SolarApp::StartTimer(float frameDuration)
+{
+	fTimer.Start((int)frameDuration);
+	fContext->GetRuntime()->BeginRunLoop();
+}
+
+void SolarApp::OnTimer(wxTimerEvent& event)
+{
+	Rtt::Runtime* runtime = fContext->GetRuntime();
+	if (!runtime->IsSuspended())
+	{
+		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)fContext->GetPlatform()->GetDevice().GetInputDeviceManager();
+		deviceManager.dispatchEvents(runtime);
+
+		// advance engine
+		(*runtime)();
+	}
+}
+
+//
+// Solar GLCanvas, mouse & key listener
+// 
+ 
 wxBEGIN_EVENT_TABLE(SolarGLCanvas, wxGLCanvas)
-EVT_TIMER(TIMER_ID, SolarGLCanvas::OnTimer)
 EVT_SIZE(SolarGLCanvas::OnSize)
 wxEND_EVENT_TABLE()
 
 SolarGLCanvas::SolarGLCanvas(SolarApp* parent, const int* vAttrs)
 	: wxGLCanvas(parent, wxID_ANY, vAttrs, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
-	, solarApp(parent)
-	, fContext(NULL)
-	, fTimer(this, TIMER_ID)
 {
 	fGLContext = new wxGLContext(this);
 	Rtt_ASSERT(fGLContext->IsOK());
@@ -1117,32 +1134,10 @@ SolarGLCanvas::~SolarGLCanvas()
 	delete fGLContext;
 }
 
-void SolarGLCanvas::StartTimer(float frameDuration)
-{
-	fTimer.Start((int)frameDuration);
-	fContext->GetRuntime()->BeginRunLoop();
-}
-
-void SolarGLCanvas::OnTimer(wxTimerEvent& event)
-{
-	Rtt::Runtime* runtime = fContext->GetRuntime();
-	if (!runtime->IsSuspended())
-	{
-		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)fContext->GetPlatform()->GetDevice().GetInputDeviceManager();
-		deviceManager.dispatchEvents(runtime);
-
-		// advance engine
-		(*runtime)();
-	}
-}
-
 void SolarGLCanvas::Render()
 {
 	SetCurrent(*fGLContext);
-	if (fWindowHeight > 0)
-	{
-		SwapBuffers();
-	}
+	SwapBuffers();
 }
 
 void SolarGLCanvas::OnSize(wxSizeEvent& event)
@@ -1150,7 +1145,6 @@ void SolarGLCanvas::OnSize(wxSizeEvent& event)
 	// if the window is fully initialized
 	if (IsShownOnScreen())
 	{
-		fWindowHeight = event.GetSize().y;
 		Refresh(true);
 		Render();
 	}

@@ -73,6 +73,8 @@ public:
 	void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 	void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 	void WatchFolder(const char* path, const char* appName);
+	void StartTimer(float duration);
+	void OnTimer(wxTimerEvent& event);
 
 	bool fRelaunchedViaFileEvent;
 	Rtt::LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
@@ -97,6 +99,8 @@ public:
 	int currentSkinWidth;
 	int currentSkinHeight;
 	wxFileSystemWatcher* fWatcher;
+	wxTimer fTimer;
+
 	wxDECLARE_EVENT_TABLE();
 };
 
@@ -108,17 +112,11 @@ public:
 	~SolarGLCanvas();
 
 	void OnChar(wxKeyEvent& event);
-	void OnTimer(wxTimerEvent& event);
-	bool IsGLContextAvailable() { return fGLContext != NULL; } // used to know if we must end now because OGL 3.2 isn't available
-	void Render();
 	void OnSize(wxSizeEvent& event);
-	void StartTimer(float duration);
+	void Render();
 
-	SolarApp* solarApp;
+private:
 	wxGLContext* fGLContext;
-	int fWindowHeight;
-	Rtt::SolarAppContext* fContext;
-	wxTimer fTimer;
 	wxDECLARE_EVENT_TABLE();
 };
 
