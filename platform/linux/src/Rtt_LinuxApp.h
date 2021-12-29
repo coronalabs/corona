@@ -33,6 +33,7 @@
 #include "wx/glcanvas.h"
 #include "wx/timer.h"
 #include "wx/fswatcher.h"
+
 #include <string>
 
 wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
@@ -51,7 +52,6 @@ public:
 	Rtt::Runtime* GetRuntime() { return fContext->GetRuntime(); }
 	Rtt::LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
-	void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
 	void OnOpen(wxCommandEvent& event);
 	void OnRelaunch(wxCommandEvent& event);
 	void OnSuspendOrResume(wxCommandEvent& event);
@@ -72,9 +72,14 @@ public:
 	void CreateMenus();
 	void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 	void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
-	void WatchFolder(const char* path, const char* appName);
 	void StartTimer(float duration);
 	void OnTimer(wxTimerEvent& event);
+
+	virtual void WatchFolder(const char* path, const char* appName) {};
+	inline bool IsHomeScreen(const std::string& appName)
+	{
+		return appName.compare(HOMESCREEN_ID) == 0;
+	}
 
 	bool fRelaunchedViaFileEvent;
 	Rtt::LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
@@ -98,7 +103,6 @@ public:
 	std::string fProjectPath;
 	int currentSkinWidth;
 	int currentSkinHeight;
-	wxFileSystemWatcher* fWatcher;
 	wxTimer fTimer;
 
 	wxDECLARE_EVENT_TABLE();

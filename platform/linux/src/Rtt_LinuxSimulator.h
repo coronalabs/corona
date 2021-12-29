@@ -17,5 +17,11 @@ public:
 	SolarSimulator(const std::string& resorcesDir);
 	virtual ~SolarSimulator();
 
+
+	void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
+	void WatchFolder(const char* path, const char* appName) override;
+
+	wxFileSystemWatcher* fWatcher;
+
 };
 
