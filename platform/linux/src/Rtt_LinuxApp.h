@@ -56,7 +56,6 @@ namespace Rtt
 		Rtt::LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
 		void OnOpen(wxCommandEvent& event);
-		void OnRelaunch(wxCommandEvent& event);
 		void OnSuspendOrResume(wxCommandEvent& event);
 		void OnOpenWelcome(wxCommandEvent& event);
 		void OnZoomIn(wxCommandEvent& event);
@@ -66,8 +65,8 @@ namespace Rtt
 		void OnClose(wxCloseEvent& event);
 		void SetOGLString(const wxString& ogls) { fGLString = ogls; }
 		void ChangeSize(int newWidth, int newHeight);
-		void CreateSuspendedPanel();
-		void RemoveSuspendedPanel();
+		virtual void CreateSuspendedPanel() {}
+		virtual void RemoveSuspendedPanel() {}
 		SolarGLCanvas* GetCanvas() const { return fSolarGLCanvas; }
 		Rtt::SolarAppContext* GetContext() const { return fContext; }
 		void ResetSize();
@@ -80,11 +79,10 @@ namespace Rtt
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 		virtual void WatchFolder(const char* path, const char* appName) {};
 		virtual bool Start(const std::string& resourcesDir);
+		void CreateMenus();
 
-		bool fRelaunchedViaFileEvent;
 		Rtt::LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
 		wxLongLong fFileSystemEventTimestamp = 0;
-		wxPanel* suspendedPanel;
 		wxStaticText* suspendedText;
 		wxMenu* fHardwareMenu;
 		wxString fGLString;
