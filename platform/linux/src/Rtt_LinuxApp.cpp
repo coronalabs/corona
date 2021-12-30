@@ -41,8 +41,6 @@
 #include "lua.h"
 #include "lauxlib.h"
 
-#define TIMER_ID wxID_HIGHEST + 1
-
 using namespace Rtt;
 using namespace std;
 
@@ -58,27 +56,7 @@ extern "C"
 namespace Rtt
 {
 
-	wxDEFINE_EVENT(eventOpenProject, wxCommandEvent);
-	wxDEFINE_EVENT(eventRelaunchProject, wxCommandEvent);
-	wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
-
-	// setup frame events
-	wxBEGIN_EVENT_TABLE(SolarApp, wxFrame)
-		EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarApp::OnOpenWelcome)
-		EVT_MENU(ID_MENU_RELAUNCH_PROJECT, SolarApp::OnRelaunch)
-		EVT_MENU(ID_MENU_SUSPEND, SolarApp::OnSuspendOrResume)
-		EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarApp::OnOpenWelcome)
-		EVT_MENU(ID_MENU_ZOOM_IN, SolarApp::OnZoomIn)
-		EVT_MENU(ID_MENU_ZOOM_OUT, SolarApp::OnZoomOut)
-		EVT_COMMAND(wxID_ANY, eventOpenProject, SolarApp::OnOpen)
-		EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarApp::OnRelaunch)
-		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarApp::OnOpenWelcome)
-		EVT_ICONIZE(SolarApp::OnIconized)
-		EVT_CLOSE(SolarApp::OnClose)
-		EVT_TIMER(TIMER_ID, SolarApp::OnTimer)
-		wxEND_EVENT_TABLE()
-
-		SolarApp::SolarApp()
+	SolarApp::SolarApp()
 		: fSolarGLCanvas(NULL)
 		, fContext(NULL)
 		, fMenuMain(NULL)
@@ -86,60 +64,40 @@ namespace Rtt
 		, fProjectPath("")
 		, fTimer(this, TIMER_ID)
 	{
-	}
+#ifdef __WXGTK3__
+		setenv("GDK_BACKEND", "x11", 1);
+#endif
 
-	bool SolarApp::Start(const string& resourcesDir)
-	{
-		// init curl
 		curl_global_init(CURL_GLOBAL_ALL);
-
-		// init image loaders
 		wxInitAllImageHandlers();
 
 		const char* homeDir = GetHomePath();
 		string basePath(homeDir);
 		string sandboxPath(homeDir);
 		string pluginPath(homeDir);
-		string buildPath(homeDir);
-		string projectCreationPath(homeDir);
+
+		// create default directories if missing
 
 		basePath.append("/.Solar2D");
 		sandboxPath.append("/.Solar2D/Sandbox");
 		pluginPath.append("/.Solar2D/Plugins");
-		buildPath.append("/Documents/Solar2D Built Apps");
-		projectCreationPath.append("/Documents/Solar2D Projects");
-
-#ifdef __WXGTK3__
-		setenv("GDK_BACKEND", "x11", 1);
-#endif
-
-		// create default directories if missing
 
 		if (!Rtt_IsDirectory(basePath.c_str()))
 		{
 			Rtt_MakeDirectory(basePath.c_str());
 		}
-
 		if (!Rtt_IsDirectory(sandboxPath.c_str()))
 		{
 			Rtt_MakeDirectory(sandboxPath.c_str());
 		}
-
 		if (!Rtt_IsDirectory(pluginPath.c_str()))
 		{
 			Rtt_MakeDirectory(pluginPath.c_str());
 		}
+	}
 
-		if (!Rtt_IsDirectory(buildPath.c_str()))
-		{
-			Rtt_MakeDirectory(buildPath.c_str());
-		}
-
-		if (!Rtt_IsDirectory(projectCreationPath.c_str()))
-		{
-			Rtt_MakeDirectory(projectCreationPath.c_str());
-		}
-
+	bool SolarApp::Start(const string& resourcesDir)
+	{
 		// set window
 
 		bool fullScreen = false;
@@ -226,28 +184,11 @@ namespace Rtt
 			minHeight = height;
 		}
 
-		suspendedPanel = NULL;
-		fRelaunchedViaFileEvent = false;
-
 		// create app window
 		Create(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, height), windowStyle);
 
 		int vAttrs[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
 		fSolarGLCanvas = new SolarGLCanvas(this, vAttrs);
-		fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
-		fProjectPath = string(homeDir);
-		fProjectPath.append("/Documents/Solar2D Projects");
-
-		if (!Rtt_IsDirectory(fProjectPath.c_str()))
-		{
-			Rtt_MakeDirectory(fProjectPath.c_str());
-		}
-
-		if (LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			currentSkinWidth = LinuxSimulatorView::Config::skinWidth;
-			currentSkinHeight = LinuxSimulatorView::Config::skinHeight;
-		}
 
 		if (fullScreen)
 		{
@@ -267,10 +208,6 @@ namespace Rtt
 		}
 		else
 		{
-			if (LinuxSimulatorView::IsRunningOnSimulator())
-			{
-				SetPosition(wxPoint(LinuxSimulatorView::Config::windowXPos, LinuxSimulatorView::Config::windowYPos));
-			}
 			Show(true);
 		}
 
@@ -288,24 +225,6 @@ namespace Rtt
 		}
 
 		OnOpen(eventOpen);
-
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnNewProject, ID_MENU_NEW_PROJECT);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenFileDialog, ID_MENU_OPEN_PROJECT);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnRelaunchLastProject, ID_MENU_OPEN_LAST_PROJECT);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenInEditor, ID_MENU_OPEN_IN_EDITOR);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnShowProjectFiles, ID_MENU_SHOW_PROJECT_FILES);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnShowProjectSandbox, ID_MENU_SHOW_PROJECT_SANDBOX);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnClearProjectSandbox, ID_MENU_CLEAR_PROJECT_SANDBOX);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnAndroidBackButton, ID_MENU_BACK_BUTTON);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForAndroid, ID_MENU_BUILD_ANDROID);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForWeb, ID_MENU_BUILD_WEB);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForLinux, ID_MENU_BUILD_LINUX);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenPreferences, wxID_PREFERENCES);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnQuit, wxID_EXIT);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenDocumentation, ID_MENU_OPEN_DOCUMENTATION);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenSampleProjects, ID_MENU_OPEN_SAMPLE_CODE);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnAbout, wxID_ABOUT);
-
 		return true;
 	}
 

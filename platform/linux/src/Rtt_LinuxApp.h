@@ -35,6 +35,8 @@
 #include "wx/fswatcher.h"
 #include <string>
 
+#define TIMER_ID wxID_HIGHEST + 1
+
 namespace Rtt
 {
 	wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
