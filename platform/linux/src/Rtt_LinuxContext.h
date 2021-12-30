@@ -27,11 +27,10 @@
 
 #define HOMESCREEN_ID "homescreen"
 
-class SolarApp;
-class SolarGLCanvas;
-
 namespace Rtt
 {
+	class SolarApp;
+	class SolarGLCanvas;
 	class LinuxPlatform;
 
 	struct SolarAppContext

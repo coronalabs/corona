@@ -14,43 +14,34 @@
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_FileSystem.h"
-#include "Rtt_ConsoleApp.h"
 
 using namespace std;
 
 // global
-SolarApp* solarApp = NULL;
+Rtt::SolarApp* solarApp = NULL;
 
 class app : public wxApp
 {
 	bool OnInit() wxOVERRIDE
 	{
-		// look for welcomescereen
 		string resourcesDir = GetStartupPath(NULL);
 		resourcesDir.append("/Resources");
 
+		// look for welcomescereen
 		if (Rtt_FileExists((resourcesDir + "/homescreen/main.lua").c_str()))
 		{
-			// start the console
-			if (ConsoleApp::isStarted())
-			{
-				ConsoleApp::Clear();
-			}
-			else
-			{
-				std::string cmd(GetStartupPath(NULL));
-				cmd.append("/Solar2DConsole");
-				wxExecute(cmd);
-			}
-			// create the main simulator window
-			solarApp = new SolarSimulator(resourcesDir);
+			resourcesDir.append("/homescreen");
+			solarApp = new Rtt::SolarSimulator();
 		}
 		else if (Rtt_IsDirectory(resourcesDir.c_str()))
 		{
-			// create the main application window
-			solarApp = new SolarApp(resourcesDir);
+			solarApp = new Rtt::SolarApp();
 		}
-		return solarApp != NULL;
+		else
+		{
+			return false;
+		}
+		return solarApp->Start(resourcesDir);
 	}
 
 	virtual ~app()

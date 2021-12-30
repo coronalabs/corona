@@ -42,10 +42,6 @@
 #include "lua.h"
 #include "lauxlib.h"
 
-#if !defined(wxHAS_IMAGES_IN_RESOURCES) && defined(Rtt_SIMULATOR)
-#include "resource/simulator.xpm"
-#endif
-
 //#define Rtt_DEBUG_TOUCH 1
 #define TIMER_ID wxID_HIGHEST + 1
 
@@ -66,7 +62,7 @@ extern "C"
 	}
 }
 
-extern SolarApp* solarApp;
+extern Rtt::SolarApp* solarApp;
 
 namespace Rtt
 {

@@ -11,17 +11,24 @@
 
 #include "Rtt_LinuxApp.h"
 
-class SolarSimulator : public SolarApp
+namespace Rtt
 {
-public:
-	SolarSimulator(const std::string& resorcesDir);
-	virtual ~SolarSimulator();
+
+	class SolarSimulator : public SolarApp
+	{
+	public:
+		SolarSimulator();
+		virtual ~SolarSimulator();
 
 
-	void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
-	void WatchFolder(const char* path, const char* appName) override;
+		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
+		void WatchFolder(const char* path, const char* appName) override;
+		bool Start(const std::string& resourcesDir) override;
 
-	wxFileSystemWatcher* fWatcher;
 
-};
+	private:
+		wxFileSystemWatcher* fWatcher;
+
+	};
+}
 
