@@ -329,30 +329,7 @@ namespace Rtt
 				//SetMinClientSize(wxSize(minWidth, minHeight));
 			}
 
-			if (LinuxSimulatorView::IsRunningOnSimulator() && !IsHomeScreen(fAppName))
-			{
-				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
-				wxRect screen = display.GetClientArea();
-				width = LinuxSimulatorView::Config::zoomedWidth;
-				height = LinuxSimulatorView::Config::zoomedHeight;
-
-				if (width > screen.width || height > screen.height)
-				{
-					solarApp->fZoomIn->Enable(false);
-				}
-
-				if (LinuxSimulatorView::Config::skinWidth <= LinuxSimulatorView::skinMinWidth)
-				{
-					solarApp->fZoomIn->Enable(false);
-					solarApp->fZoomOut->Enable(false);
-				}
-
-				while (width > screen.width || height > screen.height)
-				{
-					width /= LinuxSimulatorView::skinScaleFactor;
-					height /= LinuxSimulatorView::skinScaleFactor;
-				}
-			}
+			solarApp->GetSavedZoom(width, height);
 
 			switch (orientation)
 			{

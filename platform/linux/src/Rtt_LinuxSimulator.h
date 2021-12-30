@@ -22,16 +22,34 @@ namespace Rtt
 
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
 		void OnRelaunch(wxCommandEvent& event);
+		void OnZoomIn(wxCommandEvent& event);
+		void OnZoomOut(wxCommandEvent& event);
+		static void OnViewAsChanged(wxCommandEvent& event);
+		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 
 		void WatchFolder(const char* path, const char* appName) override;
 		bool Start(const std::string& resourcesDir) override;
 		void CreateSuspendedPanel() override;
 		void RemoveSuspendedPanel() override;
+		void CreateMenus() override;
+		void SetMenu(const char* appPath) override;
+		void GetSavedZoom(int& width, int& height) override;
 
 	private:
+
 		wxFileSystemWatcher* fWatcher;
 		wxPanel* suspendedPanel;
 		bool fRelaunchedViaFileEvent;
+
+		wxMenuBar* fMenuMain;
+		wxMenu* fViewMenu;
+		wxMenu* fViewAsAndroidMenu;
+		wxMenu* fViewAsIOSMenu;
+		wxMenu* fViewAsTVMenu;
+		wxMenu* fViewAsDesktopMenu;
+		wxMenuItem* fZoomIn;
+		wxMenuItem* fZoomOut;
+		wxMenuBar* fMenuProject;
 
 	};
 }

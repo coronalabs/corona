@@ -58,9 +58,6 @@ namespace Rtt
 		void OnOpen(wxCommandEvent& event);
 		void OnSuspendOrResume(wxCommandEvent& event);
 		void OnOpenWelcome(wxCommandEvent& event);
-		void OnZoomIn(wxCommandEvent& event);
-		void OnZoomOut(wxCommandEvent& event);
-		static void OnViewAsChanged(wxCommandEvent& event);
 		void OnIconized(wxIconizeEvent& event);
 		void OnClose(wxCloseEvent& event);
 		void SetOGLString(const wxString& ogls) { fGLString = ogls; }
@@ -70,8 +67,6 @@ namespace Rtt
 		SolarGLCanvas* GetCanvas() const { return fSolarGLCanvas; }
 		Rtt::SolarAppContext* GetContext() const { return fContext; }
 		void ResetSize();
-		void SetMenu(const char* appPath);
-		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void StartTimer(float duration);
 		void OnTimer(wxTimerEvent& event);
@@ -79,7 +74,9 @@ namespace Rtt
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 		virtual void WatchFolder(const char* path, const char* appName) {};
 		virtual bool Start(const std::string& resourcesDir);
-		void CreateMenus();
+		virtual void CreateMenus() {};
+		virtual void SetMenu(const char* appPath) {};
+		virtual void GetSavedZoom(int& width, int& height) {}
 
 		Rtt::LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
 		wxLongLong fFileSystemEventTimestamp = 0;
@@ -88,15 +85,6 @@ namespace Rtt
 		wxString fGLString;
 		SolarGLCanvas* fSolarGLCanvas;
 		Rtt::SolarAppContext* fContext;
-		wxMenuBar* fMenuMain;
-		wxMenu* fViewMenu;
-		wxMenu* fViewAsAndroidMenu;
-		wxMenu* fViewAsIOSMenu;
-		wxMenu* fViewAsTVMenu;
-		wxMenu* fViewAsDesktopMenu;
-		wxMenuItem* fZoomIn;
-		wxMenuItem* fZoomOut;
-		wxMenuBar* fMenuProject;
 		std::string fAppPath;
 		std::string fProjectPath;
 		int currentSkinWidth;
