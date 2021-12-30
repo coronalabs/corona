@@ -298,14 +298,7 @@ namespace Rtt
 		fContext = new SolarAppContext(path.c_str());
 		chdir(fContext->GetAppPath());
 
-		// clear the simulator log
-		if (LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			ConsoleApp::Clear();
-		}
-
 		string appName = fContext->GetAppName();
-		RemoveSuspendedPanel();
 
 		if (LinuxSimulatorView::IsRunningOnSimulator())
 		{
@@ -313,66 +306,16 @@ namespace Rtt
 			SetCursor(wxCURSOR_ARROW);
 		}
 
-		if (!IsHomeScreen(appName))
-		{
-			fAppPath = fContext->GetAppPath(); // save for relaunch
-			UpdateRecentDocs(appName, fullPath);
-		}
-
 		bool fullScreen = fContext->Init();
 		wxString newWindowTitle(appName);
-
-		if (!IsHomeScreen(appName))
-		{
-			if (LinuxSimulatorView::IsRunningOnSimulator())
-			{
-				LinuxSimulatorView::Config::lastProjectDirectory = fAppPath;
-				LinuxSimulatorView::Config::Save();
-				LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), appName.c_str(), fContext->GetPlatform());
-			}
-		}
-		else
-		{
-			if (LinuxSimulatorView::IsRunningOnSimulator())
-			{
-				newWindowTitle = "Solar2D Simulator";
-			}
-		}
 
 		fContext->LoadApp(fSolarGLCanvas);
 		ResetSize();
 		fContext->SetCanvas(fSolarGLCanvas);
-		SetMenu(path.c_str());
-
-		// restore home screen zoom level
-	//	if (IsHomeScreen(appName))
-	//	{
-	//		fContext->GetRuntimeDelegate()->fContentWidth = LinuxSimulatorView::Config::welcomeScreenZoomedWidth;
-	//		fContext->GetRuntimeDelegate()->fContentHeight = LinuxSimulatorView::Config::welcomeScreenZoomedHeight;
-	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
-	//	}
 
 		fContext->RestartRenderer();
 		GetCanvas()->Refresh(true);
 		StartTimer(1000.0f / (float)fContext->GetFPS());
-
-		if (LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			if (!IsHomeScreen(appName))
-			{
-				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(LinuxSimulatorView::Config::skinID);
-				newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
-				fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
-				string sandboxPath("~/.Solar2D/Sandbox/");
-				sandboxPath.append(fContext->GetTitle());
-				sandboxPath.append("_");
-				sandboxPath.append(CalculateMD5(fContext->GetTitle().c_str()));
-
-				Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
-				Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());
-			}
-		}
-
 		SetTitle(newWindowTitle);
 	}
 

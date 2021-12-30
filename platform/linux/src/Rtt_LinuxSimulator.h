@@ -21,6 +21,7 @@ namespace Rtt
 		virtual ~SolarSimulator();
 
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
+		void OnOpen(wxCommandEvent& event) override;
 		void OnRelaunch(wxCommandEvent& event);
 		void OnZoomIn(wxCommandEvent& event);
 		void OnZoomOut(wxCommandEvent& event);
@@ -36,6 +37,8 @@ namespace Rtt
 		void CreateMenus() override;
 		void SetMenu(const char* appPath) override;
 		void GetSavedZoom(int& width, int& height) override;
+
+		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 
 	private:
 

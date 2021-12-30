@@ -195,33 +195,27 @@ namespace Rtt
 
 	void SolarSimulator::CreateSuspendedPanel()
 	{
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+		if (suspendedPanel == NULL)
 		{
-			if (suspendedPanel == NULL)
-			{
-				suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->GetWidth(), fContext->GetHeight()));
-				suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
-				suspendedPanel->SetForegroundColour(wxColour(*wxBLACK));
-				suspendedText = new wxStaticText(this, -1, "Suspended", wxDefaultPosition, wxDefaultSize);
-				suspendedText->SetForegroundColour(*wxWHITE);
-				suspendedText->CenterOnParent();
-			}
+			suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->GetWidth(), fContext->GetHeight()));
+			suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
+			suspendedPanel->SetForegroundColour(wxColour(*wxBLACK));
+			suspendedText = new wxStaticText(this, -1, "Suspended", wxDefaultPosition, wxDefaultSize);
+			suspendedText->SetForegroundColour(*wxWHITE);
+			suspendedText->CenterOnParent();
 		}
 	}
 
 	void SolarSimulator::RemoveSuspendedPanel()
 	{
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+		if (suspendedPanel == NULL)
 		{
-			if (suspendedPanel == NULL)
-			{
-				return;
-			}
-
-			suspendedPanel->Destroy();
-			suspendedText->Destroy();
-			suspendedPanel = NULL;
+			return;
 		}
+
+		suspendedPanel->Destroy();
+		suspendedText->Destroy();
+		suspendedPanel = NULL;
 	}
 
 	void SolarSimulator::OnRelaunch(wxCommandEvent& event)
@@ -274,21 +268,15 @@ namespace Rtt
 			chdir(fContext->GetAppPath());
 			RemoveSuspendedPanel();
 
-			if (LinuxSimulatorView::IsRunningOnSimulator())
-			{
-				WatchFolder(fContext->GetAppPath(), fContext->GetAppName().c_str());
-				SetCursor(wxCURSOR_ARROW);
-			}
+			WatchFolder(fContext->GetAppPath(), fContext->GetAppName().c_str());
+			SetCursor(wxCURSOR_ARROW);
 
 			bool fullScreen = fContext->Init();
 			wxString newWindowTitle(fContext->GetTitle());
 
-			if (LinuxSimulatorView::IsRunningOnSimulator())
-			{
-				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(LinuxSimulatorView::Config::skinID);
-				newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
-				LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName().c_str(), fContext->GetPlatform());
-			}
+			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(LinuxSimulatorView::Config::skinID);
+			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
+			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName().c_str(), fContext->GetPlatform());
 
 			fContext->LoadApp(fSolarGLCanvas);
 			ResetSize();
@@ -701,20 +689,17 @@ namespace Rtt
 
 	void SolarSimulator::OnSuspendOrResume(wxCommandEvent& event)
 	{
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+		if (fContext->GetRuntime()->IsSuspended())
 		{
-			if (fContext->GetRuntime()->IsSuspended())
-			{
-				RemoveSuspendedPanel();
-				fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Suspend	\tCtrl-Down");
-				fContext->Resume();
-			}
-			else
-			{
-				CreateSuspendedPanel();
-				fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
-				fContext->Pause();
-			}
+			RemoveSuspendedPanel();
+			fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Suspend	\tCtrl-Down");
+			fContext->Resume();
+		}
+		else
+		{
+			CreateSuspendedPanel();
+			fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
+			fContext->Pause();
 		}
 	}
 
@@ -726,6 +711,79 @@ namespace Rtt
 		wxCommandEvent eventOpen(eventOpenProject);
 		eventOpen.SetString(path.c_str());
 		wxPostEvent(this, eventOpen);
+	}
+
+	void SolarSimulator::OnOpen(wxCommandEvent& event)
+	{
+		wxString path = event.GetString();
+		string fullPath = (const char*)path.c_str();
+		path = path.SubString(0, path.size() - 10); // without main.lua
+
+		delete fContext;
+		fContext = new SolarAppContext(path.c_str());
+		chdir(fContext->GetAppPath());
+
+		string appName = fContext->GetAppName();
+		RemoveSuspendedPanel();
+
+		WatchFolder(fContext->GetAppPath(), appName.c_str());
+		SetCursor(wxCURSOR_ARROW);
+
+		if (!IsHomeScreen(appName))
+		{
+			fAppPath = fContext->GetAppPath(); // save for relaunch
+			UpdateRecentDocs(appName, fullPath);
+		}
+
+		bool fullScreen = fContext->Init();
+		wxString newWindowTitle(appName);
+
+		if (!IsHomeScreen(appName))
+		{
+			LinuxSimulatorView::Config::lastProjectDirectory = fAppPath;
+			LinuxSimulatorView::Config::Save();
+			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), appName.c_str(), fContext->GetPlatform());
+		}
+		else
+		{
+			newWindowTitle = "Solar2D Simulator";
+		}
+
+		fContext->LoadApp(fSolarGLCanvas);
+		ResetSize();
+		fContext->SetCanvas(fSolarGLCanvas);
+		SetMenu(path.c_str());
+
+		// restore home screen zoom level
+	//	if (IsHomeScreen(appName))
+	//	{
+	//		fContext->GetRuntimeDelegate()->fContentWidth = LinuxSimulatorView::Config::welcomeScreenZoomedWidth;
+	//		fContext->GetRuntimeDelegate()->fContentHeight = LinuxSimulatorView::Config::welcomeScreenZoomedHeight;
+	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
+	//	}
+
+		fContext->RestartRenderer();
+		GetCanvas()->Refresh(true);
+		StartTimer(1000.0f / (float)fContext->GetFPS());
+
+		if (LinuxSimulatorView::IsRunningOnSimulator())
+		{
+			if (!IsHomeScreen(appName))
+			{
+				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(LinuxSimulatorView::Config::skinID);
+				newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
+				fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
+				string sandboxPath("~/.Solar2D/Sandbox/");
+				sandboxPath.append(fContext->GetTitle());
+				sandboxPath.append("_");
+				sandboxPath.append(CalculateMD5(fContext->GetTitle().c_str()));
+
+				Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
+				Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());
+			}
+		}
+
+		SetTitle(newWindowTitle);
 	}
 
 }

@@ -55,7 +55,7 @@ namespace Rtt
 		Rtt::Runtime* GetRuntime() { return fContext->GetRuntime(); }
 		Rtt::LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
-		void OnOpen(wxCommandEvent& event);
+		virtual void OnOpen(wxCommandEvent& event);
 		void OnIconized(wxIconizeEvent& event);
 		void OnClose(wxCloseEvent& event);
 		void SetOGLString(const wxString& ogls) { fGLString = ogls; }
@@ -69,7 +69,6 @@ namespace Rtt
 		void StartTimer(float duration);
 		void OnTimer(wxTimerEvent& event);
 
-		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 		virtual void WatchFolder(const char* path, const char* appName) {};
 		virtual bool Start(const std::string& resourcesDir);
 		virtual void CreateMenus() {};
