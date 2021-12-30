@@ -20,11 +20,10 @@ namespace Rtt
 		SolarSimulator();
 		virtual ~SolarSimulator();
 
-
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
 		void WatchFolder(const char* path, const char* appName) override;
 		bool Start(const std::string& resourcesDir) override;
-
+		void CreateMenus();
 
 	private:
 		wxFileSystemWatcher* fWatcher;

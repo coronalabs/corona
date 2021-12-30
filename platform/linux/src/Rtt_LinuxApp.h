@@ -70,7 +70,6 @@ namespace Rtt
 		Rtt::SolarAppContext* GetContext() const { return fContext; }
 		void ResetSize();
 		void SetMenu(const char* appPath);
-		void CreateMenus();
 		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void StartTimer(float duration);
