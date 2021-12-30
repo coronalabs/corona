@@ -56,8 +56,6 @@ namespace Rtt
 		Rtt::LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
 		void OnOpen(wxCommandEvent& event);
-		void OnSuspendOrResume(wxCommandEvent& event);
-		void OnOpenWelcome(wxCommandEvent& event);
 		void OnIconized(wxIconizeEvent& event);
 		void OnClose(wxCloseEvent& event);
 		void SetOGLString(const wxString& ogls) { fGLString = ogls; }

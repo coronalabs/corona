@@ -30,15 +30,15 @@ namespace Rtt
 
 	// setup frame events
 	wxBEGIN_EVENT_TABLE(SolarApp, wxFrame)
-		EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarApp::OnOpenWelcome)
+		EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarSimulator::OnOpenWelcome)
 		EVT_MENU(ID_MENU_RELAUNCH_PROJECT, SolarSimulator::OnRelaunch)
-		EVT_MENU(ID_MENU_SUSPEND, SolarApp::OnSuspendOrResume)
-		EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarApp::OnOpenWelcome)
+		EVT_MENU(ID_MENU_SUSPEND, SolarSimulator::OnSuspendOrResume)
+		EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarSimulator::OnOpenWelcome)
 		EVT_MENU(ID_MENU_ZOOM_IN, SolarSimulator::OnZoomIn)
 		EVT_MENU(ID_MENU_ZOOM_OUT, SolarSimulator::OnZoomOut)
 		EVT_COMMAND(wxID_ANY, eventOpenProject, SolarApp::OnOpen)
 		EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarSimulator::OnRelaunch)
-		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarApp::OnOpenWelcome)
+		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarSimulator::OnOpenWelcome)
 		EVT_ICONIZE(SolarApp::OnIconized)
 		EVT_CLOSE(SolarApp::OnClose)
 		EVT_TIMER(TIMER_ID, SolarApp::OnTimer)
@@ -697,6 +697,35 @@ namespace Rtt
 				height /= LinuxSimulatorView::skinScaleFactor;
 			}
 		}
-
 	}
+
+	void SolarSimulator::OnSuspendOrResume(wxCommandEvent& event)
+	{
+		if (LinuxSimulatorView::IsRunningOnSimulator())
+		{
+			if (fContext->GetRuntime()->IsSuspended())
+			{
+				RemoveSuspendedPanel();
+				fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Suspend	\tCtrl-Down");
+				fContext->Resume();
+			}
+			else
+			{
+				CreateSuspendedPanel();
+				fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
+				fContext->Pause();
+			}
+		}
+	}
+
+	void SolarSimulator::OnOpenWelcome(wxCommandEvent& event)
+	{
+		string path(GetStartupPath(NULL));
+		path.append("/Resources/homescreen/main.lua");
+
+		wxCommandEvent eventOpen(eventOpenProject);
+		eventOpen.SetString(path.c_str());
+		wxPostEvent(this, eventOpen);
+	}
+
 }

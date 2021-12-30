@@ -25,6 +25,8 @@ namespace Rtt
 		void OnZoomIn(wxCommandEvent& event);
 		void OnZoomOut(wxCommandEvent& event);
 		static void OnViewAsChanged(wxCommandEvent& event);
+		void OnSuspendOrResume(wxCommandEvent& event);
+		void OnOpenWelcome(wxCommandEvent& event);
 		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 
 		void WatchFolder(const char* path, const char* appName) override;

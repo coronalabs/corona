@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#define _chdir chdir
 #include <string.h>
 #include <fstream>
 #include "Core/Rtt_Build.h"
@@ -29,7 +28,6 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_ConsoleApp.h"
 #include "Rtt_HTTPClient.h"
 #include "wx/menu.h"
@@ -221,7 +219,7 @@ namespace Rtt
 
 		wxCommandEvent eventOpen(eventOpenProject);
 
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+	/*	if (LinuxSimulatorView::IsRunningOnSimulator())
 		{
 			if (LinuxSimulatorView::Config::openLastProject && !LinuxSimulatorView::Config::lastProjectDirectory.IsEmpty())
 			{
@@ -230,7 +228,7 @@ namespace Rtt
 				eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
 				eventOpen.SetString(fullPath);
 			}
-		}
+		}*/
 
 		OnOpen(eventOpen);
 		return true;
@@ -283,40 +281,11 @@ namespace Rtt
 		wxExit();
 	}
 
-	void SolarApp::OnOpenWelcome(wxCommandEvent& event)
-	{
-		string path(GetStartupPath(NULL));
-		path.append("/Resources/homescreen/main.lua");
-
-		wxCommandEvent eventOpen(eventOpenProject);
-		eventOpen.SetString(path.c_str());
-		wxPostEvent(this, eventOpen);
-	}
-
 	void SolarApp::ChangeSize(int newWidth, int newHeight)
 	{
 		SetMinClientSize(wxSize(newWidth, newHeight));
 		SetClientSize(wxSize(newWidth, newHeight));
 		SetSize(wxSize(newWidth, newHeight));
-	}
-
-	void SolarApp::OnSuspendOrResume(wxCommandEvent& event)
-	{
-		if (LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			if (fContext->GetRuntime()->IsSuspended())
-			{
-				RemoveSuspendedPanel();
-				fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Suspend	\tCtrl-Down");
-				fContext->Resume();
-			}
-			else
-			{
-				CreateSuspendedPanel();
-				fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
-				fContext->Pause();
-			}
-		}
 	}
 
 	void SolarApp::OnOpen(wxCommandEvent& event)
@@ -327,7 +296,7 @@ namespace Rtt
 
 		delete fContext;
 		fContext = new SolarAppContext(path.c_str());
-		_chdir(fContext->GetAppPath());
+		chdir(fContext->GetAppPath());
 
 		// clear the simulator log
 		if (LinuxSimulatorView::IsRunningOnSimulator())
