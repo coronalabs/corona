@@ -12,7 +12,7 @@
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_TargetDevice.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_LinuxApp.h"
+#include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxUtils.h"
@@ -56,7 +56,7 @@ namespace Rtt
 		}
 		else
 		{
-			wxString startPath(Rtt::LinuxSimulatorView::Config::lastProjectDirectory);
+			wxString startPath(solarSimulator()->fSimulatorConfig->lastProjectDirectory);
 			wxFileDialog openFileDialog(solarApp, _("Open"), startPath, "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 			if (openFileDialog.ShowModal() == wxID_CANCEL)

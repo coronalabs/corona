@@ -10,6 +10,7 @@
 #pragma once
 
 #include "Rtt_LinuxApp.h"
+#include "Rtt_LinuxSimulatorView.h"
 
 namespace Rtt
 {
@@ -22,6 +23,7 @@ namespace Rtt
 
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
 		void OnOpen(wxCommandEvent& event);
+		void OnClose(wxCloseEvent& event) override;
 		void OnRelaunch(wxCommandEvent& event);
 		void OnZoomIn(wxCommandEvent& event);
 		void OnZoomOut(wxCommandEvent& event);
@@ -37,8 +39,11 @@ namespace Rtt
 		void CreateMenus() override;
 		void SetMenu(const char* appPath) override;
 		void GetSavedZoom(int& width, int& height) override;
+		bool IsRunningOnSimulator() override { return true; }
 
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
+
+		smart_ptr<SimulatorConfig> fSimulatorConfig;
 
 	private:
 
@@ -55,7 +60,9 @@ namespace Rtt
 		wxMenuItem* fZoomIn;
 		wxMenuItem* fZoomOut;
 		wxMenuBar* fMenuProject;
-
 	};
 }
+
+Rtt::SolarSimulator* solarSimulator();
+
 

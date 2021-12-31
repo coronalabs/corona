@@ -177,7 +177,7 @@ namespace Rtt
 		const char* homeDir = GetHomePath();
 		string appDir(homeDir);
 
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+		if (solarApp->IsRunningOnSimulator())
 		{
 			appDir.append("/.Solar2D/Sandbox/");
 		}
@@ -190,7 +190,7 @@ namespace Rtt
 		{
 			appDir.append(fAppName);
 
-			if (LinuxSimulatorView::IsRunningOnSimulator())
+			if (solarApp->IsRunningOnSimulator())
 			{
 				appDir.append("_");
 				appDir.append(CalculateMD5(fAppName));
@@ -198,7 +198,7 @@ namespace Rtt
 		}
 		else
 		{
-			if (LinuxSimulatorView::IsRunningOnSimulator())
+			if (solarApp->IsRunningOnSimulator())
 			{
 				appDir.append("Simulator");
 			}
@@ -247,7 +247,7 @@ namespace Rtt
 		fRuntime = new LinuxRuntime(*fPlatform, NULL);
 		fRuntime->SetDelegate(fRuntimeDelegate);
 
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+		if (solarApp->IsRunningOnSimulator())
 		{
 			fRuntime->SetProperty(Runtime::kLinuxMaskSet | Runtime::kIsApplicationNotArchived, true);
 		}
@@ -261,7 +261,7 @@ namespace Rtt
 		int height = 480;
 		string projectPath(fPathToApp.c_str());
 
-		if (!LinuxSimulatorView::IsRunningOnSimulator())
+		if (!solarApp->IsRunningOnSimulator())
 		{
 			projectPath.append("/Resources");
 		}
@@ -406,9 +406,9 @@ namespace Rtt
 			}
 		}
 
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+		if (solarApp->IsRunningOnSimulator())
 		{
-			fPlatform->fShowRuntimeErrors = LinuxSimulatorView::Config::showRuntimeErrors;
+			fPlatform->fShowRuntimeErrors = true; // LinuxSimulatorView::Config::showRuntimeErrors;
 		}
 
 		fPlatform->setWindow(this);
@@ -475,7 +475,7 @@ namespace Rtt
 			// Swap(fRuntimeDelegate->fContentWidth, fRuntimeDelegate->fContentHeight);
 		}
 
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+		if (solarApp->IsRunningOnSimulator())
 		{
 			fSimulator = new LinuxSimulatorServices();
 			lua_State* luaStatePointer = fRuntime->VMContext().L();

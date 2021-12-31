@@ -11,8 +11,8 @@
 #include "Rtt_WebBuildDialog.h"
 #include "Rtt_LinuxClearSandboxDialog.h"
 #include "Rtt_ConsoleApp.h"
+#include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
-#include "Rtt_LinuxApp.h"
 #include "wx/aboutdlg.h"
 
 using namespace std;
@@ -63,7 +63,8 @@ namespace Rtt
 	{
 		//	string startPath(GetHomePath());
 		//	startPath.append("/Documents/Solar2D Projects");
-		wxString startPath(Rtt::LinuxSimulatorView::Config::lastProjectDirectory);
+		SolarSimulator* thiz = (SolarSimulator*)solarApp;
+		wxString startPath(thiz->fSimulatorConfig->lastProjectDirectory);
 
 		wxFileDialog openFileDialog(solarApp, _("Open"), startPath, wxEmptyString, "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
@@ -87,18 +88,16 @@ namespace Rtt
 
 	void LinuxMenuEvents::OnRelaunchLastProject(wxCommandEvent& event)
 	{
-		if (Rtt::LinuxSimulatorView::IsRunningOnSimulator())
+		SolarSimulator* thiz = (SolarSimulator*)solarApp;
+		if (!thiz->fSimulatorConfig->lastProjectDirectory.IsEmpty())
 		{
-			if (!Rtt::LinuxSimulatorView::Config::lastProjectDirectory.IsEmpty())
-			{
-				wxCommandEvent eventOpen(eventOpenProject);
-				wxString fullPath(Rtt::LinuxSimulatorView::Config::lastProjectDirectory);
-				fullPath.append("/main.lua");
+			wxCommandEvent eventOpen(eventOpenProject);
+			wxString fullPath(thiz->fSimulatorConfig->lastProjectDirectory);
+			fullPath.append("/main.lua");
 
-				eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
-				eventOpen.SetString(fullPath.c_str());
-				wxPostEvent(solarApp, eventOpen);
-			}
+			eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
+			eventOpen.SetString(fullPath.c_str());
+			wxPostEvent(solarApp, eventOpen);
 		}
 	}
 
@@ -167,15 +166,16 @@ namespace Rtt
 	void LinuxMenuEvents::OnOpenPreferences(wxCommandEvent& event)
 	{
 		Rtt::LinuxPreferencesDialog* newPreferencesDialog = new Rtt::LinuxPreferencesDialog(solarApp, wxID_ANY, wxEmptyString);
-		newPreferencesDialog->SetProperties(Rtt::LinuxSimulatorView::Config::showRuntimeErrors, Rtt::LinuxSimulatorView::Config::openLastProject, Rtt::LinuxSimulatorView::Config::relaunchOnFileChange);
+		//		newPreferencesDialog->SetProperties(Rtt::LinuxSimulatorView::Config::showRuntimeErrors, Rtt::LinuxSimulatorView::Config::openLastProject, Rtt::LinuxSimulatorView::Config::relaunchOnFileChange);
+		newPreferencesDialog->SetProperties(true, solarSimulator()->fSimulatorConfig->openLastProject, solarSimulator()->fSimulatorConfig->relaunchOnFileChange);
 
 		if (newPreferencesDialog->ShowModal() == wxID_OK)
 		{
-			Rtt::LinuxSimulatorView::Config::showRuntimeErrors = newPreferencesDialog->ShouldShowRuntimeErrors();
-			Rtt::LinuxSimulatorView::Config::openLastProject = newPreferencesDialog->ShouldOpenLastProject();
-			Rtt::LinuxSimulatorView::Config::relaunchOnFileChange = newPreferencesDialog->ShouldRelaunchOnFileChange();
-			solarApp->GetContext()->GetPlatform()->fShowRuntimeErrors = Rtt::LinuxSimulatorView::Config::showRuntimeErrors;
-			Rtt::LinuxSimulatorView::Config::Save();
+			solarSimulator()->fSimulatorConfig->showRuntimeErrors = true; // newPreferencesDialog->ShouldShowRuntimeErrors();
+			solarSimulator()->fSimulatorConfig->openLastProject = newPreferencesDialog->ShouldOpenLastProject();
+			solarSimulator()->fSimulatorConfig->relaunchOnFileChange = newPreferencesDialog->ShouldRelaunchOnFileChange();
+			solarApp->GetContext()->GetPlatform()->fShowRuntimeErrors = true; // Rtt::LinuxSimulatorView::Config::showRuntimeErrors;
+			solarSimulator()->fSimulatorConfig->Save();
 			newPreferencesDialog->Destroy();
 		}
 	}
@@ -183,10 +183,7 @@ namespace Rtt
 	void LinuxMenuEvents::OnQuit(wxCommandEvent& WXUNUSED(event))
 	{
 		// quit the simulator console
-		if (Rtt::LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			ConsoleApp::Quit();
-		}
+		ConsoleApp::Quit();
 
 		solarApp->Close(true);
 	}

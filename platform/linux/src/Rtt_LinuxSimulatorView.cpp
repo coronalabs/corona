@@ -59,78 +59,64 @@ namespace Rtt
 	// static initialise vars
 	const float  LinuxSimulatorView::skinScaleFactor = 1.5;
 	const int  LinuxSimulatorView::skinMinWidth = 320;
-	wxString LinuxSimulatorView::Config::settingsFilePath = wxEmptyString;
-	wxString LinuxSimulatorView::Config::lastProjectDirectory = wxEmptyString;
-	bool LinuxSimulatorView::Config::showRuntimeErrors = true;
-	bool LinuxSimulatorView::Config::openLastProject = false;
-	LinuxPreferencesDialog::RelaunchType LinuxSimulatorView::Config::relaunchOnFileChange = LinuxPreferencesDialog::RelaunchType::Always;
-	int LinuxSimulatorView::Config::windowXPos = 10;
-	int LinuxSimulatorView::Config::windowYPos = 10;
-	int LinuxSimulatorView::Config::skinID = 6223;
-	int LinuxSimulatorView::Config::skinWidth = 320;
-	int LinuxSimulatorView::Config::skinHeight = 480;
-	int LinuxSimulatorView::Config::zoomedWidth = LinuxSimulatorView::Config::skinWidth;
-	int LinuxSimulatorView::Config::zoomedHeight = LinuxSimulatorView::Config::skinHeight;
-	//	int LinuxSimulatorView::Config::welcomeScreenZoomedWidth = 960;
-	//	int LinuxSimulatorView::Config::welcomeScreenZoomedHeight = 720;
-	wxConfig* LinuxSimulatorView::Config::configFile;
 	std::map<int, LinuxSimulatorView::SkinProperties> LinuxSimulatorView::fSkins;
 
-	void LinuxSimulatorView::Config::Load()
+	void SimulatorConfig::Load()
 	{
-		if (LinuxSimulatorView::Config::settingsFilePath.IsEmpty())
+		if (settingsFilePath.size() == 0)
 		{
-			LinuxSimulatorView::Config::settingsFilePath = GetHomePath();
-			LinuxSimulatorView::Config::settingsFilePath.append("/.Solar2D/simulator.conf");
-			LinuxSimulatorView::Config::configFile = new wxFileConfig(wxEmptyString, wxEmptyString, LinuxSimulatorView::Config::settingsFilePath);
+			settingsFilePath = GetHomePath();
+			settingsFilePath.append("/.Solar2D/simulator.conf");
+			delete configFile;
+			configFile = new wxFileConfig(wxEmptyString, wxEmptyString, settingsFilePath);
 		}
 
 		// read from the simulator config file or create it, if it doesn't exist
-		if (wxFileExists(LinuxSimulatorView::Config::settingsFilePath))
+		if (wxFileExists(SimulatorConfig::settingsFilePath))
 		{
 			int relaunchOnFileChange = 0;
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), &LinuxSimulatorView::Config::lastProjectDirectory);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), &LinuxSimulatorView::Config::showRuntimeErrors);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), &LinuxSimulatorView::Config::openLastProject);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), &relaunchOnFileChange);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), &LinuxSimulatorView::Config::windowXPos);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), &LinuxSimulatorView::Config::windowYPos);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ID), &LinuxSimulatorView::Config::skinID);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_WIDTH), &LinuxSimulatorView::Config::skinWidth);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_HEIGHT), &LinuxSimulatorView::Config::skinHeight);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_WIDTH), &LinuxSimulatorView::Config::zoomedWidth);
-			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_HEIGHT), &LinuxSimulatorView::Config::zoomedHeight);
-			//			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_WELCOME_SCREEN_ZOOMED_WIDTH), &LinuxSimulatorView::Config::welcomeScreenZoomedWidth);
-			//			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_WELCOME_SCREEN_ZOOMED_HEIGHT), &LinuxSimulatorView::Config::welcomeScreenZoomedHeight);
-			LinuxSimulatorView::Config::relaunchOnFileChange = static_cast<LinuxPreferencesDialog::RelaunchType>(relaunchOnFileChange);
+			configFile->Read(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), &lastProjectDirectory);
+			configFile->Read(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), &showRuntimeErrors);
+			configFile->Read(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), &openLastProject);
+			configFile->Read(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), &relaunchOnFileChange);
+			configFile->Read(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), &windowXPos);
+			configFile->Read(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), &windowYPos);
+			configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ID), &skinID);
+			configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_WIDTH), &skinWidth);
+			configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_HEIGHT), &skinHeight);
+			configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_WIDTH), &zoomedWidth);
+			configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_HEIGHT), &zoomedHeight);
+			//			configFile->Read(wxT(SIMULATOR_CONFIG_WELCOME_SCREEN_ZOOMED_WIDTH), &SimulatorConfig::welcomeScreenZoomedWidth);
+			//			configFile->Read(wxT(SIMULATOR_CONFIG_WELCOME_SCREEN_ZOOMED_HEIGHT), &SimulatorConfig::welcomeScreenZoomedHeight);
+			relaunchOnFileChange = static_cast<LinuxPreferencesDialog::RelaunchType>(relaunchOnFileChange);
 		}
 		else
 		{
-			LinuxSimulatorView::Config::Save();
+			SimulatorConfig::Save();
 		}
 	}
 
-	void LinuxSimulatorView::Config::Save()
+	void SimulatorConfig::Save()
 	{
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), LinuxSimulatorView::Config::lastProjectDirectory);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), LinuxSimulatorView::Config::showRuntimeErrors);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), LinuxSimulatorView::Config::openLastProject);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), static_cast<int>(LinuxSimulatorView::Config::relaunchOnFileChange));
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), LinuxSimulatorView::Config::windowXPos);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), LinuxSimulatorView::Config::windowYPos);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ID), LinuxSimulatorView::Config::skinID);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_WIDTH), LinuxSimulatorView::Config::skinWidth);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_HEIGHT), LinuxSimulatorView::Config::skinHeight);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_WIDTH), LinuxSimulatorView::Config::zoomedWidth);
-		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_HEIGHT), LinuxSimulatorView::Config::zoomedHeight);
-		//LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_WELCOME_SCREEN_ZOOMED_WIDTH), LinuxSimulatorView::Config::welcomeScreenZoomedWidth);
-		//LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_WELCOME_SCREEN_ZOOMED_HEIGHT), LinuxSimulatorView::Config::welcomeScreenZoomedHeight);
-		LinuxSimulatorView::Config::configFile->Flush();
+		configFile->Write(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), SimulatorConfig::lastProjectDirectory);
+		configFile->Write(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), SimulatorConfig::showRuntimeErrors);
+		configFile->Write(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), SimulatorConfig::openLastProject);
+		configFile->Write(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), static_cast<int>(SimulatorConfig::relaunchOnFileChange));
+		configFile->Write(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), SimulatorConfig::windowXPos);
+		configFile->Write(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), SimulatorConfig::windowYPos);
+		configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ID), SimulatorConfig::skinID);
+		configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_WIDTH), SimulatorConfig::skinWidth);
+		configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_HEIGHT), SimulatorConfig::skinHeight);
+		configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_WIDTH), SimulatorConfig::zoomedWidth);
+		configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_HEIGHT), SimulatorConfig::zoomedHeight);
+		//configFile->Write(wxT(SIMULATOR_CONFIG_WELCOME_SCREEN_ZOOMED_WIDTH), SimulatorConfig::welcomeScreenZoomedWidth);
+		//configFile->Write(wxT(SIMULATOR_CONFIG_WELCOME_SCREEN_ZOOMED_HEIGHT), SimulatorConfig::welcomeScreenZoomedHeight);
+		configFile->Flush();
 	}
 
-	void LinuxSimulatorView::Config::Cleanup()
+	void SimulatorConfig::Cleanup()
 	{
-		delete LinuxSimulatorView::Config::configFile;
+		delete configFile;
 	}
 
 	bool LinuxSimulatorView::LoadSkin(lua_State* L, int skinID, std::string filePath)
@@ -282,15 +268,6 @@ namespace Rtt
 			DeselectSkins();
 			fSkins[skinID].selected = true;
 		}
-	}
-
-	bool LinuxSimulatorView::IsRunningOnSimulator()
-	{
-#ifdef Rtt_SIMULATOR
-		return true;
-#endif
-
-		return false;
 	}
 
 	void LinuxSimulatorView::OnLinuxPluginGet(const char* appPath, const char* appName, LinuxPlatform* platform)

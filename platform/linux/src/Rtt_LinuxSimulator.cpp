@@ -40,7 +40,7 @@ namespace Rtt
 		EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarSimulator::OnRelaunch)
 		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarSimulator::OnOpenWelcome)
 		EVT_ICONIZE(SolarApp::OnIconized)
-		EVT_CLOSE(SolarApp::OnClose)
+		EVT_CLOSE(SolarSimulator::OnClose)
 		EVT_TIMER(TIMER_ID, SolarApp::OnTimer)
 		wxEND_EVENT_TABLE()
 
@@ -58,6 +58,8 @@ namespace Rtt
 		, fZoomOut(NULL)
 		, fMenuProject(NULL)
 	{
+		fSimulatorConfig = new SimulatorConfig();
+
 		// start the console
 		if (ConsoleApp::isStarted())
 		{
@@ -90,10 +92,9 @@ namespace Rtt
 
 	SolarSimulator::~SolarSimulator()
 	{
-		LinuxSimulatorView::Config::Cleanup();
-		delete fWatcher;
-
 		SetMenuBar(NULL);
+
+		delete fWatcher;
 		delete fMenuMain;
 		delete fMenuProject;
 	}
@@ -116,19 +117,17 @@ namespace Rtt
 		// restore home screen zoom level
 	//	if (IsHomeScreen(appName))
 	//	{
-	//		fContext->GetRuntimeDelegate()->fContentWidth = LinuxSimulatorView::Config::welcomeScreenZoomedWidth;
-	//		fContext->GetRuntimeDelegate()->fContentHeight = LinuxSimulatorView::Config::welcomeScreenZoomedHeight;
+	//		fContext->GetRuntimeDelegate()->fContentWidth = fSimulatorConfig->welcomeScreenZoomedWidth;
+	//		fContext->GetRuntimeDelegate()->fContentHeight = fSimulatorConfig->welcomeScreenZoomedHeight;
 	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
 	//	}
 
-		// read from the simulator config file (it'll be created if it doesn't exist)
-		LinuxSimulatorView::Config::Load();
-		currentSkinWidth = LinuxSimulatorView::Config::skinWidth;
-		currentSkinHeight = LinuxSimulatorView::Config::skinHeight;
+		currentSkinWidth = fSimulatorConfig->skinWidth;
+		currentSkinHeight = fSimulatorConfig->skinHeight;
 
 		fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
 
-		SetPosition(wxPoint(LinuxSimulatorView::Config::windowXPos, LinuxSimulatorView::Config::windowYPos));
+		SetPosition(wxPoint(fSimulatorConfig->windowXPos, fSimulatorConfig->windowYPos));
 		SetTitle("Solar2D Simulator");
 
 		Bind(wxEVT_MENU, &LinuxMenuEvents::OnNewProject, ID_MENU_NEW_PROJECT);
@@ -251,7 +250,7 @@ namespace Rtt
 
 			if (fRelaunchedViaFileEvent)
 			{
-				switch (LinuxSimulatorView::Config::relaunchOnFileChange)
+				switch (fSimulatorConfig->relaunchOnFileChange)
 				{
 				case LinuxPreferencesDialog::RelaunchType::Always:
 					doRelaunch = true;
@@ -289,7 +288,7 @@ namespace Rtt
 
 			wxString newWindowTitle(fContext->GetTitle());
 
-			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(LinuxSimulatorView::Config::skinID);
+			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(fSimulatorConfig->skinID);
 			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName().c_str(), fContext->GetPlatform());
 
@@ -554,9 +553,9 @@ namespace Rtt
 
 			if (!IsHomeScreen(GetContext()->GetAppName()))
 			{
-				LinuxSimulatorView::Config::zoomedWidth = proposedWidth;
-				LinuxSimulatorView::Config::zoomedHeight = proposedHeight;
-				LinuxSimulatorView::Config::Save();
+				fSimulatorConfig->zoomedWidth = proposedWidth;
+				fSimulatorConfig->zoomedHeight = proposedHeight;
+				fSimulatorConfig->Save();
 
 				if (proposedWidth * LinuxSimulatorView::skinScaleFactor > screen.width || proposedHeight * LinuxSimulatorView::skinScaleFactor > screen.height)
 				{
@@ -565,9 +564,9 @@ namespace Rtt
 			}
 			else
 			{
-				//			LinuxSimulatorView::Config::welcomeScreenZoomedWidth = proposedWidth;
-				//			LinuxSimulatorView::Config::welcomeScreenZoomedHeight = proposedHeight;
-				LinuxSimulatorView::Config::Save();
+				//			fSimulatorConfig->welcomeScreenZoomedWidth = proposedWidth;
+				//			fSimulatorConfig->welcomeScreenZoomedHeight = proposedHeight;
+				fSimulatorConfig->Save();
 			}
 		}
 	}
@@ -588,9 +587,9 @@ namespace Rtt
 			frame->GetContext()->RestartRenderer();
 			GetCanvas()->Refresh(true);
 
-			LinuxSimulatorView::Config::zoomedWidth = proposedWidth;
-			LinuxSimulatorView::Config::zoomedHeight = proposedHeight;
-			LinuxSimulatorView::Config::Save();
+			fSimulatorConfig->zoomedWidth = proposedWidth;
+			fSimulatorConfig->zoomedHeight = proposedHeight;
+			fSimulatorConfig->Save();
 
 			if (proposedWidth / LinuxSimulatorView::skinScaleFactor <= LinuxSimulatorView::skinMinWidth)
 			{
@@ -622,9 +621,9 @@ namespace Rtt
 		thiz->fZoomIn->Enable(canZoom);
 		thiz->fZoomOut->Enable(canZoom);
 
-		LinuxSimulatorView::Config::skinID = sProperties.id;
-		LinuxSimulatorView::Config::skinWidth = sProperties.screenWidth;
-		LinuxSimulatorView::Config::skinHeight = sProperties.screenHeight;
+		thiz->fSimulatorConfig->skinID = sProperties.id;
+		thiz->fSimulatorConfig->skinWidth = sProperties.screenWidth;
+		thiz->fSimulatorConfig->skinHeight = sProperties.screenHeight;
 		LinuxSimulatorView::SelectSkin(skinID);
 		thiz->ClearMenuCheckboxes(thiz->fViewAsAndroidMenu, sProperties.skinTitle);
 		thiz->ClearMenuCheckboxes(thiz->fViewAsIOSMenu, sProperties.skinTitle);
@@ -637,9 +636,9 @@ namespace Rtt
 			initialHeight /= LinuxSimulatorView::skinScaleFactor;
 		}
 
-		LinuxSimulatorView::Config::zoomedWidth = initialWidth;
-		LinuxSimulatorView::Config::zoomedHeight = initialHeight;
-		LinuxSimulatorView::Config::Save();
+		thiz->fSimulatorConfig->zoomedWidth = initialWidth;
+		thiz->fSimulatorConfig->zoomedHeight = initialHeight;
+		thiz->fSimulatorConfig->Save();
 
 		thiz->GetContext()->SetWidth(initialWidth);
 		thiz->GetContext()->SetHeight(initialHeight);
@@ -657,7 +656,7 @@ namespace Rtt
 			wxMenuItem* currentSkin = targetMenu->Append(sProperties.id, skin[i].c_str(), wxEmptyString, wxITEM_CHECK);
 			Bind(wxEVT_MENU, &SolarSimulator::OnViewAsChanged, sProperties.id);
 
-			if (sProperties.id == LinuxSimulatorView::Config::skinID)
+			if (sProperties.id == fSimulatorConfig->skinID)
 			{
 				wxString newWindowTitle(GetContext()->GetTitle());
 				newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
@@ -675,15 +674,15 @@ namespace Rtt
 		{
 			wxDisplay display(wxDisplay::GetFromWindow(solarApp));
 			wxRect screen = display.GetClientArea();
-			width = LinuxSimulatorView::Config::zoomedWidth;
-			height = LinuxSimulatorView::Config::zoomedHeight;
+			width = fSimulatorConfig->zoomedWidth;
+			height = fSimulatorConfig->zoomedHeight;
 
 			if (width > screen.width || height > screen.height)
 			{
 				fZoomIn->Enable(false);
 			}
 
-			if (LinuxSimulatorView::Config::skinWidth <= LinuxSimulatorView::skinMinWidth)
+			if (fSimulatorConfig->skinWidth <= LinuxSimulatorView::skinMinWidth)
 			{
 				fZoomIn->Enable(false);
 				fZoomOut->Enable(false);
@@ -751,8 +750,8 @@ namespace Rtt
 
 		if (!IsHomeScreen(appName))
 		{
-			LinuxSimulatorView::Config::lastProjectDirectory = fAppPath;
-			LinuxSimulatorView::Config::Save();
+			fSimulatorConfig->lastProjectDirectory = fAppPath;
+			fSimulatorConfig->Save();
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), appName.c_str(), fContext->GetPlatform());
 		}
 		else
@@ -765,29 +764,44 @@ namespace Rtt
 		// restore home screen zoom level
 	//	if (IsHomeScreen(appName))
 	//	{
-	//		fContext->GetRuntimeDelegate()->fContentWidth = LinuxSimulatorView::Config::welcomeScreenZoomedWidth;
-	//		fContext->GetRuntimeDelegate()->fContentHeight = LinuxSimulatorView::Config::welcomeScreenZoomedHeight;
+	//		fContext->GetRuntimeDelegate()->fContentWidth = fSimulatorConfig->welcomeScreenZoomedWidth;
+	//		fContext->GetRuntimeDelegate()->fContentHeight = fSimulatorConfig->welcomeScreenZoomedHeight;
 	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
 	//	}
 
-		if (LinuxSimulatorView::IsRunningOnSimulator())
+		if (!IsHomeScreen(appName))
 		{
-			if (!IsHomeScreen(appName))
-			{
-				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(LinuxSimulatorView::Config::skinID);
-				newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
-				fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
-				string sandboxPath("~/.Solar2D/Sandbox/");
-				sandboxPath.append(fContext->GetTitle());
-				sandboxPath.append("_");
-				sandboxPath.append(CalculateMD5(fContext->GetTitle().c_str()));
+			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(fSimulatorConfig->skinID);
+			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
+			fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
+			string sandboxPath("~/.Solar2D/Sandbox/");
+			sandboxPath.append(fContext->GetTitle());
+			sandboxPath.append("_");
+			sandboxPath.append(CalculateMD5(fContext->GetTitle().c_str()));
 
-				Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
-				Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());
-			}
+			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
+			Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());
 		}
 
 		SetTitle(newWindowTitle);
 	}
 
+	void SolarSimulator::OnClose(wxCloseEvent& event)
+	{
+		fContext->GetRuntime()->End();
+
+		fSimulatorConfig->windowXPos = GetPosition().x;
+		fSimulatorConfig->windowYPos = GetPosition().y;
+		fSimulatorConfig->Save();
+
+		// quit the simulator console
+		ConsoleApp::Quit();
+
+		wxExit();
+	}
+}
+
+Rtt::SolarSimulator* solarSimulator()
+{
+	return dynamic_cast<Rtt::SolarSimulator*>(solarApp);
 }

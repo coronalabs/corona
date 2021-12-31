@@ -56,7 +56,7 @@ namespace Rtt
 		Rtt::LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
 		void OnIconized(wxIconizeEvent& event);
-		void OnClose(wxCloseEvent& event);
+		virtual void OnClose(wxCloseEvent& event);
 		void SetOGLString(const wxString& ogls) { fGLString = ogls; }
 		void ChangeSize(int newWidth, int newHeight);
 		virtual void CreateSuspendedPanel() {}
@@ -74,6 +74,7 @@ namespace Rtt
 		virtual void CreateMenus() {};
 		virtual void SetMenu(const char* appPath) {};
 		virtual void GetSavedZoom(int& width, int& height) {}
+		virtual bool IsRunningOnSimulator() { return false; }
 
 		Rtt::LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
 		wxLongLong fFileSystemEventTimestamp = 0;

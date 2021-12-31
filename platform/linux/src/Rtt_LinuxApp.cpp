@@ -263,15 +263,6 @@ namespace Rtt
 	void SolarApp::OnClose(wxCloseEvent& event)
 	{
 		fContext->GetRuntime()->End();
-
-		// quit the simulator console
-		if (LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			LinuxSimulatorView::Config::windowXPos = GetPosition().x;
-			LinuxSimulatorView::Config::windowYPos = GetPosition().y;
-			LinuxSimulatorView::Config::Save();
-			ConsoleApp::Quit();
-		}
 		wxExit();
 	}
 
