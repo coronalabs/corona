@@ -488,6 +488,12 @@ namespace Rtt
 		lua_pushcfunction(L, print2console);
 		lua_setglobal(L, "print");
 
+		GetRuntime()->BeginRunLoop();
+
+		RestartRenderer();
+		GetCanvas()->Refresh(true);
+		solarApp->StartTimer(1000.0f / (float)GetFPS());
+
 		return true;
 	}
 

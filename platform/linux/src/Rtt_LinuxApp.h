@@ -63,7 +63,7 @@ namespace Rtt
 		virtual void RemoveSuspendedPanel() {}
 		SolarGLCanvas* GetCanvas() const { return fSolarGLCanvas; }
 		Rtt::SolarAppContext* GetContext() const { return fContext; }
-		void ResetSize();
+		void ResetWindowSize();
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void StartTimer(float duration);
 		void OnTimer(wxTimerEvent& event);

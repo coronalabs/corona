@@ -108,8 +108,7 @@ namespace Rtt
 
 		fContext = new SolarAppContext(resourcesDir.c_str());
 		fContext->LoadApp(fSolarGLCanvas);
-
-		ResetSize();
+		ResetWindowSize();
 
 		CreateMenus();
 		SetMenu(resourcesDir.c_str());
@@ -121,10 +120,6 @@ namespace Rtt
 	//		fContext->GetRuntimeDelegate()->fContentHeight = LinuxSimulatorView::Config::welcomeScreenZoomedHeight;
 	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
 	//	}
-
-		fContext->RestartRenderer();
-		GetCanvas()->Refresh(true);
-		StartTimer(1000.0f / (float)fContext->GetFPS());
 
 		// read from the simulator config file (it'll be created if it doesn't exist)
 		LinuxSimulatorView::Config::Load();
@@ -287,6 +282,7 @@ namespace Rtt
 			delete fContext;
 			fContext = new SolarAppContext(fAppPath.c_str());
 			fContext->LoadApp(fSolarGLCanvas);
+			ResetWindowSize();
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName().c_str());
 			SetCursor(wxCURSOR_ARROW);
@@ -297,12 +293,9 @@ namespace Rtt
 			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName().c_str(), fContext->GetPlatform());
 
-			ResetSize();
 			SetMenu(fAppPath.c_str());
 			SetTitle(newWindowTitle);
 
-			fContext->RestartRenderer();
-			StartTimer(1000.0f / (float)fContext->GetFPS());
 			fFileSystemEventTimestamp = wxGetUTCTimeMillis();
 		}
 	}
@@ -732,6 +725,8 @@ namespace Rtt
 
 	void SolarSimulator::OnOpen(wxCommandEvent& event)
 	{
+		RemoveSuspendedPanel();
+
 		wxString path = event.GetString();
 		string fullPath = (const char*)path.c_str();
 		path = path.SubString(0, path.size() - 10); // without main.lua
@@ -739,9 +734,9 @@ namespace Rtt
 		delete fContext;
 		fContext = new SolarAppContext(path.c_str());
 		fContext->LoadApp(fSolarGLCanvas);
+		ResetWindowSize();
 
 		string appName = fContext->GetAppName();
-		RemoveSuspendedPanel();
 
 		WatchFolder(fContext->GetAppPath(), appName.c_str());
 		SetCursor(wxCURSOR_ARROW);
@@ -765,8 +760,6 @@ namespace Rtt
 			newWindowTitle = "Solar2D Simulator";
 		}
 
-		ResetSize();
-
 		SetMenu(path.c_str());
 
 		// restore home screen zoom level
@@ -776,10 +769,6 @@ namespace Rtt
 	//		fContext->GetRuntimeDelegate()->fContentHeight = LinuxSimulatorView::Config::welcomeScreenZoomedHeight;
 	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
 	//	}
-
-		fContext->RestartRenderer();
-		GetCanvas()->Refresh(true);
-		StartTimer(1000.0f / (float)fContext->GetFPS());
 
 		if (LinuxSimulatorView::IsRunningOnSimulator())
 		{

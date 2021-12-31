@@ -222,18 +222,13 @@ namespace Rtt
 
 		fContext = new SolarAppContext(resourcesDir.c_str());
 		fContext->LoadApp(fSolarGLCanvas);
-
-		ResetSize();
-
-		fContext->RestartRenderer();
-		GetCanvas()->Refresh(true);
-		StartTimer(1000.0f / (float)fContext->GetFPS());
+		ResetWindowSize();
 
 		SetTitle(fContext->GetAppName());
 		return true;
 	}
 
-	void SolarApp::ResetSize()
+	void SolarApp::ResetWindowSize()
 	{
 		wxSize clientSize = GetClientSize();
 
@@ -290,7 +285,6 @@ namespace Rtt
 	void SolarApp::StartTimer(float frameDuration)
 	{
 		fTimer.Start((int)frameDuration);
-		fContext->GetRuntime()->BeginRunLoop();
 	}
 
 	void SolarApp::OnTimer(wxTimerEvent& event)
