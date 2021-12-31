@@ -100,7 +100,7 @@ namespace Rtt
 		curl_global_cleanup();
 	}
 
-	bool SolarApp::Start(const string& resourcesDir)
+	bool SolarApp::CreateWindow(const string& resourcesDir)
 	{
 		// set window
 
@@ -188,8 +188,6 @@ namespace Rtt
 			minHeight = height;
 		}
 
-		CreateMenus();
-
 		// create app window
 		Create(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, height), windowStyle);
 
@@ -216,21 +214,22 @@ namespace Rtt
 		{
 			Show(true);
 		}
+	}
 
-		wxCommandEvent eventOpen(eventOpenProject);
+	bool SolarApp::Start(const string& resourcesDir)
+	{
+		CreateWindow(resourcesDir);
 
-	/*	if (LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			if (LinuxSimulatorView::Config::openLastProject && !LinuxSimulatorView::Config::lastProjectDirectory.IsEmpty())
-			{
-				wxString fullPath(LinuxSimulatorView::Config::lastProjectDirectory);
-				fullPath.append("/main.lua");
-				eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
-				eventOpen.SetString(fullPath);
-			}
-		}*/
+		fContext = new SolarAppContext(resourcesDir.c_str());
+		fContext->LoadApp(fSolarGLCanvas);
 
-		OnOpen(eventOpen);
+		ResetSize();
+
+		fContext->RestartRenderer();
+		GetCanvas()->Refresh(true);
+		StartTimer(1000.0f / (float)fContext->GetFPS());
+
+		SetTitle(fContext->GetAppName());
 		return true;
 	}
 
@@ -286,37 +285,6 @@ namespace Rtt
 		SetMinClientSize(wxSize(newWidth, newHeight));
 		SetClientSize(wxSize(newWidth, newHeight));
 		SetSize(wxSize(newWidth, newHeight));
-	}
-
-	void SolarApp::OnOpen(wxCommandEvent& event)
-	{
-		wxString path = event.GetString();
-		string fullPath = (const char*)path.c_str();
-		path = path.SubString(0, path.size() - 10); // without main.lua
-
-		delete fContext;
-		fContext = new SolarAppContext(path.c_str());
-		chdir(fContext->GetAppPath());
-
-		string appName = fContext->GetAppName();
-
-		if (LinuxSimulatorView::IsRunningOnSimulator())
-		{
-			WatchFolder(fContext->GetAppPath(), appName.c_str());
-			SetCursor(wxCURSOR_ARROW);
-		}
-
-		bool fullScreen = fContext->Init();
-		wxString newWindowTitle(appName);
-
-		fContext->LoadApp(fSolarGLCanvas);
-		ResetSize();
-		fContext->SetCanvas(fSolarGLCanvas);
-
-		fContext->RestartRenderer();
-		GetCanvas()->Refresh(true);
-		StartTimer(1000.0f / (float)fContext->GetFPS());
-		SetTitle(newWindowTitle);
 	}
 
 	void SolarApp::StartTimer(float frameDuration)

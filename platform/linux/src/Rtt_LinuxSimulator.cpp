@@ -36,7 +36,7 @@ namespace Rtt
 		EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarSimulator::OnOpenWelcome)
 		EVT_MENU(ID_MENU_ZOOM_IN, SolarSimulator::OnZoomIn)
 		EVT_MENU(ID_MENU_ZOOM_OUT, SolarSimulator::OnZoomOut)
-		EVT_COMMAND(wxID_ANY, eventOpenProject, SolarApp::OnOpen)
+		EVT_COMMAND(wxID_ANY, eventOpenProject, SolarSimulator::OnOpen)
 		EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarSimulator::OnRelaunch)
 		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarSimulator::OnOpenWelcome)
 		EVT_ICONIZE(SolarApp::OnIconized)
@@ -100,12 +100,31 @@ namespace Rtt
 
 	bool SolarSimulator::Start(const std::string& resourcesDir)
 	{
-		if (SolarApp::Start(resourcesDir) == false)
-			return false;
+		CreateWindow(resourcesDir);
 
 #ifdef Rtt_SIMULATOR
 		SetIcon(simulator_xpm);
 #endif
+
+		fContext = new SolarAppContext(resourcesDir.c_str());
+		fContext->LoadApp(fSolarGLCanvas);
+
+		ResetSize();
+
+		CreateMenus();
+		SetMenu(resourcesDir.c_str());
+
+		// restore home screen zoom level
+	//	if (IsHomeScreen(appName))
+	//	{
+	//		fContext->GetRuntimeDelegate()->fContentWidth = LinuxSimulatorView::Config::welcomeScreenZoomedWidth;
+	//		fContext->GetRuntimeDelegate()->fContentHeight = LinuxSimulatorView::Config::welcomeScreenZoomedHeight;
+	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
+	//	}
+
+		fContext->RestartRenderer();
+		GetCanvas()->Refresh(true);
+		StartTimer(1000.0f / (float)fContext->GetFPS());
 
 		// read from the simulator config file (it'll be created if it doesn't exist)
 		LinuxSimulatorView::Config::Load();
@@ -262,25 +281,23 @@ namespace Rtt
 				return;
 			}
 
+			RemoveSuspendedPanel();
+
 			fContext->GetRuntime()->End();
 			delete fContext;
 			fContext = new SolarAppContext(fAppPath.c_str());
-			chdir(fContext->GetAppPath());
-			RemoveSuspendedPanel();
+			fContext->LoadApp(fSolarGLCanvas);
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName().c_str());
 			SetCursor(wxCURSOR_ARROW);
 
-			bool fullScreen = fContext->Init();
 			wxString newWindowTitle(fContext->GetTitle());
 
 			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(LinuxSimulatorView::Config::skinID);
 			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName().c_str(), fContext->GetPlatform());
 
-			fContext->LoadApp(fSolarGLCanvas);
 			ResetSize();
-			fContext->SetCanvas(fSolarGLCanvas);
 			SetMenu(fAppPath.c_str());
 			SetTitle(newWindowTitle);
 
@@ -721,7 +738,7 @@ namespace Rtt
 
 		delete fContext;
 		fContext = new SolarAppContext(path.c_str());
-		chdir(fContext->GetAppPath());
+		fContext->LoadApp(fSolarGLCanvas);
 
 		string appName = fContext->GetAppName();
 		RemoveSuspendedPanel();
@@ -735,7 +752,6 @@ namespace Rtt
 			UpdateRecentDocs(appName, fullPath);
 		}
 
-		bool fullScreen = fContext->Init();
 		wxString newWindowTitle(appName);
 
 		if (!IsHomeScreen(appName))
@@ -749,9 +765,8 @@ namespace Rtt
 			newWindowTitle = "Solar2D Simulator";
 		}
 
-		fContext->LoadApp(fSolarGLCanvas);
 		ResetSize();
-		fContext->SetCanvas(fSolarGLCanvas);
+
 		SetMenu(path.c_str());
 
 		// restore home screen zoom level

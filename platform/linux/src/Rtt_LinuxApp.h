@@ -55,7 +55,6 @@ namespace Rtt
 		Rtt::Runtime* GetRuntime() { return fContext->GetRuntime(); }
 		Rtt::LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
-		virtual void OnOpen(wxCommandEvent& event);
 		void OnIconized(wxIconizeEvent& event);
 		void OnClose(wxCloseEvent& event);
 		void SetOGLString(const wxString& ogls) { fGLString = ogls; }
@@ -68,6 +67,7 @@ namespace Rtt
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void StartTimer(float duration);
 		void OnTimer(wxTimerEvent& event);
+		bool CreateWindow(const std::string& resourcesDir);
 
 		virtual void WatchFolder(const char* path, const char* appName) {};
 		virtual bool Start(const std::string& resourcesDir);

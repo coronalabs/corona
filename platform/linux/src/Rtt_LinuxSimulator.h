@@ -21,7 +21,7 @@ namespace Rtt
 		virtual ~SolarSimulator();
 
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
-		void OnOpen(wxCommandEvent& event) override;
+		void OnOpen(wxCommandEvent& event);
 		void OnRelaunch(wxCommandEvent& event);
 		void OnZoomIn(wxCommandEvent& event);
 		void OnZoomOut(wxCommandEvent& event);

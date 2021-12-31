@@ -38,7 +38,6 @@ namespace Rtt
 		SolarAppContext(const char *path);
 		~SolarAppContext();
 
-		bool Init();
 		bool IsInitialized() const { return NULL != fRuntime; }
 
 		Runtime *GetRuntime() { return fRuntime; }
@@ -61,7 +60,6 @@ namespace Rtt
 		void Flush();
 		bool LoadApp(SolarGLCanvas *canvas);
 		SolarGLCanvas *GetCanvas() const { return fCanvas; }
-		void SetCanvas(SolarGLCanvas *val) { fCanvas = val; }
 		const char *GetAppPath() const { return fPathToApp.c_str(); }
 		LinuxPlatform *GetPlatform() const { return fPlatform; }
 		const std::string &GetAppName() const { return fAppName; }
@@ -70,6 +68,9 @@ namespace Rtt
 		static int Print(lua_State* L);		// re-defined global.print
 
 	private:
+
+		void Init();
+
 		std::string fTitle;
 		LinuxRuntime *fRuntime;
 		LinuxRuntimeDelegate *fRuntimeDelegate;

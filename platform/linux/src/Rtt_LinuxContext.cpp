@@ -126,6 +126,7 @@ namespace Rtt
 		if (Rtt_FileExists(assetsDir.c_str()))
 		{
 			fPathToApp = startDir;
+			chdir(GetAppPath());
 			return;
 		}
 
@@ -135,6 +136,7 @@ namespace Rtt
 		if (Rtt_FileExists(assetsDir.c_str()))
 		{
 			fPathToApp = startDir;
+			chdir(GetAppPath());
 			return;
 		}
 
@@ -149,6 +151,7 @@ namespace Rtt
 			fAppName = HOMESCREEN_ID;
 			fPathToApp = startDir;
 			fIsDebApp = false;
+			chdir(GetAppPath());
 			return;
 		}
 
@@ -169,7 +172,7 @@ namespace Rtt
 		setGlyphProvider(NULL);
 	}
 
-	bool SolarAppContext::Init()
+	void SolarAppContext::Init()
 	{
 		const char* homeDir = GetHomePath();
 		string appDir(homeDir);
@@ -415,8 +418,6 @@ namespace Rtt
 		// Initialize Joystick Support:
 		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)fPlatform->GetDevice().GetInputDeviceManager();
 		deviceManager.init();
-
-		return fullScreen;
 	}
 
 	// global.print()
@@ -453,6 +454,7 @@ namespace Rtt
 	bool SolarAppContext::LoadApp(SolarGLCanvas* canvas)
 	{
 		fCanvas = canvas;
+		Init();
 
 		if (Runtime::kSuccess != fRuntime->LoadApplication(Runtime::kLinuxLaunchOption, fRuntimeDelegate->fOrientation))
 		{
