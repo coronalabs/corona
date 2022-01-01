@@ -22,7 +22,7 @@ using namespace std;
 namespace Rtt
 {
 
-	void LinuxMenuEvents::OnCloneProject(wxCommandEvent& event)
+	void SolarSimulator::OnCloneProject(wxCommandEvent& event)
 	{
 		Rtt::LinuxCloneProjectDialog* newCloneDlg = new Rtt::LinuxCloneProjectDialog(solarApp, wxID_ANY, wxEmptyString);
 
@@ -33,7 +33,7 @@ namespace Rtt
 		newCloneDlg->Destroy();
 	}
 
-	void LinuxMenuEvents::OnNewProject(wxCommandEvent& event)
+	void SolarSimulator::OnNewProject(wxCommandEvent& event)
 	{
 		Rtt::LinuxNewProjectDialog* newProjectDlg = new Rtt::LinuxNewProjectDialog(solarApp, wxID_ANY, wxEmptyString);
 
@@ -59,7 +59,7 @@ namespace Rtt
 		newProjectDlg->Destroy();
 	}
 
-	void LinuxMenuEvents::OnOpenFileDialog(wxCommandEvent& event)
+	void SolarSimulator::OnOpenFileDialog(wxCommandEvent& event)
 	{
 		//	string startPath(GetHomePath());
 		//	startPath.append("/Documents/Solar2D Projects");
@@ -83,7 +83,7 @@ namespace Rtt
 		wxPostEvent(solarApp, eventOpen);
 	}
 
-	void LinuxMenuEvents::OnRelaunchLastProject(wxCommandEvent& event)
+	void SolarSimulator::OnRelaunchLastProject(wxCommandEvent& event)
 	{
 		const string& lastProjectDirectory = solarSimulator->ConfigStr("lastProjectDirectory");
 		if (lastProjectDirectory.size() > 0)
@@ -98,28 +98,28 @@ namespace Rtt
 		}
 	}
 
-	void LinuxMenuEvents::OnOpenInEditor(wxCommandEvent& event)
+	void SolarSimulator::OnOpenInEditor(wxCommandEvent& event)
 	{
 		string command("xdg-open ");
-		command.append(solarApp->GetContext()->GetAppPath());
+		command.append(GetContext()->GetAppPath());
 		command.append("/main.lua");
 
 		wxExecute(command.c_str());
 	}
 
-	void LinuxMenuEvents::OnShowProjectFiles(wxCommandEvent& event)
+	void SolarSimulator::OnShowProjectFiles(wxCommandEvent& event)
 	{
-		const char* appPath = solarApp->GetContext()->GetAppPath();
+		const char* appPath = GetContext()->GetAppPath();
 		string command("xdg-open ");
 		command.append(appPath);
 
 		wxExecute(command.c_str());
 	}
 
-	void LinuxMenuEvents::OnShowProjectSandbox(wxCommandEvent& event)
+	void SolarSimulator::OnShowProjectSandbox(wxCommandEvent& event)
 	{
 		const char* homeDir = GetHomePath();
-		const string& appName = solarApp->GetContext()->GetAppName();
+		const string& appName = GetContext()->GetAppName();
 		string command("xdg-open ");
 		command.append(homeDir);
 		command.append("/.Solar2D/Sandbox/");
@@ -130,14 +130,14 @@ namespace Rtt
 		wxExecute(command.c_str());
 	}
 
-	void LinuxMenuEvents::OnClearProjectSandbox(wxCommandEvent& event)
+	void SolarSimulator::OnClearProjectSandbox(wxCommandEvent& event)
 	{
 		Rtt::LinuxClearProjectSandboxDialog* clearProjectSandboxDlg = new Rtt::LinuxClearProjectSandboxDialog(solarApp, wxID_ANY, wxEmptyString);
 
 		if (clearProjectSandboxDlg->ShowModal() == wxID_OK)
 		{
 			const char* homeDir = GetHomePath();
-			string appName = solarApp->GetContext()->GetAppName();
+			string appName = GetContext()->GetAppName();
 			string command("rm -r ");
 			command.append(homeDir);
 			command.append("/.Solar2D/Sandbox/");
@@ -154,13 +154,13 @@ namespace Rtt
 		clearProjectSandboxDlg->Destroy();
 	}
 
-	void LinuxMenuEvents::OnAndroidBackButton(wxCommandEvent& event)
+	void SolarSimulator::OnAndroidBackButton(wxCommandEvent& event)
 	{
 		Rtt::PlatformInputDevice* dev = NULL;
 		Rtt::KeyEvent ke(dev, Rtt::KeyEvent::kDown, "back", 0, false, false, false, false);
-		solarApp->GetContext()->GetRuntime()->DispatchEvent(ke);
+		GetContext()->GetRuntime()->DispatchEvent(ke);
 	}
-	void LinuxMenuEvents::OnOpenPreferences(wxCommandEvent& event)
+	void SolarSimulator::OnOpenPreferences(wxCommandEvent& event)
 	{
 		Rtt::LinuxPreferencesDialog* newPreferencesDialog = new Rtt::LinuxPreferencesDialog(solarApp, wxID_ANY, wxEmptyString);
 		//		newPreferencesDialog->SetProperties(Rtt::LinuxSimulatorView::Config::showRuntimeErrors, Rtt::LinuxSimulatorView::Config::openLastProject, Rtt::LinuxSimulatorView::Config::relaunchOnFileChange);
@@ -171,57 +171,57 @@ namespace Rtt
 			solarSimulator->ConfigSet("showRuntimeErrors", true); // newPreferencesDialog->ShouldShowRuntimeErrors();
 			solarSimulator->ConfigSet("openLastProject", newPreferencesDialog->ShouldOpenLastProject());
 			solarSimulator->ConfigSet("relaunchOnFileChange", newPreferencesDialog->ShouldRelaunchOnFileChange());
-			solarApp->GetContext()->GetPlatform()->fShowRuntimeErrors = true; // Rtt::LinuxSimulatorView::Config::showRuntimeErrors;
+			GetContext()->GetPlatform()->fShowRuntimeErrors = true; // Rtt::LinuxSimulatorView::Config::showRuntimeErrors;
 			solarSimulator->ConfigSave();
 			newPreferencesDialog->Destroy();
 		}
 	}
 
-	void LinuxMenuEvents::OnQuit(wxCommandEvent& WXUNUSED(event))
+	void SolarSimulator::OnQuit(wxCommandEvent& WXUNUSED(event))
 	{
 		// quit the simulator console
 		ConsoleApp::Quit();
 
-		solarApp->Close(true);
+		Close(true);
 	}
 
 	// build menu items
-	void LinuxMenuEvents::OnBuildForAndroid(wxCommandEvent& event)
+	void SolarSimulator::OnBuildForAndroid(wxCommandEvent& event)
 	{
-		solarApp->CreateSuspendedPanel();
+		CreateSuspendedPanel();
 		Rtt::AndroidBuildDialog* androidBuildDialog = new Rtt::AndroidBuildDialog(solarApp, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 470));
-		androidBuildDialog->SetAppContext(solarApp->GetContext());
+		androidBuildDialog->SetAppContext(GetContext());
 		androidBuildDialog->ShowModal();
 		androidBuildDialog->Destroy();
 	}
 
-	void LinuxMenuEvents::OnBuildForWeb(wxCommandEvent& event)
+	void SolarSimulator::OnBuildForWeb(wxCommandEvent& event)
 	{
-		solarApp->CreateSuspendedPanel();
+		CreateSuspendedPanel();
 		Rtt::WebBuildDialog* webBuildDialog = new Rtt::WebBuildDialog(solarApp, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 330));
-		webBuildDialog->SetAppContext(solarApp->GetContext());
+		webBuildDialog->SetAppContext(GetContext());
 		webBuildDialog->ShowModal();
 		webBuildDialog->Destroy();
 	}
 
-	void LinuxMenuEvents::OnBuildForLinux(wxCommandEvent& event)
+	void SolarSimulator::OnBuildForLinux(wxCommandEvent& event)
 	{
-		solarApp->CreateSuspendedPanel();
+		CreateSuspendedPanel();
 		Rtt::LinuxBuildDialog* linuxBuildDialog = new Rtt::LinuxBuildDialog(solarApp, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 330));
-		linuxBuildDialog->SetAppContext(solarApp->GetContext());
+		linuxBuildDialog->SetAppContext(GetContext());
 		linuxBuildDialog->ShowModal();
 		linuxBuildDialog->Destroy();
 	}
 
 	// help menu items
 
-	void LinuxMenuEvents::OnOpenDocumentation(wxCommandEvent& event)
+	void SolarSimulator::OnOpenDocumentation(wxCommandEvent& event)
 	{
 		string command("xdg-open https://docs.coronalabs.com/api/index.html");
 		wxExecute(command.c_str());
 	}
 
-	void LinuxMenuEvents::OnOpenSampleProjects(wxCommandEvent& event)
+	void SolarSimulator::OnOpenSampleProjects(wxCommandEvent& event)
 	{
 		string samplesPath = GetStartupPath(NULL);
 		samplesPath.append("/Resources/SampleCode");
@@ -250,7 +250,7 @@ namespace Rtt
 		wxPostEvent(solarApp, eventOpen);
 	}
 
-	void LinuxMenuEvents::OnAbout(wxCommandEvent& WXUNUSED(event))
+	void SolarSimulator::OnAbout(wxCommandEvent& WXUNUSED(event))
 	{
 		wxAboutDialogInfo info;
 		string version("Version: ");

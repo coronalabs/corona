@@ -11,6 +11,7 @@
 
 #include "Rtt_LinuxApp.h"
 #include "Rtt_LinuxSimulatorView.h"
+#include "wx/fswatcher.h"
 
 namespace Rtt
 {
@@ -32,12 +33,31 @@ namespace Rtt
 		void OnOpenWelcome(wxCommandEvent& event);
 		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 
-		void WatchFolder(const char* path, const char* appName) override;
+		// menu events
+		void OnCloneProject(wxCommandEvent& event);
+		void OnNewProject(wxCommandEvent& event);
+		void OnOpenFileDialog(wxCommandEvent& event);
+		void OnRelaunchLastProject(wxCommandEvent& event);
+		void OnOpenInEditor(wxCommandEvent& event);
+		void OnShowProjectFiles(wxCommandEvent& event);
+		void OnShowProjectSandbox(wxCommandEvent& event);
+		void OnClearProjectSandbox(wxCommandEvent& event);
+		void OnAndroidBackButton(wxCommandEvent& event);
+		void OnOpenPreferences(wxCommandEvent& event);
+		void OnQuit(wxCommandEvent& WXUNUSED(event));
+		void OnBuildForAndroid(wxCommandEvent& event);
+		void OnBuildForWeb(wxCommandEvent& event);
+		void OnBuildForLinux(wxCommandEvent& event);
+		void OnOpenDocumentation(wxCommandEvent& event);
+		void OnOpenSampleProjects(wxCommandEvent& event);
+		void OnAbout(wxCommandEvent& WXUNUSED(event));
+
+		void WatchFolder(const char* path, const char* appName);
 		bool Start(const std::string& resourcesDir) override;
-		void CreateSuspendedPanel() override;
-		void RemoveSuspendedPanel() override;
-		void CreateMenus() override;
-		void SetMenu(const char* appPath) override;
+		void CreateSuspendedPanel();
+		void RemoveSuspendedPanel();
+		void CreateMenus();
+		void SetMenu(const char* appPath);
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }
 
@@ -50,10 +70,10 @@ namespace Rtt
 		int ConfigInt(const std::string& key);
 		void ConfigSet(const char* key, std::string& val);
 		void ConfigSet(const char* key, int val);
-		std::map<std::string, std::string> fConfig;
 
 	private:
 
+		std::map<std::string, std::string> fConfig;
 		wxFileSystemWatcher* fWatcher;
 		wxPanel* suspendedPanel;
 		bool fRelaunchedViaFileEvent;

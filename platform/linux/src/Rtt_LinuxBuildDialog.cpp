@@ -12,7 +12,7 @@
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxBuildDialog.h"
-#include "Rtt_LinuxApp.h"
+#include "Rtt_LinuxSimulator.h"
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_WebAppPackager.h"
 #include "Rtt_LinuxAppPackager.h"
@@ -216,7 +216,7 @@ namespace Rtt
 		int buildResult = packager.Build(&linuxBuilderParams, "/tmp/Solar2D");
 		platform->SetActivityIndicator(false);
 		EndModal(wxID_OK);
-		solarApp->RemoveSuspendedPanel();
+		solarSimulator->RemoveSuspendedPanel();
 
 		int dialogResultFlags = buildResult == 0 ? wxOK | wxICON_INFORMATION : wxOK | wxICON_ERROR;
 		resultDialog->SetTitle("Build Result");
@@ -241,7 +241,7 @@ namespace Rtt
 
 	void LinuxBuildDialog::OnCancelClicked(wxCommandEvent &event)
 	{
-		solarApp->RemoveSuspendedPanel();
+		solarSimulator->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);
 	}
 };

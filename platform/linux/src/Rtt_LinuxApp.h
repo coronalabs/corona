@@ -31,7 +31,6 @@
 #include "wx/panel.h"
 #include "wx/stattext.h"
 #include "wx/glcanvas.h"
-#include "wx/fswatcher.h"
 #include <string>
 
 namespace Rtt
@@ -49,31 +48,26 @@ namespace Rtt
 		SolarApp();
 		virtual ~SolarApp();
 
-		Rtt::Runtime* GetRuntime() { return fContext->GetRuntime(); }
-		Rtt::LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
+		Runtime* GetRuntime() { return fContext->GetRuntime(); }
+		LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
 		void OnIconized(wxIconizeEvent& event);
 		virtual void OnClose(wxCloseEvent& event);
 		void ChangeSize(int newWidth, int newHeight);
-		virtual void CreateSuspendedPanel() {}
-		virtual void RemoveSuspendedPanel() {}
 		SolarGLCanvas* GetCanvas() const { return fSolarGLCanvas; }
-		Rtt::SolarAppContext* GetContext() const { return fContext; }
+		SolarAppContext* GetContext() const { return fContext; }
 		void ResetWindowSize();
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		bool CreateWindow(const std::string& resourcesDir);
 
-		virtual void WatchFolder(const char* path, const char* appName) {};
 		virtual bool Start(const std::string& resourcesDir);
-		virtual void CreateMenus() {};
-		virtual void SetMenu(const char* appPath) {};
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
 
-		Rtt::LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
+		LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
 		wxStaticText* suspendedText;
 		SolarGLCanvas* fSolarGLCanvas;
-		Rtt::SolarAppContext* fContext;
+		SolarAppContext* fContext;
 		std::string fAppPath;
 		std::string fProjectPath;
 		int currentSkinWidth;

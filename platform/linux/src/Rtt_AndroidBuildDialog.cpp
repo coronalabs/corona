@@ -16,7 +16,7 @@
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_AndroidAppPackager.h"
 #include "Rtt_TargetAndroidAppStore.h"
-#include "Rtt_LinuxApp.h"
+#include "Rtt_LinuxSimulator.h"
 #include "ListKeyStore.h"
 #include "Core/Rtt_FileSystem.h"
 #include <string.h>
@@ -513,8 +513,7 @@ namespace Rtt
 		}
 
 		EndModal(wxID_OK);
-		solarApp->RemoveSuspendedPanel();
-
+		solarSimulator->RemoveSuspendedPanel();
 
 		int dialogResultFlags = buildResult == 0 ? wxOK | wxICON_INFORMATION : wxOK | wxICON_ERROR;
 		resultDialog->SetTitle("Build Result");
@@ -546,7 +545,7 @@ namespace Rtt
 
 	void AndroidBuildDialog::OnCancelClicked(wxCommandEvent &event)
 	{
-		solarApp->RemoveSuspendedPanel();
+		solarSimulator->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);
 	}
 };

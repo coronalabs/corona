@@ -35,14 +35,14 @@ namespace Rtt
 	bool LinuxSimulatorServices::CloneProject() const
 	{
 		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
-		LinuxMenuEvents::OnCloneProject(cloneProjectEvent);
+		solarSimulator->OnCloneProject(cloneProjectEvent);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::NewProject() const
 	{
 		wxCommandEvent newProjectEvent(wxEVT_NULL);
-		LinuxMenuEvents::OnNewProject(newProjectEvent);
+		solarSimulator->OnNewProject(newProjectEvent);
 		return true;
 	}
 

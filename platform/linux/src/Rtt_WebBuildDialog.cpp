@@ -10,7 +10,7 @@
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxSimulatorView.h"
-#include "Rtt_LinuxApp.h"
+#include "Rtt_LinuxSimulator.h"
 #include "Rtt_WebBuildDialog.h"
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_WebAppPackager.h"
@@ -223,7 +223,7 @@ namespace Rtt
 		int buildResult = packager.Build(&webBuilderParams, tmpDirName);
 		platform->SetActivityIndicator(false);
 		EndModal(wxID_OK);
-		solarApp->RemoveSuspendedPanel();
+		solarSimulator->RemoveSuspendedPanel();
 
 		int dialogResultFlags = buildResult == 0 ? wxOK | wxICON_INFORMATION : wxOK | wxICON_ERROR;
 		resultDialog->SetTitle("Build Result");
@@ -245,7 +245,7 @@ namespace Rtt
 
 	void WebBuildDialog::OnCancelClicked(wxCommandEvent& event)
 	{
-		solarApp->RemoveSuspendedPanel();
+		solarSimulator->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);
 	}
 };

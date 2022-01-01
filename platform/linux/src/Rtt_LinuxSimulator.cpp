@@ -138,22 +138,22 @@ namespace Rtt
 		SetPosition(wxPoint(ConfigInt("windowXPos"), ConfigInt("windowYPos")));
 		SetTitle("Solar2D Simulator");
 
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnNewProject, ID_MENU_NEW_PROJECT);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenFileDialog, ID_MENU_OPEN_PROJECT);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnRelaunchLastProject, ID_MENU_OPEN_LAST_PROJECT);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenInEditor, ID_MENU_OPEN_IN_EDITOR);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnShowProjectFiles, ID_MENU_SHOW_PROJECT_FILES);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnShowProjectSandbox, ID_MENU_SHOW_PROJECT_SANDBOX);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnClearProjectSandbox, ID_MENU_CLEAR_PROJECT_SANDBOX);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnAndroidBackButton, ID_MENU_BACK_BUTTON);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForAndroid, ID_MENU_BUILD_ANDROID);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForWeb, ID_MENU_BUILD_WEB);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForLinux, ID_MENU_BUILD_LINUX);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenPreferences, wxID_PREFERENCES);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnQuit, wxID_EXIT);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenDocumentation, ID_MENU_OPEN_DOCUMENTATION);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenSampleProjects, ID_MENU_OPEN_SAMPLE_CODE);
-		Bind(wxEVT_MENU, &LinuxMenuEvents::OnAbout, wxID_ABOUT);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnNewProject(e); }, ID_MENU_NEW_PROJECT);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenFileDialog(e); }, ID_MENU_OPEN_PROJECT);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnRelaunchLastProject(e); }, ID_MENU_OPEN_LAST_PROJECT);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenInEditor(e); }, ID_MENU_OPEN_IN_EDITOR);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnShowProjectFiles(e); }, ID_MENU_SHOW_PROJECT_FILES);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnShowProjectSandbox(e); }, ID_MENU_SHOW_PROJECT_SANDBOX);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnClearProjectSandbox(e); }, ID_MENU_CLEAR_PROJECT_SANDBOX);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAndroidBackButton(e); }, ID_MENU_BACK_BUTTON);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForAndroid(e); }, ID_MENU_BUILD_ANDROID);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForWeb(e); }, ID_MENU_BUILD_WEB);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForLinux(e); }, ID_MENU_BUILD_LINUX);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenPreferences(e); }, wxID_PREFERENCES);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnQuit(e); }, wxID_EXIT);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenDocumentation(e); }, ID_MENU_OPEN_DOCUMENTATION);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenSampleProjects(e); }, ID_MENU_OPEN_SAMPLE_CODE);
+		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAbout(e); }, wxID_ABOUT);
 
 		return true;
 	}
