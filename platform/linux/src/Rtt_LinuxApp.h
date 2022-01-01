@@ -72,7 +72,6 @@ namespace Rtt
 
 		Rtt::LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
 		wxStaticText* suspendedText;
-		wxMenu* fHardwareMenu;
 		SolarGLCanvas* fSolarGLCanvas;
 		Rtt::SolarAppContext* fContext;
 		std::string fAppPath;

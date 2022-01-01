@@ -19,65 +19,13 @@
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_MPlatform.h"
-#include "wx/config.h"
 
 namespace Rtt
 {
-	struct SimulatorConfig : public ref_counted
-	{
-		SimulatorConfig()
-			: showRuntimeErrors(true)
-			, openLastProject(false)
-			, relaunchOnFileChange(LinuxPreferencesDialog::RelaunchType::Always)
-			, windowXPos(10)
-			, windowYPos(10)
-			, skinID(6223)
-			, skinWidth(320)
-			, skinHeight(480)
-			, configFile(NULL)
-		{
-			zoomedWidth = skinWidth;
-			zoomedHeight = skinHeight;
-			Load();
-		}
-
-		virtual ~SimulatorConfig()
-		{
-			Save();
-			delete configFile;
-		}
-
-		void Save();
-		void Cleanup();
-
-		wxString settingsFilePath;
-		wxString lastProjectDirectory;
-		bool showRuntimeErrors;
-		bool openLastProject;
-		LinuxPreferencesDialog::RelaunchType relaunchOnFileChange;
-		int windowXPos;
-		int windowYPos;
-		int skinID;
-		int skinWidth;
-		int skinHeight;
-		int zoomedWidth;
-		int zoomedHeight;
-
-	private:
-
-		// read from the simulator config file (it'll be created if it doesn't exist)
-		void Load();
-
-		wxConfig* configFile;
-	};
-
 	class LinuxPlatformServices : public MPlatformServices
 	{
 	public:
 		LinuxPlatformServices(MPlatform* platform);
-
-	protected:
-		bool RequestAdminAuthorization(const char* name) const;
 
 	public:
 		// MPlatformServices

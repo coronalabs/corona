@@ -44,7 +44,6 @@ namespace Rtt
 		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarSimulator::OnOpenWelcome)
 		EVT_ICONIZE(SolarApp::OnIconized)
 		EVT_CLOSE(SolarSimulator::OnClose)
-		//EVT_TIMER(TIMER_ID, SolarApp::OnTimer)
 		wxEND_EVENT_TABLE()
 
 		SolarSimulator::SolarSimulator()
@@ -57,13 +56,13 @@ namespace Rtt
 		, fViewAsIOSMenu(NULL)
 		, fViewAsTVMenu(NULL)
 		, fViewAsDesktopMenu(NULL)
+		, fHardwareMenu(NULL)
 		, fZoomIn(NULL)
 		, fZoomOut(NULL)
 		, fMenuProject(NULL)
 		, fFileSystemEventTimestamp(0)
 	{
 		solarSimulator = this;		// save
-		fSimulatorConfig = new SimulatorConfig();
 
 		// start the console
 		if (ConsoleApp::isStarted())
@@ -93,6 +92,10 @@ namespace Rtt
 		{
 			Rtt_MakeDirectory(projectCreationPath.c_str());
 		}
+
+		fConfigFilePath = GetHomePath();
+		fConfigFilePath.append("/.Solar2D/simulator.conf");
+		ConfigLoad();
 	}
 
 	SolarSimulator::~SolarSimulator()
@@ -127,12 +130,12 @@ namespace Rtt
 	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
 	//	}
 
-		currentSkinWidth = fSimulatorConfig->skinWidth;
-		currentSkinHeight = fSimulatorConfig->skinHeight;
+		currentSkinWidth = ConfigInt("skinWidth");
+		currentSkinHeight = ConfigInt("skinHeight");
 
 		fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
 
-		SetPosition(wxPoint(fSimulatorConfig->windowXPos, fSimulatorConfig->windowYPos));
+		SetPosition(wxPoint(ConfigInt("windowXPos"), ConfigInt("windowYPos")));
 		SetTitle("Solar2D Simulator");
 
 		Bind(wxEVT_MENU, &LinuxMenuEvents::OnNewProject, ID_MENU_NEW_PROJECT);
@@ -255,23 +258,11 @@ namespace Rtt
 
 			if (fRelaunchedViaFileEvent)
 			{
-				switch (fSimulatorConfig->relaunchOnFileChange)
+				const string& relaunchOnFileChange = ConfigStr("relaunchOnFileChange");
+				if (relaunchOnFileChange == "Always" || relaunchOnFileChange == "Ask")
 				{
-				case LinuxPreferencesDialog::RelaunchType::Always:
 					doRelaunch = true;
-					break;
-
-				case LinuxPreferencesDialog::RelaunchType::Ask:
-					if (fRelaunchProjectDialog->ShowModal() == wxID_OK)
-					{
-						doRelaunch = true;
-					}
-					break;
-
-				default:
-					break;
 				}
-
 				fRelaunchedViaFileEvent = false;
 			}
 
@@ -293,7 +284,7 @@ namespace Rtt
 
 			wxString newWindowTitle(fContext->GetTitle());
 
-			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(fSimulatorConfig->skinID);
+			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
 			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName().c_str(), fContext->GetPlatform());
 
@@ -558,10 +549,8 @@ namespace Rtt
 
 			if (!IsHomeScreen(GetContext()->GetAppName()))
 			{
-				fSimulatorConfig->zoomedWidth = proposedWidth;
-				fSimulatorConfig->zoomedHeight = proposedHeight;
-				fSimulatorConfig->Save();
-
+				ConfigSet("zoomedWidth", proposedWidth);
+				ConfigSet("zoomedHeight", proposedHeight);
 				if (proposedWidth * LinuxSimulatorView::skinScaleFactor > screen.width || proposedHeight * LinuxSimulatorView::skinScaleFactor > screen.height)
 				{
 					fZoomIn->Enable(false);
@@ -571,8 +560,8 @@ namespace Rtt
 			{
 				//			fSimulatorConfig->welcomeScreenZoomedWidth = proposedWidth;
 				//			fSimulatorConfig->welcomeScreenZoomedHeight = proposedHeight;
-				fSimulatorConfig->Save();
 			}
+			ConfigSave();
 		}
 	}
 
@@ -592,9 +581,9 @@ namespace Rtt
 			frame->GetContext()->RestartRenderer();
 			GetCanvas()->Refresh(true);
 
-			fSimulatorConfig->zoomedWidth = proposedWidth;
-			fSimulatorConfig->zoomedHeight = proposedHeight;
-			fSimulatorConfig->Save();
+			ConfigSet("zoomedWidth", proposedWidth);
+			ConfigSet("zoomedHeight", proposedHeight);
+			ConfigSave();
 
 			if (proposedWidth / LinuxSimulatorView::skinScaleFactor <= LinuxSimulatorView::skinMinWidth)
 			{
@@ -625,9 +614,9 @@ namespace Rtt
 		fZoomIn->Enable(canZoom);
 		fZoomOut->Enable(canZoom);
 
-		fSimulatorConfig->skinID = sProperties.id;
-		fSimulatorConfig->skinWidth = sProperties.screenWidth;
-		fSimulatorConfig->skinHeight = sProperties.screenHeight;
+		ConfigSet("skinID", sProperties.id);
+		ConfigSet("skinWidth", sProperties.screenWidth);
+		ConfigSet("skinHeight", sProperties.screenHeight);
 		LinuxSimulatorView::SelectSkin(skinID);
 		ClearMenuCheckboxes(fViewAsAndroidMenu, sProperties.skinTitle);
 		ClearMenuCheckboxes(fViewAsIOSMenu, sProperties.skinTitle);
@@ -640,9 +629,9 @@ namespace Rtt
 			initialHeight /= LinuxSimulatorView::skinScaleFactor;
 		}
 
-		fSimulatorConfig->zoomedWidth = initialWidth;
-		fSimulatorConfig->zoomedHeight = initialHeight;
-		fSimulatorConfig->Save();
+		ConfigSet("zoomedWidth", initialWidth);
+		ConfigSet("zoomedHeight", initialHeight);
+		ConfigSave();
 
 		GetContext()->SetWidth(initialWidth);
 		GetContext()->SetHeight(initialHeight);
@@ -660,7 +649,7 @@ namespace Rtt
 			wxMenuItem* currentSkin = targetMenu->Append(sProperties.id, skin[i].c_str(), wxEmptyString, wxITEM_CHECK);
 			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnViewAsChanged(e); }, sProperties.id);
 
-			if (sProperties.id == fSimulatorConfig->skinID)
+			if (sProperties.id == ConfigInt("skinID"))
 			{
 				wxString newWindowTitle(GetContext()->GetTitle());
 				newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
@@ -678,15 +667,15 @@ namespace Rtt
 		{
 			wxDisplay display(wxDisplay::GetFromWindow(solarApp));
 			wxRect screen = display.GetClientArea();
-			width = fSimulatorConfig->zoomedWidth;
-			height = fSimulatorConfig->zoomedHeight;
+			width = ConfigInt("zoomedWidth");
+			height = ConfigInt("zoomedHeight");
 
 			if (width > screen.width || height > screen.height)
 			{
 				fZoomIn->Enable(false);
 			}
 
-			if (fSimulatorConfig->skinWidth <= LinuxSimulatorView::skinMinWidth)
+			if (ConfigInt("skinWidth") <= LinuxSimulatorView::skinMinWidth)
 			{
 				fZoomIn->Enable(false);
 				fZoomOut->Enable(false);
@@ -754,8 +743,8 @@ namespace Rtt
 
 		if (!IsHomeScreen(appName))
 		{
-			fSimulatorConfig->lastProjectDirectory = fAppPath;
-			fSimulatorConfig->Save();
+			ConfigSet("lastProjectDirectory", fAppPath);
+			ConfigSave();
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), appName.c_str(), fContext->GetPlatform());
 		}
 		else
@@ -775,7 +764,7 @@ namespace Rtt
 
 		if (!IsHomeScreen(appName))
 		{
-			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(fSimulatorConfig->skinID);
+			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
 			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
 			fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
 			string sandboxPath("~/.Solar2D/Sandbox/");
@@ -794,13 +783,91 @@ namespace Rtt
 	{
 		fContext->GetRuntime()->End();
 
-		fSimulatorConfig->windowXPos = GetPosition().x;
-		fSimulatorConfig->windowYPos = GetPosition().y;
-		fSimulatorConfig->Save();
+		ConfigSet("windowXPos", GetPosition().x);
+		ConfigSet("windowYPos", GetPosition().y);
+		ConfigSave();
 
 		// quit the simulator console
 		ConsoleApp::Quit();
 
 		wxExit();
 	}
+
+	// config parser
+
+	void SolarSimulator::ConfigLoad()
+	{
+		// default values
+		fConfig["showRuntimeErrors"] = to_string(true);
+		fConfig["openLastProject"] = to_string(false);
+		fConfig["relaunchOnFileChange"] = "Always";
+		fConfig["windowXPos"] = to_string(10);
+		fConfig["windowYPos"] = to_string(10);
+		fConfig["skinID"] = to_string(6223);
+		fConfig["skinWidth"] = to_string(320);
+		fConfig["skinHeight"] = to_string(480);
+
+		FILE* f = fopen(fConfigFilePath.c_str(), "r");
+		if (f == NULL)
+		{
+			Rtt_LogException("Failed to read %s, %s\n", fConfigFilePath.c_str(), strerror(errno));
+			return;
+		}
+
+		char s[1024];
+		while (fgets(s, sizeof(s), f))
+		{
+			char* comment = strchr(s, '#');
+			if (comment)
+				*comment = 0;
+
+			char key[sizeof(s)];
+			char val[sizeof(s)];
+			if (sscanf(s, "%64[^=]=%512[^\n]%*c", key, val) == 2) // Checking scanf read key=val pair
+			{
+				fConfig[key] = val;
+			}
+		}
+		fclose(f);
+	}
+
+	void SolarSimulator::ConfigSave()
+	{
+		FILE* f = fopen(fConfigFilePath.c_str(), "w");
+		if (f == NULL)
+		{
+			Rtt_LogException("Failed to write %s, %s\n", fConfigFilePath.c_str(), strerror(errno));
+			return;
+		}
+
+		for (const auto& it: fConfig)
+		{
+			fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
+		}
+		fclose(f);
+	}
+
+	std::string& SolarSimulator::ConfigStr(const string& key)
+	{
+		static string s_empty;
+		const auto& it = fConfig.find(key);
+		return it != fConfig.end() ? it->second : s_empty;
+	}
+
+	int SolarSimulator::ConfigInt(const string& key)
+	{
+		const auto& it = fConfig.find(key);
+		return it != fConfig.end() ? atoi(it->second.c_str()) : 0;
+	}
+
+	void SolarSimulator::ConfigSet(const char* key, std::string& val)
+	{
+		fConfig[key] = val;
+	}
+
+	void SolarSimulator::ConfigSet(const char* key, int val)
+	{
+		fConfig[key] = ::to_string(val);
+	}
+
 }

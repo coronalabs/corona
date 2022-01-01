@@ -56,7 +56,7 @@ namespace Rtt
 		}
 		else
 		{
-			wxString startPath(solarSimulator->fSimulatorConfig->lastProjectDirectory);
+			wxString startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
 			wxFileDialog openFileDialog(solarApp, _("Open"), startPath, "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 			if (openFileDialog.ShowModal() == wxID_CANCEL)

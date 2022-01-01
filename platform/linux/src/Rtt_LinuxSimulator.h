@@ -43,7 +43,14 @@ namespace Rtt
 
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 
-		smart_ptr<SimulatorConfig> fSimulatorConfig;
+		// for simulator settings
+		void ConfigLoad();
+		void ConfigSave();
+		std::string& ConfigStr(const std::string& key);
+		int ConfigInt(const std::string& key);
+		void ConfigSet(const char* key, std::string& val);
+		void ConfigSet(const char* key, int val);
+		std::map<std::string, std::string> fConfig;
 
 	private:
 
@@ -57,10 +64,12 @@ namespace Rtt
 		wxMenu* fViewAsIOSMenu;
 		wxMenu* fViewAsTVMenu;
 		wxMenu* fViewAsDesktopMenu;
+		wxMenu* fHardwareMenu;
 		wxMenuItem* fZoomIn;
 		wxMenuItem* fZoomOut;
 		wxMenuBar* fMenuProject;
 		wxLongLong fFileSystemEventTimestamp;
+		std::string fConfigFilePath;
 	};
 }
 
