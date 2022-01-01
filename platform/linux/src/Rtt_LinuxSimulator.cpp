@@ -22,6 +22,9 @@
 
 using namespace std;
 
+// global
+Rtt::SolarSimulator* solarSimulator = NULL;
+
 namespace Rtt
 {
 	wxDEFINE_EVENT(eventOpenProject, wxCommandEvent);
@@ -41,7 +44,7 @@ namespace Rtt
 		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarSimulator::OnOpenWelcome)
 		EVT_ICONIZE(SolarApp::OnIconized)
 		EVT_CLOSE(SolarSimulator::OnClose)
-		EVT_TIMER(TIMER_ID, SolarApp::OnTimer)
+		//EVT_TIMER(TIMER_ID, SolarApp::OnTimer)
 		wxEND_EVENT_TABLE()
 
 		SolarSimulator::SolarSimulator()
@@ -57,7 +60,9 @@ namespace Rtt
 		, fZoomIn(NULL)
 		, fZoomOut(NULL)
 		, fMenuProject(NULL)
+		, fFileSystemEventTimestamp(0)
 	{
+		solarSimulator = this;		// save
 		fSimulatorConfig = new SimulatorConfig();
 
 		// start the console
@@ -602,14 +607,13 @@ namespace Rtt
 	{
 		int skinID = event.GetId();
 		LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skinID);
-		SolarSimulator* thiz = (SolarSimulator*)solarApp;
-		wxDisplay display(wxDisplay::GetFromWindow(thiz));
+		wxDisplay display(wxDisplay::GetFromWindow(this));
 		wxRect screen = display.GetClientArea();
-		thiz->currentSkinWidth = sProperties.screenWidth;
-		thiz->currentSkinHeight = sProperties.screenHeight;
+		currentSkinWidth = sProperties.screenWidth;
+		currentSkinHeight = sProperties.screenHeight;
 		int initialWidth = sProperties.screenWidth;
 		int initialHeight = sProperties.screenHeight;
-		wxString newWindowTitle(thiz->GetContext()->GetTitle());
+		wxString newWindowTitle(GetContext()->GetTitle());
 		newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
 		bool canZoom = sProperties.screenWidth > LinuxSimulatorView::skinMinWidth;
 
@@ -618,17 +622,17 @@ namespace Rtt
 			return;
 		}
 
-		thiz->fZoomIn->Enable(canZoom);
-		thiz->fZoomOut->Enable(canZoom);
+		fZoomIn->Enable(canZoom);
+		fZoomOut->Enable(canZoom);
 
-		thiz->fSimulatorConfig->skinID = sProperties.id;
-		thiz->fSimulatorConfig->skinWidth = sProperties.screenWidth;
-		thiz->fSimulatorConfig->skinHeight = sProperties.screenHeight;
+		fSimulatorConfig->skinID = sProperties.id;
+		fSimulatorConfig->skinWidth = sProperties.screenWidth;
+		fSimulatorConfig->skinHeight = sProperties.screenHeight;
 		LinuxSimulatorView::SelectSkin(skinID);
-		thiz->ClearMenuCheckboxes(thiz->fViewAsAndroidMenu, sProperties.skinTitle);
-		thiz->ClearMenuCheckboxes(thiz->fViewAsIOSMenu, sProperties.skinTitle);
-		thiz->ClearMenuCheckboxes(thiz->fViewAsTVMenu, sProperties.skinTitle);
-		thiz->ClearMenuCheckboxes(thiz->fViewAsDesktopMenu, sProperties.skinTitle);
+		ClearMenuCheckboxes(fViewAsAndroidMenu, sProperties.skinTitle);
+		ClearMenuCheckboxes(fViewAsIOSMenu, sProperties.skinTitle);
+		ClearMenuCheckboxes(fViewAsTVMenu, sProperties.skinTitle);
+		ClearMenuCheckboxes(fViewAsDesktopMenu, sProperties.skinTitle);
 
 		while (initialWidth > screen.width || initialHeight > screen.height)
 		{
@@ -636,13 +640,13 @@ namespace Rtt
 			initialHeight /= LinuxSimulatorView::skinScaleFactor;
 		}
 
-		thiz->fSimulatorConfig->zoomedWidth = initialWidth;
-		thiz->fSimulatorConfig->zoomedHeight = initialHeight;
-		thiz->fSimulatorConfig->Save();
+		fSimulatorConfig->zoomedWidth = initialWidth;
+		fSimulatorConfig->zoomedHeight = initialHeight;
+		fSimulatorConfig->Save();
 
-		thiz->GetContext()->SetWidth(initialWidth);
-		thiz->GetContext()->SetHeight(initialHeight);
-		thiz->ChangeSize(initialWidth, initialHeight);
+		GetContext()->SetWidth(initialWidth);
+		GetContext()->SetHeight(initialHeight);
+		ChangeSize(initialWidth, initialHeight);
 
 		wxCommandEvent ev(eventRelaunchProject);
 		wxPostEvent(solarApp, ev);
@@ -654,7 +658,7 @@ namespace Rtt
 		{
 			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skin[i].c_str());
 			wxMenuItem* currentSkin = targetMenu->Append(sProperties.id, skin[i].c_str(), wxEmptyString, wxITEM_CHECK);
-			Bind(wxEVT_MENU, &SolarSimulator::OnViewAsChanged, sProperties.id);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnViewAsChanged(e); }, sProperties.id);
 
 			if (sProperties.id == fSimulatorConfig->skinID)
 			{
@@ -799,9 +803,4 @@ namespace Rtt
 
 		wxExit();
 	}
-}
-
-Rtt::SolarSimulator* solarSimulator()
-{
-	return dynamic_cast<Rtt::SolarSimulator*>(solarApp);
 }

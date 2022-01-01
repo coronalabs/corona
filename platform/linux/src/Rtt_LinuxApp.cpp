@@ -58,7 +58,6 @@ namespace Rtt
 		: fSolarGLCanvas(NULL)
 		, fContext(NULL)
 		, fProjectPath("")
-		, fTimer(this, TIMER_ID)
 	{
 #ifdef __WXGTK3__
 		setenv("GDK_BACKEND", "x11", 1);
@@ -271,24 +270,6 @@ namespace Rtt
 		SetMinClientSize(wxSize(newWidth, newHeight));
 		SetClientSize(wxSize(newWidth, newHeight));
 		SetSize(wxSize(newWidth, newHeight));
-	}
-
-	void SolarApp::StartTimer(float frameDuration)
-	{
-		fTimer.Start((int)frameDuration);
-	}
-
-	void SolarApp::OnTimer(wxTimerEvent& event)
-	{
-		Rtt::Runtime* runtime = fContext->GetRuntime();
-		if (!runtime->IsSuspended())
-		{
-			LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)fContext->GetPlatform()->GetDevice().GetInputDeviceManager();
-			deviceManager.dispatchEvents(runtime);
-
-			// advance engine
-			(*runtime)();
-		}
 	}
 
 	//

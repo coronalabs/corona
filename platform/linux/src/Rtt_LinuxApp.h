@@ -31,11 +31,8 @@
 #include "wx/panel.h"
 #include "wx/stattext.h"
 #include "wx/glcanvas.h"
-#include "wx/timer.h"
 #include "wx/fswatcher.h"
 #include <string>
-
-#define TIMER_ID wxID_HIGHEST + 1
 
 namespace Rtt
 {
@@ -57,7 +54,6 @@ namespace Rtt
 
 		void OnIconized(wxIconizeEvent& event);
 		virtual void OnClose(wxCloseEvent& event);
-		void SetOGLString(const wxString& ogls) { fGLString = ogls; }
 		void ChangeSize(int newWidth, int newHeight);
 		virtual void CreateSuspendedPanel() {}
 		virtual void RemoveSuspendedPanel() {}
@@ -65,8 +61,6 @@ namespace Rtt
 		Rtt::SolarAppContext* GetContext() const { return fContext; }
 		void ResetWindowSize();
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
-		void StartTimer(float duration);
-		void OnTimer(wxTimerEvent& event);
 		bool CreateWindow(const std::string& resourcesDir);
 
 		virtual void WatchFolder(const char* path, const char* appName) {};
@@ -77,17 +71,14 @@ namespace Rtt
 		virtual bool IsRunningOnSimulator() { return false; }
 
 		Rtt::LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
-		wxLongLong fFileSystemEventTimestamp = 0;
 		wxStaticText* suspendedText;
 		wxMenu* fHardwareMenu;
-		wxString fGLString;
 		SolarGLCanvas* fSolarGLCanvas;
 		Rtt::SolarAppContext* fContext;
 		std::string fAppPath;
 		std::string fProjectPath;
 		int currentSkinWidth;
 		int currentSkinHeight;
-		wxTimer fTimer;
 
 		wxDECLARE_EVENT_TABLE();
 	};

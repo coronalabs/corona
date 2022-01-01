@@ -490,11 +490,25 @@ namespace Rtt
 
 		GetRuntime()->BeginRunLoop();
 
-		RestartRenderer();
-		GetCanvas()->Refresh(true);
-		solarApp->StartTimer(1000.0f / (float)GetFPS());
+		// starft timer
+		int frameDuration = 1000.0f / (float)GetFPS();
+		SetOwner(this);
+		Start(frameDuration);
 
 		return true;
+	}
+
+	// timer callback
+	void SolarAppContext::Notify()
+	{
+		if (!fRuntime->IsSuspended())
+		{
+			LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)GetPlatform()->GetDevice().GetInputDeviceManager();
+			deviceManager.dispatchEvents(fRuntime);
+
+			// advance engine
+			(*fRuntime)();
+		}
 	}
 
 	void SolarAppContext::Flush()

@@ -27,7 +27,7 @@ namespace Rtt
 		void OnRelaunch(wxCommandEvent& event);
 		void OnZoomIn(wxCommandEvent& event);
 		void OnZoomOut(wxCommandEvent& event);
-		static void OnViewAsChanged(wxCommandEvent& event);
+		void OnViewAsChanged(wxCommandEvent& event);
 		void OnSuspendOrResume(wxCommandEvent& event);
 		void OnOpenWelcome(wxCommandEvent& event);
 		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
@@ -60,9 +60,10 @@ namespace Rtt
 		wxMenuItem* fZoomIn;
 		wxMenuItem* fZoomOut;
 		wxMenuBar* fMenuProject;
+		wxLongLong fFileSystemEventTimestamp;
 	};
 }
 
-Rtt::SolarSimulator* solarSimulator();
+extern Rtt::SolarSimulator* solarSimulator;
 
 

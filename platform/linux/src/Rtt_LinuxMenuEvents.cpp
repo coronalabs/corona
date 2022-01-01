@@ -88,11 +88,10 @@ namespace Rtt
 
 	void LinuxMenuEvents::OnRelaunchLastProject(wxCommandEvent& event)
 	{
-		SolarSimulator* thiz = (SolarSimulator*)solarApp;
-		if (!thiz->fSimulatorConfig->lastProjectDirectory.IsEmpty())
+		if (!solarSimulator->fSimulatorConfig->lastProjectDirectory.IsEmpty())
 		{
 			wxCommandEvent eventOpen(eventOpenProject);
-			wxString fullPath(thiz->fSimulatorConfig->lastProjectDirectory);
+			wxString fullPath(solarSimulator->fSimulatorConfig->lastProjectDirectory);
 			fullPath.append("/main.lua");
 
 			eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
@@ -167,15 +166,15 @@ namespace Rtt
 	{
 		Rtt::LinuxPreferencesDialog* newPreferencesDialog = new Rtt::LinuxPreferencesDialog(solarApp, wxID_ANY, wxEmptyString);
 		//		newPreferencesDialog->SetProperties(Rtt::LinuxSimulatorView::Config::showRuntimeErrors, Rtt::LinuxSimulatorView::Config::openLastProject, Rtt::LinuxSimulatorView::Config::relaunchOnFileChange);
-		newPreferencesDialog->SetProperties(true, solarSimulator()->fSimulatorConfig->openLastProject, solarSimulator()->fSimulatorConfig->relaunchOnFileChange);
+		newPreferencesDialog->SetProperties(true, solarSimulator->fSimulatorConfig->openLastProject, solarSimulator->fSimulatorConfig->relaunchOnFileChange);
 
 		if (newPreferencesDialog->ShowModal() == wxID_OK)
 		{
-			solarSimulator()->fSimulatorConfig->showRuntimeErrors = true; // newPreferencesDialog->ShouldShowRuntimeErrors();
-			solarSimulator()->fSimulatorConfig->openLastProject = newPreferencesDialog->ShouldOpenLastProject();
-			solarSimulator()->fSimulatorConfig->relaunchOnFileChange = newPreferencesDialog->ShouldRelaunchOnFileChange();
+			solarSimulator->fSimulatorConfig->showRuntimeErrors = true; // newPreferencesDialog->ShouldShowRuntimeErrors();
+			solarSimulator->fSimulatorConfig->openLastProject = newPreferencesDialog->ShouldOpenLastProject();
+			solarSimulator->fSimulatorConfig->relaunchOnFileChange = newPreferencesDialog->ShouldRelaunchOnFileChange();
 			solarApp->GetContext()->GetPlatform()->fShowRuntimeErrors = true; // Rtt::LinuxSimulatorView::Config::showRuntimeErrors;
-			solarSimulator()->fSimulatorConfig->Save();
+			solarSimulator->fSimulatorConfig->Save();
 			newPreferencesDialog->Destroy();
 		}
 	}

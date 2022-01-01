@@ -23,6 +23,7 @@
 #include "Rtt_LinuxRuntimeDelegate.h"
 #include "Rtt_LinuxKeyListener.h"
 #include "Rtt_LinuxMouseListener.h"
+#include "wx/timer.h"
 #include <string>
 
 #define HOMESCREEN_ID "homescreen"
@@ -33,7 +34,7 @@ namespace Rtt
 	class SolarGLCanvas;
 	class LinuxPlatform;
 
-	struct SolarAppContext
+	struct SolarAppContext: public wxTimer
 	{
 		SolarAppContext(const char *path);
 		~SolarAppContext();
@@ -65,6 +66,7 @@ namespace Rtt
 		const std::string &GetAppName() const { return fAppName; }
 		const std::string &GetSaveFolder() const { return fSaveFolder; }
 		const LinuxRuntimeDelegate *GetRuntimeDelegate() const { return fRuntimeDelegate; }
+		void Notify() override;		// timer
 		static int Print(lua_State* L);		// re-defined global.print
 
 	private:
@@ -86,7 +88,6 @@ namespace Rtt
 		LinuxSimulatorServices *fSimulator;
 		std::string fSaveFolder;
 		ProjectSettings* fProjectSettings;
-
 	};
 }; // namespace Rtt
 
