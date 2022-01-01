@@ -215,6 +215,7 @@ namespace Rtt
 		{
 			Show(true);
 		}
+		return true;
 	}
 
 	bool SolarApp::Start(const string& resourcesDir)
@@ -241,19 +242,6 @@ namespace Rtt
 
 		ChangeSize(fContext->GetWidth(), fContext->GetHeight());
 		GetCanvas()->Refresh(true);
-	}
-
-	void SolarApp::ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle)
-	{
-		for (int i = 0; i < menu->GetMenuItemCount(); i++)
-		{
-			wxMenuItem* currentItem = menu->FindItemByPosition(i);
-
-			if (!currentItem->GetItemLabel().IsSameAs(currentSkinTitle))
-			{
-				currentItem->Check(false);
-			}
-		}
 	}
 
 	void SolarApp::OnIconized(wxIconizeEvent& event)

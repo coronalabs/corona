@@ -57,21 +57,17 @@ namespace Rtt
 		SolarGLCanvas* GetCanvas() const { return fSolarGLCanvas; }
 		SolarAppContext* GetContext() const { return fContext; }
 		void ResetWindowSize();
-		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		bool CreateWindow(const std::string& resourcesDir);
 
 		virtual bool Start(const std::string& resourcesDir);
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
 
-		LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
 		wxStaticText* suspendedText;
 		SolarGLCanvas* fSolarGLCanvas;
 		SolarAppContext* fContext;
 		std::string fAppPath;
 		std::string fProjectPath;
-		int currentSkinWidth;
-		int currentSkinHeight;
 
 		wxDECLARE_EVENT_TABLE();
 	};

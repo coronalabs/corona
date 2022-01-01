@@ -57,6 +57,7 @@ namespace Rtt
 		void CreateSuspendedPanel();
 		void RemoveSuspendedPanel();
 		void CreateMenus();
+		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void SetMenu(const char* appPath);
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }
@@ -77,6 +78,7 @@ namespace Rtt
 		wxFileSystemWatcher* fWatcher;
 		wxPanel* suspendedPanel;
 		bool fRelaunchedViaFileEvent;
+		LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
 
 		wxMenuBar* fMenuMain;
 		wxMenu* fViewMenu;
@@ -90,6 +92,8 @@ namespace Rtt
 		wxMenuBar* fMenuProject;
 		wxLongLong fFileSystemEventTimestamp;
 		std::string fConfigFilePath;
+		int currentSkinWidth;
+		int currentSkinHeight;
 	};
 }
 

@@ -76,7 +76,7 @@ namespace Rtt
 		, fTouchDeviceExist(false)
 		, fMode("normal")
 		, fIsDebApp(false)
-		, fSimulator(NULL)
+		, fLinuxSimulatorServices(NULL)
 		, fProjectSettings(new ProjectSettings())
 	{
 		string exeFileName;
@@ -166,7 +166,7 @@ namespace Rtt
 		delete fRuntime;
 		delete fRuntimeDelegate;
 		delete fPlatform;
-		delete fSimulator;
+		delete fLinuxSimulatorServices;
 		delete fProjectSettings;
 
 		setGlyphProvider(NULL);
@@ -175,35 +175,10 @@ namespace Rtt
 	void SolarAppContext::Init()
 	{
 		const char* homeDir = GetHomePath();
+
 		string appDir(homeDir);
-
-		if (solarApp->IsRunningOnSimulator())
-		{
-			appDir.append("/.Solar2D/Sandbox/");
-		}
-		else
-		{
-			appDir.append("/.local/share/");
-		}
-
-		if (!IsHomeScreen(fAppName))
-		{
-			appDir.append(fAppName);
-
-			if (solarApp->IsRunningOnSimulator())
-			{
-				appDir.append("_");
-				appDir.append(CalculateMD5(fAppName));
-			}
-		}
-		else
-		{
-			if (solarApp->IsRunningOnSimulator())
-			{
-				appDir.append("Simulator");
-			}
-		}
-
+		appDir.append("/.Solar2D/Sandbox/");
+		appDir.append(IsHomeScreen(fAppName) ? "Simulator" : fAppName);
 		if (!Rtt_IsDirectory(appDir.c_str()))
 		{
 			Rtt_MakeDirectory(appDir.c_str());
@@ -406,11 +381,6 @@ namespace Rtt
 			}
 		}
 
-		if (solarApp->IsRunningOnSimulator())
-		{
-			fPlatform->fShowRuntimeErrors = true; // LinuxSimulatorView::Config::showRuntimeErrors;
-		}
-
 		fPlatform->setWindow(this);
 		fMouseListener = new LinuxMouseListener(*fRuntime);
 		fKeyListener = new LinuxKeyListener(*fRuntime);
@@ -477,9 +447,9 @@ namespace Rtt
 
 		if (solarApp->IsRunningOnSimulator())
 		{
-			fSimulator = new LinuxSimulatorServices();
+			fLinuxSimulatorServices = new LinuxSimulatorServices();
 			lua_State* luaStatePointer = fRuntime->VMContext().L();
-			lua_pushlightuserdata(luaStatePointer, fSimulator);
+			lua_pushlightuserdata(luaStatePointer, fLinuxSimulatorServices);
 			Rtt::LuaContext::RegisterModuleLoader(luaStatePointer, Rtt::LuaLibSimulator::kName, Rtt::LuaLibSimulator::Open, 1);
 		}
 

@@ -12,8 +12,22 @@
 #include <fstream>
 #include <algorithm>
 #include <iterator>
+#include <sys/time.h>
+#include <sys/timeb.h>
 
 using namespace std;
+
+uint32_t GetTicks()
+{
+	static timeb s_start_time;
+	if (s_start_time.time == 0)
+	{
+		ftime(&s_start_time);
+	}
+	struct timeb tv;
+	ftime(&tv);
+	return  (uint32_t)(tv.time - s_start_time.time) * 1000 + (tv.millitm - s_start_time.millitm);
+}
 
 int SortVectorByName(string a, string b)
 {

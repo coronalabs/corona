@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+uint32_t GetTicks();
 int SortVectorByName(std::string a, std::string b);
 
 const char* GetStartupPath(std::string* exeFileName);

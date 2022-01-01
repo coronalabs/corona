@@ -50,6 +50,7 @@ namespace Rtt
 		: fWatcher(NULL)
 		, suspendedPanel(NULL)
 		, fRelaunchedViaFileEvent(false)
+		, fRelaunchProjectDialog(NULL)
 		, fMenuMain(NULL)
 		, fViewMenu(NULL)
 		, fViewAsAndroidMenu(NULL)
@@ -61,6 +62,8 @@ namespace Rtt
 		, fZoomOut(NULL)
 		, fMenuProject(NULL)
 		, fFileSystemEventTimestamp(0)
+		, currentSkinWidth(0)
+		, currentSkinHeight(0)
 	{
 		solarSimulator = this;		// save
 
@@ -117,6 +120,8 @@ namespace Rtt
 
 		fContext = new SolarAppContext(resourcesDir.c_str());
 		fContext->LoadApp(fSolarGLCanvas);
+		GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
+
 		ResetWindowSize();
 
 		CreateMenus();
@@ -389,6 +394,18 @@ namespace Rtt
 			//			helpMenu->Append(ID_MENU_HELP_BUILD_ANDROID, _T("&Building For Android"));
 			helpMenu->Append(wxID_ABOUT, _T("&About Simulator..."));
 			fMenuProject->Append(helpMenu, _T("&Help"));
+		}
+	}
+
+	void SolarSimulator::ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle)
+	{
+		for (int i = 0; i < menu->GetMenuItemCount(); i++)
+		{
+			wxMenuItem* currentItem = menu->FindItemByPosition(i);
+			if (!currentItem->GetItemLabel().IsSameAs(currentSkinTitle))
+			{
+				currentItem->Check(false);
+			}
 		}
 	}
 

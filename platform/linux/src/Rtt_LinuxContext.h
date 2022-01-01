@@ -85,7 +85,7 @@ namespace Rtt
 		const char *fMode;
 		SolarGLCanvas *fCanvas;
 		bool fIsDebApp;
-		LinuxSimulatorServices *fSimulator;
+		LinuxSimulatorServices* fLinuxSimulatorServices;
 		std::string fSaveFolder;
 		ProjectSettings* fProjectSettings;
 	};
