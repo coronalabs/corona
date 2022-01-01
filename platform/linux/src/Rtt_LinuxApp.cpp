@@ -191,6 +191,8 @@ namespace Rtt
 		Create(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, height), windowStyle);
 
 		int vAttrs[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
+
+		Rtt_ASSERT(fSolarGLCanvas == NULL);
 		fSolarGLCanvas = new SolarGLCanvas(this, vAttrs);
 
 		if (fullScreen)

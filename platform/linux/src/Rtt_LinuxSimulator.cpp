@@ -770,7 +770,7 @@ namespace Rtt
 			string sandboxPath("~/.Solar2D/Sandbox/");
 			sandboxPath.append(fContext->GetTitle());
 			sandboxPath.append("_");
-			sandboxPath.append(CalculateMD5(fContext->GetTitle().c_str()));
+			sandboxPath.append(CalculateMD5(fContext->GetTitle()));
 
 			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
 			Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());

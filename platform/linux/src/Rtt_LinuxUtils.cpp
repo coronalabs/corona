@@ -84,7 +84,7 @@ const char* GetHomePath()
 	return homeDir;
 }
 
-char* CalculateMD5(string filename)
+string CalculateMD5(const string& filename)
 {
 	Rtt::LinuxCrypto crypto;
 	U8 digest[Rtt::MCrypto::kMaxDigestSize];
@@ -92,14 +92,13 @@ char* CalculateMD5(string filename)
 	Rtt::Data<const char> data(filename.c_str(), (int)filename.length());
 	crypto.CalculateDigest(Rtt::MCrypto::kMD5Algorithm, data, digest);
 
-	char* hex = (char*)calloc(sizeof(char), digestLen * 2 + 1);
-
+	string hex;
 	for (unsigned int i = 0; i < digestLen; i++)
 	{
-		char* p = hex;
-		p += sprintf(hex + 2 * i, "%02x", digest[i]);
+		char s[3];
+		snprintf(s, sizeof(s), "%02X", digest[i]);
+		hex += s;
 	}
-
 	return hex;
 }
 

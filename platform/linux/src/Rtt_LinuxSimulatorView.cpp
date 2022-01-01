@@ -203,8 +203,8 @@ namespace Rtt
 		const char* identity = "no-identity";
 
 		// Create the app packager.
-		MPlatformServices* service = new LinuxPlatformServices(platform);
-		LinuxAppPackager packager(*service);
+		LinuxPlatformServices service(platform);
+		LinuxAppPackager packager(service);
 
 		// Read the application's "build.settings" file.
 		bool wasSuccessful = packager.ReadBuildSettings(appPath);

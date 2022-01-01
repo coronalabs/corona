@@ -119,13 +119,13 @@ namespace Rtt
 	void LinuxMenuEvents::OnShowProjectSandbox(wxCommandEvent& event)
 	{
 		const char* homeDir = GetHomePath();
-		string appName = solarApp->GetContext()->GetAppName();
+		const string& appName = solarApp->GetContext()->GetAppName();
 		string command("xdg-open ");
 		command.append(homeDir);
 		command.append("/.Solar2D/Sandbox/");
-		command.append(appName.c_str());
+		command.append(appName);
 		command.append("_");
-		command.append(CalculateMD5(appName.c_str()));
+		command.append(CalculateMD5(appName));
 
 		wxExecute(command.c_str());
 	}
