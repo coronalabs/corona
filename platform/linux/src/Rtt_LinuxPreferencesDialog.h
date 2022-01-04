@@ -20,7 +20,7 @@ namespace Rtt
 		};
 
 	public:
-		void SetProperties(bool shouldShowRuntimeErrors, bool shouldOpenLastProject, RelaunchType relaunchType);
+		void SetProperties(bool shouldShowRuntimeErrors, bool shouldOpenLastProject, const std::string& relaunchType);
 		bool ShouldShowRuntimeErrors();
 		bool ShouldOpenLastProject();
 		RelaunchType ShouldRelaunchOnFileChange();

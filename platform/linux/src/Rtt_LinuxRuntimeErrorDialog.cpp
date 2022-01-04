@@ -1,5 +1,5 @@
 #include "Rtt_LinuxRuntimeErrorDialog.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 #include <string.h>
 
 using namespace std;
@@ -33,7 +33,6 @@ namespace Rtt
 	{
 		wxBoxSizer *dialogLayout = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *dialogTop = new wxBoxSizer(wxHORIZONTAL);
-		wxBoxSizer *dialogMiddle = new wxBoxSizer(wxHORIZONTAL);
 		wxBoxSizer *dialogBottom = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *dialogButtons = new wxBoxSizer(wxHORIZONTAL);
 		wxBoxSizer *boxSizerTopColumn = new wxBoxSizer(wxVERTICAL);
@@ -73,7 +72,7 @@ namespace Rtt
 		EndModal(wxID_OK);
 		wxYield();
 		wxCommandEvent ev(eventRelaunchProject);
-		wxPostEvent(wxGetApp().GetFrame(), ev);
+		wxPostEvent(solarApp, ev);
 	}
 
 	void LinuxRuntimeErrorDialog::OnCancelClicked(wxCommandEvent &event)

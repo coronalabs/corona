@@ -565,7 +565,10 @@ end
 function linuxPackageApp(args)
 	debugBuildProcess = tonumber(args.debugBuildProcess) or 0
 
-	log('Linux builder started')
+	if not args.onlyGetPlugins then
+		log('Linux app builder started')
+	end
+
 	log3(json.prettify(args))
 
 	local template = args.templateLocation

@@ -5,11 +5,12 @@
 #include <string>
 #include <vector>
 
+uint32_t GetTicks();
 int SortVectorByName(std::string a, std::string b);
 
 const char* GetStartupPath(std::string* exeFileName);
 const char* GetHomePath();
-char* CalculateMD5(std::string filename);
+std::string CalculateMD5(const std::string& filename);
 std::string GetRecentDocsPath();
 bool ReadRecentDocs(std::vector<std::pair<std::string, std::string>>& recentDocs);
 void UpdateRecentDocs(const std::string& appName, const std::string& path);

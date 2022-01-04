@@ -14,7 +14,7 @@
 #include "Rtt_LuaContext.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_LinuxPlatform.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 
 namespace Rtt
 {
@@ -62,7 +62,7 @@ namespace Rtt
 			// attach to onEnterFrame
 			Rtt_ASSERT(fAudioTask == NULL);
 			fAudioTask = Rtt_NEW(Allocator(), AudioTask(this));
-			Runtime* runtime = wxGetApp().GetRuntime();
+			Runtime* runtime = solarApp->GetRuntime();
 			Scheduler& scheduler = runtime->GetScheduler();
 			scheduler.Append(fAudioTask);
 

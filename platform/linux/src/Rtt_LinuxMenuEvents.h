@@ -25,26 +25,4 @@
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 170
 #define ID_MENU_VIEW_AS wxID_HIGHEST + 180
 
-class LinuxMenuEvents
-{
-public:
-	static void OnCloneProject(wxCommandEvent &event);
-	static void OnNewProject(wxCommandEvent &event);
-	static void OnOpenFileDialog(wxCommandEvent &event);
-	static void OnRelaunchLastProject(wxCommandEvent &event);
-	static void OnOpenInEditor(wxCommandEvent &event);
-	static void OnShowProjectFiles(wxCommandEvent &event);
-	static void OnShowProjectSandbox(wxCommandEvent &event);
-	static void OnClearProjectSandbox(wxCommandEvent &event);
-	static void OnAndroidBackButton(wxCommandEvent &event);
-	static void OnOpenPreferences(wxCommandEvent &event);
-	static void OnQuit(wxCommandEvent &WXUNUSED(event));
-	static void OnBuildForAndroid(wxCommandEvent &event);
-	static void OnBuildForWeb(wxCommandEvent &event);
-	static void OnBuildForLinux(wxCommandEvent &event);
-	static void OnOpenDocumentation(wxCommandEvent &event);
-	static void OnOpenSampleProjects(wxCommandEvent &event);
-	static void OnAbout(wxCommandEvent &WXUNUSED(event));
-};
-
 #endif // Rtt_Linux_Menu_Events

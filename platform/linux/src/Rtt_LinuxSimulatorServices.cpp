@@ -12,7 +12,7 @@
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_TargetDevice.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxUtils.h"
@@ -35,14 +35,14 @@ namespace Rtt
 	bool LinuxSimulatorServices::CloneProject() const
 	{
 		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
-		LinuxMenuEvents::OnCloneProject(cloneProjectEvent);
+		solarSimulator->OnCloneProject(cloneProjectEvent);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::NewProject() const
 	{
 		wxCommandEvent newProjectEvent(wxEVT_NULL);
-		LinuxMenuEvents::OnNewProject(newProjectEvent);
+		solarSimulator->OnNewProject(newProjectEvent);
 		return true;
 	}
 
@@ -56,8 +56,8 @@ namespace Rtt
 		}
 		else
 		{
-			wxString startPath(Rtt::LinuxSimulatorView::Config::lastProjectDirectory);
-			wxFileDialog openFileDialog(wxGetApp().GetParent(), _("Open"), startPath, "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+			wxString startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
+			wxFileDialog openFileDialog(solarApp, _("Open"), startPath, "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 			if (openFileDialog.ShowModal() == wxID_CANCEL)
 			{
@@ -78,7 +78,7 @@ namespace Rtt
 		// send open file dialog event
 		wxCommandEvent openEvent(eventOpenProject);
 		openEvent.SetString(path);
-		wxPostEvent(wxGetApp().GetFrame(), openEvent);
+		wxPostEvent(solarApp, openEvent);
 
 		return true;
 	}
@@ -127,7 +127,7 @@ namespace Rtt
 	// Set the current project resource path
 	void LinuxSimulatorServices::SetProjectResourceDirectory(const char *projectResourceDirectory)
 	{
-		LinuxPlatform *platform = wxGetApp().GetPlatform();
+		LinuxPlatform *platform = solarApp->GetPlatform();
 		platform->SetProjectResourceDirectory(projectResourceDirectory);
 	}
 
@@ -225,7 +225,7 @@ namespace Rtt
 	bool LinuxSimulatorServices::RelaunchProject() const
 	{
 		wxCommandEvent e(eventRelaunchProject);
-		wxPostEvent(wxGetApp().GetFrame(), e);
+		wxPostEvent(solarApp, e);
 		return true;
 	}
 
@@ -252,7 +252,7 @@ namespace Rtt
 	bool LinuxSimulatorServices::ShowProjectSandbox(const char *name) const
 	{
 		const char *homeDir = GetHomePath();
-		string appName = wxGetApp().GetFrame()->GetContext()->GetAppName();
+		string appName = solarApp->GetContext()->GetAppName();
 		string command("xdg-open ");
 		command.append(homeDir);
 		command.append("/.Solar2D/Sandbox/");

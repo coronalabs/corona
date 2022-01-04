@@ -15,7 +15,7 @@
 #include "Rtt_LuaProxy.h"
 #include "Rtt_LuaProxyVTable.h"
 #include "Rtt_Runtime.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 #include "Rtt_LinuxPlatform.h"
 #include "CoronaLua.h"
 #include "Rtt_LuaResource.h"
@@ -182,7 +182,7 @@ namespace Rtt
 
 			if (baseDirectory != MPlatform::kUnknownDir)
 			{
-				LinuxPlatform *platform = wxGetApp().GetPlatform();
+				LinuxPlatform *platform = solarApp->GetPlatform();
 				String result;
 				platform->PathForFile(url, baseDirectory, 0, result);
 
@@ -200,9 +200,7 @@ namespace Rtt
 	bool LinuxWebView::Close()
 	{
 		// Do not continue if there is no web browser to close.
-		wxApp *app = &wxGetApp();
-
-		if (fWindow && app != NULL)
+		if (fWindow && solarApp != NULL)
 		{
 			// Remove event handlers.
 			wxWebView *www = (wxWebView*) fWindow;
@@ -255,7 +253,7 @@ namespace Rtt
 #if ( wxUSE_WEBVIEW == 1)
 		Rect outBounds;
 		GetScreenBounds(outBounds);
-		wxWebView* www = wxWebView::New(wxGetApp().GetParent(), wxID_ANY, url, wxPoint(outBounds.xMin, outBounds.yMin), wxSize(outBounds.Width(), outBounds.Height()));
+		wxWebView* www = wxWebView::New(solarApp, wxID_ANY, url, wxPoint(outBounds.xMin, outBounds.yMin), wxSize(outBounds.Width(), outBounds.Height()));
 		www->Bind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent, wxID_ANY, wxID_ANY, new eventArg(this, url));
 		www->Bind(wxEVT_WEBVIEW_NAVIGATED, onWebPopupNavigatedEvent, wxID_ANY, wxID_ANY, new eventArg(this, url));
 		www->Bind(wxEVT_WEBVIEW_LOADED, onWebPopupLoadedEvent, wxID_ANY, wxID_ANY, new eventArg(this, url));

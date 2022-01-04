@@ -43,16 +43,16 @@ extern "C" {
 
 namespace Rtt
 {
-	 int luaload_luasocket_ftp(lua_State* L);
-	 int luaload_luasocket_headers(lua_State* L);
-	 int luaload_luasocket_http(lua_State* L);
-	 int luaload_luasocket_ltn12(lua_State* L);
-	 int luaload_luasocket_mbox(lua_State* L);
-	 int luaload_luasocket_mime(lua_State* L);
-	 int luaload_luasocket_smtp(lua_State* L);
-	 int luaload_luasocket_socket(lua_State* L);
-	 int luaload_luasocket_tp(lua_State* L);
-	 int luaload_luasocket_url(lua_State* L);
+	int luaload_luasocket_ftp(lua_State* L);
+	int luaload_luasocket_headers(lua_State* L);
+	int luaload_luasocket_http(lua_State* L);
+	int luaload_luasocket_ltn12(lua_State* L);
+	int luaload_luasocket_mbox(lua_State* L);
+	int luaload_luasocket_mime(lua_State* L);
+	int luaload_luasocket_smtp(lua_State* L);
+	int luaload_luasocket_socket(lua_State* L);
+	int luaload_luasocket_tp(lua_State* L);
+	int luaload_luasocket_url(lua_State* L);
 
 	bool CompileScriptsInDirectory(lua_State* L, AppPackagerParams& params, const char* dstDir, const char* srcDir);
 	bool FetchDirectoryTreeFilePaths(const char* directoryPath, std::vector<std::string>& filePathCollection);
@@ -188,7 +188,7 @@ namespace Rtt
 		const char tmpTemplate[] = "CLtmpXXXXXX";
 		char tmpDir[1024];
 		snprintf(tmpDir, sizeof(tmpDir), "%s/%s", tmpDirBase, tmpTemplate);
-		
+
 		if (mkdir(mktemp(tmpDir)) == false)
 		{
 			Rtt_LogException("%s\n", strerror(errno));
@@ -271,7 +271,7 @@ namespace Rtt
 			}
 			else
 			{
-//				Rtt_LogException("%s not found\n", TEMPLATE_FILENAME);
+				//				Rtt_LogException("%s not found\n", TEMPLATE_FILENAME);
 			}
 		}
 
@@ -307,7 +307,10 @@ namespace Rtt
 			lua_pop(L, 1);
 		}
 
-		Rtt_DeleteDirectory(tmpDir);
+		if (Rtt_IsDirectory(tmpDir))
+		{
+			Rtt_DeleteDirectory(tmpDir);
+		}
 		return result;
-}
+	}
 } // namespace Rtt

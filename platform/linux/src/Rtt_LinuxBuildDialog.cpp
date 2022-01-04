@@ -12,6 +12,7 @@
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxBuildDialog.h"
+#include "Rtt_LinuxSimulator.h"
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_WebAppPackager.h"
 #include "Rtt_LinuxAppPackager.h"
@@ -121,7 +122,7 @@ namespace Rtt
 
 	void LinuxBuildDialog::OnBuildClicked(wxCommandEvent &event)
 	{
-		LinuxPlatform *platform = wxGetApp().GetPlatform();
+		LinuxPlatform *platform = solarApp->GetPlatform();
 		MPlatformServices *service = new LinuxPlatformServices(platform);
 		LinuxAppPackager packager(*service);
 		Rtt::Runtime *runtimePointer = fAppContext->GetRuntime();
@@ -143,7 +144,7 @@ namespace Rtt
 		Rtt::String buildSettingsPath;
 		bool foundBuildSettings = packager.ReadBuildSettings(sourceDir.c_str());
 		bool checksPassed = foundBuildSettings && !appVersion.IsEmpty() && !appName.IsEmpty();
-		wxMessageDialog *resultDialog = new wxMessageDialog(wxGetApp().GetFrame(), wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
+		wxMessageDialog *resultDialog = new wxMessageDialog(solarApp, wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
 
 		// setup paths
 		const char* TEMPLATE_FILENAME = "linuxtemplate_x64.tgz";
@@ -215,7 +216,7 @@ namespace Rtt
 		int buildResult = packager.Build(&linuxBuilderParams, "/tmp/Solar2D");
 		platform->SetActivityIndicator(false);
 		EndModal(wxID_OK);
-		wxGetApp().GetFrame()->RemoveSuspendedPanel();
+		solarSimulator->RemoveSuspendedPanel();
 
 		int dialogResultFlags = buildResult == 0 ? wxOK | wxICON_INFORMATION : wxOK | wxICON_ERROR;
 		resultDialog->SetTitle("Build Result");
@@ -240,7 +241,7 @@ namespace Rtt
 
 	void LinuxBuildDialog::OnCancelClicked(wxCommandEvent &event)
 	{
-		wxGetApp().GetFrame()->RemoveSuspendedPanel();
+		solarSimulator->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);
 	}
 };

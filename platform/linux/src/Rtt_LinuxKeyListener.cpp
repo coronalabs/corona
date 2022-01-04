@@ -1,6 +1,6 @@
 #include "Rtt_LinuxKeyListener.h"
 #include "Rtt_KeyName.h"
-#include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxApp.h"
 
 namespace Rtt
 {
@@ -163,18 +163,18 @@ namespace Rtt
 	void LinuxKeyListener::OnChar(wxKeyEvent &event)
 	{
 		event.Skip();
-		SolarAppContext *context = wxGetApp().GetFrame()->fContext;
+		SolarAppContext *context = solarApp->fContext;
 		context->GetKeyListener()->notifyCharEvent(event);
 	}
 
 	void LinuxKeyListener::OnKeyDown(wxKeyEvent &event)
 	{
 		event.Skip();
-		SolarAppContext *context = wxGetApp().GetFrame()->fContext;
+		SolarAppContext *context = solarApp->fContext;
 
 		if (event.GetKeyCode() == WXK_ESCAPE)
 		{
-			wxGetApp().GetFrame()->Close(); // close main window
+			solarApp->Close(); // close main window
 		}
 		else
 		{
@@ -185,7 +185,7 @@ namespace Rtt
 	void LinuxKeyListener::OnKeyUp(wxKeyEvent &event)
 	{
 		event.Skip();
-		SolarAppContext *context = wxGetApp().GetFrame()->fContext;
+		SolarAppContext *context = solarApp->fContext;
 
 		if (context && event.GetKeyCode() != WXK_ESCAPE)
 		{

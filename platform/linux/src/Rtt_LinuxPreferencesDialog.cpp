@@ -10,7 +10,7 @@ using namespace std;
 
 namespace Rtt
 {
-	LinuxPreferencesDialog::LinuxPreferencesDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+	LinuxPreferencesDialog::LinuxPreferencesDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 	{
 		SetSize(wxSize(520, 320));
 		showRuntimeErrors = new wxCheckBox(this, -1, "Show Runtime Errors", wxPoint(0, 0));
@@ -25,11 +25,11 @@ namespace Rtt
 		SetTitle(wxT("Preferences"));
 		SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
 		btnOK->SetDefault();
-		SetProperties(true, false, RelaunchType::Always);
+		SetProperties(true, false, "Always");
 		SetLayout();
 	}
 
-	void LinuxPreferencesDialog::SetProperties(bool shouldShowRuntimeErrors, bool shouldOpenLastProject, RelaunchType relaunchType)
+	void LinuxPreferencesDialog::SetProperties(bool shouldShowRuntimeErrors, bool shouldOpenLastProject, const std::string& relaunchType)
 	{
 		showRuntimeErrors->SetValue(shouldShowRuntimeErrors);
 		automaticallyLaunchLastProject->SetValue(shouldOpenLastProject);
@@ -37,33 +37,25 @@ namespace Rtt
 		relaunchOnModifyNever->SetValue(false);
 		relaunchOnModifyAskEveryTime->SetValue(false);
 
-		switch (relaunchType)
-		{
-			case RelaunchType::Always:
-				relaunchOnModifyAlways->SetValue(true);
-				break;
-
-			case RelaunchType::Never:
-				relaunchOnModifyNever->SetValue(true);
-				break;
-
-			case RelaunchType::Ask:
-				relaunchOnModifyAskEveryTime->SetValue(true);
-				break;
-		}
+		if (relaunchType == "Always")
+			relaunchOnModifyAlways->SetValue(true);
+		else if (relaunchType == "Never")
+			relaunchOnModifyNever->SetValue(true);
+		else if (relaunchType == "Ask")
+			relaunchOnModifyAskEveryTime->SetValue(true);
 	}
 
 	void LinuxPreferencesDialog::SetLayout()
 	{
-		wxBoxSizer *dialogLayout = new wxBoxSizer(wxVERTICAL);
-		wxBoxSizer *dialogTop = new wxBoxSizer(wxHORIZONTAL);
-		wxBoxSizer *dialogMiddle = new wxBoxSizer(wxHORIZONTAL);
-		wxBoxSizer *dialogBottom = new wxBoxSizer(wxVERTICAL);
-		wxBoxSizer *dialogButtons = new wxBoxSizer(wxHORIZONTAL);
-		wxBoxSizer *boxSizerTopColumn1 = new wxBoxSizer(wxVERTICAL);
-		wxBoxSizer *boxSizerTopColumn2 = new wxBoxSizer(wxVERTICAL);
-		wxBoxSizer *boxSizerTopColumn3 = new wxBoxSizer(wxVERTICAL);
-		wxStaticLine *staticLineSeparator = new wxStaticLine(this, wxID_ANY);
+		wxBoxSizer* dialogLayout = new wxBoxSizer(wxVERTICAL);
+		wxBoxSizer* dialogTop = new wxBoxSizer(wxHORIZONTAL);
+		wxBoxSizer* dialogMiddle = new wxBoxSizer(wxHORIZONTAL);
+		wxBoxSizer* dialogBottom = new wxBoxSizer(wxVERTICAL);
+		wxBoxSizer* dialogButtons = new wxBoxSizer(wxHORIZONTAL);
+		wxBoxSizer* boxSizerTopColumn1 = new wxBoxSizer(wxVERTICAL);
+		wxBoxSizer* boxSizerTopColumn2 = new wxBoxSizer(wxVERTICAL);
+		wxBoxSizer* boxSizerTopColumn3 = new wxBoxSizer(wxVERTICAL);
+		wxStaticLine* staticLineSeparator = new wxStaticLine(this, wxID_ANY);
 
 		// add to box sizers
 		boxSizerTopColumn1->Add(showRuntimeErrors, 0, wxALIGN_LEFT | wxBOTTOM | wxTOP, 6);
@@ -111,29 +103,29 @@ namespace Rtt
 		EVT_RADIOBUTTON(ID_RADIO_BUTTON_RELAUNCH_ALWAYS, LinuxPreferencesDialog::OnRelaunchAlwaysClicked)
 		EVT_RADIOBUTTON(ID_RADIO_BUTTON_RELAUNCH_NEVER, LinuxPreferencesDialog::OnRelaunchNeverClicked)
 		EVT_RADIOBUTTON(ID_RADIO_BUTTON_RELAUNCH_ASK, LinuxPreferencesDialog::OnRelaunchAskClicked)
-	END_EVENT_TABLE();
+		END_EVENT_TABLE();
 
-	void LinuxPreferencesDialog::OnOKClicked(wxCommandEvent &event)
+	void LinuxPreferencesDialog::OnOKClicked(wxCommandEvent& event)
 	{
 		EndModal(wxID_OK);
 	}
 
-	void LinuxPreferencesDialog::OnCancelClicked(wxCommandEvent &event)
+	void LinuxPreferencesDialog::OnCancelClicked(wxCommandEvent& event)
 	{
 		EndModal(wxID_CLOSE);
 	}
 
-	void LinuxPreferencesDialog::OnRelaunchAlwaysClicked(wxCommandEvent &event)
+	void LinuxPreferencesDialog::OnRelaunchAlwaysClicked(wxCommandEvent& event)
 	{
 		fRelaunchType = RelaunchType::Always;
 	}
 
-	void LinuxPreferencesDialog::OnRelaunchNeverClicked(wxCommandEvent &event)
+	void LinuxPreferencesDialog::OnRelaunchNeverClicked(wxCommandEvent& event)
 	{
 		fRelaunchType = RelaunchType::Never;
 	}
 
-	void LinuxPreferencesDialog::OnRelaunchAskClicked(wxCommandEvent &event)
+	void LinuxPreferencesDialog::OnRelaunchAskClicked(wxCommandEvent& event)
 	{
 		fRelaunchType = RelaunchType::Ask;
 	}

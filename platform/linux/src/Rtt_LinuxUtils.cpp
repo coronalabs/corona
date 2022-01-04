@@ -12,8 +12,22 @@
 #include <fstream>
 #include <algorithm>
 #include <iterator>
+#include <sys/time.h>
+#include <sys/timeb.h>
 
 using namespace std;
+
+uint32_t GetTicks()
+{
+	static timeb s_start_time;
+	if (s_start_time.time == 0)
+	{
+		ftime(&s_start_time);
+	}
+	struct timeb tv;
+	ftime(&tv);
+	return  (uint32_t)(tv.time - s_start_time.time) * 1000 + (tv.millitm - s_start_time.millitm);
+}
 
 int SortVectorByName(string a, string b)
 {
@@ -84,7 +98,7 @@ const char* GetHomePath()
 	return homeDir;
 }
 
-char* CalculateMD5(string filename)
+string CalculateMD5(const string& filename)
 {
 	Rtt::LinuxCrypto crypto;
 	U8 digest[Rtt::MCrypto::kMaxDigestSize];
@@ -92,14 +106,13 @@ char* CalculateMD5(string filename)
 	Rtt::Data<const char> data(filename.c_str(), (int)filename.length());
 	crypto.CalculateDigest(Rtt::MCrypto::kMD5Algorithm, data, digest);
 
-	char* hex = (char*)calloc(sizeof(char), digestLen * 2 + 1);
-
+	string hex;
 	for (unsigned int i = 0; i < digestLen; i++)
 	{
-		char* p = hex;
-		p += sprintf(hex + 2 * i, "%02x", digest[i]);
+		char s[3];
+		snprintf(s, sizeof(s), "%02X", digest[i]);
+		hex += s;
 	}
-
 	return hex;
 }
 
