@@ -94,7 +94,6 @@ extern "C" {
 
 #ifdef Rtt_NXS_ENV
 	int luaopen_network(lua_State* L);
-	int luaopen_websocket(lua_State* L);
 	extern "C" {
 		int luaopen_lfs(lua_State* L);
 	}
@@ -834,7 +833,6 @@ LuaContext::InitializeLuaCore( lua_State* L )
 #if defined(Rtt_NXS_ENV)
 		{ "network", luaopen_network },
 		{ "lfs", luaopen_lfs },
-		{ "websockets", luaopen_websocket },
 		{ "nnTextField", Lua::Open< luaload_nnTextField > },
 		{ "nnTextBox", Lua::Open< luaload_nnTextBox > },
 		{ "nnNativeAlert", Lua::Open< luaload_nnNativeAlert > },
