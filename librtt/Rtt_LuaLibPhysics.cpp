@@ -1212,6 +1212,11 @@ newJoint( lua_State *L )
 			b2Vec2 point2( qx, qy );
 
 			jointDef.Initialize( body1, body2, point1, point2 );
+			if ( lua_isboolean( L, 8 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 8 );
+			}
+			CoronaLuaLog(L, "WARNING: distance joint collideConnected = %d!", lua_gettop(L));
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1229,6 +1234,10 @@ newJoint( lua_State *L )
 			b2Vec2 point1( px, py );
 
 			jointDef.Initialize( body1, body2, point1 );
+			if ( lua_isboolean( L, 6 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 6 );
+			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1252,6 +1261,10 @@ newJoint( lua_State *L )
 			axis.Normalize();
 
 			jointDef.Initialize( body1, body2, anchor, axis );
+			if ( lua_isboolean( L, 8 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 8 );
+			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1269,6 +1282,10 @@ newJoint( lua_State *L )
 			b2Vec2 point1( px, py );
 
 			jointDef.Initialize( body1, body2, point1 );
+			if ( lua_isboolean( L, 6 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 6 );
+			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1286,6 +1303,10 @@ newJoint( lua_State *L )
 			b2Vec2 point1( px, py );
 
 			jointDef.Initialize( body1, body2, point1 );
+			if ( lua_isboolean( L, 6 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 6 );
+			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1308,6 +1329,10 @@ newJoint( lua_State *L )
 			b2Vec2 axis( qx, qy );
 
 			jointDef.Initialize( body1, body2, point, axis );
+			if ( lua_isboolean( L, 8 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 8 );
+			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1344,6 +1369,10 @@ newJoint( lua_State *L )
 			b2Vec2 bodyAnchor2 = b2Vec2( sx, sy );
 
 			jointDef.Initialize( body1, body2, fixedAnchor1, fixedAnchor2, bodyAnchor1, bodyAnchor2, ratio );
+			if ( lua_isboolean( L, 13 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 13 );
+			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1385,6 +1414,10 @@ newJoint( lua_State *L )
 			jointDef.joint2 = PhysicsJoint::GetJoint( L, 5 );
 
 			jointDef.ratio = luaL_toreal( L, 6 );
+			if ( lua_isboolean( L, 7 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 7 );
+			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1409,6 +1442,10 @@ newJoint( lua_State *L )
 			jointDef.localAnchorB = b2Vec2( bx, by );
 
 			jointDef.maxLength = (body1->GetPosition() - body2->GetPosition()).Length();
+			if ( lua_isboolean( L, 8 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 8 );
+			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -2508,6 +2545,10 @@ setMKS( lua_State *L )
 		{
 			b2Settings::velocityThreshold = value;
 		}
+		else if ( Rtt_StringCompare( "linearSlop", key ) == 0 )
+		{
+			b2Settings::linearSlop = value;
+		}
 		else if ( Rtt_StringCompare( "timeToSleep", key ) == 0 )
 		{
 			b2Settings::timeToSleep = value;
@@ -2547,6 +2588,10 @@ getMKS( lua_State *L )
 	if ( Rtt_StringCompare( "velocityThreshold", key ) == 0 )
 	{
 		value = b2Settings::velocityThreshold;
+	}
+	else if ( Rtt_StringCompare( "linearSlop", key ) == 0 )
+	{
+		value = b2Settings::linearSlop;
 	}
 	else if ( Rtt_StringCompare( "timeToSleep", key ) == 0 )
 	{
