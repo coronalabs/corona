@@ -288,12 +288,12 @@ void b2GLESDebugDraw::DrawShape( b2Fixture* fixture, const b2Transform& xf, cons
 			{
 				b2Vec2 v2 = b2Mul(xf, vertices[i]);
 				DrawSegment(v1, v2, color);
-				DrawCircle(v1, 0.05f, color);
+				DrawCircle(v1, 3.0f * fMetersPerPixel, color);
 				v1 = v2;
 			}
 
 			// Draw the "end cap" circle.
-			DrawCircle(v1, 0.05f, color);
+			DrawCircle(v1, 3.0f * fMetersPerPixel, color);
 		}
 		break;
 
@@ -621,7 +621,8 @@ void b2GLESDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Co
 void b2GLESDebugDraw::DrawTransform(const b2Transform& xf)
 {
 	b2Vec2 p1 = xf.p, p2;
-	const float32 k_axisScale = 0.4f;
+	// const float32 k_axisScale = 0.4f;
+	const float32 k_axisScale = 24.0f * fMetersPerPixel;
 
 	p2 = p1 + k_axisScale * xf.q.GetXAxis();
 	DrawSegment(p1,p2,b2Color(1,0,0));
