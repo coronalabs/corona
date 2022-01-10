@@ -1,6 +1,6 @@
 [submodule "external/Box2D"]
 	path = external/Box2D
-	url = https://github.com/coronalabs/submodule-box2d.git
+	url = https://github.com/zero-meta/submodule-box2d.git
 	branch = master
 [submodule "external/CryptoPP"]
 	path = external/CryptoPP

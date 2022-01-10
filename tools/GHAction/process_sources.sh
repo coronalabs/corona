@@ -16,6 +16,8 @@ sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_MONTH[[:space:]]*[[:digit:]]*$/#
 sed -i .bak -E "s/^#define[[:space:]]*Rtt_BUILD_DAY[[:space:]]*[[:digit:]]*$/#define Rtt_BUILD_DAY $DAY/" librtt/Core/Rtt_Version.h
 rm -f librtt/Core/Rtt_Version.h.bak
 
+./replace_code_sign.sh
+
 function upgradePlist {
     plutil -replace CFBundleVersion -string "$YEAR.$BUILD_NUMBER"  "$1"
     plutil -replace CFBundleShortVersionString -string "$YEAR.$BUILD_NUMBER"  "$1"
