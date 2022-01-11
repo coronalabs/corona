@@ -433,7 +433,6 @@ jobs:
     needs:
       - Windows-Simulator
       - macOS-Simulator
-      - linux
       - CoronaCards-Android
       - CoronaCards-iOS
       - native
@@ -449,9 +448,6 @@ jobs:
           then
           GIT_LOG="Changes since previous build:
           $GIT_LOG
-          For linux it is recommended to use snap:
-
-               sudo snap install '~/Downloads/solar2d_$YEAR.$BUILD_amd64.snap' --classic --dangerous
           "
           else
           GIT_LOG='See https://github.com/coronalabs/corona for details
