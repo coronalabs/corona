@@ -45,7 +45,7 @@ The easiest and recommended way to get started with Solar2D is to download binar
 
 
 ### API documentation and guides
-Exhaustive Solar2D API documentation, as well as getting started and more advanced guides are available on [docs.coronalabs.com](http://docs.coronalabs.com).
+Exhaustive Solar2D API documentation, as well as getting started and more advanced guides are available on [docs.coronalabs.com](https://docs.coronalabs.com).
 
 ## Source Code and licensing
 Solar2D is licensed under [MIT](LICENSE) open source license.
