@@ -14,7 +14,7 @@ android {
     }
 
     sourceSets["main"].manifest.srcFile(file("AndroidManifest-New.xml"))
-    sourceSets["main"].java.srcDirs(file("src"), file("../../../external/JNLua/src/main"))
+    sourceSets["main"].java.srcDirs(file("src"), file("../../../external/JNLua/src/main"), file("../../../plugins/network/android/src"))
     sourceSets["main"].java.filter.exclude("**/script/**")
     sourceSets["main"].res.srcDirs(file("res-new"))
 
@@ -52,8 +52,4 @@ tasks.create<Copy>("updateWidgetResources") {
             builtBy(task)
         })
     }
-}
-
-dependencies {
-    api(files("../../../plugins/build-core/network/android/network.jar"))
 }
