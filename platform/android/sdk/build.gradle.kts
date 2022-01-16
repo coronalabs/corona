@@ -53,3 +53,27 @@ tasks.create<Copy>("updateWidgetResources") {
         })
     }
 }
+
+tasks.create<Copy>("generateNetworkHelper") {
+
+    from("../../../plugins/network/android/src/")
+    include("**/LuaHelper.java.template")
+    val outputDir = file("$buildDir/generated/source/networkJava")
+    into(outputDir)
+    rename { it.removeSuffix(".template") }
+
+    val networkLua = file("../../../plugins/network/shared/network.lua")
+    val luaCode = networkLua.readText()
+            .replace("lib.", "network.")
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .lines()
+            .joinToString("\\n\" +\n\"","\"", "\";")
+    this.inputs.file(networkLua)
+    expand(mutableMapOf("luaCode" to luaCode))
+
+    val task = this
+    android.libraryVariants.all {
+        registerJavaGeneratingTask(task, outputDir)
+    }
+}
