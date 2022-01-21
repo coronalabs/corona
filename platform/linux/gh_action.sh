@@ -27,7 +27,7 @@ else
     cd ~/wxWidgets-3.1.4
     mkdir buildgtk
     cd buildgtk
-    ../configure --with-gtk
+    ../configure --with-gtk --with-opengl
     make -j4
     sudo make install
 fi
