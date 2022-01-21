@@ -24,6 +24,9 @@ class app : public wxApp
 {
 	bool OnInit() wxOVERRIDE
 	{
+		if (!wxApp::OnInit())
+			return false;
+
 		string resourcesDir = GetStartupPath(NULL);
 		resourcesDir.append("/Resources");
 
