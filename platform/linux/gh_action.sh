@@ -17,17 +17,17 @@ wget -O "$TEMP_DEB" 'http://mirrors.kernel.org/ubuntu/pool/main/r/readline/libre
 sudo dpkg -i "$TEMP_DEB"
 rm -f "$TEMP_DEB"
 
-# install wxWidgets-3.1.5
+# install wxWidgets-3.1.4
 if [ -f /usr/local/include/wx-3.1/wx/wx.h ]; then
     echo "Using existing wxWidgets"
 else
     cd "$WORKSPACE"
-    wget "https://github.com/coronalabs/binary-data/releases/download/1.0/wxWidgets-3.1.5.tar.bz2" -O "wxWidgets-3.1.5.tar.bz2"
-    tar -xf "wxWidgets-3.1.5.tar.bz2" -C ~/
-    cd ~/wxWidgets-3.1.5
+    wget "https://github.com/coronalabs/binary-data/releases/download/1.0/wxWidgets-3.1.4.tar.bz2" -O "wxWidgets-3.1.4.tar.bz2"
+    tar -xf "wxWidgets-3.1.4.tar.bz2" -C ~/
+    cd ~/wxWidgets-3.1.4
     mkdir buildgtk
     cd buildgtk
-    ../configure --with-gtk
+    ../configure --with-gtk --with-opengl
     make -j4
     sudo make install
 fi
