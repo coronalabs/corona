@@ -112,7 +112,7 @@ namespace Rtt
 
 	bool SolarSimulator::Start(const std::string& resourcesDir)
 	{
-		CreateWindow(resourcesDir);
+		bool fullScreen = CreateWindow(resourcesDir);
 
 #ifdef Rtt_SIMULATOR
 		SetIcon(simulator_xpm);
@@ -160,6 +160,14 @@ namespace Rtt
 		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenSampleProjects(e); }, ID_MENU_OPEN_SAMPLE_CODE);
 		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAbout(e); }, wxID_ABOUT);
 
+		if (fullScreen)
+		{
+			ShowFullScreen(true);
+		}
+		else
+		{
+			Show(true);
+		}
 		return true;
 	}
 
@@ -857,7 +865,7 @@ namespace Rtt
 			return;
 		}
 
-		for (const auto& it: fConfig)
+		for (const auto& it : fConfig)
 		{
 			fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
 		}

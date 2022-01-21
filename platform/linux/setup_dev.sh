@@ -18,9 +18,9 @@ elif [ -x "$(command -v apt-get)" ]; then
   sudo dpkg -i "$TEMP_DEB"
   rm -f "$TEMP_DEB"
 
-  # install wxWidgets-3.1.4
-  wxurl=https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/wxWidgets-3.1.4.tar.bz2
-  wxtar=~/Downloads/wxWidgets-3.1.4.tar.bz2
+  # install wxWidgets-3.1.5
+  wxurl=https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.5/wxWidgets-3.1.5.tar.bz2
+  wxtar=~/Downloads/wxWidgets-3.1.5.tar.bz2
   if [ -f "$wxtar" ]; then
     echo "Using existing wxWidgets"
   else
@@ -28,10 +28,10 @@ elif [ -x "$(command -v apt-get)" ]; then
     wget "$wxurl"
     tar -xf "$wxtar" -C ~
 
-    cd ~/wxWidgets-3.1.4
+    cd ~/wxWidgets-3.1.5
     mkdir buildgtk
     cd buildgtk
-    ../configure --with-gtk
+    ../configure --with-gtk=3 --with-opengl
     make -j4
     sudo make install
   fi

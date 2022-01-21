@@ -206,16 +206,7 @@ namespace Rtt
 		SetClientSize(wxSize(width, height));
 		SetSize(wxSize(width, height));
 		SetMinClientSize(wxSize(minWidth, minHeight));
-
-		if (fullScreen)
-		{
-			ShowFullScreen(true);
-		}
-		else
-		{
-			Show(true);
-		}
-		return true;
+		return fullScreen;
 	}
 
 	bool SolarApp::Start(const string& resourcesDir)
