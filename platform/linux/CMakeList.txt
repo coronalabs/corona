@@ -52,11 +52,12 @@ else()
 	message(FATAL_ERROR "*** no libcryptoPP, use 'sudo apt install libcrypto++-dev' to install it")
 endif()
 
-find_path(wxwidget wx-3.1/wx/config.h REQUIRED)
-if (wxwidget)
-	message("wxwidget: ${wxwidget}")
+find_path(WXWIDGETS_INCLUDE wx-3.1/wx/config.h REQUIRED)
+if (WXWIDGETS_INCLUDE)
+	message("wxwidget include: ${WXWIDGETS_INCLUDE}")
+	link_directories(${SNAPCRAFT_STAGE}/usr/local/lib)
 else()
-	message(FATAL_ERROR "*** no wxWidget-3.1.4, install it from https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/wxWidgets-3.1.4.tar.bz2")
+	message(FATAL_ERROR "*** no wxWidget-3.1!")
 endif()
 
 
@@ -69,7 +70,8 @@ include_directories (
 	/usr/include/AL
 	/usr/include/freetype2
 	/usr/local/lib/wx/include/gtk3-unicode-3.1
-	/usr/local/include/wx-3.1
+	${WXWIDGETS_INCLUDE}/wx-3.1
+	${SNAPCRAFT_STAGE}/usr/local/lib/wx/include/gtk3-unicode-3.1
 	${CORONA_ROOT}
 	${CORONA_ROOT}/external/sqlite3
 	${CORONA_ROOT}/external/lua-5.1.3/src
