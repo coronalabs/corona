@@ -139,20 +139,14 @@ parts:
       - ibus-gtk3
       - libibus-1.0-5
 
-  resources:
-    plugin: dump
-    source: ./platform/linux/snapcraft
-    stage: [bin, usr]
-
   solar2d:
     plugin: cmake
-    source: ./corona
+    source: .
     cmake-parameters:
       - -DCMAKE_LIBRARY_PATH=$SNAPCRAFT_STAGE/usr/local/lib
       - -DCMAKE_INCLUDE_PATH=$SNAPCRAFT_STAGE/usr/local/include
       - -DSNAPCRAFT_STAGE=${SNAPCRAFT_STAGE}
     after:
-      - resources
       - wxwidgets
       - desktop-helper
     build-packages:
