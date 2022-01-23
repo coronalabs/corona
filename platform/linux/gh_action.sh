@@ -14,13 +14,13 @@ tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/resource/an
 
 
 SNAPDIR=platform/linux/snapcraft/snap
-sed -i "s|2100|$YEAR|" $SNAPDIR/snap/snapcraft.yaml
+sed -i "s|2100|$YEAR|" $SNAPDIR/snapcraft.yaml
 if [[ "$BUILD_NUMBER" == "9999" ]]
 then
-    sed -i "s|9999|$BUILD_NUMBER.${GITHUB_SHA::7}|" $SNAPDIR/snap/snapcraft.yaml
-    sed -i "s|stable|devel|"  $SNAPDIR/snap/snapcraft.yaml
+    sed -i "s|9999|$BUILD_NUMBER.${GITHUB_SHA::7}|" $SNAPDIR/snapcraft.yaml
+    sed -i "s|stable|devel|"  $SNAPDIR/snapcraft.yaml
 else
-    sed -i "s|9999|$BUILD_NUMBER|" $SNAPDIR/snap/snapcraft.yaml
+    sed -i "s|9999|$BUILD_NUMBER|" $SNAPDIR/snapcraft.yaml
 fi
 
 
