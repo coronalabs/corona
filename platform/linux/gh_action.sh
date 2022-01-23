@@ -4,66 +4,32 @@ set -ex
 sudo snap install snapcraft --classic
 sudo lxd init --minimal
 
-
-echo Clean-up docs
 cd "$WORKSPACE"
 rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
 
-echo Copy results to output
-mkdir -p /tmp/Solar2D/bin/Solar2D/Resources/SampleCode
-cp -Rv docs/SampleCode/* /tmp/Solar2D/bin/Solar2D/Resources/SampleCode
-mkdir -p output
-cd /tmp/Solar2D/bin
-tar -czvf "${WORKSPACE}"/output/CoronaSimulator-x86-64.tgz ./
-cd Solar2D/Resources
-cp -v /tmp/Solar2D/bin/Solar2D/Resources/linuxtemplate_x64.tgz "${WORKSPACE}"/output
+cp -v Webtemplate/webtemplate.zip platform/resources/webtemplate.zip
 
-echo Build snap
-cd "$WORKSPACE"
-mkdir -p platform/linux/snapcraft/bin
-cp -Rv /tmp/Solar2D/bin/Solar2D/* platform/linux/snapcraft/bin
-chmod -R a+r platform/linux/snapcraft/bin/Resources
+tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/resource/android-template.zip CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
 
-# Put webtemplate in snap
-cp -v Webtemplate/webtemplate.zip platform/linux/snapcraft/bin/Resources/
 
-# Put Android resources in snap
-tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/resource/android-template.zip          
-mkdir -p platform/linux/snapcraft/bin/Resources/Native/Corona/android/resource
-cp -v CoronaEnterprise/Corona/android/resource/android-template.zip platform/linux/snapcraft/bin/Resources/Native/Corona/android/resource/
-tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
-mkdir -p platform/linux/snapcraft/bin/Resources/Native/Corona/android/lib/gradle
-cp -v CoronaEnterprise/Corona/android/lib/gradle/Corona.aar platform/linux/snapcraft/bin/Resources/Native/Corona/android/lib/gradle/
 
-mkdir -p platform/linux/snapcraft/usr/local/lib
-mkdir -p platform/linux/snapcraft/usr/local/lib/wx
-cp -Rv /usr/local/lib/libwx* platform/linux/snapcraft/usr/local/lib
-cp -Rv /usr/local/lib/wx/* platform/linux/snapcraft/usr/local/lib/wx
-mkdir -p platform/linux/snapcraft/usr/local/share/aclocal
-mkdir -p platform/linux/snapcraft/usr/local/share/locale
-cp -Rv /usr/local/share/aclocal/wx* platform/linux/snapcraft/usr/local/share/aclocal
-cp --parents `find /usr/local/share/locale -name 'wx*'` platform/linux/snapcraft
-
-mkdir -p platform/linux/snapcraft/usr/local/bin
-cp -Rv /usr/local/bin/wx* platform/linux/snapcraft/usr/local/bin
-cd platform/linux/snapcraft/usr/local/bin
-ln -sf ../lib/wx/config/gtk3-unicode-3.1 wx-config
-cd ../../../
-
-# set version
-sed -i "s|2100|$YEAR|" snap/snapcraft.yaml 
+SNAPDIR=platform/linux/snapcraft/snap
+sed -i "s|2100|$YEAR|" $SNAPDIR/snap/snapcraft.yaml
 if [[ "$BUILD_NUMBER" == "9999" ]]
 then
-    sed -i "s|9999|$BUILD_NUMBER.${GITHUB_SHA::7}|" snap/snapcraft.yaml
-    sed -i "s|stable|devel|"  snap/snapcraft.yaml
+    sed -i "s|9999|$BUILD_NUMBER.${GITHUB_SHA::7}|" $SNAPDIR/snap/snapcraft.yaml
+    sed -i "s|stable|devel|"  $SNAPDIR/snap/snapcraft.yaml
 else
-    sed -i "s|9999|$BUILD_NUMBER|" snap/snapcraft.yaml
+    sed -i "s|9999|$BUILD_NUMBER|" $SNAPDIR/snap/snapcraft.yaml
 fi
 
 
-# build snap
-
-cd "$WORKSPACE"
-cp -Rv platform/linux/snapcraft/snap ./
+cp -Rv $SNAPDIR ./
 sudo snapcraft --use-lxd
 cp -v ./*.snap "${WORKSPACE}"/output
+
+FS2D="$(mktemp -d)"
+sudo mount -t squashfs -o ro ./*.snap "$FS2D"
+cp -v "$FS2D/usr/local/bin/Solar2D/Resources/linuxtemplate_x64.tgz" "${WORKSPACE}"/output
+sudo umount "$FS2D"
+
