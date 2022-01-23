@@ -150,8 +150,6 @@ jobs:
       - native
       - webtemplate
     runs-on: ubuntu-20.04
-    # container:
-    #   image: coronalabs/linux_builder_rpi
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get Webtemplate

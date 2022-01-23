@@ -25,12 +25,14 @@ else
     sed -i "s|9999|$BUILD_NUMBER|" $SNAPDIR/snapcraft.yaml
 fi
 
+mkdir -p output
 
+rm -rf ./*.snap
 cp -Rv $SNAPDIR ./
 snapcraft --use-lxd
-cp -v ./*.snap "${WORKSPACE}"/output
+cp -v ./*.snap output/
 
 FS2D="$(mktemp -d)"
 sudo mount -t squashfs -o ro ./*.snap "$FS2D"
-cp -v "$FS2D/usr/local/bin/Solar2D/Resources/linuxtemplate_x64.tgz" "${WORKSPACE}"/output
+cp -v "$FS2D/usr/local/bin/Solar2D/Resources/linuxtemplate_x64.tgz" output/
 sudo umount "$FS2D"
