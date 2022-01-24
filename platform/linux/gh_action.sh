@@ -28,7 +28,7 @@ mkdir -p output
 
 rm -rf ./*.snap
 cp -Rv $SNAPDIR ./
-snapcraft --use-lxd
+sudo snapcraft --use-lxd
 cp -v ./*.snap output/
 
 FS2D="$(mktemp -d)"
