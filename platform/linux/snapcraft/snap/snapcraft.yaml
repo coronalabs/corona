@@ -12,7 +12,7 @@ version: '2100.9999'
 summary: Solar2D Game Engine
 description: Solar2D is a Lua based game engine with focus on ease of iterations and usage
 grade: stable
-confinement: classic
+confinement: strict
 architectures:
   - amd64
 
@@ -28,6 +28,8 @@ apps:
     command: bin/desktop-launch $SNAP/usr/local/bin/Solar2D/Solar2DSimulator
     environment:
       LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64
+      PATH: $JAVA_HOME/jre/bin:$JAVA_HOME/bin:$PATH
     plugs:
       - desktop
       - opengl
@@ -175,6 +177,9 @@ parts:
       - libtiff5-dev
       - liblzma-dev
       - dos2unix
+      - ca-certificates
+      - ca-certificates-java
+      - openjdk-8-jre-headless
     stage-packages:
       - libcrypto++6
       - libcurl4
@@ -198,3 +203,5 @@ parts:
       - libtiff5
       - liblzma5
       - gsettings-desktop-schemas
+      - openjdk-8-jdk-headless
+      - openjdk-8-jre-headless
