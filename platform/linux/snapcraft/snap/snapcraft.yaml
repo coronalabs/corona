@@ -149,6 +149,9 @@ parts:
     after:
       - wxwidgets
       - desktop-helper
+    override-build: |
+      snapcraftctl build
+      chmod -c -R a+r .      
     build-packages:
       - libcrypto++-dev
       - libcurl4-openssl-dev
