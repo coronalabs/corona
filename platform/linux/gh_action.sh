@@ -2,7 +2,6 @@
 set -ex
 
 sudo snap install snapcraft --classic
-sudo lxd init --minimal
 
 rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
 
