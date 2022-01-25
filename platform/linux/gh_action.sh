@@ -1,5 +1,8 @@
 #!/bin/bash
+(
 set -ex
+
+cd "$(dirname "$0")/../.."
 
 sudo snap install snapcraft --classic
 sudo lxd init --minimal
@@ -43,3 +46,4 @@ FS2D="$(mktemp -d)"
 sudo mount -t squashfs -o ro ./*.snap "$FS2D"
 cp -v "$FS2D/usr/local/bin/Solar2D/Resources/linuxtemplate_x64.tgz" output/
 sudo umount "$FS2D"
+)
