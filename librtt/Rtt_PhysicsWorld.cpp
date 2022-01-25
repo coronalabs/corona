@@ -78,7 +78,8 @@ PhysicsWorld::PhysicsWorld( Rtt_Allocator& allocator )
 	fTimeStep( -1.0f ), // Set time step equal to frame interval
 	fTimeScale( 1.0f ),
 	fTimePrevious( -1.f ),
-	fTimeRemainder( 0.0f )
+	fTimeRemainder( 0.0f ),
+	fNumSteps(1)
 {
 }
 
@@ -312,8 +313,11 @@ PhysicsWorld::StepWorld( double elapsedMS )
 		float dt = GetTimeStep();
 		if ( dt > Rtt_REAL_0 )
 		{
-			// Simulation timesteps are driven by the render frame rate
-			world.Step( dt * fTimeScale, velocityIterations, positionIterations );
+			for (S32 i = 0; i < fNumSteps; ++i)
+			{
+				// Simulation timesteps are driven by the render frame rate
+				world.Step( dt * fTimeScale, velocityIterations, positionIterations );
+			}
 		}
 		else
 		{
@@ -332,7 +336,10 @@ PhysicsWorld::StepWorld( double elapsedMS )
 
 			while ( tStep >= dt )
 			{
-				world.Step( dt * fTimeScale, velocityIterations, positionIterations );
+				for (S32 i = 0; i < fNumSteps; ++i)
+				{
+					world.Step( dt * fTimeScale, velocityIterations, positionIterations );
+				}
 				tStep -= dt;
 			}
 

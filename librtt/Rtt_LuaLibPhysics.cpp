@@ -2779,6 +2779,34 @@ getTimeScale( lua_State *L )
 	return 1;
 }
 
+// physics.setNumSteps( numSteps )
+// Sets numSteps of physics sumulator per time step. Default is 1
+static int
+setNumSteps( lua_State *L )
+{
+	if ( lua_isnumber( L, 1 ) )
+	{
+		PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
+		physics.SetNumSteps( (S32) lua_tointeger( L, 1 ) );
+	}
+	else
+	{
+		CoronaLuaError(L, "physics.setTimeScale() requires 1 parameter (number)");
+	}
+
+	return 0;
+}
+
+// physics.getNumSteps( )
+// Returns numSteps of physics sumulator per time step.
+static int
+getNumSteps( lua_State *L )
+{
+	PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
+	lua_pushinteger(L, physics.GetNumSteps());
+	return 1;
+}
+
 int
 LuaLibPhysics::Open( lua_State *L )
 {
@@ -2818,6 +2846,8 @@ LuaLibPhysics::Open( lua_State *L )
 		{ "setTimeStep", setTimeStep },
 		{ "setTimeScale", setTimeScale },
 		{ "getTimeScale", getTimeScale },
+		{ "setNumSteps", setNumSteps },
+		{ "getNumSteps", getNumSteps },
 
 		{ NULL, NULL }
 	};

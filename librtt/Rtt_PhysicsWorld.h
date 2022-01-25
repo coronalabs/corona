@@ -81,6 +81,8 @@ class PhysicsWorld
 		float GetTimeScale() const { return fTimeScale; }
 		void SetTimeScale( float newValue ) { fTimeScale = newValue; }
 
+		int GetNumSteps() const { return fNumSteps; }
+		void SetNumSteps( S32 newValue ) { fNumSteps = newValue; }
 
 
 	public:
@@ -116,6 +118,8 @@ class PhysicsWorld
 		float fTimeScale;
 		float fTimePrevious;
 		float fTimeRemainder;
+
+		S32 fNumSteps;
 
 		//! false: Contact points are reported in local-space.
 		//! true: Contact points are reported in content-space.
