@@ -31,16 +31,19 @@ apps:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64
       PATH: $JAVA_HOME/jre/bin:$JAVA_HOME/bin:$PATH
     plugs:
-      - desktop
-      - opengl
-      - network
-      - network-bind 
-      - camera
-      - alsa
-      - audio-playback
-      - audio-record
-      - gsettings
-      - home
+    - desktop
+    - desktop-legacy
+    - wayland
+    - unity7
+    - gsettings
+    - home
+    - network
+    - network-bind 
+    - opengl
+    - alsa
+    - audio-playback
+    - audio-record
+    - camera
     slots:
       - dbus-daemon
 
@@ -98,6 +101,7 @@ parts:
       - libgstreamer-plugins-base1.0-0
       - libgstreamer1.0-0
       - libgtk-3-0
+      - libgtk-3-common
       - libjpeg8
       - libogg0
       - libopenal1
