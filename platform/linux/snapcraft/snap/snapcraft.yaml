@@ -7,7 +7,7 @@ title: Solar2D
 #website: https://solar2d.com/
 license: MIT
 icon: snap/gui/solar2d.svg
-base: core18
+base: core20
 version: '2100.9999'
 summary: Solar2D Game Engine
 description: Solar2D is a Lua based game engine with focus on ease of iterations and usage
@@ -22,21 +22,19 @@ slots:
     bus: session
     name: com.solar2d.simulator
 
-#layout:
-#  /etc/fonts:
-#    bind: $SNAP/etc/fonts
-#  /usr/share:
-#    bind: $SNAP/usr/share
 
 apps:
   solar2d:
-    command: bin/desktop-launch $SNAP/bin/Solar2D/Solar2DSimulator
-    extensions: [gnome-3-28]
+    command: bin/desktop-launch $SNAP/usr/local/bin/Solar2D/Solar2DSimulator
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/lib
+      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
       JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64
       PATH: $JAVA_HOME/jre/bin:$JAVA_HOME/bin:$PATH
     plugs:
+    - desktop
+    - desktop-legacy
+    - wayland
+    - unity7
     - gsettings
     - home
     - network
@@ -46,16 +44,13 @@ apps:
     - audio-playback
     - audio-record
     - camera
-    - process-control
-    - mount-observe
     slots:
       - dbus-daemon
 
   builder:
-    command: bin/Solar2D/Solar2DBuilder
-    extensions: [gnome-3-28]
+    command: usr/local/bin/Solar2D/Solar2DBuilder
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/lib
+      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
     plugs:
       - network
       - network-bind 
@@ -69,7 +64,7 @@ parts:
   wxwidgets:
     plugin: autotools
     source: https://github.com/coronalabs/binary-data/releases/download/1.0/wxWidgets-3.1.4.tar.bz2
-    configflags:
+    autotools-configure-parameters:
       - --with-gtk
       - --with-opengl
     after:
@@ -123,22 +118,47 @@ parts:
       - libcanberra-gtk3-module
       - libtiff5
       - liblzma5
-      - gsettings-desktop-schemas
+
+  desktop-helper:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk3"]
+    build-packages:
+      - libgtk-3-dev
+    stage-packages:
+      - libxkbcommon0  # XKB_CONFIG_ROOT
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libgtk-3-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk-3-bin
+      - unity-gtk3-module
+      - libappindicator3-1
+      - locales-all
+      - xdg-user-dirs
+      - ibus-gtk3
+      - libibus-1.0-5
 
   solar2d:
     plugin: cmake
     source: .
-    configflags:
+    cmake-parameters:
       - -DCMAKE_LIBRARY_PATH=$SNAPCRAFT_STAGE/usr/local/lib
       - -DCMAKE_INCLUDE_PATH=$SNAPCRAFT_STAGE/usr/local/include
       - -DSNAPCRAFT_STAGE=${SNAPCRAFT_STAGE}
     after:
       - wxwidgets
+      - desktop-helper
     override-build: |
       snapcraftctl build
       chmod -c -R a+r .      
     build-packages:
-      - mc
       - libcrypto++-dev
       - libcurl4-openssl-dev
       - libfreetype6-dev
@@ -173,8 +193,6 @@ parts:
       - libgstreamer-plugins-base1.0-0
       - libgstreamer1.0-0
       - libgtk-3-0
-      - libgtk-3-bin
-      - libgtk-3-common
       - libjpeg8
       - libogg0
       - libopenal1
