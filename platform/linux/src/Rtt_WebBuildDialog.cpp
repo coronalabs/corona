@@ -120,7 +120,7 @@ namespace Rtt
 
 	void WebBuildDialog::OnBuildClicked(wxCommandEvent& event)
 	{
-		LinuxPlatform* platform = solarApp->GetPlatform();
+		LinuxPlatform* platform = 0; //vv solarApp->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
 		WebAppPackager packager(*service);
 		Rtt::Runtime* runtimePointer = fAppContext->GetRuntime();

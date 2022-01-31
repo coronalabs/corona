@@ -246,7 +246,7 @@ Rtt_VLogException(const char *format, va_list ap)
 	va_copy(apCopy, ap);
 
 	int n = vsnprintf(buffer, 4096, format, apCopy);
-	ConsoleApp::Log((n > 0) ? buffer : format, linuxIsErrorMsg);
+	//vv ConsoleApp::Log((n > 0) ? buffer : format, linuxIsErrorMsg);
 #endif
 #endif
 

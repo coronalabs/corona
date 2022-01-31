@@ -163,14 +163,14 @@ namespace Rtt
 	void LinuxKeyListener::OnChar(wxKeyEvent &event)
 	{
 		event.Skip();
-		SolarAppContext *context = solarApp->fContext;
+		SolarAppContext* context = 0; //vv  solarApp->fContext;
 		context->GetKeyListener()->notifyCharEvent(event);
 	}
 
 	void LinuxKeyListener::OnKeyDown(wxKeyEvent &event)
 	{
 		event.Skip();
-		SolarAppContext *context = solarApp->fContext;
+		SolarAppContext* context = 0; //vv solarApp->fContext;
 
 		if (event.GetKeyCode() == WXK_ESCAPE)
 		{
@@ -185,7 +185,7 @@ namespace Rtt
 	void LinuxKeyListener::OnKeyUp(wxKeyEvent &event)
 	{
 		event.Skip();
-		SolarAppContext *context = solarApp->fContext;
+		SolarAppContext* context = 0; //vv solarApp->fContext;
 
 		if (context && event.GetKeyCode() != WXK_ESCAPE)
 		{

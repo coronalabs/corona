@@ -44,9 +44,9 @@ namespace Rtt
 			projectPath.append("/").append(newProjectDlg->GetProjectName().c_str());
 			projectPath.append("/main.lua");
 
-			wxCommandEvent eventOpen(eventOpenProject);
-			eventOpen.SetString(projectPath.c_str());
-			wxPostEvent(solarApp, eventOpen);
+		//	wxCommandEvent eventOpen(eventOpenProject);
+		//	eventOpen.SetString(projectPath.c_str());
+		//	wxPostEvent(solarApp, eventOpen);
 
 			// open the project folder in the file browser
 			string command("xdg-open \"");
@@ -78,9 +78,9 @@ namespace Rtt
 		}
 
 		// open project
-		wxCommandEvent eventOpen(eventOpenProject);
-		eventOpen.SetString(path.c_str());
-		wxPostEvent(solarApp, eventOpen);
+	//	wxCommandEvent eventOpen(eventOpenProject);
+	//	eventOpen.SetString(path.c_str());
+	//	wxPostEvent(solarApp, eventOpen);
 	}
 
 	void SolarSimulator::OnRelaunchLastProject(wxCommandEvent& event)
@@ -88,13 +88,13 @@ namespace Rtt
 		const string& lastProjectDirectory = solarSimulator->ConfigStr("lastProjectDirectory");
 		if (lastProjectDirectory.size() > 0)
 		{
-			wxCommandEvent eventOpen(eventOpenProject);
-			wxString fullPath(lastProjectDirectory);
-			fullPath.append("/main.lua");
+	//		wxCommandEvent eventOpen(eventOpenProject);
+	//		wxString fullPath(lastProjectDirectory);
+	//		fullPath.append("/main.lua");
 
-			eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
-			eventOpen.SetString(fullPath.c_str());
-			wxPostEvent(solarApp, eventOpen);
+	//		eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
+	//		eventOpen.SetString(fullPath.c_str());
+	//		wxPostEvent(solarApp, eventOpen);
 		}
 	}
 
@@ -147,8 +147,8 @@ namespace Rtt
 
 			wxExecute(command.c_str());
 			// relaunch
-			wxCommandEvent relaunchEvent(eventRelaunchProject);
-			wxPostEvent(solarApp, relaunchEvent);
+	//		wxCommandEvent relaunchEvent(eventRelaunchProject);
+	//		wxPostEvent(solarApp, relaunchEvent);
 		}
 
 		clearProjectSandboxDlg->Destroy();
@@ -182,7 +182,7 @@ namespace Rtt
 		// quit the simulator console
 		ConsoleApp::Quit();
 
-		Close(true);
+		//Close(true);
 	}
 
 	// build menu items
@@ -245,9 +245,9 @@ namespace Rtt
 		}
 
 		// open project
-		wxCommandEvent eventOpen(eventOpenProject);
-		eventOpen.SetString(path.c_str());
-		wxPostEvent(solarApp, eventOpen);
+//		wxCommandEvent eventOpen(eventOpenProject);
+//		eventOpen.SetString(path.c_str());
+//		wxPostEvent(solarApp, eventOpen);
 	}
 
 	void SolarSimulator::OnAbout(wxCommandEvent& WXUNUSED(event))

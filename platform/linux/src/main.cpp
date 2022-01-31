@@ -18,40 +18,38 @@
 using namespace std;
 
 // global
-Rtt::SolarApp* solarApp = NULL;
+wxFrame* solarApp = NULL;
+smart_ptr<Rtt::SolarApp> app;
 
-class app : public wxApp
+int main(int argc, char* argv[])
 {
-	bool OnInit() wxOVERRIDE
+	string resourcesDir = GetStartupPath(NULL);
+	resourcesDir.append("/Resources");
+
+	// look for welcomescereen
+	if (Rtt_FileExists((resourcesDir + "/homescreen/main.lua").c_str()))
 	{
-		if (!wxApp::OnInit())
-			return false;
-
-		string resourcesDir = GetStartupPath(NULL);
-		resourcesDir.append("/Resources");
-
-		// look for welcomescereen
-		if (Rtt_FileExists((resourcesDir + "/homescreen/main.lua").c_str()))
-		{
-			resourcesDir.append("/homescreen");
-			solarApp = new Rtt::SolarSimulator();
-		}
-		else if (Rtt_IsDirectory(resourcesDir.c_str()))
-		{
-			solarApp = new Rtt::SolarApp();
-		}
-		else
-		{
-			return false;
-		}
-		return solarApp->Start(resourcesDir);
+		resourcesDir.append("/homescreen");
+		app = new Rtt::SolarSimulator();
+	}
+	else if (Rtt_IsDirectory(resourcesDir.c_str()))
+	{
+		app = new Rtt::SolarApp();
+	}
+	else
+	{
+		return -1;
 	}
 
-	virtual ~app()
-	{
-		// Don't delete frame, it deleted by Core of wxWidgets
-		solarApp = NULL;
-	}
-};
 
-wxIMPLEMENT_APP_CONSOLE(app);
+	if (app->Initialize())
+	{
+		app->Run();
+	}
+
+	//app->Start(resourcesDir);
+
+	app = NULL;
+	return 0;
+}
+

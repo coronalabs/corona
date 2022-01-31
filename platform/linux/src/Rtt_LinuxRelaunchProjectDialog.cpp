@@ -61,8 +61,8 @@ namespace Rtt
 	{
 		EndModal(wxID_OK);
 		wxYield();
-		wxCommandEvent ev(eventRelaunchProject);
-		wxPostEvent(solarApp, ev);
+		//wxCommandEvent ev(eventRelaunchProject);
+		//wxPostEvent(solarApp, ev);
 	}
 
 	void LinuxRelaunchProjectDialog::OnCancelClicked(wxCommandEvent & event)

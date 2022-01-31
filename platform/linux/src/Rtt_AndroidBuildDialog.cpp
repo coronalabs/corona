@@ -292,7 +292,7 @@ namespace Rtt
 
 	void AndroidBuildDialog::OnBuildClicked(wxCommandEvent &event)
 	{
-		LinuxPlatform *platform = solarApp->GetPlatform();
+		LinuxPlatform* platform = 0; //vv  solarApp->GetPlatform();
 		MPlatformServices *service = new LinuxPlatformServices(platform);
 		Rtt::Runtime *runtimePointer = fAppContext->GetRuntime();
 		wxString appName(appNameTextCtrl->GetValue());

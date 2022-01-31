@@ -62,7 +62,7 @@ namespace Rtt
 			// attach to onEnterFrame
 			Rtt_ASSERT(fAudioTask == NULL);
 			fAudioTask = Rtt_NEW(Allocator(), AudioTask(this));
-			Runtime* runtime = solarApp->GetRuntime();
+			Runtime* runtime = 0; //vv solarApp->GetRuntime();
 			Scheduler& scheduler = runtime->GetScheduler();
 			scheduler.Append(fAudioTask);
 

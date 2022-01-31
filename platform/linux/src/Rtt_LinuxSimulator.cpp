@@ -27,12 +27,12 @@ Rtt::SolarSimulator* solarSimulator = NULL;
 
 namespace Rtt
 {
-	wxDEFINE_EVENT(eventOpenProject, wxCommandEvent);
-	wxDEFINE_EVENT(eventRelaunchProject, wxCommandEvent);
-	wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
+//	wxDEFINE_EVENT(eventOpenProject, wxCommandEvent);
+//	wxDEFINE_EVENT(eventRelaunchProject, wxCommandEvent);
+//	wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
 
 	// setup frame events
-	wxBEGIN_EVENT_TABLE(SolarApp, wxFrame)
+/*	wxBEGIN_EVENT_TABLE(SolarApp, wxFrame)
 		EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarSimulator::OnOpenWelcome)
 		EVT_MENU(ID_MENU_RELAUNCH_PROJECT, SolarSimulator::OnRelaunch)
 		EVT_MENU(ID_MENU_SUSPEND, SolarSimulator::OnSuspendOrResume)
@@ -44,7 +44,7 @@ namespace Rtt
 		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarSimulator::OnOpenWelcome)
 		EVT_ICONIZE(SolarApp::OnIconized)
 		EVT_CLOSE(SolarSimulator::OnClose)
-		wxEND_EVENT_TABLE()
+		wxEND_EVENT_TABLE()*/
 
 		SolarSimulator::SolarSimulator()
 		: fWatcher(NULL)
@@ -68,15 +68,15 @@ namespace Rtt
 		solarSimulator = this;		// save
 
 		// start the console
-		if (ConsoleApp::isStarted())
-		{
-			ConsoleApp::Clear();
-		}
-		else
+	//	if (ConsoleApp::isStarted())
+	//	{
+	//		ConsoleApp::Clear();
+	//	}
+	//	else
 		{
 			std::string cmd(GetStartupPath(NULL));
 			cmd.append("/Solar2DConsole");
-			wxExecute(cmd);
+//			wxExecute(cmd);
 		}
 
 		const char* homeDir = GetHomePath();
@@ -103,7 +103,7 @@ namespace Rtt
 
 	SolarSimulator::~SolarSimulator()
 	{
-		SetMenuBar(NULL);
+		//SetMenuBar(NULL);
 
 		delete fWatcher;
 		delete fMenuMain;
@@ -112,10 +112,10 @@ namespace Rtt
 
 	bool SolarSimulator::Start(const std::string& resourcesDir)
 	{
-		CreateWindow(resourcesDir);
+/*		CreateWindow(resourcesDir);
 
 #ifdef Rtt_SIMULATOR
-		SetIcon(simulator_xpm);
+//		SetIcon(simulator_xpm);
 #endif
 
 		fContext = new SolarAppContext(resourcesDir.c_str());
@@ -159,7 +159,7 @@ namespace Rtt
 		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenDocumentation(e); }, ID_MENU_OPEN_DOCUMENTATION);
 		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenSampleProjects(e); }, ID_MENU_OPEN_SAMPLE_CODE);
 		Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAbout(e); }, wxID_ABOUT);
-
+		*/
 		return true;
 	}
 
@@ -170,7 +170,7 @@ namespace Rtt
 			// do not watch main screen folder
 			return;
 		}
-
+		/*
 		// wxFileSystemWatcher
 		if (fWatcher == NULL)
 		{
@@ -182,7 +182,7 @@ namespace Rtt
 		wxFileName fn = wxFileName::DirName(path);
 		fn.DontFollowLink();
 		fWatcher->RemoveAll();
-		fWatcher->AddTree(fn);
+		fWatcher->AddTree(fn);*/
 	}
 
 	void SolarSimulator::OnFileSystemEvent(wxFileSystemWatcherEvent& event)
@@ -208,8 +208,8 @@ namespace Rtt
 			if (ext.IsSameAs("lua"))
 			{
 				fRelaunchedViaFileEvent = true;
-				wxCommandEvent ev(eventRelaunchProject);
-				wxPostEvent(solarApp, ev);
+//				wxCommandEvent ev(eventRelaunchProject);
+	//			wxPostEvent(solarApp, ev);
 			}
 			break;
 		}
@@ -223,12 +223,12 @@ namespace Rtt
 	{
 		if (suspendedPanel == NULL)
 		{
-			suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->GetWidth(), fContext->GetHeight()));
-			suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
-			suspendedPanel->SetForegroundColour(wxColour(*wxBLACK));
-			suspendedText = new wxStaticText(this, -1, "Suspended", wxDefaultPosition, wxDefaultSize);
-			suspendedText->SetForegroundColour(*wxWHITE);
-			suspendedText->CenterOnParent();
+	//		suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->GetWidth(), fContext->GetHeight()));
+	//		suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
+	//		suspendedPanel->SetForegroundColour(wxColour(*wxBLACK));
+	//		suspendedText = new wxStaticText(this, -1, "Suspended", wxDefaultPosition, wxDefaultSize);
+	//		suspendedText->SetForegroundColour(*wxWHITE);
+	//		suspendedText->CenterOnParent();
 		}
 	}
 
@@ -285,7 +285,7 @@ namespace Rtt
 			ResetWindowSize();
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName().c_str());
-			SetCursor(wxCURSOR_ARROW);
+			//SetCursor(wxCURSOR_ARROW);
 
 			wxString newWindowTitle(fContext->GetTitle());
 
@@ -293,8 +293,8 @@ namespace Rtt
 			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName().c_str(), fContext->GetPlatform());
 
-			SetMenu(fAppPath.c_str());
-			SetTitle(newWindowTitle);
+		//	SetMenu(fAppPath.c_str());
+		//	SetTitle(newWindowTitle);
 
 			fFileSystemEventTimestamp = wxGetUTCTimeMillis();
 		}
@@ -411,7 +411,7 @@ namespace Rtt
 
 	void SolarSimulator::SetMenu(const char* appPath)
 	{
-		const string& appName = GetContext()->GetAppName();
+		/*const string& appName = GetContext()->GetAppName();
 		SetMenuBar(IsHomeScreen(appName) ? fMenuMain : fMenuProject);
 
 		if (!IsHomeScreen(appName) && fViewMenu->FindItem("View As") == -1)
@@ -530,12 +530,12 @@ namespace Rtt
 			fViewMenu->AppendSubMenu(viewAsMenu, _T("&View As"));
 			fViewMenu->AppendSeparator();
 			fViewMenu->Append(ID_MENU_OPEN_WELCOME_SCREEN, _T("&Welcome Screen"));
-		}
+		}*/
 	}
 
 	void SolarSimulator::OnZoomIn(wxCommandEvent& event)
 	{
-		wxDisplay display(wxDisplay::GetFromWindow(this));
+/*		wxDisplay display(wxDisplay::GetFromWindow(this));
 		wxRect screen = display.GetClientArea();
 		bool doResize = false;
 
@@ -579,12 +579,12 @@ namespace Rtt
 				//			fSimulatorConfig->welcomeScreenZoomedHeight = proposedHeight;
 			}
 			ConfigSave();
-		}
+		}*/
 	}
 
 	void SolarSimulator::OnZoomOut(wxCommandEvent& event)
 	{
-		SolarApp* frame = solarApp;
+/*		SolarApp* frame = solarApp;
 		int proposedWidth = frame->GetContext()->GetWidth() / LinuxSimulatorView::skinScaleFactor;
 		int proposedHeight = frame->GetContext()->GetHeight() / LinuxSimulatorView::skinScaleFactor;
 
@@ -606,12 +606,12 @@ namespace Rtt
 			{
 				fZoomOut->Enable(false);
 			}
-		}
+		}*/
 	}
 
 	void SolarSimulator::OnViewAsChanged(wxCommandEvent& event)
 	{
-		int skinID = event.GetId();
+/*		int skinID = event.GetId();
 		LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skinID);
 		wxDisplay display(wxDisplay::GetFromWindow(this));
 		wxRect screen = display.GetClientArea();
@@ -655,12 +655,12 @@ namespace Rtt
 		ChangeSize(initialWidth, initialHeight);
 
 		wxCommandEvent ev(eventRelaunchProject);
-		wxPostEvent(solarApp, ev);
+		wxPostEvent(solarApp, ev);*/
 	}
 
 	void SolarSimulator::CreateViewAsChildMenu(vector<string>skin, wxMenu* targetMenu)
 	{
-		for (int i = 0; i < skin.size(); i++)
+/*		for (int i = 0; i < skin.size(); i++)
 		{
 			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skin[i].c_str());
 			wxMenuItem* currentSkin = targetMenu->Append(sProperties.id, skin[i].c_str(), wxEmptyString, wxITEM_CHECK);
@@ -675,12 +675,12 @@ namespace Rtt
 				currentSkin->Check(true);
 				SetTitle(newWindowTitle);
 			}
-		}
+		}*/
 	}
 
 	void SolarSimulator::GetSavedZoom(int& width, int& height)
 	{
-		if (!IsHomeScreen(fContext->GetAppName()))
+		/*if (!IsHomeScreen(fContext->GetAppName()))
 		{
 			wxDisplay display(wxDisplay::GetFromWindow(solarApp));
 			wxRect screen = display.GetClientArea();
@@ -703,7 +703,7 @@ namespace Rtt
 				width /= LinuxSimulatorView::skinScaleFactor;
 				height /= LinuxSimulatorView::skinScaleFactor;
 			}
-		}
+		}*/
 	}
 
 	void SolarSimulator::OnSuspendOrResume(wxCommandEvent& event)
@@ -727,14 +727,14 @@ namespace Rtt
 		string path(GetStartupPath(NULL));
 		path.append("/Resources/homescreen/main.lua");
 
-		wxCommandEvent eventOpen(eventOpenProject);
-		eventOpen.SetString(path.c_str());
-		wxPostEvent(this, eventOpen);
+//		wxCommandEvent eventOpen(eventOpenProject);
+//		eventOpen.SetString(path.c_str());
+//		wxPostEvent(this, eventOpen);
 	}
 
 	void SolarSimulator::OnOpen(wxCommandEvent& event)
 	{
-		RemoveSuspendedPanel();
+/*		RemoveSuspendedPanel();
 
 		wxString path = event.GetString();
 		string fullPath = (const char*)path.c_str();
@@ -793,21 +793,21 @@ namespace Rtt
 			Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());
 		}
 
-		SetTitle(newWindowTitle);
+		SetTitle(newWindowTitle);*/
 	}
 
 	void SolarSimulator::OnClose(wxCloseEvent& event)
 	{
 		fContext->GetRuntime()->End();
 
-		ConfigSet("windowXPos", GetPosition().x);
-		ConfigSet("windowYPos", GetPosition().y);
-		ConfigSave();
+//		ConfigSet("windowXPos", GetPosition().x);
+//		ConfigSet("windowYPos", GetPosition().y);
+//		ConfigSave();
 
 		// quit the simulator console
-		ConsoleApp::Quit();
+//		ConsoleApp::Quit();
 
-		wxExit();
+//		wxExit();
 	}
 
 	// config parser

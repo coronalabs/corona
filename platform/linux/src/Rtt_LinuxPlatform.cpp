@@ -1067,7 +1067,7 @@ namespace Rtt
 		if (Rtt_StringCompare(key, "appName") == 0)
 		{
 			// Fetch the application's name.
-			lua_pushstring(L, solarApp->GetContext()->GetAppName().c_str());
+			lua_pushstring(L, "vv"); //vv solarApp->GetContext()->GetAppName().c_str());
 		}
 		else if (Rtt_StringCompare(key, "appVersionString") == 0)
 		{

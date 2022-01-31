@@ -26,27 +26,43 @@
 #include "Rtt_LinuxRelaunchProjectDialog.h"
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxContainer.h"
 #include "wx/app.h"
 #include "wx/frame.h"
 #include "wx/panel.h"
 #include "wx/stattext.h"
 #include "wx/glcanvas.h"
 #include <string>
+#include <SDL2/SDL.h>
 
 namespace Rtt
 {
-	wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
-	wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
-	wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
+//	wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
+//	wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
+//	wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
 
-	class SolarGLCanvas;
+//	class SolarGLCanvas;
 
 	// the main frame
-	class SolarApp : public wxFrame
+	class SolarApp : public ref_counted
 	{
+
+		// for event aggerating
+		struct events_t
+		{
+			Uint32 n;
+			SDL_Event e;
+		};
+		static bool cmp_events(std::pair<Uint32, events_t>& a, std::pair<Uint32, events_t>& b) { return a.second.n < b.second.n; }
+
 	public:
 		SolarApp();
 		virtual ~SolarApp();
+
+		bool Initialize();
+		void Run();
+		bool PollEvents();
+
 
 		Runtime* GetRuntime() { return fContext->GetRuntime(); }
 		LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
@@ -69,11 +85,16 @@ namespace Rtt
 		std::string fAppPath;
 		std::string fProjectPath;
 
+		SDL_Window* fWindow;
+		SDL_GLContext fGLcontext;
+		int fWidth;
+		int fHeight;
+
 		wxDECLARE_EVENT_TABLE();
 	};
 
 	//  the canvas window
-	class SolarGLCanvas : public wxGLCanvas
+	/*class SolarGLCanvas : public wxGLCanvas
 	{
 	public:
 		SolarGLCanvas(SolarApp* parent, const int* vAttrs);
@@ -86,11 +107,12 @@ namespace Rtt
 	private:
 		wxGLContext* fGLContext;
 		wxDECLARE_EVENT_TABLE();
-	};
+	};*/
 
 }
 
-extern Rtt::SolarApp* solarApp;
+extern wxFrame* solarApp;
+extern smart_ptr<Rtt::SolarApp> app;
 
 
 #endif // Rtt_LINUX_CONTEXT_H

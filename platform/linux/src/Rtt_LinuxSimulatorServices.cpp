@@ -76,9 +76,9 @@ namespace Rtt
 		fCurrentProjectPath = path.ToStdString();
 
 		// send open file dialog event
-		wxCommandEvent openEvent(eventOpenProject);
-		openEvent.SetString(path);
-		wxPostEvent(solarApp, openEvent);
+//		wxCommandEvent openEvent(eventOpenProject);
+//		openEvent.SetString(path);
+//		wxPostEvent(solarApp, openEvent);
 
 		return true;
 	}
@@ -127,7 +127,7 @@ namespace Rtt
 	// Set the current project resource path
 	void LinuxSimulatorServices::SetProjectResourceDirectory(const char *projectResourceDirectory)
 	{
-		LinuxPlatform *platform = solarApp->GetPlatform();
+		LinuxPlatform* platform = 0; //vv solarApp->GetPlatform();
 		platform->SetProjectResourceDirectory(projectResourceDirectory);
 	}
 
@@ -224,8 +224,8 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::RelaunchProject() const
 	{
-		wxCommandEvent e(eventRelaunchProject);
-		wxPostEvent(solarApp, e);
+//		wxCommandEvent e(eventRelaunchProject);
+//		wxPostEvent(solarApp, e);
 		return true;
 	}
 
@@ -252,7 +252,7 @@ namespace Rtt
 	bool LinuxSimulatorServices::ShowProjectSandbox(const char *name) const
 	{
 		const char *homeDir = GetHomePath();
-		string appName = solarApp->GetContext()->GetAppName();
+		string appName; //vv = solarApp->GetContext()->GetAppName();
 		string command("xdg-open ");
 		command.append(homeDir);
 		command.append("/.Solar2D/Sandbox/");

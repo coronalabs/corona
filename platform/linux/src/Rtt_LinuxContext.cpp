@@ -62,7 +62,7 @@ extern "C"
 	}
 }
 
-extern Rtt::SolarApp* solarApp;
+extern wxFrame* solarApp;
 
 namespace Rtt
 {
@@ -222,7 +222,7 @@ namespace Rtt
 		fRuntime = new LinuxRuntime(*fPlatform, NULL);
 		fRuntime->SetDelegate(fRuntimeDelegate);
 
-		if (solarApp->IsRunningOnSimulator())
+		if (app->IsRunningOnSimulator())
 		{
 			fRuntime->SetProperty(Runtime::kLinuxMaskSet | Runtime::kIsApplicationNotArchived, true);
 		}
@@ -236,7 +236,7 @@ namespace Rtt
 		int height = 480;
 		string projectPath(fPathToApp.c_str());
 
-		if (!solarApp->IsRunningOnSimulator())
+		if (!app->IsRunningOnSimulator())
 		{
 			projectPath.append("/Resources");
 		}
@@ -295,10 +295,10 @@ namespace Rtt
 
 			if (fullScreen)
 			{
-				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
-				wxRect screen = display.GetClientArea();
-				width = screen.width;
-				height = screen.height;
+//				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
+//				wxRect screen = display.GetClientArea();
+//				width = screen.width;
+//				height = screen.height;
 			}
 			else
 			{
@@ -307,7 +307,7 @@ namespace Rtt
 				//SetMinClientSize(wxSize(minWidth, minHeight));
 			}
 
-			solarApp->GetSavedZoom(width, height);
+			app->GetSavedZoom(width, height);
 
 			switch (orientation)
 			{
@@ -445,7 +445,7 @@ namespace Rtt
 			// Swap(fRuntimeDelegate->fContentWidth, fRuntimeDelegate->fContentHeight);
 		}
 
-		if (solarApp->IsRunningOnSimulator())
+		if (app->IsRunningOnSimulator())
 		{
 			fLinuxSimulatorServices = new LinuxSimulatorServices();
 			lua_State* luaStatePointer = fRuntime->VMContext().L();
@@ -484,7 +484,7 @@ namespace Rtt
 	void SolarAppContext::Flush()
 	{
 		fRuntime->GetDisplay().Invalidate();
-		fCanvas->Render();
+	//	fCanvas->Render();
 	}
 
 	void SolarAppContext::Pause()
