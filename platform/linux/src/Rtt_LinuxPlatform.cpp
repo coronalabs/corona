@@ -72,12 +72,11 @@ namespace Rtt
 		fInstallDir.Set(installDir);
 		fStatusBarMode = MPlatform::StatusBarMode::kDefaultStatusBar;
 		isMouseCursorVisible = true;
-		fRuntimeErrorDialog = new LinuxRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
+		fRuntimeErrorDialog = 0; //vv new LinuxRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
 	}
 
 	LinuxPlatform::~LinuxPlatform()
 	{
-		fRuntimeErrorDialog->Destroy();
 		Rtt_DELETE(fFBConnect);
 		Rtt_DELETE(fStoreProvider);
 		Rtt_DELETE(fWebPopup);

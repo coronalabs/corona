@@ -56,11 +56,11 @@ namespace Rtt
 		static bool cmp_events(std::pair<Uint32, events_t>& a, std::pair<Uint32, events_t>& b) { return a.second.n < b.second.n; }
 
 	public:
-		SolarApp();
+		SolarApp(const std::string& resourceDir);
 		virtual ~SolarApp();
 
 		bool Initialize();
-		void Run();
+		virtual void Run();
 		bool PollEvents();
 
 
@@ -75,7 +75,6 @@ namespace Rtt
 		void ResetWindowSize();
 		bool CreateWindow(const std::string& resourcesDir);
 
-		virtual bool Start(const std::string& resourcesDir);
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
 
@@ -85,7 +84,6 @@ namespace Rtt
 		std::string fAppPath;
 		std::string fProjectPath;
 
-		SDL_Window* fWindow;
 		SDL_GLContext fGLcontext;
 		int fWidth;
 		int fHeight;

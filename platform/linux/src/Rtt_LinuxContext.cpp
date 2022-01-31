@@ -63,6 +63,7 @@ extern "C"
 }
 
 extern wxFrame* solarApp;
+extern SDL_Window* fWindow;
 
 namespace Rtt
 {
@@ -417,7 +418,7 @@ namespace Rtt
 
 		puts(mb.c_str());
 		mb.append('\n');
-		ConsoleApp::Log(mb.c_str());
+	//vv	ConsoleApp::Log(mb.c_str());
 		return 0;
 	}
 
@@ -461,15 +462,15 @@ namespace Rtt
 		GetRuntime()->BeginRunLoop();
 
 		// starft timer
-		int frameDuration = 1000.0f / (float)GetFPS();
-		SetOwner(this);
-		Start(frameDuration);
+//		int frameDuration = 1000.0f / (float)GetFPS();
+//		SetOwner(this);
+//		Start(frameDuration);
 
 		return true;
 	}
 
 	// timer callback
-	void SolarAppContext::Notify()
+	void SolarAppContext::onTimer()
 	{
 		if (!fRuntime->IsSuspended())
 		{
@@ -484,7 +485,7 @@ namespace Rtt
 	void SolarAppContext::Flush()
 	{
 		fRuntime->GetDisplay().Invalidate();
-	//	fCanvas->Render();
+		SDL_GL_SwapWindow(fWindow);
 	}
 
 	void SolarAppContext::Pause()

@@ -7,10 +7,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#if !wxUSE_GLCANVAS
-#error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the library"
-#endif
-
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_FileSystem.h"
@@ -30,11 +26,11 @@ int main(int argc, char* argv[])
 	if (Rtt_FileExists((resourcesDir + "/homescreen/main.lua").c_str()))
 	{
 		resourcesDir.append("/homescreen");
-		app = new Rtt::SolarSimulator();
+		app = new Rtt::SolarSimulator(resourcesDir);
 	}
 	else if (Rtt_IsDirectory(resourcesDir.c_str()))
 	{
-		app = new Rtt::SolarApp();
+		app = new Rtt::SolarApp(resourcesDir);
 	}
 	else
 	{
@@ -46,8 +42,6 @@ int main(int argc, char* argv[])
 	{
 		app->Run();
 	}
-
-	//app->Start(resourcesDir);
 
 	app = NULL;
 	return 0;

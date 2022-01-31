@@ -857,6 +857,7 @@ SET( SOLAR2D_SOURCES
 		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDevice.cpp
 		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsolePlatform.cpp
 		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorView.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_BitmapUtils.cpp
 		${CORONA_ROOT}/platform/shared/Rtt_LinuxAppPackager.cpp
 		${CORONA_ROOT}/platform/android/Rtt_AndroidAppPackager.cpp
 		${CORONA_ROOT}/platform/shared/Rtt_WebAppPackager.cpp
@@ -1063,17 +1064,17 @@ target_compile_definitions( Solar2DConsole PUBLIC
 	wxUSE_PRIVATE_FONTS wxUSE_ACTIVITYINDICATOR wxUSE_ADDREMOVECTRL wxUSE_UNSAFE_WXSTRING_CONV wxUSE_STD_CONTAINERS_COMPATIBLY wxUSE_GLCANVAS
 )
 
-target_link_libraries(Solar2D	dl GL z pthread openal freetype png crypto++ curl SDL2
+target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2
 	gdk-3 wx_baseu-3.1 wx_baseu_net-3.1 wx_gtk3u_adv-3.1 wx_gtk3u_gl-3.1 wx_gtk3u_media-3.1 wx_gtk3u_core-3.1 wx_gtk3u_html-3.1 wx_gtk3u_stc-3.1 wx_gtk3u_webview-3.1)
 
-target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png crypto++ curl SDL2
+target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2
 	gdk-3 wx_baseu-3.1 wx_baseu_net-3.1 wx_gtk3u_adv-3.1 wx_gtk3u_gl-3.1 wx_gtk3u_media-3.1 wx_gtk3u_core-3.1 wx_gtk3u_html-3.1 wx_gtk3u_stc-3.1 wx_gtk3u_webview-3.1)
 
 # Enabling functions loaded from dlopen call a function from the Solar2DSimulator
 target_link_options(Solar2D BEFORE PUBLIC -export-dynamic)
 target_link_options(Solar2DSimulator BEFORE PUBLIC -export-dynamic)
 
-target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png crypto++ curl
+target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png jpeg crypto++ curl
 	gdk-3 wx_baseu-3.1 wx_baseu_net-3.1 wx_gtk3u_adv-3.1 wx_gtk3u_gl-3.1 wx_gtk3u_media-3.1 wx_gtk3u_core-3.1 wx_gtk3u_html-3.1 wx_gtk3u_stc-3.1 wx_gtk3u_webview-3.1)
 
 target_link_libraries(Solar2DConsole dl GL z pthread png 

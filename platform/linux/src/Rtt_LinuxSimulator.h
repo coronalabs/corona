@@ -19,7 +19,7 @@ namespace Rtt
 	class SolarSimulator : public SolarApp
 	{
 	public:
-		SolarSimulator();
+		SolarSimulator(const std::string& resourceDir);
 		virtual ~SolarSimulator();
 
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
@@ -53,7 +53,7 @@ namespace Rtt
 		void OnAbout(wxCommandEvent& WXUNUSED(event));
 
 		void WatchFolder(const char* path, const char* appName);
-		bool Start(const std::string& resourcesDir) override;
+		void Run() override;
 		void CreateSuspendedPanel();
 		void RemoveSuspendedPanel();
 		void CreateMenus();
