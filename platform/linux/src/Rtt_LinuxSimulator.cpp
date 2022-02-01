@@ -15,8 +15,6 @@
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
 #include "wx/display.h"
-#include <chrono>
-#include <thread>
 
 #if !defined(wxHAS_IMAGES_IN_RESOURCES) && defined(Rtt_SIMULATOR)
 #include "resource/simulator.xpm"
@@ -27,13 +25,8 @@ using namespace std;
 // global
 Rtt::SolarSimulator* solarSimulator = NULL;
 
-extern SDL_Window* fWindow;	// hack
 namespace Rtt
 {
-	//	wxDEFINE_EVENT(eventOpenProject, wxCommandEvent);
-	//	wxDEFINE_EVENT(eventRelaunchProject, wxCommandEvent);
-	//	wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
-
 		// setup frame events
 	/*	wxBEGIN_EVENT_TABLE(SolarApp, wxFrame)
 			EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarSimulator::OnOpenWelcome)
@@ -114,43 +107,19 @@ namespace Rtt
 		delete fMenuProject;
 	}
 
-	void SolarSimulator::Run()
+	bool SolarSimulator::Initialize()
 	{
 #ifdef Rtt_SIMULATOR
 		//		SetIcon(simulator_xpm);
 #endif
 
-		fContext = new SolarAppContext(fProjectPath.c_str());
-		fContext->LoadApp(fSolarGLCanvas);
-		GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
+		SDL_SetWindowPosition(fWindow, ConfigInt("windowXPos"), ConfigInt("windowYPos"));
 
-		//SetPosition(wxPoint(ConfigInt("windowXPos"), ConfigInt("windowYPos")));
-		SDL_SetWindowTitle(fWindow, "Solar2D Simulator");
-		ResetWindowSize();
-
-		int fps = 30; //vv getFPS();
-		float frameDuration = 1000.0f / fps;
-
-		// main app loop
-		while (1)
+		if (SolarApp::Initialize())
 		{
-			U64 start_time = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
+			GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
 
-			if (!PollEvents())
-				break;
-
-			fContext->onTimer();
-
-			int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
-			//			Rtt_Log("advance_time %d\n", advance_time);
-
-			// Don't hog the CPU.
-			int sleep_time = Max(frameDuration - advance_time, 1.0f);		// sleep for at least 1ms
-			std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
-		}
-
-
-		/*				CreateMenus();
+			/*				CreateMenus();
 						SetMenu(resourcesDir.c_str());
 
 						// restore home screen zoom level
@@ -184,6 +153,10 @@ namespace Rtt
 						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenSampleProjects(e); }, ID_MENU_OPEN_SAMPLE_CODE);
 						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAbout(e); }, wxID_ABOUT);
 						*/
+
+			return true;
+		}
+		return false;
 	}
 
 	void SolarSimulator::WatchFolder(const char* path, const char* appName)
@@ -302,19 +275,17 @@ namespace Rtt
 			RemoveSuspendedPanel();
 
 			fContext->GetRuntime()->End();
-			delete fContext;
-			fContext = new SolarAppContext(fAppPath.c_str());
-			fContext->LoadApp(fSolarGLCanvas);
-			ResetWindowSize();
+			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
+			fContext->LoadApp();
 
-			WatchFolder(fContext->GetAppPath(), fContext->GetAppName().c_str());
+			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 			//SetCursor(wxCURSOR_ARROW);
 
 			wxString newWindowTitle(fContext->GetTitle());
 
 			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
 			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
-			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName().c_str(), fContext->GetPlatform());
+			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName(), fContext->GetPlatform());
 
 			//	SetMenu(fAppPath.c_str());
 			//	SetTitle(newWindowTitle);
@@ -763,10 +734,8 @@ namespace Rtt
 				string fullPath = (const char*)path.c_str();
 				path = path.SubString(0, path.size() - 10); // without main.lua
 
-				delete fContext;
 				fContext = new SolarAppContext(path.c_str());
 				fContext->LoadApp(fSolarGLCanvas);
-				ResetWindowSize();
 
 				string appName = fContext->GetAppName();
 
@@ -910,4 +879,4 @@ namespace Rtt
 		fConfig[key] = ::to_string(val);
 	}
 
-}
+	}

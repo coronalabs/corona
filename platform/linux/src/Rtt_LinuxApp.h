@@ -31,19 +31,13 @@
 #include "wx/frame.h"
 #include "wx/panel.h"
 #include "wx/stattext.h"
-#include "wx/glcanvas.h"
 #include <string>
-#include <SDL2/SDL.h>
+#include <chrono>
+#include <thread>
 
 namespace Rtt
 {
-//	wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
-//	wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
-//	wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
 
-//	class SolarGLCanvas;
-
-	// the main frame
 	class SolarApp : public ref_counted
 	{
 
@@ -59,8 +53,8 @@ namespace Rtt
 		SolarApp(const std::string& resourceDir);
 		virtual ~SolarApp();
 
-		bool Initialize();
-		virtual void Run();
+		virtual bool Initialize();
+		void Run();
 		bool PollEvents();
 
 
@@ -70,42 +64,24 @@ namespace Rtt
 		void OnIconized(wxIconizeEvent& event);
 		virtual void OnClose(wxCloseEvent& event);
 		void ChangeSize(int newWidth, int newHeight);
-		SolarGLCanvas* GetCanvas() const { return fSolarGLCanvas; }
 		SolarAppContext* GetContext() const { return fContext; }
 		void ResetWindowSize();
 		bool CreateWindow(const std::string& resourcesDir);
 
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
+		const char* GetAppName() const { return fContext->GetAppName(); }
 
 		wxStaticText* suspendedText;
-		SolarGLCanvas* fSolarGLCanvas;
 		SolarAppContext* fContext;
 		std::string fAppPath;
 		std::string fProjectPath;
 
+		SDL_Window* fWindow;
 		SDL_GLContext fGLcontext;
 		int fWidth;
 		int fHeight;
-
-		wxDECLARE_EVENT_TABLE();
 	};
-
-	//  the canvas window
-	/*class SolarGLCanvas : public wxGLCanvas
-	{
-	public:
-		SolarGLCanvas(SolarApp* parent, const int* vAttrs);
-		~SolarGLCanvas();
-
-		void OnChar(wxKeyEvent& event);
-		void OnSize(wxSizeEvent& event);
-		void Render();
-
-	private:
-		wxGLContext* fGLContext;
-		wxDECLARE_EVENT_TABLE();
-	};*/
 
 }
 

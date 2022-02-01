@@ -42,9 +42,6 @@
 #include "lua.h"
 #include "lauxlib.h"
 
-//#define Rtt_DEBUG_TOUCH 1
-#define TIMER_ID wxID_HIGHEST + 1
-
 using namespace Rtt;
 using namespace std;
 
@@ -63,12 +60,11 @@ extern "C"
 }
 
 extern wxFrame* solarApp;
-extern SDL_Window* fWindow;
 
 namespace Rtt
 {
 
-	SolarAppContext::SolarAppContext(const char* path)
+	SolarAppContext::SolarAppContext(SDL_Window* window, const char* path)
 		: fRuntime(NULL)
 		, fRuntimeDelegate(new LinuxRuntimeDelegate())
 		, fMouseListener(NULL)
@@ -79,6 +75,7 @@ namespace Rtt
 		, fIsDebApp(false)
 		, fLinuxSimulatorServices(NULL)
 		, fProjectSettings(new ProjectSettings())
+		, fWindow(window)
 	{
 		string exeFileName;
 		const char* homeDir = GetHomePath();
@@ -296,10 +293,10 @@ namespace Rtt
 
 			if (fullScreen)
 			{
-//				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
-//				wxRect screen = display.GetClientArea();
-//				width = screen.width;
-//				height = screen.height;
+				//				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
+				//				wxRect screen = display.GetClientArea();
+				//				width = screen.width;
+				//				height = screen.height;
 			}
 			else
 			{
@@ -418,13 +415,12 @@ namespace Rtt
 
 		puts(mb.c_str());
 		mb.append('\n');
-	//vv	ConsoleApp::Log(mb.c_str());
+		//vv	ConsoleApp::Log(mb.c_str());
 		return 0;
 	}
 
-	bool SolarAppContext::LoadApp(SolarGLCanvas* canvas)
+	bool SolarAppContext::LoadApp()
 	{
-		fCanvas = canvas;
 		Init();
 
 		if (Runtime::kSuccess != fRuntime->LoadApplication(Runtime::kLinuxLaunchOption, fRuntimeDelegate->fOrientation))
@@ -461,16 +457,26 @@ namespace Rtt
 
 		GetRuntime()->BeginRunLoop();
 
-		// starft timer
-//		int frameDuration = 1000.0f / (float)GetFPS();
-//		SetOwner(this);
-//		Start(frameDuration);
+		ResetWindowSize();
+		SDL_SetWindowTitle(fWindow, GetAppName());
 
 		return true;
 	}
 
+	void SolarAppContext::ResetWindowSize()
+	{
+		int w, h;
+		SDL_GetWindowSize(fWindow, &w, &h);
+		if (w != GetWidth() || h != GetHeight())
+		{
+			w = GetWidth();
+			h = GetHeight();
+			SDL_SetWindowSize(fWindow, w, h);
+		}
+	}
+
 	// timer callback
-	void SolarAppContext::onTimer()
+	void SolarAppContext::advance()
 	{
 		if (!fRuntime->IsSuspended())
 		{

@@ -38,6 +38,8 @@
 using namespace Rtt;
 using namespace std;
 
+#define Rtt_DEBUG_TOUCH 1
+
 // for redirecting output to Solar2DConsole
 extern "C"
 {
@@ -47,18 +49,16 @@ extern "C"
 	}
 }
 
-SDL_Window* fWindow = 0;	// hack
-
 namespace Rtt
 {
 
 	SolarApp::SolarApp(const std::string& resourceDir)
-		: fSolarGLCanvas(NULL)
-		, fContext(NULL)
-		, fProjectPath(resourceDir)
+		: fProjectPath(resourceDir)
+		, fWindow(NULL)
+		, fWidth(0)
+		, fHeight(0)
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
-		//wxInitAllImageHandlers();
 
 		const char* homeDir = GetHomePath();
 		string basePath(homeDir);
@@ -87,9 +87,7 @@ namespace Rtt
 
 	SolarApp::~SolarApp()
 	{
-		delete fSolarGLCanvas;
-		delete fContext;
-
+		fContext = NULL;
 		curl_global_cleanup();
 	}
 
@@ -106,8 +104,6 @@ namespace Rtt
 			return false;
 		}
 
-		// init GL
-
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -117,7 +113,9 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 
 		CreateWindow(fProjectPath);
-		return true;
+
+		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
+		return fContext->LoadApp();
 	}
 
 	bool SolarApp::PollEvents()
@@ -175,12 +173,12 @@ namespace Rtt
 			{
 			case SDL_APP_WILLENTERFOREGROUND:
 			{
-				//resume();
+				fContext->Resume();
 				break;
 			}
 			case SDL_APP_WILLENTERBACKGROUND:
 			{
-				//pause();
+				fContext->Pause();
 				break;
 			}
 			case SDL_WINDOWEVENT:
@@ -190,11 +188,11 @@ namespace Rtt
 				{
 				case SDL_WINDOWEVENT_SHOWN:
 				case SDL_WINDOWEVENT_RESTORED:
-					//resume();
+					fContext->Resume();
 					break;
 				case SDL_WINDOWEVENT_HIDDEN:
 				case SDL_WINDOWEVENT_MINIMIZED:
-					//pause();
+					fContext->Pause();
 					break;
 				case SDL_WINDOWEVENT_SIZE_CHANGED:
 				{
@@ -256,163 +254,162 @@ namespace Rtt
 							TouchMoved(x, y, ef.fingerId);
 							break;
 						}
-
-						case SDL_MOUSEBUTTONDOWN:
-						{
-							const SDL_MouseButtonEvent& b = event.button;
-							//	if (b.which != SDL_TOUCH_MOUSEID)
-							{
-								int x = b.x;
-								int y = b.y;
-								SwapXY(x, y);
-
-			#if Rtt_DEBUG_TOUCH
-								printf("MOUSE_DOWN(%d, %d)\n", x, y);
-			#endif
-
-								float scrollWheelDeltaX = 0;
-								float scrollWheelDeltaY = 0;
-
-								// Fetch the mouse's current up/down buttons states.
-								bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-								bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
-								bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-
-								// Fetch the current state of the "shift", "alt", and "ctrl" keys.
-								const Uint8* key = SDL_GetKeyboardState(NULL);
-								bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
-								bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
-								bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
-								bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
-
-								Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kDown;
-								Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0, isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
-
-								DispatchEvent(mouseEvent);
-							}
-							break;
-						}
-
-						case SDL_MOUSEMOTION:
-						{
-							const SDL_MouseButtonEvent& b = event.button;
-							//	if (b.which != SDL_TOUCH_MOUSEID)
-							{
-								int x = b.x;
-								int y = b.y;
-								SwapXY(x, y);
-
-			#if Rtt_DEBUG_TOUCH
-								printf("MOUSE_MOTION(%d, %d)\n", x, y);
-			#endif
-
-								float scrollWheelDeltaX = 0;
-								float scrollWheelDeltaY = 0;
-
-								// Fetch the mouse's current up/down buttons states.
-								bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-								bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
-								bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-
-								// Fetch the current state of the "shift", "alt", and "ctrl" keys.
-								const Uint8* key = SDL_GetKeyboardState(NULL);
-								bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
-								bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
-								bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
-								bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
-
-								Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kMove;
-
-								// Determine if this is a "drag" event.
-								if (isPrimaryDown || isSecondaryDown || isMiddleDown)
-								{
-									eventType = Rtt::MouseEvent::kDrag;
-								}
-
-								Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
-									isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
-
-								DispatchEvent(mouseEvent);
-							}
-							break;
-						}
-
-						case SDL_MOUSEBUTTONUP:
-						{
-							const SDL_MouseButtonEvent& b = event.button;
-							//	if (b.which != SDL_TOUCH_MOUSEID)
-							{
-								int x = b.x;
-								int y = b.y;
-								SwapXY(x, y);
-
-			#if Rtt_DEBUG_TOUCH
-								printf("MOUSE_UP(%d, %d)\n", x, y);
-			#endif
-
-								float scrollWheelDeltaX = 0;
-								float scrollWheelDeltaY = 0;
-
-								// Fetch the mouse's current up/down buttons states.
-								bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-								bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
-								bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-
-								// Fetch the current state of the "shift", "alt", and "ctrl" keys.
-								const Uint8* key = SDL_GetKeyboardState(NULL);
-								bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
-								bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
-								bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
-								bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
-
-								Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kUp;
-								Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0, isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
-
-								DispatchEvent(mouseEvent);
-							}
-							break;
-						}
-
-						case SDL_MOUSEWHEEL:
-						{
-							const SDL_MouseWheelEvent& w = event.wheel;
-							if (w.which != SDL_TOUCH_MOUSEID)
-							{
-								int scrollWheelDeltaX = w.x;
-								int scrollWheelDeltaY = w.y;
-								int x = w.x;
-								int y = w.y;
-								SwapXY(x, y);
-
-			#if Rtt_DEBUG_TOUCH
-								printf("MOUSE_WHEEL(%d, %d)\n", x, y);
-			#endif
-
-								// Fetch the mouse's current up/down buttons states.
-								bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-								bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
-								bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-
-								// Fetch the current state of the "shift", "alt", and "ctrl" keys.
-								const Uint8* key = SDL_GetKeyboardState(NULL);
-								bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
-								bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
-								bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
-								bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
-
-								Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kScroll;
-								Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
-									isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
-
-			#if Rtt_DEBUG_TOUCH
-								//			printf("MouseEvent(%d, %d)\n", b.x, b.y);
-			#endif
-
-								DispatchEvent(mouseEvent);
-							}
-							break;
-						}
 						*/
+			case SDL_MOUSEBUTTONDOWN:
+			{
+				const SDL_MouseButtonEvent& b = event.button;
+				//	if (b.which != SDL_TOUCH_MOUSEID)
+				{
+					int x = b.x;
+					int y = b.y;
+					//SwapXY(x, y);
+
+#if Rtt_DEBUG_TOUCH
+					printf("MOUSE_DOWN(%d, %d)\n", x, y);
+#endif
+
+					float scrollWheelDeltaX = 0;
+					float scrollWheelDeltaY = 0;
+
+					// Fetch the mouse's current up/down buttons states.
+					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+					bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
+					bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+					// Fetch the current state of the "shift", "alt", and "ctrl" keys.
+					const Uint8* key = SDL_GetKeyboardState(NULL);
+					bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
+					bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
+					bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
+					bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
+
+					Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kDown;
+					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0, isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
+
+					fContext->DispatchEvent(mouseEvent);
+				}
+				break;
+			}
+
+			case SDL_MOUSEMOTION:
+			{
+				const SDL_MouseButtonEvent& b = event.button;
+				//	if (b.which != SDL_TOUCH_MOUSEID)
+				{
+					int x = b.x;
+					int y = b.y;
+					//SwapXY(x, y);
+
+#if Rtt_DEBUG_TOUCH
+					printf("MOUSE_MOTION(%d, %d)\n", x, y);
+#endif
+
+					float scrollWheelDeltaX = 0;
+					float scrollWheelDeltaY = 0;
+
+					// Fetch the mouse's current up/down buttons states.
+					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+					bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
+					bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+					// Fetch the current state of the "shift", "alt", and "ctrl" keys.
+					const Uint8* key = SDL_GetKeyboardState(NULL);
+					bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
+					bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
+					bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
+					bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
+
+					Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kMove;
+
+					// Determine if this is a "drag" event.
+					if (isPrimaryDown || isSecondaryDown || isMiddleDown)
+					{
+						eventType = Rtt::MouseEvent::kDrag;
+					}
+
+					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
+						isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
+
+					fContext->DispatchEvent(mouseEvent);
+				}
+				break;
+			}
+
+			case SDL_MOUSEBUTTONUP:
+			{
+				const SDL_MouseButtonEvent& b = event.button;
+				//	if (b.which != SDL_TOUCH_MOUSEID)
+				{
+					int x = b.x;
+					int y = b.y;
+					//SwapXY(x, y);
+
+#if Rtt_DEBUG_TOUCH
+					printf("MOUSE_UP(%d, %d)\n", x, y);
+#endif
+
+					float scrollWheelDeltaX = 0;
+					float scrollWheelDeltaY = 0;
+
+					// Fetch the mouse's current up/down buttons states.
+					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+					bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
+					bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+					// Fetch the current state of the "shift", "alt", and "ctrl" keys.
+					const Uint8* key = SDL_GetKeyboardState(NULL);
+					bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
+					bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
+					bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
+					bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
+
+					Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kUp;
+					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0, isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
+
+					fContext->DispatchEvent(mouseEvent);
+				}
+				break;
+			}
+
+			case SDL_MOUSEWHEEL:
+			{
+				const SDL_MouseWheelEvent& w = event.wheel;
+				if (w.which != SDL_TOUCH_MOUSEID)
+				{
+					int scrollWheelDeltaX = w.x;
+					int scrollWheelDeltaY = w.y;
+					int x = w.x;
+					int y = w.y;
+					//SwapXY(x, y);
+
+#if Rtt_DEBUG_TOUCH
+					printf("MOUSE_WHEEL(%d, %d)\n", x, y);
+#endif
+
+					// Fetch the mouse's current up/down buttons states.
+					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+					bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
+					bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+					// Fetch the current state of the "shift", "alt", and "ctrl" keys.
+					const Uint8* key = SDL_GetKeyboardState(NULL);
+					bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
+					bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
+					bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
+					bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
+
+					Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kScroll;
+					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
+						isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
+
+#if Rtt_DEBUG_TOUCH
+					//			printf("MouseEvent(%d, %d)\n", b.x, b.y);
+#endif
+
+					fContext->DispatchEvent(mouseEvent);
+				}
+				break;
+			}
 
 			case SDL_QUIT:
 			case SDLK_ESCAPE:
@@ -529,31 +526,33 @@ namespace Rtt
 			Rtt_LogException("SDL_GL_CreateContext(): %s\n", SDL_GetError());
 			return false;
 		}
-
-		// get screen size
-//		SDL_DisplayMode dm;
-//		SDL_GetDesktopDisplayMode(0, &dm);
-//		fWidth = dm.w;
-//		fHeight = dm.h;
 		return true;
 	}
 
 	void SolarApp::Run()
 	{
-		fContext = new SolarAppContext(fProjectPath.c_str());
-		fContext->LoadApp(fSolarGLCanvas);
-		ResetWindowSize();
+		int fps = fContext->GetFPS();
+		float frameDuration = 1000.0f / fps;
 
-		//	SetTitle(fContext->GetAppName());
-	}
-
-	void SolarApp::ResetWindowSize()
-	{
-		if (fContext->GetWidth() > 0 && fContext->GetHeight() > 0)
+		// main app loop
+		while (1)
 		{
-			SDL_SetWindowSize(fWindow, fContext->GetWidth(), fContext->GetHeight());
+			U64 start_time = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
+
+			if (!PollEvents())
+				break;
+
+			fContext->advance();
+
+			int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
+			//			Rtt_Log("advance_time %d\n", advance_time);
+
+			// Don't hog the CPU.
+			int sleep_time = Max(frameDuration - advance_time, 1.0f);		// sleep for at least 1ms
+			std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 		}
 	}
+
 
 	void SolarApp::OnIconized(wxIconizeEvent& event)
 	{
@@ -573,57 +572,4 @@ namespace Rtt
 		//	SetSize(wxSize(newWidth, newHeight));
 	}
 
-	//
-	// Solar GLCanvas, mouse & key listener
-	// 
-	/*
-	wxBEGIN_EVENT_TABLE(SolarGLCanvas, wxGLCanvas)
-		EVT_SIZE(SolarGLCanvas::OnSize)
-		wxEND_EVENT_TABLE()
-
-		SolarGLCanvas::SolarGLCanvas(SolarApp* parent, const int* vAttrs)
-		: wxGLCanvas(parent, wxID_ANY, vAttrs, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
-	{
-		fGLContext = new wxGLContext(this);
-		Rtt_ASSERT(fGLContext->IsOK());
-
-		SetSize(parent->GetSize());
-
-		Bind(wxEVT_CHAR, &LinuxKeyListener::OnChar);
-		Bind(wxEVT_KEY_DOWN, &LinuxKeyListener::OnKeyDown);
-		Bind(wxEVT_KEY_UP, &LinuxKeyListener::OnKeyUp);
-		Bind(wxEVT_LEFT_DCLICK, &LinuxMouseListener::OnMouseLeftDoubleClick);
-		Bind(wxEVT_LEFT_DOWN, &LinuxMouseListener::OnMouseLeftDown);
-		Bind(wxEVT_LEFT_UP, &LinuxMouseListener::OnMouseLeftUp);
-		Bind(wxEVT_RIGHT_DCLICK, &LinuxMouseListener::OnMouseRightDoubleClick);
-		Bind(wxEVT_RIGHT_DOWN, &LinuxMouseListener::OnMouseRightDown);
-		Bind(wxEVT_RIGHT_UP, &LinuxMouseListener::OnMouseRightUp);
-		Bind(wxEVT_MIDDLE_DCLICK, &LinuxMouseListener::OnMouseMiddleDoubleClick);
-		Bind(wxEVT_MIDDLE_DOWN, &LinuxMouseListener::OnMouseMiddleDown);
-		Bind(wxEVT_MIDDLE_UP, &LinuxMouseListener::OnMouseMiddleUp);
-		Bind(wxEVT_MOTION, &LinuxMouseListener::OnMouseMove);
-		Bind(wxEVT_MOUSEWHEEL, &LinuxMouseListener::OnMouseWheel);
-	}
-
-	SolarGLCanvas::~SolarGLCanvas()
-	{
-		delete fGLContext;
-	}
-
-	void SolarGLCanvas::Render()
-	{
-		SetCurrent(*fGLContext);
-		SwapBuffers();
-	}
-
-	void SolarGLCanvas::OnSize(wxSizeEvent& event)
-	{
-		// if the window is fully initialized
-		if (IsShownOnScreen())
-		{
-			Refresh(true);
-			Render();
-		}
-	}
-	*/
 }

@@ -53,7 +53,7 @@ namespace Rtt
 		void OnAbout(wxCommandEvent& WXUNUSED(event));
 
 		void WatchFolder(const char* path, const char* appName);
-		void Run() override;
+		virtual bool Initialize() override;
 		void CreateSuspendedPanel();
 		void RemoveSuspendedPanel();
 		void CreateMenus();
