@@ -212,7 +212,9 @@ namespace Rtt
 			{
 				int size = font->Size();
 				const char* name = font->Name();
-				const char* face = glyph_freetype_provider::getFace(name);
+
+				glyph_freetype_provider* gp = getGlyphProvider();
+				const char* face = gp ? gp->getFace(name) : NULL;
 
 				if (size > 0 && face)
 				{

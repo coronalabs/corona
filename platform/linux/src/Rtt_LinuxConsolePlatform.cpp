@@ -75,7 +75,11 @@ namespace Rtt
 		float height = 0;
 		float leading = 0;
 
-		glyph_freetype_provider::getMetrics(font.Name(), font.Size(), &ascent, &descent, &height, &leading);
+		glyph_freetype_provider* gp = getGlyphProvider();
+		if (gp)
+		{
+			gp->getMetrics(font.Name(), font.Size(), &ascent, &descent, &height, &leading);
+		}
 
 		ret["ascent"] = ascent;
 		ret["descent"] = descent;

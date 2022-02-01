@@ -9,7 +9,6 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <wx/string.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
 #include <sstream>
@@ -139,8 +138,8 @@ namespace Rtt
 			lua_pop(L, 1);
 			lua_settop(L, top);
 
-			wxString skinTitle(skin.windowTitleBarName);
-			skinTitle.append(wxString::Format(wxT(" (%ix%i)"), skin.screenWidth, skin.screenHeight));
+			std::string skinTitle(skin.windowTitleBarName);
+			skinTitle += to_string(skin.screenWidth) + "x" + to_string(skin.screenHeight);
 			skin.skinTitle = skinTitle;
 			skin.id = skinID;
 			skin.selected = false;
@@ -165,13 +164,13 @@ namespace Rtt
 		return fSkins.begin()->second;
 	}
 
-	LinuxSimulatorView::SkinProperties LinuxSimulatorView::GetSkinProperties(wxString skinTitle)
+	LinuxSimulatorView::SkinProperties LinuxSimulatorView::GetSkinProperties(const std::string& skinTitle)
 	{
 		SkinProperties foundSkin;
 
 		for (int i = 0; i < fSkins.size(); i++)
 		{
-			if (fSkins[i].skinTitle.IsSameAs(skinTitle))
+			if (fSkins[i].skinTitle == skinTitle)
 			{
 				foundSkin = fSkins[i];
 				break;

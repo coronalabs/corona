@@ -38,7 +38,7 @@
 using namespace Rtt;
 using namespace std;
 
-#define Rtt_DEBUG_TOUCH 1
+//#define Rtt_DEBUG_TOUCH 1
 
 // for redirecting output to Solar2DConsole
 extern "C"
@@ -98,7 +98,7 @@ namespace Rtt
 		Rtt_Log("SDL version %d.%d.%d\n", ver.major, ver.minor, ver.patch);
 
 		// Initialize SDL (Note: video is required to start event loop) 
-		if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
 			Rtt_LogException("Couldn't initialize SDL: %s\n", SDL_GetError());
 			return false;
@@ -112,7 +112,21 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 
-		CreateWindow(fProjectPath);
+		uint32_t windowStyle = SDL_WINDOW_OPENGL;
+		windowStyle |= SDL_WINDOW_RESIZABLE;
+		fWindow = SDL_CreateWindow("Solar2D", 0, 0, 320, 480, windowStyle);
+		if (!fWindow)
+		{
+			Rtt_LogException("Couldn't create window: %s\n", SDL_GetError());
+			return false;
+		}
+
+		fGLcontext = SDL_GL_CreateContext(fWindow);
+		if (!fGLcontext)
+		{
+			Rtt_LogException("SDL_GL_CreateContext(): %s\n", SDL_GetError());
+			return false;
+		}
 
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
 		return fContext->LoadApp();
@@ -120,56 +134,13 @@ namespace Rtt
 
 	bool SolarApp::PollEvents()
 	{
-		// aggregate
-		SDL_Event event;
-		Uint32 event_number = 0;
-		std::map<Uint64, events_t> events;
-		while (SDL_PollEvent(&event))
+		SDL_Event e;
+		while (SDL_PollEvent(&e))
 		{
-			Uint64 key;
-			switch (event.type)
-			{
-			case SDL_SENSORUPDATE:
-			case SDL_SENSORUPDATE + 1:
-			case SDL_FINGERMOTION:
-			case SDL_MOUSEMOTION:
-			{
-				// aggregate these events
-				key = event.type;
-				break;
-			}
-			default:
-			{
-				// all other events must be processed
-				key = event_number;
-				key <<= 32;
-				break;
-			}
-			}
-
-			events[key] = { ++event_number, event };
-		}
-
-		// sort on a first come
-		std::vector<std::pair<Uint32, events_t>> sorted_events;
-		{
-			// Copy key-value pair from Map to vector of pairs
-			for (auto& it : events)
-			{
-				sorted_events.push_back(it);
-			}
-
-			// sort
-			sort(sorted_events.begin(), sorted_events.end(), cmp_events);
-		}
-
-		for (auto& it : sorted_events)
-		{
-			event = it.second.e;
 			//SDL_Log("SDL_EVENT %d\n", event.type);
-
 			//U64 start_time = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
-			switch (event.type)
+
+			switch (e.type)
 			{
 			case SDL_APP_WILLENTERFOREGROUND:
 			{
@@ -184,7 +155,7 @@ namespace Rtt
 			case SDL_WINDOWEVENT:
 			{
 				//SDL_Log("SDL_WINDOWEVENT %d %d,%d", event.window.event, event.window.data1, event.window.data2);
-				switch (event.window.event)
+				switch (e.window.event)
 				{
 				case SDL_WINDOWEVENT_SHOWN:
 				case SDL_WINDOWEVENT_RESTORED:
@@ -221,52 +192,37 @@ namespace Rtt
 				}
 				break;
 			}
-			/*			case SDL_FINGERDOWN:
-						{
-							SDL_TouchFingerEvent& ef = event.tfinger;
-							int w, h;
-							SDL_GetWindowSize(fWindow, &w, &h);
-							int x = w * ef.x;
-							int y = h * ef.y;
-							SwapXY(x, y);
-							TouchDown(x, y, ef.fingerId);
-							break;
-						}
-						case SDL_FINGERUP:
-						{
-							SDL_TouchFingerEvent& ef = event.tfinger;
-							int w, h;
-							SDL_GetWindowSize(fWindow, &w, &h);
-							int x = w * ef.x;
-							int y = h * ef.y;
-							SwapXY(x, y);
-							TouchUp(x, y, ef.fingerId);
-							break;
-						}
-						case SDL_FINGERMOTION:
-						{
-							SDL_TouchFingerEvent& ef = event.tfinger;
-							int w, h;
-							SDL_GetWindowSize(fWindow, &w, &h);
-							int x = w * ef.x;
-							int y = h * ef.y;
-							SwapXY(x, y);
-							TouchMoved(x, y, ef.fingerId);
-							break;
-						}
-						*/
+			case SDL_FINGERDOWN:
+			{
+				int w, h;
+				SDL_GetWindowSize(fWindow, &w, &h);
+				SDL_TouchFingerEvent& ef = e.tfinger;
+				fContext->GetMouseListener()->TouchDown(w * ef.x, h * ef.y, ef.fingerId);
+				break;
+			}
+			case SDL_FINGERUP:
+			{
+				int w, h;
+				SDL_GetWindowSize(fWindow, &w, &h);
+				SDL_TouchFingerEvent& ef = e.tfinger;
+				fContext->GetMouseListener()->TouchUp(w * ef.x, h * ef.y, ef.fingerId);
+				break;
+			}
+			case SDL_FINGERMOTION:
+			{
+				int w, h;
+				SDL_GetWindowSize(fWindow, &w, &h);
+				SDL_TouchFingerEvent& ef = e.tfinger;
+				fContext->GetMouseListener()->TouchMoved(w * ef.x, h * ef.y, ef.fingerId);
+				break;
+			}
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				const SDL_MouseButtonEvent& b = event.button;
-				//	if (b.which != SDL_TOUCH_MOUSEID)
+				const SDL_MouseButtonEvent& b = e.button;
+				if (b.which != SDL_TOUCH_MOUSEID)
 				{
 					int x = b.x;
 					int y = b.y;
-					//SwapXY(x, y);
-
-#if Rtt_DEBUG_TOUCH
-					printf("MOUSE_DOWN(%d, %d)\n", x, y);
-#endif
 
 					float scrollWheelDeltaX = 0;
 					float scrollWheelDeltaY = 0;
@@ -287,22 +243,18 @@ namespace Rtt
 					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0, isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
 
 					fContext->DispatchEvent(mouseEvent);
+					fContext->GetMouseListener()->TouchDown(x, y, 0);
+					break;
 				}
-				break;
 			}
 
 			case SDL_MOUSEMOTION:
 			{
-				const SDL_MouseButtonEvent& b = event.button;
-				//	if (b.which != SDL_TOUCH_MOUSEID)
+				const SDL_MouseButtonEvent& b = e.button;
+				if (b.which != SDL_TOUCH_MOUSEID)
 				{
 					int x = b.x;
 					int y = b.y;
-					//SwapXY(x, y);
-
-#if Rtt_DEBUG_TOUCH
-					printf("MOUSE_MOTION(%d, %d)\n", x, y);
-#endif
 
 					float scrollWheelDeltaX = 0;
 					float scrollWheelDeltaY = 0;
@@ -330,23 +282,23 @@ namespace Rtt
 					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
 						isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
 
+#if Rtt_DEBUG_TOUCH
+					//			printf("MouseEvent(%d, %d)\n", b.x, b.y);
+#endif
+
 					fContext->DispatchEvent(mouseEvent);
+					fContext->GetMouseListener()->TouchMoved(x, y, 0);
+					break;
 				}
-				break;
 			}
 
 			case SDL_MOUSEBUTTONUP:
 			{
-				const SDL_MouseButtonEvent& b = event.button;
-				//	if (b.which != SDL_TOUCH_MOUSEID)
+				const SDL_MouseButtonEvent& b = e.button;
+				if (b.which != SDL_TOUCH_MOUSEID)
 				{
 					int x = b.x;
 					int y = b.y;
-					//SwapXY(x, y);
-
-#if Rtt_DEBUG_TOUCH
-					printf("MOUSE_UP(%d, %d)\n", x, y);
-#endif
 
 					float scrollWheelDeltaX = 0;
 					float scrollWheelDeltaY = 0;
@@ -367,24 +319,20 @@ namespace Rtt
 					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0, isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
 
 					fContext->DispatchEvent(mouseEvent);
+					fContext->GetMouseListener()->TouchUp(x, y, 0);
+					break;
 				}
-				break;
 			}
 
 			case SDL_MOUSEWHEEL:
 			{
-				const SDL_MouseWheelEvent& w = event.wheel;
+				const SDL_MouseWheelEvent& w = e.wheel;
 				if (w.which != SDL_TOUCH_MOUSEID)
 				{
 					int scrollWheelDeltaX = w.x;
 					int scrollWheelDeltaY = w.y;
 					int x = w.x;
 					int y = w.y;
-					//SwapXY(x, y);
-
-#if Rtt_DEBUG_TOUCH
-					printf("MOUSE_WHEEL(%d, %d)\n", x, y);
-#endif
 
 					// Fetch the mouse's current up/down buttons states.
 					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
@@ -407,8 +355,8 @@ namespace Rtt
 #endif
 
 					fContext->DispatchEvent(mouseEvent);
+					break;
 				}
-				break;
 			}
 
 			case SDL_QUIT:
@@ -416,115 +364,12 @@ namespace Rtt
 				return false;
 
 			default:
+				UserEvent(e);
 				break;
 			}
 
 			//int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
-		}
-		return true;
-	}
-
-	bool SolarApp::CreateWindow(const string& resourcesDir)
-	{
-		// set window
-		bool fullScreen = false;
-		int width = 320;
-		int height = 480;
-		int minWidth = width;
-		int minHeight = height;
-
-		// project settings
-		ProjectSettings projectSettings;
-		projectSettings.LoadFromDirectory(resourcesDir.c_str());
-
-		// grab the required config settings (we only need width/height at this stage)
-		if (projectSettings.HasConfigLua())
-		{
-			width = projectSettings.GetContentWidth();
-			height = projectSettings.GetContentHeight();
-		}
-
-		uint32_t windowStyle = SDL_WINDOW_OPENGL;
-
-		// grab the build settings (we only need width/height at this stage)
-		if (projectSettings.HasBuildSettings())
-		{
-			const Rtt::NativeWindowMode* nativeWindowMode = projectSettings.GetDefaultWindowMode();
-			bool isWindowMinimizeButtonEnabled = projectSettings.IsWindowMinimizeButtonEnabled();
-			bool isWindowMaximizeButtonEnabled = projectSettings.IsWindowMaximizeButtonEnabled();
-			bool isWindowCloseButtonEnabled = projectSettings.IsWindowCloseButtonEnabled();
-			bool isWindowResizable = projectSettings.IsWindowResizable();
-			width = projectSettings.GetDefaultWindowViewWidth();
-			height = projectSettings.GetDefaultWindowViewHeight();
-			minWidth = projectSettings.GetMinWindowViewWidth();
-			minHeight = projectSettings.GetMinWindowViewHeight();
-
-			if (*nativeWindowMode == Rtt::NativeWindowMode::kNormal)
-			{
-			}
-			else if (*nativeWindowMode == Rtt::NativeWindowMode::kMinimized)
-			{
-			}
-			else if (*nativeWindowMode == Rtt::NativeWindowMode::kMaximized)
-			{
-			}
-			else if (*nativeWindowMode == Rtt::NativeWindowMode::kFullscreen)
-			{
-				fullScreen = true;
-			}
-
-			if (isWindowMinimizeButtonEnabled)
-			{
-				//				windowStyle |= wxMINIMIZE_BOX;
-			}
-
-			if (isWindowMaximizeButtonEnabled)
-			{
-				windowStyle |= SDL_WINDOW_RESIZABLE;
-			}
-
-			if (isWindowCloseButtonEnabled)
-			{
-				//				windowStyle |= wxCLOSE_BOX;
-			}
-
-			if (isWindowResizable)
-			{
-				//				windowStyle |= wxRESIZE_BORDER;
-			}
-
-			if (fullScreen)
-			{
-				windowStyle |= SDL_WINDOW_FULLSCREEN;
-			}
-		}
-
-		// sanity checks
-		if (width <= 0)
-		{
-			width = 320;
-			minWidth = width;
-		}
-
-		if (height <= 0)
-		{
-			height = 480;
-			minHeight = height;
-		}
-
-		fWindow = SDL_CreateWindow("Solar2D", 0, 0, width, height, windowStyle);
-		if (!fWindow)
-		{
-			Rtt_LogException("Couldn't create window: %s\n", SDL_GetError());
-			return false;
-		}
-
-		fGLcontext = SDL_GL_CreateContext(fWindow);
-		if (!fGLcontext)
-		{
-			Rtt_LogException("SDL_GL_CreateContext(): %s\n", SDL_GetError());
-			return false;
 		}
 		return true;
 	}

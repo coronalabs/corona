@@ -35,21 +35,13 @@
 #include <chrono>
 #include <thread>
 
+#define OPEN_PROJECT_EVENT SDL_USEREVENT + 1
+
 namespace Rtt
 {
 
-	class SolarApp : public ref_counted
+	struct SolarApp : public ref_counted
 	{
-
-		// for event aggerating
-		struct events_t
-		{
-			Uint32 n;
-			SDL_Event e;
-		};
-		static bool cmp_events(std::pair<Uint32, events_t>& a, std::pair<Uint32, events_t>& b) { return a.second.n < b.second.n; }
-
-	public:
 		SolarApp(const std::string& resourceDir);
 		virtual ~SolarApp();
 
@@ -66,19 +58,22 @@ namespace Rtt
 		void ChangeSize(int newWidth, int newHeight);
 		SolarAppContext* GetContext() const { return fContext; }
 		void ResetWindowSize();
-		bool CreateWindow(const std::string& resourcesDir);
 
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
 		const char* GetAppName() const { return fContext->GetAppName(); }
 
-		wxStaticText* suspendedText;
-		SolarAppContext* fContext;
-		std::string fAppPath;
-		std::string fProjectPath;
+	protected:
 
+		virtual void UserEvent(SDL_Event& e) {}
+		inline void SetTitle(const std::string& name)	{	SDL_SetWindowTitle(fWindow, name.c_str()); }
+
+		SolarAppContext* fContext;
 		SDL_Window* fWindow;
 		SDL_GLContext fGLcontext;
+
+		std::string fAppPath;
+		std::string fProjectPath;
 		int fWidth;
 		int fHeight;
 	};

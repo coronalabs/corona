@@ -71,25 +71,25 @@ namespace Rtt
 
 		struct SkinProperties
 		{
-			wxString device;
+			std::string device;
 			int screenOriginX;
 			int screenOriginY;
 			int screenWidth;
 			int screenHeight;
 			int androidDisplayApproximateDpi;
-			wxString displayManufacturer;
-			wxString displayName;
+			std::string displayManufacturer;
+			std::string displayName;
 			bool isUprightOrientationPortrait;
 			bool supportsScreenRotation;
-			wxString windowTitleBarName;
-			wxString skinTitle;
+			std::string windowTitleBarName;
+			std::string skinTitle;
 			int id;
 			bool selected;
 		};
 
 		static bool LoadSkin(lua_State* L, int skinID, std::string filePath);
 		static LinuxSimulatorView::SkinProperties GetSkinProperties(int skinID);
-		static LinuxSimulatorView::SkinProperties GetSkinProperties(wxString skinTitle);
+		static LinuxSimulatorView::SkinProperties GetSkinProperties(const std::string& skinTitle);
 		static void DeselectSkins();
 		static void SelectSkin(int skinID);
 		static void OnBuildForWeb(SolarAppContext* ctx);

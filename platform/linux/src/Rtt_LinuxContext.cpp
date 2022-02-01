@@ -232,16 +232,10 @@ namespace Rtt
 		bool fullScreen = false;
 		int width = 320;
 		int height = 480;
-		string projectPath(fPathToApp.c_str());
-
-		if (!app->IsRunningOnSimulator())
-		{
-			projectPath.append("/Resources");
-		}
 
 		fProjectSettings->ResetBuildSettings();
 		fProjectSettings->ResetConfigLuaSettings();
-		fProjectSettings->LoadFromDirectory(projectPath.c_str());
+		fProjectSettings->LoadFromDirectory(fPathToApp.c_str());
 
 		// read config.lua
 		if (fProjectSettings->HasConfigLua())
@@ -323,8 +317,8 @@ namespace Rtt
 					// use swapped default settings
 					int w = fRuntimeDelegate->GetWidth();
 					int h = fRuntimeDelegate->GetHeight();
-					fRuntimeDelegate->SetWidth(h);
-					fRuntimeDelegate->SetHeight(w);
+					fRuntimeDelegate->SetWidth(480);
+					fRuntimeDelegate->SetHeight(320);
 				}
 				break;
 

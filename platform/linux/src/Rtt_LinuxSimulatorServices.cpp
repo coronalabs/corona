@@ -48,8 +48,7 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::OpenProject(const char *name) const
 	{
-		wxString path;
-
+		string path;
 		if (name != NULL)
 		{
 			path = name;
@@ -73,12 +72,13 @@ namespace Rtt
 		}
 
 		// update the current project path
-		fCurrentProjectPath = path.ToStdString();
+		fCurrentProjectPath = path;
 
 		// send open file dialog event
-//		wxCommandEvent openEvent(eventOpenProject);
-//		openEvent.SetString(path);
-//		wxPostEvent(solarApp, openEvent);
+		SDL_Event e = {};
+		e.type = OPEN_PROJECT_EVENT;
+		e.user.data1 = strdup(path.c_str());
+		SDL_PushEvent(&e);
 
 		return true;
 	}
