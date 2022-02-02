@@ -119,8 +119,9 @@ namespace Rtt
 		{
 			GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
 
-			/*				CreateMenus();
-						SetMenu(resourcesDir.c_str());
+			//			CreateMenus();
+			//			SetMenu(fProjectPath.c_str());
+						/*
 
 						// restore home screen zoom level
 					//	if (IsHomeScreen(appName))
@@ -310,9 +311,59 @@ namespace Rtt
 			}*/
 	}
 
-	void SolarSimulator::CreateMenus()
+	void SolarSimulator::DrawMenu()
 	{
+		int w, h;
+		SDL_GetWindowSize(fWindow, &w, &h);
+
+		// GUI
+
+		// set transparent window background
+		struct nk_style* s = &fNK->style;
+		nk_style_push_color(fNK, &s->window.background, nk_rgba(0, 0, 0, 0));
+		nk_style_push_style_item(fNK, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
+
+
+		if (nk_begin(fNK, GetAppName(), nk_rect(0, 0, w, h), NK_WINDOW_BACKGROUND))
 		{
+			nk_menubar_begin(fNK);
+			nk_layout_row_begin(fNK, NK_STATIC, 25, 2);
+			nk_layout_row_push(fNK, 45);
+			if (nk_menu_begin_label(fNK, "FILE", NK_TEXT_LEFT, nk_vec2(120, 200))) {
+				nk_layout_row_dynamic(fNK, 30, 1);
+				nk_menu_item_label(fNK, "OPEN", NK_TEXT_LEFT);
+				nk_menu_item_label(fNK, "CLOSE", NK_TEXT_LEFT);
+				nk_menu_end(fNK);
+			}
+			nk_layout_row_push(fNK, 45);
+			if (nk_menu_begin_label(fNK, "EDIT", NK_TEXT_LEFT, nk_vec2(120, 200))) {
+				nk_layout_row_dynamic(fNK, 30, 1);
+				nk_menu_item_label(fNK, "COPY", NK_TEXT_LEFT);
+				nk_menu_item_label(fNK, "CUT", NK_TEXT_LEFT);
+				nk_menu_item_label(fNK, "PASTE", NK_TEXT_LEFT);
+				nk_menu_end(fNK);
+			}
+			nk_layout_row_end(fNK);
+			nk_menubar_end(fNK);
+
+			/*			enum { EASY, HARD };
+						static int op = EASY;
+						static int property = 20;
+						nk_layout_row_static(fNK, 30, 80, 1);
+						if (nk_button_label(fNK, "button"))
+							fprintf(stdout, "button pressed\n");
+						nk_layout_row_dynamic(fNK, 30, 2);
+						if (nk_option_label(fNK, "easy", op == EASY)) op = EASY;
+						if (nk_option_label(fNK, "hard", op == HARD)) op = HARD;
+						nk_layout_row_dynamic(fNK, 25, 1);
+						nk_property_int(fNK, "Compression:", 0, &property, 100, 10, 1);*/
+		}
+		nk_end(fNK);
+
+		nk_style_pop_color(fNK);
+		nk_style_pop_style_item(fNK);
+
+		/* {
 			fMenuMain = new wxMenuBar();
 
 			// file Menu
@@ -404,7 +455,7 @@ namespace Rtt
 			//			helpMenu->Append(ID_MENU_HELP_BUILD_ANDROID, _T("&Building For Android"));
 			helpMenu->Append(wxID_ABOUT, _T("&About Simulator..."));
 			fMenuProject->Append(helpMenu, _T("&Help"));
-		}
+		}*/
 	}
 
 	void SolarSimulator::ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle)
@@ -421,8 +472,8 @@ namespace Rtt
 
 	void SolarSimulator::SetMenu(const char* appPath)
 	{
-		/*const string& appName = GetContext()->GetAppName();
-		SetMenuBar(IsHomeScreen(appName) ? fMenuMain : fMenuProject);
+		const string& appName = GetContext()->GetAppName();
+		/*SetMenuBar(IsHomeScreen(appName) ? fMenuMain : fMenuProject);
 
 		if (!IsHomeScreen(appName) && fViewMenu->FindItem("View As") == -1)
 		{
@@ -754,7 +805,11 @@ namespace Rtt
 		string path = ppath.substr(0, ppath.size() - 9); // without main.lua
 
 		fContext = new SolarAppContext(fWindow, path.c_str());
-		fContext->LoadApp();
+		if (fContext->LoadApp() == false)
+		{
+			Rtt_LogException("Failed to load app from %s\n", ppath.c_str());
+			return;
+		}
 
 		string appName = fContext->GetAppName();
 

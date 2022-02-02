@@ -58,7 +58,7 @@ namespace Rtt
 		virtual bool Initialize() override;
 		void CreateSuspendedPanel();
 		void RemoveSuspendedPanel();
-		void CreateMenus();
+		void DrawMenu() override;
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void SetMenu(const char* appPath);
 		void GetSavedZoom(int& width, int& height) override;

@@ -35,6 +35,19 @@
 #include "lua.h"
 #include "lauxlib.h"
 
+// nuklear
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#define NK_IMPLEMENTATION
+#define NK_SDL_GL3_IMPLEMENTATION
+#include "nuklear.h"
+#include "nuklear_sdl_gl3.h"
+
 using namespace Rtt;
 using namespace std;
 
@@ -57,6 +70,7 @@ namespace Rtt
 		, fWindow(NULL)
 		, fWidth(0)
 		, fHeight(0)
+		, fNK(NULL)
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
 
@@ -87,6 +101,8 @@ namespace Rtt
 
 	SolarApp::~SolarApp()
 	{
+		nk_sdl_shutdown();
+
 		fContext = NULL;
 		curl_global_cleanup();
 	}
@@ -112,7 +128,7 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 
-		uint32_t windowStyle = SDL_WINDOW_OPENGL;
+		uint32_t windowStyle = SDL_WINDOW_OPENGL; // | SDL_WINDOW_BORDERLESS;
 		windowStyle |= SDL_WINDOW_RESIZABLE;
 		fWindow = SDL_CreateWindow("Solar2D", 0, 0, 320, 480, windowStyle);
 		if (!fWindow)
@@ -128,17 +144,42 @@ namespace Rtt
 			return false;
 		}
 
+
+		fNK = nk_sdl_init(fWindow);
+
+		// Load Fonts: if none of these are loaded a default font will be used  
+		// Load Cursor: if you uncomment cursor loading please hide the cursor 
+		{
+			struct nk_font_atlas* atlas;
+			nk_sdl_font_stash_begin(&atlas);
+			/*struct nk_font *droid = nk_font_atlas_add_from_file(atlas, "../../../extra_font/DroidSans.ttf", 14, 0);*/
+			/*struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Roboto-Regular.ttf", 16, 0);*/
+			/*struct nk_font *future = nk_font_atlas_add_from_file(atlas, "../../../extra_font/kenvector_future_thin.ttf", 13, 0);*/
+			/*struct nk_font *clean = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyClean.ttf", 12, 0);*/
+			/*struct nk_font *tiny = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyTiny.ttf", 10, 0);*/
+			/*struct nk_font *cousine = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Cousine-Regular.ttf", 13, 0);*/
+			nk_sdl_font_stash_end();
+			/*nk_style_load_all_cursors(ctx, atlas->cursors);*/
+			/*nk_style_set_font(ctx, &roboto->handle)*/;
+		}
+
+
+
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
 		return fContext->LoadApp();
 	}
 
 	bool SolarApp::PollEvents()
 	{
+		nk_input_begin(fNK);
+
 		SDL_Event e;
 		while (SDL_PollEvent(&e))
 		{
 			//SDL_Log("SDL_EVENT %d\n", event.type);
 			//U64 start_time = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
+
+			nk_sdl_handle_event(&e);
 
 			switch (e.type)
 			{
@@ -371,6 +412,8 @@ namespace Rtt
 			//int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
 		}
+
+		nk_input_end(fNK);
 		return true;
 	}
 
@@ -386,6 +429,9 @@ namespace Rtt
 
 			if (!PollEvents())
 				break;
+
+			// GUI
+			DrawMenu();
 
 			fContext->advance();
 
