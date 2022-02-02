@@ -164,7 +164,7 @@ namespace Rtt
 	{
 		switch (e.type)
 		{
-		case OPEN_PROJECT_EVENT:
+		case sdl::ON_OPEN_PROJECT:
 		{
 			string path = (const char*)e.user.data1;
 			free(e.user.data1);
@@ -323,77 +323,102 @@ namespace Rtt
 		nk_style_push_color(fNK, &s->window.background, nk_rgba(0, 0, 0, 0));
 		nk_style_push_style_item(fNK, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
 
+		//nk_user_font font = {};
+		//font.height = 33;
+		//nk_style_set_font(fNK, &font);
 
-		if (nk_begin(fNK, GetAppName(), nk_rect(0, 0, w, h), NK_WINDOW_BACKGROUND))
+		if (strcmp(GetAppName(), "Solar2D Simulator") == 0)		// hack
 		{
-			nk_menubar_begin(fNK);
-			nk_layout_row_begin(fNK, NK_STATIC, 25, 2);
-			nk_layout_row_push(fNK, 45);
-			if (nk_menu_begin_label(fNK, "FILE", NK_TEXT_LEFT, nk_vec2(120, 200))) {
-				nk_layout_row_dynamic(fNK, 30, 1);
-				nk_menu_item_label(fNK, "OPEN", NK_TEXT_LEFT);
-				nk_menu_item_label(fNK, "CLOSE", NK_TEXT_LEFT);
-				nk_menu_end(fNK);
+			// main menu
+			if (nk_begin(fNK, "main", nk_rect(0, 0, 300, 100), 0))
+			{
+				nk_menubar_begin(fNK);
+				nk_layout_row_begin(fNK, NK_STATIC, 25, 2);
+				nk_layout_row_push(fNK, 45);
+				if (nk_menu_begin_label(fNK, "File", NK_TEXT_LEFT, nk_vec2(120, 200)))
+				{
+					nk_layout_row_dynamic(fNK, 30, 1);
+					nk_menu_item_label(fNK, "New Project/Ctrl-N", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Open Project/Ctrl-O", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Relaunch Last Project/Ctrl-R", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Preferences...", NK_TEXT_LEFT);
+					if (nk_menu_item_label(fNK, "Exit", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = SDL_QUIT;
+						SDL_PushEvent(&e);
+					}
+					nk_menu_end(fNK);
+				}
+				nk_layout_row_push(fNK, 45);
+				if (nk_menu_begin_label(fNK, "Help", NK_TEXT_LEFT, nk_vec2(120, 200)))
+				{
+					nk_layout_row_dynamic(fNK, 30, 1);
+					nk_menu_item_label(fNK, "Online Documentation...", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "About Simulator...", NK_TEXT_LEFT);
+					nk_menu_end(fNK);
+				}
+				nk_layout_row_end(fNK);
+				nk_menubar_end(fNK);
 			}
-			nk_layout_row_push(fNK, 45);
-			if (nk_menu_begin_label(fNK, "EDIT", NK_TEXT_LEFT, nk_vec2(120, 200))) {
-				nk_layout_row_dynamic(fNK, 30, 1);
-				nk_menu_item_label(fNK, "COPY", NK_TEXT_LEFT);
-				nk_menu_item_label(fNK, "CUT", NK_TEXT_LEFT);
-				nk_menu_item_label(fNK, "PASTE", NK_TEXT_LEFT);
-				nk_menu_end(fNK);
-			}
-			nk_layout_row_end(fNK);
-			nk_menubar_end(fNK);
-
-			/*			enum { EASY, HARD };
-						static int op = EASY;
-						static int property = 20;
-						nk_layout_row_static(fNK, 30, 80, 1);
-						if (nk_button_label(fNK, "button"))
-							fprintf(stdout, "button pressed\n");
-						nk_layout_row_dynamic(fNK, 30, 2);
-						if (nk_option_label(fNK, "easy", op == EASY)) op = EASY;
-						if (nk_option_label(fNK, "hard", op == HARD)) op = HARD;
-						nk_layout_row_dynamic(fNK, 25, 1);
-						nk_property_int(fNK, "Compression:", 0, &property, 100, 10, 1);*/
+			nk_end(fNK);
 		}
-		nk_end(fNK);
+		else
+		{
+			// project's menu
+			if (nk_begin(fNK, "project", nk_rect(0, 0, 300, 100), 0))
+			{
+				nk_menubar_begin(fNK);
+				nk_layout_row_begin(fNK, NK_STATIC, 25, 2);
+				nk_layout_row_push(fNK, 45);
+				if (nk_menu_begin_label(fNK, "File", NK_TEXT_LEFT, nk_vec2(120, 200)))
+				{
+					nk_layout_row_dynamic(fNK, 30, 1);
+					nk_menu_item_label(fNK, "New Project/Ctrl-N", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Open Project/Ctrl-O", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Build/Ctrl-R", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Open in Editor", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Relaunch", NK_TEXT_LEFT);
 
+					if (nk_menu_item_label(fNK, "Close Project", NK_TEXT_LEFT))
+					{
+						string path(GetStartupPath(NULL));
+						path.append("/Resources/homescreen/main.lua");
+
+						SDL_Event e = {};
+						e.type = sdl::ON_OPEN_PROJECT;
+						e.user.data1 = strdup(path.c_str());
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Exit", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = SDL_QUIT;
+						SDL_PushEvent(&e);
+					}
+					nk_menu_end(fNK);
+				}
+				nk_layout_row_push(fNK, 45);
+				if (nk_menu_begin_label(fNK, "Help", NK_TEXT_LEFT, nk_vec2(120, 200)))
+				{
+					nk_layout_row_dynamic(fNK, 30, 1);
+					nk_menu_item_label(fNK, "Online Documentation...", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT);
+					nk_menu_item_label(fNK, "About Simulator...", NK_TEXT_LEFT);
+					nk_menu_end(fNK);
+				}
+				nk_layout_row_end(fNK);
+				nk_menubar_end(fNK);
+			}
+			nk_end(fNK);
+
+		}
 		nk_style_pop_color(fNK);
 		nk_style_pop_style_item(fNK);
 
 		/* {
-			fMenuMain = new wxMenuBar();
-
-			// file Menu
-			wxMenu* fileMenu = new wxMenu();
-			fileMenu->Append(ID_MENU_NEW_PROJECT, _T("&New Project	\tCtrl-N"));
-			fileMenu->Append(ID_MENU_OPEN_PROJECT, _T("&Open Project	\tCtrl-O"));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(ID_MENU_OPEN_LAST_PROJECT, _T("&Relaunch Last Project	\tCtrl-R"));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(wxID_PREFERENCES, _T("&Preferences..."));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(wxID_EXIT, _T("&Exit"));
-			fMenuMain->Append(fileMenu, _T("&File"));
-
-			// view menu
-			//fViewMenu = new wxMenu();
-			//fZoomIn = fViewMenu->Append(ID_MENU_ZOOM_IN, _T("&Zoom In \tCtrl-KP_ADD"));
-			//fZoomOut = fViewMenu->Append(ID_MENU_ZOOM_OUT, _T("&Zoom Out \tCtrl-KP_Subtract"));
-			//fViewMenu->AppendSeparator();
-			//fMenuMain->Append(fViewMenu, _T("&View"));
-
-			// about menu
-			wxMenu* helpMenu = new wxMenu();
-			helpMenu->Append(ID_MENU_OPEN_DOCUMENTATION, _T("&Online Documentation..."));
-			helpMenu->Append(ID_MENU_OPEN_SAMPLE_CODE, _T("&Sample projects..."));
-			//			helpMenu->Append(ID_MENU_HELP_BUILD_ANDROID, _T("&Building For Android"));
-			helpMenu->Append(wxID_ABOUT, _T("&About Simulator..."));
-			fMenuMain->Append(helpMenu, _T("&Help"));
-		}
-
 		// project's menu
 		{
 			fMenuProject = new wxMenuBar();

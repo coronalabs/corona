@@ -46,7 +46,11 @@
 #include "nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
-#define OPEN_PROJECT_EVENT SDL_USEREVENT + 1
+enum sdl
+{
+	ON_OPEN_PROJECT = SDL_USEREVENT + 1,
+	ON_EXIT
+};
 
 namespace Rtt
 {

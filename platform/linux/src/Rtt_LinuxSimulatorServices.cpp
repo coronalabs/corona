@@ -76,7 +76,7 @@ namespace Rtt
 
 		// send open file dialog event
 		SDL_Event e = {};
-		e.type = OPEN_PROJECT_EVENT;
+		e.type = sdl::ON_OPEN_PROJECT;
 		e.user.data1 = strdup(path.c_str());
 		SDL_PushEvent(&e);
 
