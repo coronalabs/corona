@@ -189,7 +189,10 @@ namespace Rtt
 			OnOpenSampleProjects();
 			break;
 		case sdl::OnAbout:
-			OnAbout();
+			fDlg = new DlgAbout(fNK);
+			break;
+		case sdl::OnCloseDialog:
+			fDlg = NULL;
 			break;
 		case sdl::OnShowProjectFiles:
 		case sdl::OnShowProjectSandbox:
@@ -326,8 +329,8 @@ namespace Rtt
 
 			string newWindowTitle(fContext->GetTitle());
 
-//vv			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
-	//		newWindowTitle.append(" - ").append(sProperties.skinTitle);
+			//vv			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
+				//		newWindowTitle.append(" - ").append(sProperties.skinTitle);
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName(), fContext->GetPlatform());
 
 			//	SetMenu(fAppPath.c_str());
@@ -342,6 +345,12 @@ namespace Rtt
 		SDL_GetWindowSize(fWindow, &w, &h);
 
 		// GUI
+		if (fDlg)
+		{
+			fDlg->advance();
+			return;
+		}
+
 
 		// set transparent window background
 		struct nk_style* s = &fNK->style;
@@ -466,8 +475,8 @@ namespace Rtt
 						SDL_Event e = {};
 						e.type = sdl::OnOpenInEditor;
 						SDL_PushEvent(&e);
-					}		
-					
+					}
+
 					if (nk_menu_item_label(fNK, "Show Project Files", NK_TEXT_LEFT))
 					{
 						SDL_Event e = {};
@@ -521,7 +530,7 @@ namespace Rtt
 						e.type = sdl::OnOpenDocumentation;
 						SDL_PushEvent(&e);
 					}
-					
+
 					if (nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT))
 					{
 						SDL_Event e = {};
@@ -1104,6 +1113,52 @@ namespace Rtt
 	void SolarSimulator::ConfigSet(const char* key, int val)
 	{
 		fConfig[key] = ::to_string(val);
+	}
+
+	//
+	// 
+	//
+
+	void DlgAbout::advance()
+	{
+		struct nk_colorf bg;
+		bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
+		if (nk_begin(ctx, "About", nk_rect(50, 50, 450, 300), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE))
+		{
+			nk_layout_row_dynamic(ctx, 30, 1);
+			nk_label(ctx, "Solar2D Simulator", NK_TEXT_CENTERED);
+
+			nk_layout_row_dynamic(ctx, 30, 1);
+			nk_label(ctx, Rtt_STRING_BUILD, NK_TEXT_CENTERED);
+
+			nk_layout_row_dynamic(ctx, 30, 1);
+			nk_label(ctx, Rtt_STRING_COPYRIGHT, NK_TEXT_CENTERED);
+
+			nk_layout_row_dynamic(ctx, 30, 1);
+			const char* url = "https://solar2d.com";
+			if (nk_button_label(ctx, url))
+			{
+				OpenURL(url);
+			}
+
+			nk_layout_row_dynamic(ctx, 50, 1);
+			if (nk_button_label(ctx, "OK"))
+			{
+				SDL_Event e = {};
+				e.type = sdl::OnCloseDialog;
+				SDL_PushEvent(&e);
+			}
+
+			string iconPath = GetStartupPath(NULL);
+			iconPath.append("/Resources/solar2d.png");
+			if (Rtt_FileExists(iconPath.c_str()))
+			{
+				//wxIcon icon = wxIcon(iconPath.c_str(), wxBITMAP_TYPE_PNG, 60, 60);
+				//info.SetIcon(icon);
+			}
+
+		}
+		nk_end(ctx);
 	}
 
 }

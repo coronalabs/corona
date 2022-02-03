@@ -16,6 +16,18 @@
 namespace Rtt
 {
 
+	struct DlgWindow : public ref_counted
+	{
+		DlgWindow(nk_context* nkctx) : ctx(nkctx) {}
+		virtual void advance() = 0;
+		nk_context* ctx;
+	};
+	struct DlgAbout : public DlgWindow
+	{
+		DlgAbout(nk_context* nkctx) : DlgWindow(nkctx) {}
+		void advance() override;
+	};
+
 	class SolarSimulator : public SolarApp
 	{
 	public:
@@ -52,7 +64,6 @@ namespace Rtt
 		void OnBuildForLinux(wxCommandEvent& event);
 		void OnOpenDocumentation();
 		void OnOpenSampleProjects();
-		void OnAbout();
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool Initialize() override;
@@ -96,6 +107,7 @@ namespace Rtt
 		std::string fConfigFilePath;
 		int currentSkinWidth;
 		int currentSkinHeight;
+		smart_ptr<DlgWindow> fDlg;
 	};
 }
 

@@ -20,4 +20,6 @@ std::string& rtrim(std::string& str, const std::string& chars);
 std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
 void splitString(std::vector<std::string>& cont, const std::string& str, const std::string& delims);
 
+void OpenURL(const char* url);
+
 #endif // Rtt_LinuxUtils

@@ -175,3 +175,10 @@ void UpdateRecentDocs(const std::string& appName, const std::string& path)
 		}
 	}
 }
+
+void OpenURL(const char* url)
+{
+	string cmd("xdg-open ");
+	cmd.append(url);
+	system(cmd.c_str());
+}

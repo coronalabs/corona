@@ -63,6 +63,7 @@ enum sdl
 	OnClearProjectSandbox,
 	OnRelaunchLastProject,
 	OnOpenPreferences,
+	OnCloseDialog
 };
 
 namespace Rtt

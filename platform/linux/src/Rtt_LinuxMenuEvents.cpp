@@ -251,26 +251,4 @@ namespace Rtt
 		SDL_PushEvent(&e);
 	}
 
-	void SolarSimulator::OnAbout()
-	{
-		wxAboutDialogInfo info;
-		string version("Version: ");
-		version.append(Rtt_STRING_BUILD);	info.SetName("Solar2D Simulator");
-		info.SetVersion(version);
-		info.SetCopyright(Rtt_STRING_COPYRIGHT);
-		info.AddDeveloper("Danny Glover, Robert Craig. Based on initial port by the CoronaLabs team.");
-		info.SetWebSite("https://solar2d.com");
-		info.SetLicence(_("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES\nOF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\nNONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS\nBE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN\nACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."));
-		info.SetDescription(_("Solar2D is a cross-platform framework ideal for rapidly creating apps and games for mobile devices, TV, desktop systems and HTML5.\n\nThat means you can create your project once and publish it to multiple types of devices, including Apple iPhone and iPad, Android phones and tablets, Amazon Fire, Mac Desktop, Windows Desktop, Linux, HTML5 and even connected TVs such as Apple TV, Fire TV, and Android TV."));
-
-		string iconPath = GetStartupPath(NULL);
-		iconPath.append("/Resources/solar2d.png");
-		if (Rtt_FileExists(iconPath.c_str()))
-		{
-			wxIcon icon = wxIcon(iconPath.c_str(), wxBITMAP_TYPE_PNG, 60, 60);
-			info.SetIcon(icon);
-		}
-
-		::wxAboutBox(info, solarApp);
-	}
 }
