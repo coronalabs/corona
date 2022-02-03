@@ -74,9 +74,8 @@ namespace Rtt
 		// update the current project path
 		fCurrentProjectPath = path;
 
-		// send open file dialog event
 		SDL_Event e = {};
-		e.type = sdl::ON_OPEN_PROJECT;
+		e.type = sdl::OnOpen;
 		e.user.data1 = strdup(path.c_str());
 		SDL_PushEvent(&e);
 

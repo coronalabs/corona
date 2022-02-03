@@ -22,12 +22,12 @@ namespace Rtt
 		SolarSimulator(const std::string& resourceDir);
 		virtual ~SolarSimulator();
 
-		void UserEvent(SDL_Event& e) override;
+		void GuiEvent(SDL_Event& e) override;
 
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
 		void OnOpen(const std::string& path);
 		void OnClose(wxCloseEvent& event) override;
-		void OnRelaunch(wxCommandEvent& event);
+		void OnRelaunch();
 		void OnZoomIn(wxCommandEvent& event);
 		void OnZoomOut(wxCommandEvent& event);
 		void OnViewAsChanged(wxCommandEvent& event);
@@ -40,7 +40,7 @@ namespace Rtt
 		void OnNewProject(wxCommandEvent& event);
 		void OnOpenFileDialog(wxCommandEvent& event);
 		void OnRelaunchLastProject(wxCommandEvent& event);
-		void OnOpenInEditor(wxCommandEvent& event);
+		void OnOpenInEditor();
 		void OnShowProjectFiles(wxCommandEvent& event);
 		void OnShowProjectSandbox(wxCommandEvent& event);
 		void OnClearProjectSandbox(wxCommandEvent& event);
@@ -50,9 +50,9 @@ namespace Rtt
 		void OnBuildForAndroid(wxCommandEvent& event);
 		void OnBuildForWeb(wxCommandEvent& event);
 		void OnBuildForLinux(wxCommandEvent& event);
-		void OnOpenDocumentation(wxCommandEvent& event);
-		void OnOpenSampleProjects(wxCommandEvent& event);
-		void OnAbout(wxCommandEvent& WXUNUSED(event));
+		void OnOpenDocumentation();
+		void OnOpenSampleProjects();
+		void OnAbout();
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool Initialize() override;

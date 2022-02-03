@@ -42,7 +42,7 @@
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 #define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
+//#define NK_INCLUDE_DEFAULT_FONT
 #define NK_IMPLEMENTATION
 #define NK_SDL_GL3_IMPLEMENTATION
 #include "nuklear.h"
@@ -152,18 +152,20 @@ namespace Rtt
 		{
 			struct nk_font_atlas* atlas;
 			nk_sdl_font_stash_begin(&atlas);
-			/*struct nk_font *droid = nk_font_atlas_add_from_file(atlas, "../../../extra_font/DroidSans.ttf", 14, 0);*/
-			/*struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Roboto-Regular.ttf", 16, 0);*/
-			/*struct nk_font *future = nk_font_atlas_add_from_file(atlas, "../../../extra_font/kenvector_future_thin.ttf", 13, 0);*/
-			/*struct nk_font *clean = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyClean.ttf", 12, 0);*/
-			/*struct nk_font *tiny = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyTiny.ttf", 10, 0);*/
-			/*struct nk_font *cousine = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Cousine-Regular.ttf", 13, 0);*/
+			string font_path = fProjectPath + "/Exo2-Regular.ttf";
+			struct nk_font* exo2 = nk_font_atlas_add_from_file(atlas, font_path.c_str(), 20, 0);
 			nk_sdl_font_stash_end();
-			/*nk_style_load_all_cursors(ctx, atlas->cursors);*/
-			/*nk_style_set_font(ctx, &roboto->handle)*/;
+
+			if (exo2)
+			{
+				//nk_style_load_all_cursors(fNK, atlas->cursors);
+				nk_style_set_font(fNK, &exo2->handle);
+			}
+			else
+			{
+				Rtt_LogException("No %s\n", font_path.c_str());
+			}
 		}
-
-
 
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
 		return fContext->LoadApp();
@@ -405,7 +407,7 @@ namespace Rtt
 				return false;
 
 			default:
-				UserEvent(e);
+				GuiEvent(e);
 				break;
 			}
 

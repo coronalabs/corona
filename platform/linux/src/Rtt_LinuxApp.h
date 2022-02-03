@@ -42,14 +42,27 @@
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 #define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
+//#define NK_INCLUDE_DEFAULT_FONT
 #include "nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
 enum sdl
 {
-	ON_OPEN_PROJECT = SDL_USEREVENT + 1,
-	ON_EXIT
+	OnOpen = SDL_USEREVENT + 1,
+	OnNewProject,
+	OnBuild,
+	OnOpenInEditor,
+	OnRelaunch,
+	OnOpenFileDialog,
+	OnClose,
+	OnOpenDocumentation,
+	OnOpenSampleProjects,
+	OnAbout,
+	OnShowProjectFiles,
+	OnShowProjectSandbox,
+	OnClearProjectSandbox,
+	OnRelaunchLastProject,
+	OnOpenPreferences,
 };
 
 namespace Rtt
@@ -81,7 +94,7 @@ namespace Rtt
 
 	protected:
 
-		virtual void UserEvent(SDL_Event& e) {}
+		virtual void GuiEvent(SDL_Event& e) {}
 		inline void SetTitle(const std::string& name)	{	SDL_SetWindowTitle(fWindow, name.c_str()); }
 
 		SolarAppContext* fContext;

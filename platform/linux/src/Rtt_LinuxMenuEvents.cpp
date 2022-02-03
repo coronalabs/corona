@@ -98,7 +98,7 @@ namespace Rtt
 		}
 	}
 
-	void SolarSimulator::OnOpenInEditor(wxCommandEvent& event)
+	void SolarSimulator::OnOpenInEditor()
 	{
 		string command("xdg-open ");
 		command.append(GetContext()->GetAppPath());
@@ -215,13 +215,13 @@ namespace Rtt
 
 	// help menu items
 
-	void SolarSimulator::OnOpenDocumentation(wxCommandEvent& event)
+	void SolarSimulator::OnOpenDocumentation()
 	{
 		string command("xdg-open https://docs.coronalabs.com/api/index.html");
 		wxExecute(command.c_str());
 	}
 
-	void SolarSimulator::OnOpenSampleProjects(wxCommandEvent& event)
+	void SolarSimulator::OnOpenSampleProjects()
 	{
 		string samplesPath = GetStartupPath(NULL);
 		samplesPath.append("/Resources/SampleCode");
@@ -245,12 +245,13 @@ namespace Rtt
 		}
 
 		// open project
-//		wxCommandEvent eventOpen(eventOpenProject);
-//		eventOpen.SetString(path.c_str());
-//		wxPostEvent(solarApp, eventOpen);
+		SDL_Event e = {};
+		e.type = sdl::OnOpen;
+		e.user.data1 = strdup(path.c_str());
+		SDL_PushEvent(&e);
 	}
 
-	void SolarSimulator::OnAbout(wxCommandEvent& WXUNUSED(event))
+	void SolarSimulator::OnAbout()
 	{
 		wxAboutDialogInfo info;
 		string version("Version: ");

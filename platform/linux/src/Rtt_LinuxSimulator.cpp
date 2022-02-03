@@ -160,17 +160,43 @@ namespace Rtt
 		return false;
 	}
 
-	void SolarSimulator::UserEvent(SDL_Event& e)
+	void SolarSimulator::GuiEvent(SDL_Event& e)
 	{
 		switch (e.type)
 		{
-		case sdl::ON_OPEN_PROJECT:
+		case sdl::OnOpen:
 		{
 			string path = (const char*)e.user.data1;
 			free(e.user.data1);
 			OnOpen(path);
 			break;
 		}
+		case sdl::OnRelaunch:
+			OnRelaunch();
+			break;
+		case sdl::OnOpenInEditor:
+			OnOpenInEditor();
+			break;
+		case sdl::OnOpenFileDialog:
+			break;
+
+		case sdl::OnClose:
+			break;
+		case sdl::OnOpenDocumentation:
+			OnOpenDocumentation();
+			break;
+		case sdl::OnOpenSampleProjects:
+			OnOpenSampleProjects();
+			break;
+		case sdl::OnAbout:
+			OnAbout();
+			break;
+		case sdl::OnShowProjectFiles:
+		case sdl::OnShowProjectSandbox:
+		case sdl::OnClearProjectSandbox:
+		case sdl::OnRelaunchLastProject:
+		case sdl::OnOpenPreferences:
+
 		default:
 			break;
 		}
@@ -257,58 +283,57 @@ namespace Rtt
 		suspendedPanel = NULL;
 	}
 
-	void SolarSimulator::OnRelaunch(wxCommandEvent& event)
+	void SolarSimulator::OnRelaunch()
 	{
-		/*	if (fAppPath.size() > 0 && !IsHomeScreen(fContext->GetAppName()))
+		if (fAppPath.size() > 0 && !IsHomeScreen(fContext->GetAppName()))
+		{
+			bool doRelaunch = !fRelaunchedViaFileEvent;
+
+			LinuxRuntimeErrorDialog* errDialog = fContext->GetPlatform()->GetRuntimeErrorDialog();
+			if ((errDialog && errDialog->IsShown()) || (fRelaunchProjectDialog && fRelaunchProjectDialog->IsShown()))
 			{
-				bool doRelaunch = !fRelaunchedViaFileEvent;
+				return;
+			}
 
-				if (fContext->GetPlatform()->GetRuntimeErrorDialog()->IsShown() || fRelaunchProjectDialog->IsShown())
+			// workaround for wxFileSystem events firing twice (known wx bug)
+			if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
+			{
+				return;
+			}
+
+			if (fRelaunchedViaFileEvent)
+			{
+				const string& relaunchOnFileChange = ConfigStr("relaunchOnFileChange");
+				if (relaunchOnFileChange == "Always" || relaunchOnFileChange == "Ask")
 				{
-					return;
+					doRelaunch = true;
 				}
+				fRelaunchedViaFileEvent = false;
+			}
 
-				// workaround for wxFileSystem events firing twice (known wx bug)
-				if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
-				{
-					return;
-				}
+			if (!doRelaunch)
+			{
+				return;
+			}
 
-				if (fRelaunchedViaFileEvent)
-				{
-					const string& relaunchOnFileChange = ConfigStr("relaunchOnFileChange");
-					if (relaunchOnFileChange == "Always" || relaunchOnFileChange == "Ask")
-					{
-						doRelaunch = true;
-					}
-					fRelaunchedViaFileEvent = false;
-				}
+			RemoveSuspendedPanel();
 
-				if (!doRelaunch)
-				{
-					return;
-				}
+			fContext->GetRuntime()->End();
+			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
+			fContext->LoadApp();
 
-				RemoveSuspendedPanel();
+			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
-				fContext->GetRuntime()->End();
-				fContext = new SolarAppContext(fWindow, fAppPath.c_str());
-				fContext->LoadApp();
+			string newWindowTitle(fContext->GetTitle());
 
-				WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
-				//SetCursor(wxCURSOR_ARROW);
+//vv			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
+	//		newWindowTitle.append(" - ").append(sProperties.skinTitle);
+			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName(), fContext->GetPlatform());
 
-				wxString newWindowTitle(fContext->GetTitle());
-
-				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
-				newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
-				LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName(), fContext->GetPlatform());
-
-				//	SetMenu(fAppPath.c_str());
-				//	SetTitle(newWindowTitle);
-
-				fFileSystemEventTimestamp = wxGetUTCTimeMillis();
-			}*/
+			//	SetMenu(fAppPath.c_str());
+			SetTitle(newWindowTitle);
+			fFileSystemEventTimestamp = wxGetUTCTimeMillis();
+		}
 	}
 
 	void SolarSimulator::DrawMenu()
@@ -323,10 +348,7 @@ namespace Rtt
 		nk_style_push_color(fNK, &s->window.background, nk_rgba(0, 0, 0, 0));
 		nk_style_push_style_item(fNK, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
 
-		//nk_user_font font = {};
-		//font.height = 33;
-		//nk_style_set_font(fNK, &font);
-
+		int menu_width = 250;
 		if (strcmp(GetAppName(), "Solar2D Simulator") == 0)		// hack
 		{
 			// main menu
@@ -335,13 +357,38 @@ namespace Rtt
 				nk_menubar_begin(fNK);
 				nk_layout_row_begin(fNK, NK_STATIC, 25, 2);
 				nk_layout_row_push(fNK, 45);
-				if (nk_menu_begin_label(fNK, "File", NK_TEXT_LEFT, nk_vec2(120, 200)))
+				if (nk_menu_begin_label(fNK, "File", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
 				{
 					nk_layout_row_dynamic(fNK, 30, 1);
-					nk_menu_item_label(fNK, "New Project/Ctrl-N", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Open Project/Ctrl-O", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Relaunch Last Project/Ctrl-R", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Preferences...", NK_TEXT_LEFT);
+
+					if (nk_menu_item_label(fNK, "New Project / Ctrl-N", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnNewProject;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Open Project / Ctrl-O", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnOpenFileDialog;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Relaunch Last Prokect", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnRelaunchLastProject;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Preferences...", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnOpenPreferences;
+						SDL_PushEvent(&e);
+					}
+
 					if (nk_menu_item_label(fNK, "Exit", NK_TEXT_LEFT))
 					{
 						SDL_Event e = {};
@@ -351,12 +398,29 @@ namespace Rtt
 					nk_menu_end(fNK);
 				}
 				nk_layout_row_push(fNK, 45);
-				if (nk_menu_begin_label(fNK, "Help", NK_TEXT_LEFT, nk_vec2(120, 200)))
+				if (nk_menu_begin_label(fNK, "Help", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
 				{
 					nk_layout_row_dynamic(fNK, 30, 1);
-					nk_menu_item_label(fNK, "Online Documentation...", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "About Simulator...", NK_TEXT_LEFT);
+					if (nk_menu_item_label(fNK, "Online Documentation...", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnOpenDocumentation;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnOpenSampleProjects;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "About Simulator...", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnAbout;
+						SDL_PushEvent(&e);
+					}
 					nk_menu_end(fNK);
 				}
 				nk_layout_row_end(fNK);
@@ -372,23 +436,70 @@ namespace Rtt
 				nk_menubar_begin(fNK);
 				nk_layout_row_begin(fNK, NK_STATIC, 25, 2);
 				nk_layout_row_push(fNK, 45);
-				if (nk_menu_begin_label(fNK, "File", NK_TEXT_LEFT, nk_vec2(120, 200)))
+				if (nk_menu_begin_label(fNK, "File", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
 				{
 					nk_layout_row_dynamic(fNK, 30, 1);
-					nk_menu_item_label(fNK, "New Project/Ctrl-N", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Open Project/Ctrl-O", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Build/Ctrl-R", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Open in Editor", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Relaunch", NK_TEXT_LEFT);
+
+					if (nk_menu_item_label(fNK, "New Project / Ctrl-N", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnNewProject;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Open Project / Ctrl-O", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnOpenFileDialog;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Build", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnBuild;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Open in Editor", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnOpenInEditor;
+						SDL_PushEvent(&e);
+					}		
+					
+					if (nk_menu_item_label(fNK, "Show Project Files", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnShowProjectFiles;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Show Project Sandbox", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnShowProjectSandbox;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Clear Project Sandbox", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnClearProjectSandbox;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "Relaunch / Ctrl+R", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnRelaunch;
+						SDL_PushEvent(&e);
+					}
 
 					if (nk_menu_item_label(fNK, "Close Project", NK_TEXT_LEFT))
 					{
-						string path(GetStartupPath(NULL));
-						path.append("/Resources/homescreen/main.lua");
-
 						SDL_Event e = {};
-						e.type = sdl::ON_OPEN_PROJECT;
-						e.user.data1 = strdup(path.c_str());
+						e.type = sdl::OnClose;
 						SDL_PushEvent(&e);
 					}
 
@@ -401,12 +512,29 @@ namespace Rtt
 					nk_menu_end(fNK);
 				}
 				nk_layout_row_push(fNK, 45);
-				if (nk_menu_begin_label(fNK, "Help", NK_TEXT_LEFT, nk_vec2(120, 200)))
+				if (nk_menu_begin_label(fNK, "Help", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
 				{
 					nk_layout_row_dynamic(fNK, 30, 1);
-					nk_menu_item_label(fNK, "Online Documentation...", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT);
-					nk_menu_item_label(fNK, "About Simulator...", NK_TEXT_LEFT);
+					if (nk_menu_item_label(fNK, "Online Documentation...", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnOpenDocumentation;
+						SDL_PushEvent(&e);
+					}
+					
+					if (nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnOpenSampleProjects;
+						SDL_PushEvent(&e);
+					}
+
+					if (nk_menu_item_label(fNK, "About Simulator...", NK_TEXT_LEFT))
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnAbout;
+						SDL_PushEvent(&e);
+					}
 					nk_menu_end(fNK);
 				}
 				nk_layout_row_end(fNK);
