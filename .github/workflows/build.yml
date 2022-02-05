@@ -339,7 +339,7 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v1
