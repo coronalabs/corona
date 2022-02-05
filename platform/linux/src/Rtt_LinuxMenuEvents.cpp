@@ -240,7 +240,7 @@ namespace Rtt
 
 		// open project
 		SDL_Event e = {};
-		e.type = sdl::OnOpen;
+		e.type = sdl::OnOpenProject;
 		e.user.data1 = strdup(path.c_str());
 		SDL_PushEvent(&e);
 	}

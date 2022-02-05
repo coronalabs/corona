@@ -195,7 +195,7 @@ namespace Rtt
 	{
 		switch (e.type)
 		{
-		case sdl::OnOpen:
+		case sdl::OnOpenProject:
 		{
 			string path = (const char*)e.user.data1;
 			free(e.user.data1);

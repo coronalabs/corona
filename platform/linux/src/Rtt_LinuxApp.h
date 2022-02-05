@@ -38,7 +38,7 @@
 
 enum sdl
 {
-	OnOpen = SDL_USEREVENT + 1,
+	OnOpenProject = SDL_USEREVENT + 1,
 	OnNewProject,
 	OnBuild,
 	OnOpenInEditor,
