@@ -107,6 +107,16 @@ namespace Rtt
 		delete fMenuProject;
 	}
 
+	void SolarSimulator::RenderGUI()
+	{
+		if (fNK)
+		{
+			const int MAX_VERTEX_MEMORY = 512 * 1024;
+			const int MAX_ELEMENT_MEMORY = 128 * 1024;
+			nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
+		}
+	}
+
 	bool SolarSimulator::Initialize()
 	{
 #ifdef Rtt_SIMULATOR
@@ -119,41 +129,62 @@ namespace Rtt
 		{
 			GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
 
-			//			CreateMenus();
-			//			SetMenu(fProjectPath.c_str());
-						/*
+			fNK = nk_sdl_init(fWindow);
+			fMenu = new DlgMenu(fNK, fWindow, fProjectPath);
 
-						// restore home screen zoom level
-					//	if (IsHomeScreen(appName))
-					//	{
-					//		fContext->GetRuntimeDelegate()->fContentWidth = fSimulatorConfig->welcomeScreenZoomedWidth;
-					//		fContext->GetRuntimeDelegate()->fContentHeight = fSimulatorConfig->welcomeScreenZoomedHeight;
-					//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
-					//	}
+			// Load Fonts: if none of these are loaded a default font will be used  
+			// Load Cursor: if you uncomment cursor loading please hide the cursor 
+			{
+				struct nk_font_atlas* atlas;
+				nk_sdl_font_stash_begin(&atlas);
+				string font_path = fProjectPath + "/Exo2-Regular.ttf";
+				struct nk_font* exo2 = nk_font_atlas_add_from_file(atlas, font_path.c_str(), 20, 0);
+				nk_sdl_font_stash_end();
 
-						currentSkinWidth = ConfigInt("skinWidth");
-						currentSkinHeight = ConfigInt("skinHeight");
+				if (exo2)
+				{
+					//nk_style_load_all_cursors(fNK, atlas->cursors);
+					nk_style_set_font(fNK, &exo2->handle);
+				}
+				else
+				{
+					Rtt_LogException("No %s\n", font_path.c_str());
+				}
+			}
 
-						fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
+			/*
+
+			// restore home screen zoom level
+		//	if (IsHomeScreen(appName))
+		//	{
+		//		fContext->GetRuntimeDelegate()->fContentWidth = fSimulatorConfig->welcomeScreenZoomedWidth;
+		//		fContext->GetRuntimeDelegate()->fContentHeight = fSimulatorConfig->welcomeScreenZoomedHeight;
+		//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
+		//	}
+
+			currentSkinWidth = ConfigInt("skinWidth");
+			currentSkinHeight = ConfigInt("skinHeight");
+
+			fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
 
 
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnNewProject(e); }, ID_MENU_NEW_PROJECT);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenFileDialog(e); }, ID_MENU_OPEN_PROJECT);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnRelaunchLastProject(e); }, ID_MENU_OPEN_LAST_PROJECT);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenInEditor(e); }, ID_MENU_OPEN_IN_EDITOR);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnShowProjectFiles(e); }, ID_MENU_SHOW_PROJECT_FILES);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnShowProjectSandbox(e); }, ID_MENU_SHOW_PROJECT_SANDBOX);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnClearProjectSandbox(e); }, ID_MENU_CLEAR_PROJECT_SANDBOX);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAndroidBackButton(e); }, ID_MENU_BACK_BUTTON);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForAndroid(e); }, ID_MENU_BUILD_ANDROID);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForWeb(e); }, ID_MENU_BUILD_WEB);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForLinux(e); }, ID_MENU_BUILD_LINUX);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenPreferences(e); }, wxID_PREFERENCES);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnQuit(e); }, wxID_EXIT);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenDocumentation(e); }, ID_MENU_OPEN_DOCUMENTATION);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenSampleProjects(e); }, ID_MENU_OPEN_SAMPLE_CODE);
-						Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAbout(e); }, wxID_ABOUT);
-						*/
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnNewProject(e); }, ID_MENU_NEW_PROJECT);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenFileDialog(e); }, ID_MENU_OPEN_PROJECT);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnRelaunchLastProject(e); }, ID_MENU_OPEN_LAST_PROJECT);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenInEditor(e); }, ID_MENU_OPEN_IN_EDITOR);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnShowProjectFiles(e); }, ID_MENU_SHOW_PROJECT_FILES);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnShowProjectSandbox(e); }, ID_MENU_SHOW_PROJECT_SANDBOX);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnClearProjectSandbox(e); }, ID_MENU_CLEAR_PROJECT_SANDBOX);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAndroidBackButton(e); }, ID_MENU_BACK_BUTTON);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForAndroid(e); }, ID_MENU_BUILD_ANDROID);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForWeb(e); }, ID_MENU_BUILD_WEB);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForLinux(e); }, ID_MENU_BUILD_LINUX);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenPreferences(e); }, wxID_PREFERENCES);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnQuit(e); }, wxID_EXIT);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenDocumentation(e); }, ID_MENU_OPEN_DOCUMENTATION);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenSampleProjects(e); }, ID_MENU_OPEN_SAMPLE_CODE);
+			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAbout(e); }, wxID_ABOUT);
+			*/
 
 			return true;
 		}
@@ -178,18 +209,18 @@ namespace Rtt
 			OnOpenInEditor();
 			break;
 		case sdl::OnOpenFileDialog:
+			fDlg = new DlgFile(fNK, fWindow, fProjectPath);
 			break;
-
 		case sdl::OnClose:
 			break;
 		case sdl::OnOpenDocumentation:
-			OnOpenDocumentation();
+			OpenURL("https://docs.coronalabs.com/api/index.html");
 			break;
 		case sdl::OnOpenSampleProjects:
 			OnOpenSampleProjects();
 			break;
 		case sdl::OnAbout:
-			fDlg = new DlgAbout(fNK);
+			fDlg = new DlgAbout(fNK, fWindow);
 			break;
 		case sdl::OnCloseDialog:
 			fDlg = NULL;
@@ -324,6 +355,7 @@ namespace Rtt
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
 			fContext->LoadApp();
+			fMenu = new DlgMenu(fNK, fWindow, fProjectPath);
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
@@ -337,287 +369,6 @@ namespace Rtt
 			SetTitle(newWindowTitle);
 			fFileSystemEventTimestamp = wxGetUTCTimeMillis();
 		}
-	}
-
-	void SolarSimulator::DrawMenu()
-	{
-		int w, h;
-		SDL_GetWindowSize(fWindow, &w, &h);
-
-		// GUI
-		if (fDlg)
-		{
-			fDlg->advance();
-			return;
-		}
-
-
-		// set transparent window background
-		struct nk_style* s = &fNK->style;
-		nk_style_push_color(fNK, &s->window.background, nk_rgba(0, 0, 0, 0));
-		nk_style_push_style_item(fNK, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
-
-		int menu_width = 250;
-		if (strcmp(GetAppName(), "Solar2D Simulator") == 0)		// hack
-		{
-			// main menu
-			if (nk_begin(fNK, "main", nk_rect(0, 0, 300, 100), 0))
-			{
-				nk_menubar_begin(fNK);
-				nk_layout_row_begin(fNK, NK_STATIC, 25, 2);
-				nk_layout_row_push(fNK, 45);
-				if (nk_menu_begin_label(fNK, "File", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
-				{
-					nk_layout_row_dynamic(fNK, 30, 1);
-
-					if (nk_menu_item_label(fNK, "New Project / Ctrl-N", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnNewProject;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Open Project / Ctrl-O", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenFileDialog;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Relaunch Last Prokect", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnRelaunchLastProject;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Preferences...", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenPreferences;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Exit", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = SDL_QUIT;
-						SDL_PushEvent(&e);
-					}
-					nk_menu_end(fNK);
-				}
-				nk_layout_row_push(fNK, 45);
-				if (nk_menu_begin_label(fNK, "Help", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
-				{
-					nk_layout_row_dynamic(fNK, 30, 1);
-					if (nk_menu_item_label(fNK, "Online Documentation...", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenDocumentation;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenSampleProjects;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "About Simulator...", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnAbout;
-						SDL_PushEvent(&e);
-					}
-					nk_menu_end(fNK);
-				}
-				nk_layout_row_end(fNK);
-				nk_menubar_end(fNK);
-			}
-			nk_end(fNK);
-		}
-		else
-		{
-			// project's menu
-			if (nk_begin(fNK, "project", nk_rect(0, 0, 300, 100), 0))
-			{
-				nk_menubar_begin(fNK);
-				nk_layout_row_begin(fNK, NK_STATIC, 25, 2);
-				nk_layout_row_push(fNK, 45);
-				if (nk_menu_begin_label(fNK, "File", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
-				{
-					nk_layout_row_dynamic(fNK, 30, 1);
-
-					if (nk_menu_item_label(fNK, "New Project / Ctrl-N", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnNewProject;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Open Project / Ctrl-O", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenFileDialog;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Build", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnBuild;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Open in Editor", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenInEditor;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Show Project Files", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnShowProjectFiles;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Show Project Sandbox", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnShowProjectSandbox;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Clear Project Sandbox", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnClearProjectSandbox;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Relaunch / Ctrl+R", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnRelaunch;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Close Project", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnClose;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Exit", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = SDL_QUIT;
-						SDL_PushEvent(&e);
-					}
-					nk_menu_end(fNK);
-				}
-				nk_layout_row_push(fNK, 45);
-				if (nk_menu_begin_label(fNK, "Help", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
-				{
-					nk_layout_row_dynamic(fNK, 30, 1);
-					if (nk_menu_item_label(fNK, "Online Documentation...", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenDocumentation;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "Sample projects...", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenSampleProjects;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(fNK, "About Simulator...", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnAbout;
-						SDL_PushEvent(&e);
-					}
-					nk_menu_end(fNK);
-				}
-				nk_layout_row_end(fNK);
-				nk_menubar_end(fNK);
-			}
-			nk_end(fNK);
-
-		}
-		nk_style_pop_color(fNK);
-		nk_style_pop_style_item(fNK);
-
-		/* {
-		// project's menu
-		{
-			fMenuProject = new wxMenuBar();
-
-			// file Menu
-			wxMenu* fileMenu = new wxMenu();
-			fileMenu->Append(ID_MENU_NEW_PROJECT, _T("&New Project	\tCtrl-N"));
-			fileMenu->Append(ID_MENU_OPEN_PROJECT, _T("&Open Project	\tCtrl-O"));
-			fileMenu->AppendSeparator();
-
-			wxMenu* buildMenu = new wxMenu();
-			buildMenu->Append(ID_MENU_BUILD_ANDROID, _T("Android	\tCtrl-B"));
-			wxMenuItem* buildForWeb = buildMenu->Append(ID_MENU_BUILD_WEB, _T("HTML5	\tCtrl-Shift-Alt-B"));
-			wxMenu* buildForLinuxMenu = new wxMenu();
-			buildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("x64	\tCtrl-Alt-B"));
-			wxMenuItem* buildForARM = buildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("ARM	\tCtrl-Alt-A"));
-			buildMenu->AppendSubMenu(buildForLinuxMenu, _T("&Linux"));
-			fileMenu->AppendSubMenu(buildMenu, _T("&Build"));
-			buildForARM->Enable(false);
-
-			fileMenu->Append(ID_MENU_OPEN_IN_EDITOR, _T("&Open In Editor	\tCtrl-Shift-O"));
-			fileMenu->Append(ID_MENU_SHOW_PROJECT_FILES, _T("&Show Project Files"));
-			fileMenu->Append(ID_MENU_SHOW_PROJECT_SANDBOX, _T("&Show Project Sandbox"));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(ID_MENU_CLEAR_PROJECT_SANDBOX, _T("&Clear Project Sandbox"));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(ID_MENU_RELAUNCH_PROJECT, _T("Relaunch	\tCtrl-R"));
-			fileMenu->Append(ID_MENU_CLOSE_PROJECT, _T("Close Project	\tCtrl-W"));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(wxID_PREFERENCES, _T("&Preferences..."));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(wxID_EXIT, _T("&Exit"));
-			fMenuProject->Append(fileMenu, _T("&File"));
-
-			// hardware menu
-			fHardwareMenu = new wxMenu();
-			wxMenuItem* rotateLeft = fHardwareMenu->Append(wxID_HELP_CONTENTS, _T("&Rotate Left"));
-			wxMenuItem* rotateRight = fHardwareMenu->Append(wxID_HELP_INDEX, _T("&Rotate Right"));
-			//fHardwareMenu->Append(wxID_ABOUT, _T("&Shake"));
-			fHardwareMenu->AppendSeparator();
-			wxMenuItem* back = fHardwareMenu->Append(ID_MENU_BACK_BUTTON, _T("&Back"));
-			fHardwareMenu->AppendSeparator();
-			fHardwareMenu->Append(ID_MENU_SUSPEND, _T("&Suspend	\tCtrl-Down"));
-			fMenuProject->Append(fHardwareMenu, _T("&Hardware"));
-			rotateLeft->Enable(false);
-			rotateRight->Enable(false);
-
-			// view menu
-			fViewMenu = new wxMenu();
-			fZoomIn = fViewMenu->Append(ID_MENU_ZOOM_IN, _T("&Zoom In \tCtrl-KP_ADD"));
-			fZoomOut = fViewMenu->Append(ID_MENU_ZOOM_OUT, _T("&Zoom Out \tCtrl-KP_Subtract"));
-			fViewMenu->AppendSeparator();
-			fMenuProject->Append(fViewMenu, _T("&View"));
-
-			// about menu
-			wxMenu* helpMenu = new wxMenu();
-			helpMenu->Append(ID_MENU_OPEN_DOCUMENTATION, _T("&Online Documentation..."));
-			helpMenu->Append(ID_MENU_OPEN_SAMPLE_CODE, _T("&Sample projects..."));
-			//			helpMenu->Append(ID_MENU_HELP_BUILD_ANDROID, _T("&Building For Android"));
-			helpMenu->Append(wxID_ABOUT, _T("&About Simulator..."));
-			fMenuProject->Append(helpMenu, _T("&Help"));
-		}*/
 	}
 
 	void SolarSimulator::ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle)
@@ -973,6 +724,7 @@ namespace Rtt
 			return;
 		}
 
+		fMenu = new DlgMenu(fNK, fWindow, fProjectPath);
 		string appName = fContext->GetAppName();
 
 		WatchFolder(fContext->GetAppPath(), appName.c_str());
@@ -1113,52 +865,6 @@ namespace Rtt
 	void SolarSimulator::ConfigSet(const char* key, int val)
 	{
 		fConfig[key] = ::to_string(val);
-	}
-
-	//
-	// 
-	//
-
-	void DlgAbout::advance()
-	{
-		struct nk_colorf bg;
-		bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
-		if (nk_begin(ctx, "About", nk_rect(50, 50, 450, 300), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE))
-		{
-			nk_layout_row_dynamic(ctx, 30, 1);
-			nk_label(ctx, "Solar2D Simulator", NK_TEXT_CENTERED);
-
-			nk_layout_row_dynamic(ctx, 30, 1);
-			nk_label(ctx, Rtt_STRING_BUILD, NK_TEXT_CENTERED);
-
-			nk_layout_row_dynamic(ctx, 30, 1);
-			nk_label(ctx, Rtt_STRING_COPYRIGHT, NK_TEXT_CENTERED);
-
-			nk_layout_row_dynamic(ctx, 30, 1);
-			const char* url = "https://solar2d.com";
-			if (nk_button_label(ctx, url))
-			{
-				OpenURL(url);
-			}
-
-			nk_layout_row_dynamic(ctx, 50, 1);
-			if (nk_button_label(ctx, "OK"))
-			{
-				SDL_Event e = {};
-				e.type = sdl::OnCloseDialog;
-				SDL_PushEvent(&e);
-			}
-
-			string iconPath = GetStartupPath(NULL);
-			iconPath.append("/Resources/solar2d.png");
-			if (Rtt_FileExists(iconPath.c_str()))
-			{
-				//wxIcon icon = wxIcon(iconPath.c_str(), wxBITMAP_TYPE_PNG, 60, 60);
-				//info.SetIcon(icon);
-			}
-
-		}
-		nk_end(ctx);
 	}
 
 }

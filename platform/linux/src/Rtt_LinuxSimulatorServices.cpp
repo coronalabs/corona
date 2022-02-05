@@ -55,7 +55,12 @@ namespace Rtt
 		}
 		else
 		{
-			wxString startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
+			SDL_Event e = {};
+			e.type = sdl::OnOpenFileDialog;
+			SDL_PushEvent(&e);
+			return true;
+
+/*			wxString startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
 			wxFileDialog openFileDialog(solarApp, _("Open"), startPath, "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 			if (openFileDialog.ShowModal() == wxID_CANCEL)
@@ -63,7 +68,7 @@ namespace Rtt
 				return false;
 			}
 
-			path = openFileDialog.GetPath().c_str();
+			path = openFileDialog.GetPath().c_str();*/
 		}
 
 		if (!Rtt_FileExists(path.c_str()))
@@ -73,11 +78,6 @@ namespace Rtt
 
 		// update the current project path
 		fCurrentProjectPath = path;
-
-		SDL_Event e = {};
-		e.type = sdl::OnOpen;
-		e.user.data1 = strdup(path.c_str());
-		SDL_PushEvent(&e);
 
 		return true;
 	}

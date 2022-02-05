@@ -27,6 +27,7 @@
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxContext.h"
 #include "Rtt_LinuxContainer.h"
+#include "Rtt_LinuxDialog.h"
 #include "wx/app.h"
 #include "wx/frame.h"
 #include "wx/panel.h"
@@ -34,17 +35,6 @@
 #include <string>
 #include <chrono>
 #include <thread>
-
-// nuklear
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-//#define NK_INCLUDE_DEFAULT_FONT
-#include "nuklear.h"
-#include "nuklear_sdl_gl3.h"
 
 enum sdl
 {
@@ -91,7 +81,8 @@ namespace Rtt
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
 		const char* GetAppName() const { return fContext->GetAppName(); }
-		virtual void DrawMenu() {}
+		void DrawGUI();
+		virtual void RenderGUI() {};
 
 	protected:
 
@@ -107,6 +98,8 @@ namespace Rtt
 		int fWidth;
 		int fHeight;
 		nk_context* fNK;		// nuklear context
+		smart_ptr<DlgWindow> fMenu;
+		smart_ptr<DlgWindow> fDlg;
 	};
 
 }

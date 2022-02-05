@@ -215,12 +215,6 @@ namespace Rtt
 
 	// help menu items
 
-	void SolarSimulator::OnOpenDocumentation()
-	{
-		string command("xdg-open https://docs.coronalabs.com/api/index.html");
-		wxExecute(command.c_str());
-	}
-
 	void SolarSimulator::OnOpenSampleProjects()
 	{
 		string samplesPath = GetStartupPath(NULL);

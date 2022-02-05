@@ -879,6 +879,7 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/main.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxApp.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulator.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContext.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxAudioRecorder.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxBitmap.cpp
@@ -925,6 +926,7 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/main.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxApp.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulator.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContext.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxAudioRecorder.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxBitmap.cpp

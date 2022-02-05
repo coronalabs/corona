@@ -42,8 +42,6 @@
 #include "lua.h"
 #include "lauxlib.h"
 
-#include "nuklear.h"
-
 using namespace Rtt;
 using namespace std;
 
@@ -486,10 +484,7 @@ namespace Rtt
 
 	void SolarAppContext::Flush()
 	{
-		#define MAX_VERTEX_MEMORY 512 * 1024
-		#define MAX_ELEMENT_MEMORY 128 * 1024
-		nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
-
+		app->RenderGUI();
 		fRuntime->GetDisplay().Invalidate();
 		SDL_GL_SwapWindow(fWindow);
 	}

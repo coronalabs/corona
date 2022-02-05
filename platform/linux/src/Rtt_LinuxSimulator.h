@@ -15,19 +15,6 @@
 
 namespace Rtt
 {
-
-	struct DlgWindow : public ref_counted
-	{
-		DlgWindow(nk_context* nkctx) : ctx(nkctx) {}
-		virtual void advance() = 0;
-		nk_context* ctx;
-	};
-	struct DlgAbout : public DlgWindow
-	{
-		DlgAbout(nk_context* nkctx) : DlgWindow(nkctx) {}
-		void advance() override;
-	};
-
 	class SolarSimulator : public SolarApp
 	{
 	public:
@@ -35,6 +22,7 @@ namespace Rtt
 		virtual ~SolarSimulator();
 
 		void GuiEvent(SDL_Event& e) override;
+		void RenderGUI() override;
 
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
 		void OnOpen(const std::string& path);
@@ -62,14 +50,12 @@ namespace Rtt
 		void OnBuildForAndroid(wxCommandEvent& event);
 		void OnBuildForWeb(wxCommandEvent& event);
 		void OnBuildForLinux(wxCommandEvent& event);
-		void OnOpenDocumentation();
 		void OnOpenSampleProjects();
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool Initialize() override;
 		void CreateSuspendedPanel();
 		void RemoveSuspendedPanel();
-		void DrawMenu() override;
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void SetMenu(const char* appPath);
 		void GetSavedZoom(int& width, int& height) override;
@@ -107,7 +93,6 @@ namespace Rtt
 		std::string fConfigFilePath;
 		int currentSkinWidth;
 		int currentSkinHeight;
-		smart_ptr<DlgWindow> fDlg;
 	};
 }
 

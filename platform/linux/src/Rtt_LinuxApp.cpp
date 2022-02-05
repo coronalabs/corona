@@ -7,6 +7,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#define NK_IMPLEMENTATION
+#define NK_SDL_GL3_IMPLEMENTATION
+
 #include <string.h>
 #include <fstream>
 #include "Core/Rtt_Build.h"
@@ -34,19 +37,6 @@
 #include <utility>		// for pairs
 #include "lua.h"
 #include "lauxlib.h"
-
-// nuklear
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-//#define NK_INCLUDE_DEFAULT_FONT
-#define NK_IMPLEMENTATION
-#define NK_SDL_GL3_IMPLEMENTATION
-#include "nuklear.h"
-#include "nuklear_sdl_gl3.h"
 
 using namespace Rtt;
 using namespace std;
@@ -144,45 +134,38 @@ namespace Rtt
 			return false;
 		}
 
-
-		fNK = nk_sdl_init(fWindow);
-
-		// Load Fonts: if none of these are loaded a default font will be used  
-		// Load Cursor: if you uncomment cursor loading please hide the cursor 
-		{
-			struct nk_font_atlas* atlas;
-			nk_sdl_font_stash_begin(&atlas);
-			string font_path = fProjectPath + "/Exo2-Regular.ttf";
-			struct nk_font* exo2 = nk_font_atlas_add_from_file(atlas, font_path.c_str(), 20, 0);
-			nk_sdl_font_stash_end();
-
-			if (exo2)
-			{
-				//nk_style_load_all_cursors(fNK, atlas->cursors);
-				nk_style_set_font(fNK, &exo2->handle);
-			}
-			else
-			{
-				Rtt_LogException("No %s\n", font_path.c_str());
-			}
-		}
-
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
 		return fContext->LoadApp();
 	}
 
 	bool SolarApp::PollEvents()
 	{
-		nk_input_begin(fNK);
+		vector<SDL_Event> events;
 
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
+		SDL_Event evt;
+
+		if (fNK)
+			nk_input_begin(fNK);
+
+		while (SDL_PollEvent(&evt))
+		{
+			if (evt.type == SDL_QUIT)
+				return false;
+
+			nk_sdl_handle_event(&evt);
+			events.push_back(evt);
+		}
+
+		if (fNK)
+			nk_input_end(fNK);
+
+		DrawGUI();
+
+		for (int i = 0; i < events.size(); i++)
 		{
 			//SDL_Log("SDL_EVENT %d\n", event.type);
 			//U64 start_time = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
-
-			nk_sdl_handle_event(&e);
-
+			SDL_Event& e = events[i];
 			switch (e.type)
 			{
 			case SDL_APP_WILLENTERFOREGROUND:
@@ -261,6 +244,10 @@ namespace Rtt
 			}
 			case SDL_MOUSEBUTTONDOWN:
 			{
+				// there is a visible modal dialog window
+				if (fDlg)
+					break;
+
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -293,6 +280,10 @@ namespace Rtt
 
 			case SDL_MOUSEMOTION:
 			{
+				// there is a visible modal dialog window
+				if (fDlg)
+					break;
+
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -337,6 +328,10 @@ namespace Rtt
 
 			case SDL_MOUSEBUTTONUP:
 			{
+				// there is a visible modal dialog window
+				if (fDlg)
+					break;
+
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -369,6 +364,10 @@ namespace Rtt
 
 			case SDL_MOUSEWHEEL:
 			{
+				// there is a visible modal dialog window
+				if (fDlg)
+					break;
+
 				const SDL_MouseWheelEvent& w = e.wheel;
 				if (w.which != SDL_TOUCH_MOUSEID)
 				{
@@ -402,10 +401,6 @@ namespace Rtt
 				}
 			}
 
-			case SDL_QUIT:
-			case SDLK_ESCAPE:
-				return false;
-
 			default:
 				GuiEvent(e);
 				break;
@@ -414,9 +409,20 @@ namespace Rtt
 			//int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
 		}
-
-		nk_input_end(fNK);
 		return true;
+	}
+
+	void SolarApp::DrawGUI()
+	{
+		const char* appName = GetAppName();
+		if (fMenu)
+		{
+			fMenu->advance(appName);
+		}
+		if (fDlg)
+		{
+			fDlg->advance(appName);
+		}
 	}
 
 	void SolarApp::Run()
@@ -431,9 +437,6 @@ namespace Rtt
 
 			if (!PollEvents())
 				break;
-
-			// GUI
-			DrawMenu();
 
 			fContext->advance();
 
