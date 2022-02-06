@@ -27,37 +27,10 @@ Rtt::SolarSimulator* solarSimulator = NULL;
 
 namespace Rtt
 {
-	// setup frame events
-/*	wxBEGIN_EVENT_TABLE(SolarApp, wxFrame)
-		EVT_MENU(ID_MENU_OPEN_WELCOME_SCREEN, SolarSimulator::OnOpenWelcome)
-		EVT_MENU(ID_MENU_RELAUNCH_PROJECT, SolarSimulator::OnRelaunch)
-		EVT_MENU(ID_MENU_SUSPEND, SolarSimulator::OnSuspendOrResume)
-		EVT_MENU(ID_MENU_CLOSE_PROJECT, SolarSimulator::OnOpenWelcome)
-		EVT_MENU(ID_MENU_ZOOM_IN, SolarSimulator::OnZoomIn)
-		EVT_MENU(ID_MENU_ZOOM_OUT, SolarSimulator::OnZoomOut)
-		EVT_COMMAND(wxID_ANY, eventOpenProject, SolarSimulator::OnOpen)
-		EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarSimulator::OnRelaunch)
-		EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarSimulator::OnOpenWelcome)
-		EVT_ICONIZE(SolarApp::OnIconized)
-		EVT_CLOSE(SolarSimulator::OnClose)
-		wxEND_EVENT_TABLE()*/
-
 	SolarSimulator::SolarSimulator(const std::string& resourceDir)
 		: SolarApp(resourceDir)
 		, fWatcher(NULL)
-		, suspendedPanel(NULL)
 		, fRelaunchedViaFileEvent(false)
-		, fRelaunchProjectDialog(NULL)
-		, fMenuMain(NULL)
-		, fViewMenu(NULL)
-		, fViewAsAndroidMenu(NULL)
-		, fViewAsIOSMenu(NULL)
-		, fViewAsTVMenu(NULL)
-		, fViewAsDesktopMenu(NULL)
-		, fHardwareMenu(NULL)
-		, fZoomIn(NULL)
-		, fZoomOut(NULL)
-		, fMenuProject(NULL)
 		, fFileSystemEventTimestamp(0)
 		, currentSkinWidth(0)
 		, currentSkinHeight(0)
@@ -103,8 +76,6 @@ namespace Rtt
 		//SetMenuBar(NULL);
 
 		delete fWatcher;
-		delete fMenuMain;
-		delete fMenuProject;
 	}
 
 	void SolarSimulator::RenderGUI()
@@ -152,8 +123,6 @@ namespace Rtt
 				}
 			}
 
-			/*
-
 			// restore home screen zoom level
 		//	if (IsHomeScreen(appName))
 		//	{
@@ -164,28 +133,6 @@ namespace Rtt
 
 			currentSkinWidth = ConfigInt("skinWidth");
 			currentSkinHeight = ConfigInt("skinHeight");
-
-			fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
-
-
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnNewProject(e); }, ID_MENU_NEW_PROJECT);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenFileDialog(e); }, ID_MENU_OPEN_PROJECT);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnRelaunchLastProject(e); }, ID_MENU_OPEN_LAST_PROJECT);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenInEditor(e); }, ID_MENU_OPEN_IN_EDITOR);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnShowProjectFiles(e); }, ID_MENU_SHOW_PROJECT_FILES);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnShowProjectSandbox(e); }, ID_MENU_SHOW_PROJECT_SANDBOX);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnClearProjectSandbox(e); }, ID_MENU_CLEAR_PROJECT_SANDBOX);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAndroidBackButton(e); }, ID_MENU_BACK_BUTTON);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForAndroid(e); }, ID_MENU_BUILD_ANDROID);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForWeb(e); }, ID_MENU_BUILD_WEB);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnBuildForLinux(e); }, ID_MENU_BUILD_LINUX);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenPreferences(e); }, wxID_PREFERENCES);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnQuit(e); }, wxID_EXIT);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenDocumentation(e); }, ID_MENU_OPEN_DOCUMENTATION);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnOpenSampleProjects(e); }, ID_MENU_OPEN_SAMPLE_CODE);
-			Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnAbout(e); }, wxID_ABOUT);
-			*/
-
 			return true;
 		}
 		return false;
@@ -294,7 +241,7 @@ namespace Rtt
 
 	void SolarSimulator::CreateSuspendedPanel()
 	{
-		if (suspendedPanel == NULL)
+//		if (suspendedPanel == NULL)
 		{
 			//		suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->GetWidth(), fContext->GetHeight()));
 			//		suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
@@ -307,14 +254,6 @@ namespace Rtt
 
 	void SolarSimulator::RemoveSuspendedPanel()
 	{
-		if (suspendedPanel == NULL)
-		{
-			return;
-		}
-
-		suspendedPanel->Destroy();
-		//suspendedText->Destroy();
-		suspendedPanel = NULL;
 	}
 
 	void SolarSimulator::OnRelaunch()
@@ -324,10 +263,10 @@ namespace Rtt
 			bool doRelaunch = !fRelaunchedViaFileEvent;
 
 			LinuxRuntimeErrorDialog* errDialog = fContext->GetPlatform()->GetRuntimeErrorDialog();
-			if ((errDialog && errDialog->IsShown()) || (fRelaunchProjectDialog && fRelaunchProjectDialog->IsShown()))
-			{
-				return;
-			}
+//			if ((errDialog && errDialog->IsShown()) || (fRelaunchProjectDialog && fRelaunchProjectDialog->IsShown()))
+//			{
+//				return;
+//			}
 
 			// workaround for wxFileSystem events firing twice (known wx bug)
 			if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
@@ -685,13 +624,13 @@ namespace Rtt
 		if (fContext->GetRuntime()->IsSuspended())
 		{
 			RemoveSuspendedPanel();
-			fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Suspend	\tCtrl-Down");
+			//fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Suspend	\tCtrl-Down");
 			fContext->Resume();
 		}
 		else
 		{
 			CreateSuspendedPanel();
-			fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
+			//fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
 			fContext->Pause();
 		}
 	}

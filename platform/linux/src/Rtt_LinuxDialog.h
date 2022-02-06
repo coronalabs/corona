@@ -61,6 +61,12 @@ namespace Rtt
 		DlgMenu(nk_context* nkctx, SDL_Window* sdlwin, const std::string& fProjectPath);
 		virtual ~DlgMenu();
 		void advance(const char* appName) override;
+		inline bool IsSubMenuVisible() const { return fSubMenuVisible;	};
+
+	private:
+
+		bool fSubMenuVisible;
+
 	};
 
 }

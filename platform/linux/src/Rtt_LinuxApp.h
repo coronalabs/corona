@@ -98,7 +98,7 @@ namespace Rtt
 		int fWidth;
 		int fHeight;
 		nk_context* fNK;		// nuklear context
-		smart_ptr<DlgWindow> fMenu;
+		smart_ptr<DlgMenu> fMenu;
 		smart_ptr<DlgWindow> fDlg;
 	};
 

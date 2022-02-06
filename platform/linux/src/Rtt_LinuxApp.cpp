@@ -245,7 +245,7 @@ namespace Rtt
 			case SDL_MOUSEBUTTONDOWN:
 			{
 				// there is a visible modal dialog window
-				if (fDlg)
+				if ((fMenu && fMenu->IsSubMenuVisible()) || fDlg)
 					break;
 
 				const SDL_MouseButtonEvent& b = e.button;
@@ -281,7 +281,7 @@ namespace Rtt
 			case SDL_MOUSEMOTION:
 			{
 				// there is a visible modal dialog window
-				if (fDlg)
+				if ((fMenu && fMenu->IsSubMenuVisible()) || fDlg)
 					break;
 
 				const SDL_MouseButtonEvent& b = e.button;
@@ -329,7 +329,7 @@ namespace Rtt
 			case SDL_MOUSEBUTTONUP:
 			{
 				// there is a visible modal dialog window
-				if (fDlg)
+				if ((fMenu && fMenu->IsSubMenuVisible()) || fDlg)
 					break;
 
 				const SDL_MouseButtonEvent& b = e.button;
@@ -365,7 +365,7 @@ namespace Rtt
 			case SDL_MOUSEWHEEL:
 			{
 				// there is a visible modal dialog window
-				if (fDlg)
+				if ((fMenu && fMenu->IsSubMenuVisible()) || fDlg)
 					break;
 
 				const SDL_MouseWheelEvent& w = e.wheel;

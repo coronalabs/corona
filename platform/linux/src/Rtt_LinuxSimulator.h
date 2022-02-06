@@ -75,20 +75,7 @@ namespace Rtt
 
 		std::map<std::string, std::string> fConfig;
 		wxFileSystemWatcher* fWatcher;
-		wxPanel* suspendedPanel;
 		bool fRelaunchedViaFileEvent;
-		LinuxRelaunchProjectDialog* fRelaunchProjectDialog;
-
-		wxMenuBar* fMenuMain;
-		wxMenu* fViewMenu;
-		wxMenu* fViewAsAndroidMenu;
-		wxMenu* fViewAsIOSMenu;
-		wxMenu* fViewAsTVMenu;
-		wxMenu* fViewAsDesktopMenu;
-		wxMenu* fHardwareMenu;
-		wxMenuItem* fZoomIn;
-		wxMenuItem* fZoomOut;
-		wxMenuBar* fMenuProject;
 		wxLongLong fFileSystemEventTimestamp;
 		std::string fConfigFilePath;
 		int currentSkinWidth;

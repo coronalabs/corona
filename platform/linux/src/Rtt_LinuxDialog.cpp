@@ -107,6 +107,7 @@ namespace Rtt
 	//
 	DlgMenu::DlgMenu(nk_context* nkctx, SDL_Window* sdlwin, const string& fProjectPath)
 		: DlgWindow(nkctx, sdlwin)
+		, fSubMenuVisible(false)
 	{
 	}
 
@@ -132,21 +133,38 @@ namespace Rtt
 		style.menu_button.text_normal = style.menu_button.text_hover = style.menu_button.text_active = nk_rgb(0, 0, 0);
 		style.menu_button.normal = nk_style_item_color(nk_rgb(255, 255, 255));
 		style.menu_button.hover = nk_style_item_color(nk_rgb(222, 222, 222));
+		style.menu_button.active = nk_style_item_color(nk_rgb(111, 111, 111));
+
+		style.contextual_button.border_color = nk_rgba(0, 0, 0, 0);
+		style.contextual_button.text_background = nk_rgb(255, 255, 255);
+		style.contextual_button.text_normal = style.menu_button.text_hover = style.menu_button.text_active = nk_rgb(0, 0, 0);
+		style.contextual_button.normal = nk_style_item_color(nk_rgb(255, 255, 255));
+		style.contextual_button.hover = nk_style_item_color(nk_rgb(222, 222, 222));
+		style.contextual_button.active = nk_style_item_color(nk_rgb(111, 111, 111));
 
 		style.window.background = nk_rgb(255, 255, 255);
 		style.window.fixed_background = nk_style_item_color(nk_rgb(255, 255, 255));
+		style.window.border_color = nk_rgba(0, 0, 0, 0);
+		style.window.popup_border_color = nk_rgba(0, 0, 0, 0);
+		style.window.combo_border_color = nk_rgba(0, 0, 0, 0);
+		style.window.contextual_border_color = nk_rgba(0, 0, 0, 0);
+		style.window.menu_border_color = nk_rgba(0, 0, 0, 0);
+		style.window.group_border_color = nk_rgba(0, 0, 0, 0);
+		style.window.tooltip_border_color = nk_rgba(0, 0, 0, 0);
 
 		int menu_width = 250;
+		fSubMenuVisible = false;
 		if (strcmp(appName, "Solar2D Simulator") == 0)		// hack
 		{
 			// main menu
-			if (nk_begin(ctx, "main", nk_rect(0, 0, w, 28), 0))
+			if (nk_begin(ctx, "main", nk_rect(0, 0, w, 34), 0))
 			{
 				nk_menubar_begin(ctx);
 				nk_layout_row_begin(ctx, NK_STATIC, 20, 2);
 				nk_layout_row_push(ctx, 45);
 				if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
 				{
+					fSubMenuVisible = true;
 					nk_layout_row_dynamic(ctx, 30, 1);
 
 					if (nk_menu_item_label(ctx, "New Project / Ctrl-N", NK_TEXT_LEFT))
@@ -188,7 +206,9 @@ namespace Rtt
 				nk_layout_row_push(ctx, 45);
 				if (nk_menu_begin_label(ctx, "Help", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
 				{
+					fSubMenuVisible = true;
 					nk_layout_row_dynamic(ctx, 30, 1);
+
 					if (nk_menu_item_label(ctx, "Online Documentation...", NK_TEXT_LEFT))
 					{
 						SDL_Event e = {};
@@ -219,28 +239,15 @@ namespace Rtt
 		else
 		{
 			// project's menu
-			if (nk_begin(ctx, "project", nk_rect(0, 0, 300, 100), 0))
+			if (nk_begin(ctx, "project", nk_rect(0, 0, w, 28), 0))
 			{
 				nk_menubar_begin(ctx);
 				nk_layout_row_begin(ctx, NK_STATIC, 25, 2);
 				nk_layout_row_push(ctx, 45);
 				if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
 				{
+					fSubMenuVisible = true;
 					nk_layout_row_dynamic(ctx, 30, 1);
-
-					if (nk_menu_item_label(ctx, "New Project / Ctrl-N", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnNewProject;
-						SDL_PushEvent(&e);
-					}
-
-					if (nk_menu_item_label(ctx, "Open Project / Ctrl-O", NK_TEXT_LEFT))
-					{
-						SDL_Event e = {};
-						e.type = sdl::OnOpenFileDialog;
-						SDL_PushEvent(&e);
-					}
 
 					if (nk_menu_item_label(ctx, "Build", NK_TEXT_LEFT))
 					{
@@ -302,7 +309,9 @@ namespace Rtt
 				nk_layout_row_push(ctx, 45);
 				if (nk_menu_begin_label(ctx, "Help", NK_TEXT_LEFT, nk_vec2(menu_width, 200)))
 				{
+					fSubMenuVisible = true;
 					nk_layout_row_dynamic(ctx, 30, 1);
+
 					if (nk_menu_item_label(ctx, "Online Documentation...", NK_TEXT_LEFT))
 					{
 						SDL_Event e = {};
@@ -329,74 +338,7 @@ namespace Rtt
 				nk_menubar_end(ctx);
 			}
 			nk_end(ctx);
-
 		}
-
-		/* {
-		// project's menu
-		{
-			fMenuProject = new wxMenuBar();
-
-			// file Menu
-			wxMenu* fileMenu = new wxMenu();
-			fileMenu->Append(ID_MENU_NEW_PROJECT, _T("&New Project	\tCtrl-N"));
-			fileMenu->Append(ID_MENU_OPEN_PROJECT, _T("&Open Project	\tCtrl-O"));
-			fileMenu->AppendSeparator();
-
-			wxMenu* buildMenu = new wxMenu();
-			buildMenu->Append(ID_MENU_BUILD_ANDROID, _T("Android	\tCtrl-B"));
-			wxMenuItem* buildForWeb = buildMenu->Append(ID_MENU_BUILD_WEB, _T("HTML5	\tCtrl-Shift-Alt-B"));
-			wxMenu* buildForLinuxMenu = new wxMenu();
-			buildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("x64	\tCtrl-Alt-B"));
-			wxMenuItem* buildForARM = buildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("ARM	\tCtrl-Alt-A"));
-			buildMenu->AppendSubMenu(buildForLinuxMenu, _T("&Linux"));
-			fileMenu->AppendSubMenu(buildMenu, _T("&Build"));
-			buildForARM->Enable(false);
-
-			fileMenu->Append(ID_MENU_OPEN_IN_EDITOR, _T("&Open In Editor	\tCtrl-Shift-O"));
-			fileMenu->Append(ID_MENU_SHOW_PROJECT_FILES, _T("&Show Project Files"));
-			fileMenu->Append(ID_MENU_SHOW_PROJECT_SANDBOX, _T("&Show Project Sandbox"));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(ID_MENU_CLEAR_PROJECT_SANDBOX, _T("&Clear Project Sandbox"));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(ID_MENU_RELAUNCH_PROJECT, _T("Relaunch	\tCtrl-R"));
-			fileMenu->Append(ID_MENU_CLOSE_PROJECT, _T("Close Project	\tCtrl-W"));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(wxID_PREFERENCES, _T("&Preferences..."));
-			fileMenu->AppendSeparator();
-			fileMenu->Append(wxID_EXIT, _T("&Exit"));
-			fMenuProject->Append(fileMenu, _T("&File"));
-
-			// hardware menu
-			fHardwareMenu = new wxMenu();
-			wxMenuItem* rotateLeft = fHardwareMenu->Append(wxID_HELP_CONTENTS, _T("&Rotate Left"));
-			wxMenuItem* rotateRight = fHardwareMenu->Append(wxID_HELP_INDEX, _T("&Rotate Right"));
-			//fHardwareMenu->Append(wxID_ABOUT, _T("&Shake"));
-			fHardwareMenu->AppendSeparator();
-			wxMenuItem* back = fHardwareMenu->Append(ID_MENU_BACK_BUTTON, _T("&Back"));
-			fHardwareMenu->AppendSeparator();
-			fHardwareMenu->Append(ID_MENU_SUSPEND, _T("&Suspend	\tCtrl-Down"));
-			fMenuProject->Append(fHardwareMenu, _T("&Hardware"));
-			rotateLeft->Enable(false);
-			rotateRight->Enable(false);
-
-			// view menu
-			fViewMenu = new wxMenu();
-			fZoomIn = fViewMenu->Append(ID_MENU_ZOOM_IN, _T("&Zoom In \tCtrl-KP_ADD"));
-			fZoomOut = fViewMenu->Append(ID_MENU_ZOOM_OUT, _T("&Zoom Out \tCtrl-KP_Subtract"));
-			fViewMenu->AppendSeparator();
-			fMenuProject->Append(fViewMenu, _T("&View"));
-
-			// about menu
-			wxMenu* helpMenu = new wxMenu();
-			helpMenu->Append(ID_MENU_OPEN_DOCUMENTATION, _T("&Online Documentation..."));
-			helpMenu->Append(ID_MENU_OPEN_SAMPLE_CODE, _T("&Sample projects..."));
-			//			helpMenu->Append(ID_MENU_HELP_BUILD_ANDROID, _T("&Building For Android"));
-			helpMenu->Append(wxID_ABOUT, _T("&About Simulator..."));
-			fMenuProject->Append(helpMenu, _T("&Help"));
-		}*/
 	}
-
-
 
 }
