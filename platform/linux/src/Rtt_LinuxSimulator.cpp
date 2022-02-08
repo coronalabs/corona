@@ -78,16 +78,6 @@ namespace Rtt
 		delete fWatcher;
 	}
 
-	void SolarSimulator::RenderGUI()
-	{
-		if (fNK)
-		{
-			const int MAX_VERTEX_MEMORY = 512 * 1024;
-			const int MAX_ELEMENT_MEMORY = 128 * 1024;
-			nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
-		}
-	}
-
 	bool SolarSimulator::Initialize()
 	{
 #ifdef Rtt_SIMULATOR
@@ -99,29 +89,6 @@ namespace Rtt
 		if (SolarApp::Initialize())
 		{
 			GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
-
-			fNK = nk_sdl_init(fWindow);
-			fMenu = new DlgMenu(fNK, fWindow, fProjectPath);
-
-			// Load Fonts: if none of these are loaded a default font will be used  
-			// Load Cursor: if you uncomment cursor loading please hide the cursor 
-			{
-				struct nk_font_atlas* atlas;
-				nk_sdl_font_stash_begin(&atlas);
-				string font_path = fProjectPath + "/Exo2-Regular.ttf";
-				struct nk_font* exo2 = nk_font_atlas_add_from_file(atlas, font_path.c_str(), 20, 0);
-				nk_sdl_font_stash_end();
-
-				if (exo2)
-				{
-					//nk_style_load_all_cursors(fNK, atlas->cursors);
-					nk_style_set_font(fNK, &exo2->handle);
-				}
-				else
-				{
-					Rtt_LogException("No %s\n", font_path.c_str());
-				}
-			}
 
 			// restore home screen zoom level
 		//	if (IsHomeScreen(appName))
@@ -138,7 +105,7 @@ namespace Rtt
 		return false;
 	}
 
-	void SolarSimulator::GuiEvent(SDL_Event& e)
+	/*void SolarSimulator::GuiEvent(SDL_Event& e)
 	{
 		switch (e.type)
 		{
@@ -156,7 +123,6 @@ namespace Rtt
 			OnOpenInEditor();
 			break;
 		case sdl::OnOpenFileDialog:
-			fDlg = new DlgFile(fNK, fWindow, fProjectPath);
 			break;
 		case sdl::OnClose:
 			break;
@@ -167,10 +133,8 @@ namespace Rtt
 			OnOpenSampleProjects();
 			break;
 		case sdl::OnAbout:
-			fDlg = new DlgAbout(fNK, fWindow);
 			break;
 		case sdl::OnCloseDialog:
-			fDlg = NULL;
 			break;
 		case sdl::OnShowProjectFiles:
 		case sdl::OnShowProjectSandbox:
@@ -181,7 +145,7 @@ namespace Rtt
 		default:
 			break;
 		}
-	}
+	}*/
 
 	void SolarSimulator::WatchFolder(const char* path, const char* appName)
 	{
@@ -294,7 +258,7 @@ namespace Rtt
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
 			fContext->LoadApp();
-			fMenu = new DlgMenu(fNK, fWindow, fProjectPath);
+			fImGui["menu"] = new ImMenu(fContext->GetAppName());
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
@@ -663,8 +627,8 @@ namespace Rtt
 			return;
 		}
 
-		fMenu = new DlgMenu(fNK, fWindow, fProjectPath);
 		string appName = fContext->GetAppName();
+		fImGui["menu"] = new ImMenu(fContext->GetAppName());
 
 		WatchFolder(fContext->GetAppPath(), appName.c_str());
 		//SetCursor(wxCURSOR_ARROW);

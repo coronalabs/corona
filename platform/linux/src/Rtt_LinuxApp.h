@@ -82,7 +82,7 @@ namespace Rtt
 		virtual bool IsRunningOnSimulator() { return false; }
 		const char* GetAppName() const { return fContext->GetAppName(); }
 		void DrawGUI();
-		virtual void RenderGUI() {};
+		void RenderGUI();
 
 	protected:
 
@@ -97,9 +97,8 @@ namespace Rtt
 		std::string fProjectPath;
 		int fWidth;
 		int fHeight;
-		nk_context* fNK;		// nuklear context
-		smart_ptr<DlgMenu> fMenu;
-		smart_ptr<DlgWindow> fDlg;
+		bool fDrawGUI;
+		std::map<std::string, smart_ptr<Im>> fImGui;
 	};
 
 }

@@ -20,141 +20,67 @@ using namespace std;
 namespace Rtt
 {
 
-	void DlgAbout::advance(const char* appName)
+	void PushEvent(int evt)
 	{
-		int w, h;
-		SDL_GetWindowSize(win, &w, &h);
+		SDL_Event e = {};
+		e.type = evt;
+		SDL_PushEvent(&e);
+	}
 
-		int about_width = 450;
-		int about_height = 225;
-		int x = (w - about_width) / 2;
-		int y = (h - about_height) / 2;
+	void ImAbout::Draw()
+	{
+	}
 
-		struct nk_style& style = ctx->style;
-		style.button.border_color = nk_rgba(0, 0, 0, 0);
-		style.button.text_background = nk_rgb(255, 255, 255);
-		style.button.text_normal = style.button.text_hover = style.button.text_active = nk_rgb(0, 0, 0);
-		style.button.normal = nk_style_item_color(nk_rgb(222, 222, 222));
-		style.button.hover = nk_style_item_color(nk_rgb(177, 177, 177));
-		style.button.active = nk_style_item_color(nk_rgb(111, 111, 111));
-
-		style.menu_button.border_color = nk_rgba(0, 0, 0, 0);
-		style.menu_button.text_background = nk_rgb(255, 255, 255);
-		style.menu_button.text_normal = style.menu_button.text_hover = style.menu_button.text_active = nk_rgb(0, 0, 0);
-		style.menu_button.normal = nk_style_item_color(nk_rgb(255, 255, 255));
-		style.menu_button.hover = nk_style_item_color(nk_rgb(222, 222, 222));
-
-		style.window.background = nk_rgb(255, 255, 255);
-		style.window.fixed_background = nk_style_item_color(nk_rgb(255, 255, 255));
-		style.window.header.normal = style.window.header.active = style.window.header.hover = nk_style_item_color(nk_rgb(0, 0, 200));
-
-		if (nk_begin(ctx, "About", nk_rect(x, y, about_width, about_height), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE))
+	void ImMenu::Draw()
+	{
+		if (isMainMenu)
 		{
-			nk_layout_row_dynamic(ctx, 30, 1);
-			nk_label(ctx, "Solar2D Simulator", NK_TEXT_CENTERED);
-
-			nk_layout_row_dynamic(ctx, 30, 1);
-			nk_label(ctx, Rtt_STRING_BUILD, NK_TEXT_CENTERED);
-
-			nk_layout_row_dynamic(ctx, 30, 1);
-			nk_label(ctx, Rtt_STRING_COPYRIGHT, NK_TEXT_CENTERED);
-
-			nk_layout_row_dynamic(ctx, 30, 1);
-			const char* url = "https://solar2d.com";
-			if (nk_button_label(ctx, url))
+			if (ImGui::BeginMainMenuBar())
 			{
-				OpenURL(url);
-			}
-
-			nk_layout_row_dynamic(ctx, 30, 1);
-			if (nk_button_label(ctx, "OK"))
-			{
-				SDL_Event e = {};
-				e.type = sdl::OnCloseDialog;
-				SDL_PushEvent(&e);
-			}
-
-			string iconPath = GetStartupPath(NULL);
-			iconPath.append("/Resources/solar2d.png");
-			if (Rtt_FileExists(iconPath.c_str()))
-			{
-				//wxIcon icon = wxIcon(iconPath.c_str(), wxBITMAP_TYPE_PNG, 60, 60);
-				//info.SetIcon(icon);
+				if (ImGui::BeginMenu("File"))
+				{
+					if (ImGui::MenuItem("New Project/Ctrl+N", "CTRL+N"))
+					{
+						PushEvent(sdl::OnNewProject);
+					}
+					if (ImGui::MenuItem("Open Project/Ctrl+N", "CTRL+O")) 
+					{
+						PushEvent(sdl::OnOpenFileDialog);
+					}
+					if (ImGui::MenuItem("Relaunch Last Prokect", NULL)) 
+					{
+						PushEvent(sdl::OnRelaunchLastProject);
+					}
+					if (ImGui::MenuItem("Preferences...", NULL)) 
+					{
+						PushEvent(sdl::OnOpenPreferences);
+					}
+					if (ImGui::MenuItem("Exit", NULL)) 
+					{
+						PushEvent(SDL_QUIT);
+					}
+					ImGui::EndMenu();
+				}
+				if (ImGui::BeginMenu("Help"))
+				{
+					if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+					if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+					ImGui::Separator();
+					if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+					if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+					if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+					ImGui::EndMenu();
+				}
+				ImGui::EndMainMenuBar();
 			}
 
 		}
-		nk_end(ctx);
-	}
+		else
+		{
 
-	//
-	// file_browser
-	//
-	DlgFile::DlgFile(nk_context* nkctx, SDL_Window* sdlwin, const string& fProjectPath)
-		: DlgWindow(nkctx, sdlwin)
-	{
-	}
+		}
 
-	DlgFile::~DlgFile()
-	{
-	}
-
-	void DlgFile::advance(const char* appName)
-	{
-	}
-
-	//
-	//	main menu
-	//
-	DlgMenu::DlgMenu(nk_context* nkctx, SDL_Window* sdlwin, const string& fProjectPath)
-		: DlgWindow(nkctx, sdlwin)
-		, fSubMenuVisible(false)
-	{
-	}
-
-	DlgMenu::~DlgMenu()
-	{
-	}
-
-	void DlgMenu::advance(const char* appName)
-	{
-		int w, h;
-		SDL_GetWindowSize(win, &w, &h);
-
-		struct nk_style& style = ctx->style;
-		style.button.border_color = nk_rgba(0, 0, 0, 0);
-		style.button.text_background = nk_rgb(255, 255, 255);
-		style.button.text_normal = style.button.text_hover = style.button.text_active = nk_rgb(0, 0, 0);
-		style.button.normal = nk_style_item_color(nk_rgb(222, 222, 222));
-		style.button.hover = nk_style_item_color(nk_rgb(177, 177, 177));
-		style.button.active = nk_style_item_color(nk_rgb(111, 111, 111));
-
-		style.menu_button.border_color = nk_rgba(0, 0, 0, 0);
-		style.menu_button.text_background = nk_rgb(255, 255, 255);
-		style.menu_button.text_normal = style.menu_button.text_hover = style.menu_button.text_active = nk_rgb(0, 0, 0);
-		style.menu_button.normal = nk_style_item_color(nk_rgb(255, 255, 255));
-		style.menu_button.hover = nk_style_item_color(nk_rgb(222, 222, 222));
-		style.menu_button.active = nk_style_item_color(nk_rgb(111, 111, 111));
-
-		style.contextual_button.border_color = nk_rgba(0, 0, 0, 0);
-		style.contextual_button.text_background = nk_rgb(255, 255, 255);
-		style.contextual_button.text_normal = style.menu_button.text_hover = style.menu_button.text_active = nk_rgb(0, 0, 0);
-		style.contextual_button.normal = nk_style_item_color(nk_rgb(255, 255, 255));
-		style.contextual_button.hover = nk_style_item_color(nk_rgb(222, 222, 222));
-		style.contextual_button.active = nk_style_item_color(nk_rgb(111, 111, 111));
-
-		style.window.background = nk_rgb(255, 255, 255);
-		style.window.fixed_background = nk_style_item_color(nk_rgb(255, 255, 255));
-		style.window.border_color = nk_rgba(0, 0, 0, 0);
-		style.window.popup_border_color = nk_rgba(0, 0, 0, 0);
-		style.window.combo_border_color = nk_rgba(0, 0, 0, 0);
-		style.window.contextual_border_color = nk_rgba(0, 0, 0, 0);
-		style.window.menu_border_color = nk_rgba(0, 0, 0, 0);
-		style.window.group_border_color = nk_rgba(0, 0, 0, 0);
-		style.window.tooltip_border_color = nk_rgba(0, 0, 0, 0);
-
-		int menu_width = 250;
-		fSubMenuVisible = false;
-		if (strcmp(appName, "Solar2D Simulator") == 0)		// hack
+/*		if (strcmp(appName, "Solar2D Simulator") == 0)		// hack
 		{
 			// main menu
 			if (nk_begin(ctx, "main", nk_rect(0, 0, w, 34), 0))
@@ -338,7 +264,7 @@ namespace Rtt
 				nk_menubar_end(ctx);
 			}
 			nk_end(ctx);
-		}
+		}*/
 	}
 
 }

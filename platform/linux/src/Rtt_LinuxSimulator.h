@@ -21,9 +21,6 @@ namespace Rtt
 		SolarSimulator(const std::string& resourceDir);
 		virtual ~SolarSimulator();
 
-		void GuiEvent(SDL_Event& e) override;
-		void RenderGUI() override;
-
 		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
 		void OnOpen(const std::string& path);
 		void OnClose(wxCloseEvent& event) override;

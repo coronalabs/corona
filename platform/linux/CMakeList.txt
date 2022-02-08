@@ -69,6 +69,7 @@ set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${COMMON_COMPILER_FLAGS} -no-pie")
 include_directories (
 	/usr/include/AL
 	/usr/include/freetype2
+	/usr/include/SDL2
 	/usr/local/lib/wx/include/gtk3-unicode-3.1
 	${WXWIDGETS_INCLUDE}/wx-3.1
 	${SNAPCRAFT_STAGE}/usr/local/lib/wx/include/gtk3-unicode-3.1
@@ -333,6 +334,16 @@ add_executable( Solar2DConsole
 		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxIPCServerConnection.cpp
 		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsole.cpp
 		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
+)
+
+# imgui
+SET( IMGUI_SOURCES
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_draw.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_tables.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_widgets.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_impl_opengl3.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_impl_sdl.cpp
 )
 
 SET( SOLAR2D_SOURCES
@@ -876,6 +887,7 @@ SET( SOLAR2D_SOURCES
 
 add_executable( Solar2D
 	${SOLAR2D_SOURCES}
+	${IMGUI_SOURCES}
 	${CORONA_ROOT}/platform/linux/src/main.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxApp.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulator.cpp
@@ -923,6 +935,7 @@ add_executable( Solar2D
 
 add_executable( Solar2DSimulator
 	${SOLAR2D_SOURCES}
+	${IMGUI_SOURCES}
 	${CORONA_ROOT}/platform/linux/src/main.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxApp.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulator.cpp

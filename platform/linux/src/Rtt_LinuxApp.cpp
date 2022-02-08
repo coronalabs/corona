@@ -7,9 +7,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#define NK_IMPLEMENTATION
-#define NK_SDL_GL3_IMPLEMENTATION
-
 #include <string.h>
 #include <fstream>
 #include "Core/Rtt_Build.h"
@@ -60,7 +57,7 @@ namespace Rtt
 		, fWindow(NULL)
 		, fWidth(0)
 		, fHeight(0)
-		, fNK(NULL)
+		, fDrawGUI(false)
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
 
@@ -91,10 +88,17 @@ namespace Rtt
 
 	SolarApp::~SolarApp()
 	{
-		nk_sdl_shutdown();
-
 		fContext = NULL;
 		curl_global_cleanup();
+
+		// Cleanup
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplSDL2_Shutdown();
+		ImGui::DestroyContext();
+
+		SDL_GL_DeleteContext(fGLcontext);
+		SDL_DestroyWindow(fWindow);
+		SDL_Quit();
 	}
 
 	bool SolarApp::Initialize()
@@ -110,31 +114,58 @@ namespace Rtt
 			return false;
 		}
 
+		// GL 3.0 + GLSL 130
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE| SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-		uint32_t windowStyle = SDL_WINDOW_OPENGL; // | SDL_WINDOW_BORDERLESS;
+		uint32_t windowStyle = SDL_WINDOW_OPENGL| SDL_WINDOW_ALLOW_HIGHDPI; // | SDL_WINDOW_BORDERLESS;
 		windowStyle |= SDL_WINDOW_RESIZABLE;
 		fWindow = SDL_CreateWindow("Solar2D", 0, 0, 320, 480, windowStyle);
-		if (!fWindow)
+		Rtt_ASSERT(fWindow);
+		fGLcontext = SDL_GL_CreateContext(fWindow);
+		Rtt_ASSERT(fGLcontext);  
+		SDL_GL_MakeCurrent(fWindow, fGLcontext);
+		SDL_GL_SetSwapInterval(1); // Enable vsync
+
+		// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//io.ConfigViewportsNoAutoMerge = true;
+		//io.ConfigViewportsNoTaskBarIcon = true;
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsClassic();
+
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			Rtt_LogException("Couldn't create window: %s\n", SDL_GetError());
-			return false;
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		fGLcontext = SDL_GL_CreateContext(fWindow);
-		if (!fGLcontext)
-		{
-			Rtt_LogException("SDL_GL_CreateContext(): %s\n", SDL_GetError());
-			return false;
-		}
+		// Setup Platform/Renderer backends
+		ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
+		const char* glsl_version = "#version 130";
+		ImGui_ImplOpenGL3_Init(glsl_version);
 
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
+		fImGui["menu"] = new ImMenu(fContext->GetAppName());
+
 		return fContext->LoadApp();
 	}
 
@@ -143,23 +174,16 @@ namespace Rtt
 		vector<SDL_Event> events;
 
 		SDL_Event evt;
-
-		if (fNK)
-			nk_input_begin(fNK);
-
 		while (SDL_PollEvent(&evt))
 		{
+			ImGui_ImplSDL2_ProcessEvent(&evt);
 			if (evt.type == SDL_QUIT)
 				return false;
+			if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE && evt.window.windowID == SDL_GetWindowID(fWindow))
+				return false;
 
-			nk_sdl_handle_event(&evt);
 			events.push_back(evt);
 		}
-
-		if (fNK)
-			nk_input_end(fNK);
-
-		DrawGUI();
 
 		for (int i = 0; i < events.size(); i++)
 		{
@@ -180,7 +204,7 @@ namespace Rtt
 			}
 			case SDL_WINDOWEVENT:
 			{
-				//SDL_Log("SDL_WINDOWEVENT %d %d,%d", event.window.event, event.window.data1, event.window.data2);
+				//SDL_Log("SDL_WINDOWEVENT %d: %d %d,%d", e.window.windowID, e.window.event, e.window.data1, e.window.data2);
 				switch (e.window.event)
 				{
 				case SDL_WINDOWEVENT_SHOWN:
@@ -211,6 +235,13 @@ namespace Rtt
 						// refresh native elements
 	//					jsContextResizeNativeObjects();
 					}
+					break;
+				}
+				case SDL_WINDOWEVENT_CLOSE: 
+				{
+					SDL_Event e = {};
+					e.type = sdl::OnCloseDialog;
+					SDL_PushEvent(&e);
 					break;
 				}
 				default:
@@ -244,10 +275,6 @@ namespace Rtt
 			}
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				// there is a visible modal dialog window
-				if ((fMenu && fMenu->IsSubMenuVisible()) || fDlg)
-					break;
-
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -280,10 +307,6 @@ namespace Rtt
 
 			case SDL_MOUSEMOTION:
 			{
-				// there is a visible modal dialog window
-				if ((fMenu && fMenu->IsSubMenuVisible()) || fDlg)
-					break;
-
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -328,10 +351,6 @@ namespace Rtt
 
 			case SDL_MOUSEBUTTONUP:
 			{
-				// there is a visible modal dialog window
-				if ((fMenu && fMenu->IsSubMenuVisible()) || fDlg)
-					break;
-
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -364,10 +383,6 @@ namespace Rtt
 
 			case SDL_MOUSEWHEEL:
 			{
-				// there is a visible modal dialog window
-				if ((fMenu && fMenu->IsSubMenuVisible()) || fDlg)
-					break;
-
 				const SDL_MouseWheelEvent& w = e.wheel;
 				if (w.which != SDL_TOUCH_MOUSEID)
 				{
@@ -412,19 +427,6 @@ namespace Rtt
 		return true;
 	}
 
-	void SolarApp::DrawGUI()
-	{
-		const char* appName = GetAppName();
-		if (fMenu)
-		{
-			fMenu->advance(appName);
-		}
-		if (fDlg)
-		{
-			fDlg->advance(appName);
-		}
-	}
-
 	void SolarApp::Run()
 	{
 		int fps = fContext->GetFPS();
@@ -438,6 +440,16 @@ namespace Rtt
 			if (!PollEvents())
 				break;
 
+			// draw GUI
+			fDrawGUI = true;
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplSDL2_NewFrame();
+			ImGui::NewFrame();
+			for (const auto& it : fImGui)
+			{
+				it.second->Draw();
+			}
+
 			fContext->advance();
 
 			int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
@@ -449,6 +461,28 @@ namespace Rtt
 		}
 	}
 
+	void SolarApp::RenderGUI()
+	{
+		if (fDrawGUI)
+		{
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+			// Update and Render additional Platform Windows
+			// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+			//  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
+			ImGuiIO& io = ImGui::GetIO(); (void)io;
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+				SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+			}
+			fDrawGUI = false;
+		}
+	}
 
 	void SolarApp::OnIconized(wxIconizeEvent& event)
 	{
