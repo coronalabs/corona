@@ -83,53 +83,6 @@ namespace Rtt
 	//	wxPostEvent(solarApp, eventOpen);
 	}
 
-	void SolarSimulator::OnRelaunchLastProject(wxCommandEvent& event)
-	{
-		const string& lastProjectDirectory = solarSimulator->ConfigStr("lastProjectDirectory");
-		if (lastProjectDirectory.size() > 0)
-		{
-	//		wxCommandEvent eventOpen(eventOpenProject);
-	//		wxString fullPath(lastProjectDirectory);
-	//		fullPath.append("/main.lua");
-
-	//		eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
-	//		eventOpen.SetString(fullPath.c_str());
-	//		wxPostEvent(solarApp, eventOpen);
-		}
-	}
-
-	void SolarSimulator::OnOpenInEditor()
-	{
-		string command("xdg-open ");
-		command.append(GetContext()->GetAppPath());
-		command.append("/main.lua");
-
-		wxExecute(command.c_str());
-	}
-
-	void SolarSimulator::OnShowProjectFiles(wxCommandEvent& event)
-	{
-		const char* appPath = GetContext()->GetAppPath();
-		string command("xdg-open ");
-		command.append(appPath);
-
-		wxExecute(command.c_str());
-	}
-
-	void SolarSimulator::OnShowProjectSandbox(wxCommandEvent& event)
-	{
-		const char* homeDir = GetHomePath();
-		const string& appName = GetContext()->GetAppName();
-		string command("xdg-open ");
-		command.append(homeDir);
-		command.append("/.Solar2D/Sandbox/");
-		command.append(appName);
-		command.append("_");
-		command.append(CalculateMD5(appName));
-
-		wxExecute(command.c_str());
-	}
-
 	void SolarSimulator::OnClearProjectSandbox(wxCommandEvent& event)
 	{
 		Rtt::LinuxClearProjectSandboxDialog* clearProjectSandboxDlg = new Rtt::LinuxClearProjectSandboxDialog(solarApp, wxID_ANY, wxEmptyString);

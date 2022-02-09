@@ -33,7 +33,7 @@ namespace Rtt
 	{
 		ImMenu(const std::string& appName)
 		{
-			isMainMenu = appName == "Solar2D Simulator";
+			isMainMenu = appName == "homescreen";
 		}
 		void Draw() override;
 

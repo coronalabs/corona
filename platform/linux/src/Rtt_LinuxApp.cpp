@@ -159,6 +159,7 @@ namespace Rtt
 	bool SolarApp::PollEvents()
 	{
 		vector<SDL_Event> events;
+		ImGuiIO& io = ImGui::GetIO();
 
 		SDL_Event evt;
 		while (SDL_PollEvent(&evt))
@@ -267,6 +268,10 @@ namespace Rtt
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
+					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+					if (io.WantCaptureMouse)
+						break;
+
 					int x = b.x;
 					int y = b.y;
 
@@ -299,6 +304,10 @@ namespace Rtt
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
+					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+					if (io.WantCaptureMouse)
+						break;
+
 					int x = b.x;
 					int y = b.y;
 
@@ -343,6 +352,10 @@ namespace Rtt
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
+					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+					if (io.WantCaptureMouse)
+						break;
+
 					int x = b.x;
 					int y = b.y;
 
@@ -375,6 +388,10 @@ namespace Rtt
 				const SDL_MouseWheelEvent& w = e.wheel;
 				if (w.which != SDL_TOUCH_MOUSEID)
 				{
+					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+					if (io.WantCaptureMouse)
+						break;
+
 					int scrollWheelDeltaX = w.x;
 					int scrollWheelDeltaY = w.y;
 					int x = w.x;
@@ -414,6 +431,11 @@ namespace Rtt
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
 		}
 		return true;
+	}
+
+	void SolarApp::SetTitle(const std::string& name)
+	{
+		SDL_SetWindowTitle(fWindow, IsHomeScreen(name) ? "Solar2D Simulator" : name.c_str());
 	}
 
 	void SolarApp::Run()

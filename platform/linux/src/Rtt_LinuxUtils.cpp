@@ -176,7 +176,7 @@ void UpdateRecentDocs(const std::string& appName, const std::string& path)
 	}
 }
 
-void OpenURL(const char* url)
+void OpenURL(const string& url)
 {
 	string cmd("xdg-open ");
 	cmd.append(url);

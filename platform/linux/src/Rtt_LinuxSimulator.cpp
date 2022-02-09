@@ -120,8 +120,12 @@ namespace Rtt
 			OnRelaunch();
 			break;
 		case sdl::OnOpenInEditor:
-			OnOpenInEditor();
+		{
+			string path = GetContext()->GetAppPath();
+			path.append("/main.lua");
+			OpenURL(path);
 			break;
+		}
 		case sdl::OnOpenFileDialog:
 			break;
 		case sdl::OnCloseProject:
@@ -142,10 +146,32 @@ namespace Rtt
 		case sdl::OnCloseDialog:
 			break;
 		case sdl::OnShowProjectFiles:
+			OpenURL(GetContext()->GetAppPath());
+			break;
 		case sdl::OnShowProjectSandbox:
+		{
+			const string& appName = GetContext()->GetAppName();
+			string path = GetHomePath();
+			path.append("/.Solar2D/Sandbox/");
+			path.append(appName);
+			OpenURL(path);
+			break;
+		}
 		case sdl::OnClearProjectSandbox:
+			break;
 		case sdl::OnRelaunchLastProject:
+		{
+			const string& lastProjectDirectory = solarSimulator->ConfigStr("lastProjectDirectory");
+			if (lastProjectDirectory.size() > 0)
+			{
+				string path(lastProjectDirectory);
+				path.append("/main.lua");
+				OnOpen(path);
+			}
+			break;
+		}
 		case sdl::OnOpenPreferences:
+			break;
 
 		default:
 			break;
@@ -210,7 +236,7 @@ namespace Rtt
 
 	void SolarSimulator::CreateSuspendedPanel()
 	{
-//		if (suspendedPanel == NULL)
+		//		if (suspendedPanel == NULL)
 		{
 			//		suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->GetWidth(), fContext->GetHeight()));
 			//		suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
@@ -232,12 +258,12 @@ namespace Rtt
 			bool doRelaunch = !fRelaunchedViaFileEvent;
 
 			LinuxRuntimeErrorDialog* errDialog = fContext->GetPlatform()->GetRuntimeErrorDialog();
-//			if ((errDialog && errDialog->IsShown()) || (fRelaunchProjectDialog && fRelaunchProjectDialog->IsShown()))
-//			{
-//				return;
-//			}
+			//			if ((errDialog && errDialog->IsShown()) || (fRelaunchProjectDialog && fRelaunchProjectDialog->IsShown()))
+			//			{
+			//				return;
+			//			}
 
-			// workaround for wxFileSystem events firing twice (known wx bug)
+						// workaround for wxFileSystem events firing twice (known wx bug)
 			if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
 			{
 				return;
@@ -626,7 +652,6 @@ namespace Rtt
 		fImGui["menu"] = new ImMenu(fContext->GetAppName());
 
 		WatchFolder(fContext->GetAppPath(), appName.c_str());
-		//SetCursor(wxCURSOR_ARROW);
 
 		if (!IsHomeScreen(appName))
 		{

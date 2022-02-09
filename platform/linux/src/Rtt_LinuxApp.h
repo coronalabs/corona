@@ -81,13 +81,15 @@ namespace Rtt
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
 		const char* GetAppName() const { return fContext->GetAppName(); }
+		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
+		void SetTitle(const std::string& name);
+
 		void DrawGUI();
 		void RenderGUI();
 
 	protected:
 
 		virtual void MenuEvent(SDL_Event& e) {}
-		inline void SetTitle(const std::string& name)	{	SDL_SetWindowTitle(fWindow, name.c_str()); }
 
 		SolarAppContext* fContext;
 		SDL_Window* fWindow;

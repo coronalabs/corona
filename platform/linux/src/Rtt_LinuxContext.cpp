@@ -452,7 +452,7 @@ namespace Rtt
 		GetRuntime()->BeginRunLoop();
 
 		ResetWindowSize();
-		SDL_SetWindowTitle(fWindow, GetAppName());
+		app->SetTitle(GetAppName());
 
 		return true;
 	}

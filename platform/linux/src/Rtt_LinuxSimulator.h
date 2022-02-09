@@ -35,10 +35,6 @@ namespace Rtt
 		void OnCloneProject(wxCommandEvent& event);
 		void OnNewProject(wxCommandEvent& event);
 		void OnOpenFileDialog(wxCommandEvent& event);
-		void OnRelaunchLastProject(wxCommandEvent& event);
-		void OnOpenInEditor();
-		void OnShowProjectFiles(wxCommandEvent& event);
-		void OnShowProjectSandbox(wxCommandEvent& event);
 		void OnClearProjectSandbox(wxCommandEvent& event);
 		void OnAndroidBackButton(wxCommandEvent& event);
 		void OnOpenPreferences(wxCommandEvent& event);
@@ -57,8 +53,6 @@ namespace Rtt
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }
 		void MenuEvent(SDL_Event& e) override;
-
-		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 
 		// for simulator settings
 		void ConfigLoad();
