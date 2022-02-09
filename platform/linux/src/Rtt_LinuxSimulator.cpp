@@ -105,7 +105,7 @@ namespace Rtt
 		return false;
 	}
 
-	/*void SolarSimulator::GuiEvent(SDL_Event& e)
+	void SolarSimulator::MenuEvent(SDL_Event& e)
 	{
 		switch (e.type)
 		{
@@ -124,8 +124,13 @@ namespace Rtt
 			break;
 		case sdl::OnOpenFileDialog:
 			break;
-		case sdl::OnClose:
+		case sdl::OnCloseProject:
+		{
+			string path(GetStartupPath(NULL));
+			path.append("/Resources/homescreen/main.lua");
+			OnOpen(path);
 			break;
+		}
 		case sdl::OnOpenDocumentation:
 			OpenURL("https://docs.coronalabs.com/api/index.html");
 			break;
@@ -145,7 +150,7 @@ namespace Rtt
 		default:
 			break;
 		}
-	}*/
+	}
 
 	void SolarSimulator::WatchFolder(const char* path, const char* appName)
 	{
@@ -597,16 +602,6 @@ namespace Rtt
 			//fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
 			fContext->Pause();
 		}
-	}
-
-	void SolarSimulator::OnOpenWelcome(wxCommandEvent& event)
-	{
-		string path(GetStartupPath(NULL));
-		path.append("/Resources/homescreen/main.lua");
-
-		//		wxCommandEvent eventOpen(eventOpenProject);
-		//		eventOpen.SetString(path.c_str());
-		//		wxPostEvent(this, eventOpen);
 	}
 
 	void SolarSimulator::OnOpen(const std::string& ppath)

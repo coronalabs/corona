@@ -29,7 +29,6 @@ namespace Rtt
 		void OnZoomOut(wxCommandEvent& event);
 		void OnViewAsChanged(wxCommandEvent& event);
 		void OnSuspendOrResume(wxCommandEvent& event);
-		void OnOpenWelcome(wxCommandEvent& event);
 		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 
 		// menu events
@@ -57,6 +56,7 @@ namespace Rtt
 		void SetMenu(const char* appPath);
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }
+		void MenuEvent(SDL_Event& e) override;
 
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 

@@ -44,7 +44,7 @@ enum sdl
 	OnOpenInEditor,
 	OnRelaunch,
 	OnOpenFileDialog,
-	OnClose,
+	OnCloseProject,
 	OnOpenDocumentation,
 	OnOpenSampleProjects,
 	OnAbout,
@@ -86,7 +86,7 @@ namespace Rtt
 
 	protected:
 
-		virtual void GuiEvent(SDL_Event& e) {}
+		virtual void MenuEvent(SDL_Event& e) {}
 		inline void SetTitle(const std::string& name)	{	SDL_SetWindowTitle(fWindow, name.c_str()); }
 
 		SolarAppContext* fContext;
@@ -97,7 +97,9 @@ namespace Rtt
 		std::string fProjectPath;
 		int fWidth;
 		int fHeight;
-		bool fDrawGUI;
+
+		// GUI
+		ImGuiContext* imctx;
 		std::map<std::string, smart_ptr<Im>> fImGui;
 	};
 

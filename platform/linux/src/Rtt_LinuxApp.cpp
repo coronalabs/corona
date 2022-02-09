@@ -57,7 +57,7 @@ namespace Rtt
 		, fWindow(NULL)
 		, fWidth(0)
 		, fHeight(0)
-		, fDrawGUI(false)
+		, imctx(NULL)
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
 
@@ -125,38 +125,25 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE| SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-		uint32_t windowStyle = SDL_WINDOW_OPENGL| SDL_WINDOW_ALLOW_HIGHDPI; // | SDL_WINDOW_BORDERLESS;
+		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI; // | SDL_WINDOW_BORDERLESS;
 		windowStyle |= SDL_WINDOW_RESIZABLE;
 		fWindow = SDL_CreateWindow("Solar2D", 0, 0, 320, 480, windowStyle);
 		Rtt_ASSERT(fWindow);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
-		Rtt_ASSERT(fGLcontext);  
+		Rtt_ASSERT(fGLcontext);
 		SDL_GL_MakeCurrent(fWindow, fGLcontext);
 		SDL_GL_SetSwapInterval(1); // Enable vsync
 
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
+		imctx = ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-		//io.ConfigViewportsNoAutoMerge = true;
-		//io.ConfigViewportsNoTaskBarIcon = true;
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsClassic();
-
-		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		}
 
 		// Setup Platform/Renderer backends
 		ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
@@ -176,7 +163,9 @@ namespace Rtt
 		SDL_Event evt;
 		while (SDL_PollEvent(&evt))
 		{
+			// GUI
 			ImGui_ImplSDL2_ProcessEvent(&evt);
+
 			if (evt.type == SDL_QUIT)
 				return false;
 			if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE && evt.window.windowID == SDL_GetWindowID(fWindow))
@@ -237,7 +226,7 @@ namespace Rtt
 					}
 					break;
 				}
-				case SDL_WINDOWEVENT_CLOSE: 
+				case SDL_WINDOWEVENT_CLOSE:
 				{
 					SDL_Event e = {};
 					e.type = sdl::OnCloseDialog;
@@ -417,7 +406,7 @@ namespace Rtt
 			}
 
 			default:
-				GuiEvent(e);
+				MenuEvent(e);
 				break;
 			}
 
@@ -440,16 +429,6 @@ namespace Rtt
 			if (!PollEvents())
 				break;
 
-			// draw GUI
-			fDrawGUI = true;
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplSDL2_NewFrame();
-			ImGui::NewFrame();
-			for (const auto& it : fImGui)
-			{
-				it.second->Draw();
-			}
-
 			fContext->advance();
 
 			int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
@@ -463,25 +442,21 @@ namespace Rtt
 
 	void SolarApp::RenderGUI()
 	{
-		if (fDrawGUI)
-		{
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		if (imctx == NULL)
+			return;
 
-			// Update and Render additional Platform Windows
-			// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-			//  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
-			ImGuiIO& io = ImGui::GetIO(); (void)io;
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			{
-				SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-				SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-				SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-			}
-			fDrawGUI = false;
+		// draw GUI
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+		ImGui::NewFrame();
+		for (const auto& it : fImGui)
+		{
+			it.second->Draw();
 		}
+		ImGui::EndFrame();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	void SolarApp::OnIconized(wxIconizeEvent& event)
