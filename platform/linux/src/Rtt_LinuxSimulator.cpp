@@ -109,11 +109,43 @@ namespace Rtt
 	{
 		switch (e.type)
 		{
+		case sdl::OnNewProject:
+		{
+			/*			Rtt::LinuxNewProjectDialog* newProjectDlg = new Rtt::LinuxNewProjectDialog(solarApp, wxID_ANY, wxEmptyString);
+						if (newProjectDlg->ShowModal() == wxID_OK)
+						{
+							// open project in the simulator
+							string projectPath(newProjectDlg->GetProjectFolder().c_str());
+							projectPath.append("/").append(newProjectDlg->GetProjectName().c_str());
+							projectPath.append("/main.lua");
+
+							//	wxCommandEvent eventOpen(eventOpenProject);
+							//	eventOpen.SetString(projectPath.c_str());
+							//	wxPostEvent(solarApp, eventOpen);
+
+								// open the project folder in the file browser
+							string command("xdg-open \"");
+							command.append(newProjectDlg->GetProjectFolder().c_str());
+							command.append("/").append(newProjectDlg->GetProjectName().c_str());
+							command.append("\"");
+							wxExecute(command.c_str());
+						}
+						newProjectDlg->Destroy();*/
+			break;
+		}
 		case sdl::OnOpenProject:
 		{
-			string path = (const char*)e.user.data1;
-			free(e.user.data1);
-			OnOpen(path);
+			if (e.user.data1)
+			{
+				string path = (const char*)e.user.data1;
+				free(e.user.data1);
+				OnOpen(path);
+			}
+			else
+			{
+				// open file dialog
+				fDlg = new ImFile("");
+			}
 			break;
 		}
 		case sdl::OnRelaunch:
@@ -126,8 +158,6 @@ namespace Rtt
 			OpenURL(path);
 			break;
 		}
-		case sdl::OnOpenFileDialog:
-			break;
 		case sdl::OnCloseProject:
 		{
 			string path(GetStartupPath(NULL));
@@ -143,8 +173,15 @@ namespace Rtt
 			break;
 		case sdl::OnAbout:
 			break;
-		case sdl::OnCloseDialog:
+		case sdl::OnFileBrowserSelected:
+		{
+			string path = (const char*)e.user.data1;
+			free(e.user.data1);
+			OnOpen(path);
+
+			fDlg = NULL;
 			break;
+		}
 		case sdl::OnShowProjectFiles:
 			OpenURL(GetContext()->GetAppPath());
 			break;
@@ -289,7 +326,7 @@ namespace Rtt
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
 			fContext->LoadApp();
-			fImGui["menu"] = new ImMenu(fContext->GetAppName());
+			fMenu = new ImMenu(fContext->GetAppName());
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
@@ -649,7 +686,7 @@ namespace Rtt
 		}
 
 		string appName = fContext->GetAppName();
-		fImGui["menu"] = new ImMenu(fContext->GetAppName());
+		fMenu = new ImMenu(fContext->GetAppName());
 
 		WatchFolder(fContext->GetAppPath(), appName.c_str());
 

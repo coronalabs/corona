@@ -63,7 +63,7 @@ endif()
 
 #set(COMMON_COMPILER_FLAGS "-Wno-deprecated -O3 -fstrict-aliasing -fvisibility=hidden -ffunction-sections -fdata-sections")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILER_FLAGS} -no-pie -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILER_FLAGS} -no-pie -std=c++17")
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${COMMON_COMPILER_FLAGS} -no-pie")
 
 include_directories (

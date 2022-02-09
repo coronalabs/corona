@@ -33,56 +33,6 @@ namespace Rtt
 		newCloneDlg->Destroy();
 	}
 
-	void SolarSimulator::OnNewProject(wxCommandEvent& event)
-	{
-		Rtt::LinuxNewProjectDialog* newProjectDlg = new Rtt::LinuxNewProjectDialog(solarApp, wxID_ANY, wxEmptyString);
-
-		if (newProjectDlg->ShowModal() == wxID_OK)
-		{
-			// open project in the simulator
-			string projectPath(newProjectDlg->GetProjectFolder().c_str());
-			projectPath.append("/").append(newProjectDlg->GetProjectName().c_str());
-			projectPath.append("/main.lua");
-
-		//	wxCommandEvent eventOpen(eventOpenProject);
-		//	eventOpen.SetString(projectPath.c_str());
-		//	wxPostEvent(solarApp, eventOpen);
-
-			// open the project folder in the file browser
-			string command("xdg-open \"");
-			command.append(newProjectDlg->GetProjectFolder().c_str());
-			command.append("/").append(newProjectDlg->GetProjectName().c_str());
-			command.append("\"");
-			wxExecute(command.c_str());
-		}
-
-		newProjectDlg->Destroy();
-	}
-
-	void SolarSimulator::OnOpenFileDialog(wxCommandEvent& event)
-	{
-		//	string startPath(GetHomePath());
-		//	startPath.append("/Documents/Solar2D Projects");
-		wxString startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
-
-		wxFileDialog openFileDialog(solarApp, _("Open"), startPath, wxEmptyString, "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-		if (openFileDialog.ShowModal() == wxID_CANCEL)
-		{
-			return;
-		}
-
-		wxString path = openFileDialog.GetPath();
-		if (!Rtt_FileExists(path.c_str()))
-		{
-			return;
-		}
-
-		// open project
-	//	wxCommandEvent eventOpen(eventOpenProject);
-	//	eventOpen.SetString(path.c_str());
-	//	wxPostEvent(solarApp, eventOpen);
-	}
-
 	void SolarSimulator::OnClearProjectSandbox(wxCommandEvent& event)
 	{
 		Rtt::LinuxClearProjectSandboxDialog* clearProjectSandboxDlg = new Rtt::LinuxClearProjectSandboxDialog(solarApp, wxID_ANY, wxEmptyString);

@@ -22,7 +22,7 @@ using namespace std;
 
 namespace Rtt
 {
-	string LinuxSimulatorServices::fCurrentProjectPath;
+	void PushEvent(int evt);
 
 	LinuxSimulatorServices::LinuxSimulatorServices()
 	{
@@ -41,49 +41,16 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::NewProject() const
 	{
-		wxCommandEvent newProjectEvent(wxEVT_NULL);
-		solarSimulator->OnNewProject(newProjectEvent);
+		PushEvent(sdl::OnNewProject);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::OpenProject(const char* name) const
 	{
-		string path;
-		if (name != NULL)
-		{
-			path = name;
-			if (!Rtt_FileExists(path.c_str()))
-			{
-				return false;
-			}
-
-			// update the current project path
-			fCurrentProjectPath = path;
-
-			// open project
-			SDL_Event e = {};
-			e.type = sdl::OnOpenProject;
-			e.user.data1 = strdup(path.c_str());
-			SDL_PushEvent(&e);
-
-			return true;
-		}
-
 		SDL_Event e = {};
-		e.type = sdl::OnOpenFileDialog;
+		e.type = sdl::OnOpenProject;
+		e.user.data1 = name ? strdup(name) : NULL;
 		SDL_PushEvent(&e);
-
-		return true;
-
-		/*			wxString startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
-					wxFileDialog openFileDialog(solarApp, _("Open"), startPath, "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-					if (openFileDialog.ShowModal() == wxID_CANCEL)
-					{
-						return false;
-					}
-
-					path = openFileDialog.GetPath().c_str();*/
 		return true;
 	}
 
@@ -119,7 +86,7 @@ namespace Rtt
 
 	const char* LinuxSimulatorServices::GetCurrProjectPath() const
 	{
-		return fCurrentProjectPath.c_str();
+		return app->GetContext()->GetAppPath();
 	}
 
 	// stub to match Mac implementation
@@ -131,7 +98,7 @@ namespace Rtt
 	// Set the current project resource path
 	void LinuxSimulatorServices::SetProjectResourceDirectory(const char* projectResourceDirectory)
 	{
-		LinuxPlatform* platform = 0; //vv solarApp->GetPlatform();
+		LinuxPlatform* platform = app->GetPlatform();
 		platform->SetProjectResourceDirectory(projectResourceDirectory);
 	}
 
@@ -204,10 +171,7 @@ namespace Rtt
 
 	void LinuxSimulatorServices::OpenTextEditor(const char* filename) const
 	{
-		string command("xdg-open ");
-		command.append(filename);
-
-		wxExecute(command.c_str());
+		PushEvent(sdl::OnOpenInEditor);
 	}
 
 	// stub to match Mac implementation
@@ -228,43 +192,25 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::RelaunchProject() const
 	{
-		//		wxCommandEvent e(eventRelaunchProject);
-		//		wxPostEvent(solarApp, e);
+		PushEvent(sdl::OnRelaunch);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::EditProject(const char* name) const
 	{
-		string command("xdg-open ");
-		command.append(name);
-
-		wxExecute(command.c_str());
+		PushEvent(sdl::OnOpenInEditor);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::ShowProjectFiles(const char* name) const
 	{
-		wxString path(name);
-		path = path.SubString(0, path.size() - 10); // without main.lua
-		string command("xdg-open ");
-		command.append(path.c_str());
-
-		wxExecute(command.c_str());
+		PushEvent(sdl::OnShowProjectFiles);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::ShowProjectSandbox(const char* name) const
 	{
-		const char* homeDir = GetHomePath();
-		string appName; //vv = solarApp->GetContext()->GetAppName();
-		string command("xdg-open ");
-		command.append(homeDir);
-		command.append("/.Solar2D/Sandbox/");
-		command.append(name);
-		command.append("_");
-		command.append(CalculateMD5(name));
-
-		wxExecute(command.c_str());
+		PushEvent(sdl::OnShowProjectSandbox);
 		return true;
 	}
 }; // namespace Rtt

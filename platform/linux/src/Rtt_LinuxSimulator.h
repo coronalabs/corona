@@ -33,8 +33,6 @@ namespace Rtt
 
 		// menu events
 		void OnCloneProject(wxCommandEvent& event);
-		void OnNewProject(wxCommandEvent& event);
-		void OnOpenFileDialog(wxCommandEvent& event);
 		void OnClearProjectSandbox(wxCommandEvent& event);
 		void OnAndroidBackButton(wxCommandEvent& event);
 		void OnOpenPreferences(wxCommandEvent& event);

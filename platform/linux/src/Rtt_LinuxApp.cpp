@@ -151,7 +151,7 @@ namespace Rtt
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
-		fImGui["menu"] = new ImMenu(fContext->GetAppName());
+		fMenu = new ImMenu(fContext->GetAppName());
 
 		return fContext->LoadApp();
 	}
@@ -229,9 +229,6 @@ namespace Rtt
 				}
 				case SDL_WINDOWEVENT_CLOSE:
 				{
-					SDL_Event e = {};
-					e.type = sdl::OnCloseDialog;
-					SDL_PushEvent(&e);
 					break;
 				}
 				default:
@@ -471,10 +468,13 @@ namespace Rtt
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
-		for (const auto& it : fImGui)
+
+		fMenu->Draw();
+		if (fDlg)
 		{
-			it.second->Draw();
+			fDlg->Draw();
 		}
+
 		ImGui::EndFrame();
 
 		ImGui::Render();

@@ -27,9 +27,50 @@ namespace Rtt
 		SDL_PushEvent(&e);
 	}
 
+	//
+	// About dialog
+	//
+
 	void ImAbout::Draw()
 	{
 	}
+
+	//
+	// File dialog
+	//
+
+	ImFile::ImFile(const std::string& startFolder)
+	{
+		// (optional) set browser properties
+		fileDialog.SetTitle("title");
+		fileDialog.SetTypeFilters({ ".lua" });
+		fileDialog.Open();
+	}
+
+	ImFile::~ImFile()
+	{
+
+	}
+
+	void ImFile::Draw()
+	{
+		fileDialog.Display();
+		if (fileDialog.HasSelected())
+		{
+			std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
+			fileDialog.ClearSelected();
+
+			SDL_Event e = {};
+			e.type = sdl::OnFileBrowserSelected;
+			e.user.data1 = strdup(fileDialog.GetSelected().string().c_str());
+			SDL_PushEvent(&e);
+		}
+
+	}
+
+	//
+	// Menu
+	//
 
 	void ImMenu::Draw()
 	{
@@ -47,7 +88,7 @@ namespace Rtt
 					}
 					if (ImGui::MenuItem("Open Project...", "Ctrl+O"))
 					{
-						PushEvent(sdl::OnOpenFileDialog);
+						PushEvent(sdl::OnOpenProject);
 					}
 					ImGui::Separator();
 					if (ImGui::MenuItem("Relaunch Last Project", "Ctrl+R"))
@@ -102,7 +143,7 @@ namespace Rtt
 					}
 					if (ImGui::MenuItem("Open Project...", "Ctrl+O"))
 					{
-						PushEvent(sdl::OnOpenFileDialog);
+						PushEvent(sdl::OnOpenProject);
 					}
 					ImGui::Separator();
 					if (ImGui::MenuItem("Build", NULL))

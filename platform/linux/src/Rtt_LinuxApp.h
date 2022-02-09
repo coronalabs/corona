@@ -43,7 +43,6 @@ enum sdl
 	OnBuild,
 	OnOpenInEditor,
 	OnRelaunch,
-	OnOpenFileDialog,
 	OnCloseProject,
 	OnOpenDocumentation,
 	OnOpenSampleProjects,
@@ -53,7 +52,7 @@ enum sdl
 	OnClearProjectSandbox,
 	OnRelaunchLastProject,
 	OnOpenPreferences,
-	OnCloseDialog
+	OnFileBrowserSelected
 };
 
 namespace Rtt
@@ -102,7 +101,8 @@ namespace Rtt
 
 		// GUI
 		ImGuiContext* imctx;
-		std::map<std::string, smart_ptr<Im>> fImGui;
+		smart_ptr<Im> fMenu;
+		smart_ptr<Im> fDlg;
 	};
 
 }
