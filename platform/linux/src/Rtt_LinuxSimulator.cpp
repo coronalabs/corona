@@ -172,6 +172,7 @@ namespace Rtt
 			OnOpenSampleProjects();
 			break;
 		case sdl::OnAbout:
+			fDlg = new ImAbout();
 			break;
 		case sdl::OnFileBrowserSelected:
 		{
@@ -209,7 +210,10 @@ namespace Rtt
 		}
 		case sdl::OnOpenPreferences:
 			break;
-
+		case sdl::onClosePopupModal:
+			ImGui::CloseCurrentPopup();
+			fDlg = NULL;
+			break;
 		default:
 			break;
 		}

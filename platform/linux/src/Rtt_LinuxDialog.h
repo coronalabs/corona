@@ -28,7 +28,13 @@ namespace Rtt
 
 	struct ImAbout : public Im
 	{
+		ImAbout();
+		virtual ~ImAbout();
 		void Draw() override;
+
+		GLuint tex_id;
+		int width;
+		int height;
 	};
 
 	struct ImFile : public Im

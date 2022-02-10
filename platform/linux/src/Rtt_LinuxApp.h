@@ -44,6 +44,7 @@ enum sdl
 	OnOpenInEditor,
 	OnRelaunch,
 	OnCloseProject,
+	onClosePopupModal,
 	OnOpenDocumentation,
 	OnOpenSampleProjects,
 	OnAbout,
