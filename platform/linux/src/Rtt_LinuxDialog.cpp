@@ -91,7 +91,7 @@ namespace Rtt
 	{
 		// Always center this window when appearing
 		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
 		if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
@@ -149,8 +149,10 @@ namespace Rtt
 	ImFile::ImFile(const std::string& startFolder)
 	{
 		// (optional) set browser properties
-		fileDialog.SetTitle("title");
+		fileDialog.SetTitle("Open");
 		fileDialog.SetTypeFilters({ ".lua" });
+		std::filesystem::path pwd;
+		fileDialog.SetPwd(startFolder);
 		fileDialog.Open();
 	}
 
@@ -164,15 +166,13 @@ namespace Rtt
 		fileDialog.Display();
 		if (fileDialog.HasSelected())
 		{
-			std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
-			fileDialog.ClearSelected();
-
 			SDL_Event e = {};
 			e.type = sdl::OnFileBrowserSelected;
 			e.user.data1 = strdup(fileDialog.GetSelected().string().c_str());
 			SDL_PushEvent(&e);
-		}
 
+			fileDialog.ClearSelected();
+		}
 	}
 
 	//
@@ -361,6 +361,93 @@ namespace Rtt
 				ImGui::EndMainMenuBar();
 			}
 		}
+	}
+
+	//
+	//
+	//
+	ImNewProject::ImNewProject()
+		: fProjectName(""),
+		fTemplateName(""),
+		fScreenWidth(320),
+		fScreenHeight(480),
+		fOrientationIndex(""),
+		fProjectPath(""),
+		fProjectSavePath(""),
+		fResourcePath("")
+	{
+		// open project in the simulator
+/*			string projectPath(newProjectDlg->GetProjectFolder().c_str());
+			projectPath.append("/").append(newProjectDlg->GetProjectName().c_str());
+			projectPath.append("/main.lua");
+
+			//	wxCommandEvent eventOpen(eventOpenProject);
+			//	eventOpen.SetString(projectPath.c_str());
+			//	wxPostEvent(solarApp, eventOpen);
+
+				// open the project folder in the file browser
+			string command("xdg-open \"");
+			command.append(newProjectDlg->GetProjectFolder().c_str());
+			command.append("/").append(newProjectDlg->GetProjectName().c_str());
+			command.append("\"");
+			wxExecute(command.c_str());*/
+	}
+
+	void ImNewProject::Draw()
+	{
+		// Always center this window when appearing
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+		if (ImGui::BeginPopupModal("New Project", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			string s;
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			ImGui::Dummy(ImVec2(10, 10));
+
+			s = "   Application Name :";
+			float label_width = ImGui::CalcTextSize(s.c_str()).x;
+			static char sApplicationName[100] = "";
+			ImGui::Text(s.c_str());
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(label_width + 20);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
+			ImGui::InputText("##ApplicationName", sApplicationName, sizeof(sApplicationName));
+
+			s = "   Project Folder: ";
+			static char sProjectFolder[100] = "";
+			ImGui::Text(s.c_str());
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(label_width + 20);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
+			ImGui::InputText("##ProjectFolder", sProjectFolder, sizeof(sProjectFolder));
+			ImGui::SameLine();
+			if (ImGui::Button("Browse..."))
+			{
+				OpenURL(s);
+			}
+
+			// ok + cancel
+			s = "OK";
+			ImGui::Dummy(ImVec2(20, 20));
+			int ok_width = 100;
+			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			{
+				PushEvent(sdl::onClosePopupModal);
+			}
+			ImGui::SetItemDefaultFocus();
+
+			s = "Cancel";
+			ImGui::SameLine();
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			{
+				PushEvent(sdl::onClosePopupModal);
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::OpenPopup("New Project");
 	}
 }
 

@@ -111,28 +111,10 @@ namespace Rtt
 		{
 		case sdl::OnNewProject:
 		{
-			/*			Rtt::LinuxNewProjectDialog* newProjectDlg = new Rtt::LinuxNewProjectDialog(solarApp, wxID_ANY, wxEmptyString);
-						if (newProjectDlg->ShowModal() == wxID_OK)
-						{
-							// open project in the simulator
-							string projectPath(newProjectDlg->GetProjectFolder().c_str());
-							projectPath.append("/").append(newProjectDlg->GetProjectName().c_str());
-							projectPath.append("/main.lua");
-
-							//	wxCommandEvent eventOpen(eventOpenProject);
-							//	eventOpen.SetString(projectPath.c_str());
-							//	wxPostEvent(solarApp, eventOpen);
-
-								// open the project folder in the file browser
-							string command("xdg-open \"");
-							command.append(newProjectDlg->GetProjectFolder().c_str());
-							command.append("/").append(newProjectDlg->GetProjectName().c_str());
-							command.append("\"");
-							wxExecute(command.c_str());
-						}
-						newProjectDlg->Destroy();*/
+			fDlg = new ImNewProject();
 			break;
 		}
+
 		case sdl::OnOpenProject:
 		{
 			if (e.user.data1)
@@ -144,13 +126,16 @@ namespace Rtt
 			else
 			{
 				// open file dialog
-				fDlg = new ImFile("");
+				string startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
+				fDlg = new ImFile(startPath);
 			}
 			break;
 		}
+
 		case sdl::OnRelaunch:
 			OnRelaunch();
 			break;
+
 		case sdl::OnOpenInEditor:
 		{
 			string path = GetContext()->GetAppPath();
@@ -158,6 +143,7 @@ namespace Rtt
 			OpenURL(path);
 			break;
 		}
+
 		case sdl::OnCloseProject:
 		{
 			string path(GetStartupPath(NULL));
@@ -165,15 +151,19 @@ namespace Rtt
 			OnOpen(path);
 			break;
 		}
+
 		case sdl::OnOpenDocumentation:
 			OpenURL("https://docs.coronalabs.com/api/index.html");
 			break;
+
 		case sdl::OnOpenSampleProjects:
 			OnOpenSampleProjects();
 			break;
+
 		case sdl::OnAbout:
 			fDlg = new ImAbout();
 			break;
+
 		case sdl::OnFileBrowserSelected:
 		{
 			string path = (const char*)e.user.data1;
@@ -183,9 +173,11 @@ namespace Rtt
 			fDlg = NULL;
 			break;
 		}
+
 		case sdl::OnShowProjectFiles:
 			OpenURL(GetContext()->GetAppPath());
 			break;
+
 		case sdl::OnShowProjectSandbox:
 		{
 			const string& appName = GetContext()->GetAppName();
@@ -195,8 +187,10 @@ namespace Rtt
 			OpenURL(path);
 			break;
 		}
+
 		case sdl::OnClearProjectSandbox:
 			break;
+
 		case sdl::OnRelaunchLastProject:
 		{
 			const string& lastProjectDirectory = solarSimulator->ConfigStr("lastProjectDirectory");
@@ -208,12 +202,15 @@ namespace Rtt
 			}
 			break;
 		}
+
 		case sdl::OnOpenPreferences:
 			break;
+
 		case sdl::onClosePopupModal:
 			ImGui::CloseCurrentPopup();
 			fDlg = NULL;
 			break;
+
 		default:
 			break;
 		}

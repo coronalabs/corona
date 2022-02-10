@@ -59,4 +59,21 @@ namespace Rtt
 		bool isMainMenu;
 	};
 
+	struct ImNewProject : public Im
+	{
+		ImNewProject();
+		void Draw() override;
+
+		std::string fTemplateName;
+		int fScreenWidth;
+		int fScreenHeight;
+		std::string fOrientationIndex;
+		std::string fP;
+		std::string fProjectPath;
+		std::string fProjectSavePath;
+		std::string fResourcePath;
+		std::string fProjectFolder;
+		std::string fProjectName;
+	};
+
 }
