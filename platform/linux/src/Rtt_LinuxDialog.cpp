@@ -12,13 +12,21 @@
 #include "Rtt_LinuxApp.h"
 #include "Rtt_Version.h"
 #include "Rtt_FileSystem.h"
+#include "Rtt_LuaContext.h"
 #include <dirent.h>
 #include <unistd.h>
+#include <pwd.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "imgui/stb_image.h"
 
 using namespace std;
+
+
+extern "C"
+{
+	int luaopen_lfs(lua_State* L);
+}
 
 namespace Rtt
 {
@@ -69,7 +77,7 @@ namespace Rtt
 	// About dialog
 	//
 
-	ImAbout::ImAbout()
+	DlgAbout::DlgAbout()
 		: tex_id(0)
 		, width(0)
 		, height(0)
@@ -79,7 +87,7 @@ namespace Rtt
 		LoadTextureFromFile(iconPath.c_str(), &tex_id, &width, &height);
 	}
 
-	ImAbout::~ImAbout()
+	DlgAbout::~DlgAbout()
 	{
 		if (tex_id > 0)
 		{
@@ -87,7 +95,7 @@ namespace Rtt
 		}
 	}
 
-	void ImAbout::Draw()
+	void DlgAbout::Draw()
 	{
 		// Always center this window when appearing
 		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
@@ -136,7 +144,6 @@ namespace Rtt
 				PushEvent(sdl::onClosePopupModal);
 			}
 
-			ImGui::Dummy(ImVec2(20, 20));
 			ImGui::EndPopup();
 		}
 		ImGui::OpenPopup("About");
@@ -146,22 +153,20 @@ namespace Rtt
 	// File dialog
 	//
 
-	ImFile::ImFile(const std::string& startFolder)
+	DlgFile::DlgFile(const std::string& startFolder)
 	{
 		// (optional) set browser properties
 		fileDialog.SetTitle("Open");
 		fileDialog.SetTypeFilters({ ".lua" });
-		std::filesystem::path pwd;
 		fileDialog.SetPwd(startFolder);
 		fileDialog.Open();
 	}
 
-	ImFile::~ImFile()
+	DlgFile::~DlgFile()
 	{
-
 	}
 
-	void ImFile::Draw()
+	void DlgFile::Draw()
 	{
 		fileDialog.Display();
 		if (fileDialog.HasSelected())
@@ -179,7 +184,7 @@ namespace Rtt
 	// Menu
 	//
 
-	void ImMenu::Draw()
+	void DlgMenu::Draw()
 	{
 		if (isMainMenu)
 		{
@@ -364,69 +369,86 @@ namespace Rtt
 	}
 
 	//
+	// DlgNewProject
 	//
-	//
-	ImNewProject::ImNewProject()
-		: fProjectName(""),
-		fTemplateName(""),
-		fScreenWidth(320),
-		fScreenHeight(480),
-		fOrientationIndex(""),
-		fProjectPath(""),
-		fProjectSavePath(""),
-		fResourcePath("")
+
+	DlgNewProject::DlgNewProject()
+		: fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
+		, fTemplateName("blank")
+		, fScreenWidth(320)
+		, fScreenHeight(480)
+		, fOrientation("Upright")
 	{
-		// open project in the simulator
-/*			string projectPath(newProjectDlg->GetProjectFolder().c_str());
-			projectPath.append("/").append(newProjectDlg->GetProjectName().c_str());
-			projectPath.append("/main.lua");
+		*fApplicationNameInput = 0;
+		*fProjectDirInput = 0;
 
-			//	wxCommandEvent eventOpen(eventOpenProject);
-			//	eventOpen.SetString(projectPath.c_str());
-			//	wxPostEvent(solarApp, eventOpen);
+		struct passwd* pw = getpwuid(getuid());
+		const char* homedir = pw->pw_dir;
+		fProjectDir = std::string(homedir);
+		fProjectDir += LUA_DIRSEP;
+		fProjectDir += "Documents";
+		fProjectDir += LUA_DIRSEP;
+		fProjectDir += "Solar2D Projects";
+		if (!Rtt_IsDirectory(fProjectDir.c_str()))
+		{
+			int rc = Rtt_MakeDirectory(fProjectDir.c_str());
+			if (!rc)
+			{
+				Rtt_LogException("Failed to create %s\n", fProjectDir.c_str());
+			}
+		}
 
-				// open the project folder in the file browser
-			string command("xdg-open \"");
-			command.append(newProjectDlg->GetProjectFolder().c_str());
-			command.append("/").append(newProjectDlg->GetProjectName().c_str());
-			command.append("\"");
-			wxExecute(command.c_str());*/
+		fileDialog.SetTitle("Browse For Folder");
 	}
 
-	void ImNewProject::Draw()
+	void DlgNewProject::Draw()
 	{
+
+		fileDialog.Display();
+		if (fileDialog.HasSelected())
+		{
+			fProjectDir = fileDialog.GetSelected().string();
+			strncpy(fProjectDirInput, fProjectDir.c_str(), sizeof(fProjectDirInput) - 1);
+			fileDialog.ClearSelected();
+		}
+
+
 		// Always center this window when appearing
 		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
-		if (ImGui::BeginPopupModal("New Project", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::Begin("New Project", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
 		{
 			string s;
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
 			ImGui::Dummy(ImVec2(10, 10));
 
+			ImGui::PushItemWidth(350);		// input field width
+
 			s = "   Application Name :";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
-			static char sApplicationName[100] = "";
 			ImGui::Text(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##ApplicationName", sApplicationName, sizeof(sApplicationName));
+			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
 			s = "   Project Folder: ";
-			static char sProjectFolder[100] = "";
+			strncpy(fProjectDirInput, fProjectDir.c_str(), sizeof(fProjectDirInput) - 1);
 			ImGui::Text(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##ProjectFolder", sProjectFolder, sizeof(sProjectFolder));
+			ImGui::InputText("##ProjectFolder", fProjectDirInput, sizeof(fProjectDirInput), ImGuiInputTextFlags_ReadOnly);
 			ImGui::SameLine();
 			if (ImGui::Button("Browse..."))
 			{
-				OpenURL(s);
+				fileDialog.SetPwd(fProjectDir);
+				fileDialog.Open();
 			}
+
+			ImGui::PopItemWidth();
 
 			// ok + cancel
 			s = "OK";
@@ -435,7 +457,22 @@ namespace Rtt
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				PushEvent(sdl::onClosePopupModal);
+				// sanity check
+				if (*fApplicationNameInput != 0)
+				{
+					if (CreateProject())
+					{
+						PushEvent(sdl::onClosePopupModal);
+					}
+					else
+					{
+						Rtt_LogException("Failed to create Application %s\n", fApplicationNameInput);
+					}
+				}
+				else
+				{
+					Rtt_LogException("Empty Application name\n");
+				}
 			}
 			ImGui::SetItemDefaultFocus();
 
@@ -445,9 +482,97 @@ namespace Rtt
 			{
 				PushEvent(sdl::onClosePopupModal);
 			}
-			ImGui::EndPopup();
-		}
-		ImGui::OpenPopup("New Project");
+			ImGui::End();
+		} //ImGui::Begin
 	}
-}
+
+	bool DlgNewProject::CreateProject()
+	{
+		string fResourcePath = string(GetStartupPath(NULL));
+		fResourcePath.append("/Resources");
+
+		string fNewProjectLuaScript(fResourcePath);
+		fNewProjectLuaScript.append("/homescreen/newproject.lua");
+
+		string fTemplatesDir(fResourcePath);
+		fTemplatesDir.append("/homescreen/templates");
+
+		string projectPath = fProjectDir;
+		projectPath.append(LUA_DIRSEP);
+		projectPath.append(fApplicationNameInput);
+
+		// check if project folder already exists and that the height and width are numbers
+		if (Rtt_IsDirectory(projectPath.c_str()))
+		{
+			//wxMessageBox(wxT("Project of that name already exists."), wxT("Duplicate Project Name"), wxICON_INFORMATION);
+			Rtt_LogException("Project of that name already exists\n");
+			return false;
+		}
+
+		if (!Rtt_MakeDirectory(projectPath.c_str()))
+		{
+			Rtt_LogException("Failed to create %s\n", projectPath.c_str());
+			return false;
+		}
+
+		lua_State* L = luaL_newstate();
+		luaL_openlibs(L);
+		Rtt::LuaContext::RegisterModuleLoader(L, "lfs", luaopen_lfs);
+
+		const char* script = fNewProjectLuaScript.c_str();
+		int status = luaL_loadfile(L, script);
+		if (0 != status)
+		{
+			Rtt_LogException("Failed to load %s\n", script);
+			return false;
+		}
+
+		lua_createtable(L, 0, 6);
+		{
+			lua_pushboolean(L, true);
+			lua_setfield(L, -2, "isSimulator");
+
+			lua_pushstring(L, fTemplateName.c_str());
+			lua_setfield(L, -2, "template");
+
+			lua_pushinteger(L, fScreenWidth);
+			lua_setfield(L, -2, "width");
+
+			lua_pushinteger(L, fScreenHeight);
+			lua_setfield(L, -2, "height");
+
+			lua_pushstring(L, fOrientation.c_str()); // Index ? "portrait" : "landscapeRight");
+			lua_setfield(L, -2, "orientation");
+
+			lua_pushstring(L, projectPath.c_str());
+			lua_setfield(L, -2, "savePath");
+
+			lua_pushstring(L, fTemplatesDir.c_str());
+			lua_setfield(L, -2, "templateBaseDir");
+		}
+
+		status = Rtt::LuaContext::DoCall(L, 1, 0);
+		lua_close(L);
+		if (0 == status)
+		{
+			// show the project folder
+			OpenURL(projectPath);
+
+			// open project in the simulator
+			projectPath.append("/main.lua");
+
+			SDL_Event e = {};
+			e.type = sdl::OnOpenProject;
+			e.user.data1 = strdup(projectPath.c_str());
+			SDL_PushEvent(&e);
+		}
+		else
+		{
+			Rtt_LogException("Failed to create %s project\n", fApplicationNameInput);
+			return false;
+		}
+		return true;
+	}
+
+}	// Rtt
 

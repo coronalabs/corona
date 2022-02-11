@@ -143,7 +143,7 @@ namespace Rtt
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 
 		// Setup Dear ImGui style
-		ImGui::StyleColorsClassic();
+		ImGui::StyleColorsLight(); // StyleColorsClassic();
 
 		// Setup Platform/Renderer backends
 		ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
@@ -151,7 +151,7 @@ namespace Rtt
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
-		fMenu = new ImMenu(fContext->GetAppName());
+		fMenu = new DlgMenu(fContext->GetAppName());
 
 		return fContext->LoadApp();
 	}
@@ -262,6 +262,9 @@ namespace Rtt
 			}
 			case SDL_MOUSEBUTTONDOWN:
 			{
+				if (fDlg)
+					break;
+
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -298,6 +301,9 @@ namespace Rtt
 
 			case SDL_MOUSEMOTION:
 			{
+				if (fDlg)
+					break;
+
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -341,11 +347,14 @@ namespace Rtt
 					fContext->DispatchEvent(mouseEvent);
 					fContext->GetMouseListener()->TouchMoved(x, y, 0);
 					break;
+					}
 				}
-			}
 
 			case SDL_MOUSEBUTTONUP:
 			{
+				if (fDlg)
+					break;
+
 				const SDL_MouseButtonEvent& b = e.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
@@ -382,6 +391,9 @@ namespace Rtt
 
 			case SDL_MOUSEWHEEL:
 			{
+				if (fDlg)
+					break;
+
 				const SDL_MouseWheelEvent& w = e.wheel;
 				if (w.which != SDL_TOUCH_MOUSEID)
 				{
@@ -426,9 +438,9 @@ namespace Rtt
 
 			//int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
-		}
+			}
 		return true;
-	}
+		}
 
 	void SolarApp::SetTitle(const std::string& name)
 	{
@@ -469,7 +481,11 @@ namespace Rtt
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
+		// disable main menu if there is a popup window 
+		ImGui::BeginDisabled(fDlg != NULL);
 		fMenu->Draw();
+		ImGui::EndDisabled();
+
 		if (fDlg)
 		{
 			fDlg->Draw();
@@ -499,4 +515,4 @@ namespace Rtt
 		//	SetSize(wxSize(newWidth, newHeight));
 	}
 
-}
+	}

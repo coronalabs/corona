@@ -21,15 +21,15 @@
 
 namespace Rtt
 {
-	struct Im : public ref_counted
+	struct Dlg : public ref_counted
 	{
 		virtual void Draw() = 0;
 	};
 
-	struct ImAbout : public Im
+	struct DlgAbout : public Dlg
 	{
-		ImAbout();
-		virtual ~ImAbout();
+		DlgAbout();
+		virtual ~DlgAbout();
 		void Draw() override;
 
 		GLuint tex_id;
@@ -37,19 +37,19 @@ namespace Rtt
 		int height;
 	};
 
-	struct ImFile : public Im
+	struct DlgFile : public Dlg
 	{
-		ImFile(const std::string& startFolder);
-		virtual ~ImFile();
+		DlgFile(const std::string& startFolder);
+		virtual ~DlgFile();
 
 		void Draw() override;
 
 		ImGui::FileBrowser fileDialog;
 	};
 
-	struct ImMenu : public Im
+	struct DlgMenu : public Dlg
 	{
-		ImMenu(const std::string& appName)
+		DlgMenu(const std::string& appName)
 		{
 			isMainMenu = appName == "homescreen";
 		}
@@ -59,21 +59,23 @@ namespace Rtt
 		bool isMainMenu;
 	};
 
-	struct ImNewProject : public Im
+	struct DlgNewProject : public Dlg
 	{
-		ImNewProject();
+		DlgNewProject();
 		void Draw() override;
 
+	private:
+
+		bool CreateProject();
+		ImGui::FileBrowser fileDialog;
+
+		char fApplicationNameInput[32];
+		char fProjectDirInput[1024];
+		std::string fProjectDir;
 		std::string fTemplateName;
 		int fScreenWidth;
 		int fScreenHeight;
-		std::string fOrientationIndex;
-		std::string fP;
-		std::string fProjectPath;
-		std::string fProjectSavePath;
-		std::string fResourcePath;
-		std::string fProjectFolder;
-		std::string fProjectName;
+		std::string fOrientation;
 	};
 
 }

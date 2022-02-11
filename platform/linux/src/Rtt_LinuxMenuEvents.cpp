@@ -4,7 +4,6 @@
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
-#include "Rtt_LinuxNewProjectDialog.h"
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxBuildDialog.h"
 #include "Rtt_AndroidBuildDialog.h"

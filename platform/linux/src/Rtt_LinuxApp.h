@@ -102,8 +102,8 @@ namespace Rtt
 
 		// GUI
 		ImGuiContext* imctx;
-		smart_ptr<Im> fMenu;
-		smart_ptr<Im> fDlg;
+		smart_ptr<Dlg> fMenu;
+		smart_ptr<Dlg> fDlg;
 	};
 
 }

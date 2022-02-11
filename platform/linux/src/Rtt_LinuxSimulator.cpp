@@ -111,7 +111,7 @@ namespace Rtt
 		{
 		case sdl::OnNewProject:
 		{
-			fDlg = new ImNewProject();
+			fDlg = new DlgNewProject();
 			break;
 		}
 
@@ -127,7 +127,7 @@ namespace Rtt
 			{
 				// open file dialog
 				string startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
-				fDlg = new ImFile(startPath);
+				fDlg = new DlgFile(startPath);
 			}
 			break;
 		}
@@ -161,7 +161,7 @@ namespace Rtt
 			break;
 
 		case sdl::OnAbout:
-			fDlg = new ImAbout();
+			fDlg = new DlgAbout();
 			break;
 
 		case sdl::OnFileBrowserSelected:
@@ -327,7 +327,7 @@ namespace Rtt
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
 			fContext->LoadApp();
-			fMenu = new ImMenu(fContext->GetAppName());
+			fMenu = new DlgMenu(fContext->GetAppName());
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
@@ -687,7 +687,7 @@ namespace Rtt
 		}
 
 		string appName = fContext->GetAppName();
-		fMenu = new ImMenu(fContext->GetAppName());
+		fMenu = new DlgMenu(fContext->GetAppName());
 
 		WatchFolder(fContext->GetAppPath(), appName.c_str());
 
