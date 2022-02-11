@@ -68,14 +68,15 @@ namespace Rtt
 
 		bool CreateProject();
 		ImGui::FileBrowser fileDialog;
+		std::string fProjectDir;
 
 		char fApplicationNameInput[32];
 		char fProjectDirInput[1024];
-		std::string fProjectDir;
-		std::string fTemplateName;
-		int fScreenWidth;
-		int fScreenHeight;
-		std::string fOrientation;
+		int fTemplateIndex;
+		int fSizeIndex;
+		int fOrientationIndex;
+		char fWidthInput[10];
+		char fHeightInput[10];
 	};
 
 }

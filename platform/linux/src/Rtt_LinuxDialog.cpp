@@ -374,13 +374,14 @@ namespace Rtt
 
 	DlgNewProject::DlgNewProject()
 		: fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
-		, fTemplateName("blank")
-		, fScreenWidth(320)
-		, fScreenHeight(480)
-		, fOrientation("Upright")
+		, fTemplateIndex(0)
+		, fSizeIndex(0)
+		, fOrientationIndex(0)
 	{
 		*fApplicationNameInput = 0;
 		*fProjectDirInput = 0;
+		strcpy(fWidthInput, "320");
+		strcpy(fHeightInput, "480");
 
 		struct passwd* pw = getpwuid(getuid());
 		const char* homedir = pw->pw_dir;
@@ -447,12 +448,77 @@ namespace Rtt
 				fileDialog.SetPwd(fProjectDir);
 				fileDialog.Open();
 			}
+			ImGui::PopItemWidth();
+
+			// templates
+			ImGui::Dummy(ImVec2(10, 10));
+			float yGroup1 = ImGui::GetCursorPosY();
+			ImGui::Text("Project Template");
+			ImGui::RadioButton("Blank", &fTemplateIndex, 0);
+			ImGui::Text("   Creates a project folder with an empty \"main.lua\"");
+			ImGui::RadioButton("Tab Bar Application", &fTemplateIndex, 1);
+			ImGui::Text("   Multiscreen application using a Tab Bar for");
+			ImGui::RadioButton("Physics Based Game", &fTemplateIndex, 2);
+			ImGui::Text("   Application using the physics and composer");
+			ImGui::RadioButton("eBook", &fTemplateIndex, 3);
+			ImGui::Text("   Multi-page interface using the composer");
+
+			float x = 400;
+			ImGui::SetCursorPosY(yGroup1);
+
+			// project template combo
+			ImGui::SetCursorPosX(x);
+			ImGui::Text("Upright Screen Size");
+			const char* templates[] = { "Phone Preset", "Tablet Preset", "Custom" };
+			ImGui::SetCursorPosX(x);
+			if (ImGui::Combo("##UprightScreenSize", &fSizeIndex, templates, IM_ARRAYSIZE(templates)))
+			{
+				if (fSizeIndex == 0)
+				{
+					strcpy(fWidthInput, "320");
+					strcpy(fHeightInput, "480");
+				}
+				else if (fSizeIndex == 1)
+				{
+					strcpy(fWidthInput, "768");
+					strcpy(fHeightInput, "1024");
+				}
+			}
+
+			ImGui::BeginDisabled(fSizeIndex < 2);		// disable if not custom
+			ImGui::PushItemWidth(50);		// input field width
+
+			s = "Width:";
+			float label2 = x + ImGui::CalcTextSize(s.c_str()).x;
+			ImGui::SetCursorPosX(x);
+			ImGui::Text(s.c_str());
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(label2 + 20);
+			//			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
+			ImGui::InputText("##templateWidth", fWidthInput, sizeof(fWidthInput), ImGuiInputTextFlags_CharsDecimal);
+
+			s = "Height:";
+			ImGui::SetCursorPosX(x);
+			ImGui::Text(s.c_str());
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(label2 + 20);
+			//			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
+			ImGui::InputText("##templateHeight", fHeightInput, sizeof(fHeightInput), ImGuiInputTextFlags_CharsDecimal);
 
 			ImGui::PopItemWidth();
+			ImGui::EndDisabled();
+
+			// default orientation
+			ImGui::Dummy(ImVec2(20, 20));
+			ImGui::SetCursorPosX(x);
+			ImGui::Text("Default orientation");
+			ImGui::SetCursorPosX(x);
+			ImGui::RadioButton("Upright", &fOrientationIndex, 0);	ImGui::SameLine();
+			ImGui::RadioButton("Sideways", &fOrientationIndex, 1);
 
 			// ok + cancel
 			s = "OK";
-			ImGui::Dummy(ImVec2(20, 20));
+			ImGui::Dummy(ImVec2(70, 40));
 			int ok_width = 100;
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
@@ -532,16 +598,20 @@ namespace Rtt
 			lua_pushboolean(L, true);
 			lua_setfield(L, -2, "isSimulator");
 
-			lua_pushstring(L, fTemplateName.c_str());
+			Rtt_ASSERT(fTemplateIndex >= 0 && fTemplateIndex < 4);
+			array<string, 4> templates = { "blank","app","game","ebook" };
+			lua_pushstring(L, templates[fTemplateIndex].c_str());
 			lua_setfield(L, -2, "template");
 
-			lua_pushinteger(L, fScreenWidth);
+			int w = atoi(fWidthInput);
+			lua_pushinteger(L, w);
 			lua_setfield(L, -2, "width");
 
-			lua_pushinteger(L, fScreenHeight);
+			int h = atoi(fHeightInput);
+			lua_pushinteger(L, h);
 			lua_setfield(L, -2, "height");
 
-			lua_pushstring(L, fOrientation.c_str()); // Index ? "portrait" : "landscapeRight");
+			lua_pushstring(L, fOrientationIndex == 0 ? "portrait" : "landscapeRight");
 			lua_setfield(L, -2, "orientation");
 
 			lua_pushstring(L, projectPath.c_str());
