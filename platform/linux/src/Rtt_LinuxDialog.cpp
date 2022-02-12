@@ -178,6 +178,11 @@ namespace Rtt
 
 			fileDialog.ClearSelected();
 		}
+
+		if (!fileDialog.IsOpened())
+		{
+			PushEvent(sdl::onClosePopupModal);
+		}
 	}
 
 	//
@@ -186,8 +191,32 @@ namespace Rtt
 
 	void DlgMenu::Draw()
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		bool ctrl = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) | ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+
 		if (isMainMenu)
 		{
+			// hot keys
+			if (ctrl)
+			{
+				if (ImGui::IsKeyPressed(ImGuiKey_N))
+				{
+					PushEvent(sdl::OnNewProject);
+				}
+				else if (ImGui::IsKeyPressed(ImGuiKey_O))
+				{
+					PushEvent(sdl::OnOpenProject);
+				}
+				else if (ImGui::IsKeyPressed(ImGuiKey_R))
+				{
+					PushEvent(sdl::OnRelaunchLastProject);
+				}
+				else if (ImGui::IsKeyPressed(ImGuiKey_Q))
+				{
+					PushEvent(SDL_QUIT);
+				}
+			}
+
 			// main menu
 			if (ImGui::BeginMainMenuBar())
 			{
@@ -213,7 +242,7 @@ namespace Rtt
 						PushEvent(sdl::OnOpenPreferences);
 					}
 					ImGui::Separator();
-					if (ImGui::MenuItem("Exit", NULL))
+					if (ImGui::MenuItem("Exit", "Ctrl+Q"))
 					{
 						PushEvent(SDL_QUIT);
 					}
@@ -244,6 +273,39 @@ namespace Rtt
 		else
 		{
 			// project menu
+
+			bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) | ImGui::IsKeyDown(ImGuiKey_RightShift);
+			bool alt = ImGui::IsKeyDown(ImGuiKey_LeftAlt) | ImGui::IsKeyDown(ImGuiKey_RightAlt);
+
+			// hot keys
+			if (ctrl)
+			{
+				if (ImGui::IsKeyPressed(ImGuiKey_N))
+				{
+					PushEvent(sdl::OnNewProject);
+				}
+				else if (ImGui::IsKeyPressed(ImGuiKey_O))
+				{
+					PushEvent(sdl::OnOpenProject);
+				}
+				else if (ImGui::IsKeyPressed(ImGuiKey_R))
+				{
+					PushEvent(sdl::OnRelaunch);
+				}
+				else if (ImGui::IsKeyPressed(ImGuiKey_W))
+				{
+					PushEvent(sdl::OnCloseProject);
+				}
+				else if (shift && ImGui::IsKeyPressed(ImGuiKey_O))
+				{
+					PushEvent(sdl::OnOpenInEditor);
+				}
+				else if (ImGui::IsKeyPressed(ImGuiKey_Q))
+				{
+					PushEvent(SDL_QUIT);
+				}
+			}
+
 			if (ImGui::BeginMainMenuBar())
 			{
 				// project menu
@@ -292,7 +354,7 @@ namespace Rtt
 						PushEvent(sdl::OnOpenPreferences);
 					}
 					ImGui::Separator();
-					if (ImGui::MenuItem("Exit", NULL))
+					if (ImGui::MenuItem("Exit", "Ctrl+Q"))
 					{
 						PushEvent(SDL_QUIT);
 					}
