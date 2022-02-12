@@ -22,7 +22,7 @@
 
 namespace Rtt
 {
-	LinuxBuildDialog::LinuxBuildDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style):
+	LinuxBuildDialog::LinuxBuildDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) :
 		wxDialog(parent, id, title, pos, size, wxCAPTION)
 	{
 		appNameTextCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
@@ -55,36 +55,36 @@ namespace Rtt
 
 	void LinuxBuildDialog::DoLayout()
 	{
-		wxBoxSizer *parentGridSizer = new wxBoxSizer(wxVERTICAL);
-		wxFlexGridSizer *buttonGridSizer = new wxFlexGridSizer(1, 2, 0, 0);
-		wxFlexGridSizer *optionsGridSizer = new wxFlexGridSizer(6, 3, 4, 10);
-		wxStaticText *appNameLabel = new wxStaticText(this, wxID_ANY, wxT("Application Name:"));
+		wxBoxSizer* parentGridSizer = new wxBoxSizer(wxVERTICAL);
+		wxFlexGridSizer* buttonGridSizer = new wxFlexGridSizer(1, 2, 0, 0);
+		wxFlexGridSizer* optionsGridSizer = new wxFlexGridSizer(6, 3, 4, 10);
+		wxStaticText* appNameLabel = new wxStaticText(this, wxID_ANY, wxT("Application Name:"));
 		optionsGridSizer->Add(appNameLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appNameTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *appVersion = new wxStaticText(this, wxID_ANY, wxT("Application Version:"));
+		wxStaticText* appVersion = new wxStaticText(this, wxID_ANY, wxT("Application Version:"));
 		optionsGridSizer->Add(appVersion, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appVersionTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *appPathLabel = new wxStaticText(this, wxID_ANY, wxT("Application Path:"));
+		wxStaticText* appPathLabel = new wxStaticText(this, wxID_ANY, wxT("Application Path:"));
 		optionsGridSizer->Add(appPathLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appPathTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *appBuildPath = new wxStaticText(this, wxID_ANY, wxT("Build Ouput Path:"));
+		wxStaticText* appBuildPath = new wxStaticText(this, wxID_ANY, wxT("Build Ouput Path:"));
 		optionsGridSizer->Add(appBuildPath, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appBuildPathTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(appBuildPathButton, 0, 0, 0);
-		wxStaticText *includeWidgetResourcesLabel = new wxStaticText(this, wxID_ANY, wxT("Include Widget Resources?"));
+		wxStaticText* includeWidgetResourcesLabel = new wxStaticText(this, wxID_ANY, wxT("Include Widget Resources?"));
 		optionsGridSizer->Add(includeWidgetResourcesLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(includeWidgetResourcesCheckbox, 0, 0, 0);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *runAfterBuildLabel = new wxStaticText(this, wxID_ANY, wxT("Launch App After Build?"));
+		wxStaticText* runAfterBuildLabel = new wxStaticText(this, wxID_ANY, wxT("Launch App After Build?"));
 		optionsGridSizer->Add(runAfterBuildLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(runAfterBuildCheckbox, 0, 0, 0);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
 		optionsGridSizer->AddGrowableCol(1);
 		parentGridSizer->Add(optionsGridSizer, 0, wxALL | wxEXPAND, 10);
-		wxStaticLine *staticLineSeparator = new wxStaticLine(this, wxID_ANY);
+		wxStaticLine* staticLineSeparator = new wxStaticLine(this, wxID_ANY);
 		parentGridSizer->Add(staticLineSeparator, 0, wxBOTTOM | wxEXPAND | wxTOP, 5);
 		buttonGridSizer->Add(buildButton, 1, wxRIGHT | wxTOP, 10);
 		buttonGridSizer->Add(cancelButton, 1, wxRIGHT | wxTOP, 10);
@@ -96,7 +96,7 @@ namespace Rtt
 		Centre();
 	}
 
-	void LinuxBuildDialog::SetAppContext(SolarAppContext *appContext)
+	void LinuxBuildDialog::SetAppContext(SolarAppContext* appContext)
 	{
 		fAppContext = appContext;
 		appNameTextCtrl->SetValue(fAppContext->GetAppName());
@@ -108,9 +108,9 @@ namespace Rtt
 		EVT_BUTTON(wxID_OPEN, LinuxBuildDialog::OnSelectOutputPathClicked)
 		EVT_BUTTON(wxID_OK, LinuxBuildDialog::OnBuildClicked)
 		EVT_BUTTON(wxID_CANCEL, LinuxBuildDialog::OnCancelClicked)
-	END_EVENT_TABLE();
+		END_EVENT_TABLE();
 
-	void LinuxBuildDialog::OnSelectOutputPathClicked(wxCommandEvent &event)
+	void LinuxBuildDialog::OnSelectOutputPathClicked(wxCommandEvent& event)
 	{
 		wxDirDialog openDirDialog(this, _("Choose Output Directory"), "", 0, wxDefaultPosition);
 
@@ -120,12 +120,12 @@ namespace Rtt
 		}
 	}
 
-	void LinuxBuildDialog::OnBuildClicked(wxCommandEvent &event)
+	void LinuxBuildDialog::OnBuildClicked(wxCommandEvent& event)
 	{
-		LinuxPlatform* platform = 0; //vv solarApp->GetPlatform();
-		MPlatformServices *service = new LinuxPlatformServices(platform);
+		LinuxPlatform* platform = app->GetPlatform();
+		MPlatformServices* service = new LinuxPlatformServices(platform);
 		LinuxAppPackager packager(*service);
-		Rtt::Runtime *runtimePointer = fAppContext->GetRuntime();
+		Rtt::Runtime* runtimePointer = fAppContext->GetRuntime();
 		wxString appName(appNameTextCtrl->GetValue());
 		wxString sourceDir(appPathTextCtrl->GetValue());
 		wxString outputDir(appBuildPathTextCtrl->GetValue());
@@ -133,10 +133,10 @@ namespace Rtt
 		std::string linuxtemplate(platform->getInstallDir());
 		bool useWidgetResources = includeWidgetResourcesCheckbox->GetValue();
 		bool runAfterBuild = runAfterBuildCheckbox->GetValue();
-		const char *identity = "no-identity";
-		const char *customBuildId = packager.GetCustomBuildId();
-		const char *bundleId = "bundleId";
-		const char *sdkRoot = "";
+		const char* identity = "no-identity";
+		const char* customBuildId = packager.GetCustomBuildId();
+		const char* bundleId = "bundleId";
+		const char* sdkRoot = "";
 		int targetVersion = Rtt::TargetDevice::kLinux;
 		const TargetDevice::Platform targetPlatform(TargetDevice::Platform::kLinuxPlatform);
 		bool isDistribution = true;
@@ -144,7 +144,7 @@ namespace Rtt
 		Rtt::String buildSettingsPath;
 		bool foundBuildSettings = packager.ReadBuildSettings(sourceDir.c_str());
 		bool checksPassed = foundBuildSettings && !appVersion.IsEmpty() && !appName.IsEmpty();
-		wxMessageDialog *resultDialog = new wxMessageDialog(solarApp, wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
+		wxMessageDialog* resultDialog = new wxMessageDialog(solarApp, wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
 
 		// setup paths
 		const char* TEMPLATE_FILENAME = "linuxtemplate_x64.tgz";
@@ -168,16 +168,7 @@ namespace Rtt
 		}
 
 		// ensure we have write access to the target output directory
-		
-		if (wxDirExists(outputDir))
-		{
-			if (!wxFileName::IsDirWritable(outputDir))
-			{
-				resultDialog->SetMessage(wxT("No write access to the selected output directory."));
-				checksPassed = false;
-			}
-		}
-		else
+		if (!Rtt_IsDirectory(outputDir))
 		{
 			if (!Rtt_MakeDirectory(outputDir))
 			{
@@ -202,10 +193,10 @@ namespace Rtt
 
 		bool onlyGetPlugins = false;
 		LinuxAppPackagerParams linuxBuilderParams(
-		    appName.c_str(), appVersion.c_str(), identity, NULL, sourceDir.c_str(),
-		    outputDir.c_str(), NULL, targetPlatform, targetVersion,
-		    Rtt::TargetDevice::kLinux, customBuildId, NULL, bundleId, isDistribution,
-		    NULL, useWidgetResources, runAfterBuild, onlyGetPlugins);
+			appName.c_str(), appVersion.c_str(), identity, NULL, sourceDir.c_str(),
+			outputDir.c_str(), NULL, targetPlatform, targetVersion,
+			Rtt::TargetDevice::kLinux, customBuildId, NULL, bundleId, isDistribution,
+			NULL, useWidgetResources, runAfterBuild, onlyGetPlugins);
 
 		// select build template
 		fAppContext->GetPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
@@ -239,7 +230,7 @@ namespace Rtt
 		}
 	}
 
-	void LinuxBuildDialog::OnCancelClicked(wxCommandEvent &event)
+	void LinuxBuildDialog::OnCancelClicked(wxCommandEvent& event)
 	{
 		solarSimulator->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);

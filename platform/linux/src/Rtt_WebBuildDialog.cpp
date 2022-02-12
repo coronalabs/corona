@@ -120,7 +120,7 @@ namespace Rtt
 
 	void WebBuildDialog::OnBuildClicked(wxCommandEvent& event)
 	{
-		LinuxPlatform* platform = 0; //vv solarApp->GetPlatform();
+		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
 		WebAppPackager packager(*service);
 		Rtt::Runtime* runtimePointer = fAppContext->GetRuntime();
@@ -163,15 +163,7 @@ namespace Rtt
 		}
 
 		// ensure we have write access to the target output directory
-		if (wxDirExists(outputDir))
-		{
-			if (!wxFileName::IsDirWritable(outputDir))
-			{
-				resultDialog->SetMessage(wxT("No write access to the selected output directory."));
-				checksPassed = false;
-			}
-		}
-		else
+		if (!Rtt_IsDirectory(outputDir))
 		{
 			if (!Rtt_MakeDirectory(outputDir))
 			{
@@ -179,7 +171,7 @@ namespace Rtt
 				checksPassed = false;
 			}
 		}
-		
+
 		// checks failed, show failure popup
 		if (!checksPassed)
 		{

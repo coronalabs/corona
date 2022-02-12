@@ -23,18 +23,16 @@
 #include "Rtt_LinuxRuntimeDelegate.h"
 #include "Rtt_LinuxKeyListener.h"
 #include "Rtt_LinuxMouseListener.h"
-#include "Rtt_LinuxRelaunchProjectDialog.h"
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxContext.h"
 #include "Rtt_LinuxContainer.h"
 #include "Rtt_LinuxDialog.h"
+#include "Rtt_LinuxUtils.h"
 #include "wx/app.h"
 #include "wx/frame.h"
 #include "wx/panel.h"
 #include "wx/stattext.h"
-#include <string>
-#include <chrono>
-#include <thread>
+#include <sys/inotify.h>
 
 enum sdl
 {
@@ -53,11 +51,13 @@ enum sdl
 	OnClearProjectSandbox,
 	OnRelaunchLastProject,
 	OnOpenPreferences,
-	OnFileBrowserSelected
+	OnFileBrowserSelected,
+	OnFileSystemEvent
 };
 
 namespace Rtt
 {
+	void PushEvent(int evt);
 
 	struct SolarApp : public ref_counted
 	{
@@ -89,7 +89,7 @@ namespace Rtt
 
 	protected:
 
-		virtual void MenuEvent(SDL_Event& e) {}
+		virtual void SolarEvent(SDL_Event& e) {}
 
 		SolarAppContext* fContext;
 		SDL_Window* fWindow;
@@ -105,6 +105,27 @@ namespace Rtt
 		smart_ptr<Dlg> fMenu;
 		smart_ptr<Dlg> fDlg;
 	};
+
+	//
+	// FileWatcher
+	//
+	struct FileWatcher : public ref_counted
+	{
+		FileWatcher();
+		virtual ~FileWatcher();
+
+		bool Start(const std::string& folder);
+		void Stop();
+
+		// thread func timer callback
+		void Advance();
+
+	private:
+		smart_ptr<mythread> fThread;
+		int m_inotify_fd;
+		int m_watch_descriptor;
+	};
+
 
 }
 

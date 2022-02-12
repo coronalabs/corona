@@ -14,6 +14,7 @@
 #include <iterator>
 #include <sys/time.h>
 #include <sys/timeb.h>
+#include <fcntl.h>
 
 using namespace std;
 
@@ -182,3 +183,4 @@ void OpenURL(const string& url)
 	cmd.append(url);
 	system(cmd.c_str());
 }
+

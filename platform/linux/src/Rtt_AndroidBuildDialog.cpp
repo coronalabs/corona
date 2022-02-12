@@ -31,12 +31,12 @@
 class wxRegEx;
 namespace Rtt
 {
-	AndroidBuildDialog::AndroidBuildDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style):
+	AndroidBuildDialog::AndroidBuildDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) :
 		wxDialog(parent, id, title, pos, size, wxCAPTION)
 	{
 		wxTextValidator appNameValidator(wxFILTER_ALPHANUMERIC);
 		wxTextValidator appVersionCodeValidator(wxFILTER_DIGITS);
-		wxTextValidator packageNameValidator(wxFILTER_ALPHANUMERIC  | wxFILTER_INCLUDE_CHAR_LIST);
+		wxTextValidator packageNameValidator(wxFILTER_ALPHANUMERIC | wxFILTER_INCLUDE_CHAR_LIST);
 		packageNameValidator.AddCharIncludes(".");
 
 		appNameTextCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, appNameValidator);
@@ -93,52 +93,52 @@ namespace Rtt
 
 	void AndroidBuildDialog::DoLayout()
 	{
-		wxBoxSizer *parentGridSizer = new wxBoxSizer(wxVERTICAL);
-		wxFlexGridSizer *buttonGridSizer = new wxFlexGridSizer(1, 2, 0, 0);
-		wxFlexGridSizer *optionsGridSizer = new wxFlexGridSizer(10, 3, 4, 10);
-		wxStaticText *appNameLabel = new wxStaticText(this, wxID_ANY, wxT("Application Name:"));
+		wxBoxSizer* parentGridSizer = new wxBoxSizer(wxVERTICAL);
+		wxFlexGridSizer* buttonGridSizer = new wxFlexGridSizer(1, 2, 0, 0);
+		wxFlexGridSizer* optionsGridSizer = new wxFlexGridSizer(10, 3, 4, 10);
+		wxStaticText* appNameLabel = new wxStaticText(this, wxID_ANY, wxT("Application Name:"));
 		optionsGridSizer->Add(appNameLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appNameTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *appVersionLabel = new wxStaticText(this, wxID_ANY, wxT("Application Version:"));
+		wxStaticText* appVersionLabel = new wxStaticText(this, wxID_ANY, wxT("Application Version:"));
 		optionsGridSizer->Add(appVersionLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appVersionTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *appVersionCodeLabel = new wxStaticText(this, wxID_ANY, wxT("Application Version Code:"));
+		wxStaticText* appVersionCodeLabel = new wxStaticText(this, wxID_ANY, wxT("Application Version Code:"));
 		optionsGridSizer->Add(appVersionCodeLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appVersionCodeTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *appPackageNameLabel = new wxStaticText(this, wxID_ANY, wxT("Package Name:"));
+		wxStaticText* appPackageNameLabel = new wxStaticText(this, wxID_ANY, wxT("Package Name:"));
 		optionsGridSizer->Add(appPackageNameLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appPackageNameTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *appPathLabel = new wxStaticText(this, wxID_ANY, wxT("Application Path:"));
+		wxStaticText* appPathLabel = new wxStaticText(this, wxID_ANY, wxT("Application Path:"));
 		optionsGridSizer->Add(appPathLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appPathTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *appBuildPathLabel = new wxStaticText(this, wxID_ANY, wxT("Build Ouput Path:"));
+		wxStaticText* appBuildPathLabel = new wxStaticText(this, wxID_ANY, wxT("Build Ouput Path:"));
 		optionsGridSizer->Add(appBuildPathLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(appBuildPathTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(appBuildPathButton, 0, 0, 0);
-		wxStaticText *targetAppStoreLabel = new wxStaticText(this, wxID_ANY, wxT("Target App Store:"));
+		wxStaticText* targetAppStoreLabel = new wxStaticText(this, wxID_ANY, wxT("Target App Store:"));
 		optionsGridSizer->Add(targetAppStoreLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(targetAppStoreComboBox, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *keyStoreLabel = new wxStaticText(this, wxID_ANY, wxT("Keystore:"));
+		wxStaticText* keyStoreLabel = new wxStaticText(this, wxID_ANY, wxT("Keystore:"));
 		optionsGridSizer->Add(keyStoreLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(keystorePathTextCtrl, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(keystorePathButton, 0, 0, 0);
-		wxStaticText *keyAliasLabel = new wxStaticText(this, wxID_ANY, wxT("Key Alias:"));
+		wxStaticText* keyAliasLabel = new wxStaticText(this, wxID_ANY, wxT("Key Alias:"));
 		optionsGridSizer->Add(keyAliasLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(keyAliasComboBox, 0, wxEXPAND | wxRIGHT, 10);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
-		wxStaticText *installToDeviceLabel = new wxStaticText(this, wxID_ANY, wxT("Install After Build?"));
+		wxStaticText* installToDeviceLabel = new wxStaticText(this, wxID_ANY, wxT("Install After Build?"));
 		optionsGridSizer->Add(installToDeviceLabel, 0, wxLEFT, 10);
 		optionsGridSizer->Add(installToDeviceCheckbox, 0, 0, 0);
 		optionsGridSizer->Add(0, 0, 0, 0, 0);
 		optionsGridSizer->AddGrowableCol(1);
 		parentGridSizer->Add(optionsGridSizer, 0, wxALL | wxEXPAND, 10);
-		wxStaticLine *staticLineSeparator = new wxStaticLine(this, wxID_ANY);
+		wxStaticLine* staticLineSeparator = new wxStaticLine(this, wxID_ANY);
 		parentGridSizer->Add(staticLineSeparator, 0, wxBOTTOM | wxEXPAND | wxTOP, 5);
 		buttonGridSizer->Add(buildButton, 1, wxRIGHT | wxTOP, 10);
 		buttonGridSizer->Add(cancelButton, 1, wxRIGHT | wxTOP, 10);
@@ -150,7 +150,7 @@ namespace Rtt
 		Centre();
 	}
 
-	void AndroidBuildDialog::SetAppContext(SolarAppContext *appContext)
+	void AndroidBuildDialog::SetAppContext(SolarAppContext* appContext)
 	{
 		fAppContext = appContext;
 		appNameTextCtrl->SetValue(fAppContext->GetAppName());
@@ -159,7 +159,7 @@ namespace Rtt
 		appVersionTextCtrl->SetValue("1.0");
 		appVersionCodeTextCtrl->SetValue("1");
 
-		char uname[256] = {0};
+		char uname[256] = { 0 };
 		int rc = getlogin_r(uname, sizeof(uname));
 		std::string package("com.solar2d.");
 		package.append(uname).append(".");
@@ -176,8 +176,8 @@ namespace Rtt
 		const char kBuildSettings[] = "build.settings";
 		String filePath(&fAppContext->GetPlatform()->GetAllocator());
 		fAppContext->GetPlatform()->PathForFile(kBuildSettings, MPlatform::kResourceDir, MPlatform::kTestFileExists, filePath);
-		lua_State *L = fAppContext->GetRuntime()->VMContext().L();
-		const char *buildSettingsPath = filePath.GetString();
+		lua_State* L = fAppContext->GetRuntime()->VMContext().L();
+		const char* buildSettingsPath = filePath.GetString();
 
 		if (buildSettingsPath && 0 == luaL_loadfile(L, buildSettingsPath) && 0 == lua_pcall(L, 0, 0, 0))
 		{
@@ -190,7 +190,7 @@ namespace Rtt
 					lua_getfield(L, -1, "versionCode");
 					if (lua_isstring(L, -1))
 					{
-						const char *versionCode = lua_tostring(L, -1);
+						const char* versionCode = lua_tostring(L, -1);
 						appVersionCodeTextCtrl->SetValue(versionCode);
 					}
 					lua_pop(L, 1);
@@ -214,7 +214,7 @@ namespace Rtt
 			{
 				if (showErrors)
 				{
-					wxMessageDialog *errorDialog = new wxMessageDialog(NULL, wxT("The selected keystore doesn't have any aliases."), wxT("Solar2D Simulator"), wxOK | wxICON_ERROR);
+					wxMessageDialog* errorDialog = new wxMessageDialog(NULL, wxT("The selected keystore doesn't have any aliases."), wxT("Solar2D Simulator"), wxOK | wxICON_ERROR);
 				}
 			}
 			else
@@ -234,7 +234,7 @@ namespace Rtt
 		{
 			if (showErrors)
 			{
-				wxMessageDialog *errorDialog = new wxMessageDialog(NULL, wxT("The selected keystore is either invalid or an incorrect password was entered."), wxT("Solar2D Simulator"), wxOK | wxICON_ERROR);
+				wxMessageDialog* errorDialog = new wxMessageDialog(NULL, wxT("The selected keystore is either invalid or an incorrect password was entered."), wxT("Solar2D Simulator"), wxOK | wxICON_ERROR);
 			}
 		}
 
@@ -246,9 +246,9 @@ namespace Rtt
 		EVT_BUTTON(wxID_FILE1, AndroidBuildDialog::OnSelectKeyStorePathClicked)
 		EVT_BUTTON(wxID_OK, AndroidBuildDialog::OnBuildClicked)
 		EVT_BUTTON(wxID_CANCEL, AndroidBuildDialog::OnCancelClicked)
-	END_EVENT_TABLE();
+		END_EVENT_TABLE();
 
-	void AndroidBuildDialog::OnSelectOutputPathClicked(wxCommandEvent &event)
+	void AndroidBuildDialog::OnSelectOutputPathClicked(wxCommandEvent& event)
 	{
 		wxDirDialog openDirDialog(this, _("Choose Output Directory"), GetHomePath(), 0, wxDefaultPosition);
 
@@ -258,7 +258,7 @@ namespace Rtt
 		}
 	}
 
-	void AndroidBuildDialog::OnSelectKeyStorePathClicked(wxCommandEvent &event)
+	void AndroidBuildDialog::OnSelectKeyStorePathClicked(wxCommandEvent& event)
 	{
 		wxFileDialog openFileDialog(this, _("Choose Keystore Path"), GetHomePath(), wxEmptyString, "KeyStore files |*.keystore", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
@@ -270,7 +270,7 @@ namespace Rtt
 			// this isn't the default "debug.keystore". request the password from the user
 			if (keystorePathTextCtrl->GetValue().EndsWith("debug.keystore"))
 			{
-				wxPasswordEntryDialog *passEntryDialog = new wxPasswordEntryDialog(this, "Please enter the password for this keystore", wxGetPasswordFromUserPromptStr);
+				wxPasswordEntryDialog* passEntryDialog = new wxPasswordEntryDialog(this, "Please enter the password for this keystore", wxGetPasswordFromUserPromptStr);
 
 				if (passEntryDialog->ShowModal() == wxID_OK)
 				{
@@ -290,11 +290,11 @@ namespace Rtt
 		return packager->Build(androidBuilderParams, tmp.c_str());
 	}
 
-	void AndroidBuildDialog::OnBuildClicked(wxCommandEvent &event)
+	void AndroidBuildDialog::OnBuildClicked(wxCommandEvent& event)
 	{
-		LinuxPlatform* platform = 0; //vv  solarApp->GetPlatform();
-		MPlatformServices *service = new LinuxPlatformServices(platform);
-		Rtt::Runtime *runtimePointer = fAppContext->GetRuntime();
+		LinuxPlatform* platform = app->GetPlatform();
+		MPlatformServices* service = new LinuxPlatformServices(platform);
+		Rtt::Runtime* runtimePointer = fAppContext->GetRuntime();
 		wxString appName(appNameTextCtrl->GetValue());
 		wxString sourceDir(appPathTextCtrl->GetValue());
 		wxString outputDir(appBuildPathTextCtrl->GetValue());
@@ -306,16 +306,16 @@ namespace Rtt
 		std::string androidTemplate(platform->getInstallDir());
 		std::string tmp = Rtt_GetSystemTempDirectory();
 		std::string targetAppStoreName(TargetAndroidAppStore::kGoogle.GetStringId());
-		const char *identity = "no-identity";
-		const char *bundleId = "bundleId";
-		const char *provisionFile = "";
+		const char* identity = "no-identity";
+		const char* bundleId = "bundleId";
+		const char* provisionFile = "";
 		int versionCode = wxAtoi(appVersionCode);
 		bool installAfterBuild = installToDeviceCheckbox->GetValue() == true;
 		const TargetDevice::Platform targetPlatform(TargetDevice::Platform::kAndroidPlatform);
 		bool isDistribution = true;
 		const char kBuildSettings[] = "build.settings";
 		Rtt::String buildSettingsPath;
-		wxMessageDialog *resultDialog = new wxMessageDialog(solarApp, wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
+		wxMessageDialog* resultDialog = new wxMessageDialog(solarApp, wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
 
 		// setup paths
 		androidTemplate.append("/Resources");
@@ -323,9 +323,9 @@ namespace Rtt
 
 		AndroidAppPackager packager(*service, androidTemplate.c_str());
 		bool foundBuildSettings = packager.ReadBuildSettings(sourceDir.c_str());
-		const char *customBuildId = packager.GetCustomBuildId();
+		const char* customBuildId = packager.GetCustomBuildId();
 		bool checksPassed = foundBuildSettings && !appVersion.IsEmpty() && !appName.IsEmpty()
-		                    && !appVersionCode.IsEmpty() && !packageName.IsEmpty() && versionCode != 0 && keystorePasswordValid;
+			&& !appVersionCode.IsEmpty() && !packageName.IsEmpty() && versionCode != 0 && keystorePasswordValid;
 
 		// pre-build validation
 		if (!foundBuildSettings)
@@ -382,7 +382,7 @@ namespace Rtt
 		}
 
 		// ensure unzip is installed on the users system
-		if (!wxFileName::Exists("/usr/bin/unzip"))
+		if (!Rtt_FileExists("/usr/bin/unzip"))
 		{
 			checksPassed = false;
 			resultDialog->SetMessage(wxT("/usr/bin/unzip not found"));
@@ -394,15 +394,15 @@ namespace Rtt
 		Rtt_ASSERT(k > 0);
 
 		exePath.Remove(k + 1, exePath.size() - k - 1);
-		
+
 		wxString solar2DBuilderPath = exePath;
 		solar2DBuilderPath.append("Solar2DBuilder");
-		if (!wxFileName::Exists(solar2DBuilderPath))
+		if (!Rtt_FileExists(solar2DBuilderPath))
 		{
 			checksPassed = false;
 			resultDialog->SetMessage(solar2DBuilderPath + " not found");
 		}
-		
+
 		// ensure Resource is not a link
 		{
 			wxString resourcesPath = exePath;
@@ -410,7 +410,7 @@ namespace Rtt
 			struct stat buf;
 			if (lstat(resourcesPath.c_str(), &buf) == 0)
 			{
-				if (S_ISLNK(buf.st_mode))		
+				if (S_ISLNK(buf.st_mode))
 				{
 					checksPassed = false;
 					resultDialog->SetMessage(resourcesPath + " is a link, it must be regular folder");
@@ -422,21 +422,13 @@ namespace Rtt
 				resultDialog->SetMessage(resourcesPath + " failed to stat");
 			}
 		}
-		
+
 		outputDir.append('/');
 		outputDir.append(appName);
 		outputDir.append(".Android");
 
 		// ensure we have write access to the target output directory
-		if (wxDirExists(outputDir))
-		{
-			if (!wxFileName::IsDirWritable(outputDir))
-			{
-				resultDialog->SetMessage(wxT("No write access to the selected output directory."));
-				checksPassed = false;
-			}
-		}
-		else
+		if (!Rtt_IsDirectory(outputDir))
 		{
 			if (!Rtt_MakeDirectory(outputDir))
 			{
@@ -444,7 +436,7 @@ namespace Rtt
 				checksPassed = false;
 			}
 		}
-		
+
 		// checks failed, show failure popup
 		if (!checksPassed)
 		{
@@ -476,12 +468,12 @@ namespace Rtt
 		}
 
 		AndroidAppPackagerParams androidBuilderParams(
-		    appName.ToStdString().c_str(), appVersion.ToStdString().c_str(), identity, provisionFile,
-		    sourceDir.ToStdString().c_str(), outputDir.ToStdString().c_str(), androidTemplate.c_str(),
-		    targetPlatform, targetAppStoreName.c_str(),
-		    (S32)Rtt::TargetDevice::VersionForPlatform(Rtt::TargetDevice::kAndroidPlatform),
-		    customBuildId, NULL,
-		    packageName.ToStdString().c_str(), isDistribution, keystore.ToStdString().c_str(), keystorePassword.ToStdString().c_str(), keystoreAlias.ToStdString().c_str(), keystorePassword.ToStdString().c_str()/*alias_pwd.c_str()*/, versionCode);
+			appName.ToStdString().c_str(), appVersion.ToStdString().c_str(), identity, provisionFile,
+			sourceDir.ToStdString().c_str(), outputDir.ToStdString().c_str(), androidTemplate.c_str(),
+			targetPlatform, targetAppStoreName.c_str(),
+			(S32)Rtt::TargetDevice::VersionForPlatform(Rtt::TargetDevice::kAndroidPlatform),
+			customBuildId, NULL,
+			packageName.ToStdString().c_str(), isDistribution, keystore.ToStdString().c_str(), keystorePassword.ToStdString().c_str(), keystoreAlias.ToStdString().c_str(), keystorePassword.ToStdString().c_str()/*alias_pwd.c_str()*/, versionCode);
 
 		// select build template
 		fAppContext->GetPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
@@ -489,20 +481,20 @@ namespace Rtt
 
 		platform->SetActivityIndicator(true);
 		SetCursor(wxCURSOR_WAIT);		// cursor on dialog window
-	
+
 		// the only goal of using async here is the showing wait cursor on build dialog window
-		std::future<int> futureBuildResult = std::async(std::launch::async, fetchBuildResult, &packager, &androidBuilderParams, tmp);		
-		
+		std::future<int> futureBuildResult = std::async(std::launch::async, fetchBuildResult, &packager, &androidBuilderParams, tmp);
+
 		// wait for result
 		while (futureBuildResult.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
 		{
 			wxYield();
 		}
 		int buildResult = futureBuildResult.get();
-			
+
 		SetCursor(wxCURSOR_ARROW);		// restore cursor
 		platform->SetActivityIndicator(false);
-		
+
 		if (buildResult == 0)
 		{
 			Rtt_Log("Android build succeeded.\n");
@@ -525,9 +517,9 @@ namespace Rtt
 		// install after build
 		if (buildResult == 0 && installAfterBuild)
 		{
-			const char *adbPath = "/opt/Solar2D/Android/platform-tools/adb";
+			const char* adbPath = "/opt/Solar2D/Android/platform-tools/adb";
 
-			if (wxFileName::Exists(adbPath))
+			if (Rtt_FileExists(adbPath))
 			{
 				std::string cmd(adbPath);
 				cmd.append(" install -r \"");
@@ -543,7 +535,7 @@ namespace Rtt
 		}
 	}
 
-	void AndroidBuildDialog::OnCancelClicked(wxCommandEvent &event)
+	void AndroidBuildDialog::OnCancelClicked(wxCommandEvent& event)
 	{
 		solarSimulator->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);

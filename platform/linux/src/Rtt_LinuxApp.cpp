@@ -347,8 +347,8 @@ namespace Rtt
 					fContext->DispatchEvent(mouseEvent);
 					fContext->GetMouseListener()->TouchMoved(x, y, 0);
 					break;
-					}
 				}
+			}
 
 			case SDL_MOUSEBUTTONUP:
 			{
@@ -432,15 +432,15 @@ namespace Rtt
 			}
 
 			default:
-				MenuEvent(e);
+				SolarEvent(e);
 				break;
 			}
 
 			//int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
-			}
-		return true;
 		}
+		return true;
+	}
 
 	void SolarApp::SetTitle(const std::string& name)
 	{
@@ -515,4 +515,112 @@ namespace Rtt
 		//	SetSize(wxSize(newWidth, newHeight));
 	}
 
+	//
+	// FileWatcher
+	//
+
+	FileWatcher::FileWatcher()
+		: m_inotify_fd(-1)
+		, m_watch_descriptor(-1)
+	{
 	}
+
+	bool FileWatcher::Start(const std::string& folder)
+	{
+		if (m_inotify_fd >= 0)
+		{
+			// re-entry
+			Stop();
+		}
+
+		m_inotify_fd = inotify_init();
+		if (m_inotify_fd < 0)
+		{
+			Rtt_LogException("inotify_init failed for %s\n", folder.c_str());
+			return false;
+		}
+
+		//adding the directory into watch list.
+		m_watch_descriptor = inotify_add_watch(m_inotify_fd, folder.c_str(), IN_CREATE | IN_DELETE | IN_MODIFY);
+		if (m_watch_descriptor < 0)
+		{
+			Rtt_LogException("inotify_add_watch failed for %s\n", folder.c_str());
+			close(m_inotify_fd);
+			m_inotify_fd = -1;
+			return false;
+		}
+
+		fcntl(m_inotify_fd, F_SETFL, fcntl(m_inotify_fd, F_GETFL) | O_NONBLOCK);
+
+		fThread = new mythread();
+		fThread->start([this]() { Advance(); });
+
+		return true;
+	}
+
+	void FileWatcher::Stop()
+	{
+		fThread = NULL;
+		if (m_inotify_fd >= 0)
+		{
+			if (m_watch_descriptor >= 0)
+			{
+				inotify_rm_watch(m_inotify_fd, m_watch_descriptor);
+			}
+			close(m_inotify_fd);
+
+			m_inotify_fd = -1;
+			m_watch_descriptor = -1;
+		}
+	}
+
+	FileWatcher::~FileWatcher()
+	{
+		Stop();
+	}
+
+	// called every 20mlsec in separate thread
+	void FileWatcher::Advance()
+	{
+		if (m_inotify_fd >= 0 && m_watch_descriptor >= 0)
+		{
+			const int EVENT_SIZE = sizeof(struct inotify_event);
+			const int EVENT_BUF_LEN = 1024 * (EVENT_SIZE + 16);
+
+			char buffer[EVENT_BUF_LEN];
+			int length = read(m_inotify_fd, buffer, EVENT_BUF_LEN);
+			if (length < 0)
+			{
+				int rc = errno;
+				switch (rc)
+				{
+				case EAGAIN:
+					return;
+				default:
+					Rtt_LogException("failed to read onFileChanged event\n");
+					Stop();
+					return;
+				}
+			}
+
+			// actually read return the list of change events happens. Here, read the change event one by one and process it accordingly.
+			int i = 0;
+			while (i < length)
+			{
+				struct inotify_event* event = (struct inotify_event*)&buffer[i];
+				if (event->len > 0 && strlen(event->name) > 0)
+				{
+					Rtt_Log("Updated %s, mask 0x%X\n", event->name, event->mask);
+					SDL_Event e = {};
+					e.type = sdl::OnFileSystemEvent;
+					e.user.code = event->mask;
+					e.user.data1 = strdup(event->name);
+					SDL_PushEvent(&e);
+
+				}
+				i += EVENT_SIZE + event->len;
+			}
+		}
+	}
+
+}

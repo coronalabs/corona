@@ -11,7 +11,6 @@
 
 #include "Rtt_LinuxApp.h"
 #include "Rtt_LinuxSimulatorView.h"
-#include "wx/fswatcher.h"
 
 namespace Rtt
 {
@@ -21,7 +20,6 @@ namespace Rtt
 		SolarSimulator(const std::string& resourceDir);
 		virtual ~SolarSimulator();
 
-		void OnFileSystemEvent(wxFileSystemWatcherEvent& event);
 		void OnOpen(const std::string& path);
 		void OnClose(wxCloseEvent& event) override;
 		void OnRelaunch();
@@ -47,10 +45,9 @@ namespace Rtt
 		void CreateSuspendedPanel();
 		void RemoveSuspendedPanel();
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
-		void SetMenu(const char* appPath);
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }
-		void MenuEvent(SDL_Event& e) override;
+		void SolarEvent(SDL_Event& e) override;
 
 		// for simulator settings
 		void ConfigLoad();
@@ -63,7 +60,7 @@ namespace Rtt
 	private:
 
 		std::map<std::string, std::string> fConfig;
-		wxFileSystemWatcher* fWatcher;
+		smart_ptr<FileWatcher> fWatcher;
 		bool fRelaunchedViaFileEvent;
 		wxLongLong fFileSystemEventTimestamp;
 		std::string fConfigFilePath;

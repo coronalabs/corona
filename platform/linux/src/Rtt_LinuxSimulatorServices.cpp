@@ -192,7 +192,7 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::RelaunchProject() const
 	{
-		PushEvent(sdl::OnRelaunch);
+		PushEvent(sdl::OnRelaunchLastProject);
 		return true;
 	}
 

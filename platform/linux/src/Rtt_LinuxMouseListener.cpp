@@ -120,7 +120,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseLeftDoubleClick(wxMouseEvent &event)
 	{
-		SolarAppContext *context = 0; //vv solarApp->fContext;
+		SolarAppContext *context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const int x = event.GetX();
 		const int y = event.GetY();
@@ -135,7 +135,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseLeftDown(wxMouseEvent &event)
 	{
-		SolarAppContext *context = 0; //vv solarApp->fContext;
+		SolarAppContext *context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const int x = event.GetX();
 		const int y = event.GetY();
@@ -149,7 +149,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseLeftUp(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const int x = event.GetX();
 		const int y = event.GetY();
@@ -164,7 +164,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseRightDoubleClick(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const bool isSecondaryDown = true;
 		MouseEvent::MouseEventType eventType = MouseEvent::kDown;
@@ -175,7 +175,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseRightDown(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const int x = event.GetX();
 		const int y = event.GetY();
@@ -189,7 +189,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseRightUp(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const int x = event.GetX();
 		const int y = event.GetY();
@@ -202,7 +202,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseMiddleDoubleClick(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const bool isMiddleDown = true;
 		MouseEvent::MouseEventType eventType = MouseEvent::kUp;
@@ -213,7 +213,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseMiddleDown(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const bool isMiddleDown = true;
 		MouseEvent::MouseEventType eventType = MouseEvent::kDown;
@@ -224,7 +224,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseMiddleUp(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		MouseEvent::MouseEventType eventType = MouseEvent::kUp;
 		MouseEvent mouseEvent(eventType,  event.GetX(), event.GetY(), Rtt_FloatToReal(0), Rtt_FloatToReal(0), 1, false, false, false, false, false, false, false);
@@ -234,7 +234,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseMove(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const int x = event.GetX();
 		const int y = event.GetY();
@@ -251,7 +251,7 @@ namespace Rtt
 
 	void LinuxMouseListener::OnMouseWheel(wxMouseEvent &event)
 	{
-		SolarAppContext* context = 0; //vv solarApp->fContext;
+		SolarAppContext* context = app->GetContext();
 		Runtime *runtime = context->GetRuntime();
 		const float wheelRotation = event.GetWheelRotation();
 		const bool scrolledVertically = event.GetWheelAxis() == wxMOUSE_WHEEL_VERTICAL;

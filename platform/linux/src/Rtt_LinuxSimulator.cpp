@@ -29,7 +29,6 @@ namespace Rtt
 {
 	SolarSimulator::SolarSimulator(const std::string& resourceDir)
 		: SolarApp(resourceDir)
-		, fWatcher(NULL)
 		, fRelaunchedViaFileEvent(false)
 		, fFileSystemEventTimestamp(0)
 		, currentSkinWidth(0)
@@ -73,9 +72,6 @@ namespace Rtt
 
 	SolarSimulator::~SolarSimulator()
 	{
-		//SetMenuBar(NULL);
-
-		delete fWatcher;
 	}
 
 	bool SolarSimulator::Initialize()
@@ -105,8 +101,9 @@ namespace Rtt
 		return false;
 	}
 
-	void SolarSimulator::MenuEvent(SDL_Event& e)
+	void SolarSimulator::SolarEvent(SDL_Event& e)
 	{
+		Rtt_Log("SolarEvent %d\n", e.type);
 		switch (e.type)
 		{
 		case sdl::OnNewProject:
@@ -211,6 +208,17 @@ namespace Rtt
 			fDlg = NULL;
 			break;
 
+		case sdl::OnFileSystemEvent:
+		{
+			string path = (const char*)e.user.data1;
+			free(e.user.data1);
+
+			if (path.size()>=5 && path.substr(0, 2) != ".#" && path.rfind(".lua") != string::npos)
+			{
+				PushEvent(sdl::OnRelaunchLastProject);
+			}
+			break;
+		}
 		default:
 			break;
 		}
@@ -218,27 +226,15 @@ namespace Rtt
 
 	void SolarSimulator::WatchFolder(const char* path, const char* appName)
 	{
-		if (IsHomeScreen(string(appName)))
+		fWatcher = NULL;
+		if (!IsHomeScreen(appName))
 		{
-			// do not watch main screen folder
-			return;
+			fWatcher = new FileWatcher();
+			fWatcher->Start(path);
 		}
-		/*
-		// wxFileSystemWatcher
-		if (fWatcher == NULL)
-		{
-			fWatcher = new wxFileSystemWatcher();
-			fWatcher->SetOwner(this);
-			Connect(wxEVT_FSWATCHER, wxFileSystemWatcherEventHandler(SolarSimulator::OnFileSystemEvent));
-		}
-
-		wxFileName fn = wxFileName::DirName(path);
-		fn.DontFollowLink();
-		fWatcher->RemoveAll();
-		fWatcher->AddTree(fn);*/
 	}
 
-	void SolarSimulator::OnFileSystemEvent(wxFileSystemWatcherEvent& event)
+	/*void SolarSimulator::OnFileSystemEvent(wxFileSystemWatcherEvent& event)
 	{
 		if (fContext->GetRuntime()->IsSuspended())
 		{
@@ -270,7 +266,7 @@ namespace Rtt
 		default:
 			break;
 		}
-	}
+	}*/
 
 	void SolarSimulator::CreateSuspendedPanel()
 	{
@@ -355,11 +351,9 @@ namespace Rtt
 		}
 	}
 
-	void SolarSimulator::SetMenu(const char* appPath)
+	/*void SolarSimulator::SetMenu(const char* appPath)
 	{
 		const string& appName = GetContext()->GetAppName();
-		/*SetMenuBar(IsHomeScreen(appName) ? fMenuMain : fMenuProject);
-
 		if (!IsHomeScreen(appName) && fViewMenu->FindItem("View As") == -1)
 		{
 			wxMenu* viewAsMenu = new wxMenu();
@@ -476,8 +470,8 @@ namespace Rtt
 			fViewMenu->AppendSubMenu(viewAsMenu, _T("&View As"));
 			fViewMenu->AppendSeparator();
 			fViewMenu->Append(ID_MENU_OPEN_WELCOME_SCREEN, _T("&Welcome Screen"));
-		}*/
-	}
+		}
+	}*/
 
 	void SolarSimulator::OnZoomIn(wxCommandEvent& event)
 	{
@@ -709,8 +703,6 @@ namespace Rtt
 		{
 			newWindowTitle = "Solar2D Simulator";
 		}
-
-		SetMenu(path.c_str());
 
 		// restore home screen zoom level
 	//	if (IsHomeScreen(appName))
