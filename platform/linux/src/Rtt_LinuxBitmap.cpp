@@ -148,6 +148,10 @@ namespace Rtt
 				{
 					fFormat = kRGB;
 				}
+				else
+				{
+					Rtt_LogException("Failed to load %s\n", path);
+				}
 				fclose(f);
 			}
 		}
