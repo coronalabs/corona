@@ -320,9 +320,24 @@ namespace Rtt
 						PushEvent(sdl::OnOpenProject);
 					}
 					ImGui::Separator();
-					if (ImGui::MenuItem("Build", NULL))
+
+					if (ImGui::BeginMenu("Build"))
 					{
+						if (ImGui::MenuItem("Android...", "Ctrl+B"))
+						{
+							PushEvent(sdl::OnBuildAndroid);
+						}
+						if (ImGui::MenuItem("HTML5...", "Ctrl+Alt+B"))
+						{
+							PushEvent(sdl::OnBuildHTML5);
+						}
+						if (ImGui::MenuItem("Linux...", "Ctrl+Shift+Alt+B"))
+						{
+							PushEvent(sdl::OnBuildLinux);
+						}
+						ImGui::EndMenu();
 					}
+
 					if (ImGui::MenuItem("Open in Editor", "Ctrl+Shift+O"))
 					{
 						PushEvent(sdl::OnOpenInEditor);

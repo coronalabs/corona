@@ -52,7 +52,10 @@ enum sdl
 	OnRelaunchLastProject,
 	OnOpenPreferences,
 	OnFileBrowserSelected,
-	OnFileSystemEvent
+	OnFileSystemEvent,
+	OnBuildLinux,
+	OnBuildAndroid,
+	OnBuildHTML5
 };
 
 namespace Rtt

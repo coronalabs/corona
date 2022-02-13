@@ -12,6 +12,7 @@
 #include "Rtt_ConsoleApp.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxMenuEvents.h"
+#include "Rtt_LinuxDialogBuild.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
 #include "wx/display.h"
@@ -72,6 +73,11 @@ namespace Rtt
 
 	SolarSimulator::~SolarSimulator()
 	{
+		int x, y;
+		SDL_GetWindowPosition(fWindow, &x, &y);
+		ConfigSet("windowXPos", x);
+		ConfigSet("windowYPos", y);
+
 		ConfigSave();
 
 		// quit the simulator console
@@ -229,6 +235,7 @@ namespace Rtt
 
 			if (path.size() >= 5 && path.substr(0, 2) != ".#" && path.rfind(".lua") != string::npos)
 			{
+				Rtt_Log("OnFileSystemEvent 0x%X: %s", e.user.code, path.c_str());
 				const string& s = fConfig["relaunchOnFileChange"];
 				if (s == "Always")
 				{
@@ -241,6 +248,19 @@ namespace Rtt
 			}
 			break;
 		}
+
+		case sdl::OnBuildLinux:
+			fDlg = new DlgLinuxBuild();
+			break;
+
+		case sdl::OnBuildAndroid:
+			fDlg = new DlgAndroidBuild();
+			break;
+
+		case sdl::OnBuildHTML5:
+			fDlg = new DlgHTML5Build();
+			break;
+
 		default:
 			break;
 		}
@@ -761,11 +781,6 @@ namespace Rtt
 
 	void SolarSimulator::ConfigSave()
 	{
-		int x, y;
-		SDL_GetWindowPosition(fWindow, &x, &y);
-		ConfigSet("windowXPos", x);
-		ConfigSet("windowYPos", y);
-
 		FILE* f = fopen(fConfigFilePath.c_str(), "w");
 		if (f == NULL)
 		{

@@ -12,7 +12,6 @@
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxUtils.h"
-#include "Rtt_LinuxBuildDialog.h"
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_AndroidAppPackager.h"
 #include "Rtt_TargetAndroidAppStore.h"

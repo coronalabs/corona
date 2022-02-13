@@ -624,7 +624,10 @@ namespace Rtt
 
 	void LinuxPlatform::SetActivityIndicator(bool visible) const
 	{
-		solarApp->SetCursor(visible ? *wxHOURGLASS_CURSOR : *wxSTANDARD_CURSOR);
+		if (visible)
+		{
+			ImGui::Text("%c", "|/-\\"[(int)(ImGui::GetTime() / 0.05f) & 3]);
+		}
 	}
 
 	PlatformWebPopup *LinuxPlatform::GetWebPopup() const

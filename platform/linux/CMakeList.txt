@@ -892,6 +892,7 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxApp.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulator.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialog.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialogBuild.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContext.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxAudioRecorder.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxBitmap.cpp
@@ -910,7 +911,6 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_AndroidBuildDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_ConsoleApp.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxBuildDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_WebBuildDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxClearSandboxDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCloneProjectDialog.cpp
@@ -938,6 +938,7 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxApp.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulator.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialog.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialogBuild.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContext.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxAudioRecorder.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxBitmap.cpp
@@ -956,7 +957,6 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_AndroidBuildDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_ConsoleApp.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxBuildDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_WebBuildDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxClearSandboxDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCloneProjectDialog.cpp

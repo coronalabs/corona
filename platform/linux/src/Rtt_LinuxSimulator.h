@@ -36,7 +36,6 @@ namespace Rtt
 		void OnQuit(wxCommandEvent& WXUNUSED(event));
 		void OnBuildForAndroid(wxCommandEvent& event);
 		void OnBuildForWeb(wxCommandEvent& event);
-		void OnBuildForLinux(wxCommandEvent& event);
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool Initialize() override;

@@ -5,7 +5,6 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxPreferencesDialog.h"
-#include "Rtt_LinuxBuildDialog.h"
 #include "Rtt_AndroidBuildDialog.h"
 #include "Rtt_WebBuildDialog.h"
 #include "Rtt_LinuxClearSandboxDialog.h"
@@ -79,13 +78,5 @@ namespace Rtt
 		webBuildDialog->Destroy();
 	}
 
-	void SolarSimulator::OnBuildForLinux(wxCommandEvent& event)
-	{
-		CreateSuspendedPanel();
-		Rtt::LinuxBuildDialog* linuxBuildDialog = new Rtt::LinuxBuildDialog(solarApp, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 330));
-		linuxBuildDialog->SetAppContext(GetContext());
-		linuxBuildDialog->ShowModal();
-		linuxBuildDialog->Destroy();
-	}
 
 }
