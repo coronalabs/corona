@@ -98,9 +98,7 @@ BOOL CBuildNxSDlg::OnInitDialog()
 
 	fNmetaPath.SetString(L"");
 	fNmetaPath.Append(m_pProject->GetDir());
-	fNmetaPath.Append(L"\\");
-	fNmetaPath.Append(m_pProject->GetName());
-	fNmetaPath.Append(L".nmeta");
+	fNmetaPath.Append(L"\\build.nmeta");
 
 	SetDlgItemText(IDC_BUILD_APPNAME, m_pProject->GetName());
 	SetDlgItemText(IDC_BUILD_NMETA_PATH, fNmetaPath);
