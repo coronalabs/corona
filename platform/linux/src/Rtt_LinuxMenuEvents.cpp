@@ -12,11 +12,8 @@
 #include "Rtt_ConsoleApp.h"
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
-#include "wx/aboutdlg.h"
 
 using namespace std;
-
-// file menu items
 
 namespace Rtt
 {
@@ -62,30 +59,6 @@ namespace Rtt
 		Rtt::KeyEvent ke(dev, Rtt::KeyEvent::kDown, "back", 0, false, false, false, false);
 		GetContext()->GetRuntime()->DispatchEvent(ke);
 	}
-	void SolarSimulator::OnOpenPreferences(wxCommandEvent& event)
-	{
-		Rtt::LinuxPreferencesDialog* newPreferencesDialog = new Rtt::LinuxPreferencesDialog(solarApp, wxID_ANY, wxEmptyString);
-		//		newPreferencesDialog->SetProperties(Rtt::LinuxSimulatorView::Config::showRuntimeErrors, Rtt::LinuxSimulatorView::Config::openLastProject, Rtt::LinuxSimulatorView::Config::relaunchOnFileChange);
-		newPreferencesDialog->SetProperties(true, solarSimulator->ConfigInt("openLastProject"), solarSimulator->ConfigStr("relaunchOnFileChange"));
-
-		if (newPreferencesDialog->ShowModal() == wxID_OK)
-		{
-			solarSimulator->ConfigSet("showRuntimeErrors", true); // newPreferencesDialog->ShouldShowRuntimeErrors();
-			solarSimulator->ConfigSet("openLastProject", newPreferencesDialog->ShouldOpenLastProject());
-			solarSimulator->ConfigSet("relaunchOnFileChange", newPreferencesDialog->ShouldRelaunchOnFileChange());
-			GetContext()->GetPlatform()->fShowRuntimeErrors = true; // Rtt::LinuxSimulatorView::Config::showRuntimeErrors;
-			solarSimulator->ConfigSave();
-			newPreferencesDialog->Destroy();
-		}
-	}
-
-	void SolarSimulator::OnQuit(wxCommandEvent& WXUNUSED(event))
-	{
-		// quit the simulator console
-		ConsoleApp::Quit();
-
-		//Close(true);
-	}
 
 	// build menu items
 	void SolarSimulator::OnBuildForAndroid(wxCommandEvent& event)
@@ -113,38 +86,6 @@ namespace Rtt
 		linuxBuildDialog->SetAppContext(GetContext());
 		linuxBuildDialog->ShowModal();
 		linuxBuildDialog->Destroy();
-	}
-
-	// help menu items
-
-	void SolarSimulator::OnOpenSampleProjects()
-	{
-		string samplesPath = GetStartupPath(NULL);
-		samplesPath.append("/Resources/SampleCode");
-		if (!wxDirExists(samplesPath))
-		{
-			Rtt_LogException("%s\n not found", samplesPath.c_str());
-			return;
-		}
-
-		wxFileDialog openFileDialog(solarApp, _("Open"), samplesPath.c_str(), wxEmptyString, "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-		if (openFileDialog.ShowModal() == wxID_CANCEL)
-		{
-			return;
-		}
-
-		wxString path = openFileDialog.GetPath();
-		if (!Rtt_FileExists(path.c_str()))
-		{
-			Rtt_LogException("%s\n not found", path.c_str());
-			return;
-		}
-
-		// open project
-		SDL_Event e = {};
-		e.type = sdl::OnOpenProject;
-		e.user.data1 = strdup(path.c_str());
-		SDL_PushEvent(&e);
 	}
 
 }

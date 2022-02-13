@@ -79,4 +79,11 @@ namespace Rtt
 		char fHeightInput[10];
 	};
 
+	struct DlgPreferences : public Dlg
+	{
+		DlgPreferences();
+		void Draw() override;
+	};
+
+
 }

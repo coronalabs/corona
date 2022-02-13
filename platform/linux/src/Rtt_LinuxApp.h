@@ -80,6 +80,9 @@ namespace Rtt
 
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
+		virtual void ConfigLoad() {};
+		virtual void ConfigSave() {};
+
 		const char* GetAppName() const { return fContext->GetAppName(); }
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 		void SetTitle(const std::string& name);

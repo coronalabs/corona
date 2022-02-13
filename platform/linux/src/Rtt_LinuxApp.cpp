@@ -610,7 +610,6 @@ namespace Rtt
 				struct inotify_event* event = (struct inotify_event*)&buffer[i];
 				if (event->len > 0 && strlen(event->name) > 0)
 				{
-					Rtt_Log("Updated %s, mask 0x%X\n", event->name, event->mask);
 					SDL_Event e = {};
 					e.type = sdl::OnFileSystemEvent;
 					e.user.code = event->mask;

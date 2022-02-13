@@ -38,7 +38,6 @@ namespace Rtt
 		void OnBuildForAndroid(wxCommandEvent& event);
 		void OnBuildForWeb(wxCommandEvent& event);
 		void OnBuildForLinux(wxCommandEvent& event);
-		void OnOpenSampleProjects();
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool Initialize() override;
@@ -50,8 +49,8 @@ namespace Rtt
 		void SolarEvent(SDL_Event& e) override;
 
 		// for simulator settings
-		void ConfigLoad();
-		void ConfigSave();
+		void ConfigLoad() override;
+		void ConfigSave() override;
 		std::string& ConfigStr(const std::string& key);
 		int ConfigInt(const std::string& key);
 		void ConfigSet(const char* key, std::string& val);

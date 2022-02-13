@@ -72,6 +72,7 @@ namespace Rtt
 
 	SolarSimulator::~SolarSimulator()
 	{
+//		ConsoleApp::Quit();
 	}
 
 	bool SolarSimulator::Initialize()
@@ -103,7 +104,7 @@ namespace Rtt
 
 	void SolarSimulator::SolarEvent(SDL_Event& e)
 	{
-		Rtt_Log("SolarEvent %d\n", e.type);
+		//Rtt_Log("SolarEvent %d\n", e.type);
 		switch (e.type)
 		{
 		case sdl::OnNewProject:
@@ -154,9 +155,19 @@ namespace Rtt
 			break;
 
 		case sdl::OnOpenSampleProjects:
-			OnOpenSampleProjects();
-			break;
+		{
+			string samplesPath = GetStartupPath(NULL);
+			samplesPath.append("/Resources/SampleCode");
+			if (!Rtt_IsDirectory(samplesPath.c_str()))
+			{
+				Rtt_LogException("%s\n not found", samplesPath.c_str());
+				break;
+			}
 
+			// open file dialog
+			fDlg = new DlgFile(samplesPath);
+			break;
+		}
 		case sdl::OnAbout:
 			fDlg = new DlgAbout();
 			break;
@@ -201,6 +212,7 @@ namespace Rtt
 		}
 
 		case sdl::OnOpenPreferences:
+			fDlg = new DlgPreferences();
 			break;
 
 		case sdl::onClosePopupModal:
@@ -233,40 +245,6 @@ namespace Rtt
 			fWatcher->Start(path);
 		}
 	}
-
-	/*void SolarSimulator::OnFileSystemEvent(wxFileSystemWatcherEvent& event)
-	{
-		if (fContext->GetRuntime()->IsSuspended())
-		{
-			return;
-		}
-
-		int type = event.GetChangeType();
-		const wxFileName& f = event.GetPath();
-		wxString fn = f.GetFullName();
-		wxString fp = f.GetFullPath();
-		wxString ext = f.GetExt();
-
-		switch (type)
-		{
-		case wxFSW_EVENT_CREATE:
-		case wxFSW_EVENT_DELETE:
-		case wxFSW_EVENT_RENAME:
-		case wxFSW_EVENT_MODIFY:
-		{
-			if (ext.IsSameAs("lua"))
-			{
-				fRelaunchedViaFileEvent = true;
-				//				wxCommandEvent ev(eventRelaunchProject);
-					//			wxPostEvent(solarApp, ev);
-			}
-			break;
-		}
-
-		default:
-			break;
-		}
-	}*/
 
 	void SolarSimulator::CreateSuspendedPanel()
 	{

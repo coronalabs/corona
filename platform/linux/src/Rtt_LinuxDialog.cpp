@@ -706,5 +706,24 @@ namespace Rtt
 		return true;
 	}
 
+	//
+	//
+	//
+
+	DlgPreferences::DlgPreferences()
+	{
+	}
+
+	void DlgPreferences::Draw()
+	{
+	//	newPreferencesDialog->SetProperties(true, solarSimulator->ConfigInt("openLastProject"), solarSimulator->ConfigStr("relaunchOnFileChange"));
+	//	solarSimulator->ConfigSet("showRuntimeErrors", true); // newPreferencesDialog->ShouldShowRuntimeErrors();
+	//	solarSimulator->ConfigSet("openLastProject", newPreferencesDialog->ShouldOpenLastProject());
+	//	solarSimulator->ConfigSet("relaunchOnFileChange", newPreferencesDialog->ShouldRelaunchOnFileChange());
+	//	GetContext()->GetPlatform()->fShowRuntimeErrors = true; // Rtt::LinuxSimulatorView::Config::showRuntimeErrors;
+		app->ConfigSave();
+
+	}
+
 }	// Rtt
 
