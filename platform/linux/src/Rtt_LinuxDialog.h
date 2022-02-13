@@ -83,6 +83,14 @@ namespace Rtt
 	{
 		DlgPreferences();
 		void Draw() override;
+
+	private:
+
+		int fRelaunchIndex;
+		bool fShowWelcome;
+		bool fShowErrors;
+		bool fOpenlastProject;
+		int fStyleIndex;
 	};
 
 

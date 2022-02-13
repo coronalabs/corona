@@ -55,6 +55,7 @@ namespace Rtt
 		int ConfigInt(const std::string& key);
 		void ConfigSet(const char* key, std::string& val);
 		void ConfigSet(const char* key, int val);
+		virtual std::map<std::string, std::string>* ConfigGet() override { return &fConfig; }
 
 	private:
 

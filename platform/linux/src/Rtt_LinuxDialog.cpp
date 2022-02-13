@@ -153,7 +153,7 @@ namespace Rtt
 	// File dialog
 	//
 
-	DlgFile::DlgFile(const std::string& startFolder)
+	DlgFile::DlgFile(const string& startFolder)
 	{
 		// (optional) set browser properties
 		fileDialog.SetTitle("Open");
@@ -447,7 +447,7 @@ namespace Rtt
 
 		struct passwd* pw = getpwuid(getuid());
 		const char* homedir = pw->pw_dir;
-		fProjectDir = std::string(homedir);
+		fProjectDir = string(homedir);
 		fProjectDir += LUA_DIRSEP;
 		fProjectDir += "Documents";
 		fProjectDir += LUA_DIRSEP;
@@ -711,18 +711,91 @@ namespace Rtt
 	//
 
 	DlgPreferences::DlgPreferences()
+		: fRelaunchIndex(1)
+		, fShowWelcome(false)
+		, fShowErrors(true)
+		, fOpenlastProject(false)
+		, fStyleIndex(0)
 	{
+		if (app->ConfigGet())
+		{
+			map<string, string>& cfg = *app->ConfigGet();
+			fRelaunchIndex = cfg["relaunchOnFileChange"] == "Always" ? 0 : (cfg["relaunchOnFileChange"] == "Ask" ? 2 : 1);
+			fShowWelcome = atoi(cfg["ShowWelcome"].c_str());
+			fShowErrors = atoi(cfg["showRuntimeErrors"].c_str());
+			fOpenlastProject = atoi(cfg["openLastProject"].c_str());
+			fStyleIndex = cfg["ColorScheme"] == "Light" ? 0 : (cfg["ColorScheme"] == "Dark" ? 2 : 1);
+		}
 	}
 
 	void DlgPreferences::Draw()
 	{
-	//	newPreferencesDialog->SetProperties(true, solarSimulator->ConfigInt("openLastProject"), solarSimulator->ConfigStr("relaunchOnFileChange"));
-	//	solarSimulator->ConfigSet("showRuntimeErrors", true); // newPreferencesDialog->ShouldShowRuntimeErrors();
-	//	solarSimulator->ConfigSet("openLastProject", newPreferencesDialog->ShouldOpenLastProject());
-	//	solarSimulator->ConfigSet("relaunchOnFileChange", newPreferencesDialog->ShouldRelaunchOnFileChange());
-	//	GetContext()->GetPlatform()->fShowRuntimeErrors = true; // Rtt::LinuxSimulatorView::Config::showRuntimeErrors;
-		app->ConfigSave();
+		// Always center this window when appearing
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
+		const char* title = "Solar2D Simulator Preferences";
+		if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			ImGui::Checkbox("Don't show the Welcome window", &fShowWelcome);
+			ImGui::Checkbox("Show Runtime Errorrs", &fShowErrors);
+			ImGui::Checkbox("Automatically open last project", &fOpenlastProject);
+
+			string s = "Relaunch Simulator when project is modified";
+			ImGui::Dummy(ImVec2(100, 10));
+			ImGui::Text(s.c_str());
+			ImGui::RadioButton("Always", &fRelaunchIndex, 0);
+			ImGui::RadioButton("Never", &fRelaunchIndex, 1);
+			ImGui::RadioButton("Ask every time", &fRelaunchIndex, 2);
+
+			s = "GUI Color Scheme";
+			ImGui::Dummy(ImVec2(100, 10));
+			ImGui::Text(s.c_str());
+			if (ImGui::RadioButton("Light", &fStyleIndex, 0))
+			{
+				ImGui::StyleColorsLight();
+			}
+			if (ImGui::RadioButton("Classic", &fStyleIndex, 1))
+			{
+				ImGui::StyleColorsClassic();
+			}
+			if (ImGui::RadioButton("Dark", &fStyleIndex, 2))
+			{
+				ImGui::StyleColorsDark();
+			}
+
+			// ok + cancel
+			s = "OK";
+			ImGui::Dummy(ImVec2(100, 30));
+			int ok_width = 100;
+			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			{
+				if (app->ConfigGet())
+				{
+					map<string, string>& cfg = *app->ConfigGet();
+					cfg["relaunchOnFileChange"] = fRelaunchIndex == 0 ? "Always" : (fRelaunchIndex == 2 ? "Ask" : "Never");
+					cfg["ShowWelcome"] = to_string(fShowWelcome);
+					cfg["showRuntimeErrors"] = to_string(fShowErrors);
+					cfg["openLastProject"] = to_string(fOpenlastProject);
+					cfg["ColorScheme"] = fStyleIndex == 0 ? "Light" : (fStyleIndex == 2 ? "Dark" : "Standard");
+					app->ConfigSave();
+				}
+				PushEvent(sdl::onClosePopupModal);
+			}
+			ImGui::SetItemDefaultFocus();
+
+			s = "Cancel";
+			ImGui::SameLine();
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			{
+				PushEvent(sdl::onClosePopupModal);
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::OpenPopup(title);
 	}
 
 }	// Rtt

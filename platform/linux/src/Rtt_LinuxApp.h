@@ -82,6 +82,7 @@ namespace Rtt
 		virtual bool IsRunningOnSimulator() { return false; }
 		virtual void ConfigLoad() {};
 		virtual void ConfigSave() {};
+		virtual std::map<std::string, std::string>* ConfigGet() { return NULL; }
 
 		const char* GetAppName() const { return fContext->GetAppName(); }
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
