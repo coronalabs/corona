@@ -798,5 +798,61 @@ namespace Rtt
 		ImGui::OpenPopup(title);
 	}
 
+	//
+	// DlgAskRelaunch
+	//
+
+	void DlgAskRelaunch::Draw()
+	{
+		// Always center this window when appearing
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+		const char* title = "Solar2D Simulator";
+		if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			ImGui::Dummy(ImVec2(100, 10));
+			ImGui::Text("   Solar2D project has been modified");
+			ImGui::Text("Whould you like to relaunch the project?");
+
+			ImGui::Dummy(ImVec2(150, 30));
+			ImGui::Checkbox("Remember my preference", &fSaveMyPreference);
+
+			// ok + cancel
+			string s = "Relaunch";
+			ImGui::Dummy(ImVec2(100, 30));
+			int ok_width = 100;
+			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			{
+				SaveMyPreference("Always");
+				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::OnRelaunchLastProject);
+			}
+			ImGui::SetItemDefaultFocus();
+
+			s = "Ignore";
+			ImGui::SameLine();
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			{
+				SaveMyPreference("Never");
+				PushEvent(sdl::onClosePopupModal);
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::OpenPopup(title);
+	}
+
+	void DlgAskRelaunch::SaveMyPreference(const char* val)
+	{
+		if (fSaveMyPreference && app->ConfigGet())
+		{
+			map<string, string>& cfg = *app->ConfigGet();
+			cfg["relaunchOnFileChange"] = val;
+		}
+	}
+
 }	// Rtt
 

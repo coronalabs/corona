@@ -93,5 +93,15 @@ namespace Rtt
 		int fStyleIndex;
 	};
 
+	struct DlgAskRelaunch : public Dlg
+	{
+		DlgAskRelaunch() :fSaveMyPreference(false) {}
+		void Draw() override;
+
+	private:
+
+		void SaveMyPreference(const char* val);
+		bool fSaveMyPreference;
+	};
 
 }

@@ -68,15 +68,12 @@ namespace Rtt
 		void Run();
 		bool PollEvents();
 
-
 		Runtime* GetRuntime() { return fContext->GetRuntime(); }
 		LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
 		void OnIconized(wxIconizeEvent& event);
-		virtual void OnClose(wxCloseEvent& event);
 		void ChangeSize(int newWidth, int newHeight);
 		SolarAppContext* GetContext() const { return fContext; }
-		void ResetWindowSize();
 
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
@@ -88,7 +85,6 @@ namespace Rtt
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 		void SetTitle(const std::string& name);
 
-		void DrawGUI();
 		void RenderGUI();
 
 	protected:

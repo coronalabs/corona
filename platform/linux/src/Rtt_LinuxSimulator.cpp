@@ -72,7 +72,10 @@ namespace Rtt
 
 	SolarSimulator::~SolarSimulator()
 	{
-//		ConsoleApp::Quit();
+		ConfigSave();
+
+		// quit the simulator console
+		// ConsoleApp::Quit();
 	}
 
 	bool SolarSimulator::Initialize()
@@ -80,8 +83,6 @@ namespace Rtt
 #ifdef Rtt_SIMULATOR
 		//		SetIcon(simulator_xpm);
 #endif
-
-		SDL_SetWindowPosition(fWindow, ConfigInt("windowXPos"), ConfigInt("windowYPos"));
 
 		if (SolarApp::Initialize())
 		{
@@ -97,10 +98,11 @@ namespace Rtt
 
 			currentSkinWidth = ConfigInt("skinWidth");
 			currentSkinHeight = ConfigInt("skinHeight");
+			SDL_SetWindowPosition(fWindow, ConfigInt("windowXPos"), ConfigInt("windowYPos"));
 			return true;
 		}
 		return false;
-	}
+}
 
 	void SolarSimulator::SolarEvent(SDL_Event& e)
 	{
@@ -225,9 +227,17 @@ namespace Rtt
 			string path = (const char*)e.user.data1;
 			free(e.user.data1);
 
-			if (path.size()>=5 && path.substr(0, 2) != ".#" && path.rfind(".lua") != string::npos)
+			if (path.size() >= 5 && path.substr(0, 2) != ".#" && path.rfind(".lua") != string::npos)
 			{
-				PushEvent(sdl::OnRelaunchLastProject);
+				const string& s = fConfig["relaunchOnFileChange"];
+				if (s == "Always")
+				{
+					PushEvent(sdl::OnRelaunchLastProject);
+				}
+				else if (s == "Ask")
+				{
+					fDlg = new DlgAskRelaunch();
+				}
 			}
 			break;
 		}
@@ -707,22 +717,7 @@ namespace Rtt
 		SetTitle(newWindowTitle);
 	}
 
-	void SolarSimulator::OnClose(wxCloseEvent& event)
-	{
-		fContext->GetRuntime()->End();
-
-		//		ConfigSet("windowXPos", GetPosition().x);
-		//		ConfigSet("windowYPos", GetPosition().y);
-		//		ConfigSave();
-
-				// quit the simulator console
-		//		ConsoleApp::Quit();
-
-		//		wxExit();
-	}
-
 	// config parser
-
 	void SolarSimulator::ConfigLoad()
 	{
 		// default values
@@ -757,10 +752,20 @@ namespace Rtt
 			}
 		}
 		fclose(f);
+
+		//for (const auto it : fConfig)
+		//{
+		//	Rtt_Log("%s=%s\n", it.first.c_str(), it.second.c_str());
+		//}
 	}
 
 	void SolarSimulator::ConfigSave()
 	{
+		int x, y;
+		SDL_GetWindowPosition(fWindow, &x, &y);
+		ConfigSet("windowXPos", x);
+		ConfigSet("windowYPos", y);
+
 		FILE* f = fopen(fConfigFilePath.c_str(), "w");
 		if (f == NULL)
 		{

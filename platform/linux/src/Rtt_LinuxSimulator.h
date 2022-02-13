@@ -21,7 +21,6 @@ namespace Rtt
 		virtual ~SolarSimulator();
 
 		void OnOpen(const std::string& path);
-		void OnClose(wxCloseEvent& event) override;
 		void OnRelaunch();
 		void OnZoomIn(wxCommandEvent& event);
 		void OnZoomOut(wxCommandEvent& event);

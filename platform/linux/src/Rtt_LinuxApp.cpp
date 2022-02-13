@@ -502,12 +502,6 @@ namespace Rtt
 		fContext->RestartRenderer();
 	}
 
-	void SolarApp::OnClose(wxCloseEvent& event)
-	{
-		fContext->GetRuntime()->End();
-		wxExit();
-	}
-
 	void SolarApp::ChangeSize(int newWidth, int newHeight)
 	{
 		//	SetMinClientSize(wxSize(newWidth, newHeight));
