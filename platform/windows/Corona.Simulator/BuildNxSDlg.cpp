@@ -20,7 +20,6 @@
 #include "BrowseDirDialog.h"
 #include "HtmlMessageDlg.h"
 #include "MessageDlg.h"
-#include "ListKeyStore.h"
 #include "CoronaInterface.h"
 #include "Core/Rtt_Build.h"
 #include "Rtt_SimulatorAnalytics.h"
@@ -54,7 +53,6 @@ END_MESSAGE_MAP()
 
 // OnInitDialog - restore settings from m_pProject if available.
 // Choose likely defaults for non-saved settings.
-// Check for trial users, who can only use installed debug.keystore
 BOOL CBuildNxSDlg::OnInitDialog()
 {
 	WinString stringConverter;
@@ -221,7 +219,6 @@ void CBuildNxSDlg::OnOK()  // OnBuild()
 	// Store field settings to project.
 	m_pProject->SetName(sAppName);
 	m_pProject->SetSaveDir(sBuildDir);
-	m_pProject->SetKeystorePath(sNmetaPath);		// really it's .nmeta path
 
 	// Save all project settings and then build the project.
 
