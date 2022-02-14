@@ -304,6 +304,16 @@ namespace Rtt
 				{
 					PushEvent(SDL_QUIT);
 				}
+				// Suspend
+				else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_DownArrow))
+				{
+					PushEvent(sdl::onSuspendOrResume);
+				}
+				// Back
+				else if (alt && ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
+				{
+					PushEvent(sdl::OnCloseProject);
+				}
 			}
 
 			if (ImGui::BeginMainMenuBar())
@@ -381,20 +391,24 @@ namespace Rtt
 				{
 					if (ImGui::MenuItem("Rotate Left", "Ctrl+Left"))
 					{
+						PushEvent(sdl::OnRotateLeft);
 					}
 					if (ImGui::MenuItem("Rotate Right", "Ctrl+Right"))
 					{
+						PushEvent(sdl::OnRotateRight);
 					}
 					if (ImGui::MenuItem("Shake", "Ctrl+Up"))
 					{
+						PushEvent(sdl::OnShake);
 					}
 					ImGui::Separator();
 					if (ImGui::MenuItem("Back", "Alt+Left"))
 					{
+						PushEvent(sdl::OnCloseProject);
 					}
 
 					ImGui::Separator();
-					if (ImGui::MenuItem(app->IsSuspended() ? "Resume" : "Suspend", "Ctrl+DownArrow"))
+					if (ImGui::MenuItem(app->IsSuspended() ? "Resume" : "Suspend", "Ctrl+Down"))
 					{
 						PushEvent(sdl::onSuspendOrResume);
 					}
@@ -407,9 +421,11 @@ namespace Rtt
 				{
 					if (ImGui::MenuItem("Zoom In", "Ctrl++"))
 					{
+						PushEvent(sdl::OnZoomIn);
 					}
 					if (ImGui::MenuItem("Zoom Out", "Ctrl+-"))
 					{
+						PushEvent(sdl::OnZoomOut);
 					}
 					ImGui::Separator();
 					if (ImGui::MenuItem("View As...", NULL))
@@ -418,9 +434,11 @@ namespace Rtt
 					ImGui::Separator();
 					if (ImGui::MenuItem("Welcome screen", NULL))
 					{
+						PushEvent(sdl::OnCloseProject);
 					}
 					if (ImGui::MenuItem("Console", NULL))
 					{
+						PushEvent(sdl::OnConsole);
 					}
 					ImGui::EndMenu();
 				}

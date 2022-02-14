@@ -56,7 +56,13 @@ enum sdl
 	OnBuildLinux,
 	OnBuildAndroid,
 	OnBuildHTML5,
-	onSuspendOrResume
+	onSuspendOrResume,
+	OnRotateLeft,
+	OnRotateRight,
+	OnShake,
+	OnZoomIn,
+	OnZoomOut,
+	OnConsole
 };
 
 namespace Rtt

@@ -16,9 +16,27 @@ namespace Rtt
 {
 	struct DlgAndroidBuild : public Dlg
 	{
-//		DlgAndroidBuild();
+		DlgAndroidBuild();
 		void Draw() override;
-	//	void Build();
+
+	private:
+
+		bool ReadKeystore(std::string& keystorePath, std::string& password);
+		void Build();
+		void RunBuilder();
+
+		ImGui::FileBrowser fileDialog;
+		char fApplicationNameInput[32];
+		char fVersionCodeInput[32];
+		char fVersionNameInput[32];
+		char fPackageInput[256];
+		char fSaveToFolderInput[1024];
+		char fProjectPathInput[1024];
+		char fKeyStoreInput[1024];
+		bool fCreateLiveBuild;
+		smart_ptr<mythread> fThread;
+		char fBuildResult[512];
+		std::vector<std::string> fKeyAliases;
 	};
 
 	struct DlgLinuxBuild : public Dlg
