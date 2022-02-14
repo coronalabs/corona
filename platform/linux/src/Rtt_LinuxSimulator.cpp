@@ -261,6 +261,20 @@ namespace Rtt
 			fDlg = new DlgHTML5Build();
 			break;
 
+		case sdl::onSuspendOrResume:
+		{
+			if (IsSuspended())
+			{
+				fDlg = NULL;
+				fContext->Resume();
+			}
+			else
+			{
+				fDlg = new DlgSuspended();
+				fContext->Pause();
+			}
+			break;
+		}
 		default:
 			break;
 		}
@@ -274,23 +288,6 @@ namespace Rtt
 			fWatcher = new FileWatcher();
 			fWatcher->Start(path);
 		}
-	}
-
-	void SolarSimulator::CreateSuspendedPanel()
-	{
-		//		if (suspendedPanel == NULL)
-		{
-			//		suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->GetWidth(), fContext->GetHeight()));
-			//		suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
-			//		suspendedPanel->SetForegroundColour(wxColour(*wxBLACK));
-			//		suspendedText = new wxStaticText(this, -1, "Suspended", wxDefaultPosition, wxDefaultSize);
-			//		suspendedText->SetForegroundColour(*wxWHITE);
-			//		suspendedText->CenterOnParent();
-		}
-	}
-
-	void SolarSimulator::RemoveSuspendedPanel()
-	{
 	}
 
 	void SolarSimulator::OnRelaunch()
@@ -325,8 +322,6 @@ namespace Rtt
 			{
 				return;
 			}
-
-			RemoveSuspendedPanel();
 
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
@@ -654,29 +649,11 @@ namespace Rtt
 		}*/
 	}
 
-	void SolarSimulator::OnSuspendOrResume(wxCommandEvent& event)
-	{
-		if (fContext->GetRuntime()->IsSuspended())
-		{
-			RemoveSuspendedPanel();
-			//fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Suspend	\tCtrl-Down");
-			fContext->Resume();
-		}
-		else
-		{
-			CreateSuspendedPanel();
-			//fHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
-			fContext->Pause();
-		}
-	}
-
 	void SolarSimulator::OnOpen(const std::string& ppath)
 	{
 		// sanity check
 		if (ppath.size() < 10)
 			return;
-
-		RemoveSuspendedPanel();
 
 		string fullPath = ppath;
 		string path = ppath.substr(0, ppath.size() - 9); // without main.lua

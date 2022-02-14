@@ -55,7 +55,8 @@ enum sdl
 	OnFileSystemEvent,
 	OnBuildLinux,
 	OnBuildAndroid,
-	OnBuildHTML5
+	OnBuildHTML5,
+	onSuspendOrResume
 };
 
 namespace Rtt
@@ -80,6 +81,7 @@ namespace Rtt
 
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
+		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
 		virtual void ConfigLoad() {};
 		virtual void ConfigSave() {};
 		virtual std::map<std::string, std::string>* ConfigGet() { return NULL; }

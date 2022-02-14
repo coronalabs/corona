@@ -62,7 +62,6 @@ namespace Rtt
 	// build menu items
 	void SolarSimulator::OnBuildForAndroid(wxCommandEvent& event)
 	{
-		CreateSuspendedPanel();
 		Rtt::AndroidBuildDialog* androidBuildDialog = new Rtt::AndroidBuildDialog(solarApp, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 470));
 		androidBuildDialog->SetAppContext(GetContext());
 		androidBuildDialog->ShowModal();
@@ -71,7 +70,6 @@ namespace Rtt
 
 	void SolarSimulator::OnBuildForWeb(wxCommandEvent& event)
 	{
-		CreateSuspendedPanel();
 		Rtt::WebBuildDialog* webBuildDialog = new Rtt::WebBuildDialog(solarApp, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 330));
 		webBuildDialog->SetAppContext(GetContext());
 		webBuildDialog->ShowModal();

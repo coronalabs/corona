@@ -392,10 +392,13 @@ namespace Rtt
 					if (ImGui::MenuItem("Back", "Alt+Left"))
 					{
 					}
+
 					ImGui::Separator();
-					if (ImGui::MenuItem("Suspend", "Ctrl+Down"))
+					if (ImGui::MenuItem(app->IsSuspended() ? "Resume" : "Suspend", "Ctrl+DownArrow"))
 					{
+						PushEvent(sdl::onSuspendOrResume);
 					}
+
 					ImGui::EndMenu();
 				}
 
@@ -868,6 +871,28 @@ namespace Rtt
 			cfg["relaunchOnFileChange"] = val;
 		}
 	}
+
+	//
+	//
+	//
+
+	void DlgSuspended::Draw()
+	{
+		// Always center this window when appearing
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+		if (ImGui::BeginPopupModal("Suspended", NULL, ImGuiWindowFlags_NoTitleBar))
+		{
+			if (ImGui::Button("Resume"))
+			{
+				PushEvent(sdl::onSuspendOrResume);
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::OpenPopup("Suspended");
+	}
+
 
 }	// Rtt
 

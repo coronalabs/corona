@@ -472,14 +472,17 @@ namespace Rtt
 	// timer callback
 	void SolarAppContext::advance()
 	{
-		if (!fRuntime->IsSuspended())
+		if (fRuntime->IsSuspended())
+			return;
+
+		if (app->EngineMutex().try_lock())
 		{
 			LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)GetPlatform()->GetDevice().GetInputDeviceManager();
 			deviceManager.dispatchEvents(fRuntime);
 
 			// advance engine
-			lock_guard<mutex> lock(app->EngineMutex());
 			(*fRuntime)();
+			app->EngineMutex().unlock();
 		}
 	}
 

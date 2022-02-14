@@ -25,22 +25,17 @@ namespace Rtt
 		void OnZoomIn(wxCommandEvent& event);
 		void OnZoomOut(wxCommandEvent& event);
 		void OnViewAsChanged(wxCommandEvent& event);
-		void OnSuspendOrResume(wxCommandEvent& event);
 		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
 
 		// menu events
 		void OnCloneProject(wxCommandEvent& event);
 		void OnClearProjectSandbox(wxCommandEvent& event);
 		void OnAndroidBackButton(wxCommandEvent& event);
-		void OnOpenPreferences(wxCommandEvent& event);
-		void OnQuit(wxCommandEvent& WXUNUSED(event));
 		void OnBuildForAndroid(wxCommandEvent& event);
 		void OnBuildForWeb(wxCommandEvent& event);
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool Initialize() override;
-		void CreateSuspendedPanel();
-		void RemoveSuspendedPanel();
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }

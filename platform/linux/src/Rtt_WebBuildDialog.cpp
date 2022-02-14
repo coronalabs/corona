@@ -215,7 +215,6 @@ namespace Rtt
 		int buildResult = packager.Build(&webBuilderParams, tmpDirName);
 		platform->SetActivityIndicator(false);
 		EndModal(wxID_OK);
-		solarSimulator->RemoveSuspendedPanel();
 
 		int dialogResultFlags = buildResult == 0 ? wxOK | wxICON_INFORMATION : wxOK | wxICON_ERROR;
 		resultDialog->SetTitle("Build Result");
@@ -237,7 +236,6 @@ namespace Rtt
 
 	void WebBuildDialog::OnCancelClicked(wxCommandEvent& event)
 	{
-		solarSimulator->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);
 	}
 };

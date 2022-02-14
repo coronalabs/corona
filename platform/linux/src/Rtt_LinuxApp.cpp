@@ -460,7 +460,15 @@ namespace Rtt
 			if (!PollEvents())
 				break;
 
-			fContext->advance();
+			if (IsSuspended())
+			{
+				RenderGUI();
+				SDL_GL_SwapWindow(fWindow);
+			}
+			else
+			{
+				fContext->advance();
+			}
 
 			int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
 			//			Rtt_Log("advance_time %d\n", advance_time);
