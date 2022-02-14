@@ -10,10 +10,10 @@
 #pragma once
 
 #include "Rtt_LinuxDialog.h"
+#include "Rtt_LinuxUtils.h"
 
 namespace Rtt
 {
-
 	struct DlgAndroidBuild : public Dlg
 	{
 //		DlgAndroidBuild();
@@ -29,12 +29,16 @@ namespace Rtt
 	private:
 
 		void Build();
+		void RunBuilder();
+
+		ImGui::FileBrowser fileDialog;
 		char fApplicationNameInput[32];
 		char fVersionInput[32];
 		char fSaveToFolderInput[1024];
 		char fProjectPathInput[1024];
 		bool fIncludeStandardResources;
-		ImGui::FileBrowser fileDialog;
+		smart_ptr<mythread> fThread;
+		char fBuildResult[512];
 	};
 
 	struct DlgHTML5Build : public Dlg

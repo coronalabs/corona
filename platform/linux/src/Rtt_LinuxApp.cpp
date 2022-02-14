@@ -456,7 +456,7 @@ namespace Rtt
 		while (1)
 		{
 			U64 start_time = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
-
+			
 			if (!PollEvents())
 				break;
 
@@ -573,46 +573,51 @@ namespace Rtt
 		Stop();
 	}
 
-	// called every 20mlsec in separate thread
+	// thread func
 	void FileWatcher::Advance()
 	{
-		if (m_inotify_fd >= 0 && m_watch_descriptor >= 0)
+		while (fThread && fThread->is_running())
 		{
-			const int EVENT_SIZE = sizeof(struct inotify_event);
-			const int EVENT_BUF_LEN = 1024 * (EVENT_SIZE + 16);
-
-			char buffer[EVENT_BUF_LEN];
-			int length = read(m_inotify_fd, buffer, EVENT_BUF_LEN);
-			if (length < 0)
+			if (m_inotify_fd >= 0 && m_watch_descriptor >= 0)
 			{
-				int rc = errno;
-				switch (rc)
+				const int EVENT_SIZE = sizeof(struct inotify_event);
+				const int EVENT_BUF_LEN = 1024 * (EVENT_SIZE + 16);
+
+				char buffer[EVENT_BUF_LEN];
+				int length = read(m_inotify_fd, buffer, EVENT_BUF_LEN);
+				if (length < 0)
 				{
-				case EAGAIN:
-					return;
-				default:
-					Rtt_LogException("failed to read onFileChanged event\n");
-					Stop();
-					return;
+					int rc = errno;
+					switch (rc)
+					{
+					case EAGAIN:
+						return;
+					default:
+						Rtt_LogException("failed to read onFileChanged event\n");
+						Stop();
+						return;
+					}
+				}
+
+				// actually read return the list of change events happens. Here, read the change event one by one and process it accordingly.
+				int i = 0;
+				while (i < length)
+				{
+					struct inotify_event* event = (struct inotify_event*)&buffer[i];
+					if (event->len > 0 && strlen(event->name) > 0)
+					{
+						SDL_Event e = {};
+						e.type = sdl::OnFileSystemEvent;
+						e.user.code = event->mask;
+						e.user.data1 = strdup(event->name);
+						SDL_PushEvent(&e);
+
+					}
+					i += EVENT_SIZE + event->len;
 				}
 			}
 
-			// actually read return the list of change events happens. Here, read the change event one by one and process it accordingly.
-			int i = 0;
-			while (i < length)
-			{
-				struct inotify_event* event = (struct inotify_event*)&buffer[i];
-				if (event->len > 0 && strlen(event->name) > 0)
-				{
-					SDL_Event e = {};
-					e.type = sdl::OnFileSystemEvent;
-					e.user.code = event->mask;
-					e.user.data1 = strdup(event->name);
-					SDL_PushEvent(&e);
-
-				}
-				i += EVENT_SIZE + event->len;
-			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 	}
 

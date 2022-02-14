@@ -21,7 +21,6 @@ using namespace std;
 namespace Rtt
 {
 
-
 	//
 	// DlgAndroidBuild
 	//
@@ -109,28 +108,41 @@ namespace Rtt
 	//
 
 	DlgLinuxBuild::DlgLinuxBuild()
-		: fIncludeStandardResources(false)
+		: fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
+		, fIncludeStandardResources(false)
 	{
-		strcpy(fApplicationNameInput, app->GetAppName());
-		strcpy(fVersionInput, "1.0.0");
-		strcpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str());
-		strcpy(fProjectPathInput, app->GetContext()->GetAppPath());
+		*fBuildResult = 0;
+		strncpy(fApplicationNameInput, app->GetAppName(), sizeof(fApplicationNameInput));
+		strncpy(fVersionInput, "1.0.0", sizeof(fVersionInput));
+		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
+		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
+
+		fileDialog.SetTitle("Browse For Folder");
 	}
 
 	void DlgLinuxBuild::Draw()
 	{
+		const ImVec2& window_size = ImGui::GetWindowSize();
+		LinuxPlatform* platform = app->GetPlatform();
+
+		fileDialog.Display();
+		if (fileDialog.HasSelected())
+		{
+			strncpy(fSaveToFolderInput, fileDialog.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
+			fileDialog.ClearSelected();
+		}
+
 		// Always center this window when appearing
 		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
-		const char* title = "Linux Build Setup";
-		if (ImGui::Begin(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::Begin("Linux Build Setup", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
 		{
-			const ImVec2& window_size = ImGui::GetWindowSize();
+			string s;
 			ImGui::Dummy(ImVec2(10, 10));
 			ImGui::PushItemWidth(350);		// input field width
 
-			string s = "   Application Name :";
+			s = "   Application Name :";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
 			ImGui::Text(s.c_str());
 			ImGui::SameLine();
@@ -145,13 +157,6 @@ namespace Rtt
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionInput", fVersionInput, sizeof(fVersionInput), ImGuiInputTextFlags_CharsDecimal);
 
-			s = "   Project Path :";
-			ImGui::Text(s.c_str());
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(label_width + 20);
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fProjectPathInput", fProjectPathInput, sizeof(fProjectPathInput), ImGuiInputTextFlags_ReadOnly);
-
 			s = "   Save To Folder: ";
 			ImGui::Text(s.c_str());
 			ImGui::SameLine();
@@ -161,6 +166,7 @@ namespace Rtt
 			ImGui::SameLine();
 			if (ImGui::Button("Browse..."))
 			{
+				fileDialog.SetTitle("Browse For Folder");
 				fileDialog.SetPwd(fSaveToFolderInput);
 				fileDialog.Open();
 			}
@@ -168,17 +174,18 @@ namespace Rtt
 
 			ImGui::Checkbox("Include Standard Resources", &fIncludeStandardResources);
 
-
 			// ok + cancel
 			s = "OK";
-			ImGui::Dummy(ImVec2(100, 30));
+			ImGui::Dummy(ImVec2(70, 40));
 			int ok_width = 100;
+			ImGui::SetItemDefaultFocus();
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				Build();
+				platform->SetActivityIndicator(true);
+				fThread = new mythread();
+				fThread->start([this]() { Build(); });
 			}
-			ImGui::SetItemDefaultFocus();
 
 			s = "Cancel";
 			ImGui::SameLine();
@@ -188,11 +195,53 @@ namespace Rtt
 			}
 			ImGui::End();
 		}
-		ImGui::OpenPopup(title);
+
+		// builder ended ?
+		if (fThread && fThread->is_running() == false)
+		{
+			platform->SetActivityIndicator(false);
+			fThread = NULL;
+		}
+
+		if (*fBuildResult != 0)
+		{
+			// display result
+			const char* title = "Solar2D Simulator";
+			if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				ImGui::Dummy(ImVec2(100, 10));
+				ImGui::Text(fBuildResult);
+
+				string s = "View";
+				ImGui::Dummy(ImVec2(100, 30));
+				int ok_width = 100;
+				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					OpenURL(fSaveToFolderInput);
+					PushEvent(sdl::onClosePopupModal);
+				}
+				ImGui::SetItemDefaultFocus();
+
+				s = "Done";
+				ImGui::SameLine();
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					PushEvent(sdl::onClosePopupModal);
+				}
+				ImGui::EndPopup();
+			}
+			ImGui::OpenPopup(title);
+
+
+		}
 	}
 
+	// running in separate thread!
 	void DlgLinuxBuild::Build()
 	{
+		lock_guard<mutex> lock(app->EngineMutex());
+
 		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
 		LinuxAppPackager packager(*service);
@@ -213,10 +262,8 @@ namespace Rtt
 		const char kBuildSettings[] = "build.settings";
 		Rtt::String buildSettingsPath;
 		bool foundBuildSettings = packager.ReadBuildSettings(sourceDir.c_str());
-		//	bool checksPassed = foundBuildSettings && !appVersion.empty() && !appName.empty();
-	//		wxMessageDialog* resultDialog = new wxMessageDialog(solarApp, wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
 
-			// setup paths
+		// setup paths
 		const char* TEMPLATE_FILENAME = "linuxtemplate_x64.tgz";
 		linuxtemplate.append("/Resources/");
 		linuxtemplate.append(TEMPLATE_FILENAME);
@@ -224,26 +271,26 @@ namespace Rtt
 		// pre-build validation
 		if (!foundBuildSettings)
 		{
-			//	msgBox("build.settings file not found in project path.");
+			strncpy(fBuildResult, "build.settings file not found in project path.", sizeof(fBuildResult));
 			return;
 		}
 
 		if (appName.empty())
 		{
-			//resultDialog->SetMessage(wxT("App name cannot be empty."));
+			strncpy(fBuildResult, "App name cannot be empty.", sizeof(fBuildResult));
 			return;
 		}
 
 		if (appVersion.empty())
 		{
-			//resultDialog->SetMessage(wxT("App version cannot be empty."));
+			strncpy(fBuildResult, "App version cannot be empty.", sizeof(fBuildResult));
 			return;
 		}
 
 		// ensure we have write access to the target output directory
 		if (!Rtt_IsDirectory(outputDir.c_str()) && !Rtt_MakeDirectory(outputDir.c_str()))
 		{
-			//resultDialog->SetMessage(wxT("Failed to create the selected output directory."));
+			strncpy(fBuildResult, "Failed to create the selected output directory.", sizeof(fBuildResult));
 			return;
 		}
 
@@ -265,22 +312,11 @@ namespace Rtt
 		linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
 
 		// build the app (warning! This is blocking call)
-		platform->SetActivityIndicator(true);
 		int buildResult = packager.Build(&linuxBuilderParams, "/tmp/Solar2D");
-		platform->SetActivityIndicator(false);
-		//		EndModal(wxID_OK);
-			//	solarSimulator->RemoveSuspendedPanel();
 
-		int dialogResultFlags = buildResult == 0 ? wxOK | wxICON_INFORMATION : wxOK | wxICON_ERROR;
-		//resultDialog->SetTitle("Build Result");
-		//resultDialog->SetMessage(buildResult == 0 ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.");
-		//resultDialog->SetMessageDialogStyle(dialogResultFlags);
-
-		platform->SetActivityIndicator(true);
-		//resultDialog->ShowModal();
-		//wxYield();
-		platform->SetActivityIndicator(false);
+		strncpy(fBuildResult, buildResult == 0 ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.", sizeof(fBuildResult));
 	}
+
 
 }	// Rtt
 

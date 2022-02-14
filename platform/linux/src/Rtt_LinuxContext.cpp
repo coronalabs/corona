@@ -478,6 +478,7 @@ namespace Rtt
 			deviceManager.dispatchEvents(fRuntime);
 
 			// advance engine
+			lock_guard<mutex> lock(app->EngineMutex());
 			(*fRuntime)();
 		}
 	}

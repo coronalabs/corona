@@ -75,12 +75,10 @@ private:
 	void thread_func(F func)
 	{
 		// running in separate thread
-		while (m_go)
-		{
-			func();
-			std::this_thread::sleep_for(std::chrono::milliseconds(20));
-		}
+		func();
+
 		m_promise.set_value_at_thread_exit(true);
+		stop();
 	}
 
 	std::atomic<bool> m_go;
