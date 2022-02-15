@@ -278,43 +278,56 @@ namespace Rtt
 			bool alt = ImGui::IsKeyDown(ImGuiKey_LeftAlt) | ImGui::IsKeyDown(ImGuiKey_RightAlt);
 
 			// hot keys
-			if (ctrl)
+			if (ctrl && ImGui::IsKeyPressed(ImGuiKey_N))
 			{
-				if (ImGui::IsKeyPressed(ImGuiKey_N))
-				{
-					PushEvent(sdl::OnNewProject);
-				}
-				else if (ImGui::IsKeyPressed(ImGuiKey_O))
-				{
-					PushEvent(sdl::OnOpenProject);
-				}
-				else if (ImGui::IsKeyPressed(ImGuiKey_R))
-				{
-					PushEvent(sdl::OnRelaunch);
-				}
-				else if (ImGui::IsKeyPressed(ImGuiKey_W))
-				{
-					PushEvent(sdl::OnCloseProject);
-				}
-				else if (shift && ImGui::IsKeyPressed(ImGuiKey_O))
-				{
-					PushEvent(sdl::OnOpenInEditor);
-				}
-				else if (ImGui::IsKeyPressed(ImGuiKey_Q))
-				{
-					PushEvent(SDL_QUIT);
-				}
-				// Suspend
-				else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_DownArrow))
-				{
-					PushEvent(sdl::onSuspendOrResume);
-				}
-				// Back
-				else if (alt && ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
-				{
-					PushEvent(sdl::OnCloseProject);
-				}
+				PushEvent(sdl::OnNewProject);
 			}
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_O))
+			{
+				PushEvent(sdl::OnOpenProject);
+			}
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_R))
+			{
+				PushEvent(sdl::OnRelaunch);
+			}
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_W))
+			{
+				PushEvent(sdl::OnCloseProject);
+			}
+			else if (ctrl && shift && ImGui::IsKeyPressed(ImGuiKey_O))
+			{
+				PushEvent(sdl::OnOpenInEditor);
+			}
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_Q))
+			{
+				PushEvent(SDL_QUIT);
+			}
+			// Suspend
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_DownArrow))
+			{
+				PushEvent(sdl::onSuspendOrResume);
+			}
+			// Back
+			else if (alt && ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
+			{
+				PushEvent(sdl::OnCloseProject);
+			}
+			// Build Android
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_B))
+			{
+				PushEvent(sdl::OnBuildAndroid);
+			}
+			// Build Linux
+			else if (ctrl && shift && alt && ImGui::IsKeyPressed(ImGuiKey_B))
+			{
+				PushEvent(sdl::OnBuildLinux);
+			}
+			// Build HTML5
+			else if (ctrl && alt && ImGui::IsKeyPressed(ImGuiKey_B))
+			{
+				PushEvent(sdl::OnBuildHTML5);
+			}
+
 
 			if (ImGui::BeginMainMenuBar())
 			{

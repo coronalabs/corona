@@ -5,7 +5,6 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxPreferencesDialog.h"
-#include "Rtt_AndroidBuildDialog.h"
 #include "Rtt_WebBuildDialog.h"
 #include "Rtt_LinuxClearSandboxDialog.h"
 #include "Rtt_ConsoleApp.h"
@@ -51,30 +50,5 @@ namespace Rtt
 
 		clearProjectSandboxDlg->Destroy();
 	}
-
-	void SolarSimulator::OnAndroidBackButton(wxCommandEvent& event)
-	{
-		Rtt::PlatformInputDevice* dev = NULL;
-		Rtt::KeyEvent ke(dev, Rtt::KeyEvent::kDown, "back", 0, false, false, false, false);
-		GetContext()->GetRuntime()->DispatchEvent(ke);
-	}
-
-	// build menu items
-	void SolarSimulator::OnBuildForAndroid(wxCommandEvent& event)
-	{
-		Rtt::AndroidBuildDialog* androidBuildDialog = new Rtt::AndroidBuildDialog(solarApp, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 470));
-		androidBuildDialog->SetAppContext(GetContext());
-		androidBuildDialog->ShowModal();
-		androidBuildDialog->Destroy();
-	}
-
-	void SolarSimulator::OnBuildForWeb(wxCommandEvent& event)
-	{
-		Rtt::WebBuildDialog* webBuildDialog = new Rtt::WebBuildDialog(solarApp, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 330));
-		webBuildDialog->SetAppContext(GetContext());
-		webBuildDialog->ShowModal();
-		webBuildDialog->Destroy();
-	}
-
 
 }

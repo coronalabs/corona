@@ -17,15 +17,21 @@ namespace Rtt
 	struct DlgAndroidBuild : public Dlg
 	{
 		DlgAndroidBuild();
+		virtual ~DlgAndroidBuild();
+
 		void Draw() override;
 
 	private:
 
-		bool ReadKeystore(std::string& keystorePath, std::string& password);
+		bool ReadKeystore(const std::string& keystorePath, const std::string& password);
+		void ReadVersion();
 		void Build();
 		void RunBuilder();
+		void ClearKeyAliases();
 
-		ImGui::FileBrowser fileDialog;
+		ImGui::FileBrowser fileDialogKeyStore;
+		ImGui::FileBrowser fileDialogSaveTo;
+		const char* fBuildResult;
 		char fApplicationNameInput[32];
 		char fVersionCodeInput[32];
 		char fVersionNameInput[32];
@@ -35,8 +41,12 @@ namespace Rtt
 		char fKeyStoreInput[1024];
 		bool fCreateLiveBuild;
 		smart_ptr<mythread> fThread;
-		char fBuildResult[512];
-		std::vector<std::string> fKeyAliases;
+		char** fKeyAliases;
+		int fKeyAliasesSize;
+		int fAppStoreIndex;
+		int fKeyAliasIndex;
+		std::string fStorePassword;
+		std::string fAliasPassword;
 	};
 
 	struct DlgLinuxBuild : public Dlg
@@ -50,13 +60,13 @@ namespace Rtt
 		void RunBuilder();
 
 		ImGui::FileBrowser fileDialog;
+		const char* fBuildResult;
 		char fApplicationNameInput[32];
 		char fVersionInput[32];
 		char fSaveToFolderInput[1024];
 		char fProjectPathInput[1024];
 		bool fIncludeStandardResources;
 		smart_ptr<mythread> fThread;
-		char fBuildResult[512];
 	};
 
 	struct DlgHTML5Build : public Dlg

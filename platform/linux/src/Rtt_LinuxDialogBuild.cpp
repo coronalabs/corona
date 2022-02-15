@@ -15,7 +15,6 @@
 #include "Rtt_LuaContext.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxAppPackager.h"
-#include "Rtt_AndroidBuildDialog.h"
 #include "Rtt_AndroidAppPackager.h"
 #include "Rtt_TargetAndroidAppStore.h"
 #include "ListKeyStore.h"
@@ -30,8 +29,14 @@ namespace Rtt
 	//
 
 	DlgAndroidBuild::DlgAndroidBuild()
-		: fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
+		: fileDialogKeyStore(ImGuiFileBrowserFlags_EnterNewFilename| ImGuiFileBrowserFlags_CloseOnEsc)
+		, fileDialogSaveTo(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir| ImGuiFileBrowserFlags_CloseOnEsc)
+		, fBuildResult(NULL)
 		, fCreateLiveBuild(false)
+		, fAppStoreIndex(1)		// google play
+		, fKeyAliases(NULL)
+		, fKeyAliasesSize(0)
+		, fKeyAliasIndex(0)
 	{
 		char uname[256] = { 0 };
 		int rc = getlogin_r(uname, sizeof(uname));
@@ -39,40 +44,68 @@ namespace Rtt
 		package.append(uname).append(".");
 		package.append(app->GetAppName());
 
-		std::string keystorePath(GetStartupPath(NULL));
-		keystorePath.append("/Resources/debug.keystore");
-
-		string keystorePassword = "android";
-		ReadKeystore(keystorePath, keystorePassword);
-
-		*fBuildResult = 0;
+		// defaults
 		strncpy(fApplicationNameInput, app->GetAppName(), sizeof(fApplicationNameInput));
 		strncpy(fVersionCodeInput, "1", sizeof(fVersionCodeInput));
 		strncpy(fVersionNameInput, "1.0.0", sizeof(fVersionNameInput));
 		strncpy(fPackageInput, package.c_str(), sizeof(fPackageInput));
 		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
 		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
-		strncpy(fKeyStoreInput, app->GetContext()->GetAppPath(), sizeof(fKeyStoreInput));
 
-		fileDialog.SetTitle("Browse For Folder");
+		std::string keystorePath(GetStartupPath(NULL));
+		keystorePath.append("/Resources/debug.keystore");
+		strncpy(fKeyStoreInput, keystorePath.c_str(), sizeof(fKeyStoreInput));
+
+		fStorePassword = "android";
+		fAliasPassword = fStorePassword;
+		ReadKeystore(keystorePath, fStorePassword);
+		ReadVersion();
+
+		fileDialogKeyStore.SetTitle("Browse For Keystore");
+		fileDialogSaveTo.SetTitle("Browse For Folder");
 	}
 
-	bool DlgAndroidBuild::ReadKeystore(std::string& keystorePath, std::string& password)
+	DlgAndroidBuild::~DlgAndroidBuild()
 	{
-		fKeyAliases.clear();
+		ClearKeyAliases();
+	}
+
+	void DlgAndroidBuild::ClearKeyAliases()
+	{
+		if (fKeyAliases)
+		{
+			for (int i = 0; i < fKeyAliasesSize; i++)
+			{
+				free(fKeyAliases[i]);
+			}
+			delete[] fKeyAliases;
+		}
+		fKeyAliasesSize = 0;
+		fKeyAliasIndex = 0;
+	}
+
+	bool DlgAndroidBuild::ReadKeystore(const std::string& keystorePath, const std::string& password)
+	{
+		ClearKeyAliases();
 		ListKeyStore listKeyStore;  // uses Java to read keystore
 		if (listKeyStore.GetAliasList(keystorePath.c_str(), password.c_str()))
 		{
-			for (int i = 0; i < listKeyStore.GetSize(); i++)
-			{
-				fKeyAliases.push_back(listKeyStore.GetAlias(i));
-			}
-
 			// Succeeded and there is at least one alias - add aliases to alias dropdown
-			if (fKeyAliases.empty())
+			if (listKeyStore.GetSize() == 0)
 			{
 				Rtt_LogException("The selected keystore doesn't have any aliases.\n");
 				return false;
+			}
+			else
+			{
+				fKeyAliasesSize = listKeyStore.GetSize();
+				fKeyAliases = new char* [fKeyAliasesSize];
+				for (int i = 0; i < listKeyStore.GetSize(); i++)
+				{
+					const char* s = listKeyStore.GetAlias(i);
+					fKeyAliases[i] = (char*)malloc(strlen(s) + 1);
+					strcpy(fKeyAliases[i], s);
+				}
 			}
 		}
 		else // didn't get valid password, or keystore bad format
@@ -83,16 +116,51 @@ namespace Rtt
 		return true;
 	}
 
+	void DlgAndroidBuild::ReadVersion()
+	{
+		// Get the version code from build.settings
+		const char kBuildSettings[] = "build.settings";
+		String filePath;
+		app->GetPlatform()->PathForFile(kBuildSettings, MPlatform::kResourceDir, MPlatform::kTestFileExists, filePath);
+		lua_State* L = app->GetRuntime()->VMContext().L();
+		const char* buildSettingsPath = filePath.GetString();
+
+		if (buildSettingsPath && 0 == luaL_loadfile(L, buildSettingsPath) && 0 == lua_pcall(L, 0, 0, 0))
+		{
+			lua_getglobal(L, "settings");
+			if (lua_istable(L, -1))
+			{
+				lua_getfield(L, -1, "android");
+				if (lua_istable(L, -1))
+				{
+					lua_getfield(L, -1, "versionCode");
+					if (lua_isstring(L, -1))
+					{
+						strncpy(fVersionCodeInput, lua_tostring(L, -1), sizeof(fVersionCodeInput));
+					}
+					lua_pop(L, 1);
+				}
+				lua_pop(L, 1);
+			}
+		}
+	}
+
 	void DlgAndroidBuild::Draw()
 	{
 		const ImVec2& window_size = ImGui::GetWindowSize();
 		LinuxPlatform* platform = app->GetPlatform();
 
-		fileDialog.Display();
-		if (fileDialog.HasSelected())
+		fileDialogKeyStore.Display();
+		if (fileDialogKeyStore.HasSelected())
 		{
-			strncpy(fSaveToFolderInput, fileDialog.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
-			fileDialog.ClearSelected();
+			strncpy(fKeyStoreInput, fileDialogKeyStore.GetSelected().string().c_str(), sizeof(fKeyStoreInput));
+			fileDialogKeyStore.ClearSelected();
+		}
+		fileDialogSaveTo.Display();
+		if (fileDialogSaveTo.HasSelected())
+		{
+			strncpy(fSaveToFolderInput, fileDialogSaveTo.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
+			fileDialogSaveTo.ClearSelected();
 		}
 
 		// Always center this window when appearing
@@ -134,12 +202,43 @@ namespace Rtt
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fPackageInput", fPackageInput, sizeof(fPackageInput), ImGuiInputTextFlags_None);
 
+			s = "A unique Java-style package identifier for your app\n(e.g. com.acme.games.myframegame)";
+			ImGui::SetCursorPosX(label_width + 20);
+			ImGui::Text(s.c_str());
+			ImGui::Dummy(ImVec2(70, 10));
+
 			s = "   Project Path :";
 			ImGui::Text(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fProjectPathInput", fProjectPathInput, sizeof(fProjectPathInput), ImGuiInputTextFlags_ReadOnly);
+
+			// Target App Store
+			ImGui::Text("   Target App Store :");
+			ImGui::SameLine();
+			const char* appstores[] = { "Amazon", "Google Play", "Samsung" };
+			ImGui::SetCursorPosX(label_width + 20);
+			ImGui::Combo("##TargetAppStore", &fAppStoreIndex, appstores, IM_ARRAYSIZE(appstores));
+
+			s = "   Keystore: ";
+			ImGui::Text(s.c_str());
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(label_width + 20);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
+			ImGui::InputText("##fSaveToFolderInput", fKeyStoreInput, sizeof(fKeyStoreInput), 0);
+			ImGui::SameLine();
+			if (ImGui::Button("Browse..."))
+			{
+				fileDialogKeyStore.SetPwd(fKeyStoreInput);
+				fileDialogKeyStore.Open();
+			}
+
+			// Key Alias
+			ImGui::Text("   Key Alias :");
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(label_width + 20);
+			ImGui::Combo("##TargetAppStore", &fKeyAliasIndex, fKeyAliases, fKeyAliasesSize);
 
 			s = "   Save To Folder: ";
 			ImGui::Text(s.c_str());
@@ -150,12 +249,13 @@ namespace Rtt
 			ImGui::SameLine();
 			if (ImGui::Button("Browse..."))
 			{
-				fileDialog.SetTitle("Browse For Folder");
-				fileDialog.SetPwd(fSaveToFolderInput);
-				fileDialog.Open();
+				fileDialogSaveTo.SetPwd(fSaveToFolderInput);
+				fileDialogSaveTo.Open();
 			}
+
 			ImGui::PopItemWidth();
 
+			ImGui::Dummy(ImVec2(70, 10));
 			ImGui::Checkbox("Create Live Build", &fCreateLiveBuild);
 
 			// ok + cancel
@@ -187,7 +287,7 @@ namespace Rtt
 			fThread = NULL;
 		}
 
-		if (*fBuildResult != 0)
+		if (fBuildResult)
 		{
 			// display result
 			const char* title = "Solar2D Simulator";
@@ -219,85 +319,203 @@ namespace Rtt
 		}
 	}
 
-	// running in separate thread!
+	// thread function
 	void DlgAndroidBuild::Build()
 	{
 		lock_guard<mutex> lock(app->EngineMutex());
-		/*
-				LinuxPlatform* platform = app->GetPlatform();
-				MPlatformServices* service = new LinuxPlatformServices(platform);
-				LinuxAppPackager packager(*service);
-				Rtt::Runtime* runtimePointer = app->GetContext()->GetRuntime();
-				string appName(fApplicationNameInput);
-				string sourceDir(fProjectPathInput);
-				string outputDir(fSaveToFolderInput);
-				string appVersion(fVersionInput);
-				std::string linuxtemplate(platform->getInstallDir());
-				bool runAfterBuild = false; // runAfterBuildCheckbox->GetValue();
-				const char* identity = "no-identity";
-				const char* customBuildId = packager.GetCustomBuildId();
-				const char* bundleId = "bundleId";
-				const char* sdkRoot = "";
-				int targetVersion = Rtt::TargetDevice::kLinux;
-				const TargetDevice::Platform targetPlatform(TargetDevice::Platform::kLinuxPlatform);
-				bool isDistribution = true;
-				const char kBuildSettings[] = "build.settings";
-				Rtt::String buildSettingsPath;
-				bool foundBuildSettings = packager.ReadBuildSettings(sourceDir.c_str());
 
-				// setup paths
-				const char* TEMPLATE_FILENAME = "linuxtemplate_x64.tgz";
-				linuxtemplate.append("/Resources/");
-				linuxtemplate.append(TEMPLATE_FILENAME);
+		LinuxPlatform* platform = app->GetPlatform();
+		MPlatformServices* service = new LinuxPlatformServices(platform);
+		Rtt::Runtime* runtimePointer = app->GetRuntime();
+		std::string androidTemplate(platform->getInstallDir());
+		std::string tmp = Rtt_GetSystemTempDirectory();
+		std::string targetAppStoreName(TargetAndroidAppStore::kGoogle.GetStringId());
+		const char* identity = "no-identity";
+		const char* bundleId = "bundleId";
+		const char* provisionFile = "";
+		int versionCode = atoi(fVersionCodeInput);
+		bool installAfterBuild = false; // installToDeviceCheckbox->GetValue() == true;
+		const TargetDevice::Platform targetPlatform(TargetDevice::Platform::kAndroidPlatform);
+		bool isDistribution = true;
+		const char kBuildSettings[] = "build.settings";
+		Rtt::String buildSettingsPath;
 
-				// pre-build validation
-				if (!foundBuildSettings)
-				{
-					strncpy(fBuildResult, "build.settings file not found in project path.", sizeof(fBuildResult));
-					return;
-				}
+		// setup paths
+		androidTemplate.append("/Resources");
+		tmp.append("/CoronaLabs");
 
-				if (appName.empty())
-				{
-					strncpy(fBuildResult, "App name cannot be empty.", sizeof(fBuildResult));
-					return;
-				}
+		AndroidAppPackager packager(*service, androidTemplate.c_str());
+		bool foundBuildSettings = packager.ReadBuildSettings(fProjectPathInput);
+		const char* customBuildId = packager.GetCustomBuildId();
 
-				if (appVersion.empty())
-				{
-					strncpy(fBuildResult, "App version cannot be empty.", sizeof(fBuildResult));
-					return;
-				}
+		// pre-build validation
+		if (!foundBuildSettings)
+		{
+			fBuildResult = "build.settings file not found in project path.";
+			return;
+		}
 
-				// ensure we have write access to the target output directory
-				if (!Rtt_IsDirectory(outputDir.c_str()) && !Rtt_MakeDirectory(outputDir.c_str()))
-				{
-					strncpy(fBuildResult, "Failed to create the selected output directory.", sizeof(fBuildResult));
-					return;
-				}
+		if (*fApplicationNameInput == 0)
+		{
+			fBuildResult = "App name cannot be empty.";
+			return;
+		}
 
-				// check if a custom build ID has been assigned
-				if (!Rtt_StringIsEmpty(customBuildId))
-				{
-					Rtt_Log("\nUsing custom Build Id %s\n", customBuildId);
-				}
+		if (*fVersionNameInput == 0)
+		{
+			fBuildResult = "App version cannot be empty.";
+			return;
+		}
 
-				bool onlyGetPlugins = false;
-				LinuxAppPackagerParams linuxBuilderParams(
-					appName.c_str(), appVersion.c_str(), identity, NULL, sourceDir.c_str(),
-					outputDir.c_str(), NULL, targetPlatform, targetVersion,
-					Rtt::TargetDevice::kLinux, customBuildId, NULL, bundleId, isDistribution,
-					NULL, fIncludeStandardResources, runAfterBuild, onlyGetPlugins);
+		if (fVersionNameInput[0] == '.' || fVersionNameInput[strlen(fVersionNameInput)] == '.')
+		{
+			fBuildResult = "App version cannot start or end with a period (dot).";
+			return;
+		}
 
-				// select build template
-				app->GetContext()->GetPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
-				linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
+		if (*fVersionCodeInput == 0)
+		{
+			fBuildResult = "App version code cannot be empty.";
+			return;
+		}
 
-				// build the app (warning! This is blocking call)
-				int buildResult = packager.Build(&linuxBuilderParams, "/tmp/Solar2D");
+		if (versionCode <= 0)
+		{
+			fBuildResult = "App version code must be an integer.";
+			return;
+		}
 
-				strncpy(fBuildResult, buildResult == 0 ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.", sizeof(fBuildResult));
-				*/
+		if (*fPackageInput == 0)
+		{
+			fBuildResult = "App package name cannot be empty.";
+			return;
+		}
+
+		if (strchr(fPackageInput, '.') == NULL)
+		{
+			fBuildResult = "App package name must contain at least one period (dot).";
+			return;
+		}
+
+		if (fPackageInput[0] == '.' || fPackageInput[strlen(fPackageInput)] == '.')
+		{
+			fBuildResult = "App package name cannot start or end with a period (dot).";
+			return;
+		}
+
+		if (fKeyAliasesSize == 0)
+		{
+			fBuildResult = "The keystore password is invalid.";
+			return;
+		}
+
+		// ensure unzip is installed on the users system
+		if (!Rtt_FileExists("/usr/bin/unzip"))
+		{
+			fBuildResult = "/usr/bin/unzip not found";
+			return;
+		}
+
+		string exePath = GetStartupPath(NULL);
+
+		// ensure Solar2DBuilder exists at the correct location
+		string solar2DBuilderPath = exePath;
+		solar2DBuilderPath.append("/Solar2DBuilder");
+		if (!Rtt_FileExists(solar2DBuilderPath.c_str()))
+		{
+			fBuildResult = "Solar2DBuilder is not found";
+			return;
+		}
+
+		// ensure Resource is not a link
+		string resourcesPath = exePath;
+		resourcesPath.append("/Resources");
+		struct stat buf;
+		if (lstat(resourcesPath.c_str(), &buf) == 0)
+		{
+			if (S_ISLNK(buf.st_mode))
+			{
+				fBuildResult = "Resources path is a link, it must be regular folder";
+				return;
+			}
+		}
+		else
+		{
+			fBuildResult = "No Resources found";
+			return;
+		}
+
+		string outputDir(fSaveToFolderInput);
+		outputDir.append("/");
+		outputDir.append(fApplicationNameInput);
+		outputDir.append(".Android");
+
+		// ensure we have write access to the target output directory
+		if (!Rtt_IsDirectory(outputDir.c_str()))
+		{
+			if (!Rtt_MakeDirectory(outputDir.c_str()))
+			{
+				fBuildResult = "Failed to create the selected output directory.";
+				return;
+			}
+		}
+
+		Rtt_Log("\nStarting Android build...\n");
+
+		// check if a custom build ID has been assigned
+		if (!Rtt_StringIsEmpty(customBuildId))
+		{
+			Rtt_Log("Using custom Build Id %s\n", customBuildId);
+		}
+
+		// set the target app store
+		if (fAppStoreIndex == 1) // GOOGLE_PLAY_STORE_TARGET
+		{
+			targetAppStoreName = TargetAndroidAppStore::kGoogle.GetStringId();
+		}
+		else if (fAppStoreIndex == 0) // AMAZON_STORE_TARGET
+		{
+			targetAppStoreName = TargetAndroidAppStore::kAmazon.GetStringId();
+		}
+		else if (fAppStoreIndex == 2) // Samsung
+		{
+			targetAppStoreName = TargetAndroidAppStore::kSamsung.GetStringId();
+		}
+
+		Rtt_ASSERT(fKeyAliasIndex > 0 && fKeyAliasIndex < fKeyAliasesSize);
+		const char* keyAlias = fKeyAliases[fKeyAliasIndex];
+
+		AndroidAppPackagerParams androidBuilderParams(fApplicationNameInput, fVersionCodeInput, identity, provisionFile,
+			fProjectPathInput, outputDir.c_str(), androidTemplate.c_str(), targetPlatform, targetAppStoreName.c_str(),
+			(S32)Rtt::TargetDevice::VersionForPlatform(Rtt::TargetDevice::kAndroidPlatform), customBuildId, NULL,
+			fPackageInput, isDistribution, fKeyStoreInput, fStorePassword.c_str(), keyAlias, fAliasPassword.c_str(), versionCode);
+
+		// select build template
+		app->GetPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
+		androidBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
+
+		// build the app (warning! This is blocking call)
+		int buildResult = packager.Build(&androidBuilderParams, tmp.c_str());
+		fBuildResult = buildResult == 0 ? "Android build succeeded" : "Android build failed. Check the log for more details";
+
+		// install after build
+		/*if (buildResult == 0 && installAfterBuild)
+		{
+			const char* adbPath = "/opt/Solar2D/Android/platform-tools/adb";
+			if (Rtt_FileExists(adbPath))
+			{
+				std::string cmd(adbPath);
+				cmd.append(" install -r \"");
+				cmd.append(outputDir.ToStdString().c_str());
+				cmd.append("/").append(appName.ToStdString().c_str());
+				cmd.append(".apk").append("\"");
+				system(cmd);
+			}
+			else
+			{
+				Rtt_LogException("adb not found at the expected location of %s\n. Not copying to device as a result.\n", adbPath);
+			}
+		}*/
 	}
 
 	//
@@ -347,9 +565,9 @@ namespace Rtt
 
 	DlgLinuxBuild::DlgLinuxBuild()
 		: fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
+		, fBuildResult(NULL)
 		, fIncludeStandardResources(false)
 	{
-		*fBuildResult = 0;
 		strncpy(fApplicationNameInput, app->GetAppName(), sizeof(fApplicationNameInput));
 		strncpy(fVersionInput, "1.0.0", sizeof(fVersionInput));
 		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
@@ -441,7 +659,7 @@ namespace Rtt
 			fThread = NULL;
 		}
 
-		if (*fBuildResult != 0)
+		if (fBuildResult)
 		{
 			// display result
 			const char* title = "Solar2D Simulator";
@@ -470,8 +688,6 @@ namespace Rtt
 				ImGui::EndPopup();
 			}
 			ImGui::OpenPopup(title);
-
-
 		}
 	}
 
@@ -509,26 +725,26 @@ namespace Rtt
 		// pre-build validation
 		if (!foundBuildSettings)
 		{
-			strncpy(fBuildResult, "build.settings file not found in project path.", sizeof(fBuildResult));
+			fBuildResult = "build.settings file not found in project path.";
 			return;
 		}
 
 		if (appName.empty())
 		{
-			strncpy(fBuildResult, "App name cannot be empty.", sizeof(fBuildResult));
+			fBuildResult = "App name cannot be empty.";
 			return;
 		}
 
 		if (appVersion.empty())
 		{
-			strncpy(fBuildResult, "App version cannot be empty.", sizeof(fBuildResult));
+			fBuildResult = "App version cannot be empty.";
 			return;
 		}
 
 		// ensure we have write access to the target output directory
 		if (!Rtt_IsDirectory(outputDir.c_str()) && !Rtt_MakeDirectory(outputDir.c_str()))
 		{
-			strncpy(fBuildResult, "Failed to create the selected output directory.", sizeof(fBuildResult));
+			fBuildResult = "Failed to create the selected output directory.";
 			return;
 		}
 
@@ -551,8 +767,7 @@ namespace Rtt
 
 		// build the app (warning! This is blocking call)
 		int buildResult = packager.Build(&linuxBuilderParams, "/tmp/Solar2D");
-
-		strncpy(fBuildResult, buildResult == 0 ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.", sizeof(fBuildResult));
+		fBuildResult = buildResult == 0 ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.";
 	}
 
 
