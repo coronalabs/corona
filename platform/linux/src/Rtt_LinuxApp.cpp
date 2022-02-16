@@ -58,6 +58,7 @@ namespace Rtt
 		, fWidth(0)
 		, fHeight(0)
 		, imctx(NULL)
+		, fActivityIndicator(false)
 	{
 	}
 
@@ -511,6 +512,11 @@ namespace Rtt
 		if (fDlg)
 		{
 			fDlg->Draw();
+		}
+
+		if (fActivityIndicator)
+		{
+			DrawActivity();
 		}
 
 		ImGui::EndFrame();

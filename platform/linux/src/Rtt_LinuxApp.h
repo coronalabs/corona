@@ -99,6 +99,7 @@ namespace Rtt
 		void RenderGUI();
 		inline void Pause() { fContext->Pause(); }
 		inline void Resume() { fContext->Resume(); }
+		void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
 
 	protected:
 
@@ -117,6 +118,7 @@ namespace Rtt
 		ImGuiContext* imctx;
 		smart_ptr<Dlg> fMenu;
 		smart_ptr<Dlg> fDlg;
+		bool fActivityIndicator;
 	};
 
 	//

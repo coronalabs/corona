@@ -27,7 +27,7 @@ std::string& rtrim(std::string& str, const std::string& chars);
 std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
 void splitString(std::vector<std::string>& cont, const std::string& str, const std::string& delims);
 
-void OpenURL(const std::string& url);
+bool OpenURL(const std::string& url);
 
 // using promise
 struct mythread : public ref_counted

@@ -74,6 +74,19 @@ namespace Rtt
 		return true;
 	}
 
+	void DrawActivity()
+	{
+		// Always center this window when appearing
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+		if (ImGui::Begin("##DrawActivity", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
+		{
+			ImGui::Text("%c", "|/-\\"[(int)(ImGui::GetTime() / 0.05f) & 3]);
+			ImGui::End();
+		}
+	}
+
 	//
 	// About dialog
 	//
@@ -194,11 +207,13 @@ namespace Rtt
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		bool ctrl = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) | ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+		bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) | ImGui::IsKeyDown(ImGuiKey_RightShift);
+		bool alt = ImGui::IsKeyDown(ImGuiKey_LeftAlt) | ImGui::IsKeyDown(ImGuiKey_RightAlt);
 
 		if (isMainMenu)
 		{
 			// hot keys
-			if (ctrl)
+			if (ctrl && !shift && !alt)
 			{
 				if (ImGui::IsKeyPressed(ImGuiKey_N, false))
 				{
@@ -275,36 +290,33 @@ namespace Rtt
 		{
 			// project menu
 
-			bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) | ImGui::IsKeyDown(ImGuiKey_RightShift);
-			bool alt = ImGui::IsKeyDown(ImGuiKey_LeftAlt) | ImGui::IsKeyDown(ImGuiKey_RightAlt);
-
 			// shortcuts
-			if (ctrl && ImGui::IsKeyPressed(ImGuiKey_N, false))
+			if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_N, false))
 			{
 				PushEvent(sdl::OnNewProject);
 			}
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_O, false))
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_O, false))
 			{
 				PushEvent(sdl::OnOpenProject);
 			}
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_R, false))
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_R, false))
 			{
 				PushEvent(sdl::OnRelaunch);
 			}
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_W, false))
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_W, false))
 			{
 				PushEvent(sdl::OnCloseProject);
 			}
-			else if (ctrl && shift && ImGui::IsKeyPressed(ImGuiKey_O, false))
+			else if (ctrl && shift && !alt && ImGui::IsKeyPressed(ImGuiKey_O, false))
 			{
 				PushEvent(sdl::OnOpenInEditor);
 			}
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_Q, false))
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_Q, false))
 			{
 				PushEvent(SDL_QUIT);
 			}
 			// Suspend
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_DownArrow, false))
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_DownArrow, false))
 			{
 				if (app->IsSuspended())
 					app->Resume();
@@ -312,12 +324,12 @@ namespace Rtt
 					app->Pause();
 			}
 			// Back
-			else if (alt && ImGui::IsKeyPressed(ImGuiKey_LeftArrow, false))
+			else if (alt && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_LeftArrow, false))
 			{
 				PushEvent(sdl::OnCloseProject);
 			}
 			// Build Android
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_B, false))
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_B, false))
 			{
 				PushEvent(sdl::OnBuildAndroid);
 			}
@@ -327,7 +339,7 @@ namespace Rtt
 				PushEvent(sdl::OnBuildLinux);
 			}
 			// Build HTML5
-			else if (ctrl && alt && ImGui::IsKeyPressed(ImGuiKey_B, false))
+			else if (ctrl && !shift && alt && ImGui::IsKeyPressed(ImGuiKey_B, false))
 			{
 				PushEvent(sdl::OnBuildHTML5);
 			}

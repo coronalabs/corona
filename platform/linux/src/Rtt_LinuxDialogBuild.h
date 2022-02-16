@@ -14,7 +14,13 @@
 
 namespace Rtt
 {
-	struct DlgAndroidBuild : public Dlg
+	struct DlgBuild : public Dlg
+	{
+		DlgBuild();
+		virtual ~DlgBuild();
+	};
+
+	struct DlgAndroidBuild : public DlgBuild
 	{
 		DlgAndroidBuild();
 		virtual ~DlgAndroidBuild();
@@ -50,7 +56,7 @@ namespace Rtt
 		std::string fAliasPassword;
 	};
 
-	struct DlgLinuxBuild : public Dlg
+	struct DlgLinuxBuild : public DlgBuild
 	{
 		DlgLinuxBuild();
 		virtual ~DlgLinuxBuild();
@@ -72,11 +78,26 @@ namespace Rtt
 		smart_ptr<mythread> fThread;
 	};
 
-	struct DlgHTML5Build : public Dlg
+	struct DlgHTML5Build : public DlgBuild
 	{
-	//	DlgHTML5Build();
+		DlgHTML5Build();
+		virtual ~DlgHTML5Build();
+
 		void Draw() override;
-//		void Build();
+
+	private:
+
+		void Build();
+		void RunBuilder();
+
+		ImGui::FileBrowser fileDialog;
+		const char* fBuildResult;
+		char fApplicationNameInput[32];
+		char fVersionInput[32];
+		char fSaveToFolderInput[1024];
+		char fProjectPathInput[1024];
+		bool fIncludeStandardResources;
+		smart_ptr<mythread> fThread;
 	};
 
 }

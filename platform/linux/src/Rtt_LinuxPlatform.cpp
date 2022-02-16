@@ -35,8 +35,6 @@
 #include "Rtt_LinuxApp.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
-#include "wx/wx.h"
-#include "wx/activityindicator.h"
 #include <pwd.h>
 
 using namespace std;
@@ -113,7 +111,7 @@ namespace Rtt
 
 	bool LinuxPlatform::OpenURL(const char *url) const
 	{
-		return wxLaunchDefaultBrowser(url);
+		return ::OpenURL(url);
 	}
 
 	PlatformVideoPlayer *LinuxPlatform::GetVideoPlayer(const Rtt::ResourceHandle<lua_State> &handle) const
@@ -624,10 +622,7 @@ namespace Rtt
 
 	void LinuxPlatform::SetActivityIndicator(bool visible) const
 	{
-		if (visible)
-		{
-			ImGui::Text("%c", "|/-\\"[(int)(ImGui::GetTime() / 0.05f) & 3]);
-		}
+		app->SetActivityIndicator(visible);
 	}
 
 	PlatformWebPopup *LinuxPlatform::GetWebPopup() const

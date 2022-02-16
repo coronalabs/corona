@@ -21,6 +21,8 @@
 
 namespace Rtt
 {
+	void DrawActivity();
+
 	struct Dlg : public ref_counted
 	{
 		virtual void Draw() = 0;
