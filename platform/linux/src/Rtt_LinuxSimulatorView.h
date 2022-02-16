@@ -16,7 +16,6 @@
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxContext.h"
 #include "Rtt_LinuxContainer.h"
-#include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_MPlatform.h"
 

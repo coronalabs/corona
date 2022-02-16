@@ -4,8 +4,6 @@
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
-#include "Rtt_LinuxPreferencesDialog.h"
-#include "Rtt_WebBuildDialog.h"
 #include "Rtt_LinuxClearSandboxDialog.h"
 #include "Rtt_ConsoleApp.h"
 #include "Rtt_LinuxSimulator.h"

@@ -329,13 +329,6 @@ add_dependencies(luac lua)
 
 # build Solar2D binaries
 
-add_executable( Solar2DConsole
-		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxIPCServer.cpp
-		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxIPCServerConnection.cpp
-		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsole.cpp
-		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
-)
-
 # imgui
 SET( IMGUI_SOURCES
 		${CORONA_ROOT}/platform/linux/src/imgui/imgui.cpp
@@ -344,6 +337,11 @@ SET( IMGUI_SOURCES
 		${CORONA_ROOT}/platform/linux/src/imgui/imgui_widgets.cpp
 		${CORONA_ROOT}/platform/linux/src/imgui/imgui_impl_opengl3.cpp
 		${CORONA_ROOT}/platform/linux/src/imgui/imgui_impl_sdl.cpp
+)
+
+add_executable( Solar2DConsole
+	${IMGUI_SOURCES}
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
 )
 
 SET( SOLAR2D_SOURCES
@@ -917,7 +915,6 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMenuEvents.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxPreferencesDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorServices.cpp
@@ -961,7 +958,6 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMenuEvents.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxPreferencesDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorServices.cpp
@@ -1067,8 +1063,6 @@ target_compile_definitions( Solar2DBuilder PUBLIC
 
 target_compile_definitions( Solar2DConsole PUBLIC
 	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
-	wxUSE_MEDIACTRL=1 wxUSE_WEBVIEW=1 __WXGTK__ HAVE_SSIZE_T wxUSE_XTEST wxHAS_INOTIFY wxUSE_SELECT_DISPATCHER WXWIN_COMPATIBILITY_3_0
-	wxUSE_PRIVATE_FONTS wxUSE_ACTIVITYINDICATOR wxUSE_ADDREMOVECTRL wxUSE_UNSAFE_WXSTRING_CONV wxUSE_STD_CONTAINERS_COMPATIBLY wxUSE_GLCANVAS
 )
 
 target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2
@@ -1084,8 +1078,7 @@ target_link_options(Solar2DSimulator BEFORE PUBLIC -export-dynamic)
 target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png jpeg crypto++ curl SDL2
 	gdk-3 wx_baseu-3.1 wx_baseu_net-3.1 wx_gtk3u_adv-3.1 wx_gtk3u_gl-3.1 wx_gtk3u_media-3.1 wx_gtk3u_core-3.1 wx_gtk3u_html-3.1 wx_gtk3u_stc-3.1 wx_gtk3u_webview-3.1)
 
-target_link_libraries(Solar2DConsole dl GL z pthread png 
-	gdk-3 wx_baseu-3.1 wx_baseu_net-3.1 wx_gtk3u_adv-3.1 wx_gtk3u_gl-3.1 wx_gtk3u_media-3.1 wx_gtk3u_core-3.1 wx_gtk3u_html-3.1 wx_gtk3u_stc-3.1 wx_gtk3u_webview-3.1)
+target_link_libraries(Solar2DConsole dl SDL2 GL pthread)
 
 # build template
 add_custom_target(create_template ALL 

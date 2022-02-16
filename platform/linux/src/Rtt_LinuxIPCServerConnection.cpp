@@ -1,3 +1,4 @@
+#if 0
 #include "Rtt_LinuxIPCServerConnection.h"
 
 bool Rtt_LinuxIPCServerConnection::OnPoke(const wxString &topic, const wxString &item, const void *data, size_t size, wxIPCFormat format)
@@ -30,3 +31,4 @@ bool Rtt_LinuxIPCServerConnection::OnPoke(const wxString &topic, const wxString 
 	wxGetApp().UpdateLog(msg.c_str(), logType);
 	return wxConnection::OnPoke(topic, item, data, size, format);
 }
+#endif

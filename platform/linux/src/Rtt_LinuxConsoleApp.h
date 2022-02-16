@@ -1,20 +1,39 @@
 #ifndef LINUX_CONSOLE_APP_H
 #define LINUX_CONSOLE_APP_H
 
-#include <wx/app.h>
-#include "Rtt_LinuxConsole.h"
+#include "Rtt_LinuxContainer.h"
+#include "Rtt_LinuxUtils.h"
 
-class Rtt_LinuxConsoleApp: public wxApp
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_sdl.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imfilebrowser.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+
+struct LinuxConsoleApp: public ref_counted
 {
-public:
 	enum MessageType {Normal, Warning, Error};
-	Rtt_LinuxConsole *Solar2DConsole;
-	bool OnInit();
-	void ClearLog();
-	void UpdateLog(wxString message);
-	void UpdateLog(wxString message, int messageType);
+
+	LinuxConsoleApp();
+	virtual ~LinuxConsoleApp();
+
+	bool Init();
+	void Run();
+
+private:
+
+	void Draw();
+	void logi(const char* fmt, ...);
+	void loge(const char* fmt, ...);
+	void logw(const char* fmt, ...);
+
+	SDL_Window* fWindow;
+	SDL_GLContext fGLcontext;
+
+	// GUI
+	ImGuiContext* imctx;
 };
 
-DECLARE_APP(Rtt_LinuxConsoleApp);
 
 #endif //LINUXCONSOLEAPP_H
