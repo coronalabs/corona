@@ -59,6 +59,10 @@ namespace Rtt
 		, fHeight(0)
 		, imctx(NULL)
 	{
+	}
+
+	bool SolarApp::Init()
+	{
 		curl_global_init(CURL_GLOBAL_ALL);
 
 		const char* homeDir = GetHomePath();
@@ -84,25 +88,7 @@ namespace Rtt
 		{
 			Rtt_MakeDirectory(pluginPath.c_str());
 		}
-	}
 
-	SolarApp::~SolarApp()
-	{
-		fContext = NULL;
-		curl_global_cleanup();
-
-		// Cleanup
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplSDL2_Shutdown();
-		ImGui::DestroyContext();
-
-		SDL_GL_DeleteContext(fGLcontext);
-		SDL_DestroyWindow(fWindow);
-		SDL_Quit();
-	}
-
-	bool SolarApp::Initialize()
-	{
 		SDL_version ver;
 		SDL_GetVersion(&ver);
 		Rtt_Log("SDL version %d.%d.%d\n", ver.major, ver.minor, ver.patch);
@@ -137,6 +123,7 @@ namespace Rtt
 		SDL_GL_SetSwapInterval(1); // Enable vsync
 
 		// Setup Dear ImGui context
+
 		IMGUI_CHECKVERSION();
 		imctx = ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -150,9 +137,28 @@ namespace Rtt
 		const char* glsl_version = "#version 130";
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
+		return LoadApp();
+	}
+
+	SolarApp::~SolarApp()
+	{
+		fContext = NULL;
+		curl_global_cleanup();
+
+		// Cleanup
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplSDL2_Shutdown();
+		ImGui::DestroyContext();
+
+		SDL_GL_DeleteContext(fGLcontext);
+		SDL_DestroyWindow(fWindow);
+		SDL_Quit();
+	}
+
+	bool SolarApp::LoadApp()
+	{
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
 		fMenu = new DlgMenu(fContext->GetAppName());
-
 		return fContext->LoadApp();
 	}
 
@@ -460,15 +466,7 @@ namespace Rtt
 			if (!PollEvents())
 				break;
 
-			if (IsSuspended())
-			{
-				RenderGUI();
-				SDL_GL_SwapWindow(fWindow);
-			}
-			else
-			{
-				fContext->advance();
-			}
+			fContext->advance();
 
 			int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
 			//			Rtt_Log("advance_time %d\n", advance_time);
@@ -488,6 +486,22 @@ namespace Rtt
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
+
+		if (IsSuspended())
+		{
+			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			// Always center this window when appearing
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+			if (ImGui::Begin("##Suspended", NULL, ImGuiWindowFlags_NoDecoration| ImGuiWindowFlags_NoInputs))
+			{
+				ImGui::Text("Suspended");
+				ImGui::End();
+			}
+		}
 
 		// disable main menu if there is a popup window 
 		ImGui::BeginDisabled(fDlg != NULL);

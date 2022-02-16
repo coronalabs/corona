@@ -56,7 +56,6 @@ enum sdl
 	OnBuildLinux,
 	OnBuildAndroid,
 	OnBuildHTML5,
-	onSuspendOrResume,
 	OnRotateLeft,
 	OnRotateRight,
 	OnShake,
@@ -74,7 +73,8 @@ namespace Rtt
 		SolarApp(const std::string& resourceDir);
 		virtual ~SolarApp();
 
-		virtual bool Initialize();
+		bool Init();
+		virtual bool LoadApp();
 		void Run();
 		bool PollEvents();
 
@@ -95,9 +95,10 @@ namespace Rtt
 		const char* GetAppName() const { return fContext->GetAppName(); }
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 		void SetTitle(const std::string& name);
-		std::mutex& EngineMutex() {	return fEngineMutex; }
 
 		void RenderGUI();
+		inline void Pause() { fContext->Pause(); }
+		inline void Resume() { fContext->Resume(); }
 
 	protected:
 
@@ -111,7 +112,6 @@ namespace Rtt
 		std::string fProjectPath;
 		int fWidth;
 		int fHeight;
-		std::mutex fEngineMutex;
 
 		// GUI
 		ImGuiContext* imctx;

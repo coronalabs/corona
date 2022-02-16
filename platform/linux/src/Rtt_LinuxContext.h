@@ -36,7 +36,7 @@ namespace Rtt
 
 	struct SolarAppContext : public ref_counted
 	{
-		SolarAppContext(SDL_Window* window, const char* path);
+		SolarAppContext(SDL_Window* window, const std::string& path);
 		~SolarAppContext();
 
 		bool IsInitialized() const { return NULL != fRuntime; }

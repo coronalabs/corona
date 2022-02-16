@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	if (app->Initialize())
+	if (app->Init())
 	{
 		app->Run();
 	}

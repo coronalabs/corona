@@ -35,7 +35,7 @@ namespace Rtt
 		void OnBuildForWeb(wxCommandEvent& event);
 
 		void WatchFolder(const char* path, const char* appName);
-		virtual bool Initialize() override;
+		virtual bool LoadApp() override;
 		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }

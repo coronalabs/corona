@@ -1,4 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
 // For overview and more information on licensing please refer to README.md
@@ -199,19 +200,19 @@ namespace Rtt
 			// hot keys
 			if (ctrl)
 			{
-				if (ImGui::IsKeyPressed(ImGuiKey_N))
+				if (ImGui::IsKeyPressed(ImGuiKey_N, false))
 				{
 					PushEvent(sdl::OnNewProject);
 				}
-				else if (ImGui::IsKeyPressed(ImGuiKey_O))
+				else if (ImGui::IsKeyPressed(ImGuiKey_O, false))
 				{
 					PushEvent(sdl::OnOpenProject);
 				}
-				else if (ImGui::IsKeyPressed(ImGuiKey_R))
+				else if (ImGui::IsKeyPressed(ImGuiKey_R, false))
 				{
 					PushEvent(sdl::OnRelaunchLastProject);
 				}
-				else if (ImGui::IsKeyPressed(ImGuiKey_Q))
+				else if (ImGui::IsKeyPressed(ImGuiKey_Q, false))
 				{
 					PushEvent(SDL_QUIT);
 				}
@@ -277,53 +278,56 @@ namespace Rtt
 			bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) | ImGui::IsKeyDown(ImGuiKey_RightShift);
 			bool alt = ImGui::IsKeyDown(ImGuiKey_LeftAlt) | ImGui::IsKeyDown(ImGuiKey_RightAlt);
 
-			// hot keys
-			if (ctrl && ImGui::IsKeyPressed(ImGuiKey_N))
+			// shortcuts
+			if (ctrl && ImGui::IsKeyPressed(ImGuiKey_N, false))
 			{
 				PushEvent(sdl::OnNewProject);
 			}
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_O))
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_O, false))
 			{
 				PushEvent(sdl::OnOpenProject);
 			}
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_R))
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_R, false))
 			{
 				PushEvent(sdl::OnRelaunch);
 			}
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_W))
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_W, false))
 			{
 				PushEvent(sdl::OnCloseProject);
 			}
-			else if (ctrl && shift && ImGui::IsKeyPressed(ImGuiKey_O))
+			else if (ctrl && shift && ImGui::IsKeyPressed(ImGuiKey_O, false))
 			{
 				PushEvent(sdl::OnOpenInEditor);
 			}
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_Q))
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_Q, false))
 			{
 				PushEvent(SDL_QUIT);
 			}
 			// Suspend
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_DownArrow))
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_DownArrow, false))
 			{
-				PushEvent(sdl::onSuspendOrResume);
+				if (app->IsSuspended())
+					app->Resume();
+				else
+					app->Pause();
 			}
 			// Back
-			else if (alt && ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
+			else if (alt && ImGui::IsKeyPressed(ImGuiKey_LeftArrow, false))
 			{
 				PushEvent(sdl::OnCloseProject);
 			}
 			// Build Android
-			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_B))
+			else if (ctrl && ImGui::IsKeyPressed(ImGuiKey_B, false))
 			{
 				PushEvent(sdl::OnBuildAndroid);
 			}
 			// Build Linux
-			else if (ctrl && shift && alt && ImGui::IsKeyPressed(ImGuiKey_B))
+			else if (ctrl && shift && alt && ImGui::IsKeyPressed(ImGuiKey_B, false))
 			{
 				PushEvent(sdl::OnBuildLinux);
 			}
 			// Build HTML5
-			else if (ctrl && alt && ImGui::IsKeyPressed(ImGuiKey_B))
+			else if (ctrl && alt && ImGui::IsKeyPressed(ImGuiKey_B, false))
 			{
 				PushEvent(sdl::OnBuildHTML5);
 			}
@@ -423,7 +427,10 @@ namespace Rtt
 					ImGui::Separator();
 					if (ImGui::MenuItem(app->IsSuspended() ? "Resume" : "Suspend", "Ctrl+Down"))
 					{
-						PushEvent(sdl::onSuspendOrResume);
+						if (app->IsSuspended())
+							app->Resume();
+						else
+							app->Pause();
 					}
 
 					ImGui::EndMenu();
@@ -902,28 +909,6 @@ namespace Rtt
 			cfg["relaunchOnFileChange"] = val;
 		}
 	}
-
-	//
-	//
-	//
-
-	void DlgSuspended::Draw()
-	{
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-
-		if (ImGui::BeginPopupModal("Suspended", NULL, ImGuiWindowFlags_NoTitleBar))
-		{
-			if (ImGui::Button("Resume"))
-			{
-				PushEvent(sdl::onSuspendOrResume);
-			}
-			ImGui::EndPopup();
-		}
-		ImGui::OpenPopup("Suspended");
-	}
-
 
 }	// Rtt
 

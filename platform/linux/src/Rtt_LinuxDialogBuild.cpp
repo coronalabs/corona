@@ -29,9 +29,10 @@ namespace Rtt
 	//
 
 	DlgAndroidBuild::DlgAndroidBuild()
-		: fileDialogKeyStore(ImGuiFileBrowserFlags_EnterNewFilename| ImGuiFileBrowserFlags_CloseOnEsc)
-		, fileDialogSaveTo(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir| ImGuiFileBrowserFlags_CloseOnEsc)
+		: fileDialogKeyStore(ImGuiFileBrowserFlags_EnterNewFilename | ImGuiFileBrowserFlags_CloseOnEsc)
+		, fileDialogSaveTo(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir | ImGuiFileBrowserFlags_CloseOnEsc)
 		, fBuildResult(NULL)
+		, fBuildSuccessed(0)
 		, fCreateLiveBuild(false)
 		, fAppStoreIndex(1)		// google play
 		, fKeyAliases(NULL)
@@ -63,11 +64,14 @@ namespace Rtt
 
 		fileDialogKeyStore.SetTitle("Browse For Keystore");
 		fileDialogSaveTo.SetTitle("Browse For Folder");
+
+		app->Pause();
 	}
 
 	DlgAndroidBuild::~DlgAndroidBuild()
 	{
 		ClearKeyAliases();
+		app->Resume();
 	}
 
 	void DlgAndroidBuild::ClearKeyAliases()
@@ -262,7 +266,6 @@ namespace Rtt
 			s = "Build";
 			ImGui::Dummy(ImVec2(70, 40));
 			int ok_width = 100;
-			ImGui::SetItemDefaultFocus();
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
@@ -270,6 +273,7 @@ namespace Rtt
 				fThread = new mythread();
 				fThread->start([this]() { Build(); });
 			}
+			ImGui::SetItemDefaultFocus();
 
 			s = "Cancel";
 			ImGui::SameLine();
@@ -296,23 +300,28 @@ namespace Rtt
 				ImGui::Dummy(ImVec2(100, 10));
 				ImGui::Text(fBuildResult);
 
-				string s = "View";
+				string s;
 				ImGui::Dummy(ImVec2(100, 30));
 				int ok_width = 100;
 				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+				if (fBuildSuccessed == 0)
+				{
+					s = "View";
+					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+					{
+						OpenURL(fSaveToFolderInput);
+						PushEvent(sdl::onClosePopupModal);
+					}
+					ImGui::SameLine();
+				}
+
+				s = "Done";
 				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 				{
-					OpenURL(fSaveToFolderInput);
 					PushEvent(sdl::onClosePopupModal);
 				}
 				ImGui::SetItemDefaultFocus();
 
-				s = "Done";
-				ImGui::SameLine();
-				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-				{
-					PushEvent(sdl::onClosePopupModal);
-				}
 				ImGui::EndPopup();
 			}
 			ImGui::OpenPopup(title);
@@ -322,8 +331,7 @@ namespace Rtt
 	// thread function
 	void DlgAndroidBuild::Build()
 	{
-		lock_guard<mutex> lock(app->EngineMutex());
-
+		fBuildSuccessed = false;
 		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
 		Rtt::Runtime* runtimePointer = app->GetRuntime();
@@ -495,8 +503,8 @@ namespace Rtt
 		androidBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
 
 		// build the app (warning! This is blocking call)
-		int buildResult = packager.Build(&androidBuilderParams, tmp.c_str());
-		fBuildResult = buildResult == 0 ? "Android build succeeded" : "Android build failed. Check the log for more details";
+		fBuildSuccessed = packager.Build(&androidBuilderParams, tmp.c_str());
+		fBuildResult = fBuildSuccessed == 0 ? "Android build succeeded" : "Android build failed. Check the log for more details";
 
 		// install after build
 		/*if (buildResult == 0 && installAfterBuild)
@@ -574,6 +582,12 @@ namespace Rtt
 		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
 
 		fileDialog.SetTitle("Browse For Folder");
+		app->Pause();
+	}
+
+	DlgLinuxBuild::~DlgLinuxBuild()
+	{
+		app->Resume();
 	}
 
 	void DlgLinuxBuild::Draw()
@@ -634,7 +648,6 @@ namespace Rtt
 			s = "Build";
 			ImGui::Dummy(ImVec2(70, 40));
 			int ok_width = 100;
-			ImGui::SetItemDefaultFocus();
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
@@ -642,6 +655,7 @@ namespace Rtt
 				fThread = new mythread();
 				fThread->start([this]() { Build(); });
 			}
+			ImGui::SetItemDefaultFocus();
 
 			s = "Cancel";
 			ImGui::SameLine();
@@ -677,7 +691,6 @@ namespace Rtt
 					OpenURL(fSaveToFolderInput);
 					PushEvent(sdl::onClosePopupModal);
 				}
-				ImGui::SetItemDefaultFocus();
 
 				s = "Done";
 				ImGui::SameLine();
@@ -685,6 +698,8 @@ namespace Rtt
 				{
 					PushEvent(sdl::onClosePopupModal);
 				}
+				ImGui::SetItemDefaultFocus();
+
 				ImGui::EndPopup();
 			}
 			ImGui::OpenPopup(title);
@@ -694,8 +709,6 @@ namespace Rtt
 	// running in separate thread!
 	void DlgLinuxBuild::Build()
 	{
-		lock_guard<mutex> lock(app->EngineMutex());
-
 		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
 		LinuxAppPackager packager(*service);

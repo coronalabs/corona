@@ -84,13 +84,16 @@ namespace Rtt
 		// ConsoleApp::Quit();
 	}
 
-	bool SolarSimulator::Initialize()
+	bool SolarSimulator::LoadApp()
 	{
 #ifdef Rtt_SIMULATOR
 		//		SetIcon(simulator_xpm);
 #endif
 
-		if (SolarApp::Initialize())
+		const string& lastProjectDirectory = ConfigStr("lastProjectDirectory");
+		fContext = new SolarAppContext(fWindow, ConfigInt("ShowWelcome") && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
+		fMenu = new DlgMenu(fContext->GetAppName());
+		if (fContext->LoadApp())
 		{
 			GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
 
@@ -108,7 +111,7 @@ namespace Rtt
 			return true;
 		}
 		return false;
-}
+	}
 
 	void SolarSimulator::SolarEvent(SDL_Event& e)
 	{
@@ -261,20 +264,6 @@ namespace Rtt
 			fDlg = new DlgHTML5Build();
 			break;
 
-		case sdl::onSuspendOrResume:
-		{
-			if (IsSuspended())
-			{
-				fDlg = NULL;
-				fContext->Resume();
-			}
-			else
-			{
-				fDlg = new DlgSuspended();
-				fContext->Pause();
-			}
-			break;
-		}
 		default:
 			break;
 		}

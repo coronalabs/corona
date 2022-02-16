@@ -104,9 +104,4 @@ namespace Rtt
 		bool fSaveMyPreference;
 	};
 
-
-	struct DlgSuspended : public Dlg
-	{
-		void Draw() override;
-	};
 }

@@ -64,7 +64,7 @@ extern wxFrame* solarApp;
 namespace Rtt
 {
 
-	SolarAppContext::SolarAppContext(SDL_Window* window, const char* path)
+	SolarAppContext::SolarAppContext(SDL_Window* window, const std::string& appPath)
 		: fRuntime(NULL)
 		, fRuntimeDelegate(new LinuxRuntimeDelegate())
 		, fMouseListener(NULL)
@@ -79,32 +79,23 @@ namespace Rtt
 	{
 		string exeFileName;
 		const char* homeDir = GetHomePath();
-		const char* appPath = GetStartupPath(&exeFileName);
-
-		// override appPath if arg isn't null
-		if (path && *path != 0)
-		{
-			appPath = path;
-		}
 
 		// set app name
-		if (strcmp(appPath, "/usr/bin") == 0) // deb ?
+		if (appPath == "/usr/bin") // deb ?
 		{
 			// for .deb app the appName is exe file name
 			fAppName = exeFileName;
 		}
 		else
 		{
-			const char* slash = strrchr(appPath, '/');
-
+			const char* slash = strrchr(appPath.c_str(), '/');
 			if (slash)
 			{
 				fAppName = slash + 1;
 			}
 			else
 			{
-				slash = strrchr(appPath, '\\');
-
+				slash = strrchr(appPath.c_str(), '\\');
 				if (slash)
 				{
 					fAppName = slash + 1;
@@ -473,17 +464,17 @@ namespace Rtt
 	void SolarAppContext::advance()
 	{
 		if (fRuntime->IsSuspended())
-			return;
-
-		if (app->EngineMutex().try_lock())
 		{
-			LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)GetPlatform()->GetDevice().GetInputDeviceManager();
-			deviceManager.dispatchEvents(fRuntime);
-
-			// advance engine
-			(*fRuntime)();
-			app->EngineMutex().unlock();
+			// render only GUI
+			Flush();
+			return;
 		}
+
+		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)GetPlatform()->GetDevice().GetInputDeviceManager();
+		deviceManager.dispatchEvents(fRuntime);
+
+		// advance engine
+		(*fRuntime)();
 	}
 
 	void SolarAppContext::Flush()

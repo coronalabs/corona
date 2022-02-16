@@ -32,6 +32,7 @@ namespace Rtt
 		ImGui::FileBrowser fileDialogKeyStore;
 		ImGui::FileBrowser fileDialogSaveTo;
 		const char* fBuildResult;
+		int fBuildSuccessed;
 		char fApplicationNameInput[32];
 		char fVersionCodeInput[32];
 		char fVersionNameInput[32];
@@ -52,6 +53,8 @@ namespace Rtt
 	struct DlgLinuxBuild : public Dlg
 	{
 		DlgLinuxBuild();
+		virtual ~DlgLinuxBuild();
+
 		void Draw() override;
 
 	private:
