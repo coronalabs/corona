@@ -150,7 +150,7 @@ val coronaVersionCode: Int =
 val androidDestPluginPlatform = if (coronaTargetStore.equals("amazon", ignoreCase = true)) {
     "android-kindle"
 } else if (coronaTargetStore.equals("samsung", ignoreCase = true)) {
-    "android-samsung"
+    "android-nongoogle"
 } else {
     "android"
 }
