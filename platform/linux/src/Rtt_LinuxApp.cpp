@@ -89,10 +89,6 @@ namespace Rtt
 			Rtt_MakeDirectory(pluginPath.c_str());
 		}
 
-		SDL_version ver;
-		SDL_GetVersion(&ver);
-		Rtt_Log("SDL version %d.%d.%d\n", ver.major, ver.minor, ver.patch);
-
 		// Initialize SDL (Note: video is required to start event loop) 
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{

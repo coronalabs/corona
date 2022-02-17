@@ -19,11 +19,10 @@ namespace Rtt
 		ConsoleClient();
 		virtual ~ConsoleClient();
 
+		bool Connect(int attempts);
 		int Log(const char* buf, int len);
 
 	private:
-
-		int fPID;
 		int fSocket;
 	};
 

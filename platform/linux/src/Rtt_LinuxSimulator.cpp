@@ -46,78 +46,71 @@ namespace Rtt
 	//
 
 	ConsoleClient::ConsoleClient()
-		: fPID(-1)
-		, fSocket(-1)
+		: fSocket(-1)
 	{
+		fSocket = socket(AF_UNIX, SOCK_STREAM, 0);
+		if (Connect(1) == false)
+		{
+			// start console
+			string cmd(GetStartupPath(NULL));
+			cmd.append("/Solar2DConsole");
+			int pid = fork();
+			if (pid == 0)
+			{
+				// it's child !!! The exec() functions only return if an error has occurred.
+				int rc = execl(cmd.c_str(), NULL);
+
+				// close child process
+				exit(rc);
+			}
+
+			// try to connect again, 3 seconds
+			if (!Connect(12))
+			{
+				close(fSocket);
+				fSocket = -1;
+			}
+		}
 	}
 
 	ConsoleClient::~ConsoleClient()
 	{
-		if (fPID > 0)
+		if (fSocket >= 0)
+			close(fSocket);
+	}
+
+	bool ConsoleClient::Connect(int attempts)
+	{
+		struct sockaddr_un  serv_addr = {};
+		serv_addr.sun_family = AF_UNIX;
+		strncpy(serv_addr.sun_path, SOLAR2D_UNIX_SOCKET, sizeof(serv_addr.sun_path));
+		int servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
+
+		for (int i = 0; i < attempts; i++)
 		{
-			kill(fPID, 0);
-			waitpid(fPID, NULL, 0);			// this is used to avoid defunct
-			fPID = 0;
+			if (connect(fSocket, (struct sockaddr*)&serv_addr, servlen) == 0)
+			{
+				// non blocking mode
+				int mode = fcntl(fSocket, F_GETFL, 0);
+				mode |= O_NONBLOCK;
+				fcntl(fSocket, F_SETFL, mode);
+				return true;
+			}
+			this_thread::sleep_for(chrono::milliseconds(250));
 		}
+		return false;
 	}
 
 	int ConsoleClient::Log(const char* data, int bytes_to_write)
 	{
-		if (fSocket < 0)
-		{
-			struct sockaddr_un  serv_addr = {};
-			serv_addr.sun_family = AF_UNIX;
-			strcpy(serv_addr.sun_path, SOLAR2D_UNIX_SOCKET);
-
-			fSocket = socket(AF_UNIX, SOCK_STREAM, 0);
-			if (fSocket < 0)
-			{
-				return 0;
-			}
-
-			// 3 attempts
-			for (int i = 0; i < 3; i++)
-			{
-				int servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
-				if (connect(fSocket, (struct sockaddr*)&serv_addr, servlen) == 0)
-				{
-					break;
-				}
-
-				if (fPID < 0)
-				{
-					std::string cmd(GetStartupPath(NULL));
-					cmd.append("/Solar2DConsole");
-
-					fPID = fork();
-					if (fPID == 0)
-					{
-						// it's child !!! The exec() functions only return if an error has occurred.
-						int rc = execl(cmd.c_str(), NULL);
-
-						// close process
-						exit(rc);
-					}
-				}
-
-				// try to connect again
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
-				continue;
-			}
-
-			// SetNonBlocking(fSocket);
-			int mode = fcntl(fSocket, F_GETFL, 0);
-			mode |= O_NONBLOCK;
-			fcntl(fSocket, F_SETFL, mode);
-		}
-		return (int)send(fSocket, data, bytes_to_write, MSG_NOSIGNAL);
+		return fSocket >= 0 ? (int)send(fSocket, data, bytes_to_write, MSG_NOSIGNAL) : -1;
 	}
 
 	//
 	// SolarSimulator
 	//
 
-	SolarSimulator::SolarSimulator(const std::string& resourceDir)
+	SolarSimulator::SolarSimulator(const string& resourceDir)
 		: SolarApp(resourceDir)
 		, fRelaunchedViaFileEvent(false)
 		, fFileSystemEventTimestamp(0)
@@ -194,7 +187,7 @@ namespace Rtt
 			return true;
 		}
 		return false;
-	}
+		}
 
 	void SolarSimulator::SolarEvent(SDL_Event& e)
 	{
@@ -721,7 +714,7 @@ namespace Rtt
 		}*/
 	}
 
-	void SolarSimulator::OnOpen(const std::string& ppath)
+	void SolarSimulator::OnOpen(const string& ppath)
 	{
 		// sanity check
 		if (ppath.size() < 10)
@@ -844,7 +837,7 @@ namespace Rtt
 		fclose(f);
 	}
 
-	std::string& SolarSimulator::ConfigStr(const string& key)
+	string& SolarSimulator::ConfigStr(const string& key)
 	{
 		static string s_empty;
 		const auto& it = fConfig.find(key);
@@ -857,7 +850,7 @@ namespace Rtt
 		return it != fConfig.end() ? atoi(it->second.c_str()) : 0;
 	}
 
-	void SolarSimulator::ConfigSet(const char* key, std::string& val)
+	void SolarSimulator::ConfigSet(const char* key, string& val)
 	{
 		fConfig[key] = val;
 	}
@@ -867,4 +860,4 @@ namespace Rtt
 		fConfig[key] = ::to_string(val);
 	}
 
-}
+	}

@@ -1,3 +1,7 @@
+//
+// Solar2D Simulator Console
+//
+
 #ifndef LINUX_CONSOLE_APP_H
 #define LINUX_CONSOLE_APP_H
 
@@ -26,25 +30,23 @@ struct LinuxConsoleApp: public ref_counted
 
 private:
 
+	int Advance();
 	bool ListenSocket();
 	void CloseServerSocket();
-	int ReadSocket();
-
-	void Draw();
-	void logi(const char* fmt, ...);
-	void loge(const char* fmt, ...);
-	void logw(const char* fmt, ...);
+	int ReadLog();
+	void CloseClient();
 
 	SDL_Window* fWindow;
 	SDL_GLContext fGLcontext;
 
 	// GUI
-	ImGuiContext* imctx;
-	membuf fLogData;
+	ImGuiContext* ImCtx;
+	std::string fLogData;
 
 	// unix server socket 
 	int fSocketServer;
 	int fSocketClient;
+	pid_t fParentPID;
 
 };
 

@@ -1,5 +1,5 @@
 //
-//
+// Solar2D Simulator Console
 //
 
 #include "Rtt_LinuxConsoleApp.h"
@@ -27,13 +27,11 @@ int main(int argc, char** argv)
 
 LinuxConsoleApp::LinuxConsoleApp()
 	: fWindow(NULL)
-	, imctx(NULL)
+	, ImCtx(NULL)
 	, fSocketServer(-1)
 	, fSocketClient(-1)
 {
-	fLogData.append("*** Solar2D Simulator Console ***\nListening unix socket ");
-	fLogData.append(SOLAR2D_UNIX_SOCKET);
-	fLogData.append("\n");
+	fParentPID = getppid();
 }
 
 LinuxConsoleApp::~LinuxConsoleApp()
@@ -52,14 +50,10 @@ LinuxConsoleApp::~LinuxConsoleApp()
 
 bool LinuxConsoleApp::Init()
 {
-	SDL_version ver;
-	SDL_GetVersion(&ver);
-	logi("SDL version %d.%d.%d\n", ver.major, ver.minor, ver.patch);
-
 	// Initialize SDL (Note: video is required to start event loop) 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		loge("Couldn't initialize SDL: %s\n", SDL_GetError());
+		printf("Couldn't initialize SDL: %s\n", SDL_GetError());
 		return false;
 	}
 
@@ -76,19 +70,15 @@ bool LinuxConsoleApp::Init()
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-	uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI; // | SDL_WINDOW_BORDERLESS;
-	windowStyle |= SDL_WINDOW_RESIZABLE;
+	uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
 	fWindow = SDL_CreateWindow("Solar2D Simulator Console", 0, 0, 640, 480, windowStyle);
-	assert(fWindow);
 	fGLcontext = SDL_GL_CreateContext(fWindow);
-	assert(fGLcontext);
 	SDL_GL_MakeCurrent(fWindow, fGLcontext);
 	SDL_GL_SetSwapInterval(1); // Enable vsync
 
 	// Setup Dear ImGui context
-
 	IMGUI_CHECKVERSION();
-	imctx = ImGui::CreateContext();
+	ImCtx = ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 
@@ -100,30 +90,37 @@ bool LinuxConsoleApp::Init()
 	const char* glsl_version = "#version 130";
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
+	// start unix socket server
 	return ListenSocket();
 }
 
-void LinuxConsoleApp::Draw()
+int LinuxConsoleApp::Advance()
 {
-	// connect client
-	if (fSocketServer >= 0 && fSocketClient < 0)
+	if (fParentPID != getppid())
 	{
-		uint32_t ln;
-		sockaddr_in client_sockaddr = {};
-		ln = sizeof(sockaddr_in);
-		fSocketClient = (int) ::accept(fSocketServer, (sockaddr*)&client_sockaddr, &ln);
-		if (fSocketClient >= 0)
-		{
-			SetNonBlocking(fSocketClient);
-		}
+		// parent was killed, needs to close console
+		return -1;
+	}
+
+	// accept client
+	uint32_t ln;
+	sockaddr_in client_sockaddr = {};
+	ln = sizeof(sockaddr_in);
+	int client = (int) ::accept(fSocketServer, (sockaddr*)&client_sockaddr, &ln);
+	if (client >= 0)
+	{
+		CloseClient();
+		fSocketClient = client;
+		SetNonBlocking(fSocketClient);
 	}
 
 	// there is a connection, read data
-	if (fSocketClient >= 0)
+	if (ReadLog() < 0)
 	{
-		ReadSocket();
+		// Simulator closed
+		CloseClient();
+		return -1;
 	}
-
 
 	// set size
 	const ImVec2& windowSize = ImGui::GetMainViewport()->WorkSize;
@@ -133,21 +130,24 @@ void LinuxConsoleApp::Draw()
 	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
-	if (ImGui::Begin("##LogWindow", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs) && fLogData.size() > 0)
+	if (ImGui::Begin("##LogWindow", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
 	{
 		ImVec2 tbSize = windowSize;
-		tbSize.x -= 20;
-		tbSize.y -= 20;
-		ImGui::InputTextMultiline("##LogData", (char*)fLogData.data(), fLogData.size(), tbSize, ImGuiInputTextFlags_ReadOnly);
-
+		tbSize.x -= 15;	// hack
+		tbSize.y -= 15;
+		int len = fLogData.size();
+		if (len > 0)
+		{
+			ImGui::InputTextMultiline("##LogData", (char*)fLogData.c_str(), len, tbSize, ImGuiInputTextFlags_ReadOnly);
+		}
 		ImGui::End();
 	}
+	return 0;
 }
-
 
 void LinuxConsoleApp::Run()
 {
-	while (1)
+	while (true)
 	{
 		SDL_Event evt;
 		while (SDL_PollEvent(&evt))
@@ -163,7 +163,11 @@ void LinuxConsoleApp::Run()
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		app->Draw();
+		if (app->Advance() < 0)
+		{
+			// Sumulator was closed
+			break;
+		}
 
 		ImGui::EndFrame();
 
@@ -172,42 +176,8 @@ void LinuxConsoleApp::Run()
 		SDL_GL_SwapWindow(fWindow);
 
 		// Don't hog the CPU.
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
-}
-
-void LinuxConsoleApp::logi(const char* fmt, ...)
-{
-	va_list arg;
-	va_start(arg, fmt);
-
-	const int bufsize = 1024 * 16;
-	char* buf = (char*)malloc(bufsize);
-	int len = vsnprintf(buf, bufsize - 1, fmt, arg);
-	if (len > 0)
-	{
-		buf[len] = 0;
-		printf("%s\n", buf);
-	}
-	free(buf);
-	va_end(arg);
-}
-
-void LinuxConsoleApp::loge(const char* fmt, ...)
-{
-	va_list arg;
-	va_start(arg, fmt);
-
-	const int bufsize = 1024 * 16;
-	char* buf = (char*)malloc(bufsize);
-	int len = vsnprintf(buf, bufsize - 1, fmt, arg);
-	if (len > 0)
-	{
-		buf[len] = 0;
-		printf("%s\n", buf);
-	}
-	free(buf);
-	va_end(arg);
 }
 
 // set_nonblock
@@ -222,11 +192,6 @@ bool LinuxConsoleApp::ListenSocket()
 {
 	unlink(SOLAR2D_UNIX_SOCKET);
 	fSocketServer = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (fSocketServer < 0)
-	{
-		loge("Failed to create sock channel, err=%d\n", errno);
-		return false;
-	}
 
 	// set_nonblock
 	SetNonBlocking(fSocketServer);
@@ -238,7 +203,7 @@ bool LinuxConsoleApp::ListenSocket()
 
 	if (::bind(fSocketServer, (struct sockaddr*)&addr, sizeof(addr)) == -1)
 	{
-		loge("Failed to bind usock channel, err=%d\n", errno);
+		printf("bind() failed, %s\n", strerror(errno));
 		CloseServerSocket();
 		return false;
 	}
@@ -246,7 +211,7 @@ bool LinuxConsoleApp::ListenSocket()
 	int channels = 1;
 	if (::listen(fSocketServer, channels) == -1)
 	{
-		loge("Failed to listen sock channel\n");
+		printf("listen() failed, %s\n", strerror(errno));
 		CloseServerSocket();
 		return false;
 	}
@@ -255,11 +220,7 @@ bool LinuxConsoleApp::ListenSocket()
 
 void LinuxConsoleApp::CloseServerSocket()
 {
-	if (fSocketClient >= 0)
-	{
-		close(fSocketClient);
-		fSocketClient = -1;
-	}
+	CloseClient();
 	if (fSocketServer >= 0)
 	{
 		close(fSocketServer);
@@ -268,17 +229,23 @@ void LinuxConsoleApp::CloseServerSocket()
 	}
 }
 
-int LinuxConsoleApp::ReadSocket()
+int LinuxConsoleApp::ReadLog()
 {
+	if (fSocketClient < 0)
+	{
+		// wait
+		return 0;
+	}
+
 	char buf[4096];
-	int bytes_read = ::recv(fSocketClient, buf, sizeof(buf), 0);
+	int bytes_read = (int)recv(fSocketClient, buf, sizeof(buf), 0);
 	if (bytes_read > 0)
 	{
 		// truncate
-		const int maxsize = 10 * 1024 * 1024;	// 10Mb
+		const int maxsize = 20000;
 		if (fLogData.size() > maxsize)
 		{
-			fLogData.remove(fLogData.size() - maxsize);
+			fLogData.erase(0, (fLogData.size() - maxsize) * 0.9);	// 10%
 		}
 		fLogData.append(buf, bytes_read);
 		return bytes_read;
@@ -286,20 +253,28 @@ int LinuxConsoleApp::ReadSocket()
 	else if (bytes_read == 0)
 	{
 		// Socket must close
-		loge("Connection was closed by remote side");
-
-		close(fSocketClient);
-		fSocketClient = -1;
+		printf("Connection was closed by remote side");
+		CloseClient();
 		return -1;
 	}
 
 	int err = errno;
 	if (err == EAGAIN || err == EINPROGRESS)
+	{
 		return 0;    // wait
+	}
 
-	loge("%s\n", strerror(err));
-
-	close(fSocketClient);
-	fSocketClient = -1;
+	printf("%s\n", strerror(err));
+	CloseClient();
 	return -1;
+}
+
+void LinuxConsoleApp::CloseClient()
+{
+	fLogData.clear();
+	if (fSocketClient >= 0)
+	{
+		close(fSocketClient);
+		fSocketClient = -1;
+	}
 }
