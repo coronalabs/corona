@@ -342,6 +342,7 @@ SET( IMGUI_SOURCES
 add_executable( Solar2DConsole
 	${IMGUI_SOURCES}
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContainer.cpp
 )
 
 SET( SOLAR2D_SOURCES
@@ -907,11 +908,8 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_ConsoleApp.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxClearSandboxDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCloneProjectDialog.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxIPCClient.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxIPCClientConnection.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMenuEvents.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
@@ -950,11 +948,8 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_ConsoleApp.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxClearSandboxDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCloneProjectDialog.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxIPCClient.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxIPCClientConnection.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMenuEvents.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp

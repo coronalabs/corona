@@ -11,6 +11,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
+#define SOLAR2D_UNIX_SOCKET "/tmp/solar2d.sock"
+
 struct LinuxConsoleApp: public ref_counted
 {
 	enum MessageType {Normal, Warning, Error};
@@ -20,8 +22,13 @@ struct LinuxConsoleApp: public ref_counted
 
 	bool Init();
 	void Run();
+	static void SetNonBlocking(int sd);
 
 private:
+
+	bool ListenSocket();
+	void CloseServerSocket();
+	int ReadSocket();
 
 	void Draw();
 	void logi(const char* fmt, ...);
@@ -33,6 +40,12 @@ private:
 
 	// GUI
 	ImGuiContext* imctx;
+	membuf fLogData;
+
+	// unix server socket 
+	int fSocketServer;
+	int fSocketClient;
+
 };
 
 

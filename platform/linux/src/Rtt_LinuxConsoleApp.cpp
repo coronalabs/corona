@@ -3,8 +3,17 @@
 //
 
 #include "Rtt_LinuxConsoleApp.h"
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/un.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <netinet/ip.h> 
 
 smart_ptr<LinuxConsoleApp> app;
+
 int main(int argc, char** argv)
 {
 	app = new LinuxConsoleApp();
@@ -19,12 +28,18 @@ int main(int argc, char** argv)
 LinuxConsoleApp::LinuxConsoleApp()
 	: fWindow(NULL)
 	, imctx(NULL)
+	, fSocketServer(-1)
+	, fSocketClient(-1)
 {
-
+	fLogData.append("*** Solar2D Simulator Console ***\nListening unix socket ");
+	fLogData.append(SOLAR2D_UNIX_SOCKET);
+	fLogData.append("\n");
 }
 
 LinuxConsoleApp::~LinuxConsoleApp()
 {
+	CloseServerSocket();
+
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -84,13 +99,47 @@ bool LinuxConsoleApp::Init()
 	ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
 	const char* glsl_version = "#version 130";
 	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	return ListenSocket();
 }
 
 void LinuxConsoleApp::Draw()
 {
-	if (ImGui::Begin("##DrawActivity", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
+	// connect client
+	if (fSocketServer >= 0 && fSocketClient < 0)
 	{
-		ImGui::Text("%c", "|/-\\"[(int)(ImGui::GetTime() / 0.05f) & 3]);
+		uint32_t ln;
+		sockaddr_in client_sockaddr = {};
+		ln = sizeof(sockaddr_in);
+		fSocketClient = (int) ::accept(fSocketServer, (sockaddr*)&client_sockaddr, &ln);
+		if (fSocketClient >= 0)
+		{
+			SetNonBlocking(fSocketClient);
+		}
+	}
+
+	// there is a connection, read data
+	if (fSocketClient >= 0)
+	{
+		ReadSocket();
+	}
+
+
+	// set size
+	const ImVec2& windowSize = ImGui::GetMainViewport()->WorkSize;
+	ImGui::SetNextWindowSize(windowSize);
+
+	// move to center
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+	if (ImGui::Begin("##LogWindow", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs) && fLogData.size() > 0)
+	{
+		ImVec2 tbSize = windowSize;
+		tbSize.x -= 20;
+		tbSize.y -= 20;
+		ImGui::InputTextMultiline("##LogData", (char*)fLogData.data(), fLogData.size(), tbSize, ImGuiInputTextFlags_ReadOnly);
+
 		ImGui::End();
 	}
 }
@@ -159,4 +208,98 @@ void LinuxConsoleApp::loge(const char* fmt, ...)
 	}
 	free(buf);
 	va_end(arg);
+}
+
+// set_nonblock
+void LinuxConsoleApp::SetNonBlocking(int sd)
+{
+	int mode = fcntl(sd, F_GETFL, 0);
+	mode |= O_NONBLOCK;
+	fcntl(sd, F_SETFL, mode);
+}
+
+bool LinuxConsoleApp::ListenSocket()
+{
+	unlink(SOLAR2D_UNIX_SOCKET);
+	fSocketServer = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (fSocketServer < 0)
+	{
+		loge("Failed to create sock channel, err=%d\n", errno);
+		return false;
+	}
+
+	// set_nonblock
+	SetNonBlocking(fSocketServer);
+
+	struct sockaddr_un addr;
+	memset(&addr, 0, sizeof(addr));
+	addr.sun_family = AF_UNIX;
+	strncpy(addr.sun_path, SOLAR2D_UNIX_SOCKET, sizeof(addr.sun_path) - 1);
+
+	if (::bind(fSocketServer, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+	{
+		loge("Failed to bind usock channel, err=%d\n", errno);
+		CloseServerSocket();
+		return false;
+	}
+
+	int channels = 1;
+	if (::listen(fSocketServer, channels) == -1)
+	{
+		loge("Failed to listen sock channel\n");
+		CloseServerSocket();
+		return false;
+	}
+	return true;
+}
+
+void LinuxConsoleApp::CloseServerSocket()
+{
+	if (fSocketClient >= 0)
+	{
+		close(fSocketClient);
+		fSocketClient = -1;
+	}
+	if (fSocketServer >= 0)
+	{
+		close(fSocketServer);
+		unlink(SOLAR2D_UNIX_SOCKET);
+		fSocketServer = -1;
+	}
+}
+
+int LinuxConsoleApp::ReadSocket()
+{
+	char buf[4096];
+	int bytes_read = ::recv(fSocketClient, buf, sizeof(buf), 0);
+	if (bytes_read > 0)
+	{
+		// truncate
+		const int maxsize = 10 * 1024 * 1024;	// 10Mb
+		if (fLogData.size() > maxsize)
+		{
+			fLogData.remove(fLogData.size() - maxsize);
+		}
+		fLogData.append(buf, bytes_read);
+		return bytes_read;
+	}
+	else if (bytes_read == 0)
+	{
+		// Socket must close
+		loge("Connection was closed by remote side");
+
+		close(fSocketClient);
+		fSocketClient = -1;
+		return -1;
+	}
+
+	int err = errno;
+	if (err == EAGAIN || err == EINPROGRESS)
+		return 0;    // wait
+
+	loge("%s\n", strerror(err));
+
+	close(fSocketClient);
+	fSocketClient = -1;
+	return -1;
 }

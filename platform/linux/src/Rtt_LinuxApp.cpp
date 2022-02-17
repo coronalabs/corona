@@ -28,7 +28,6 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_ConsoleApp.h"
 #include "Rtt_HTTPClient.h"
 #include <curl/curl.h>
 #include <utility>		// for pairs

@@ -1,5 +1,4 @@
 #include "Rtt_LinuxUtils.h"
-#include "Rtt_Assert.h"
 #include "Rtt_LinuxCrypto.h"
 #include "string.h"
 #include <limits.h>

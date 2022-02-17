@@ -100,6 +100,7 @@ namespace Rtt
 		inline void Pause() { fContext->Pause(); }
 		inline void Resume() { fContext->Resume(); }
 		void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
+		virtual void Log(const char* buf, int len) {}
 
 	protected:
 

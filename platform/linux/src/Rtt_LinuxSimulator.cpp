@@ -9,13 +9,21 @@
 
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
-#include "Rtt_ConsoleApp.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxDialogBuild.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
-#include "wx/display.h"
+#include "Rtt_LinuxConsoleApp.h"
+#include <sys/wait.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/un.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <netinet/ip.h> 
 
 #if !defined(wxHAS_IMAGES_IN_RESOURCES) && defined(Rtt_SIMULATOR)
 #include "resource/simulator.xpm"
@@ -26,8 +34,89 @@ using namespace std;
 // global
 Rtt::SolarSimulator* solarSimulator = NULL;
 
+int LinuxLog(const char* buf, int len)
+{
+	app->Log(buf, len);
+}
+
 namespace Rtt
 {
+	//
+	// ConsoleClient
+	//
+
+	ConsoleClient::ConsoleClient()
+		: fPID(-1)
+		, fSocket(-1)
+	{
+	}
+
+	ConsoleClient::~ConsoleClient()
+	{
+		if (fPID > 0)
+		{
+			kill(fPID, 0);
+			waitpid(fPID, NULL, 0);			// this is used to avoid defunct
+			fPID = 0;
+		}
+	}
+
+	int ConsoleClient::Log(const char* data, int bytes_to_write)
+	{
+		if (fSocket < 0)
+		{
+			struct sockaddr_un  serv_addr = {};
+			serv_addr.sun_family = AF_UNIX;
+			strcpy(serv_addr.sun_path, SOLAR2D_UNIX_SOCKET);
+
+			fSocket = socket(AF_UNIX, SOCK_STREAM, 0);
+			if (fSocket < 0)
+			{
+				return 0;
+			}
+
+			// 3 attempts
+			for (int i = 0; i < 3; i++)
+			{
+				int servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
+				if (connect(fSocket, (struct sockaddr*)&serv_addr, servlen) == 0)
+				{
+					break;
+				}
+
+				if (fPID < 0)
+				{
+					std::string cmd(GetStartupPath(NULL));
+					cmd.append("/Solar2DConsole");
+
+					fPID = fork();
+					if (fPID == 0)
+					{
+						// it's child !!! The exec() functions only return if an error has occurred.
+						int rc = execl(cmd.c_str(), NULL);
+
+						// close process
+						exit(rc);
+					}
+				}
+
+				// try to connect again
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				continue;
+			}
+
+			// SetNonBlocking(fSocket);
+			int mode = fcntl(fSocket, F_GETFL, 0);
+			mode |= O_NONBLOCK;
+			fcntl(fSocket, F_SETFL, mode);
+		}
+		return (int)send(fSocket, data, bytes_to_write, MSG_NOSIGNAL);
+	}
+
+	//
+	// SolarSimulator
+	//
+
 	SolarSimulator::SolarSimulator(const std::string& resourceDir)
 		: SolarApp(resourceDir)
 		, fRelaunchedViaFileEvent(false)
@@ -36,18 +125,7 @@ namespace Rtt
 		, currentSkinHeight(0)
 	{
 		solarSimulator = this;		// save
-
-		// start the console
-	//	if (ConsoleApp::isStarted())
-	//	{
-	//		ConsoleApp::Clear();
-	//	}
-	//	else
-		{
-			std::string cmd(GetStartupPath(NULL));
-			cmd.append("/Solar2DConsole");
-			//			wxExecute(cmd);
-		}
+		fConsole = new ConsoleClient();
 
 		const char* homeDir = GetHomePath();
 		string buildPath(homeDir);
@@ -82,6 +160,11 @@ namespace Rtt
 
 		// quit the simulator console
 		// ConsoleApp::Quit();
+	}
+
+	void SolarSimulator::Log(const char* buf, int len)
+	{
+		fConsole->Log(buf, len);
 	}
 
 	bool SolarSimulator::LoadApp()

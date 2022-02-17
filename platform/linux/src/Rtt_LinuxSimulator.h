@@ -14,9 +14,21 @@
 
 namespace Rtt
 {
-	class SolarSimulator : public SolarApp
+	struct ConsoleClient : public ref_counted
 	{
-	public:
+		ConsoleClient();
+		virtual ~ConsoleClient();
+
+		int Log(const char* buf, int len);
+
+	private:
+
+		int fPID;
+		int fSocket;
+	};
+
+	struct SolarSimulator : public SolarApp
+	{
 		SolarSimulator(const std::string& resourceDir);
 		virtual ~SolarSimulator();
 
@@ -49,6 +61,8 @@ namespace Rtt
 		void ConfigSet(const char* key, std::string& val);
 		void ConfigSet(const char* key, int val);
 		virtual std::map<std::string, std::string>* ConfigGet() override { return &fConfig; }
+		virtual void Log(const char* buf, int len) override;
+
 
 	private:
 
@@ -59,6 +73,7 @@ namespace Rtt
 		std::string fConfigFilePath;
 		int currentSkinWidth;
 		int currentSkinHeight;
+		smart_ptr<ConsoleClient> fConsole;
 	};
 }
 
