@@ -30,10 +30,9 @@ slots:
     bus: session
     name: com.solar2d.simulator
 
-
 apps:
   solar2d:
-    command: usr/local/bin/Solar2D/Solar2DSimulator
+    command: usr/local/bin/Solar2D/Solar2D
     environment:
       LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/usr/lib/x86_64-linux-gnu/dri::${SNAP}/usr/lib/x86_64-linux-gnu
       JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64
@@ -138,64 +137,6 @@ parts:
     - libxss1
     - libxxf86vm1
 
-  wxwidgets:
-    plugin: autotools
-    source: https://github.com/coronalabs/binary-data/releases/download/1.0/wxWidgets-3.1.4.tar.bz2
-    autotools-configure-parameters:
-      - --with-gtk
-      - --with-opengl
-    after:
-      - readline
-    build-packages:
-      - libcrypto++-dev
-      - libcurl4-openssl-dev
-      - libfreetype6-dev
-      - libgl1-mesa-dev
-      - libglu1-mesa-dev
-      - libgstreamer-plugins-base1.0-dev
-      - libgstreamer1.0-dev
-      - libgtk-3-dev
-      - libjpeg-dev
-      - libogg-dev
-      - libopenal-dev
-      - libpng-dev
-      - libssl-dev
-      - libvorbis-dev
-      - libwebkit2gtk-4.0-dev
-      - uuid-dev
-      - zlib1g-dev
-      - libcanberra-gtk3-dev
-      - libcanberra-gtk3-module
-      - libtiff5-dev
-      - liblzma-dev
-      
-    stage-packages:
-      - libcrypto++6
-      - libcurl4
-      - libfreetype6
-      - libgl1
-      - libglu1-mesa
-      - libgstreamer-plugins-base1.0-0
-      - libgstreamer1.0-0
-      - libgtk-3-0
-      - libgtk-3-common
-      - libjpeg8
-      - libogg0
-      - libopenal1
-      - libpng16-16
-      - libssl1.1
-      - libvorbis0a
-      - libwebkit2gtk-4.0-37
-      - libuuid1
-      - zlib1g
-      - libice6
-      - libsm6
-      - libxtst6
-      - libcanberra-gtk-module
-      - libcanberra-gtk3-module
-      - libtiff5
-      - liblzma5
-
   solar2d:
     plugin: cmake
     source: .
@@ -204,7 +145,6 @@ parts:
       - -DCMAKE_INCLUDE_PATH=$SNAPCRAFT_STAGE/usr/local/include
       - -DSNAPCRAFT_STAGE=${SNAPCRAFT_STAGE}
     after:
-      - wxwidgets
       - sdl
     override-build: |
       snapcraftctl build
@@ -215,20 +155,14 @@ parts:
       - libfreetype6-dev
       - libgl1-mesa-dev
       - libglu1-mesa-dev
-      - libgstreamer-plugins-base1.0-dev
-      - libgstreamer1.0-dev
-      - libgtk-3-dev
       - libjpeg-dev
       - libogg-dev
       - libopenal-dev
       - libpng-dev
       - libssl-dev
       - libvorbis-dev
-      - libwebkit2gtk-4.0-dev
       - uuid-dev
       - zlib1g-dev
-      - libcanberra-gtk3-dev
-      - libcanberra-gtk3-module
       - libtiff5-dev
       - liblzma-dev
       - dos2unix
@@ -242,24 +176,16 @@ parts:
       - libcurl4
       - libfreetype6
       - libgl1
-      - libglu1-mesa
-      - libgstreamer-plugins-base1.0-0
-      - libgstreamer1.0-0
-      - libgtk-3-0
       - libjpeg8
       - libogg0
       - libopenal1
       - libpng16-16
       - libssl1.1
       - libvorbis0a
-      - libwebkit2gtk-4.0-37
       - libuuid1
       - zlib1g
-      - libcanberra-gtk-module
-      - libcanberra-gtk3-module
       - libtiff5
       - liblzma5
-      - gsettings-desktop-schemas
       - openjdk-8-jdk-headless
       - openjdk-8-jre-headless
       - libvulkan1
@@ -267,4 +193,5 @@ parts:
       - libgl1-mesa-dri
       - unzip
       - zip
-      - libfontconfig1
+
+
