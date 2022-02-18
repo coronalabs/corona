@@ -33,21 +33,13 @@ namespace Rtt
 
 		void OnOpen(const std::string& path);
 		void OnRelaunch();
-		void OnZoomIn(wxCommandEvent& event);
-		void OnZoomOut(wxCommandEvent& event);
-		void OnViewAsChanged(wxCommandEvent& event);
-		void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu* targetMenu);
-
-		// menu events
-		void OnCloneProject(wxCommandEvent& event);
-		void OnClearProjectSandbox(wxCommandEvent& event);
-		void OnAndroidBackButton(wxCommandEvent& event);
-		void OnBuildForAndroid(wxCommandEvent& event);
-		void OnBuildForWeb(wxCommandEvent& event);
+		void OnZoomIn();
+		void OnZoomOut();
+		void OnViewAsChanged();
+		void CreateViewAsChildMenu(std::vector<std::string>skin);
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool LoadApp() override;
-		void ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle);
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }
 		void SolarEvent(SDL_Event& e) override;
@@ -68,7 +60,6 @@ namespace Rtt
 		std::map<std::string, std::string> fConfig;
 		smart_ptr<FileWatcher> fWatcher;
 		bool fRelaunchedViaFileEvent;
-		wxLongLong fFileSystemEventTimestamp;
 		std::string fConfigFilePath;
 		int currentSkinWidth;
 		int currentSkinHeight;

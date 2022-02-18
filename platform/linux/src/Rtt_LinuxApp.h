@@ -28,10 +28,6 @@
 #include "Rtt_LinuxContainer.h"
 #include "Rtt_LinuxDialog.h"
 #include "Rtt_LinuxUtils.h"
-#include "wx/app.h"
-#include "wx/frame.h"
-#include "wx/panel.h"
-#include "wx/stattext.h"
 #include <sys/inotify.h>
 
 enum sdl
@@ -81,7 +77,7 @@ namespace Rtt
 		Runtime* GetRuntime() { return fContext->GetRuntime(); }
 		LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
-		void OnIconized(wxIconizeEvent& event);
+		void OnIconized();
 		void ChangeSize(int newWidth, int newHeight);
 		SolarAppContext* GetContext() const { return fContext; }
 
@@ -102,6 +98,12 @@ namespace Rtt
 		void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
 		virtual void Log(const char* buf, int len) {}
 
+		const std::string& GetTitle() { return fContext->GetTitle(); };
+		bool IsFullScreen() { return false; }
+		bool IsMinimized() { return false; }
+		bool IsIconized() { return false; }
+		bool IsMaximized() { return false; }
+		
 	protected:
 
 		virtual void SolarEvent(SDL_Event& e) {}
@@ -145,7 +147,6 @@ namespace Rtt
 
 }
 
-extern wxFrame* solarApp;
 extern smart_ptr<Rtt::SolarApp> app;
 
 

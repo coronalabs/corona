@@ -13,8 +13,6 @@
 
 using namespace std;
 
-// global
-wxFrame* solarApp = NULL;
 smart_ptr<Rtt::SolarApp> app;
 
 int main(int argc, char* argv[])

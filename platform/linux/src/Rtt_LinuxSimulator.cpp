@@ -113,7 +113,6 @@ namespace Rtt
 	SolarSimulator::SolarSimulator(const string& resourceDir)
 		: SolarApp(resourceDir)
 		, fRelaunchedViaFileEvent(false)
-		, fFileSystemEventTimestamp(0)
 		, currentSkinWidth(0)
 		, currentSkinHeight(0)
 	{
@@ -361,17 +360,17 @@ namespace Rtt
 		{
 			bool doRelaunch = !fRelaunchedViaFileEvent;
 
-			LinuxRuntimeErrorDialog* errDialog = fContext->GetPlatform()->GetRuntimeErrorDialog();
+			//LinuxRuntimeErrorDialog* errDialog = fContext->GetPlatform()->GetRuntimeErrorDialog();
 			//			if ((errDialog && errDialog->IsShown()) || (fRelaunchProjectDialog && fRelaunchProjectDialog->IsShown()))
 			//			{
 			//				return;
 			//			}
 
 						// workaround for wxFileSystem events firing twice (known wx bug)
-			if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
-			{
-				return;
-			}
+		//	if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
+		//	{
+		//		return;
+		//	}
 
 			if (fRelaunchedViaFileEvent)
 			{
@@ -403,19 +402,7 @@ namespace Rtt
 
 			//	SetMenu(fAppPath.c_str());
 			SetTitle(newWindowTitle);
-			fFileSystemEventTimestamp = wxGetUTCTimeMillis();
-		}
-	}
-
-	void SolarSimulator::ClearMenuCheckboxes(wxMenu* menu, wxString currentSkinTitle)
-	{
-		for (int i = 0; i < menu->GetMenuItemCount(); i++)
-		{
-			wxMenuItem* currentItem = menu->FindItemByPosition(i);
-			if (!currentItem->GetItemLabel().IsSameAs(currentSkinTitle))
-			{
-				currentItem->Check(false);
-			}
+			//fFileSystemEventTimestamp = wxGetUTCTimeMillis();
 		}
 	}
 
@@ -541,7 +528,7 @@ namespace Rtt
 		}
 	}*/
 
-	void SolarSimulator::OnZoomIn(wxCommandEvent& event)
+	void SolarSimulator::OnZoomIn()
 	{
 		/*		wxDisplay display(wxDisplay::GetFromWindow(this));
 				wxRect screen = display.GetClientArea();
@@ -590,7 +577,7 @@ namespace Rtt
 				}*/
 	}
 
-	void SolarSimulator::OnZoomOut(wxCommandEvent& event)
+	void SolarSimulator::OnZoomOut()
 	{
 		/*		SolarApp* frame = solarApp;
 				int proposedWidth = frame->GetContext()->GetWidth() / LinuxSimulatorView::skinScaleFactor;
@@ -617,7 +604,7 @@ namespace Rtt
 				}*/
 	}
 
-	void SolarSimulator::OnViewAsChanged(wxCommandEvent& event)
+	void SolarSimulator::OnViewAsChanged()
 	{
 		/*		int skinID = event.GetId();
 				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skinID);
@@ -666,7 +653,7 @@ namespace Rtt
 				wxPostEvent(solarApp, ev);*/
 	}
 
-	void SolarSimulator::CreateViewAsChildMenu(vector<string>skin, wxMenu* targetMenu)
+	void SolarSimulator::CreateViewAsChildMenu(vector<string>skin)
 	{
 		/*		for (int i = 0; i < skin.size(); i++)
 				{

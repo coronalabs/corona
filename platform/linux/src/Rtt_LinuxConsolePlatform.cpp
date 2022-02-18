@@ -34,8 +34,6 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
-//#include "wx/wx.h"
-//#include "wx/activityindicator.h"
 #include <pwd.h>
 
 using namespace std;

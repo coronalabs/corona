@@ -92,9 +92,9 @@ namespace Rtt
 		static void DeselectSkins();
 		static void SelectSkin(int skinID);
 		static void OnBuildForWeb(SolarAppContext* ctx);
-		static void OnWebBuild(wxCommandEvent&);
+//		static void OnWebBuild(wxCommandEvent&);
 		static void OnLinuxPluginGet(const char* appPath, const char* appName, LinuxPlatform* platform);
-		static void OnCancel(wxCommandEvent&);
+//		static void OnCancel(wxCommandEvent&);
 		static void AppWebBuild(SolarAppContext* ctx);
 		static void GetRecentDocs(LightPtrArray<RecentProjectInfo>* listPointer);
 
@@ -104,7 +104,8 @@ namespace Rtt
 		static const int skinMinWidth;
 
 	public:
-		struct webBuildParams : public wxObject
+
+/*		struct webBuildParams
 		{
 			webBuildParams(wxDialog* dlg, SolarAppContext* ctx, wxCheckBox* useStandardResources, wxCheckBox* runAfterBuild, wxCheckBox* createFBInstance)
 				: fDlg(dlg), fCtx(ctx), fUseStandardResources(useStandardResources), fRunAfterBuild(runAfterBuild), fCreateFBInstance(createFBInstance) {};
@@ -117,10 +118,11 @@ namespace Rtt
 			std::string fErrMsg;
 		};
 
-		struct cancelBuild : public wxObject
+		struct cancelBuild
 		{
 			cancelBuild(wxDialog* dlg) : fDlg(dlg) {};
 			wxDialog* fDlg;
 		};
+		*/
 	};
 }; // namespace Rtt

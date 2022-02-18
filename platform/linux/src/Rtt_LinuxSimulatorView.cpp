@@ -9,8 +9,6 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <wx/menu.h>
-#include <wx/textctrl.h>
 #include <sstream>
 #include <fstream>
 #include "Rtt_LuaContext.h"

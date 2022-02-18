@@ -34,8 +34,8 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::CloneProject() const
 	{
-		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
-		solarSimulator->OnCloneProject(cloneProjectEvent);
+//		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
+//		solarSimulator->OnCloneProject(cloneProjectEvent);
 		return true;
 	}
 
@@ -69,7 +69,7 @@ namespace Rtt
 
 	void LinuxSimulatorServices::ShowSampleCode() const
 	{
-		wxExecute("xdg-open /opt/Solar2D/SampleCode");
+		OpenURL("/opt/Solar2D/SampleCode");
 	}
 
 	// stub to match Mac implementation

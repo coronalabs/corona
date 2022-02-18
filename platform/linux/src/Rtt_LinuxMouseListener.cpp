@@ -118,6 +118,7 @@ namespace Rtt
 		fRuntime.DispatchEvent(e);
 	}
 
+	/*
 	void LinuxMouseListener::OnMouseLeftDoubleClick(wxMouseEvent &event)
 	{
 		SolarAppContext *context = app->GetContext();
@@ -261,5 +262,5 @@ namespace Rtt
 		                      false, false, false, false, false, false, false);
 
 		runtime->DispatchEvent(mouseEvent);
-	}
+	}*/
 };

@@ -14,7 +14,6 @@
 #include "CoronaLua.h"
 #include "Rtt_PlatformDisplayObject.h"
 #include "Rtt_LinuxContainer.h"
-#include <wx/window.h>
 
 #pragma region Forward Declarations
 
@@ -53,7 +52,6 @@ namespace Rtt
 	protected:
 
 		void addEventListener(lua_State* L);
-		wxWindow *fWindow;
 		CoronaLuaRef fLuaReference;
 
 	private:

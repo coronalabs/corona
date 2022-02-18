@@ -10,6 +10,7 @@
 
 using namespace std;
 
+/*
 namespace Rtt
 {
 
@@ -49,3 +50,4 @@ namespace Rtt
 	}
 
 }
+*/

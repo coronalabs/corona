@@ -520,7 +520,7 @@ namespace Rtt
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
-	void SolarApp::OnIconized(wxIconizeEvent& event)
+	void SolarApp::OnIconized()
 	{
 		fContext->RestartRenderer();
 	}

@@ -1,8 +1,9 @@
 #include "Rtt_LinuxClearSandboxDialog.h"
 
+#if 0
 namespace Rtt
 {
-	LinuxClearProjectSandboxDialog::LinuxClearProjectSandboxDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style):
+	LinuxClearProjectSandboxDialog::LinuxClearProjectSandboxDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) :
 		wxDialog(parent, id, title, pos, size, wxCAPTION)
 	{
 		okButton = new wxButton(this, wxID_OK, wxT("Confirm"));
@@ -19,13 +20,13 @@ namespace Rtt
 
 	void LinuxClearProjectSandboxDialog::DoLayout()
 	{
-		wxBoxSizer *parentGridSizer = new wxBoxSizer(wxVERTICAL);
-		wxFlexGridSizer *buttonGridSizer = new wxFlexGridSizer(1, 2, 0, 0);
-		wxGridSizer *optionsGridSizer = new wxGridSizer(1, 1, 0, 0);
-		wxStaticText *informationLabel = new wxStaticText(this, wxID_ANY, wxT("You're about to clear the sandbox for this project. This action cannot be undone.\n\nDo you wish to proceed?"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxALIGN_LEFT | wxALIGN_RIGHT);
+		wxBoxSizer* parentGridSizer = new wxBoxSizer(wxVERTICAL);
+		wxFlexGridSizer* buttonGridSizer = new wxFlexGridSizer(1, 2, 0, 0);
+		wxGridSizer* optionsGridSizer = new wxGridSizer(1, 1, 0, 0);
+		wxStaticText* informationLabel = new wxStaticText(this, wxID_ANY, wxT("You're about to clear the sandbox for this project. This action cannot be undone.\n\nDo you wish to proceed?"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxALIGN_LEFT | wxALIGN_RIGHT);
 		optionsGridSizer->Add(informationLabel, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, 10);
 		parentGridSizer->Add(optionsGridSizer, 0, wxALL | wxEXPAND, 10);
-		wxStaticLine *staticLineSeparator = new wxStaticLine(this, wxID_ANY);
+		wxStaticLine* staticLineSeparator = new wxStaticLine(this, wxID_ANY);
 		parentGridSizer->Add(staticLineSeparator, 0, wxBOTTOM | wxEXPAND | wxTOP, 5);
 		buttonGridSizer->Add(okButton, 1, wxRIGHT | wxTOP, 10);
 		buttonGridSizer->Add(cancelButton, 1, wxRIGHT | wxTOP, 10);
@@ -41,15 +42,16 @@ namespace Rtt
 	BEGIN_EVENT_TABLE(LinuxClearProjectSandboxDialog, wxDialog)
 		EVT_BUTTON(wxID_OK, LinuxClearProjectSandboxDialog::OnConfirmClicked)
 		EVT_BUTTON(wxID_CANCEL, LinuxClearProjectSandboxDialog::OnCancelClicked)
-	END_EVENT_TABLE();
+		END_EVENT_TABLE();
 
-	void LinuxClearProjectSandboxDialog::OnConfirmClicked(wxCommandEvent &event)
+	void LinuxClearProjectSandboxDialog::OnConfirmClicked(wxCommandEvent& event)
 	{
 		EndModal(wxID_OK);
 	}
 
-	void LinuxClearProjectSandboxDialog::OnCancelClicked(wxCommandEvent &event)
+	void LinuxClearProjectSandboxDialog::OnCancelClicked(wxCommandEvent& event)
 	{
 		EndModal(wxID_CLOSE);
 	}
 };
+#endif

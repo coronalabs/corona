@@ -32,10 +32,6 @@
 #include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxApp.h"
 #include "Rtt_HTTPClient.h"
-#include "wx/menu.h"
-#include "wx/dcclient.h"
-#include "wx/app.h"
-#include "wx/display.h"
 #include <curl/curl.h>
 #include <utility>		// for pairs
 #include "lua.h"
@@ -57,8 +53,6 @@ extern "C"
 		return SolarAppContext::Print(L);
 	}
 }
-
-extern wxFrame* solarApp;
 
 namespace Rtt
 {
@@ -246,17 +240,9 @@ namespace Rtt
 		// read build.settings
 		if (fProjectSettings->HasBuildSettings())
 		{
-			int systemLanguage = wxLocale::GetSystemLanguage();
-
-			// fallback to en_us if wx wasn't able to determine the system language
-			if (systemLanguage == wxLANGUAGE_UNKNOWN)
-			{
-				systemLanguage = wxLANGUAGE_ENGLISH_US;
-			}
-
-			wxString localeName = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
-			string langCode = localeName.ToStdString().substr(0, 2);
-			string countryCode = localeName.ToStdString().substr(3, 5);
+			string localeName = "fixme"; // = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
+			string langCode = localeName.substr(0, 2);
+			string countryCode = localeName.substr(3, 5);
 			int minWidth = fProjectSettings->GetMinWindowViewWidth();
 			int minHeight = fProjectSettings->GetMinWindowViewHeight();
 			const char* windowTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());

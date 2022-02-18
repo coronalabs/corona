@@ -757,12 +757,12 @@ namespace Rtt
 
 		if (buildResult == 0 && runAfterBuild)
 		{
-			wxString command("\"");
-			command.Append(outputDir);
-			command.Append("/").Append(appName);
-			command.Append("/").Append(appName);
-			command.Append("\"");
-			system(command);
+			string command("\"");
+			command.append(outputDir);
+			command.append("/").append(appName);
+			command.append("/").append(appName);
+			command.append("\"");
+			system(command.c_str());
 		}
 	}
 

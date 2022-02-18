@@ -20,6 +20,7 @@
 #include "Rtt_Freetype.h"
 #include <string.h>
 
+#if 0
 namespace Rtt
 {
 	LinuxTextBoxObject::LinuxTextBoxObject(const Rect& bounds, bool isSingleLine)
@@ -398,3 +399,4 @@ namespace Rtt
 	}
 
 }; // namespace Rtt
+#endif
