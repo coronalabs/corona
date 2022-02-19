@@ -1,54 +1,28 @@
 //
-// Solar2D Simulator Console
+// Console window
 //
 
-#ifndef LINUX_CONSOLE_APP_H
-#define LINUX_CONSOLE_APP_H
+#pragma once
 
-#include "Rtt_LinuxContainer.h"
-#include "Rtt_LinuxUtils.h"
+#include "Rtt_LinuxDialog.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_sdl.h"
-#include "imgui/imgui_impl_opengl3.h"
-#include "imgui/imfilebrowser.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
-
-#define SOLAR2D_UNIX_SOCKET "/tmp/solar2d.sock"
-
-struct LinuxConsoleApp: public ref_counted
+namespace Rtt
 {
-	enum MessageType {Normal, Warning, Error};
+	struct DlgConsole : public Dlg
+	{
+		DlgConsole(std::string* logData);
+		virtual ~DlgConsole();
 
-	LinuxConsoleApp();
-	virtual ~LinuxConsoleApp();
+		void ProcessEvent(SDL_Event* evt);
+		void Draw() override;
 
-	bool Init();
-	void Run();
-	static void SetNonBlocking(int sd);
+	private:
 
-private:
+		SDL_Window* fWindow;       
+		SDL_GLContext fGLcontext;
+		ImGuiContext* fImCtx;
 
-	int Advance();
-	bool ListenSocket();
-	void CloseServerSocket();
-	int ReadLog();
-	void CloseClient();
+		std::string* fLogData;	
 
-	SDL_Window* fWindow;
-	SDL_GLContext fGLcontext;
-
-	// GUI
-	ImGuiContext* ImCtx;
-	std::string fLogData;
-
-	// unix server socket 
-	int fSocketServer;
-	int fSocketClient;
-	pid_t fParentPID;
-
-};
-
-
-#endif //LINUXCONSOLEAPP_H
+	};
+}

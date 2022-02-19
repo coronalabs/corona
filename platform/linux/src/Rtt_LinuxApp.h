@@ -28,6 +28,7 @@
 #include "Rtt_LinuxContainer.h"
 #include "Rtt_LinuxDialog.h"
 #include "Rtt_LinuxUtils.h"
+#include "Rtt_LinuxConsoleApp.h"
 #include <sys/inotify.h>
 
 enum sdl
@@ -96,7 +97,7 @@ namespace Rtt
 		inline void Pause() { fContext->Pause(); }
 		inline void Resume() { fContext->Resume(); }
 		void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
-		virtual void Log(const char* buf, int len) {}
+		void Log(const char* buf, int len);
 
 		const std::string& GetTitle() { return fContext->GetTitle(); };
 		bool IsFullScreen() { return false; }
@@ -122,6 +123,10 @@ namespace Rtt
 		smart_ptr<Dlg> fMenu;
 		smart_ptr<Dlg> fDlg;
 		bool fActivityIndicator;
+
+		// console
+		std::string fLogData;
+		smart_ptr<DlgConsole> fConsole;
 	};
 
 	//

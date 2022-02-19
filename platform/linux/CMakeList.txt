@@ -327,12 +327,6 @@ SET( IMGUI_SOURCES
 		${CORONA_ROOT}/platform/linux/src/imgui/imgui_impl_sdl.cpp
 )
 
-add_executable( Solar2DConsole
-	${IMGUI_SOURCES}
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContainer.cpp
-)
-
 SET( SOLAR2D_SOURCES
 		${Lua2CppOutputDir}/init.cpp
 		${Lua2CppOutputDir}/runtime.cpp
@@ -909,6 +903,7 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/shared/Rtt_ReadOnlyProjectSettings.cpp
 	${CORONA_ROOT}/platform/shared/Rtt_NativeWindowMode.cpp
 	${CORONA_ROOT}/platform/shared/ListKeyStore.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
 )
 
 add_executable( Solar2DSimulator
@@ -948,6 +943,7 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/shared/Rtt_ReadOnlyProjectSettings.cpp
 	${CORONA_ROOT}/platform/shared/Rtt_NativeWindowMode.cpp
 	${CORONA_ROOT}/platform/shared/ListKeyStore.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
 )
 
 add_executable( Solar2DBuilder
@@ -980,7 +976,6 @@ FOREACH(LUA_FILE ${LUA_SOURCES})
 	add_custom_target(${finame}
 		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native.sh" "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
 		DEPENDS dos2unix)
-	add_dependencies(Solar2DConsole ${finame})
 	add_dependencies(Solar2D ${finame})
 	add_dependencies(Solar2DSimulator ${finame}) 
 	add_dependencies(Solar2DBuilder ${finame})
@@ -993,7 +988,6 @@ FOREACH(LUA_FILE ${LUA_SOCKET_SOURCES})
 	add_custom_target(${finame}
 		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native.sh" ${MODULE_COMMAND1} ${MODULE_COMMAND2} "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
 		DEPENDS dos2unix)
-	add_dependencies(Solar2DConsole ${finame})
 	add_dependencies(Solar2D ${finame})
 	add_dependencies(Solar2DSimulator ${finame})
 	add_dependencies(Solar2DBuilder ${finame})
@@ -1006,7 +1000,6 @@ FOREACH(LUA_FILE ${LUA_REMDEBUG_SOURCES})
 	add_custom_target(${finame}
 		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native.sh" ${MODULE_COMMAND1} ${MODULE_COMMAND2} "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
 		DEPENDS dos2unix)
-	add_dependencies(Solar2DConsole ${finame})
 	add_dependencies(Solar2D ${finame})
 	add_dependencies(Solar2DSimulator ${finame})
 	add_dependencies(Solar2DBuilder ${finame})
@@ -1030,10 +1023,6 @@ target_compile_definitions( Solar2DBuilder PUBLIC
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
-target_compile_definitions( Solar2DConsole PUBLIC
-	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
-)
-
 target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
 target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
 
@@ -1042,7 +1031,6 @@ target_link_options(Solar2D BEFORE PUBLIC -export-dynamic)
 target_link_options(Solar2DSimulator BEFORE PUBLIC -export-dynamic)
 
 target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
-target_link_libraries(Solar2DConsole dl SDL2 GL pthread)
 
 # build template
 add_custom_target(create_template ALL 
@@ -1056,7 +1044,6 @@ include(platform/linux/CMakeResources.txt)
 # install binaries
 install(TARGETS Solar2D RUNTIME DESTINATION bin/Solar2D)
 install(TARGETS Solar2DSimulator RUNTIME DESTINATION bin/Solar2D)
-install(TARGETS Solar2DConsole RUNTIME DESTINATION bin/Solar2D)
 install(TARGETS Solar2DBuilder RUNTIME DESTINATION bin/Solar2D)
 
 # install Resources

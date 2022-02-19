@@ -42,71 +42,6 @@ int LinuxLog(const char* buf, int len)
 namespace Rtt
 {
 	//
-	// ConsoleClient
-	//
-
-	ConsoleClient::ConsoleClient()
-		: fSocket(-1)
-	{
-		fSocket = socket(AF_UNIX, SOCK_STREAM, 0);
-		if (Connect(1) == false)
-		{
-			// start console
-			string cmd(GetStartupPath(NULL));
-			cmd.append("/Solar2DConsole");
-			int pid = fork();
-			if (pid == 0)
-			{
-				// it's child !!! The exec() functions only return if an error has occurred.
-				int rc = execl(cmd.c_str(), NULL);
-
-				// close child process
-				exit(rc);
-			}
-
-			// try to connect again, 3 seconds
-			if (!Connect(12))
-			{
-				close(fSocket);
-				fSocket = -1;
-			}
-		}
-	}
-
-	ConsoleClient::~ConsoleClient()
-	{
-		if (fSocket >= 0)
-			close(fSocket);
-	}
-
-	bool ConsoleClient::Connect(int attempts)
-	{
-		struct sockaddr_un  serv_addr = {};
-		serv_addr.sun_family = AF_UNIX;
-		strncpy(serv_addr.sun_path, SOLAR2D_UNIX_SOCKET, sizeof(serv_addr.sun_path));
-		int servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
-
-		for (int i = 0; i < attempts; i++)
-		{
-			if (connect(fSocket, (struct sockaddr*)&serv_addr, servlen) == 0)
-			{
-				// non blocking mode
-				int mode = fcntl(fSocket, F_GETFL, 0);
-				mode |= O_NONBLOCK;
-				fcntl(fSocket, F_SETFL, mode);
-				return true;
-			}
-			this_thread::sleep_for(chrono::milliseconds(250));
-		}
-		return false;
-	}
-
-	int ConsoleClient::Log(const char* data, int bytes_to_write)
-	{
-		return fSocket >= 0 ? (int)send(fSocket, data, bytes_to_write, MSG_NOSIGNAL) : -1;
-	}
-
-	//
 	// SolarSimulator
 	//
 
@@ -117,7 +52,6 @@ namespace Rtt
 		, currentSkinHeight(0)
 	{
 		solarSimulator = this;		// save
-		fConsole = new ConsoleClient();
 
 		const char* homeDir = GetHomePath();
 		string buildPath(homeDir);
@@ -152,11 +86,6 @@ namespace Rtt
 
 		// quit the simulator console
 		// ConsoleApp::Quit();
-	}
-
-	void SolarSimulator::Log(const char* buf, int len)
-	{
-		fConsole->Log(buf, len);
 	}
 
 	bool SolarSimulator::LoadApp()

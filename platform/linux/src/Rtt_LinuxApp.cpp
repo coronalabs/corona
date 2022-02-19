@@ -109,6 +109,8 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
+		fConsole = new DlgConsole(&fLogData);
+
 		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI; // | SDL_WINDOW_BORDERLESS;
 		windowStyle |= SDL_WINDOW_RESIZABLE;
 		fWindow = SDL_CreateWindow("Solar2D", 0, 0, 320, 480, windowStyle);
@@ -168,6 +170,7 @@ namespace Rtt
 		{
 			// GUI
 			ImGui_ImplSDL2_ProcessEvent(&evt);
+			fConsole->ProcessEvent(&evt);
 
 			if (evt.type == SDL_QUIT)
 				return false;
@@ -462,6 +465,8 @@ namespace Rtt
 			if (!PollEvents())
 				break;
 
+			fConsole->Draw();
+
 			fContext->advance();
 
 			int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
@@ -471,6 +476,17 @@ namespace Rtt
 			int sleep_time = Max(frameDuration - advance_time, 1.0f);		// sleep for at least 1ms
 			std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 		}
+	}
+
+	void SolarApp::Log(const char* buf, int len)
+	{
+		// truncate
+		const int maxsize = 20000;
+		if (fLogData.size() > maxsize)
+		{
+			fLogData.erase(0, (fLogData.size() - maxsize) * 0.9);	// 10%
+		}
+		fLogData.append(buf, len);
 	}
 
 	void SolarApp::RenderGUI()
