@@ -117,14 +117,14 @@ namespace Rtt
 		return false;
 		}
 
-	void SolarSimulator::SolarEvent(SDL_Event& e)
+	void SolarSimulator::SolarEvent(const SDL_Event& e)
 	{
 		//Rtt_Log("SolarEvent %d\n", e.type);
 		switch (e.type)
 		{
 		case sdl::OnNewProject:
 		{
-			fDlg = new DlgNewProject();
+			fDlg = new DlgNewProject("New Project", 320, 240);
 			break;
 		}
 
@@ -140,7 +140,7 @@ namespace Rtt
 			{
 				// open file dialog
 				string startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
-				fDlg = new DlgFile(startPath);
+				fDlg = new DlgFile("Open", 320, 240, startPath);
 			}
 			break;
 		}
@@ -180,11 +180,11 @@ namespace Rtt
 			}
 
 			// open file dialog
-			fDlg = new DlgFile(samplesPath);
+			fDlg = new DlgFile("Select Sample Project", 480, 320, samplesPath);
 			break;
 		}
 		case sdl::OnAbout:
-			fDlg = new DlgAbout();
+			fDlg = new DlgAbout("About Solar2D Simulator", 480, 240);
 			break;
 
 		case sdl::OnFileBrowserSelected:
@@ -227,11 +227,10 @@ namespace Rtt
 		}
 
 		case sdl::OnOpenPreferences:
-			fDlg = new DlgPreferences();
+			fDlg = new DlgPreferences("Solar2D Simulator Preferences", 320, 240);
 			break;
 
-		case sdl::onClosePopupModal:
-			ImGui::CloseCurrentPopup();
+		case sdl::onCloseDialog:
 			fDlg = NULL;
 			break;
 
@@ -250,22 +249,22 @@ namespace Rtt
 				}
 				else if (s == "Ask")
 				{
-					fDlg = new DlgAskRelaunch();
+					fDlg = new DlgAskRelaunch("Solar2D", 320, 240);
 				}
 			}
 			break;
 		}
 
 		case sdl::OnBuildLinux:
-			fDlg = new DlgLinuxBuild();
+			fDlg = new DlgLinuxBuild("Linux Build Setup", 320, 240);
 			break;
 
 		case sdl::OnBuildAndroid:
-			fDlg = new DlgAndroidBuild();
+			fDlg = new DlgAndroidBuild("Android Build Setup", 320, 240);
 			break;
 
 		case sdl::OnBuildHTML5:
-			fDlg = new DlgHTML5Build();
+			fDlg = new DlgHTML5Build("HTML5 Build Setup", 320, 240);
 			break;
 
 		default:

@@ -23,14 +23,38 @@ namespace Rtt
 {
 	void DrawActivity();
 
+	//
+	// base class
+	//
+
 	struct Dlg : public ref_counted
 	{
+		Dlg(const std::string& title, int w, int h);
+		virtual ~Dlg();
+
 		virtual void Draw() = 0;
+		void ProcessEvent(const SDL_Event& evt);
+
+	protected:
+
+		void begin();
+		void end();
+
+	private:
+
+		SDL_Window* fWindow;
+		SDL_GLContext fGLcontext;
+		ImGuiContext* fImCtx;
+
+		// for state saving 
+		SDL_Window* window;
+		SDL_GLContext glcontext;
+		ImGuiContext* imctx;
 	};
 
 	struct DlgAbout : public Dlg
 	{
-		DlgAbout();
+		DlgAbout(const std::string& title, int w, int h);
 		virtual ~DlgAbout();
 		void Draw() override;
 
@@ -41,7 +65,7 @@ namespace Rtt
 
 	struct DlgFile : public Dlg
 	{
-		DlgFile(const std::string& startFolder);
+		DlgFile(const std::string& title, int w, int h, const std::string& startFolder);
 		virtual ~DlgFile();
 
 		void Draw() override;
@@ -49,13 +73,13 @@ namespace Rtt
 		ImGui::FileBrowser fileDialog;
 	};
 
-	struct DlgMenu : public Dlg
+	struct DlgMenu : public ref_counted
 	{
 		DlgMenu(const std::string& appName)
 		{
 			isMainMenu = appName == "homescreen";
 		}
-		void Draw() override;
+		void Draw();
 
 	private:
 		bool isMainMenu;
@@ -63,7 +87,7 @@ namespace Rtt
 
 	struct DlgNewProject : public Dlg
 	{
-		DlgNewProject();
+		DlgNewProject(const std::string& title, int w, int h);
 		void Draw() override;
 
 	private:
@@ -83,7 +107,7 @@ namespace Rtt
 
 	struct DlgPreferences : public Dlg
 	{
-		DlgPreferences();
+		DlgPreferences(const std::string& title, int w, int h);
 		void Draw() override;
 
 	private:
@@ -97,7 +121,12 @@ namespace Rtt
 
 	struct DlgAskRelaunch : public Dlg
 	{
-		DlgAskRelaunch() :fSaveMyPreference(false) {}
+		DlgAskRelaunch(const std::string& title, int w, int h)
+			: Dlg(title, w, h)
+			, fSaveMyPreference(false)
+		{
+		}
+
 		void Draw() override;
 
 	private:

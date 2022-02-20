@@ -30,7 +30,7 @@ namespace Rtt
 		virtual bool LoadApp() override;
 		void GetSavedZoom(int& width, int& height) override;
 		bool IsRunningOnSimulator() override { return true; }
-		void SolarEvent(SDL_Event& e) override;
+		void SolarEvent(const SDL_Event& e) override;
 
 		// for simulator settings
 		void ConfigLoad() override;

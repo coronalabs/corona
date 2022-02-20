@@ -39,7 +39,7 @@ enum sdl
 	OnOpenInEditor,
 	OnRelaunch,
 	OnCloseProject,
-	onClosePopupModal,
+	onCloseDialog,
 	OnOpenDocumentation,
 	OnOpenSampleProjects,
 	OnAbout,
@@ -107,7 +107,7 @@ namespace Rtt
 		
 	protected:
 
-		virtual void SolarEvent(SDL_Event& e) {}
+		virtual void SolarEvent(const SDL_Event& e) {}
 
 		SolarAppContext* fContext;
 		SDL_Window* fWindow;
@@ -119,8 +119,8 @@ namespace Rtt
 		int fHeight;
 
 		// GUI
-		ImGuiContext* imctx;
-		smart_ptr<Dlg> fMenu;
+		ImGuiContext* fImCtx;
+		smart_ptr<DlgMenu> fMenu;
 		smart_ptr<Dlg> fDlg;
 		bool fActivityIndicator;
 

@@ -88,11 +88,89 @@ namespace Rtt
 	}
 
 	//
+	// Dlg base class
+	//
+
+	Dlg::Dlg(const string& title, int w, int h)
+	{
+		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL);
+		fGLcontext = SDL_GL_CreateContext(fWindow);
+
+		ImGuiContext* imctx = ImGui::GetCurrentContext();
+		fImCtx = ImGui::CreateContext();
+		ImGui::SetCurrentContext(fImCtx);
+
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsLight(); // StyleColorsClassic();
+
+		// Setup Platform/Renderer backends
+		ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
+		const char* glsl_version = "#version 130";
+		ImGui_ImplOpenGL3_Init(glsl_version);
+
+		ImGui::SetCurrentContext(imctx);
+	}
+
+	Dlg::~Dlg()
+	{
+		ImGui::DestroyContext(fImCtx);
+		SDL_DestroyWindow(fWindow);
+	}
+
+	void Dlg::begin()
+	{
+		// save state
+		window = SDL_GL_GetCurrentWindow();
+		glcontext = SDL_GL_GetCurrentContext();
+		imctx = ImGui::GetCurrentContext();
+
+		SDL_GL_MakeCurrent(fWindow, fGLcontext);
+		ImGui::SetCurrentContext(fImCtx);
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+		ImGui::NewFrame();
+
+		// Always center this window when appearing
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+		// background
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	void Dlg::end()
+	{
+		ImGui::EndFrame();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		SDL_GL_SwapWindow(fWindow);
+
+		// restore state
+		SDL_GL_MakeCurrent(window, glcontext);
+		ImGui::SetCurrentContext(imctx);
+	}
+
+	void Dlg::ProcessEvent(const SDL_Event& evt)
+	{
+		imctx = ImGui::GetCurrentContext();
+		ImGui::SetCurrentContext(fImCtx);
+		ImGui_ImplSDL2_ProcessEvent(&evt);
+		ImGui::SetCurrentContext(imctx);
+	}
+
+	//
 	// About dialog
 	//
 
-	DlgAbout::DlgAbout()
-		: tex_id(0)
+	DlgAbout::DlgAbout(const std::string& title, int w, int h)
+		: Dlg(title, w, h)
+		, tex_id(0)
 		, width(0)
 		, height(0)
 	{
@@ -111,11 +189,8 @@ namespace Rtt
 
 	void DlgAbout::Draw()
 	{
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-
-		if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		begin();
+		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -155,19 +230,20 @@ namespace Rtt
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 			}
 
-			ImGui::EndPopup();
+			ImGui::End();
 		}
-		ImGui::OpenPopup("About");
+		end();
 	}
 
 	//
 	// File dialog
 	//
 
-	DlgFile::DlgFile(const string& startFolder)
+	DlgFile::DlgFile(const std::string& title, int w, int h, const string& startFolder)
+		: Dlg(title, w, h)
 	{
 		// (optional) set browser properties
 		fileDialog.SetTitle("Open");
@@ -195,7 +271,7 @@ namespace Rtt
 
 		if (!fileDialog.IsOpened())
 		{
-			PushEvent(sdl::onClosePopupModal);
+			PushEvent(sdl::onCloseDialog);
 		}
 	}
 
@@ -502,8 +578,9 @@ namespace Rtt
 	// DlgNewProject
 	//
 
-	DlgNewProject::DlgNewProject()
-		: fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
+	DlgNewProject::DlgNewProject(const std::string& title, int w, int h)
+		: Dlg(title, w, h)
+		, fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
 		, fTemplateIndex(0)
 		, fSizeIndex(0)
 		, fOrientationIndex(0)
@@ -658,7 +735,7 @@ namespace Rtt
 				{
 					if (CreateProject())
 					{
-						PushEvent(sdl::onClosePopupModal);
+						PushEvent(sdl::onCloseDialog);
 					}
 					else
 					{
@@ -676,7 +753,7 @@ namespace Rtt
 			ImGui::SameLine();
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 			}
 			ImGui::End();
 		} //ImGui::Begin
@@ -778,8 +855,9 @@ namespace Rtt
 	//
 	//
 
-	DlgPreferences::DlgPreferences()
-		: fRelaunchIndex(1)
+	DlgPreferences::DlgPreferences(const std::string& title, int w, int h)
+		: Dlg(title, w, h)
+		, fRelaunchIndex(1)
 		, fShowWelcome(false)
 		, fShowErrors(true)
 		, fOpenlastProject(false)
@@ -851,7 +929,7 @@ namespace Rtt
 					cfg["ColorScheme"] = fStyleIndex == 0 ? "Light" : (fStyleIndex == 2 ? "Dark" : "Standard");
 					app->ConfigSave();
 				}
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 			}
 			ImGui::SetItemDefaultFocus();
 
@@ -859,7 +937,7 @@ namespace Rtt
 			ImGui::SameLine();
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 			}
 			ImGui::EndPopup();
 		}
@@ -896,7 +974,7 @@ namespace Rtt
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
 				SaveMyPreference("Always");
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 				PushEvent(sdl::OnRelaunchLastProject);
 			}
 			ImGui::SetItemDefaultFocus();
@@ -906,7 +984,7 @@ namespace Rtt
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
 				SaveMyPreference("Never");
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 			}
 			ImGui::EndPopup();
 		}

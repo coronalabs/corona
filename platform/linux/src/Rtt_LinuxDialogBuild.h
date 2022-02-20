@@ -16,13 +16,13 @@ namespace Rtt
 {
 	struct DlgBuild : public Dlg
 	{
-		DlgBuild();
+		DlgBuild(const std::string& title, int w, int h);
 		virtual ~DlgBuild();
 	};
 
 	struct DlgAndroidBuild : public DlgBuild
 	{
-		DlgAndroidBuild();
+		DlgAndroidBuild(const std::string& title, int w, int h);
 		virtual ~DlgAndroidBuild();
 
 		void Draw() override;
@@ -58,7 +58,7 @@ namespace Rtt
 
 	struct DlgLinuxBuild : public DlgBuild
 	{
-		DlgLinuxBuild();
+		DlgLinuxBuild(const std::string& title, int w, int h);
 		virtual ~DlgLinuxBuild();
 
 		void Draw() override;
@@ -80,7 +80,7 @@ namespace Rtt
 
 	struct DlgHTML5Build : public DlgBuild
 	{
-		DlgHTML5Build();
+		DlgHTML5Build(const std::string& title, int w, int h);
 		virtual ~DlgHTML5Build();
 
 		void Draw() override;

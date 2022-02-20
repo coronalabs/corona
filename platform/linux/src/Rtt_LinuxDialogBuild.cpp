@@ -25,7 +25,8 @@ using namespace std;
 namespace Rtt
 {
 
-	DlgBuild::DlgBuild()
+	DlgBuild::DlgBuild(const std::string& title, int w, int h)
+		: Dlg(title, w, h)
 	{
 		app->Pause();
 	}
@@ -39,8 +40,9 @@ namespace Rtt
 	// DlgAndroidBuild
 	//
 
-	DlgAndroidBuild::DlgAndroidBuild()
-		: fileDialogKeyStore(ImGuiFileBrowserFlags_EnterNewFilename | ImGuiFileBrowserFlags_CloseOnEsc)
+	DlgAndroidBuild::DlgAndroidBuild(const std::string& title, int w, int h)
+		: DlgBuild(title, w, h)
+		, fileDialogKeyStore(ImGuiFileBrowserFlags_EnterNewFilename | ImGuiFileBrowserFlags_CloseOnEsc)
 		, fileDialogSaveTo(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir | ImGuiFileBrowserFlags_CloseOnEsc)
 		, fBuildResult(NULL)
 		, fBuildSuccessed(0)
@@ -286,7 +288,7 @@ namespace Rtt
 			ImGui::SameLine();
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 			}
 			ImGui::End();
 		}
@@ -320,7 +322,7 @@ namespace Rtt
 					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 					{
 						OpenURL(fSaveToFolderInput);
-						PushEvent(sdl::onClosePopupModal);
+						PushEvent(sdl::onCloseDialog);
 					}
 					ImGui::SameLine();
 				}
@@ -328,7 +330,7 @@ namespace Rtt
 				s = "Done";
 				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 				{
-					PushEvent(sdl::onClosePopupModal);
+					PushEvent(sdl::onCloseDialog);
 				}
 				ImGui::SetItemDefaultFocus();
 
@@ -540,8 +542,9 @@ namespace Rtt
 	// DlgHTML5Build
 	//
 
-	DlgHTML5Build::DlgHTML5Build()
-		: fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
+	DlgHTML5Build::DlgHTML5Build(const std::string& title, int w, int h)
+		: DlgBuild(title, w, h)
+		, fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
 		, fBuildResult(NULL)
 		, fIncludeStandardResources(true)
 	{
@@ -627,7 +630,7 @@ namespace Rtt
 			ImGui::SameLine();
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 			}
 			ImGui::End();
 		}
@@ -654,14 +657,14 @@ namespace Rtt
 				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 				{
 					OpenURL(fSaveToFolderInput);
-					PushEvent(sdl::onClosePopupModal);
+					PushEvent(sdl::onCloseDialog);
 				}
 
 				s = "Done";
 				ImGui::SameLine();
 				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 				{
-					PushEvent(sdl::onClosePopupModal);
+					PushEvent(sdl::onCloseDialog);
 				}
 				ImGui::SetItemDefaultFocus();
 
@@ -770,8 +773,9 @@ namespace Rtt
 	// DlgLinuxdBuild
 	//
 
-	DlgLinuxBuild::DlgLinuxBuild()
-		: fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
+	DlgLinuxBuild::DlgLinuxBuild(const std::string& title, int w, int h)
+		: DlgBuild(title, w, h)
+		, fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
 		, fBuildResult(NULL)
 		, fIncludeStandardResources(false)
 	{
@@ -857,7 +861,7 @@ namespace Rtt
 			ImGui::SameLine();
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				PushEvent(sdl::onClosePopupModal);
+				PushEvent(sdl::onCloseDialog);
 			}
 			ImGui::End();
 		}
@@ -884,14 +888,14 @@ namespace Rtt
 				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 				{
 					OpenURL(fSaveToFolderInput);
-					PushEvent(sdl::onClosePopupModal);
+					PushEvent(sdl::onCloseDialog);
 				}
 
 				s = "Done";
 				ImGui::SameLine();
 				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 				{
-					PushEvent(sdl::onClosePopupModal);
+					PushEvent(sdl::onCloseDialog);
 				}
 				ImGui::SetItemDefaultFocus();
 

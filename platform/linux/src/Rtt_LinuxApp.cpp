@@ -56,7 +56,7 @@ namespace Rtt
 		, fWindow(NULL)
 		, fWidth(0)
 		, fHeight(0)
-		, imctx(NULL)
+		, fImCtx(NULL)
 		, fActivityIndicator(false)
 	{
 	}
@@ -109,7 +109,7 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-		fConsole = new DlgConsole(&fLogData);
+		fConsole = new DlgConsole("Solar2D simulator Console", 640, 480, &fLogData);
 
 		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI; // | SDL_WINDOW_BORDERLESS;
 		windowStyle |= SDL_WINDOW_RESIZABLE;
@@ -123,7 +123,7 @@ namespace Rtt
 		// Setup Dear ImGui context
 
 		IMGUI_CHECKVERSION();
-		imctx = ImGui::CreateContext();
+		fImCtx = ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 
@@ -163,14 +163,17 @@ namespace Rtt
 	bool SolarApp::PollEvents()
 	{
 		vector<SDL_Event> events;
-		ImGuiIO& io = ImGui::GetIO();
-
 		SDL_Event evt;
 		while (SDL_PollEvent(&evt))
 		{
 			// GUI
 			ImGui_ImplSDL2_ProcessEvent(&evt);
-			fConsole->ProcessEvent(&evt);
+
+			if (fConsole)
+				fConsole->ProcessEvent(evt);
+
+			if (fDlg)
+				fDlg->ProcessEvent(evt);
 
 			if (evt.type == SDL_QUIT)
 				return false;
@@ -180,12 +183,13 @@ namespace Rtt
 			events.push_back(evt);
 		}
 
+		ImGuiIO& io = ImGui::GetIO();
 		for (int i = 0; i < events.size(); i++)
 		{
 			//SDL_Log("SDL_EVENT %d\n", event.type);
 			//U64 start_time = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
-			SDL_Event& e = events[i];
-			switch (e.type)
+			const SDL_Event& evt = events[i];
+			switch (evt.type)
 			{
 			case SDL_APP_WILLENTERFOREGROUND:
 			{
@@ -200,35 +204,45 @@ namespace Rtt
 			case SDL_WINDOWEVENT:
 			{
 				//SDL_Log("SDL_WINDOWEVENT %d: %d %d,%d", e.window.windowID, e.window.event, e.window.data1, e.window.data2);
-				switch (e.window.event)
+				switch (evt.window.event)
 				{
 				case SDL_WINDOWEVENT_SHOWN:
 				case SDL_WINDOWEVENT_RESTORED:
-					fContext->Resume();
+					if (evt.window.windowID == SDL_GetWindowID(fWindow))
+					{
+						fContext->Resume();
+					}
 					break;
 				case SDL_WINDOWEVENT_HIDDEN:
 				case SDL_WINDOWEVENT_MINIMIZED:
-					fContext->Pause();
+					if (evt.window.windowID == SDL_GetWindowID(fWindow))
+					{
+						fContext->Pause();
+					}
 					break;
 				case SDL_WINDOWEVENT_SIZE_CHANGED:
 				{
-					SDL_DisplayMode dm;
-					SDL_GetDesktopDisplayMode(0, &dm);
-					if (fWidth != dm.w && fHeight != dm.h)
+					if (evt.window.windowID == SDL_GetWindowID(fWindow))
 					{
-						//SDL_Log("SDL_WINDOWEVENT_SIZE_CHANGED old %d,%d new %d,%d", fWidth, fHeight, dm.w, dm.h);
-						fWidth = dm.w;
-						fHeight = dm.h;
-						//fPlatform->setWindow(fWindow, fOrientation, dm.w, dm.h);
 
-						//fRuntime->WindowSizeChanged();
-						//fRuntime->RestartRenderer(fOrientation);
-						//fRuntime->GetDisplay().Invalidate();
+						SDL_DisplayMode dm;
+						SDL_GetDesktopDisplayMode(0, &dm);
+						if (fWidth != dm.w && fHeight != dm.h)
+						{
+							//SDL_Log("SDL_WINDOWEVENT_SIZE_CHANGED old %d,%d new %d,%d", fWidth, fHeight, dm.w, dm.h);
+							fWidth = dm.w;
+							fHeight = dm.h;
+							//fPlatform->setWindow(fWindow, fOrientation, dm.w, dm.h);
 
-						//fRuntime->DispatchEvent(ResizeEvent());
+							//fRuntime->WindowSizeChanged();
+							//fRuntime->RestartRenderer(fOrientation);
+							//fRuntime->GetDisplay().Invalidate();
 
-						// refresh native elements
-	//					jsContextResizeNativeObjects();
+							//fRuntime->DispatchEvent(ResizeEvent());
+
+							// refresh native elements
+		//					jsContextResizeNativeObjects();
+						}
 					}
 					break;
 				}
@@ -245,7 +259,7 @@ namespace Rtt
 			{
 				int w, h;
 				SDL_GetWindowSize(fWindow, &w, &h);
-				SDL_TouchFingerEvent& ef = e.tfinger;
+				const SDL_TouchFingerEvent& ef = evt.tfinger;
 				fContext->GetMouseListener()->TouchDown(w * ef.x, h * ef.y, ef.fingerId);
 				break;
 			}
@@ -253,7 +267,7 @@ namespace Rtt
 			{
 				int w, h;
 				SDL_GetWindowSize(fWindow, &w, &h);
-				SDL_TouchFingerEvent& ef = e.tfinger;
+				const SDL_TouchFingerEvent& ef = evt.tfinger;
 				fContext->GetMouseListener()->TouchUp(w * ef.x, h * ef.y, ef.fingerId);
 				break;
 			}
@@ -261,7 +275,7 @@ namespace Rtt
 			{
 				int w, h;
 				SDL_GetWindowSize(fWindow, &w, &h);
-				SDL_TouchFingerEvent& ef = e.tfinger;
+				const SDL_TouchFingerEvent& ef = evt.tfinger;
 				fContext->GetMouseListener()->TouchMoved(w * ef.x, h * ef.y, ef.fingerId);
 				break;
 			}
@@ -270,7 +284,7 @@ namespace Rtt
 				if (fDlg)
 					break;
 
-				const SDL_MouseButtonEvent& b = e.button;
+				const SDL_MouseButtonEvent& b = evt.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
 					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -309,7 +323,7 @@ namespace Rtt
 				if (fDlg)
 					break;
 
-				const SDL_MouseButtonEvent& b = e.button;
+				const SDL_MouseButtonEvent& b = evt.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
 					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -360,7 +374,7 @@ namespace Rtt
 				if (fDlg)
 					break;
 
-				const SDL_MouseButtonEvent& b = e.button;
+				const SDL_MouseButtonEvent& b = evt.button;
 				if (b.which != SDL_TOUCH_MOUSEID)
 				{
 					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -399,7 +413,7 @@ namespace Rtt
 				if (fDlg)
 					break;
 
-				const SDL_MouseWheelEvent& w = e.wheel;
+				const SDL_MouseWheelEvent& w = evt.wheel;
 				if (w.which != SDL_TOUCH_MOUSEID)
 				{
 					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -437,7 +451,7 @@ namespace Rtt
 			}
 
 			default:
-				SolarEvent(e);
+				SolarEvent(evt);
 				break;
 			}
 
@@ -461,13 +475,17 @@ namespace Rtt
 		while (1)
 		{
 			U64 start_time = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
-			
+
 			if (!PollEvents())
 				break;
 
-			fConsole->Draw();
+			if (fConsole)
+				fConsole->Draw();
 
 			fContext->advance();
+
+			if (fDlg)
+				fDlg->Draw();
 
 			int advance_time = (int)(Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime()) - start_time);
 			//			Rtt_Log("advance_time %d\n", advance_time);
@@ -491,8 +509,11 @@ namespace Rtt
 
 	void SolarApp::RenderGUI()
 	{
-		if (imctx == NULL)
+		if (fImCtx == NULL)
 			return;
+
+		SDL_GL_MakeCurrent(fWindow, fGLcontext);
+		ImGui::SetCurrentContext(fImCtx);
 
 		// draw GUI
 		ImGui_ImplOpenGL3_NewFrame();
@@ -508,7 +529,7 @@ namespace Rtt
 			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 			ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
-			if (ImGui::Begin("##Suspended", NULL, ImGuiWindowFlags_NoDecoration| ImGuiWindowFlags_NoInputs))
+			if (ImGui::Begin("##Suspended", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
 			{
 				ImGui::Text("Suspended");
 				ImGui::End();
@@ -519,11 +540,6 @@ namespace Rtt
 		ImGui::BeginDisabled(fDlg != NULL);
 		fMenu->Draw();
 		ImGui::EndDisabled();
-
-		if (fDlg)
-		{
-			fDlg->Draw();
-		}
 
 		if (fActivityIndicator)
 		{

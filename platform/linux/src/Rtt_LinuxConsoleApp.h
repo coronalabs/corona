@@ -10,19 +10,12 @@ namespace Rtt
 {
 	struct DlgConsole : public Dlg
 	{
-		DlgConsole(std::string* logData);
+		DlgConsole(const std::string& title, int w, int h, std::string* logData);
 		virtual ~DlgConsole();
 
-		void ProcessEvent(SDL_Event* evt);
 		void Draw() override;
 
 	private:
-
-		SDL_Window* fWindow;       
-		SDL_GLContext fGLcontext;
-		ImGuiContext* fImCtx;
-
 		std::string* fLogData;	
-
 	};
 }
