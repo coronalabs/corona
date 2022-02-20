@@ -32,7 +32,7 @@ slots:
 
 apps:
   solar2d:
-    command: usr/local/bin/Solar2D/Solar2D
+    command: usr/local/bin/Solar2D/Solar2DSimulator
     environment:
       LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/usr/lib/x86_64-linux-gnu/dri::${SNAP}/usr/lib/x86_64-linux-gnu
       JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64

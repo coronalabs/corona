@@ -34,7 +34,7 @@ using namespace std;
 // global
 Rtt::SolarSimulator* solarSimulator = NULL;
 
-int LinuxLog(const char* buf, int len)
+void LinuxLog(const char* buf, int len)
 {
 	app->Log(buf, len);
 }
@@ -275,6 +275,7 @@ namespace Rtt
 
 	void SolarSimulator::WatchFolder(const char* path, const char* appName)
 	{
+		return;
 		fWatcher = NULL;
 		if (!IsHomeScreen(appName))
 		{
@@ -321,7 +322,7 @@ namespace Rtt
 			fContext->LoadApp();
 			fMenu = new DlgMenu(fContext->GetAppName());
 
-			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
+		//	WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
 			string newWindowTitle(fContext->GetTitle());
 
@@ -649,7 +650,7 @@ namespace Rtt
 		string appName = fContext->GetAppName();
 		fMenu = new DlgMenu(fContext->GetAppName());
 
-		WatchFolder(fContext->GetAppPath(), appName.c_str());
+	//	WatchFolder(fContext->GetAppPath(), appName.c_str());
 
 		if (!IsHomeScreen(appName))
 		{

@@ -13,10 +13,8 @@
 #include "Core/Rtt_Types.h"
 #include "Core/Rtt_Assert.h"
 
-#ifdef Rtt_LINUX_ENV
-#ifndef CORONABUILDER_LINUX
-int LinuxLog(const char* buf, int len);
-#endif
+#ifdef Rtt_LINUX_ENV 
+void LinuxLog(const char* buf, int len);
 #endif
 
 #ifdef Rtt_EMSCRIPTEN_ENV
@@ -245,7 +243,7 @@ Rtt_VLogException(const char* format, va_list ap)
 	va_list apCopy;
 	va_copy(apCopy, ap);
 
-	int n = vsnprintf(buffer, 4096, format, apCopy);
+	int n = vsnprintf(buffer, sizeof(buffer) - 1, format, apCopy);
 	if (n > 0)
 	{
 		LinuxLog(buffer, n);
