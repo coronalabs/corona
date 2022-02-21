@@ -58,7 +58,7 @@ enum sdl
 	OnShake,
 	OnZoomIn,
 	OnZoomOut,
-	OnConsole,
+	OnSetFocusConsole,
 	OnStyleColorsLight,
 	OnStyleColorsClassic,
 	OnStyleColorsDark
@@ -91,6 +91,8 @@ namespace Rtt
 		virtual void ConfigLoad() {};
 		virtual void ConfigSave() {};
 		virtual std::map<std::string, std::string>* ConfigGet() { return NULL; }
+
+		virtual void LoadSkins() {};
 
 		const char* GetAppName() const { return fContext->GetAppName(); }
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
@@ -130,6 +132,7 @@ namespace Rtt
 		// console
 		std::string fLogData;
 		smart_ptr<DlgConsole> fConsole;
+		std::map<std::string, std::vector<std::string>> fSkins;
 	};
 
 	//
@@ -143,8 +146,8 @@ namespace Rtt
 		bool Start(const std::string& folder);
 		void Stop();
 
-		// thread func timer callback
-		void Advance();
+		// thread func
+		void Watch();
 
 	private:
 		smart_ptr<mythread> fThread;

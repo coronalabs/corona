@@ -41,14 +41,18 @@ namespace Rtt
 		void ConfigSet(const char* key, int val);
 		virtual std::map<std::string, std::string>* ConfigGet() override { return &fConfig; }
 
+		void LoadSkins() override;
+
 	private:
 
 		std::map<std::string, std::string> fConfig;
 		smart_ptr<FileWatcher> fWatcher;
 		bool fRelaunchedViaFileEvent;
 		std::string fConfigFilePath;
+
 		int currentSkinWidth;
 		int currentSkinHeight;
+		int currentSkinID;
 	};
 }
 

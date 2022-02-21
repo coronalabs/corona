@@ -18,6 +18,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+#include <map>
 
 namespace Rtt
 {
@@ -34,6 +35,7 @@ namespace Rtt
 
 		virtual void Draw() = 0;
 		void ProcessEvent(const SDL_Event& evt);
+		SDL_Window* GetWindow() const { return fWindow; }
 
 	protected:
 
@@ -75,14 +77,15 @@ namespace Rtt
 
 	struct DlgMenu : public ref_counted
 	{
-		DlgMenu(const std::string& appName)
-		{
-			isMainMenu = appName == "homescreen";
-		}
+		DlgMenu(const std::string& appName, const std::map<std::string, std::vector<std::string>>& skins);
+
 		void Draw();
+		void DrawView(const std::string& name);
 
 	private:
+
 		bool isMainMenu;
+		const std::map<std::string, std::vector<std::string>>& fSkins;
 	};
 
 	struct DlgNewProject : public Dlg

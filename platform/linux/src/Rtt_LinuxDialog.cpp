@@ -322,6 +322,28 @@ namespace Rtt
 	// Menu
 	//
 
+	DlgMenu::DlgMenu(const std::string& appName, const std::map<std::string, std::vector<std::string>>& skins)
+		: fSkins(skins)
+	{
+		isMainMenu = appName == "homescreen";
+	}
+
+	void DlgMenu::DrawView(const string& name)
+	{
+		auto it = fSkins.find(name);
+		if (it != fSkins.end())
+		{
+			const vector<string>& skins = it->second;
+			for (int i = 0; i < skins.size(); i++)
+			{
+				if (ImGui::MenuItem(skins[i].c_str(), NULL))
+				{
+					PushEvent(sdl::OnZoomIn);
+				}
+			}
+		}
+	}
+
 	void DlgMenu::Draw()
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -579,8 +601,39 @@ namespace Rtt
 						PushEvent(sdl::OnZoomOut);
 					}
 					ImGui::Separator();
-					if (ImGui::MenuItem("View As...", NULL))
+					if (ImGui::BeginMenu("View As..."))
 					{
+						if (ImGui::BeginMenu("Generic Android  "))
+						{
+							DrawView("genericAndroid");
+							ImGui::EndMenu();
+						}
+						if (ImGui::BeginMenu("Named Android"))
+						{
+							DrawView("namedAndroid");
+							ImGui::EndMenu();
+						}
+						if (ImGui::BeginMenu("Generic iOS"))
+						{
+							DrawView("genericIOS");
+							ImGui::EndMenu();
+						}
+						if (ImGui::BeginMenu("Named iOS"))
+						{
+							DrawView("namedIOS");
+							ImGui::EndMenu();
+						}
+						if (ImGui::BeginMenu("TV"))
+						{
+							DrawView("tv");
+							ImGui::EndMenu();
+						}
+						if (ImGui::BeginMenu("Desktop"))
+						{
+							DrawView("desktop");
+							ImGui::EndMenu();
+						}
+						ImGui::EndMenu();
 					}
 					ImGui::Separator();
 					if (ImGui::MenuItem("Welcome screen", NULL))
@@ -589,7 +642,7 @@ namespace Rtt
 					}
 					if (ImGui::MenuItem("Console", NULL))
 					{
-						PushEvent(sdl::OnConsole);
+						PushEvent(sdl::OnSetFocusConsole);
 					}
 					ImGui::EndMenu();
 				}
@@ -987,12 +1040,8 @@ namespace Rtt
 
 	void DlgAskRelaunch::Draw()
 	{
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-
-		const char* title = "Solar2D Simulator";
-		if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		begin();
+		if (ImGui::Begin("##DlgAskRelaunch", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -1023,9 +1072,9 @@ namespace Rtt
 				SaveMyPreference("Never");
 				PushEvent(sdl::onCloseDialog);
 			}
-			ImGui::EndPopup();
+			ImGui::End();
 		}
-		ImGui::OpenPopup(title);
+		end();
 	}
 
 	void DlgAskRelaunch::SaveMyPreference(const char* val)

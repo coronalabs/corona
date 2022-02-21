@@ -36,7 +36,8 @@ Rtt::SolarSimulator* solarSimulator = NULL;
 
 void LinuxLog(const char* buf, int len)
 {
-	app->Log(buf, len);
+	if (app)
+		app->Log(buf, len);
 }
 
 namespace Rtt
@@ -50,7 +51,9 @@ namespace Rtt
 		, fRelaunchedViaFileEvent(false)
 		, currentSkinWidth(0)
 		, currentSkinHeight(0)
+		, currentSkinID(0)
 	{
+		app = this;
 		solarSimulator = this;		// save
 
 		const char* homeDir = GetHomePath();
@@ -96,7 +99,7 @@ namespace Rtt
 
 		const string& lastProjectDirectory = ConfigStr("lastProjectDirectory");
 		fContext = new SolarAppContext(fWindow, ConfigInt("ShowWelcome") && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
-		fMenu = new DlgMenu(fContext->GetAppName());
+		fMenu = new DlgMenu(fContext->GetAppName(), fSkins);
 
 		SDL_SetWindowPosition(fWindow, ConfigInt("windowXPos"), ConfigInt("windowYPos"));
 		if (fContext->LoadApp())
@@ -113,10 +116,11 @@ namespace Rtt
 
 			currentSkinWidth = ConfigInt("skinWidth");
 			currentSkinHeight = ConfigInt("skinHeight");
+			LoadSkins();
 			return true;
 		}
 		return false;
-		}
+	}
 
 	void SolarSimulator::SolarEvent(const SDL_Event& e)
 	{
@@ -278,6 +282,13 @@ namespace Rtt
 			ImGui::StyleColorsDark();
 			break;
 
+		case sdl::OnSetFocusConsole:
+			if (fConsole)
+			{
+				SDL_RaiseWindow(fConsole->GetWindow());
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -285,7 +296,6 @@ namespace Rtt
 
 	void SolarSimulator::WatchFolder(const char* path, const char* appName)
 	{
-		return;
 		fWatcher = NULL;
 		if (!IsHomeScreen(appName))
 		{
@@ -330,9 +340,9 @@ namespace Rtt
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
 			fContext->LoadApp();
-			fMenu = new DlgMenu(fContext->GetAppName());
+			fMenu = new DlgMenu(fContext->GetAppName(), fSkins);
 
-		//	WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
+			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
 			string newWindowTitle(fContext->GetTitle());
 
@@ -340,133 +350,86 @@ namespace Rtt
 				//		newWindowTitle.append(" - ").append(sProperties.skinTitle);
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName(), fContext->GetPlatform());
 
-			//	SetMenu(fAppPath.c_str());
 			SetTitle(newWindowTitle);
-			//fFileSystemEventTimestamp = wxGetUTCTimeMillis();
 		}
 	}
 
-	/*void SolarSimulator::SetMenu(const char* appPath)
+	void SolarSimulator::LoadSkins()
 	{
-		const string& appName = GetContext()->GetAppName();
-		if (!IsHomeScreen(appName) && fViewMenu->FindItem("View As") == -1)
+		//	int currentSkinID = ID_MENU_VIEW_AS;
+
+		const char* startupPath = GetStartupPath(NULL);
+		string skinDirPath(startupPath);
+		skinDirPath.append("/Resources");
+		if (!Rtt_IsDirectory(skinDirPath.c_str()))
 		{
-			wxMenu* viewAsMenu = new wxMenu();
-			fViewAsAndroidMenu = new wxMenu();
-			fViewAsIOSMenu = new wxMenu();
-			fViewAsTVMenu = new wxMenu();
-			fViewAsDesktopMenu = new wxMenu();
-			vector<string>namedAndroidSkins;
-			vector<string>genericAndroidSkins;
-			vector<string>namedIOSSkins;
-			vector<string>genericIOSSkins;
-			vector<string>tvSkins;
-			vector<string>desktopSkins;
-			int currentSkinID = ID_MENU_VIEW_AS;
+			Rtt_LogException("No Resources dir in %s!\n", startupPath);
+			return;
+		}
 
-			const char* startupPath = GetStartupPath(NULL);
-			string skinDirPath(startupPath);
-			skinDirPath.append("/Resources");
-			if (!Rtt_IsDirectory(skinDirPath.c_str()))
+		skinDirPath.append("/Skins");
+		if (!Rtt_IsDirectory(skinDirPath.c_str()))
+		{
+			Rtt_LogException("Skin directory not found in /Resources!\n");
+			return;
+		}
+
+		lua_State* L = GetContext()->GetRuntime()->VMContext().L();
+		vector<string> skins = Rtt_ListFiles(skinDirPath.c_str());
+		for (int i = 0; i < skins.size(); i++)
+		{
+			const string& filename = skins[i];
+			if (filename.rfind(".lua") != string::npos && LinuxSimulatorView::LoadSkin(L, currentSkinID, filename))
 			{
-				Rtt_LogException("No Resources dir in %s!\n", startupPath);
-				return;
-			}
+				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(currentSkinID);
 
-			skinDirPath.append("/Skins");
-			wxDir skinDir(skinDirPath);
-			if (!skinDir.IsOpened())
-			{
-				Rtt_LogException("Skin directory not found in /Resources!\n");
-				return;
-			}
+				string skinTitle(sProperties.windowTitleBarName);
+				skinTitle.append(to_string(sProperties.screenWidth));
+				skinTitle.append("x");
+				skinTitle.append(to_string(sProperties.screenHeight));
 
-
-			if (!skinDir.IsOpened())
-			{
-				Rtt_LogException("Skin directory not found in /Resources!\n");
-				return;
-			}
-
-			wxString filename;
-			lua_State* L = GetContext()->GetRuntime()->VMContext().L();
-			bool fileExists = skinDir.GetFirst(&filename, wxEmptyString, wxDIR_DEFAULT);
-
-			while (fileExists)
-			{
-				if (filename.EndsWith(".lua"))
+				if (sProperties.device.find("android") != string::npos && !sProperties.device.find("tv") != string::npos)
 				{
-					wxString luaSkinPath(skinDirPath);
-					luaSkinPath.append("/").append(filename);
-
-					LinuxSimulatorView::LoadSkin(L, currentSkinID, luaSkinPath.ToStdString());
-					LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(currentSkinID);
-					wxString skinTitle(sProperties.windowTitleBarName);
-					skinTitle.append(wxString::Format(wxT(" (%ix%i)"), sProperties.screenWidth, sProperties.screenHeight));
-
-					if (sProperties.device.Contains("android") && !sProperties.device.Contains("tv"))
+					if (sProperties.device.find("borderless") != string::npos)
 					{
-						if (sProperties.device.Contains("borderless"))
-						{
-							genericAndroidSkins.push_back(skinTitle.ToStdString());
-						}
-						else
-						{
-							namedAndroidSkins.push_back(skinTitle.ToStdString());
-						}
+						fSkins["genericAndroid"].push_back(skinTitle);
 					}
-					else if (sProperties.device.Contains("ios"))
+					else
 					{
-						if (sProperties.device.Contains("borderless"))
-						{
-							genericIOSSkins.push_back(skinTitle.ToStdString());
-						}
-						else
-						{
-							namedIOSSkins.push_back(skinTitle.ToStdString());
-						}
-					}
-					else if (sProperties.device.Contains("tv"))
-					{
-						tvSkins.push_back(skinTitle.ToStdString());
-					}
-					else if (sProperties.device.Contains("desktop"))
-					{
-						desktopSkins.push_back(skinTitle.ToStdString());
+						fSkins["namedAndroid"].push_back(skinTitle);
 					}
 				}
-
-				currentSkinID++;
-				fileExists = skinDir.GetNext(&filename);
+				else if (sProperties.device.find("ios") != string::npos)
+				{
+					if (sProperties.device.find("borderless") != string::npos)
+					{
+						fSkins["genericIOS"].push_back(skinTitle);
+					}
+					else
+					{
+						fSkins["namedIOS"].push_back(skinTitle);
+					}
+				}
+				else if (sProperties.device.find("tv") != string::npos)
+				{
+					fSkins["tv"].push_back(skinTitle);
+				}
+				else if (sProperties.device.find("desktop") != string::npos)
+				{
+					fSkins["desktop"].push_back(skinTitle);
+				}
 			}
-
-			// sort all the skin vectors by name
-			sort(namedAndroidSkins.begin(), namedAndroidSkins.end(), SortVectorByName);
-			sort(genericAndroidSkins.begin(), genericAndroidSkins.end(), SortVectorByName);
-			sort(namedIOSSkins.begin(), namedIOSSkins.end(), SortVectorByName);
-			sort(genericIOSSkins.begin(), genericIOSSkins.end(), SortVectorByName);
-			sort(tvSkins.begin(), tvSkins.end(), SortVectorByName);
-			sort(desktopSkins.begin(), desktopSkins.end(), SortVectorByName);
-
-			// setup the child "view as" menus
-			CreateViewAsChildMenu(namedAndroidSkins, fViewAsAndroidMenu);
-			fViewAsAndroidMenu->AppendSeparator();
-			CreateViewAsChildMenu(genericAndroidSkins, fViewAsAndroidMenu);
-			CreateViewAsChildMenu(namedIOSSkins, fViewAsIOSMenu);
-			fViewAsIOSMenu->AppendSeparator();
-			CreateViewAsChildMenu(genericIOSSkins, fViewAsIOSMenu);
-			CreateViewAsChildMenu(tvSkins, fViewAsTVMenu);
-			CreateViewAsChildMenu(desktopSkins, fViewAsDesktopMenu);
-
-			viewAsMenu->AppendSubMenu(fViewAsAndroidMenu, _T("&Android"));
-			viewAsMenu->AppendSubMenu(fViewAsIOSMenu, _T("&iOS"));
-			viewAsMenu->AppendSubMenu(fViewAsTVMenu, _T("&TV"));
-			viewAsMenu->AppendSubMenu(fViewAsDesktopMenu, _T("&Desktop"));
-			fViewMenu->AppendSubMenu(viewAsMenu, _T("&View As"));
-			fViewMenu->AppendSeparator();
-			fViewMenu->Append(ID_MENU_OPEN_WELCOME_SCREEN, _T("&Welcome Screen"));
+			currentSkinID++;
 		}
-	}*/
+
+		// sort all the skin vectors by name
+		sort(fSkins["namedAndroid"].begin(), fSkins["namedAndroid"].end(), SortVectorByName);
+		sort(fSkins["genericAndroid"].begin(), fSkins["genericAndroid"].end(), SortVectorByName);
+		sort(fSkins["namedIOS"].begin(), fSkins["namedIOS"].end(), SortVectorByName);
+		sort(fSkins["genericIOS"].begin(), fSkins["genericIOS"].end(), SortVectorByName);
+		sort(fSkins["tv"].begin(), fSkins["tv"].end(), SortVectorByName);
+		sort(fSkins["desktop"].begin(), fSkins["desktop"].end(), SortVectorByName);
+	}
 
 	void SolarSimulator::OnZoomIn()
 	{
@@ -554,8 +517,8 @@ namespace Rtt
 				currentSkinHeight = sProperties.screenHeight;
 				int initialWidth = sProperties.screenWidth;
 				int initialHeight = sProperties.screenHeight;
-				wxString newWindowTitle(GetContext()->GetTitle());
-				newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
+				string newWindowTitle(GetContext()->GetTitle());
+				newWindowTitle.append(" - ").append(sProperties.skinTitle.c_str());
 				bool canZoom = sProperties.screenWidth > LinuxSimulatorView::skinMinWidth;
 
 				if (sProperties.selected)
@@ -603,8 +566,8 @@ namespace Rtt
 
 					if (sProperties.id == ConfigInt("skinID"))
 					{
-						wxString newWindowTitle(GetContext()->GetTitle());
-						newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
+						string newWindowTitle(GetContext()->GetTitle());
+						newWindowTitle.append(" - ").append(sProperties.skinTitle.c_str());
 
 						LinuxSimulatorView::SelectSkin(sProperties.id);
 						currentSkin->Check(true);
@@ -660,9 +623,9 @@ namespace Rtt
 		}
 
 		string appName = fContext->GetAppName();
-		fMenu = new DlgMenu(fContext->GetAppName());
+		fMenu = new DlgMenu(fContext->GetAppName(), fSkins);
 
-	//	WatchFolder(fContext->GetAppPath(), appName.c_str());
+		WatchFolder(fContext->GetAppPath(), appName.c_str());
 
 		if (!IsHomeScreen(appName))
 		{
@@ -791,4 +754,4 @@ namespace Rtt
 		fConfig[key] = ::to_string(val);
 	}
 
-	}
+}

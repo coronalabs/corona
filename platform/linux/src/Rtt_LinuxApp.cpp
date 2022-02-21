@@ -155,7 +155,7 @@ namespace Rtt
 	bool SolarApp::LoadApp()
 	{
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
-		fMenu = new DlgMenu(fContext->GetAppName());
+		fMenu = new DlgMenu(fContext->GetAppName(), fSkins);
 		return fContext->LoadApp();
 	}
 
@@ -602,7 +602,7 @@ namespace Rtt
 		fcntl(m_inotify_fd, F_SETFL, fcntl(m_inotify_fd, F_GETFL) | O_NONBLOCK);
 
 		fThread = new mythread();
-		fThread->start([this]() { Advance(); });
+		fThread->start([this]() { Watch(); });
 
 		return true;
 	}
@@ -629,7 +629,7 @@ namespace Rtt
 	}
 
 	// thread func
-	void FileWatcher::Advance()
+	void FileWatcher::Watch()
 	{
 		while (fThread && fThread->is_running())
 		{
@@ -646,7 +646,8 @@ namespace Rtt
 					switch (rc)
 					{
 					case EAGAIN:
-						return;
+						length = 0;
+						break;
 					default:
 						Rtt_LogException("failed to read onFileChanged event\n");
 						Stop();
@@ -654,7 +655,7 @@ namespace Rtt
 					}
 				}
 
-				// actually read return the list of change events happens. Here, read the change event one by one and process it accordingly.
+				// actually the read returns the list of change events happens. Here, read the change event one by one and process it accordingly.
 				int i = 0;
 				while (i < length)
 				{
@@ -666,7 +667,6 @@ namespace Rtt
 						e.user.code = event->mask;
 						e.user.data1 = strdup(event->name);
 						SDL_PushEvent(&e);
-
 					}
 					i += EVENT_SIZE + event->len;
 				}
