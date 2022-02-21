@@ -76,7 +76,9 @@ namespace Rtt
 		ReadVersion();
 
 		fileDialogKeyStore.SetTitle("Browse For Keystore");
+		fileDialogKeyStore.SetWindowSize(w, h);
 		fileDialogSaveTo.SetTitle("Browse For Folder");
+		fileDialogSaveTo.SetWindowSize(w, h);
 	}
 
 	DlgAndroidBuild::~DlgAndroidBuild()
@@ -161,28 +163,26 @@ namespace Rtt
 
 	void DlgAndroidBuild::Draw()
 	{
-		const ImVec2& window_size = ImGui::GetWindowSize();
-		LinuxPlatform* platform = app->GetPlatform();
-
-		fileDialogKeyStore.Display();
-		if (fileDialogKeyStore.HasSelected())
+		begin();
+		if (ImGui::Begin("##DlgAndroidBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
-			strncpy(fKeyStoreInput, fileDialogKeyStore.GetSelected().string().c_str(), sizeof(fKeyStoreInput));
-			fileDialogKeyStore.ClearSelected();
-		}
-		fileDialogSaveTo.Display();
-		if (fileDialogSaveTo.HasSelected())
-		{
-			strncpy(fSaveToFolderInput, fileDialogSaveTo.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
-			fileDialogSaveTo.ClearSelected();
-		}
+			const ImVec2& window_size = ImGui::GetWindowSize();
+			LinuxPlatform* platform = app->GetPlatform();
 
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			fileDialogKeyStore.Display();
+			if (fileDialogKeyStore.HasSelected())
+			{
+				strncpy(fKeyStoreInput, fileDialogKeyStore.GetSelected().string().c_str(), sizeof(fKeyStoreInput));
+				fileDialogKeyStore.ClearSelected();
+			}
 
-		if (ImGui::Begin("Android Build Setup", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
-		{
+			fileDialogSaveTo.Display();
+			if (fileDialogSaveTo.HasSelected())
+			{
+				strncpy(fSaveToFolderInput, fileDialogSaveTo.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
+				fileDialogSaveTo.ClearSelected();
+			}
+
 			string s;
 			ImGui::Dummy(ImVec2(10, 10));
 			ImGui::PushItemWidth(350);		// input field width
@@ -290,6 +290,41 @@ namespace Rtt
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
+
+			if (fBuildResult)
+			{
+				// display result
+				const char* title = "Solar2D Simulator";
+				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::Dummy(ImVec2(100, 10));
+					ImGui::Text(fBuildResult);
+
+					string s;
+					ImGui::Dummy(ImVec2(100, 30));
+					int ok_width = 100;
+					ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+					if (fBuildSuccessed == 0)
+					{
+						s = "View";
+						if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+						{
+							OpenURL(fSaveToFolderInput);
+							PushEvent(sdl::onCloseDialog);
+						}
+						ImGui::SameLine();
+					}
+
+					s = "Done";
+					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+					{
+						PushEvent(sdl::onCloseDialog);
+					}
+					ImGui::SetItemDefaultFocus();
+					ImGui::EndPopup();
+				}
+				ImGui::OpenPopup(title);
+			}
 			ImGui::End();
 		}
 
@@ -303,41 +338,7 @@ namespace Rtt
 			}
 		}
 
-		if (fBuildResult)
-		{
-			// display result
-			const char* title = "Solar2D Simulator";
-			if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
-			{
-				ImGui::Dummy(ImVec2(100, 10));
-				ImGui::Text(fBuildResult);
-
-				string s;
-				ImGui::Dummy(ImVec2(100, 30));
-				int ok_width = 100;
-				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-				if (fBuildSuccessed == 0)
-				{
-					s = "View";
-					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-					{
-						OpenURL(fSaveToFolderInput);
-						PushEvent(sdl::onCloseDialog);
-					}
-					ImGui::SameLine();
-				}
-
-				s = "Done";
-				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-				{
-					PushEvent(sdl::onCloseDialog);
-				}
-				ImGui::SetItemDefaultFocus();
-
-				ImGui::EndPopup();
-			}
-			ImGui::OpenPopup(title);
-		}
+		end();
 	}
 
 	// thread function
@@ -553,7 +554,8 @@ namespace Rtt
 		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
 		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
 
-		fileDialog.SetTitle("Browse For Folder");
+		fileDialog.SetTitle("Save To Folder");
+		fileDialog.SetWindowSize(w, h);
 	}
 
 	DlgHTML5Build::~DlgHTML5Build()
@@ -562,22 +564,19 @@ namespace Rtt
 
 	void DlgHTML5Build::Draw()
 	{
-		const ImVec2& window_size = ImGui::GetWindowSize();
-		LinuxPlatform* platform = app->GetPlatform();
-
-		fileDialog.Display();
-		if (fileDialog.HasSelected())
+		begin();
+		if (ImGui::Begin("##DlgHTML5Build", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
-			strncpy(fSaveToFolderInput, fileDialog.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
-			fileDialog.ClearSelected();
-		}
+			const ImVec2& window_size = ImGui::GetWindowSize();
+			LinuxPlatform* platform = app->GetPlatform();
 
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			fileDialog.Display();
+			if (fileDialog.HasSelected())
+			{
+				strncpy(fSaveToFolderInput, fileDialog.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
+				fileDialog.ClearSelected();
+			}
 
-		if (ImGui::Begin("HTML5 Build Setup", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
-		{
 			string s;
 			ImGui::Dummy(ImVec2(10, 10));
 			ImGui::PushItemWidth(350);		// input field width
@@ -632,46 +631,52 @@ namespace Rtt
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
+
+			if (fBuildResult)
+			{
+				// display result
+				const char* title = "Solar2D Simulator";
+				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::Dummy(ImVec2(100, 10));
+					ImGui::Text(fBuildResult);
+
+					string s = "View";
+					ImGui::Dummy(ImVec2(100, 30));
+					int ok_width = 100;
+					ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+					{
+						OpenURL(fSaveToFolderInput);
+						PushEvent(sdl::onCloseDialog);
+					}
+
+					s = "Done";
+					ImGui::SameLine();
+					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+					{
+						PushEvent(sdl::onCloseDialog);
+					}
+					ImGui::SetItemDefaultFocus();
+
+					ImGui::EndPopup();
+				}
+				ImGui::OpenPopup(title);
+			}
 			ImGui::End();
 		}
 
 		// builder ended ?
-		if (fThread && fThread->is_running() == false)
+		if (fThread)
 		{
-			fThread = NULL;
-		}
-
-		if (fBuildResult)
-		{
-			// display result
-			const char* title = "Solar2D Simulator";
-			if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+			DrawActivity();
+			if (fThread->is_running() == false)
 			{
-				ImGui::Dummy(ImVec2(100, 10));
-				ImGui::Text(fBuildResult);
-
-				string s = "View";
-				ImGui::Dummy(ImVec2(100, 30));
-				int ok_width = 100;
-				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-				{
-					OpenURL(fSaveToFolderInput);
-					PushEvent(sdl::onCloseDialog);
-				}
-
-				s = "Done";
-				ImGui::SameLine();
-				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-				{
-					PushEvent(sdl::onCloseDialog);
-				}
-				ImGui::SetItemDefaultFocus();
-
-				ImGui::EndPopup();
+				fThread = NULL;
 			}
-			ImGui::OpenPopup(title);
 		}
+
+		end();
 	}
 
 	// thread function
@@ -784,7 +789,8 @@ namespace Rtt
 		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
 		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
 
-		fileDialog.SetTitle("Browse For Folder");
+		fileDialog.SetTitle("Save To Folder");
+		fileDialog.SetWindowSize(w, h);
 	}
 
 	DlgLinuxBuild::~DlgLinuxBuild()
@@ -793,22 +799,19 @@ namespace Rtt
 
 	void DlgLinuxBuild::Draw()
 	{
-		const ImVec2& window_size = ImGui::GetWindowSize();
-		LinuxPlatform* platform = app->GetPlatform();
-
-		fileDialog.Display();
-		if (fileDialog.HasSelected())
+		begin();
+		if (ImGui::Begin("##DlgLinuxBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
-			strncpy(fSaveToFolderInput, fileDialog.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
-			fileDialog.ClearSelected();
-		}
+			const ImVec2& window_size = ImGui::GetWindowSize();
+			LinuxPlatform* platform = app->GetPlatform();
 
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			fileDialog.Display();
+			if (fileDialog.HasSelected())
+			{
+				strncpy(fSaveToFolderInput, fileDialog.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
+				fileDialog.ClearSelected();
+			}
 
-		if (ImGui::Begin("Linux Build Setup", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
-		{
 			string s;
 			ImGui::Dummy(ImVec2(10, 10));
 			ImGui::PushItemWidth(350);		// input field width
@@ -863,46 +866,52 @@ namespace Rtt
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
+
+			if (fBuildResult)
+			{
+				// display result
+				const char* title = "Solar2D Simulator";
+				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::Dummy(ImVec2(100, 10));
+					ImGui::Text(fBuildResult);
+
+					string s = "View";
+					ImGui::Dummy(ImVec2(100, 30));
+					int ok_width = 100;
+					ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+					{
+						OpenURL(fSaveToFolderInput);
+						PushEvent(sdl::onCloseDialog);
+					}
+
+					s = "Done";
+					ImGui::SameLine();
+					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+					{
+						PushEvent(sdl::onCloseDialog);
+					}
+					ImGui::SetItemDefaultFocus();
+
+					ImGui::EndPopup();
+				}
+				ImGui::OpenPopup(title);
+			}
 			ImGui::End();
 		}
 
 		// builder ended ?
-		if (fThread && fThread->is_running() == false)
+		if (fThread)
 		{
-			fThread = NULL;
-		}
-
-		if (fBuildResult)
-		{
-			// display result
-			const char* title = "Solar2D Simulator";
-			if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+			DrawActivity();
+			if (fThread->is_running() == false)
 			{
-				ImGui::Dummy(ImVec2(100, 10));
-				ImGui::Text(fBuildResult);
-
-				string s = "View";
-				ImGui::Dummy(ImVec2(100, 30));
-				int ok_width = 100;
-				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-				{
-					OpenURL(fSaveToFolderInput);
-					PushEvent(sdl::onCloseDialog);
-				}
-
-				s = "Done";
-				ImGui::SameLine();
-				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-				{
-					PushEvent(sdl::onCloseDialog);
-				}
-				ImGui::SetItemDefaultFocus();
-
-				ImGui::EndPopup();
+				fThread = NULL;
 			}
-			ImGui::OpenPopup(title);
 		}
+
+		end();
 	}
 
 	// thread function

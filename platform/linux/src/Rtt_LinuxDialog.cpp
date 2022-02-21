@@ -93,7 +93,7 @@ namespace Rtt
 
 	Dlg::Dlg(const string& title, int w, int h)
 	{
-		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL);
+		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
 
 		ImGuiContext* imctx = ImGui::GetCurrentContext();
@@ -139,7 +139,7 @@ namespace Rtt
 		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
 		// background
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
@@ -158,10 +158,36 @@ namespace Rtt
 
 	void Dlg::ProcessEvent(const SDL_Event& evt)
 	{
+		if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE && evt.window.windowID == SDL_GetWindowID(fWindow))
+		{
+			PushEvent(sdl::onCloseDialog);
+			return;
+		}
+
+		// filter events
+		switch (evt.type)
+		{
+		case SDL_MOUSEMOTION:
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+		case 	SDL_MOUSEWHEEL:
+			if (evt.window.windowID != SDL_GetWindowID(fWindow))
+			{
+				return;
+			}
+			break;
+		default:
+			break;
+		}
+
 		imctx = ImGui::GetCurrentContext();
 		ImGui::SetCurrentContext(fImCtx);
 		ImGui_ImplSDL2_ProcessEvent(&evt);
 		ImGui::SetCurrentContext(imctx);
+
+
+
+
 	}
 
 	//
@@ -242,37 +268,44 @@ namespace Rtt
 	// File dialog
 	//
 
-	DlgFile::DlgFile(const std::string& title, int w, int h, const string& startFolder)
+	DlgOpen::DlgOpen(const std::string& title, int w, int h, const string& startFolder)
 		: Dlg(title, w, h)
+		, fileDialog(ImGuiFileBrowserFlags_EnterNewFilename | ImGuiFileBrowserFlags_CloseOnEsc | ImGuiFileBrowserFlags_NoTitleBar)
 	{
-		// (optional) set browser properties
-		fileDialog.SetTitle("Open");
+		fileDialog.SetWindowSize(w, h);
+		fileDialog.SetTitle("##DlgOpen");
 		fileDialog.SetTypeFilters({ ".lua" });
 		fileDialog.SetPwd(startFolder);
 		fileDialog.Open();
 	}
 
-	DlgFile::~DlgFile()
+	DlgOpen::~DlgOpen()
 	{
 	}
 
-	void DlgFile::Draw()
+	void DlgOpen::Draw()
 	{
-		fileDialog.Display();
-		if (fileDialog.HasSelected())
+		begin();
+		if (ImGui::Begin("##DlgOpen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
-			SDL_Event e = {};
-			e.type = sdl::OnFileBrowserSelected;
-			e.user.data1 = strdup(fileDialog.GetSelected().string().c_str());
-			SDL_PushEvent(&e);
+			fileDialog.Display();
+			if (fileDialog.HasSelected())
+			{
+				SDL_Event e = {};
+				e.type = sdl::OnFileBrowserSelected;
+				e.user.data1 = strdup(fileDialog.GetSelected().string().c_str());
+				SDL_PushEvent(&e);
 
-			fileDialog.ClearSelected();
-		}
+				fileDialog.ClearSelected();
+			}
 
-		if (!fileDialog.IsOpened())
-		{
-			PushEvent(sdl::onCloseDialog);
+			if (!fileDialog.IsOpened())
+			{
+				PushEvent(sdl::onCloseDialog);
+			}
+			ImGui::End();
 		}
+		end();
 	}
 
 	//
@@ -607,26 +640,22 @@ namespace Rtt
 		}
 
 		fileDialog.SetTitle("Browse For Folder");
+		fileDialog.SetWindowSize(w, h);
 	}
 
 	void DlgNewProject::Draw()
 	{
-
-		fileDialog.Display();
-		if (fileDialog.HasSelected())
+		begin();
+		if (ImGui::Begin("##DlgNewProject", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
-			fProjectDir = fileDialog.GetSelected().string();
-			strncpy(fProjectDirInput, fProjectDir.c_str(), sizeof(fProjectDirInput) - 1);
-			fileDialog.ClearSelected();
-		}
+			fileDialog.Display();
+			if (fileDialog.HasSelected())
+			{
+				fProjectDir = fileDialog.GetSelected().string();
+				strncpy(fProjectDirInput, fProjectDir.c_str(), sizeof(fProjectDirInput) - 1);
+				fileDialog.ClearSelected();
+			}
 
-
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-
-		if (ImGui::Begin("New Project", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
-		{
 			string s;
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -755,8 +784,10 @@ namespace Rtt
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
+
 			ImGui::End();
-		} //ImGui::Begin
+		}
+		end();
 	}
 
 	bool DlgNewProject::CreateProject()
@@ -876,12 +907,8 @@ namespace Rtt
 
 	void DlgPreferences::Draw()
 	{
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-
-		const char* title = "Solar2D Simulator Preferences";
-		if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		begin();
+		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -939,9 +966,9 @@ namespace Rtt
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
-			ImGui::EndPopup();
+			ImGui::End();
 		}
-		ImGui::OpenPopup(title);
+		end();
 	}
 
 	//

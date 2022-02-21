@@ -124,7 +124,7 @@ namespace Rtt
 		{
 		case sdl::OnNewProject:
 		{
-			fDlg = new DlgNewProject("New Project", 320, 240);
+			fDlg = new DlgNewProject("New Project", 640, 350);
 			break;
 		}
 
@@ -140,7 +140,7 @@ namespace Rtt
 			{
 				// open file dialog
 				string startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
-				fDlg = new DlgFile("Open", 320, 240, startPath);
+				fDlg = new DlgOpen("Open Project", 640, 480, startPath);
 			}
 			break;
 		}
@@ -180,7 +180,7 @@ namespace Rtt
 			}
 
 			// open file dialog
-			fDlg = new DlgFile("Select Sample Project", 480, 320, samplesPath);
+			fDlg = new DlgOpen("Select Sample Project", 480, 320, samplesPath);
 			break;
 		}
 		case sdl::OnAbout:
@@ -227,7 +227,7 @@ namespace Rtt
 		}
 
 		case sdl::OnOpenPreferences:
-			fDlg = new DlgPreferences("Solar2D Simulator Preferences", 320, 240);
+			fDlg = new DlgPreferences("Solar2D Simulator Preferences", 400, 350);
 			break;
 
 		case sdl::onCloseDialog:
@@ -256,15 +256,15 @@ namespace Rtt
 		}
 
 		case sdl::OnBuildLinux:
-			fDlg = new DlgLinuxBuild("Linux Build Setup", 320, 240);
+			fDlg = new DlgLinuxBuild("Linux Build Setup", 640, 260);
 			break;
 
 		case sdl::OnBuildAndroid:
-			fDlg = new DlgAndroidBuild("Android Build Setup", 320, 240);
+			fDlg = new DlgAndroidBuild("Android Build Setup", 640, 480);
 			break;
 
 		case sdl::OnBuildHTML5:
-			fDlg = new DlgHTML5Build("HTML5 Build Setup", 320, 240);
+			fDlg = new DlgHTML5Build("HTML5 Build Setup", 640, 260);
 			break;
 
 		default:

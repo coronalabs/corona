@@ -111,8 +111,7 @@ namespace Rtt
 
 		fConsole = new DlgConsole("Solar2D simulator Console", 640, 480, &fLogData);
 
-		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI; // | SDL_WINDOW_BORDERLESS;
-		windowStyle |= SDL_WINDOW_RESIZABLE;
+		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
 		fWindow = SDL_CreateWindow("Solar2D", 0, 0, 320, 480, windowStyle);
 		Rtt_ASSERT(fWindow);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
@@ -320,7 +319,7 @@ namespace Rtt
 
 			case SDL_MOUSEMOTION:
 			{
-				if (fDlg)
+				if (fDlg || (evt.window.windowID != SDL_GetWindowID(fWindow)))
 					break;
 
 				const SDL_MouseButtonEvent& b = evt.button;
@@ -371,7 +370,7 @@ namespace Rtt
 
 			case SDL_MOUSEBUTTONUP:
 			{
-				if (fDlg)
+				if (fDlg || (evt.window.windowID != SDL_GetWindowID(fWindow)))
 					break;
 
 				const SDL_MouseButtonEvent& b = evt.button;
@@ -410,7 +409,7 @@ namespace Rtt
 
 			case SDL_MOUSEWHEEL:
 			{
-				if (fDlg)
+				if (fDlg || (evt.window.windowID != SDL_GetWindowID(fWindow)))
 					break;
 
 				const SDL_MouseWheelEvent& w = evt.wheel;

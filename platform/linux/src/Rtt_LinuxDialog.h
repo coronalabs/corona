@@ -63,10 +63,10 @@ namespace Rtt
 		int height;
 	};
 
-	struct DlgFile : public Dlg
+	struct DlgOpen : public Dlg
 	{
-		DlgFile(const std::string& title, int w, int h, const std::string& startFolder);
-		virtual ~DlgFile();
+		DlgOpen(const std::string& title, int w, int h, const std::string& startFolder);
+		virtual ~DlgOpen();
 
 		void Draw() override;
 
