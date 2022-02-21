@@ -58,7 +58,10 @@ enum sdl
 	OnShake,
 	OnZoomIn,
 	OnZoomOut,
-	OnConsole
+	OnConsole,
+	OnStyleColorsLight,
+	OnStyleColorsClassic,
+	OnStyleColorsDark
 };
 
 namespace Rtt

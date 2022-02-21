@@ -138,8 +138,10 @@ namespace Rtt
 		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
-		// background
-		glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+		// set background color
+		const ImGuiStyle& style = ImGui::GetStyle();
+		const ImVec4& bg = style.Colors[ImGuiCol_WindowBg];
+		glClearColor(bg.x, bg.y, bg.z, bg.w);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
@@ -158,10 +160,13 @@ namespace Rtt
 
 	void Dlg::ProcessEvent(const SDL_Event& evt)
 	{
+		imctx = ImGui::GetCurrentContext();
+		ImGui::SetCurrentContext(fImCtx);
+
 		if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE && evt.window.windowID == SDL_GetWindowID(fWindow))
 		{
 			PushEvent(sdl::onCloseDialog);
-			return;
+			goto done;
 		}
 
 		// filter events
@@ -173,21 +178,26 @@ namespace Rtt
 		case 	SDL_MOUSEWHEEL:
 			if (evt.window.windowID != SDL_GetWindowID(fWindow))
 			{
-				return;
+				goto done;
 			}
 			break;
+		case sdl::OnStyleColorsLight:
+			ImGui::StyleColorsLight();
+			goto done;
+		case sdl::OnStyleColorsClassic:
+			ImGui::StyleColorsClassic();
+			goto done;
+		case sdl::OnStyleColorsDark:
+			ImGui::StyleColorsDark();
+			goto done;
 		default:
 			break;
 		}
 
-		imctx = ImGui::GetCurrentContext();
-		ImGui::SetCurrentContext(fImCtx);
 		ImGui_ImplSDL2_ProcessEvent(&evt);
+
+	done:
 		ImGui::SetCurrentContext(imctx);
-
-
-
-
 	}
 
 	//
@@ -928,15 +938,15 @@ namespace Rtt
 			ImGui::Text(s.c_str());
 			if (ImGui::RadioButton("Light", &fStyleIndex, 0))
 			{
-				ImGui::StyleColorsLight();
+				PushEvent(sdl::OnStyleColorsLight);
 			}
 			if (ImGui::RadioButton("Classic", &fStyleIndex, 1))
 			{
-				ImGui::StyleColorsClassic();
+				PushEvent(sdl::OnStyleColorsClassic);
 			}
 			if (ImGui::RadioButton("Dark", &fStyleIndex, 2))
 			{
-				ImGui::StyleColorsDark();
+				PushEvent(sdl::OnStyleColorsDark);
 			}
 
 			// ok + cancel

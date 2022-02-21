@@ -97,6 +97,8 @@ namespace Rtt
 		const string& lastProjectDirectory = ConfigStr("lastProjectDirectory");
 		fContext = new SolarAppContext(fWindow, ConfigInt("ShowWelcome") && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
 		fMenu = new DlgMenu(fContext->GetAppName());
+
+		SDL_SetWindowPosition(fWindow, ConfigInt("windowXPos"), ConfigInt("windowYPos"));
 		if (fContext->LoadApp())
 		{
 			GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
@@ -111,7 +113,6 @@ namespace Rtt
 
 			currentSkinWidth = ConfigInt("skinWidth");
 			currentSkinHeight = ConfigInt("skinHeight");
-			SDL_SetWindowPosition(fWindow, ConfigInt("windowXPos"), ConfigInt("windowYPos"));
 			return true;
 		}
 		return false;
@@ -265,6 +266,16 @@ namespace Rtt
 
 		case sdl::OnBuildHTML5:
 			fDlg = new DlgHTML5Build("HTML5 Build Setup", 640, 260);
+			break;
+
+		case sdl::OnStyleColorsLight:
+			ImGui::StyleColorsLight();
+			break;
+		case sdl::OnStyleColorsClassic:
+			ImGui::StyleColorsClassic();
+			break;
+		case sdl::OnStyleColorsDark:
+			ImGui::StyleColorsDark();
 			break;
 
 		default:
@@ -636,6 +647,8 @@ namespace Rtt
 		if (ppath.size() < 10)
 			return;
 
+		ConfigSave();
+
 		string fullPath = ppath;
 		string path = ppath.substr(0, ppath.size() - 9); // without main.lua
 
@@ -662,7 +675,6 @@ namespace Rtt
 		if (!IsHomeScreen(appName))
 		{
 			ConfigSet("lastProjectDirectory", fAppPath);
-			ConfigSave();
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), appName.c_str(), fContext->GetPlatform());
 		}
 		else
@@ -739,18 +751,21 @@ namespace Rtt
 
 	void SolarSimulator::ConfigSave()
 	{
-		FILE* f = fopen(fConfigFilePath.c_str(), "w");
-		if (f == NULL)
+		if (IsHomeScreen(GetAppName()))
 		{
-			Rtt_LogException("Failed to write %s, %s\n", fConfigFilePath.c_str(), strerror(errno));
-			return;
-		}
+			FILE* f = fopen(fConfigFilePath.c_str(), "w");
+			if (f == NULL)
+			{
+				Rtt_LogException("Failed to write %s, %s\n", fConfigFilePath.c_str(), strerror(errno));
+				return;
+			}
 
-		for (const auto& it : fConfig)
-		{
-			fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
+			for (const auto& it : fConfig)
+			{
+				fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
+			}
+			fclose(f);
 		}
-		fclose(f);
 	}
 
 	string& SolarSimulator::ConfigStr(const string& key)

@@ -111,8 +111,8 @@ namespace Rtt
 
 		fConsole = new DlgConsole("Solar2D simulator Console", 640, 480, &fLogData);
 
-		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
-		fWindow = SDL_CreateWindow("Solar2D", 0, 0, 320, 480, windowStyle);
+		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
+		fWindow = SDL_CreateWindow("", 0, 0, 320, 480, windowStyle);
 		Rtt_ASSERT(fWindow);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
 		Rtt_ASSERT(fGLcontext);
@@ -127,7 +127,7 @@ namespace Rtt
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 
 		// Setup Dear ImGui style
-		ImGui::StyleColorsLight(); // StyleColorsClassic();
+		ImGui::StyleColorsLight();
 
 		// Setup Platform/Renderer backends
 		ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
@@ -463,6 +463,7 @@ namespace Rtt
 	void SolarApp::SetTitle(const std::string& name)
 	{
 		SDL_SetWindowTitle(fWindow, IsHomeScreen(name) ? "Solar2D Simulator" : name.c_str());
+		SDL_ShowWindow(fWindow);
 	}
 
 	void SolarApp::Run()
