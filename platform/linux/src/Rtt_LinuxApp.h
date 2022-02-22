@@ -61,7 +61,9 @@ enum sdl
 	OnSetFocusConsole,
 	OnStyleColorsLight,
 	OnStyleColorsClassic,
-	OnStyleColorsDark
+	OnStyleColorsDark,
+	OnViewAs,
+	OnChangeView
 };
 
 namespace Rtt

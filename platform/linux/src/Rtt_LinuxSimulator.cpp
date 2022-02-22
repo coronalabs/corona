@@ -99,7 +99,7 @@ namespace Rtt
 
 		const string& lastProjectDirectory = ConfigStr("lastProjectDirectory");
 		fContext = new SolarAppContext(fWindow, ConfigInt("ShowWelcome") && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
-		fMenu = new DlgMenu(fContext->GetAppName(), fSkins);
+		fMenu = new DlgMenu(fContext->GetAppName());
 
 		SDL_SetWindowPosition(fWindow, ConfigInt("windowXPos"), ConfigInt("windowYPos"));
 		if (fContext->LoadApp())
@@ -289,6 +289,18 @@ namespace Rtt
 			}
 			break;
 
+		case sdl::OnViewAs:
+			fDlg = new DlgViewAs("View As", 500, 500, fSkins);
+			break;
+
+		case sdl::OnChangeView:
+		{
+			string skin = (const char*)e.user.data1;
+			free(e.user.data1);
+			OnViewAsChanged(skin);
+			break;
+		}
+
 		default:
 			break;
 		}
@@ -340,7 +352,7 @@ namespace Rtt
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
 			fContext->LoadApp();
-			fMenu = new DlgMenu(fContext->GetAppName(), fSkins);
+			fMenu = new DlgMenu(fContext->GetAppName());
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
@@ -507,73 +519,51 @@ namespace Rtt
 				}*/
 	}
 
-	void SolarSimulator::OnViewAsChanged()
+	void SolarSimulator::OnViewAsChanged(const string& skin)
 	{
-		/*		int skinID = event.GetId();
-				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skinID);
-				wxDisplay display(wxDisplay::GetFromWindow(this));
-				wxRect screen = display.GetClientArea();
-				currentSkinWidth = sProperties.screenWidth;
-				currentSkinHeight = sProperties.screenHeight;
-				int initialWidth = sProperties.screenWidth;
-				int initialHeight = sProperties.screenHeight;
-				string newWindowTitle(GetContext()->GetTitle());
-				newWindowTitle.append(" - ").append(sProperties.skinTitle.c_str());
-				bool canZoom = sProperties.screenWidth > LinuxSimulatorView::skinMinWidth;
+		SDL_DisplayMode screen;
+		if (SDL_GetCurrentDisplayMode(0, &screen) != 0)
+		{
+			return;
+		}
 
-				if (sProperties.selected)
-				{
-					return;
-				}
+		LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skin);
+		currentSkinWidth = sProperties.screenWidth;
+		currentSkinHeight = sProperties.screenHeight;
+		int initialWidth = sProperties.screenWidth;
+		int initialHeight = sProperties.screenHeight;
+		string newWindowTitle(GetContext()->GetTitle());
+		newWindowTitle.append(" - ").append(sProperties.skinTitle.c_str());
+		bool canZoom = sProperties.screenWidth > LinuxSimulatorView::skinMinWidth;
 
-				fZoomIn->Enable(canZoom);
-				fZoomOut->Enable(canZoom);
+		if (sProperties.selected)
+		{
+			return;
+		}
 
-				ConfigSet("skinID", sProperties.id);
-				ConfigSet("skinWidth", sProperties.screenWidth);
-				ConfigSet("skinHeight", sProperties.screenHeight);
-				LinuxSimulatorView::SelectSkin(skinID);
-				ClearMenuCheckboxes(fViewAsAndroidMenu, sProperties.skinTitle);
-				ClearMenuCheckboxes(fViewAsIOSMenu, sProperties.skinTitle);
-				ClearMenuCheckboxes(fViewAsTVMenu, sProperties.skinTitle);
-				ClearMenuCheckboxes(fViewAsDesktopMenu, sProperties.skinTitle);
+//		fZoomIn->Enable(canZoom);
+//		fZoomOut->Enable(canZoom);
 
-				while (initialWidth > screen.width || initialHeight > screen.height)
-				{
-					initialWidth /= LinuxSimulatorView::skinScaleFactor;
-					initialHeight /= LinuxSimulatorView::skinScaleFactor;
-				}
+		ConfigSet("skinID", sProperties.id);
+		ConfigSet("skinWidth", sProperties.screenWidth);
+		ConfigSet("skinHeight", sProperties.screenHeight);
+		LinuxSimulatorView::SelectSkin(sProperties.id);
 
-				ConfigSet("zoomedWidth", initialWidth);
-				ConfigSet("zoomedHeight", initialHeight);
-				ConfigSave();
+		while (initialWidth > screen.w || initialHeight > screen.h)
+		{
+			initialWidth /= LinuxSimulatorView::skinScaleFactor;
+			initialHeight /= LinuxSimulatorView::skinScaleFactor;
+		}
 
-				GetContext()->SetWidth(initialWidth);
-				GetContext()->SetHeight(initialHeight);
-				ChangeSize(initialWidth, initialHeight);
+		ConfigSet("zoomedWidth", initialWidth);
+		ConfigSet("zoomedHeight", initialHeight);
+		ConfigSave();
 
-				wxCommandEvent ev(eventRelaunchProject);
-				wxPostEvent(solarApp, ev);*/
-	}
+		GetContext()->SetWidth(initialWidth);
+		GetContext()->SetHeight(initialHeight);
+		ChangeSize(initialWidth, initialHeight);
 
-	void SolarSimulator::CreateViewAsChildMenu(vector<string>skin)
-	{
-		/*		for (int i = 0; i < skin.size(); i++)
-				{
-					LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skin[i].c_str());
-					wxMenuItem* currentSkin = targetMenu->Append(sProperties.id, skin[i].c_str(), wxEmptyString, wxITEM_CHECK);
-					Bind(wxEVT_MENU, [this](wxCommandEvent& e) { OnViewAsChanged(e); }, sProperties.id);
-
-					if (sProperties.id == ConfigInt("skinID"))
-					{
-						string newWindowTitle(GetContext()->GetTitle());
-						newWindowTitle.append(" - ").append(sProperties.skinTitle.c_str());
-
-						LinuxSimulatorView::SelectSkin(sProperties.id);
-						currentSkin->Check(true);
-						SetTitle(newWindowTitle);
-					}
-				}*/
+		PushEvent(sdl::OnRelaunch);
 	}
 
 	void SolarSimulator::GetSavedZoom(int& width, int& height)
@@ -623,7 +613,7 @@ namespace Rtt
 		}
 
 		string appName = fContext->GetAppName();
-		fMenu = new DlgMenu(fContext->GetAppName(), fSkins);
+		fMenu = new DlgMenu(fContext->GetAppName());
 
 		WatchFolder(fContext->GetAppPath(), appName.c_str());
 

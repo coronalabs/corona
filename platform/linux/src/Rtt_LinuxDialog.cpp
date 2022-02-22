@@ -120,6 +120,11 @@ namespace Rtt
 		SDL_DestroyWindow(fWindow);
 	}
 
+	void Dlg::GetWindowSize(int* w, int* h)
+	{
+		SDL_GetWindowSize(fWindow, w, h);
+	}
+
 	void Dlg::begin()
 	{
 		// save state
@@ -322,26 +327,9 @@ namespace Rtt
 	// Menu
 	//
 
-	DlgMenu::DlgMenu(const std::string& appName, const std::map<std::string, std::vector<std::string>>& skins)
-		: fSkins(skins)
+	DlgMenu::DlgMenu(const std::string& appName)
 	{
 		isMainMenu = appName == "homescreen";
-	}
-
-	void DlgMenu::DrawView(const string& name)
-	{
-		auto it = fSkins.find(name);
-		if (it != fSkins.end())
-		{
-			const vector<string>& skins = it->second;
-			for (int i = 0; i < skins.size(); i++)
-			{
-				if (ImGui::MenuItem(skins[i].c_str(), NULL))
-				{
-					PushEvent(sdl::OnZoomIn);
-				}
-			}
-		}
 	}
 
 	void DlgMenu::Draw()
@@ -592,48 +580,13 @@ namespace Rtt
 				// project menu
 				if (ImGui::BeginMenu("View"))
 				{
-					if (ImGui::MenuItem("Zoom In", "Ctrl++"))
+					if (ImGui::MenuItem("Zoom In", "Ctrl+Plus"))
 					{
 						PushEvent(sdl::OnZoomIn);
 					}
-					if (ImGui::MenuItem("Zoom Out", "Ctrl+-"))
+					if (ImGui::MenuItem("Zoom Out", "Ctrl+Minus"))
 					{
 						PushEvent(sdl::OnZoomOut);
-					}
-					ImGui::Separator();
-					if (ImGui::BeginMenu("View As..."))
-					{
-						if (ImGui::BeginMenu("Generic Android  "))
-						{
-							DrawView("genericAndroid");
-							ImGui::EndMenu();
-						}
-						if (ImGui::BeginMenu("Named Android"))
-						{
-							DrawView("namedAndroid");
-							ImGui::EndMenu();
-						}
-						if (ImGui::BeginMenu("Generic iOS"))
-						{
-							DrawView("genericIOS");
-							ImGui::EndMenu();
-						}
-						if (ImGui::BeginMenu("Named iOS"))
-						{
-							DrawView("namedIOS");
-							ImGui::EndMenu();
-						}
-						if (ImGui::BeginMenu("TV"))
-						{
-							DrawView("tv");
-							ImGui::EndMenu();
-						}
-						if (ImGui::BeginMenu("Desktop"))
-						{
-							DrawView("desktop");
-							ImGui::EndMenu();
-						}
-						ImGui::EndMenu();
 					}
 					ImGui::Separator();
 					if (ImGui::MenuItem("Welcome screen", NULL))
@@ -643,6 +596,12 @@ namespace Rtt
 					if (ImGui::MenuItem("Console", NULL))
 					{
 						PushEvent(sdl::OnSetFocusConsole);
+					}
+					ImGui::Separator();
+
+					if (ImGui::MenuItem("View As..."))
+					{
+						PushEvent(sdl::OnViewAs);
 					}
 					ImGui::EndMenu();
 				}
@@ -1083,6 +1042,137 @@ namespace Rtt
 		{
 			map<string, string>& cfg = *app->ConfigGet();
 			cfg["relaunchOnFileChange"] = val;
+		}
+	}
+
+	//
+	// DlgViewAs
+	//
+
+	DlgViewAs::DlgViewAs(const std::string& title, int w, int h, const std::map<std::string, std::vector<std::string>>& skins)
+		: Dlg(title, w, h)
+		, fViewIndex(0)
+		, fSkins(skins)
+		, fItems(NULL)
+		, fItemsLen(0)
+		, fItemCurrent(0)
+		, fTabCurrent(-1)
+	{
+	}
+
+	DlgViewAs::~DlgViewAs()
+	{
+		Clear();
+	}
+
+	void DlgViewAs::Draw()
+	{
+		begin();
+		if (ImGui::Begin("##DlgViewAs", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground))
+		{
+			int w, h;
+			GetWindowSize(&w, &h);
+			ImGui::SetWindowSize(ImVec2(w, h));
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			ImGui::SetCursorPosX(10);
+			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+			if (ImGui::BeginTabBar("##DlgViewAsTabBar", tab_bar_flags))
+			{
+
+				if (ImGui::BeginTabItem("Generic Android"))
+				{
+					DrawView("genericAndroid", 0);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Named Android"))
+				{
+					DrawView("namedAndroid", 1);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Generic iOS"))
+				{
+					DrawView("genericIOS", 2);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Named iOS"))
+				{
+					DrawView("namedIOS", 3);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("TV"))
+				{
+					DrawView("tv", 4);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Desktop"))
+				{
+					DrawView("Desktop", 5);
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
+			}
+
+			// ok + cancel
+			string s = "Select";
+			ImGui::Dummy(ImVec2(100, 30));
+			int ok_width = 100;
+			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			{
+				PushEvent(sdl::onCloseDialog);
+			}
+			ImGui::SetItemDefaultFocus();
+
+			s = "Close";
+			ImGui::SameLine();
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			{
+				PushEvent(sdl::onCloseDialog);
+			}
+
+			ImGui::End();
+		}
+		end();
+	}
+
+	void DlgViewAs::Clear()
+	{
+		if (fItems)
+		{
+			for (int i = 0; i < fItemsLen; i++)
+			{
+				free(fItems[i]);
+			}
+			delete[] fItems;
+		}
+	}
+
+	void DlgViewAs::DrawView(const string& name, int tabIndex)
+	{
+		auto it = fSkins.find(name);
+		if (it != fSkins.end())
+		{
+			const vector<string>& skins = it->second;
+			if (fTabCurrent != tabIndex)
+			{
+				Clear();
+				fItems = new char* [skins.size()];
+				for (int i = 0; i < skins.size(); i++)
+				{
+					fItems[i] = strdup(skins[i].c_str());
+				}
+				fTabCurrent = tabIndex;
+				fItemsLen = skins.size();
+			}
+
+			if (ImGui::ListBox("", &fItemCurrent, fItems, fItemsLen, 20))
+			{
+				SDL_Event e = {};
+				e.type = sdl::OnChangeView;
+				e.user.data1 = strdup(fItems[fItemCurrent]);
+				SDL_PushEvent(&e);
+			}
 		}
 	}
 

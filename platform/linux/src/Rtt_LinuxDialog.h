@@ -36,6 +36,7 @@ namespace Rtt
 		virtual void Draw() = 0;
 		void ProcessEvent(const SDL_Event& evt);
 		SDL_Window* GetWindow() const { return fWindow; }
+		void GetWindowSize(int* w, int* h);
 
 	protected:
 
@@ -77,15 +78,13 @@ namespace Rtt
 
 	struct DlgMenu : public ref_counted
 	{
-		DlgMenu(const std::string& appName, const std::map<std::string, std::vector<std::string>>& skins);
+		DlgMenu(const std::string& appName);
 
 		void Draw();
-		void DrawView(const std::string& name);
 
 	private:
 
 		bool isMainMenu;
-		const std::map<std::string, std::vector<std::string>>& fSkins;
 	};
 
 	struct DlgNewProject : public Dlg
@@ -136,6 +135,26 @@ namespace Rtt
 
 		void SaveMyPreference(const char* val);
 		bool fSaveMyPreference;
+	};
+
+	struct DlgViewAs : public Dlg
+	{
+		DlgViewAs(const std::string& title, int w, int h, const std::map<std::string, std::vector<std::string>>& skins);
+		virtual ~DlgViewAs();
+
+		void Draw() override;
+
+	private:
+
+		void DrawView(const std::string& name, int index);
+		void Clear();
+
+		int fViewIndex;
+		const std::map<std::string, std::vector<std::string>>& fSkins;
+		char** fItems;
+		int fItemsLen;
+		int fItemCurrent;
+		int fTabCurrent;
 	};
 
 }

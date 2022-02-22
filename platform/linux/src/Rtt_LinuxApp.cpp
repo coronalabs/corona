@@ -155,7 +155,7 @@ namespace Rtt
 	bool SolarApp::LoadApp()
 	{
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
-		fMenu = new DlgMenu(fContext->GetAppName(), fSkins);
+		fMenu = new DlgMenu(fContext->GetAppName());
 		return fContext->LoadApp();
 	}
 
@@ -559,9 +559,7 @@ namespace Rtt
 
 	void SolarApp::ChangeSize(int newWidth, int newHeight)
 	{
-		//	SetMinClientSize(wxSize(newWidth, newHeight));
-		//	SetClientSize(wxSize(newWidth, newHeight));
-		//	SetSize(wxSize(newWidth, newHeight));
+		SDL_SetWindowSize(fWindow, newWidth, newHeight);
 	}
 
 	//

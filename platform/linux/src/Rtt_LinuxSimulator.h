@@ -23,8 +23,7 @@ namespace Rtt
 		void OnRelaunch();
 		void OnZoomIn();
 		void OnZoomOut();
-		void OnViewAsChanged();
-		void CreateViewAsChildMenu(std::vector<std::string>skin);
+		void OnViewAsChanged(const std::string& skin);
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool LoadApp() override;
