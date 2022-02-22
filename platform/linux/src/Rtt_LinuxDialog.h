@@ -28,10 +28,10 @@ namespace Rtt
 	// base class
 	//
 
-	struct Dlg : public ref_counted
+	struct Window : public ref_counted
 	{
-		Dlg(const std::string& title, int w, int h);
-		virtual ~Dlg();
+		Window(const std::string& title, int w, int h);
+		virtual ~Window();
 
 		virtual void Draw() = 0;
 		void ProcessEvent(const SDL_Event& evt);
@@ -55,7 +55,7 @@ namespace Rtt
 		ImGuiContext* imctx;
 	};
 
-	struct DlgAbout : public Dlg
+	struct DlgAbout : public Window
 	{
 		DlgAbout(const std::string& title, int w, int h);
 		virtual ~DlgAbout();
@@ -66,7 +66,7 @@ namespace Rtt
 		int height;
 	};
 
-	struct DlgOpen : public Dlg
+	struct DlgOpen : public Window
 	{
 		DlgOpen(const std::string& title, int w, int h, const std::string& startFolder);
 		virtual ~DlgOpen();
@@ -87,7 +87,7 @@ namespace Rtt
 		bool isMainMenu;
 	};
 
-	struct DlgNewProject : public Dlg
+	struct DlgNewProject : public Window
 	{
 		DlgNewProject(const std::string& title, int w, int h);
 		void Draw() override;
@@ -107,7 +107,7 @@ namespace Rtt
 		char fHeightInput[10];
 	};
 
-	struct DlgPreferences : public Dlg
+	struct DlgPreferences : public Window
 	{
 		DlgPreferences(const std::string& title, int w, int h);
 		void Draw() override;
@@ -121,10 +121,10 @@ namespace Rtt
 		int fStyleIndex;
 	};
 
-	struct DlgAskRelaunch : public Dlg
+	struct DlgAskRelaunch : public Window
 	{
 		DlgAskRelaunch(const std::string& title, int w, int h)
-			: Dlg(title, w, h)
+			: Window(title, w, h)
 			, fSaveMyPreference(false)
 		{
 		}
@@ -137,7 +137,7 @@ namespace Rtt
 		bool fSaveMyPreference;
 	};
 
-	struct DlgViewAs : public Dlg
+	struct DlgViewAs : public Window
 	{
 		DlgViewAs(const std::string& title, int w, int h, const std::map<std::string, std::vector<std::string>>& skins);
 		virtual ~DlgViewAs();

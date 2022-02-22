@@ -109,7 +109,7 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-		fConsole = new DlgConsole("Solar2D simulator Console", 640, 480, &fLogData);
+		fConsole = new ConsoleWindow("Solar2D Simulator Console", 640, 480, &fLogData);
 
 		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
 		fWindow = SDL_CreateWindow("", 0, 0, 320, 480, windowStyle);

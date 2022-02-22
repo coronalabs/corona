@@ -8,10 +8,10 @@
 
 namespace Rtt
 {
-	struct DlgConsole : public Dlg
+	struct ConsoleWindow : public Window
 	{
-		DlgConsole(const std::string& title, int w, int h, std::string* logData);
-		virtual ~DlgConsole();
+		ConsoleWindow(const std::string& title, int w, int h, std::string* logData);
+		virtual ~ConsoleWindow();
 
 		void Draw() override;
 

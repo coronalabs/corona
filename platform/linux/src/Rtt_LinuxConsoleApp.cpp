@@ -8,17 +8,17 @@ using namespace std;
 
 namespace Rtt
 {
-	DlgConsole::DlgConsole(const string& title, int w, int h, string* logData)
-		: Dlg(title, w, h)
+	ConsoleWindow::ConsoleWindow(const string& title, int w, int h, string* logData)
+		: Window(title, w, h)
 		, fLogData(logData)
 	{
 	}
 
-	DlgConsole::~DlgConsole()
+	ConsoleWindow::~ConsoleWindow()
 	{
 	}
 
-	void DlgConsole::Draw()
+	void ConsoleWindow::Draw()
 	{
 		begin();
 

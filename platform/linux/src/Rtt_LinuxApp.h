@@ -128,12 +128,12 @@ namespace Rtt
 		// GUI
 		ImGuiContext* fImCtx;
 		smart_ptr<DlgMenu> fMenu;
-		smart_ptr<Dlg> fDlg;
+		smart_ptr<Window> fDlg;
 		bool fActivityIndicator;
 
 		// console
 		std::string fLogData;
-		smart_ptr<DlgConsole> fConsole;
+		smart_ptr<ConsoleWindow> fConsole;
 		std::map<std::string, std::vector<std::string>> fSkins;
 	};
 

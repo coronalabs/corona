@@ -14,7 +14,7 @@
 
 namespace Rtt
 {
-	struct DlgBuild : public Dlg
+	struct DlgBuild : public Window
 	{
 		DlgBuild(const std::string& title, int w, int h);
 		virtual ~DlgBuild();

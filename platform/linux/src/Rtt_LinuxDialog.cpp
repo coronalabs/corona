@@ -91,7 +91,7 @@ namespace Rtt
 	// Dlg base class
 	//
 
-	Dlg::Dlg(const string& title, int w, int h)
+	Window::Window(const string& title, int w, int h)
 	{
 		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
@@ -114,18 +114,18 @@ namespace Rtt
 		ImGui::SetCurrentContext(imctx);
 	}
 
-	Dlg::~Dlg()
+	Window::~Window()
 	{
 		ImGui::DestroyContext(fImCtx);
 		SDL_DestroyWindow(fWindow);
 	}
 
-	void Dlg::GetWindowSize(int* w, int* h)
+	void Window::GetWindowSize(int* w, int* h)
 	{
 		SDL_GetWindowSize(fWindow, w, h);
 	}
 
-	void Dlg::begin()
+	void Window::begin()
 	{
 		// save state
 		window = SDL_GL_GetCurrentWindow();
@@ -150,7 +150,7 @@ namespace Rtt
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
-	void Dlg::end()
+	void Window::end()
 	{
 		ImGui::EndFrame();
 
@@ -163,7 +163,7 @@ namespace Rtt
 		ImGui::SetCurrentContext(imctx);
 	}
 
-	void Dlg::ProcessEvent(const SDL_Event& evt)
+	void Window::ProcessEvent(const SDL_Event& evt)
 	{
 		imctx = ImGui::GetCurrentContext();
 		ImGui::SetCurrentContext(fImCtx);
@@ -210,7 +210,7 @@ namespace Rtt
 	//
 
 	DlgAbout::DlgAbout(const std::string& title, int w, int h)
-		: Dlg(title, w, h)
+		: Window(title, w, h)
 		, tex_id(0)
 		, width(0)
 		, height(0)
@@ -284,7 +284,7 @@ namespace Rtt
 	//
 
 	DlgOpen::DlgOpen(const std::string& title, int w, int h, const string& startFolder)
-		: Dlg(title, w, h)
+		: Window(title, w, h)
 		, fileDialog(ImGuiFileBrowserFlags_EnterNewFilename | ImGuiFileBrowserFlags_CloseOnEsc | ImGuiFileBrowserFlags_NoTitleBar)
 	{
 		fileDialog.SetWindowSize(w, h);
@@ -634,7 +634,7 @@ namespace Rtt
 	//
 
 	DlgNewProject::DlgNewProject(const std::string& title, int w, int h)
-		: Dlg(title, w, h)
+		: Window(title, w, h)
 		, fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
 		, fTemplateIndex(0)
 		, fSizeIndex(0)
@@ -909,7 +909,7 @@ namespace Rtt
 	//
 
 	DlgPreferences::DlgPreferences(const std::string& title, int w, int h)
-		: Dlg(title, w, h)
+		: Window(title, w, h)
 		, fRelaunchIndex(1)
 		, fShowWelcome(false)
 		, fShowErrors(true)
@@ -1050,7 +1050,7 @@ namespace Rtt
 	//
 
 	DlgViewAs::DlgViewAs(const std::string& title, int w, int h, const std::map<std::string, std::vector<std::string>>& skins)
-		: Dlg(title, w, h)
+		: Window(title, w, h)
 		, fViewIndex(0)
 		, fSkins(skins)
 		, fItems(NULL)

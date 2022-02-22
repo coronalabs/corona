@@ -26,7 +26,7 @@ namespace Rtt
 {
 
 	DlgBuild::DlgBuild(const std::string& title, int w, int h)
-		: Dlg(title, w, h)
+		: Window(title, w, h)
 	{
 		app->Pause();
 	}
