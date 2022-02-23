@@ -106,18 +106,7 @@ namespace Rtt
 		{
 			GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
 
-			// restore home screen zoom level
-		//	if (IsHomeScreen(appName))
-		//	{
-		//		fContext->GetRuntimeDelegate()->fContentWidth = fSimulatorConfig->welcomeScreenZoomedWidth;
-		//		fContext->GetRuntimeDelegate()->fContentHeight = fSimulatorConfig->welcomeScreenZoomedHeight;
-		//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
-		//	}
-
-			currentSkinWidth = ConfigInt("skinWidth");
-			currentSkinHeight = ConfigInt("skinHeight");
-			LoadSkins();
-			return true;
+			return fSkins.Load(GetContext()->GetRuntime()->VMContext().L());
 		}
 		return false;
 	}
@@ -290,13 +279,12 @@ namespace Rtt
 			break;
 
 		case sdl::OnViewAs:
-			fDlg = new DlgViewAs("View As", 500, 500, fSkins);
+			fDlg = new DlgViewAs("View As", 500, 500, &fSkins);
 			break;
 
 		case sdl::OnChangeView:
 		{
-			string skin = (const char*)e.user.data1;
-			free(e.user.data1);
+			const SkinProperties* skin = (const SkinProperties*)e.user.data1;
 			OnViewAsChanged(skin);
 			break;
 		}
@@ -364,83 +352,6 @@ namespace Rtt
 
 			SetTitle(newWindowTitle);
 		}
-	}
-
-	void SolarSimulator::LoadSkins()
-	{
-		//	int currentSkinID = ID_MENU_VIEW_AS;
-
-		const char* startupPath = GetStartupPath(NULL);
-		string skinDirPath(startupPath);
-		skinDirPath.append("/Resources");
-		if (!Rtt_IsDirectory(skinDirPath.c_str()))
-		{
-			Rtt_LogException("No Resources dir in %s!\n", startupPath);
-			return;
-		}
-
-		skinDirPath.append("/Skins");
-		if (!Rtt_IsDirectory(skinDirPath.c_str()))
-		{
-			Rtt_LogException("Skin directory not found in /Resources!\n");
-			return;
-		}
-
-		lua_State* L = GetContext()->GetRuntime()->VMContext().L();
-		vector<string> skins = Rtt_ListFiles(skinDirPath.c_str());
-		for (int i = 0; i < skins.size(); i++)
-		{
-			const string& filename = skins[i];
-			if (filename.rfind(".lua") != string::npos && LinuxSimulatorView::LoadSkin(L, currentSkinID, filename))
-			{
-				LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(currentSkinID);
-
-				string skinTitle(sProperties.windowTitleBarName);
-				skinTitle.append(to_string(sProperties.screenWidth));
-				skinTitle.append("x");
-				skinTitle.append(to_string(sProperties.screenHeight));
-
-				if (sProperties.device.find("android") != string::npos && !sProperties.device.find("tv") != string::npos)
-				{
-					if (sProperties.device.find("borderless") != string::npos)
-					{
-						fSkins["genericAndroid"].push_back(skinTitle);
-					}
-					else
-					{
-						fSkins["namedAndroid"].push_back(skinTitle);
-					}
-				}
-				else if (sProperties.device.find("ios") != string::npos)
-				{
-					if (sProperties.device.find("borderless") != string::npos)
-					{
-						fSkins["genericIOS"].push_back(skinTitle);
-					}
-					else
-					{
-						fSkins["namedIOS"].push_back(skinTitle);
-					}
-				}
-				else if (sProperties.device.find("tv") != string::npos)
-				{
-					fSkins["tv"].push_back(skinTitle);
-				}
-				else if (sProperties.device.find("desktop") != string::npos)
-				{
-					fSkins["desktop"].push_back(skinTitle);
-				}
-			}
-			currentSkinID++;
-		}
-
-		// sort all the skin vectors by name
-		sort(fSkins["namedAndroid"].begin(), fSkins["namedAndroid"].end(), SortVectorByName);
-		sort(fSkins["genericAndroid"].begin(), fSkins["genericAndroid"].end(), SortVectorByName);
-		sort(fSkins["namedIOS"].begin(), fSkins["namedIOS"].end(), SortVectorByName);
-		sort(fSkins["genericIOS"].begin(), fSkins["genericIOS"].end(), SortVectorByName);
-		sort(fSkins["tv"].begin(), fSkins["tv"].end(), SortVectorByName);
-		sort(fSkins["desktop"].begin(), fSkins["desktop"].end(), SortVectorByName);
 	}
 
 	void SolarSimulator::OnZoomIn()
@@ -519,7 +430,7 @@ namespace Rtt
 				}*/
 	}
 
-	void SolarSimulator::OnViewAsChanged(const string& skin)
+	void SolarSimulator::OnViewAsChanged(const SkinProperties* skin)
 	{
 		SDL_DisplayMode screen;
 		if (SDL_GetCurrentDisplayMode(0, &screen) != 0)
@@ -527,43 +438,23 @@ namespace Rtt
 			return;
 		}
 
-		LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(skin);
-		currentSkinWidth = sProperties.screenWidth;
-		currentSkinHeight = sProperties.screenHeight;
-		int initialWidth = sProperties.screenWidth;
-		int initialHeight = sProperties.screenHeight;
 		string newWindowTitle(GetContext()->GetTitle());
-		newWindowTitle.append(" - ").append(sProperties.skinTitle.c_str());
-		bool canZoom = sProperties.screenWidth > LinuxSimulatorView::skinMinWidth;
+		newWindowTitle.append(" - ").append(skin->skinTitle);
 
-		if (sProperties.selected)
+		int w = skin->screenWidth;
+		int h = skin->screenHeight;
+		float skinScaleFactor = 1.5f;
+		while (w > screen.w || h > screen.h)
 		{
-			return;
+			w /= skinScaleFactor;
+			h /= skinScaleFactor;
 		}
 
-//		fZoomIn->Enable(canZoom);
-//		fZoomOut->Enable(canZoom);
-
-		ConfigSet("skinID", sProperties.id);
-		ConfigSet("skinWidth", sProperties.screenWidth);
-		ConfigSet("skinHeight", sProperties.screenHeight);
-		LinuxSimulatorView::SelectSkin(sProperties.id);
-
-		while (initialWidth > screen.w || initialHeight > screen.h)
-		{
-			initialWidth /= LinuxSimulatorView::skinScaleFactor;
-			initialHeight /= LinuxSimulatorView::skinScaleFactor;
-		}
-
-		ConfigSet("zoomedWidth", initialWidth);
-		ConfigSet("zoomedHeight", initialHeight);
 		ConfigSave();
 
-		GetContext()->SetWidth(initialWidth);
-		GetContext()->SetHeight(initialHeight);
-		ChangeSize(initialWidth, initialHeight);
-
-		PushEvent(sdl::OnRelaunch);
+		GetContext()->SetWidth(w);
+		GetContext()->SetHeight(h);
+		ChangeSize(w, h);
 	}
 
 	void SolarSimulator::GetSavedZoom(int& width, int& height)

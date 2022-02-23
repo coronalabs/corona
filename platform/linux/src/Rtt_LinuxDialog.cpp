@@ -11,6 +11,7 @@
 #include "Rtt_LinuxDialog.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxApp.h"
+#include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_Version.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
@@ -251,11 +252,11 @@ namespace Rtt
 
 			s = Rtt_STRING_BUILD;
 			ImGui::SetCursorPosX((window_size.x - ImGui::CalcTextSize(s.c_str()).x) * 0.5f);
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 
 			s = Rtt_STRING_COPYRIGHT;
 			ImGui::SetCursorPosX((window_size.x - ImGui::CalcTextSize(s.c_str()).x) * 0.5f);
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 
 			s = "https://solar2d.com";
 			ImGui::SetCursorPosX((window_size.x - ImGui::CalcTextSize(s.c_str()).x) * 0.5f);
@@ -687,7 +688,7 @@ namespace Rtt
 
 			s = "   Application Name :";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -695,7 +696,7 @@ namespace Rtt
 
 			s = "   Project Folder: ";
 			strncpy(fProjectDirInput, fProjectDir.c_str(), sizeof(fProjectDirInput) - 1);
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -711,22 +712,22 @@ namespace Rtt
 			// templates
 			ImGui::Dummy(ImVec2(10, 10));
 			float yGroup1 = ImGui::GetCursorPosY();
-			ImGui::Text("Project Template");
+			ImGui::TextUnformatted("Project Template");
 			ImGui::RadioButton("Blank", &fTemplateIndex, 0);
-			ImGui::Text("   Creates a project folder with an empty \"main.lua\"");
+			ImGui::TextUnformatted("   Creates a project folder with an empty \"main.lua\"");
 			ImGui::RadioButton("Tab Bar Application", &fTemplateIndex, 1);
-			ImGui::Text("   Multiscreen application using a Tab Bar for");
+			ImGui::TextUnformatted("   Multiscreen application using a Tab Bar for");
 			ImGui::RadioButton("Physics Based Game", &fTemplateIndex, 2);
-			ImGui::Text("   Application using the physics and composer");
+			ImGui::TextUnformatted("   Application using the physics and composer");
 			ImGui::RadioButton("eBook", &fTemplateIndex, 3);
-			ImGui::Text("   Multi-page interface using the composer");
+			ImGui::TextUnformatted("   Multi-page interface using the composer");
 
 			float x = 400;
 			ImGui::SetCursorPosY(yGroup1);
 
 			// project template combo
 			ImGui::SetCursorPosX(x);
-			ImGui::Text("Upright Screen Size");
+			ImGui::TextUnformatted("Upright Screen Size");
 			const char* templates[] = { "Phone Preset", "Tablet Preset", "Custom" };
 			ImGui::SetCursorPosX(x);
 			if (ImGui::Combo("##UprightScreenSize", &fSizeIndex, templates, IM_ARRAYSIZE(templates)))
@@ -749,7 +750,7 @@ namespace Rtt
 			s = "Width:";
 			float label2 = x + ImGui::CalcTextSize(s.c_str()).x;
 			ImGui::SetCursorPosX(x);
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label2 + 20);
 			//			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -757,7 +758,7 @@ namespace Rtt
 
 			s = "Height:";
 			ImGui::SetCursorPosX(x);
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label2 + 20);
 			//			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -769,7 +770,7 @@ namespace Rtt
 			// default orientation
 			ImGui::Dummy(ImVec2(20, 20));
 			ImGui::SetCursorPosX(x);
-			ImGui::Text("Default orientation");
+			ImGui::TextUnformatted("Default orientation");
 			ImGui::SetCursorPosX(x);
 			ImGui::RadioButton("Upright", &fOrientationIndex, 0);	ImGui::SameLine();
 			ImGui::RadioButton("Sideways", &fOrientationIndex, 1);
@@ -940,14 +941,14 @@ namespace Rtt
 
 			string s = "Relaunch Simulator when project is modified";
 			ImGui::Dummy(ImVec2(100, 10));
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::RadioButton("Always", &fRelaunchIndex, 0);
 			ImGui::RadioButton("Never", &fRelaunchIndex, 1);
 			ImGui::RadioButton("Ask every time", &fRelaunchIndex, 2);
 
 			s = "GUI Color Scheme";
 			ImGui::Dummy(ImVec2(100, 10));
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			if (ImGui::RadioButton("Light", &fStyleIndex, 0))
 			{
 				PushEvent(sdl::OnStyleColorsLight);
@@ -1005,8 +1006,8 @@ namespace Rtt
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
 			ImGui::Dummy(ImVec2(100, 10));
-			ImGui::Text("   Solar2D project has been modified");
-			ImGui::Text("Whould you like to relaunch the project?");
+			ImGui::TextUnformatted("   Solar2D project has been modified");
+			ImGui::TextUnformatted("Whould you like to relaunch the project?");
 
 			ImGui::Dummy(ImVec2(150, 30));
 			ImGui::Checkbox("Remember my preference", &fSaveMyPreference);
@@ -1049,14 +1050,13 @@ namespace Rtt
 	// DlgViewAs
 	//
 
-	DlgViewAs::DlgViewAs(const std::string& title, int w, int h, const std::map<std::string, std::vector<std::string>>& skins)
+	DlgViewAs::DlgViewAs(const std::string& title, int w, int h, Skins* skins)
 		: Window(title, w, h)
 		, fViewIndex(0)
 		, fSkins(skins)
 		, fItems(NULL)
 		, fItemsLen(0)
 		, fItemCurrent(0)
-		, fTabCurrent(-1)
 	{
 	}
 
@@ -1079,35 +1079,34 @@ namespace Rtt
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("##DlgViewAsTabBar", tab_bar_flags))
 			{
-
 				if (ImGui::BeginTabItem("Generic Android"))
 				{
-					DrawView("genericAndroid", 0);
+					DrawView("genericAndroid");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Named Android"))
 				{
-					DrawView("namedAndroid", 1);
+					DrawView("namedAndroid");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Generic iOS"))
 				{
-					DrawView("genericIOS", 2);
+					DrawView("genericIOS");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Named iOS"))
 				{
-					DrawView("namedIOS", 3);
+					DrawView("namedIOS");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("TV"))
 				{
-					DrawView("tv", 4);
+					DrawView("tv");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Desktop"))
 				{
-					DrawView("Desktop", 5);
+					DrawView("Desktop");
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
@@ -1148,31 +1147,37 @@ namespace Rtt
 		}
 	}
 
-	void DlgViewAs::DrawView(const string& name, int tabIndex)
+	void DlgViewAs::DrawView(const string& tabName)
 	{
-		auto it = fSkins.find(name);
-		if (it != fSkins.end())
+		const std::map<std::string, SkinProperties>* skins = fSkins->GetSkins(tabName);
+		if (skins)
 		{
-			const vector<string>& skins = it->second;
-			if (fTabCurrent != tabIndex)
+			if (fTabCurrent != tabName)
 			{
 				Clear();
-				fItems = new char* [skins.size()];
-				for (int i = 0; i < skins.size(); i++)
+				fItems = new char* [skins->size()];
+
+				int i = 0;
+				for (const auto& it : *skins)
 				{
-					fItems[i] = strdup(skins[i].c_str());
+					fItems[i++] = strdup(it.first.c_str());
 				}
-				fTabCurrent = tabIndex;
-				fItemsLen = skins.size();
+				fTabCurrent = tabName;
+				fItemsLen = skins->size();
 			}
 
 			if (ImGui::ListBox("", &fItemCurrent, fItems, fItemsLen, 20))
 			{
-				SDL_Event e = {};
-				e.type = sdl::OnChangeView;
-				e.user.data1 = strdup(fItems[fItemCurrent]);
-				SDL_PushEvent(&e);
+				const auto& it = skins->find(fItems[fItemCurrent]);
+				if (it != skins->end())
+				{
+					SDL_Event e = {};
+					e.type = sdl::OnChangeView;
+					e.user.data1 = (void*) &it->second;
+					SDL_PushEvent(&e);
+				}
 			}
+
 		}
 	}
 

@@ -137,24 +137,25 @@ namespace Rtt
 		bool fSaveMyPreference;
 	};
 
+	struct Skins;
 	struct DlgViewAs : public Window
 	{
-		DlgViewAs(const std::string& title, int w, int h, const std::map<std::string, std::vector<std::string>>& skins);
+		DlgViewAs(const std::string& title, int w, int h, Skins* skins);
 		virtual ~DlgViewAs();
 
 		void Draw() override;
 
 	private:
 
-		void DrawView(const std::string& name, int index);
+		void DrawView(const std::string& name);
 		void Clear();
 
 		int fViewIndex;
-		const std::map<std::string, std::vector<std::string>>& fSkins;
+		Skins* fSkins;
 		char** fItems;
 		int fItemsLen;
 		int fItemCurrent;
-		int fTabCurrent;
+		std::string fTabCurrent;
 	};
 
 }

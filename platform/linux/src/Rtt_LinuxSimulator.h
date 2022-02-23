@@ -23,7 +23,7 @@ namespace Rtt
 		void OnRelaunch();
 		void OnZoomIn();
 		void OnZoomOut();
-		void OnViewAsChanged(const std::string& skin);
+		void OnViewAsChanged(const SkinProperties* skin);
 
 		void WatchFolder(const char* path, const char* appName);
 		virtual bool LoadApp() override;
@@ -40,8 +40,6 @@ namespace Rtt
 		void ConfigSet(const char* key, int val);
 		virtual std::map<std::string, std::string>* ConfigGet() override { return &fConfig; }
 
-		void LoadSkins() override;
-
 	private:
 
 		std::map<std::string, std::string> fConfig;
@@ -52,6 +50,7 @@ namespace Rtt
 		int currentSkinWidth;
 		int currentSkinHeight;
 		int currentSkinID;
+		Skins fSkins;
 	};
 }
 

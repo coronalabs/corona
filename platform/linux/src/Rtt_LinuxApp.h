@@ -94,8 +94,6 @@ namespace Rtt
 		virtual void ConfigSave() {};
 		virtual std::map<std::string, std::string>* ConfigGet() { return NULL; }
 
-		virtual void LoadSkins() {};
-
 		const char* GetAppName() const { return fContext->GetAppName(); }
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 		void SetTitle(const std::string& name);
@@ -134,7 +132,6 @@ namespace Rtt
 		// console
 		std::string fLogData;
 		smart_ptr<ConsoleWindow> fConsole;
-		std::map<std::string, std::vector<std::string>> fSkins;
 	};
 
 	//

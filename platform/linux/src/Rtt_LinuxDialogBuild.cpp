@@ -189,28 +189,28 @@ namespace Rtt
 
 			s = "   Application Name :";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
 			s = "   Version Code :";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionCodeInput", fVersionCodeInput, sizeof(fVersionCodeInput), ImGuiInputTextFlags_CharsDecimal);
 
 			s = "   Version Name :";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionNameInput", fVersionNameInput, sizeof(fVersionNameInput), ImGuiInputTextFlags_CharsDecimal);
 
 			s = "   Package :";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -218,25 +218,25 @@ namespace Rtt
 
 			s = "A unique Java-style package identifier for your app\n(e.g. com.acme.games.myframegame)";
 			ImGui::SetCursorPosX(label_width + 20);
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::Dummy(ImVec2(70, 10));
 
 			s = "   Project Path :";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fProjectPathInput", fProjectPathInput, sizeof(fProjectPathInput), ImGuiInputTextFlags_ReadOnly);
 
 			// Target App Store
-			ImGui::Text("   Target App Store :");
+			ImGui::TextUnformatted("   Target App Store :");
 			ImGui::SameLine();
 			const char* appstores[] = { "Amazon", "Google Play", "Samsung" };
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::Combo("##TargetAppStore", &fAppStoreIndex, appstores, IM_ARRAYSIZE(appstores));
 
 			s = "   Keystore: ";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -249,13 +249,13 @@ namespace Rtt
 			}
 
 			// Key Alias
-			ImGui::Text("   Key Alias :");
+			ImGui::TextUnformatted("   Key Alias :");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::Combo("##TargetAppStore", &fKeyAliasIndex, fKeyAliases, fKeyAliasesSize);
 
 			s = "   Save To Folder: ";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -298,7 +298,7 @@ namespace Rtt
 				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
 				{
 					ImGui::Dummy(ImVec2(100, 10));
-					ImGui::Text(fBuildResult);
+					ImGui::TextUnformatted(fBuildResult);
 
 					string s;
 					ImGui::Dummy(ImVec2(100, 30));
@@ -583,21 +583,21 @@ namespace Rtt
 
 			s = "   Application Name :";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
 			s = "   Version Code :";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionInput", fVersionInput, sizeof(fVersionInput), ImGuiInputTextFlags_CharsDecimal);
 
 			s = "   Save To Folder: ";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -639,7 +639,7 @@ namespace Rtt
 				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
 				{
 					ImGui::Dummy(ImVec2(100, 10));
-					ImGui::Text(fBuildResult);
+					ImGui::TextUnformatted(fBuildResult);
 
 					string s = "View";
 					ImGui::Dummy(ImVec2(100, 30));
@@ -818,21 +818,21 @@ namespace Rtt
 
 			s = "   Application Name :";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
 			s = "   Version Code :";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionInput", fVersionInput, sizeof(fVersionInput), ImGuiInputTextFlags_CharsDecimal);
 
 			s = "   Save To Folder: ";
-			ImGui::Text(s.c_str());
+			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
@@ -874,7 +874,7 @@ namespace Rtt
 				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
 				{
 					ImGui::Dummy(ImVec2(100, 10));
-					ImGui::Text(fBuildResult);
+					ImGui::TextUnformatted(fBuildResult);
 
 					string s = "View";
 					ImGui::Dummy(ImVec2(100, 30));
