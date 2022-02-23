@@ -12,8 +12,8 @@
 #include "Corona/CoronaLua.h"
 #include "Rtt_LinuxDisplayObject.h"
 #include "Display/Rtt_TextObject.h"
-#include <wx/textctrl.h>
 
+#if 0
 namespace Rtt
 {
 	class LinuxTextBoxObject : public LinuxDisplayObject
@@ -58,3 +58,4 @@ namespace Rtt
 		wxString fOldValue;
 	};
 }; // namespace Rtt
+#endif

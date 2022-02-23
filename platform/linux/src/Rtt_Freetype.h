@@ -103,8 +103,8 @@ namespace Rtt
 		                               bool is_bold, bool is_italic, int fontsize, const std::vector<int> &xleading, const std::vector<int> &yleading,
 		                               int w, int h, bool multiline, float xscale, float yscale, float *baseline);
 
-		static const char *getFace(const char *path);
-		static bool getMetrics(const char *path, float size, float *ascent, float *descent, float *height, float *leading);
+		const char *getFace(const char *path);
+		bool getMetrics(const char *path, float size, float *ascent, float *descent, float *height, float *leading);
 
 	private:
 		struct rect
@@ -121,9 +121,9 @@ namespace Rtt
 		face_entity* get_face_entity(const std::string& fontname,	bool is_bold, bool is_italic);
 		Uint32	decode_next_unicode_character(const char **utf8_buffer);
 		std::map<std::string, smart_ptr<face_entity>> m_face_entity;
-		static FT_Library	m_lib;
+		FT_Library	m_lib;
 		float m_scale;
-		static std::string m_base_dir;
+		std::string m_base_dir;
 	};
 
 	glyph_freetype_provider *getGlyphProvider();

@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#if 0
 namespace Rtt
 {
 	LinuxRuntimeErrorDialog::LinuxRuntimeErrorDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
@@ -71,8 +72,8 @@ namespace Rtt
 	{
 		EndModal(wxID_OK);
 		wxYield();
-		wxCommandEvent ev(eventRelaunchProject);
-		wxPostEvent(solarApp, ev);
+//		wxCommandEvent ev(eventRelaunchProject);
+//		wxPostEvent(solarApp, ev);
 	}
 
 	void LinuxRuntimeErrorDialog::OnCancelClicked(wxCommandEvent &event)
@@ -80,3 +81,4 @@ namespace Rtt
 		EndModal(wxID_CLOSE);
 	}
 } // namespace Rtt
+#endif

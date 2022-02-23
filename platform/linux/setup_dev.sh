@@ -11,6 +11,7 @@ elif [ -x "$(command -v apt-get)" ]; then
   sudo apt-get install -y build-essential libwxgtk3.0-gtk3-dev zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev libopenal-dev libfreetype6-dev libpng-dev libcrypto++-dev
   sudo apt-get install -y libcurl4-openssl-dev libpng-dev libjpeg-dev libssl-dev libvorbis-dev libogg-dev uuid-dev zlib1g-dev 
   sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libwebkit2gtk-4.0-dev libgtk-3-dev
+  sudo apt-get install -y libsdl2-dev
 
   # install libreadline7_7
   TEMP_DEB="$(mktemp)" &&

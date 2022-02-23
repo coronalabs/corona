@@ -8,48 +8,190 @@ title: Solar2D
 license: MIT
 icon: snap/gui/solar2d.svg
 base: core20
-version: 'YEAR.BUILD_NUMBER'
+version: '2100.9999'
 summary: Solar2D Game Engine
 description: Solar2D is a Lua based game engine with focus on ease of iterations and usage
 grade: stable
-confinement: classic
+confinement: strict
 architectures:
   - amd64
 
+layout:
+  /usr/share/vulkan:
+    symlink: $SNAP/usr/share/vulkan
+  /usr/lib/dri/swrast_dri.so:
+    symlink: $SNAP/usr/lib/x86_64-linux-gnu/dri/swrast_dri.so
+  /usr/lib/dri/vmwgfx_dri.so:
+    symlink: $SNAP/usr/lib/x86_64-linux-gnu/dri/vmwgfx_dri.so
+
+slots:
+  dbus-daemon:
+    interface: dbus
+    bus: session
+    name: com.solar2d.simulator
+
 apps:
   solar2d:
-    command: bin/Solar2DSimulator
+    command: usr/local/bin/Solar2D/Solar2DSimulator
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
+      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/usr/lib/x86_64-linux-gnu/dri::${SNAP}/usr/lib/x86_64-linux-gnu
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64
+      PATH: $JAVA_HOME/jre/bin:$JAVA_HOME/bin:$PATH
+    plugs:
+    - desktop
+    - desktop-legacy
+    - wayland
+    - unity7
+    - gsettings
+    - home
+    - network
+    - network-bind 
+    - opengl
+    - alsa
+    - audio-playback
+    - audio-record
+    - camera
+    - x11
+    slots:
+      - dbus-daemon
 
   builder:
-    command: bin/Solar2DBuilder
+    command: usr/local/bin/Solar2D/Solar2DBuilder
     environment:
       LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
+    plugs:
+      - network
+      - network-bind 
 
 parts:
-  solar2d:
+  readline:
+    source: http://mirrors.kernel.org/ubuntu/pool/main/r/readline/libreadline7_7.0-3_amd64.deb
     plugin: dump
-    source: .
-    stage: [bin, usr]
+    source-type: deb
+
+  sdl:
+    source: https://www.libsdl.org/release/SDL2-2.0.14.tar.gz
+    source-checksum: sha512/ebc482585bd565bf3003fbcedd91058b2183e333b9ea566d2f386da0298ff970645d9d25c1aa4459c7c96e9ea839fd1c5f2da0242a56892865b2e456cdd027ee
+    plugin: autotools
+    autotools-configure-parameters:
+    - --prefix=/usr
+    - --disable-alsa
+    - --disable-arts
+    - --disable-esd
+    - --disable-nas
+    - --disable-oss
+    override-build: |
+      snapcraftctl build
+      sed -i 's|"/usr"|"'"$SNAPCRAFT_STAGE/usr"'"|g' "$SNAPCRAFT_PART_INSTALL/usr/lib/cmake/SDL2/sdl2-config.cmake"
     build-packages:
+    - git
+    - libdbus-1-dev
+    - libudev-dev
+    - fcitx-libs-dev
+    - libegl1-mesa-dev
+    - libgl1-mesa-dev
+    - libgles2-mesa-dev
+    - libibus-1.0-dev
+    - libjack-dev
+    - libpulse-dev
+    - libsamplerate0-dev
+    - libsndfile1-dev
+    - libts-dev
+    - libvulkan-dev
+    - libwayland-dev
+    - libx11-dev
+    - libxcursor-dev
+    - libxext-dev
+    - libxi-dev
+    - libxinerama-dev
+    - libxkbcommon-dev
+    - libxrandr-dev
+    - libxrender-dev
+    - libxss-dev
+    - libxxf86vm-dev
+    stage-packages:
+    - libdbus-1-3
+    - libudev1
+    - fcitx-libs
+    - libdrm2
+    - libegl1-mesa
+    - libgl1
+    - libgles2
+    - libibus-1.0-5
+    - libjack0
+    - libpulse0
+    - libsamplerate0
+    - libts0
+    - libsndfile1
+    - libwayland-client0
+    - libwayland-egl1-mesa
+    - libvulkan1
+    - libx11-6
+    - libxcursor1
+    - libxext6
+    - libxi6
+    - libxinerama1
+    - libxkbcommon0
+    - libxrandr2
+    - libxrender1
+    - libxss1
+    - libxxf86vm1
+
+  solar2d:
+    plugin: cmake
+    source: .
+    cmake-parameters:
+      - -DCMAKE_LIBRARY_PATH=$SNAPCRAFT_STAGE/usr/local/lib
+      - -DCMAKE_INCLUDE_PATH=$SNAPCRAFT_STAGE/usr/local/include
+      - -DSNAPCRAFT_STAGE=${SNAPCRAFT_STAGE}
+    after:
+      - sdl
+    override-build: |
+      snapcraftctl build
+      chmod -c -R a+r .      
+    build-packages:
+      - libcrypto++-dev
+      - libcurl4-openssl-dev
+      - libfreetype6-dev
+      - libgl1-mesa-dev
+      - libglu1-mesa-dev
+      - libjpeg-dev
+      - libogg-dev
+      - libopenal-dev
+      - libpng-dev
+      - libssl-dev
+      - libvorbis-dev
+      - uuid-dev
+      - zlib1g-dev
+      - libtiff5-dev
+      - liblzma-dev
+      - dos2unix
       - ca-certificates
       - ca-certificates-java
       - openjdk-8-jre-headless
+      - libsdl2-dev
+      - libpulse-dev
     stage-packages:
-      - libfreetype6
-      - libpng16-16 
-      - libjpeg8
-      - libgl1
-      - libogg0
       - libcrypto++6
       - libcurl4
+      - libfreetype6
+      - libgl1
+      - libjpeg8
+      - libogg0
+      - libopenal1
+      - libpng16-16
+      - libssl1.1
+      - libvorbis0a
+      - libuuid1
+      - zlib1g
+      - libtiff5
+      - liblzma5
       - openjdk-8-jdk-headless
       - openjdk-8-jre-headless
-      - zlib1g
-      - libopenal1
-      - libpango-1.0-0
-      - libpangocairo-1.0-0 
-      - libpangoft2-1.0-0 
-      - libwebkit2gtk-4.0-37
-      - libsm6
+      - libvulkan1
+      - mesa-vulkan-drivers
+      - libgl1-mesa-dri
+      - unzip
+      - zip
+
+

@@ -9,9 +9,6 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <wx/string.h>
-#include <wx/menu.h>
-#include <wx/textctrl.h>
 #include <sstream>
 #include <fstream>
 #include "Rtt_LuaContext.h"
@@ -42,20 +39,165 @@ namespace Rtt
 	{
 	}
 
-	// static initialise vars
-	const float  LinuxSimulatorView::skinScaleFactor = 1.5;
-	const int  LinuxSimulatorView::skinMinWidth = 320;
-	std::map<int, LinuxSimulatorView::SkinProperties> LinuxSimulatorView::fSkins;
+	void LinuxSimulatorView::OnLinuxPluginGet(const char* appPath, const char* appName, LinuxPlatform* platform)
+	{
+		const char* identity = "no-identity";
 
-	bool LinuxSimulatorView::LoadSkin(lua_State* L, int skinID, std::string filePath)
+		// Create the app packager.
+		LinuxPlatformServices service(platform);
+		LinuxAppPackager packager(service);
+
+		// Read the application's "build.settings" file.
+		bool wasSuccessful = packager.ReadBuildSettings(appPath);
+
+		if (!wasSuccessful)
+		{
+			return;
+		}
+
+		int targetVersion = Rtt::TargetDevice::kLinux;
+		const TargetDevice::Platform targetPlatform(TargetDevice::Platform::kLinuxPlatform);
+
+		// Package build settings parameters.
+		bool onlyGetPlugins = true;
+		bool runAfterBuild = false;
+		bool useWidgetResources = false;
+		LinuxAppPackagerParams linuxBuilderParams(
+			appName, NULL, identity, NULL,
+			appPath, NULL, NULL,
+			targetPlatform, targetVersion,
+			Rtt::TargetDevice::kLinux, NULL,
+			NULL, NULL, false, NULL, useWidgetResources, runAfterBuild, onlyGetPlugins);
+
+		const char kBuildSettings[] = "build.settings";
+		Rtt::String buildSettingsPath;
+		platform->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
+		linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
+		int rc = packager.Build(&linuxBuilderParams, "/tmp/Solar2D");
+	}
+
+	/// Gets a list of recent projects.
+	void LinuxSimulatorView::GetRecentDocs(Rtt::LightPtrArray<Rtt::RecentProjectInfo>* listPointer)
+	{
+		if (listPointer)
+		{
+			listPointer->Clear();
+
+			vector<pair<string, string>> recentDocs;
+			if (ReadRecentDocs(recentDocs))
+			{
+				for (int i = 0; i < recentDocs.size(); i++)
+				{
+					// Create a recent project info object.
+					RecentProjectInfo* infoPointer = new RecentProjectInfo();
+					if (!infoPointer)
+					{
+						continue;
+					}
+
+					const string& appName = recentDocs[i].first;
+					const string& appPath = recentDocs[i].second;
+
+					// Copy the project's folder name to the info object.
+					String sTitle;
+					sTitle.Append(appName.c_str());
+					infoPointer->formattedString = sTitle;
+
+					// Copy the project's "main.lua" file path to the info object.
+					String sPath;
+					sPath.Append(appPath.c_str());
+					infoPointer->fullURLString = sPath;
+
+					// Add the info object to the given collection.
+					listPointer->Append(infoPointer);
+				}
+			}
+		}
+	}
+
+	//
+	// Skins
+	//
+
+	const map<string, SkinProperties>* Skins::GetSkins(const string& tabname) const
+	{
+		const auto& it = fSkins.find(tabname);
+		return it == fSkins.end() ? NULL : &it->second;
+	}
+
+	bool Skins::Load(lua_State* L)
+	{
+		const char* startupPath = GetStartupPath(NULL);
+		string skinDirPath(startupPath);
+		skinDirPath.append("/Resources");
+		if (!Rtt_IsDirectory(skinDirPath.c_str()))
+		{
+			Rtt_LogException("No Resources dir in %s!\n", startupPath);
+			return false;
+		}
+
+		skinDirPath.append("/Skins");
+		if (!Rtt_IsDirectory(skinDirPath.c_str()))
+		{
+			Rtt_LogException("Skin directory not found in /Resources!\n");
+			return false;
+		}
+
+		vector<string> skins = Rtt_ListFiles(skinDirPath.c_str());
+		for (int i = 0; i < skins.size(); i++)
+		{
+			const string& filename = skins[i];
+			SkinProperties sProperties;
+			if (filename.rfind(".lua") != string::npos && Load(L, filename, sProperties))
+			{
+				string skinTitle(sProperties.windowTitleBarName);
+				skinTitle += to_string(sProperties.screenWidth) + "x" + to_string(sProperties.screenHeight);
+				sProperties.skinTitle = skinTitle;
+
+				if (sProperties.device.find("android") != string::npos && !sProperties.device.find("tv") != string::npos)
+				{
+					if (sProperties.device.find("borderless") != string::npos)
+					{
+						fSkins["genericAndroid"][skinTitle] = sProperties;
+					}
+					else
+					{
+						fSkins["namedAndroid"][skinTitle] = sProperties;
+					}
+				}
+				else if (sProperties.device.find("ios") != string::npos)
+				{
+					if (sProperties.device.find("borderless") != string::npos)
+					{
+						fSkins["genericIOS"][skinTitle] = sProperties;
+					}
+					else
+					{
+						fSkins["namedIOS"][skinTitle] = sProperties;
+					}
+				}
+				else if (sProperties.device.find("tv") != string::npos)
+				{
+					fSkins["tv"][skinTitle] = sProperties;
+				}
+				else if (sProperties.device.find("desktop") != string::npos)
+				{
+					fSkins["desktop"][skinTitle] = sProperties;
+				}
+			}
+		}
+		return true;
+	}
+
+
+	bool Skins::Load(lua_State* L, const string& filePath, SkinProperties& skin)
 	{
 		int top = lua_gettop(L);
 		int status = Lua::DoFile(L, filePath.c_str(), 0, true);
 		lua_pop(L, 1); // remove DoFile result
 		lua_getglobal(L, "simulator");
 
-		SkinProperties skin;
-
+		skin = {};
 		if (lua_type(L, -1) == LUA_TTABLE)
 		{
 			lua_getfield(L, -1, "device");
@@ -139,139 +281,17 @@ namespace Rtt
 			lua_pop(L, 1);
 			lua_settop(L, top);
 
-			wxString skinTitle(skin.windowTitleBarName);
-			skinTitle.append(wxString::Format(wxT(" (%ix%i)"), skin.screenWidth, skin.screenHeight));
+			string skinTitle(skin.windowTitleBarName);
+			skinTitle += to_string(skin.screenWidth) + "x" + to_string(skin.screenHeight);
 			skin.skinTitle = skinTitle;
-			skin.id = skinID;
 			skin.selected = false;
-
-			fSkins[skinID] = skin;
 		}
 		else
 		{
 			printf("Couldn't find 'simulator' table\n");
 		}
-
 		return (status == 0);
 	}
 
-	LinuxSimulatorView::SkinProperties LinuxSimulatorView::GetSkinProperties(int skinID)
-	{
-		if (fSkins.count(skinID) > 0)
-		{
-			return fSkins[skinID];
-		}
-
-		return fSkins.begin()->second;
-	}
-
-	LinuxSimulatorView::SkinProperties LinuxSimulatorView::GetSkinProperties(wxString skinTitle)
-	{
-		SkinProperties foundSkin;
-
-		for (int i = 0; i < fSkins.size(); i++)
-		{
-			if (fSkins[i].skinTitle.IsSameAs(skinTitle))
-			{
-				foundSkin = fSkins[i];
-				break;
-			}
-		}
-
-		return foundSkin;
-	}
-
-	void LinuxSimulatorView::DeselectSkins()
-	{
-		for (int i = 0; i < fSkins.size(); i++)
-		{
-			fSkins[i].selected = false;
-		}
-	}
-
-	void LinuxSimulatorView::SelectSkin(int skinID)
-	{
-		if (fSkins.count(skinID) > 0)
-		{
-			DeselectSkins();
-			fSkins[skinID].selected = true;
-		}
-	}
-
-	void LinuxSimulatorView::OnLinuxPluginGet(const char* appPath, const char* appName, LinuxPlatform* platform)
-	{
-		const char* identity = "no-identity";
-
-		// Create the app packager.
-		LinuxPlatformServices service(platform);
-		LinuxAppPackager packager(service);
-
-		// Read the application's "build.settings" file.
-		bool wasSuccessful = packager.ReadBuildSettings(appPath);
-
-		if (!wasSuccessful)
-		{
-			return;
-		}
-
-		int targetVersion = Rtt::TargetDevice::kLinux;
-		const TargetDevice::Platform targetPlatform(TargetDevice::Platform::kLinuxPlatform);
-
-		// Package build settings parameters.
-		bool onlyGetPlugins = true;
-		bool runAfterBuild = false;
-		bool useWidgetResources = false;
-		LinuxAppPackagerParams linuxBuilderParams(
-			appName, NULL, identity, NULL,
-			appPath, NULL, NULL,
-			targetPlatform, targetVersion,
-			Rtt::TargetDevice::kLinux, NULL,
-			NULL, NULL, false, NULL, useWidgetResources, runAfterBuild, onlyGetPlugins);
-
-		const char kBuildSettings[] = "build.settings";
-		Rtt::String buildSettingsPath;
-		platform->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
-		linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
-		int rc = packager.Build(&linuxBuilderParams, "/tmp/Solar2D");
-	}
-
-	/// Gets a list of recent projects.
-	void LinuxSimulatorView::GetRecentDocs(Rtt::LightPtrArray<Rtt::RecentProjectInfo>* listPointer)
-	{
-		if (listPointer)
-		{
-			listPointer->Clear();
-
-			vector<pair<string, string>> recentDocs;
-			if (ReadRecentDocs(recentDocs))
-			{
-				for (int i = 0; i < recentDocs.size(); i++)
-				{
-					// Create a recent project info object.
-					RecentProjectInfo* infoPointer = new RecentProjectInfo();
-					if (!infoPointer)
-					{
-						continue;
-					}
-
-					const string& appName = recentDocs[i].first;
-					const string& appPath = recentDocs[i].second;
-
-					// Copy the project's folder name to the info object.
-					String sTitle;
-					sTitle.Append(appName.c_str());
-					infoPointer->formattedString = sTitle;
-
-					// Copy the project's "main.lua" file path to the info object.
-					String sPath;
-					sPath.Append(appPath.c_str());
-					infoPointer->fullURLString = sPath;
-
-					// Add the info object to the given collection.
-					listPointer->Append(infoPointer);
-				}
-			}
-		}
-	}
 
 } // namespace Rtt

@@ -7,51 +7,41 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#if !wxUSE_GLCANVAS
-#error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the library"
-#endif
-
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_FileSystem.h"
 
 using namespace std;
 
-// global
-Rtt::SolarApp* solarApp = NULL;
+smart_ptr<Rtt::SolarApp> app;
 
-class app : public wxApp
+int main(int argc, char* argv[])
 {
-	bool OnInit() wxOVERRIDE
+	string resourcesDir = GetStartupPath(NULL);
+	resourcesDir.append("/Resources");
+
+	// look for welcomescereen
+	if (Rtt_FileExists((resourcesDir + "/homescreen/main.lua").c_str()))
 	{
-		if (!wxApp::OnInit())
-			return false;
-
-		string resourcesDir = GetStartupPath(NULL);
-		resourcesDir.append("/Resources");
-
-		// look for welcomescereen
-		if (Rtt_FileExists((resourcesDir + "/homescreen/main.lua").c_str()))
-		{
-			resourcesDir.append("/homescreen");
-			solarApp = new Rtt::SolarSimulator();
-		}
-		else if (Rtt_IsDirectory(resourcesDir.c_str()))
-		{
-			solarApp = new Rtt::SolarApp();
-		}
-		else
-		{
-			return false;
-		}
-		return solarApp->Start(resourcesDir);
+		resourcesDir.append("/homescreen");
+		app = new Rtt::SolarSimulator(resourcesDir);
+	}
+	else if (Rtt_IsDirectory(resourcesDir.c_str()))
+	{
+		app = new Rtt::SolarApp(resourcesDir);
+	}
+	else
+	{
+		return -1;
 	}
 
-	virtual ~app()
-	{
-		// Don't delete frame, it deleted by Core of wxWidgets
-		solarApp = NULL;
-	}
-};
 
-wxIMPLEMENT_APP_CONSOLE(app);
+	if (app->Init())
+	{
+		app->Run();
+	}
+
+	app = NULL;
+	return 0;
+}
+

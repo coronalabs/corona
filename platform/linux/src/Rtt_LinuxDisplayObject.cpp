@@ -13,9 +13,8 @@
 #include "Rtt_Runtime.h"
 #include "Rtt_RenderingStream.h"
 #include "Rtt_LinuxContext.h"
-#include "wx/textctrl.h"
-#include "wx/colour.h"
 
+#if 0
 namespace Rtt
 {
 	LinuxDisplayObject::LinuxDisplayObject(const Rect &bounds, const char *elementType)
@@ -192,3 +191,4 @@ namespace Rtt
 	}
 
 } // namespace Rtt
+#endif

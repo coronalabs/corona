@@ -1,5 +1,4 @@
 #include "Rtt_LinuxUtils.h"
-#include "Rtt_Assert.h"
 #include "Rtt_LinuxCrypto.h"
 #include "string.h"
 #include <limits.h>
@@ -14,6 +13,7 @@
 #include <iterator>
 #include <sys/time.h>
 #include <sys/timeb.h>
+#include <fcntl.h>
 
 using namespace std;
 
@@ -175,3 +175,12 @@ void UpdateRecentDocs(const std::string& appName, const std::string& path)
 		}
 	}
 }
+
+bool OpenURL(const string& url)
+{
+	string cmd("xdg-open \"");
+	cmd.append(url);
+	cmd.append("\"");
+	return system(cmd.c_str()) == 0;
+}
+

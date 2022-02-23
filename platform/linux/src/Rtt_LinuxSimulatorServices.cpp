@@ -22,7 +22,7 @@ using namespace std;
 
 namespace Rtt
 {
-	string LinuxSimulatorServices::fCurrentProjectPath;
+	void PushEvent(int evt);
 
 	LinuxSimulatorServices::LinuxSimulatorServices()
 	{
@@ -34,63 +34,34 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::CloneProject() const
 	{
-		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
-		solarSimulator->OnCloneProject(cloneProjectEvent);
+//		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
+//		solarSimulator->OnCloneProject(cloneProjectEvent);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::NewProject() const
 	{
-		wxCommandEvent newProjectEvent(wxEVT_NULL);
-		solarSimulator->OnNewProject(newProjectEvent);
+		PushEvent(sdl::OnNewProject);
 		return true;
 	}
 
-	bool LinuxSimulatorServices::OpenProject(const char *name) const
+	bool LinuxSimulatorServices::OpenProject(const char* name) const
 	{
-		wxString path;
-
-		if (name != NULL)
-		{
-			path = name;
-		}
-		else
-		{
-			wxString startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
-			wxFileDialog openFileDialog(solarApp, _("Open"), startPath, "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-			if (openFileDialog.ShowModal() == wxID_CANCEL)
-			{
-				return false;
-			}
-
-			path = openFileDialog.GetPath().c_str();
-		}
-
-		if (!Rtt_FileExists(path.c_str()))
-		{
-			return false;
-		}
-
-		// update the current project path
-		fCurrentProjectPath = path.ToStdString();
-
-		// send open file dialog event
-		wxCommandEvent openEvent(eventOpenProject);
-		openEvent.SetString(path);
-		wxPostEvent(solarApp, openEvent);
-
+		SDL_Event e = {};
+		e.type = sdl::OnOpenProject;
+		e.user.data1 = name ? strdup(name) : NULL;
+		SDL_PushEvent(&e);
 		return true;
 	}
 
-	bool LinuxSimulatorServices::BuildProject(const char *platformName) const
+	bool LinuxSimulatorServices::BuildProject(const char* platformName) const
 	{
 		TargetDevice::Platform platformType = TargetDevice::PlatformForString(platformName);
 
 		switch (platformType)
 		{
-			case TargetDevice::kAndroidPlatform:
-				return true;
+		case TargetDevice::kAndroidPlatform:
+			return true;
 		}
 
 		return false;
@@ -98,41 +69,41 @@ namespace Rtt
 
 	void LinuxSimulatorServices::ShowSampleCode() const
 	{
-		wxExecute("xdg-open /opt/Solar2D/SampleCode");
+		OpenURL("/opt/Solar2D/SampleCode");
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::SelectOpenFilename(const char *currDirectory, const char *extn, LuaResource *resource) const
+	void LinuxSimulatorServices::SelectOpenFilename(const char* currDirectory, const char* extn, LuaResource* resource) const
 	{
 		Rtt_TRACE_SIM(("WARNING: SelectOpenFilename not available on Linux\n"));
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::SelectSaveFilename(const char *newFilename, const char *currDirectory, const char *extn, LuaResource *resource) const
+	void LinuxSimulatorServices::SelectSaveFilename(const char* newFilename, const char* currDirectory, const char* extn, LuaResource* resource) const
 	{
 		Rtt_TRACE_SIM(("WARNING: SelectSaveFilename not available on Linux\n"));
 	}
 
-	const char *LinuxSimulatorServices::GetCurrProjectPath() const
+	const char* LinuxSimulatorServices::GetCurrProjectPath() const
 	{
-		return fCurrentProjectPath.c_str();
+		return app->GetContext()->GetAppPath();
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::RunExtension(const char *extName) const
+	void LinuxSimulatorServices::RunExtension(const char* extName) const
 	{
 		Rtt_TRACE_SIM(("WARNING: RunExtension not available on Linux\n"));
 	}
 
 	// Set the current project resource path
-	void LinuxSimulatorServices::SetProjectResourceDirectory(const char *projectResourceDirectory)
+	void LinuxSimulatorServices::SetProjectResourceDirectory(const char* projectResourceDirectory)
 	{
-		LinuxPlatform *platform = solarApp->GetPlatform();
+		LinuxPlatform* platform = app->GetPlatform();
 		platform->SetProjectResourceDirectory(projectResourceDirectory);
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::SetWindowCloseListener(LuaResource *resource) const
+	void LinuxSimulatorServices::SetWindowCloseListener(LuaResource* resource) const
 	{
 		Rtt_TRACE_SIM(("WARNING: SetWindowCloseListener not available on Linux\n"));
 	}
@@ -144,14 +115,14 @@ namespace Rtt
 	}
 
 	// Get the value of the given preference (user registry setting)
-	const char *LinuxSimulatorServices::GetPreference(const char *prefName) const
+	const char* LinuxSimulatorServices::GetPreference(const char* prefName) const
 	{
 		//Rtt_ASSERT(0 && "todo");
 		return 0;
 	}
 
 	// Set the value of the given preference (user registry setting)
-	void LinuxSimulatorServices::SetPreference(const char *prefName, const char *prefValue) const
+	void LinuxSimulatorServices::SetPreference(const char* prefName, const char* prefValue) const
 	{
 		Rtt_ASSERT(0 && "todo");
 	}
@@ -170,97 +141,76 @@ namespace Rtt
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::SetWindowResizeListener(LuaResource *resource) const
+	void LinuxSimulatorServices::SetWindowResizeListener(LuaResource* resource) const
 	{
 		Rtt_TRACE_SIM(("WARNING: SetWindowResizeListener not available on Linux\n"));
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::SetCursorRect(const char *cursorName, int x, int y, int width, int height) const
+	void LinuxSimulatorServices::SetCursorRect(const char* cursorName, int x, int y, int width, int height) const
 	{
 	}
 
 	// Gets a list of recent projects
-	void LinuxSimulatorServices::GetRecentDocs(LightPtrArray<RecentProjectInfo> *list) const
+	void LinuxSimulatorServices::GetRecentDocs(LightPtrArray<RecentProjectInfo>* list) const
 	{
 		LinuxSimulatorView::GetRecentDocs(list);
 	}
 
-	const char *LinuxSimulatorServices::GetSubscription(S32 *expirationTimestamp) const
+	const char* LinuxSimulatorServices::GetSubscription(S32* expirationTimestamp) const
 	{
 		Rtt_ASSERT(0 && "todo");
 		return 0;
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::SetWindowTitle(const char *windowTitle) const
+	void LinuxSimulatorServices::SetWindowTitle(const char* windowTitle) const
 	{
 		Rtt_TRACE_SIM(("WARNING: SetWindowTitle not available on Linux\n"));
 	}
 
-	void LinuxSimulatorServices::OpenTextEditor(const char *filename) const
+	void LinuxSimulatorServices::OpenTextEditor(const char* filename) const
 	{
-		string command("xdg-open ");
-		command.append(filename);
-
-		wxExecute(command.c_str());
+		PushEvent(sdl::OnOpenInEditor);
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::OpenColorPanel(double r, double g, double b, double a, LuaResource *callback) const
+	void LinuxSimulatorServices::OpenColorPanel(double r, double g, double b, double a, LuaResource* callback) const
 	{
 		Rtt_TRACE_SIM(("WARNING: OpenColorPanel not available on Linux\n"));
 	}
 
 	// stub to match Mac implementation
-	void LinuxSimulatorServices::SetBuildMessage(const char *message) const
+	void LinuxSimulatorServices::SetBuildMessage(const char* message) const
 	{
 		Rtt_TRACE_SIM(("WARNING: SetBuildMessage not available on Linux\n"));
 	}
 
-	void LinuxSimulatorServices::SendAnalytics(const char *eventName, const char *keyName, const char *value) const
+	void LinuxSimulatorServices::SendAnalytics(const char* eventName, const char* keyName, const char* value) const
 	{
 	}
 
 	bool LinuxSimulatorServices::RelaunchProject() const
 	{
-		wxCommandEvent e(eventRelaunchProject);
-		wxPostEvent(solarApp, e);
+		PushEvent(sdl::OnRelaunchLastProject);
 		return true;
 	}
 
-	bool LinuxSimulatorServices::EditProject(const char *name) const
+	bool LinuxSimulatorServices::EditProject(const char* name) const
 	{
-		string command("xdg-open ");
-		command.append(name);
-
-		wxExecute(command.c_str());
+		PushEvent(sdl::OnOpenInEditor);
 		return true;
 	}
 
-	bool LinuxSimulatorServices::ShowProjectFiles(const char *name) const
+	bool LinuxSimulatorServices::ShowProjectFiles(const char* name) const
 	{
-		wxString path(name);
-		path = path.SubString(0, path.size() - 10); // without main.lua
-		string command("xdg-open ");
-		command.append(path.c_str());
-
-		wxExecute(command.c_str());
+		PushEvent(sdl::OnShowProjectFiles);
 		return true;
 	}
 
-	bool LinuxSimulatorServices::ShowProjectSandbox(const char *name) const
+	bool LinuxSimulatorServices::ShowProjectSandbox(const char* name) const
 	{
-		const char *homeDir = GetHomePath();
-		string appName = solarApp->GetContext()->GetAppName();
-		string command("xdg-open ");
-		command.append(homeDir);
-		command.append("/.Solar2D/Sandbox/");
-		command.append(name);
-		command.append("_");
-		command.append(CalculateMD5(name));
-
-		wxExecute(command.c_str());
+		PushEvent(sdl::OnShowProjectSandbox);
 		return true;
 	}
 }; // namespace Rtt

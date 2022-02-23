@@ -23,31 +23,31 @@
 #include "Rtt_LinuxRuntimeDelegate.h"
 #include "Rtt_LinuxKeyListener.h"
 #include "Rtt_LinuxMouseListener.h"
-#include "wx/timer.h"
+#include "Rtt_LinuxContainer.h"
 #include <string>
+#include <SDL2/SDL.h>
 
 #define HOMESCREEN_ID "homescreen"
 
 namespace Rtt
 {
 	class SolarApp;
-	class SolarGLCanvas;
 	class LinuxPlatform;
 
-	struct SolarAppContext: public wxTimer
+	struct SolarAppContext : public ref_counted
 	{
-		SolarAppContext(const char *path);
+		SolarAppContext(SDL_Window* window, const std::string& path);
 		~SolarAppContext();
 
 		bool IsInitialized() const { return NULL != fRuntime; }
 
-		Runtime *GetRuntime() { return fRuntime; }
-		LinuxRuntimeDelegate *GetDelegate() { return fRuntimeDelegate; }
-		const Runtime *GetRuntime() const { return fRuntime; }
-		LinuxMouseListener *GetMouseListener() { return fMouseListener; }
-		const LinuxMouseListener *GetMouseListener() const { return fMouseListener; }
-		LinuxKeyListener *GetKeyListener() { return fKeyListener; }
-		const LinuxKeyListener *GetKeyListener() const { return fKeyListener; }
+		Runtime* GetRuntime() { return fRuntime; }
+		LinuxRuntimeDelegate* GetDelegate() { return fRuntimeDelegate; }
+		const Runtime* GetRuntime() const { return fRuntime; }
+		LinuxMouseListener* GetMouseListener() { return fMouseListener; }
+		const LinuxMouseListener* GetMouseListener() const { return fMouseListener; }
+		LinuxKeyListener* GetKeyListener() { return fKeyListener; }
+		const LinuxKeyListener* GetKeyListener() const { return fKeyListener; }
 		void Pause();
 		void Resume();
 		void RestartRenderer();
@@ -57,37 +57,44 @@ namespace Rtt
 		int GetHeight() const;
 		void SetHeight(int val);
 		DeviceOrientation::Type GetOrientation() const { return fRuntimeDelegate->fOrientation; }
-		const std::string &GetTitle() const { return fTitle; }
+		const std::string& GetTitle() const { return fTitle; }
 		void Flush();
-		bool LoadApp(SolarGLCanvas *canvas);
-		SolarGLCanvas *GetCanvas() const { return fCanvas; }
-		const char *GetAppPath() const { return fPathToApp.c_str(); }
-		LinuxPlatform *GetPlatform() const { return fPlatform; }
-		const std::string &GetAppName() const { return fAppName; }
-		const std::string &GetSaveFolder() const { return fSaveFolder; }
-		const LinuxRuntimeDelegate *GetRuntimeDelegate() const { return fRuntimeDelegate; }
-		void Notify() override;		// timer
+		bool LoadApp();
+		const char* GetAppPath() const { return fPathToApp.c_str(); }
+		LinuxPlatform* GetPlatform() const { return fPlatform; }
+		const char* GetAppName() const { return fAppName.c_str(); }
+		const std::string& GetSaveFolder() const { return fSaveFolder; }
+		const LinuxRuntimeDelegate* GetRuntimeDelegate() const { return fRuntimeDelegate; }
+		void advance();
+		void ResetWindowSize();
 		static int Print(lua_State* L);		// re-defined global.print
-
+		void DispatchEvent(const MEvent& e)
+		{
+			if (fRuntime)
+			{
+				fRuntime->DispatchEvent(e);
+			}
+		}
 	private:
 
 		void Init();
 
 		std::string fTitle;
-		LinuxRuntime *fRuntime;
-		LinuxRuntimeDelegate *fRuntimeDelegate;
-		LinuxMouseListener *fMouseListener;
-		LinuxKeyListener *fKeyListener;
+		LinuxRuntime* fRuntime;
+		LinuxRuntimeDelegate* fRuntimeDelegate;
+		LinuxMouseListener* fMouseListener;
+		LinuxKeyListener* fKeyListener;
 		std::string fPathToApp;
 		std::string fAppName;
-		LinuxPlatform *fPlatform;
+		LinuxPlatform* fPlatform;
 		bool fTouchDeviceExist;
-		const char *fMode;
-		SolarGLCanvas *fCanvas;
+		const char* fMode;
 		bool fIsDebApp;
 		LinuxSimulatorServices* fLinuxSimulatorServices;
 		std::string fSaveFolder;
 		ProjectSettings* fProjectSettings;
+
+		SDL_Window* fWindow;
 	};
 }; // namespace Rtt
 

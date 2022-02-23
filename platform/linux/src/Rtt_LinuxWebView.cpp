@@ -182,7 +182,7 @@ namespace Rtt
 
 			if (baseDirectory != MPlatform::kUnknownDir)
 			{
-				LinuxPlatform *platform = solarApp->GetPlatform();
+				LinuxPlatform* platform = app->GetPlatform();
 				String result;
 				platform->PathForFile(url, baseDirectory, 0, result);
 

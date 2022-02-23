@@ -1,20 +1,21 @@
-#ifndef LINUX_CONSOLE_APP_H
-#define LINUX_CONSOLE_APP_H
+//
+// Console window
+//
 
-#include <wx/app.h>
-#include "Rtt_LinuxConsole.h"
+#pragma once
 
-class Rtt_LinuxConsoleApp: public wxApp
+#include "Rtt_LinuxDialog.h"
+
+namespace Rtt
 {
-public:
-	enum MessageType {Normal, Warning, Error};
-	Rtt_LinuxConsole *Solar2DConsole;
-	bool OnInit();
-	void ClearLog();
-	void UpdateLog(wxString message);
-	void UpdateLog(wxString message, int messageType);
-};
+	struct ConsoleWindow : public Window
+	{
+		ConsoleWindow(const std::string& title, int w, int h, std::string* logData);
+		virtual ~ConsoleWindow();
 
-DECLARE_APP(Rtt_LinuxConsoleApp);
+		void Draw() override;
 
-#endif //LINUXCONSOLEAPP_H
+	private:
+		std::string* fLogData;	
+	};
+}

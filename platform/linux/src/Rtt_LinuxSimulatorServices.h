@@ -38,7 +38,7 @@ namespace Rtt
 		virtual bool CloneProject() const;
 
 		/// <summary>Displays a "New Project" window for creating a new Corona project.</summary>
-		virtual bool NewProject() const;
+		virtual bool NewProject() const override;
 
 		/// <summary>Opens a Corona project for simulation.</summary>
 		/// <param name="name">
@@ -56,7 +56,7 @@ namespace Rtt
 
 		virtual void SelectOpenFilename(const char *currDirectory, const char *extn, LuaResource *resource) const;
 		virtual void SelectSaveFilename(const char *newFilename, const char *currDirectory, const char *extn, LuaResource *resource) const;
-		virtual const char *GetCurrProjectPath() const;
+		virtual const char *GetCurrProjectPath() const override;
 		virtual void RunExtension(const char *extName) const;
 		virtual void SetProjectResourceDirectory(const char *projectResourceDirectory);
 		virtual void SetWindowCloseListener(LuaResource *resource) const;
@@ -82,11 +82,8 @@ namespace Rtt
 		virtual void SendAnalytics(const char *eventName, const char *keyName, const char *value) const;
 		virtual bool RelaunchProject() const;
 		virtual bool EditProject(const char *name) const;
-		virtual bool ShowProjectFiles(const char *name) const;
-		virtual bool ShowProjectSandbox(const char *name) const;
-
-	private:
-		static std::string fCurrentProjectPath;
+		virtual bool ShowProjectFiles(const char *name) const override;
+		virtual bool ShowProjectSandbox(const char *name) const override;
 	};
 }; // namespace Rtt
 

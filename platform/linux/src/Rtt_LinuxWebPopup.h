@@ -10,7 +10,6 @@
 #include "Corona/CoronaLua.h"
 #include "Rtt_PlatformWebPopup.h"
 #include "Rtt_MPlatform.h"
-#include "wx/webview.h"
 
 #ifndef _Rtt_LinuxWebPopup_H__
 #define _Rtt_LinuxWebPopup_H__

@@ -34,8 +34,6 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
-//#include "wx/wx.h"
-//#include "wx/activityindicator.h"
 #include <pwd.h>
 
 using namespace std;
@@ -75,7 +73,11 @@ namespace Rtt
 		float height = 0;
 		float leading = 0;
 
-		glyph_freetype_provider::getMetrics(font.Name(), font.Size(), &ascent, &descent, &height, &leading);
+		glyph_freetype_provider* gp = getGlyphProvider();
+		if (gp)
+		{
+			gp->getMetrics(font.Name(), font.Size(), &ascent, &descent, &height, &leading);
+		}
 
 		ret["ascent"] = ascent;
 		ret["descent"] = descent;
