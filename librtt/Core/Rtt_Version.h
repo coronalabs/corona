@@ -21,14 +21,14 @@
 #define Rtt_LOCAL_BUILD_REVISION 9999
 
 #ifndef Rtt_BUILD_YEAR
-#	define Rtt_BUILD_YEAR 2100
+#define Rtt_BUILD_YEAR 2100
 #endif
 
 #define Rtt_BUILD_MONTH 1
 #define Rtt_BUILD_DAY 1
 
 #ifndef Rtt_BUILD_REVISION
-#	define Rtt_BUILD_REVISION Rtt_LOCAL_BUILD_REVISION
+#define Rtt_BUILD_REVISION Rtt_LOCAL_BUILD_REVISION
 #endif
 
 // If this is a public release, this should be 0
@@ -37,7 +37,7 @@
 // Used to determine if this is an internal/locally built version of Corona.
 // This will never be defined for customer builds.
 #if Rtt_BUILD_REVISION == Rtt_LOCAL_BUILD_REVISION
-#	define Rtt_IS_LOCAL_BUILD
+#define Rtt_IS_LOCAL_BUILD
 #endif
 
 #define Rtt_EXPIRATION_CUTOFF_INDIES_SIMULATOR_SKINS 1353196800

@@ -1,12 +1,8 @@
 #ifndef Rtt_LINUX_CLONE_PROJECT_DIALOG_H
 #define Rtt_LINUX_CLONE_PROJECT_DIALOG_H
 
-#include "wx/wx.h"
-#include "wx/image.h"
-#include "wx/statline.h"
-#include "wx/activityindicator.h"
 #include <string>
-
+#if 0
 namespace Rtt
 {
 	class LinuxCloneProjectDialog : public wxDialog
@@ -37,3 +33,4 @@ namespace Rtt
 } // namespace Rtt
 
 #endif // Rtt_LINUX_CLONE_PROJECT_DIALOG_H
+#endif

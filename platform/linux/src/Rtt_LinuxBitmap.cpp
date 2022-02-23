@@ -16,8 +16,7 @@
 #include "Rtt_Freetype.h"
 #include "Display/Rtt_Display.h"
 #include "Core/Rtt_Types.h"
-#include "wx/image.h"
-#include "wx/log.h"
+#include "Rtt_BitmapUtils.h"
 
 namespace Rtt
 {
@@ -110,46 +109,70 @@ namespace Rtt
 	{
 		Rtt_ASSERT(fData == NULL);
 
-		// disable log messages
-		wxLogNull logNo;
-		wxImage img;
-
-		if (img.LoadFile(path))
+		// get file ext
+		int n = strlen(path);
+		if (n < 5)
 		{
-			fWidth = img.GetWidth();
-			fHeight = img.GetHeight();
+			return false;
+		}
 
-			int size = fWidth * fHeight * 4;
-			fData = (U8 *)malloc(size);
-			U8 *dst = fData;
+		std::string ext = path + n - 4;
+		if (ext == ".bmp")
+		{
+			fData = bitmapUtil::loadBMP(path, fWidth, fHeight, fFormat);
+			if (fData)
+			{
+				fFormat = kRGBA;
+			}
+		}
+		else if (ext == ".png")
+		{
+			FILE* f = fopen(path, "rb");
+			if (f)
+			{
+				fData = bitmapUtil::loadPNG(f, fWidth, fHeight);
+				if (fData)
+				{
+					fFormat = kRGBA;
+				}
+				fclose(f);
+			}
+		}
+		else if (ext == ".jpg")
+		{
+			FILE* f = fopen(path, "rb");
+			if (f)
+			{
+				fData = bitmapUtil::loadJPG(f, fWidth, fHeight);
+				if (fData)
+				{
+					fFormat = kRGB;
+				}
+				else
+				{
+					Rtt_LogException("Failed to load %s\n", path);
+				}
+				fclose(f);
+			}
+		}
 
+		if (fData && fFormat == kRGBA)
+		{
+			U8* dst = fData;
 			for (int y = 0; y < fHeight; y++)
 			{
 				for (int x = 0; x < fWidth; x++)
 				{
-					U8 r = img.GetRed(x, y);
-					U8 g = img.GetGreen(x, y);
-					U8 b = img.GetBlue(x, y);
-					U8 a = img.HasAlpha() ? img.GetAlpha(x, y) : 255;
-
 					// premultiple alpha
-					if (a < 255)
+					if (dst[3] < 255)
 					{
-						dst[0] = (r * a) >> 8;
-						dst[1] = (g * a) >> 8;
-						dst[2] = (b * a) >> 8;
+						dst[0] = (dst[0] * dst[3]) >> 8;
+						dst[1] = (dst[1] * dst[3]) >> 8;
+						dst[2] = (dst[2] * dst[3]) >> 8;
 					}
-					else
-					{
-						dst[0] = r;
-						dst[1] = g;
-						dst[2] = b;
-					}
-					dst[3] = a;
 					dst += 4;
 				}
 			}
-			fFormat = kRGBA;
 		}
 
 		return fData != NULL;
@@ -159,59 +182,30 @@ namespace Rtt
 	{
 		// Validate.
 		if ((NULL == bitmap) || (NULL == filePath))
-		{
 			return false;
-		}
-
-		wxBitmapType bitmapType = wxBITMAP_TYPE_JPEG;
-
-		if (strcmp(filePath + strlen(filePath) - 4, ".png") == 0)
-		{
-			bitmapType = wxBITMAP_TYPE_PNG;
-		}
 
 		S32 w = bitmap->Width();
 		S32 h = bitmap->Height();
-
 		if (w <= 0 || h <= 0)
-		{
 			return false;
-		}
 
 		// Fetch the given bitmap's bits.
-		U8 *bits = (U8 *)(bitmap->GetBits(context));
-
+		U8* bits = (U8*)(bitmap->GetBits(context));
 		if (bits == NULL)
-		{
 			return false;
-		}
 
-		// save
-		U8 *rgb = (U8 *)malloc(w * h * 3);
-		U8 *alpha = (U8 *)malloc(w * h);
-		U8 *prgb = rgb;
-		U8 *palpha = alpha;
+		Format fmt = bitmap->GetFormat();
+		bool rc = false;
 
-		for (int y = 0; y < h; y++)
+		std::string path = filePath;
+		if (path.rfind(".png") != std::string::npos)
 		{
-			for (int x = 0; x < w; x++)
-			{
-				prgb[0] = bits[1];
-				prgb[1] = bits[2];
-				prgb[2] = bits[3];
-				*palpha = bits[0];
-
-				bits += 4;
-				prgb += 3;
-				palpha++;
-			}
+			rc = bitmapUtil::savePNG(filePath, bits, w, h, fmt);
 		}
-
-		wxImage img(w, h, rgb, alpha, true); // disable taking ownership of the data and free it afterwards.
-		bool rc = img.SaveFile(filePath, bitmapType);
-
-		free(rgb);
-		free(alpha);
+		else if (path.rfind(".jpg") != std::string::npos)
+		{
+			rc = bitmapUtil::saveJPG(filePath, bits, w, h, fmt, 75); // jpegQuality);
+		}
 		return rc;
 	}
 

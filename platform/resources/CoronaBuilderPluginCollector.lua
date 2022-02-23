@@ -11,6 +11,7 @@ platformFallbacks = {
     { "appletvos", "tvos" },
     { "appletvsimulator", "tvos-sim" },
     { "android-kindle", "android" },
+    { "android-nongoogle", "android" },
     { "macos", "mac-sim" },
     { "win32", "win32-sim" },
     { "linux", "linux-sim" },

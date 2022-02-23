@@ -23,74 +23,141 @@
 #include "Rtt_LinuxRuntimeDelegate.h"
 #include "Rtt_LinuxKeyListener.h"
 #include "Rtt_LinuxMouseListener.h"
-#include "Rtt_LinuxRelaunchProjectDialog.h"
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxContext.h"
-#include "wx/app.h"
-#include "wx/frame.h"
-#include "wx/panel.h"
-#include "wx/stattext.h"
-#include "wx/glcanvas.h"
-#include <string>
+#include "Rtt_LinuxContainer.h"
+#include "Rtt_LinuxDialog.h"
+#include "Rtt_LinuxUtils.h"
+#include "Rtt_LinuxConsoleApp.h"
+#include <sys/inotify.h>
+
+enum sdl
+{
+	OnOpenProject = SDL_USEREVENT + 1,
+	OnNewProject,
+	OnBuild,
+	OnOpenInEditor,
+	OnRelaunch,
+	OnCloseProject,
+	onCloseDialog,
+	OnOpenDocumentation,
+	OnOpenSampleProjects,
+	OnAbout,
+	OnShowProjectFiles,
+	OnShowProjectSandbox,
+	OnClearProjectSandbox,
+	OnRelaunchLastProject,
+	OnOpenPreferences,
+	OnFileBrowserSelected,
+	OnFileSystemEvent,
+	OnBuildLinux,
+	OnBuildAndroid,
+	OnBuildHTML5,
+	OnRotateLeft,
+	OnRotateRight,
+	OnShake,
+	OnZoomIn,
+	OnZoomOut,
+	OnSetFocusConsole,
+	OnStyleColorsLight,
+	OnStyleColorsClassic,
+	OnStyleColorsDark,
+	OnViewAs,
+	OnChangeView
+};
 
 namespace Rtt
 {
-	wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
-	wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
-	wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
+	void PushEvent(int evt);
 
-	class SolarGLCanvas;
-
-	// the main frame
-	class SolarApp : public wxFrame
+	struct SolarApp : public ref_counted
 	{
-	public:
-		SolarApp();
+		SolarApp(const std::string& resourceDir);
 		virtual ~SolarApp();
+
+		bool Init();
+		virtual bool LoadApp();
+		void Run();
+		bool PollEvents();
 
 		Runtime* GetRuntime() { return fContext->GetRuntime(); }
 		LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
-		void OnIconized(wxIconizeEvent& event);
-		virtual void OnClose(wxCloseEvent& event);
+		void OnIconized();
 		void ChangeSize(int newWidth, int newHeight);
-		SolarGLCanvas* GetCanvas() const { return fSolarGLCanvas; }
 		SolarAppContext* GetContext() const { return fContext; }
-		void ResetWindowSize();
-		bool CreateWindow(const std::string& resourcesDir);
 
-		virtual bool Start(const std::string& resourcesDir);
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
+		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
+		virtual void ConfigLoad() {};
+		virtual void ConfigSave() {};
+		virtual std::map<std::string, std::string>* ConfigGet() { return NULL; }
 
-		wxStaticText* suspendedText;
-		SolarGLCanvas* fSolarGLCanvas;
+		const char* GetAppName() const { return fContext->GetAppName(); }
+		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
+		void SetTitle(const std::string& name);
+
+		void RenderGUI();
+		inline void Pause() { fContext->Pause(); }
+		inline void Resume() { fContext->Resume(); }
+		void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
+		void Log(const char* buf, int len);
+
+		const std::string& GetTitle() { return fContext->GetTitle(); };
+		bool IsFullScreen() { return false; }
+		bool IsMinimized() { return false; }
+		bool IsIconized() { return false; }
+		bool IsMaximized() { return false; }
+		
+	protected:
+
+		virtual void SolarEvent(const SDL_Event& e) {}
+
 		SolarAppContext* fContext;
+		SDL_Window* fWindow;
+		SDL_GLContext fGLcontext;
+
 		std::string fAppPath;
 		std::string fProjectPath;
+		int fWidth;
+		int fHeight;
 
-		wxDECLARE_EVENT_TABLE();
+		// GUI
+		ImGuiContext* fImCtx;
+		smart_ptr<DlgMenu> fMenu;
+		smart_ptr<Window> fDlg;
+		bool fActivityIndicator;
+
+		// console
+		std::string fLogData;
+		smart_ptr<ConsoleWindow> fConsole;
 	};
 
-	//  the canvas window
-	class SolarGLCanvas : public wxGLCanvas
+	//
+	// FileWatcher
+	//
+	struct FileWatcher : public ref_counted
 	{
-	public:
-		SolarGLCanvas(SolarApp* parent, const int* vAttrs);
-		~SolarGLCanvas();
+		FileWatcher();
+		virtual ~FileWatcher();
 
-		void OnChar(wxKeyEvent& event);
-		void OnSize(wxSizeEvent& event);
-		void Render();
+		bool Start(const std::string& folder);
+		void Stop();
+
+		// thread func
+		void Watch();
 
 	private:
-		wxGLContext* fGLContext;
-		wxDECLARE_EVENT_TABLE();
+		smart_ptr<mythread> fThread;
+		int m_inotify_fd;
+		int m_watch_descriptor;
 	};
+
 
 }
 
-extern Rtt::SolarApp* solarApp;
+extern smart_ptr<Rtt::SolarApp> app;
 
 
 #endif // Rtt_LINUX_CONTEXT_H

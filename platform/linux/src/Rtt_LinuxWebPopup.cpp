@@ -79,7 +79,7 @@ namespace Rtt
 		if (!fWebBrowserPointer)
 		{
 			// Fetch the bounds of this display object converted from Corona coordinates to native screen coordinates.
-			Runtime *runtimePointer = solarApp->GetRuntime();
+			Runtime* runtimePointer = app->GetRuntime();
 
 			if (!runtimePointer)
 			{
@@ -104,7 +104,7 @@ namespace Rtt
 		if (fBaseDirectory != MPlatform::kUnknownDir)
 		{
 			Rtt::String filePath;
-			LinuxPlatform *platform = solarApp->GetPlatform();
+			LinuxPlatform* platform = app->GetPlatform();
 			platform->PathForFile(url, fBaseDirectory, MPlatform::kDefaultPathFlags, filePath);
 
 			if (!filePath.IsEmpty())

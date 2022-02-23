@@ -52,15 +52,12 @@ void printBitmap(const char* path, const U8* img, int w, int h, int bpp, int cha
 namespace Rtt
 {
 
-	FT_Library	glyph_freetype_provider::m_lib;
-	std::string glyph_freetype_provider::m_base_dir;
-
-
 	//
 	//	glyph provider implementation
 	//
 
 	static smart_ptr<glyph_freetype_provider> sGlyphProvider;
+
 	glyph_freetype_provider* getGlyphProvider()
 	{
 		return sGlyphProvider.get();
