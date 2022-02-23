@@ -557,9 +557,14 @@ namespace Rtt
 		fContext->RestartRenderer();
 	}
 
-	void SolarApp::ChangeSize(int newWidth, int newHeight)
+	void SolarApp::SetWindowSize(int w, int h)
 	{
-		SDL_SetWindowSize(fWindow, newWidth, newHeight);
+		SDL_SetWindowSize(fWindow, w, h);
+
+		fConfig["title"] = GetTitle();
+		fConfig["windowWidth"] = w;
+		fConfig["windowHeight"] = h;
+		fConfig.Save();
 	}
 
 	//
@@ -674,4 +679,99 @@ namespace Rtt
 		}
 	}
 
-}
+	//
+	// Config
+	//
+
+	Config::Config(const string& path)
+	{
+		Load(path);
+	}
+
+	Config::Config()
+	{
+		string cfg = GetHomePath();
+		cfg.append("/.Solar2D/simulator.conf");
+		Load(cfg);
+	}
+
+	Config::~Config()
+	{
+		Save();
+	}
+
+	void Config::Load(const string& path)
+	{
+		fPath = path;
+
+		// default values
+		fConfig["showRuntimeErrors"] = true;
+		fConfig["openLastProject"] = false;
+		fConfig["relaunchOnFileChange"] = "Always";
+		fConfig["windowXPos"] = 10;
+		fConfig["windowYPos"] = 10;
+		fConfig["skinWidth"] = 320;
+		fConfig["skinHeight"] = 480;
+
+		FILE* f = fopen(path.c_str(), "r");
+		if (f == NULL)
+		{
+			Rtt_LogException("Failed to read %s, %s\n", path.c_str(), strerror(errno));
+			return;
+		}
+
+		char s[1024];
+		while (fgets(s, sizeof(s), f))
+		{
+			char* comment = strchr(s, '#');
+			if (comment)
+				*comment = 0;
+
+			char key[sizeof(s)];
+			char val[sizeof(s)];
+			if (sscanf(s, "%64[^=]=%512[^\n]%*c", key, val) == 2) // Checking scanf read key=val pair
+			{
+				fConfig[key] = val;
+			}
+		}
+		fclose(f);
+	}
+
+	void Config::Save()
+	{
+		FILE* f = fopen(fPath.c_str(), "w");
+		if (f)
+		{
+			for (const auto& it : fConfig)
+			{
+				fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
+			}
+			fclose(f);
+		}
+	}
+
+	as_value& Config::operator[](const std::string& name)
+	{
+		static as_value undefined;
+		undefined.set_undefined();
+
+		auto it = fConfig.find(name);
+		if (it == fConfig.end())
+			return undefined;
+		else
+			return it->second;
+	}
+
+	const as_value& Config::operator[](const std::string& name) const
+	{
+		static as_value undefined;
+		undefined.set_undefined();
+
+		const auto& it = fConfig.find(name);
+		if (it == fConfig.end())
+			return undefined;
+		else
+			return it->second;
+	}
+
+}	// Rtt

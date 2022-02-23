@@ -70,6 +70,23 @@ namespace Rtt
 {
 	void PushEvent(int evt);
 
+	struct Config : public ref_counted
+	{
+		Config();
+		Config(const std::string& path);
+		virtual ~Config();
+
+		as_value& operator[](const std::string& name);
+		const as_value& operator[](const std::string& name) const;
+
+		void Load(const std::string& path);
+		void Save();
+
+	private:
+		std::map<std::string, as_value> fConfig;
+		std::string fPath;
+	};
+
 	struct SolarApp : public ref_counted
 	{
 		SolarApp(const std::string& resourceDir);
@@ -84,15 +101,12 @@ namespace Rtt
 		LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
 
 		void OnIconized();
-		void ChangeSize(int newWidth, int newHeight);
+		void SetWindowSize(int newWidth, int newHeight);
 		SolarAppContext* GetContext() const { return fContext; }
 
 		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
 		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
-		virtual void ConfigLoad() {};
-		virtual void ConfigSave() {};
-		virtual std::map<std::string, std::string>* ConfigGet() { return NULL; }
 
 		const char* GetAppName() const { return fContext->GetAppName(); }
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
@@ -109,7 +123,9 @@ namespace Rtt
 		bool IsMinimized() { return false; }
 		bool IsIconized() { return false; }
 		bool IsMaximized() { return false; }
-		
+
+		Config& GetConfig() { return fConfig; }
+
 	protected:
 
 		virtual void SolarEvent(const SDL_Event& e) {}
@@ -118,6 +134,7 @@ namespace Rtt
 		SDL_Window* fWindow;
 		SDL_GLContext fGLcontext;
 
+		Config fConfig;
 		std::string fAppPath;
 		std::string fProjectPath;
 		int fWidth;

@@ -473,6 +473,16 @@ namespace Rtt
 			{
 				PushEvent(sdl::OnBuildHTML5);
 			}
+			// ZoomIn
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_Equal, false))
+			{
+				PushEvent(sdl::OnZoomIn);
+			}
+			// ZoomOut
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_Minus, false))
+			{
+				PushEvent(sdl::OnZoomOut);
+			}
 
 
 			if (ImGui::BeginMainMenuBar())
@@ -917,15 +927,12 @@ namespace Rtt
 		, fOpenlastProject(false)
 		, fStyleIndex(0)
 	{
-		if (app->ConfigGet())
-		{
-			map<string, string>& cfg = *app->ConfigGet();
-			fRelaunchIndex = cfg["relaunchOnFileChange"] == "Always" ? 0 : (cfg["relaunchOnFileChange"] == "Ask" ? 2 : 1);
-			fShowWelcome = atoi(cfg["ShowWelcome"].c_str());
-			fShowErrors = atoi(cfg["showRuntimeErrors"].c_str());
-			fOpenlastProject = atoi(cfg["openLastProject"].c_str());
-			fStyleIndex = cfg["ColorScheme"] == "Light" ? 0 : (cfg["ColorScheme"] == "Dark" ? 2 : 1);
-		}
+		Config& cfg = app->GetConfig();
+		fRelaunchIndex = cfg["relaunchOnFileChange"].to_string() == "Always" ? 0 : (cfg["relaunchOnFileChange"].to_string() == "Ask" ? 2 : 1);
+		fShowWelcome = cfg["ShowWelcome"].to_bool();
+		fShowErrors = cfg["showRuntimeErrors"].to_bool();
+		fOpenlastProject = cfg["openLastProject"].to_bool();
+		fStyleIndex = cfg["ColorScheme"].to_string() == "Light" ? 0 : (cfg["ColorScheme"].to_string() == "Dark" ? 2 : 1);
 	}
 
 	void DlgPreferences::Draw()
@@ -969,16 +976,14 @@ namespace Rtt
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				if (app->ConfigGet())
-				{
-					map<string, string>& cfg = *app->ConfigGet();
-					cfg["relaunchOnFileChange"] = fRelaunchIndex == 0 ? "Always" : (fRelaunchIndex == 2 ? "Ask" : "Never");
-					cfg["ShowWelcome"] = to_string(fShowWelcome);
-					cfg["showRuntimeErrors"] = to_string(fShowErrors);
-					cfg["openLastProject"] = to_string(fOpenlastProject);
-					cfg["ColorScheme"] = fStyleIndex == 0 ? "Light" : (fStyleIndex == 2 ? "Dark" : "Standard");
-					app->ConfigSave();
-				}
+				Config& cfg = app->GetConfig();
+				cfg["relaunchOnFileChange"] = fRelaunchIndex == 0 ? "Always" : (fRelaunchIndex == 2 ? "Ask" : "Never");
+				cfg["ShowWelcome"] = fShowWelcome;
+				cfg["showRuntimeErrors"] = fShowErrors;
+				cfg["openLastProject"] = fOpenlastProject;
+				cfg["ColorScheme"] = fStyleIndex == 0 ? "Light" : (fStyleIndex == 2 ? "Dark" : "Standard");
+				cfg.Save();
+
 				PushEvent(sdl::onCloseDialog);
 			}
 			ImGui::SetItemDefaultFocus();
@@ -1039,9 +1044,9 @@ namespace Rtt
 
 	void DlgAskRelaunch::SaveMyPreference(const char* val)
 	{
-		if (fSaveMyPreference && app->ConfigGet())
+		if (fSaveMyPreference)
 		{
-			map<string, string>& cfg = *app->ConfigGet();
+			Config& cfg = app->GetConfig();
 			cfg["relaunchOnFileChange"] = val;
 		}
 	}
@@ -1173,7 +1178,7 @@ namespace Rtt
 				{
 					SDL_Event e = {};
 					e.type = sdl::OnChangeView;
-					e.user.data1 = (void*) &it->second;
+					e.user.data1 = (void*)&it->second;
 					SDL_PushEvent(&e);
 				}
 			}

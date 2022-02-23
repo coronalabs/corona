@@ -31,21 +31,10 @@ namespace Rtt
 		bool IsRunningOnSimulator() override { return true; }
 		void SolarEvent(const SDL_Event& e) override;
 
-		// for simulator settings
-		void ConfigLoad() override;
-		void ConfigSave() override;
-		std::string& ConfigStr(const std::string& key);
-		int ConfigInt(const std::string& key);
-		void ConfigSet(const char* key, std::string& val);
-		void ConfigSet(const char* key, int val);
-		virtual std::map<std::string, std::string>* ConfigGet() override { return &fConfig; }
-
 	private:
 
-		std::map<std::string, std::string> fConfig;
 		smart_ptr<FileWatcher> fWatcher;
 		bool fRelaunchedViaFileEvent;
-		std::string fConfigFilePath;
 
 		int currentSkinWidth;
 		int currentSkinHeight;

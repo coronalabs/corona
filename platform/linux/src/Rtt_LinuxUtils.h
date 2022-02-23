@@ -29,7 +29,9 @@ void splitString(std::vector<std::string>& cont, const std::string& str, const s
 
 bool OpenURL(const std::string& url);
 
-// using promise
+//
+// simple thread wrapper
+//
 struct mythread : public ref_counted
 {
 	mythread()
