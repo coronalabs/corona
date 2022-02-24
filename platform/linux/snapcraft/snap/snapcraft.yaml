@@ -17,6 +17,10 @@ architectures:
   - amd64
 
 layout:
+  /usr/bin/zip:
+    symlink: $SNAP/usr/bin/zip
+  /usr/bin/unzip:
+    symlink: $SNAP/usr/bin/unzip
   /usr/share/vulkan:
     symlink: $SNAP/usr/share/vulkan
   /usr/lib/dri/swrast_dri.so:
@@ -34,7 +38,7 @@ apps:
   solar2d:
     command: usr/local/bin/Solar2D/Solar2DSimulator
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/usr/lib/x86_64-linux-gnu/dri::${SNAP}/usr/lib/x86_64-linux-gnu
+#      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/usr/lib/x86_64-linux-gnu/dri::${SNAP}/usr/lib/x86_64-linux-gnu
       JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64
       PATH: $JAVA_HOME/jre/bin:$JAVA_HOME/bin:$PATH
     plugs:
@@ -57,8 +61,8 @@ apps:
 
   builder:
     command: usr/local/bin/Solar2D/Solar2DBuilder
-    environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
+#    environment:
+#      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
     plugs:
       - network
       - network-bind 
@@ -193,5 +197,4 @@ parts:
       - libgl1-mesa-dri
       - unzip
       - zip
-
-
+      - tar
