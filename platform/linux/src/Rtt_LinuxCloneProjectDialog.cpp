@@ -5,7 +5,7 @@
 #include "Rtt_LinuxUtils.h"
 
 using namespace std;
-
+#if 0
 namespace Rtt
 {
 	LinuxCloneProjectDialog::LinuxCloneProjectDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
@@ -130,3 +130,4 @@ namespace Rtt
 	}
 
 } // namespace Rtt
+#endif

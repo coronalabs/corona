@@ -56,3 +56,19 @@ file(RENAME ${RESOURCES}/welcomescreen ${RESOURCES}/homescreen)
 
 # icon
 file(COPY "${CORONA_ROOT}/platform/linux/snapcraft/snap/gui/solar2d.png" DESTINATION ${RESOURCES}) 
+
+
+# resource from different artifacts
+if(EXISTS "${CORONA_ROOT}/docs/SampleCode")
+  file(COPY "${CORONA_ROOT}/docs/SampleCode" DESTINATION "${RESOURCES}/SampleCode")
+endif()
+
+if(EXISTS "${CORONA_ROOT}/CoronaEnterprise/Corona/android/resource/android-template.zip")
+  file(MAKE_DIRECTORY "${RESOURCES}/Native/Corona")
+  file(COPY "${CORONA_ROOT}/CoronaEnterprise/Corona/android" DESTINATION "${RESOURCES}/Native/Corona")
+endif()
+
+file(COPY "${CORONA_ROOT}/platform/resources/webtemplate.zip" DESTINATION "${RESOURCES}")
+
+
+

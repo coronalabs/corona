@@ -1,12 +1,8 @@
 #ifndef Rtt_LINUX_RUNTIME_ERROR_DIALOG_H
 #define Rtt_LINUX_RUNTIME_ERROR_DIALOG_H
 
-#include "wx/wx.h"
-#include "wx/image.h"
-#include "wx/statline.h"
-#include "wx/activityindicator.h"
 #include <string>
-
+#if 0
 namespace Rtt
 {
 	class LinuxRuntimeErrorDialog : public wxDialog
@@ -36,3 +32,4 @@ namespace Rtt
 } // namespace Rtt
 
 #endif // Rtt_LINUX_RUNTIME_ERROR_DIALOG_H
+#endif

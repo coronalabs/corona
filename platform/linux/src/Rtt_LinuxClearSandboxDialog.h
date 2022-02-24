@@ -1,9 +1,7 @@
 #ifndef Rtt_Linux_Clear_Sandbox_Dialog
 #define Rtt_Linux_Clear_Sandbox_Dialog
 
-#include "wx/wx.h"
-#include "wx/image.h"
-#include "wx/statline.h"
+#if 0
 
 namespace Rtt
 {
@@ -25,5 +23,6 @@ namespace Rtt
 		DECLARE_EVENT_TABLE();
 	};
 };
+#endif
 
 #endif // Rtt_Linux_Clear_Sandbox_Dialog

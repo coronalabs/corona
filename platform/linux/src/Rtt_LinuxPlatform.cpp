@@ -35,33 +35,31 @@
 #include "Rtt_LinuxApp.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
-#include "wx/wx.h"
-#include "wx/activityindicator.h"
 #include <pwd.h>
 
 using namespace std;
 
 namespace Rtt
 {
-	LinuxPlatform::LinuxPlatform(const char *resourceDir, const char *documentsDir, const char *temporaryDir,
-	                             const char *cachesDir, const char *systemCachesDir, const char *skinDir, const char *installDir)
+	LinuxPlatform::LinuxPlatform(const char* resourceDir, const char* documentsDir, const char* temporaryDir,
+		const char* cachesDir, const char* systemCachesDir, const char* skinDir, const char* installDir)
 		: fAllocator(Rtt_AllocatorCreate()),
-		  fDevice(*fAllocator),
-		  fAudioPlayer(NULL),
-		  fVideoPlayer(NULL),
-		  fImageProvider(NULL),
-		  fVideoProvider(NULL),
-		  fWebPopup(NULL),
-		  fResourceDir(fAllocator),
-		  fDocumentsDir(fAllocator),
-		  fTemporaryDir(fAllocator),
-		  fCachesDir(fAllocator),
-		  fSystemCachesDir(fAllocator),
-		  fInstallDir(fAllocator),
-		  fSkinDir(fAllocator),
-		  fStoreProvider(NULL),
-		  fFBConnect(NULL),
-		  fScreenSurface(NULL)
+		fDevice(*fAllocator),
+		fAudioPlayer(NULL),
+		fVideoPlayer(NULL),
+		fImageProvider(NULL),
+		fVideoProvider(NULL),
+		fWebPopup(NULL),
+		fResourceDir(fAllocator),
+		fDocumentsDir(fAllocator),
+		fTemporaryDir(fAllocator),
+		fCachesDir(fAllocator),
+		fSystemCachesDir(fAllocator),
+		fInstallDir(fAllocator),
+		fSkinDir(fAllocator),
+		fStoreProvider(NULL),
+		fFBConnect(NULL),
+		fScreenSurface(NULL)
 	{
 		fResourceDir.Set(resourceDir);
 		fDocumentsDir.Set(documentsDir);
@@ -72,12 +70,11 @@ namespace Rtt
 		fInstallDir.Set(installDir);
 		fStatusBarMode = MPlatform::StatusBarMode::kDefaultStatusBar;
 		isMouseCursorVisible = true;
-		fRuntimeErrorDialog = new LinuxRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
+	//	fRuntimeErrorDialog = 0; //vv new LinuxRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
 	}
 
 	LinuxPlatform::~LinuxPlatform()
 	{
-		fRuntimeErrorDialog->Destroy();
 		Rtt_DELETE(fFBConnect);
 		Rtt_DELETE(fStoreProvider);
 		Rtt_DELETE(fWebPopup);
@@ -90,34 +87,34 @@ namespace Rtt
 		//Rtt_DELETE(fScreenSurface);
 	}
 
-	MPlatformDevice &LinuxPlatform::GetDevice() const
+	MPlatformDevice& LinuxPlatform::GetDevice() const
 	{
-		return const_cast<LinuxDevice &>(fDevice);
+		return const_cast<LinuxDevice&>(fDevice);
 	}
 
-	PlatformSurface *LinuxPlatform::CreateScreenSurface() const
+	PlatformSurface* LinuxPlatform::CreateScreenSurface() const
 	{
 		Rtt_ASSERT(fScreenSurface == NULL);
 		fScreenSurface = Rtt_NEW(fAllocator, LinuxScreenSurface());
 		return fScreenSurface;
 	}
 
-	PlatformSurface *LinuxPlatform::CreateOffscreenSurface(const PlatformSurface &parent) const
+	PlatformSurface* LinuxPlatform::CreateOffscreenSurface(const PlatformSurface& parent) const
 	{
 		return Rtt_NEW(fAllocator, LinuxOffscreenSurface(parent));
 	}
 
-	int LinuxPlatform::CanOpenURL(const char *url) const
+	int LinuxPlatform::CanOpenURL(const char* url) const
 	{
 		return true;
 	}
 
-	bool LinuxPlatform::OpenURL(const char *url) const
+	bool LinuxPlatform::OpenURL(const char* url) const
 	{
-		return wxLaunchDefaultBrowser(url);
+		return ::OpenURL(url);
 	}
 
-	PlatformVideoPlayer *LinuxPlatform::GetVideoPlayer(const Rtt::ResourceHandle<lua_State> &handle) const
+	PlatformVideoPlayer* LinuxPlatform::GetVideoPlayer(const Rtt::ResourceHandle<lua_State>& handle) const
 	{
 #if (wxUSE_MEDIACTRL == 1)
 		if (!fVideoPlayer)
@@ -134,7 +131,7 @@ namespace Rtt
 #endif
 	}
 
-	PlatformImageProvider *LinuxPlatform::GetImageProvider(const Rtt::ResourceHandle<lua_State> &handle) const
+	PlatformImageProvider* LinuxPlatform::GetImageProvider(const Rtt::ResourceHandle<lua_State>& handle) const
 	{
 		if (!fImageProvider)
 		{
@@ -144,7 +141,7 @@ namespace Rtt
 		return fImageProvider;
 	}
 
-	PlatformVideoProvider *LinuxPlatform::GetVideoProvider(const Rtt::ResourceHandle<lua_State> &handle) const
+	PlatformVideoProvider* LinuxPlatform::GetVideoProvider(const Rtt::ResourceHandle<lua_State>& handle) const
 	{
 		if (!fVideoProvider)
 		{
@@ -157,7 +154,7 @@ namespace Rtt
 		return fVideoProvider;
 	}
 
-	PlatformStoreProvider *LinuxPlatform::GetStoreProvider(const ResourceHandle<lua_State> &handle) const
+	PlatformStoreProvider* LinuxPlatform::GetStoreProvider(const ResourceHandle<lua_State>& handle) const
 	{
 		return NULL;
 	}
@@ -171,10 +168,10 @@ namespace Rtt
 		return true;
 	}
 
-	NativeAlertRef LinuxPlatform::ShowNativeAlert(const char *title, const char *msg, const char **buttonLabels, U32 numButtons, LuaResource *resource) const
+	NativeAlertRef LinuxPlatform::ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource) const
 	{
-		msgBox *msgs = new msgBox(title, msg, buttonLabels, numButtons, resource);
-		msgs->Show(true);
+//		msgBox* msgs = new msgBox(title, msg, buttonLabels, numButtons, resource);
+//		msgs->Show(true);
 		return NULL; // (NativeAlertRef) 0x1234;
 	}
 
@@ -184,26 +181,26 @@ namespace Rtt
 		Rtt_ASSERT_MSG(0, "Code should NOT be reached");
 	}
 
-	Rtt_Allocator &LinuxPlatform::GetAllocator() const
+	Rtt_Allocator& LinuxPlatform::GetAllocator() const
 	{
 		return *fAllocator;
 	}
 
-	RenderingStream *LinuxPlatform::CreateRenderingStream(bool antialias) const
+	RenderingStream* LinuxPlatform::CreateRenderingStream(bool antialias) const
 	{
-		RenderingStream *result = Rtt_NEW(fAllocator, GPUStream(fAllocator));
+		RenderingStream* result = Rtt_NEW(fAllocator, GPUStream(fAllocator));
 		result->SetProperty(RenderingStream::kFlipHorizontalAxis, true);
 		return result;
 	}
 
-	PlatformTimer *LinuxPlatform::CreateTimerWithCallback(MCallback &callback) const
+	PlatformTimer* LinuxPlatform::CreateTimerWithCallback(MCallback& callback) const
 	{
 		return Rtt_NEW(fAllocator, LinuxTimer(callback));
 	}
 
-	PlatformBitmap *LinuxPlatform::CreateBitmap(const char *path, bool convertToGrayscale) const
+	PlatformBitmap* LinuxPlatform::CreateBitmap(const char* path, bool convertToGrayscale) const
 	{
-		PlatformBitmap *result = NULL;
+		PlatformBitmap* result = NULL;
 
 		if (path)
 		{
@@ -227,7 +224,7 @@ namespace Rtt
 		return result;
 	}
 
-	bool LinuxPlatform::FileExists(const char *filename) const
+	bool LinuxPlatform::FileExists(const char* filename) const
 	{
 		// Validate.
 		if (Rtt_StringIsEmpty(filename))
@@ -237,7 +234,7 @@ namespace Rtt
 
 		// Determine if the given file name exists.
 		bool fileExists = false;
-		FILE *file = fopen(filename, "r");
+		FILE* file = fopen(filename, "r");
 
 		if (file)
 		{
@@ -248,7 +245,7 @@ namespace Rtt
 		return fileExists;
 	}
 
-	void LinuxPlatform::PathForFile(const char *filename, MPlatform::Directory baseDir, U32 flags, String &result) const
+	void LinuxPlatform::PathForFile(const char* filename, MPlatform::Directory baseDir, U32 flags, String& result) const
 	{
 		// Initialize result to an empty string in case the file was not found.
 		result.Set(NULL);
@@ -265,93 +262,93 @@ namespace Rtt
 			// Create an absolute path by appending the file name to the base directory.
 			switch (baseDir)
 			{
-				case MPlatform::kResourceDir:
+			case MPlatform::kResourceDir:
+			{
+				PathForFile(filename, fResourceDir.GetString(), result);
+				String result1;
+				String result2;
+
+				if (filename != NULL && FileExists(result.GetString()) == false)
 				{
-					PathForFile(filename, fResourceDir.GetString(), result);
-					String result1;
-					String result2;
-
-					if (filename != NULL && FileExists(result.GetString()) == false)
-					{
-						result1.Set(result);
-						// look for Resources dir
-						String resDir;
-						resDir.Append(fInstallDir);
-						resDir.Append("/Resources");
-						PathForFile(filename, resDir.GetString(), result);
-						result2.Set(result);
-					}
-
-					if (filename != NULL && FileExists(result.GetString()) == false)
-					{
-						// look in the plugins dir
-						String resDir(GetHomePath());
-						resDir.Append("/.Solar2D/Plugins/");
-						PathForFile(filename, resDir.GetString(), result);
-						Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s || %s || %s)'. File does not exist.\n\n", filename, result1.GetString(), result2.GetString(), result.GetString()));
-					}
-					break;
+					result1.Set(result);
+					// look for Resources dir
+					String resDir;
+					resDir.Append(fInstallDir);
+					resDir.Append("/Resources");
+					PathForFile(filename, resDir.GetString(), result);
+					result2.Set(result);
 				}
 
-				case MPlatform::kSystemResourceDir:
+				if (filename != NULL && FileExists(result.GetString()) == false)
 				{
-					PathForFile(filename, fResourceDir.GetString(), result);
-
-					if (filename != NULL && FileExists(result.GetString()) == false)
-					{
-						// look for Resources dir
-						String resDir;
-						resDir.Append(fInstallDir);
-						resDir.Append("/Resources");
-						PathForFile(filename, resDir.GetString(), result);
-						Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s)'. File does not exist.\n\n", filename, result.GetString()));
-					}
-					break;
+					// look in the plugins dir
+					String resDir(GetHomePath());
+					resDir.Append("/.Solar2D/Plugins/");
+					PathForFile(filename, resDir.GetString(), result);
+					Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s || %s || %s)'. File does not exist.\n\n", filename, result1.GetString(), result2.GetString(), result.GetString()));
 				}
+				break;
+			}
 
-				case MPlatform::kCachesDir:
+			case MPlatform::kSystemResourceDir:
+			{
+				PathForFile(filename, fResourceDir.GetString(), result);
+
+				if (filename != NULL && FileExists(result.GetString()) == false)
 				{
-					PathForFile(filename, fCachesDir.GetString(), result);
-					break;
+					// look for Resources dir
+					String resDir;
+					resDir.Append(fInstallDir);
+					resDir.Append("/Resources");
+					PathForFile(filename, resDir.GetString(), result);
+					Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s)'. File does not exist.\n\n", filename, result.GetString()));
 				}
+				break;
+			}
 
-				case MPlatform::kSystemCachesDir:
-				{
-					PathForFile(filename, fSystemCachesDir.GetString(), result);
-					break;
-				}
+			case MPlatform::kCachesDir:
+			{
+				PathForFile(filename, fCachesDir.GetString(), result);
+				break;
+			}
 
-				case MPlatform::kTmpDir:
-				{
-					PathForFile(filename, fTemporaryDir.GetString(), result);
-					break;
-				}
+			case MPlatform::kSystemCachesDir:
+			{
+				PathForFile(filename, fSystemCachesDir.GetString(), result);
+				break;
+			}
 
-				case MPlatform::kPluginsDir:
-				{
-					std::string pluginPath;
+			case MPlatform::kTmpDir:
+			{
+				PathForFile(filename, fTemporaryDir.GetString(), result);
+				break;
+			}
+
+			case MPlatform::kPluginsDir:
+			{
+				std::string pluginPath;
 
 #ifdef Rtt_SIMULATOR
-					pluginPath = GetHomePath();
-					pluginPath.append("/.Solar2D/Plugins");
+				pluginPath = GetHomePath();
+				pluginPath.append("/.Solar2D/Plugins");
 #else
-					pluginPath = GetStartupPath(NULL);
+				pluginPath = GetStartupPath(NULL);
 #endif
 
-					PathForFile(filename, pluginPath.c_str(), result);
-					break;
-				}
+				PathForFile(filename, pluginPath.c_str(), result);
+				break;
+			}
 
-				case MPlatform::kSkinResourceDir:
-				{
-					PathForFile(filename, fSkinDir.GetString(), result);
-					break;
-				}
+			case MPlatform::kSkinResourceDir:
+			{
+				PathForFile(filename, fSkinDir.GetString(), result);
+				break;
+			}
 
-				case MPlatform::kDocumentsDir:
-				default:
-					PathForFile(filename, fDocumentsDir.GetString(), result);
-					break;
+			case MPlatform::kDocumentsDir:
+			default:
+				PathForFile(filename, fDocumentsDir.GetString(), result);
+				break;
 			}
 		}
 
@@ -366,17 +363,17 @@ namespace Rtt
 		}
 	}
 
-	void LinuxPlatform::SetProjectResourceDirectory(const char *filename)
+	void LinuxPlatform::SetProjectResourceDirectory(const char* filename)
 	{
 		fResourceDir.Set(filename);
 	}
 
-	void LinuxPlatform::SetSkinResourceDirectory(const char *filename)
+	void LinuxPlatform::SetSkinResourceDirectory(const char* filename)
 	{
 		fSkinDir.Set(filename);
 	}
 
-	void LinuxPlatform::PathForFile(const char *filename, const char *baseDir, String &result) const
+	void LinuxPlatform::PathForFile(const char* filename, const char* baseDir, String& result) const
 	{
 		result.Set(NULL);
 
@@ -403,29 +400,29 @@ namespace Rtt
 		}
 	}
 
-	void LinuxPlatform::HttpPost(const char *url, const char *key, const char *value) const
+	void LinuxPlatform::HttpPost(const char* url, const char* key, const char* value) const
 	{
 		// Rtt_ASSERT_NOT_IMPLEMENTED();
 	}
 
-	PlatformEventSound *LinuxPlatform::CreateEventSound(const ResourceHandle<lua_State> &handle, const char *filePath) const
+	PlatformEventSound* LinuxPlatform::CreateEventSound(const ResourceHandle<lua_State>& handle, const char* filePath) const
 	{
 		// LinuxEventSound *p = Rtt_NEW(fAllocator, LinuxEventSound(handle, *fAllocator));
 		// p->Load(filePath);
 		return NULL;
 	}
 
-	void LinuxPlatform::ReleaseEventSound(PlatformEventSound *soundID) const
+	void LinuxPlatform::ReleaseEventSound(PlatformEventSound* soundID) const
 	{
 		Rtt_DELETE(soundID);
 	}
 
-	void LinuxPlatform::PlayEventSound(PlatformEventSound *soundID) const
+	void LinuxPlatform::PlayEventSound(PlatformEventSound* soundID) const
 	{
 		//soundID->Play();
 	}
 
-	PlatformAudioPlayer *LinuxPlatform::GetAudioPlayer(const ResourceHandle<lua_State> &handle) const
+	PlatformAudioPlayer* LinuxPlatform::GetAudioPlayer(const ResourceHandle<lua_State>& handle) const
 	{
 		//if (!fAudioPlayer)
 		//{
@@ -434,12 +431,12 @@ namespace Rtt
 		return NULL; //fAudioPlayer;
 	}
 
-	PlatformAudioRecorder *LinuxPlatform::CreateAudioRecorder(const Rtt::ResourceHandle<lua_State> &handle, const char *filePath) const
+	PlatformAudioRecorder* LinuxPlatform::CreateAudioRecorder(const Rtt::ResourceHandle<lua_State>& handle, const char* filePath) const
 	{
 		return Rtt_NEW(fAllocator, LinuxAudioRecorder(handle, *fAllocator, filePath));
 	}
 
-	void LinuxPlatform::RaiseError(MPlatform::Error e, const char *reason) const
+	void LinuxPlatform::RaiseError(MPlatform::Error e, const char* reason) const
 	{
 		const char kNull[] = "(null)";
 
@@ -451,17 +448,17 @@ namespace Rtt
 		Rtt_TRACE(("MPlatformFactory error(%d): %s\n", e, kNull));
 	}
 
-	bool LinuxPlatform::SaveImageToPhotoLibrary(const char *filePath) const
+	bool LinuxPlatform::SaveImageToPhotoLibrary(const char* filePath) const
 	{
 		return false;
 	}
 
-	bool LinuxPlatform::SaveBitmap(PlatformBitmap *bitmap, const char *filePath, float jpegQuality) const
+	bool LinuxPlatform::SaveBitmap(PlatformBitmap* bitmap, const char* filePath, float jpegQuality) const
 	{
 		return LinuxBaseBitmap::SaveBitmap(fAllocator, bitmap, filePath);
 	}
 
-	bool LinuxPlatform::AddBitmapToPhotoLibrary(PlatformBitmap *bitmap) const
+	bool LinuxPlatform::AddBitmapToPhotoLibrary(PlatformBitmap* bitmap) const
 	{
 		return SaveBitmap(bitmap, NULL, 1.0f);
 	}
@@ -470,23 +467,23 @@ namespace Rtt
 	{
 		switch (newValue)
 		{
-			case MPlatform::StatusBarMode::kHiddenStatusBar:
-				break;
+		case MPlatform::StatusBarMode::kHiddenStatusBar:
+			break;
 
-			case MPlatform::StatusBarMode::kDefaultStatusBar:
-				break;
+		case MPlatform::StatusBarMode::kDefaultStatusBar:
+			break;
 
-			case MPlatform::StatusBarMode::kTranslucentStatusBar:
-				break;
+		case MPlatform::StatusBarMode::kTranslucentStatusBar:
+			break;
 
-			case MPlatform::StatusBarMode::kDarkStatusBar:
-				break;
+		case MPlatform::StatusBarMode::kDarkStatusBar:
+			break;
 
-			case MPlatform::StatusBarMode::kLightTransparentStatusBar:
-				break;
+		case MPlatform::StatusBarMode::kLightTransparentStatusBar:
+			break;
 
-			case MPlatform::StatusBarMode::kDarkTransparentStatusBar:
-				break;
+		case MPlatform::StatusBarMode::kDarkTransparentStatusBar:
+			break;
 		}
 
 		fStatusBarMode = newValue;
@@ -512,43 +509,43 @@ namespace Rtt
 		return 0;
 	}
 
-	int LinuxPlatform::SetSync(lua_State *L) const
+	int LinuxPlatform::SetSync(lua_State* L) const
 	{
 		return 0;
 	}
 
-	int LinuxPlatform::GetSync(lua_State *L) const
+	int LinuxPlatform::GetSync(lua_State* L) const
 	{
 		return 0;
 	}
 
-	void LinuxPlatform::BeginRuntime(const Runtime &runtime) const
+	void LinuxPlatform::BeginRuntime(const Runtime& runtime) const
 	{
 	}
 
-	void LinuxPlatform::EndRuntime(const Runtime &runtime) const
+	void LinuxPlatform::EndRuntime(const Runtime& runtime) const
 	{
 	}
 
-	PlatformExitCallback *LinuxPlatform::GetExitCallback()
+	PlatformExitCallback* LinuxPlatform::GetExitCallback()
 	{
 		return NULL;
 	}
 
-	bool LinuxPlatform::RequestSystem(lua_State *L, const char *actionName, int optionsIndex) const
+	bool LinuxPlatform::RequestSystem(lua_State* L, const char* actionName, int optionsIndex) const
 	{
 		if (Rtt_StringCompareNoCase(actionName, "exitApplication") == 0)
 		{
-			solarApp->Close(true);
+		//todo	app->Close(true);
 			return true;
 		}
 
 		return false;
 	}
 
-	void LinuxPlatform::RuntimeErrorNotification(const char *errorType, const char *message, const char *stacktrace) const
+	void LinuxPlatform::RuntimeErrorNotification(const char* errorType, const char* message, const char* stacktrace) const
 	{
-		if (!fShowRuntimeErrors || fRuntimeErrorDialog->IsShown())
+		/*if (!fShowRuntimeErrors || fRuntimeErrorDialog->IsShown())
 		{
 			return;
 		}
@@ -557,15 +554,15 @@ namespace Rtt
 
 		if (fRuntimeErrorDialog->ShowModal() == wxID_OK)
 		{
-		}
+		}*/
 	}
 
-	const MCrypto &LinuxPlatform::GetCrypto() const
+	const MCrypto& LinuxPlatform::GetCrypto() const
 	{
 		return fCrypto;
 	}
 
-	void LinuxPlatform::GetPreference(Category category, Rtt::String *value) const
+	void LinuxPlatform::GetPreference(Category category, Rtt::String* value) const
 	{
 		// Validate.
 		if (value == NULL)
@@ -574,48 +571,40 @@ namespace Rtt
 		}
 
 		// Fetch the requested preference value.
-		const char *resultPointer = "";
-		int systemLanguage = wxLocale::GetSystemLanguage();
-
-		// fallback to en_us if wx wasn't able to determine the system language
-		if (systemLanguage == wxLANGUAGE_UNKNOWN)
-		{
-			systemLanguage = wxLANGUAGE_ENGLISH_US;
-		}
-
-		wxString localeName = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
-
+		// fixme
+		const char* resultPointer = "";
+		string localeName = "English"; // wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
 		switch (category)
 		{
-			case kLocaleLanguage:
-				resultPointer = localeName.ToStdString().substr(0, 2).c_str();
-				break;
-			case kLocaleCountry:
-				resultPointer = localeName.ToStdString().substr(3, 5).c_str();
-				break;
-			case kLocaleIdentifier:
-			case kUILanguage:
-			{
-				resultPointer = localeName.ToStdString().c_str();
-				break;
-			}
-			case kDefaultStatusBarFile:
-				break;
-			case kDarkStatusBarFile:
-				break;
-			case kTranslucentStatusBarFile:
-				break;
-			case kLightTransparentStatusBarFile:
-				break;
-			case kDarkTransparentStatusBarFile:
-				break;
-			case kScreenDressingFile:
-				break;
-			case kSubscription:
-				break;
-			default:
-				//Rtt_ASSERT_NOT_REACHED();
-				break;
+		case kLocaleLanguage:
+			resultPointer = localeName.substr(0, 2).c_str();
+			break;
+		case kLocaleCountry:
+			resultPointer = localeName.substr(3, 5).c_str();
+			break;
+		case kLocaleIdentifier:
+		case kUILanguage:
+		{
+			resultPointer = localeName.c_str();
+			break;
+		}
+		case kDefaultStatusBarFile:
+			break;
+		case kDarkStatusBarFile:
+			break;
+		case kTranslucentStatusBarFile:
+			break;
+		case kLightTransparentStatusBarFile:
+			break;
+		case kDarkTransparentStatusBarFile:
+			break;
+		case kScreenDressingFile:
+			break;
+		case kSubscription:
+			break;
+		default:
+			//Rtt_ASSERT_NOT_REACHED();
+			break;
 		}
 
 		// Copy the requested preference string to the given value.
@@ -625,10 +614,10 @@ namespace Rtt
 
 	void LinuxPlatform::SetActivityIndicator(bool visible) const
 	{
-		solarApp->SetCursor(visible ? *wxHOURGLASS_CURSOR : *wxSTANDARD_CURSOR);
+		app->SetActivityIndicator(visible);
 	}
 
-	PlatformWebPopup *LinuxPlatform::GetWebPopup() const
+	PlatformWebPopup* LinuxPlatform::GetWebPopup() const
 	{
 #if (wxUSE_WEBVIEW == 1)
 		if (!fWebPopup)
@@ -642,12 +631,12 @@ namespace Rtt
 #endif
 	}
 
-	bool LinuxPlatform::CanShowPopup(const char *name) const
+	bool LinuxPlatform::CanShowPopup(const char* name) const
 	{
 		return true;
 	}
 
-	bool LinuxPlatform::ShowPopup(lua_State *L, const char *name, int optionsIndex) const
+	bool LinuxPlatform::ShowPopup(lua_State* L, const char* name, int optionsIndex) const
 	{
 		bool result = false;
 
@@ -680,26 +669,26 @@ namespace Rtt
 		return result;
 	}
 
-	bool LinuxPlatform::HidePopup(const char *name) const
+	bool LinuxPlatform::HidePopup(const char* name) const
 	{
 		return true;
 	}
 
-	PlatformDisplayObject *LinuxPlatform::CreateNativeTextBox(const Rect &bounds) const
+	PlatformDisplayObject* LinuxPlatform::CreateNativeTextBox(const Rect& bounds) const
 	{
-		return Rtt_NEW(&GetAllocator(), LinuxTextBoxObject(bounds, false));
+		return 0; // Rtt_NEW(&GetAllocator(), LinuxTextBoxObject(bounds, false));
 	}
 
-	PlatformDisplayObject *LinuxPlatform::CreateNativeTextField(const Rect &bounds) const
+	PlatformDisplayObject* LinuxPlatform::CreateNativeTextField(const Rect& bounds) const
 	{
-		return Rtt_NEW(&GetAllocator(), LinuxTextBoxObject(bounds, true));
+		return 0; // Rtt_NEW(&GetAllocator(), LinuxTextBoxObject(bounds, true));
 	}
 
-	void LinuxPlatform::SetKeyboardFocus(PlatformDisplayObject *textObject) const
+	void LinuxPlatform::SetKeyboardFocus(PlatformDisplayObject* textObject) const
 	{
 		if (textObject)
 		{
-//			((LinuxDisplayObject *)textObject)->SetFocus();
+			//			((LinuxDisplayObject *)textObject)->SetFocus();
 		}
 		else
 		{
@@ -707,12 +696,12 @@ namespace Rtt
 		}
 	}
 
-	PlatformDisplayObject *LinuxPlatform::CreateNativeMapView(const Rect &bounds) const
+	PlatformDisplayObject* LinuxPlatform::CreateNativeMapView(const Rect& bounds) const
 	{
 		return NULL;
 	}
 
-	PlatformDisplayObject *LinuxPlatform::CreateNativeWebView(const Rect &bounds) const
+	PlatformDisplayObject* LinuxPlatform::CreateNativeWebView(const Rect& bounds) const
 	{
 #if (wxUSE_WEBVIEW == 1)
 		return Rtt_NEW(&GetAllocator(), LinuxWebView(bounds));
@@ -721,7 +710,7 @@ namespace Rtt
 #endif
 	}
 
-	PlatformDisplayObject *LinuxPlatform::CreateNativeVideo(const Rect &bounds) const
+	PlatformDisplayObject* LinuxPlatform::CreateNativeVideo(const Rect& bounds) const
 	{
 #if (wxUSE_MEDIACTRL == 1)
 		return Rtt_NEW(&GetAllocator(), LinuxVideoObject(bounds));
@@ -730,7 +719,7 @@ namespace Rtt
 #endif
 	}
 
-	PlatformDisplayObject *LinuxPlatform::GetNativeDisplayObjectById(const int objectId) const
+	PlatformDisplayObject* LinuxPlatform::GetNativeDisplayObjectById(const int objectId) const
 	{
 		return NULL;
 	}
@@ -740,7 +729,7 @@ namespace Rtt
 		return 16.0f;
 	}
 
-	S32 LinuxPlatform::GetFontNames(lua_State *L, int index) const
+	S32 LinuxPlatform::GetFontNames(lua_State* L, int index) const
 	{
 		S32 numFonts = 0;
 #if 0
@@ -761,12 +750,12 @@ namespace Rtt
 		return numFonts;
 	}
 
-	PlatformFont *LinuxPlatform::CreateFont(PlatformFont::SystemFont fontType, Rtt_Real size) const
+	PlatformFont* LinuxPlatform::CreateFont(PlatformFont::SystemFont fontType, Rtt_Real size) const
 	{
 		return Rtt_NEW(fAllocator, LinuxFont(*fAllocator, fontType, size));
 	}
 
-	PlatformFont *LinuxPlatform::CreateFont(const char *fontName, Rtt_Real size) const
+	PlatformFont* LinuxPlatform::CreateFont(const char* fontName, Rtt_Real size) const
 	{
 		bool isBold = false;
 		return Rtt_NEW(fAllocator, LinuxFont(*fAllocator, fontName, size, isBold));
@@ -782,21 +771,21 @@ namespace Rtt
 		return 1.0f;
 	}
 
-	PlatformFBConnect *LinuxPlatform::GetFBConnect() const
+	PlatformFBConnect* LinuxPlatform::GetFBConnect() const
 	{
 		return 0;
 	}
 
-	void *LinuxPlatform::CreateAndScheduleNotification(lua_State *L, int index) const
+	void* LinuxPlatform::CreateAndScheduleNotification(lua_State* L, int index) const
 	{
 		return NULL;
 	}
 
-	void LinuxPlatform::ReleaseNotification(void *notificationId) const
+	void LinuxPlatform::ReleaseNotification(void* notificationId) const
 	{
 	}
 
-	void LinuxPlatform::CancelNotification(void *notificationId) const
+	void LinuxPlatform::CancelNotification(void* notificationId) const
 	{
 		if (notificationId == NULL)
 		{
@@ -808,15 +797,15 @@ namespace Rtt
 		}
 	}
 
-	void LinuxPlatform::FlurryInit(const char *applicationKey) const
+	void LinuxPlatform::FlurryInit(const char* applicationKey) const
 	{
 	}
 
-	void LinuxPlatform::FlurryEvent(const char *eventId) const
+	void LinuxPlatform::FlurryEvent(const char* eventId) const
 	{
 	}
 
-	void LinuxPlatform::SetNativeProperty(lua_State *L, const char *key, int valueIndex) const
+	void LinuxPlatform::SetNativeProperty(lua_State* L, const char* key, int valueIndex) const
 	{
 		// Validate arguments.
 		if (!L || Rtt_StringIsEmpty(key) || !valueIndex)
@@ -829,7 +818,7 @@ namespace Rtt
 		{
 			if (lua_type(L, valueIndex) == LUA_TSTRING)
 			{
-				const char *windowMode = lua_tostring(L, valueIndex);
+				const char* windowMode = lua_tostring(L, valueIndex);
 
 				if (windowMode != NULL)
 				{
@@ -839,7 +828,7 @@ namespace Rtt
 					}
 					else if (Rtt_StringCompare(windowMode, "minimized") == 0)
 					{
-						solarApp->Iconize(true);
+					//	app->Iconize(true);
 					}
 					else if (Rtt_StringCompare(windowMode, "maximized") == 0)
 					{
@@ -869,16 +858,16 @@ namespace Rtt
 		{
 			if (lua_type(L, valueIndex) == LUA_TSTRING)
 			{
-				const char *windowTitle = lua_tostring(L, valueIndex);
+				const char* windowTitle = lua_tostring(L, valueIndex);
 
 				if (windowTitle != NULL)
 				{
-					solarApp->SetTitle(windowTitle);
+					app->SetTitle(windowTitle);
 				}
 			}
 		}
 		// mouse cursor
-		else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)
+		/*else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)
 		{
 			if (lua_type(L, valueIndex) == LUA_TBOOLEAN)
 			{
@@ -979,10 +968,10 @@ namespace Rtt
 
 				solarApp->SetCursor(cursor);
 			}
-		}
+		}*/
 	}
 
-	int LinuxPlatform::PushNativeProperty(lua_State *L, const char *key) const
+	int LinuxPlatform::PushNativeProperty(lua_State* L, const char* key) const
 	{
 		// Validate.
 		if (!L)
@@ -995,16 +984,16 @@ namespace Rtt
 		// Push the requested native property information to Lua.
 		if (Rtt_StringCompare(key, "windowTitleText") == 0)
 		{
-			lua_pushstring(L, solarApp->GetTitle().ToStdString().c_str());
+			lua_pushstring(L, app->GetTitle().c_str());
 			pushedValues = 1;
 		}
 		else if (Rtt_StringCompare(key, "windowMode") == 0)
 		{
-			bool isFullScreen = solarApp->IsFullScreen();
-			bool isMinimized = solarApp->IsIconized();
-			bool isMaximized = solarApp->IsMaximized();
+			bool isFullScreen = app->IsFullScreen();
+			bool isMinimized = app->IsIconized();
+			bool isMaximized = app->IsMaximized();
 			bool isNormal = !isFullScreen || !isMinimized || !isMaximized;
-			const char *windowMode = NULL;
+			const char* windowMode = NULL;
 
 			if (isFullScreen)
 			{
@@ -1055,7 +1044,7 @@ namespace Rtt
 		return pushedValues;
 	}
 
-	int LinuxPlatform::PushSystemInfo(lua_State *L, const char *key) const
+	int LinuxPlatform::PushSystemInfo(lua_State* L, const char* key) const
 	{
 		// Validate.
 		if (!L)
@@ -1067,7 +1056,7 @@ namespace Rtt
 		if (Rtt_StringCompare(key, "appName") == 0)
 		{
 			// Fetch the application's name.
-			lua_pushstring(L, solarApp->GetContext()->GetAppName().c_str());
+			lua_pushstring(L, app->GetContext()->GetAppName());
 		}
 		else if (Rtt_StringCompare(key, "appVersionString") == 0)
 		{
@@ -1100,26 +1089,26 @@ namespace Rtt
 		return 1;
 	}
 
-	void LinuxPlatform::NetworkBaseRequest(lua_State *L, const char *url, const char *method, LuaResource *listener, int paramsIndex, const char *path) const
+	void LinuxPlatform::NetworkBaseRequest(lua_State* L, const char* url, const char* method, LuaResource* listener, int paramsIndex, const char* path) const
 	{
 	}
 
-	void LinuxPlatform::NetworkRequest(lua_State *L, const char *url, const char *method, LuaResource *listener, int paramsIndex) const
+	void LinuxPlatform::NetworkRequest(lua_State* L, const char* url, const char* method, LuaResource* listener, int paramsIndex) const
 	{
 		NetworkBaseRequest(L, url, method, listener, paramsIndex, NULL);
 	}
 
-	void LinuxPlatform::NetworkDownload(lua_State *L, const char *url, const char *method, LuaResource *listener, int paramsIndex, const char *filename, MPlatform::Directory baseDir) const
+	void LinuxPlatform::NetworkDownload(lua_State* L, const char* url, const char* method, LuaResource* listener, int paramsIndex, const char* filename, MPlatform::Directory baseDir) const
 	{
-		Runtime &runtime = *LuaContext::GetRuntime(L);
-		const MPlatform &platform = runtime.Platform();
+		Runtime& runtime = *LuaContext::GetRuntime(L);
+		const MPlatform& platform = runtime.Platform();
 
 		String filePath(runtime.GetAllocator());
 		platform.PathForFile(filename, baseDir, MPlatform::kDefaultPathFlags, filePath);
 		NetworkBaseRequest(L, url, method, listener, paramsIndex, filePath.GetString());
 	}
 
-	PlatformReachability *LinuxPlatform::NewReachability(const ResourceHandle<lua_State> &handle, PlatformReachability::PlatformReachabilityType type, const char *address) const
+	PlatformReachability* LinuxPlatform::NewReachability(const ResourceHandle<lua_State>& handle, PlatformReachability::PlatformReachabilityType type, const char* address) const
 	{
 		return Rtt_NEW(fAllocator, PlatformReachability(handle, type, address));
 	}
@@ -1129,12 +1118,12 @@ namespace Rtt
 		return false;
 	}
 
-	PlatformBitmap *LinuxPlatform::CreateBitmapMask(const char str[], const PlatformFont &font, Real w, Real h, const char alignment[], Real &baselineOffset) const
+	PlatformBitmap* LinuxPlatform::CreateBitmapMask(const char str[], const PlatformFont& font, Real w, Real h, const char alignment[], Real& baselineOffset) const
 	{
 		return Rtt_NEW(&GetAllocator(), LinuxTextBitmap(GetAllocator(), str, font, (int)(w + 0.5f), (int)(h + 0.5f), alignment, baselineOffset));
 	}
 
-	FontMetricsMap LinuxPlatform::GetFontMetrics(const PlatformFont &font) const
+	FontMetricsMap LinuxPlatform::GetFontMetrics(const PlatformFont& font) const
 	{
 		FontMetricsMap ret;
 		float ascent = 0;
@@ -1142,7 +1131,11 @@ namespace Rtt
 		float height = 0;
 		float leading = 0;
 
-		glyph_freetype_provider::getMetrics(font.Name(), font.Size(), &ascent, &descent, &height, &leading);
+		glyph_freetype_provider* gp = getGlyphProvider();
+		if (gp)
+		{
+			gp->getMetrics(font.Name(), font.Size(), &ascent, &descent, &height, &leading);
+		}
 
 		ret["ascent"] = ascent;
 		ret["descent"] = descent;
@@ -1151,12 +1144,12 @@ namespace Rtt
 		return ret;
 	}
 
-	void LinuxPlatform::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Real &bottom, Rtt_Real &right) const
+	void LinuxPlatform::GetSafeAreaInsetsPixels(Rtt_Real& top, Rtt_Real& left, Rtt_Real& bottom, Rtt_Real& right) const
 	{
 		top = left = bottom = right = 0;
 	}
 
-	Preference::ReadValueResult LinuxPlatform::GetPreference(const char *categoryName, const char *keyName) const
+	Preference::ReadValueResult LinuxPlatform::GetPreference(const char* categoryName, const char* keyName) const
 	{
 		// add category name as prefix
 		std::string key(categoryName);
@@ -1172,7 +1165,7 @@ namespace Rtt
 		std::string path = fSystemCachesDir.GetString();
 		path += '/';
 		path += key;
-		FILE *f = fopen(path.c_str(), "rb");
+		FILE* f = fopen(path.c_str(), "rb");
 		bool rc = false;
 
 		if (f)
@@ -1186,7 +1179,7 @@ namespace Rtt
 		return rc == false ? Preference::ReadValueResult::kPreferenceNotFound : Preference::ReadValueResult::SucceededWith(val);
 	}
 
-	OperationResult LinuxPlatform::SetPreferences(const char *categoryName, const PreferenceCollection &preferences) const
+	OperationResult LinuxPlatform::SetPreferences(const char* categoryName, const PreferenceCollection& preferences) const
 	{
 		bool rc = true;
 
@@ -1206,13 +1199,13 @@ namespace Rtt
 
 				// Insert the preference value as string.
 				PreferenceValue::StringResult strval = pval.ToString();
-				const char *val = strval.GetValue()->c_str();
+				const char* val = strval.GetValue()->c_str();
 
 				// maybe it would be better to use sqlite3 ??
 				std::string path = fSystemCachesDir.GetString();
 				path += '/';
 				path += key;
-				FILE *f = fopen(path.c_str(), "wb");
+				FILE* f = fopen(path.c_str(), "wb");
 
 				if (f)
 				{
@@ -1226,7 +1219,7 @@ namespace Rtt
 		return rc == false ? OperationResult::FailedWith("This API is not supported on this platform.") : Rtt::OperationResult::kSucceeded;
 	}
 
-	OperationResult LinuxPlatform::DeletePreferences(const char *categoryName, const char **keyNameArray, U32 keyNameCount) const
+	OperationResult LinuxPlatform::DeletePreferences(const char* categoryName, const char** keyNameArray, U32 keyNameCount) const
 	{
 		bool rc = true;
 
@@ -1256,7 +1249,7 @@ namespace Rtt
 	{
 	}
 
-	void LinuxPlatform::setWindow(void *ctx)
+	void LinuxPlatform::setWindow(void* ctx)
 	{
 		Rtt_ASSERT(fScreenSurface);
 		fScreenSurface->setWindow(ctx);
@@ -1293,72 +1286,75 @@ namespace Rtt
 	}
 #endif
 
-//
-// for native.showAlert
-//
-	msgBox::msgBox(const char *title, const char *msg, const char **buttonLabels, U32 numButtons, LuaResource *resource)
-		: wxFrame(solarApp, wxID_ANY, title, wxDefaultPosition, wxSize(520, 180), wxCAPTION | wxCLOSE_BOX), fCallback(resource)
-	{
-		wxSize sz = GetSize();
-		wxPanel *panel = new wxPanel(this, wxID_ANY);
-		wxBoxSizer *hbox = new wxBoxSizer(wxVERTICAL);
-		wxStaticText *txt = new wxStaticText(panel, wxID_ANY, msg, wxPoint(0, 10), wxSize(sz.x - 20, 60), wxALIGN_CENTRE_HORIZONTAL);
-		wxFont font = txt->GetFont();
-		//	font.SetPointSize(font.GetPointSize() + 2);
-		font.SetWeight(wxFONTWEIGHT_BOLD);
-		txt->SetFont(font);
-
-		// add buttons
-		wxBoxSizer *gs = new wxBoxSizer(wxHORIZONTAL);
-
-		for (int i = 0; i < numButtons; i++)
+	//
+	// for native.showAlert
+	//
+		/*
+		msgBox::msgBox(const char *title, const char *msg, const char **buttonLabels, U32 numButtons, LuaResource *resource)
+			: wxFrame(solarApp, wxID_ANY, title, wxDefaultPosition, wxSize(520, 180), wxCAPTION | wxCLOSE_BOX), fCallback(resource)
 		{
-			const char *caption = buttonLabels[i];
-			wxButton *b = new wxButton(panel, i, caption);
-			Connect(i, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(msgBox::ShowMessage));
-			gs->Add(b, 0, 0, 7);
-			gs->AddSpacer(5);
+			wxSize sz = GetSize();
+			wxPanel *panel = new wxPanel(this, wxID_ANY);
+			wxBoxSizer *hbox = new wxBoxSizer(wxVERTICAL);
+			wxStaticText *txt = new wxStaticText(panel, wxID_ANY, msg, wxPoint(0, 10), wxSize(sz.x - 20, 60), wxALIGN_CENTRE_HORIZONTAL);
+			wxFont font = txt->GetFont();
+			//	font.SetPointSize(font.GetPointSize() + 2);
+			font.SetWeight(wxFONTWEIGHT_BOLD);
+			txt->SetFont(font);
+
+			// add buttons
+			wxBoxSizer *gs = new wxBoxSizer(wxHORIZONTAL);
+
+			for (int i = 0; i < numButtons; i++)
+			{
+				const char *caption = buttonLabels[i];
+				wxButton *b = new wxButton(panel, i, caption);
+				Connect(i, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(msgBox::ShowMessage));
+				gs->Add(b, 0, 0, 7);
+				gs->AddSpacer(5);
+			}
+
+			Connect(wxID_ANY, wxEVT_CLOSE_WINDOW, wxCloseEventHandler(msgBox::OnClose));
+			hbox->Add(txt, 0, wxALL, 15);
+			hbox->Add(gs, 1, wxALIGN_CENTER_HORIZONTAL | wxALL, 7);
+			panel->SetSizer(hbox);
+			Centre(wxBOTH);
 		}
 
-		Connect(wxID_ANY, wxEVT_CLOSE_WINDOW, wxCloseEventHandler(msgBox::OnClose));
-		hbox->Add(txt, 0, wxALL, 15);
-		hbox->Add(gs, 1, wxALIGN_CENTER_HORIZONTAL | wxALL, 7);
-		panel->SetSizer(hbox);
-		Centre(wxBOTH);
-	}
+		msgBox::~msgBox()
+		{
+		}
 
-	msgBox::~msgBox()
-	{
-	}
+		void msgBox::ShowMessage(wxCommandEvent &e)
+		{
+			// Invoke the Lua listener.
+			int id = e.GetId();
 
-	void msgBox::ShowMessage(wxCommandEvent &e)
-	{
-		// Invoke the Lua listener.
-		int id = e.GetId();
+			if (fCallback)
+			{
+				// Invoke the Lua listener.
+				Rtt::LuaResource *pLuaResource = (Rtt::LuaResource *)fCallback;
+				bool wasCanceled = id >= 0 ? false : true;
+				Rtt::LuaLibNative::AlertComplete(*pLuaResource, id, wasCanceled);
 
-		if (fCallback)
+				// Delete the Lua resource.
+				Rtt_DELETE(pLuaResource);
+			}
+			Destroy();
+		}
+
+		void msgBox::OnClose()
 		{
 			// Invoke the Lua listener.
 			Rtt::LuaResource *pLuaResource = (Rtt::LuaResource *)fCallback;
-			bool wasCanceled = id >= 0 ? false : true;
-			Rtt::LuaLibNative::AlertComplete(*pLuaResource, id, wasCanceled);
+			bool wasCanceled = true;
+			Rtt::LuaLibNative::AlertComplete(*pLuaResource, -1, wasCanceled);
 
 			// Delete the Lua resource.
 			Rtt_DELETE(pLuaResource);
+
+			Destroy();
 		}
-		Destroy();
-	}
+		*/
 
-	void msgBox::OnClose(wxCloseEvent &event)
-	{
-		// Invoke the Lua listener.
-		Rtt::LuaResource *pLuaResource = (Rtt::LuaResource *)fCallback;
-		bool wasCanceled = true;
-		Rtt::LuaLibNative::AlertComplete(*pLuaResource, -1, wasCanceled);
-
-		// Delete the Lua resource.
-		Rtt_DELETE(pLuaResource);
-
-		Destroy();
-	}
 }; // namespace Rtt

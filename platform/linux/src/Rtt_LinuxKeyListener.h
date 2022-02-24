@@ -4,7 +4,6 @@
 #include <string>
 #include <map>
 #include "Rtt_Runtime.h"
-#include "wx/app.h"
 
 namespace Rtt
 {
@@ -12,13 +11,13 @@ namespace Rtt
 	{
 	public:
 		LinuxKeyListener(Runtime &runtime);
-		void notifyKeyEvent(wxKeyEvent &e, bool down);
-		void notifyCharEvent(wxKeyEvent &e);
+		void notifyKeyEvent(bool down);
+		void notifyCharEvent();
 
 	public:
-		static void OnChar(wxKeyEvent &event);
-		static void OnKeyDown(wxKeyEvent &event);
-		static void OnKeyUp(wxKeyEvent &event);
+		static void OnChar();
+		static void OnKeyDown();
+		static void OnKeyUp();
 
 	private:
 		Runtime &fRuntime;

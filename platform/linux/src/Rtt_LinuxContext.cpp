@@ -30,20 +30,12 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_LinuxMenuEvents.h"
-#include "Rtt_ConsoleApp.h"
 #include "Rtt_LinuxApp.h"
 #include "Rtt_HTTPClient.h"
-#include "wx/menu.h"
-#include "wx/dcclient.h"
-#include "wx/app.h"
-#include "wx/display.h"
 #include <curl/curl.h>
 #include <utility>		// for pairs
 #include "lua.h"
 #include "lauxlib.h"
-
-//#define Rtt_DEBUG_TOUCH 1
-#define TIMER_ID wxID_HIGHEST + 1
 
 using namespace Rtt;
 using namespace std;
@@ -62,12 +54,10 @@ extern "C"
 	}
 }
 
-extern Rtt::SolarApp* solarApp;
-
 namespace Rtt
 {
 
-	SolarAppContext::SolarAppContext(const char* path)
+	SolarAppContext::SolarAppContext(SDL_Window* window, const std::string& appPath)
 		: fRuntime(NULL)
 		, fRuntimeDelegate(new LinuxRuntimeDelegate())
 		, fMouseListener(NULL)
@@ -78,35 +68,27 @@ namespace Rtt
 		, fIsDebApp(false)
 		, fLinuxSimulatorServices(NULL)
 		, fProjectSettings(new ProjectSettings())
+		, fWindow(window)
 	{
 		string exeFileName;
 		const char* homeDir = GetHomePath();
-		const char* appPath = GetStartupPath(&exeFileName);
-
-		// override appPath if arg isn't null
-		if (path && *path != 0)
-		{
-			appPath = path;
-		}
 
 		// set app name
-		if (strcmp(appPath, "/usr/bin") == 0) // deb ?
+		if (appPath == "/usr/bin") // deb ?
 		{
 			// for .deb app the appName is exe file name
 			fAppName = exeFileName;
 		}
 		else
 		{
-			const char* slash = strrchr(appPath, '/');
-
+			const char* slash = strrchr(appPath.c_str(), '/');
 			if (slash)
 			{
 				fAppName = slash + 1;
 			}
 			else
 			{
-				slash = strrchr(appPath, '\\');
-
+				slash = strrchr(appPath.c_str(), '\\');
 				if (slash)
 				{
 					fAppName = slash + 1;
@@ -222,7 +204,7 @@ namespace Rtt
 		fRuntime = new LinuxRuntime(*fPlatform, NULL);
 		fRuntime->SetDelegate(fRuntimeDelegate);
 
-		if (solarApp->IsRunningOnSimulator())
+		if (app->IsRunningOnSimulator())
 		{
 			fRuntime->SetProperty(Runtime::kLinuxMaskSet | Runtime::kIsApplicationNotArchived, true);
 		}
@@ -234,16 +216,10 @@ namespace Rtt
 		bool fullScreen = false;
 		int width = 320;
 		int height = 480;
-		string projectPath(fPathToApp.c_str());
-
-		if (!solarApp->IsRunningOnSimulator())
-		{
-			projectPath.append("/Resources");
-		}
 
 		fProjectSettings->ResetBuildSettings();
 		fProjectSettings->ResetConfigLuaSettings();
-		fProjectSettings->LoadFromDirectory(projectPath.c_str());
+		fProjectSettings->LoadFromDirectory(fPathToApp.c_str());
 
 		// read config.lua
 		if (fProjectSettings->HasConfigLua())
@@ -264,17 +240,9 @@ namespace Rtt
 		// read build.settings
 		if (fProjectSettings->HasBuildSettings())
 		{
-			int systemLanguage = wxLocale::GetSystemLanguage();
-
-			// fallback to en_us if wx wasn't able to determine the system language
-			if (systemLanguage == wxLANGUAGE_UNKNOWN)
-			{
-				systemLanguage = wxLANGUAGE_ENGLISH_US;
-			}
-
-			wxString localeName = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
-			string langCode = localeName.ToStdString().substr(0, 2);
-			string countryCode = localeName.ToStdString().substr(3, 5);
+			string localeName = "fixme"; // = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
+			string langCode = localeName.substr(0, 2);
+			string countryCode = localeName.substr(3, 5);
 			int minWidth = fProjectSettings->GetMinWindowViewWidth();
 			int minHeight = fProjectSettings->GetMinWindowViewHeight();
 			const char* windowTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());
@@ -295,10 +263,10 @@ namespace Rtt
 
 			if (fullScreen)
 			{
-				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
-				wxRect screen = display.GetClientArea();
-				width = screen.width;
-				height = screen.height;
+				//				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
+				//				wxRect screen = display.GetClientArea();
+				//				width = screen.width;
+				//				height = screen.height;
 			}
 			else
 			{
@@ -307,7 +275,7 @@ namespace Rtt
 				//SetMinClientSize(wxSize(minWidth, minHeight));
 			}
 
-			solarApp->GetSavedZoom(width, height);
+			app->GetSavedZoom(width, height);
 
 			switch (orientation)
 			{
@@ -325,8 +293,8 @@ namespace Rtt
 					// use swapped default settings
 					int w = fRuntimeDelegate->GetWidth();
 					int h = fRuntimeDelegate->GetHeight();
-					fRuntimeDelegate->SetWidth(h);
-					fRuntimeDelegate->SetHeight(w);
+					fRuntimeDelegate->SetWidth(480);
+					fRuntimeDelegate->SetHeight(320);
 				}
 				break;
 
@@ -417,13 +385,12 @@ namespace Rtt
 
 		puts(mb.c_str());
 		mb.append('\n');
-		ConsoleApp::Log(mb.c_str());
+		//vv	ConsoleApp::Log(mb.c_str());
 		return 0;
 	}
 
-	bool SolarAppContext::LoadApp(SolarGLCanvas* canvas)
+	bool SolarAppContext::LoadApp()
 	{
-		fCanvas = canvas;
 		Init();
 
 		if (Runtime::kSuccess != fRuntime->LoadApplication(Runtime::kLinuxLaunchOption, fRuntimeDelegate->fOrientation))
@@ -445,7 +412,7 @@ namespace Rtt
 			// Swap(fRuntimeDelegate->fContentWidth, fRuntimeDelegate->fContentHeight);
 		}
 
-		if (solarApp->IsRunningOnSimulator())
+		if (app->IsRunningOnSimulator())
 		{
 			fLinuxSimulatorServices = new LinuxSimulatorServices();
 			lua_State* luaStatePointer = fRuntime->VMContext().L();
@@ -460,31 +427,46 @@ namespace Rtt
 
 		GetRuntime()->BeginRunLoop();
 
-		// starft timer
-		int frameDuration = 1000.0f / (float)GetFPS();
-		SetOwner(this);
-		Start(frameDuration);
+		ResetWindowSize();
+		app->SetTitle(GetAppName());
 
 		return true;
 	}
 
-	// timer callback
-	void SolarAppContext::Notify()
+	void SolarAppContext::ResetWindowSize()
 	{
-		if (!fRuntime->IsSuspended())
+		int w, h;
+		SDL_GetWindowSize(fWindow, &w, &h);
+		if (w != GetWidth() || h != GetHeight())
 		{
-			LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)GetPlatform()->GetDevice().GetInputDeviceManager();
-			deviceManager.dispatchEvents(fRuntime);
-
-			// advance engine
-			(*fRuntime)();
+			w = GetWidth();
+			h = GetHeight();
+			SDL_SetWindowSize(fWindow, w, h);
 		}
+	}
+
+	// timer callback
+	void SolarAppContext::advance()
+	{
+		if (fRuntime->IsSuspended())
+		{
+			// render only GUI
+			Flush();
+			return;
+		}
+
+		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)GetPlatform()->GetDevice().GetInputDeviceManager();
+		deviceManager.dispatchEvents(fRuntime);
+
+		// advance engine
+		(*fRuntime)();
 	}
 
 	void SolarAppContext::Flush()
 	{
+		app->RenderGUI();
 		fRuntime->GetDisplay().Invalidate();
-		fCanvas->Render();
+		SDL_GL_SwapWindow(fWindow);
 	}
 
 	void SolarAppContext::Pause()

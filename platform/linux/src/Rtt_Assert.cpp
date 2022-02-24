@@ -13,10 +13,8 @@
 #include "Core/Rtt_Types.h"
 #include "Core/Rtt_Assert.h"
 
-#ifdef Rtt_LINUX_ENV
-#ifndef CORONABUILDER_LINUX
-#include "Rtt_ConsoleApp.h"
-#endif
+#ifdef Rtt_LINUX_ENV 
+void LinuxLog(const char* buf, int len);
 #endif
 
 #ifdef Rtt_EMSCRIPTEN_ENV
@@ -126,7 +124,7 @@ Rtt_LogException( const char *format, ... )
 }
 
 int
-Rtt_VLogException(const char *format, va_list ap)
+Rtt_VLogException(const char* format, va_list ap)
 {
 	int result = 0;
 
@@ -180,7 +178,7 @@ Rtt_VLogException(const char *format, va_list ap)
 				for (sourceIndex = 0, destinationIndex = 0; sourceIndex < stringLength; sourceIndex++)
 				{
 					if (('\r' == stringPointer[sourceIndex]) &&
-					        ((sourceIndex + 1) < stringLength) && ('\n' == stringPointer[sourceIndex + 1]))
+						((sourceIndex + 1) < stringLength) && ('\n' == stringPointer[sourceIndex + 1]))
 					{
 						result--;
 						continue;
@@ -226,17 +224,17 @@ Rtt_VLogException(const char *format, va_list ap)
 		}
 	}
 #elif defined( Rtt_ANDROID_ENV )
-	result = __android_log_vprint( ANDROID_LOG_INFO, "Corona", format, ap );
+	result = __android_log_vprint(ANDROID_LOG_INFO, "Corona", format, ap);
 #elif defined(EMSCRIPTEN)
 	char buffer[4096];
 	int n = vsnprintf(buffer, 4096, format, ap);
 	if (n > 0)
 	{
 		EM_ASM(
-		{
-			var msg = UTF8ToString($0);
-			Module.printErr(msg);
-		}, buffer);
+			{
+				var msg = UTF8ToString($0);
+				Module.printErr(msg);
+			}, buffer);
 	}
 #else
 #if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
@@ -245,8 +243,11 @@ Rtt_VLogException(const char *format, va_list ap)
 	va_list apCopy;
 	va_copy(apCopy, ap);
 
-	int n = vsnprintf(buffer, 4096, format, apCopy);
-	ConsoleApp::Log((n > 0) ? buffer : format, linuxIsErrorMsg);
+	int n = vsnprintf(buffer, sizeof(buffer) - 1, format, apCopy);
+	if (n > 0)
+	{
+		LinuxLog(buffer, n);
+	}
 #endif
 #endif
 

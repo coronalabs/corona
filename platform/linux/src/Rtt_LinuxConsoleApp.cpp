@@ -1,41 +1,43 @@
+//
+//
+//
+
 #include "Rtt_LinuxConsoleApp.h"
 
-bool Rtt_LinuxConsoleApp::OnInit()
-{
-	wxInitAllImageHandlers();
-	Solar2DConsole = new Rtt_LinuxConsole(NULL, wxID_ANY, wxEmptyString);
-	SetTopWindow(Solar2DConsole);
-	Solar2DConsole->Show();
+using namespace std;
 
-	return true;
-}
-
-void Rtt_LinuxConsoleApp::ClearLog()
+namespace Rtt
 {
-	Solar2DConsole->ClearLog();
-}
-
-void Rtt_LinuxConsoleApp::UpdateLog(wxString message)
-{
-	Solar2DConsole->UpdateLog(message);
-}
-
-void Rtt_LinuxConsoleApp::UpdateLog(wxString message, int messageType)
-{
-	switch(messageType)
+	ConsoleWindow::ConsoleWindow(const string& title, int w, int h, string* logData)
+		: Window(title, w, h)
+		, fLogData(logData)
 	{
-		case MessageType::Warning:
-			Solar2DConsole->UpdateLogWarning(message);
-			break;
+	}
 
-		case MessageType::Error:
-			Solar2DConsole->UpdateLogError(message);
-			break;
+	ConsoleWindow::~ConsoleWindow()
+	{
+	}
 
-		default:
-			Solar2DConsole->UpdateLog(message);
-			break;
+	void ConsoleWindow::Draw()
+	{
+		begin();
+
+		// set size
+		const ImVec2& windowSize = ImGui::GetMainViewport()->WorkSize;
+		ImGui::SetNextWindowSize(windowSize);
+
+		if (ImGui::Begin("##LogWindow", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
+		{
+			ImVec2 tbSize = windowSize;
+			tbSize.x -= 15;	// hack
+			tbSize.y -= 15;
+			int len = fLogData->size();
+			if (len > 0)
+			{
+				ImGui::InputTextMultiline("##LogData", (char*)fLogData->c_str(), len, tbSize, ImGuiInputTextFlags_ReadOnly);
+			}
+			ImGui::End();
+		}
+		end();
 	}
 }
-
-IMPLEMENT_APP(Rtt_LinuxConsoleApp);

@@ -12,9 +12,7 @@
 #include "Rtt_LinuxDisplayObject.h"
 #include "Rtt_MPlatform.h"
 
-#if (wxUSE_WEBVIEW == 1)
-
-#include "wx/webview.h"
+#if 0 //(wxUSE_WEBVIEW == 1)
 
 namespace Rtt
 {

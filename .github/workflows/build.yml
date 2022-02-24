@@ -150,8 +150,6 @@ jobs:
       - native
       - webtemplate
     runs-on: ubuntu-20.04
-    # container:
-    #   image: coronalabs/linux_builder_rpi
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get Webtemplate
@@ -182,11 +180,6 @@ jobs:
         with:
           name: Linux-Template
           path: ./output/linuxtemplate_x64.tgz
-      - name: Upload Linux Linux-Simulator-Template
-        uses: actions/upload-artifact@v2-preview
-        with:
-          name: Linux-Simulator-Template
-          path: ./output/CoronaSimulator*
       - name: Upload snap
         uses: actions/upload-artifact@v2-preview
         with:
@@ -339,7 +332,7 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v1

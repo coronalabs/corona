@@ -12,8 +12,6 @@
 #include "Rtt_LinuxDisplayObject.h"
 #include "Corona/CoronaLua.h"
 #include <string.h>
-#include "wx/wx.h"
-#include "wx/mediactrl.h"
 
 #if (wxUSE_MEDIACTRL == 1)
 

@@ -4,7 +4,6 @@
 #include "Rtt_Event.h"
 #include "Core/Rtt_Types.h"
 #include "Rtt_Runtime.h"
-#include "wx/wx.h"
 #include <string>
 #include <map>
 
@@ -21,19 +20,6 @@ namespace Rtt
 		void TouchMoved(int x, int y, int id);
 		void TouchUp(int x, int y, int id);
 		void DispatchEvent(const MEvent &e) const;
-
-	public:
-		static void OnMouseLeftDoubleClick(wxMouseEvent &event);
-		static void OnMouseLeftDown(wxMouseEvent &event);
-		static void OnMouseLeftUp(wxMouseEvent &event);
-		static void OnMouseRightDoubleClick(wxMouseEvent &event);
-		static void OnMouseRightDown(wxMouseEvent &event);
-		static void OnMouseRightUp(wxMouseEvent &event);
-		static void OnMouseMiddleDoubleClick(wxMouseEvent &event);
-		static void OnMouseMiddleDown(wxMouseEvent &event);
-		static void OnMouseMiddleUp(wxMouseEvent &event);
-		static void OnMouseMove(wxMouseEvent &event);
-		static void OnMouseWheel(wxMouseEvent &event);
 
 	private:
 		struct pt

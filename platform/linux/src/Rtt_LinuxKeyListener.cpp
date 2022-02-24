@@ -125,9 +125,9 @@ namespace Rtt
 		//fKeyName["Application"] = KeyName::kMenu; // web
 	}
 
-	void LinuxKeyListener::notifyCharEvent(wxKeyEvent &e)
+	void LinuxKeyListener::notifyCharEvent()
 	{
-		wxChar unicodeCharacter = e.GetUnicodeKey();
+/*		wxChar unicodeCharacter = e.GetUnicodeKey();
 
 		if (unicodeCharacter != WXK_NONE)
 		{
@@ -139,12 +139,12 @@ namespace Rtt
 				CharacterEvent characterEvent(NULL, utf8Character);
 				fRuntime.DispatchEvent(characterEvent);
 			}
-		}
+		}*/
 	}
 
-	void LinuxKeyListener::notifyKeyEvent(wxKeyEvent &e, bool down)
+	void LinuxKeyListener::notifyKeyEvent(bool down)
 	{
-		int mod = e.GetModifiers();
+/*		int mod = e.GetModifiers();
 		bool isNumLockDown = false; // fixme
 		bool isCapsLockDown = false; // fixme
 		bool isShiftDown = mod & wxMOD_SHIFT ? true : false;
@@ -157,20 +157,20 @@ namespace Rtt
 		const char *keyName = it == fKeyName.end() ? KeyName::kUnknown : it->second.c_str();
 
 		KeyEvent ke(dev, down ? KeyEvent::kDown : KeyEvent::kUp, keyName, keycode, isShiftDown, isAltDown, isCtrlDown, isCommandDown);
-		fRuntime.DispatchEvent(ke);
+		fRuntime.DispatchEvent(ke);*/
 	}
 
-	void LinuxKeyListener::OnChar(wxKeyEvent &event)
+	void LinuxKeyListener::OnChar()
 	{
-		event.Skip();
-		SolarAppContext *context = solarApp->fContext;
-		context->GetKeyListener()->notifyCharEvent(event);
+	//	event.Skip();
+//		SolarAppContext* context = app->GetContext();
+	//	context->GetKeyListener()->notifyCharEvent(event);
 	}
 
-	void LinuxKeyListener::OnKeyDown(wxKeyEvent &event)
+	void LinuxKeyListener::OnKeyDown()
 	{
-		event.Skip();
-		SolarAppContext *context = solarApp->fContext;
+	/*	event.Skip();
+		SolarAppContext* context = app->GetContext();
 
 		if (event.GetKeyCode() == WXK_ESCAPE)
 		{
@@ -179,17 +179,17 @@ namespace Rtt
 		else
 		{
 			context->GetKeyListener()->notifyKeyEvent(event, true);
-		}
+		}*/
 	}
 
-	void LinuxKeyListener::OnKeyUp(wxKeyEvent &event)
+	void LinuxKeyListener::OnKeyUp()
 	{
-		event.Skip();
-		SolarAppContext *context = solarApp->fContext;
+/*		event.Skip();
+		SolarAppContext* context = app->GetContext();
 
 		if (context && event.GetKeyCode() != WXK_ESCAPE)
 		{
 			context->GetKeyListener()->notifyKeyEvent(event, false);
-		}
+		}*/
 	}
 };

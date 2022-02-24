@@ -16,7 +16,6 @@
 #include "Rtt_PlatformTimer.h"
 #include "Rtt_PlatformSimulator.h"
 #include "Rtt_LinuxRuntimeErrorDialog.h"
-#include <wx/wx.h>
 
 #undef CreateFont
 
@@ -169,11 +168,9 @@ namespace Rtt
 		const char *getInstallDir() const { return fInstallDir.GetString(); }
 		void setWindow(void *ctx);
 		bool fShowRuntimeErrors;
-		LinuxRuntimeErrorDialog *GetRuntimeErrorDialog() { return fRuntimeErrorDialog; }
 
 	protected:
 		Rtt_Allocator *fAllocator;
-		LinuxRuntimeErrorDialog *fRuntimeErrorDialog;
 		mutable LinuxAudioPlayer *fAudioPlayer;
 		mutable bool isMouseCursorVisible;
 
@@ -235,15 +232,4 @@ namespace Rtt
 		S32 fAdaptiveHeight;
 	};
 
-	class msgBox : public wxFrame
-	{
-	public:
-		msgBox(const char *title, const char *msg, const char **buttonLabels, U32 numButtons, LuaResource *resource);
-		~msgBox();
-
-		void ShowMessage(wxCommandEvent &event);
-		void OnClose(wxCloseEvent &event);
-
-		LuaResource *fCallback;
-	};
 }; // namespace Rtt
