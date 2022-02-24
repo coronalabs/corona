@@ -47,6 +47,8 @@ apps:
 #      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/usr/lib/x86_64-linux-gnu/dri::${SNAP}/usr/lib/x86_64-linux-gnu
       JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64
       PATH: $JAVA_HOME/jre/bin:$JAVA_HOME/bin:$PATH
+      GRADLE_USER_HOME: $SNAP_USER_DATA/.gradle
+      ANDROID_HOME: $SNAP_USER_DATA/android-sdk
     plugs:
     - desktop
     - desktop-legacy
