@@ -17,6 +17,12 @@ architectures:
   - amd64
 
 layout:
+  /usr/bin/keytool:
+    symlink: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin/keytool
+  /usr/bin/jarsigner:
+    symlink: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin/jarsigner
+  /usr/bin/java:
+    symlink: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin/java
   /usr/bin/zip:
     symlink: $SNAP/usr/bin/zip
   /usr/bin/unzip:

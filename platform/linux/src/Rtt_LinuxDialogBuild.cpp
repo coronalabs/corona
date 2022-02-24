@@ -72,7 +72,6 @@ namespace Rtt
 
 		fStorePassword = "android";
 		fAliasPassword = fStorePassword;
-		ReadKeystore(keystorePath, fStorePassword);
 		ReadVersion();
 
 		fileDialogKeyStore.SetTitle("Browse For Keystore");
@@ -187,7 +186,7 @@ namespace Rtt
 			ImGui::Dummy(ImVec2(10, 10));
 			ImGui::PushItemWidth(350);		// input field width
 
-			s = "   Application Name :";
+			s = "   Application Name:";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
@@ -195,21 +194,21 @@ namespace Rtt
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
-			s = "   Version Code :";
+			s = "   Version Code:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionCodeInput", fVersionCodeInput, sizeof(fVersionCodeInput), ImGuiInputTextFlags_CharsDecimal);
 
-			s = "   Version Name :";
+			s = "   Version Name:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionNameInput", fVersionNameInput, sizeof(fVersionNameInput), ImGuiInputTextFlags_CharsDecimal);
 
-			s = "   Package :";
+			s = "   Package:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
@@ -221,7 +220,7 @@ namespace Rtt
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::Dummy(ImVec2(70, 10));
 
-			s = "   Project Path :";
+			s = "   Project Path:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
@@ -229,13 +228,13 @@ namespace Rtt
 			ImGui::InputText("##fProjectPathInput", fProjectPathInput, sizeof(fProjectPathInput), ImGuiInputTextFlags_ReadOnly);
 
 			// Target App Store
-			ImGui::TextUnformatted("   Target App Store :");
+			ImGui::TextUnformatted("   Target App Store:");
 			ImGui::SameLine();
 			const char* appstores[] = { "Amazon", "Google Play", "Samsung" };
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::Combo("##TargetAppStore", &fAppStoreIndex, appstores, IM_ARRAYSIZE(appstores));
 
-			s = "   Keystore: ";
+			s = "   Keystore:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
@@ -249,7 +248,7 @@ namespace Rtt
 			}
 
 			// Key Alias
-			ImGui::TextUnformatted("   Key Alias :");
+			ImGui::TextUnformatted("   Key Alias:");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::Combo("##TargetAppStore", &fKeyAliasIndex, fKeyAliases, fKeyAliasesSize);
@@ -344,6 +343,12 @@ namespace Rtt
 	// thread function
 	void DlgAndroidBuild::Build()
 	{
+		if (ReadKeystore(fKeyStoreInput, fStorePassword)==false)
+		{
+			fBuildResult = "ReadKeystore failed.";
+			return;
+		}
+
 		fBuildSuccessed = false;
 		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
@@ -581,7 +586,7 @@ namespace Rtt
 			ImGui::Dummy(ImVec2(10, 10));
 			ImGui::PushItemWidth(350);		// input field width
 
-			s = "   Application Name :";
+			s = "   Application Name:";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
@@ -589,7 +594,7 @@ namespace Rtt
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
-			s = "   Version Code :";
+			s = "   Version Code:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
@@ -816,7 +821,7 @@ namespace Rtt
 			ImGui::Dummy(ImVec2(10, 10));
 			ImGui::PushItemWidth(350);		// input field width
 
-			s = "   Application Name :";
+			s = "   Application Name:";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
@@ -824,7 +829,7 @@ namespace Rtt
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
-			s = "   Version Code :";
+			s = "   Version Code:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
