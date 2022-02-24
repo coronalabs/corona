@@ -1,0 +1,15 @@
+/lua
+/Simulator
+compile_commands.json
+*.bak
+linux_rtt.txt
+car.txt
+*Template.tgz
+Solar2DSimulator/android-sdk
+deb_arm/CONTENTS/usr/bin/linux_rtt
+deb_arm/CONTENTS/usr/share/corona/res_widget/
+deb_simulator/CONTENTS/usr/bin/CoronaSimulator
+deb/CONTENTS/usr/share/corona/res_widget/
+deb/CONTENTS/usr/bin/linux_rtt
+Solar2DSimulator/Solar2DSimulator_*
+

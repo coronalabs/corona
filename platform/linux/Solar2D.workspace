@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="Solar2D" Database="" Version="10.0.0">
+  <Project Name="Solar2DConsole" Path="Solar2DConsole.project" Active="No"/>
+  <Project Name="Solar2DBuilder" Path="Solar2DBuilder.project" Active="No"/>
+  <Project Name="Solar2D" Path="Solar2D.project" Active="No"/>
+  <Project Name="Solar2DSimulator" Path="Solar2DSimulator.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Release" Selected="no">
+      <Environment/>
+      <Project Name="Solar2DSimulator" ConfigName="Release"/>
+      <Project Name="Solar2DConsole" ConfigName="Release"/>
+      <Project Name="Solar2DBuilder" ConfigName="Release"/>
+      <Project Name="Solar2DBuilder" ConfigName="Release"/>
+      <Project Name="Solar2D" ConfigName="Release"/>
+      <Project Name="Solar2DSimulator" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
+      <Project Name="Solar2DConsole" ConfigName="Debug"/>
+      <Project Name="Solar2DSimulator" ConfigName="Debug"/>
+      <Project Name="Solar2DBuilder" ConfigName="Debug"/>
+      <Project Name="Solar2D" ConfigName="Debug"/>
+      <Project Name="Solar2DSimulator" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="x64Template" Selected="yes">
+      <Environment/>
+      <Project Name="Solar2DSimulator" ConfigName="X64 Template"/>
+      <Project Name="Solar2DConsole" ConfigName="x64 Template"/>
+      <Project Name="Solar2DBuilder" ConfigName="Debug"/>
+      <Project Name="Solar2DBuilder" ConfigName="Debug"/>
+      <Project Name="Solar2D" ConfigName="Debug"/>
+      <Project Name="Solar2DSimulator" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

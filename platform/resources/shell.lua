@@ -373,8 +373,8 @@ function PluginSync:addPluginToQueueIfRequired( required_plugin )
 	should_queue = should_queue or ( not manifest )
 	if type(manifest) == 'table' and type(manifest.lastUpdate) == 'number'  then
 		local age = os.difftime(self.now, manifest.lastUpdate)
-		-- update plugins every 30 minutes or so
-		should_queue = should_queue or ( age > 60*30 )
+		-- update plugins every 24 hours or so
+		should_queue = should_queue or ( age > 86400 )
 	else
 		should_queue = true
 	end

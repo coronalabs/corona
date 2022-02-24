@@ -359,7 +359,7 @@ CBuildResult appLinuxBuild(
 		srcDir,	dstDir,	NULL,  
 		targetPlatform, targetVersion,
 		Rtt::TargetDevice::kLinux, customBuildId,
-		NULL, bundleId, isDistribution, NULL, useStandartResources);
+		NULL, bundleId, isDistribution, NULL, useStandartResources, false, false);
 
 	// Select build template
 	Rtt::Runtime* runtimePointer = pSim->GetRuntime();

@@ -1,9 +1,9 @@
-Plugin binaries can be obtained from the "Corona Enterprise" tab here:
+Plugin binaries can be obtained from Solar2D repository:
 
-https://developer.coronalabs.com/downloads/daily-builds
+https://github.com/orgs/solar2d/repositories
 
-Look for the file:
+Look for the files in 'Releases' tab of the corresponding plugin:
 
-`CoronaEnterprisePlugins.[Daily build number].tgz`
+`PluginFileName.tgz`
 
 

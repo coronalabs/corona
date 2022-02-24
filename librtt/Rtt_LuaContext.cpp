@@ -72,7 +72,7 @@ Rtt_EXPORT_END
 
 // ----------------------------------------------------------------------------
 
-#if defined(Rtt_EMSCRIPTEN_ENV) || defined(Rtt_LINUX_ENV)
+#if defined(Rtt_EMSCRIPTEN_ENV)
 CORONA_EXPORT	int luaopen_network( lua_State *L );
 CORONA_EXPORT	int luaopen_lfs( lua_State *L );
 
@@ -99,6 +99,15 @@ extern "C" {
 	}
 #endif
 
+#ifdef Rtt_LINUX_ENV
+	extern "C" {
+		int luaopen_network(lua_State* L);
+		int luaopen_lfs(lua_State* L);
+		int luaopen_socket_core(lua_State* L);
+		int luaopen_mime_core(lua_State* L);
+	}
+#endif
+
 namespace Rtt
 {
 
@@ -110,6 +119,19 @@ namespace Rtt
 	int luaload_nnTextField(lua_State* L);
 	int luaload_nnTextBox(lua_State* L);
 	int luaload_nnNativeAlert(lua_State* L);
+#endif
+
+#ifdef Rtt_LINUX_ENV
+	int luaload_luasocket_socket(lua_State* L);
+	int luaload_luasocket_ftp(lua_State* L);
+	int luaload_luasocket_headers(lua_State* L);
+	int luaload_luasocket_http(lua_State* L);
+	int luaload_luasocket_mbox(lua_State* L);
+	int luaload_luasocket_smtp(lua_State* L);
+	int luaload_luasocket_tp(lua_State* L);
+	int luaload_luasocket_url(lua_State* L);
+	int luaload_luasocket_mime(lua_State* L);
+	int luaload_luasocket_ltn12(lua_State* L);
 #endif
 
 // ----------------------------------------------------------------------------
@@ -794,17 +816,18 @@ LuaContext::InitializeLuaCore( lua_State* L )
 		{ "network", luaopen_network },
 		{ "lfs", luaopen_lfs },
 		{ "socket.core", luaopen_socket_core },
-		{ "socket", Lua::Open< CoronaPluginLuaLoad_socket >  },
-		{ "socket.ftp", Lua::Open< CoronaPluginLuaLoad_ftp > },
-		{ "socket.headers", Lua::Open< CoronaPluginLuaLoad_headers > },
-		{ "socket.http", Lua::Open< CoronaPluginLuaLoad_http > },
-		{ "socket.mbox", Lua::Open< CoronaPluginLuaLoad_mbox > },
-		{ "socket.smtp", Lua::Open< CoronaPluginLuaLoad_smtp > },
-		{ "socket.tp", Lua::Open< CoronaPluginLuaLoad_tp > },
-		{ "socket.url", Lua::Open< CoronaPluginLuaLoad_url > },
+		{ "socket", Lua::Open< luaload_luasocket_socket >  },
+		{ "socket.ftp", Lua::Open< luaload_luasocket_ftp > },
+		{ "socket.headers", Lua::Open< luaload_luasocket_headers > },
+		{ "socket.http", Lua::Open< luaload_luasocket_http > },
+		{ "socket.mbox", Lua::Open< luaload_luasocket_mbox > },
+		{ "socket.smtp", Lua::Open< luaload_luasocket_smtp > },
+		{ "socket.tp", Lua::Open< luaload_luasocket_tp > },
+		{ "socket.url", Lua::Open< luaload_luasocket_url > },
 		{ "mime.core", luaopen_mime_core },
-		{ "mime", Lua::Open< CoronaPluginLuaLoad_mime > },
-		{ "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 > },
+		{ "mime", Lua::Open< luaload_luasocket_mime > },
+		{ "ltn12", Lua::Open< luaload_luasocket_ltn12 > },
+
 #endif
 
 #if defined(Rtt_NXS_ENV)

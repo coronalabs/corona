@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	Copyright (c) 2013 Corona Labs Inc. All rights reserved.
+
+	Summary:
+		This file is referenced by the "LuaToCppTask.targets" file.
+		It is used by a Visual Studio project to provide property field information for *.lua files.
+ -->
+<ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+	<ItemType Name="LuaToCpp" DisplayName="Lua Code" />
+	<ContentType Name="LuaToCppContent" ItemType="LuaToCpp" DisplayName="Lua Code" />
+	<FileExtension Name="*.lua" ContentType="LuaToCppContent" />
+	<Rule Name="LuaToCpp" PageTemplate="tool" DisplayName="LuaToCpp" Order="200">
+		<Rule.DataSource>
+			<DataSource Persistence="ProjectFile" ItemType="LuaToCpp"/>
+		</Rule.DataSource>
+		<Rule.Categories>
+			<Category Name="General">
+				<Category.DisplayName>
+					<sys:String>General</sys:String>
+				</Category.DisplayName>
+			</Category>
+		</Rule.Categories>
+		<StringProperty
+				Category="General"
+				Name="BaseFunctionName" DisplayName="Base Function Name" Visible="True" IncludeInCommandLine="False"
+				Description="The function name to be generated, excluding the 'luaload_' or 'CoronaPluginLuaLoad_' prefix. If this field is left empty, then the Lua file name will be used as the function name."/>
+		<StringProperty
+				Category="General"
+				Name="ModuleName" DisplayName="Module Name" Visible="True" IncludeInCommandLine="False"
+				Description="A module name to be included in the name of the generated function to aid in unique naming."/>
+	</Rule>
+</ProjectSchemaDefinitions>

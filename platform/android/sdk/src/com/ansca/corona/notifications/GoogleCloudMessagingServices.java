@@ -620,13 +620,13 @@ public final class GoogleCloudMessagingServices extends com.ansca.corona.Applica
 			}
 
 			// Send the registration request.
-			android.content.Intent intent = new android.content.Intent("com.google.android.c2dm.intent.REGISTER");
-			intent.setPackage(GOOGLE_SERVICE_FRAMEWORK_PACKAGE_NAME);
-			intent.putExtra(
-					INTENT_EXTRA_PENDING_INTENT,
-					android.app.PendingIntent.getBroadcast(context, 0, new android.content.Intent(), 0));
-			intent.putExtra(INTENT_EXTRA_PROJECT_NUMBERS, fProjectNumbers);
-			context.startService(intent);
+//			android.content.Intent intent = new android.content.Intent("com.google.android.c2dm.intent.REGISTER");
+//			intent.setPackage(GOOGLE_SERVICE_FRAMEWORK_PACKAGE_NAME);
+//			intent.putExtra(
+//					INTENT_EXTRA_PENDING_INTENT,
+//					android.app.PendingIntent.getBroadcast(context, 0, new android.content.Intent(), 0));
+//			intent.putExtra(INTENT_EXTRA_PROJECT_NUMBERS, fProjectNumbers);
+//			context.startService(intent);
 		}
 	}
 
@@ -651,12 +651,12 @@ public final class GoogleCloudMessagingServices extends com.ansca.corona.Applica
 				new com.ansca.corona.permissions.PermissionsServices(context);
 			if (permissionsServices.getPermissionStateFor("com.google.android.c2dm.permission.RECEIVE") 
 					== com.ansca.corona.permissions.PermissionState.GRANTED) {
-				android.content.Intent intent = new android.content.Intent("com.google.android.c2dm.intent.UNREGISTER");
-				intent.setPackage(GOOGLE_SERVICE_FRAMEWORK_PACKAGE_NAME);
-				intent.putExtra(
-						INTENT_EXTRA_PENDING_INTENT,
-						android.app.PendingIntent.getBroadcast(context, 0, new android.content.Intent(), 0));
-				context.startService(intent);
+//				android.content.Intent intent = new android.content.Intent("com.google.android.c2dm.intent.UNREGISTER");
+//				intent.setPackage(GOOGLE_SERVICE_FRAMEWORK_PACKAGE_NAME);
+//				intent.putExtra(
+//						INTENT_EXTRA_PENDING_INTENT,
+//						android.app.PendingIntent.getBroadcast(context, 0, new android.content.Intent(), 0));
+//				context.startService(intent);
 			}
 		}
 	}

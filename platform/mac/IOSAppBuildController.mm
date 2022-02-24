@@ -28,7 +28,7 @@
 using namespace Rtt;
 
 static NSString *kMacAppStoreXcodeURL = @"macappstore://itunes.apple.com/us/app/xcode/id497799835";
-static NSString *kDailyBuildsURL = @"https://developer.coronalabs.com/downloads/daily-builds/";
+static NSString *kDailyBuildsURL = @"https://github.com/coronalabs/corona/releases";
 static NSString *kValueNotSet = @"not set";
 //static NSString *kValueYes = @"YES";
 //static NSString *kValueNo = @"NO";
@@ -628,7 +628,7 @@ static NSString *kValueNone = @"None";
 	{
 		[self startTailDeviceSyslog:[XcodeToolHelper pathForXcodeSimulatorDeviceSyslogUtility] appBundlePath:appBundlePath deviceID:iosSimulatorUDID];
 
-		NSString *message = [NSString stringWithFormat:@"*%@* has been launched in the Xcode iOS Simulator\n\nThe Xcode iOS Simulator's syslog will appear in the Corona Console until this message is closed", self.appName];
+		NSString *message = [NSString stringWithFormat:@"*%@* has been launched in the Xcode iOS Simulator\n\nThe Xcode iOS Simulator's syslog will appear in the Console until this message is closed", self.appName];
 
 		[self showMessage:@"Xcode iOS Simulator Running" message:message helpURL:nil parentWindow:[self window]];
 
@@ -795,7 +795,7 @@ static NSString *kValueNone = @"None";
 		NSString *dailyBuildBtn = @"Daily Builds";
 		NSString *title = nil;
 		NSString *msg = nil;
-		NSString *helpURL = @"https://coronalabs.com/links/simulator/xcode-required";
+		NSString *helpURL = @"https://docs.coronalabs.com/guide/start/systemReqs/index.html#macos";
 		NSArray *buttons = @[ installXcodeBtn, dailyBuildBtn, @"Cancel Build" ];
 
 		if ( sdkRoot == nil || [sdkRoot isEqualToString:@""] )
@@ -803,7 +803,7 @@ static NSString *kValueNone = @"None";
 			// No Xcode found
 			title = @"Xcode Required";
 
-			msg = [NSString stringWithFormat:@"The Xcode iOS SDK could not be found. Please install Xcode (or use `xcode-select` to choose an existing installation).\n\nXcode is required by Corona and needs to be installed to build iOS applications.\n\nPress the *%@* button to go to the App Store and get Xcode.  When it is installed, build for iOS again.\n", installXcodeBtn];
+			msg = [NSString stringWithFormat:@"The Xcode iOS SDK could not be found. Please install Xcode (or use `xcode-select` to choose an existing installation).\n\nXcode is required by Solar2D and needs to be installed to build iOS applications.\n\nPress the *%@* button to go to the App Store and get Xcode.  When it is installed, build for iOS again.\n", installXcodeBtn];
 
 			[self logEvent:@"build-bungled" key:@"reason" value:@"ios-sdk-not-found"];
 		}
@@ -812,7 +812,7 @@ static NSString *kValueNone = @"None";
 			// xcode-select gave us a path, but a component could not be found.
 			title = @"Xcode Compatibility Problem";
 
-			msg = [NSString stringWithFormat:@"Corona can't find the following components in the\nXcode %g iOS SDK located at *%@*:\n\n%@\n\nPlease update Corona to the latest [Daily Build](%@) (it might also be necessary to re-install Xcode)",
+			msg = [NSString stringWithFormat:@"Solar2D can't find the following components in the\nXcode %g iOS SDK located at *%@*:\n\n%@\n\nPlease update Solar2D to the latest [Daily Build](%@) (it might also be necessary to re-install Xcode)",
 						 [XcodeToolHelper getXcodeVersion], sdkRoot, error_string, kDailyBuildsURL];
 
 			[self logEvent:@"build-bungled" key:@"reason" value:@"ios-sdk-incomplete"];
@@ -984,7 +984,7 @@ static NSString *kValueNone = @"None";
         NSAlert* alert = [[[NSAlert alloc] init] autorelease];
         [alert addButtonWithTitle:@"OK"];
 
-        NSString *message = [NSString stringWithFormat:@"We were unable to parse the list of supported iOS SDKs.  Check the console for more information.\n\nYou should re-install Corona."];
+        NSString *message = [NSString stringWithFormat:@"We were unable to parse the list of supported iOS SDKs.  Check the console for more information.\n\nYou should re-install Solar2D."];
 
         [alert setMessageText:@"Internal Error"];
         [alert setInformativeText:message];
@@ -1093,7 +1093,7 @@ static NSString *kValueNone = @"None";
 	{
 		[self startTailDeviceSyslog:[XcodeToolHelper pathForIOSDeviceSyslogUtility] appBundlePath:appBundlePath deviceID:@"iPhone OS"];
 
-		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the iOS device and is ready to run\n\nThe device's syslog will appear in the Corona Console until this message is closed (you'll need to *launch* the app on the device before anything appears in the syslog)", self.appName];
+		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the iOS device and is ready to run\n\nThe device's syslog will appear in the Console until this message is closed (you'll need to *launch* the app on the device before anything appears in the syslog)", self.appName];
 
 		[self showMessage:@"App Installation Complete" message:message helpURL:nil parentWindow:[self window]];
 

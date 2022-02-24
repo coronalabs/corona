@@ -1,0 +1,76 @@
+body {
+    background-color: #fff;
+}
+
+h1 {
+    color: #3b5998;
+    font-family: 'Lucida Grande';
+}
+
+h2 {
+    color: #afbdd4;
+    font-family: 'Lucida Grande';
+}
+
+.button {
+    background-color: #3b5998;
+    color: white;
+    font-size: 20pt;
+    border-radius: 5px;
+    font-family: 'Lucida Grande';
+    border: 10px;
+}
+
+.panel p {
+    color: #6d84b4;
+    font-family: 'Tahoma';
+}
+
+.img-title {
+    width:90%;
+    align-self: center;
+    max-width: 750px;
+}
+
+#error-messages {
+    color: #f00;
+}
+
+#scene {
+    width: 90%;
+    height: 90%;
+    overflow-x: auto;
+}
+table.gamegrid {
+    width: 100%;
+    height: 100%;
+    align-self: center;
+    table-layout:fixed;
+}
+
+/* table.gamegrid tr {
+    width: 600px;
+    height: 200px;
+} */
+
+table.gamegrid tr td {
+    width:100px;
+    height:100px;
+    margin: 5px;
+    padding: 3px;
+}
+
+table.gamegrid tr td.blue {
+    background-color: lightblue;
+}
+
+table.gamegrid tr td.grey {
+    background-color: lightgrey;
+}
+
+table.gamegrid tr td img.sprite {
+    width: 100px;
+    height: 100px;
+    align-self: center;
+    vertical-align: middle;
+}

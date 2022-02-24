@@ -129,7 +129,17 @@ SimpleThread* SimpleThread_CreateThread(int (*user_function)(void*), void* user_
 		free(new_thread);		
 		return NULL;
 	}
-	
+
+#if defined(Rtt_NXS_ENV)
+	// set mixer thread priority as max to avoid sound interuuption when main loop is too busy
+	const int policy = SCHED_FIFO;
+	const int max_priority = sched_get_priority_max(policy);
+	struct sched_param param;
+	memset(&param, 0, sizeof(struct sched_param));
+	param.sched_priority = max_priority;
+	pthread_setschedparam(new_thread->nativeThread, policy, &param);
+#endif
+
 	return new_thread;
 }
 

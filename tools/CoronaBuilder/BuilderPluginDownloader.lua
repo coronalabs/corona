@@ -571,7 +571,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		config:close()
 
 
-	elseif platform == 'android' or platform == 'android-kindle' then
+	elseif platform == 'android' or platform == 'android-kindle' or platform == 'android-nongoogle' then
 		local androidConfSuccess = androidDownloadPlugins(platform, build, pluginsToDownload)
 		if not androidConfSuccess then
 			return 1

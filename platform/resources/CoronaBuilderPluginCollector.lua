@@ -11,8 +11,10 @@ platformFallbacks = {
     { "appletvos", "tvos" },
     { "appletvsimulator", "tvos-sim" },
     { "android-kindle", "android" },
+    { "android-nongoogle", "android" },
     { "macos", "mac-sim" },
     { "win32", "win32-sim" },
+    { "linux", "linux-sim" },
     { "html5", "web" },
     { "*", "lua" },
 }
@@ -94,7 +96,7 @@ function exec(cmd)
             cmd = cmd .. ' &> /dev/null'
         end
     end
-    local ret = (0 == os.execute(cmd))
+    local ret = (0 == os.execute2(cmd))
     return ret
 end
 
@@ -647,6 +649,7 @@ local function CollectCoronaPlugins(params)
         package.path = path
     end
 
+    debugBuildProcess = tonumber(debugBuildProcess) or 0
     if debugBuildProcess > 0 then
         local copyLocators = {}
         for i=1,#params.pluginLocators do

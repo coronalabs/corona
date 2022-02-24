@@ -925,7 +925,7 @@ local function packageApp( options )
 			identity=options.signingIdentity,
 			platform="iphoneos"
 		}
-		local bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --sign {identity} --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
+		local bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
 
 		if not options.signingIdentity then
 			bundleOptions.identity = "-"

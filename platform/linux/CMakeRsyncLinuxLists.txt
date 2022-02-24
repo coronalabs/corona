@@ -1,0 +1,45 @@
+#
+# list of files used by rsync for Linux platform
+#
+
++ CMake*.*
+
++ bin/***
++ subrepos/***
++ librtt/***
++ plugins/***
++ modules/***
++ tools/***
+
++ platform/
++ platform/linux/***
++ platform/android/***
++ platform/resources/***
++ platform/shared/***
++ platform/lpng1256/***
+
++ external/
++ external/ALmixer/***
++ external/lua-5.1.3/***
++ external/lpeg/***
++ external/luasocket/***
++ external/LuaHashMap/***
++ external/lpng1256/***
++ external/luafilesystem/***
++ external/sqlite3/***
++ external/lsqlite3-7/***
++ external/Box2D/***
++ external/b2Separator-cpp/***
++ external/smoothpolygon/***
++ external/loop-2.3-beta/
++ external/loop-2.3-beta/lua/***
++ external/ALmixer/***
++ external/mpg123-1.13.1/***
++ external/tremor/***
++ external/apache-ant-1.8.1/
++ external/apache-ant-1.8.1/lib/***
++ external/remdebug-1.0/
++ external/remdebug-1.0/src/***
++ simulator-extensions/***
+
+- *

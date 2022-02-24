@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="Solar2DConsole" Version="11000" InternalType="GUI">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+    </Plugin>
+  </Plugins>
+  <Reconciliation>
+    <Regexes/>
+    <Excludepaths/>
+    <Ignorefiles/>
+    <Extensions>
+      <![CDATA[*.cpp;*.c;*.h;*.hpp;*.xrc;*.wxcp;*.fbp]]>
+    </Extensions>
+    <Topleveldir>/home/robert/dev/c++/CoronaConsole</Topleveldir>
+  </Reconciliation>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <VirtualDirectory Name="include">
+      <File Name="src/Rtt_LinuxIPCServerConnection.h"/>
+      <File Name="src/Rtt_LinuxIPCServer.h"/>
+      <File Name="src/Rtt_LinuxConsoleApp.h"/>
+      <File Name="src/Rtt_LinuxConsole.h"/>
+    </VirtualDirectory>
+    <File Name="src/Rtt_LinuxIPCServerConnection.cpp"/>
+    <File Name="src/Rtt_LinuxConsoleApp.cpp"/>
+    <File Name="src/Rtt_LinuxIPCServer.cpp"/>
+    <File Name="src/Rtt_LinuxConsole.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+  <Settings Type="Executable">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="" Assembler="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-O0;-g3;-std=c++11;-Wfatal-errors;-Wno-narrowing" C_Options="-O0;-g3;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="/usr/local/lib/wx/include/gtk3-unicode-3.1"/>
+        <IncludePath Value="/usr/local/include/wx-3.1"/>
+        <Preprocessor Value="wxUSE_MEDIACTRL=1"/>
+        <Preprocessor Value="wxUSE_WEBVIEW=1"/>
+        <Preprocessor Value="__WXGTK__"/>
+        <Preprocessor Value="HAVE_SSIZE_T"/>
+        <Preprocessor Value="wxUSE_XTEST"/>
+        <Preprocessor Value="wxHAS_INOTIFY"/>
+        <Preprocessor Value="wxUSE_SELECT_DISPATCHER"/>
+        <Preprocessor Value="WXWIN_COMPATIBILITY_3_0"/>
+        <Preprocessor Value="wxUSE_PRIVATE_FONTS"/>
+        <Preprocessor Value="wxUSE_ACTIVITYINDICATOR"/>
+        <Preprocessor Value="wxUSE_ADDREMOVECTRL"/>
+        <Preprocessor Value="wxUSE_UNSAFE_WXSTRING_CONV"/>
+        <Preprocessor Value="wxUSE_STD_CONTAINERS_COMPATIBLY"/>
+        <Preprocessor Value="wxUSE_GLCANVAS"/>
+      </Compiler>
+      <Linker Options="-lgdk-3 -lwx_baseu-3.1 -lwx_baseu_net-3.1 -lwx_gtk3u_adv-3.1 -lwx_gtk3u_gl-3.1 -lwx_gtk3u_media-3.1 -lwx_gtk3u_core-3.1 -lwx_gtk3u_html-3.1 -lwx_gtk3u_stc-3.1 -lwx_gtk3u_webview-3.1" Required="yes"/>
+      <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
+      <General OutputFile="CoronaSimulator/$(ProjectName)" IntermediateDirectory="./.Solar2DConsole" Command="CoronaSimulator/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="Solar2D" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-O2;-g3;-std=c++11;-Wfatal-errors;-Wno-narrowing" C_Options="-O0;-g3;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="./wx/include"/>
+        <Preprocessor Value="wxUSE_MEDIACTRL=1"/>
+        <Preprocessor Value="wxUSE_WEBVIEW=1"/>
+        <Preprocessor Value="__WXGTK__"/>
+        <Preprocessor Value="HAVE_SSIZE_T"/>
+        <Preprocessor Value="wxUSE_XTEST"/>
+        <Preprocessor Value="wxHAS_INOTIFY"/>
+        <Preprocessor Value="wxUSE_SELECT_DISPATCHER"/>
+        <Preprocessor Value="WXWIN_COMPATIBILITY_3_0"/>
+        <Preprocessor Value="wxUSE_PRIVATE_FONTS"/>
+        <Preprocessor Value="wxUSE_ACTIVITYINDICATOR"/>
+        <Preprocessor Value="wxUSE_ADDREMOVECTRL"/>
+        <Preprocessor Value="wxUSE_UNSAFE_WXSTRING_CONV"/>
+        <Preprocessor Value="wxUSE_STD_CONTAINERS_COMPATIBLY"/>
+        <Preprocessor Value="wxUSE_GLCANVAS"/>
+        <Preprocessor Value="FT2_BUILD_LIBRARY"/>
+      </Compiler>
+      <Linker Options="-export-dynamic ./wx/lib/libwx_gtk3u-3.1.a ./wx/lib/libwx_gtk3u_gl-3.1.a ./wx/lib/libwxtiff-3.1.a ./wx/lib/libwxregexu-3.1.a ./wx/lib/libwxscintilla-3.1.a -lGL -lopenal -lgdk-3 -lpangocairo-1.0 -lgthread-2.0 -pthread -lX11 -lXxf86vm -lSM -lgtk-3 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lXtst -lpangoft2-1.0 -lpango-1.0 -lfontconfig -lfreetype -lpng -lz -lexpat -ljpeg -ldl -lm -lwebkit2gtk-4.0 -ljavascriptcoregtk-4.0 -lgstreamer-1.0 -lgstvideo-1.0" Required="yes"/>
+      <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
+      <General OutputFile="Solar2DSimulator/$(ProjectName)" IntermediateDirectory="./Console" Command="../$(OutputFile)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

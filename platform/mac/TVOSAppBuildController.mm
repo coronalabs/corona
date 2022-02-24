@@ -29,7 +29,7 @@
 using namespace Rtt;
 
 static NSString *kMacAppStoreXcodeURL = @"macappstore://itunes.apple.com/us/app/xcode/id497799835";
-static NSString *kDailyBuildsURL = @"https://developer.coronalabs.com/downloads/daily-builds/";
+static NSString *kDailyBuildsURL = @"https://github.com/coronalabs/corona/releases";
 static NSString *kValueNotSet = @"not set";
 //static NSString *kValueYes = @"YES";
 //static NSString *kValueNo = @"NO";
@@ -629,7 +629,7 @@ static NSString *kValueNone = @"None";
 	{
 		[self startTailDeviceSyslog:[XcodeToolHelper pathForXcodeSimulatorDeviceSyslogUtility] appBundlePath:appBundlePath deviceID:tvosSimulatorUDID];
 
-		NSString *message = [NSString stringWithFormat:@"*%@* has been launched in the Xcode tvOS Simulator\n\nThe Xcode tvOS Simulator's syslog will appear in the Corona Console until this message is closed", self.appName];
+		NSString *message = [NSString stringWithFormat:@"*%@* has been launched in the Xcode tvOS Simulator\n\nThe Xcode tvOS Simulator's syslog will appear in the Console until this message is closed", self.appName];
 
 		[self showMessage:@"Xcode tvOS Simulator Running" message:message helpURL:nil parentWindow:[self window]];
 
@@ -791,7 +791,7 @@ static NSString *kValueNone = @"None";
 		NSString *dailyBuildBtn = @"Daily Builds";
 		NSString *title = nil;
 		NSString *msg = nil;
-		NSString *helpURL = @"https://coronalabs.com/links/simulator/xcode-required";
+		NSString *helpURL = @"https://docs.coronalabs.com/guide/start/systemReqs/index.html#macos";
 		NSArray *buttons = @[ installXcodeBtn,dailyBuildBtn,  @"Cancel Build" ];
 
 		if ( sdkRoot == nil || [sdkRoot isEqualToString:@""] )
@@ -801,7 +801,7 @@ static NSString *kValueNone = @"None";
 			// No Xcode found
 			title = @"Xcode Required";
 
-			msg = [NSString stringWithFormat:@"The Xcode tvOS SDK could not be found. Please install Xcode (or use `xcode-select` to choose an existing installation).\n\nXcode is required by Corona and needs to be installed to build tvOS applications.\n\nPress the *%@* button to go to the App Store and get Xcode.  When it is installed, build for tvOS again.\n", installXcodeBtn];
+			msg = [NSString stringWithFormat:@"The Xcode tvOS SDK could not be found. Please install Xcode (or use `xcode-select` to choose an existing installation).\n\nXcode is required by Solar2D and needs to be installed to build tvOS applications.\n\nPress the *%@* button to go to the App Store and get Xcode.  When it is installed, build for tvOS again.\n", installXcodeBtn];
 
 			// fAnalytics->Log("bad-tvos-sdk", "not-found");
 		}
@@ -812,7 +812,7 @@ static NSString *kValueNone = @"None";
 			// xcode-select gave us a path, but a component could not be found.
 			title = @"Xcode Compatibility Problem";
 
-			msg = [NSString stringWithFormat:@"Corona can't find the following components in the\nXcode %g tvOS SDK located at *%@*:\n\n%@\n\nPlease update Corona to the latest [Daily Build](%@) (it might also be necessary to re-install Xcode)",
+			msg = [NSString stringWithFormat:@"Solar2D can't find the following components in the\nXcode %g tvOS SDK located at *%@*:\n\n%@\n\nPlease update Solar2D to the latest [Daily Build](%@) (it might also be necessary to re-install Xcode)",
 						 [XcodeToolHelper getXcodeVersion], sdkRoot, error_string, kDailyBuildsURL];
 
 			// fAnalytics->Log("bad-tvos-sdk", "incomplete");
@@ -984,7 +984,7 @@ static NSString *kValueNone = @"None";
         NSAlert* alert = [[[NSAlert alloc] init] autorelease];
         [alert addButtonWithTitle:@"OK"];
 
-        NSString *message = [NSString stringWithFormat:@"We were unable to parse the list of supported tvOS SDKs.  Check the console for more information.\n\nYou should re-install Corona."];
+        NSString *message = [NSString stringWithFormat:@"We were unable to parse the list of supported tvOS SDKs.  Check the console for more information.\n\nYou should re-install Solar2D."];
 
         [alert setMessageText:@"Internal Error"];
         [alert setInformativeText:message];
@@ -1044,10 +1044,10 @@ static NSString *kValueNone = @"None";
 	{
 		NSString *errorMsg = @"*ideviceinstaller* does not appear to be installed on this computer\n\n"
 		"To enable device installation:\n\n"
-		"1. install Homebrew: [http://brew.sh](http://brew.sh) (_if not already installed_)\n"
+		"1. install Homebrew: [https://brew.sh/](https://brew.sh/) (_if not already installed_)\n"
 		"2. run the Terminal command:\n\n"
 		"\t`brew install ideviceinstaller`\n\n"
-		"[More info](http://www.libimobiledevice.org/)";
+		"[More info](https://libimobiledevice.org/)";
 
 		[self showError:@"Device Installation Utility Not Found" message:errorMsg helpURL:nil parentWindow:[self window]];
 	}
@@ -1065,7 +1065,7 @@ static NSString *kValueNone = @"None";
 
 		[self startTailDeviceSyslog:[XcodeToolHelper pathForIOSDeviceSyslogUtility] appBundlePath:appBundlePath deviceID:@"Apple TVOS"];
 
-		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the tvOS device and is ready to run\n\nThe device's syslog will appear in the Corona Console until this message is closed (you'll need to *launch* the app on the device before anything appears in the syslog)", self.appName];
+		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the tvOS device and is ready to run\n\nThe device's syslog will appear in the Console until this message is closed (you'll need to *launch* the app on the device before anything appears in the syslog)", self.appName];
 
 		[self showMessage:@"App Installation Complete" message:message helpURL:nil parentWindow:[self window]];
 

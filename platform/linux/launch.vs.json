@@ -1,0 +1,24 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "cppgdb",
+      "name": "CMakeLists.txt",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Solar2DSimulator",
+      "comment": "Learn how to configure remote debugging. For more info, see http://aka.ms/vslinuxdebug",
+      "debuggerConfiguration": "gdb",
+      "preDebugCommand": "export DISPLAY=:0"
+    },
+    {
+      "type": "cppgdb",
+      "name": "Solar2DSimulator",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Solar2DSimulator",
+      "comment": "Learn how to configure remote debugging. For more info, see http://aka.ms/vslinuxdebug",
+      "debuggerConfiguration": "gdb",
+      "preDebugCommand": "export DISPLAY=:0"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Solar2D
+GenericName=Solar2D
+Comment=Solar2D
+Exec=solar2d
+Icon=${SNAP}/meta/gui/solar2d.png
+Type=Application
+Categories=Education;
+StartupNotify=true

@@ -142,28 +142,6 @@ using namespace Rtt;
 
 - (void)alertDidEnd:(NSAlert *)alert returnCode:(int)returnCode contextInfo:(void  *)contextInfo
 {
-//	if ( NSAlertThirdButtonReturn == returnCode )
-//	{
-//		NSString *dstApp = [self appPackagePath];
-//		NSString* appuploadertool = [sdkRoot stringByAppendingPathComponent:@"/Applications/Utilities/Application Loader.app"];
-//
-//
-//		NSFileManager* filemanager = [NSFileManager defaultManager];
-//
-//		NSString* zipfile = nil;
-//
-//		if( [filemanager fileExistsAtPath:dstApp] )
-//		{
-//			zipfile = [[dstApp stringByDeletingPathExtension] stringByAppendingPathExtension:@"zip"];
-//
-//			if( ! [filemanager fileExistsAtPath:zipfile] )
-//			{
-//				zipfile = nil;
-//			}
-//		}
-//		[[NSWorkspace sharedWorkspace] openFile:zipfile withApplication:appuploadertool];
-//	}
-
 	[super alertDidEnd:alert returnCode:returnCode contextInfo:contextInfo];
 }
 
@@ -262,7 +240,7 @@ using namespace Rtt;
 	
 	int targetVersion = Rtt::TargetDevice::kLinux;
 	const char * customBuildId = packager->GetCustomBuildId();
-	LinuxAppPackagerParams * params = new LinuxAppPackagerParams(name, versionname, identity, NULL, srcDir, dstDir,	NULL, TargetDevice::kLinuxPlatform, targetVersion, TargetDevice::kLinux, customBuildId, NULL, "bundleId", true, NULL, useStandartResources );
+	LinuxAppPackagerParams * params = new LinuxAppPackagerParams(name, versionname, identity, NULL, srcDir, dstDir,	NULL, TargetDevice::kLinuxPlatform, targetVersion, TargetDevice::kLinux, customBuildId, NULL, "bundleId", true, NULL, useStandartResources, false, false );
 	
 	NSString *kBuildSettings = @"build.settings";
 	params->SetBuildSettingsPath( [[self.projectPath stringByAppendingPathComponent:kBuildSettings] UTF8String]);
@@ -297,22 +275,12 @@ using namespace Rtt;
 		[appDelegate notifyWithTitle:@"Corona Simulator"
 										 description:[NSString stringWithFormat:@"LINUX build of \"%@\" complete", self.appName]
 												iconData:nil];
-		
-		NSRunningApplication *app = [[NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.coronalabs.CoronaLiveServer"] firstObject];
-		if(!app) {
-			NSString *liveServerPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Corona Live Server.app"];
-			app = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:[NSURL fileURLWithPath:liveServerPath] options:(NSWorkspaceLaunchAndHide|NSWorkspaceLaunchWithoutActivation) configuration:@{} error:nil];
-		}
-		NSString *dstHtmlPath = [self.dstPath stringByAppendingPathComponent:self.appName];
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			if(!app.finishedLaunching) {
-				while (![[[NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.coronalabs.CoronaLiveServer"] firstObject] isFinishedLaunching]) {
-					[NSThread sleepForTimeInterval:0.01];
-				}
-			}
+												
+		NSString *message = [NSString stringWithFormat:@"Showing built LINUX app *%@* in Finder", self.appName];
 
-			[[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"linuxProjectBuilt" object:nil userInfo:@{@"root":dstHtmlPath} deliverImmediately:YES];
-		});
+		[self showMessage:@"Build Complete" message:message helpURL:nil parentWindow:[self window]];
+		
+		[[NSWorkspace sharedWorkspace] selectFile:[self appBundleFile] inFileViewerRootedAtPath:@""];
 
 		// Do nothing
 		[self logEvent:@"build-post-action" key:@"post-action" value:@"do-nothing"];

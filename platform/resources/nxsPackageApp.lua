@@ -542,6 +542,19 @@ function nxsPackageApp( args )
 	local solar2Dfile = pathJoin(args.tmpDir, '\\nxtemplate\\code')
 	local assets = pathJoin(args.tmpDir, '\\nxsapp')
 
+	-- update .npdm file
+	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe'
+	cmd = cmd .. ' --desc ' .. nxsRoot .. '\\Resources\\SpecFiles\\Application.desc'
+	cmd = cmd .. ' --meta "' ..  metafile .. '"'
+	cmd = cmd .. ' -o "' ..  solar2Dfile .. '\\main.npdm"'
+	logd('\Creating the NPDM File ... ', cmd)
+	local rc, stdout = processExecute(cmd, true);
+	log('\MakeMeta retcode ' .. rc)
+	if type(stdout) == 'string' and string.len(stdout) > 0 then
+		log('\MakeMeta output\n' .. stdout)
+	end
+
+	-- create .nsp file
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
 	cmd = cmd .. ' --meta "' ..  metafile .. '"'
@@ -550,7 +563,7 @@ function nxsPackageApp( args )
 	cmd = cmd .. ' "' .. assets .. '"'
 	cmd = 'cmd /c "'.. cmd .. '"'
 	
-	logd('\nBuilding ... ', cmd)
+	logd('\nBuilding App ... ', cmd)
 	local rc, stdout = processExecute(cmd, true);
 	log('\nAuthoringTool retcode ' .. rc)
 	if type(stdout) == 'string' and string.len(stdout) > 0 then

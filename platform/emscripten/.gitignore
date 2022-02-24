@@ -1,0 +1,80 @@
+gmake/webtemplate_build
+webtemplate.zip
+lua/*
+gmake/a.*
+
+webtemplate/html
+webtemplate/res_widget
+
+# Backup files left behind by Emacs
+*~
+
+# Lock files used by Emacs
+# Notice that the "#" char is escaped
+.\#*
+
+# Temp files used by vim
+.*.swp
+.*.swo
+
+# Hidden files used by the Finder in MacOS
+.DS_Store
+.Trashes
+.com.apple.timemachine.supported
+.fseventsd/*
+.TemporaryItems/*
+Desktop DB
+Desktop DF
+
+# Eclipse
+.metadata/*
+
+# Build files
+*/build/*
+*.pbxuser
+*.perspective*
+*.mode1
+*.mode1v3
+*.orig
+*.class
+*.apk
+*.ap_
+*.obj
+*.bak
+*.dex
+*.so
+*.ncb
+*.opensdf
+*.sdf
+*.suo
+*.idb
+*.ipch
+*.pdb
+*.ilk
+*.lu
+*._*
+contents.xcworkspacedata
+
+
+
+
+platform/test/**
+platform/test/assets/*
+bin/mac/LuaCocoa.framework/**
+bin/mac/logs/**
+bin/mac/tmp/**
+sdk/Corona**
+*/Debug/*
+*/Release/*
+*/PowerVRDebug/*
+*.aps
+*.o
+*.o.d
+*/corona-root.lnk
+*.user
+platform/android/resources/FastFileCreate
+plugins/ads-inmobi/android/AndroidManifest\.xml
+plugins/ads-inmobi/android/proguard-project\.txt
+plugins/ads-inmobi/android/project\.properties
+
+gmake/obj/
