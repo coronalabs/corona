@@ -82,6 +82,7 @@ namespace Rtt
 		SDL_GetWindowPosition(fWindow, &x, &y);
 		fConfig["windowXPos"] = x;
 		fConfig["windowYPos"] = y;
+		fConfig.Save();
 	}
 
 	bool SolarSimulator::LoadApp()
@@ -227,7 +228,7 @@ namespace Rtt
 
 			if (path.size() >= 5 && path.substr(0, 2) != ".#" && path.rfind(".lua") != string::npos)
 			{
-				Rtt_Log("OnFileSystemEvent 0x%X: %s", e.user.code, path.c_str());
+				//Rtt_Log("OnFileSystemEvent 0x%X: %s\n", e.user.code, path.c_str());
 				const string& s = fConfig["relaunchOnFileChange"].to_string();
 				if (s == "Always")
 				{
@@ -246,7 +247,7 @@ namespace Rtt
 			break;
 
 		case sdl::OnBuildAndroid:
-			fDlg = new DlgAndroidBuild("Android Build Setup", 640, 480);
+			fDlg = new DlgAndroidBuild("Android Build Setup", 650, 350);
 			break;
 
 		case sdl::OnBuildHTML5:
@@ -271,7 +272,7 @@ namespace Rtt
 			break;
 
 		case sdl::OnViewAs:
-			fDlg = new DlgViewAs("View As", 500, 500, &fSkins);
+			fDlg = new DlgViewAs("View As", 500, 450, &fSkins);
 			break;
 
 		case sdl::OnChangeView:
@@ -475,6 +476,8 @@ namespace Rtt
 		if (!IsHomeScreen(appName))
 		{
 			fConfig["lastProjectDirectory"] = fAppPath;
+			fConfig.Save();
+
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), appName.c_str(), fContext->GetPlatform());
 		}
 		else

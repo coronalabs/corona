@@ -163,6 +163,8 @@ namespace Rtt
 	void DlgAndroidBuild::Draw()
 	{
 		begin();
+		ImGui::BeginDisabled(fThread != NULL);
+
 		if (ImGui::Begin("##DlgAndroidBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
@@ -184,7 +186,7 @@ namespace Rtt
 
 			string s;
 			ImGui::Dummy(ImVec2(10, 10));
-			ImGui::PushItemWidth(350);		// input field width
+			ImGui::PushItemWidth(400);		// input field width
 
 			s = "   Application Name:";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
@@ -309,7 +311,6 @@ namespace Rtt
 						if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 						{
 							OpenURL(fSaveToFolderInput);
-							PushEvent(sdl::onCloseDialog);
 						}
 						ImGui::SameLine();
 					}
@@ -326,6 +327,7 @@ namespace Rtt
 			}
 			ImGui::End();
 		}
+		ImGui::EndDisabled();
 
 		// builder ended ?
 		if (fThread)
@@ -570,6 +572,8 @@ namespace Rtt
 	void DlgHTML5Build::Draw()
 	{
 		begin();
+		ImGui::BeginDisabled(fThread != NULL);
+
 		if (ImGui::Begin("##DlgHTML5Build", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
@@ -653,7 +657,6 @@ namespace Rtt
 					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 					{
 						OpenURL(fSaveToFolderInput);
-						PushEvent(sdl::onCloseDialog);
 					}
 
 					s = "Done";
@@ -670,6 +673,7 @@ namespace Rtt
 			}
 			ImGui::End();
 		}
+		ImGui::EndDisabled();
 
 		// builder ended ?
 		if (fThread)
@@ -805,6 +809,8 @@ namespace Rtt
 	void DlgLinuxBuild::Draw()
 	{
 		begin();
+		ImGui::BeginDisabled(fThread != NULL);
+
 		if (ImGui::Begin("##DlgLinuxBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
@@ -888,7 +894,6 @@ namespace Rtt
 					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 					{
 						OpenURL(fSaveToFolderInput);
-						PushEvent(sdl::onCloseDialog);
 					}
 
 					s = "Done";
@@ -905,6 +910,7 @@ namespace Rtt
 			}
 			ImGui::End();
 		}
+		ImGui::EndDisabled();
 
 		// builder ended ?
 		if (fThread)

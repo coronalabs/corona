@@ -12,6 +12,7 @@
 #include "Rtt_LinuxContainer.h"
 
 #include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imfilebrowser.h"
@@ -37,6 +38,7 @@ namespace Rtt
 		void ProcessEvent(const SDL_Event& evt);
 		SDL_Window* GetWindow() const { return fWindow; }
 		void GetWindowSize(int* w, int* h);
+		static void MoveToCenter();
 
 	protected:
 

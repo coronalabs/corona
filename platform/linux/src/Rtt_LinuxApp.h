@@ -115,7 +115,7 @@ namespace Rtt
 		void RenderGUI();
 		inline void Pause() { fContext->Pause(); }
 		inline void Resume() { fContext->Resume(); }
-		void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
+		inline void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
 		void Log(const char* buf, int len);
 
 		const std::string& GetTitle() { return fContext->GetTitle(); };

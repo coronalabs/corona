@@ -706,6 +706,7 @@ namespace Rtt
 
 		// default values
 		fConfig["showRuntimeErrors"] = true;
+		fConfig["showWelcome"] = true;
 		fConfig["openLastProject"] = false;
 		fConfig["relaunchOnFileChange"] = "Always";
 		fConfig["windowXPos"] = 10;
@@ -752,14 +753,13 @@ namespace Rtt
 
 	as_value& Config::operator[](const std::string& name)
 	{
-		static as_value undefined;
-		undefined.set_undefined();
-
 		auto it = fConfig.find(name);
 		if (it == fConfig.end())
-			return undefined;
-		else
-			return it->second;
+		{
+			fConfig[name] = as_value();
+			it = fConfig.find(name);
+		}
+		return it->second;
 	}
 
 	const as_value& Config::operator[](const std::string& name) const

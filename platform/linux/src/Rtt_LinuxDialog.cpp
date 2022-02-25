@@ -77,15 +77,43 @@ namespace Rtt
 
 	void DrawActivity()
 	{
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+		Window::MoveToCenter();
 
-		if (ImGui::Begin("##DrawActivity", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
+		ImGui::Begin("##DrawActivity", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+		const char* label = "##spinner";
+		const float indicator_radius = 10;
+		const ImVec4 main_color(1, 0.5f, 0.5f, 0.5f);
+		const ImVec4 backdrop_color(0.5f, 0.5f, 0.5f, 0.0f);
+		const int circle_count = 8;
+		const float speed = 8;
+
+		ImGuiContext& g = *GImGui;
+		const ImGuiID id = window->GetID(label);
+
+		const ImVec2 pos = window->DC.CursorPos;
+		const float circle_radius = indicator_radius / 10.0f;
+		const ImRect bb(pos, ImVec2(pos.x + indicator_radius * 2.0f, pos.y + indicator_radius * 2.0f));
+		ImGui::ItemSize(bb, 0);
+		if (ImGui::ItemAdd(bb, id))
 		{
-			ImGui::Text("%c", "|/-\\"[(int)(ImGui::GetTime() / 0.05f) & 3]);
-			ImGui::End();
+			const float t = g.Time;
+			const auto degree_offset = 2.0f * IM_PI / circle_count;
+			for (int i = 0; i < circle_count; ++i)
+			{
+				const auto x = indicator_radius * std::sin(degree_offset * i);
+				const auto y = indicator_radius * std::cos(degree_offset * i);
+				const auto growth = std::max(0.0f, std::sin(t * speed - i * degree_offset));
+				ImVec4 color;
+				color.x = main_color.x * growth + backdrop_color.x * (1.0f - growth);
+				color.y = main_color.y * growth + backdrop_color.y * (1.0f - growth);
+				color.z = main_color.z * growth + backdrop_color.z * (1.0f - growth);
+				color.w = 1.0f;
+				window->DrawList->AddCircleFilled(ImVec2(pos.x + indicator_radius + x, pos.y + indicator_radius - y), circle_radius + growth * circle_radius, ImGui::GetColorU32(color));
+			}
 		}
+		ImGui::End();
 	}
 
 	//
@@ -126,6 +154,13 @@ namespace Rtt
 		SDL_GetWindowSize(fWindow, w, h);
 	}
 
+	void Window::MoveToCenter()
+	{
+		// center this window when appearing
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	}
+
 	void Window::begin()
 	{
 		// save state
@@ -140,9 +175,7 @@ namespace Rtt
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+		MoveToCenter();
 
 		// set background color
 		const ImGuiStyle& style = ImGui::GetStyle();
@@ -1117,20 +1150,10 @@ namespace Rtt
 				ImGui::EndTabBar();
 			}
 
-			// ok + cancel
-			string s = "Select";
-			ImGui::Dummy(ImVec2(100, 30));
+			ImGui::Dummy(ImVec2(10, 10));
 			int ok_width = 100;
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-			{
-				PushEvent(sdl::onCloseDialog);
-			}
-			ImGui::SetItemDefaultFocus();
-
-			s = "Close";
-			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			if (ImGui::Button("Close", ImVec2(ok_width, 0)))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
