@@ -92,7 +92,8 @@ namespace Rtt
 #endif
 
 		const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();
-		fContext = new SolarAppContext(fWindow, fConfig["ShowWelcome"].to_bool() && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
+		bool openlastProject = fConfig["openLastProject"].to_bool();
+		fContext = new SolarAppContext(fWindow, openlastProject && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
 		fMenu = new DlgMenu(fContext->GetAppName());
 
 		SDL_SetWindowPosition(fWindow, fConfig["windowXPos"].to_int(), fConfig["windowYPos"].to_int());

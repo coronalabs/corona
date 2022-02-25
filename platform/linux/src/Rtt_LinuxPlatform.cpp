@@ -676,12 +676,12 @@ namespace Rtt
 
 	PlatformDisplayObject* LinuxPlatform::CreateNativeTextBox(const Rect& bounds) const
 	{
-		return 0; // Rtt_NEW(&GetAllocator(), LinuxTextBoxObject(bounds, false));
+		return new LinuxTextBoxObject(bounds, false);
 	}
 
 	PlatformDisplayObject* LinuxPlatform::CreateNativeTextField(const Rect& bounds) const
 	{
-		return 0; // Rtt_NEW(&GetAllocator(), LinuxTextBoxObject(bounds, true));
+		return new LinuxTextBoxObject(bounds, true);
 	}
 
 	void LinuxPlatform::SetKeyboardFocus(PlatformDisplayObject* textObject) const

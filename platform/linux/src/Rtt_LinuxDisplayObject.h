@@ -35,12 +35,12 @@ namespace Rtt
 	class LinuxDisplayObject : public PlatformDisplayObject
 	{
 	public:
-		LinuxDisplayObject(const Rect &bounds, const char *elementType);
+		LinuxDisplayObject(const Rect &bounds);
 		virtual ~LinuxDisplayObject();
 
 		void SetBackgroundVisible(bool isVisible);
 		virtual bool CanCull() const;
-		virtual void Draw(Renderer& renderer) const override {}
+		virtual void Draw(Renderer& renderer) const override;
 		virtual void GetSelfBounds(Rect &rect) const;
 		virtual int ValueForKey(lua_State *L, const char key[]) const;
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex);

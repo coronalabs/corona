@@ -20,13 +20,15 @@
 #include "Rtt_Freetype.h"
 #include <string.h>
 
-#if 0
+using namespace std;
+
 namespace Rtt
 {
 	LinuxTextBoxObject::LinuxTextBoxObject(const Rect& bounds, bool isSingleLine)
-		: Super(bounds, isSingleLine ? "input" : "textarea")
+		: Super(bounds)
 		, fIsSingleLine(isSingleLine)
 	{
+	//	app->AddDisplayObject(this);
 	}
 
 	LinuxTextBoxObject::~LinuxTextBoxObject()
@@ -37,8 +39,8 @@ namespace Rtt
 	{
 		if (Super::Initialize())
 		{
-			fWindow = new myTextCtrl(this, fIsSingleLine);
-			fWindow->Hide();
+			//fWindow = new myTextCtrl(this, fIsSingleLine);
+			//fWindow->Hide();
 			return true;
 		}
 		return false;
@@ -76,23 +78,17 @@ namespace Rtt
 	{
 		Rtt_ASSERT(key);
 
-		wxTextCtrl* fControl = getTextCtrl();
-		if (fControl == NULL)
-		{
-			return 0;
-		}
-
 		int result = 1;
 		if (strcmp("text", key) == 0)
 		{
-			wxString val = fControl->GetValue();
+			string val; // = fControl->GetValue();
 			lua_pushstring(L, val.c_str());
 		}
 		else if (strcmp("size", key) == 0)
 		{
 			// font size
-			wxFont font = fControl->GetFont();
-			int val = font.GetPointSize();
+	//		wxFont font = fControl->GetFont();
+			int val = 0; // font.GetPointSize();
 			lua_pushinteger(L, val);
 		}
 		else if (strcmp("font", key) == 0)
@@ -170,12 +166,6 @@ namespace Rtt
 	{
 		Rtt_ASSERT(key);
 
-		wxTextCtrl* fControl = getTextCtrl();
-		if (fControl == NULL)
-		{
-			return false;
-		}
-
 		bool result = true;
 		if (strcmp("text", key) == 0)
 		{
@@ -183,7 +173,7 @@ namespace Rtt
 
 			if (Rtt_VERIFY(s))
 			{
-				fControl->ChangeValue(s);
+//				fControl->ChangeValue(s);
 			}
 		}
 		else if (strcmp("size", key) == 0)
@@ -195,9 +185,9 @@ namespace Rtt
 				// sanity check
 				if (size > 0)
 				{
-					wxFont font = fControl->GetFont();
-					font.SetPixelSize(wxSize(0, size)); // hack 0.8
-					fControl->SetFont(font);
+	//				wxFont font = fControl->GetFont();
+		//			font.SetPixelSize(wxSize(0, size)); // hack 0.8
+			//		fControl->SetFont(font);
 				}
 				else
 				{
@@ -219,11 +209,11 @@ namespace Rtt
 
 				if (size > 0 && face)
 				{
-					bool rc = wxFont::AddPrivateFont(name);
-					wxFont wxf = fControl->GetFont();
-					wxf.SetPixelSize(wxSize(0, size)); // hack 0.8
-					wxf.SetFaceName(face);
-					fControl->SetFont(wxf);
+//					bool rc = wxFont::AddPrivateFont(name);
+//					wxFont wxf = fControl->GetFont();
+//					wxf.SetPixelSize(wxSize(0, size)); // hack 0.8
+//					wxf.SetFaceName(face);
+	//				fControl->SetFont(wxf);
 				}
 			}
 		}
@@ -330,7 +320,7 @@ namespace Rtt
 
 			if (strcmp(phase, "editing") == 0)
 			{
-				wxString strval = getTextCtrl()->GetValue();
+				string strval; // = getTextCtrl()->GetValue();
 
 				lua_pushstring(L, strval.c_str());
 				lua_setfield(L, luaTableStackIndex, "newCharacters");
@@ -345,7 +335,7 @@ namespace Rtt
 				lua_setfield(L, luaTableStackIndex, "oldText");
 				nPushed++;
 
-				int pos = getTextCtrl()->GetInsertionPoint();
+				int pos = 0; // getTextCtrl()->GetInsertionPoint();
 				lua_pushnumber(L, pos);
 				lua_setfield(L, luaTableStackIndex, "startPosition");
 				nPushed++;
@@ -363,7 +353,7 @@ namespace Rtt
 	//
 	// myTextCtrl
 	//
-
+	/*
 	LinuxTextBoxObject::myTextCtrl::myTextCtrl(LinuxTextBoxObject* parent, bool singleLine)
 		: wxTextCtrl(solarApp, -1, "", wxDefaultPosition, wxDefaultSize, singleLine ? wxTE_MULTILINE : wxTE_MULTILINE)
 		, fLinuxTextBoxObject(parent)
@@ -396,7 +386,6 @@ namespace Rtt
 		{
 			fLinuxTextBoxObject->dispatch("ended");
 		}
-	}
+	}*/
 
 }; // namespace Rtt
-#endif

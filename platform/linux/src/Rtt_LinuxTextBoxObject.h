@@ -13,7 +13,6 @@
 #include "Rtt_LinuxDisplayObject.h"
 #include "Display/Rtt_TextObject.h"
 
-#if 0
 namespace Rtt
 {
 	class LinuxTextBoxObject : public LinuxDisplayObject
@@ -21,16 +20,6 @@ namespace Rtt
 	public:
 		typedef LinuxTextBoxObject Self;
 		typedef LinuxDisplayObject Super;
-
-		struct myTextCtrl : public wxTextCtrl
-		{
-			myTextCtrl(LinuxTextBoxObject *parent, bool singleLine);
-			virtual ~myTextCtrl();
-			void onTextEvent(wxCommandEvent &e);
-
-		private:
-			LinuxTextBoxObject* fLinuxTextBoxObject;
-		};
 
 		LinuxTextBoxObject(const Rect &bounds, bool isSingleLine);
 		virtual ~LinuxTextBoxObject();
@@ -49,13 +38,7 @@ namespace Rtt
 
 	private:
 
-		myTextCtrl* getTextCtrl() const { return dynamic_cast<myTextCtrl*>(fWindow); }
-
-		/// Set TRUE if this is a single line text field. Set FALSE for a multiline text box.
-		/// This value is not expected to change after initialization.
 		bool fIsSingleLine;
-
-		wxString fOldValue;
+		std::string fOldValue;
 	};
 }; // namespace Rtt
-#endif
