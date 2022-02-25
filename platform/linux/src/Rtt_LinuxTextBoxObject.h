@@ -12,6 +12,7 @@
 #include "Corona/CoronaLua.h"
 #include "Rtt_LinuxDisplayObject.h"
 #include "Display/Rtt_TextObject.h"
+#include "imgui/imgui.h"
 
 namespace Rtt
 {
@@ -24,14 +25,15 @@ namespace Rtt
 		LinuxTextBoxObject(const Rect &bounds, bool isSingleLine);
 		virtual ~LinuxTextBoxObject();
 
-		virtual bool Initialize();
 		virtual const LuaProxyVTable& ProxyVTable() const;
 		virtual int ValueForKey(lua_State *L, const char key[]) const;
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex);
 		static int addEventListener(lua_State *L);
-		void dispatch(const char* phase);
+		void dispatch(const char* phase, int pos, ImWchar ch);
+		void Draw() override;		// for ImGui renderer
 
 	protected:
+
 		static int SetTextColor(lua_State *L);
 		static int SetReturnKey(lua_State *L);
 		static int SetSelection(lua_State *L);
@@ -39,6 +41,7 @@ namespace Rtt
 	private:
 
 		bool fIsSingleLine;
-		std::string fOldValue;
+		char fValue[1024];
+		char fOldValue[1024];
 	};
 }; // namespace Rtt

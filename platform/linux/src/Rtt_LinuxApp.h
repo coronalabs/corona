@@ -29,6 +29,7 @@
 #include "Rtt_LinuxDialog.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxConsoleApp.h"
+#include "Rtt_LinuxDisplayObject.h"
 #include <sys/inotify.h>
 
 enum sdl
@@ -126,6 +127,9 @@ namespace Rtt
 
 		Config& GetConfig() { return fConfig; }
 
+		void AddDisplayObject(LinuxDisplayObject* obj);
+		void RemoveDisplayObject(LinuxDisplayObject* obj);
+
 	protected:
 
 		virtual void SolarEvent(const SDL_Event& e) {}
@@ -145,6 +149,7 @@ namespace Rtt
 		smart_ptr<DlgMenu> fMenu;
 		smart_ptr<Window> fDlg;
 		bool fActivityIndicator;
+		std::vector<LinuxDisplayObject*> fNativeObjects;
 
 		// console
 		std::string fLogData;

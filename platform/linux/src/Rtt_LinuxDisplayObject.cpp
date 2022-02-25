@@ -21,8 +21,7 @@ namespace Rtt
 {
 	LinuxDisplayObject::LinuxDisplayObject(const Rect& bounds)
 		: PlatformDisplayObject()
-		, fSelfBounds(bounds)
-		//		, fWindow(NULL)
+		, fBounds(bounds)
 		, fLuaReference(NULL)
 	{
 		// Note: Setting the reference point to center is not done in any of the other implementations because
@@ -52,7 +51,7 @@ namespace Rtt
 
 		// The self bounds needs to be centered around DisplayObject's local origin
 		// even though UIView's bounds will not be.
-		fSelfBounds.MoveCenterToOrigin();
+		fBounds.MoveCenterToOrigin();
 	}
 
 	LinuxDisplayObject::~LinuxDisplayObject()
@@ -62,36 +61,6 @@ namespace Rtt
 			CoronaLuaDeleteRef(fHandle->Dereference(), fLuaReference);
 			fLuaReference = NULL;
 		}
-	}
-
-	void LinuxDisplayObject::Draw(Renderer& renderer) const
-	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
-		ImGui::NewFrame();
-
-		// center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-
-		if (ImGui::Begin("##LinuxDisplayObject", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
-		{
-			const ImVec2& window_size = ImGui::GetWindowSize();
-
-			ImGui::SetCursorPosX(20);
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			static char zz[100] = { 0 };
-			strcpy(zz, "sssssssssssssssssssss");
-			ImGui::PushItemWidth(350);		// input field width
-			{
-				ImGui::InputText("##zzz", zz, sizeof(zz));
-			}
-			ImGui::PopItemWidth();
-			ImGui::End();
-		}
-		ImGui::EndFrame();
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	bool LinuxDisplayObject::CanCull() const
@@ -104,7 +73,7 @@ namespace Rtt
 
 	void LinuxDisplayObject::GetSelfBounds(Rect& rect) const
 	{
-		rect = fSelfBounds;
+		rect = fBounds;
 	}
 
 	void LinuxDisplayObject::SetBackgroundVisible(bool isVisible)
@@ -137,10 +106,6 @@ namespace Rtt
 
 	void LinuxDisplayObject::showControls(bool val)
 	{
-		//		if (fWindow)
-		//		{
-		//			fWindow->Show(val);
-		//		}
 	}
 
 	bool LinuxDisplayObject::SetValueForKey(lua_State* L, const char key[], int valueIndex)
@@ -176,11 +141,7 @@ namespace Rtt
 		Super::Prepare(display);
 		if (ShouldPrepare())
 		{
-			Rect outBounds;
-			GetScreenBounds(outBounds);
-			//			fWindow->SetPosition((wxPoint(outBounds.xMin, outBounds.yMin)));
-			//			fWindow->SetSize(outBounds.Width(), outBounds.Height());
-			//			fWindow->Show();
+			GetScreenBounds(fBounds);
 		}
 	}
 

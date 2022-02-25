@@ -51,7 +51,7 @@ extern "C"
 namespace Rtt
 {
 
-	SolarApp::SolarApp(const std::string& resourceDir)
+	SolarApp::SolarApp(const string& resourceDir)
 		: fProjectPath(resourceDir)
 		, fWindow(NULL)
 		, fWidth(0)
@@ -460,7 +460,7 @@ namespace Rtt
 		return true;
 	}
 
-	void SolarApp::SetTitle(const std::string& name)
+	void SolarApp::SetTitle(const string& name)
 	{
 		SDL_SetWindowTitle(fWindow, IsHomeScreen(name) ? "Solar2D Simulator" : name.c_str());
 		SDL_ShowWindow(fWindow);
@@ -492,7 +492,7 @@ namespace Rtt
 
 			// Don't hog the CPU.
 			int sleep_time = Max(frameDuration - advance_time, 1.0f);		// sleep for at least 1ms
-			std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
+			this_thread::sleep_for(chrono::milliseconds(sleep_time));
 		}
 	}
 
@@ -541,6 +541,13 @@ namespace Rtt
 		fMenu->Draw();
 		ImGui::EndDisabled();
 
+
+		for (int i = 0; i < fNativeObjects.size(); i++)
+		{
+			fNativeObjects[i]->Draw();
+		}
+
+		// Activity Indicator
 		if (fActivityIndicator)
 		{
 			DrawActivity();
@@ -567,6 +574,23 @@ namespace Rtt
 		fConfig.Save();
 	}
 
+	void SolarApp::AddDisplayObject(LinuxDisplayObject* obj)
+	{
+		fNativeObjects.push_back(obj);
+
+		// sanity check
+		Rtt_ASSERT(fNativeObjects < 1000);
+	}
+
+	void SolarApp::RemoveDisplayObject(LinuxDisplayObject* obj)
+	{
+		const auto& it = find(fNativeObjects.begin(), fNativeObjects.end(), obj);
+		if (it != fNativeObjects.end())
+		{
+			fNativeObjects.erase(it);
+		}
+	}
+
 	//
 	// FileWatcher
 	//
@@ -577,7 +601,7 @@ namespace Rtt
 	{
 	}
 
-	bool FileWatcher::Start(const std::string& folder)
+	bool FileWatcher::Start(const string& folder)
 	{
 		if (m_inotify_fd >= 0)
 		{
@@ -675,7 +699,7 @@ namespace Rtt
 				}
 			}
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			this_thread::sleep_for(chrono::milliseconds(100));
 		}
 	}
 
@@ -751,7 +775,7 @@ namespace Rtt
 		}
 	}
 
-	as_value& Config::operator[](const std::string& name)
+	as_value& Config::operator[](const string& name)
 	{
 		auto it = fConfig.find(name);
 		if (it == fConfig.end())
@@ -762,7 +786,7 @@ namespace Rtt
 		return it->second;
 	}
 
-	const as_value& Config::operator[](const std::string& name) const
+	const as_value& Config::operator[](const string& name) const
 	{
 		static as_value undefined;
 		undefined.set_undefined();
