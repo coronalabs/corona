@@ -27,6 +27,11 @@ namespace Rtt
 	LinuxTextBoxObject::LinuxTextBoxObject(const Rect& bounds, bool isSingleLine)
 		: Super(bounds)
 		, fIsSingleLine(isSingleLine)
+		, fIsEditable(true)
+		, fIsSecure(false)
+		, fHasFocus(false)
+		, fInputType(InputType::undefined)
+		, fFontSize(0)
 	{
 		app->AddDisplayObject(this);
 		*fValue = 0;
@@ -79,9 +84,7 @@ namespace Rtt
 		else if (strcmp("size", key) == 0)
 		{
 			// font size
-	//		wxFont font = fControl->GetFont();
-			int val = 0; // font.GetPointSize();
-			lua_pushinteger(L, val);
+			lua_pushinteger(L, (int)fFontSize);
 		}
 		else if (strcmp("font", key) == 0)
 		{
@@ -109,31 +112,35 @@ namespace Rtt
 		}
 		else if (strcmp("isSecure", key) == 0)
 		{
-			char buf[64] = { 0 };
-			Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implemented\n", key);
-			lua_pushboolean(L, strcmp(buf, "password") == 0);
+			lua_pushboolean(L, fIsSecure);
 		}
 		else if (strcmp("inputType", key) == 0)
 		{
-			if (fIsSingleLine)
+			switch (fInputType)
 			{
-				char buf[64] = { 0 };
-				Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implemented\n", key);
-				lua_pushstring(L, buf);
-			}
-			else
-			{
-				result = 0;
+			case InputType::number:
+				lua_pushstring(L, "number");
+				break;
+			case InputType::decimal:
+				lua_pushstring(L, "decimal");
+				break;
+			case InputType::phone:
+				lua_pushstring(L, "phone");
+				break;
+			case InputType::url:
+				lua_pushstring(L, "url");
+				break;
+			case InputType::noemoji:
+				lua_pushstring(L, "no-emoji");
+				break;
+			default:
+				lua_pushstring(L, "default");
+				break;
 			}
 		}
 		else if (strcmp("isEditable", key) == 0)
 		{
-			if (!fIsSingleLine)
-			{
-				bool val = 0; //jsTextFieldGetEditable(fElementID);
-				Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implemented\n", key);
-				lua_pushboolean(L, val);
-			}
+			lua_pushboolean(L, fIsEditable);
 		}
 		else if (strcmp("margin", key) == 0)
 		{
@@ -161,30 +168,13 @@ namespace Rtt
 		bool result = true;
 		if (strcmp("text", key) == 0)
 		{
-			const char* s = lua_tostring(L, valueIndex);
-
-			if (Rtt_VERIFY(s))
-			{
-				//				fControl->ChangeValue(s);
-			}
+			strncpy(fValue, lua_tostring(L, valueIndex), sizeof(fValue));
 		}
 		else if (strcmp("size", key) == 0)
 		{
 			if (Rtt_VERIFY(lua_isnumber(L, valueIndex)))
 			{
-				float size = (float)lua_tonumber(L, valueIndex);
-
-				// sanity check
-				if (size > 0)
-				{
-					//				wxFont font = fControl->GetFont();
-						//			font.SetPixelSize(wxSize(0, size)); // hack 0.8
-							//		fControl->SetFont(font);
-				}
-				else
-				{
-					// Rtt_LogException("LinuxTextBoxObject: set size=0\n", key);
-				}
+				fFontSize = (float)lua_tonumber(L, valueIndex);
 			}
 		}
 		else if (strcmp("font", key) == 0)
@@ -212,41 +202,41 @@ namespace Rtt
 		else if (strcmp("placeholder", key) == 0)
 		{
 			const char* s = lua_tostring(L, valueIndex);
-			//	jsTextFieldSetPlaceholder(fElementID, s ? s : "");
 			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
 		}
 		else if (strcmp("isSecure", key) == 0)
 		{
-			bool secure = lua_toboolean(L, valueIndex) ? true : false;
-			//	jsTextFieldSetSecure(fElementID, secure);
-			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
+			fIsSecure = lua_toboolean(L, valueIndex) ? true : false;
 		}
 		else if (strcmp("align", key) == 0)
 		{
 			const char* align = lua_tostring(L, valueIndex);
-			//	jsTextFieldSetAlign(fElementID, align);
 			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
 		}
 		else if (strcmp("inputType", key) == 0)
 		{
 			const char* inputType = lua_tostring(L, valueIndex);
-			if (inputType)
-			{
-				//	jsTextFieldSetInputType(fElementID, inputType);
-				Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
-			}
+			if (strcasecmp(inputType, "number") == 0)
+				fInputType = InputType::number;
+			else if (strcasecmp(inputType, "decimal") == 0)
+				fInputType = InputType::decimal;
+			else if (strcasecmp(inputType, "phone") == 0)
+				fInputType = InputType::phone;
+			else if (strcasecmp(inputType, "url") == 0)
+				fInputType = InputType::url;
+			else if (strcasecmp(inputType, "no-emoji") == 0)
+				fInputType = InputType::noemoji;
+			else
+				fInputType = InputType::undefined;
 		}
 		else if (strcmp("isEditable", key) == 0)
 		{
 			bool isEditable = lua_toboolean(L, valueIndex) ? true : false;
-			//	jsTextFieldSetEditable(fElementID, isEditable);
-			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
 		}
 		else
 		{
 			result = Super::SetValueForKey(L, key, valueIndex);
 		}
-
 		return result;
 	}
 
@@ -367,16 +357,46 @@ namespace Rtt
 
 		if (ImGui::Begin(windowLabel, NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground))
 		{
+			// set fontsize
+			float fontSize = ImGui::GetTextLineHeight();
+			if (fFontSize != fontSize)
+			{
+				if (fFontSize > 0)
+					ImGui::SetWindowFontScale(fFontSize / fontSize);
+				fFontSize = ImGui::GetTextLineHeight();		// reset
+			}
+
 			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			if (fHasFocus && !ImGui::IsWindowFocused())
+			{
+				dispatch("ended", 0, 0);
+			}
+			if (!fHasFocus && ImGui::IsWindowFocused())
+			{
+				dispatch("began", 0, 0);
+			}
+			fHasFocus = ImGui::IsWindowFocused();
 
 			ImGui::SetCursorPosX(0);
 			ImGui::SetCursorPosY(0);
 			ImGui::PushItemWidth(fBounds.Width());		// input field width
 			{
+				ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackCharFilter;
+				if (!fIsEditable)
+					flags |= ImGuiInputTextFlags_ReadOnly;
+
+				// input type
+				if (fInputType == InputType::number || fInputType == InputType::decimal)
+					flags |= ImGuiInputTextFlags_CharsDecimal;
+
+				if (fIsSecure)
+					flags |= ImGuiInputTextFlags_Password;
+
 				if (fIsSingleLine)
-					ImGui::InputText(fldLabel, fValue, sizeof(fValue), ImGuiInputTextFlags_CallbackCharFilter, ImGuiInputTextCallback, this);
+					ImGui::InputText(fldLabel, fValue, sizeof(fValue), flags, ImGuiInputTextCallback, this);
 				else
-					ImGui::InputTextMultiline(fldLabel, fValue, sizeof(fValue), ImVec2(w, h), ImGuiInputTextFlags_CallbackCharFilter, ImGuiInputTextCallback, this);
+					ImGui::InputTextMultiline(fldLabel, fValue, sizeof(fValue), ImVec2(w, h), flags, ImGuiInputTextCallback, this);
 
 			}
 			ImGui::PopItemWidth();

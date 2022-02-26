@@ -40,8 +40,24 @@ namespace Rtt
 
 	private:
 
+		enum class InputType
+		{
+			undefined,
+			number,
+			decimal,
+			phone,
+			url,
+			email,
+			noemoji
+		};
+
 		bool fIsSingleLine;
+		bool fIsEditable;
+		bool fIsSecure;
+		bool fHasFocus;
+		InputType fInputType;
 		char fValue[1024];
 		char fOldValue[1024];
+		float fFontSize;
 	};
 }; // namespace Rtt
