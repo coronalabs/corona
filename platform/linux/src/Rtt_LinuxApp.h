@@ -134,7 +134,7 @@ namespace Rtt
 
 		virtual void SolarEvent(const SDL_Event& e) {}
 
-		SolarAppContext* fContext;
+		smart_ptr<SolarAppContext> fContext;
 		SDL_Window* fWindow;
 		SDL_GLContext fGLcontext;
 

@@ -132,8 +132,7 @@ namespace Rtt
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 
-		// Setup Dear ImGui style
-		ImGui::StyleColorsLight(); // StyleColorsClassic();
+		SetStyle();
 
 		// Setup Platform/Renderer backends
 		ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
@@ -149,6 +148,18 @@ namespace Rtt
 		SDL_DestroyWindow(fWindow);
 	}
 
+	// Setup Dear ImGui style
+	void Window::SetStyle()
+	{
+		Config& cfg = app->GetConfig();
+		if (cfg["ColorScheme"].to_string() == "Light")
+			PushEvent(sdl::OnStyleColorsLight);
+		else if (cfg["ColorScheme"].to_string() == "Dark")
+			PushEvent(sdl::OnStyleColorsDark);
+		else
+			PushEvent(sdl::OnStyleColorsClassic);
+	}
+
 	void Window::GetWindowSize(int* w, int* h)
 	{
 		SDL_GetWindowSize(fWindow, w, h);
@@ -159,6 +170,13 @@ namespace Rtt
 		// center this window when appearing
 		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	}
+
+	void Window::FocusHere()
+	{
+		// Auto-focus on window apparition
+		ImGui::SetItemDefaultFocus();
+		//ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 	}
 
 	void Window::begin()
@@ -300,10 +318,13 @@ namespace Rtt
 
 			s = "OK";
 			ImGui::Dummy(ImVec2(20, 20));
-			ImGui::SetItemDefaultFocus();
 			int ok_width = 100;
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			bool isOkPressed = ImGui::Button(s.c_str(), ImVec2(ok_width, 0));
+			FocusHere();
+
+			//  (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
+			if (isOkPressed || ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsKeyPressed(ImGuiKey_Enter))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
@@ -968,6 +989,10 @@ namespace Rtt
 		fStyleIndex = cfg["ColorScheme"].to_string() == "Light" ? 0 : (cfg["ColorScheme"].to_string() == "Dark" ? 2 : 1);
 	}
 
+	DlgPreferences::~DlgPreferences()
+	{
+	}
+
 	void DlgPreferences::Draw()
 	{
 		begin();
@@ -1003,11 +1028,11 @@ namespace Rtt
 			}
 
 			// ok + cancel
-			s = "OK";
 			ImGui::Dummy(ImVec2(100, 30));
 			int ok_width = 100;
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			bool IsOkPressed = ImGui::Button("OK", ImVec2(ok_width, 0));
+			if (IsOkPressed || ImGui::IsKeyPressed(ImGuiKey_Enter))
 			{
 				Config& cfg = app->GetConfig();
 				cfg["relaunchOnFileChange"] = fRelaunchIndex == 0 ? "Always" : (fRelaunchIndex == 2 ? "Ask" : "Never");
@@ -1016,17 +1041,19 @@ namespace Rtt
 				cfg["openLastProject"] = fOpenlastProject;
 				cfg["ColorScheme"] = fStyleIndex == 0 ? "Light" : (fStyleIndex == 2 ? "Dark" : "Standard");
 				cfg.Save();
-
 				PushEvent(sdl::onCloseDialog);
 			}
-			ImGui::SetItemDefaultFocus();
 
-			s = "Cancel";
 			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			bool IsCancelPressed = ImGui::Button("Cancel", ImVec2(ok_width, 0));
+			if (IsCancelPressed || ImGui::IsKeyPressed(ImGuiKey_Escape))
 			{
+				// reset old values
+				SetStyle();
 				PushEvent(sdl::onCloseDialog);
 			}
+			FocusHere();
+
 			ImGui::End();
 		}
 		end();

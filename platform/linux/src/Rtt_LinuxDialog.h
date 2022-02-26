@@ -39,6 +39,8 @@ namespace Rtt
 		SDL_Window* GetWindow() const { return fWindow; }
 		void GetWindowSize(int* w, int* h);
 		static void MoveToCenter();
+		static void FocusHere();
+		static void SetStyle();
 
 	protected:
 
@@ -112,6 +114,8 @@ namespace Rtt
 	struct DlgPreferences : public Window
 	{
 		DlgPreferences(const std::string& title, int w, int h);
+		virtual ~DlgPreferences();
+
 		void Draw() override;
 
 	private:

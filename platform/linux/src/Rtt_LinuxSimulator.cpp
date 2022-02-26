@@ -100,6 +100,7 @@ namespace Rtt
 		if (fContext->LoadApp())
 		{
 			GetPlatform()->fShowRuntimeErrors = fConfig["showRuntimeErrors"].to_bool();
+			Window::SetStyle();
 
 			return fSkins.Load(GetContext()->GetRuntime()->VMContext().L());
 		}
