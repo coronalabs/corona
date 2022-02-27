@@ -109,7 +109,7 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-		fConsole = new ConsoleWindow("Solar2D Simulator Console", 640, 480, &fLogData);
+		StartConsole();
 
 		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
 		fWindow = SDL_CreateWindow("", 0, 0, 320, 480, windowStyle);
@@ -152,7 +152,7 @@ namespace Rtt
 	bool SolarApp::LoadApp()
 	{
 		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
-		fMenu = new DlgMenu(fContext->GetAppName());
+		CreateMenu();
 		return fContext->LoadApp();
 	}
 
@@ -534,10 +534,12 @@ namespace Rtt
 		}
 
 		// disable main menu if there is a popup window 
-		ImGui::BeginDisabled(fDlg != NULL);
-		fMenu->Draw();
-		ImGui::EndDisabled();
-
+		if (fMenu)
+		{
+			ImGui::BeginDisabled(fDlg != NULL);
+			fMenu->Draw();
+			ImGui::EndDisabled();
+		}
 
 		for (int i = 0; i < fNativeObjects.size(); i++)
 		{

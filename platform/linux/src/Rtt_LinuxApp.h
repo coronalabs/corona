@@ -105,8 +105,7 @@ namespace Rtt
 		void SetWindowSize(int newWidth, int newHeight);
 		SolarAppContext* GetContext() const { return fContext; }
 
-		virtual void GetSavedZoom(int& width, int& height) {}
-		virtual bool IsRunningOnSimulator() { return false; }
+		bool IsRunningOnSimulator() { return dynamic_cast<SolarApp*>(this) != NULL; }
 		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
 
 		const char* GetAppName() const { return fContext->GetAppName(); }
@@ -130,6 +129,8 @@ namespace Rtt
 		void AddDisplayObject(LinuxDisplayObject* obj);
 		void RemoveDisplayObject(LinuxDisplayObject* obj);
 		NativeAlertRef ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource);
+		virtual void StartConsole() {}
+		virtual void CreateMenu() {}
 
 	protected:
 

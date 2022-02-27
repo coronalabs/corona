@@ -26,10 +26,10 @@ namespace Rtt
 		void OnViewAsChanged(const SkinProperties* skin);
 
 		void WatchFolder(const char* path, const char* appName);
-		virtual bool LoadApp() override;
-		void GetSavedZoom(int& width, int& height) override;
-		bool IsRunningOnSimulator() override { return true; }
+		bool LoadApp() override;
 		void SolarEvent(const SDL_Event& e) override;
+		void StartConsole() override;
+		void CreateMenu() override;
 
 	private:
 

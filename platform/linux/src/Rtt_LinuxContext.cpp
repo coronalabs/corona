@@ -275,8 +275,6 @@ namespace Rtt
 				//SetMinClientSize(wxSize(minWidth, minHeight));
 			}
 
-			app->GetSavedZoom(width, height);
-
 			switch (orientation)
 			{
 			case DeviceOrientation::kSidewaysRight:

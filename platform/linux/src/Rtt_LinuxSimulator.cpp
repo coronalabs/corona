@@ -94,7 +94,7 @@ namespace Rtt
 		const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();
 		bool openlastProject = fConfig["openLastProject"].to_bool();
 		fContext = new SolarAppContext(fWindow, openlastProject && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
-		fMenu = new DlgMenu(fContext->GetAppName());
+		CreateMenu();
 
 		SDL_SetWindowPosition(fWindow, fConfig["windowXPos"].to_int(), fConfig["windowYPos"].to_int());
 		if (fContext->LoadApp())
@@ -312,19 +312,6 @@ namespace Rtt
 		if (fAppPath.size() > 0 && !IsHomeScreen(fContext->GetAppName()))
 		{
 			bool doRelaunch = !fRelaunchedViaFileEvent;
-
-			//LinuxRuntimeErrorDialog* errDialog = fContext->GetPlatform()->GetRuntimeErrorDialog();
-			//			if ((errDialog && errDialog->IsShown()) || (fRelaunchProjectDialog && fRelaunchProjectDialog->IsShown()))
-			//			{
-			//				return;
-			//			}
-
-						// workaround for wxFileSystem events firing twice (known wx bug)
-		//	if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
-		//	{
-		//		return;
-		//	}
-
 			if (fRelaunchedViaFileEvent)
 			{
 				const string& relaunchOnFileChange = fConfig["relaunchOnFileChange"].to_string();
@@ -343,7 +330,7 @@ namespace Rtt
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
 			fContext->LoadApp();
-			fMenu = new DlgMenu(fContext->GetAppName());
+			CreateMenu();
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
 
@@ -416,34 +403,6 @@ namespace Rtt
 		}
 	}
 
-	void SolarSimulator::GetSavedZoom(int& width, int& height)
-	{
-		/*if (!IsHomeScreen(fContext->GetAppName()))
-		{
-			wxDisplay display(wxDisplay::GetFromWindow(solarApp));
-			wxRect screen = display.GetClientArea();
-			width = ConfigInt("zoomedWidth");
-			height = ConfigInt("zoomedHeight");
-
-			if (width > screen.width || height > screen.height)
-			{
-				fZoomIn->Enable(false);
-			}
-
-			if (ConfigInt("skinWidth") <= LinuxSimulatorView::skinMinWidth)
-			{
-				fZoomIn->Enable(false);
-				fZoomOut->Enable(false);
-			}
-
-			while (width > screen.width || height > screen.height)
-			{
-				width /= LinuxSimulatorView::skinScaleFactor;
-				height /= LinuxSimulatorView::skinScaleFactor;
-			}
-		}*/
-	}
-
 	void SolarSimulator::OnOpen(const string& ppath)
 	{
 		// sanity check
@@ -463,7 +422,7 @@ namespace Rtt
 		}
 
 		string appName = fContext->GetAppName();
-		fMenu = new DlgMenu(fContext->GetAppName());
+		CreateMenu();
 
 		WatchFolder(fContext->GetAppPath(), appName.c_str());
 
@@ -511,5 +470,16 @@ namespace Rtt
 
 		SetTitle(newWindowTitle);
 	}
+
+	void SolarSimulator::StartConsole()
+	{
+		fConsole = new ConsoleWindow("Solar2D Simulator Console", 640, 480, &fLogData);
+	}
+
+	void SolarSimulator::CreateMenu()
+	{
+		fMenu = new DlgMenu(fContext->GetAppName());
+	}
+
 
 }
