@@ -764,7 +764,7 @@ namespace Rtt
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##ProjectFolder", fProjectDirInput, sizeof(fProjectDirInput), ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputText("##ProjectFolder", fProjectDirInput, sizeof(fProjectDirInput));
 			ImGui::SameLine();
 			if (ImGui::Button("Browse..."))
 			{
