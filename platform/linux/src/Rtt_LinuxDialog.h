@@ -21,6 +21,8 @@
 #include <SDL2/SDL_opengl.h>
 #include <map>
 
+#define BUTTON_WIDTH 100
+
 namespace Rtt
 {
 	void DrawActivity();
@@ -162,6 +164,23 @@ namespace Rtt
 		int fItemsLen;
 		int fItemCurrent;
 		std::string fTabCurrent;
+	};
+
+	class LuaResource;
+	struct DlgAlert : public Window
+	{
+		DlgAlert(const char* title, const char* msg, const char** buttonLabels, int numButtons, LuaResource* resource);
+		virtual ~DlgAlert();
+
+		void Draw() override;
+
+	private:
+
+		void onClick(int nButton);
+
+		std::string fMsg;
+		std::vector<std::string> fButtons;
+		LuaResource* fCallback;
 	};
 
 }

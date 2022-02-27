@@ -129,6 +129,7 @@ namespace Rtt
 
 		void AddDisplayObject(LinuxDisplayObject* obj);
 		void RemoveDisplayObject(LinuxDisplayObject* obj);
+		NativeAlertRef ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource);
 
 	protected:
 

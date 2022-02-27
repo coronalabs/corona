@@ -170,9 +170,8 @@ namespace Rtt
 
 	NativeAlertRef LinuxPlatform::ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource) const
 	{
-//		msgBox* msgs = new msgBox(title, msg, buttonLabels, numButtons, resource);
-//		msgs->Show(true);
-		return NULL; // (NativeAlertRef) 0x1234;
+		app->ShowNativeAlert(title, msg, buttonLabels, numButtons, resource);
+		return  (NativeAlertRef) 0x1234;
 	}
 
 	void LinuxPlatform::CancelNativeAlert(NativeAlertRef alert, S32 index) const

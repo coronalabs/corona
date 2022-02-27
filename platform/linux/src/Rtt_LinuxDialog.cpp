@@ -15,6 +15,7 @@
 #include "Rtt_Version.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
+#include "Rtt_LuaLibNative.h"
 #include <dirent.h>
 #include <unistd.h>
 #include <pwd.h>
@@ -83,9 +84,9 @@ namespace Rtt
 		ImGuiWindow* window = ImGui::GetCurrentWindow();
 
 		const char* label = "##spinner";
-		const float indicator_radius = 10;
-		const ImVec4 main_color(1, 0.5f, 0.5f, 0.5f);
-		const ImVec4 backdrop_color(0.5f, 0.5f, 0.5f, 0.0f);
+		const float indicator_radius = 14;
+		const ImVec4 main_color(0, 0, 1, 1);
+		const ImVec4 backdrop_color(0, 0, 1, 0.7f);
 		const int circle_count = 8;
 		const float speed = 8;
 
@@ -318,9 +319,8 @@ namespace Rtt
 
 			s = "OK";
 			ImGui::Dummy(ImVec2(20, 20));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			bool isOkPressed = ImGui::Button(s.c_str(), ImVec2(ok_width, 0));
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			bool isOkPressed = ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0));
 			FocusHere();
 
 			//  (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
@@ -842,9 +842,8 @@ namespace Rtt
 			// ok + cancel
 			s = "OK";
 			ImGui::Dummy(ImVec2(70, 40));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)))
 			{
 				// sanity check
 				if (*fApplicationNameInput != 0)
@@ -867,7 +866,7 @@ namespace Rtt
 
 			s = "Cancel";
 			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			if (ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
@@ -1029,10 +1028,9 @@ namespace Rtt
 
 			// ok + cancel
 			ImGui::Dummy(ImVec2(100, 30));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			bool IsOkPressed = ImGui::Button("OK", ImVec2(ok_width, 0));
-			if (IsOkPressed || ImGui::IsKeyPressed(ImGuiKey_Enter))
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			bool IsOkPressed = ImGui::Button("OK", ImVec2(BUTTON_WIDTH, 0));
+			if (IsOkPressed || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)))
 			{
 				Config& cfg = app->GetConfig();
 				cfg["relaunchOnFileChange"] = fRelaunchIndex == 0 ? "Always" : (fRelaunchIndex == 2 ? "Ask" : "Never");
@@ -1045,8 +1043,8 @@ namespace Rtt
 			}
 
 			ImGui::SameLine();
-			bool IsCancelPressed = ImGui::Button("Cancel", ImVec2(ok_width, 0));
-			if (IsCancelPressed || ImGui::IsKeyPressed(ImGuiKey_Escape))
+			bool IsCancelPressed = ImGui::Button("Cancel", ImVec2(BUTTON_WIDTH, 0));
+			if (IsCancelPressed || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				// reset old values
 				SetStyle();
@@ -1080,9 +1078,8 @@ namespace Rtt
 			// ok + cancel
 			string s = "Relaunch";
 			ImGui::Dummy(ImVec2(100, 30));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)))
 			{
 				SaveMyPreference("Always");
 				PushEvent(sdl::onCloseDialog);
@@ -1092,7 +1089,7 @@ namespace Rtt
 
 			s = "Ignore";
 			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			if (ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				SaveMyPreference("Never");
 				PushEvent(sdl::onCloseDialog);
@@ -1178,9 +1175,8 @@ namespace Rtt
 			}
 
 			ImGui::Dummy(ImVec2(10, 10));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button("Close", ImVec2(ok_width, 0)))
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			if (ImGui::Button("Close", ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
@@ -1233,6 +1229,76 @@ namespace Rtt
 				}
 			}
 
+		}
+	}
+
+	//
+	// DlgAlert
+	//
+
+	DlgAlert::DlgAlert(const char* title, const char* msg, const char** buttonLabels, int numButtons, LuaResource* resource)
+		: Window(title, 400, 300)
+		, fMsg(msg)
+		, fCallback(resource)
+	{
+		for (int i = 0; i < numButtons; i++)
+		{
+			fButtons.push_back(buttonLabels[i]);
+		}
+	}
+
+	DlgAlert::~DlgAlert()
+	{
+		if (fCallback)
+			delete fCallback;
+	}
+
+	void DlgAlert::Draw()
+	{
+		begin();
+		if (ImGui::Begin("##DlgAlert", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		{
+			int w, h;
+			GetWindowSize(&w, &h);
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + w - 40);
+			ImGui::SetCursorPosX(20);
+			ImGui::SetCursorPosY(20);
+			ImGui::TextWrapped(fMsg.c_str());
+			ImGui::PopTextWrapPos();
+
+			ImGui::Dummy(ImVec2(20, 20));
+			ImGui::SetCursorPosX((window_size.x - (BUTTON_WIDTH + 10) * fButtons.size()) * 0.5f);
+			for (int i = fButtons.size() - 1; i >= 0; i--)
+			{
+				if (ImGui::Button(fButtons[i].c_str(), ImVec2(BUTTON_WIDTH, 0)))
+				{
+					onClick(i);
+				}
+				ImGui::SameLine();
+			}
+
+			if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+			{
+				onClick(-1);
+			}
+			ImGui::End();
+		}
+		end();
+	}
+
+	void DlgAlert::onClick(int nButton)
+	{
+		if (fCallback)
+		{
+			// Invoke the Lua listener.
+			LuaLibNative::AlertComplete(*fCallback, nButton, nButton < 0);
+
+			// Delete the Lua resource.
+			delete fCallback;
+			fCallback = NULL;		// lock re-entry
+			PushEvent(sdl::onCloseDialog);
 		}
 	}
 

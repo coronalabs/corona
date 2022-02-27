@@ -588,6 +588,12 @@ namespace Rtt
 		}
 	}
 
+	NativeAlertRef SolarApp::ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource)
+	{
+		fDlg = new DlgAlert(title, msg, buttonLabels, numButtons, resource);
+		return NULL;
+	}
+
 	//
 	// FileWatcher
 	//
