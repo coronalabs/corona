@@ -525,7 +525,7 @@ jobs:
           $GIT_LOG
           For linux it is recommended to use snap:
           
-               sudo snap install solar2d --classic
+               sudo snap install solar2d
           
           "
           else
@@ -542,9 +542,6 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: Simulator-Windows
-      - uses: actions/download-artifact@v1
-        with:
-          name: Simulator-Linux
       - uses: actions/download-artifact@v1
         with:
           name: CoronaCards-iOS
