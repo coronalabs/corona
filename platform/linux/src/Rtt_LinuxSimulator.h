@@ -30,6 +30,7 @@ namespace Rtt
 		void SolarEvent(const SDL_Event& e) override;
 		void StartConsole() override;
 		void CreateMenu() override;
+		bool IsRunningOnSimulator() override { return true; }
 
 	private:
 

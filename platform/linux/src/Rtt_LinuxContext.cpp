@@ -70,68 +70,36 @@ namespace Rtt
 		, fProjectSettings(new ProjectSettings())
 		, fWindow(window)
 	{
-		string exeFileName;
 		const char* homeDir = GetHomePath();
-
-		// set app name
-		if (appPath == "/usr/bin") // deb ?
-		{
-			// for .deb app the appName is exe file name
-			fAppName = exeFileName;
-		}
-		else
-		{
-			const char* slash = strrchr(appPath.c_str(), '/');
-			if (slash)
-			{
-				fAppName = slash + 1;
-			}
-			else
-			{
-				slash = strrchr(appPath.c_str(), '\\');
-				if (slash)
-				{
-					fAppName = slash + 1;
-				}
-			}
-		}
-
-		Rtt_ASSERT(fAppName.size() > 0);
-		string startDir(appPath);
-
 		fSaveFolder.append(homeDir);
 		fSaveFolder.append("/Documents/Solar2D Built Apps");
 
-		string assetsDir = startDir;
-		assetsDir.append("/Resources/resource.car");
-
-		if (Rtt_FileExists(assetsDir.c_str()))
+		vector<string> tokens;
+		splitString(tokens, appPath, "/");
+		if (tokens.size() >= 2)
 		{
-			fPathToApp = startDir;
+			fAppName = tokens[tokens.size() - 1];
+		}
+
+		fPathToApp = appPath;
+		if (Rtt_FileExists((fPathToApp + "/resource.car").c_str()))
+		{
 			chdir(GetAppPath());
 			return;
 		}
 
-		assetsDir = startDir;
-		assetsDir.append("/main.lua");
-
-		if (Rtt_FileExists(assetsDir.c_str()))
+		if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
 		{
-			fPathToApp = startDir;
 			chdir(GetAppPath());
 			return;
 		}
 
 		// look for welcomescereen
-		startDir = GetStartupPath(NULL);
-		startDir.append("/Resources/homescreen");
-		assetsDir = startDir;
-		assetsDir.append("/main.lua");
-
-		if (Rtt_FileExists(assetsDir.c_str()))
+		fPathToApp = GetStartupPath(NULL);
+		fPathToApp.append("/Resources/homescreen");
+		if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
 		{
 			fAppName = HOMESCREEN_ID;
-			fPathToApp = startDir;
 			fIsDebApp = false;
 			chdir(GetAppPath());
 			return;
@@ -206,6 +174,7 @@ namespace Rtt
 
 		if (app->IsRunningOnSimulator())
 		{
+			// it can launch main.lua
 			fRuntime->SetProperty(Runtime::kLinuxMaskSet | Runtime::kIsApplicationNotArchived, true);
 		}
 		else
@@ -272,7 +241,6 @@ namespace Rtt
 			{
 				width = fProjectSettings->GetDefaultWindowViewWidth();
 				height = fProjectSettings->GetDefaultWindowViewHeight();
-				//SetMinClientSize(wxSize(minWidth, minHeight));
 			}
 
 			switch (orientation)
@@ -426,7 +394,7 @@ namespace Rtt
 		GetRuntime()->BeginRunLoop();
 
 		ResetWindowSize();
-		app->SetTitle(GetAppName());
+		app->SetTitle(fTitle.size() > 0 ? fTitle.c_str() : fAppName.c_str());
 
 		return true;
 	}

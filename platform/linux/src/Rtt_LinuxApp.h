@@ -105,7 +105,7 @@ namespace Rtt
 		void SetWindowSize(int newWidth, int newHeight);
 		SolarAppContext* GetContext() const { return fContext; }
 
-		bool IsRunningOnSimulator() { return dynamic_cast<SolarApp*>(this) != NULL; }
+		virtual bool IsRunningOnSimulator() { return false; }
 		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
 
 		const char* GetAppName() const { return fContext->GetAppName(); }
