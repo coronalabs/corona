@@ -49,10 +49,6 @@ namespace Rtt
 
 	SolarSimulator::SolarSimulator(const string& resourceDir)
 		: SolarApp(resourceDir)
-		, fRelaunchedViaFileEvent(false)
-		, currentSkinWidth(0)
-		, currentSkinHeight(0)
-		, currentSkinID(0)
 	{
 		app = this;
 		solarSimulator = this;		// save
@@ -317,35 +313,15 @@ namespace Rtt
 	{
 		if (fAppPath.size() > 0 && !IsHomeScreen(fContext->GetAppName()))
 		{
-			bool doRelaunch = !fRelaunchedViaFileEvent;
-			if (fRelaunchedViaFileEvent)
-			{
-				const string& relaunchOnFileChange = fConfig["relaunchOnFileChange"].to_string();
-				if (relaunchOnFileChange == "Always" || relaunchOnFileChange == "Ask")
-				{
-					doRelaunch = true;
-				}
-				fRelaunchedViaFileEvent = false;
-			}
-
-			if (!doRelaunch)
-			{
-				return;
-			}
-
 			fContext->GetRuntime()->End();
 			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
 			fContext->LoadApp();
 			CreateMenu();
 
 			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
-
-			string newWindowTitle(fContext->GetTitle());
-
-			//vv			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
-				//		newWindowTitle.append(" - ").append(sProperties.skinTitle);
 			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName(), fContext->GetPlatform());
 
+			string newWindowTitle(fContext->GetTitle());
 			SetTitle(newWindowTitle);
 		}
 	}
@@ -467,8 +443,8 @@ namespace Rtt
 			fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
 			string sandboxPath("~/.Solar2D/Sandbox/");
 			sandboxPath.append(fContext->GetTitle());
-//			sandboxPath.append("_");
-//			sandboxPath.append(CalculateMD5(fContext->GetTitle()));
+			//			sandboxPath.append("_");
+			//			sandboxPath.append(CalculateMD5(fContext->GetTitle()));
 
 			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
 			Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());

@@ -35,11 +35,6 @@ namespace Rtt
 	private:
 
 		smart_ptr<FileWatcher> fWatcher;
-		bool fRelaunchedViaFileEvent;
-
-		int currentSkinWidth;
-		int currentSkinHeight;
-		int currentSkinID;
 		Skins fSkins;
 	};
 }
