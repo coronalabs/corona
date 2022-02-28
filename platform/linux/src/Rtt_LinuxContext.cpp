@@ -29,7 +29,6 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxApp.h"
 #include "Rtt_HTTPClient.h"
 #include <curl/curl.h>

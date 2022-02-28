@@ -10,7 +10,6 @@
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxSimulatorView.h"
-#include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxDialogBuild.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
@@ -201,8 +200,15 @@ namespace Rtt
 		}
 
 		case sdl::OnClearProjectSandbox:
-			break;
+		{
+			string dir = GetSandboxPath();
+			dir.append("/");
+			dir.append(GetAppName());
+			Rtt_DeleteDirectory(dir.c_str());
 
+			OnRelaunch();
+			break;
+		}
 		case sdl::OnRelaunchLastProject:
 		{
 			const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();
@@ -461,8 +467,8 @@ namespace Rtt
 			fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
 			string sandboxPath("~/.Solar2D/Sandbox/");
 			sandboxPath.append(fContext->GetTitle());
-			sandboxPath.append("_");
-			sandboxPath.append(CalculateMD5(fContext->GetTitle()));
+//			sandboxPath.append("_");
+//			sandboxPath.append(CalculateMD5(fContext->GetTitle()));
 
 			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
 			Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());

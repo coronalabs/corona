@@ -118,9 +118,16 @@ string CalculateMD5(const string& filename)
 
 string GetRecentDocsPath()
 {
-	std::string recent_path = GetHomePath();
-	recent_path += "/.Solar2D/recent_projects.conf";
-	return recent_path;
+	std::string path = GetHomePath();
+	path += "/.Solar2D/recent_projects.conf";
+	return path;
+}
+
+string GetSandboxPath()
+{
+	std::string path = GetHomePath();
+	path += "/.Solar2D/Sandbox";
+	return path;
 }
 
 bool ReadRecentDocs(vector<pair<string, string>>& recentDocs)
