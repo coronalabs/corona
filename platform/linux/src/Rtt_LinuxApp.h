@@ -93,8 +93,9 @@ namespace Rtt
 		SolarApp(const std::string& resourceDir);
 		virtual ~SolarApp();
 
-		bool Init();
-		virtual bool LoadApp();
+		bool InitSDL();
+		virtual bool Init();
+		virtual bool LoadApp(const std::string& path);
 		void Run();
 		bool PollEvents();
 
@@ -108,7 +109,6 @@ namespace Rtt
 		virtual bool IsRunningOnSimulator() { return false; }
 		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
 
-		const char* GetAppName() const { return fContext->GetAppName(); }
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 		void SetTitle(const std::string& name);
 
@@ -131,6 +131,9 @@ namespace Rtt
 		NativeAlertRef ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource);
 		virtual void StartConsole() {}
 		virtual void CreateMenu() {}
+		const std::string& GetAppPath() const { return fContext->GetAppPath(); }
+		const std::string& GetAppName() const { return fContext->GetAppName(); }
+		const std::string& GetSaveFolder() const { return fContext->GetSaveFolder(); }
 
 	protected:
 
@@ -141,8 +144,7 @@ namespace Rtt
 		SDL_GLContext fGLcontext;
 
 		Config fConfig;
-		std::string fAppPath;
-		std::string fProjectPath;
+		std::string fResourceDir;
 		int fWidth;
 		int fHeight;
 

@@ -25,12 +25,13 @@ namespace Rtt
 		void OnZoomOut();
 		void OnViewAsChanged(const SkinProperties* skin);
 
-		void WatchFolder(const char* path, const char* appName);
-		bool LoadApp() override;
+		void WatchFolder(const std::string& path);
+		bool LoadApp(const std::string& path) override;
 		void SolarEvent(const SDL_Event& e) override;
 		void StartConsole() override;
 		void CreateMenu() override;
 		bool IsRunningOnSimulator() override { return true; }
+		bool Init() override;
 
 	private:
 

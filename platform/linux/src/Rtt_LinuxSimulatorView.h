@@ -97,6 +97,7 @@ namespace Rtt
 	{
 		bool Load(lua_State* L);
 		const std::map<std::string, SkinProperties>* GetSkins(const std::string& tabname) const;
+		int Count() const { return fSkins.size(); }
 
 	private:
 

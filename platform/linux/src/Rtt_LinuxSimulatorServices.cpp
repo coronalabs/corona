@@ -85,7 +85,7 @@ namespace Rtt
 
 	const char* LinuxSimulatorServices::GetCurrProjectPath() const
 	{
-		return app->GetContext()->GetAppPath();
+		return app->GetAppPath().c_str();
 	}
 
 	// stub to match Mac implementation

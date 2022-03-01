@@ -60,9 +60,9 @@ namespace Rtt
 		const std::string& GetTitle() const { return fTitle; }
 		void Flush();
 		bool LoadApp();
-		const char* GetAppPath() const { return fPathToApp.c_str(); }
+		const std::string& GetAppPath() const { return fPathToApp; }
 		LinuxPlatform* GetPlatform() const { return fPlatform; }
-		const char* GetAppName() const { return fAppName.c_str(); }
+		const std::string& GetAppName() const { return fAppName; }
 		const std::string& GetSaveFolder() const { return fSaveFolder; }
 		const LinuxRuntimeDelegate* GetRuntimeDelegate() const { return fRuntimeDelegate; }
 		void advance();

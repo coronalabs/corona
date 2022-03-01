@@ -34,10 +34,10 @@ namespace Rtt
 		app->Pause();
 
 		// defaults
-		strncpy(fApplicationNameInput, app->GetAppName(), sizeof(fApplicationNameInput));
+		strncpy(fApplicationNameInput, app->GetAppName().c_str(), sizeof(fApplicationNameInput));
 		strncpy(fVersionNameInput, "1.0.0", sizeof(fVersionNameInput));
-		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
-		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
+		strncpy(fSaveToFolderInput, app->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
+		strncpy(fProjectPathInput, app->GetAppPath().c_str(), sizeof(fProjectPathInput));
 	}
 
 	DlgBuild::~DlgBuild()

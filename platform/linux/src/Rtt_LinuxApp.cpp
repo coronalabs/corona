@@ -52,7 +52,7 @@ namespace Rtt
 {
 
 	SolarApp::SolarApp(const string& resourceDir)
-		: fProjectPath(resourceDir)
+		: fResourceDir(resourceDir)
 		, fWindow(NULL)
 		, fWidth(0)
 		, fHeight(0)
@@ -61,7 +61,7 @@ namespace Rtt
 	{
 	}
 
-	bool SolarApp::Init()
+	bool SolarApp::InitSDL()
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
 
@@ -131,7 +131,16 @@ namespace Rtt
 		const char* glsl_version = "#version 130";
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
-		return LoadApp();
+		return true;
+	}
+
+	bool SolarApp::Init()
+	{
+		if (InitSDL())
+		{
+			return LoadApp(fResourceDir);
+		}
+		return false;
 	}
 
 	SolarApp::~SolarApp()
@@ -149,9 +158,9 @@ namespace Rtt
 		SDL_Quit();
 	}
 
-	bool SolarApp::LoadApp()
+	bool SolarApp::LoadApp(const string& path)
 	{
-		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
+		fContext = new SolarAppContext(fWindow, fResourceDir);
 		CreateMenu();
 		return fContext->LoadApp();
 	}

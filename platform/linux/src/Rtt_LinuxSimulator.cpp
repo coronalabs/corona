@@ -80,25 +80,65 @@ namespace Rtt
 		fConfig.Save();
 	}
 
-	bool SolarSimulator::LoadApp()
+	bool SolarSimulator::Init()
+	{
+		if (InitSDL())
+		{
+			const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();
+			bool openlastProject = fConfig["openLastProject"].to_bool();
+
+			LoadApp(openlastProject && !lastProjectDirectory.empty() ? lastProjectDirectory : fResourceDir);
+			return true;
+		}
+		return false;
+	}
+
+	bool SolarSimulator::LoadApp(const string& ppath)
 	{
 #ifdef Rtt_SIMULATOR
 		//		SetIcon(simulator_xpm);
 #endif
 
-		const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();
-		bool openlastProject = fConfig["openLastProject"].to_bool();
-		fContext = new SolarAppContext(fWindow, openlastProject && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
-		CreateMenu();
-
-		SDL_SetWindowPosition(fWindow, fConfig["windowXPos"].to_int(), fConfig["windowYPos"].to_int());
+		string path(ppath);	// keep alive
+		fContext = new SolarAppContext(fWindow, path);
 		if (fContext->LoadApp())
 		{
-			GetPlatform()->fShowRuntimeErrors = fConfig["showRuntimeErrors"].to_bool();
+			SDL_SetWindowPosition(fWindow, fConfig["windowXPos"].to_int(), fConfig["windowYPos"].to_int());
 			Window::SetStyle();
 
-			return fSkins.Load(GetContext()->GetRuntime()->VMContext().L());
+			CreateMenu();
+
+			string title;
+			if (IsHomeScreen(GetAppName()))
+			{
+				title = "Solar2D Simulator";
+				if (fSkins.Count() == 0)
+				{
+					fSkins.Load(GetContext()->GetRuntime()->VMContext().L());
+				}
+
+				GetPlatform()->fShowRuntimeErrors = fConfig["showRuntimeErrors"].to_bool();
+			}
+			else
+			{
+				UpdateRecentDocs(fContext->GetAppName(), path + "/main.lua");
+
+				fConfig["lastProjectDirectory"] = fContext->GetAppPath();
+				fConfig.Save();
+
+				WatchFolder(GetAppPath());
+				LinuxSimulatorView::OnLinuxPluginGet(GetAppPath().c_str(), GetAppName().c_str(), fContext->GetPlatform());
+				title = fContext->GetTitle();
+			}
+
+			SetTitle(title);
+
+			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath().c_str());
+			Rtt_Log("Project sandbox folder: %s\n", GetSandboxPath().c_str());
+			return true;
 		}
+
+		Rtt_LogException("Failed to load app %s\n", path.c_str());
 		return false;
 	}
 
@@ -299,30 +339,18 @@ namespace Rtt
 		}
 	}
 
-	void SolarSimulator::WatchFolder(const char* path, const char* appName)
+	void SolarSimulator::WatchFolder(const string& path)
 	{
 		fWatcher = NULL;
-		if (!IsHomeScreen(appName))
-		{
-			fWatcher = new FileWatcher();
-			fWatcher->Start(path);
-		}
+		fWatcher = new FileWatcher();
+		fWatcher->Start(path);
 	}
 
 	void SolarSimulator::OnRelaunch()
 	{
-		if (fAppPath.size() > 0 && !IsHomeScreen(fContext->GetAppName()))
+		if (!IsHomeScreen(GetAppName()))
 		{
-			fContext->GetRuntime()->End();
-			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
-			fContext->LoadApp();
-			CreateMenu();
-
-			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
-			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName(), fContext->GetPlatform());
-
-			string newWindowTitle(fContext->GetTitle());
-			SetTitle(newWindowTitle);
+			LoadApp(GetAppPath());
 		}
 	}
 
@@ -385,72 +413,14 @@ namespace Rtt
 		}
 	}
 
-	void SolarSimulator::OnOpen(const string& ppath)
+	void SolarSimulator::OnOpen(const string& fullPath)
 	{
 		// sanity check
-		if (ppath.size() < 10)
+		if (fullPath.size() < 10)
 			return;
 
-		fConfig.Save();
-
-		string fullPath = ppath;
-		string path = ppath.substr(0, ppath.size() - 9); // without main.lua
-
-		fContext = new SolarAppContext(fWindow, path.c_str());
-		if (fContext->LoadApp() == false)
-		{
-			Rtt_LogException("Failed to load app from %s\n", ppath.c_str());
-			return;
-		}
-
-		string appName = fContext->GetAppName();
-		CreateMenu();
-
-		WatchFolder(fContext->GetAppPath(), appName.c_str());
-
-		if (!IsHomeScreen(appName))
-		{
-			fAppPath = fContext->GetAppPath(); // save for relaunch
-			UpdateRecentDocs(appName, fullPath);
-		}
-
-		string newWindowTitle(appName);
-
-		if (!IsHomeScreen(appName))
-		{
-			fConfig["lastProjectDirectory"] = fAppPath;
-			fConfig.Save();
-
-			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), appName.c_str(), fContext->GetPlatform());
-		}
-		else
-		{
-			newWindowTitle = "Solar2D Simulator";
-		}
-
-		// restore home screen zoom level
-	//	if (IsHomeScreen(appName))
-	//	{
-	//		fContext->GetRuntimeDelegate()->fContentWidth = fSimulatorConfig->welcomeScreenZoomedWidth;
-	//		fContext->GetRuntimeDelegate()->fContentHeight = fSimulatorConfig->welcomeScreenZoomedHeight;
-	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
-	//	}
-
-		if (!IsHomeScreen(appName))
-		{
-			//vv LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
-			//vv newWindowTitle += " - " + sProperties.skinTitle;
-			fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
-			string sandboxPath("~/.Solar2D/Sandbox/");
-			sandboxPath.append(fContext->GetTitle());
-			//			sandboxPath.append("_");
-			//			sandboxPath.append(CalculateMD5(fContext->GetTitle()));
-
-			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
-			Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());
-		}
-
-		SetTitle(newWindowTitle);
+		string path = fullPath.substr(0, fullPath.size() - 9); // without main.lua
+		LoadApp(path);
 	}
 
 	void SolarSimulator::StartConsole()

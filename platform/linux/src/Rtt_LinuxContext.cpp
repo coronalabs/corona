@@ -83,13 +83,13 @@ namespace Rtt
 		fPathToApp = appPath;
 		if (Rtt_FileExists((fPathToApp + "/resource.car").c_str()))
 		{
-			chdir(GetAppPath());
+			chdir(GetAppPath().c_str());
 			return;
 		}
 
 		if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
 		{
-			chdir(GetAppPath());
+			chdir(GetAppPath().c_str());
 			return;
 		}
 
@@ -100,7 +100,7 @@ namespace Rtt
 		{
 			fAppName = HOMESCREEN_ID;
 			fIsDebApp = false;
-			chdir(GetAppPath());
+			chdir(GetAppPath().c_str());
 			return;
 		}
 
