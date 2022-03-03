@@ -56,7 +56,7 @@ extern "C"
 namespace Rtt
 {
 
-	SolarAppContext::SolarAppContext(SDL_Window* window, const std::string& appPath)
+	SolarAppContext::SolarAppContext(SDL_Window* window)
 		: fRuntime(NULL)
 		, fRuntimeDelegate(new LinuxRuntimeDelegate())
 		, fMouseListener(NULL)
@@ -69,47 +69,18 @@ namespace Rtt
 		, fProjectSettings(new ProjectSettings())
 		, fWindow(window)
 	{
-		const char* homeDir = GetHomePath();
-		fSaveFolder.append(homeDir);
-		fSaveFolder.append("/Documents/Solar2D Built Apps");
-
-		vector<string> tokens;
-		splitString(tokens, appPath, "/");
-		if (tokens.size() >= 2)
-		{
-			fAppName = tokens[tokens.size() - 1];
-		}
-
-		fPathToApp = appPath;
-		if (Rtt_FileExists((fPathToApp + "/resource.car").c_str()))
-		{
-			chdir(GetAppPath().c_str());
-			return;
-		}
-
-		if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
-		{
-			chdir(GetAppPath().c_str());
-			return;
-		}
-
-		// look for welcomescereen
-		fPathToApp = GetStartupPath(NULL);
-		fPathToApp.append("/Resources/homescreen");
-		if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
-		{
-			fAppName = HOMESCREEN_ID;
-			fIsDebApp = false;
-			chdir(GetAppPath().c_str());
-			return;
-		}
-
-		Rtt_LogException("Failed to find app\n");
-		Rtt_ASSERT(0);
 	}
 
 	SolarAppContext::~SolarAppContext()
 	{
+		int w, h, x, y;
+		SDL_GetWindowPosition(fWindow ,&x, &y);
+		SDL_GetWindowSize(fWindow , &w, &h);
+		fConfig["x"] = x;
+		fConfig["y"] = y;
+		fConfig["w"] = w;
+		fConfig["h"] = h;
+
 		delete fMouseListener;
 		delete fKeyListener;
 		delete fRuntime;
@@ -123,11 +94,7 @@ namespace Rtt
 
 	void SolarAppContext::Init()
 	{
-		const char* homeDir = GetHomePath();
-
-		string appDir(homeDir);
-		appDir.append("/.Solar2D/Sandbox/");
-		appDir.append(IsHomeScreen(fAppName) ? "Simulator" : fAppName);
+		string appDir = GetSandboxPath(GetAppName());
 		if (!Rtt_IsDirectory(appDir.c_str()))
 		{
 			Rtt_MakeDirectory(appDir.c_str());
@@ -354,8 +321,43 @@ namespace Rtt
 		return 0;
 	}
 
-	bool SolarAppContext::LoadApp()
+	bool SolarAppContext::LoadApp(const string& appPath)
 	{
+		fPathToApp = appPath;
+
+		// appName
+
+		const char* homeDir = GetHomePath();
+		fSaveFolder.append(homeDir);
+		fSaveFolder.append("/Documents/Solar2D Built Apps");
+
+		vector<string> tokens;
+		splitString(tokens, appPath, "/");
+		if (tokens.size() >= 2)
+		{
+			fAppName = tokens[tokens.size() - 1];
+		}
+
+		fConfig.Load(GetConfigPath(fAppName));
+
+		// set workdir
+
+		if (Rtt_FileExists((fPathToApp + "/resource.car").c_str()))
+		{
+			chdir(GetAppPath().c_str());
+		}
+		else
+		if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
+		{
+			chdir(GetAppPath().c_str());
+		}
+		else
+		{
+			Rtt_ASSERT_NOT_REACHED();
+		}
+
+		// load app
+
 		Init();
 
 		if (Runtime::kSuccess != fRuntime->LoadApplication(Runtime::kLinuxLaunchOption, fRuntimeDelegate->fOrientation))
@@ -390,24 +392,18 @@ namespace Rtt
 		lua_pushcfunction(L, print2console);
 		lua_setglobal(L, "print");
 
-		GetRuntime()->BeginRunLoop();
+		int x = fConfig["x"].to_int() > 0 ? fConfig["x"].to_int() : 0;
+		int y = fConfig["y"].to_int() > 0 ? fConfig["y"].to_int() : 0;
+		SDL_SetWindowPosition(fWindow, x, y);
 
-		ResetWindowSize();
+		int w = fConfig["w"].to_int() > 0 ? fConfig["w"].to_int() : GetWidth();
+		int h = fConfig["h"].to_int() > 0 ? fConfig["h"].to_int() : GetHeight();
+		SetSize(w, h);
+
 		app->SetTitle(fTitle.size() > 0 ? fTitle.c_str() : fAppName.c_str());
 
+		GetRuntime()->BeginRunLoop();
 		return true;
-	}
-
-	void SolarAppContext::ResetWindowSize()
-	{
-		int w, h;
-		SDL_GetWindowSize(fWindow, &w, &h);
-		if (w != GetWidth() || h != GetHeight())
-		{
-			w = GetWidth();
-			h = GetHeight();
-			SDL_SetWindowSize(fWindow, w, h);
-		}
 	}
 
 	// timer callback
@@ -477,6 +473,18 @@ namespace Rtt
 	void SolarAppContext::SetHeight(int val)
 	{
 		fRuntimeDelegate->SetHeight(val);
+	}
+
+	void SolarAppContext::SetSize(int w, int h)
+	{
+		SetWidth(w);
+		SetHeight(h);
+		SDL_SetWindowSize(fWindow, w, h);
+		RestartRenderer();
+
+		fRuntime->DispatchEvent(ResizeEvent());
+
+		// todo: refresh native elements
 	}
 
 } // namespace Rtt

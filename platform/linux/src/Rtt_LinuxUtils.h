@@ -19,7 +19,9 @@ const char* GetStartupPath(std::string* exeFileName);
 const char* GetHomePath();
 std::string CalculateMD5(const std::string& filename);
 std::string GetRecentDocsPath();
-std::string GetSandboxPath();
+std::string GetSandboxPath(const std::string& appName);
+std::string GetConfigPath(const std::string& appName);
+std::string GetPluginsPath();
 bool ReadRecentDocs(std::vector<std::pair<std::string, std::string>>& recentDocs);
 void UpdateRecentDocs(const std::string& appName, const std::string& path);
 

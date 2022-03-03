@@ -17,6 +17,7 @@
 
 using namespace std;
 
+#define SOLAR2D_BASEDIR ".Solar2D"
 uint32_t GetTicks()
 {
 	static timeb s_start_time;
@@ -46,7 +47,7 @@ string& rtrim(string& str, const string& chars)
 	return str;
 }
 
-string& trim(string& str, const std::string& chars)
+string& trim(string& str, const string& chars)
 {
 	return ltrim(rtrim(str, chars), chars);
 }
@@ -118,15 +119,32 @@ string CalculateMD5(const string& filename)
 
 string GetRecentDocsPath()
 {
-	std::string path = GetHomePath();
-	path += "/.Solar2D/recent_projects.conf";
+	string path = GetHomePath();
+	path.append("/" SOLAR2D_BASEDIR "/recent.conf");
 	return path;
 }
 
-string GetSandboxPath()
+string GetSandboxPath(const string& appName)
 {
-	std::string path = GetHomePath();
-	path += "/.Solar2D/Sandbox";
+	string path = GetHomePath();
+	path.append("/" SOLAR2D_BASEDIR "/Sandbox/");
+	path.append(appName);
+	return path;
+}
+
+string GetConfigPath(const string& appName)
+{
+	string path = GetHomePath();
+	path.append("/" SOLAR2D_BASEDIR "/Sandbox/");
+	path.append(appName);
+	path.append("/app.conf");
+	return path;
+}
+
+string GetPluginsPath()
+{
+	string path = GetHomePath();
+	path.append("/" SOLAR2D_BASEDIR "/Plugins");
 	return path;
 }
 
@@ -139,7 +157,7 @@ bool ReadRecentDocs(vector<pair<string, string>>& recentDocs)
 		string line;
 		while (getline(f, line))
 		{
-			std::vector<std::string> items;
+			vector<string> items;
 			splitString(items, line, "=");
 			if (items.size() == 2 && items[0].size() > 0 && items[1].size() > 0)
 			{
@@ -152,7 +170,7 @@ bool ReadRecentDocs(vector<pair<string, string>>& recentDocs)
 	return false;
 }
 
-void UpdateRecentDocs(const std::string& appName, const std::string& path)
+void UpdateRecentDocs(const string& appName, const string& path)
 {
 	vector<pair<string, string>> recentDocs;
 	if (ReadRecentDocs(recentDocs))

@@ -123,10 +123,14 @@ namespace Rtt
 
 	Window::Window(const string& title, int w, int h)
 	{
+		// save state
+		window = SDL_GL_GetCurrentWindow();
+		glcontext = SDL_GL_GetCurrentContext();
+		imctx = ImGui::GetCurrentContext();
+
 		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
 
-		ImGuiContext* imctx = ImGui::GetCurrentContext();
 		fImCtx = ImGui::CreateContext();
 		ImGui::SetCurrentContext(fImCtx);
 
@@ -140,6 +144,8 @@ namespace Rtt
 		const char* glsl_version = "#version 130";
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
+		// restore state
+		SDL_GL_MakeCurrent(window, glcontext);
 		ImGui::SetCurrentContext(imctx);
 	}
 

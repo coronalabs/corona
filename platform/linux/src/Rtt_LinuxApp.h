@@ -71,23 +71,6 @@ namespace Rtt
 {
 	void PushEvent(int evt);
 
-	struct Config : public ref_counted
-	{
-		Config();
-		Config(const std::string& path);
-		virtual ~Config();
-
-		as_value& operator[](const std::string& name);
-		const as_value& operator[](const std::string& name) const;
-
-		void Load(const std::string& path);
-		void Save();
-
-	private:
-		std::map<std::string, as_value> fConfig;
-		std::string fPath;
-	};
-
 	struct SolarApp : public ref_counted
 	{
 		SolarApp(const std::string& resourceDir);
@@ -124,7 +107,7 @@ namespace Rtt
 		bool IsIconized() { return false; }
 		bool IsMaximized() { return false; }
 
-		Config& GetConfig() { return fConfig; }
+		inline Config& GetConfig() { return fConfig; }
 
 		void AddDisplayObject(LinuxDisplayObject* obj);
 		void RemoveDisplayObject(LinuxDisplayObject* obj);
@@ -134,6 +117,8 @@ namespace Rtt
 		const std::string& GetAppPath() const { return fContext->GetAppPath(); }
 		const std::string& GetAppName() const { return fContext->GetAppName(); }
 		const std::string& GetSaveFolder() const { return fContext->GetSaveFolder(); }
+		void GetWindowPosition(int* x, int* y);
+		void GetWindowSize(int* w, int* h);
 
 	protected:
 
@@ -143,10 +128,8 @@ namespace Rtt
 		SDL_Window* fWindow;
 		SDL_GLContext fGLcontext;
 
-		Config fConfig;
 		std::string fResourceDir;
-		int fWidth;
-		int fHeight;
+		Config fConfig;
 
 		// GUI
 		ImGuiContext* fImCtx;

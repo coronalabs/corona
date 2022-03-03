@@ -54,40 +54,30 @@ namespace Rtt
 	SolarApp::SolarApp(const string& resourceDir)
 		: fResourceDir(resourceDir)
 		, fWindow(NULL)
-		, fWidth(0)
-		, fHeight(0)
 		, fImCtx(NULL)
 		, fActivityIndicator(false)
 	{
 	}
 
+	SolarApp::~SolarApp()
+	{
+		fContext = NULL;
+		curl_global_cleanup();
+
+		// Cleanup
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplSDL2_Shutdown();
+		ImGui::DestroyContext();
+
+		SDL_GL_DeleteContext(fGLcontext);
+		SDL_DestroyWindow(fWindow);
+		SDL_Quit();
+	}
+
+
 	bool SolarApp::InitSDL()
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
-
-		const char* homeDir = GetHomePath();
-		string basePath(homeDir);
-		string sandboxPath(homeDir);
-		string pluginPath(homeDir);
-
-		// create default directories if missing
-
-		basePath.append("/.Solar2D");
-		sandboxPath.append("/.Solar2D/Sandbox");
-		pluginPath.append("/.Solar2D/Plugins");
-
-		if (!Rtt_IsDirectory(basePath.c_str()))
-		{
-			Rtt_MakeDirectory(basePath.c_str());
-		}
-		if (!Rtt_IsDirectory(sandboxPath.c_str()))
-		{
-			Rtt_MakeDirectory(sandboxPath.c_str());
-		}
-		if (!Rtt_IsDirectory(pluginPath.c_str()))
-		{
-			Rtt_MakeDirectory(pluginPath.c_str());
-		}
 
 		// Initialize SDL (Note: video is required to start event loop) 
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -108,8 +98,6 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-
-		StartConsole();
 
 		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
 		fWindow = SDL_CreateWindow("", 0, 0, 320, 480, windowStyle);
@@ -143,26 +131,21 @@ namespace Rtt
 		return false;
 	}
 
-	SolarApp::~SolarApp()
+	void SolarApp::GetWindowPosition(int* x, int* y)
 	{
-		fContext = NULL;
-		curl_global_cleanup();
+		SDL_GetWindowPosition(fWindow, x, y);
+	}
 
-		// Cleanup
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplSDL2_Shutdown();
-		ImGui::DestroyContext();
-
-		SDL_GL_DeleteContext(fGLcontext);
-		SDL_DestroyWindow(fWindow);
-		SDL_Quit();
+	void SolarApp::GetWindowSize(int* w, int* h)
+	{
+		SDL_GetWindowSize(fWindow, w, h);
 	}
 
 	bool SolarApp::LoadApp(const string& path)
 	{
-		fContext = new SolarAppContext(fWindow, fResourceDir);
+		fContext = new SolarAppContext(fWindow);
 		CreateMenu();
-		return fContext->LoadApp();
+		return fContext->LoadApp(fResourceDir);
 	}
 
 	bool SolarApp::PollEvents()
@@ -229,25 +212,20 @@ namespace Rtt
 				{
 					if (evt.window.windowID == SDL_GetWindowID(fWindow))
 					{
-
-						SDL_DisplayMode dm;
-						SDL_GetDesktopDisplayMode(0, &dm);
-						if (fWidth != dm.w && fHeight != dm.h)
-						{
-							//SDL_Log("SDL_WINDOWEVENT_SIZE_CHANGED old %d,%d new %d,%d", fWidth, fHeight, dm.w, dm.h);
-							fWidth = dm.w;
-							fHeight = dm.h;
-							//fPlatform->setWindow(fWindow, fOrientation, dm.w, dm.h);
-
-							//fRuntime->WindowSizeChanged();
-							//fRuntime->RestartRenderer(fOrientation);
-							//fRuntime->GetDisplay().Invalidate();
-
-							//fRuntime->DispatchEvent(ResizeEvent());
-
-							// refresh native elements
-		//					jsContextResizeNativeObjects();
-						}
+						//						SDL_DisplayMode dm;
+						//						SDL_GetDesktopDisplayMode(0, &dm);
+						int w, h;
+						GetWindowSize(&w, &h);
+				//		fContext->SetSize(w, h);
+					}
+					break;
+				}
+				case SDL_WINDOWEVENT_MOVED:
+				{
+					if (IsHomeScreen(GetAppName()))
+					{
+						fConfig["x"] = evt.window.data1;
+						fConfig["y"] = evt.window.data2;
 					}
 					break;
 				}
@@ -575,11 +553,6 @@ namespace Rtt
 	void SolarApp::SetWindowSize(int w, int h)
 	{
 		SDL_SetWindowSize(fWindow, w, h);
-
-		fConfig["title"] = GetTitle();
-		fConfig["windowWidth"] = w;
-		fConfig["windowHeight"] = h;
-		fConfig.Save();
 	}
 
 	void SolarApp::AddDisplayObject(LinuxDisplayObject* obj)
@@ -721,16 +694,13 @@ namespace Rtt
 	// Config
 	//
 
+	Config::Config()
+	{
+	}
+
 	Config::Config(const string& path)
 	{
 		Load(path);
-	}
-
-	Config::Config()
-	{
-		string cfg = GetHomePath();
-		cfg.append("/.Solar2D/simulator.conf");
-		Load(cfg);
 	}
 
 	Config::~Config()
@@ -740,42 +710,29 @@ namespace Rtt
 
 	void Config::Load(const string& path)
 	{
-		fPath = path;
-
-		// default values
-		fConfig["showRuntimeErrors"] = true;
-		fConfig["showWelcome"] = true;
-		fConfig["openLastProject"] = false;
-		fConfig["relaunchOnFileChange"] = "Always";
-		fConfig["windowXPos"] = 10;
-		fConfig["windowYPos"] = 10;
-		fConfig["skinWidth"] = 320;
-		fConfig["skinHeight"] = 480;
-
+		fPath = path;		// save
 		FILE* f = fopen(path.c_str(), "r");
-		if (f == NULL)
+		if (f)
 		{
-			Rtt_LogException("Failed to read %s, %s\n", path.c_str(), strerror(errno));
-			return;
-		}
-
-		char s[1024];
-		while (fgets(s, sizeof(s), f))
-		{
-			char* comment = strchr(s, '#');
-			if (comment)
-				*comment = 0;
-
-			char key[sizeof(s)];
-			char val[sizeof(s)];
-			if (sscanf(s, "%64[^=]=%512[^\n]%*c", key, val) == 2) // Checking scanf read key=val pair
+			char s[1024];
+			while (fgets(s, sizeof(s), f))
 			{
-				fConfig[key] = val;
+				char* comment = strchr(s, '#');
+				if (comment)
+					*comment = 0;
+
+				char key[sizeof(s)];
+				char val[sizeof(s)];
+				if (sscanf(s, "%64[^=]=%512[^\n]%*c", key, val) == 2) // Checking scanf read key=val pair
+				{
+					fConfig[key] = val;
+				}
 			}
+			fclose(f);
 		}
-		fclose(f);
 	}
 
+	// load & join & save
 	void Config::Save()
 	{
 		FILE* f = fopen(fPath.c_str(), "w");

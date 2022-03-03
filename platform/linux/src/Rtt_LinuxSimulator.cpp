@@ -73,22 +73,24 @@ namespace Rtt
 
 	SolarSimulator::~SolarSimulator()
 	{
-		int x, y;
-		SDL_GetWindowPosition(fWindow, &x, &y);
-		fConfig["windowXPos"] = x;
-		fConfig["windowYPos"] = y;
-		fConfig.Save();
 	}
 
 	bool SolarSimulator::Init()
 	{
 		if (InitSDL())
 		{
+			// load Config, default values
+			fConfig["showRuntimeErrors"] = true;
+			fConfig["showWelcome"] = true;
+			fConfig["openLastProject"] = false;
+			fConfig["relaunchOnFileChange"] = "Always";
+			fConfig.Load(GetConfigPath(HOMESCREEN_ID));
+
+			StartConsole();
+
 			const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();
 			bool openlastProject = fConfig["openLastProject"].to_bool();
-
-			LoadApp(openlastProject && !lastProjectDirectory.empty() ? lastProjectDirectory : fResourceDir);
-			return true;
+			return LoadApp(openlastProject && !lastProjectDirectory.empty() ? lastProjectDirectory : fResourceDir);
 		}
 		return false;
 	}
@@ -99,13 +101,13 @@ namespace Rtt
 		//		SetIcon(simulator_xpm);
 #endif
 
+		fConfig.Save();
 		string path(ppath);	// keep alive
-		fContext = new SolarAppContext(fWindow, path);
-		if (fContext->LoadApp())
-		{
-			SDL_SetWindowPosition(fWindow, fConfig["windowXPos"].to_int(), fConfig["windowYPos"].to_int());
-			Window::SetStyle();
 
+		fContext = new SolarAppContext(fWindow);
+		if (fContext->LoadApp(path))
+		{
+			Window::SetStyle();
 			CreateMenu();
 
 			string title;
@@ -121,10 +123,8 @@ namespace Rtt
 			}
 			else
 			{
-				UpdateRecentDocs(fContext->GetAppName(), path + "/main.lua");
-
+				UpdateRecentDocs(GetAppName(), path + "/main.lua");
 				fConfig["lastProjectDirectory"] = fContext->GetAppPath();
-				fConfig.Save();
 
 				WatchFolder(GetAppPath());
 				LinuxSimulatorView::OnLinuxPluginGet(GetAppPath().c_str(), GetAppName().c_str(), fContext->GetPlatform());
@@ -134,13 +134,13 @@ namespace Rtt
 			SetTitle(title);
 
 			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath().c_str());
-			Rtt_Log("Project sandbox folder: %s\n", GetSandboxPath().c_str());
+			Rtt_Log("Project sandbox folder: %s\n", GetSandboxPath(GetAppName()).c_str());
 			return true;
-		}
+	}
 
 		Rtt_LogException("Failed to load app %s\n", path.c_str());
 		return false;
-	}
+}
 
 	void SolarSimulator::SolarEvent(const SDL_Event& e)
 	{
@@ -227,19 +227,13 @@ namespace Rtt
 
 		case sdl::OnShowProjectSandbox:
 		{
-			const string& appName = GetContext()->GetAppName();
-			string path = GetHomePath();
-			path.append("/.Solar2D/Sandbox/");
-			path.append(appName);
-			OpenURL(path);
+			OpenURL(GetSandboxPath(GetAppName()));
 			break;
 		}
 
 		case sdl::OnClearProjectSandbox:
 		{
-			string dir = GetSandboxPath();
-			dir.append("/");
-			dir.append(GetAppName());
+			string dir = GetSandboxPath(GetAppName());
 			Rtt_DeleteDirectory(dir.c_str());
 
 			OnRelaunch();
@@ -363,11 +357,7 @@ namespace Rtt
 			int proposedHeight = GetContext()->GetHeight() * skinScaleFactor;
 			if (proposedWidth <= screen.w && proposedHeight <= screen.h)
 			{
-				GetContext()->SetWidth(proposedWidth);
-				GetContext()->SetHeight(proposedHeight);
-				SetWindowSize(proposedWidth, proposedHeight);
-				GetContext()->RestartRenderer();
-				fConfig.Save();
+				GetContext()->SetSize(proposedWidth, proposedHeight);
 			}
 		}
 	}
@@ -381,11 +371,7 @@ namespace Rtt
 			int proposedHeight = GetContext()->GetHeight() / skinScaleFactor;
 			if (proposedWidth >= 320) //skinMinWidth)
 			{
-				GetContext()->SetWidth(proposedWidth);
-				GetContext()->SetHeight(proposedHeight);
-				SetWindowSize(proposedWidth, proposedHeight);
-				GetContext()->RestartRenderer();
-				fConfig.Save();
+				GetContext()->SetSize(proposedWidth, proposedHeight);
 			}
 		}
 	}
@@ -405,11 +391,7 @@ namespace Rtt
 				w /= skinScaleFactor;
 				h /= skinScaleFactor;
 			}
-
-			GetContext()->SetWidth(w);
-			GetContext()->SetHeight(h);
-			SetWindowSize(w, h);
-			GetContext()->RestartRenderer();
+			GetContext()->SetSize(w, h);
 		}
 	}
 
