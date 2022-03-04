@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -15,6 +15,11 @@
 #include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderComposite.h"
 #include "Display/Rtt_ShaderTypes.h"
+// STEVE CHANGE
+#include "Renderer/Rtt_Geometry_Renderer.h"
+// /STEVE CHANGE
+
+// STEVE CHANGE remove "CoronaGraphics.h"
 
 // ----------------------------------------------------------------------------
 
@@ -31,101 +36,121 @@ class ShaderData;
 class ShaderResource;
 class LuaMap;
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
-	class ShaderBinaryVersions;
+    class ShaderBinaryVersions;
 #endif
 
 // ----------------------------------------------------------------------------
-		
+        
 class ShaderFactory
 {
-	public:
-		typedef ShaderFactory Self;
-	private:
-		typedef std::map<std::string, SharedPtr< Shader> > ShaderMap;
+    public:
+        typedef ShaderFactory Self;
+    private:
+        typedef std::map<std::string, SharedPtr< Shader> > ShaderMap;
 
-	private:
-		static int ShaderFinalizer( lua_State *L );
-		static void PushTable( lua_State *L, const char *key );
-		static void RegisterBuiltin( lua_State *L, ShaderTypes::Category category );
+    private:
+        static int ShaderFinalizer( lua_State *L );
+        static void PushTable( lua_State *L, const char *key );
+        static void RegisterBuiltin( lua_State *L, ShaderTypes::Category category );
 
-	public:
-		ShaderFactory( Display& owner, const ProgramHeader& programHeader );
-		~ShaderFactory();
+    public:
+        ShaderFactory( Display& owner, const ProgramHeader& programHeader );
+        ~ShaderFactory();
 
-	protected:
-		bool Initialize();
+    protected:
+        bool Initialize();
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
-		Program *NewProgram(ShaderBinaryVersions &compiledShaders, ShaderResource::ProgramMod mod ) const;
-		SharedPtr< ShaderResource > NewShaderResource(
-				ShaderTypes::Category category,
-				const char *name,
-				ShaderBinaryVersions &compiledDefaultShaders,
-				ShaderBinaryVersions &compiled25DShaders);
+        Program *NewProgram(ShaderBinaryVersions &compiledShaders, ShaderResource::ProgramMod mod ) const;
+        SharedPtr< ShaderResource > NewShaderResource(
+                ShaderTypes::Category category,
+                const char *name,
+                ShaderBinaryVersions &compiledDefaultShaders,
+                ShaderBinaryVersions &compiled25DShaders);
 #else
-		Program *NewProgram(
-				const char *shellVert,
-				const char *shellFrag,
-				const char *kernelVertDefault,
-				const char *kernelFragDefault,
-				ShaderResource::ProgramMod mod ) const;
-		SharedPtr< ShaderResource > NewShaderResource(
-				ShaderTypes::Category category,
-				const char *name,
-				const char *kernelVert,
-				const char *kernelFrag );
+        Program *NewProgram(
+                const char *shellVert,
+                const char *shellFrag,
+                const char *kernelVertDefault,
+                const char *kernelFragDefault,
+                ShaderResource::ProgramMod mod ) const;
+        SharedPtr< ShaderResource > NewShaderResource(
+                ShaderTypes::Category category,
+                const char *name,
+                const char *kernelVert,
+                const char *kernelFrag );
 #endif
-		Shader *NewShaderPrototype( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
+        Shader *NewShaderPrototype( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 
-	private:
-		// Helper methods to instantiate Shader
-		bool BindVertexDataMap( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
-		bool BindUniformDataMap( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
-		void BindTimeTransform( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
-		void InitializeBindings( lua_State *L, int shaderIndex, const SharedPtr< ShaderResource >& resource );
+    private:
+        // Helper methods to instantiate Shader
+        bool BindVertexDataMap( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
+        bool BindUniformDataMap( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
+        void BindDataType( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
+        void BindDetails( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
+        void BindShellTransform( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
+        void BindTimeTransform( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
+    // STEVE CHANGE
+        void BindVertexExtension( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
+    // /STEVE CHANGE
+        void InitializeBindings( lua_State *L, int shaderIndex, const SharedPtr< ShaderResource >& resource );
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
-		bool LoadAllCompiledShaders(
-					lua_State *L, int compiledShadersTableIndex,
-					ShaderBinaryVersions &compiledDefaultShaders, ShaderBinaryVersions &compiled25DShaders);
-		bool LoadCompiledShaderVersions(lua_State *L, int modeTableIndex, ShaderBinaryVersions &compiledShaders);
+        bool LoadAllCompiledShaders(
+                    lua_State *L, int compiledShadersTableIndex,
+                    ShaderBinaryVersions &compiledDefaultShaders, ShaderBinaryVersions &compiled25DShaders);
+        bool LoadCompiledShaderVersions(lua_State *L, int modeTableIndex, ShaderBinaryVersions &compiledShaders);
 #endif
 
-	protected:
-//		Shader *NewShader( lua_State *L, int index );
-		ShaderComposite *NewShaderBuiltin( ShaderTypes::Category category, const char *name);
-		void AddShader( Shader *shader, const char *name );
-		
-		void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode);
-		void ConnectLocalNodes(ShaderMap &inputNodes, LuaMap *nodeGraph, std::string terminalNodeKey, ShaderComposite *terminalNode);
+    protected:
+//        Shader *NewShader( lua_State *L, int index );
+        ShaderComposite *NewShaderBuiltin( ShaderTypes::Category category, const char *name);
+        void AddShader( Shader *shader, const char *name );
+        
+        void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode);
+        void ConnectLocalNodes(ShaderMap &inputNodes, LuaMap *nodeGraph, std::string terminalNodeKey, ShaderComposite *terminalNode);
 
-	public:
-		bool DefineEffect( lua_State *L, int shaderIndex );
-		Shader *NewShaderGraph( lua_State *L, int index);
-				
-	protected:
-		const Shader *FindPrototype( ShaderTypes::Category category, const char *name ) const;
+    public:
+        bool DefineEffect( lua_State *L, int shaderIndex );
+        Shader *NewShaderGraph( lua_State *L, int index);
 
-		ShaderComposite *FindOrLoadGraph( ShaderTypes::Category category, const char *name, bool shouldFallback );
+        bool RegisterDataType( const char * name, const CoronaEffectCallbacks & callbacks );
+        bool RegisterShellTransform( const char * name, const CoronaShellTransform & transform );
+    // STEVE CHANGE
+        bool RegisterVertexExtension( const char * name, const CoronaVertexExtension & extension );
+    
+        SharedPtr<FormatExtensionList> * GetExtensionList( const char * name ) const;
+    // /STEVE CHANGE
 
-	public:
-		Shader *FindOrLoad( const ShaderName& shaderName );
-		Shader *FindOrLoad( ShaderTypes::Category category, const char *name );
+        bool UnregisterDataType( const char * name );
+        bool UnregisterShellTransform( const char * name );
+    // STEVE CHANGE
+        bool UnregisterVertexExtension( const char * name );
+    // /STEVE CHANGE
+    
+    protected:
+        const Shader *FindPrototype( ShaderTypes::Category category, const char *name ) const;
 
-	public:
-		void PushList( lua_State *L, ShaderTypes::Category category ) const;
+        ShaderComposite *FindOrLoadGraph( ShaderTypes::Category category, const char *name, bool shouldFallback );
 
-	public:
-		Shader& GetDefault() const { return *fDefaultShader; }
-		Shader& GetDefaultColorShader() const;
+    public:
+        Shader *FindOrLoad( const ShaderName& shaderName );
+        Shader *FindOrLoad( ShaderTypes::Category category, const char *name );
 
-	private:
-		Rtt_Allocator *fAllocator;
-		Shader *fDefaultShader;
-		mutable Shader *fDefaultColorShader;
-		lua_State *fL;
-		Display& fOwner;
-		Program *fDefaultShell;
-		Program *fDefaultKernel;
-		ProgramHeader *fProgramHeader;
+    public:
+        void PushList( lua_State *L, ShaderTypes::Category category ) const;
+
+    public:
+        Shader& GetDefault() const { return *fDefaultShader; }
+        Shader& GetDefaultColorShader() const;
+
+    private:
+        Rtt_Allocator *fAllocator;
+        Shader *fDefaultShader;
+        mutable Shader *fDefaultColorShader;
+        lua_State *fL;
+        Display& fOwner;
+        Program *fDefaultShell;
+        Program *fDefaultKernel;
+        ProgramHeader *fProgramHeader;
 };
 
 // ----------------------------------------------------------------------------

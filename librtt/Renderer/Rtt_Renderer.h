@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -22,6 +22,8 @@
 #include "Core/Rtt_Real.h"
 #include "Core/Rtt_Time.h"
 
+#include "Corona/CoronaGraphics.h"
+
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
@@ -34,283 +36,368 @@ class FrameBufferObject;
 class GeometryPool;
 class Texture;
 class Uniform;
+class ShaderData;
 
 // ----------------------------------------------------------------------------
 
 class Renderer
 {
-	public:
-		typedef Renderer Self;
+    public:
+        typedef Renderer Self;
 
-	public:
-		Renderer( Rtt_Allocator* allocator );
+    public:
+        Renderer( Rtt_Allocator* allocator );
 
-		virtual ~Renderer();
+        virtual ~Renderer();
 
-		// Called once at the start of the application. This function may only
-		// be called when a valid rendering context is active.
-		virtual void Initialize();
+        // Called once at the start of the application. This function may only
+        // be called when a valid rendering context is active.
+        virtual void Initialize();
 
-		// Perform any per-frame preparation. Total time is the time in seconds
-		// since the start of the application. Delta time is the amount of time
-		// in seconds it took to complete the previous frame.
-		virtual void BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY );
+        // Perform any per-frame preparation. Total time is the time in seconds
+        // since the start of the application. Delta time is the amount of time
+        // in seconds it took to complete the previous frame.
+        virtual void BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY );
 
-		// Perform any per-frame finalization.
-		virtual void EndFrame();
+        // Perform any per-frame finalization.
+        virtual void EndFrame();
 
-		// Get the current view and projection matrices. These 4x4 matrices are
-		// returned via the given pointers, which are assumed to be non-null.
-		void GetFrustum( Real* viewMatrix, Real* projectionMatrix ) const;
+        // Get the current view and projection matrices. These 4x4 matrices are
+        // returned via the given pointers, which are assumed to be non-null.
+        void GetFrustum( Real* viewMatrix, Real* projectionMatrix ) const;
 
-		// Set the viewing frustum to use while rendering. This function may be
-		// called multiple times per frame. Each call to Insert() will use the
-		// most recently given frustum.
-		void SetFrustum( const Real* viewMatrix, const Real* projectionMatrix );
+        // Set the viewing frustum to use while rendering. This function may be
+        // called multiple times per frame. Each call to Insert() will use the
+        // most recently given frustum.
+        void SetFrustum( const Real* viewMatrix, const Real* projectionMatrix );
 
-		// Get the current viewport (the subregion into which normalized device
-		// coordinates are remapped).
-		void GetViewport( S32& x, S32& y, S32& width, S32& height ) const;
+        // Get the current viewport (the subregion into which normalized device
+        // coordinates are remapped).
+        void GetViewport( S32& x, S32& y, S32& width, S32& height ) const;
 
-		// Normalized device coordinates will be remapped to the given window 
-		// coordinates. This function may be called multiple times per frame. 
-		// Each call to Insert() will use the most recently given viewport.
-		void SetViewport( S32 x, S32 y, S32 width, S32 height );
+        // Normalized device coordinates will be remapped to the given window
+        // coordinates. This function may be called multiple times per frame.
+        // Each call to Insert() will use the most recently given viewport.
+        void SetViewport( S32 x, S32 y, S32 width, S32 height );
 
-		// Get the current scissor window.
-		void GetScissor( S32& x, S32& y, S32& width, S32& height ) const;
+        // Get the current scissor window.
+        void GetScissor( S32& x, S32& y, S32& width, S32& height ) const;
 
-		// Set the subregion of the output buffer outside of which all pixels
-		// are rejected. This function may be called multiple times per frame.
-		// Each call to Insert() will use the most recently given region.
-		void SetScissor( S32 x, S32 y, S32 width, S32 height );
+        // Set the subregion of the output buffer outside of which all pixels
+        // are rejected. This function may be called multiple times per frame.
+        // Each call to Insert() will use the most recently given region.
+        void SetScissor( S32 x, S32 y, S32 width, S32 height );
 
-		// Get whether or not scissoring is enabled. Scissoring is disabled by
-		// default.
-		bool GetScissorEnabled() const;
+        // Get whether or not scissoring is enabled. Scissoring is disabled by
+        // default.
+        bool GetScissorEnabled() const;
 
-		// Enable or disable scissor testing. The region given by SetScissor()
-		// will only be applied if scissor testing is explicitly enabled.
-		void SetScissorEnabled( bool enabled );
+        // Enable or disable scissor testing. The region given by SetScissor()
+        // will only be applied if scissor testing is explicitly enabled.
+        void SetScissorEnabled( bool enabled );
 
-		// Get/Set the corresponding Renderer state for multisampling.
-		// This does NOT take care of any surface-related settings
-		// for multisampling b/c that's OS-specific.
-		bool GetMultisampleEnabled() const;
-		void SetMultisampleEnabled( bool enabled );
+        // Get/Set the corresponding Renderer state for multisampling.
+        // This does NOT take care of any surface-related settings
+        // for multisampling b/c that's OS-specific.
+        bool GetMultisampleEnabled() const;
+        void SetMultisampleEnabled( bool enabled );
 
-		// Get the active FrameBufferObject or NULL if one does not exist.
-		FrameBufferObject* GetFrameBufferObject() const;
+        // Get the active FrameBufferObject or NULL if one does not exist.
+        FrameBufferObject* GetFrameBufferObject() const;
 
-		// Set the FrameBufferObject. All subsequently inserted RenderData will
-		// be drawn to this FBO until SetFrameBufferObject() is called again.
-		void SetFrameBufferObject( FrameBufferObject* fbo );
+        // Set the FrameBufferObject. All subsequently inserted RenderData will
+        // be drawn to this FBO until SetFrameBufferObject() is called again.
+        void SetFrameBufferObject( FrameBufferObject* fbo );
 
-		// Assign the given color to all pixels in the back buffer or, if there
-		// is a texture bound for offscreen rendering, to pixels in the texture.
-		void Clear( Real r, Real g, Real b, Real a );
+    // STEVE CHANGE
+        struct ExtraClearOptions {
+            bool clearDepth;
+            bool clearStencil;
+            float depthClearValue;
+            U32 stencilClearValue;
+        };
+    // /STEVE CHANGE
+    
+        // Assign the given color to all pixels in the back buffer or, if there
+        // is a texture bound for offscreen rendering, to pixels in the texture.
+        void Clear( Real r, Real g, Real b, Real a, const ExtraClearOptions * extraOptions = NULL ); // <- STEVE CHANGE
 
-		// Push a new mask onto the stack. The given matrix describes a 2D
-		// transformation and is expected to be of type Uniform::kMat3.
-		void PushMask( Texture* maskTexture, Uniform* maskMatrix );
+        // Push a new mask onto the stack. The given matrix describes a 2D
+        // transformation and is expected to be of type Uniform::kMat3.
+        void PushMask( Texture* maskTexture, Uniform* maskMatrix );
 
-		// Pop the most recently added mask from the stack. This mask will not
-		// be applied to any RenderData inserted after this call.
-		void PopMask();
-		
-		// Push a new mask count. Typically called before a render-to-texture
-		// operation, so that the mask count prior to the operation is saved.
-		void PushMaskCount();
+        // Pop the most recently added mask from the stack. This mask will not
+        // be applied to any RenderData inserted after this call.
+        void PopMask();
+        
+        // Push a new mask count. Typically called before a render-to-texture
+        // operation, so that the mask count prior to the operation is saved.
+        void PushMaskCount();
 
-		// Restore the previous mask count. Typically called after a render-to-texture
-		// operation, so that the mask count prior to the operation is restored.
-		void PopMaskCount();
+        // Restore the previous mask count. Typically called after a render-to-texture
+        // operation, so that the mask count prior to the operation is restored.
+        void PopMaskCount();
 
-		// Generate the minimum set of commands needed to ensure that the given
-		// RenderData is properly drawn on the next call to Render().
-		void Insert( const RenderData* data );
+        // Generate the minimum set of commands needed to ensure that the given
+        // RenderData is properly drawn on the next call to Render().
+        void Insert( const RenderData* data, const ShaderData * shaderData = NULL );
 
-		// Render all data added since the last call to swap(). It is both safe
-		// and expected that Render() is called while another thread is adding
-		// new RenderData and preparing it for the subsequent call to Render().
-		// This function requires that a valid rendering context is active.
-		void Render();
+        // Render all data added since the last call to swap(). It is both safe
+        // and expected that Render() is called while another thread is adding
+        // new RenderData and preparing it for the subsequent call to Render().
+        // This function requires that a valid rendering context is active.
+        void Render();
 
-		// Synchronize any data used by the preparation and rendering threads,
-		// including the creation, update, and destruction of GPU resources.		
-		// This function requires that a valid rendering context is active.
-		void Swap();
-		
-		// This function iterates through the CPU resources and removes their GPU resources
-		// causing them to be recreated lazily - this operation should only be called in events
-		//that require it, such as switching opengl contexts
-		//void UnloadGPUResources( );
+        // Synchronize any data used by the preparation and rendering threads,
+        // including the creation, update, and destruction of GPU resources.
+        // This function requires that a valid rendering context is active.
+        void Swap();
+        
+        // This function iterates through the CPU resources and removes their GPU resources
+        // causing them to be recreated lazily - this operation should only be called in events
+        //that require it, such as switching opengl contexts
+        //void UnloadGPUResources( );
 
-		// Any GPU-side resources needed for the given data will be created the
-		// next time a valid rendering context is available.
-		void QueueCreate( CPUResource* resource );
+        // Any GPU-side resources needed for the given data will be created the
+        // next time a valid rendering context is available.
+        void QueueCreate( CPUResource* resource );
 
-		// Any GPU-side resources previously created for the given data will
-		// be updated the next time a valid rendering context is available.
-		void QueueUpdate( CPUResource* resource );
+        // Any GPU-side resources previously created for the given data will
+        // be updated the next time a valid rendering context is available.
+        void QueueUpdate( CPUResource* resource );
 
-		// The GPU resources denoted by the given pointer will be destroyed
-		// the next time a valid rendering context is available.
-		void QueueDestroy( GPUResource* resource );
+        // The GPU resources denoted by the given pointer will be destroyed
+        // the next time a valid rendering context is available.
+        void QueueDestroy( GPUResource* resource );
 
-		// Return true if wireframe rendering is enabled. Disabled by default.
-		bool GetWireframeEnabled() const;
+        // Return true if wireframe rendering is enabled. Disabled by default.
+        bool GetWireframeEnabled() const;
 
-		// Render triangles as outlines with no interior. Useful for debugging.
-		void SetWireframeEnabled( bool enabled );
+        // Render triangles as outlines with no interior. Useful for debugging.
+        void SetWireframeEnabled( bool enabled );
 
-		static U32 GetMaxTextureSize();
-		static const char *GetGlString( const char *s );
-		static bool GetGpuSupportsHighPrecisionFragmentShaders();
-		static size_t GetMaxVertexTextureUnits();
+        static U32 GetMaxTextureSize();
+        static const char *GetGlString( const char *s );
+        static bool GetGpuSupportsHighPrecisionFragmentShaders();
+        static U32 GetMaxUniformVectorsCount();
+        static U32 GetMaxVertexTextureUnits();
+    // STEVE CHANGE
+        void GetVertexAttributes( VertexAttributeSupport & support );
+    // /STEVE CHANGE
 
-		struct Statistics
-		{
-			Statistics();
-			void Log() const;
+        struct Statistics
+        {
+            Statistics();
+            void Log() const;
 
-			Real fResourceCreateTime;	// Time spent creating GPU resources in ms
-			Real fResourceUpdateTime;	// Time spent updating GPU resources in ms
-			Real fResourceDestroyTime;	// Time spent deleting GPU resources in ms
-			Real fPreparationTime;		// Time spent from BeginFrame to Swap in ms
-			Real fRenderTimeCPU;		// CPU dispatch time in ms
-			Real fRenderTimeGPU;		// GPU execution time in ms
-			U32 fDrawCallCount;			// Number of draw commands issued
-			U32 fTriangleCount;			// Number of triangles drawn
-			U32 fLineCount;             // Number of lines drawn
-			U32 fGeometryBindCount;		// Number of Geometry bindings
-			U32 fProgramBindCount;		// Number of Program bindings
-			U32 fTextureBindCount;		// Number of Texture bindings
-			U32 fUniformBindCount;		// Number of Uniform bindings
-		};
+            Real fResourceCreateTime;    // Time spent creating GPU resources in ms
+            Real fResourceUpdateTime;    // Time spent updating GPU resources in ms
+            Real fResourceDestroyTime;    // Time spent deleting GPU resources in ms
+            Real fPreparationTime;        // Time spent from BeginFrame to Swap in ms
+            Real fRenderTimeCPU;        // CPU dispatch time in ms
+            Real fRenderTimeGPU;        // GPU execution time in ms
+            U32 fDrawCallCount;            // Number of draw commands issued
+            U32 fTriangleCount;            // Number of triangles drawn
+            U32 fLineCount;             // Number of lines drawn
+            U32 fGeometryBindCount;        // Number of Geometry bindings
+            U32 fProgramBindCount;        // Number of Program bindings
+            U32 fTextureBindCount;        // Number of Texture bindings
+            U32 fUniformBindCount;        // Number of Uniform bindings
+        };
 
-		// Return true if statistics gathering is enabled. Disabled by default.
-		bool GetStatisticsEnabled() const;
+        // Return true if statistics gathering is enabled. Disabled by default.
+        bool GetStatisticsEnabled() const;
 
-		// For optimal performance, statistics gathering should only be enabled
-		// when needed.
-		void SetStatisticsEnabled( bool enabled );
+        // For optimal performance, statistics gathering should only be enabled
+        // when needed.
+        void SetStatisticsEnabled( bool enabled );
 
-		// Get the previous frame's statistics. For accurate results, do not
-		// call this function during preparation or rendering.
-		const Statistics& GetFrameStatistics() const;
+        // Get the previous frame's statistics. For accurate results, do not
+        // call this function during preparation or rendering.
+        const Statistics& GetFrameStatistics() const;
 
-		// Get the maximum number of RenderData that may be inserted each frame. 
-		U32 GetMaximumRenderDataCount() const;
-		
-		// Set the maximum number of RenderData that may be inserted each frame.
-		// This is primarily useful as a debugging tool. By increasing the count
-		// over time, users can visualize render order, batching, etc.
-		void SetMaximumRenderDataCount( U32 count );
-		
-		void SetCPUResourceObserver(MCPUResourceObserver *resourceObserver);
-		void ReleaseGPUResources();
+        // Get the maximum number of RenderData that may be inserted each frame.
+        U32 GetMaximumRenderDataCount() const;
+        
+        // Set the maximum number of RenderData that may be inserted each frame.
+        // This is primarily useful as a debugging tool. By increasing the count
+        // over time, users can visualize render order, batching, etc.
+        void SetMaximumRenderDataCount( U32 count );
+        
+        void SetCPUResourceObserver(MCPUResourceObserver *resourceObserver);
+        void ReleaseGPUResources();
 
-		// When there is a GPU-dependency on time, e.g. the shader code,
-		// we need to ensure re-blitting. These functions help tally each
-		// time such a situation occurs.
-		void TallyTimeDependency( bool usesTime );
-		bool IsFrameTimeDependent() const { return fTimeDependencyCount > 0; }
+        // When there is a GPU-dependency on time, e.g. the shader code,
+        // we need to ensure re-blitting. These functions help tally each
+        // time such a situation occurs.
+        void TallyTimeDependency( bool usesTime );
+        bool IsFrameTimeDependent() const { return fTimeDependencyCount > 0; }
 
-		// During render-to-texture, there could be false positives added to the
-		// dependency count, so these functions allow you to save/restore the count.
-		// These are false positives b/c they operate offscreen and don't affect
-		// whether or not objects *on*screen need to be re-blitted
-		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
-		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
+        // During render-to-texture, there could be false positives added to the
+        // dependency count, so these functions allow you to save/restore the count.
+        // These are false positives b/c they operate offscreen and don't affect
+        // whether or not objects *on*screen need to be re-blitted
+        void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
+        U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
+    // STEVE CHANGE
+        struct StateBlockInfo {
+            CoronaStateBlockDirty fChanged;
+            CoronaStateBlockDirty fRestore;
+            void * fData;
+            U32 fOffset;
+            U32 fSize;
+            bool fIgnoredByHash;
+        };
+    
+        U16 AddStateBlock( const CoronaStateBlock & block );
+        bool GetStateBlockInfo( U16 id, U8 *& start, U32 & size, bool mightDirty );
+    // /STEVE CHANGE
+        struct CustomOp {
+            CoronaRendererOp fAction;
+            unsigned long fID;
+            void * fUserData;
+        };
 
-	protected:
-		// Destroys all queued GPU resources passed into the DestroyQueue() method.
-		void DestroyQueuedGPUResources();
+        U16 AddCustomCommand( const CoronaCommand & command );
 
-		// Derived classes must use this function to provide platform specific
-		// and rendering API specific GPUResources.
-		virtual GPUResource* Create( const CPUResource* resource ) = 0;
+        // STEVE CHANGE removed AddClearOp, AddEndFrameOp, Inject
 
-		// Bind resources, taking care that they have properly created backends
-		void BindTexture( Texture* maskTexture, U32 unit );
-		void BindUniform( Uniform* maskUniform, U32 unit );
+        bool IssueCustomCommand( U16 id, const void * data, U32 size );
+    
+    public:
+        // STEVE CHANGE remove GetClearOps, GetEndFrameOps
 
-		// Check for any unsubmitted RenderData that must be drawn. Typically,
-		// this is called in response to a change in render state.
-		void CheckAndInsertDrawCommand();
+    protected:
+        // Destroys all queued GPU resources passed into the DestroyQueue() method.
+        void DestroyQueuedGPUResources();
 
-	private:
-		void FlushBatch();
+        // Derived classes must use this function to provide platform specific
+        // and rendering API specific GPUResources.
+        virtual GPUResource* Create( const CPUResource* resource ) = 0;
 
-	protected:
-		void UpdateBatch( bool batch, bool enoughSpace, bool storedOnGPU, U32 verticesRequired );
-		void CopyVertexData( Geometry* geometry, Geometry::Vertex* destination, bool interior );
-		void CopyTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* destination );
-		void CopyTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destination );
-		void CopyIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
-		void CopyTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        // Bind resources, taking care that they have properly created backends
+        void BindTexture( Texture* maskTexture, U32 unit );
+        void BindUniform( Uniform* maskUniform, U32 unit );
 
-	protected:
-		// Returns count at top of the mask count stack
-		const U32& MaskCount() const { return fMaskCount[fMaskCountIndex]; }
-		U32& MaskCount() { return fMaskCount[fMaskCountIndex]; }
+        // Check for any unsubmitted RenderData that must be drawn. Typically,
+        // this is called in response to a change in render state.
+        void CheckAndInsertDrawCommand();
 
-	protected:
-		Rtt_Allocator* fAllocator;
-		
-		MCPUResourceObserver *fCPUResourceObserver;
-		
-		Array<CPUResource*> fCreateQueue;
-		Array<CPUResource*> fUpdateQueue;
-		Array<GPUResource*> fDestroyQueue;
+    private:
+    // STEVE CHANGE
+        U32 EnumerateDirtyBlocks( ArrayS32& dirtyIndices );
+        void UpdateDirtyBlocks( const ArrayS32& dirtyIndices, U32 largestDirtySize );
+        void RestoreDefaultBlocks();
+        void InsertInstancing( const Geometry::ExtensionBlock* block, const FormatExtensionList* programList, const FormatExtensionList* geometryList );
+    // /STEVE CHANGE
+        void FlushBatch();
+    
+    protected:
+        void UpdateBatch( bool batch, bool enoughSpace, bool storedOnGPU, U32 verticesRequired );
+        void CopyVertexData( Geometry* geometry, Geometry::Vertex* destination, bool interior );
+        void CopyTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        void CopyTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        void CopyIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        void CopyTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
 
-		GeometryPool* fGeometryPool;
-		CommandBuffer* fFrontCommandBuffer;
-		CommandBuffer* fBackCommandBuffer;
-		
-		Uniform* fViewProjectionMatrix;
-		Uniform* fTotalTime;
-		Uniform* fDeltaTime;
-		Uniform* fTexelSize;
-		Uniform* fContentScale;
+        // STEVE CHANGE
+        void CopyExtendedVertexData( Geometry* geometry, Geometry::Vertex* destination, bool interior );
+        void CopyExtendedTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        void CopyExtendedTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        void CopyExtendedIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        void CopyExtendedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        // /STEVE CHANGE
+    
+    protected:
+        // Returns count at top of the mask count stack
+        const U32& MaskCount() const { return fMaskCount[fMaskCountIndex]; }
+        U32& MaskCount() { return fMaskCount[fMaskCountIndex]; }
 
-		int fMaskCountIndex;
-		Array< U32 > fMaskCount; // "Stack" of mask counts
-		U32 fCurrentProgramMaskCount;
+    public:
+        int GetVersionCode( bool addingMask ) const;
 
-		bool fWireframeEnabled;
-		bool fStatisticsEnabled;
-		Statistics fStatistics;
-		Rtt_AbsoluteTime fStartTime;
+    protected:
+        Rtt_Allocator* fAllocator;
+        
+        MCPUResourceObserver *fCPUResourceObserver;
+        
+        Array<CPUResource*> fCreateQueue;
+        Array<CPUResource*> fUpdateQueue;
+        Array<GPUResource*> fDestroyQueue;
 
-		Real fViewMatrix[16];
-		Real fProjMatrix[16];
-		S32 fViewport[4];
-		S32 fScissor[4];
-		bool fScissorEnabled;
-		bool fMultisampleEnabled;
-		FrameBufferObject* fFrameBufferObject;
+        GeometryPool* fGeometryPool;
+    // STEVE CHANGE
+        GeometryPool* fInstancingGeometryPool;
+    // /STEVE CHANGE
+        CommandBuffer* fFrontCommandBuffer;
+        CommandBuffer* fBackCommandBuffer;
+        
+        Uniform* fViewProjectionMatrix;
+        Uniform* fTotalTime;
+        Uniform* fDeltaTime;
+        Uniform* fTexelSize;
+        Uniform* fContentScale;
 
-		RenderData fPrevious;
-		U32 fVertexOffset;
-		U32 fVertexCount;
-		U32 fIndexOffset;
-		U32 fIndexCount;
-		U32 fRenderDataCount;
-		U32 fInsertionCount;
-		U32 fInsertionLimit;
-		U32 fDegenerateVertexCount;
-		U32 fCachedVertexOffset;
-		U32 fCachedVertexCount;
-		Geometry::PrimitiveType fPreviousPrimitiveType;
-		Geometry::Vertex* fCurrentVertex;
-		Geometry* fCurrentGeometry;
+        int fMaskCountIndex;
+        Array< U32 > fMaskCount; // "Stack" of mask counts
+        U32 fCurrentProgramMaskCount;
 
-		Real fContentScaleX; // Temporary holder.
-		Real fContentScaleY; // Temporary holder.
+        bool fWireframeEnabled;
+        bool fStatisticsEnabled;
+        Statistics fStatistics;
+        Rtt_AbsoluteTime fStartTime;
 
-		U32 fTimeDependencyCount;
+        Real fViewMatrix[16];
+        Real fProjMatrix[16];
+        S32 fViewport[4];
+        S32 fScissor[4];
+        bool fScissorEnabled;
+        bool fMultisampleEnabled;
+        FrameBufferObject* fFrameBufferObject;
+
+        RenderData fPrevious;
+        U32 fVertexOffset;
+        U32 fVertexCount;
+    // STEVE CHANGE
+        U32 fVertexExtra;
+    // /STEVE CHANGE
+        U32 fIndexOffset;
+        U32 fIndexCount;
+        U32 fRenderDataCount;
+        U32 fInsertionCount;
+        U32 fInsertionLimit;
+        U32 fDegenerateVertexCount;
+        U32 fCachedVertexOffset;
+        U32 fCachedVertexCount;
+    // STEVE CHANGE
+        U32 fCachedVertexExtra;
+    // /STEVE CHANGE
+        Geometry::PrimitiveType fPreviousPrimitiveType;
+        Geometry::Vertex* fCurrentVertex;
+        Geometry* fCurrentGeometry;
+    // STEVE CHANGE
+        Geometry::Vertex* fCurrentInstancingVertex;
+        Geometry* fCurrentInstancingGeometry;
+    // /STEVE CHANGE
+
+        Real fContentScaleX; // Temporary holder.
+        Real fContentScaleY; // Temporary holder.
+
+        U32 fTimeDependencyCount;
+    
+        Array< CoronaCommand > fPendingCommands;
+
+        // STEVE CHANGE remove fClearOps, fEndFrameOps
+    
+        U16 fCommandCount;
+
+    // STEVE CHANGE
+        Array< StateBlockInfo > fStateBlocks;
+        Array< U8 > fDefaultState;
+        Array< U8 > fCurrentState;
+        Array< U8 > fWorkingState;
+        bool fMaybeDirty;
+    // /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------
