@@ -99,11 +99,11 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
-		fWindow = SDL_CreateWindow("", 0, 0, 320, 480, windowStyle);
-		Rtt_ASSERT(fWindow);
+		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI;
+		fWindow = SDL_CreateWindow("", 0, 0, 1, 1, windowStyle);
+		SetIcon();
+
 		fGLcontext = SDL_GL_CreateContext(fWindow);
-		Rtt_ASSERT(fGLcontext);
 		SDL_GL_MakeCurrent(fWindow, fGLcontext);
 		SDL_GL_SetSwapInterval(1); // Enable vsync
 
@@ -120,6 +120,39 @@ namespace Rtt
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
 		return true;
+	}
+
+	void SolarApp::SetIcon()
+	{
+		int image_width = 0;
+		int image_height = 0;
+		string icon_path = GetStartupPath(NULL);
+		icon_path.append("/Resources/solar2d.png");
+		unsigned char* img = stbi_load(icon_path.c_str(), &image_width, &image_height, NULL, STBI_rgb_alpha);
+		if (img)
+		{
+			// Set up the pixel format color masks for RGB(A) byte arrays.
+			// Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
+			Uint32 rmask, gmask, bmask, amask;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+			int shift = (req_format == STBI_rgb) ? 8 : 0;
+			rmask = 0xff000000 >> shift;
+			gmask = 0x00ff0000 >> shift;
+			bmask = 0x0000ff00 >> shift;
+			amask = 0x000000ff >> shift;
+#else // little endian, like x86
+			rmask = 0x000000ff;
+			gmask = 0x0000ff00;
+			bmask = 0x00ff0000;
+			amask = 0xff000000;
+#endif
+
+			int depth = 32;
+			int pitch = 4 * image_width;
+			SDL_Surface* icon = SDL_CreateRGBSurfaceFrom(img, image_width, image_height, depth, pitch, rmask, gmask, bmask, amask);
+			SDL_SetWindowIcon(fWindow, icon);
+			SDL_FreeSurface(icon);
+		}
 	}
 
 	bool SolarApp::Init()
@@ -216,13 +249,13 @@ namespace Rtt
 						//						SDL_GetDesktopDisplayMode(0, &dm);
 						int w, h;
 						GetWindowSize(&w, &h);
-				//		fContext->SetSize(w, h);
+						//		fContext->SetSize(w, h);
 					}
 					break;
 				}
 				case SDL_WINDOWEVENT_MOVED:
 				{
-					if (IsHomeScreen(GetAppName()))
+					if (evt.window.windowID == SDL_GetWindowID(fWindow) && IsHomeScreen(GetAppName()))
 					{
 						fConfig["x"] = evt.window.data1;
 						fConfig["y"] = evt.window.data2;

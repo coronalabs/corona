@@ -16,6 +16,7 @@
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imfilebrowser.h"
+#include "imgui/stb_image.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>

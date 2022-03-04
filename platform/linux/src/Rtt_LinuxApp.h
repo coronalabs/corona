@@ -119,6 +119,7 @@ namespace Rtt
 		const std::string& GetSaveFolder() const { return fContext->GetSaveFolder(); }
 		void GetWindowPosition(int* x, int* y);
 		void GetWindowSize(int* w, int* h);
+		void SetIcon();
 
 	protected:
 
