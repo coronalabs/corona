@@ -1174,7 +1174,7 @@ namespace Rtt
 				}
 				if (ImGui::BeginTabItem("Desktop"))
 				{
-					DrawView("Desktop");
+					DrawView("desktop");
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();

@@ -114,10 +114,7 @@ namespace Rtt
 			if (IsHomeScreen(GetAppName()))
 			{
 				title = "Solar2D Simulator";
-				if (fSkins.Count() == 0)
-				{
-					fSkins.Load(fContext->GetRuntime()->VMContext().L());
-				}
+				fSkins.Load(fContext->GetRuntime()->VMContext().L());
 
 				GetPlatform()->fShowRuntimeErrors = fConfig["showRuntimeErrors"].to_bool();
 			}
@@ -133,11 +130,11 @@ namespace Rtt
 			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath().c_str());
 			Rtt_Log("Project sandbox folder: %s\n", GetSandboxPath(GetAppName()).c_str());
 			return true;
-	}
+		}
 
 		Rtt_LogException("Failed to load app %s\n", path.c_str());
 		return false;
-}
+	}
 
 	void SolarSimulator::SolarEvent(const SDL_Event& e)
 	{

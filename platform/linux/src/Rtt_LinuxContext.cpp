@@ -175,12 +175,8 @@ namespace Rtt
 		// read build.settings
 		if (fProjectSettings->HasBuildSettings())
 		{
-			string localeName = "fixme"; // = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
-			string langCode = localeName.substr(0, 2);
-			string countryCode = localeName.substr(3, 5);
 			int minWidth = fProjectSettings->GetMinWindowViewWidth();
 			int minHeight = fProjectSettings->GetMinWindowViewHeight();
-			//const char* windowTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());
 			const Rtt::NativeWindowMode* nativeWindowMode = fProjectSettings->GetDefaultWindowMode();
 			DeviceOrientation::Type orientation = fProjectSettings->GetDefaultOrientation();
 
@@ -331,6 +327,12 @@ namespace Rtt
 		if (tokens.size() >= 2)
 		{
 			fAppName = tokens[tokens.size() - 1];
+
+			// appName = exeFileName for standalone apps
+			if (fAppName == "Resources")
+			{
+				GetStartupPath(&fAppName);
+			}
 		}
 
 		fConfig.Load(GetConfigPath(fAppName));
@@ -398,8 +400,20 @@ namespace Rtt
 		SetSize(w, h);
 		SDL_SetWindowPosition(fWindow, x, y);
 
-		const string& title = fConfig["title"].to_string();
-		SetTitle(title.size() > 0 ? title.c_str() : fAppName.c_str());
+		string title = fConfig["title"].to_string();
+		if (title.empty())
+		{
+			string localeName = "en_US"; // fixme
+			string langCode = localeName.substr(0, 2);
+			string countryCode = localeName.substr(3, 2);
+			const char* projectTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());
+			if (projectTitle)
+			{
+				title = projectTitle;
+			}
+		}
+
+		SetTitle(title.empty() ? fAppName : title);
 
 		GetRuntime()->BeginRunLoop();
 		return true;
