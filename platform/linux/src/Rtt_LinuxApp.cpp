@@ -29,6 +29,7 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_HTTPClient.h"
+#include "Rtt_LinuxKeyListener.h"
 #include <curl/curl.h>
 #include <utility>		// for pairs
 #include "lua.h"
@@ -464,6 +465,46 @@ namespace Rtt
 					fContext->DispatchEvent(mouseEvent);
 					break;
 				}
+			}
+
+			case SDL_KEYDOWN:
+			{
+				// ignore key repeat
+				if (evt.key.repeat == 0)
+				{
+					SDL_Keycode	keycode = evt.key.keysym.sym;
+					uint16_t mod = evt.key.keysym.mod;
+					bool isNumLockDown = mod & KMOD_NUM ? true : false;
+					bool isCapsLockDown = mod & KMOD_CAPS ? true : false;
+					bool isShiftDown = mod & KMOD_SHIFT ? true : false;
+					bool isCtrlDown = mod & KMOD_CTRL ? true : false;
+					bool isAltDown = mod & KMOD_ALT ? true : false;
+					bool isCommandDown = mod & KMOD_GUI ? true : false;
+
+					PlatformInputDevice* dev = NULL;
+					const char* keyName = GetKeyName(keycode);
+					KeyEvent ke(dev, KeyEvent::kDown, keyName, keycode, isShiftDown, isAltDown, isCtrlDown, isCommandDown);
+					GetRuntime()->DispatchEvent(ke);
+				}
+				break;
+			}
+
+			case SDL_KEYUP:
+			{
+				SDL_Keycode	keycode = evt.key.keysym.sym;
+				uint16_t mod = evt.key.keysym.mod;
+				bool isNumLockDown = mod & KMOD_NUM ? true : false;
+				bool isCapsLockDown = mod & KMOD_CAPS ? true : false;
+				bool isShiftDown = mod & KMOD_SHIFT ? true : false;
+				bool isCtrlDown = mod & KMOD_CTRL ? true : false;
+				bool isAltDown = mod & KMOD_ALT ? true : false;
+				bool isCommandDown = mod & KMOD_GUI ? true : false;
+
+				PlatformInputDevice* dev = NULL;
+				const char* keyName = GetKeyName(keycode);
+				KeyEvent ke(dev, KeyEvent::kUp, keyName, keycode, isShiftDown, isAltDown, isCtrlDown, isCommandDown);
+				GetRuntime()->DispatchEvent(ke);
+				break;
 			}
 
 			default:

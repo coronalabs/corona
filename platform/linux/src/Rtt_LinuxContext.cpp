@@ -60,7 +60,6 @@ namespace Rtt
 		: fRuntime(NULL)
 		, fRuntimeDelegate(new LinuxRuntimeDelegate())
 		, fMouseListener(NULL)
-		, fKeyListener(NULL)
 		, fPlatform(NULL)
 		, fTouchDeviceExist(false)
 		, fMode("normal")
@@ -82,7 +81,6 @@ namespace Rtt
 		fConfig["h"] = h;
 
 		delete fMouseListener;
-		delete fKeyListener;
 		delete fRuntime;
 		delete fRuntimeDelegate;
 		delete fPlatform;
@@ -274,7 +272,6 @@ namespace Rtt
 
 		fPlatform->setWindow(this);
 		fMouseListener = new LinuxMouseListener(*fRuntime);
-		fKeyListener = new LinuxKeyListener(*fRuntime);
 
 		// Initialize Joystick Support:
 		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)fPlatform->GetDevice().GetInputDeviceManager();
