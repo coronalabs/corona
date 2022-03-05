@@ -151,7 +151,7 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 Renderer::~Renderer()
 {
     Rtt_DELETE( fGeometryPool );
-    
+
     DestroyQueuedGPUResources();
     
     Rtt_DELETE( fBackCommandBuffer );
