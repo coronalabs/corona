@@ -70,7 +70,6 @@ namespace Rtt
 		fInstallDir.Set(installDir);
 		fStatusBarMode = MPlatform::StatusBarMode::kDefaultStatusBar;
 		isMouseCursorVisible = true;
-	//	fRuntimeErrorDialog = 0; //vv new LinuxRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
 	}
 
 	LinuxPlatform::~LinuxPlatform()

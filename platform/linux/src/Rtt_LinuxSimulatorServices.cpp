@@ -33,8 +33,7 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::CloneProject() const
 	{
-//		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
-//		solarSimulator->OnCloneProject(cloneProjectEvent);
+		PushEvent(sdl::OnCloneProject);
 		return true;
 	}
 

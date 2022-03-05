@@ -900,7 +900,6 @@ namespace Rtt
 		// check if project folder already exists and that the height and width are numbers
 		if (Rtt_IsDirectory(projectPath.c_str()))
 		{
-			//wxMessageBox(wxT("Project of that name already exists."), wxT("Duplicate Project Name"), wxICON_INFORMATION);
 			Rtt_LogException("Project of that name already exists\n");
 			return false;
 		}

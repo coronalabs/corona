@@ -191,11 +191,7 @@ namespace Rtt
 
 				if (size > 0 && face)
 				{
-					//					bool rc = wxFont::AddPrivateFont(name);
-					//					wxFont wxf = fControl->GetFont();
-					//					wxf.SetPixelSize(wxSize(0, size)); // hack 0.8
-					//					wxf.SetFaceName(face);
-						//				fControl->SetFont(wxf);
+					// todo
 				}
 			}
 		}

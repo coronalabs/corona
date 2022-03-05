@@ -187,10 +187,10 @@ namespace Rtt
 
 			if (fullScreen)
 			{
-				//				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
-				//				wxRect screen = display.GetClientArea();
-				//				width = screen.width;
-				//				height = screen.height;
+				SDL_DisplayMode DM;
+				SDL_GetCurrentDisplayMode(0, &DM);
+				width = DM.w;
+				height = DM.h;
 			}
 			else
 			{
