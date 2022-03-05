@@ -74,7 +74,6 @@ namespace Rtt
 		int GetHeight() const;
 		void SetHeight(int val);
 		DeviceOrientation::Type GetOrientation() const { return fRuntimeDelegate->fOrientation; }
-		const std::string& GetTitle() const { return fTitle; }
 		void Flush();
 		bool LoadApp(const std::string& appPath);
 		const std::string& GetAppPath() const { return fPathToApp; }
@@ -94,11 +93,13 @@ namespace Rtt
 
 		void SetSize(int w, int h);
 
+		std::string GetTitle() const;
+		void SetTitle(const std::string& title);
+
 	private:
 
 		void Init();
 
-		std::string fTitle;
 		LinuxRuntime* fRuntime;
 		LinuxRuntimeDelegate* fRuntimeDelegate;
 		LinuxMouseListener* fMouseListener;

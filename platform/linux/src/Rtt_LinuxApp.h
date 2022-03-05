@@ -93,7 +93,6 @@ namespace Rtt
 		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
 
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
-		void SetTitle(const std::string& name);
 
 		void RenderGUI();
 		inline void Pause() { fContext->Pause(); }
@@ -101,7 +100,6 @@ namespace Rtt
 		inline void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
 		void Log(const char* buf, int len);
 
-		const std::string& GetTitle() { return fContext->GetTitle(); };
 		bool IsFullScreen() { return false; }
 		bool IsMinimized() { return false; }
 		bool IsIconized() { return false; }
@@ -120,6 +118,9 @@ namespace Rtt
 		void GetWindowPosition(int* x, int* y);
 		void GetWindowSize(int* w, int* h);
 		void SetIcon();
+
+		std::string GetTitle() const { return fContext->GetTitle(); }
+		void SetTitle(const std::string& name) { fContext->SetTitle(name); }
 
 	protected:
 

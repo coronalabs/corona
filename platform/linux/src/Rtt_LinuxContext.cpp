@@ -74,8 +74,8 @@ namespace Rtt
 	SolarAppContext::~SolarAppContext()
 	{
 		int w, h, x, y;
-		SDL_GetWindowPosition(fWindow ,&x, &y);
-		SDL_GetWindowSize(fWindow , &w, &h);
+		SDL_GetWindowPosition(fWindow, &x, &y);
+		SDL_GetWindowSize(fWindow, &w, &h);
 		fConfig["x"] = x;
 		fConfig["y"] = y;
 		fConfig["w"] = w;
@@ -180,14 +180,9 @@ namespace Rtt
 			string countryCode = localeName.substr(3, 5);
 			int minWidth = fProjectSettings->GetMinWindowViewWidth();
 			int minHeight = fProjectSettings->GetMinWindowViewHeight();
-			const char* windowTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());
+			//const char* windowTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());
 			const Rtt::NativeWindowMode* nativeWindowMode = fProjectSettings->GetDefaultWindowMode();
 			DeviceOrientation::Type orientation = fProjectSettings->GetDefaultOrientation();
-
-			if (windowTitle != NULL)
-			{
-				fTitle = windowTitle;
-			}
 
 			if (*nativeWindowMode == Rtt::NativeWindowMode::kFullscreen)
 			{
@@ -347,14 +342,14 @@ namespace Rtt
 			chdir(GetAppPath().c_str());
 		}
 		else
-		if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
-		{
-			chdir(GetAppPath().c_str());
-		}
-		else
-		{
-			Rtt_ASSERT_NOT_REACHED();
-		}
+			if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
+			{
+				chdir(GetAppPath().c_str());
+			}
+			else
+			{
+				Rtt_ASSERT_NOT_REACHED();
+			}
 
 		// load app
 
@@ -392,15 +387,19 @@ namespace Rtt
 		lua_pushcfunction(L, print2console);
 		lua_setglobal(L, "print");
 
-		int x = fConfig["x"].to_int() > 0 ? fConfig["x"].to_int() : 0;
-		int y = fConfig["y"].to_int() > 0 ? fConfig["y"].to_int() : 0;
-		SDL_SetWindowPosition(fWindow, x, y);
-
 		int w = fConfig["w"].to_int() > 0 ? fConfig["w"].to_int() : GetWidth();
 		int h = fConfig["h"].to_int() > 0 ? fConfig["h"].to_int() : GetHeight();
-		SetSize(w, h);
 
-		app->SetTitle(fTitle.size() > 0 ? fTitle.c_str() : fAppName.c_str());
+		SDL_DisplayMode dm;
+		SDL_GetCurrentDisplayMode(0, &dm);
+		int x = fConfig["x"].to_int() > 0 ? fConfig["x"].to_int() : (dm.w - w) / 2;
+		int y = fConfig["y"].to_int() > 0 ? fConfig["y"].to_int() : (dm.h - h) / 2;
+
+		SetSize(w, h);
+		SDL_SetWindowPosition(fWindow, x, y);
+
+		const string& title = fConfig["title"].to_string();
+		SetTitle(title.size() > 0 ? title.c_str() : fAppName.c_str());
 
 		GetRuntime()->BeginRunLoop();
 		return true;
@@ -485,6 +484,19 @@ namespace Rtt
 		fRuntime->DispatchEvent(ResizeEvent());
 
 		// todo: refresh native elements
+	}
+
+	string SolarAppContext::GetTitle() const
+	{
+		return SDL_GetWindowTitle(fWindow);
+	}
+
+	void SolarAppContext::SetTitle(const string& xtitle)
+	{
+		string title = xtitle == HOMESCREEN_ID ? "Solar2D Simulator" : xtitle;
+		SDL_SetWindowTitle(fWindow, title.c_str());
+		SDL_ShowWindow(fWindow);
+		fConfig["title"] = title;
 	}
 
 } // namespace Rtt

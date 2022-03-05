@@ -351,7 +351,7 @@ namespace Rtt
 		fileDialog.SetWindowSize(w, h);
 		fileDialog.SetTitle("##DlgOpen");
 		fileDialog.SetTypeFilters({ ".lua" });
-		fileDialog.SetPwd(startFolder);
+		fileDialog.SetPwd(startFolder.empty() ? GetHomePath() : startFolder);
 		fileDialog.Open();
 	}
 

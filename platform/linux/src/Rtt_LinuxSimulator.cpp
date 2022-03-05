@@ -116,7 +116,7 @@ namespace Rtt
 				title = "Solar2D Simulator";
 				if (fSkins.Count() == 0)
 				{
-					fSkins.Load(GetContext()->GetRuntime()->VMContext().L());
+					fSkins.Load(fContext->GetRuntime()->VMContext().L());
 				}
 
 				GetPlatform()->fShowRuntimeErrors = fConfig["showRuntimeErrors"].to_bool();
@@ -128,10 +128,7 @@ namespace Rtt
 
 				WatchFolder(GetAppPath());
 				LinuxSimulatorView::OnLinuxPluginGet(GetAppPath().c_str(), GetAppName().c_str(), fContext->GetPlatform());
-				title = fContext->GetTitle();
 			}
-
-			SetTitle(title);
 
 			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath().c_str());
 			Rtt_Log("Project sandbox folder: %s\n", GetSandboxPath(GetAppName()).c_str());
@@ -175,7 +172,7 @@ namespace Rtt
 
 		case sdl::OnOpenInEditor:
 		{
-			string path = GetContext()->GetAppPath();
+			string path = fContext->GetAppPath();
 			path.append("/main.lua");
 			OpenURL(path);
 			break;
@@ -183,6 +180,7 @@ namespace Rtt
 
 		case sdl::OnCloseProject:
 		{
+			fDlg = NULL;
 			string path(GetStartupPath(NULL));
 			path.append("/Resources/homescreen/main.lua");
 			OnOpen(path);
@@ -222,7 +220,7 @@ namespace Rtt
 		}
 
 		case sdl::OnShowProjectFiles:
-			OpenURL(GetContext()->GetAppPath());
+			OpenURL(fContext->GetAppPath());
 			break;
 
 		case sdl::OnShowProjectSandbox:
@@ -353,11 +351,11 @@ namespace Rtt
 		SDL_DisplayMode screen;
 		if (SDL_GetCurrentDisplayMode(0, &screen) == 0)
 		{
-			int proposedWidth = GetContext()->GetWidth() * skinScaleFactor;
-			int proposedHeight = GetContext()->GetHeight() * skinScaleFactor;
+			int proposedWidth = fContext->GetWidth() * skinScaleFactor;
+			int proposedHeight = fContext->GetHeight() * skinScaleFactor;
 			if (proposedWidth <= screen.w && proposedHeight <= screen.h)
 			{
-				GetContext()->SetSize(proposedWidth, proposedHeight);
+				fContext->SetSize(proposedWidth, proposedHeight);
 			}
 		}
 	}
@@ -367,11 +365,11 @@ namespace Rtt
 		SDL_DisplayMode screen;
 		if (SDL_GetCurrentDisplayMode(0, &screen) == 0)
 		{
-			int proposedWidth = GetContext()->GetWidth() / skinScaleFactor;
-			int proposedHeight = GetContext()->GetHeight() / skinScaleFactor;
+			int proposedWidth = fContext->GetWidth() / skinScaleFactor;
+			int proposedHeight = fContext->GetHeight() / skinScaleFactor;
 			if (proposedWidth >= 320) //skinMinWidth)
 			{
-				GetContext()->SetSize(proposedWidth, proposedHeight);
+				fContext->SetSize(proposedWidth, proposedHeight);
 			}
 		}
 	}
@@ -381,8 +379,9 @@ namespace Rtt
 		SDL_DisplayMode screen;
 		if (SDL_GetCurrentDisplayMode(0, &screen) == 0)
 		{
-			string newWindowTitle(GetContext()->GetTitle());
-			newWindowTitle.append(" - ").append(skin->skinTitle);
+			string title(GetAppName());
+			title.append(" - ").append(skin->skinTitle);
+			fContext->SetTitle(title);
 
 			int w = skin->screenWidth;
 			int h = skin->screenHeight;
@@ -391,7 +390,7 @@ namespace Rtt
 				w /= skinScaleFactor;
 				h /= skinScaleFactor;
 			}
-			GetContext()->SetSize(w, h);
+			fContext->SetSize(w, h);
 		}
 	}
 

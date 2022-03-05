@@ -100,7 +100,7 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
 		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI;
-		fWindow = SDL_CreateWindow("", 0, 0, 1, 1, windowStyle);
+		fWindow = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, windowStyle);
 		SetIcon();
 
 		fGLcontext = SDL_GL_CreateContext(fWindow);
@@ -475,12 +475,6 @@ namespace Rtt
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
 		}
 		return true;
-	}
-
-	void SolarApp::SetTitle(const string& name)
-	{
-		SDL_SetWindowTitle(fWindow, IsHomeScreen(name) ? "Solar2D Simulator" : name.c_str());
-		SDL_ShowWindow(fWindow);
 	}
 
 	void SolarApp::Run()
