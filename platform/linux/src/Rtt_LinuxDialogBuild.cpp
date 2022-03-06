@@ -202,7 +202,7 @@ namespace Rtt
 		begin();
 		ImGui::BeginDisabled(fThread != NULL);
 
-		if (ImGui::Begin("##DlgAndroidBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgAndroidBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 			LinuxPlatform* platform = app->GetPlatform();
@@ -606,7 +606,7 @@ namespace Rtt
 		begin();
 		ImGui::BeginDisabled(fThread != NULL);
 
-		if (ImGui::Begin("##DlgHTML5Build", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgHTML5Build", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 			LinuxPlatform* platform = app->GetPlatform();
@@ -809,7 +809,7 @@ namespace Rtt
 		begin();
 		ImGui::BeginDisabled(fThread != NULL);
 
-		if (ImGui::Begin("##DlgLinuxBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgLinuxBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 			LinuxPlatform* platform = app->GetPlatform();

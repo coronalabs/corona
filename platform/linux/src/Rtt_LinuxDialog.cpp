@@ -290,7 +290,7 @@ namespace Rtt
 	void DlgAbout::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -362,7 +362,7 @@ namespace Rtt
 	void DlgOpen::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgOpen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgOpen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			fileDialog.Display();
 			if (fileDialog.HasSelected())
@@ -739,7 +739,7 @@ namespace Rtt
 	void DlgNewProject::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgNewProject", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgNewProject", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			fileDialog.Display();
 			if (fileDialog.HasSelected())
@@ -1000,7 +1000,7 @@ namespace Rtt
 	void DlgPreferences::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -1071,7 +1071,7 @@ namespace Rtt
 	void DlgAskRelaunch::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgAskRelaunch", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgAskRelaunch", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -1137,7 +1137,7 @@ namespace Rtt
 	void DlgViewAs::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgViewAs", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgViewAs", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar))
 		{
 			int w, h;
 			GetWindowSize(&w, &h);
@@ -1263,7 +1263,7 @@ namespace Rtt
 	void DlgAlert::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgAlert", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgAlert", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			int w, h;
 			GetWindowSize(&w, &h);
@@ -1328,7 +1328,7 @@ namespace Rtt
 	void DlgRuntimeError::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgRuntimeError", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgRuntimeError", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			int w, h;
 			GetWindowSize(&w, &h);
