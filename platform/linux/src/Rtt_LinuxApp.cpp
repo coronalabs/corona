@@ -224,11 +224,46 @@ namespace Rtt
 				fContext->Pause();
 				break;
 			}
+
+			case sdl::OnSetCursor:
+			{
+				string cursorName = (const char*)evt.user.data1;
+				free(evt.user.data1);
+				// todo
+				break;
+			}
+			case sdl::OnMouseCursorVisible:
+				SDL_ShowCursor(evt.user.code ? SDL_ENABLE : SDL_DISABLE);
+				break;
+
+			case sdl::OnWindowNormal:
+				SDL_RestoreWindow(fWindow);
+				fContext->Resume();
+				break;
+
+			case sdl::OnWindowMaximized:
+				SDL_MaximizeWindow(fWindow);
+				fContext->Resume();
+				break;
+
+			case sdl::OnWindowFullscreen:
+				SDL_SetWindowFullscreen(fWindow, SDL_WINDOW_FULLSCREEN);	// SDL_WINDOW_FULLSCREEN_DESKTOP
+				fContext->Resume();
+				break;
+
+			case sdl::OnWindowMinimized:
+				SDL_MinimizeWindow(fWindow);
+				fContext->Pause();
+				break;
+
 			case SDL_WINDOWEVENT:
 			{
 				//SDL_Log("SDL_WINDOWEVENT %d: %d %d,%d", e.window.windowID, e.window.event, e.window.data1, e.window.data2);
 				switch (evt.window.event)
 				{
+				case SDL_WINDOWEVENT_MAXIMIZED:
+					break;
+
 				case SDL_WINDOWEVENT_SHOWN:
 				case SDL_WINDOWEVENT_RESTORED:
 					if (evt.window.windowID == SDL_GetWindowID(fWindow))
@@ -558,6 +593,7 @@ namespace Rtt
 					}
 				}
 
+				// actually the read returns the list of change events happens. Here, read the change event one by one and process it accordingly.
 				// actually the read returns the list of change events happens. Here, read the change event one by one and process it accordingly.
 				int i = 0;
 				while (i < length)

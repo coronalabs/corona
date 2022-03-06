@@ -65,7 +65,13 @@ enum sdl
 	OnStyleColorsClassic,
 	OnStyleColorsDark,
 	OnViewAs,
-	OnChangeView
+	OnChangeView,
+	OnWindowNormal,
+	OnWindowMinimized,
+	OnWindowMaximized,
+	OnWindowFullscreen,
+	OnMouseCursorVisible,
+	OnSetCursor
 };
 
 namespace Rtt
