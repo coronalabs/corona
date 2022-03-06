@@ -115,19 +115,8 @@ namespace Rtt
 
 	PlatformVideoPlayer* LinuxPlatform::GetVideoPlayer(const Rtt::ResourceHandle<lua_State>& handle) const
 	{
-#if (wxUSE_MEDIACTRL == 1)
-		if (!fVideoPlayer)
-		{
-			int w, h;
-			fScreenSurface->getWindowSize(&w, &h);
-
-			fVideoPlayer = Rtt_NEW(fAllocator, LinuxVideoPlayer(handle, *fAllocator, w, h));
-		}
-
-		return fVideoPlayer;
-#else
+		Rtt_ASSERT(0 && "todo");
 		return NULL;
-#endif
 	}
 
 	PlatformImageProvider* LinuxPlatform::GetImageProvider(const Rtt::ResourceHandle<lua_State>& handle) const
@@ -170,7 +159,7 @@ namespace Rtt
 	NativeAlertRef LinuxPlatform::ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource) const
 	{
 		app->ShowNativeAlert(title, msg, buttonLabels, numButtons, resource);
-		return  (NativeAlertRef) 0x1234;
+		return  (NativeAlertRef)0x1234;
 	}
 
 	void LinuxPlatform::CancelNativeAlert(NativeAlertRef alert, S32 index) const
@@ -534,7 +523,7 @@ namespace Rtt
 	{
 		if (Rtt_StringCompareNoCase(actionName, "exitApplication") == 0)
 		{
-		//todo	app->Close(true);
+			//todo	app->Close(true);
 			return true;
 		}
 
@@ -543,16 +532,14 @@ namespace Rtt
 
 	void LinuxPlatform::RuntimeErrorNotification(const char* errorType, const char* message, const char* stacktrace) const
 	{
-		/*if (!fShowRuntimeErrors || fRuntimeErrorDialog->IsShown())
-		{
-			return;
-		}
-
-		fRuntimeErrorDialog->SetProperties(errorType, message, stacktrace);
-
-		if (fRuntimeErrorDialog->ShowModal() == wxID_OK)
-		{
-		}*/
+		SDL_Event e = {};
+		e.type = sdl::OnRuntimeError;
+		char** data = new char* [3];
+		data[0] = strdup(errorType);
+		data[1] = strdup(message);
+		data[2] = strdup(stacktrace);
+		e.user.data1 = data;
+		SDL_PushEvent(&e);
 	}
 
 	const MCrypto& LinuxPlatform::GetCrypto() const
@@ -867,7 +854,7 @@ namespace Rtt
 		{
 			if (lua_type(L, valueIndex) == LUA_TSTRING)
 			{
-				const char *cursorName = lua_tostring(L, valueIndex);
+				const char* cursorName = lua_tostring(L, valueIndex);
 				SDL_Event e = {};
 				e.type = sdl::OnSetCursor;
 				e.user.data1 = strdup(cursorName);

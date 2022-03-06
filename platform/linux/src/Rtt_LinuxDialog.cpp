@@ -1307,5 +1307,53 @@ namespace Rtt
 		}
 	}
 
+	//
+	// DlgRuntimeError
+	//
+
+	DlgRuntimeError::DlgRuntimeError(const char* title, int w, int h, const char* errorType, const char* message, const char* stacktrace)
+		: Window(title, w, h)
+		, fErrorType(errorType)
+		, fMessage(message)
+		, fStackTrace(stacktrace)
+	{
+	}
+
+	DlgRuntimeError::~DlgRuntimeError()
+	{
+	}
+
+	void DlgRuntimeError::Draw()
+	{
+		begin();
+		if (ImGui::Begin("##DlgRuntimeError", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		{
+			int w, h;
+			GetWindowSize(&w, &h);
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + w - 40);
+			ImGui::SetCursorPosX(20);
+			ImGui::SetCursorPosY(20);
+			ImGui::TextWrapped(fStackTrace.c_str());
+			ImGui::PopTextWrapPos();
+
+			string s = "OK";
+			ImGui::Dummy(ImVec2(20, 20));
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			bool isOkPressed = ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0));
+			FocusHere();
+
+			//  (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
+			if (isOkPressed || ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsKeyPressed(ImGuiKey_Enter))
+			{
+				PushEvent(sdl::onCloseDialog);
+			}
+
+			ImGui::End();
+		}
+		end();
+	}
+
 }	// Rtt
 

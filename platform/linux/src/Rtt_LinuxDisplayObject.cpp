@@ -133,7 +133,7 @@ namespace Rtt
 
 	void LinuxDisplayObject::setBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 	{
-		//			fWindow->SetBackgroundColour(wxColour(r, g, b, a));
+		// todo
 	}
 
 	void LinuxDisplayObject::Prepare(const Display& display)

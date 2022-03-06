@@ -184,4 +184,18 @@ namespace Rtt
 		LuaResource* fCallback;
 	};
 
+	struct DlgRuntimeError : public Window
+	{
+		DlgRuntimeError(const char* title, int w, int h, const char* errorType, const char* message, const char* stacktrace);
+		virtual ~DlgRuntimeError();
+
+		void Draw() override;
+
+	private:
+
+		std::string fErrorType;
+		std::string fMessage;
+		std::string fStackTrace;
+	};
+
 }

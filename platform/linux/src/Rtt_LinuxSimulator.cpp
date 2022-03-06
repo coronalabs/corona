@@ -147,6 +147,17 @@ namespace Rtt
 			break;
 		}
 
+		case sdl::OnRuntimeError:
+		{
+			char** data = (char**)e.user.data1;
+			fDlg = new DlgRuntimeError("Runtime Error", 640, 350, data[0], data[1], data[2]);
+			free(data[0]);
+			free(data[1]);
+			free(data[2]);
+			delete[] data;
+			break;
+		}
+
 		case sdl::OnOpenProject:
 		{
 			if (e.user.data1)
