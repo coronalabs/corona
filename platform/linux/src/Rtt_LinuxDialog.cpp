@@ -1044,6 +1044,8 @@ namespace Rtt
 				cfg["openLastProject"] = fOpenlastProject;
 				cfg["ColorScheme"] = fStyleIndex == 0 ? "Light" : (fStyleIndex == 2 ? "Dark" : "Standard");
 				cfg.Save();
+
+				PushEvent(sdl::OnPreferencesChanged);
 				PushEvent(sdl::onCloseDialog);
 			}
 
@@ -1335,17 +1337,27 @@ namespace Rtt
 			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + w - 40);
 			ImGui::SetCursorPosX(20);
 			ImGui::SetCursorPosY(20);
-			ImGui::TextWrapped(fStackTrace.c_str());
+			ImGui::TextWrapped(fMessage.c_str());
 			ImGui::PopTextWrapPos();
 
-			string s = "OK";
-			ImGui::Dummy(ImVec2(20, 20));
-			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
-			bool isOkPressed = ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0));
+			ImGui::Dummy(ImVec2(70, 30));
+			ImGui::TextUnformatted("Do you want to relaunch the project?");
+
+			// ok + cancel
+			string s = "Yes";
+			ImGui::Dummy(ImVec2(70, 30));
+			int ok_width = 100;
+			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter))
+			{
+				PushEvent(sdl::onCloseDialog);
+				PushEvent(sdl::OnRelaunch);
+			}
 			FocusHere();
 
-			//  (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
-			if (isOkPressed || ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsKeyPressed(ImGuiKey_Enter))
+			s = "No";
+			ImGui::SameLine();
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}

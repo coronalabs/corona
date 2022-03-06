@@ -110,6 +110,10 @@ namespace Rtt
 			Window::SetStyle();
 			CreateMenu();
 
+			bool showErrors = fConfig["showRuntimeErrors"].to_bool();
+			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrorsSet, true);
+			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrors, showErrors);
+
 			string title;
 			if (IsHomeScreen(GetAppName()))
 			{
@@ -147,6 +151,13 @@ namespace Rtt
 			break;
 		}
 
+		case sdl::OnPreferencesChanged:
+		{
+			bool showErrors = fConfig["showRuntimeErrors"].to_bool();
+			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrorsSet, true);
+			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrors, showErrors);
+			break;
+		}
 		case sdl::OnRuntimeError:
 		{
 			char** data = (char**)e.user.data1;

@@ -72,7 +72,8 @@ enum sdl
 	OnWindowFullscreen,
 	OnMouseCursorVisible,
 	OnSetCursor,
-	OnRuntimeError
+	OnRuntimeError,
+	OnPreferencesChanged
 };
 
 namespace Rtt
