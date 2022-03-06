@@ -59,7 +59,6 @@ namespace Rtt
 	SolarAppContext::SolarAppContext(SDL_Window* window)
 		: fRuntime(NULL)
 		, fRuntimeDelegate(new LinuxRuntimeDelegate())
-		, fMouseListener(NULL)
 		, fPlatform(NULL)
 		, fTouchDeviceExist(false)
 		, fMode("normal")
@@ -80,7 +79,6 @@ namespace Rtt
 		fConfig["w"] = w;
 		fConfig["h"] = h;
 
-		delete fMouseListener;
 		delete fRuntime;
 		delete fRuntimeDelegate;
 		delete fPlatform;
@@ -271,7 +269,6 @@ namespace Rtt
 		}
 
 		fPlatform->setWindow(this);
-		fMouseListener = new LinuxMouseListener(*fRuntime);
 
 		// Initialize Joystick Support:
 		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)fPlatform->GetDevice().GetInputDeviceManager();

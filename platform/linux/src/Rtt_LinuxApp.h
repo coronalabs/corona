@@ -83,15 +83,15 @@ namespace Rtt
 		void Run();
 		bool PollEvents();
 
-		Runtime* GetRuntime() { return fContext->GetRuntime(); }
-		LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
+		Runtime* GetRuntime() const { return fContext ? fContext->GetRuntime() : NULL; }
+		LinuxPlatform* GetPlatform() const { return fContext ? fContext->GetPlatform() : NULL; }
 
 		void OnIconized();
 		void SetWindowSize(int newWidth, int newHeight);
 		SolarAppContext* GetContext() const { return fContext; }
 
 		virtual bool IsRunningOnSimulator() { return false; }
-		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
+		bool IsSuspended() const { return GetRuntime()->IsSuspended(); }
 
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
 
@@ -133,6 +133,7 @@ namespace Rtt
 
 		std::string fResourceDir;
 		Config fConfig;
+		smart_ptr<LinuxMouseListener> fMouse;
 
 		// GUI
 		ImGuiContext* fImCtx;

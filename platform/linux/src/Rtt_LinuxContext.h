@@ -61,8 +61,6 @@ namespace Rtt
 		Runtime* GetRuntime() { return fRuntime; }
 		LinuxRuntimeDelegate* GetDelegate() { return fRuntimeDelegate; }
 		const Runtime* GetRuntime() const { return fRuntime; }
-		LinuxMouseListener* GetMouseListener() { return fMouseListener; }
-		const LinuxMouseListener* GetMouseListener() const { return fMouseListener; }
 		void Pause();
 		void Resume();
 		void RestartRenderer();
@@ -100,7 +98,6 @@ namespace Rtt
 
 		LinuxRuntime* fRuntime;
 		LinuxRuntimeDelegate* fRuntimeDelegate;
-		LinuxMouseListener* fMouseListener;
 		std::string fPathToApp;
 		std::string fAppName;
 		LinuxPlatform* fPlatform;

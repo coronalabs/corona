@@ -1213,8 +1213,7 @@ namespace Rtt
 				}
 			}
 		}
-
-		return rc == false ? OperationResult::FailedWith("This API is not supported on this platform.") : Rtt::OperationResult::kSucceeded;
+		return rc == false ? OperationResult::FailedWith("SetPreferences failed") : Rtt::OperationResult::kSucceeded;
 	}
 
 	OperationResult LinuxPlatform::DeletePreferences(const char* categoryName, const char** keyNameArray, U32 keyNameCount) const
@@ -1235,8 +1234,7 @@ namespace Rtt
 			int n = Rtt_DeleteFile(path.c_str());
 			rc = n == 0 ? true : false;
 		}
-
-		return rc == false ? OperationResult::FailedWith("This API is not supported on this platform.") : Rtt::OperationResult::kSucceeded;
+		return rc == false ? OperationResult::FailedWith("DeletePreferences failed") : Rtt::OperationResult::kSucceeded;
 	}
 
 	void LinuxPlatform::Suspend() const
