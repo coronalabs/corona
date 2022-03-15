@@ -287,20 +287,20 @@ namespace Rtt
 
 		// Fetch the requested preference value.
 		const char *resultPointer = "";
-		//wxString localeName = wxLocale::GetLanguageInfo(wxLocale::GetSystemLanguage())->CanonicalName.Lower();
+		string localeName = "en_US"; // hack
 
 		switch (category)
 		{
 			case kLocaleLanguage:
-				//resultPointer = localeName.ToStdString().substr(0, 2).c_str();
+				resultPointer = localeName.substr(0, 2).c_str();
 				break;
 			case kLocaleCountry:
-				//resultPointer = localeName.ToStdString().substr(3, 5).c_str();
+				resultPointer = localeName.substr(3, 2).c_str();
 				break;
 			case kLocaleIdentifier:
 			case kUILanguage:
 			{
-				//resultPointer = localeName.ToStdString().c_str();
+				resultPointer = localeName.c_str();
 				break;
 			}
 			case kDefaultStatusBarFile:

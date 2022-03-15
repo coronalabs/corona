@@ -14,7 +14,6 @@
 #include "Rtt_SimulatorAnalytics.h"
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
-#include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxUtils.h"
 #include "Core/Rtt_FileSystem.h"
 
@@ -34,8 +33,7 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::CloneProject() const
 	{
-//		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
-//		solarSimulator->OnCloneProject(cloneProjectEvent);
+		PushEvent(sdl::OnCloneProject);
 		return true;
 	}
 
@@ -86,7 +84,7 @@ namespace Rtt
 
 	const char* LinuxSimulatorServices::GetCurrProjectPath() const
 	{
-		return app->GetContext()->GetAppPath();
+		return app->GetAppPath().c_str();
 	}
 
 	// stub to match Mac implementation

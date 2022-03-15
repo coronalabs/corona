@@ -24,7 +24,7 @@ local function callOnShellComplete(param)
 end
 
 function overlay:setStatusBarMode( mode )
-	print( "WARNING: setStatusBarMode is not supported in Linux Simulator" )
+--	print( "WARNING: setStatusBarMode is not supported in Linux Simulator" )
 end
 
 if params.showMessage then
