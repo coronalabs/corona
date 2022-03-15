@@ -4,22 +4,22 @@
 #include "Rtt_Event.h"
 #include "Core/Rtt_Types.h"
 #include "Rtt_Runtime.h"
-#include <string>
-#include <map>
+#include "Rtt_LinuxContainer.h"
+#include <SDL.h>
 
 namespace Rtt
 {
-	class LinuxMouseListener
+	struct LinuxMouseListener : public ref_counted
 	{
-	public:
 		float fScaleX, fScaleY;
 
-	public:
-		LinuxMouseListener(Runtime &runtime);
+		LinuxMouseListener();
+
 		void TouchDown(int x, int y, int id);
 		void TouchMoved(int x, int y, int id);
 		void TouchUp(int x, int y, int id);
-		void DispatchEvent(const MEvent &e) const;
+		void DispatchEvent(const MEvent& e) const;
+		void OnEvent(const SDL_Event& evt, SDL_Window* window);
 
 	private:
 		struct pt
@@ -30,7 +30,6 @@ namespace Rtt
 			int y;
 		};
 
-		Runtime &fRuntime;
 		std::map<int, pt> fStartPoint; // finger id ==> point
 	};
 };

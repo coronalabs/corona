@@ -890,10 +890,7 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxClearSandboxDialog.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCloneProjectDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMenuEvents.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
@@ -930,10 +927,7 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxClearSandboxDialog.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCloneProjectDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMenuEvents.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
