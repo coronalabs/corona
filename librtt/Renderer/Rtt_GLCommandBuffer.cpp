@@ -788,7 +788,7 @@ GLCommandBuffer::Execute( bool measureGPU )
 			  else
 			  {
 				  texture->Bind( 0 );
-				  
+  
 				  glCopyTexSubImage2D( GL_TEXTURE_2D, 0, x, y, rect.xMin, (windowHeight - h) - rect.yMin, w, h );
 				  
 				  GL_CHECK_ERROR();

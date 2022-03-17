@@ -396,6 +396,7 @@ class CaptureObject : public RectObject
 		static CaptureObject *NewCapture( Rtt_Allocator*, TextureResourceCapture* capture );
 	
 		virtual void Draw( Renderer& renderer ) const;
+		virtual bool CanCull() const { return false; }
 		virtual bool HitTest( Rtt_Real, Rtt_Real ) const { return false; }
 
 	protected:
@@ -462,8 +463,8 @@ CaptureObject::Draw( Renderer& renderer ) const
 					
 	texBounds.xMin = floorf( texBounds.xMin );
 	texBounds.yMin = floorf( texBounds.yMin );
-	texBounds.xMax = ceilf( texBounds.xMax - Rtt_REAL_HALF );
-	texBounds.yMax = ceilf( texBounds.yMax - Rtt_REAL_HALF );
+	texBounds.xMax = ceilf( texBounds.xMax ) - 1;
+	texBounds.yMax = ceilf( texBounds.yMax ) - 1;
 
 	Rect rawRect = texBounds, bounds;
 	

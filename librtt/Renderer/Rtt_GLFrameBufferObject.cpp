@@ -8,9 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Renderer/Rtt_GLFrameBufferObject.h"
-// STEVE CHANGE
-//#include "Renderer/Rtt_GL.h"
-// /STEVE CHANGE
+
 #include "Renderer/Rtt_FrameBufferObject.h"
 #include "Renderer/Rtt_Texture.h"
 #include "Renderer/Rtt_GLTexture.h"
@@ -20,6 +18,8 @@
 #if defined( Rtt_EGL )
 	#include <EGL/egl.h>
 #endif
+
+#include <cstring>
 // /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
@@ -174,7 +174,7 @@ GLFrameBufferObject::GetTextureName()
 
 // STEVE CHANGE
 #if defined( Rtt_OPENGLES )
-	#define GL_GET_PROC(name, suffix) (PFNGL ## name ## suffix ## PROC) eglGetProcAddress( "gl" #name #suffix )
+	#define GL_GET_PROC(name, cap, suffix) (PFNGL ## cap ## suffix ## PROC) eglGetProcAddress( "gl" #name #suffix )
 #else
 	#define GL_GET_PROC(name, suffix) gl ## name ## suffix
 #endif
@@ -205,10 +205,20 @@ GLFrameBufferObject::HasFramebufferBlit()
 				sReadBufferBinding = GL_READ_FRAMEBUFFER_EXT;
 			}
 		#endif
-	#elif defined( GL_DRAW_FRAMEBUFFER_ANGLE )
-		sBlitFramebuffer = GL_GET_PROC( BlitFramebuffer, ANGLE );
+    #elif defined( GL_DRAW_FRAMEBUFFER_ANGLE )
+		sBlitFramebuffer = GL_GET_PROC( BlitFramebuffer, BLITFRAMEBUFFER, ANGLE );
 		sDrawBufferBinding = GL_DRAW_FRAMEBUFFER_ANGLE;
 		sReadBufferBinding = GL_READ_FRAMEBUFFER_ANGLE;
+
+		if (NULL != sBlitFramebuffer)
+		{
+			const char * extensions = (const char *)glGetString(GL_EXTENSIONS);
+
+			if (!strstr( extensions, "GL_ANGLE_framebuffer_blit" ))
+			{
+				sBlitFramebuffer = NULL;
+			}
+		}
 	#endif
 	}
 		
