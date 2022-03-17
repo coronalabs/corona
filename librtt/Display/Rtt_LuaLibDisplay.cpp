@@ -790,7 +790,7 @@ DisplayLibrary::newMesh( lua_State *L )
 		if ( lua_istable( L, -1) )
 		{
 			int parentArg = Lua::Normalize( L, -1 );
-			parent = LuaLibDisplay::GetParent( L, nextArg ); // <- STEVE CHANGE
+			parent = LuaLibDisplay::GetParent( L, parentArg ); // <- STEVE CHANGE
 		}
 		lua_pop( L, 1 );
 		
@@ -1286,7 +1286,7 @@ static int CreateTextObject( lua_State *L, bool isEmbossed )
 			if ( lua_istable( L, -1) )
 			{
 				int parentArg = Lua::Normalize( L, -1 );
-				parent = LuaLibDisplay::GetParent( L, nextArg ); // <- STEVE CHANGE
+				parent = LuaLibDisplay::GetParent( L, parentArg ); // <- STEVE CHANGE
 			}
 			else if (lua_type( L, -1 ) != LUA_TNIL)
 			{
