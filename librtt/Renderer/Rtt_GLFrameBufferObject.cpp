@@ -8,11 +8,19 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Renderer/Rtt_GLFrameBufferObject.h"
-
+// STEVE CHANGE
+//#include "Renderer/Rtt_GL.h"
+// /STEVE CHANGE
 #include "Renderer/Rtt_FrameBufferObject.h"
 #include "Renderer/Rtt_Texture.h"
 #include "Renderer/Rtt_GLTexture.h"
 #include "Core/Rtt_Assert.h"
+
+// STEVE CHANGE
+#if defined( Rtt_EGL )
+	#include <EGL/egl.h>
+#endif
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -102,10 +110,41 @@ GLFrameBufferObject::Destroy()
 					name );
 }
 
+// STEVE CHANGE
+#if defined( Rtt_WIN_ENV )
+	#define GL_TYPE_PREFIX GLAPIENTRY
+#else
+	#define GL_TYPE_PREFIX
+#endif
+
+typedef void (GL_TYPE_PREFIX *BlitFramebufferPtr)( GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
+typedef void (GL_TYPE_PREFIX *BindFramebufferPtr)( GLenum target, GLuint framebuffer );
+
+static BlitFramebufferPtr sBlitFramebuffer;
+static BindFramebufferPtr sBindFramebuffer;
+static GLenum sDrawBufferBinding;
+static GLenum sReadBufferBinding;
+// /STEVE CHANGE
+
 void 
-GLFrameBufferObject::Bind()
+GLFrameBufferObject::Bind( bool asDrawBuffer ) // <- STEVE CHANGE
 {
-	glBindFramebuffer( GL_FRAMEBUFFER, GetName() );
+	// STEVE CHANGE
+	if (asDrawBuffer)
+	{
+		Rtt_ASSERT( HasFramebufferBlit() );
+		
+		sBindFramebuffer( sDrawBufferBinding, GetName() );
+		sBindFramebuffer( sReadBufferBinding, 0 );
+	}
+	
+	else
+	{
+	// /STEVE CHANGE
+		glBindFramebuffer( GL_FRAMEBUFFER, GetName() );
+	// STEVE CHANGE
+	}
+	// /STEVE CHANGE
 	GL_CHECK_ERROR();
 }
 
@@ -132,6 +171,68 @@ GLFrameBufferObject::GetTextureName()
 
 	return param;
 }
+
+// STEVE CHANGE
+#if defined( Rtt_OPENGLES )
+	#define GL_GET_PROC(name, suffix) (PFNGL ## name ## suffix ## PROC) eglGetProcAddress( "gl" #name #suffix )
+#else
+	#define GL_GET_PROC(name, suffix) gl ## name ## suffix
+#endif
+
+bool
+GLFrameBufferObject::HasFramebufferBlit()
+{
+	static bool sIsInitialized;
+	
+	if (!sIsInitialized)
+	{
+		sIsInitialized = true;
+		sBindFramebuffer = glBindFramebuffer;
+	
+	#if !defined( Rtt_OPENGLES )
+		#if GL_ARB_framebuffer_object 
+			sBlitFramebuffer = glBlitFramebuffer;
+			sDrawBufferBinding = GL_DRAW_FRAMEBUFFER;
+			sReadBufferBinding = GL_READ_FRAMEBUFFER;
+		#endif
+			
+		#if GL_EXT_framebuffer_blit
+			if (!sBlitFramebuffer)
+			{
+				sBlitFramebuffer = GL_GET_PROC( BlitFramebuffer, EXT );
+				sBindFramebuffer = GL_GET_PROC( BindFramebuffer, EXT );
+				sDrawBufferBinding = GL_DRAW_FRAMEBUFFER_EXT;
+				sReadBufferBinding = GL_READ_FRAMEBUFFER_EXT;
+			}
+		#endif
+	#elif defined( GL_DRAW_FRAMEBUFFER_ANGLE )
+		sBlitFramebuffer = GL_GET_PROC( BlitFramebuffer, ANGLE );
+		sDrawBufferBinding = GL_DRAW_FRAMEBUFFER_ANGLE;
+		sReadBufferBinding = GL_READ_FRAMEBUFFER_ANGLE;
+	#endif
+	}
+		
+	return NULL != sBlitFramebuffer;
+}
+
+#undef GL_GET_PROC
+#undef GL_TYPE_PREFIX
+
+void
+GLFrameBufferObject::Blit( int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, GLbitfield mask, GLenum filter )
+{
+	Rtt_ASSERT( HasFramebufferBlit() ); // n.b. assumed not to be first time called
+
+#if defined( Rtt_OPENGLES )
+	// ANGLE extension does not support stretching
+	dstX1 = dstX0 + (srcX1 - srcX0);
+	dstY1 = dstY0 + (srcY1 - srcY0);
+	filter = GL_NEAREST;
+#endif
+	
+	sBlitFramebuffer( srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter );
+}
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

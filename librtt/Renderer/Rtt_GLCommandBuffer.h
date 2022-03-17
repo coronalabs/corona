@@ -28,7 +28,9 @@ class GLCommandBuffer : public CommandBuffer
 	public:
 		typedef CommandBuffer Super;
 		typedef GLCommandBuffer Self;
-
+	// STEVE CHANGE
+		bool HasFramebufferBlit() const;
+	// /STEVE CHANGE
 	public:
 		GLCommandBuffer( Rtt_Allocator* allocator );
 		virtual ~GLCommandBuffer();
@@ -41,7 +43,10 @@ class GLCommandBuffer : public CommandBuffer
 
 		// Generate the appropriate buffered OpenGL commands to accomplish the
 		// specified state changes.
-		virtual void BindFrameBufferObject( FrameBufferObject* fbo );
+		virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer ); // <- STEVE CHANGE
+	// STEVE CHANGE
+		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect );
+	// /STEVE CHANGE
 		virtual void BindGeometry( Geometry* geometry );
 		virtual void BindTexture( Texture* texture, U32 unit );
 		virtual void BindUniform( Uniform* uniform, U32 unit );

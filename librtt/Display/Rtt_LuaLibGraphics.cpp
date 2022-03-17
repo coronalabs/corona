@@ -670,7 +670,84 @@ SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &fa
 	return ret;
 }
 
+// STEVE CHANGE
+//helper function to parse lua table to create capture resource
+SharedPtr<TextureResource> CreateResourceCaptureFromTable(Rtt::TextureFactory &factory, lua_State *L, int index)
+{
+	Display &display = factory.GetDisplay();
 	
+	static unsigned int sNextRenderTextureID = 1;
+	SharedPtr<TextureResource> ret;
+	
+	Real width = -1, height = -1;
+	int pixelWidth = -1, pixelHeight = -1;
+	
+	lua_getfield( L, index, "width" );
+	if (lua_isnumber( L, -1 ))
+	{
+		width = lua_tonumber( L, -1 );
+	}
+	lua_pop( L, 1 );
+	
+	lua_getfield( L, index, "height" );
+	if (lua_isnumber( L, -1 ))
+	{
+		height = lua_tonumber( L, -1 );
+	}
+	lua_pop( L, 1 );
+	
+	lua_getfield( L, index, "pixelWidth" );
+	if (lua_isnumber( L, -1 ))
+	{
+		pixelWidth = (int)lua_tointeger( L, -1 );
+	}
+	lua_pop( L, 1 );
+	
+	lua_getfield( L, index, "pixelHeight" );
+	if (lua_isnumber( L, -1 ))
+	{
+		pixelHeight = (int)lua_tointeger( L, -1 );
+	}
+	lua_pop( L, 1 );
+	
+	if( width > 0 && height > 0 )
+	{
+		
+		if (pixelWidth <= 0 || pixelHeight <= 0)
+		{
+			S32 unused = 0; // n.b. ContentToScreen(x,y) NOT okay for dimensions!
+			
+			pixelWidth = Rtt_RealToInt( width );
+			pixelHeight = Rtt_RealToInt( height );
+			display.ContentToScreen( unused, unused, pixelWidth, pixelHeight );
+
+			pixelWidth *= (float)display.WindowWidth() / display.ScreenWidth();
+			pixelHeight *= (float)display.WindowHeight() / display.ScreenHeight();
+		}
+		
+		int texSize = display.GetMaxTextureSize();
+		pixelWidth = Min(texSize, pixelWidth);
+		pixelHeight = Min(texSize, pixelHeight);
+
+		char filename[30];
+		snprintf(filename, 30, "corona://FBOcap_%u", sNextRenderTextureID++);
+
+		SharedPtr<TextureResource> texSource = factory.FindOrCreateCapture( filename, width, height, pixelWidth, pixelHeight );
+		if( texSource.NotNull() )
+		{
+			factory.Retain(texSource);
+			ret = texSource;
+		}
+	}
+	else
+	{
+		CoronaLuaError( L, "display.newTexture() requires valid width and height" );
+	}
+	
+	return ret;
+}
+// /STEVE CHANGE
+
 // graphics.newTexture(  {type=, filename, [baseDir=], [isMask=], } )
 int
 GraphicsLibrary::newTexture( lua_State *L )
@@ -697,6 +774,14 @@ GraphicsLibrary::newTexture( lua_State *L )
 				Display& display = library->GetDisplay();
 				ret = CreateResourceCanvasFromTable(display.GetTextureFactory(), L, index, 0 == strcmp( "maskCanvas", textureType ));
 			}
+			// STEVE CHANGE
+			else if ( 0 == strcmp( "capture", textureType ) )
+			{
+				Self *library = ToLibrary( L );
+				Display& display = library->GetDisplay();
+				ret = CreateResourceCaptureFromTable(display.GetTextureFactory(), L, index);
+			}
+			// /STEVE CHANGE
 			else
 			{
 				CoronaLuaError( L, "display.newTexture() unrecognized type" );
@@ -750,6 +835,12 @@ GraphicsLibrary::releaseTextures( lua_State *L )
 			{
 				type = TextureResource::kTextureResourceCanvas;
 			}
+		// STEVE CHANGE
+			else if ( strcmp(str, "capture") == 0 )
+			{
+				type = TextureResource::kTextureResourceCapture;
+			}
+		// /STEVE CHANGE
 			else if ( strcmp(str, "external") == 0 )
 			{
 				type = TextureResource::kTextureResourceExternal;

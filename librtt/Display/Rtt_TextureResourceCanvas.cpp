@@ -204,6 +204,69 @@ void TextureResourceCanvas::Render(Rtt::Renderer &renderer, GroupObject *group, 
 	renderer.SetFrameBufferObject( fbo );
 }
 
+// STEVE CHANGE
+TextureResourceCapture::TextureResourceCapture(
+					  TextureFactory &factory,
+					  Texture *texture,
+					  FrameBufferObject* fbo,
+					  Real width,
+					  Real height,
+					  int texWidth,
+					  int texHeight)
+: TextureResource(factory, texture, NULL, kTextureResourceCapture)
+, fDstFBO(fbo)
+, fContentWidth(width)
+, fContentHeight(height)
+, fTexWidth(texWidth)
+, fTexHeight(texHeight)
+{
+	
+}
+
+TextureResourceCapture *
+TextureResourceCapture::Create(
+					TextureFactory& factory,
+					Real w, Real h,
+					int texW, int texH)
+{
+	Display &display = factory.GetDisplay();
+	
+	Rtt_Allocator* pAllocator = display.GetAllocator();
+	
+	Texture::Filter filter = RenderTypes::Convert( display.GetDefaults().GetMagTextureFilter() );
+	// ^^ TODO: does this filter need to match the BlitFrameBuffer version?
+	Texture::Wrap wrap = RenderTypes::Convert( display.GetDefaults().GetTextureWrapX() );
+
+	Texture *texture = Rtt_NEW( pAllocator,
+							   TextureVolatile( display.GetAllocator(), texW, texH, Texture::kRGB, filter, wrap, wrap ) );
+
+	FrameBufferObject * fbo = NULL;
+	
+	if (display.HasFramebufferBlit())
+	{
+		fbo = Rtt_NEW( pAllocator, FrameBufferObject( pAllocator, texture ) );
+	}
+	
+	TextureResourceCapture *ret = new TextureResourceCapture(factory, texture, fbo, w, h, texW, texH);
+	
+	return ret;
+}
+
+TextureResourceCapture::~TextureResourceCapture()
+{
+	if (fDstFBO)
+	{
+		GetTextureFactory().GetDisplay().GetStage()->QueueRelease(fDstFBO);
+	}
+}
+
+const MLuaUserdataAdapter&
+TextureResourceCapture::GetAdapter() const
+{
+	return TextureResourceCaptureAdapter::Constant();
+}
+// /STEVE CHANGE
+
 } // namespace Rtt
 
 

@@ -168,6 +168,9 @@ class Renderer
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
 		static size_t GetMaxVertexTextureUnits();
+	// STEVE CHANGE
+		 bool HasFramebufferBlit() const;
+	// /STEVE CHANGE
 
 		struct Statistics
 		{
@@ -224,6 +227,11 @@ class Renderer
 		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
 		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
 
+	// STEVE CHANGE
+	public:
+		void InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped );
+		void IssueCaptures( Texture * fill0 );
+	// /STEVE CHANGE
 	protected:
 		// Destroys all queued GPU resources passed into the DestroyQueue() method.
 		void DestroyQueuedGPUResources();
@@ -311,6 +319,24 @@ class Renderer
 		Real fContentScaleY; // Temporary holder.
 
 		U32 fTimeDependencyCount;
+	
+	// STEVE CHANGE
+		struct RectPair {
+			Rect fClipped;
+			Rect fUnclipped;
+			RectPair * fNext;
+		};
+	
+		struct CaptureGroup {
+			FrameBufferObject * fFBO;
+			Texture * fTexture;
+			RectPair * fFirst;
+			RectPair * fLast;
+		};
+	
+		Array< CaptureGroup > fCaptureGroups;
+		Array< RectPair > fCaptureRects;
+	// /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------

@@ -80,6 +80,13 @@ class TextureFactory
 			Real w, Real h,
 			int pixelW, int pixelH, bool isMask );
 	
+	// STEVE CHANGE
+		SharedPtr< TextureResource > FindOrCreateCapture(
+			const std::string &cacheKey,
+			Real w, Real h,
+			int pixelW, int pixelH );
+	// /STEVE CHANGE
+	
 		SharedPtr< TextureResource > FindOrCreateExternal(
 			const std::string &cacheKey,
 			const CoronaExternalTextureCallbacks* callbacks,

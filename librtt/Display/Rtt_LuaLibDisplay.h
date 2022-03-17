@@ -70,6 +70,9 @@ class LuaLibDisplay
 		static Color toColorByte( lua_State *L, int index );
 
 	public:
+	// STEVE CHANGE
+		static GroupObject*GetParent( lua_State *L, int& nextArg );
+	// /STEVE CHANGE
 		static int PushColorChannels( lua_State *L, Color c, bool isBytes );
 		static Color toColor( lua_State *L, int index, bool isBytes );
 		static void ArrayToColor( lua_State *L, int index, Color& outColor, bool isBytes );
