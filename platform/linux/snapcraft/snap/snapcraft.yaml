@@ -178,7 +178,6 @@ parts:
       - zlib1g-dev
       - libtiff5-dev
       - liblzma-dev
-      - dos2unix
       - ca-certificates
       - ca-certificates-java
       - openjdk-8-jre-headless
