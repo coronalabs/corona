@@ -124,6 +124,7 @@ static BlitFramebufferPtr sBlitFramebuffer;
 static BindFramebufferPtr sBindFramebuffer;
 static GLenum sDrawBufferBinding;
 static GLenum sReadBufferBinding;
+static bool sCanScale;
 // /STEVE CHANGE
 
 void 
@@ -132,7 +133,7 @@ GLFrameBufferObject::Bind( bool asDrawBuffer ) // <- STEVE CHANGE
 	// STEVE CHANGE
 	if (asDrawBuffer)
 	{
-		Rtt_ASSERT( HasFramebufferBlit() );
+		Rtt_ASSERT( HasFramebufferBlit( NULL ) );
 		
 		sBindFramebuffer( sDrawBufferBinding, GetName() );
 		sBindFramebuffer( sReadBufferBinding, 0 );
@@ -180,7 +181,7 @@ GLFrameBufferObject::GetTextureName()
 #endif
 
 bool
-GLFrameBufferObject::HasFramebufferBlit()
+GLFrameBufferObject::HasFramebufferBlit( bool * canScale )
 {
 	static bool sIsInitialized;
 	
@@ -205,23 +206,37 @@ GLFrameBufferObject::HasFramebufferBlit()
 				sReadBufferBinding = GL_READ_FRAMEBUFFER_EXT;
 			}
 		#endif
-    #elif defined( GL_DRAW_FRAMEBUFFER_ANGLE )
-		sBlitFramebuffer = GL_GET_PROC( BlitFramebuffer, BLITFRAMEBUFFER, ANGLE );
-		sDrawBufferBinding = GL_DRAW_FRAMEBUFFER_ANGLE;
-		sReadBufferBinding = GL_READ_FRAMEBUFFER_ANGLE;
-
-		if (NULL != sBlitFramebuffer)
-		{
-			const char * extensions = (const char *)glGetString(GL_EXTENSIONS);
-
-			if (!strstr( extensions, "GL_ANGLE_framebuffer_blit" ))
+		
+		sCanScale = !!sBlitFramebuffer;
+    #elif defined( GL_DRAW_FRAMEBUFFER_NV ) || defined( GL_DRAW_FRAMEBUFFER_ANGLE )
+		const char * extensions = (const char *)glGetString(GL_EXTENSIONS);
+		
+		#if defined( GL_DRAW_FRAMEBUFFER_NV )
+			if (strstr( extensions, "GL_NV_framebuffer_blit" ))
 			{
-				sBlitFramebuffer = NULL;
+				sBlitFramebuffer = GL_GET_PROC( BlitFramebuffer, BLITFRAMEBUFFER, NV );
+				sDrawBufferBinding = GL_DRAW_FRAMEBUFFER_NV;
+				sReadBufferBinding = GL_READ_FRAMEBUFFER_NV;
+				sCanScale = !!sBlitFramebuffer;
 			}
-		}
+		#endif
+		
+		#if defined( GL_DRAW_FRAMEBUFFER_ANGLE )
+			if (NULL == sBlitFramebuffer && strstr( extensions, "GL_ANGLE_framebuffer_blit" ))
+			{
+				sBlitFramebuffer = GL_GET_PROC( BlitFramebuffer, BLITFRAMEBUFFER, ANGLE );
+				sDrawBufferBinding = GL_DRAW_FRAMEBUFFER_ANGLE;
+				sReadBufferBinding = GL_READ_FRAMEBUFFER_ANGLE;
+			}
+		#endif
 	#endif
 	}
-		
+
+	if (canScale)
+	{
+		*canScale = sCanScale;
+	}
+	
 	return NULL != sBlitFramebuffer;
 }
 
@@ -231,14 +246,14 @@ GLFrameBufferObject::HasFramebufferBlit()
 void
 GLFrameBufferObject::Blit( int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, GLbitfield mask, GLenum filter )
 {
-	Rtt_ASSERT( HasFramebufferBlit() ); // n.b. assumed not to be first time called
+	Rtt_ASSERT( sBlitFramebuffer );
 
-#if defined( Rtt_OPENGLES )
-	// ANGLE extension does not support stretching
-	dstX1 = dstX0 + (srcX1 - srcX0);
-	dstY1 = dstY0 + (srcY1 - srcY0);
-	filter = GL_NEAREST;
-#endif
+	if (!sCanScale)
+	{
+		dstX1 = dstX0 + (srcX1 - srcX0);
+		dstY1 = dstY0 + (srcY1 - srcY0);
+		filter = GL_NEAREST;
+	}
 	
 	sBlitFramebuffer( srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter );
 }

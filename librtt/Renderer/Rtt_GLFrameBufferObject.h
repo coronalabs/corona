@@ -37,7 +37,7 @@ class GLFrameBufferObject : public GPUResource
 
 	// STEVE CHANGE
 	public:
-		static bool HasFramebufferBlit();
+		static bool HasFramebufferBlit(  bool * canScale );
 		static void Blit( int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, GLbitfield mask, GLenum filter );
 	// /STEVE CHANGE
 };

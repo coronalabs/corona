@@ -327,7 +327,7 @@ class Display
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
 		static size_t GetMaxVertexTextureUnits();
 	// STEVE CHANGE
-		bool HasFramebufferBlit() const;
+		bool HasFramebufferBlit( bool * canScale ) const;
 	// /STEVE CHANGE
 
 	public:

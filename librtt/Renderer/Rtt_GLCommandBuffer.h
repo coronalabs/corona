@@ -29,7 +29,7 @@ class GLCommandBuffer : public CommandBuffer
 		typedef CommandBuffer Super;
 		typedef GLCommandBuffer Self;
 	// STEVE CHANGE
-		bool HasFramebufferBlit() const;
+		bool HasFramebufferBlit( bool * canScale ) const;
 	// /STEVE CHANGE
 	public:
 		GLCommandBuffer( Rtt_Allocator* allocator );

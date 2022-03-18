@@ -241,8 +241,9 @@ TextureResourceCapture::Create(
 							   TextureVolatile( display.GetAllocator(), texW, texH, Texture::kRGB, filter, wrap, wrap ) );
 
 	FrameBufferObject * fbo = NULL;
+	bool canScale = false;
 	
-	if (display.HasFramebufferBlit())
+	if (display.HasFramebufferBlit( &canScale ))
 	{
 		fbo = Rtt_NEW( pAllocator, FrameBufferObject( pAllocator, texture ) );
 	}

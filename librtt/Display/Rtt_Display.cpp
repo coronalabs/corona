@@ -1854,9 +1854,9 @@ Display::GetMaxVertexTextureUnits()
 
 // STEVE CHANGE
 bool
-Display::HasFramebufferBlit() const
+Display::HasFramebufferBlit( bool * canScale ) const
 {
-    return fRenderer->HasFramebufferBlit();
+    return fRenderer->HasFramebufferBlit( canScale );
 }
 // /STEVE CHANGE
 

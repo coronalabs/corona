@@ -291,9 +291,9 @@ CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders()
 
 // STEVE CHANGE
 bool
-GLCommandBuffer::HasFramebufferBlit() const
+GLCommandBuffer::HasFramebufferBlit( bool * canScale ) const
 {
-	return GLFrameBufferObject::HasFramebufferBlit();
+	return GLFrameBufferObject::HasFramebufferBlit( canScale );
 }
 // /STEVE CHANGE
 

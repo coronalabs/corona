@@ -60,7 +60,8 @@ class ShaderFactory
 				ShaderTypes::Category category,
 				const char *name,
 				ShaderBinaryVersions &compiledDefaultShaders,
-				ShaderBinaryVersions &compiled25DShaders);
+				ShaderBinaryVersions &compiled25DShaders,
+				int localStubsIndex );
 #else
 		Program *NewProgram(
 				const char *shellVert,
@@ -72,7 +73,8 @@ class ShaderFactory
 				ShaderTypes::Category category,
 				const char *name,
 				const char *kernelVert,
-				const char *kernelFrag );
+				const char *kernelFrag,
+				int localStubsIndex );
 #endif
 		Shader *NewShaderPrototype( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 
@@ -91,20 +93,33 @@ class ShaderFactory
 
 	protected:
 //		Shader *NewShader( lua_State *L, int index );
-		ShaderComposite *NewShaderBuiltin( ShaderTypes::Category category, const char *name);
+		ShaderComposite *NewShaderBuiltin( ShaderTypes::Category category, const char *name, int localStubsIndex );
 		void AddShader( Shader *shader, const char *name );
 		
-		void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode);
+		void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode, int localStubsIndex );
 		void ConnectLocalNodes(ShaderMap &inputNodes, LuaMap *nodeGraph, std::string terminalNodeKey, ShaderComposite *terminalNode);
 
+	private:
+		struct EffectInfo {
+			ShaderTypes::Category fCategory;
+			const char * fCategoryName;
+			const char * fEffectName;
+			bool fIsBuiltIn;
+		};
+	
+		EffectInfo GetEffectInfo( const char * fullName );
+	
+		bool GatherEffectStubs( lua_State * L );
+	
 	public:
 		bool DefineEffect( lua_State *L, int shaderIndex );
-		Shader *NewShaderGraph( lua_State *L, int index);
+		bool UndefineEffect( lua_State *L, int nameIndex );
+		Shader *NewShaderGraph( lua_State *L, int index, int localStubsIndex );
 				
 	protected:
-		const Shader *FindPrototype( ShaderTypes::Category category, const char *name ) const;
+		const Shader *FindPrototype( ShaderTypes::Category category, const char *name, int localStubsIndex ) const;
 
-		ShaderComposite *FindOrLoadGraph( ShaderTypes::Category category, const char *name, bool shouldFallback );
+		ShaderComposite *FindOrLoadGraph( ShaderTypes::Category category, const char *name, bool shouldFallback, int localStubsIndex );
 
 	public:
 		Shader *FindOrLoad( const ShaderName& shaderName );

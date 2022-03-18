@@ -54,7 +54,7 @@ class CommandBuffer
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
 	// STEVE CHANGE
-		virtual bool HasFramebufferBlit() const = 0;
+		virtual bool HasFramebufferBlit( bool * canScale ) const = 0;
 	// /STEVE CHANGE
 
 	public:
