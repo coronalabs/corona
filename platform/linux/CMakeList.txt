@@ -45,13 +45,6 @@ else()
 	message(FATAL_ERROR "*** no libcurl, use 'sudo apt install libcurl-dev' to install it")
 endif()
 
-find_path(cryptoPP crypto++/aes.h REQUIRED)
-if (cryptoPP)
-	message("libcrypto++: ${cryptoPP}")
-else()
-	message(FATAL_ERROR "*** no libcryptoPP, use 'sudo apt install libcrypto++-dev' to install it")
-endif()
-
 #set(COMMON_COMPILER_FLAGS "-Wno-deprecated -O3 -fstrict-aliasing -fvisibility=hidden -ffunction-sections -fdata-sections")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILER_FLAGS} -no-pie -std=c++17")
@@ -1017,14 +1010,14 @@ target_compile_definitions( Solar2DBuilder PUBLIC
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
-target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
-target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
+target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
+target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
 
 # Enabling functions loaded from dlopen call a function from the Solar2DSimulator
 target_link_options(Solar2D BEFORE PUBLIC -export-dynamic)
 target_link_options(Solar2DSimulator BEFORE PUBLIC -export-dynamic)
 
-target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
+target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png jpeg crypto curl SDL2)
 
 # build template
 add_custom_target(create_template ALL 
