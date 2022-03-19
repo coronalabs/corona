@@ -447,6 +447,8 @@ GLCommandBuffer::CaptureRect( FrameBufferObject* fbo, Texture& texture, const Re
 	
 	Write<Rect>( rect );
 	Write<Rect>( unclipped );
+	Write<U32>( texture.GetWidth() );
+	Write<U32>( texture.GetHeight() );
 }
 // /STEVE CHANGE
 
@@ -766,8 +768,10 @@ GLCommandBuffer::Execute( bool measureGPU )
 			  GLTexture* texture = Read<GLTexture*>();
 			  Rect rect = Read<Rect>();
 			  Rect unclipped = Read<Rect>();
-			  S32 x = 0, w = rect.xMax - rect.xMin;
-			  S32 y = 0, h = rect.yMax - rect.yMin;
+			  U32 texW = Read<U32>();
+			  U32 texH = Read<U32>();
+			  U32 x = 0, w = rect.xMax - rect.xMin;
+			  U32 y = 0, h = rect.yMax - rect.yMin;
 			  
 			  if (unclipped.xMin < 0)
 			  {
@@ -781,7 +785,16 @@ GLCommandBuffer::Execute( bool measureGPU )
 			  
 			  if (!texture)
 			  {
-				  // TODO: allow some flexibility for downsampling etc.
+				  S32 w1 = texW, w2 = unclipped.xMax - unclipped.xMin;
+				  S32 h1 = texH, h2 = unclipped.yMax - unclipped.yMin;
+				  
+				  if (( abs( w1 - w2 ) > 5 || abs( h1 - h2 ) > 5 )) // more than a rounding difference?
+				  {
+					  x = x * w1 / w2;
+					  y = y * h1 / h2;
+					  w = w * w1 / w2;
+					  h = h * h1 / h2;
+				  }
 				  
 				  GLFrameBufferObject::Blit( rect.xMin, windowHeight - rect.yMax, rect.xMax, windowHeight - rect.yMin, x, y, x + w, y + h, GL_COLOR_BUFFER_BIT, GL_NEAREST );
 			  }

@@ -23,6 +23,7 @@
 #include "Rtt_LuaLibDisplay.h"
 #include "Rtt_TextureFactory.h"
 
+#include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_Renderer.h"
 // /STEVE CHANGE
 
@@ -454,10 +455,27 @@ CaptureObject::Draw( Renderer& renderer ) const
 	
 	Rect texBounds;
 	
-	texBounds.xMin = -capture.GetTexWidth() / 2;
-	texBounds.yMin = -capture.GetTexHeight() / 2;
-	texBounds.xMax = +capture.GetTexWidth() / 2;
-	texBounds.yMax = +capture.GetTexHeight() / 2;
+	float width = capture.GetTexWidth();
+	float height = capture.GetTexHeight();
+/*
+N.B. Currently "canScale" is always false, cf. GLFrameBufferObject::HasFramebufferBlit()
+TODO: on Mac, in GLView.m, we have NSOpenGLPFASamples,(NSOpenGLPixelFormatAttribute)4,
+so we get GL_INVALID_OPERATION due to the mismatch. (It will work if we comment out the
+two sample-related lines.) Other platforms probably also have these issues, so for now
+I'm just going to disable the feature.
+*/
+	bool canScale = false;
+
+	if (display.HasFramebufferBlit( &canScale ) && canScale)
+	{
+		width = fabs( width * GetGeometricProperty( kScaleX ) );
+		height = fabs( height * GetGeometricProperty( kScaleY ) );
+	}
+
+	texBounds.xMin = -width / 2;
+	texBounds.yMin = -height / 2;
+	texBounds.xMax = +width / 2;
+	texBounds.yMax = +height / 2;
 	
 	texBounds.Translate( center.x * screenToWindowX, center.y * screenToWindowY );
 					

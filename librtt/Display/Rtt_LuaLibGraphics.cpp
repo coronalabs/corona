@@ -686,7 +686,6 @@ SharedPtr<TextureResource> CreateResourceCaptureFromTable(Rtt::TextureFactory &f
 	SharedPtr<TextureResource> ret;
 	
 	Real width = -1, height = -1;
-	int pixelWidth = -1, pixelHeight = -1;
 	
 	lua_getfield( L, index, "width" );
 	if (lua_isnumber( L, -1 ))
@@ -702,39 +701,21 @@ SharedPtr<TextureResource> CreateResourceCaptureFromTable(Rtt::TextureFactory &f
 	}
 	lua_pop( L, 1 );
 	
-	lua_getfield( L, index, "pixelWidth" );
-	if (lua_isnumber( L, -1 ))
-	{
-		pixelWidth = (int)lua_tointeger( L, -1 );
-	}
-	lua_pop( L, 1 );
-	
-	lua_getfield( L, index, "pixelHeight" );
-	if (lua_isnumber( L, -1 ))
-	{
-		pixelHeight = (int)lua_tointeger( L, -1 );
-	}
-	lua_pop( L, 1 );
-	
 	if( width > 0 && height > 0 )
 	{
+		S32 unused = 0; // n.b. ContentToScreen(x,y) NOT okay for dimensions!
 		
-		if (pixelWidth <= 0 || pixelHeight <= 0)
-		{
-			S32 unused = 0; // n.b. ContentToScreen(x,y) NOT okay for dimensions!
-			
-			pixelWidth = Rtt_RealToInt( width );
-			pixelHeight = Rtt_RealToInt( height );
-			display.ContentToScreen( unused, unused, pixelWidth, pixelHeight );
+		int pixelWidth = Rtt_RealToInt( width );
+		int pixelHeight = Rtt_RealToInt( height );
+		display.ContentToScreen( unused, unused, pixelWidth, pixelHeight );
 
-			pixelWidth *= (float)display.WindowWidth() / display.ScreenWidth();
-			pixelHeight *= (float)display.WindowHeight() / display.ScreenHeight();
-		}
-		
+		pixelWidth *= (float)display.WindowWidth() / display.ScreenWidth();
+		pixelHeight *= (float)display.WindowHeight() / display.ScreenHeight();
+	
 		int texSize = display.GetMaxTextureSize();
 		pixelWidth = Min(texSize, pixelWidth);
 		pixelHeight = Min(texSize, pixelHeight);
-
+		
 		char filename[30];
 		snprintf(filename, 30, "corona://FBOcap_%u", sNextRenderTextureID++);
 

@@ -75,7 +75,7 @@ class CommandBuffer
 		// here and transcribing them into equivalent, buffered commands used
 		// by the underlying rendering API.
 		virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer = false ) = 0; // <- STEVE CHANGE
-	// STEVE CHANGE
+	// STEVE CHANGE	
 		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect ) = 0;
 	// /STEVE CHANGE
 		virtual void BindGeometry( Geometry* geometry ) = 0;

@@ -229,12 +229,23 @@ GLFrameBufferObject::HasFramebufferBlit( bool * canScale )
 				sReadBufferBinding = GL_READ_FRAMEBUFFER_ANGLE;
 			}
 		#endif
+		
+			if (NULL == sBlitFramebuffer && strstr( extensions, "GL_EXT_blit_framebuffer_params" ) )
+			{
+				// ? query for EXT? for raw?
+				// read 0x8CA8
+				// draw 0x8CA9
+				// scalable??
+			}
+
+		// TODO? there are also *_APPLE variants, but related to multisampling...
 	#endif
 	}
 
 	if (canScale)
 	{
-		*canScale = sCanScale;
+		// TODO: see comment in CaptureObject::Draw()
+		*canScale = false; // sCanScale;
 	}
 	
 	return NULL != sBlitFramebuffer;
