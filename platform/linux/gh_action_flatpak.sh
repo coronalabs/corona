@@ -44,18 +44,14 @@ else
     sed -i "s|9999|$BUILD_NUMBER|" "${YML}"
 fi
 
+# build flat app and put it in a repo
+flatpak-builder --repo repo build-dir "${YML}"
 
-flatpak-builder --force-clean flat-build "${YML}"
+# Create a single-file bundle from a local repository
+flatpak build-bundle ./repo solar2d.flatpak com.solar2d.simulator 
 
-# put in a repo
-#flatpak-builder --repo=repo --force-clean build "${YML}"
-
+cd ..
 mkdir -p output
-#cp -v ./*.snap output/
-
-#FS2D="$(mktemp -d)"
-#sudo mount -t squashfs -o ro ./*.snap "$FS2D"
-#cp -v "$FS2D/usr/local/bin/Solar2D/Resources/linuxtemplate_x64.tgz" output/
-#sudo umount "$FS2D"
+cp -v ./.flatpak/solar2d.flatpak output/
 
 )

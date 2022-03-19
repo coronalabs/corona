@@ -4,42 +4,22 @@ runtime-version: '21.08'
 sdk: org.freedesktop.Sdk
 base-version: '2100.9999'
 
-command: Solar2DSimulator
+command: /app/bin/Solar2D/Solar2DSimulator
 #rename-desktop-file: cgenius.desktop
 #rename-icon: cg
 
+# Sandbox Permissions
 finish-args:
-  # X11 + XShm access
   - --share=ipc
   - --socket=x11
   - --socket=pulseaudio
-  # Wayland access
-#  - --socket=wayland
-  # Needs to talk to the network:
+  - --device=dri
   - --share=network
-  # Needs to save files locally
-  - --filesystem=xdg-documents
-  - --metadata=X-DConf=migrate-path=/org/gnome/dictionary/
+  - --socket=system-bus
+  - --filesystem=host
         
-cleanup:
-  - /include
-  - /lib/pkgconfig
-  - /share/pkgconfig
-  - /share/aclocal
-  - /man
-  - /share/man
-  - /share/gtk-doc
-  - '*.la'
-  - '*.a'
-  - /lib/girepository-1.0
-  - /share/doc
-  - /share/gir-1.0   
-
-#  cleanup-commands:
-#  - 'sed s/foo/bar/ /bin/app.sh'     
-
 modules:
-  - name: simulator
+  - name: solar2d
     buildsystem: cmake-ninja
     sources:
       - type: dir
