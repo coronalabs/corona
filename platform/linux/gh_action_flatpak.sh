@@ -45,13 +45,13 @@ else
 fi
 
 # build flat app and put it in a repo
-flatpak-builder --repo repo build-dir "${YML}"
+flatpak-builder --force-clean --repo repo build-dir "${YML}"
 
 # Create a single-file bundle from a local repository
 flatpak build-bundle ./repo solar2d.flatpak com.solar2d.simulator 
 
 cd ..
-mkdir -p output
-cp -v ./.flatpak/solar2d.flatpak output/
+#mkdir -p output
+cp -v ./.flatpak/solar2d.flatpak ./
 
 )
