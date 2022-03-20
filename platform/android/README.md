@@ -15,12 +15,17 @@ Currently Solar2D for Android is built with Gradle build system. It is well inte
 
 __WARNING:__ Do not update Android Plugin if requested. It would break the build.
 
-## Command line builds
+### Setting up plugins
 
-To build from command line, you have to have Android SDK adn NDK set up.
-```bash
-export ANDROID_SDK=~/Library/Android/sdk
-export ANDROID_NDK=~/Library/Android/sdk/ndk-bundle
-./gradlew assemble
-```
+To set up all plugins in `build.settings` run `setUpCoronaAppAndPlugins` Gradle task. This will download all plugins and rewrite the `AndroidManifest.xml` with values required provided by plugins. To run Gradle task from Android Studio press "Execute Gradle Task" button, which has icon of an elephant, in Gradle tool window (View -> Tool Windows -> Gradle).
 
+### Running a Gradle task
+
+To run a gradle task in Android Studio, do the following:
+1. Open the Gradle panel (it can be also opened via menu View -> Tool Windows -> Gradle)
+2. Press "Execute Gradle Task" button
+3. Paste or type gradle job name and press Enter
+
+![Android Studio Screenshot](https://i.imgur.com/ysKdRi9.png)
+
+Alternatively, you can double tab the Ctrl key on keyboard to show the "Run Anything" window, then type `gradle`, followed by space and desired gradle target to achieve same result as in step &#35;3.

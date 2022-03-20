@@ -61,7 +61,7 @@ class ShaderFactory
 				const char *name,
 				ShaderBinaryVersions &compiledDefaultShaders,
 				ShaderBinaryVersions &compiled25DShaders,
-				int localStubsIndex );
+                int localStubsIndex );
 #else
 		Program *NewProgram(
 				const char *shellVert,
@@ -74,7 +74,7 @@ class ShaderFactory
 				const char *name,
 				const char *kernelVert,
 				const char *kernelFrag,
-				int localStubsIndex );
+                int localStubsIndex );
 #endif
 		Shader *NewShaderPrototype( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 
@@ -99,21 +99,22 @@ class ShaderFactory
 		void LoadDependency(LuaMap *nodeGraph, std::string nodeKey, ShaderMap &inputNodes, bool createNode, int localStubsIndex );
 		void ConnectLocalNodes(ShaderMap &inputNodes, LuaMap *nodeGraph, std::string terminalNodeKey, ShaderComposite *terminalNode);
 
-	private:
-		struct EffectInfo {
-			ShaderTypes::Category fCategory;
-			const char * fCategoryName;
-			const char * fEffectName;
-			bool fIsBuiltIn;
-		};
-	
-		EffectInfo GetEffectInfo( const char * fullName );
-	
-		bool GatherEffectStubs( lua_State * L );
-	
+    private:
+        struct EffectInfo {
+            ShaderTypes::Category fCategory;
+            const char * fCategoryName;
+            const char * fEffectName;
+            bool fIsBuiltIn;
+        };
+    
+        EffectInfo GetEffectInfo( const char * fullName );
+    
+        bool GatherEffectStubs( lua_State * L );
+    
 	public:
 		bool DefineEffect( lua_State *L, int shaderIndex );
-		bool UndefineEffect( lua_State *L, int nameIndex );
+        bool UndefineEffect( lua_State *L, int nameIndex );
+
 		Shader *NewShaderGraph( lua_State *L, int index, int localStubsIndex );
 				
 	protected:

@@ -86,6 +86,9 @@
 	<condition property="corona.native.android" value="${user.home}/Library/Application Support/Corona/Native/Corona/android">
 		<available file="${user.home}/Library/Application Support/Corona/Native/Corona/android" />
 	</condition>	
+	<condition property="corona.native.android" value="${BUNDLE_DIR}/Native/Corona/android">
+		<available file="${BUNDLE_DIR}/Native/Corona/android" />
+	</condition>
 	<target name="check-gradle-bundle">
 		<available file="${corona.native.android}/resource/android-template.zip" property="gradle.bundle.exists"/>
 	</target>
