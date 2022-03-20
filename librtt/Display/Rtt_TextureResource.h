@@ -37,9 +37,7 @@ class TextureResource
 	enum TextureResourceType{
 		kTextureResourceBitmap,
 		kTextureResourceCanvas,
-	// STEVE CHANGE
-		 kTextureResourceCapture,
-	 // /STEVE CHANGE
+		kTextureResourceCapture,
 		kTextureResourceExternal,
 		
 		kTextureResource_Any

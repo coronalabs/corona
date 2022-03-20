@@ -86,7 +86,6 @@ class TextureResourceCanvas : public TextureResource
 
 };
 
-// STEVE CHANGE
 class TextureResourceCapture : public TextureResource
 {
 	public:
@@ -137,7 +136,6 @@ class TextureResourceCapture : public TextureResource
 		virtual const MLuaUserdataAdapter& GetAdapter() const override;
 		WeakPtr<TextureResource> fWeakResource;
 };
-// /STEVE CHANGE
 	
 }
 #endif /* defined(__ratatouille__Rtt_TextureResourceCanvas__) */

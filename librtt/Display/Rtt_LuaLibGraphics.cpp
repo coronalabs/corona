@@ -78,9 +78,7 @@ class GraphicsLibrary
 		static int newOutline( lua_State *L ); // This returns an outline in texels.
 		static int newTexture( lua_State *L );
 		static int releaseTextures( lua_State *L );
-	// STEVE CHANGE
 		static int undefineEffect( lua_State *L );
-	// /STEVE CHANGE
         static int getFontMetrics( lua_State *L );
 
 	private:
@@ -123,9 +121,7 @@ GraphicsLibrary::Open( lua_State *L )
 		{ "newOutline", newOutline }, // This returns an outline in texels.
 		{ "newTexture", newTexture },
 		{ "releaseTextures", releaseTextures },
-	// STEVE CHANGE
 		{ "undefineEffect", undefineEffect },
-	// /STEVE CHANGE
         { "getFontMetrics", getFontMetrics },
 
 		{ NULL, NULL }
@@ -676,7 +672,6 @@ SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &fa
 	return ret;
 }
 
-// STEVE CHANGE
 //helper function to parse lua table to create capture resource
 SharedPtr<TextureResource> CreateResourceCaptureFromTable(Rtt::TextureFactory &factory, lua_State *L, int index)
 {
@@ -733,7 +728,6 @@ SharedPtr<TextureResource> CreateResourceCaptureFromTable(Rtt::TextureFactory &f
 	
 	return ret;
 }
-// /STEVE CHANGE
 
 // graphics.newTexture(  {type=, filename, [baseDir=], [isMask=], } )
 int
@@ -761,14 +755,12 @@ GraphicsLibrary::newTexture( lua_State *L )
 				Display& display = library->GetDisplay();
 				ret = CreateResourceCanvasFromTable(display.GetTextureFactory(), L, index, 0 == strcmp( "maskCanvas", textureType ));
 			}
-			// STEVE CHANGE
 			else if ( 0 == strcmp( "capture", textureType ) )
 			{
 				Self *library = ToLibrary( L );
 				Display& display = library->GetDisplay();
 				ret = CreateResourceCaptureFromTable(display.GetTextureFactory(), L, index);
 			}
-			// /STEVE CHANGE
 			else
 			{
 				CoronaLuaError( L, "display.newTexture() unrecognized type" );
@@ -822,12 +814,10 @@ GraphicsLibrary::releaseTextures( lua_State *L )
 			{
 				type = TextureResource::kTextureResourceCanvas;
 			}
-		// STEVE CHANGE
 			else if ( strcmp(str, "capture") == 0 )
 			{
 				type = TextureResource::kTextureResourceCapture;
 			}
-		// /STEVE CHANGE
 			else if ( strcmp(str, "external") == 0 )
 			{
 				type = TextureResource::kTextureResourceExternal;
@@ -865,7 +855,6 @@ GraphicsLibrary::releaseTextures( lua_State *L )
 	return result;
 }
 	
-// STEVE CHANGE
 // ----------------------------------------------------------------------------
 
 int
@@ -882,7 +871,6 @@ GraphicsLibrary::undefineEffect( lua_State *L )
 
 	return 1;
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

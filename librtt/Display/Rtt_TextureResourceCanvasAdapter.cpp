@@ -14,7 +14,6 @@
 #include "Rtt_LuaLibDisplay.h"
 #include "Rtt_GroupObject.h"
 
-// STEVE CHANGE
 #include "Rtt_RectObject.h"
 #include "Rtt_RectPath.h"
 #include "Rtt_StageObject.h"
@@ -25,7 +24,6 @@
 
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_Renderer.h"
-// /STEVE CHANGE
 
 namespace Rtt {
 	
@@ -280,7 +278,6 @@ int TextureResourceCanvasAdapter::invalidate( lua_State *L )
 	return 0;
 }
 
-// STEVE CHANGE
 const TextureResourceCaptureAdapter&
 TextureResourceCaptureAdapter::Constant()
 {
@@ -537,6 +534,5 @@ TextureResourceCaptureAdapter::newCaptureEvent( lua_State *L )
 	
 	return 0;
 }
-// /STEVE CHANGE
 
 } // namespace Rtt

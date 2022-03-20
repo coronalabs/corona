@@ -133,10 +133,8 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fTexelSize( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec4 ) ) ),
 	fContentScale( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec2 ) ) ),
 	fViewProjectionMatrix( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kMat4 ) ) ),
-// STEVE CHANGE
 	fCaptureGroups( allocator ),
 	fCaptureRects( allocator ),
-// /STEVE CHANGE
 	fMaskCountIndex( 0 ),
 	fMaskCount( allocator ),
 	fCurrentProgramMaskCount( 0 ),
@@ -521,7 +519,7 @@ Renderer::Insert( const RenderData* data )
 				|| userUniformDirty1
 				|| userUniformDirty2
 				|| userUniformDirty3
-				|| fCaptureGroups.Length() > 0 );// <- STEVE CHANGE
+				|| fCaptureGroups.Length() > 0 );
 
 
 		// Only triangle strips are batched. All other primitive types
@@ -616,15 +614,12 @@ Renderer::Insert( const RenderData* data )
 			QueueCreate( data->fFillTexture0 );
 		}
 
-		// STEVE CHANGE
 		bool postponeBind = fCaptureGroups.Length() > 0 && !HasFramebufferBlit( NULL );
 		if (!postponeBind)
 		{
-		// /STEVE CHANGE
 			fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
-		// STEVE CHANGE
 		}
-		// /STEVE CHANGE
+
 		fPrevious.fFillTexture0 = data->fFillTexture0;
 		INCREMENT( fStatistics.fTextureBindCount );
 
@@ -756,12 +751,12 @@ Renderer::Insert( const RenderData* data )
 		BindUniform( data->fUserUniform3, Uniform::kUserData3 );
 		fPrevious.fUserUniform3 = data->fUserUniform3;
 	}
-	// /STEVE CHANGE
+
 	if (fCaptureGroups.Length() > 0)
 	{
 		IssueCaptures( data->fFillTexture0 );
 	}
-	// /STEVE CHANGE
+
 	DEBUG_PRINT( "Insert RenderData: data=%p\n", data );
 	#if ENABLE_DEBUG_PRINT
 		data->Log();
@@ -855,7 +850,6 @@ Renderer::TallyTimeDependency( bool usesTime )
 	}
 }
 
-// STEVE CHANGE
 void
 Renderer::InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped )
 {
@@ -975,7 +969,6 @@ Renderer::IssueCaptures( Texture * fill0 )
 	fCaptureGroups.Clear();
 	fCaptureRects.Clear();
 }
-// /STEVE CHANGE
 
 void
 Renderer::QueueUpdate( CPUResource* resource )
@@ -1038,13 +1031,11 @@ Renderer::GetMaxVertexTextureUnits()
 	return CommandBuffer::GetMaxVertexTextureUnits();
 }
 
-// STEVE CHANGE
 bool
 Renderer::HasFramebufferBlit( bool * canScale ) const
 {
 	return fBackCommandBuffer->HasFramebufferBlit( canScale );
 }
-// /STEVE CHANGE
 
 bool
 Renderer::GetStatisticsEnabled() const

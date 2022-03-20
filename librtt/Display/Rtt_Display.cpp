@@ -1430,7 +1430,6 @@ Display::GetScaleMode() const
 	return fStream->GetScaleMode();
 }
 
-// STEVE CHANGE
 void
 Display::ContentToScreenUnrounded( float& x, float& y ) const
 {
@@ -1444,7 +1443,6 @@ Display::ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) cons
 {
     fStream->ContentToScreenUnrounded( x, y, w, h );
 }
-// /STEVE CHANGE
 
 void
 Display::ContentToScreen( S32& x, S32& y ) const
@@ -1852,13 +1850,11 @@ Display::GetMaxVertexTextureUnits()
 	return Renderer::GetMaxVertexTextureUnits();
 }
 
-// STEVE CHANGE
 bool
 Display::HasFramebufferBlit( bool * canScale ) const
 {
     return fRenderer->HasFramebufferBlit( canScale );
 }
-// /STEVE CHANGE
 
 void
 Display::SetWireframe( bool newValue )

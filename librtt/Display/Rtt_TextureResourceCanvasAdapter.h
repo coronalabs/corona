@@ -47,7 +47,6 @@ class TextureResourceCanvasAdapter : public TextureResourceAdapter
 
 };
 
-// STEVE CHANGE
 class TextureResourceCaptureAdapter : public TextureResourceAdapter
 {
 	public:
@@ -77,7 +76,6 @@ class TextureResourceCaptureAdapter : public TextureResourceAdapter
 		static int newCaptureEvent( lua_State *L );
 
 };
-// /STEVE CHANGE
 
 } // namespace Rtt
 

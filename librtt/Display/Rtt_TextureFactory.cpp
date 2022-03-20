@@ -560,7 +560,6 @@ TextureFactory::FindOrCreateCanvas(const std::string &cacheKey,
 	return result;
 }
 
-// STEVE CHANGE
 SharedPtr< TextureResource >
 TextureFactory::FindOrCreateCapture(
 		const std::string &cacheKey,
@@ -584,7 +583,6 @@ TextureFactory::FindOrCreateCapture(
 	
 	return result;	
 }
-// /STEVE CHANGE
 	
 SharedPtr< TextureResource >
 TextureFactory::FindOrCreateExternal(const std::string &cacheKey,

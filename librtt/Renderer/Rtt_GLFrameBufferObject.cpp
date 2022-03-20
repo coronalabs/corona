@@ -14,13 +14,11 @@
 #include "Renderer/Rtt_GLTexture.h"
 #include "Core/Rtt_Assert.h"
 
-// STEVE CHANGE
 #if defined( Rtt_EGL )
 	#include <EGL/egl.h>
 #endif
 
 #include <cstring>
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -110,7 +108,6 @@ GLFrameBufferObject::Destroy()
 					name );
 }
 
-// STEVE CHANGE
 #if defined( Rtt_WIN_ENV )
 	#define GL_TYPE_PREFIX GLAPIENTRY
 #else
@@ -125,12 +122,10 @@ static BindFramebufferPtr sBindFramebuffer;
 static GLenum sDrawBufferBinding;
 static GLenum sReadBufferBinding;
 static bool sCanScale;
-// /STEVE CHANGE
 
 void 
-GLFrameBufferObject::Bind( bool asDrawBuffer ) // <- STEVE CHANGE
+GLFrameBufferObject::Bind( bool asDrawBuffer )
 {
-	// STEVE CHANGE
 	if (asDrawBuffer)
 	{
 		Rtt_ASSERT( HasFramebufferBlit( NULL ) );
@@ -141,11 +136,9 @@ GLFrameBufferObject::Bind( bool asDrawBuffer ) // <- STEVE CHANGE
 	
 	else
 	{
-	// /STEVE CHANGE
 		glBindFramebuffer( GL_FRAMEBUFFER, GetName() );
-	// STEVE CHANGE
 	}
-	// /STEVE CHANGE
+
 	GL_CHECK_ERROR();
 }
 
@@ -173,7 +166,6 @@ GLFrameBufferObject::GetTextureName()
 	return param;
 }
 
-// STEVE CHANGE
 #if defined( Rtt_OPENGLES )
 	#define GL_GET_PROC(name, cap, suffix) (PFNGL ## cap ## suffix ## PROC) eglGetProcAddress( "gl" #name #suffix )
 #else
@@ -209,7 +201,7 @@ GLFrameBufferObject::HasFramebufferBlit( bool * canScale )
 		
 		sCanScale = !!sBlitFramebuffer;
     #elif defined( GL_DRAW_FRAMEBUFFER_NV ) || defined( GL_DRAW_FRAMEBUFFER_ANGLE )
-		const char * extensions = (const char *)glGetString(GL_EXTENSIONS);
+		const char * extensions = (const char *)glGetString( GL_EXTENSIONS );
 		
 		#if defined( GL_DRAW_FRAMEBUFFER_NV )
 			if (strstr( extensions, "GL_NV_framebuffer_blit" ))
@@ -268,7 +260,6 @@ GLFrameBufferObject::Blit( int srcX0, int srcY0, int srcX1, int srcY1, int dstX0
 	
 	sBlitFramebuffer( srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter );
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

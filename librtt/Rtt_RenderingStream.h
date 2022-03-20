@@ -267,10 +267,10 @@ class RenderingStream
 		// Sets the scaling mode and updates content scale factors based on window size
 		void SetScaleMode( Display::ScaleMode mode, Rtt_Real screenWidth, Rtt_Real screenHeight );
 		Display::ScaleMode GetScaleMode() const { return (Display::ScaleMode)fScaleMode; }
-	// STEVE CHANGE
+
 		void ContentToScreenUnrounded( float& x, float& y ) const;
 		void ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const;
-	// /STEVE CHANGE
+
 		void ContentToScreen( S32& x, S32& y ) const;
 		void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
 		void ContentToPixels( S32& x, S32& y ) const;

@@ -445,7 +445,6 @@ RenderingStream::ScreenHeight() const
 	return result;
 }
 
-// STEVE CHANGE
 void
 RenderingStream::ContentToScreenUnrounded( float& x, float& y ) const
 {
@@ -465,7 +464,6 @@ RenderingStream::ContentToScreenUnrounded( float& x, float& y, float& w, float& 
 	y = Rtt_RealDiv(GetYOriginOffset() + y, yScreen);
 	h = Rtt_RealDiv(h, yScreen);
 }
-// /STEVE CHANGE
 
 // Converts the given content coordinates to pixel coordinates.
 void

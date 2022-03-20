@@ -204,7 +204,6 @@ void TextureResourceCanvas::Render(Rtt::Renderer &renderer, GroupObject *group, 
 	renderer.SetFrameBufferObject( fbo );
 }
 
-// STEVE CHANGE
 TextureResourceCapture::TextureResourceCapture(
 					  TextureFactory &factory,
 					  Texture *texture,
@@ -265,7 +264,6 @@ TextureResourceCapture::GetAdapter() const
 {
 	return TextureResourceCaptureAdapter::Constant();
 }
-// /STEVE CHANGE
 
 } // namespace Rtt
 
