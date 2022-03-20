@@ -88,10 +88,12 @@ namespace Rtt
 		DlgMenu(const std::string& appName);
 
 		void Draw();
+		int GetHeight() const { return fMenuSize.y;	}
 
 	private:
 
-		bool isMainMenu;
+		bool fIsMainMenu;
+		ImVec2 fMenuSize;
 	};
 
 	struct DlgNewProject : public Window

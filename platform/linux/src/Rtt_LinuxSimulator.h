@@ -33,6 +33,8 @@ namespace Rtt
 		bool IsRunningOnSimulator() override { return true; }
 		bool Init() override;
 
+		virtual int GetMenuHeight() const { return 19; }		// hack
+
 	private:
 
 		smart_ptr<FileWatcher> fWatcher;

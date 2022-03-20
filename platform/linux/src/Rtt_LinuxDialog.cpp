@@ -390,7 +390,7 @@ namespace Rtt
 
 	DlgMenu::DlgMenu(const std::string& appName)
 	{
-		isMainMenu = appName == "homescreen";
+		fIsMainMenu = appName == "homescreen";
 	}
 
 	void DlgMenu::Draw()
@@ -400,7 +400,7 @@ namespace Rtt
 		bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) | ImGui::IsKeyDown(ImGuiKey_RightShift);
 		bool alt = ImGui::IsKeyDown(ImGuiKey_LeftAlt) | ImGui::IsKeyDown(ImGuiKey_RightAlt);
 
-		if (isMainMenu)
+		if (fIsMainMenu)
 		{
 			// hot keys
 			if (ctrl && !shift && !alt)
@@ -473,6 +473,7 @@ namespace Rtt
 					}
 					ImGui::EndMenu();
 				}
+				fMenuSize = ImGui::GetWindowSize();
 				ImGui::EndMainMenuBar();
 			}
 		}
@@ -695,6 +696,7 @@ namespace Rtt
 					}
 					ImGui::EndMenu();
 				}
+				fMenuSize = ImGui::GetWindowSize();
 				ImGui::EndMainMenuBar();
 			}
 		}

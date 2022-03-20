@@ -174,6 +174,7 @@ namespace Rtt
 	void SolarApp::GetWindowSize(int* w, int* h)
 	{
 		SDL_GetWindowSize(fWindow, w, h);
+		*h = -GetMenuHeight();
 	}
 
 	bool SolarApp::LoadApp(const string& path)
@@ -476,7 +477,7 @@ namespace Rtt
 
 	void SolarApp::SetWindowSize(int w, int h)
 	{
-		SDL_SetWindowSize(fWindow, w, h);
+		SDL_SetWindowSize(fWindow, w, h + GetMenuHeight());
 	}
 
 	void SolarApp::AddDisplayObject(LinuxDisplayObject* obj)
