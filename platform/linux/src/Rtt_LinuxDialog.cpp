@@ -16,15 +16,12 @@
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaLibNative.h"
+#include "Rtt_BitmapUtils.h"
 #include <dirent.h>
 #include <unistd.h>
 #include <pwd.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "imgui/stb_image.h"
-
 using namespace std;
-
 
 extern "C"
 {
@@ -42,38 +39,36 @@ namespace Rtt
 	}
 
 	// Simple helper function to load an image into a OpenGL texture with common settings
-	bool LoadTextureFromFile(const char* filename, GLuint* out_texture, int* out_width, int* out_height)
+	bool LoadTextureFromFile(const char* filename, GLuint* out_texture, int* w, int* h)
 	{
 		// Load from file
-		int image_width = 0;
-		int image_height = 0;
-		unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
-		if (image_data == NULL)
-			return false;
+		FILE * f = fopen(filename, "rb");
+		if (f)
+		{
+			unsigned char* img = bitmapUtil::loadPNG(f, *w, *h);
+			fclose(f);
 
-		// Create a OpenGL texture identifier
-		GLuint image_texture;
-		glGenTextures(1, &image_texture);
-		glBindTexture(GL_TEXTURE_2D, image_texture);
+			if (img)
+			{
+				// Create a OpenGL texture identifier
+				GLuint image_texture;
+				glGenTextures(1, &image_texture);
+				glBindTexture(GL_TEXTURE_2D, image_texture);
 
-		// Setup filtering parameters for display
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+				// Setup filtering parameters for display
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, *w, *h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img);
 
-		// Upload pixels into texture
-#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-#endif
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-		stbi_image_free(image_data);
+				*out_texture = image_texture;
 
-		*out_texture = image_texture;
-		*out_width = image_width;
-		*out_height = image_height;
-
-		return true;
+				free(img);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void DrawActivity()
@@ -274,9 +269,11 @@ namespace Rtt
 		, width(0)
 		, height(0)
 	{
+		begin();
 		string iconPath = GetStartupPath(NULL);
 		iconPath.append("/Resources/solar2d.png");
 		LoadTextureFromFile(iconPath.c_str(), &tex_id, &width, &height);
+		end();
 	}
 
 	DlgAbout::~DlgAbout()
@@ -1274,7 +1271,7 @@ namespace Rtt
 			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + w - 40);
 			ImGui::SetCursorPosX(20);
 			ImGui::SetCursorPosY(20);
-			ImGui::TextWrapped(fMsg.c_str());
+			ImGui::TextWrapped("%s", fMsg.c_str());
 			ImGui::PopTextWrapPos();
 
 			ImGui::Dummy(ImVec2(20, 20));
@@ -1339,7 +1336,7 @@ namespace Rtt
 			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + w - 40);
 			ImGui::SetCursorPosX(20);
 			ImGui::SetCursorPosY(20);
-			ImGui::TextWrapped(fMessage.c_str());
+			ImGui::TextWrapped("%s", fMessage.c_str());
 			ImGui::PopTextWrapPos();
 
 			ImGui::Dummy(ImVec2(70, 30));
