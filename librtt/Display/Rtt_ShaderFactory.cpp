@@ -1463,11 +1463,17 @@ ShaderFactory::RegisterVertexExtension( const char * name, const CoronaVertexExt
         VertexAttributeSupport support;
         
         fOwner.GetVertexAttributes( support );
-        
-        U32 count = extension.count;
+
+        U32 n = extension.count, count = n;
         bool ok = true;
         
-        for (unsigned int i = 0; i < extension.count; ++i)
+		if (extension.instanceByID && NULL == support.suffix)
+		{
+			ok = false;
+			n = 0;
+		}
+		
+        for (unsigned int i = 0; i < n; ++i)
         {
             const CoronaVertexExtensionAttribute & attribute = extension.attributes[i];
             
@@ -1598,6 +1604,45 @@ bool
 ShaderFactory::UnregisterVertexExtension( const char * name )
 {
     return Unregister( fL, &sVertexExtensionCookie, name );
+}
+
+static void
+SetExternalInfo( lua_State * L, const char * name, const char * type )
+{
+	static int sExternalInfoRef = LUA_NOREF;
+
+	lua_getref( L, sExternalInfoRef ); // ..., object, ei?
+
+	if (lua_isnil( L, -1 ))
+	{
+		lua_pop( L, 1 ); // ..., object
+		lua_newtable( L ); // ..., object, ei
+		lua_pushvalue( L, -1 ); // ..., object, ei, ei
+	
+		sExternalInfoRef = lua_ref( L, 1 ); // ..., object, ei; registry.ref = ei
+	}
+	
+	char key[BUFSIZ];
+	
+	sprintf( key, "coronashaderexternalinfo:%s:%s", type, name );
+	
+	lua_insert( L, -2 ); // ..., ei, object
+	lua_setfield( L, -2, key ); // ..., ei = { ..., key = object }
+	lua_pop( L, 1 ); // ...
+}
+
+void
+ShaderFactory::AddExternalInfo( lua_State * L, const char * name, const char * type )
+{
+	SetExternalInfo( L, name, type ); // ...
+}
+
+void
+ShaderFactory::RemoveExternalInfo( lua_State * L, const char * name, const char * type )
+{
+	lua_pushnil( L ); // ..., nil
+	
+	SetExternalInfo( L, name, type ); // ...
 }
 // /STEVE CHANGE
 

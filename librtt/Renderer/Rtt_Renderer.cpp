@@ -196,21 +196,7 @@ Renderer::Initialize()
     fFrontCommandBuffer->Initialize();
 }
 
-static void
-CallOps( Rtt::Renderer * renderer, Rtt::Array< Renderer::CustomOp > & ops, Rtt::ObjectBoxList & list )
-{
-    OBJECT_BOX_STORE( Renderer, ref, renderer );
-
-    for (S32 i = 0; i < ops.Length(); ++i)
-    {
-        Renderer::CustomOp & op = ops[i];
-
-        if (op.fAction)
-        {
-            op.fAction( ref, op.fUserData );
-        }
-    }
-}
+// STEVE CHANGE removed CallOps
 
 void
 Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY )
@@ -582,7 +568,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     }
     
     const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
-    bool isInstanced = block && block->fInstanceData;
+    bool isInstanced = block && (block->fInstanceData || extensionList->instancedByID);
  // /STEVE CHANGE
     // Geometry that is stored on the GPU does not need to be copied
     // over each frame. As a consequence, they can not be batched.
@@ -707,7 +693,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         // STEVE CHANGE
         if (isInstanced)
         {
-            Rtt_ASSERT( programList && programList->HasInstanceRateData() );
+            Rtt_ASSERT( programList && programList->IsInstanced() );
 
             InsertInstancing( block, programList, extensionList );
             
@@ -768,7 +754,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
             QueueCreate( data->fFillTexture0 );
         }
 
-        fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
+		fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
         fPrevious.fFillTexture0 = data->fFillTexture0;
         INCREMENT( fStatistics.fTextureBindCount );
 
@@ -1220,7 +1206,7 @@ Renderer::GetMaxVertexTextureUnits()
 
 // STEVE CHANGE
 void
-Renderer::GetVertexAttributes( VertexAttributeSupport & support )
+Renderer::GetVertexAttributes( VertexAttributeSupport & support ) const
 {
     fBackCommandBuffer->GetVertexAttributes( support );
 }
@@ -1454,13 +1440,13 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
     bool enoughSpace = fCurrentInstancingGeometry && verticesRequired <=
      ( fCurrentInstancingGeometry->GetVerticesAllocated() - fCurrentInstancingGeometry->GetVerticesUsed() );
     
-    if (!enoughSpace)
+    if (verticesRequired > 0 && !enoughSpace)
     {
         fCurrentInstancingGeometry = fInstancingGeometryPool->GetOrCreate( verticesRequired );
         fCurrentInstancingVertex = fCurrentInstancingGeometry->GetVertexData();
     }
     
-    fBackCommandBuffer->BindInstancing( block->fCount, fCurrentInstancingVertex );
+    fBackCommandBuffer->BindInstancing( block->fCount, verticesRequired > 0 ? fCurrentInstancingVertex : NULL );
     
     for (auto iter = FormatExtensionList::InstancedGroups( programList ); !iter.IsDone(); iter.Advance())
     {
@@ -1489,7 +1475,10 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
         fCurrentInstancingVertex += vertexCount;
     }
     
-    fCurrentInstancingGeometry->SetVerticesUsed( fCurrentInstancingGeometry->GetVerticesUsed() + verticesRequired );
+	if (verticesRequired > 0)
+	{
+		fCurrentInstancingGeometry->SetVerticesUsed( fCurrentInstancingGeometry->GetVerticesUsed() + verticesRequired );
+	}
 }
 // /STEVE CHANGE
 

@@ -182,7 +182,7 @@ class Renderer
         static U32 GetMaxUniformVectorsCount();
         static U32 GetMaxVertexTextureUnits();
     // STEVE CHANGE
-        void GetVertexAttributes( VertexAttributeSupport & support );
+        void GetVertexAttributes( VertexAttributeSupport & support ) const;
     // /STEVE CHANGE
 
         struct Statistics
@@ -223,7 +223,7 @@ class Renderer
         // This is primarily useful as a debugging tool. By increasing the count
         // over time, users can visualize render order, batching, etc.
         void SetMaximumRenderDataCount( U32 count );
-        
+	
         void SetCPUResourceObserver(MCPUResourceObserver *resourceObserver);
         void ReleaseGPUResources();
 
@@ -390,7 +390,7 @@ class Renderer
         // STEVE CHANGE remove fClearOps, fEndFrameOps
     
         U16 fCommandCount;
-
+	
     // STEVE CHANGE
         Array< StateBlockInfo > fStateBlocks;
         Array< U8 > fDefaultState;

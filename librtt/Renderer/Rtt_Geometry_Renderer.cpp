@@ -420,9 +420,11 @@ FormatExtensionList::Compatible( const FormatExtensionList * shaderList, const F
         
         return false;
     }
-    
+	
     else
     {
+		bool geometryIsInstanced = geometryList->instancedByID;
+		
         for (auto iter = FormatExtensionList::AllAttributes( shaderList ); !iter.IsDone(); iter.Advance())
         {
             Geometry::ExtensionAttribute shaderAttribute = *iter.GetAttribute();
@@ -452,7 +454,9 @@ FormatExtensionList::Compatible( const FormatExtensionList * shaderList, const F
             
             U32 geometryGroupIndex = geometryList->FindGroup( geometryAttributeIndex );
             Geometry::ExtensionGroup geometryGroup = geometryList->groups[geometryGroupIndex], shaderGroup = *iter.GetGroup();
-            
+        
+			geometryIsInstanced |= geometryGroup.IsInstanceRate();
+			
             if (shaderGroup.divisor != geometryGroup.divisor)
             {
                 return LogNameError( "WARNING: instancing count clash with attribute named `%s`", shaderList, iter );
@@ -468,6 +472,13 @@ FormatExtensionList::Compatible( const FormatExtensionList * shaderList, const F
                 return LogNameError( "WARNING: structuring clash with attribute named `%s`: windows have different sizes", shaderList, iter );
             }
         }
+		
+		if (geometryIsInstanced && !shaderList->IsInstanced())
+		{
+			Rtt_Log( "WARNING: geometry list instantiated, but not shader list." );
+			
+			return false;
+		}
 
         return true;
     }
@@ -627,6 +638,7 @@ FormatExtensionList::Build( const CoronaVertexExtension * extension )
         names[i].index = (S32)i; // preserve attribute index against reordering
     }
     
+	instancedByID = !HasInstanceRateData() && !!extension->instanceByID;
     ownsData = true;
     sorted = true;
 }
@@ -831,7 +843,7 @@ Geometry::ExtensionBlock::~ExtensionBlock()
             Rtt_DELETE( fInstanceData[i] );
         }
         
-        Rtt_DELETE( fInstanceData );
+        Rtt_FREE( fInstanceData );
     }
 }
 
@@ -846,7 +858,7 @@ Geometry::ExtensionBlock::SetExtensionList( SharedPtr<FormatExtensionList> &list
     {
         Rtt_Allocator* allocator = fVertexData.Allocator();
 
-        fInstanceData = Rtt_NEW( allocator, Array<U8>* );
+        fInstanceData = (Array<U8>**)Rtt_MALLOC( allocator, sizeof(Array<U8>*) * fList->InstanceGroupCount() );
 
         for (U32 i = 0, count = fList->InstanceGroupCount(); i < count; ++i)
         {

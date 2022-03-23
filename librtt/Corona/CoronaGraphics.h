@@ -580,6 +580,13 @@ typedef struct CoronaVertexExtension {
     */
     unsigned long size;
 
+	/**
+	 If non-0, extension is instanced.
+	 This is instancing via a shader ID, and redundant if any attributes also request instancing.
+	 To query support, call `system.getInfo( "instancingSupport" )`.
+	*/
+	int instanceByID;
+	
     /**
      Number of extension attributes.
     */
@@ -596,7 +603,7 @@ typedef struct CoronaVertexExtension {
  geometry&mdash;that includes new members as well as those in stock Solar vertices.
  @param L Lua state.
  @param name Unused extension name.
- @param transform Extension configuration.
+ @param extension Extension configuration.
  @return If non-0, the extension was registered.
 */
 CORONA_API

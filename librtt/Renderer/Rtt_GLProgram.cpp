@@ -438,7 +438,7 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
             extendedHints[4] = "extensionAttributes";
             
             // enable instances and / or provide IDs for the same
-            if (extensionList->HasInstanceRateData()) // TODO: or "wants instancing"?
+            if (extensionList->IsInstanced())
             {
                 const char * idSuffix = GLGeometry::InstanceIDSuffix();
                 
@@ -471,7 +471,7 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
                         extendedSources[0] = versionStr.c_str();
                     }
                     
-                    sprintf( buf, "\n#define CoronaInstanceID gl_InstanceID%s\n\n", idSuffix );
+                    sprintf( buf, "\n#define CoronaInstanceID float(gl_InstanceID%s)\n\n", idSuffix );
                     
                     suffixStr = buf;
                     
@@ -480,7 +480,7 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
                 
                 else
                 {
-                    extendedSources[nsources - 1] = "\n#define CoronaInstanceID 0\n\n";
+                    extendedSources[nsources - 1] = "\n#define CoronaInstanceID 0.\n\n";
                 }
                 
                 extendedHints[nsources - 1] = "instanceID";

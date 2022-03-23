@@ -33,7 +33,7 @@ class GLCommandBuffer : public CommandBuffer
         typedef GLCommandBuffer Self;
     
     // STEVE CHANGE
-        void GetVertexAttributes( VertexAttributeSupport & support );
+        void GetVertexAttributes( VertexAttributeSupport & support ) const;
     // /STEVE CHANGE
 
     public:

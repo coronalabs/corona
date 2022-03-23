@@ -59,7 +59,7 @@ class CommandBuffer
         static const char *GetGlString( const char *s );
         static bool GetGpuSupportsHighPrecisionFragmentShaders();
     // STEVE CHANGE
-        virtual void GetVertexAttributes( VertexAttributeSupport & support ) = 0;
+        virtual void GetVertexAttributes( VertexAttributeSupport & support ) const = 0;
     // /STEVE CHANGE
 
     public:

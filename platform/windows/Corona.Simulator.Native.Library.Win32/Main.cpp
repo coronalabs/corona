@@ -25,6 +25,7 @@
 #include "CoronaMacros.h"
 #include "CoronaVersion.h"
 #include "CoronaGraphics.h"
+#include "CoronaObjects.h"
 //#include "CoronaWin32.h"
 #include <Windows.h>
 
@@ -595,4 +596,376 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 	CoronaCallbackLoad();
 	return CoronaCallbackInvoke(format);
 }
+#pragma endregion
+
+#pragma region Corona Renderer API
+
+// STEVE CHANGE removed ClearOps, EndFrameOps, RendererDo
+
+CORONA_API
+void CoronaRendererInvalidate(lua_State * L)
+{
+    typedef void(*CoronaCallbackType)(lua_State *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L);
+}
+
+// STEVE CHANGE
+CORONA_API
+int CoronaRendererRegisterStateBlock( lua_State * L, const CoronaStateBlock * block, unsigned long * blockID )
+{
+    typedef int(*CoronaCallbackType)(lua_State *, const CoronaStateBlock *, unsigned long *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, block, blockID);
+}
+
+CORONA_API
+int CoronaRendererReadStateBlock( const CoronaRenderer * renderer, unsigned long blockID, void * data, unsigned int * size )
+{
+    typedef int(*CoronaCallbackType)(const CoronaRenderer *, unsigned long, void *, unsigned int *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(renderer, blockID, data, size);
+}
+
+CORONA_API
+int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned long blockID, const void * data, unsigned int size )
+{
+    typedef int(*CoronaCallbackType)(const CoronaRenderer *, unsigned long, const void *, unsigned int);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(renderer, blockID, data, size);
+}
+// /STEVE CHANGE
+
+CORONA_API
+int CoronaRendererRegisterCommand(lua_State* L, const CoronaCommand* command, unsigned long* commandID)
+{
+	typedef int(*CoronaCallbackType)(lua_State* L, const CoronaCommand* command, unsigned long* commandID);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, command, commandID);
+}
+
+CORONA_API
+int CoronaRendererIssueCommand(const CoronaRenderer* renderer, unsigned long commandID, void* data, unsigned int size)
+{
+
+	typedef int(*CoronaCallbackType)(const CoronaRenderer* renderer, unsigned long commandID, void* data, unsigned int size);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(renderer, commandID, data, size);
+}
+#pragma endregion
+
+#pragma Corona Command Buffer API
+CORONA_API
+const unsigned char * CoronaCommandBufferGetBaseAddress(const CoronaCommandBuffer * commandBuffer)
+{
+    typedef const unsigned char* (*CoronaCallbackType)(const CoronaCommandBuffer *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(commandBuffer);
+}
+
+CORONA_API
+int CoronaCommandBufferWriteNamedUniform(const CoronaCommandBuffer * commandBuffer, const char * uniformName, const CoronaWriteUniformParams * params, unsigned int size)
+{
+    typedef int(*CoronaCallbackType)(const CoronaCommandBuffer *, const char *, const CoronaWriteUniformParams *, unsigned int);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(commandBuffer, uniformName, params, size);
+}
+#pragma endregion
+
+#pragma Corona Geometry API
+CORONA_API
+unsigned int CoronaGeometryCopyData(void * dst, const CoronaGeometryMappingLayout * dstLayout, const void * src, const CoronaGeometryMappingLayout * srcLayout)
+{
+    typedef unsigned int(*CoronaCallbackType)(void *, const CoronaGeometryMappingLayout *, const void *, const CoronaGeometryMappingLayout *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(dst, dstLayout, src, srcLayout);
+}
+
+CORONA_API
+void * CoronaGeometryGetMappingFromRenderData(const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout)
+{
+    typedef void *(*CoronaCallbackType)(const CoronaRenderData *, const char *, CoronaGeometryMappingLayout *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(renderData, name, layout);
+}
+// STEVE CHANGE
+CORONA_API
+int CoronaGeometryRegisterVertexExtension( lua_State * L, const char * name, const CoronaVertexExtension * extension )
+{
+	typedef int(*CoronaCallbackType)(lua_State *, const char *, const CoronaVertexExtension *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, name, extension);
+}
+
+CORONA_API
+int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name )
+{
+    typedef int(*CoronaCallbackType)(lua_State *, const char *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, name);
+}
+// /STEVE CHANGE
+#pragma endregion
+
+#pragma Corona Shader API
+CORONA_API
+int CoronaShaderGetEffectDetail(const CoronaShader * shader, int index, CoronaEffectDetail * detail)
+{
+    typedef int(*CoronaCallbackType)(const CoronaShader *, int, CoronaEffectDetail *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(shader, index, detail);
+}
+
+CORONA_API
+int CoronaShaderRegisterShellTransform(lua_State * L, const char * name, const CoronaShellTransform * transform)
+{
+    typedef int(*CoronaCallbackType)(lua_State *, const char *, const CoronaShellTransform *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, name, transform);
+}
+
+CORONA_API
+int CoronaShaderUnregisterShellTransform(lua_State * L, const char * name)
+{
+    typedef int(*CoronaCallbackType)(lua_State *, const char *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, name);
+}
+
+CORONA_API
+int CoronaShaderRawDraw(const CoronaShader * shader, const CoronaRenderData * renderData, const CoronaRenderer * renderer)
+{
+    typedef int(*CoronaCallbackType)(const CoronaShader *, const CoronaRenderData *, const CoronaRenderer *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(shader, renderData, renderer);
+}
+
+CORONA_API
+int CoronaShaderGetVersion(const CoronaRenderData * renderData, const CoronaRenderer * renderer)
+{
+    typedef int(*CoronaCallbackType)(const CoronaRenderData *, const CoronaRenderer *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(renderData, renderer);
+}
+
+CORONA_API
+int CoronaShaderRegisterEffectDataType(lua_State * L, const char * name, const CoronaEffectCallbacks * callbacks)
+{
+    typedef int(*CoronaCallbackType)(lua_State *, const char *, const CoronaEffectCallbacks *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, name, callbacks);
+}
+
+CORONA_API
+int CoronaShaderUnregisterEffectDataType(lua_State * L, const char * name)
+{
+    typedef int(*CoronaCallbackType)(lua_State *, const char *);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(L, name);
+}
+
+#pragma endregion
+
+#pragma region Corona Matrix API
+CORONA_API
+void CoronaMultiplyMatrix4x4(const CoronaMatrix4x4 m1, const CoronaMatrix4x4 m2, CoronaMatrix4x4 result)
+{
+    typedef void (*CoronaCallbackType)(const CoronaMatrix4x4, const CoronaMatrix4x4, CoronaMatrix4x4);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(m1, m2, result);
+}
+
+CORONA_API
+void CoronaCreateViewMatrix(const CoronaVector3 eye, const CoronaVector3 center, const CoronaVector3 up, CoronaMatrix4x4 result)
+{
+    typedef void (*CoronaCallbackType)(const CoronaVector3, const CoronaVector3, const CoronaVector3, CoronaMatrix4x4);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(eye, center, up, result);
+}
+
+CORONA_API
+void CoronaCreateOrthoMatrix(float left, float right, float bottom, float top, float zNear, float zFar, CoronaMatrix4x4 result)
+{
+    typedef void (*CoronaCallbackType)(float, float, float, float, float, float, CoronaMatrix4x4);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(left, right, bottom, top, zNear, zFar, result);
+}
+
+CORONA_API
+void CoronaCreatePerspectiveMatrix(float fovy, float aspectRatio, float zNear, float zFar, CoronaMatrix4x4 result)
+{
+    typedef void (*CoronaCallbackType)(float, float, float, float, CoronaMatrix4x4);
+    CoronaCallbackLoad();
+    return CoronaCallbackInvoke(fovy, aspectRatio, zNear, zFar, result);
+}
+#pragma endregion
+
+#pragma region Corona Objects API
+CORONA_API
+int CoronaObjectsBuildMethodStream(lua_State* L, const CoronaObjectParamsHeader* head)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, const CoronaObjectParamsHeader*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, head);
+}
+
+CORONA_API
+int CoronaObjectsPushContainer(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void *, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushEmbossedText(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushEmitter(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushGroup(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushImage(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushImageRect(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushLine(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushMesh(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushPolygon(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushRect(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushRoundedRect(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushSnapshot(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushSprite(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+CORONA_API
+int CoronaObjectsPushText(lua_State* L, void* userData, const CoronaObjectParams* params)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, void*, const CoronaObjectParams*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, userData, params);
+}
+
+int CoronaObjectInvalidate(const CoronaDisplayObject* object)
+{
+	typedef int(*CoronaCallbackType)(const CoronaDisplayObject*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(object);
+}
+
+CORONA_API
+int CoronaObjectSetHasDummyStageBounds(const CoronaDisplayObject* object, int hasBounds)
+{
+	typedef int(*CoronaCallbackType)(const CoronaDisplayObject*, int);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(object, hasBounds);
+}
+
+CORONA_API
+CoronaGroupObject* CoronaObjectGetParent(const CoronaDisplayObject* object)
+{
+	typedef CoronaGroupObject* (*CoronaCallbackType)(const CoronaDisplayObject*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(object);
+}
+
+CORONA_API
+CoronaDisplayObject* CoronaGroupObjectGetChild(const CoronaGroupObject* object, int index)
+{
+	typedef CoronaDisplayObject* (*CoronaCallbackType)(const CoronaGroupObject*, int);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(object, index);
+}
+
+CORONA_API
+int CoronaGroupObjectGetNumChildren(const CoronaGroupObject* groupObject)
+{
+	typedef int(*CoronaCallbackType)(const CoronaGroupObject*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(groupObject);
+}
+
+CORONA_API
+int CoronaObjectSendMessage(const CoronaDisplayObject* object, const char* message, const void* payload, unsigned int size)
+{
+	typedef int(*CoronaCallbackType)(const CoronaDisplayObject*, const char*, const void*, unsigned int);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(object, message, payload, size);
+}
+
 #pragma endregion

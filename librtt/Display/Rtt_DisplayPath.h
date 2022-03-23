@@ -101,8 +101,8 @@ class DisplayPath
             virtual StringHash *GetHash( lua_State *L ) const;
         
         private:
-            static int getStreamDetails( lua_State *L );
-            static int setStreamValue( lua_State *L );
+            static int getAttributeDetails( lua_State *L );
+            static int setAttributeValue( lua_State *L );
         
         private:
             bool fIsFill;

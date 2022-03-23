@@ -274,6 +274,7 @@ struct FormatExtensionList {
     
     U32 ExtraVertexCount() const;
     U32 InstanceGroupCount() const;
+	bool IsInstanced() const { return instancedByID || HasInstanceRateData(); }
     bool HasInstanceRateData() const;
     bool HasVertexRateData() const;
     void SortNames() const;
@@ -302,6 +303,7 @@ struct FormatExtensionList {
     mutable NamePair* names; // allow reordering
     U16 attributeCount;
     U16 groupCount;
+	bool instancedByID;
     bool ownsData;
     mutable bool sorted;
 };

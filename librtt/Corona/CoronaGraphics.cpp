@@ -542,7 +542,13 @@ int CoronaShaderRegisterShellTransform( lua_State * L, const char * name, const 
 CORONA_API
 int CoronaShaderUnregisterShellTransform( lua_State * L, const char * name )
 {
-    return Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetShaderFactory().UnregisterShellTransform( name );
+	// STEVE CHANGE
+	Rtt::ShaderFactory & factory = Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetShaderFactory();
+	
+	factory.RemoveExternalInfo( L, name, "shellTransform" );
+	
+    return factory.UnregisterShellTransform( name );
+	// /STEVE CHANGE
 }
 
 // ----------------------------------------------------------------------------

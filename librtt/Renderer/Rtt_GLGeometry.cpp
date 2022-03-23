@@ -22,7 +22,6 @@
 // STEVE CHANGE
 #include <stddef.h>
 // /STEVE CHANGE
-#include "Corona/CoronaLog.h" // <- STEVE CHANGE HACK
 
 // ----------------------------------------------------------------------------
 
@@ -263,32 +262,36 @@ GLGeometry::GLGeometry()
     fInstancesAllocated( -1 )
 // /STEVE CHANGE
 {
-    // STEVE CHANGE HACK
-    static int siii;
-    iii=siii++;
-    // /STEVE CHANGE HACK
 }
 
 // STEVE CHANGE
-typedef void (*DrawArraysInstancedPtr)( GLenum mode, GLint first, GLsizei count,
+#if defined( Rtt_WIN_ENV )
+    #define GL_TYPE_PREFIX GLAPIENTRY
+#elif defined( Rtt_IPHONE_ENV )
+	#define GL_TYPE_PREFIX GL_APIENTRY
+#else
+    #define GL_TYPE_PREFIX
+#endif
+
+typedef void (GL_TYPE_PREFIX *DrawArraysInstancedPtr)( GLenum mode, GLint first, GLsizei count,
                            GLsizei primcount );
-typedef void (*DrawElementsInstancedPtr)( GLenum mode, GLsizei count, GLenum type,
+typedef void (GL_TYPE_PREFIX *DrawElementsInstancedPtr)( GLenum mode, GLsizei count, GLenum type,
                 const GLvoid *indices, GLsizei primcount );
-typedef void (*VertexAttribDivisorPtr)( GLuint index, GLuint divisor);
+typedef void (GL_TYPE_PREFIX *VertexAttribDivisorPtr)( GLuint index, GLuint divisor);
 
 static DrawArraysInstancedPtr sDrawArraysInstanced;
 static DrawElementsInstancedPtr sDrawElementsInstanced;
 static VertexAttribDivisorPtr sVertexAttribDivisor;
 static const char * sSuffix;
 
-#if defined( Rtt_OPENGLES )
-    #define GL_GET_PROC(name, suffix) (PFNGL ## name ## suffix ## PROC) eglGetProcAddress( "gl" #name #suffix )
+#if defined( Rtt_EGL )
+	#define GL_GET_PROC(name, suffix) (name ## Ptr) eglGetProcAddress( "gl" #name #suffix )
 #else
     #define GL_GET_PROC(name, suffix) gl ## name ## suffix
 #endif
 
 #define GL_RESET() DrawArrays = NULL; DrawElements = NULL; AttribDivisor = NULL; Suffix = NULL
-#define GL_HAS_SUPPORT() (NULL != DrawArrays) && (NULL != DrawElements)
+#define GL_HAS_SUPPORT() ((NULL != DrawArrays) && (NULL != DrawElements))
 
 bool
 GLGeometry::SupportsInstancing()
@@ -316,8 +319,10 @@ GLGeometry::SupportsInstancing()
         #endif
     #endif
         
+		const char * extensions = (const char *)glGetString( GL_EXTENSIONS );
+		
     #if defined( GL_EXT_instanced_arrays )
-        if (!GL_HAS_SUPPORT())
+        if (strstr( extensions, "GL_EXT_instanced_arrays" ) && !GL_HAS_SUPPORT())
         {
             GL_RESET();
         
@@ -328,7 +333,7 @@ GLGeometry::SupportsInstancing()
     #endif
 
     #if defined( GL_ANGLE_instanced_arrays )
-        if (!GL_HAS_SUPPORT())
+        if (strstr( extensions, "GL_ANGLE_instanced_arrays" ) && !GL_HAS_SUPPORT())
         {
             GL_RESET();
         
@@ -339,7 +344,7 @@ GLGeometry::SupportsInstancing()
     #endif
         
     #if defined( GL_EXT_draw_instanced ) // extension notes suggest not ES-only...
-        if (!GL_HAS_SUPPORT())
+        if (strstr( extensions, "GL_EXT_draw_instanced" ) && !GL_HAS_SUPPORT())
         {
             GL_RESET();
             
@@ -385,6 +390,7 @@ GLGeometry::InstanceIDSuffix()
 #undef GL_GET_PROC
 #undef GL_RESET
 #undef GL_HAS_SUPPORT
+#undef GL_TYPE_PREFIX
 
 void
 GLGeometry::DrawArraysInstanced( GLenum mode, GLint first, GLsizei count,
@@ -431,7 +437,7 @@ GLGeometry::Create( CPUResource* resource )
 {
     Rtt_ASSERT( CPUResource::kGeometry == resource->GetType() );
     Geometry* geometry = static_cast<Geometry*>( resource );
-    CoronaLog("CREATE %i", iii); // <- STEVE CHANGE HACK
+
     bool shouldStoreOnGPU = geometry->GetStoredOnGPU();
     if ( shouldStoreOnGPU )
     {
@@ -458,7 +464,7 @@ GLGeometry::Create( CPUResource* resource )
     // STEVE CHANGE
         const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
         
-        if (block && block->fCount > 0)
+        if (block && block->fCount > 0 && geometry->GetExtensionList()->HasInstanceRateData())
         {
             createInstanceVBO( geometry, fInstancesVBO );
             fInstancesAllocated = block->fCount;
@@ -519,7 +525,7 @@ GLGeometry::Update( CPUResource* resource )
             // STEVE CHANGE
             /*const */size_t size = sizeof(Geometry::Vertex);
             
-            if (extensionList->HasVertexRateData())
+            if (extensionList && extensionList->HasVertexRateData()) // <- STEVE CHANGE
             {
                 Geometry::Vertex* extendedData = geometry->GetWritableExtendedVertexData();
                 
@@ -605,7 +611,7 @@ GLGeometry::Update( CPUResource* resource )
             // STEVE CHANGE
             size_t size = sizeof(Geometry::Vertex);
             
-            if (extensionList->HasVertexRateData())
+            if (extensionList && extensionList->HasVertexRateData()) // <- STEVE CHANGE
             {
                 Geometry::Vertex* extendedData = geometry->GetWritableExtendedVertexData();
                 
@@ -698,7 +704,6 @@ GLGeometry::Destroy()
         fInstancesVBO = 0;
     }
 // /STEVE CHANGE
-    CoronaLog("DESTROY %i",iii); // <- STEVE CHANGE HACK
 }
 
 // STEVE CHANGE

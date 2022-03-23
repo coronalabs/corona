@@ -49,7 +49,6 @@ DisplayDefaults::DisplayDefaults()
     fIsAnchorClamped( true ),
     fIsImageSheetSampledInsideFrame( false ),
 // STEVE CHANGE
-    fIgnoresStageBounds( false ),
     fSkipsCull( false ),
     fSkipsHitTest( false ),
     fEnableDepthInScene( false ),

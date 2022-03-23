@@ -122,10 +122,10 @@ class DisplayObject : public MDrawable, public MLuaProxyable
             kIsAnchorChildren = 0x200, // Group-specific property
             kIsRenderedOffscreen = 0x400,
             kIsRestricted = 0x800,
-            kIsDummyStageBounds = 0x1000,
         // STEVE CHANGE
-            kSkipsCull = 0x2000,
-            kSkipsHitTest = 0x4000,
+			// removed IsDummyStagebounds
+            kSkipsCull = 0x1000,
+            kSkipsHitTest = 0x2000,
         // /STEVE CHANGE
 
             // NOTE: Current maximum of 16 PropertyMasks!!!
@@ -364,9 +364,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         Rtt_INLINE bool IsForceDraw() const { return (fProperties & kIsForceDraw) != 0; }
         Rtt_INLINE void SetForceDraw( bool newValue ) { SetProperty( kIsForceDraw, newValue ); }
     
-        Rtt_INLINE bool IsDummyStageBounds() const { return (fProperties & kIsDummyStageBounds) != 0; }
-        Rtt_INLINE void SetDummyStageBounds( bool newValue ) { SetProperty( kIsDummyStageBounds, newValue ); }
     // STEVE CHANGE
+		// removed Is/SetDummyStageBounds
         Rtt_INLINE bool SkipsCull() const { return (fProperties & kSkipsCull) != 0; }
         Rtt_INLINE void SetSkipsCull( bool newValue ) { SetProperty( kSkipsCull, newValue ); }
         
@@ -396,12 +395,13 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         void UpdateAlphaCumulative( U8 alphaCumulativeFromAncestors );
 
         Rtt_INLINE bool IsNotHidden() const { return IsVisible() && Alpha() > 0; }
-        Rtt_INLINE bool ShouldHitTest() const { return (IsNotHidden() || IsHitTestable()) && !SkipsHitTest() && CanHitTest(); } // <- STEVE CHANGE
+        Rtt_INLINE bool ShouldHitTest() const { return IsNotHidden() || IsHitTestable(); } // <- STEVE CHANGE revert
+	
         bool ShouldDraw() const
         {
             return ( ! IsDirty() && IsNotHidden() ) || IsForceDraw();
         }
-        bool ShouldPrepare() const { return IsDirty() && ( ShouldHitTest() || IsDummyStageBounds() ); }
+        bool ShouldPrepare() const { return IsDirty() && ShouldHitTest(); }
 
         void SetTransform( const Transform& newValue );
         const Transform& GetTransform() const { return fTransform; }

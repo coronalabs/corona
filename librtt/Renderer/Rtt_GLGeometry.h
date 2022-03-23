@@ -75,7 +75,6 @@ class GLGeometry : public GPUResource
         U32 fVertexCount;
         U32 fVertexOffset;
         U32 fIndexCount;
-    int iii; // <- STEVE CHANGE HACK
 };
 
 // ----------------------------------------------------------------------------

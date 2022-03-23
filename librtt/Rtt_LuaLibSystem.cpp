@@ -271,18 +271,17 @@ LuaLibSystem::getInfo( lua_State *L )
                 }
                 else if (support.hasPerInstance)
                 {
-                    lua_pushliteral( L, "perInstance" );
+                    lua_pushliteral( L, "singleInstance" );
                 }
                 else
                 {
                     lua_pushliteral( L, "none" );
                 }
-                lua_setfield( L, -2, "vertexRate" );
+                lua_setfield( L, -2, "vertexReplication" );
                 lua_pushboolean( L, NULL != support.suffix );
                 lua_setfield( L, -2, "hasInstanceID" );
             }
         }
-        // TODO
     }
     // /STEVE CHANGE
     else

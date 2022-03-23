@@ -77,9 +77,6 @@ class DisplayDefaults
         bool IsShaderCompilerVerbose() const { return fShaderCompilerVerbose; }
         void SetShaderCompilerVerbose( bool newValue ) { fShaderCompilerVerbose = newValue; }
     // STEVE CHANGE
-        bool GetIgnoresStageBounds() const { return fIgnoresStageBounds; }
-        void SetIgnoresStageBounds( bool newValue ) { fIgnoresStageBounds = newValue; }
-    
         bool GetSkipsCull() const { return fSkipsCull; }
         void SetSkipsCull( bool newValue ) { fSkipsCull = newValue; }
     
@@ -131,7 +128,6 @@ class DisplayDefaults
         bool fIsAnchorClamped;
         bool fIsImageSheetSampledInsideFrame;
     // STEVE CHANGE
-        bool fIgnoresStageBounds;
         bool fSkipsCull;
         bool fSkipsHitTest;
         bool fEnableDepthInScene;

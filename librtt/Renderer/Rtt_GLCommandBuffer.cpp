@@ -325,7 +325,7 @@ CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders()
 
 // STEVE CHANGE
 void
-GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support )
+GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support ) const
 {
     static GLint sMaxVertexAttribs = -1;
     
@@ -941,9 +941,9 @@ GLCommandBuffer::Execute( bool measureGPU )
             case kCommandBindFrameBufferObject:
             {
                 GLFrameBufferObject* fbo = Read<GLFrameBufferObject*>();
-                fbo->Bind();
+				fbo->Bind();
                 DEBUG_PRINT( "Bind FrameBufferObject: OpenGL name: %i, OpenGL Texture name, if any: %d",
-                                fbo->GetName(),
+								fbo->GetName(),
                                 fbo->GetTextureName() );
                 CHECK_ERROR_AND_BREAK;
             }
@@ -1253,7 +1253,7 @@ GLCommandBuffer::Execute( bool measureGPU )
             case kCommandClearDepth:
             {
                 GLfloat depth = Read<GLfloat>();
-                glClearDepth( depth );
+                Rtt_glClearDepth( depth );
                 clearingDepth = true;
                 DEBUG_PRINT( "Clear Depth: value=%f", depth );
                 CHECK_ERROR_AND_BREAK;

@@ -124,6 +124,9 @@ class ShaderFactory
         bool UnregisterShellTransform( const char * name );
     // STEVE CHANGE
         bool UnregisterVertexExtension( const char * name );
+	
+		void AddExternalInfo( lua_State * L, const char * name, const char * type );
+		void RemoveExternalInfo( lua_State * L, const char * name, const char * type );
     // /STEVE CHANGE
     
     protected:

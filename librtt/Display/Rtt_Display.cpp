@@ -865,7 +865,15 @@ Display::Capture( DisplayObject *object,
     fRenderer->SetFrameBufferObject( fbo );
     fRenderer->PushMaskCount();
     fRenderer->SetViewport( 0, 0, texW, texH );
-    fRenderer->Clear( 0.0f, 0.0f, 0.0f, 0.0f );
+// STEVE CHANGE
+    Renderer::ExtraClearOptions extra;
+    
+    extra.clearDepth = GetDefaults().GetEnableDepthInScene();
+    extra.clearStencil = GetDefaults().GetEnableStencilInScene();
+    extra.depthClearValue = GetDefaults().GetSceneDepthClearValue();
+    extra.stencilClearValue = GetDefaults().GetSceneStencilClearValue();
+// /STEVE CHANGE
+    fRenderer->Clear( 0.0f, 0.0f, 0.0f, 0.0f, &extra ); // <- STEVE CHANGE
 
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
@@ -1886,7 +1894,7 @@ Display::GetMaxVertexTextureUnits()
 
 // STEVE CHANGE
 void
-Display::GetVertexAttributes( VertexAttributeSupport & support )
+Display::GetVertexAttributes( VertexAttributeSupport & support ) const
 {
     fRenderer->GetVertexAttributes( support );
 }

@@ -207,13 +207,13 @@ DisplayPath::ExtensionAdapter::ValueForKey(
     switch ( index )
     {
         case 0:
-            Lua::PushCachedFunction( L, getStreamDetails );
+            Lua::PushCachedFunction( L, getAttributeDetails );
             break;
         case 1:
             {
                 const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
                 
-                if (block && block->fInstanceData)
+                if (block && (block->fInstanceData || geometry->GetExtensionList()->instancedByID))
                 {
                     lua_pushnumber( L, block->fCount );
                 }
@@ -225,7 +225,7 @@ DisplayPath::ExtensionAdapter::ValueForKey(
             }
             break;
         case 2:
-            Lua::PushCachedFunction( L, setStreamValue );
+            Lua::PushCachedFunction( L, setAttributeValue );
             break;
         default:
             result = 0;
@@ -300,21 +300,29 @@ DisplayPath::ExtensionAdapter::SetValueForKey(
                     CoronaLuaWarning( L, "Unable to assign instances without extension." );
                 }
                 
-                else
+                else if (!geometry->GetExtensionList()->instancedByID)
                 {
                     CoronaLuaWarning( L, "Extension has no instance-rate members." );
-                    // TODO?
-                    // https://github.com/KhronosGroup/WebGL/issues/2419#issuecomment-307713008
-                    // and so on... if this has changed since then, could relax restriction;
-                    // can probably do so on other targets but complicates handling... the
-                    // shader needs to add some #extension : INSTANCING statements, but at the
-                    // moment this calls for a vertex extension (no relation)... even if we
-                    // have no other members to add (most of the vertex extension logic assumes
-                    // a non-0 count)... maybe could make it a `defineEffect` flag if no
-                    // extension was provided (divisors would be 0?)... can probably work out
-                    // a compatibility predicate that honors this
-                    // upshot: need to set divisors of 1 when feature is available
                 }
+				
+				else
+				{
+					int instanceCount = luaL_checkint( L, valueIndex );
+					
+					if (instanceCount < 0 )
+					{
+						CoronaLuaWarning( L, "Negative instance count" );
+					}
+					
+					else
+					{
+						block->fCount = (U32)instanceCount;
+						
+						// object->Invalidate( ???? );
+						
+						result = true;
+					}
+				}
             }
             break;
             
@@ -349,16 +357,16 @@ DisplayPath::ExtensionAdapter::GetHash( lua_State *L ) const
 {
     static const char *keys[] =
     {
-        "getStreamDetails", // 0
-        "instances",        // 1
-        "setStreamValue",   // 2
+        "getAttributeDetails", // 0
+        "instances",           // 1
+        "setAttributeValue",   // 2
     };
     static StringHash sHash( *LuaContext::GetAllocator( L ), keys, sizeof( keys ) / sizeof( const char * ), 3, 6, 1, __FILE__, __LINE__ );
     return &sHash;
 }
 
 int
-DisplayPath::ExtensionAdapter::getStreamDetails( lua_State *L )
+DisplayPath::ExtensionAdapter::getAttributeDetails( lua_State *L )
 {
     int result = 0;
     int nextArg = 1;
@@ -419,7 +427,7 @@ DisplayPath::ExtensionAdapter::getStreamDetails( lua_State *L )
         
         else
         {
-            CoronaLuaWarning( L, "No stream named %s.", name );
+            CoronaLuaWarning( L, "No attribute named %s.", name );
         }
     }
     
@@ -439,7 +447,7 @@ DisplayPath::ExtensionAdapter::getStreamDetails( lua_State *L )
 }
 
 int
-DisplayPath::ExtensionAdapter::setStreamValue( lua_State *L )
+DisplayPath::ExtensionAdapter::setAttributeValue( lua_State *L )
 {
     int nextArg = 1;
     LuaUserdataProxy* sender = LuaUserdataProxy::ToProxy( L, nextArg++ );
@@ -567,7 +575,7 @@ DisplayPath::ExtensionAdapter::setStreamValue( lua_State *L )
         
         else
         {
-            CoronaLuaWarning( L, "No stream named %s.", name );
+            CoronaLuaWarning( L, "No attribute named %s.", name );
         }
     }
     

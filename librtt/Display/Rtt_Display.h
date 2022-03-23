@@ -262,7 +262,7 @@ class Display
         // Sets the scaling mode and updates content scale factors based on window size
         virtual void SetScaleMode( ScaleMode mode, Rtt_Real screenWidth, Rtt_Real screenHeight );
         virtual ScaleMode GetScaleMode() const;
-
+	
         virtual void ContentToScreen( S32& x, S32& y ) const;
         virtual void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
         virtual void ContentToPixels( S32& x, S32& y, S32& w, S32& h ) const;
@@ -330,7 +330,7 @@ class Display
         static U32 GetMaxUniformVectorsCount();
         static U32 GetMaxVertexTextureUnits();
     // STEVE CHANGE
-        void GetVertexAttributes( VertexAttributeSupport & support );
+        void GetVertexAttributes( VertexAttributeSupport & support ) const;
     // /STEVE CHANGE
 
     public:

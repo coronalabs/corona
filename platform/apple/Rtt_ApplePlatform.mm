@@ -90,6 +90,11 @@
         (void*)CoronaGeometryCopyData,
         (void*)CoronaGeometryGetMappingFromRenderData,
         
+	// STEVE CHANGE
+		(void*)CoronaGeometryRegisterVertexExtension,
+		(void*)CoronaGeometryUnregisterVertexExtension,
+	// /STEVE CHANGE
+		
         (void*)CoronaShaderGetEffectDetail,
         (void*)CoronaShaderRegisterShellTransform,
         (void*)CoronaShaderUnregisterShellTransform,
@@ -119,7 +124,7 @@
         (void*)CoronaObjectsPushSprite,
         (void*)CoronaObjectsPushText,
         (void*)CoronaObjectInvalidate,
-        (void*)CoronaObjectSetHasDummyStageBounds,
+        // STEVE CHANGE removed SetHasDummyStageBounds
         (void*)CoronaObjectGetParent,
         (void*)CoronaGroupObjectGetChild,
         (void*)CoronaGroupObjectGetNumChildren,
