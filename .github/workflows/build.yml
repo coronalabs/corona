@@ -260,6 +260,8 @@ jobs:
           path: docs/SampleCode
       - name: Run build script
         run: platform/linux/gh_action_flatpak.sh
+        continue-on-error: true
+      - name: touch solar2d.flatpak
       - name: Upload flatpak
         uses: actions/upload-artifact@v2-preview
         with:

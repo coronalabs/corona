@@ -9,8 +9,9 @@ sudo apt install flatpak -y
 # Add the Flathub repository
 sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-sudo flatpak install flathub org.flatpak.Builder -y
-sudo flatpak install flathub org.freedesktop.Platform//21.08 org.freedesktop.Sdk//21.08 -y
+flatpak install flathub org.flatpak.Builder -y
+flatpak install flathub org.freedesktop.Platform//21.08 -y
+flatpak install org.freedesktop.Sdk//21.08 -y
 
 rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
 
