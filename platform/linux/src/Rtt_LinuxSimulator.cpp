@@ -161,7 +161,7 @@ namespace Rtt
 		case sdl::OnRuntimeError:
 		{
 			char** data = (char**)e.user.data1;
-			fDlg = new DlgRuntimeError("Runtime Error", 640, 350, data[0], data[1], data[2]);
+			fDlg = new DlgRuntimeError("Runtime Error", 500, 200, data[0], data[1], data[2]);
 			free(data[0]);
 			free(data[1]);
 			free(data[2]);

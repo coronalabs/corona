@@ -886,7 +886,6 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorServices.cpp
 
 	${CORONA_ROOT}/platform/shared/Rtt_ProjectSettings.cpp
@@ -923,7 +922,6 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorServices.cpp
 
 	${CORONA_ROOT}/platform/shared/Rtt_ProjectSettings.cpp
