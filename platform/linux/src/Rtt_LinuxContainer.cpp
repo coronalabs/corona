@@ -141,11 +141,13 @@ void membuf::remove(int len)
 
 const char* membuf::c_str() const
 {
-	// ensure ZERO at end of data
 	if (m_data)
+	{
+		// ensure end of string
 		m_data[m_size + m_start] = 0;
-
-	return (const char*)data();
+		return (const char*)data();
+	}
+	return "";
 }
 
 //

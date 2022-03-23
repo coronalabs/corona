@@ -163,6 +163,7 @@ namespace Rtt
 			{
 				int x = b.x;
 				int y = b.y;
+				y -= app->GetMenuHeight();
 
 				float scrollWheelDeltaX = 0;
 				float scrollWheelDeltaY = 0;
@@ -195,6 +196,7 @@ namespace Rtt
 			{
 				int x = b.x;
 				int y = b.y;
+				y -= app->GetMenuHeight();
 
 				float scrollWheelDeltaX = 0;
 				float scrollWheelDeltaY = 0;
@@ -239,6 +241,7 @@ namespace Rtt
 			{
 				int x = b.x;
 				int y = b.y;
+				y -= app->GetMenuHeight();
 
 				float scrollWheelDeltaX = 0;
 				float scrollWheelDeltaY = 0;
@@ -273,6 +276,7 @@ namespace Rtt
 				int scrollWheelDeltaY = w.y;
 				int x = w.x;
 				int y = w.y;
+				y -= app->GetMenuHeight();
 
 				// Fetch the mouse's current up/down buttons states.
 				bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);

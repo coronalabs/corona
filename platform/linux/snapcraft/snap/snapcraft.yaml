@@ -163,7 +163,6 @@ parts:
       snapcraftctl build
       chmod -c -R a+r .      
     build-packages:
-      - libcrypto++-dev
       - libcurl4-openssl-dev
       - libfreetype6-dev
       - libgl1-mesa-dev
@@ -178,14 +177,12 @@ parts:
       - zlib1g-dev
       - libtiff5-dev
       - liblzma-dev
-      - dos2unix
       - ca-certificates
       - ca-certificates-java
       - openjdk-8-jre-headless
       - libsdl2-dev
       - libpulse-dev
     stage-packages:
-      - libcrypto++6
       - libcurl4
       - libfreetype6
       - libgl1
