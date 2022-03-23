@@ -16,7 +16,6 @@
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imfilebrowser.h"
-#include "imgui/stb_image.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
@@ -88,10 +87,12 @@ namespace Rtt
 		DlgMenu(const std::string& appName);
 
 		void Draw();
+		int GetHeight() const { return fMenuSize.y;	}
 
 	private:
 
-		bool isMainMenu;
+		bool fIsMainMenu;
+		ImVec2 fMenuSize;
 	};
 
 	struct DlgNewProject : public Window

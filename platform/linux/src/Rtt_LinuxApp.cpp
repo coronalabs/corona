@@ -26,10 +26,10 @@
 #include "Rtt_LuaLibSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxUtils.h"
-#include "Rtt_LinuxUtils.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_HTTPClient.h"
 #include "Rtt_LinuxKeyListener.h"
+#include "Rtt_BitmapUtils.h"
 #include <curl/curl.h>
 #include <utility>		// for pairs
 #include "lua.h"
@@ -130,30 +130,39 @@ namespace Rtt
 		int image_height = 0;
 		string icon_path = GetStartupPath(NULL);
 		icon_path.append("/Resources/solar2d.png");
-		unsigned char* img = stbi_load(icon_path.c_str(), &image_width, &image_height, NULL, STBI_rgb_alpha);
-		if (img)
+
+		FILE* f = fopen(icon_path.c_str(), "rb");
+		if (f)
 		{
-			// Set up the pixel format color masks for RGB(A) byte arrays.
-			// Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
-			Uint32 rmask, gmask, bmask, amask;
+			unsigned char* img = bitmapUtil::loadPNG(f, image_width, image_height);
+			fclose(f);
+
+			if (img)
+			{
+				// Set up the pixel format color masks for RGB(A) byte arrays.
+				// Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
+				Uint32 rmask, gmask, bmask, amask;
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			int shift = (req_format == STBI_rgb) ? 8 : 0;
-			rmask = 0xff000000 >> shift;
-			gmask = 0x00ff0000 >> shift;
-			bmask = 0x0000ff00 >> shift;
-			amask = 0x000000ff >> shift;
+				int shift = (req_format == STBI_rgb) ? 8 : 0;
+				rmask = 0xff000000 >> shift;
+				gmask = 0x00ff0000 >> shift;
+				bmask = 0x0000ff00 >> shift;
+				amask = 0x000000ff >> shift;
 #else // little endian, like x86
-			rmask = 0x000000ff;
-			gmask = 0x0000ff00;
-			bmask = 0x00ff0000;
-			amask = 0xff000000;
+				rmask = 0x000000ff;
+				gmask = 0x0000ff00;
+				bmask = 0x00ff0000;
+				amask = 0xff000000;
 #endif
 
-			int depth = 32;
-			int pitch = 4 * image_width;
-			SDL_Surface* icon = SDL_CreateRGBSurfaceFrom(img, image_width, image_height, depth, pitch, rmask, gmask, bmask, amask);
-			SDL_SetWindowIcon(fWindow, icon);
-			SDL_FreeSurface(icon);
+				int depth = 32;
+				int pitch = 4 * image_width;
+				SDL_Surface* icon = SDL_CreateRGBSurfaceFrom(img, image_width, image_height, depth, pitch, rmask, gmask, bmask, amask);
+				SDL_SetWindowIcon(fWindow, icon);
+				SDL_FreeSurface(icon);
+
+				free(img);
+			}
 		}
 	}
 
@@ -174,6 +183,7 @@ namespace Rtt
 	void SolarApp::GetWindowSize(int* w, int* h)
 	{
 		SDL_GetWindowSize(fWindow, w, h);
+		*h = -GetMenuHeight();
 	}
 
 	bool SolarApp::LoadApp(const string& path)
@@ -476,7 +486,7 @@ namespace Rtt
 
 	void SolarApp::SetWindowSize(int w, int h)
 	{
-		SDL_SetWindowSize(fWindow, w, h);
+		SDL_SetWindowSize(fWindow, w, h + GetMenuHeight());
 	}
 
 	void SolarApp::AddDisplayObject(LinuxDisplayObject* obj)

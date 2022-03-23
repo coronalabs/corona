@@ -357,6 +357,7 @@ struct membuf
 	inline int size() const { return m_size; }
 	inline const void* data() const { return m_data + m_start; }
 	inline void* data() { return m_data + m_start; }
+	inline bool empty() const { return m_size == 0; }
 	const char* c_str() const;
 
 	void clear();

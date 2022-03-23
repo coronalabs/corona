@@ -131,6 +131,8 @@ namespace Rtt
 		std::string GetTitle() const { return fContext->GetTitle(); }
 		void SetTitle(const std::string& name) { fContext->SetTitle(name); }
 
+		virtual int GetMenuHeight() const { return 0; }
+
 	protected:
 
 		virtual void SolarEvent(const SDL_Event& e) {}
