@@ -4,13 +4,13 @@ set -ex
 
 cd "$(dirname "$0")/../.."
 
-sudo apt install flatpak
+sudo apt install flatpak -y
 
 # Add the Flathub repository
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-flatpak install flathub org.flatpak.Builder
-flatpak install flathub org.freedesktop.Platform//21.08 org.freedesktop.Sdk//21.08
+sudo flatpak install flathub org.flatpak.Builder -y
+sudo flatpak install flathub org.freedesktop.Platform//21.08 org.freedesktop.Sdk//21.08 -y
 
 rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
 
@@ -45,13 +45,11 @@ else
 fi
 
 # build flat app and put it in a repo
-flatpak-builder --force-clean --repo repo build-dir "${YML}"
+flatpak run org.flatpak.Builder --force-clean --repo repo build-dir "${YML}"
 
 # Create a single-file bundle from a local repository
 flatpak build-bundle ./repo solar2d.flatpak com.solar2d.simulator 
 
-cd ..
-#mkdir -p output
-cp -v ./.flatpak/solar2d.flatpak ./
+cp -v solar2d.flatpak ../
 
 )
