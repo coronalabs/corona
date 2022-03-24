@@ -395,7 +395,7 @@ jobs:
         shell: bash
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.macos.tgz -o jre.macos.tgz
-      - name: reinstall icu4c
+      - name: install icu4c
         run: brew reinstall icu4c
       - name: install appdmg
         run: npm install -g appdmg
@@ -423,7 +423,7 @@ jobs:
       - name: Notarize
         run: |
           if [ -z "$APPLE_AUTH" ]
-          then 
+          then
             echo 'Skipping because no authorization provided'
             exit 0
           fi
@@ -447,7 +447,7 @@ jobs:
       - name: Check notarization credentials
         run: |
           if [ -z "$APPLE_AUTH" ]
-          then 
+          then
             echo 'Skipping because no authorization provided'
             exit 0
           fi
@@ -608,9 +608,9 @@ jobs:
           GIT_LOG="Changes since previous build:
           $GIT_LOG
           For linux it is recommended to use snap:
-          
+
                sudo snap install solar2d
-          
+
           "
           else
           GIT_LOG='See https://github.com/coronalabs/corona for details
