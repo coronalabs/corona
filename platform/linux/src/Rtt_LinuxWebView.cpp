@@ -242,7 +242,7 @@ namespace Rtt
 	{
 		Rect outBounds;
 		GetScreenBounds(outBounds);
-		fWebView = new as_cef();
+		fWebView = new CefClient(outBounds, url);
 	}
 
 	void LinuxWebView::Prepare(const Display &display)

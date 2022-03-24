@@ -18,25 +18,29 @@
 
 namespace Rtt
 {
-	struct as_cef : public ref_counted
+	struct CefClient : public ref_counted
 	{
-		as_cef();
-		virtual ~as_cef();
-		virtual void advance();
+		CefClient(const Rect& outBounds, const char* url);
+		virtual ~CefClient();
 
-		LinuxBaseBitmap* m_bi;
-		std::string m_url;
-		cef_browser_t* m_browser;cef_window_info_t m_window_info;
-		cef_browser_settings_t m_bsettings;
+		void advance();
 
-		cef_client_t m_client;
-		weak_ptr<as_cef> this_ptr_for_client;
+	//private:
 
-		cef_render_handler_t m_render;
-		weak_ptr<as_cef> this_ptr_for_render;
+		LinuxBaseBitmap* fBitmap;
+		Rect fBounds;
+		std::string fUrl;
 
-		cef_request_handler_t m_requesthandler;
-		weak_ptr<as_cef> this_ptr_for_requesthandler;
+		cef_browser_t* fBrowser;
+		cef_window_info_t fWindowInfo;
+		cef_browser_settings_t fBrowserSettings;
+		cef_client_t fClient;
+		cef_render_handler_t fRender;
+		cef_request_handler_t fRequestHandler;
+
+		weak_ptr<CefClient> this_ptr_for_client;
+		weak_ptr<CefClient> this_ptr_for_render;
+		weak_ptr<CefClient> this_ptr_for_requesthandler;
 	};
 
 	bool InitCEF(int argc, char** argv);

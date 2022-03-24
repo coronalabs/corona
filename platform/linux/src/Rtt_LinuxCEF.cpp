@@ -21,12 +21,7 @@ namespace Rtt
 		return 1;		// true
 	}
 
-
-#ifdef WIN32
-	void CEF_CALLBACK onResourceRedirect(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, const cef_string_t* old_url, cef_string_t* new_url)
-#else
 	void CEF_CALLBACK onResourceRedirect(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_request_t* request, cef_string_t* new_url)
-#endif
 	{
 		cef_string_utf8_t dst = {};
 		int n = cef_string_utf16_to_utf8(new_url->str, new_url->length, &dst);
@@ -36,24 +31,24 @@ namespace Rtt
 
 	_cef_render_handler_t* CEF_CALLBACK getRenderHandler(struct _cef_client_t* self)
 	{
-		const weak_ptr<as_cef>& thiz = *(const weak_ptr<as_cef>*)((Uint8*)self + sizeof(struct _cef_client_t));
-		return &thiz->m_render;
+		const weak_ptr<CefClient>& thiz = *(const weak_ptr<CefClient>*)((Uint8*)self + sizeof(struct _cef_client_t));
+		return &thiz->fRender;
 	}
 
 	_cef_request_handler_t* CEF_CALLBACK getRequestHandler(struct _cef_client_t* self)
 	{
-		const weak_ptr<as_cef>& thiz = *(const weak_ptr<as_cef>*)((Uint8*)self + sizeof(struct _cef_client_t));
-		return &thiz->m_requesthandler;
+		const weak_ptr<CefClient>& thiz = *(const weak_ptr<CefClient>*)((Uint8*)self + sizeof(struct _cef_client_t));
+		return &thiz->fRequestHandler;
 	}
 
 	int CEF_CALLBACK getViewRect(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_rect_t* rect)
 	{
-		const weak_ptr<as_cef>& thiz = *(const weak_ptr<as_cef>*)((Uint8*)self + sizeof(struct _cef_render_handler_t));
+		const weak_ptr<CefClient>& thiz = *(const weak_ptr<CefClient>*)((Uint8*)self + sizeof(struct _cef_render_handler_t));
 
 		rect->x = 0;
 		rect->y = 0;
-		rect->width = thiz->m_bi->Width();
-		rect->height = thiz->m_bi->Height();
+		rect->width = thiz->fBitmap->Width();
+		rect->height = thiz->fBitmap->Height();
 		return 1;
 	}
 
@@ -74,19 +69,19 @@ namespace Rtt
 			dst += 4;
 		}
 
-		const weak_ptr<as_cef>& thiz = *(const weak_ptr<as_cef>*)((Uint8*)self + sizeof(struct _cef_render_handler_t));
+		const weak_ptr<CefClient>& thiz = *(const weak_ptr<CefClient>*)((Uint8*)self + sizeof(struct _cef_render_handler_t));
 
 		// todo sanity checks
-		memcpy((char*)thiz->m_bi->GetBits(NULL), buf, width * height * 4);
+		memcpy((char*)thiz->fBitmap->GetBits(NULL), buf, width * height * 4);
 		free(buf);
 	}
 
-	void	as_cef_mouse_move()
+	void	CefClient_mouse_move()
 	{
 		/*		as_value val;
 				mc->get_member("_CefPtr_", &val);
-				as_cef* obj = cast_to<as_cef>(val.to_object());
-				if (obj && obj->m_browser != NULL && obj->m_url != "")
+				CefClient* obj = cast_to<CefClient>(val.to_object());
+				if (obj && obj->fBrowser != NULL && obj->m_url != "")
 				{
 					// Local coord of mouse IN PIXELS.
 					int	x, y, buttons;
@@ -97,26 +92,26 @@ namespace Rtt
 
 					point	a(PIXELS_TO_TWIPS(x), PIXELS_TO_TWIPS(y));
 					point	b;
-					m.transform_by_inverse(&b, a);
+					m.transforfBy_inverse(&b, a);
 
 					cef_mouse_event_t event;
 					event.modifiers = 0;
 					event.x = (int)ceil(TWIPS_TO_PIXELS(b.m_x));
 					event.y = (int)ceil(TWIPS_TO_PIXELS(b.m_y));
 
-					cef_browser_host_t* host = obj->m_browser->get_host(obj->m_browser);
+					cef_browser_host_t* host = obj->fBrowser->get_host(obj->fBrowser);
 					host->set_focus(host, 1);
 					host->send_focus_event(host, 1);
 					host->send_mouse_move_event(host, &event, false);
 				}*/
 	}
 
-	void	as_cef_mouse_press()
+	void	CefClient_mouse_press()
 	{
 		/*as_value val;
 		mc->get_member("_CefPtr_", &val);
-		as_cef* obj = cast_to<as_cef>(val.to_object());
-		if (obj && obj->m_browser && obj->m_url != "")
+		CefClient* obj = cast_to<CefClient>(val.to_object());
+		if (obj && obj->fBrowser && obj->m_url != "")
 		{
 			// Local coord of mouse IN PIXELS.
 			int	x, y, buttons;
@@ -127,26 +122,26 @@ namespace Rtt
 
 			point	a(PIXELS_TO_TWIPS(x), PIXELS_TO_TWIPS(y));
 			point	b;
-			m.transform_by_inverse(&b, a);
+			m.transforfBy_inverse(&b, a);
 
 			cef_mouse_event_t event;
 			event.modifiers = 0; // EVENTFLAG_LEFT_MOUSE_BUTTON;
 			event.x = (int)ceil(TWIPS_TO_PIXELS(b.m_x));
 			event.y = (int)ceil(TWIPS_TO_PIXELS(b.m_y));
 
-			cef_browser_host_t* host = obj->m_browser->get_host(obj->m_browser);
+			cef_browser_host_t* host = obj->fBrowser->get_host(obj->fBrowser);
 			host->set_focus(host, 1);
 			host->send_focus_event(host, 1);
 			host->send_mouse_click_event(host, &event, MBT_LEFT, 0, 1);
 		}*/
 	}
 
-	void	as_cef_mouse_release()
+	void	CefClient_mouse_release()
 	{
 		/*as_value val;
 		mc->get_member("_CefPtr_", &val);
-		as_cef* obj = cast_to<as_cef>(val.to_object());
-		if (obj && obj->m_browser && obj->m_url != "")
+		CefClient* obj = cast_to<CefClient>(val.to_object());
+		if (obj && obj->fBrowser && obj->m_url != "")
 		{
 			// Local coord of mouse IN PIXELS.
 			int	x, y, buttons;
@@ -157,24 +152,24 @@ namespace Rtt
 
 			point	a(PIXELS_TO_TWIPS(x), PIXELS_TO_TWIPS(y));
 			point	b;
-			m.transform_by_inverse(&b, a);
+			m.transforfBy_inverse(&b, a);
 
 			cef_mouse_event_t event;
 			event.modifiers = 0;
 			event.x = (int)ceil(TWIPS_TO_PIXELS(b.m_x));
 			event.y = (int)ceil(TWIPS_TO_PIXELS(b.m_y));
 
-			cef_browser_host_t* host = obj->m_browser->get_host(obj->m_browser);
+			cef_browser_host_t* host = obj->fBrowser->get_host(obj->fBrowser);
 			host->send_mouse_click_event(host, &event, MBT_LEFT, 1, 1);
 		}*/
 	}
 
-	void	as_cef_keydown()
+	void	CefClient_keydown()
 	{
 		/*as_value val;
 		mc->get_member("_CefPtr_", &val);
-		as_cef* obj = cast_to<as_cef>(val.to_object());
-		if (obj && obj->m_browser != NULL && obj->m_url != "")
+		CefClient* obj = cast_to<CefClient>(val.to_object());
+		if (obj && obj->fBrowser != NULL && obj->m_url != "")
 		{
 			as_value key;
 			get_global()->get_member("Key", &key);
@@ -182,7 +177,7 @@ namespace Rtt
 			int lastkey = ko->get_last_key_pressed();
 			Uint16 utf16char = ko->get_last_utf16_key_pressed();
 
-			cef_browser_host_t* host = obj->m_browser->get_host(obj->m_browser);
+			cef_browser_host_t* host = obj->fBrowser->get_host(obj->fBrowser);
 
 			cef_key_event_t event = {};
 #ifdef WIN32
@@ -209,148 +204,127 @@ namespace Rtt
 		}*/
 	}
 
-/*	void	as_cef_url_setter(const fn_call& fn)
-	{
-		as_cef* obj = cast_to<as_cef>(fn.this_ptr);
-		if (obj && fn.nargs > 0 && obj->m_browser != NULL)
+	/*	void	CefClient_url_setter(const fn_call& fn)
 		{
-			obj->m_url = fn.arg(0).to_tu_string();
-
-			sprite_instance* mc = obj->m_parent.get();
-			assert(mc);
-			if (obj->m_url == "")
+			CefClient* obj = cast_to<CefClient>(fn.this_ptr);
+			if (obj && fn.nargs > 0 && obj->fBrowser != NULL)
 			{
-				// clear
-				mc->builtin_member("onMouseMove", as_value());
-				mc->builtin_member("onPress", as_value());
-				mc->builtin_member("onRelease", as_value());
-				mc->builtin_member("onKeyDown", as_value());
+				obj->m_url = fn.arg(0).to_tu_string();
+
+				sprite_instance* mc = obj->m_parent.get();
+				assert(mc);
+				if (obj->m_url == "")
+				{
+					// clear
+					mc->builtin_member("onMouseMove", as_value());
+					mc->builtin_member("onPress", as_value());
+					mc->builtin_member("onRelease", as_value());
+					mc->builtin_member("onKeyDown", as_value());
+				}
+				else
+				{
+					mc->builtin_member("onMouseMove", CefClient_mouse_move);
+					mc->builtin_member("onPress", CefClient_mouse_press);
+					mc->builtin_member("onRelease", CefClient_mouse_release);
+
+					// Key.addListener(mc)
+					as_value key;
+					get_global()->get_member("Key", &key);
+
+					as_value func;
+					key.to_object()->get_member("addListener", &func);
+
+					as_environment* env = mc->get_environment();
+					env->push(mc);
+					call_method(func, env, key, 1, env->get_top_index());
+					env->drop(1);
+
+					mc->builtin_member("onKeyDown", CefClient_keydown);
+				}
+
+				sendMessage("onLoadURL", fn.arg(0));
+
+				cef_frame_t* frame = obj->fBrowser->get_main_frame(obj->fBrowser);
+				if (obj->m_url.size() > 0)
+				{
+					static cef_cookie_visitor_t it = {};
+					it.base.size = sizeof(it);
+					it.visit = visitCookie;
+	#ifdef WIN32
+					cef_cookie_manager_t* cm = cef_cookie_manager_get_global_manager();
+	#else
+					cef_cookie_manager_t* cm = cef_cookie_manager_get_global_manager(NULL);
+	#endif
+					cm->visit_all_cookies(cm, &it);
+
+					cef_string_t url = {};
+					cef_string_utf8_to_utf16(obj->m_url.c_str(), obj->m_url.size(), &url);
+					frame->load_url(frame, &url);
+					cef_string_clear(&url);
+				}
+				else
+				{
+					const char about[] = "about:blank";
+					cef_string_utf16_t url = {};
+					cef_string_ascii_to_utf16(about, sizeof(about), &url);
+					frame->load_url(frame, &url);
+					cef_string_utf16_clear(&url);
+				}
 			}
-			else
-			{
-				mc->builtin_member("onMouseMove", as_cef_mouse_move);
-				mc->builtin_member("onPress", as_cef_mouse_press);
-				mc->builtin_member("onRelease", as_cef_mouse_release);
-
-				// Key.addListener(mc)
-				as_value key;
-				get_global()->get_member("Key", &key);
-
-				as_value func;
-				key.to_object()->get_member("addListener", &func);
-
-				as_environment* env = mc->get_environment();
-				env->push(mc);
-				call_method(func, env, key, 1, env->get_top_index());
-				env->drop(1);
-
-				mc->builtin_member("onKeyDown", as_cef_keydown);
-			}
-
-			sendMessage("onLoadURL", fn.arg(0));
-
-			cef_frame_t* frame = obj->m_browser->get_main_frame(obj->m_browser);
-			if (obj->m_url.size() > 0)
-			{
-				static cef_cookie_visitor_t it = {};
-				it.base.size = sizeof(it);
-				it.visit = visitCookie;
-#ifdef WIN32
-				cef_cookie_manager_t* cm = cef_cookie_manager_get_global_manager();
-#else
-				cef_cookie_manager_t* cm = cef_cookie_manager_get_global_manager(NULL);
-#endif
-				cm->visit_all_cookies(cm, &it);
-
-				cef_string_t url = {};
-				cef_string_utf8_to_utf16(obj->m_url.c_str(), obj->m_url.size(), &url);
-				frame->load_url(frame, &url);
-				cef_string_clear(&url);
-			}
-			else
-			{
-				const char about[] = "about:blank";
-				cef_string_utf16_t url = {};
-				cef_string_ascii_to_utf16(about, sizeof(about), &url);
-				frame->load_url(frame, &url);
-				cef_string_utf16_clear(&url);
-			}
-		}
-	}*/
+		}*/
 
 
-	as_cef::as_cef()
-		: m_bi(NULL)
-		, m_browser(NULL)
+	CefClient::CefClient(const Rect& outBounds, const char* url)
+		: fBitmap(NULL)
+		, fBounds(outBounds)
+		, fUrl(url)
+		, fBrowser(NULL)
+		, fWindowInfo({})
+		, fBrowserSettings({})
+		, fClient({})
+		, fRender({})
+		, fRequestHandler({})
 		, this_ptr_for_render(this)
 		, this_ptr_for_client(this)
 		, this_ptr_for_requesthandler(this)
 	{
-		memset(&m_window_info, 0, sizeof(m_window_info));
-		memset(&m_bsettings, 0, sizeof(m_bsettings));
-		memset(&m_render, 0, sizeof(m_render));
-		memset(&m_client, 0, sizeof(m_client));
-		memset(&m_requesthandler, 0, sizeof(m_requesthandler));
+		int w = outBounds.Width();
+		int h = outBounds.Height();
+		fBitmap = new LinuxBaseBitmap(NULL, w, h, NULL);
 
-		int w = 111; 
-		int h = 111;
-		m_bi = new LinuxBaseBitmap(NULL, w, h, NULL);
+		fRequestHandler.base.size = sizeof(fRequestHandler);
+		//fRequesthandler.on_before_browse = onBeforeBrowse;
+		//fRequesthandler.on_resource_redirect = onResourceRedirect;
 
-		m_requesthandler.base.size = sizeof(m_requesthandler);
-		//m_requesthandler.on_before_browse = onBeforeBrowse;
-		//m_requesthandler.on_resource_redirect = onResourceRedirect;
+		fClient.base.size = sizeof(fClient);
+		fClient.get_render_handler = getRenderHandler;
+		fClient.get_request_handler = getRequestHandler;
 
-		m_client.base.size = sizeof(m_client);
-		m_client.get_render_handler = getRenderHandler;
-		m_client.get_request_handler = getRequestHandler;
+		fWindowInfo.windowless_rendering_enabled = true;
+		//fWindowInfo.transparent_painting_enabled = true;
 
-		m_window_info.windowless_rendering_enabled = true;
-		//m_window_info.transparent_painting_enabled = true;
+		fBrowserSettings.size = sizeof(fBrowserSettings);
+		fBrowserSettings.windowless_frame_rate = 30;
 
-		m_bsettings.size = sizeof(m_bsettings);
-		m_bsettings.windowless_frame_rate = 30;
+		// initial URL
+		cef_string_t cefurl = {};
+		cef_string_utf8_to_utf16(url, strlen(url), &cefurl);
 
-		cef_string_t url = {};
-		cef_client_t* m_client_ptr = &m_client;
-
-		m_browser = cef_browser_host_create_browser_sync(&m_window_info, &m_client, &url, &m_bsettings,0,0);
+		fBrowser = cef_browser_host_create_browser_sync(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, 0, 0);
 	}
 
-	as_cef::~as_cef()
+	CefClient::~CefClient()
 	{
-		if (m_browser)
+		if (fBrowser)
 		{
-			cef_browser_host_t* host = m_browser->get_host(m_browser);
+			cef_browser_host_t* host = fBrowser->get_host(fBrowser);
 			host->close_browser(host, true);
 		}
 	}
 
-	void	as_cef::advance()
+	void	CefClient::advance()
 	{
 		cef_do_message_loop_work();
-	}
-
-	// factory
-	as_cef* CreateWebview(const Rect& outBounds)
-	{
-		static int s_needs_to_init = true;
-		if (s_needs_to_init)
-		{
-			s_needs_to_init = false;
-
-			cef_main_args_t args = {};
-			cef_settings_t settings = {};
-			settings.multi_threaded_message_loop = false;
-			settings.command_line_args_disabled = false;
-			settings.no_sandbox = 1;
-
-			int ok = cef_initialize(&args, &settings, NULL, NULL);
-			if (!ok)
-			{
-				Rtt_LogException("cef_initialize failed\n");
-			}
-		}
-		return new as_cef();
 	}
 
 	bool InitCEF(int argc, char** argv)

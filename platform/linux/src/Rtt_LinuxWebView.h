@@ -46,7 +46,7 @@ namespace Rtt
 		static void onWebPopupErrorEvent();
 		static int OnDeleteCookies(lua_State *L);
 
-		as_cef* fWebView;
+		CefClient* fWebView;
 
 	};
 }; // namespace Rtt
