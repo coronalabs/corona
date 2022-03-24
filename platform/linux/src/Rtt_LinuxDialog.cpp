@@ -1243,7 +1243,7 @@ namespace Rtt
 	//
 
 	DlgAlert::DlgAlert(const char* title, const char* msg, const char** buttonLabels, int numButtons, LuaResource* resource)
-		: Window(title, 400, 300)
+		: Window(title, 400, 150)
 		, fMsg(msg)
 		, fCallback(resource)
 	{

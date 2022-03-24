@@ -883,6 +883,7 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCEF.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
@@ -919,6 +920,7 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCEF.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
@@ -1008,8 +1010,8 @@ target_compile_definitions( Solar2DBuilder PUBLIC
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
-target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
-target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
+target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2 cef)
+target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2 cef)
 
 # Enabling functions loaded from dlopen call a function from the Solar2DSimulator
 target_link_options(Solar2D BEFORE PUBLIC -export-dynamic)

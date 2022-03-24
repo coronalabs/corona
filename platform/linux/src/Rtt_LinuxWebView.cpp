@@ -20,12 +20,11 @@
 #include "CoronaLua.h"
 #include "Rtt_LuaResource.h"
 
-#if ( wxUSE_WEBVIEW == 1)
-
 namespace Rtt
 {
 	LinuxWebView::LinuxWebView(const Rect &bounds)
-		: Super(bounds, "iframe")
+		: Super(bounds)
+		, fWebView(NULL)
 	{
 	}
 
@@ -200,66 +199,50 @@ namespace Rtt
 	bool LinuxWebView::Close()
 	{
 		// Do not continue if there is no web browser to close.
-		if (fWindow && solarApp != NULL)
-		{
-			// Remove event handlers.
-			wxWebView *www = (wxWebView*) fWindow;
-
-			www->Unbind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent);
-			www->Unbind(wxEVT_WEBVIEW_NAVIGATED, onWebPopupNavigatedEvent);
-			www->Unbind(wxEVT_WEBVIEW_LOADED, onWebPopupLoadedEvent);
-			www->Unbind(wxEVT_WEBVIEW_ERROR, onWebPopupErrorEvent);
-			www->Stop();
-		}
-		return false;
+		delete fWebView;
+		fWebView = NULL;
+		return true;
 	}
 
-	void LinuxWebView::onWebPopupLoadedEvent(wxWebViewEvent &e)
+	void LinuxWebView::onWebPopupLoadedEvent()
 	{
 	}
 
-	void LinuxWebView::onWebPopupNavigatingEvent(wxWebViewEvent &e)
+	void LinuxWebView::onWebPopupNavigatingEvent()
 	{
-		const char *url = e.GetURL().c_str();
-		eventArg *arg = (eventArg*) e.GetEventUserData();
+		//const char *url = e.GetURL().c_str();
+		//eventArg *arg = (eventArg*) e.GetEventUserData();
 
-		// Relay this event to the popup's Lua listener.
-		Rtt::UrlRequestEvent event(url, Rtt::UrlRequestEvent::kOther);
-		arg->fThiz->DispatchEventWithTarget(event);
+		//// Relay this event to the popup's Lua listener.
+		//Rtt::UrlRequestEvent event(url, Rtt::UrlRequestEvent::kOther);
+		//arg->fThiz->DispatchEventWithTarget(event);
 	}
 
-	void LinuxWebView::onWebPopupNavigatedEvent(wxWebViewEvent &e)
+	void LinuxWebView::onWebPopupNavigatedEvent()
 	{
-		const char *url = e.GetURL().c_str();
-		eventArg *arg = (eventArg*) e.GetEventUserData();
+		//const char *url = e.GetURL().c_str();
+		//eventArg *arg = (eventArg*) e.GetEventUserData();
 
-		Rtt::UrlRequestEvent event(url, Rtt::UrlRequestEvent::kLoaded);
-		arg->fThiz->DispatchEventWithTarget(event);
+		//Rtt::UrlRequestEvent event(url, Rtt::UrlRequestEvent::kLoaded);
+		//arg->fThiz->DispatchEventWithTarget(event);
 	}
 
-	void LinuxWebView::onWebPopupErrorEvent(wxWebViewEvent &e)
+	void LinuxWebView::onWebPopupErrorEvent()
 	{
-		const char *url = e.GetURL().c_str();
-		eventArg *arg = (eventArg*) e.GetEventUserData();
+		//const char *url = e.GetURL().c_str();
+		//eventArg *arg = (eventArg*) e.GetEventUserData();
 
-		// Dispatch a Lua "urlRequest" event indicating that we've failed to load a URL or web page.
-		const char *msg = e.GetString().c_str();
-		Rtt::UrlRequestEvent event(url, msg, 100); // hack, not tested
-		arg->fThiz->DispatchEventWithTarget(event);
+		//// Dispatch a Lua "urlRequest" event indicating that we've failed to load a URL or web page.
+		//const char *msg = e.GetString().c_str();
+		//Rtt::UrlRequestEvent event(url, msg, 100); // hack, not tested
+		//arg->fThiz->DispatchEventWithTarget(event);
 	}
 
 	void LinuxWebView::openURL(const char *url)
 	{
-#if ( wxUSE_WEBVIEW == 1)
 		Rect outBounds;
 		GetScreenBounds(outBounds);
-		wxWebView* www = wxWebView::New(solarApp, wxID_ANY, url, wxPoint(outBounds.xMin, outBounds.yMin), wxSize(outBounds.Width(), outBounds.Height()));
-		www->Bind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent, wxID_ANY, wxID_ANY, new eventArg(this, url));
-		www->Bind(wxEVT_WEBVIEW_NAVIGATED, onWebPopupNavigatedEvent, wxID_ANY, wxID_ANY, new eventArg(this, url));
-		www->Bind(wxEVT_WEBVIEW_LOADED, onWebPopupLoadedEvent, wxID_ANY, wxID_ANY, new eventArg(this, url));
-		www->Bind(wxEVT_WEBVIEW_ERROR, onWebPopupErrorEvent, wxID_ANY, wxID_ANY, new eventArg(this, url));
-		fWindow = www;
-#endif
+		fWebView = new as_cef();
 	}
 
 	void LinuxWebView::Prepare(const Display &display)
@@ -313,5 +296,3 @@ namespace Rtt
 		return 0;
 	}
 }; // namespace Rtt
-
-#endif

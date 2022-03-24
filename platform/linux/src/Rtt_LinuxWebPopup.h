@@ -14,8 +14,6 @@
 #ifndef _Rtt_LinuxWebPopup_H__
 #define _Rtt_LinuxWebPopup_H__
 
-#if ( wxUSE_WEBVIEW == 1)
-
 namespace Rtt
 {
 	class LinuxWebPopup : public PlatformWebPopup
@@ -33,12 +31,12 @@ namespace Rtt
 		virtual void SetPostParams(const MKeyValueIterable &params) override;
 		virtual int ValueForKey(lua_State *L, const char key[]) const override;
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex) override;
-		static void onWebPopupNavigatingEvent(wxWebViewEvent &e);
-		static void onWebPopupNavigatedEvent(wxWebViewEvent &e);
-		static void onWebPopupLoadedEvent(wxWebViewEvent &e);
-		static void onWebPopupErrorEvent(wxWebViewEvent &e);
+		static void onWebPopupNavigatingEvent();
+		static void onWebPopupNavigatedEvent();
+		static void onWebPopupLoadedEvent();
+		static void onWebPopupErrorEvent();
 
-		struct eventArg: public wxObject
+		struct eventArg
 		{
 			eventArg(LinuxWebPopup *thiz) : fThiz(thiz) {};
 			LinuxWebPopup *fThiz;
@@ -64,10 +62,9 @@ namespace Rtt
 		/// <summary>Set true if the popup's control needs to be resized during Corona's next render pass.</summary>
 		bool fWasResizeRequested;
 
-		wxWebView *fWebBrowserPointer;
-		wxEvtHandler fEvent;
+		void* fWebBrowserPointer;
+//		wxEvtHandler fEvent;
 	};
 }; // namespace Rtt
 
-#endif
 #endif

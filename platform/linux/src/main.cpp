@@ -7,9 +7,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "Rtt_FileSystem.h"
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
-#include "Rtt_FileSystem.h"
+#include "Rtt_LinuxCEF.h"
 
 using namespace std;
 
@@ -17,6 +18,8 @@ smart_ptr<Rtt::SolarApp> app;
 
 int main(int argc, char* argv[])
 {
+	Rtt::InitCEF(argc, argv);
+
 	string resourcesDir = GetStartupPath(NULL);
 	resourcesDir.append("/Resources");
 
@@ -41,7 +44,9 @@ int main(int argc, char* argv[])
 		app->Run();
 	}
 
+	Rtt::FinalizeCEF();
 	app = NULL;
+
 	return 0;
 }
 
