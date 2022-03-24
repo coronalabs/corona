@@ -85,10 +85,8 @@ class ShapePath : public ClosedPath
         U32 GetFillVertexCount() const;
         U32 GetStrokeVertexCount() const;
 
-    // STEVE CHANGE
         Geometry *GetFillGeometry() const { return fFillGeometry; }
         Geometry *GetStrokeGeometry() const { return fStrokeGeometry; }
-    // /STEVE CHANGE
 
     protected:
         Geometry *fFillGeometry;

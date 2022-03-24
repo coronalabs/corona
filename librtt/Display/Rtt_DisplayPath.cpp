@@ -17,10 +17,8 @@
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Rtt_LuaUserdataProxy.h"
 
-// STEVE CHANGE
 #include "CoronaLua.h"
 #include "Rtt_LuaContext.h"
-// /STEVE CHANGE
 
 #include <vector>
 
@@ -177,7 +175,6 @@ DisplayPath::PushProxy( lua_State *L ) const
     fProxy->Push( L );
 }
 
-// STEVE CHANGE
 void
 DisplayPath::ReleaseProxy( LuaUserdataProxy *proxy )
 {
@@ -586,7 +583,6 @@ DisplayPath::ExtensionAdapter::setAttributeValue( lua_State *L )
     
     return 0;
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

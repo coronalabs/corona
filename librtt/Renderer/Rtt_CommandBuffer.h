@@ -30,7 +30,7 @@ class Program;
 class Texture;
 class Uniform;
 class ShaderData;
-struct FormatExtensionList; // <- STEVE CHANGE
+struct FormatExtensionList;
 
 // ----------------------------------------------------------------------------
 
@@ -58,9 +58,8 @@ class CommandBuffer
         static size_t GetMaxTextureSize();
         static const char *GetGlString( const char *s );
         static bool GetGpuSupportsHighPrecisionFragmentShaders();
-    // STEVE CHANGE
+
         virtual void GetVertexAttributes( VertexAttributeSupport & support ) const = 0;
-    // /STEVE CHANGE
 
     public:
         CommandBuffer( Rtt_Allocator* allocator );
@@ -84,12 +83,10 @@ class CommandBuffer
         virtual void BindTexture( Texture* texture, U32 unit ) = 0;
         virtual void BindUniform( Uniform* uniform, U32 unit ) = 0;
         virtual void BindProgram( Program* program, Program::Version version ) = 0;
-    // STEVE CHANGE
         virtual void BindInstancing( U32 count, Geometry::Vertex* instanceData ) = 0;
         virtual void DirtyVertexFormat() = 0;
         virtual void BindVertexFormat( FormatExtensionList* extensionList, U16 fullCount, U16 vertexSize ) = 0;
         virtual void BindVertexOffset( U32 offset, U32 extraVertexCount ) = 0;
-    // /STEVE CHANGE
         virtual void SetBlendEnabled( bool enabled ) = 0;
         virtual void SetBlendFunction( const BlendMode& mode ) = 0;
         virtual void SetBlendEquation( RenderTypes::BlendEquation equation ) = 0;
@@ -97,10 +94,8 @@ class CommandBuffer
         virtual void SetScissorEnabled( bool enabled ) = 0;
         virtual void SetScissorRegion( int x, int y, int width, int height ) = 0;
         virtual void SetMultisampleEnabled( bool enabled ) = 0;
-    // STEVE CHANGE
         virtual void ClearDepth( Real depth ) = 0;
         virtual void ClearStencil( U32 stencil ) = 0;
-    // /STEVE CHANGE
         virtual void Clear( Real r, Real g, Real b, Real a ) = 0;
         virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
         virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;

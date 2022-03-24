@@ -30,9 +30,7 @@
 #include "Input/Rtt_PlatformInputDevice.h"
 #include "Input/Rtt_InputDeviceCollection.h"
 #include "Input/Rtt_ReadOnlyInputDeviceCollection.h"
-// STEVE CHANGE
 #include "Renderer/Rtt_Geometry_Renderer.h"
-// /STEVE CHANGE
 
 #include <locale>
 #include <locale.h>
@@ -245,7 +243,6 @@ LuaLibSystem::getInfo( lua_State *L )
         size_t n = runtime->GetDisplay().GetMaxVertexTextureUnits();
         lua_pushnumber( L, n > 2U ? 2U : 0U ); // more than 2 requires new paint types
     }
-    // STEVE CHANGE
     else if ( Rtt_StringCompare( key, "maxVertexAttributes" ) == 0 || Rtt_StringCompare( key, "instancingSupport" ) == 0 )
     {
         VertexAttributeSupport support;
@@ -283,7 +280,6 @@ LuaLibSystem::getInfo( lua_State *L )
             }
         }
     }
-    // /STEVE CHANGE
     else
     {
         // This is a place where we can add system.getInfo() categories that return arbitrary types

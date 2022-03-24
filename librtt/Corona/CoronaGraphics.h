@@ -215,8 +215,6 @@ typedef struct CoronaRendererOpParams
 */
 typedef void (*CoronaRendererOp)( const CoronaRenderer * renderer, void * userData );
 
-// STEVE CHANGE removed ClearOps, EndFrameOps, RendererDo
-
 /**
  Invalidate the display hierarchy.
  @param L Lua state.
@@ -224,7 +222,6 @@ typedef void (*CoronaRendererOp)( const CoronaRenderer * renderer, void * userDa
 CORONA_API
 void CoronaRendererInvalidate( lua_State * L ) CORONA_PUBLIC_SUFFIX;
 
-// STEVE CHANGE
 /**
  Operation performed when processing a dirty state block, i.e. preparing to draw, with the new contents to apply.
  When `restore` is 0, the working contents are supplied as "new"; those committed before the last draw (or failing
@@ -309,7 +306,6 @@ int CoronaRendererReadStateBlock( const CoronaRenderer * renderer, unsigned long
 */
 CORONA_API
 int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned long blockID, const void * data, unsigned int size ) CORONA_PUBLIC_SUFFIX;
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -503,7 +499,7 @@ unsigned int CoronaGeometryCopyData( void * dst, const CoronaGeometryMappingLayo
 */
 CORONA_API
 void * CoronaGeometryGetMappingFromRenderData( const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout ) CORONA_PUBLIC_SUFFIX;
-// STEVE CHANGE
+
 /**
  Primitive types that may be used by extended attributes; these extend the set used by Solar's vertices.
 */
@@ -618,7 +614,7 @@ int CoronaGeometryRegisterVertexExtension( lua_State * L, const char * name, con
 */
 CORONA_API
 int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name ) CORONA_PUBLIC_SUFFIX;
-// /STEVE CHANGE
+
 // ----------------------------------------------------------------------------
 
 /**

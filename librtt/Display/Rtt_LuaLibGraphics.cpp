@@ -83,9 +83,7 @@ class GraphicsLibrary
         static int newImageSheet( lua_State *L );
         static int defineEffect( lua_State *L );
         static int defineShellTransform( lua_State * L );
-        // STEVE CHANGE
         static int defineVertexExtension( lua_State *L );
-        // /STEVE CHANGE
         static int listEffects( lua_State *L );
         static int newOutline( lua_State *L ); // This returns an outline in texels.
         static int newTexture( lua_State *L );
@@ -129,9 +127,7 @@ GraphicsLibrary::Open( lua_State *L )
         { "newImageSheet", newImageSheet },
         { "defineEffect", defineEffect },
         { "defineShellTransform", defineShellTransform },
-    // STEVE CHANGE
         { "defineVertexExtension", defineVertexExtension },
-    // /STEVE CHANGE
         { "listEffects", listEffects },
         { "newOutline", newOutline }, // This returns an outline in texels.
         { "newTexture", newTexture },
@@ -364,7 +360,7 @@ GraphicsLibrary::defineShellTransform( lua_State * L )
 
         if (!ok)
         {
-            Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-string name" ) ); // <- STEVE CHANGE
+            Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-string name" ) );
         }
     }
 
@@ -440,7 +436,7 @@ GraphicsLibrary::defineShellTransform( lua_State * L )
 
                             else
                             {
-                                Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-number priority" ) ); // <- STEVE CHANGE
+                                Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-number priority" ) );
                             }
 
                             lua_pop( L, 1 ); // params, transformations, name, xforms, xform, original, modificationTable
@@ -549,10 +545,9 @@ GraphicsLibrary::defineShellTransform( lua_State * L )
 
                     for (const PairWithPriority & pwp : entry.fFindAndReplace)
                     {
-						// STEVE CHANGE
 						size_t lastPos = std::string::npos;
 						U32 repeatCount = 0, overallCount = 0;
-						// /STEVE CHANGE
+
                         while (true)
                         {
                             size_t pos = updated.find( pwp.fOriginal );
@@ -562,7 +557,6 @@ GraphicsLibrary::defineShellTransform( lua_State * L )
                                 break;
                             }
 							
-							// STEVE CHANGE
 							// Guard against getting stuck, e.g. if our substitution
 							// ens up copying or appending to the input string.
 							if (pos == lastPos)
@@ -579,16 +573,13 @@ GraphicsLibrary::defineShellTransform( lua_State * L )
 							++overallCount;
 							
 							bool tooManyLoops = 10 == repeatCount || 100 == overallCount;
-							// /STEVE CHANGE
 
-                            updated.replace( pos, pwp.fOriginal.size(), !tooManyLoops ? pwp.fModifier : "\n#error Too many loops\n" ); // <- STEVE CHANGE
+                            updated.replace( pos, pwp.fOriginal.size(), !tooManyLoops ? pwp.fModifier : "\n#error Too many loops\n" );
 							
-							// STEVE CHANGE
 							if (tooManyLoops)
 							{
 								break;
 							}
-							// /STEVE CHANGE
                         }
                     }
 
@@ -638,7 +629,6 @@ GraphicsLibrary::defineShellTransform( lua_State * L )
     return 1;
 }
 
-// STEVE CHANGE
 // graphics.defineVertexExtension( params )
 int
 GraphicsLibrary::defineVertexExtension( lua_State *L )
@@ -863,7 +853,6 @@ GraphicsLibrary::defineVertexExtension( lua_State *L )
 
     return 1;
 }
-// /STEVE CHANGE
 
 // graphics.listEffects( category )
 int

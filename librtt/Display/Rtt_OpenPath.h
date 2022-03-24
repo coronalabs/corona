@@ -69,9 +69,7 @@ class OpenPath : public DisplayPath
         Rtt_INLINE Paint* GetStroke() const { return fStroke; }
         void SetStroke( Paint* newValue );
 
-    // STEVE CHANGE
         Geometry *GetStrokeGeometry() const { return fStrokeGeometry; }
-    // /STEVE CHANGE
     
         Rtt_INLINE Real GetWidth() const { return fWidth; }
         void SetWidth( Real newValue );

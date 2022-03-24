@@ -136,15 +136,13 @@ GroupObject::UpdateTransform( const Matrix& parentToDstSpace )
             child->UpdateTransform( xform );
 
             // Only cull objects that are hit-testable and allow culling
-            if ( child->ShouldHitTest() && (!child->SkipsCull() && child->CanCull()) ) //<- STEVE CHANGE
+            if ( child->ShouldHitTest() && (!child->SkipsCull() && child->CanCull()) )
             {
                 // Only leaf nodes are culled, so we only need to build stage bounds
                 // of leaf nodes to determine if they should be culled.
 // TODO: BuildStageBounds is expensive --- accumulate iteratively if numChildren is large
-				// STEVE CHANGE removed some stuff
 				child->BuildStageBounds();
 				child->CullOffscreen( screenBounds );
-				// /STEVE CHANGE
             }
         }
     }
@@ -173,7 +171,7 @@ GroupObject::Prepare( const Display& display )
             // 1. child is not a group
             // 2. (or if it's a group then), child is onscreen
             // 3. (or if it's offscreen then), child is cullable, e.g. containers
-            Rtt_ASSERT( NULL == child->AsGroupObject() || ! child->IsOffScreen() || (!child->SkipsCull() && child->CanCull()) ); // <- STEVE CHANGE
+            Rtt_ASSERT( NULL == child->AsGroupObject() || ! child->IsOffScreen() || (!child->SkipsCull() && child->CanCull()) );
 
             if ( ! child->IsOffScreen() )
             {

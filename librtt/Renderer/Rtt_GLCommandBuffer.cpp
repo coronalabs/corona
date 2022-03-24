@@ -48,12 +48,10 @@ namespace /*anonymous*/
         kCommandBindGeometry,
         kCommandBindTexture,
         kCommandBindProgram,
-    // STEVE CHANGE
         kCommandBindInstancing,
         kCommandDirtyVertexFormat,
         kCommandResolveVertexFormat,
         kCommandBindVertexOffset,
-    // /STEVE CHANGE
         kCommandApplyUniformScalar,
         kCommandApplyUniformVec2,
         kCommandApplyUniformVec3,
@@ -76,10 +74,8 @@ namespace /*anonymous*/
         kCommandSetScissorRegion,
         kCommandEnableMultisample,
         kCommandDisableMultisample,
-    // STEVE CHANGE
         kCommandClearDepth,
         kCommandClearStencil,
-    // /STEVE CHANGE
         kCommandClear,
         kCommandDraw,
         kCommandDrawIndexed,
@@ -323,7 +319,6 @@ CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders()
 #endif
 }
 
-// STEVE CHANGE
 void
 GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support ) const
 {
@@ -342,7 +337,6 @@ GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support ) const
     support.hasPerInstance = support.hasDivisors; // divisor == 1
     support.suffix = GLGeometry::InstanceIDSuffix();
 }
-// /STEVE CHANGE
 
 GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 :    CommandBuffer( allocator ),
@@ -505,7 +499,6 @@ GLCommandBuffer::BindProgram( Program* program, Program::Version version )
     fTimeTransform = program->GetShaderResource()->GetTimeTransform();
 }
 
-// STEVE CHANGE
 void
 GLCommandBuffer::BindInstancing( U32 count, Geometry::Vertex* instanceData )
 {
@@ -548,7 +541,6 @@ GLCommandBuffer::BindVertexOffset( U32 offset, U32 extraVertexCount )
     Write<U32>( offset );
     Write<U32>( extraVertexCount );
 }
-// /STEVE CHANGE
 
 void
 GLCommandBuffer::BindUniform( Uniform* uniform, U32 unit )
@@ -705,7 +697,6 @@ GLCommandBuffer::SetMultisampleEnabled( bool enabled )
     WRITE_COMMAND( enabled ? kCommandEnableMultisample : kCommandDisableMultisample );
 }
 
-// STEVE CHANGE
 void
 GLCommandBuffer::ClearDepth( Real depth )
 {
@@ -719,7 +710,6 @@ GLCommandBuffer::ClearStencil( U32 stencil )
     WRITE_COMMAND( kCommandClearStencil );
     Write<GLuint>(stencil);
 }
-// /STEVE CHANGE
 
 void
 GLCommandBuffer::Clear(Real r, Real g, Real b, Real a)
@@ -922,12 +912,11 @@ GLCommandBuffer::Execute( bool measureGPU )
     fOffset = fBuffer;
 
     //GL_CHECK_ERROR();
-    // STEVE CHANGE
+
     GLGeometry* geometry = NULL;
     Geometry::Vertex* instancingData = NULL;
     U32 currentAttributeCount = 0, instanceCount = 0, vertexOffset = 0;
     bool formatDirty = false, clearingDepth = false, clearingStencil = false;
-    // /STEVE CHANGE
 
     for( U32 i = 0; i < fNumCommands; ++i )
     {
@@ -955,9 +944,9 @@ GLCommandBuffer::Execute( bool measureGPU )
             }
             case kCommandBindGeometry:
             {
-                /*GLGeometry* */geometry = Read<GLGeometry*>(); // <- STEVE CHANGE
-                geometry->Bind(); // <- STEVE CHANGE
-                DEBUG_PRINT( "Bind Geometry %p (stored on GPU = %s)", geometry, geometry->StoredOnGPU() ? "true" : "false" ); // <- STEVE CHANGE
+                geometry = Read<GLGeometry*>();
+                geometry->Bind();
+                DEBUG_PRINT( "Bind Geometry %p (stored on GPU = %s)", geometry, geometry->StoredOnGPU() ? "true" : "false" );
                 CHECK_ERROR_AND_BREAK;
             }
             case kCommandBindTexture:
@@ -982,7 +971,6 @@ GLCommandBuffer::Execute( bool measureGPU )
                 DEBUG_PRINT( "Bind Program: program=%p version=%i", program, fCurrentDrawVersion );
                 CHECK_ERROR_AND_BREAK;
             }
-        // STEVE CHANGE
             case kCommandBindInstancing:
             {
                 instanceCount = Read<U32>();
@@ -1088,7 +1076,6 @@ GLCommandBuffer::Execute( bool measureGPU )
                 DEBUG_PRINT( "Bind vertex offset=%i (extra vertex count = %i)", vertexOffset, extraVertexCount );
                 CHECK_ERROR_AND_BREAK;
             }
-        // /STEVE CHANGE
             case kCommandApplyUniformScalar:
             {
                 READ_UNIFORM_DATA( Real );
@@ -1273,7 +1260,6 @@ GLCommandBuffer::Execute( bool measureGPU )
                 GLfloat b = Read<GLfloat>();
                 GLfloat a = Read<GLfloat>();
                 glClearColor( r, g, b, a );
-            // STEVE CHANGE
                 GLbitfield bits = GL_COLOR_BUFFER_BIT;
                 if (clearingDepth)
                 {
@@ -1284,8 +1270,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                     bits |= GL_STENCIL_BUFFER_BIT;
                 }
                 clearingDepth = clearingStencil = false;
-            // STEVE CHANGE
-                glClear( GL_COLOR_BUFFER_BIT | bits ); // <- STEVE CHANGE
+                glClear( GL_COLOR_BUFFER_BIT | bits );
                 DEBUG_PRINT( "Clear: r=%f, g=%f, b=%f, a=%f", r, g, b, a );
                 CHECK_ERROR_AND_BREAK;
             }
@@ -1294,14 +1279,11 @@ GLCommandBuffer::Execute( bool measureGPU )
                 GLenum mode = Read<GLenum>();
                 GLint offset = Read<GLint>();
                 GLsizei count = Read<GLsizei>();
-                // STEVE CHANGE
                 offset -= geometry->GetVertexOffset();
                 if (0 == instanceCount)
                 {
-                // /STEVE CHANGE
                     glDrawArrays( mode, offset, count );
                     DEBUG_PRINT( "Draw: mode=%i, offset=%i, count=%i", mode, offset, count );
-                // STEVE CHANGE
                 }
                 else
                 {
@@ -1309,20 +1291,16 @@ GLCommandBuffer::Execute( bool measureGPU )
                     DEBUG_PRINT( "Draw (instanced): mode=%i, offset=%i, count=%i, instance count=%i", mode, offset, count, instanceCount );
                     instanceCount = 0;
                 }
-                // /STEVE CHANGE
                 CHECK_ERROR_AND_BREAK;
             }
             case kCommandDrawIndexed:
             {
                 GLenum mode = Read<GLenum>();
                 GLsizei count = Read<GLsizei>();
-                // STEVE CHANGE
                 if (0 == instanceCount)
                 {
-                // /STEVE CHANGE
                     glDrawElements( mode, count, GL_UNSIGNED_SHORT, NULL );
                     DEBUG_PRINT( "Draw indexed: mode=%i, count=%i", mode, count );
-                // STEVE CHANGE
                 }
                 else
                 {
@@ -1330,7 +1308,6 @@ GLCommandBuffer::Execute( bool measureGPU )
                     DEBUG_PRINT( "Draw indexed (instanced): mode=%i, count=%i, instance count=%i", mode, count, instanceCount );
                     instanceCount = 0;
                 }
-                // /STEVE CHANGE
                 CHECK_ERROR_AND_BREAK;
             }
             default:
@@ -1361,12 +1338,10 @@ GLCommandBuffer::Execute( bool measureGPU )
     fNumCommands = 0;
     fExtraUniforms = NULL;
     
-    // STEVE CHANGE
     for (U32 i = 0; i < currentAttributeCount; ++i)
     {
         glDisableVertexAttribArray( Geometry::FirstExtraAttribute() + i );
     }
-    // /STEVE CHANGE
     
 #ifdef ENABLE_GPU_TIMER_QUERIES
     if( measureGPU )

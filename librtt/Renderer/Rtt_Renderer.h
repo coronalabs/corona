@@ -109,18 +109,16 @@ class Renderer
         // be drawn to this FBO until SetFrameBufferObject() is called again.
         void SetFrameBufferObject( FrameBufferObject* fbo );
 
-    // STEVE CHANGE
         struct ExtraClearOptions {
             bool clearDepth;
             bool clearStencil;
             float depthClearValue;
             U32 stencilClearValue;
         };
-    // /STEVE CHANGE
     
         // Assign the given color to all pixels in the back buffer or, if there
         // is a texture bound for offscreen rendering, to pixels in the texture.
-        void Clear( Real r, Real g, Real b, Real a, const ExtraClearOptions * extraOptions = NULL ); // <- STEVE CHANGE
+        void Clear( Real r, Real g, Real b, Real a, const ExtraClearOptions * extraOptions = NULL );
 
         // Push a new mask onto the stack. The given matrix describes a 2D
         // transformation and is expected to be of type Uniform::kMat3.
@@ -181,9 +179,8 @@ class Renderer
         static bool GetGpuSupportsHighPrecisionFragmentShaders();
         static U32 GetMaxUniformVectorsCount();
         static U32 GetMaxVertexTextureUnits();
-    // STEVE CHANGE
+
         void GetVertexAttributes( VertexAttributeSupport & support ) const;
-    // /STEVE CHANGE
 
         struct Statistics
         {
@@ -239,7 +236,7 @@ class Renderer
         // whether or not objects *on*screen need to be re-blitted
         void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
         U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
-    // STEVE CHANGE
+
         struct StateBlockInfo {
             CoronaStateBlockDirty fChanged;
             CoronaStateBlockDirty fRestore;
@@ -251,7 +248,7 @@ class Renderer
     
         U16 AddStateBlock( const CoronaStateBlock & block );
         bool GetStateBlockInfo( U16 id, U8 *& start, U32 & size, bool mightDirty );
-    // /STEVE CHANGE
+
         struct CustomOp {
             CoronaRendererOp fAction;
             unsigned long fID;
@@ -260,13 +257,8 @@ class Renderer
 
         U16 AddCustomCommand( const CoronaCommand & command );
 
-        // STEVE CHANGE removed AddClearOp, AddEndFrameOp, Inject
-
         bool IssueCustomCommand( U16 id, const void * data, U32 size );
     
-    public:
-        // STEVE CHANGE remove GetClearOps, GetEndFrameOps
-
     protected:
         // Destroys all queued GPU resources passed into the DestroyQueue() method.
         void DestroyQueuedGPUResources();
@@ -284,12 +276,10 @@ class Renderer
         void CheckAndInsertDrawCommand();
 
     private:
-    // STEVE CHANGE
         U32 EnumerateDirtyBlocks( ArrayS32& dirtyIndices );
         void UpdateDirtyBlocks( const ArrayS32& dirtyIndices, U32 largestDirtySize );
         void RestoreDefaultBlocks();
         void InsertInstancing( const Geometry::ExtensionBlock* block, const FormatExtensionList* programList, const FormatExtensionList* geometryList );
-    // /STEVE CHANGE
         void FlushBatch();
     
     protected:
@@ -300,13 +290,11 @@ class Renderer
         void CopyIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
         void CopyTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
 
-        // STEVE CHANGE
         void CopyExtendedVertexData( Geometry* geometry, Geometry::Vertex* destination, bool interior );
         void CopyExtendedTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* destination );
         void CopyExtendedTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destination );
         void CopyExtendedIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
         void CopyExtendedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
-        // /STEVE CHANGE
     
     protected:
         // Returns count at top of the mask count stack
@@ -326,9 +314,8 @@ class Renderer
         Array<GPUResource*> fDestroyQueue;
 
         GeometryPool* fGeometryPool;
-    // STEVE CHANGE
         GeometryPool* fInstancingGeometryPool;
-    // /STEVE CHANGE
+	
         CommandBuffer* fFrontCommandBuffer;
         CommandBuffer* fBackCommandBuffer;
         
@@ -358,9 +345,7 @@ class Renderer
         RenderData fPrevious;
         U32 fVertexOffset;
         U32 fVertexCount;
-    // STEVE CHANGE
         U32 fVertexExtra;
-    // /STEVE CHANGE
         U32 fIndexOffset;
         U32 fIndexCount;
         U32 fRenderDataCount;
@@ -369,16 +354,12 @@ class Renderer
         U32 fDegenerateVertexCount;
         U32 fCachedVertexOffset;
         U32 fCachedVertexCount;
-    // STEVE CHANGE
         U32 fCachedVertexExtra;
-    // /STEVE CHANGE
         Geometry::PrimitiveType fPreviousPrimitiveType;
         Geometry::Vertex* fCurrentVertex;
         Geometry* fCurrentGeometry;
-    // STEVE CHANGE
         Geometry::Vertex* fCurrentInstancingVertex;
         Geometry* fCurrentInstancingGeometry;
-    // /STEVE CHANGE
 
         Real fContentScaleX; // Temporary holder.
         Real fContentScaleY; // Temporary holder.
@@ -387,17 +368,13 @@ class Renderer
     
         Array< CoronaCommand > fPendingCommands;
 
-        // STEVE CHANGE remove fClearOps, fEndFrameOps
-    
         U16 fCommandCount;
-	
-    // STEVE CHANGE
+
         Array< StateBlockInfo > fStateBlocks;
         Array< U8 > fDefaultState;
         Array< U8 > fCurrentState;
         Array< U8 > fWorkingState;
         bool fMaybeDirty;
-    // /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------

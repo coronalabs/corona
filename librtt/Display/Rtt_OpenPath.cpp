@@ -40,14 +40,13 @@ OpenPath::OpenPath( Rtt_Allocator* pAllocator )
 
 OpenPath::~OpenPath()
 {
-    // STEVE CHANGE
     Geometry::ExtensionBlock* strokeBlock = fStrokeGeometry->GetExtensionBlock();
     
     if (GetObserver() && strokeBlock && strokeBlock->fProxy)
     {
         ReleaseProxy( strokeBlock->fProxy );
     }
-    // /STEVE CHANGE
+
     Rtt_DELETE( fStrokeGeometry );
     Rtt_DELETE( fStroke );
 }

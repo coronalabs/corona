@@ -184,9 +184,7 @@ PaintAdapter::SetValueForKey(
                 // We get it for free right now b/c access to paint properties are restricted
                 {
                     Shader *shader = NULL;
-                    // STEVE CHANGE
                     Geometry *geometry = NULL;
-                    // /STEVE CHANGE
 
                     // Ensure paint has a parent display object
                     DisplayObject *observer = paint->GetObserver();
@@ -211,15 +209,14 @@ PaintAdapter::SetValueForKey(
                                 Display& display = stage->GetDisplay();
                                 ShaderFactory& factory = display.GetShaderFactory();
                                 shader = factory.FindOrLoad( namedShader );
-                                // STEVE CHANGE
+
                                 bool isFill = DisplayPath::ExtensionAdapter::IsFillPaint( observer, paint );
                                 
                                 geometry = DisplayPath::ExtensionAdapter::GetGeometry( observer, isFill );
-                                // /STEVE CHANGE
                             }
                         }
                     }
-                    // STEVE CHANGE
+
                     if (shader && !shader->IsCompatible( geometry ))
                     {
                         result = false;
@@ -227,13 +224,10 @@ PaintAdapter::SetValueForKey(
                     
                     else
                     {
-                    // /STEVE CHANGE
                         paint->SetShader( shader );
 
                         result = true;
-                    // STEVE CHANGE
                     }
-                    // /STEVE CHANGE
                 }
                 break;
             case 5:

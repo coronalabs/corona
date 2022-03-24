@@ -19,9 +19,7 @@
 #endif
 
 #include <stdio.h>
-// STEVE CHANGE
 #include <stddef.h>
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -75,7 +73,7 @@ namespace /*anonymous*/
         return true;
     }
 #endif
-// STEVE CHANGE
+
     static const Geometry::Vertex* GetGPUVertexData( Geometry* geometry )
     {
         const Geometry::Vertex* extendedData = geometry->GetExtendedVertexData();
@@ -90,7 +88,7 @@ namespace /*anonymous*/
             return geometry->GetVertexData();
         }
     }
-// /STEVE CHANGE
+
     void createVertexArrayObject(Geometry* geometry, GLuint& VAO, GLuint& VBO, GLuint& IBO)
     {
         Rtt_glGenVertexArrays( 1, &VAO );
@@ -106,22 +104,19 @@ namespace /*anonymous*/
         glEnableVertexAttribArray( Geometry::kVertexUserDataAttribute );
         GL_CHECK_ERROR();
 
-        const Geometry::Vertex* vertexData = GetGPUVertexData( geometry ); // geometry->GetVertexData(); <- STEVE CHANGE
+        const Geometry::Vertex* vertexData = GetGPUVertexData( geometry );
+		
         if ( !vertexData )
         {
             GL_LOG_ERROR( "Unable to initialize GPU geometry. Data is NULL" );
         }
 
         // It is valid to pass a NULL pointer, so allocation is done either way
-        // STEVE CHANGE
         const FormatExtensionList* extensionList = geometry->GetExtensionList();
         const size_t size = FormatExtensionList::GetVertexSize( extensionList );
-        // /STEVE CHANGE
         const U32 vertexCount = geometry->GetVerticesAllocated();
-        glBufferData( GL_ARRAY_BUFFER, vertexCount * size/*sizeof(Geometry::Vertex)*/, vertexData, GL_STATIC_DRAW ); // <- STEVE CHANGE
+        glBufferData( GL_ARRAY_BUFFER, vertexCount * size, vertexData, GL_STATIC_DRAW );
         GL_CHECK_ERROR();
-
-        //const size_t size = sizeof(Geometry::Vertex); <- STEVE CHANGE
     
         glVertexAttribPointer( Geometry::kVertexPositionAttribute, 3, GL_FLOAT, GL_FALSE, size, (void*)0 );
         glVertexAttribPointer( Geometry::kVertexTexCoordAttribute, 3, GL_FLOAT, GL_FALSE, size, (void*)12 );
@@ -160,8 +155,6 @@ namespace /*anonymous*/
             glDeleteBuffers( 1, &IBO );
         }
         
-        // STEVE CHANGE TODO: extended VBOs
-        
         GL_CHECK_ERROR();
     }
 
@@ -176,7 +169,8 @@ namespace /*anonymous*/
         glEnableVertexAttribArray( Geometry::kVertexUserDataAttribute );
         GL_CHECK_ERROR();
 
-        const Geometry::Vertex* vertexData = GetGPUVertexData( geometry ); // geometry->GetVertexData(); <- STEVE CHANGE
+        const Geometry::Vertex* vertexData = GetGPUVertexData( geometry );
+		
         if ( !vertexData )
         {
             GL_LOG_ERROR( "Unable to initialize GPU geometry. Data is NULL" );
@@ -184,11 +178,9 @@ namespace /*anonymous*/
 
         // It is valid to pass a NULL pointer, so allocation is done either way
         const U32 vertexCount = geometry->GetVerticesAllocated();
-        // STEVE CHANGE
         const FormatExtensionList* extensionList = geometry->GetExtensionList();
         const size_t size = FormatExtensionList::GetVertexSize( extensionList );
-        // /STEVE CHANGE
-        glBufferData( GL_ARRAY_BUFFER, vertexCount * size/*sizeof(Geometry::Vertex)*/, vertexData, GL_STATIC_DRAW ); // <- STEVE CHANGE
+        glBufferData( GL_ARRAY_BUFFER, vertexCount * size, vertexData, GL_STATIC_DRAW );
         GL_CHECK_ERROR();
         
         const Geometry::Index* indexData = geometry->GetIndexData();
@@ -215,7 +207,6 @@ namespace /*anonymous*/
 
 }
 
-// STEVE CHANGE
 void createInstanceVBO( Geometry* geometry, GLuint& instancesVBO )
 {
     glGenBuffers( 1, &instancesVBO ); GL_CHECK_ERROR();
@@ -240,7 +231,6 @@ void destroyInstanceVBO( GLuint instancesVBO )
         glDeleteBuffers( 1, &instancesVBO );
     }
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -257,14 +247,11 @@ GLGeometry::GLGeometry()
     fVAO( 0 ),
     fVBO( 0 ),
     fIBO( 0 ),
-// STEVE CHANGE
     fInstancesVBO( 0 ),
     fInstancesAllocated( -1 )
-// /STEVE CHANGE
 {
 }
 
-// STEVE CHANGE
 #if defined( Rtt_WIN_ENV )
     #define GL_TYPE_PREFIX GLAPIENTRY
 #elif defined( Rtt_IPHONE_ENV )
@@ -430,7 +417,6 @@ GLGeometry::SpliceVertexRateData( const Geometry::Vertex* vertexData, Geometry::
     
     size *= total;
 }
-// /STEVE CHANGE
 
 void
 GLGeometry::Create( CPUResource* resource )
@@ -461,7 +447,6 @@ GLGeometry::Create( CPUResource* resource )
         fVertexCount = geometry->GetVerticesAllocated();
         fIndexCount = geometry->GetIndicesAllocated();
 
-    // STEVE CHANGE
         const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
         
         if (block && block->fCount > 0 && geometry->GetExtensionList()->HasInstanceRateData())
@@ -469,7 +454,6 @@ GLGeometry::Create( CPUResource* resource )
             createInstanceVBO( geometry, fInstancesVBO );
             fInstancesAllocated = block->fCount;
         }
-    // /STEVE CHANGE
     }
     else
     {
@@ -483,7 +467,6 @@ GLGeometry::Update( CPUResource* resource )
     Rtt_ASSERT( CPUResource::kGeometry == resource->GetType() );
     Geometry* geometry = static_cast<Geometry*>( resource );
 
-    // STEVE CHANGE
     const FormatExtensionList* extensionList = geometry->GetExtensionList();
     bool gainedExtension = -1 == fInstancesAllocated && NULL != extensionList;
     bool hasInstancedData = extensionList ? extensionList->HasInstanceRateData() : false;
@@ -494,7 +477,6 @@ GLGeometry::Update( CPUResource* resource )
         
         fInstancesAllocated = 0;
     }
-    // /STEVE CHANGE
     
     if ( fVAO )
     {
@@ -502,30 +484,28 @@ GLGeometry::Update( CPUResource* resource )
         // since the last call to update (see Geometry::Resize()).
         if ( fVertexCount < geometry->GetVerticesAllocated() ||
              fIndexCount < geometry->GetIndicesAllocated() ||
-            (gainedExtension && extensionList->HasVertexRateData()) ) // <- STEVE CHANGE
+            (gainedExtension && extensionList->HasVertexRateData()) )
         {
             destroyVertexArrayObject( fVAO, fVBO, fIBO);
             createVertexArrayObject( geometry, fVAO, fVBO, fIBO );
             fVertexCount = geometry->GetVerticesAllocated();
             fIndexCount = geometry->GetIndicesAllocated();
         }
-    // STEVE CHANGE
+
         if (hasInstancedData && fInstancesAllocated < geometry->GetExtensionBlock()->fCount)
         {
             destroyInstanceVBO( fInstancesVBO );
             createInstanceVBO( geometry, fInstancesVBO );
             fInstancesAllocated = geometry->GetExtensionBlock()->fCount;
         }
-    // /STEVE CHANGE
         
         // Copy the vertex data from main memory to GPU memory.
         const Geometry::Vertex* vertexData = geometry->GetVertexData();
         if ( vertexData )
         {
-            // STEVE CHANGE
-            /*const */size_t size = sizeof(Geometry::Vertex);
+            size_t size = sizeof(Geometry::Vertex);
             
-            if (extensionList && extensionList->HasVertexRateData()) // <- STEVE CHANGE
+            if (extensionList && extensionList->HasVertexRateData())
             {
                 Geometry::Vertex* extendedData = geometry->GetWritableExtendedVertexData();
                 
@@ -533,10 +513,10 @@ GLGeometry::Update( CPUResource* resource )
                 
                 vertexData = extendedData;
             }
-            // /STEVE CHANGE
+			
             glBindBuffer( GL_ARRAY_BUFFER, fVBO );
-            glBufferSubData( GL_ARRAY_BUFFER, 0, fVertexCount * size/*sizeof(Geometry::Vertex)*/, vertexData ); // <- STEVE CHANGE
-            // STEVE CHANGE TODO ^^^ This is being updated every frame!!!! (indices too)
+            glBufferSubData( GL_ARRAY_BUFFER, 0, fVertexCount * size, vertexData );
+
             const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
                         
             Rtt_ASSERT( !hasInstancedData || block->fInstanceData );
@@ -565,7 +545,7 @@ GLGeometry::Update( CPUResource* resource )
                 }
                 // ^^^ only update if dirty, etc. (ditto for fVBO)
             }
-            // /STEVE CHANGE
+
             glBindBuffer( GL_ARRAY_BUFFER, 0 );
             
             const Geometry::Index* indexData = geometry->GetIndexData();
@@ -588,30 +568,28 @@ GLGeometry::Update( CPUResource* resource )
         // since the last call to update (see Geometry::Resize()).
         if ( fVertexCount < geometry->GetVerticesAllocated() ||
              fIndexCount < geometry->GetIndicesAllocated() ||
-             (gainedExtension && extensionList->HasVertexRateData()) ) // <- STEVE CHANGE
+             (gainedExtension && extensionList->HasVertexRateData()) )
         {
             destroyVBO( fVBO, fIBO );
             createVBO( geometry, fVBO, fIBO );
             fVertexCount = geometry->GetVerticesAllocated();
             fIndexCount = geometry->GetIndicesAllocated();
         }
-    // STEVE CHANGE
+
         if (hasInstancedData && fInstancesAllocated < geometry->GetExtensionBlock()->fCount)
         {
             destroyInstanceVBO( fInstancesVBO );
             createInstanceVBO( geometry, fInstancesVBO );
             fInstancesAllocated = geometry->GetExtensionBlock()->fCount;
         }
-    // /STEVE CHANGE
         
         // Copy the vertex data from main memory to GPU memory.
         const Geometry::Vertex* vertexData = geometry->GetVertexData();
         if ( vertexData )
         {
-            // STEVE CHANGE
             size_t size = sizeof(Geometry::Vertex);
             
-            if (extensionList && extensionList->HasVertexRateData()) // <- STEVE CHANGE
+            if (extensionList && extensionList->HasVertexRateData())
             {
                 Geometry::Vertex* extendedData = geometry->GetWritableExtendedVertexData();
                 
@@ -619,10 +597,10 @@ GLGeometry::Update( CPUResource* resource )
                 
                 vertexData = extendedData;
             }
-            // /STEVE CHANGE
+
             glBindBuffer( GL_ARRAY_BUFFER, fVBO );
-            glBufferSubData( GL_ARRAY_BUFFER, 0, fVertexCount * size/*sizeof(Geometry::Vertex)*/, vertexData ); // <- STEVE CHANGE
-            // STEVE CHANGE
+            glBufferSubData( GL_ARRAY_BUFFER, 0, fVertexCount * size, vertexData );
+
             const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
                         
             Rtt_ASSERT( !hasInstancedData || block->fInstanceData );
@@ -650,8 +628,8 @@ GLGeometry::Update( CPUResource* resource )
                     offset += Geometry::Vertex::SizeInVertices( dataSize ) * sizeof(Geometry::Vertex);
                 }
             }
-            // ^^^ only update if dirty, etc. (ditto for fVBO)
-            // /STEVE CHANGE
+            // ^^^ TODO: make these updates more fine-grained
+
             glBindBuffer( GL_ARRAY_BUFFER, 0 );
         }
         else
@@ -694,7 +672,7 @@ GLGeometry::Destroy()
         fColorScaleStart = NULL;
         fUserDataStart = NULL;
     }
-// STEVE CHANGE
+
     if (fInstancesVBO)
     {
         Rtt_ASSERT( -1 != fInstancesAllocated );
@@ -703,10 +681,8 @@ GLGeometry::Destroy()
         
         fInstancesVBO = 0;
     }
-// /STEVE CHANGE
 }
 
-// STEVE CHANGE
 void
 GLGeometry::BindStockAttributes( size_t size )
 {
@@ -730,7 +706,6 @@ GLGeometry::BindStockAttributes( size_t size )
     glVertexAttribPointer( Geometry::kVertexColorScaleAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, (GLsizei)size, colorScaleStart ); GL_CHECK_ERROR();
     glVertexAttribPointer( Geometry::kVertexUserDataAttribute, 4, GL_FLOAT, GL_FALSE, (GLsizei)size, userDataStart ); GL_CHECK_ERROR();
 }
-// /STEVE CHANGE
 
 void
 GLGeometry::Bind()
@@ -754,20 +729,12 @@ GLGeometry::Bind()
         }
 
         glBindBuffer( GL_ARRAY_BUFFER, fVBO ); GL_CHECK_ERROR();
-
-        // STEVE CHANGE
-/*
-            glVertexAttribPointer( Geometry::kVertexPositionAttribute, 3, GL_FLOAT, GL_FALSE, size, fPositionStart ); GL_CHECK_ERROR();
-            glVertexAttribPointer( Geometry::kVertexTexCoordAttribute, 3, GL_FLOAT, GL_FALSE, size, fTexCoordStart ); GL_CHECK_ERROR();
-            glVertexAttribPointer( Geometry::kVertexColorScaleAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, size, fColorScaleStart ); GL_CHECK_ERROR();
-            glVertexAttribPointer( Geometry::kVertexUserDataAttribute, 4, GL_FLOAT, GL_FALSE, size, fUserDataStart ); GL_CHECK_ERROR();
- */
-        // /STEVE CHANGE
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, fIBO ); GL_CHECK_ERROR();
+		
+		// cf. BindStockAttributes() for where "true" binds happen
     }
 }
 
-// STEVE CHANGE
 void
 GLGeometry::SetVertexOffset( U32 offset, size_t sizeExtra, bool formatDirty )
 {
@@ -809,8 +776,6 @@ GLGeometry::ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSiz
     
     if (mainDirty && !fVAO) // a VAO does not have this info, but already has it bound
     {
-    //  Rtt_ASSERT( list->HasVertexRateData() );
-
         BindStockAttributes( vertexSize );
     }
 
@@ -876,7 +841,6 @@ GLGeometry::ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSiz
     
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

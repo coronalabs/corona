@@ -12,9 +12,8 @@
 
 #include <map>
 #include <string>
-// STEVE CHANGE
+
 #include "Core/Rtt_SharedPtr.h"
-// /STEVE CHANGE
 #include "Display/Rtt_ShaderTypes.h"
 #include "Renderer/Rtt_Uniform.h"
 
@@ -28,9 +27,7 @@ namespace Rtt
 
 class Program;
 class ShaderData;
-// STEVE CHANGE
 struct FormatExtensionList;
-// /STEVE CHANGE
 
 struct TimeTransform
 {
@@ -95,10 +92,10 @@ class ShaderResource
         void SetEffectCallbacks( CoronaEffectCallbacks * callbacks );
         const CoronaShellTransform * GetShellTransform() const { return fShellTransform; }
         void SetShellTransform( CoronaShellTransform * shellTransform );
-    // STEVE CHANGE
+
         const FormatExtensionList * GetExtensionList() const { return &*fExtensionList; }
         void SetExtensionList( const SharedPtr<FormatExtensionList>& list ) { fExtensionList = list; }
-    // /STEVE CHANGE
+
         void AddEffectDetail( const char * name, const char * value );
 
         int GetEffectDetail( int index, CoronaEffectDetail & detail ) const;
@@ -145,9 +142,7 @@ class ShaderResource
         ShaderData *fDefaultData;
         CoronaEffectCallbacks *fEffectCallbacks;
         CoronaShellTransform *fShellTransform;
-    // STEVE CHANGE
         SharedPtr<FormatExtensionList> fExtensionList;
-    // /STEVE CHANGE
         std::vector< std::string > fDetailNames;
         std::vector< std::string > fDetailValues;
         U32 fDetailsCount;

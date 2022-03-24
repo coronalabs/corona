@@ -8,9 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Renderer/Rtt_GLProgram.h"
-// STEVE CHANGE
 #include "Renderer/Rtt_GLGeometry.h"
-// /STEVE CHANGE
 
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
@@ -27,7 +25,6 @@
 #endif
 
 #include "Display/Rtt_ShaderResource.h"
-// STEVE CHANGE? (removed CoronaLog.h)
 
 #include <string>
 #include <vector>
@@ -277,7 +274,6 @@ SetShaderSource( GLuint shader, CoronaShellTransformParams & params, const Coron
     GL_CHECK_ERROR();
 }
 
-// STEVE CHANGE
 static bool
 IsDoubleType( CoronaVertexExtensionAttributeType )
 {
@@ -336,7 +332,6 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
         AppendMacroName( extensionList->names[i].str, extensionAttributes );
     }
 }
-// /STEVE CHANGE
 
 void
 GLProgram::UpdateShaderSource( Program* program, Program::Version version, VersionData& data )
@@ -380,8 +375,6 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
     const char * hints[] = { "header", "highpSupport", "mask", "texCoordZ", NULL };
     void * shellTransformKey = &fCleanupShellTransform; // n.b. done to make cleanup robust
 
-    // params.hints = hints; <- STEVE CHANGE
-
     std::vector< CoronaEffectDetail > details;
     CoronaEffectDetail detail;
 
@@ -406,7 +399,6 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
 
     // Vertex shader.
     {
-        // STEVE CHANGE
         const char * extendedSources[7] = {}, * extendedHints[8] = {};
         std::string extensionAttributes, suffixStr, versionStr;
         
@@ -471,7 +463,10 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
                         extendedSources[0] = versionStr.c_str();
                     }
                     
-                    sprintf( buf, "\n#define CoronaInstanceID float(gl_InstanceID%s)\n\n", idSuffix );
+					sprintf( buf,
+							"\n#define CoronaInstanceID int(gl_InstanceID%s)\n"
+							"\n#define CoronaInstanceFloat float(gl_InstanceID%s)\n\n",
+							idSuffix, idSuffix );
                     
                     suffixStr = buf;
                     
@@ -480,7 +475,8 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
                 
                 else
                 {
-                    extendedSources[nsources - 1] = "\n#define CoronaInstanceID 0.\n\n";
+					extendedSources[nsources - 1] = "\n#define CoronaInstanceID 0\n"
+												"\n#define CoronaInstanceFloat 0.\n\n";
                 }
                 
                 extendedHints[nsources - 1] = "instanceID";
@@ -497,21 +493,12 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
         }
         
         SetShaderSource( data.fVertexShader, params, shellTransform, spaceData, shellTransformKey );
-        // /STEVE CHANGE
     }
 
     // Fragment shader.
     {
         shader_source[4] = ( version == Program::kWireframe ) ? kWireframeSource : program->GetFragmentShaderSource();
-        // STEVE CHANGE
-        /*
-        glShaderSource( data.fFragmentShader,
-                         ( sizeof(shader_source) / sizeof(shader_source[0]) ),
-                         shader_source,
-                         NULL );
-        GL_CHECK_ERROR();
-        */
-        // /STEVE CHANGE
+
         hints[4] = "fragmentSource";
         params.type = "fragment";
         params.hints = hints;
@@ -534,7 +521,7 @@ GLProgram::Update( Program::Version version, VersionData& data )
     glBindAttribLocation( data.fProgram, Geometry::kVertexColorScaleAttribute, "a_ColorScale" );
     glBindAttribLocation( data.fProgram, Geometry::kVertexUserDataAttribute, "a_UserData" );
     GL_CHECK_ERROR();
-    // STEVE CHANGE
+
     const FormatExtensionList* extensionList = program->GetShaderResource()->GetExtensionList();
 
     if (extensionList)
@@ -554,7 +541,6 @@ GLProgram::Update( Program::Version version, VersionData& data )
 
         GL_CHECK_ERROR();
     }
-    // /STEVE CHANGE
 #endif
 
     UpdateShaderSource( program,
@@ -680,7 +666,7 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
 {
     if (!fCache)
     {
-        Rtt_LogException( "Extra uniforms cache not yet initialized" ); // <- STEVE CHANGE
+        Rtt_LogException( "Extra uniforms cache not yet initialized" );
         
         return -1;
     }
@@ -717,7 +703,7 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
 
     if (-1 == location)
     {
-        Rtt_LogException( "WARNING: uniform `%s` not found in effect", name ); // <- STEVE CHANGE
+        Rtt_LogException( "WARNING: uniform `%s` not found in effect", name );
         
         return -1;
     }
@@ -732,7 +718,7 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
             {
                 if (versionData.fUniformLocations[i] == location)
                 {
-                    Rtt_LogException( "WARNING: `%s` is a built-in uniform", name ); // <- STEVE CHANGE
+                    Rtt_LogException( "WARNING: `%s` is a built-in uniform", name );
                     
                     return -1;
                 }
@@ -767,7 +753,7 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
         
         if (uniformIndex == count)
         {
-            Rtt_LogException( "Location of uniform `%s` found, but no active info: name too long?", name ); // <- STEVE CHANGE
+            Rtt_LogException( "Location of uniform `%s` found, but no active info: name too long?", name );
             
             return -1;
         }
@@ -783,7 +769,7 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
         case GL_FLOAT_MAT4:
             break;
         default:
-            Rtt_LogException( "Location of uniform `%s` found, but type unsupported", name ); // <- STEVE CHANGE
+            Rtt_LogException( "Location of uniform `%s` found, but type unsupported", name );
                 
             return -1;
         }

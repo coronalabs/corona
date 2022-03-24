@@ -1360,7 +1360,6 @@ LuaDisplayObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object
 
 // ----------------------------------------------------------------------------
 
-// STEVE CHANGE
 bool
 DisplayPath::ExtensionAdapter::IsLineObject( const DisplayObject* object )
 {
@@ -1416,7 +1415,6 @@ ExtensionAdapterStrokeConstant()
     static const DisplayPath::ExtensionAdapter kAdapter( false );
     return kAdapter;
 }
-// /STEVE CHANGE
 
 const LuaLineObjectProxyVTable&
 LuaLineObjectProxyVTable::Constant()
@@ -1536,7 +1534,7 @@ LuaLineObjectProxyVTable::append( lua_State *L )
             Vertex2 v = { luaL_checkreal( L, i ), luaL_checkreal( L, i + 1 ) };
             o->Append( v );
         }
-        // STEVE CHANGE
+
         Geometry* geometry = o->GetPath().GetStrokeGeometry();
         Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
         
@@ -1544,7 +1542,6 @@ LuaLineObjectProxyVTable::append( lua_State *L )
         {
             block->UpdateData( geometry->GetStoredOnGPU(), o->GetPath().GetStrokeVertexCount() );
         }
-        // /STEVE CHANGE
     }
 
     return 0;
@@ -1571,12 +1568,10 @@ LuaLineObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object
         "anchorSegments",    // 8
         "setStrokeVertexColor", // 9
         "strokeVertexCount",    // 10
-    // STEVE CHANGE
         "extendedData"     // 11
-    // /STEVE CHANGE
     };
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-    static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 12, 20, 2, __FILE__, __LINE__ ); // <- STEVE CHANGE
+    static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 12, 20, 2, __FILE__, __LINE__ );
     StringHash *hash = &sHash;
 
     int index = hash->Lookup( key );
@@ -1661,7 +1656,6 @@ LuaLineObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object
             lua_pushinteger( L, o.GetPath().GetStrokeVertexCount() );
         }
         break;
-    // STEVE CHANGE
     case 11:
         {
             const LineObject& line = static_cast< const LineObject& >( object );
@@ -1677,7 +1671,6 @@ LuaLineObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object
             block->fProxy->Push( L );
         }
         break;
-    // /STEVE CHANGE
     default:
         {
             result = Super::ValueForKey( L, object, key, overrideRestriction );
@@ -1724,12 +1717,10 @@ LuaLineObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
         "anchorSegments",    // 8
         "strokeVertexCount",    // 9
         "setStrokeVertexColor",    // 10
-    // STEVE CHANGE
         "strokeExtension"    // 11
-    // /STEVE CHANGE
     };
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-    static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 12, 3, 3, __FILE__, __LINE__ ); // <- STEVE CHANGE
+    static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 12, 3, 3, __FILE__, __LINE__ );
     StringHash *hash = &sHash;
 
     int index = hash->Lookup( key );
@@ -1785,7 +1776,6 @@ LuaLineObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
     case 9:
         // No-op: cannot set vertex count
         break;
-    // STEVE CHANGE
     case 11:
         {
             OpenPath& path = o.GetPath();
@@ -1816,7 +1806,6 @@ LuaLineObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
             }
         }
         break;
-    // /STEVE CHANGE
     default:
         {
             result = Super::SetValueForKey( L, object, key, valueIndex );
@@ -2014,14 +2003,12 @@ LuaShapeObjectProxyVTable::setStrokeVertexColor( lua_State *L )
     return 0;
 }
 
-// STEVE CHANGE
 static const DisplayPath::ExtensionAdapter&
 ExtensionAdapterFillConstant()
 {
     static const DisplayPath::ExtensionAdapter kAdapter( true );
     return kAdapter;
 }
-// /STEVE CHANGE
 
 int
 LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction /* = false */ ) const
@@ -2044,10 +2031,8 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
         "fillVertexCount",        // 9
         "setStrokeVertexColor", // 10
         "strokeVertexCount",    // 11
-    // STEVE CHANGE
         "fillExtendedData",     // 12
         "strokeExtendedData",   // 13
-    // /STEVE CHANGE
     };
     const int numKeys = sizeof( keys ) / sizeof( const char * );
     static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 14, 19, 2, __FILE__, __LINE__ );
@@ -2164,7 +2149,6 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
             lua_pushinteger( L, static_cast< const ShapePath& >( o.GetPath() ).GetStrokeVertexCount() );
         }
         break;
-    // STEVE CHANGE
     case 12:
     case 13:
         {
@@ -2182,7 +2166,6 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
             block->fProxy->Push( L );
         }
         break;
-    // /STEVE CHANGE
     default:
         {
              result = Super::ValueForKey( L, object, key, overrideRestriction );
@@ -2253,13 +2236,11 @@ LuaShapeObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, 
         "blendMode",        // 2
         "strokeWidth",        // 3
         "innerStrokeWidth", // 4
-    // STEVE CHANGE
         "fillExtension",     // 5
         "strokeExtension"    // 6
-    // /STEVE CHANGE
     };
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-    static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 7, 10, 2, __FILE__, __LINE__ ); // <- STEVE CHANGE
+    static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 7, 10, 2, __FILE__, __LINE__ );
     StringHash *hash = &sHash;
 
     int index = hash->Lookup( key );
@@ -2312,7 +2293,6 @@ LuaShapeObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, 
             AssignDefaultStrokeColor( L, o );
         }
         break;
-    // STEVE CHANGE
     case 5:
     case 6:
         {
@@ -2345,7 +2325,6 @@ LuaShapeObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, 
             }
         }
         break;
-    // /STEVE CHANGE
     default:
         {
             result = Super::SetValueForKey( L, object, key, valueIndex );

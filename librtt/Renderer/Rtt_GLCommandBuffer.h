@@ -32,9 +32,7 @@ class GLCommandBuffer : public CommandBuffer
         typedef CommandBuffer Super;
         typedef GLCommandBuffer Self;
     
-    // STEVE CHANGE
         void GetVertexAttributes( VertexAttributeSupport & support ) const;
-    // /STEVE CHANGE
 
     public:
         GLCommandBuffer( Rtt_Allocator* allocator );
@@ -53,12 +51,10 @@ class GLCommandBuffer : public CommandBuffer
         virtual void BindTexture( Texture* texture, U32 unit );
         virtual void BindUniform( Uniform* uniform, U32 unit );
         virtual void BindProgram( Program* program, Program::Version version );
-    // STEVE CHANGE
         virtual void BindInstancing( U32 count, Geometry::Vertex* instanceData );
         virtual void DirtyVertexFormat();
         virtual void BindVertexFormat( FormatExtensionList* list, U16 fullCount, U16 vertexSize );
         virtual void BindVertexOffset( U32 offset, U32 extraVertexCount );
-    // /STEVE CHANGE
         virtual void SetBlendEnabled( bool enabled );
         virtual void SetBlendFunction( const BlendMode& mode );
         virtual void SetBlendEquation( RenderTypes::BlendEquation mode );
@@ -66,10 +62,8 @@ class GLCommandBuffer : public CommandBuffer
         virtual void SetScissorEnabled( bool enabled );
         virtual void SetScissorRegion( int x, int y, int width, int height );
         virtual void SetMultisampleEnabled( bool enabled );
-    // STEVE CHANGE
         virtual void ClearDepth( Real depth );
         virtual void ClearStencil( U32 stencil );
-    // /STEVE CHANGE
         virtual void Clear( Real r, Real g, Real b, Real a );
         virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type );
         virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type );

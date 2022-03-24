@@ -95,7 +95,6 @@ ShapePath::~ShapePath()
     DisplayObject *observer = GetObserver();
     if ( observer )
     {
-    // STEVE CHANGE
         Geometry::ExtensionBlock* strokeBlock = fStrokeGeometry->GetExtensionBlock();
         
         if (strokeBlock && strokeBlock->fProxy)
@@ -109,7 +108,7 @@ ShapePath::~ShapePath()
         {
             ReleaseProxy( fillBlock->fProxy );
         }
-    // /STEVE CHANGE
+
         observer->QueueRelease( fStrokeGeometry );
         observer->QueueRelease( fFillGeometry );
     }

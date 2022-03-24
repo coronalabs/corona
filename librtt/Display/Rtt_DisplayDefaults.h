@@ -76,7 +76,7 @@ class DisplayDefaults
 
         bool IsShaderCompilerVerbose() const { return fShaderCompilerVerbose; }
         void SetShaderCompilerVerbose( bool newValue ) { fShaderCompilerVerbose = newValue; }
-    // STEVE CHANGE
+
         bool GetSkipsCull() const { return fSkipsCull; }
         void SetSkipsCull( bool newValue ) { fSkipsCull = newValue; }
     
@@ -106,7 +106,6 @@ class DisplayDefaults
     
         U32 GetAddedStencilClearValue() const { return fAddedStencilClear; }
         void SetAddedStencilClearValue( float newValue ) { fAddedStencilClear = newValue; }
-    // /STEVE CHANGE
 
     private:
         Color fClearColor;
@@ -127,7 +126,6 @@ class DisplayDefaults
         bool fShaderCompilerVerbose;
         bool fIsAnchorClamped;
         bool fIsImageSheetSampledInsideFrame;
-    // STEVE CHANGE
         bool fSkipsCull;
         bool fSkipsHitTest;
         bool fEnableDepthInScene;
@@ -138,7 +136,6 @@ class DisplayDefaults
         float fAddedDepthClear;
         U32 fSceneStencilClear;
         U32 fAddedStencilClear;
-    // /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------

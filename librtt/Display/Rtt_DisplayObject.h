@@ -122,11 +122,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
             kIsAnchorChildren = 0x200, // Group-specific property
             kIsRenderedOffscreen = 0x400,
             kIsRestricted = 0x800,
-        // STEVE CHANGE
-			// removed IsDummyStagebounds
             kSkipsCull = 0x1000,
             kSkipsHitTest = 0x2000,
-        // /STEVE CHANGE
 
             // NOTE: Current maximum of 16 PropertyMasks!!!
         };
@@ -364,14 +361,12 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         Rtt_INLINE bool IsForceDraw() const { return (fProperties & kIsForceDraw) != 0; }
         Rtt_INLINE void SetForceDraw( bool newValue ) { SetProperty( kIsForceDraw, newValue ); }
     
-    // STEVE CHANGE
-		// removed Is/SetDummyStageBounds
         Rtt_INLINE bool SkipsCull() const { return (fProperties & kSkipsCull) != 0; }
         Rtt_INLINE void SetSkipsCull( bool newValue ) { SetProperty( kSkipsCull, newValue ); }
         
         Rtt_INLINE bool SkipsHitTest() const { return (fProperties & kSkipsHitTest) != 0; }
         Rtt_INLINE void SetSkipsHitTest( bool newValue ) { SetProperty( kSkipsHitTest, newValue ); }
-    // /STEVE CHANGE
+
         Rtt_INLINE bool IsOffScreen() const { return (fProperties & kIsOffScreen) != 0; }
         Rtt_INLINE void SetOffScreen( bool newValue ) { SetProperty( kIsOffScreen, newValue ); }
 
@@ -395,7 +390,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         void UpdateAlphaCumulative( U8 alphaCumulativeFromAncestors );
 
         Rtt_INLINE bool IsNotHidden() const { return IsVisible() && Alpha() > 0; }
-        Rtt_INLINE bool ShouldHitTest() const { return IsNotHidden() || IsHitTestable(); } // <- STEVE CHANGE revert
+        Rtt_INLINE bool ShouldHitTest() const { return IsNotHidden() || IsHitTestable(); }
 	
         bool ShouldDraw() const
         {

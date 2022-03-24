@@ -15,11 +15,7 @@
 #include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderComposite.h"
 #include "Display/Rtt_ShaderTypes.h"
-// STEVE CHANGE
 #include "Renderer/Rtt_Geometry_Renderer.h"
-// /STEVE CHANGE
-
-// STEVE CHANGE remove "CoronaGraphics.h"
 
 // ----------------------------------------------------------------------------
 
@@ -89,9 +85,8 @@ class ShaderFactory
         void BindDetails( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
         void BindShellTransform( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
         void BindTimeTransform( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
-    // STEVE CHANGE
         void BindVertexExtension( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
-    // /STEVE CHANGE
+
         void InitializeBindings( lua_State *L, int shaderIndex, const SharedPtr< ShaderResource >& resource );
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
         bool LoadAllCompiledShaders(
@@ -114,20 +109,16 @@ class ShaderFactory
 
         bool RegisterDataType( const char * name, const CoronaEffectCallbacks & callbacks );
         bool RegisterShellTransform( const char * name, const CoronaShellTransform & transform );
-    // STEVE CHANGE
         bool RegisterVertexExtension( const char * name, const CoronaVertexExtension & extension );
     
         SharedPtr<FormatExtensionList> * GetExtensionList( const char * name ) const;
-    // /STEVE CHANGE
 
         bool UnregisterDataType( const char * name );
         bool UnregisterShellTransform( const char * name );
-    // STEVE CHANGE
         bool UnregisterVertexExtension( const char * name );
 	
 		void AddExternalInfo( lua_State * L, const char * name, const char * type );
 		void RemoveExternalInfo( lua_State * L, const char * name, const char * type );
-    // /STEVE CHANGE
     
     protected:
         const Shader *FindPrototype( ShaderTypes::Category category, const char *name ) const;

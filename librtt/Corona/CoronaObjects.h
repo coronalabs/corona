@@ -757,8 +757,6 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
 CORONA_API
 int CoronaObjectInvalidate( const CoronaDisplayObject * object ) CORONA_PUBLIC_SUFFIX;
 
-// STEVE CHANGE SetHasDummyStageBounds
-
 // ----------------------------------------------------------------------------
 
 /**

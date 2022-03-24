@@ -8,12 +8,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Core/Rtt_Build.h"
-// STEVE CHANGE
+
 #include "Core/Rtt_String.h"
 #include "Core/Rtt_Assert.h"
 
 #include "Renderer/Rtt_CommandBuffer.h"
-// /STEVE CHANGE
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Display/Rtt_DisplayTypes.h"
 #include "Renderer/Rtt_RenderTypes.h"
@@ -21,12 +20,10 @@
 #include <cstring>
 #include <stddef.h>
 #include <string.h>
-// STEVE CHANGE
 #include <algorithm>
 #include <functional>
 #include <string>
 #include <vector>
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -103,7 +100,6 @@ void Geometry::Vertex::SetColor(U32 vertexCount, Vertex* vertices,
     SetColor4ub(vertexCount, vertices, r, g, b, a);
 }
 
-// STEVE CHANGE
 U32
 Geometry::Vertex::SizeInVertices( U32 size )
 {
@@ -893,7 +889,6 @@ Geometry::ExtensionBlock::UpdateData( bool storedOnGPU, U32 count )
         fVertexData.PadToSize( count * extraCount, Geometry::Vertex{} );
     }
 }
-// /STEVE CHANGE
 
 Geometry::Geometry(Rtt_Allocator* allocator, PrimitiveType type, U32 vertexCount, U32 indexCount, bool storeOnGPU)
     : CPUResource(allocator),
@@ -910,9 +905,7 @@ Geometry::Geometry(Rtt_Allocator* allocator, PrimitiveType type, U32 vertexCount
     fIndexData(NULL),
     fVerticesUsed(0),
     fIndicesUsed(0),
-// STEVE CHANGE
     fExtension(NULL)
-// /STEVE CHANGE
 {
     // Indexed triangles are only supported for the VBO path
     Rtt_ASSERT(!(type == Geometry::kIndexedTriangles && storeOnGPU == false));
@@ -930,9 +923,7 @@ Geometry::Geometry(const Geometry& geometry)
     fIndexData(NULL),
     fVerticesUsed(geometry.fVerticesUsed),
     fIndicesUsed(geometry.fIndicesUsed),
-// STEVE CHANGE
     fExtension(NULL)
-// /STEVE CHANGE
 {
     // Indexed triangles are only supported for the VBO path
     Rtt_ASSERT(!(fPrimitiveType == Geometry::kIndexedTriangles && fStoredOnGPU == false));
@@ -946,12 +937,10 @@ Geometry::Geometry(const Geometry& geometry)
     {
         memcpy(fIndexData, geometry.fIndexData, fIndicesAllocated * sizeof(Index));
     }
-    // STEVE CHANGE
     if (geometry.fExtension)
     {
         fExtension = Rtt_NEW( geometry.GetAllocator(), ExtensionBlock( *geometry.fExtension ) );
     }
-    // /STEVE CHANGE
 }
 
 Geometry::~Geometry()
@@ -987,13 +976,12 @@ void
         delete[] fIndexData;
         fIndexData = NULL;
     }
-// STEVE CHANGE
+
     if (fExtension)
     {
         delete fExtension;
         fExtension = NULL;
     }
-// /STEVE CHANGE
 }
 
 bool
@@ -1299,7 +1287,6 @@ bool
     return changed;
 }
 
-// STEVE CHANGE
 const FormatExtensionList*
 Geometry::GetExtensionList() const
 {
@@ -1348,7 +1335,6 @@ Geometry::EnsureExtension()
     
     return fExtension;
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

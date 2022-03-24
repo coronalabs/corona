@@ -36,7 +36,7 @@ namespace Rtt
 {
 
 struct Rect;
-struct VertexAttributeSupport; // <- STEVE CHANGE
+struct VertexAttributeSupport;
 
 class BitmapPaint;
 class DisplayDefaults;
@@ -329,9 +329,8 @@ class Display
         static bool GetGpuSupportsHighPrecisionFragmentShaders();
         static U32 GetMaxUniformVectorsCount();
         static U32 GetMaxVertexTextureUnits();
-    // STEVE CHANGE
+
         void GetVertexAttributes( VertexAttributeSupport & support ) const;
-    // /STEVE CHANGE
 
     public:
         Scene& GetScene() { return *fScene; }

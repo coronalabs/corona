@@ -129,9 +129,7 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fDestroyQueue( allocator ),
     fCPUResourceObserver(NULL),
     fGeometryPool( Rtt_NEW( fAllocator, GeometryPool( fAllocator ) ) ),
-// STEVE CHANGE
     fInstancingGeometryPool( Rtt_NEW( fAllocator, GeometryPool( fAllocator ) ) ),
-// /STEVE CHANGE
     fFrontCommandBuffer( NULL ),
     fBackCommandBuffer( NULL ),
     fTotalTime( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kScalar ) ) ),
@@ -140,15 +138,12 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fContentScale( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec2 ) ) ),
     fViewProjectionMatrix( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kMat4 ) ) ),
     fPendingCommands( allocator ),
-    // STEVE CHANGE remove fClearOps, fEndFrameOps
     fCommandCount( 0U ),
-// STEVE CHANGE
     fStateBlocks( allocator ),
     fDefaultState( allocator ),
     fCurrentState( allocator ),
     fWorkingState( allocator ),
     fMaybeDirty( false ),
-// /STEVE CHANGE
     fMaskCountIndex( 0 ),
     fMaskCount( allocator ),
     fCurrentProgramMaskCount( 0 ),
@@ -166,16 +161,13 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 
 Renderer::~Renderer()
 {
-    Rtt_DELETE( fGeometryPool ); // <- STEVE CHANGE
-    // STEVE CHANGE
+    Rtt_DELETE( fGeometryPool );
     Rtt_DELETE( fInstancingGeometryPool );
-    // /STEVE CHANGE
 
     DestroyQueuedGPUResources();
     
     Rtt_DELETE( fBackCommandBuffer );
     Rtt_DELETE( fFrontCommandBuffer );
-//    Rtt_DELETE( fGeometryPool ); <- STEVE CHANGE
     
     Rtt_DELETE( fTotalTime );
     Rtt_DELETE( fDeltaTime );
@@ -196,8 +188,6 @@ Renderer::Initialize()
     fFrontCommandBuffer->Initialize();
 }
 
-// STEVE CHANGE removed CallOps
-
 void
 Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY )
 {
@@ -209,19 +199,15 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real c
     fPrevious = RenderData();
     fVertexOffset = 0;
     fVertexCount = 0;
-// STEVE CHANGE
     fVertexExtra = 0;
-// /STEVE CHANGE
     fIndexOffset = 0;
     fIndexCount = 0;
     fRenderDataCount = 0;
     fPreviousPrimitiveType = Geometry::kTriangleStrip;
     fCurrentVertex = NULL;
     fCurrentGeometry = NULL;
-// STEVE CHANGE
     fCurrentInstancingVertex = NULL;
     fCurrentInstancingGeometry = NULL;
-// /STEVE CHANGE
     
     fMaskCountIndex = 0;
     fMaskCount[0] = 0;
@@ -253,16 +239,14 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real c
 void
 Renderer::EndFrame()
 {
-    // STEVE CHANGE remove CallOps() for fEndFrameOps
-
     CheckAndInsertDrawCommand();
-// STEVE CHANGE
+
     // We usually want some default state when a frame starts, so
     // invoke "restore"-style handlers for any mismatches. This is
     // done here, rather than the beginning of the frame, to better
     // accommodate captures, relaunches, and so on.
     RestoreDefaultBlocks();
-// /STEVE CHANGE
+
     fStatistics.fPreparationTime = STOP_TIMING(fStartTime);
     
     DEBUG_PRINT( "--End Frame: Renderer--\n\n" );
@@ -423,10 +407,10 @@ Renderer::SetFrameBufferObject( FrameBufferObject* fbo )
 }
 
 void
-Renderer::Clear( Real r, Real g, Real b, Real a, const ExtraClearOptions * extraOptions ) // <- STEVE CHANGE
+Renderer::Clear( Real r, Real g, Real b, Real a, const ExtraClearOptions * extraOptions ) 
 {
     CheckAndInsertDrawCommand();
-// STEVE CHANGE
+
     if (extraOptions && extraOptions->clearDepth)
     {
         fBackCommandBuffer->ClearDepth( extraOptions->depthClearValue );
@@ -440,12 +424,10 @@ Renderer::Clear( Real r, Real g, Real b, Real a, const ExtraClearOptions * extra
         
         DEBUG_PRINT( "Clear (stencil): %i\n", extraOptions->stencilClearValue );
     }
-// /STEVE CHANGE
+
     fBackCommandBuffer->Clear( r, g, b, a );
     
     DEBUG_PRINT( "Clear: r=%f, g=%f, b=%f, a=%f\n", r, g, b, a );
-
-    // STEVE CHANGE remove clear ops
 }
 
 void
@@ -527,15 +509,14 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1;
     bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2;
     bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3;
-    // STEVE CHANGE TODO
+
     ArrayS32 dirtyIndices( fAllocator );
     U32 largestDirtySize = EnumerateDirtyBlocks( dirtyIndices );
-    // /STEVE CHANGE
 
     Geometry* geometry = data->fGeometry;
     Rtt_ASSERT( geometry );
     fDegenerateVertexCount = 0;
-// STEVE CHANGE
+
     const ShaderResource* shaderResource = data->fProgram->GetShaderResource();
     const FormatExtensionList* programList = shaderResource->GetExtensionList();
     const FormatExtensionList *previousGeometryList = NULL;
@@ -569,7 +550,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     
     const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
     bool isInstanced = block && (block->fInstanceData || extensionList->instancedByID);
- // /STEVE CHANGE
+
     // Geometry that is stored on the GPU does not need to be copied
     // over each frame. As a consequence, they can not be batched.
     if( geometry->GetStoredOnGPU() && !fWireframeEnabled )
@@ -585,22 +566,19 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         
             fBackCommandBuffer->BindGeometry( geometry );
             fPrevious.fGeometry = geometry;
-        // STEVE CHANGE
+
             if (isInstanced)
             {
                 fBackCommandBuffer->BindInstancing( block->fCount, NULL );
                 
                 formatsDirty = true;
             }
-        // /STEVE CHANGE
         }
 
         fCachedVertexOffset = fVertexOffset;
         fCachedVertexCount = fVertexCount;
-        // STEVE CHANGE
         fCachedVertexExtra = fVertexExtra;
         fVertexExtra = 0;
-        // /STEVE CHANGE
         fVertexOffset = 0;
         fVertexCount = geometry->GetVerticesUsed();
         fIndexCount = geometry->GetIndicesUsed();
@@ -620,8 +598,8 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
                 || userUniformDirty1
                 || userUniformDirty2
                 || userUniformDirty3
-                || formatsDirty // <- STEVE CHANGE
-                || dirtyIndices.Length() > 0 ); // <- STEVE CHANGE
+                || formatsDirty
+                || dirtyIndices.Length() > 0 );
 
         // Only triangle strips are batched. All other primitive types
         // force the previous batch to draw and a new one to be started.
@@ -630,8 +608,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         {
             batch = false;
         }
-        
-        // STEVE CHANGE
+
         // Instanced draws will also break batching.
         if (isInstanced)
         {
@@ -647,7 +624,6 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
                 batch = false;
             }
         }
-        // /STEVE CHANGE
         
         // If the previous RenderData had its Geometry stored on the GPU,
         // then the current RenderData must begin a new batch.
@@ -660,11 +636,9 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         
         // Depending on batching, wireframe, etc, the amount of space
         // needed may be more than what is used by the Geometry itself.
-        // STEVE CHANGE
         const U32 vertexExtra = extensionList ? extensionList->ExtraVertexCount() : 0;
         const U32 verticesComputed = ComputeRequiredVertices( geometry, fWireframeEnabled );
         const U32 verticesRequired = verticesComputed * (1 + vertexExtra);
-        // /STEVE CHANGE
 //        bool enoughSpace = fCurrentGeometry;
 //        if ( enoughSpace )
 //        {
@@ -677,20 +651,16 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         if( !batch || !enoughSpace )
         {
             UpdateBatch( batch, enoughSpace, storedOnGPU, verticesRequired );
-        // STEVE CHANGE
+
             fBackCommandBuffer->BindVertexOffset( fVertexOffset, vertexExtra );
-        // /STEVE CHANGE
         }
         
-        // STEVE CHANGE
         fVertexExtra = vertexExtra;
-        // /STEVE CHANGE
 
         // Copy the the incoming vertex data into the current Geometry
         // pool instance, even if the data will not be batched.
         CopyVertexData( geometry, fCurrentVertex, batch && enoughSpace );
 
-        // STEVE CHANGE
         if (isInstanced)
         {
             Rtt_ASSERT( programList && programList->IsInstanced() );
@@ -699,10 +669,9 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
             
             formatsDirty = true; // pointers out of date
         }
-        // /STEVE CHANGE
 
         fCurrentVertex += verticesRequired;
-        fVertexCount += verticesComputed; // <- STEVE CHANGE
+        fVertexCount += verticesComputed;
         fCurrentGeometry->SetVerticesUsed( fCurrentGeometry->GetVerticesUsed() + verticesRequired );
 
         // Update previous batch
@@ -845,7 +814,6 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         
         if (shaderData)
         {
-        //    ShaderResource* shaderResource = data->fProgram->GetShaderResource(); <- STEVE CHANGE
             const CoronaEffectCallbacks * effectCallbacks = shaderResource->GetEffectCallbacks();
         
             if (effectCallbacks && effectCallbacks->shaderBind)
@@ -855,14 +823,13 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
                 OBJECT_BOX_STORE( Renderer, renderer, this );
                 
                 effectCallbacks->shaderBind( renderer, shaderData->GetExtraSpace() );
-            // STEVE CHANGE
+
                 if (fMaybeDirty)
                 {
                     dirtyIndices.Empty();
                     
                     largestDirtySize = EnumerateDirtyBlocks( dirtyIndices );
                 }
-            // /STEVE CHANGE
             }
         }
     }
@@ -910,7 +877,6 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         fPrevious.fUserUniform3 = data->fUserUniform3;
     }
     
-    // STEVE CHANGE
     if (formatsDirty)
     {
         FormatExtensionList::ReconcileFormats( fBackCommandBuffer, programList, extensionList );
@@ -920,7 +886,6 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     {
         UpdateDirtyBlocks( dirtyIndices, largestDirtySize );
     }
-    // /STEVE CHANGE
     
     DEBUG_PRINT( "Insert RenderData: data=%p\n", data );
     #if ENABLE_DEBUG_PRINT
@@ -969,9 +934,7 @@ Renderer::Swap()
     fFrontCommandBuffer = fBackCommandBuffer;
     fBackCommandBuffer = temp;
     fGeometryPool->Swap();
-    // STEVE CHANGE
     fInstancingGeometryPool->Swap();
-    // /STEVE CHANGE
 
     // Add pending commands
     for (int i = 0; i < fPendingCommands.Length(); ++i)
@@ -1026,7 +989,6 @@ Renderer::TallyTimeDependency( bool usesTime )
     }
 }
 
-// STEVE CHANGE
 U16
 Renderer::AddStateBlock( const CoronaStateBlock & block )
 {
@@ -1087,7 +1049,6 @@ Renderer::GetStateBlockInfo( U16 id, U8 *& start, U32 & size, bool mightDirty )
 
     return false;
 }
-// /STEVE CHANGE
 
 U16
 Renderer::AddCustomCommand( const CoronaCommand & command )
@@ -1121,8 +1082,6 @@ AddOp( Rtt::Array< Renderer::CustomOp > & arr, CoronaRendererOp action, void * u
 
     return arr.Length();
 }
-
-// STEVE CHANGE remove AddClearOp, AddEndFrameOp, Inject
 
 bool
 Renderer::IssueCustomCommand( U16 id, const void * data, U32 size )
@@ -1204,13 +1163,11 @@ Renderer::GetMaxVertexTextureUnits()
     return CommandBuffer::GetMaxVertexTextureUnits();
 }
 
-// STEVE CHANGE
 void
 Renderer::GetVertexAttributes( VertexAttributeSupport & support ) const
 {
     fBackCommandBuffer->GetVertexAttributes( support );
 }
-// /STEVE CHANGE
 
 bool
 Renderer::GetStatisticsEnabled() const
@@ -1306,12 +1263,10 @@ Renderer::CheckAndInsertDrawCommand()
             };
         }
 
-     //   fCurrentGeometry = NULL; // STEVE CHANGE
         fRenderDataCount = 0;
     }
 }
 
-// STEVE CHANGE
 U32
 Renderer::EnumerateDirtyBlocks( ArrayS32& dirtyIndices )
 {
@@ -1480,7 +1435,6 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
 		fCurrentInstancingGeometry->SetVerticesUsed( fCurrentInstancingGeometry->GetVerticesUsed() + verticesRequired );
 	}
 }
-// /STEVE CHANGE
 
 void
 Renderer::FlushBatch()
@@ -1493,26 +1447,21 @@ Renderer::FlushBatch()
 void
 Renderer::UpdateBatch( bool batch, bool enoughSpace, bool storedOnGPU, U32 verticesRequired )
 {
- //   Geometry * was = enoughSpace ? fCurrentGeometry : NULL; // STEVE CHANGE
-
     CheckAndInsertDrawCommand();
-
- //   fCurrentGeometry = was; <- STEVE CHANGE
     
     if( storedOnGPU && !fWireframeEnabled )
     {
         fVertexOffset = fCachedVertexOffset;
         fVertexCount = fCachedVertexCount;
-        // STEVE CHANGE
         fVertexExtra = fCachedVertexExtra;
-        // /STEVE CHANGE
+
         if( enoughSpace )
         {
             fBackCommandBuffer->BindGeometry( fCurrentGeometry );
         }
     }
     
-    fVertexOffset += fVertexCount * (1 + fVertexExtra); // <- STEVE CHANGE
+    fVertexOffset += fVertexCount * (1 + fVertexExtra);
     fVertexCount = 0;
     fIndexCount = 0;
 
@@ -1537,13 +1486,12 @@ Renderer::CopyVertexData( Geometry* geometry, Geometry::Vertex* destination, boo
     const U32 verticesUsed = geometry->GetVerticesUsed();
     const U32 vertexSize = sizeof(Geometry::Vertex);
 
-    // STEVE CHANGE
     if (0 != fVertexExtra)
     {
         CopyExtendedVertexData( geometry, destination, interior );
     }
     
-    else /* /STEVE CHANGE */ if( fWireframeEnabled )
+    else if( fWireframeEnabled )
     {
         // Given the primitive type, convert the vertex data to lines
         switch( geometry->GetPrimitiveType() )
@@ -1707,7 +1655,6 @@ Renderer::GetVersionCode( bool addingMask ) const
     }
 }
 
-// STEVE CHANGE
 static void
 MergeVertexData( Geometry::Vertex** destination, const Geometry::Vertex* mainSrc, const Geometry::Vertex* extensionSrc, int index, int extraCount )
 {
@@ -1718,7 +1665,6 @@ MergeVertexData( Geometry::Vertex** destination, const Geometry::Vertex* mainSrc
     memcpy( *destination, &extensionSrc[index * extraCount], sizeof(Geometry::Vertex) * extraCount );
     
     *destination += extraCount;
-    // TODO: if instanced...
 }
 
 static void
@@ -1870,10 +1816,7 @@ Renderer::CopyExtendedIndexedTrianglesAsLines( Geometry* geometry, Geometry::Ver
         MergeVertexData( &destination, geometry->GetVertexData(), geometry->GetExtendedVertexData(), indexData[index + 2], fVertexExtra );
         MergeVertexData( &destination, geometry->GetVertexData(), geometry->GetExtendedVertexData(), indexData[index], fVertexExtra );
     }
-    // STEVE CHANGE
 }
-
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

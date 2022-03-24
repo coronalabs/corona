@@ -48,7 +48,6 @@ DisplayDefaults::DisplayDefaults()
     fShaderCompilerVerbose( kShaderCompilerVerboseDefault ),
     fIsAnchorClamped( true ),
     fIsImageSheetSampledInsideFrame( false ),
-// STEVE CHANGE
     fSkipsCull( false ),
     fSkipsHitTest( false ),
     fEnableDepthInScene( false ),
@@ -59,7 +58,6 @@ DisplayDefaults::DisplayDefaults()
     fAddedDepthClear( 1.0 ),
     fSceneStencilClear( 0 ),
     fAddedStencilClear( 0 )
-// /STEVE CHANGE
 {
 }
 

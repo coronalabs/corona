@@ -789,7 +789,7 @@ DisplayLibrary::newPolygon( lua_State *L )
 
         if (hasZ)
         {
-            ArrayIndex * indexArray = path->GetFillSource().ExtraIndexArray( DisplayPath::IndicesKey(), true ); // STEVE CHANGE
+            ArrayIndex * indexArray = path->GetFillSource().ExtraIndexArray( DisplayPath::IndicesKey(), true );
 
             tesselator->SetTriangulationArray( indexArray );
 
@@ -1937,7 +1937,6 @@ DisplayLibrary::getDefault( lua_State *L )
         bool value = defaults.IsImageSheetSampledInsideFrame();
         lua_pushboolean( L, value ? 1 : 0 );
     }
-// STEVE CHANGE
     else if ( ( Rtt_StringCompare( key, "skipsCulling" ) == 0 ) )
     {
         bool value = defaults.GetSkipsCull();
@@ -1984,7 +1983,6 @@ DisplayLibrary::getDefault( lua_State *L )
     {
         lua_pushinteger( L, defaults.GetAddedStencilClearValue() );
     }
-// /STEVE CHANGE
     else if ( key )
     {
         luaL_error( L, "ERROR: display.getDefault() given invalid key (%s)", key );
@@ -2110,7 +2108,6 @@ DisplayLibrary::setDefault( lua_State *L )
         bool value = lua_toboolean( L, index ) ? true : false;
         defaults.SetImageSheetSampledInsideFrame( value );
     }
-// STEVE CHANGE
     else if ( ( Rtt_StringCompare( key, "skipsCulling" ) == 0 ) )
     {
         bool value = lua_toboolean( L, index ) ? true : false;
@@ -2167,7 +2164,6 @@ DisplayLibrary::setDefault( lua_State *L )
         U32 stencil = lua_tointeger( L, index );
         defaults.SetAddedStencilClearValue( stencil );
     }
-// /STEVE CHANGE
     else if ( key )
     {
         luaL_error( L, "ERROR: display.setDefault() given invalid key (%s)", key );
@@ -2876,10 +2872,10 @@ LuaLibDisplay::AssignParentAndPushResult( lua_State *L, Display& display, Displa
         o->SetAnchorX( defaults.GetAnchorX() );
         o->SetAnchorY( defaults.GetAnchorY() );
     }
-// STEVE CHANGE
+
     o->SetSkipsCull( defaults.GetSkipsCull() );
     o->SetSkipsHitTest( defaults.GetSkipsHitTest() );
-// /STEVE CHANGE
+
     // NOTE: This restriction should only be set on creation.
     // This is a performance optimization to make the initial restriction
     // check fast. Any subsequent checking can be more expensive.

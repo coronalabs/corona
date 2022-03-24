@@ -11,7 +11,7 @@
 
 #include "Display/Rtt_ShaderFactory.h"
 
-#include "Corona/CoronaGraphics.h" // <- STEVE CHANGE
+#include "Corona/CoronaGraphics.h"
 #include "Corona/CoronaLua.h"
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_DisplayDefaults.h"
@@ -20,9 +20,8 @@
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderName.h"
 #include "Display/Rtt_ShaderResource.h"
-// STEVE CHANGE
+
 #include "Renderer/Rtt_Geometry_Renderer.h"
-// /STEVE CHANGE
 #include "Renderer/Rtt_Program.h"
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
     #include "Renderer/Rtt_ShaderBinary.h"
@@ -787,7 +786,6 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
     lua_pop( L, 1 ); // ...
 }
 
-// STEVE CHANGE
 static int sVertexExtensionCookie;
 
 void
@@ -836,7 +834,6 @@ ShaderFactory::BindVertexExtension( lua_State *L, int index, const SharedPtr< Sh
 
     lua_pop( L, 1 ); // ...
 }
-// /STEVE CHANGE
 
 // shaderIndex is the index into the Lua table that defines the shader
 void
@@ -851,9 +848,7 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
     BindDataType( L, shaderIndex, resource );
     BindDetails( L, shaderIndex, resource );
     BindShellTransform( L, shaderIndex, resource );
-    // STEVE CHANGE
     BindVertexExtension( L, shaderIndex, resource );
-    // /STEVE CHANGE
 
     if (resource->UsesTime())
     {
@@ -1411,7 +1406,6 @@ ShaderFactory::RegisterShellTransform( const char * name, const CoronaShellTrans
     }
 }
 
-// STEVE CHANGE
 bool
 ShaderFactory::RegisterVertexExtension( const char * name, const CoronaVertexExtension & extension )
 {
@@ -1562,7 +1556,6 @@ ShaderFactory::GetExtensionList( const char * name ) const
     
     return sharedList;
 }
-// /STEVE CHANGE
 
 static bool Unregister( lua_State *L, void * cookie, const char *name )
 {
@@ -1599,7 +1592,6 @@ ShaderFactory::UnregisterShellTransform( const char * name )
     return Unregister( fL, &sShellTransformCookie, name );
 }
 
-// STEVE CHANGE
 bool
 ShaderFactory::UnregisterVertexExtension( const char * name )
 {
@@ -1644,7 +1636,6 @@ ShaderFactory::RemoveExternalInfo( lua_State * L, const char * name, const char 
 	
 	SetExternalInfo( L, name, type ); // ...
 }
-// /STEVE CHANGE
 
 const Shader *
 ShaderFactory::FindPrototype( ShaderTypes::Category category, const char *name ) const

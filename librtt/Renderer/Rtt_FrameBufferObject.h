@@ -29,26 +29,22 @@ class FrameBufferObject : public CPUResource
 		typedef FrameBufferObject Self;
 
 	public:
-		// STEVE CHANGE
 		struct ExtraOptions {
 			U8 depthBits;
 			U8 stencilBits;
 		};
-		// /STEVE CHANGE
-		FrameBufferObject( Rtt_Allocator* allocator, Texture* texture, ExtraOptions * options = NULL ); // <- STEVE CHANGE
+
+		FrameBufferObject( Rtt_Allocator* allocator, Texture* texture, ExtraOptions * options = NULL );
+	
 		virtual ResourceType GetType() const;
 		Texture* GetTexture() const;
-		
-		// STEVE CHANGE
 		U8 GetDepthBits() const { return fDepthBits; }
 		U8 GetStencilBits() const { return fStencilBits; }
-		// /STEVE CHANGE 
+
 	private:
 		Texture* fTexture;
-		// STEVE CHANGE
 		U8 fDepthBits;
 		U8 fStencilBits;
-		// /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------

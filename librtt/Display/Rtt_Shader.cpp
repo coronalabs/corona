@@ -392,7 +392,6 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
     }
 }
 
-// STEVE CHANGE
 bool
 Shader::IsCompatible( const Geometry* geometry )
 {
@@ -402,7 +401,6 @@ Shader::IsCompatible( const Geometry* geometry )
 
     return FormatExtensionList::Compatible( shaderList, geometry->GetExtensionList() );
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

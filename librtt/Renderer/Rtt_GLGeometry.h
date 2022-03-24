@@ -12,7 +12,7 @@
 
 #include "Renderer/Rtt_GL.h"
 #include "Renderer/Rtt_GPUResource.h"
-#include "Renderer/Rtt_Geometry_Renderer.h" // <- STEVE CHANGE
+#include "Renderer/Rtt_Geometry_Renderer.h"
 
 // ----------------------------------------------------------------------------
 
@@ -30,7 +30,6 @@ class GLGeometry : public GPUResource
     public:
         GLGeometry();
 
-        // STEVE CHANGE
         static bool SupportsInstancing();
         static bool SupportsDivisors();
         static const char * InstanceIDSuffix();
@@ -45,20 +44,17 @@ class GLGeometry : public GPUResource
         GLbyte* GetBaseOffset() const { return (GLbyte*)fPositionStart + fVertexOffset * sizeof(Geometry::Vertex); }
     
         void SpliceVertexRateData( const Geometry::Vertex* vertexData, Geometry::Vertex* extendedVertexData, const FormatExtensionList * list, size_t & size );
-        // /STEVE CHANGE
     
         virtual void Create( CPUResource* resource );
         virtual void Update( CPUResource* resource );
         virtual void Destroy();
-    // STEVE CHANGE
+
         void BindStockAttributes( size_t size );
         void SetVertexOffset( U32 offset, size_t sizeExtra, bool formatDirty );
-    // /STEVE CHANGE
-        /*virtual */void Bind(); // <- STEVE CHANGE
-    // STEVE CHANGE
+		void Bind();
+
         void ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSize, bool mainDirty, const Geometry::Vertex* instancingData, U32 instanceCount );
         U32 GetVertexOffset() const { return fVertexOffset; }
-    // /STEVE CHANGE
 
     private:
         GLvoid* fPositionStart;
@@ -68,10 +64,8 @@ class GLGeometry : public GPUResource
         GLuint fVAO;
         GLuint fVBO;
         GLuint fIBO;
-    // STEVE CHANGE
         GLuint fInstancesVBO;
         S32 fInstancesAllocated;
-    // /STEVE CHANGE
         U32 fVertexCount;
         U32 fVertexOffset;
         U32 fIndexCount;

@@ -117,15 +117,12 @@ GetRenderer( CoronaRendererOpParams * params )
     return renderer;
 }
 
-// STEVE CHANGE removed ClearOp, EndFrameOp, RendererDo
-
 CORONA_API
 void CoronaRendererInvalidate( lua_State * L )
 {
     Rtt::LuaContext::GetRuntime( L )->GetDisplay().Invalidate();
 }
 
-// STEVE CHANGE
 CORONA_API
 int CoronaRendererRegisterStateBlock( lua_State * L, const CoronaStateBlock * block, unsigned long * blockID )
 {
@@ -203,7 +200,6 @@ int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned lon
     
     return 0;
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -486,7 +482,7 @@ void * CoronaGeometryGetMappingFromRenderData( const CoronaRenderData * renderDa
 
     return NULL;
 }
-// STEVE CHANGE
+
 CORONA_API
 int CoronaGeometryRegisterVertexExtension( lua_State * L, const char * name, const CoronaVertexExtension * extension )
 {
@@ -503,7 +499,7 @@ int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name )
 {
     return Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetShaderFactory().UnregisterVertexExtension( name );
 }
-// /STEVE CHANGE
+
 // ----------------------------------------------------------------------------
 
 CORONA_API
@@ -542,13 +538,11 @@ int CoronaShaderRegisterShellTransform( lua_State * L, const char * name, const 
 CORONA_API
 int CoronaShaderUnregisterShellTransform( lua_State * L, const char * name )
 {
-	// STEVE CHANGE
 	Rtt::ShaderFactory & factory = Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetShaderFactory();
 	
 	factory.RemoveExternalInfo( L, name, "shellTransform" );
 	
     return factory.UnregisterShellTransform( name );
-	// /STEVE CHANGE
 }
 
 // ----------------------------------------------------------------------------

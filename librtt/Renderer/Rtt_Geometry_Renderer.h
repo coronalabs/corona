@@ -14,10 +14,8 @@
 #include "Core/Rtt_Types.h"
 #include "Display/Rtt_DisplayTypes.h"
 #include "Core/Rtt_Real.h" // TODO: Rtt_Real.h depends on Rtt_Types being included before it
-// STEVE CHANGE
 #include "Core/Rtt_SharedPtr.h"
 #include "Corona/CoronaGraphics.h"
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -26,7 +24,6 @@ struct Rtt_Allocator;
 namespace Rtt
 {
 
-// STEVE CHANGE
 class CommandBuffer;
 class DisplayObject;
 class MLuaUserdataAdapter;
@@ -40,7 +37,6 @@ struct VertexAttributeSupport {
     bool hasDivisors;
     const char * suffix;
 };
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -82,9 +78,7 @@ class Geometry : public CPUResource
             static void SetColor( U32 vertexCount, Vertex* vertices,
                 Real red, Real green, Real blue, Real alpha );
 
-            // STEVE CHANGE
             static U32 SizeInVertices( U32 size );
-            // /STEVE CHANGE
             
             Real x, y, z;         // 12 bytes
             Real u, v, q;         // 12 bytes
@@ -94,7 +88,6 @@ class Geometry : public CPUResource
 
         typedef U16 Index;
 
-    // STEVE CHANGE
         struct ExtensionAttribute {
             size_t nameHash;
             CoronaVertexExtensionAttributeType type;
@@ -134,7 +127,6 @@ class Geometry : public CPUResource
             U32 fCount;
             mutable LuaUserdataProxy *fProxy;
         };
-    // /STEVE CHANGE
     
         // Generic vertex attribute indices
 #ifdef Rtt_WIN_PHONE_ENV
@@ -150,9 +142,9 @@ class Geometry : public CPUResource
         static const U32 kVertexColorScaleAttribute = 2;
         static const U32 kVertexUserDataAttribute = 3;
 #endif
-        // STEVE CHANGE
+	
         static U32 FirstExtraAttribute() { return kVertexUserDataAttribute + 1; }
-        // /STEVE CHANGE
+
     public:
         // If storeOnGPU is true, a copy of the vertex data will be stored
         // in GPU memory. For large, infrequently changing data, this can
@@ -180,14 +172,12 @@ class Geometry : public CPUResource
         const U32* GetPerVertexColorData() const;
         bool SetVertexColor( U32 index, U32 color );
 
-    // STEVE CHANGE
         const FormatExtensionList * GetExtensionList() const;
         const Vertex* GetExtendedVertexData() const;
         Vertex* GetWritableExtendedVertexData( S32 * length = NULL );
  
         ExtensionBlock * GetExtensionBlock() const { return fExtension; }
         ExtensionBlock * EnsureExtension();
-    // /STEVE CHANGE
     
         // More space may be allocated than is initially needed. By default,
         // the use count is zero and must be set for Geometry to be useful.
@@ -229,12 +219,9 @@ class Geometry : public CPUResource
         Index* fIndexData;
         U32 fVerticesUsed;
         U32 fIndicesUsed;
-    // STEVE CHANGE
         ExtensionBlock* fExtension;
-    // /STEVE CHANGE
 };
 
-// STEVE CHANGE
 // this is outside of Geometry to allow forward declarations, e.g. in ShaderResource
 struct FormatExtensionList {
     FormatExtensionList();
@@ -307,7 +294,6 @@ struct FormatExtensionList {
     bool ownsData;
     mutable bool sorted;
 };
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 

@@ -185,16 +185,16 @@ Scene::Clear( Renderer& renderer )
     DisplayDefaults& defaults = fOwner.GetDefaults();
     ColorUnion c;
     c.pixel = defaults.GetClearColor();
-// STEVE CHANGE
+
     Renderer::ExtraClearOptions extra;
     
     extra.clearDepth = defaults.GetEnableDepthInScene();
     extra.clearStencil = defaults.GetEnableStencilInScene();
     extra.depthClearValue = defaults.GetSceneDepthClearValue();
     extra.stencilClearValue = defaults.GetSceneStencilClearValue();
-// /STEVE CHANGE
+
     Real inv255 = 1.f / 255.f;
-    renderer.Clear( c.rgba.r * inv255, c.rgba.g * inv255, c.rgba.b * inv255, c.rgba.a * inv255, &extra ); // <- STEVE CHANGE
+    renderer.Clear( c.rgba.r * inv255, c.rgba.g * inv255, c.rgba.b * inv255, c.rgba.a * inv255, &extra );
 }
 void
 Scene::Render( Renderer& renderer, PlatformSurface& rTarget )

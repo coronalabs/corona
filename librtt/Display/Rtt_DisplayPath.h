@@ -11,9 +11,7 @@
 #define _Rtt_DisplayPath_H__
 
 #include "Rtt_DisplayTypes.h"
-// STEVE CHANGE
 #include "Rtt_LuaUserdataProxy.h"
-// /STEVE CHANGE
 
 struct lua_State;
 
@@ -29,9 +27,7 @@ struct Rect;
 struct RenderData;
 class Renderer;
 class VertexCache;
-// STEVE CHANGE
 class Paint;
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -69,7 +65,7 @@ class DisplayPath
     public:
         DisplayPath();
         virtual ~DisplayPath();
-// STEVE CHANGE
+
         class ExtensionAdapter : public MLuaUserdataAdapter
         {
         public:
@@ -107,7 +103,7 @@ class DisplayPath
         private:
             bool fIsFill;
         };
-// /STEVE CHANGE
+
     public:
         virtual void Update( RenderData& data, const Matrix& srcToDstSpace ) = 0;
         virtual void UpdateResources( Renderer& renderer ) const = 0;
@@ -123,9 +119,7 @@ class DisplayPath
         void SetAdapter( const MLuaUserdataAdapter *newValue ) { fAdapter = newValue; }
         void PushProxy( lua_State *L ) const;
         void DetachProxy() { fAdapter = NULL; fProxy = NULL; }
-    // STEVE CHANGE
         void ReleaseProxy( LuaUserdataProxy *proxy );
-    // /STEVE CHNAGE
 
     private:
         DisplayObject *fObserver; // weak ptr

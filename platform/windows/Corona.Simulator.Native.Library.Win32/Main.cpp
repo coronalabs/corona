@@ -600,8 +600,6 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 
 #pragma region Corona Renderer API
 
-// STEVE CHANGE removed ClearOps, EndFrameOps, RendererDo
-
 CORONA_API
 void CoronaRendererInvalidate(lua_State * L)
 {
@@ -610,7 +608,6 @@ void CoronaRendererInvalidate(lua_State * L)
     return CoronaCallbackInvoke(L);
 }
 
-// STEVE CHANGE
 CORONA_API
 int CoronaRendererRegisterStateBlock( lua_State * L, const CoronaStateBlock * block, unsigned long * blockID )
 {
@@ -634,7 +631,6 @@ int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned lon
     CoronaCallbackLoad();
     return CoronaCallbackInvoke(renderer, blockID, data, size);
 }
-// /STEVE CHANGE
 
 CORONA_API
 int CoronaRendererRegisterCommand(lua_State* L, const CoronaCommand* command, unsigned long* commandID)
@@ -688,7 +684,7 @@ void * CoronaGeometryGetMappingFromRenderData(const CoronaRenderData * renderDat
     CoronaCallbackLoad();
     return CoronaCallbackInvoke(renderData, name, layout);
 }
-// STEVE CHANGE
+
 CORONA_API
 int CoronaGeometryRegisterVertexExtension( lua_State * L, const char * name, const CoronaVertexExtension * extension )
 {
@@ -704,7 +700,6 @@ int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name )
     CoronaCallbackLoad();
     return CoronaCallbackInvoke(L, name);
 }
-// /STEVE CHANGE
 #pragma endregion
 
 #pragma Corona Shader API

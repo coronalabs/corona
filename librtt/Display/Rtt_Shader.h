@@ -120,10 +120,8 @@ class Shader
         bool DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & renderer, const RenderData & objectData ) const;
         void DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const RenderData & objectData ) const;
 
-    // STEVE CHANGE
     public:
         bool IsCompatible( const Geometry* geometry );
-    // /STEVE CHANGE
     
     protected:
         SharedPtr< ShaderResource > fResource;

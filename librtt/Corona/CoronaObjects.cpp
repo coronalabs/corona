@@ -1570,8 +1570,6 @@ int CoronaObjectInvalidate( const CoronaDisplayObject * object )
     return 0;
 }
 
-// STEVE CHANGE removed SetHasDummyStageBounds
-
 // ----------------------------------------------------------------------------
 
 CORONA_API

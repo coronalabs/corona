@@ -342,7 +342,7 @@ DisplayObject::CullOffscreen( const Rect& screenBounds )
     if ( IsNotHidden() )
     {
         // Only cull 'leaf' nodes (or groups that have finite bounds)
-        Rtt_ASSERT( NULL == AsGroupObject() || (!SkipsCull() && CanCull()) ); // <- STEVE CHANGE
+        Rtt_ASSERT( NULL == AsGroupObject() || (!SkipsCull() && CanCull()) );
         Rtt_ASSERT( IsStageBoundsValid() );
 
         // The PREVIOUS isOffScreen state.

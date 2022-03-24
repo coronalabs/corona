@@ -73,14 +73,10 @@
         (void*)CoronaExternalGetUserData,
         (void*)CoronaExternalFormatBPP,
 
-        // STEVE CHANGE removed end clear ops, frame ops, RendererDo
-        
         (void*)CoronaRendererInvalidate,
-    // STEVE CHANGE
         (void*)CoronaRendererRegisterStateBlock,
         (void*)CoronaRendererReadStateBlock,
         (void*)CoronaRendererWriteStateBlock,
-    // /STEVE CHANGE
         (void*)CoronaRendererRegisterCommand,
         (void*)CoronaRendererIssueCommand,
 
@@ -89,11 +85,8 @@
         
         (void*)CoronaGeometryCopyData,
         (void*)CoronaGeometryGetMappingFromRenderData,
-        
-	// STEVE CHANGE
 		(void*)CoronaGeometryRegisterVertexExtension,
 		(void*)CoronaGeometryUnregisterVertexExtension,
-	// /STEVE CHANGE
 		
         (void*)CoronaShaderGetEffectDetail,
         (void*)CoronaShaderRegisterShellTransform,
@@ -124,7 +117,6 @@
         (void*)CoronaObjectsPushSprite,
         (void*)CoronaObjectsPushText,
         (void*)CoronaObjectInvalidate,
-        // STEVE CHANGE removed SetHasDummyStageBounds
         (void*)CoronaObjectGetParent,
         (void*)CoronaGroupObjectGetChild,
         (void*)CoronaGroupObjectGetNumChildren,
