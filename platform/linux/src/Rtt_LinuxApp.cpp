@@ -26,9 +26,10 @@
 #include "Rtt_LuaLibSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxUtils.h"
-#include "Rtt_LinuxUtils.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_HTTPClient.h"
+#include "Rtt_LinuxKeyListener.h"
+#include "Rtt_BitmapUtils.h"
 #include <curl/curl.h>
 #include <utility>		// for pairs
 #include "lua.h"
@@ -51,43 +52,34 @@ extern "C"
 namespace Rtt
 {
 
-	SolarApp::SolarApp(const std::string& resourceDir)
-		: fProjectPath(resourceDir)
+	SolarApp::SolarApp(const string& resourceDir)
+		: fResourceDir(resourceDir)
 		, fWindow(NULL)
-		, fWidth(0)
-		, fHeight(0)
 		, fImCtx(NULL)
 		, fActivityIndicator(false)
 	{
+		fMouse = new LinuxMouseListener();
 	}
 
-	bool SolarApp::Init()
+	SolarApp::~SolarApp()
+	{
+		fContext = NULL;
+		curl_global_cleanup();
+
+		// Cleanup
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplSDL2_Shutdown();
+		ImGui::DestroyContext();
+
+		SDL_GL_DeleteContext(fGLcontext);
+		SDL_DestroyWindow(fWindow);
+		SDL_Quit();
+	}
+
+
+	bool SolarApp::InitSDL()
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
-
-		const char* homeDir = GetHomePath();
-		string basePath(homeDir);
-		string sandboxPath(homeDir);
-		string pluginPath(homeDir);
-
-		// create default directories if missing
-
-		basePath.append("/.Solar2D");
-		sandboxPath.append("/.Solar2D/Sandbox");
-		pluginPath.append("/.Solar2D/Plugins");
-
-		if (!Rtt_IsDirectory(basePath.c_str()))
-		{
-			Rtt_MakeDirectory(basePath.c_str());
-		}
-		if (!Rtt_IsDirectory(sandboxPath.c_str()))
-		{
-			Rtt_MakeDirectory(sandboxPath.c_str());
-		}
-		if (!Rtt_IsDirectory(pluginPath.c_str()))
-		{
-			Rtt_MakeDirectory(pluginPath.c_str());
-		}
 
 		// Initialize SDL (Note: video is required to start event loop) 
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -109,13 +101,11 @@ namespace Rtt
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-		fConsole = new ConsoleWindow("Solar2D Simulator Console", 640, 480, &fLogData);
+		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI;
+		fWindow = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, windowStyle);
+		SetIcon();
 
-		uint32_t windowStyle = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
-		fWindow = SDL_CreateWindow("", 0, 0, 320, 480, windowStyle);
-		Rtt_ASSERT(fWindow);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
-		Rtt_ASSERT(fGLcontext);
 		SDL_GL_MakeCurrent(fWindow, fGLcontext);
 		SDL_GL_SetSwapInterval(1); // Enable vsync
 
@@ -126,37 +116,81 @@ namespace Rtt
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 
-		// Setup Dear ImGui style
-		ImGui::StyleColorsLight();
-
 		// Setup Platform/Renderer backends
 		ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
 		const char* glsl_version = "#version 130";
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
-		return LoadApp();
+		return true;
 	}
 
-	SolarApp::~SolarApp()
+	void SolarApp::SetIcon()
 	{
-		fContext = NULL;
-		curl_global_cleanup();
+		int image_width = 0;
+		int image_height = 0;
+		string icon_path = GetStartupPath(NULL);
+		icon_path.append("/Resources/solar2d.png");
 
-		// Cleanup
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplSDL2_Shutdown();
-		ImGui::DestroyContext();
+		FILE* f = fopen(icon_path.c_str(), "rb");
+		if (f)
+		{
+			unsigned char* img = bitmapUtil::loadPNG(f, image_width, image_height);
+			fclose(f);
 
-		SDL_GL_DeleteContext(fGLcontext);
-		SDL_DestroyWindow(fWindow);
-		SDL_Quit();
+			if (img)
+			{
+				// Set up the pixel format color masks for RGB(A) byte arrays.
+				// Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
+				Uint32 rmask, gmask, bmask, amask;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+				int shift = (req_format == STBI_rgb) ? 8 : 0;
+				rmask = 0xff000000 >> shift;
+				gmask = 0x00ff0000 >> shift;
+				bmask = 0x0000ff00 >> shift;
+				amask = 0x000000ff >> shift;
+#else // little endian, like x86
+				rmask = 0x000000ff;
+				gmask = 0x0000ff00;
+				bmask = 0x00ff0000;
+				amask = 0xff000000;
+#endif
+
+				int depth = 32;
+				int pitch = 4 * image_width;
+				SDL_Surface* icon = SDL_CreateRGBSurfaceFrom(img, image_width, image_height, depth, pitch, rmask, gmask, bmask, amask);
+				SDL_SetWindowIcon(fWindow, icon);
+				SDL_FreeSurface(icon);
+
+				free(img);
+			}
+		}
 	}
 
-	bool SolarApp::LoadApp()
+	bool SolarApp::Init()
 	{
-		fContext = new SolarAppContext(fWindow, fProjectPath.c_str());
-		fMenu = new DlgMenu(fContext->GetAppName());
-		return fContext->LoadApp();
+		if (InitSDL())
+		{
+			return LoadApp(fResourceDir);
+		}
+		return false;
+	}
+
+	void SolarApp::GetWindowPosition(int* x, int* y)
+	{
+		SDL_GetWindowPosition(fWindow, x, y);
+	}
+
+	void SolarApp::GetWindowSize(int* w, int* h)
+	{
+		SDL_GetWindowSize(fWindow, w, h);
+		*h = -GetMenuHeight();
+	}
+
+	bool SolarApp::LoadApp(const string& path)
+	{
+		fContext = new SolarAppContext(fWindow);
+		CreateMenu();
+		return fContext->LoadApp(fResourceDir);
 	}
 
 	bool SolarApp::PollEvents()
@@ -200,11 +234,46 @@ namespace Rtt
 				fContext->Pause();
 				break;
 			}
+
+			case sdl::OnSetCursor:
+			{
+				string cursorName = (const char*)evt.user.data1;
+				free(evt.user.data1);
+				// todo
+				break;
+			}
+			case sdl::OnMouseCursorVisible:
+				SDL_ShowCursor(evt.user.code ? SDL_ENABLE : SDL_DISABLE);
+				break;
+
+			case sdl::OnWindowNormal:
+				SDL_RestoreWindow(fWindow);
+				fContext->Resume();
+				break;
+
+			case sdl::OnWindowMaximized:
+				SDL_MaximizeWindow(fWindow);
+				fContext->Resume();
+				break;
+
+			case sdl::OnWindowFullscreen:
+				SDL_SetWindowFullscreen(fWindow, SDL_WINDOW_FULLSCREEN);	// SDL_WINDOW_FULLSCREEN_DESKTOP
+				fContext->Resume();
+				break;
+
+			case sdl::OnWindowMinimized:
+				SDL_MinimizeWindow(fWindow);
+				fContext->Pause();
+				break;
+
 			case SDL_WINDOWEVENT:
 			{
 				//SDL_Log("SDL_WINDOWEVENT %d: %d %d,%d", e.window.windowID, e.window.event, e.window.data1, e.window.data2);
 				switch (evt.window.event)
 				{
+				case SDL_WINDOWEVENT_MAXIMIZED:
+					break;
+
 				case SDL_WINDOWEVENT_SHOWN:
 				case SDL_WINDOWEVENT_RESTORED:
 					if (evt.window.windowID == SDL_GetWindowID(fWindow))
@@ -223,25 +292,20 @@ namespace Rtt
 				{
 					if (evt.window.windowID == SDL_GetWindowID(fWindow))
 					{
-
-						SDL_DisplayMode dm;
-						SDL_GetDesktopDisplayMode(0, &dm);
-						if (fWidth != dm.w && fHeight != dm.h)
-						{
-							//SDL_Log("SDL_WINDOWEVENT_SIZE_CHANGED old %d,%d new %d,%d", fWidth, fHeight, dm.w, dm.h);
-							fWidth = dm.w;
-							fHeight = dm.h;
-							//fPlatform->setWindow(fWindow, fOrientation, dm.w, dm.h);
-
-							//fRuntime->WindowSizeChanged();
-							//fRuntime->RestartRenderer(fOrientation);
-							//fRuntime->GetDisplay().Invalidate();
-
-							//fRuntime->DispatchEvent(ResizeEvent());
-
-							// refresh native elements
-		//					jsContextResizeNativeObjects();
-						}
+						//						SDL_DisplayMode dm;
+						//						SDL_GetDesktopDisplayMode(0, &dm);
+						int w, h;
+						GetWindowSize(&w, &h);
+						//		fContext->SetSize(w, h);
+					}
+					break;
+				}
+				case SDL_WINDOWEVENT_MOVED:
+				{
+					if (evt.window.windowID == SDL_GetWindowID(fWindow) && IsHomeScreen(GetAppName()))
+					{
+						fConfig["x"] = evt.window.data1;
+						fConfig["y"] = evt.window.data2;
 					}
 					break;
 				}
@@ -254,199 +318,59 @@ namespace Rtt
 				}
 				break;
 			}
+
 			case SDL_FINGERDOWN:
-			{
-				int w, h;
-				SDL_GetWindowSize(fWindow, &w, &h);
-				const SDL_TouchFingerEvent& ef = evt.tfinger;
-				fContext->GetMouseListener()->TouchDown(w * ef.x, h * ef.y, ef.fingerId);
-				break;
-			}
 			case SDL_FINGERUP:
-			{
-				int w, h;
-				SDL_GetWindowSize(fWindow, &w, &h);
-				const SDL_TouchFingerEvent& ef = evt.tfinger;
-				fContext->GetMouseListener()->TouchUp(w * ef.x, h * ef.y, ef.fingerId);
-				break;
-			}
 			case SDL_FINGERMOTION:
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEMOTION:
+			case SDL_MOUSEWHEEL:
+				// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+				if (fDlg == NULL && (evt.window.windowID == SDL_GetWindowID(fWindow)) && !io.WantCaptureMouse)
+				{
+					fMouse->OnEvent(evt, fWindow);
+				}
+				break;
+
+			case SDL_KEYDOWN:
 			{
-				int w, h;
-				SDL_GetWindowSize(fWindow, &w, &h);
-				const SDL_TouchFingerEvent& ef = evt.tfinger;
-				fContext->GetMouseListener()->TouchMoved(w * ef.x, h * ef.y, ef.fingerId);
+				// ignore key repeat
+				if (evt.key.repeat == 0)
+				{
+					SDL_Keycode	keycode = evt.key.keysym.sym;
+					uint16_t mod = evt.key.keysym.mod;
+					bool isNumLockDown = mod & KMOD_NUM ? true : false;
+					bool isCapsLockDown = mod & KMOD_CAPS ? true : false;
+					bool isShiftDown = mod & KMOD_SHIFT ? true : false;
+					bool isCtrlDown = mod & KMOD_CTRL ? true : false;
+					bool isAltDown = mod & KMOD_ALT ? true : false;
+					bool isCommandDown = mod & KMOD_GUI ? true : false;
+
+					PlatformInputDevice* dev = NULL;
+					const char* keyName = GetKeyName(keycode);
+					KeyEvent ke(dev, KeyEvent::kDown, keyName, keycode, isShiftDown, isAltDown, isCtrlDown, isCommandDown);
+					GetRuntime()->DispatchEvent(ke);
+				}
 				break;
 			}
-			case SDL_MOUSEBUTTONDOWN:
+
+			case SDL_KEYUP:
 			{
-				if (fDlg)
-					break;
+				SDL_Keycode	keycode = evt.key.keysym.sym;
+				uint16_t mod = evt.key.keysym.mod;
+				bool isNumLockDown = mod & KMOD_NUM ? true : false;
+				bool isCapsLockDown = mod & KMOD_CAPS ? true : false;
+				bool isShiftDown = mod & KMOD_SHIFT ? true : false;
+				bool isCtrlDown = mod & KMOD_CTRL ? true : false;
+				bool isAltDown = mod & KMOD_ALT ? true : false;
+				bool isCommandDown = mod & KMOD_GUI ? true : false;
 
-				const SDL_MouseButtonEvent& b = evt.button;
-				if (b.which != SDL_TOUCH_MOUSEID)
-				{
-					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-					if (io.WantCaptureMouse)
-						break;
-
-					int x = b.x;
-					int y = b.y;
-
-					float scrollWheelDeltaX = 0;
-					float scrollWheelDeltaY = 0;
-
-					// Fetch the mouse's current up/down buttons states.
-					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-					bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
-					bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-
-					// Fetch the current state of the "shift", "alt", and "ctrl" keys.
-					const Uint8* key = SDL_GetKeyboardState(NULL);
-					bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
-					bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
-					bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
-					bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
-
-					Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kDown;
-					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0, isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
-
-					fContext->DispatchEvent(mouseEvent);
-					fContext->GetMouseListener()->TouchDown(x, y, 0);
-					break;
-				}
-			}
-
-			case SDL_MOUSEMOTION:
-			{
-				if (fDlg || (evt.window.windowID != SDL_GetWindowID(fWindow)))
-					break;
-
-				const SDL_MouseButtonEvent& b = evt.button;
-				if (b.which != SDL_TOUCH_MOUSEID)
-				{
-					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-					if (io.WantCaptureMouse)
-						break;
-
-					int x = b.x;
-					int y = b.y;
-
-					float scrollWheelDeltaX = 0;
-					float scrollWheelDeltaY = 0;
-
-					// Fetch the mouse's current up/down buttons states.
-					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-					bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
-					bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-
-					// Fetch the current state of the "shift", "alt", and "ctrl" keys.
-					const Uint8* key = SDL_GetKeyboardState(NULL);
-					bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
-					bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
-					bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
-					bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
-
-					Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kMove;
-
-					// Determine if this is a "drag" event.
-					if (isPrimaryDown || isSecondaryDown || isMiddleDown)
-					{
-						eventType = Rtt::MouseEvent::kDrag;
-					}
-
-					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
-						isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
-
-#if Rtt_DEBUG_TOUCH
-					//			printf("MouseEvent(%d, %d)\n", b.x, b.y);
-#endif
-
-					fContext->DispatchEvent(mouseEvent);
-					fContext->GetMouseListener()->TouchMoved(x, y, 0);
-					break;
-				}
-			}
-
-			case SDL_MOUSEBUTTONUP:
-			{
-				if (fDlg || (evt.window.windowID != SDL_GetWindowID(fWindow)))
-					break;
-
-				const SDL_MouseButtonEvent& b = evt.button;
-				if (b.which != SDL_TOUCH_MOUSEID)
-				{
-					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-					if (io.WantCaptureMouse)
-						break;
-
-					int x = b.x;
-					int y = b.y;
-
-					float scrollWheelDeltaX = 0;
-					float scrollWheelDeltaY = 0;
-
-					// Fetch the mouse's current up/down buttons states.
-					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-					bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
-					bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-
-					// Fetch the current state of the "shift", "alt", and "ctrl" keys.
-					const Uint8* key = SDL_GetKeyboardState(NULL);
-					bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
-					bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
-					bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
-					bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
-
-					Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kUp;
-					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0, isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
-
-					fContext->DispatchEvent(mouseEvent);
-					fContext->GetMouseListener()->TouchUp(x, y, 0);
-					break;
-				}
-			}
-
-			case SDL_MOUSEWHEEL:
-			{
-				if (fDlg || (evt.window.windowID != SDL_GetWindowID(fWindow)))
-					break;
-
-				const SDL_MouseWheelEvent& w = evt.wheel;
-				if (w.which != SDL_TOUCH_MOUSEID)
-				{
-					// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-					if (io.WantCaptureMouse)
-						break;
-
-					int scrollWheelDeltaX = w.x;
-					int scrollWheelDeltaY = w.y;
-					int x = w.x;
-					int y = w.y;
-
-					// Fetch the mouse's current up/down buttons states.
-					bool isPrimaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-					bool isSecondaryDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
-					bool isMiddleDown = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-
-					// Fetch the current state of the "shift", "alt", and "ctrl" keys.
-					const Uint8* key = SDL_GetKeyboardState(NULL);
-					bool IsAltDown = key[SDL_SCANCODE_LALT] | key[SDL_SCANCODE_RALT];
-					bool IsShiftDown = key[SDL_SCANCODE_LSHIFT] | key[SDL_SCANCODE_RSHIFT];
-					bool IsControlDown = key[SDL_SCANCODE_LCTRL] | key[SDL_SCANCODE_RCTRL];
-					bool IsCommandDown = key[SDL_SCANCODE_LGUI] | key[SDL_SCANCODE_RGUI];
-
-					Rtt::MouseEvent::MouseEventType eventType = Rtt::MouseEvent::kScroll;
-					Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
-						isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
-
-#if Rtt_DEBUG_TOUCH
-					//			printf("MouseEvent(%d, %d)\n", b.x, b.y);
-#endif
-
-					fContext->DispatchEvent(mouseEvent);
-					break;
-				}
+				PlatformInputDevice* dev = NULL;
+				const char* keyName = GetKeyName(keycode);
+				KeyEvent ke(dev, KeyEvent::kUp, keyName, keycode, isShiftDown, isAltDown, isCtrlDown, isCommandDown);
+				GetRuntime()->DispatchEvent(ke);
+				break;
 			}
 
 			default:
@@ -458,12 +382,6 @@ namespace Rtt
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
 		}
 		return true;
-	}
-
-	void SolarApp::SetTitle(const std::string& name)
-	{
-		SDL_SetWindowTitle(fWindow, IsHomeScreen(name) ? "Solar2D Simulator" : name.c_str());
-		SDL_ShowWindow(fWindow);
 	}
 
 	void SolarApp::Run()
@@ -492,7 +410,7 @@ namespace Rtt
 
 			// Don't hog the CPU.
 			int sleep_time = Max(frameDuration - advance_time, 1.0f);		// sleep for at least 1ms
-			std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
+			this_thread::sleep_for(chrono::milliseconds(sleep_time));
 		}
 	}
 
@@ -537,10 +455,19 @@ namespace Rtt
 		}
 
 		// disable main menu if there is a popup window 
-		ImGui::BeginDisabled(fDlg != NULL);
-		fMenu->Draw();
-		ImGui::EndDisabled();
+		if (fMenu)
+		{
+			ImGui::BeginDisabled(fDlg != NULL);
+			fMenu->Draw();
+			ImGui::EndDisabled();
+		}
 
+		for (int i = 0; i < fNativeObjects.size(); i++)
+		{
+			fNativeObjects[i]->Draw();
+		}
+
+		// Activity Indicator
 		if (fActivityIndicator)
 		{
 			DrawActivity();
@@ -557,9 +484,32 @@ namespace Rtt
 		fContext->RestartRenderer();
 	}
 
-	void SolarApp::ChangeSize(int newWidth, int newHeight)
+	void SolarApp::SetWindowSize(int w, int h)
 	{
-		SDL_SetWindowSize(fWindow, newWidth, newHeight);
+		SDL_SetWindowSize(fWindow, w, h + GetMenuHeight());
+	}
+
+	void SolarApp::AddDisplayObject(LinuxDisplayObject* obj)
+	{
+		fNativeObjects.push_back(obj);
+
+		// sanity check
+		Rtt_ASSERT(fNativeObjects < 1000);
+	}
+
+	void SolarApp::RemoveDisplayObject(LinuxDisplayObject* obj)
+	{
+		const auto& it = find(fNativeObjects.begin(), fNativeObjects.end(), obj);
+		if (it != fNativeObjects.end())
+		{
+			fNativeObjects.erase(it);
+		}
+	}
+
+	NativeAlertRef SolarApp::ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource)
+	{
+		fDlg = new DlgAlert(title, msg, buttonLabels, numButtons, resource);
+		return NULL;
 	}
 
 	//
@@ -572,7 +522,7 @@ namespace Rtt
 	{
 	}
 
-	bool FileWatcher::Start(const std::string& folder)
+	bool FileWatcher::Start(const string& folder)
 	{
 		if (m_inotify_fd >= 0)
 		{
@@ -654,6 +604,7 @@ namespace Rtt
 				}
 
 				// actually the read returns the list of change events happens. Here, read the change event one by one and process it accordingly.
+				// actually the read returns the list of change events happens. Here, read the change event one by one and process it accordingly.
 				int i = 0;
 				while (i < length)
 				{
@@ -670,8 +621,87 @@ namespace Rtt
 				}
 			}
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			this_thread::sleep_for(chrono::milliseconds(100));
 		}
 	}
 
-}
+	//
+	// Config
+	//
+
+	Config::Config()
+	{
+	}
+
+	Config::Config(const string& path)
+	{
+		Load(path);
+	}
+
+	Config::~Config()
+	{
+		Save();
+	}
+
+	void Config::Load(const string& path)
+	{
+		fPath = path;		// save
+		FILE* f = fopen(path.c_str(), "r");
+		if (f)
+		{
+			char s[1024];
+			while (fgets(s, sizeof(s), f))
+			{
+				char* comment = strchr(s, '#');
+				if (comment)
+					*comment = 0;
+
+				char key[sizeof(s)];
+				char val[sizeof(s)];
+				if (sscanf(s, "%64[^=]=%512[^\n]%*c", key, val) == 2) // Checking scanf read key=val pair
+				{
+					fConfig[key] = val;
+				}
+			}
+			fclose(f);
+		}
+	}
+
+	// load & join & save
+	void Config::Save()
+	{
+		FILE* f = fopen(fPath.c_str(), "w");
+		if (f)
+		{
+			for (const auto& it : fConfig)
+			{
+				fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
+			}
+			fclose(f);
+		}
+	}
+
+	as_value& Config::operator[](const string& name)
+	{
+		auto it = fConfig.find(name);
+		if (it == fConfig.end())
+		{
+			fConfig[name] = as_value();
+			it = fConfig.find(name);
+		}
+		return it->second;
+	}
+
+	const as_value& Config::operator[](const string& name) const
+	{
+		static as_value undefined;
+		undefined.set_undefined();
+
+		const auto& it = fConfig.find(name);
+		if (it == fConfig.end())
+			return undefined;
+		else
+			return it->second;
+	}
+
+}	// Rtt

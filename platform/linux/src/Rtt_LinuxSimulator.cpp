@@ -10,7 +10,6 @@
 #include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxSimulatorView.h"
-#include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxDialogBuild.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
@@ -25,7 +24,7 @@
 #include <netinet/in.h>
 #include <netinet/ip.h> 
 
-#if !defined(wxHAS_IMAGES_IN_RESOURCES) && defined(Rtt_SIMULATOR)
+#if defined(Rtt_SIMULATOR)
 #include "resource/simulator.xpm"
 #endif
 
@@ -46,12 +45,10 @@ namespace Rtt
 	// SolarSimulator
 	//
 
+	static float skinScaleFactor = 1.5f;
+
 	SolarSimulator::SolarSimulator(const string& resourceDir)
 		: SolarApp(resourceDir)
-		, fRelaunchedViaFileEvent(false)
-		, currentSkinWidth(0)
-		, currentSkinHeight(0)
-		, currentSkinID(0)
 	{
 		app = this;
 		solarSimulator = this;		// save
@@ -72,42 +69,74 @@ namespace Rtt
 		{
 			Rtt_MakeDirectory(projectCreationPath.c_str());
 		}
-
-		fConfigFilePath = GetHomePath();
-		fConfigFilePath.append("/.Solar2D/simulator.conf");
-		ConfigLoad();
 	}
 
 	SolarSimulator::~SolarSimulator()
 	{
-		int x, y;
-		SDL_GetWindowPosition(fWindow, &x, &y);
-		ConfigSet("windowXPos", x);
-		ConfigSet("windowYPos", y);
-
-		ConfigSave();
-
-		// quit the simulator console
-		// ConsoleApp::Quit();
 	}
 
-	bool SolarSimulator::LoadApp()
+	bool SolarSimulator::Init()
+	{
+		if (InitSDL())
+		{
+			// load Config, default values
+			fConfig["showRuntimeErrors"] = true;
+			fConfig["showWelcome"] = true;
+			fConfig["openLastProject"] = false;
+			fConfig["relaunchOnFileChange"] = "Always";
+			fConfig.Load(GetConfigPath(HOMESCREEN_ID));
+
+			StartConsole();
+
+			const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();
+			bool openlastProject = fConfig["openLastProject"].to_bool();
+			return LoadApp(openlastProject && !lastProjectDirectory.empty() ? lastProjectDirectory : fResourceDir);
+		}
+		return false;
+	}
+
+	bool SolarSimulator::LoadApp(const string& ppath)
 	{
 #ifdef Rtt_SIMULATOR
 		//		SetIcon(simulator_xpm);
 #endif
 
-		const string& lastProjectDirectory = ConfigStr("lastProjectDirectory");
-		fContext = new SolarAppContext(fWindow, ConfigInt("ShowWelcome") && !lastProjectDirectory.empty() ? lastProjectDirectory : fProjectPath);
-		fMenu = new DlgMenu(fContext->GetAppName());
+		fConfig.Save();
+		string path(ppath);	// keep alive
 
-		SDL_SetWindowPosition(fWindow, ConfigInt("windowXPos"), ConfigInt("windowYPos"));
-		if (fContext->LoadApp())
+		fContext = new SolarAppContext(fWindow);
+		if (fContext->LoadApp(path))
 		{
-			GetPlatform()->fShowRuntimeErrors = ConfigInt("showRuntimeErrors");
+			Window::SetStyle();
+			CreateMenu();
 
-			return fSkins.Load(GetContext()->GetRuntime()->VMContext().L());
+			bool showErrors = fConfig["showRuntimeErrors"].to_bool();
+			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrorsSet, true);
+			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrors, showErrors);
+
+			string title;
+			if (IsHomeScreen(GetAppName()))
+			{
+				title = "Solar2D Simulator";
+				fSkins.Load(fContext->GetRuntime()->VMContext().L());
+
+				GetPlatform()->fShowRuntimeErrors = fConfig["showRuntimeErrors"].to_bool();
+			}
+			else
+			{
+				UpdateRecentDocs(GetAppName(), path + "/main.lua");
+				fConfig["lastProjectDirectory"] = fContext->GetAppPath();
+
+				WatchFolder(GetAppPath());
+				LinuxSimulatorView::OnLinuxPluginGet(GetAppPath().c_str(), GetAppName().c_str(), fContext->GetPlatform());
+			}
+
+			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath().c_str());
+			Rtt_Log("Project sandbox folder: %s\n", GetSandboxPath(GetAppName()).c_str());
+			return true;
 		}
+
+		Rtt_LogException("Failed to load app %s\n", path.c_str());
 		return false;
 	}
 
@@ -122,6 +151,24 @@ namespace Rtt
 			break;
 		}
 
+		case sdl::OnPreferencesChanged:
+		{
+			bool showErrors = fConfig["showRuntimeErrors"].to_bool();
+			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrorsSet, true);
+			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrors, showErrors);
+			break;
+		}
+		case sdl::OnRuntimeError:
+		{
+			char** data = (char**)e.user.data1;
+			fDlg = new DlgRuntimeError("Runtime Error", 640, 350, data[0], data[1], data[2]);
+			free(data[0]);
+			free(data[1]);
+			free(data[2]);
+			delete[] data;
+			break;
+		}
+
 		case sdl::OnOpenProject:
 		{
 			if (e.user.data1)
@@ -133,8 +180,7 @@ namespace Rtt
 			else
 			{
 				// open file dialog
-				string startPath(solarSimulator->ConfigStr("lastProjectDirectory"));
-				fDlg = new DlgOpen("Open Project", 640, 480, startPath);
+				fDlg = new DlgOpen("Open Project", 640, 480, fConfig["lastProjectDirectory"].to_string());
 			}
 			break;
 		}
@@ -145,7 +191,7 @@ namespace Rtt
 
 		case sdl::OnOpenInEditor:
 		{
-			string path = GetContext()->GetAppPath();
+			string path = fContext->GetAppPath();
 			path.append("/main.lua");
 			OpenURL(path);
 			break;
@@ -153,6 +199,7 @@ namespace Rtt
 
 		case sdl::OnCloseProject:
 		{
+			fDlg = NULL;
 			string path(GetStartupPath(NULL));
 			path.append("/Resources/homescreen/main.lua");
 			OnOpen(path);
@@ -192,25 +239,26 @@ namespace Rtt
 		}
 
 		case sdl::OnShowProjectFiles:
-			OpenURL(GetContext()->GetAppPath());
+			OpenURL(fContext->GetAppPath());
 			break;
 
 		case sdl::OnShowProjectSandbox:
 		{
-			const string& appName = GetContext()->GetAppName();
-			string path = GetHomePath();
-			path.append("/.Solar2D/Sandbox/");
-			path.append(appName);
-			OpenURL(path);
+			OpenURL(GetSandboxPath(GetAppName()));
 			break;
 		}
 
 		case sdl::OnClearProjectSandbox:
-			break;
+		{
+			string dir = GetSandboxPath(GetAppName());
+			Rtt_DeleteDirectory(dir.c_str());
 
+			OnRelaunch();
+			break;
+		}
 		case sdl::OnRelaunchLastProject:
 		{
-			const string& lastProjectDirectory = solarSimulator->ConfigStr("lastProjectDirectory");
+			const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();
 			if (lastProjectDirectory.size() > 0)
 			{
 				string path(lastProjectDirectory);
@@ -235,8 +283,8 @@ namespace Rtt
 
 			if (path.size() >= 5 && path.substr(0, 2) != ".#" && path.rfind(".lua") != string::npos)
 			{
-				Rtt_Log("OnFileSystemEvent 0x%X: %s", e.user.code, path.c_str());
-				const string& s = fConfig["relaunchOnFileChange"];
+				//Rtt_Log("OnFileSystemEvent 0x%X: %s\n", e.user.code, path.c_str());
+				const string& s = fConfig["relaunchOnFileChange"].to_string();
 				if (s == "Always")
 				{
 					PushEvent(sdl::OnRelaunchLastProject);
@@ -254,7 +302,7 @@ namespace Rtt
 			break;
 
 		case sdl::OnBuildAndroid:
-			fDlg = new DlgAndroidBuild("Android Build Setup", 640, 480);
+			fDlg = new DlgAndroidBuild("Android Build Setup", 650, 350);
 			break;
 
 		case sdl::OnBuildHTML5:
@@ -279,7 +327,7 @@ namespace Rtt
 			break;
 
 		case sdl::OnViewAs:
-			fDlg = new DlgViewAs("View As", 500, 500, &fSkins);
+			fDlg = new DlgViewAs("View As", 500, 450, &fSkins);
 			break;
 
 		case sdl::OnChangeView:
@@ -289,350 +337,101 @@ namespace Rtt
 			break;
 		}
 
+		case sdl::OnZoomIn:
+			OnZoomIn();
+			break;
+
+		case sdl::OnZoomOut:
+			OnZoomOut();
+			break;
+
 		default:
 			break;
 		}
 	}
 
-	void SolarSimulator::WatchFolder(const char* path, const char* appName)
+	void SolarSimulator::WatchFolder(const string& path)
 	{
 		fWatcher = NULL;
-		if (!IsHomeScreen(appName))
-		{
-			fWatcher = new FileWatcher();
-			fWatcher->Start(path);
-		}
+		fWatcher = new FileWatcher();
+		fWatcher->Start(path);
 	}
 
 	void SolarSimulator::OnRelaunch()
 	{
-		if (fAppPath.size() > 0 && !IsHomeScreen(fContext->GetAppName()))
+		if (!IsHomeScreen(GetAppName()))
 		{
-			bool doRelaunch = !fRelaunchedViaFileEvent;
-
-			//LinuxRuntimeErrorDialog* errDialog = fContext->GetPlatform()->GetRuntimeErrorDialog();
-			//			if ((errDialog && errDialog->IsShown()) || (fRelaunchProjectDialog && fRelaunchProjectDialog->IsShown()))
-			//			{
-			//				return;
-			//			}
-
-						// workaround for wxFileSystem events firing twice (known wx bug)
-		//	if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
-		//	{
-		//		return;
-		//	}
-
-			if (fRelaunchedViaFileEvent)
-			{
-				const string& relaunchOnFileChange = ConfigStr("relaunchOnFileChange");
-				if (relaunchOnFileChange == "Always" || relaunchOnFileChange == "Ask")
-				{
-					doRelaunch = true;
-				}
-				fRelaunchedViaFileEvent = false;
-			}
-
-			if (!doRelaunch)
-			{
-				return;
-			}
-
-			fContext->GetRuntime()->End();
-			fContext = new SolarAppContext(fWindow, fAppPath.c_str());
-			fContext->LoadApp();
-			fMenu = new DlgMenu(fContext->GetAppName());
-
-			WatchFolder(fContext->GetAppPath(), fContext->GetAppName());
-
-			string newWindowTitle(fContext->GetTitle());
-
-			//vv			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
-				//		newWindowTitle.append(" - ").append(sProperties.skinTitle);
-			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), fContext->GetAppName(), fContext->GetPlatform());
-
-			SetTitle(newWindowTitle);
+			LoadApp(GetAppPath());
 		}
 	}
 
 	void SolarSimulator::OnZoomIn()
 	{
-		/*		wxDisplay display(wxDisplay::GetFromWindow(this));
-				wxRect screen = display.GetClientArea();
-				bool doResize = false;
-
-				int proposedWidth = GetContext()->GetWidth() * LinuxSimulatorView::skinScaleFactor;
-				int proposedHeight = GetContext()->GetHeight() * LinuxSimulatorView::skinScaleFactor;
-
-				fZoomOut->Enable(true);
-
-				if (IsHomeScreen(GetContext()->GetAppName()))
-				{
-					doResize = (proposedWidth < screen.width&& proposedHeight < screen.height);
-				}
-				else
-				{
-					if (currentSkinWidth >= proposedWidth && currentSkinHeight >= proposedHeight)
-					{
-						doResize = (proposedWidth < screen.width&& proposedHeight < screen.height);
-					}
-				}
-
-				if (doResize)
-				{
-					GetContext()->SetWidth(proposedWidth);
-					GetContext()->SetHeight(proposedHeight);
-					ChangeSize(proposedWidth, proposedHeight);
-					GetContext()->RestartRenderer();
-					GetCanvas()->Refresh(true);
-
-					if (!IsHomeScreen(GetContext()->GetAppName()))
-					{
-						ConfigSet("zoomedWidth", proposedWidth);
-						ConfigSet("zoomedHeight", proposedHeight);
-						if (proposedWidth * LinuxSimulatorView::skinScaleFactor > screen.width || proposedHeight * LinuxSimulatorView::skinScaleFactor > screen.height)
-						{
-							fZoomIn->Enable(false);
-						}
-					}
-					else
-					{
-						//			fSimulatorConfig->welcomeScreenZoomedWidth = proposedWidth;
-						//			fSimulatorConfig->welcomeScreenZoomedHeight = proposedHeight;
-					}
-					ConfigSave();
-				}*/
+		SDL_DisplayMode screen;
+		if (SDL_GetCurrentDisplayMode(0, &screen) == 0)
+		{
+			int proposedWidth = fContext->GetWidth() * skinScaleFactor;
+			int proposedHeight = fContext->GetHeight() * skinScaleFactor;
+			if (proposedWidth <= screen.w && proposedHeight <= screen.h)
+			{
+				fContext->SetSize(proposedWidth, proposedHeight);
+			}
+		}
 	}
 
 	void SolarSimulator::OnZoomOut()
 	{
-		/*		SolarApp* frame = solarApp;
-				int proposedWidth = frame->GetContext()->GetWidth() / LinuxSimulatorView::skinScaleFactor;
-				int proposedHeight = frame->GetContext()->GetHeight() / LinuxSimulatorView::skinScaleFactor;
-
-				fZoomIn->Enable(true);
-
-				if (proposedWidth >= LinuxSimulatorView::skinMinWidth)
-				{
-					frame->GetContext()->SetWidth(proposedWidth);
-					frame->GetContext()->SetHeight(proposedHeight);
-					frame->ChangeSize(proposedWidth, proposedHeight);
-					frame->GetContext()->RestartRenderer();
-					GetCanvas()->Refresh(true);
-
-					ConfigSet("zoomedWidth", proposedWidth);
-					ConfigSet("zoomedHeight", proposedHeight);
-					ConfigSave();
-
-					if (proposedWidth / LinuxSimulatorView::skinScaleFactor <= LinuxSimulatorView::skinMinWidth)
-					{
-						fZoomOut->Enable(false);
-					}
-				}*/
+		SDL_DisplayMode screen;
+		if (SDL_GetCurrentDisplayMode(0, &screen) == 0)
+		{
+			int proposedWidth = fContext->GetWidth() / skinScaleFactor;
+			int proposedHeight = fContext->GetHeight() / skinScaleFactor;
+			if (proposedWidth >= 320) //skinMinWidth)
+			{
+				fContext->SetSize(proposedWidth, proposedHeight);
+			}
+		}
 	}
 
 	void SolarSimulator::OnViewAsChanged(const SkinProperties* skin)
 	{
 		SDL_DisplayMode screen;
-		if (SDL_GetCurrentDisplayMode(0, &screen) != 0)
+		if (SDL_GetCurrentDisplayMode(0, &screen) == 0)
 		{
-			return;
+			string title(GetAppName());
+			title.append(" - ").append(skin->skinTitle);
+			fContext->SetTitle(title);
+
+			int w = skin->screenWidth;
+			int h = skin->screenHeight;
+			while (w > screen.w || h > screen.h)
+			{
+				w /= skinScaleFactor;
+				h /= skinScaleFactor;
+			}
+			fContext->SetSize(w, h);
 		}
-
-		string newWindowTitle(GetContext()->GetTitle());
-		newWindowTitle.append(" - ").append(skin->skinTitle);
-
-		int w = skin->screenWidth;
-		int h = skin->screenHeight;
-		float skinScaleFactor = 1.5f;
-		while (w > screen.w || h > screen.h)
-		{
-			w /= skinScaleFactor;
-			h /= skinScaleFactor;
-		}
-
-		ConfigSave();
-
-		GetContext()->SetWidth(w);
-		GetContext()->SetHeight(h);
-		ChangeSize(w, h);
 	}
 
-	void SolarSimulator::GetSavedZoom(int& width, int& height)
-	{
-		/*if (!IsHomeScreen(fContext->GetAppName()))
-		{
-			wxDisplay display(wxDisplay::GetFromWindow(solarApp));
-			wxRect screen = display.GetClientArea();
-			width = ConfigInt("zoomedWidth");
-			height = ConfigInt("zoomedHeight");
-
-			if (width > screen.width || height > screen.height)
-			{
-				fZoomIn->Enable(false);
-			}
-
-			if (ConfigInt("skinWidth") <= LinuxSimulatorView::skinMinWidth)
-			{
-				fZoomIn->Enable(false);
-				fZoomOut->Enable(false);
-			}
-
-			while (width > screen.width || height > screen.height)
-			{
-				width /= LinuxSimulatorView::skinScaleFactor;
-				height /= LinuxSimulatorView::skinScaleFactor;
-			}
-		}*/
-	}
-
-	void SolarSimulator::OnOpen(const string& ppath)
+	void SolarSimulator::OnOpen(const string& fullPath)
 	{
 		// sanity check
-		if (ppath.size() < 10)
+		if (fullPath.size() < 10)
 			return;
 
-		ConfigSave();
+		string path = fullPath.substr(0, fullPath.size() - 9); // without main.lua
+		LoadApp(path);
+	}
 
-		string fullPath = ppath;
-		string path = ppath.substr(0, ppath.size() - 9); // without main.lua
+	void SolarSimulator::StartConsole()
+	{
+		fConsole = new ConsoleWindow("Solar2D Simulator Console", 640, 480, &fLogData);
+	}
 
-		fContext = new SolarAppContext(fWindow, path.c_str());
-		if (fContext->LoadApp() == false)
-		{
-			Rtt_LogException("Failed to load app from %s\n", ppath.c_str());
-			return;
-		}
-
-		string appName = fContext->GetAppName();
+	void SolarSimulator::CreateMenu()
+	{
 		fMenu = new DlgMenu(fContext->GetAppName());
-
-		WatchFolder(fContext->GetAppPath(), appName.c_str());
-
-		if (!IsHomeScreen(appName))
-		{
-			fAppPath = fContext->GetAppPath(); // save for relaunch
-			UpdateRecentDocs(appName, fullPath);
-		}
-
-		string newWindowTitle(appName);
-
-		if (!IsHomeScreen(appName))
-		{
-			ConfigSet("lastProjectDirectory", fAppPath);
-			LinuxSimulatorView::OnLinuxPluginGet(fContext->GetAppPath(), appName.c_str(), fContext->GetPlatform());
-		}
-		else
-		{
-			newWindowTitle = "Solar2D Simulator";
-		}
-
-		// restore home screen zoom level
-	//	if (IsHomeScreen(appName))
-	//	{
-	//		fContext->GetRuntimeDelegate()->fContentWidth = fSimulatorConfig->welcomeScreenZoomedWidth;
-	//		fContext->GetRuntimeDelegate()->fContentHeight = fSimulatorConfig->welcomeScreenZoomedHeight;
-	//		ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
-	//	}
-
-		if (!IsHomeScreen(appName))
-		{
-			//vv LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(ConfigInt("skinID"));
-			//vv newWindowTitle += " - " + sProperties.skinTitle;
-			fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
-			string sandboxPath("~/.Solar2D/Sandbox/");
-			sandboxPath.append(fContext->GetTitle());
-			sandboxPath.append("_");
-			sandboxPath.append(CalculateMD5(fContext->GetTitle()));
-
-			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
-			Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());
-		}
-
-		SetTitle(newWindowTitle);
 	}
 
-	// config parser
-	void SolarSimulator::ConfigLoad()
-	{
-		// default values
-		fConfig["showRuntimeErrors"] = to_string(true);
-		fConfig["openLastProject"] = to_string(false);
-		fConfig["relaunchOnFileChange"] = "Always";
-		fConfig["windowXPos"] = to_string(10);
-		fConfig["windowYPos"] = to_string(10);
-		fConfig["skinID"] = to_string(6223);
-		fConfig["skinWidth"] = to_string(320);
-		fConfig["skinHeight"] = to_string(480);
-
-		FILE* f = fopen(fConfigFilePath.c_str(), "r");
-		if (f == NULL)
-		{
-			Rtt_LogException("Failed to read %s, %s\n", fConfigFilePath.c_str(), strerror(errno));
-			return;
-		}
-
-		char s[1024];
-		while (fgets(s, sizeof(s), f))
-		{
-			char* comment = strchr(s, '#');
-			if (comment)
-				*comment = 0;
-
-			char key[sizeof(s)];
-			char val[sizeof(s)];
-			if (sscanf(s, "%64[^=]=%512[^\n]%*c", key, val) == 2) // Checking scanf read key=val pair
-			{
-				fConfig[key] = val;
-			}
-		}
-		fclose(f);
-
-		//for (const auto it : fConfig)
-		//{
-		//	Rtt_Log("%s=%s\n", it.first.c_str(), it.second.c_str());
-		//}
-	}
-
-	void SolarSimulator::ConfigSave()
-	{
-		if (IsHomeScreen(GetAppName()))
-		{
-			FILE* f = fopen(fConfigFilePath.c_str(), "w");
-			if (f == NULL)
-			{
-				Rtt_LogException("Failed to write %s, %s\n", fConfigFilePath.c_str(), strerror(errno));
-				return;
-			}
-
-			for (const auto& it : fConfig)
-			{
-				fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
-			}
-			fclose(f);
-		}
-	}
-
-	string& SolarSimulator::ConfigStr(const string& key)
-	{
-		static string s_empty;
-		const auto& it = fConfig.find(key);
-		return it != fConfig.end() ? it->second : s_empty;
-	}
-
-	int SolarSimulator::ConfigInt(const string& key)
-	{
-		const auto& it = fConfig.find(key);
-		return it != fConfig.end() ? atoi(it->second.c_str()) : 0;
-	}
-
-	void SolarSimulator::ConfigSet(const char* key, string& val)
-	{
-		fConfig[key] = val;
-	}
-
-	void SolarSimulator::ConfigSet(const char* key, int val)
-	{
-		fConfig[key] = ::to_string(val);
-	}
 
 }

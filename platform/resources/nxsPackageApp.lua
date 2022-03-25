@@ -211,6 +211,20 @@ local function copyFile(src, dst)
 	return false;
 end
 
+local function moveFiles( src, dst, fltr )
+	logd('Moving ' .. fltr .. ' files from ' .. src .. ' to ' .. dst)
+	if windows then
+		local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst .. '" ' .. fltr ..' /mov 2> nul'
+		-- robocopy failed when exit code is > 7... Windows  ¯\_(ツ)_/¯ 
+		return processExecute(cmd)>7 and 1 or 0
+	else
+		local cmd = 'mkdir -p ' .. quoteString(dst)
+		os.execute(cmd)
+		local cmd = 'mv ' .. quoteString(src) .. '/' .. fltr .. ' ' ..  quoteString(dst)
+		return os.execute(cmd)
+	end
+end
+
 local function copyDir( src, dst )
 	if windows then
 		local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst.. '" /e 2> nul'
@@ -347,14 +361,6 @@ local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate
 			logd('Excluded ' .. f)
     end
 	end
-end
-
-local function GetFileName(url)
-  return url:match("^.+/(.+)$")
-end
-
-local function GetFileExtension(url)
-  return url:match("^.+(%..+)$")
 end
 
 local function deleteUnusedFiles(srcDir, excludePredicate)
@@ -528,8 +534,12 @@ function nxsPackageApp( args )
 		-- delete .lua, .lu, etc
 	deleteUnusedFiles(appFolder, getExcludePredecate())
 
+	-- move *.nrr files to /.nrr folder
+	local nrrFolder =  pathJoin(appFolder, '.nrr')
+	moveFiles(appFolder, nrrFolder, '*.nrr')
+
 	-- build App 
-	-- sample: AuthoringTool.exe creatensp -o Rtt.nsp --metartt.nmeta --type Application --desc Application.desc--program program0.ncd/code assets2
+	-- sample: AuthoringTool.exe creatensp -o Rtt.nsp --metartt.nmeta --type Application --nro nrofolder --desc Application.desc--program program0.ncd/code assets2
 
 	local metafile = args.nmetaPath
 	if not isFile(metafile) then
@@ -541,6 +551,7 @@ function nxsPackageApp( args )
 	local descfile = pathJoin(nxsRoot, "\\Resources\\SpecFiles\\Application.desc")
 	local solar2Dfile = pathJoin(args.tmpDir, '\\nxtemplate\\code')
 	local assets = pathJoin(args.tmpDir, '\\nxsapp')
+	local nroFolder = appFolder
 
 	-- update .npdm file
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe'
@@ -558,6 +569,7 @@ function nxsPackageApp( args )
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
 	cmd = cmd .. ' --meta "' ..  metafile .. '"'
+	cmd = cmd .. ' --nro "' ..  nroFolder .. '"'
 	cmd = cmd .. ' --desc "' ..  descfile .. '"'
 	cmd = cmd .. ' --program "' ..  solar2Dfile .. '"'
 	cmd = cmd .. ' "' .. assets .. '"'

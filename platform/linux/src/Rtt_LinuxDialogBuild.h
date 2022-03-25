@@ -18,6 +18,17 @@ namespace Rtt
 	{
 		DlgBuild(const std::string& title, int w, int h);
 		virtual ~DlgBuild();
+
+	protected:
+
+		void DrawResult();
+		const char* fBuildResult;
+		bool fBuildSuccessed;
+		char fApplicationNameInput[32];
+		char fSaveToFolderInput[1024];
+		char fProjectPathInput[1024];
+		char fVersionNameInput[32];
+		bool fIncludeStandardResources;
 	};
 
 	struct DlgAndroidBuild : public DlgBuild
@@ -37,14 +48,8 @@ namespace Rtt
 
 		ImGui::FileBrowser fileDialogKeyStore;
 		ImGui::FileBrowser fileDialogSaveTo;
-		const char* fBuildResult;
-		int fBuildSuccessed;
-		char fApplicationNameInput[32];
 		char fVersionCodeInput[32];
-		char fVersionNameInput[32];
 		char fPackageInput[256];
-		char fSaveToFolderInput[1024];
-		char fProjectPathInput[1024];
 		char fKeyStoreInput[1024];
 		bool fCreateLiveBuild;
 		smart_ptr<mythread> fThread;
@@ -66,15 +71,8 @@ namespace Rtt
 	private:
 
 		void Build();
-		void RunBuilder();
 
 		ImGui::FileBrowser fileDialog;
-		const char* fBuildResult;
-		char fApplicationNameInput[32];
-		char fVersionInput[32];
-		char fSaveToFolderInput[1024];
-		char fProjectPathInput[1024];
-		bool fIncludeStandardResources;
 		smart_ptr<mythread> fThread;
 	};
 
@@ -91,12 +89,6 @@ namespace Rtt
 		void RunBuilder();
 
 		ImGui::FileBrowser fileDialog;
-		const char* fBuildResult;
-		char fApplicationNameInput[32];
-		char fVersionInput[32];
-		char fSaveToFolderInput[1024];
-		char fProjectPathInput[1024];
-		bool fIncludeStandardResources;
 		smart_ptr<mythread> fThread;
 	};
 

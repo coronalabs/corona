@@ -9,10 +9,10 @@
 
 #include "Core/Rtt_Build.h"
 #include "Rtt_LinuxCrypto.h"
-#include "crypto++/hmac.h"
-#include "crypto++/md4.h"
-#include "crypto++/md5.h"
-#include "crypto++/sha.h"
+#include "openssl/hmac.h"
+#include "openssl/md4.h"
+#include "openssl/md5.h"
+#include "openssl/sha.h"
 
 namespace Rtt
 {
@@ -22,19 +22,19 @@ namespace Rtt
 		switch (algorithm)
 		{
 			case kMD4Algorithm:
-				return (size_t)CryptoPP::Weak1::MD4::DIGESTSIZE;
+				return (size_t)MD4_DIGEST_LENGTH;
 			case kMD5Algorithm:
-				return (size_t)CryptoPP::Weak1::MD5::DIGESTSIZE;
+				return (size_t)MD5_DIGEST_LENGTH;
 			case kSHA1Algorithm:
-				return (size_t)CryptoPP::SHA1::DIGESTSIZE;
+				return (size_t)SHA_DIGEST_LENGTH;
 			case kSHA224Algorithm:
-				return (size_t)CryptoPP::SHA224::DIGESTSIZE;
+				return (size_t)SHA224_DIGEST_LENGTH;
 			case kSHA256Algorithm:
-				return (size_t)CryptoPP::SHA256::DIGESTSIZE;
+				return (size_t)SHA256_DIGEST_LENGTH;
 			case kSHA384Algorithm:
-				return (size_t)CryptoPP::SHA384::DIGESTSIZE;
+				return (size_t)SHA384_DIGEST_LENGTH;
 			case kSHA512Algorithm:
-				return (size_t)CryptoPP::SHA512::DIGESTSIZE;
+				return (size_t)SHA512_DIGEST_LENGTH;
 		}
 
 		// The given algorithm is not supported or unknown.
@@ -49,44 +49,37 @@ namespace Rtt
 		{
 			case kMD4Algorithm:
 			{
-				CryptoPP::Weak1::MD4 md4;
-				md4.CalculateDigest(digest, (const U8*) data.GetData(), data.GetLength());
+				MD4((unsigned char*)(const U8*)data.GetData(), data.GetLength(), digest);
 				break;
 			}
 			case kMD5Algorithm:
 			{
-				CryptoPP::Weak1::MD5 md5;
-				md5.CalculateDigest(digest, (const U8*)data.GetData(), data.GetLength());
+				MD5((unsigned char*)(const U8*)data.GetData(), data.GetLength(), digest);
 				break;
 			}
 			case kSHA1Algorithm:
 			{
-				CryptoPP::SHA1 sha;
-				sha.CalculateDigest(digest, (const U8*)data.GetData(), data.GetLength());
+				SHA1((unsigned char*)(const U8*)data.GetData(), data.GetLength(), digest);
 				break;
 			}
 			case kSHA224Algorithm:
 			{
-				CryptoPP::SHA224 sha;
-				sha.CalculateDigest(digest, (const U8*)data.GetData(), data.GetLength());
+				SHA224((unsigned char*)(const U8*)data.GetData(), data.GetLength(), digest);
 				break;
 			}
 			case kSHA256Algorithm:
 			{
-				CryptoPP::SHA256 sha;
-				sha.CalculateDigest(digest, (const U8*)data.GetData(), data.GetLength());
+				SHA256((unsigned char*)(const U8*)data.GetData(), data.GetLength(), digest);
 				break;
 			}
 			case kSHA384Algorithm:
 			{
-				CryptoPP::SHA384 sha;
-				sha.CalculateDigest(digest, (const U8*)data.GetData(), data.GetLength());
+				SHA384((unsigned char*)(const U8*)data.GetData(), data.GetLength(), digest);
 				break;
 			}
 			case kSHA512Algorithm:
 			{
-				CryptoPP::SHA512 sha;
-				sha.CalculateDigest(digest, (const U8*)data.GetData(), data.GetLength());
+				SHA512((unsigned char*)(const U8*)data.GetData(), data.GetLength(), digest);
 				break;
 			}
 		}
@@ -94,7 +87,9 @@ namespace Rtt
 
 	void LinuxCrypto::CalculateHMAC(Algorithm algorithm, const Rtt::Data<const char> &key, const Rtt::Data<const char> &data, U8 *digest) const
 	{
-		switch (algorithm)
+		Rtt_LogException("todo: CalculateHMAC\n");
+		// todo using openssl
+		/*switch (algorithm)
 		{
 			case kMD4Algorithm:
 			{
@@ -138,6 +133,6 @@ namespace Rtt
 				hmac.CalculateDigest(digest, (const U8*)data.GetData(), data.GetLength());
 				break;
 			}
-		}
+		}*/
 	}
 }; // namespace Rtt

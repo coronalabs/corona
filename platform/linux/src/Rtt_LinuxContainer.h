@@ -357,6 +357,7 @@ struct membuf
 	inline int size() const { return m_size; }
 	inline const void* data() const { return m_data + m_start; }
 	inline void* data() { return m_data + m_start; }
+	inline bool empty() const { return m_size == 0; }
 	const char* c_str() const;
 
 	void clear();
@@ -376,6 +377,85 @@ private:
 	int m_capacity;
 	char* m_data;
 	int m_start;
+};
+
+//
+// variant
+//
+struct as_value
+{
+private:
+
+	enum type
+	{
+		UNDEFINED,
+		BOOLEAN,
+		NUMBER,
+		STRING,
+		NIL,
+		//OBJECT
+	};
+	type	m_type;
+
+	mutable std::string	m_string;
+	union
+	{
+		double m_number;
+		bool m_bool;
+		//as_object* m_object;
+	};
+
+
+public:
+
+	// constructors
+	as_value(float val);
+	as_value(int val);
+	as_value(unsigned int val);
+	as_value(int64_t val);
+	as_value(uint64_t val);
+	as_value(double val);
+	as_value(bool val);
+	as_value(const char* str);
+	as_value(const std::string& str);
+	as_value();
+	as_value(const as_value& v);
+	//as_value(as_object* val);
+
+	~as_value();
+
+	const std::string& to_string() const;
+	const char* c_str() const;
+	double	to_number() const;
+	int	to_int() const { return (int)to_number(); };
+	float	to_float() const { return (float)to_number(); };
+	bool	to_bool() const;
+	//as_object* to_object() const;
+
+	// These set_*()'s are more type-safe; should be used
+	// in preference to generic overloaded set().  You are
+	// more likely to get a warning/error if misused.
+	void	set_undefined();
+	void	set_nil();
+	void	set_double(double val);
+	//void	set_object(as_object* val);
+	void	set_bool(bool val);
+	void	set_string(const std::string& str);
+	void	set_string(const char* str);
+	void	set_int(int val);
+
+	void	operator=(const as_value& v);
+	bool	operator==(const as_value& v) const;
+	bool	operator!=(const as_value& v) const;
+	void	operator+=(double v) { set_double(to_number() + v); }
+
+	inline bool is_string() const { return m_type == STRING; }
+	inline bool is_number() const { return m_type == NUMBER; }
+	inline bool is_bool() const { return m_type == BOOLEAN; }
+	inline bool is_undefined() const { return m_type == UNDEFINED; }
+	inline bool is_nil() const { return m_type == NIL; }
+	//inline bool is_object() const { return m_type == OBJECT && m_object != NULL; }
+
 };
 
 #endif // CONTAINER_H

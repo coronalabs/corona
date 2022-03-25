@@ -1213,7 +1213,7 @@
         <Preprocessor Value="NO_REAL"/>
         <Preprocessor Value="ENABLE_ALMIXER_THREADS"/>
       </Compiler>
-      <Linker Options="-ldl -lGL -lz -lpthread -lopenal -lfreetype -lpng -lcrypto++ -lcurl -lgdk-3 -lwx_baseu-3.1 -lwx_baseu_net-3.1 -lwx_gtk3u_adv-3.1 -lwx_gtk3u_gl-3.1 -lwx_gtk3u_media-3.1 -lwx_gtk3u_core-3.1 -lwx_gtk3u_html-3.1 -lwx_gtk3u_stc-3.1 -lwx_gtk3u_webview-3.1" Required="yes"/>
+      <Linker Options="-ldl -lGL -lz -lpthread -lopenal -lfreetype -lpng -lcrypto -lcurl -lgdk-3 -lwx_baseu-3.1 -lwx_baseu_net-3.1 -lwx_gtk3u_adv-3.1 -lwx_gtk3u_gl-3.1 -lwx_gtk3u_media-3.1 -lwx_gtk3u_core-3.1 -lwx_gtk3u_html-3.1 -lwx_gtk3u_stc-3.1 -lwx_gtk3u_webview-3.1" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="CoronaSimulator/$(ProjectName)" IntermediateDirectory="./.Solar2DSimulator" Command="CoronaSimulator/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="Solar2DSimulator" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
