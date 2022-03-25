@@ -30,6 +30,7 @@ namespace Rtt
 		virtual void Prepare(const Display &display) override;
 		void openURL(const char *url);
 		bool Close();
+		void Draw() override;		// for ImGui renderer
 
 	protected:
 

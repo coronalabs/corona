@@ -34,12 +34,14 @@ namespace Rtt
 		cef_browser_t* fBrowser;
 		cef_window_info_t fWindowInfo;
 		cef_browser_settings_t fBrowserSettings;
-		cef_client_t fClient;
-		cef_render_handler_t fRender;
-		cef_request_handler_t fRequestHandler;
 
+		cef_client_t fClient;
 		weak_ptr<CefClient> this_ptr_for_client;
+
+		cef_render_handler_t fRender;
 		weak_ptr<CefClient> this_ptr_for_render;
+
+		cef_request_handler_t fRequestHandler;
 		weak_ptr<CefClient> this_ptr_for_requesthandler;
 	};
 

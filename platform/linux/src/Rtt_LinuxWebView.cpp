@@ -26,11 +26,13 @@ namespace Rtt
 		: Super(bounds)
 		, fWebView(NULL)
 	{
+		app->AddDisplayObject(this);
 	}
 
 	LinuxWebView::~LinuxWebView()
 	{
 		Close();
+		app->RemoveDisplayObject(this);
 	}
 
 	bool LinuxWebView::Initialize()
@@ -295,4 +297,72 @@ namespace Rtt
 		CoronaLuaWarning(L, "The native WebView:deleteCookies() function is not supported on Linux.");
 		return 0;
 	}
+
+	void LinuxWebView::Draw()
+	{
+		if (fWebView)
+		{
+			fWebView->advance();
+		}
+/*		// center this window when appearing
+		float w = fBounds.Width();
+		float h = fBounds.Height();
+		ImVec2 center(fBounds.xMin + w / 2, fBounds.yMin + h / 2);
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+		ImGui::SetNextWindowSize(ImVec2(w, h));
+
+		char windowLabel[32];
+		snprintf(windowLabel, sizeof(windowLabel), "##Text%p", this);
+		char fldLabel[32];
+		snprintf(fldLabel, sizeof(fldLabel), "##TextFld%p", this);
+
+		if (ImGui::Begin(windowLabel, NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground))
+		{
+			// set fontsize
+			float fontSize = ImGui::GetTextLineHeight();
+			if (fFontSize != fontSize)
+			{
+				if (fFontSize > 0)
+					ImGui::SetWindowFontScale(fFontSize / fontSize);
+				fFontSize = ImGui::GetTextLineHeight();		// reset
+			}
+
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			if (fHasFocus && !ImGui::IsWindowFocused())
+			{
+				dispatch("ended", 0, 0);
+			}
+			if (!fHasFocus && ImGui::IsWindowFocused())
+			{
+				dispatch("began", 0, 0);
+			}
+			fHasFocus = ImGui::IsWindowFocused();
+
+			ImGui::SetCursorPosX(0);
+			ImGui::SetCursorPosY(0);
+			ImGui::PushItemWidth(fBounds.Width());		// input field width
+			{
+				ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackCharFilter;
+				if (!fIsEditable)
+					flags |= ImGuiInputTextFlags_ReadOnly;
+
+				// input type
+				if (fInputType == InputType::number || fInputType == InputType::decimal)
+					flags |= ImGuiInputTextFlags_CharsDecimal;
+
+				if (fIsSecure)
+					flags |= ImGuiInputTextFlags_Password;
+
+				if (fIsSingleLine)
+					ImGui::InputText(fldLabel, fValue, sizeof(fValue), flags, ImGuiInputTextCallback, this);
+				else
+					ImGui::InputTextMultiline(fldLabel, fValue, sizeof(fValue), ImVec2(w, h), flags, ImGuiInputTextCallback, this);
+
+			}
+			ImGui::PopItemWidth();
+			ImGui::End();
+		}*/
+	}
+
 }; // namespace Rtt

@@ -27,21 +27,24 @@ namespace Rtt
 		int n = cef_string_utf16_to_utf8(new_url->str, new_url->length, &dst);
 		//sendMessage("onLoadURL", dst.str);
 		cef_string_utf8_clear(&dst);
+		printf("onResourceRedirect\n");
 	}
 
 	_cef_render_handler_t* CEF_CALLBACK getRenderHandler(struct _cef_client_t* self)
 	{
+		printf("getRenderHandler\n");
 		const weak_ptr<CefClient>& thiz = *(const weak_ptr<CefClient>*)((Uint8*)self + sizeof(struct _cef_client_t));
 		return &thiz->fRender;
 	}
 
 	_cef_request_handler_t* CEF_CALLBACK getRequestHandler(struct _cef_client_t* self)
 	{
+		printf("getRequestHandler\n");
 		const weak_ptr<CefClient>& thiz = *(const weak_ptr<CefClient>*)((Uint8*)self + sizeof(struct _cef_client_t));
 		return &thiz->fRequestHandler;
 	}
 
-	int CEF_CALLBACK getViewRect(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_rect_t* rect)
+	void CEF_CALLBACK getViewRect(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_rect_t* rect)
 	{
 		const weak_ptr<CefClient>& thiz = *(const weak_ptr<CefClient>*)((Uint8*)self + sizeof(struct _cef_render_handler_t));
 
@@ -49,12 +52,15 @@ namespace Rtt
 		rect->y = 0;
 		rect->width = thiz->fBitmap->Width();
 		rect->height = thiz->fBitmap->Height();
-		return 1;
+		printf("getViewRect %dx%d\n", rect->width, rect->height);
 	}
 
 	void CEF_CALLBACK onPaint(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_paint_element_type_t type, size_t dirtyRectsCount,
 		cef_rect_t const* dirtyRects, const void* buffer, int width, int height)
 	{
+		printf("onPaint\n");
+		return;
+
 		// BGRA ==> RGBA
 		Uint8* src = (Uint8*)buffer;
 		Uint8* buf = (Uint8*)malloc(width * height * 4);
@@ -292,25 +298,31 @@ namespace Rtt
 		int h = outBounds.Height();
 		fBitmap = new LinuxBaseBitmap(NULL, w, h, NULL);
 
+		fRender.base.size = sizeof(cef_render_handler_t);
+		fRender.on_paint = onPaint;
+		fRender.get_view_rect = getViewRect;
+
 		fRequestHandler.base.size = sizeof(fRequestHandler);
 		//fRequesthandler.on_before_browse = onBeforeBrowse;
 		//fRequesthandler.on_resource_redirect = onResourceRedirect;
 
-		fClient.base.size = sizeof(fClient);
+		fClient.base.size = sizeof(cef_client_t);
 		fClient.get_render_handler = getRenderHandler;
 		fClient.get_request_handler = getRequestHandler;
 
 		fWindowInfo.windowless_rendering_enabled = true;
 		//fWindowInfo.transparent_painting_enabled = true;
 
-		fBrowserSettings.size = sizeof(fBrowserSettings);
+		fBrowserSettings.size = sizeof(cef_browser_settings_t);
 		fBrowserSettings.windowless_frame_rate = 30;
 
 		// initial URL
 		cef_string_t cefurl = {};
 		cef_string_utf8_to_utf16(url, strlen(url), &cefurl);
 
-		fBrowser = cef_browser_host_create_browser_sync(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, 0, 0);
+		//		fBrowser = cef_browser_host_create_browser_sync(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, NULL, NULL);
+		int rc = cef_browser_host_create_browser(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, NULL, NULL);
+		Rtt_Log("cef_browser_host_create_browser %s\n", rc == 0 ? "failed" : "successed");
 	}
 
 	CefClient::~CefClient()
@@ -358,7 +370,9 @@ namespace Rtt
 		cef_settings_t settings = {};
 		settings.size = sizeof(cef_settings_t);
 		settings.log_severity = LOGSEVERITY_WARNING; // Show only warnings/errors
-		settings.no_sandbox = 1;
+		settings.no_sandbox = true;
+		settings.windowless_rendering_enabled = true;
+		settings.multi_threaded_message_loop = false;
 
 		// Initialize CEF.
 		rc = cef_initialize(&main_args, &settings, NULL, NULL);
