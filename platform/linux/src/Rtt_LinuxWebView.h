@@ -9,9 +9,9 @@
 
 #pragma once
 
+#include "Rtt_LinuxCEF.h"
 #include "Rtt_LinuxDisplayObject.h"
 #include "Rtt_MPlatform.h"
-#include "Rtt_LinuxCEF.h"
 
 namespace Rtt
 {
@@ -30,7 +30,7 @@ namespace Rtt
 		virtual void Prepare(const Display &display) override;
 		void openURL(const char *url);
 		bool Close();
-		void Draw() override;		// for ImGui renderer
+		void Draw(Renderer& renderer) const override;
 
 	protected:
 
@@ -47,7 +47,7 @@ namespace Rtt
 		static void onWebPopupErrorEvent();
 		static int OnDeleteCookies(lua_State *L);
 
-		CefClient* fWebView;
+		smart_ptr<CefClient> fWebView;
 
 	};
 }; // namespace Rtt

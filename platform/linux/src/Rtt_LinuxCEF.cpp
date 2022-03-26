@@ -2,6 +2,11 @@
 // whatever you want with it.
 
 #include "Rtt_LinuxCEF.h"
+#include "Rtt_LinuxApp.h"
+#include "Rtt_Display.h"
+#include "Renderer/Rtt_Geometry_Renderer.h"
+#include "Display/Rtt_ShaderFactory.h"
+#include "Display/Rtt_DisplayObject.h"
 
 static int s_x0 = 0;
 static int s_y0 = 0;
@@ -50,17 +55,14 @@ namespace Rtt
 
 		rect->x = 0;
 		rect->y = 0;
-		rect->width = thiz->fBitmap->Width();
-		rect->height = thiz->fBitmap->Height();
+		rect->width = thiz->Width();
+		rect->height = thiz->Height();
 		printf("getViewRect %dx%d\n", rect->width, rect->height);
 	}
 
 	void CEF_CALLBACK onPaint(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_paint_element_type_t type, size_t dirtyRectsCount,
 		cef_rect_t const* dirtyRects, const void* buffer, int width, int height)
 	{
-		printf("onPaint\n");
-		return;
-
 		// BGRA ==> RGBA
 		Uint8* src = (Uint8*)buffer;
 		Uint8* buf = (Uint8*)malloc(width * height * 4);
@@ -76,9 +78,7 @@ namespace Rtt
 		}
 
 		const weak_ptr<CefClient>& thiz = *(const weak_ptr<CefClient>*)((Uint8*)self + sizeof(struct _cef_render_handler_t));
-
-		// todo sanity checks
-		memcpy((char*)thiz->fBitmap->GetBits(NULL), buf, width * height * 4);
+		thiz->UpdateTex(buf, width, height);
 		free(buf);
 	}
 
@@ -281,8 +281,7 @@ namespace Rtt
 
 
 	CefClient::CefClient(const Rect& outBounds, const char* url)
-		: fBitmap(NULL)
-		, fBounds(outBounds)
+		: fBounds(outBounds)
 		, fUrl(url)
 		, fBrowser(NULL)
 		, fWindowInfo({})
@@ -294,9 +293,20 @@ namespace Rtt
 		, this_ptr_for_client(this)
 		, this_ptr_for_requesthandler(this)
 	{
+		printf("ctor CefClient\n");
+
 		int w = outBounds.Width();
 		int h = outBounds.Height();
-		fBitmap = new LinuxBaseBitmap(NULL, w, h, NULL);
+
+		Display& display = app->GetRuntime()->GetDisplay();
+		TextureFactory& factory = display.GetTextureFactory();
+
+		InitGeometry();
+
+		LinuxBaseBitmap* bm = new LinuxBaseBitmap(NULL, w, h, NULL);
+		TextureResourceBitmap* resourceY = TextureResourceBitmap::Create(factory, bm, false);
+		fTex = SharedPtr< TextureResourceBitmap >(resourceY);
+		fData.fFillTexture0 = &fTex->GetTexture();
 
 		fRender.base.size = sizeof(cef_render_handler_t);
 		fRender.on_paint = onPaint;
@@ -320,18 +330,80 @@ namespace Rtt
 		cef_string_t cefurl = {};
 		cef_string_utf8_to_utf16(url, strlen(url), &cefurl);
 
-		//		fBrowser = cef_browser_host_create_browser_sync(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, NULL, NULL);
-		int rc = cef_browser_host_create_browser(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, NULL, NULL);
-		Rtt_Log("cef_browser_host_create_browser %s\n", rc == 0 ? "failed" : "successed");
+		fBrowser = cef_browser_host_create_browser_sync(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, NULL, NULL);
+		Rtt_Log("cef_browser_host_create_browser %s\n", fBrowser == 0 ? "failed" : "successed");
 	}
 
 	CefClient::~CefClient()
 	{
+		printf("dtor CefClient\n");
 		if (fBrowser)
 		{
 			cef_browser_host_t* host = fBrowser->get_host(fBrowser);
 			host->close_browser(host, true);
 		}
+	}
+
+	void CefClient::UpdateTex(const uint8_t* buf, int width, int height)
+	{
+		printf("onPaint\n");
+		memcpy(GetBitmap(), buf, width * height * 4);
+		fTex->GetTexture().Invalidate(); // Force Renderer to update GPU texture
+	}
+
+	void CefClient::InitGeometry()
+	{
+		// Init fData.
+		int numVertices = 4;
+		Display& display = app->GetRuntime()->GetDisplay();
+		fData.fGeometry = new Rtt::Geometry(display.GetAllocator(), Geometry::kTriangleStrip, numVertices, 0, true);
+		fData.fGeometry->Resize(4, false);
+
+		Geometry::Vertex* dstVertices = fData.fGeometry->GetVertexData();
+		for (U32 i = 0; i < numVertices; i++)
+		{
+			Geometry::Vertex& dst = dstVertices[i];
+			dst.q = 1.f;
+			dst.z = 0.f;
+			dst.rs = dst.gs = dst.bs = dst.as = 255;
+			switch (i)
+			{
+			case 0:
+				dst.x = fBounds.xMin;
+				dst.y = fBounds.yMin;
+				dst.u = 0;
+				dst.v = 0;
+				break;
+			case 1:
+				dst.x = fBounds.xMin;
+				dst.y = fBounds.yMax;
+				dst.u = 0;
+				dst.v = 1;
+				break;
+			case 2:
+				dst.x = fBounds.xMax;
+				dst.y = fBounds.yMin;
+				dst.u = 1;
+				dst.v = 0;
+				break;
+			case 3:
+				dst.x = fBounds.xMax;
+				dst.y = fBounds.yMax;
+				dst.u = 1;
+				dst.v = 1;
+				break;
+			}
+		}
+
+		fData.fGeometry->SetVerticesUsed(numVertices);
+		ShaderFactory& factory = display.GetShaderFactory();
+
+#ifdef USE_NV12_SHADER
+		Shader* shader = factory.FindOrLoad(ShaderTypes::kCategoryComposite, "yuv420v");
+#else
+		Shader* shader = &factory.GetDefault();
+#endif
+		shader->Prepare(fData, 0, 0, ShaderResource::kDefault);
 	}
 
 	void	CefClient::advance()
@@ -346,7 +418,7 @@ namespace Rtt
 		// There may be more subprocesses like GPU (--type=gpu-process) and others.
 		// On Linux there are also special Zygote processes.
 
-		if (argc > 1)
+		/*if (argc > 1)
 		{
 			Rtt_Log("Subprocess: ");
 			for (int i = 1; i < argc; i++)
@@ -354,7 +426,7 @@ namespace Rtt
 				Rtt_Log("%s ", argv[i]);
 			}
 			Rtt_Log("\n");
-		}
+		}*/
 
 		// Execute subprocesses. 
 		// It is also possible to have a separate executable for subprocesses by setting cef_settings_t.browser_subprocess_path.
@@ -378,7 +450,7 @@ namespace Rtt
 		rc = cef_initialize(&main_args, &settings, NULL, NULL);
 
 		// A return value of true (1) indicates that it succeeded and false (0) indicates that it failed.
-		Rtt_Log("Main process: CEF Initialize %s\n", rc == 0 ? "failed" : "successed");
+		//Rtt_Log("Main process: CEF Initialize %s\n", rc == 0 ? "failed" : "successed");
 		return rc == 1;
 	}
 

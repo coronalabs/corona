@@ -19,20 +19,18 @@
 #include "Rtt_LinuxPlatform.h"
 #include "CoronaLua.h"
 #include "Rtt_LuaResource.h"
+#include "Rtt_Renderer.h"
 
 namespace Rtt
 {
-	LinuxWebView::LinuxWebView(const Rect &bounds)
+	LinuxWebView::LinuxWebView(const Rect& bounds)
 		: Super(bounds)
-		, fWebView(NULL)
 	{
-		app->AddDisplayObject(this);
 	}
 
 	LinuxWebView::~LinuxWebView()
 	{
 		Close();
-		app->RemoveDisplayObject(this);
 	}
 
 	bool LinuxWebView::Initialize()
@@ -45,7 +43,7 @@ namespace Rtt
 		return PlatformDisplayObject::GetWebViewObjectProxyVTable();
 	}
 
-	int LinuxWebView::ValueForKey(lua_State *L, const char key[]) const
+	int LinuxWebView::ValueForKey(lua_State* L, const char key[]) const
 	{
 		Rtt_ASSERT(key);
 
@@ -77,7 +75,7 @@ namespace Rtt
 		}
 		else if (strcmp("bounces", key) == 0)
 		{
-			Rtt_PRINT( ( "WARNING: Web views do not have bounce behavior on this platform.\n" ) );
+			Rtt_PRINT(("WARNING: Web views do not have bounce behavior on this platform.\n"));
 			result = 0;
 		}
 		else if (strcmp("deleteCookies", key) == 0)
@@ -104,7 +102,7 @@ namespace Rtt
 		return result;
 	}
 
-	bool LinuxWebView::SetValueForKey(lua_State *L, const char key[], int valueIndex)
+	bool LinuxWebView::SetValueForKey(lua_State* L, const char key[], int valueIndex)
 	{
 		Rtt_ASSERT(key);
 
@@ -116,11 +114,11 @@ namespace Rtt
 			//	Rtt_PRINT( ( "WARNING: Web views do not have bounce behavior on this platform.\n" ) );
 		}
 		else if (strcmp("request", key) == 0
-		         || strcmp("stop", key) == 0
-		         || strcmp("back", key) == 0
-		         || strcmp("forward", key) == 0
-		         || strcmp("reload", key) == 0
-		         || strcmp("resize", key) == 0)
+			|| strcmp("stop", key) == 0
+			|| strcmp("back", key) == 0
+			|| strcmp("forward", key) == 0
+			|| strcmp("reload", key) == 0
+			|| strcmp("resize", key) == 0)
 		{
 			// no-op
 		}
@@ -132,16 +130,16 @@ namespace Rtt
 		return result;
 	}
 
-	int LinuxWebView::Load(lua_State *L)
+	int LinuxWebView::Load(lua_State* L)
 	{
 		return 0;
 	}
 
-	int LinuxWebView::Request(lua_State *L)
+	int LinuxWebView::Request(lua_State* L)
 	{
 		// Fetch the web view from the Lua object.
-		const LuaProxyVTable &table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
-		LinuxWebView *view = (LinuxWebView *)luaL_todisplayobject(L, 1, table);
+		const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+		LinuxWebView* view = (LinuxWebView*)luaL_todisplayobject(L, 1, table);
 
 		if (view == NULL)
 		{
@@ -154,7 +152,7 @@ namespace Rtt
 			luaL_error(L, "Function WebView.request() was given an invalid URL argument. Was expecting a string.");
 		}
 
-		const char *url = lua_tostring(L, 2);
+		const char* url = lua_tostring(L, 2);
 
 		// If the optional base directory argument was provided, then update the above URL path with it.
 		if (lua_type(L, 3) == LUA_TSTRING)
@@ -201,7 +199,6 @@ namespace Rtt
 	bool LinuxWebView::Close()
 	{
 		// Do not continue if there is no web browser to close.
-		delete fWebView;
 		fWebView = NULL;
 		return true;
 	}
@@ -240,23 +237,26 @@ namespace Rtt
 		//arg->fThiz->DispatchEventWithTarget(event);
 	}
 
-	void LinuxWebView::openURL(const char *url)
+	void LinuxWebView::openURL(const char* url)
 	{
-		Rect outBounds;
-		GetScreenBounds(outBounds);
-		fWebView = new CefClient(outBounds, url);
+		Rect bounds;
+		GetScreenBounds(bounds);
+
+		int w = bounds.Width();
+		int h = bounds.Height();
+		fWebView = new CefClient(bounds, url);
 	}
 
-	void LinuxWebView::Prepare(const Display &display)
+	void LinuxWebView::Prepare(const Display& display)
 	{
 		Rect coronaBounds{};
 		GetScreenBounds(coronaBounds);
 	}
 
-	int LinuxWebView::Stop(lua_State *L)
+	int LinuxWebView::Stop(lua_State* L)
 	{
 		const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
-		LinuxWebView *view = (LinuxWebView *)luaL_todisplayobject(L, 1, table);
+		LinuxWebView* view = (LinuxWebView*)luaL_todisplayobject(L, 1, table);
 
 		if (view)
 		{
@@ -265,25 +265,25 @@ namespace Rtt
 		return 0;
 	}
 
-	int LinuxWebView::Back(lua_State *L)
+	int LinuxWebView::Back(lua_State* L)
 	{
 		return 0;
 	}
 
-	int LinuxWebView::Forward(lua_State *L)
+	int LinuxWebView::Forward(lua_State* L)
 	{
 		return 0;
 	}
 
-	int LinuxWebView::Resize(lua_State *L)
+	int LinuxWebView::Resize(lua_State* L)
 	{
 		return 0;
 	}
 
-	int LinuxWebView::Reload(lua_State *L)
+	int LinuxWebView::Reload(lua_State* L)
 	{
 		const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
-		LinuxWebView *view = (LinuxWebView *)luaL_todisplayobject(L, 1, table);
+		LinuxWebView* view = (LinuxWebView*)luaL_todisplayobject(L, 1, table);
 
 		if (view)
 		{
@@ -292,77 +292,19 @@ namespace Rtt
 		return 0;
 	}
 
-	int LinuxWebView::OnDeleteCookies(lua_State *L)
+	int LinuxWebView::OnDeleteCookies(lua_State* L)
 	{
 		CoronaLuaWarning(L, "The native WebView:deleteCookies() function is not supported on Linux.");
 		return 0;
 	}
 
-	void LinuxWebView::Draw()
+	void LinuxWebView::Draw(Renderer& renderer) const
 	{
 		if (fWebView)
 		{
 			fWebView->advance();
+			renderer.Insert(&fWebView->fData);
 		}
-/*		// center this window when appearing
-		float w = fBounds.Width();
-		float h = fBounds.Height();
-		ImVec2 center(fBounds.xMin + w / 2, fBounds.yMin + h / 2);
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-		ImGui::SetNextWindowSize(ImVec2(w, h));
-
-		char windowLabel[32];
-		snprintf(windowLabel, sizeof(windowLabel), "##Text%p", this);
-		char fldLabel[32];
-		snprintf(fldLabel, sizeof(fldLabel), "##TextFld%p", this);
-
-		if (ImGui::Begin(windowLabel, NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground))
-		{
-			// set fontsize
-			float fontSize = ImGui::GetTextLineHeight();
-			if (fFontSize != fontSize)
-			{
-				if (fFontSize > 0)
-					ImGui::SetWindowFontScale(fFontSize / fontSize);
-				fFontSize = ImGui::GetTextLineHeight();		// reset
-			}
-
-			const ImVec2& window_size = ImGui::GetWindowSize();
-
-			if (fHasFocus && !ImGui::IsWindowFocused())
-			{
-				dispatch("ended", 0, 0);
-			}
-			if (!fHasFocus && ImGui::IsWindowFocused())
-			{
-				dispatch("began", 0, 0);
-			}
-			fHasFocus = ImGui::IsWindowFocused();
-
-			ImGui::SetCursorPosX(0);
-			ImGui::SetCursorPosY(0);
-			ImGui::PushItemWidth(fBounds.Width());		// input field width
-			{
-				ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackCharFilter;
-				if (!fIsEditable)
-					flags |= ImGuiInputTextFlags_ReadOnly;
-
-				// input type
-				if (fInputType == InputType::number || fInputType == InputType::decimal)
-					flags |= ImGuiInputTextFlags_CharsDecimal;
-
-				if (fIsSecure)
-					flags |= ImGuiInputTextFlags_Password;
-
-				if (fIsSingleLine)
-					ImGui::InputText(fldLabel, fValue, sizeof(fValue), flags, ImGuiInputTextCallback, this);
-				else
-					ImGui::InputTextMultiline(fldLabel, fValue, sizeof(fValue), ImVec2(w, h), flags, ImGuiInputTextCallback, this);
-
-			}
-			ImGui::PopItemWidth();
-			ImGui::End();
-		}*/
 	}
 
 }; // namespace Rtt

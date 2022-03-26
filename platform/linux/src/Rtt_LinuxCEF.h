@@ -9,6 +9,8 @@
 #include "Rtt_LinuxContainer.h"
 #include "Rtt_LinuxBitmap.h"
 #include "Rtt_Geometry.h"
+#include "Rtt_RenderData.h"
+#include "Display/Rtt_TextureResourceBitmap.h"
 
 // cef
 #include "include/capi/cef_app_capi.h"	
@@ -24,12 +26,27 @@ namespace Rtt
 		virtual ~CefClient();
 
 		void advance();
+		int Width() { return fBounds.Width(); }
+		int Height() { return fBounds.Height(); }
+		uint8_t* GetBitmap()
+		{
+			if (fTex.NotNull())
+			{
+				PlatformBitmap* bitmap = fTex->GetBitmap();
+				return (uint8_t*)bitmap->GetBits(NULL);
+			}
+			return NULL;
+		}
 
-	//private:
+		void InitGeometry();
+		void UpdateTex(const uint8_t* buf, int width, int height);
 
-		LinuxBaseBitmap* fBitmap;
+		//private:
+
 		Rect fBounds;
 		std::string fUrl;
+		RenderData fData;
+		SharedPtr< TextureResourceBitmap > fTex;
 
 		cef_browser_t* fBrowser;
 		cef_window_info_t fWindowInfo;
