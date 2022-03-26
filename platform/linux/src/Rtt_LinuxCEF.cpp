@@ -37,7 +37,6 @@ namespace Rtt
 
 	_cef_render_handler_t* CEF_CALLBACK getRenderHandler(struct _cef_client_t* self)
 	{
-		printf("getRenderHandler\n");
 		const weak_ptr<WebView>& thiz = *(const weak_ptr<WebView>*)((Uint8*)self + sizeof(struct _cef_client_t));
 		return &thiz->fRender;
 	}
@@ -214,6 +213,7 @@ namespace Rtt
 		if (fBrowser == NULL)
 			return;
 
+		printf("move %dx%d\n", x, y);
 		cef_mouse_event_t event;
 		event.modifiers = 0;	// EVENTFLAG_LEFT_MOUSE_BUTTON
 		event.x = x;
@@ -230,6 +230,7 @@ namespace Rtt
 		if (fBrowser == NULL)
 			return;
 
+		printf("pres %dx%d\n", x,y);
 		cef_mouse_event_t event;
 		event.modifiers = 0; // EVENTFLAG_LEFT_MOUSE_BUTTON;
 		event.x = x;
@@ -246,6 +247,7 @@ namespace Rtt
 		if (fBrowser == NULL)
 			return;
 
+		printf("rele %dx%d\n", x, y);
 		cef_mouse_event_t event;
 		event.modifiers = 0;
 		event.x = x;

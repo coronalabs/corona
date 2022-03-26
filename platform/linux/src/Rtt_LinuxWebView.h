@@ -31,6 +31,7 @@ namespace Rtt
 		void openURL(const char *url);
 		bool Close();
 		void Draw(Renderer& renderer) const override;
+		void ProcessEvent(const SDL_Event& evt) override;
 
 	protected:
 

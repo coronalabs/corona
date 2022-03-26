@@ -33,14 +33,12 @@ namespace Rtt
 		, fInputType(InputType::undefined)
 		, fFontSize(0)
 	{
-		app->AddDisplayObject(this);
 		*fValue = 0;
 		*fOldValue = 0;
 	}
 
 	LinuxTextBoxObject::~LinuxTextBoxObject()
 	{
-		app->RemoveDisplayObject(this);
 	}
 
 	const LuaProxyVTable& LinuxTextBoxObject::ProxyVTable() const

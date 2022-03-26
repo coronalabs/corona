@@ -330,6 +330,11 @@ namespace Rtt
 				if (fDlg == NULL && (evt.window.windowID == SDL_GetWindowID(fWindow)) && !io.WantCaptureMouse)
 				{
 					fMouse->OnEvent(evt, fWindow);
+					
+					for (int i = 0; i < fNativeObjects.size(); i++)
+					{
+						fNativeObjects[i]->ProcessEvent(evt);
+					}
 				}
 				break;
 
