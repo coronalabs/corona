@@ -20,10 +20,10 @@
 
 namespace Rtt
 {
-	struct CefClient : public ref_counted
+	struct WebView : public ref_counted
 	{
-		CefClient(const Rect& outBounds, const char* url);
-		virtual ~CefClient();
+		WebView(const Rect& outBounds, const char* url);
+		virtual ~WebView();
 
 		void advance();
 		int Width() { return fBounds.Width(); }
@@ -40,6 +40,11 @@ namespace Rtt
 
 		void InitGeometry();
 		void UpdateTex(const uint8_t* buf, int width, int height);
+		void MouseMove(int	x, int y, int buttons);
+		void MousePress(int	x, int y, int buttons);
+		void MouseRelease(int	x, int y, int buttons);
+		void KeyDown();
+		void ClearCookies();
 
 		//private:
 
@@ -53,13 +58,13 @@ namespace Rtt
 		cef_browser_settings_t fBrowserSettings;
 
 		cef_client_t fClient;
-		weak_ptr<CefClient> this_ptr_for_client;
+		weak_ptr<WebView> this_ptr_for_client;
 
 		cef_render_handler_t fRender;
-		weak_ptr<CefClient> this_ptr_for_render;
+		weak_ptr<WebView> this_ptr_for_render;
 
 		cef_request_handler_t fRequestHandler;
-		weak_ptr<CefClient> this_ptr_for_requesthandler;
+		weak_ptr<WebView> this_ptr_for_requesthandler;
 	};
 
 	bool InitCEF(int argc, char** argv);

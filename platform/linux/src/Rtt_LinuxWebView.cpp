@@ -244,7 +244,7 @@ namespace Rtt
 
 		int w = bounds.Width();
 		int h = bounds.Height();
-		fWebView = new CefClient(bounds, url);
+		fWebView = new WebView(bounds, url);
 	}
 
 	void LinuxWebView::Prepare(const Display& display)
