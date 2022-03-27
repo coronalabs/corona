@@ -8,7 +8,7 @@
 #include "Display/Rtt_ShaderFactory.h"
 #include "Display/Rtt_DisplayObject.h"
 
-#ifdef USE_LIBCEF
+#if USE_LIBCEF
 
 namespace Rtt
 {
@@ -75,8 +75,8 @@ namespace Rtt
 		free(buf);
 	}
 
-	WebView::WebView(const Rect& outBounds, const char* url)
-		: fBounds(outBounds)
+	WebView::WebView(const Rect& bounds, const char* url)
+		: fBounds(bounds)
 		, fUrl(url)
 		, fBrowser(NULL)
 		, fWindowInfo({})
@@ -88,8 +88,8 @@ namespace Rtt
 		, this_ptr_for_client(this)
 		, this_ptr_for_requesthandler(this)
 	{
-		int w = outBounds.Width();
-		int h = outBounds.Height();
+		int w = fBounds.Width();
+		int h = fBounds.Height();
 
 		Display& display = app->GetRuntime()->GetDisplay();
 		TextureFactory& factory = display.GetTextureFactory();
@@ -124,7 +124,7 @@ namespace Rtt
 		cef_string_utf8_to_utf16(url, strlen(url), &cefurl);
 
 		fBrowser = cef_browser_host_create_browser_sync(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, NULL, NULL);
-		Rtt_Log("CEF browser %s\n", fBrowser == 0 ? "failed to start" : "started");
+		Rtt_Log("CEF browser %s, %dx%d\n", fBrowser == 0 ? "failed to start" : "started", w, h);
 	}
 
 	WebView::~WebView()

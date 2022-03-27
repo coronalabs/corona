@@ -75,7 +75,7 @@ namespace Rtt
 		int w, h, x, y;
 		SDL_GetWindowPosition(fWindow, &x, &y);
 		SDL_GetWindowSize(fWindow, &w, &h);
-		h = -app->GetMenuHeight();
+		h -= app->GetMenuHeight();
 		fConfig["x"] = x;
 		fConfig["y"] = y;
 		fConfig["w"] = w;

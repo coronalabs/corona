@@ -12,7 +12,7 @@
 #include "Rtt_RenderData.h"
 #include "Display/Rtt_TextureResourceBitmap.h"
 
-#ifdef USE_LIBCEF
+#if USE_LIBCEF
 
 # include "include/capi/cef_app_capi.h"	
 # include "include/capi/cef_browser_capi.h"		// browser API

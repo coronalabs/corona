@@ -212,7 +212,7 @@ namespace Rtt
 		//const char *url = e.GetURL().c_str();
 		//eventArg *arg = (eventArg*) e.GetEventUserData();
 
-		//// Relay this event to the popup's Lua listener.
+		//// Relay this event to the popup's Lua listenebounds.
 		//Rtt::UrlRequestEvent event(url, Rtt::UrlRequestEvent::kOther);
 		//arg->fThiz->DispatchEventWithTarget(event);
 	}
@@ -239,18 +239,12 @@ namespace Rtt
 
 	void LinuxWebView::openURL(const char* url)
 	{
-		Rect bounds;
-		GetScreenBounds(bounds);
-
-		int w = bounds.Width();
-		int h = bounds.Height();
+		Rect bounds = StageBounds();
 		fWebView = new WebView(bounds, url);
 	}
 
 	void LinuxWebView::Prepare(const Display& display)
 	{
-		Rect coronaBounds{};
-		GetScreenBounds(coronaBounds);
 	}
 
 	int LinuxWebView::Stop(lua_State* L)
@@ -310,7 +304,10 @@ namespace Rtt
 	{
 		if (fWebView)
 		{
-			const Rect& r = fWebView->fBounds;
+			Rect boundsScreen;
+			GetScreenBounds(boundsScreen);
+			float k = 1 / GetContentToScreenSx();
+
 			switch (evt.type)
 			{
 			case SDL_MOUSEBUTTONDOWN:
@@ -321,11 +318,13 @@ namespace Rtt
 					int x = b.x;
 					int y = b.y;
 					y -= app->GetMenuHeight();
-					if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+					//printf("%d-%d %d-%d, %dx%d\n", (int)boundsScreen.xMin, (int)boundsScreen.Width(), (int)boundsScreen.yMin, (int)boundsScreen.Height(), x, y);
+
+					if (x >= boundsScreen.xMin && y >= boundsScreen.yMin && x <= boundsScreen.xMax && y <= boundsScreen.yMax)
 					{
-						x -= r.xMin;
-						y -= r.yMin;
-						fWebView->MousePress(x, y);
+						x -= boundsScreen.xMin;
+						y -= boundsScreen.yMin;
+						fWebView->MousePress(x * k, y * k);
 						return true;
 					}
 				}
@@ -339,11 +338,12 @@ namespace Rtt
 					int x = b.x;
 					int y = b.y;
 					y -= app->GetMenuHeight();
-					if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+					if (x >= boundsScreen.xMin && y >= boundsScreen.yMin && x <= boundsScreen.xMax && y <= boundsScreen.yMax)
 					{
-						x -= r.xMin;
-						y -= r.yMin;
-						fWebView->MouseRelease(x, y);
+						x -= boundsScreen.xMin;
+						y -= boundsScreen.yMin;
+
+						fWebView->MouseRelease(x * k, y * k);
 						return true;
 					}
 				}
@@ -357,11 +357,11 @@ namespace Rtt
 					int x = b.x;
 					int y = b.y;
 					y -= app->GetMenuHeight();
-					if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+					if (x >= boundsScreen.xMin && y >= boundsScreen.yMin && x <= boundsScreen.xMax && y <= boundsScreen.yMax)
 					{
-						x -= r.xMin;
-						y -= r.yMin;
-						fWebView->MouseMove(x, y);
+						x -= boundsScreen.xMin;
+						y -= boundsScreen.yMin;
+						fWebView->MouseMove(x * k, y * k);
 						return true;
 					}
 				}
@@ -376,10 +376,10 @@ namespace Rtt
 					SDL_GetMouseState(&x, &y);
 					y -= app->GetMenuHeight();
 
-					if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+					if (x >= boundsScreen.xMin && y >= boundsScreen.yMin && x <= boundsScreen.xMax && y <= boundsScreen.yMax)
 					{
-						x -= r.xMin;
-						y -= r.yMin;
+						x -= boundsScreen.xMin;
+						y -= boundsScreen.yMin;
 						fWebView->MouseWheel(w.x, w.y);
 						return true;
 					}
