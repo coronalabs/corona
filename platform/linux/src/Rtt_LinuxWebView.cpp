@@ -300,7 +300,7 @@ namespace Rtt
 
 	void LinuxWebView::Draw(Renderer& renderer) const
 	{
-		if (fWebView)
+		if (fWebView && fWebView->fData.fFillTexture0)
 		{
 			renderer.Insert(&fWebView->fData);
 		}

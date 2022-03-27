@@ -12,11 +12,12 @@
 #include "Rtt_RenderData.h"
 #include "Display/Rtt_TextureResourceBitmap.h"
 
-// cef
-#include "include/capi/cef_app_capi.h"	
-#include "include/capi/cef_browser_capi.h"		// browser API
-#include "include/capi/cef_client_capi.h"		// client API
-#include "include/capi/cef_app_capi.h"
+#ifdef USE_LIBCEF
+
+# include "include/capi/cef_app_capi.h"	
+# include "include/capi/cef_browser_capi.h"		// browser API
+# include "include/capi/cef_client_capi.h"		// client API
+# include "include/capi/cef_app_capi.h"
 
 namespace Rtt
 {
@@ -68,8 +69,42 @@ namespace Rtt
 		weak_ptr<WebView> this_ptr_for_requesthandler;
 	};
 
+} // namespace 
+
+#else
+
+// dummy class
+namespace Rtt
+{
+	struct WebView : public ref_counted
+	{
+		WebView(const Rect& outBounds, const char* url) {}
+		virtual ~WebView() {};
+
+		int Width() { return 0; }
+		int Height() { return 0; }
+		uint8_t* GetBitmap() { return NULL; }
+		void InitGeometry() {}
+		void UpdateTex(const uint8_t* buf, int width, int height) {}
+		void MouseMove(int	x, int y) {}
+		void MousePress(int	x, int y) {}
+		void MouseRelease(int	x, int y) {}
+		void MouseWheel(int deltaX, int deltaY) {}
+		int EventModifiers() const { return 0; }
+		void KeyDown() {}
+		void ClearCookies() {}
+
+		Rect fBounds;
+		RenderData fData;
+	};
+
+} // namespace 
+
+#endif
+
+namespace Rtt
+{
 	bool InitCEF(int argc, char** argv);
 	void FinalizeCEF();
 	void	advanceCEF();
-
-}	// namespace 
+}

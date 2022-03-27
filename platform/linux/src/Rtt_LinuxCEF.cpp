@@ -8,10 +8,7 @@
 #include "Display/Rtt_ShaderFactory.h"
 #include "Display/Rtt_DisplayObject.h"
 
-static int s_x0 = 0;
-static int s_y0 = 0;
-static float s_retina = 1;
-static float s_scale = 1;
+#ifdef USE_LIBCEF
 
 namespace Rtt
 {
@@ -387,3 +384,15 @@ namespace Rtt
 	}
 
 }	// namespace bakeinflash
+
+#else
+
+namespace Rtt
+{
+	bool InitCEF(int argc, char** argv) { return true; }
+	void FinalizeCEF() {}
+	void	advanceCEF() {}
+}
+
+#endif
+

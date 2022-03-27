@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+#set(USE_LIBCEF "USE_LIBCEF")
+if (USE_LIBCEF)
+  set(LIBCEF "cef")
+	message(STATUS "Using libcef")
+endif()
+
 # check dependencies
 
 find_package(ZLIB REQUIRED)
@@ -994,12 +1000,14 @@ ENDFOREACH()
 
 target_compile_definitions( Solar2D PUBLIC
 	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
+	${USE_LIBCEF}
 	LUA_USE_POPEN Rtt_LUA_COMPILER LUA_DL_DLOPEN 
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
 target_compile_definitions( Solar2DSimulator PUBLIC
 	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
+	${USE_LIBCEF}
 	LUA_USE_POPEN Rtt_AUTHORING_SIMULATOR Rtt_LUA_COMPILER Rtt_SIMULATOR LUA_DL_DLOPEN
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
@@ -1010,8 +1018,8 @@ target_compile_definitions( Solar2DBuilder PUBLIC
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
-target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2 cef)
-target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2 cef)
+target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2 ${LIBCEF})
+target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2 ${LIBCEF})
 
 # Enabling functions loaded from dlopen call a function from the Solar2DSimulator
 target_link_options(Solar2D BEFORE PUBLIC -export-dynamic)

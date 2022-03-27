@@ -109,6 +109,7 @@ namespace Rtt
 		{
 			Window::SetStyle();
 			CreateMenu();
+			fSkins.Load(fContext->GetRuntime()->VMContext().L());
 
 			bool showErrors = fConfig["showRuntimeErrors"].to_bool();
 			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrorsSet, true);
@@ -118,8 +119,6 @@ namespace Rtt
 			if (IsHomeScreen(GetAppName()))
 			{
 				title = "Solar2D Simulator";
-				fSkins.Load(fContext->GetRuntime()->VMContext().L());
-
 				GetPlatform()->fShowRuntimeErrors = fConfig["showRuntimeErrors"].to_bool();
 			}
 			else
