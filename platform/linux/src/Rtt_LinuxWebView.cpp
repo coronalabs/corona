@@ -367,6 +367,25 @@ namespace Rtt
 				}
 				break;
 			}
+			case SDL_MOUSEWHEEL:
+			{
+				const SDL_MouseWheelEvent& w = evt.wheel;
+				if (w.which != SDL_TOUCH_MOUSEID)
+				{
+					int x, y;
+					SDL_GetMouseState(&x, &y);
+					y -= app->GetMenuHeight();
+
+					if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+					{
+						x -= r.xMin;
+						y -= r.yMin;
+						fWebView->MouseWheel(w.x, w.y);
+						return true;
+					}
+				}
+				break;
+			}
 			}
 		}
 		return false;

@@ -42,6 +42,7 @@ namespace Rtt
 		void MouseMove(int	x, int y);
 		void MousePress(int	x, int y);
 		void MouseRelease(int	x, int y);
+		void MouseWheel(int deltaX, int deltaY);
 		int EventModifiers() const;
 		void KeyDown();
 		void ClearCookies();

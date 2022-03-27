@@ -253,6 +253,17 @@ namespace Rtt
 		}
 	}
 
+	void	WebView::MouseWheel(int deltaX, int deltaY)
+	{
+		if (fBrowser)
+		{
+			cef_mouse_event_t event = { 100, 100, EventModifiers() };
+			cef_browser_host_t* host = fBrowser->get_host(fBrowser);
+			host->set_focus(host, 1);
+			host->send_mouse_wheel_event(host, &event, deltaX, deltaY);
+		}
+	}
+
 	void	WebView::KeyDown()
 	{
 		if (fBrowser == NULL)
