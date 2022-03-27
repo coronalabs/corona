@@ -31,6 +31,7 @@
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_LinuxApp.h"
 #include "Rtt_HTTPClient.h"
+#include "Rtt_LinuxCEF.h"
 #include <curl/curl.h>
 #include <utility>		// for pairs
 #include "lua.h"
@@ -423,6 +424,8 @@ namespace Rtt
 			Flush();
 			return;
 		}
+
+		advanceCEF();
 
 		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)GetPlatform()->GetDevice().GetInputDeviceManager();
 		deviceManager.dispatchEvents(fRuntime);

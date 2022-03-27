@@ -50,7 +50,7 @@ namespace Rtt
 		virtual void Prepare(const Display &display) override;
 		void showControls(bool val);
 		void setBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-		virtual void ProcessEvent(const SDL_Event& evt) {}
+		virtual bool ProcessEvent(const SDL_Event& evt) { return false; }
 
 	protected:
 

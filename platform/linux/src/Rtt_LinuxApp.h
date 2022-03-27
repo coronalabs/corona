@@ -136,6 +136,7 @@ namespace Rtt
 	protected:
 
 		virtual void SolarEvent(const SDL_Event& e) {}
+		bool DispathNativeObjectsEvent(const SDL_Event& e);
 
 		smart_ptr<SolarAppContext> fContext;
 		SDL_Window* fWindow;

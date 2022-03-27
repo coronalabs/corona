@@ -329,11 +329,10 @@ namespace Rtt
 				// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
 				if (fDlg == NULL && (evt.window.windowID == SDL_GetWindowID(fWindow)) && !io.WantCaptureMouse)
 				{
-					fMouse->OnEvent(evt, fWindow);
-					
-					for (int i = 0; i < fNativeObjects.size(); i++)
+					// focus is in native objects ?
+					if (!DispathNativeObjectsEvent(evt))
 					{
-						fNativeObjects[i]->ProcessEvent(evt);
+						fMouse->OnEvent(evt, fWindow);
 					}
 				}
 				break;
@@ -387,6 +386,19 @@ namespace Rtt
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
 		}
 		return true;
+	}
+
+	bool SolarApp::DispathNativeObjectsEvent(const SDL_Event& evt)
+	{
+		for (int i = 0; i < fNativeObjects.size(); i++)
+		{
+			if (fNativeObjects[i]->ProcessEvent(evt))
+			{
+				// focus is in native object
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void SolarApp::Run()

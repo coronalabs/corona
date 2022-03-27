@@ -43,7 +43,6 @@ namespace Rtt
 
 	_cef_request_handler_t* CEF_CALLBACK getRequestHandler(struct _cef_client_t* self)
 	{
-		printf("getRequestHandler\n");
 		const weak_ptr<WebView>& thiz = *(const weak_ptr<WebView>*)((Uint8*)self + sizeof(struct _cef_client_t));
 		return &thiz->fRequestHandler;
 	}
@@ -51,12 +50,10 @@ namespace Rtt
 	void CEF_CALLBACK getViewRect(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_rect_t* rect)
 	{
 		const weak_ptr<WebView>& thiz = *(const weak_ptr<WebView>*)((Uint8*)self + sizeof(struct _cef_render_handler_t));
-
 		rect->x = 0;
 		rect->y = 0;
 		rect->width = thiz->Width();
 		rect->height = thiz->Height();
-		printf("getViewRect %dx%d\n", rect->width, rect->height);
 	}
 
 	void CEF_CALLBACK onPaint(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_paint_element_type_t type, size_t dirtyRectsCount,
@@ -94,8 +91,6 @@ namespace Rtt
 		, this_ptr_for_client(this)
 		, this_ptr_for_requesthandler(this)
 	{
-		printf("ctor WebView\n");
-
 		int w = outBounds.Width();
 		int h = outBounds.Height();
 
@@ -132,23 +127,21 @@ namespace Rtt
 		cef_string_utf8_to_utf16(url, strlen(url), &cefurl);
 
 		fBrowser = cef_browser_host_create_browser_sync(&fWindowInfo, &fClient, &cefurl, &fBrowserSettings, NULL, NULL);
-		Rtt_Log("cef_browser_host_create_browser %s\n", fBrowser == 0 ? "failed" : "successed");
+		Rtt_Log("CEF browser %s\n", fBrowser == 0 ? "failed to start" : "started");
 	}
 
 	WebView::~WebView()
 	{
-		printf("dtor WebView\n");
+		Rtt_Log("CEF browser ended\n");
 		if (fBrowser)
 		{
 			cef_browser_host_t* host = fBrowser->get_host(fBrowser);
 			host->close_browser(host, true);
-			cef_do_message_loop_work();
 		}
 	}
 
 	void WebView::UpdateTex(const uint8_t* buf, int width, int height)
 	{
-		printf("onPaint\n");
 		memcpy(GetBitmap(), buf, width * height * 4);
 		fTex->GetTexture().Invalidate(); // Force Renderer to update GPU texture
 	}
@@ -203,58 +196,61 @@ namespace Rtt
 		shader->Prepare(fData, 0, 0, ShaderResource::kDefault);
 	}
 
-	void	WebView::advance()
+
+	int WebView::EventModifiers() const
 	{
-		cef_do_message_loop_work();
+		// Fetch the mouse's current up/down buttons states.
+		int m = 0;
+		Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+		m |= mouseState & SDL_BUTTON(SDL_BUTTON_LEFT) ? EVENTFLAG_LEFT_MOUSE_BUTTON : 0;
+		m |= mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT) ? EVENTFLAG_RIGHT_MOUSE_BUTTON : 0;
+		m |= mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE) ? EVENTFLAG_MIDDLE_MOUSE_BUTTON : 0;
+
+		// Fetch the current state of the "shift", "alt", and "ctrl" keys.
+		const Uint8* key = SDL_GetKeyboardState(NULL);
+		m |= key[SDL_SCANCODE_LALT] ? EVENTFLAG_ALT_DOWN | EVENTFLAG_IS_LEFT : 0;
+		m |= key[SDL_SCANCODE_RALT] ? EVENTFLAG_ALT_DOWN | EVENTFLAG_IS_RIGHT : 0;
+		m |= key[SDL_SCANCODE_LSHIFT] ? EVENTFLAG_SHIFT_DOWN | EVENTFLAG_IS_LEFT : 0;
+		m |= key[SDL_SCANCODE_RSHIFT] ? EVENTFLAG_SHIFT_DOWN | EVENTFLAG_IS_RIGHT : 0;
+		m |= key[SDL_SCANCODE_LCTRL] ? EVENTFLAG_CONTROL_DOWN | EVENTFLAG_IS_LEFT : 0;
+		m |= key[SDL_SCANCODE_RCTRL] ? EVENTFLAG_CONTROL_DOWN | EVENTFLAG_IS_RIGHT : 0;
+		m |= key[SDL_SCANCODE_LGUI] ? EVENTFLAG_COMMAND_DOWN | EVENTFLAG_IS_LEFT : 0;
+		m |= key[SDL_SCANCODE_RGUI] ? EVENTFLAG_COMMAND_DOWN | EVENTFLAG_IS_RIGHT : 0;
+
+		return m;
 	}
 
-	void	WebView::MouseMove(int	x, int y, int buttons)
+	void	WebView::MouseMove(int	x, int y)
 	{
-		if (fBrowser == NULL)
-			return;
-
-		printf("move %dx%d\n", x, y);
-		cef_mouse_event_t event;
-		event.modifiers = 0;	// EVENTFLAG_LEFT_MOUSE_BUTTON
-		event.x = x;
-		event.y = y;
-
-		cef_browser_host_t* host = fBrowser->get_host(fBrowser);
-		host->set_focus(host, 1);
-		//	host->send_focus_event(host, 1);
-		host->send_mouse_move_event(host, &event, false);
+		if (fBrowser)
+		{
+			cef_mouse_event_t event = { x, y, EventModifiers() };
+			cef_browser_host_t* host = fBrowser->get_host(fBrowser);
+			host->set_focus(host, 1);
+			host->send_mouse_move_event(host, &event, false);
+		}
 	}
 
-	void	WebView::MousePress(int	x, int y, int buttons)
+	void	WebView::MousePress(int	x, int y)
 	{
-		if (fBrowser == NULL)
-			return;
-
-		printf("pres %dx%d\n", x,y);
-		cef_mouse_event_t event;
-		event.modifiers = 0; // EVENTFLAG_LEFT_MOUSE_BUTTON;
-		event.x = x;
-		event.y = y;
-
-		cef_browser_host_t* host = fBrowser->get_host(fBrowser);
-		host->set_focus(host, 1);
-		//		host->send_focus_event(host, 1);
-		host->send_mouse_click_event(host, &event, MBT_LEFT, 0, 1);
+		if (fBrowser)
+		{
+			cef_mouse_event_t event = { x, y, EventModifiers() };
+			cef_browser_host_t* host = fBrowser->get_host(fBrowser);
+			host->set_focus(host, 1);
+			host->send_mouse_click_event(host, &event, MBT_LEFT, 0, 1);
+		}
 	}
 
-	void	WebView::MouseRelease(int	x, int y, int buttons)
+	void	WebView::MouseRelease(int	x, int y)
 	{
-		if (fBrowser == NULL)
-			return;
-
-		printf("rele %dx%d\n", x, y);
-		cef_mouse_event_t event;
-		event.modifiers = 0;
-		event.x = x;
-		event.y = y;
-
-		cef_browser_host_t* host = fBrowser->get_host(fBrowser);
-		host->send_mouse_click_event(host, &event, MBT_LEFT, 1, 1);
+		if (fBrowser)
+		{
+			cef_mouse_event_t event = { x, y, EventModifiers() };
+			cef_browser_host_t* host = fBrowser->get_host(fBrowser);
+			host->set_focus(host, 1);
+			host->send_mouse_click_event(host, &event, MBT_LEFT, 1, 1);
+		}
 	}
 
 	void	WebView::KeyDown()
@@ -290,36 +286,36 @@ namespace Rtt
 
 	void WebView::ClearCookies()
 	{
-/*		if (fBrowser == NULL)
-			return;
+		/*		if (fBrowser == NULL)
+					return;
 
-		cef_frame_t* frame = fBrowser->get_main_frame(fBrowser);
-		if (!fUrl.empty())
-		{
-			static cef_cookie_visitor_t it = {};
-			it.base.size = sizeof(it);
-			it.visit = visitCookie;
-#ifdef WIN32
-			cef_cookie_manager_t* cm = cef_cookie_manager_get_global_manager();
-#else
-			cef_cookie_manager_t* cm = cef_cookie_manager_get_global_manager(NULL);
-#endif
-			cm->visit_all_cookies(cm, &it);
+				cef_frame_t* frame = fBrowser->get_main_frame(fBrowser);
+				if (!fUrl.empty())
+				{
+					static cef_cookie_visitor_t it = {};
+					it.base.size = sizeof(it);
+					it.visit = visitCookie;
+		#ifdef WIN32
+					cef_cookie_manager_t* cm = cef_cookie_manager_get_global_manager();
+		#else
+					cef_cookie_manager_t* cm = cef_cookie_manager_get_global_manager(NULL);
+		#endif
+					cm->visit_all_cookies(cm, &it);
 
-			cef_string_t url = {};
-			cef_string_utf8_to_utf16(fUrl.c_str(), fUrl.size(), &url);
-			frame->load_url(frame, &url);
-			cef_string_clear(&url);
-		}
-		else
-		{
-			const char about[] = "about:blank";
-			cef_string_utf16_t url = {};
-			cef_string_ascii_to_utf16(about, sizeof(about), &url);
-			frame->load_url(frame, &url);
-			cef_string_utf16_clear(&url);
-		}
-*/
+					cef_string_t url = {};
+					cef_string_utf8_to_utf16(fUrl.c_str(), fUrl.size(), &url);
+					frame->load_url(frame, &url);
+					cef_string_clear(&url);
+				}
+				else
+				{
+					const char about[] = "about:blank";
+					cef_string_utf16_t url = {};
+					cef_string_ascii_to_utf16(about, sizeof(about), &url);
+					frame->load_url(frame, &url);
+					cef_string_utf16_clear(&url);
+				}
+		*/
 	}
 
 	//
@@ -372,6 +368,11 @@ namespace Rtt
 	void FinalizeCEF()
 	{
 		cef_shutdown();
+	}
+
+	void	advanceCEF()
+	{
+		cef_do_message_loop_work();
 	}
 
 }	// namespace bakeinflash

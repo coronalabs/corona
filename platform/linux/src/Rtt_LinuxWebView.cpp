@@ -302,75 +302,74 @@ namespace Rtt
 	{
 		if (fWebView)
 		{
-			fWebView->advance();
 			renderer.Insert(&fWebView->fData);
 		}
 	}
 
-	void LinuxWebView::ProcessEvent(const SDL_Event& evt)
+	bool LinuxWebView::ProcessEvent(const SDL_Event& evt)
 	{
-		if (fWebView == NULL)
-			return;
-
-		const Rect& r = fWebView->fBounds;
-		int x, y, btn;
-		btn = 0;
-
-		switch (evt.type)
+		if (fWebView)
 		{
-		case SDL_MOUSEBUTTONDOWN:
-		{
-			const SDL_MouseButtonEvent& b = evt.button;
-			if (b.which != SDL_TOUCH_MOUSEID)
+			const Rect& r = fWebView->fBounds;
+			switch (evt.type)
 			{
-				int x = b.x;
-				int y = b.y;
-				y -= app->GetMenuHeight();
-				if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
-				{
-					x -= r.xMin;
-					y -= r.yMin;
-					fWebView->MousePress(x, y, btn);
-				}
-			}
-			break;
-		}
-		case SDL_MOUSEBUTTONUP:
-		{
-			const SDL_MouseButtonEvent& b = evt.button;
-			if (b.which != SDL_TOUCH_MOUSEID)
+			case SDL_MOUSEBUTTONDOWN:
 			{
-				int x = b.x;
-				int y = b.y;
-				y -= app->GetMenuHeight();
-				if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+				const SDL_MouseButtonEvent& b = evt.button;
+				if (b.which != SDL_TOUCH_MOUSEID)
 				{
-					x -= r.xMin;
-					y -= r.yMin;
-					fWebView->MouseRelease(x, y, btn);
+					int x = b.x;
+					int y = b.y;
+					y -= app->GetMenuHeight();
+					if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+					{
+						x -= r.xMin;
+						y -= r.yMin;
+						fWebView->MousePress(x, y);
+						return true;
+					}
 				}
+				break;
 			}
-			break;
-		}
-		case SDL_MOUSEMOTION:
-		{
-			const SDL_MouseButtonEvent& b = evt.button;
-			if (b.which != SDL_TOUCH_MOUSEID)
+			case SDL_MOUSEBUTTONUP:
 			{
-				int x = b.x;
-				int y = b.y;
-				y -= app->GetMenuHeight();
-				if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+				const SDL_MouseButtonEvent& b = evt.button;
+				if (b.which != SDL_TOUCH_MOUSEID)
 				{
-					x -= r.xMin;
-					y -= r.yMin;
-					fWebView->MouseMove(x, y, btn);
+					int x = b.x;
+					int y = b.y;
+					y -= app->GetMenuHeight();
+					if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+					{
+						x -= r.xMin;
+						y -= r.yMin;
+						fWebView->MouseRelease(x, y);
+						return true;
+					}
 				}
+				break;
 			}
-			break;
+			case SDL_MOUSEMOTION:
+			{
+				const SDL_MouseButtonEvent& b = evt.button;
+				if (b.which != SDL_TOUCH_MOUSEID)
+				{
+					int x = b.x;
+					int y = b.y;
+					y -= app->GetMenuHeight();
+					if (x >= r.xMin && y >= r.yMin && x <= r.xMax && y <= r.yMax)
+					{
+						x -= r.xMin;
+						y -= r.yMin;
+						fWebView->MouseMove(x, y);
+						return true;
+					}
+				}
+				break;
+			}
+			}
 		}
-		}
-
+		return false;
 	}
 
 }; // namespace Rtt

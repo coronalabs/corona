@@ -25,7 +25,6 @@ namespace Rtt
 		WebView(const Rect& outBounds, const char* url);
 		virtual ~WebView();
 
-		void advance();
 		int Width() { return fBounds.Width(); }
 		int Height() { return fBounds.Height(); }
 		uint8_t* GetBitmap()
@@ -40,9 +39,10 @@ namespace Rtt
 
 		void InitGeometry();
 		void UpdateTex(const uint8_t* buf, int width, int height);
-		void MouseMove(int	x, int y, int buttons);
-		void MousePress(int	x, int y, int buttons);
-		void MouseRelease(int	x, int y, int buttons);
+		void MouseMove(int	x, int y);
+		void MousePress(int	x, int y);
+		void MouseRelease(int	x, int y);
+		int EventModifiers() const;
 		void KeyDown();
 		void ClearCookies();
 
@@ -69,5 +69,6 @@ namespace Rtt
 
 	bool InitCEF(int argc, char** argv);
 	void FinalizeCEF();
+	void	advanceCEF();
 
 }	// namespace 
