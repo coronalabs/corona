@@ -12,6 +12,70 @@
 
 namespace Rtt
 {
+
+	void on_browser_created(struct _cef_render_process_handler_t* self, struct _cef_browser_t* browser, struct _cef_dictionary_value_t* extra_info)
+	{
+		printf("Render: on_browser_created %p\n", browser);
+
+		//		cef_browser_host_t* host = browser->get_host(browser);
+		//		host->close_browser(host, true);
+	}
+
+	void on_browser_destroyed(struct _cef_render_process_handler_t* self, struct _cef_browser_t* browser)
+	{
+		printf("Render: on_browser_destroyed %p\n", browser);
+	}
+
+	void on_context_initialized(struct _cef_browser_process_handler_t* self)
+	{
+		printf("Main: on_context_initialized %p\n", self);
+	}
+
+	void on_after_created(struct _cef_life_span_handler_t* self, struct _cef_browser_t* browser)
+	{
+		printf("Main: browser on_after_created\n");
+	}
+
+	void on_before_close(struct _cef_life_span_handler_t* self, struct _cef_browser_t* browser)
+	{
+		printf("Main: browser on_before_close\n");
+	}
+
+	int do_close(struct _cef_life_span_handler_t* self, struct _cef_browser_t* browser)
+	{
+		printf("Main: browser do_close\n");
+		return 1;
+	}
+
+	struct _cef_life_span_handler_t* get_life_span_handler(struct _cef_client_t* self)
+	{
+		printf("Main: get_life_span_handler %p\n", self);
+		static _cef_life_span_handler_t cef_life_span_handler = {};
+		cef_life_span_handler.base.size = sizeof(_cef_life_span_handler_t);
+		cef_life_span_handler.on_after_created = on_after_created;
+		cef_life_span_handler.on_before_close = on_before_close;
+		//cef_life_span_handler.do_close = do_close;
+		return &cef_life_span_handler;
+	}
+
+	// Return the handler for functionality specific to the render process. This function is called on the render process
+	struct _cef_render_process_handler_t* get_render_process_handler(struct _cef_app_t* self)
+	{
+		static _cef_render_process_handler_t renderProcessHandler = {};
+		renderProcessHandler.base.size = sizeof(_cef_render_process_handler_t);
+		renderProcessHandler.on_browser_created = on_browser_created;
+		renderProcessHandler.on_browser_destroyed = on_browser_destroyed;
+		return &renderProcessHandler;
+	}
+
+	struct _cef_browser_process_handler_t* get_browser_process_handler(struct _cef_app_t* self)
+	{
+		static _cef_browser_process_handler_t browserProcessHandler = {};
+		browserProcessHandler.base.size = sizeof(_cef_browser_process_handler_t);
+		browserProcessHandler.on_context_initialized = on_context_initialized;
+		return &browserProcessHandler;
+	}
+
 	// Method that will be called once for each cookie. |count| is the 0-based
 	// index for the current cookie. |total| is the total number of cookies. Set
 	// |deleteCookie| to true (1) to delete the cookie currently being visited.
@@ -32,13 +96,13 @@ namespace Rtt
 		printf("onResourceRedirect\n");
 	}
 
-	_cef_render_handler_t* CEF_CALLBACK getRenderHandler(struct _cef_client_t* self)
+	_cef_render_handler_t* CEF_CALLBACK get_render_handler(struct _cef_client_t* self)
 	{
 		const weak_ptr<WebView>& thiz = *(const weak_ptr<WebView>*)((Uint8*)self + sizeof(struct _cef_client_t));
 		return &thiz->fRender;
 	}
 
-	_cef_request_handler_t* CEF_CALLBACK getRequestHandler(struct _cef_client_t* self)
+	_cef_request_handler_t* CEF_CALLBACK get_request_handler(struct _cef_client_t* self)
 	{
 		const weak_ptr<WebView>& thiz = *(const weak_ptr<WebView>*)((Uint8*)self + sizeof(struct _cef_client_t));
 		return &thiz->fRequestHandler;
@@ -110,8 +174,9 @@ namespace Rtt
 		//fRequesthandler.on_resource_redirect = onResourceRedirect;
 
 		fClient.base.size = sizeof(cef_client_t);
-		fClient.get_render_handler = getRenderHandler;
-		fClient.get_request_handler = getRequestHandler;
+		fClient.get_render_handler = get_render_handler;
+		fClient.get_request_handler = get_request_handler;
+		fClient.get_life_span_handler = get_life_span_handler;
 
 		fWindowInfo.windowless_rendering_enabled = true;
 		//fWindowInfo.transparent_painting_enabled = true;
@@ -333,11 +398,13 @@ namespace Rtt
 	bool InitCEF(int argc, char** argv)
 	{
 		// This is called many times, because it is also used for subprocesses. 
-		// If one of the first args is for example "--type=renderer" then it means that this is a Renderer process. 
-		// There may be more subprocesses like GPU (--type=gpu-process) and others.
-		// On Linux there are also special Zygote processes.
 
-		/*if (argc > 1)
+		static cef_app_t app = {};
+		app.base.size = sizeof(cef_app_t);
+		app.get_render_process_handler = get_render_process_handler;
+		app.get_browser_process_handler = get_browser_process_handler;
+
+		if (argc > 1)
 		{
 			Rtt_Log("Subprocess: ");
 			for (int i = 1; i < argc; i++)
@@ -345,13 +412,13 @@ namespace Rtt
 				Rtt_Log("%s ", argv[i]);
 			}
 			Rtt_Log("\n");
-		}*/
+		}
 
 		// Execute subprocesses. 
 		// It is also possible to have a separate executable for subprocesses by setting cef_settings_t.browser_subprocess_path.
 		// In such case cef_execute_process should not be called here.
 		cef_main_args_t main_args = { argc, argv };
-		int rc = cef_execute_process(&main_args, NULL, NULL);
+		int rc = cef_execute_process(&main_args, &app, NULL);
 		if (rc >= 0)
 		{
 			_exit(rc);
@@ -361,12 +428,12 @@ namespace Rtt
 		cef_settings_t settings = {};
 		settings.size = sizeof(cef_settings_t);
 		settings.log_severity = LOGSEVERITY_WARNING; // Show only warnings/errors
-		settings.no_sandbox = true;
+		//settings.no_sandbox = true;
 		settings.windowless_rendering_enabled = true;
 		settings.multi_threaded_message_loop = false;
 
 		// Initialize CEF.
-		rc = cef_initialize(&main_args, &settings, NULL, NULL);
+		rc = cef_initialize(&main_args, &settings, &app, NULL);
 
 		// A return value of true (1) indicates that it succeeded and false (0) indicates that it failed.
 		//Rtt_Log("Main process: CEF Initialize %s\n", rc == 0 ? "failed" : "successed");
