@@ -17,6 +17,16 @@ architectures:
   - amd64
 
 layout:
+  /usr/bin/keytool:
+    symlink: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin/keytool
+  /usr/bin/jarsigner:
+    symlink: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin/jarsigner
+  /usr/bin/java:
+    symlink: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin/java
+  /usr/bin/zip:
+    symlink: $SNAP/usr/bin/zip
+  /usr/bin/unzip:
+    symlink: $SNAP/usr/bin/unzip
   /usr/share/vulkan:
     symlink: $SNAP/usr/share/vulkan
   /usr/lib/dri/swrast_dri.so:
@@ -34,9 +44,12 @@ apps:
   solar2d:
     command: usr/local/bin/Solar2D/Solar2DSimulator
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/usr/lib/x86_64-linux-gnu/dri::${SNAP}/usr/lib/x86_64-linux-gnu
+#      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/usr/lib/x86_64-linux-gnu/dri::${SNAP}/usr/lib/x86_64-linux-gnu
       JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64
       PATH: $JAVA_HOME/jre/bin:$JAVA_HOME/bin:$PATH
+      GRADLE_USER_HOME: $SNAP_USER_DATA/.gradle
+      ANDROID_HOME: $SNAP_USER_DATA/android-sdk
+      ANDROID_SDK_HOME: $SNAP_USER_DATA/android-sdk
     plugs:
     - desktop
     - desktop-legacy
@@ -57,8 +70,8 @@ apps:
 
   builder:
     command: usr/local/bin/Solar2D/Solar2DBuilder
-    environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
+#    environment:
+#      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib
     plugs:
       - network
       - network-bind 
@@ -150,7 +163,6 @@ parts:
       snapcraftctl build
       chmod -c -R a+r .      
     build-packages:
-      - libcrypto++-dev
       - libcurl4-openssl-dev
       - libfreetype6-dev
       - libgl1-mesa-dev
@@ -165,14 +177,12 @@ parts:
       - zlib1g-dev
       - libtiff5-dev
       - liblzma-dev
-      - dos2unix
       - ca-certificates
       - ca-certificates-java
       - openjdk-8-jre-headless
       - libsdl2-dev
       - libpulse-dev
     stage-packages:
-      - libcrypto++6
       - libcurl4
       - libfreetype6
       - libgl1
@@ -193,5 +203,4 @@ parts:
       - libgl1-mesa-dri
       - unzip
       - zip
-
-
+      - tar

@@ -18,7 +18,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_13.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_13.3.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -26,7 +26,7 @@ jobs:
   source-code:
     name: Check out and process source code
     if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v2
@@ -41,6 +41,47 @@ jobs:
           name: SourceCode
           path: ./output
 
+  Xcode-template-matrix-12:
+    strategy:
+      matrix:
+        runner:
+          - macos-12
+        xcode:
+          - Xcode_13.3
+        target:
+          - template
+          - template-angle
+        platform:
+          - iphone
+          - tvos
+    needs: source-code
+    runs-on: ${{ matrix.runner }}
+    env:
+      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
+      TEMPLATE_TARGET: ${{ matrix.target }}
+      TEMPLATE_PLATFORM: ${{ matrix.platform }}
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build templates
+        working-directory: ./platform/${{ matrix.platform }}
+        run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Build templates JSON spec
+        run: ./tools/GHAction/generate_xcode_jsons.py
+      - name: Upload templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
+          path: ./output
+
   Xcode-template-matrix:
     strategy:
       matrix:
@@ -48,7 +89,7 @@ jobs:
           - macos-11
         xcode:
           - Xcode_12.5.1
-          - Xcode_13.2
+          - Xcode_13.2.1
         target:
           - template
           - template-angle
@@ -91,6 +132,7 @@ jobs:
   collect-ios-templates:
     needs:
       - Xcode-template-matrix
+      - Xcode-template-matrix-12
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
@@ -114,7 +156,7 @@ jobs:
   webtemplate:
     needs:
       - source-code
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
@@ -187,9 +229,49 @@ jobs:
           path: ./output/*.snap
 
 
+  linux-flatpak:
+    needs:
+      - source-code
+      - native
+      - webtemplate
+    runs-on: ubuntu-20.04
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get Webtemplate
+        uses: actions/download-artifact@v1
+        with:
+          name: Webtemplate
+      - name: Get Native
+        uses: actions/download-artifact@v1
+        with:
+          name: Native
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - run: mkdir docs
+      - name: Get Sample Code
+        uses: actions/checkout@v2
+        with:
+          repository: coronalabs/samples-coronasdk
+          path: docs/SampleCode
+      - name: Run build script
+        run: platform/linux/gh_action_flatpak.sh
+        continue-on-error: true
+      - run: touch solar2d.flatpak
+      - name: Upload flatpak
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: Flatpak
+          path: ./solar2d.flatpak
+
+
   native:
     needs: source-code
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -236,7 +318,7 @@ jobs:
 
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -266,7 +348,7 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -330,7 +412,7 @@ jobs:
   notarize:
     needs:
       - macOS-Simulator
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - name: Get built simulator
         uses: actions/download-artifact@v1
@@ -339,7 +421,7 @@ jobs:
       - name: Notarize
         run: |
           if [ -z "$APPLE_AUTH" ]
-          then 
+          then
             echo 'Skipping because no authorization provided'
             exit 0
           fi
@@ -358,12 +440,12 @@ jobs:
           APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
 
   check-notarization:
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - name: Check notarization credentials
         run: |
           if [ -z "$APPLE_AUTH" ]
-          then 
+          then
             echo 'Skipping because no authorization provided'
             exit 0
           fi
@@ -524,9 +606,9 @@ jobs:
           GIT_LOG="Changes since previous build:
           $GIT_LOG
           For linux it is recommended to use snap:
-          
+
                sudo snap install solar2d
-          
+
           "
           else
           GIT_LOG='See https://github.com/coronalabs/corona for details
@@ -551,6 +633,9 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: Native
+      - uses: actions/download-artifact@v1
+        with:
+          name: Flatpak
       - uses: actions/download-artifact@v1
         with:
           name: Snap
@@ -591,6 +676,15 @@ jobs:
           asset_path: ./Snap/s2d.snap
           asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.snap
           asset_content_type: application/octet-stream
+      # - name: Upload Release Asset for Linux Flatpak
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./Flatpak/solar2d.flatpak
+      #     asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.flatpak
+      #     asset_content_type: application/octet-stream
       - name: Upload Release Asset Corona Cards iOS
         uses: actions/upload-release-asset@v1
         env:

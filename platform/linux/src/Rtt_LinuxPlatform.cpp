@@ -70,7 +70,6 @@ namespace Rtt
 		fInstallDir.Set(installDir);
 		fStatusBarMode = MPlatform::StatusBarMode::kDefaultStatusBar;
 		isMouseCursorVisible = true;
-	//	fRuntimeErrorDialog = 0; //vv new LinuxRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
 	}
 
 	LinuxPlatform::~LinuxPlatform()
@@ -116,19 +115,8 @@ namespace Rtt
 
 	PlatformVideoPlayer* LinuxPlatform::GetVideoPlayer(const Rtt::ResourceHandle<lua_State>& handle) const
 	{
-#if (wxUSE_MEDIACTRL == 1)
-		if (!fVideoPlayer)
-		{
-			int w, h;
-			fScreenSurface->getWindowSize(&w, &h);
-
-			fVideoPlayer = Rtt_NEW(fAllocator, LinuxVideoPlayer(handle, *fAllocator, w, h));
-		}
-
-		return fVideoPlayer;
-#else
+		Rtt_ASSERT(0 && "todo");
 		return NULL;
-#endif
 	}
 
 	PlatformImageProvider* LinuxPlatform::GetImageProvider(const Rtt::ResourceHandle<lua_State>& handle) const
@@ -170,9 +158,8 @@ namespace Rtt
 
 	NativeAlertRef LinuxPlatform::ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource) const
 	{
-//		msgBox* msgs = new msgBox(title, msg, buttonLabels, numButtons, resource);
-//		msgs->Show(true);
-		return NULL; // (NativeAlertRef) 0x1234;
+		app->ShowNativeAlert(title, msg, buttonLabels, numButtons, resource);
+		return  (NativeAlertRef)0x1234;
 	}
 
 	void LinuxPlatform::CancelNativeAlert(NativeAlertRef alert, S32 index) const
@@ -536,7 +523,7 @@ namespace Rtt
 	{
 		if (Rtt_StringCompareNoCase(actionName, "exitApplication") == 0)
 		{
-		//todo	app->Close(true);
+			//todo	app->Close(true);
 			return true;
 		}
 
@@ -545,16 +532,14 @@ namespace Rtt
 
 	void LinuxPlatform::RuntimeErrorNotification(const char* errorType, const char* message, const char* stacktrace) const
 	{
-		/*if (!fShowRuntimeErrors || fRuntimeErrorDialog->IsShown())
-		{
-			return;
-		}
-
-		fRuntimeErrorDialog->SetProperties(errorType, message, stacktrace);
-
-		if (fRuntimeErrorDialog->ShowModal() == wxID_OK)
-		{
-		}*/
+		SDL_Event e = {};
+		e.type = sdl::OnRuntimeError;
+		char** data = new char* [3];
+		data[0] = strdup(errorType);
+		data[1] = strdup(message);
+		data[2] = strdup(stacktrace);
+		e.user.data1 = data;
+		SDL_PushEvent(&e);
 	}
 
 	const MCrypto& LinuxPlatform::GetCrypto() const
@@ -676,12 +661,12 @@ namespace Rtt
 
 	PlatformDisplayObject* LinuxPlatform::CreateNativeTextBox(const Rect& bounds) const
 	{
-		return 0; // Rtt_NEW(&GetAllocator(), LinuxTextBoxObject(bounds, false));
+		return new LinuxTextBoxObject(bounds, false);
 	}
 
 	PlatformDisplayObject* LinuxPlatform::CreateNativeTextField(const Rect& bounds) const
 	{
-		return 0; // Rtt_NEW(&GetAllocator(), LinuxTextBoxObject(bounds, true));
+		return new LinuxTextBoxObject(bounds, true);
 	}
 
 	void LinuxPlatform::SetKeyboardFocus(PlatformDisplayObject* textObject) const
@@ -824,31 +809,19 @@ namespace Rtt
 				{
 					if (Rtt_StringCompare(windowMode, "normal") == 0)
 					{
-						// todo
+						PushEvent(sdl::OnWindowNormal);
 					}
 					else if (Rtt_StringCompare(windowMode, "minimized") == 0)
 					{
-					//	app->Iconize(true);
+						PushEvent(sdl::OnWindowMinimized);
 					}
 					else if (Rtt_StringCompare(windowMode, "maximized") == 0)
 					{
-						/*
-						bool isFullScreen = solarApp->IsFullScreen();
-
-						if (isFullScreen)
-						{
-							solarApp->ShowFullScreen(false);
-						}
-						else
-						{
-							solarApp->Maximize(true);
-						}*/
+						PushEvent(sdl::OnWindowMaximized);
 					}
 					else if (Rtt_StringCompare(windowMode, "fullscreen") == 0)
 					{
-						// note: seems to need the frame set to wxDEFAULT_FRAME_STYLE to work
-						// commenting out as it isn't enough to just set the window to fullscreen for this to work
-						//solarApp->ShowFullScreen(true, wxFULLSCREEN_ALL);
+						PushEvent(sdl::OnWindowFullscreen);
 					}
 				}
 			}
@@ -859,7 +832,6 @@ namespace Rtt
 			if (lua_type(L, valueIndex) == LUA_TSTRING)
 			{
 				const char* windowTitle = lua_tostring(L, valueIndex);
-
 				if (windowTitle != NULL)
 				{
 					app->SetTitle(windowTitle);
@@ -867,14 +839,14 @@ namespace Rtt
 			}
 		}
 		// mouse cursor
-		/*else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)
+		else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)
 		{
 			if (lua_type(L, valueIndex) == LUA_TBOOLEAN)
 			{
-				bool cursorVisible = lua_toboolean(L, valueIndex);
-				isMouseCursorVisible = cursorVisible;
-				wxCursor cursor = cursorVisible ? *wxSTANDARD_CURSOR : wxCURSOR_BLANK;
-				solarApp->SetCursor(cursor);
+				SDL_Event e = {};
+				e.type = sdl::OnMouseCursorVisible;
+				e.user.code = lua_toboolean(L, valueIndex);
+				SDL_PushEvent(&e);
 			}
 		}
 		// mouse cursor type
@@ -882,93 +854,17 @@ namespace Rtt
 		{
 			if (lua_type(L, valueIndex) == LUA_TSTRING)
 			{
-				const char *cursorName = lua_tostring(L, valueIndex);
-				wxCursor cursor(wxCURSOR_ARROW);
-
-				if (strcasecmp(cursorName, "arrow") == 0)
-				{
-					cursor = wxCURSOR_ARROW;
-				}
-				else if (strcasecmp(cursorName, "beam") == 0)
-				{
-					cursor = wxCURSOR_IBEAM;
-				}
-				else if (strcasecmp(cursorName, "bullseye") == 0)
-				{
-					cursor = wxCURSOR_BULLSEYE;
-				}
-				else if (strcasecmp(cursorName, "crosshair") == 0)
-				{
-					cursor = wxCURSOR_CROSS;
-				}
-				else if (strcasecmp(cursorName, "leftButton") == 0)
-				{
-					cursor = wxCURSOR_LEFT_BUTTON;
-				}
-				else if (strcasecmp(cursorName, "middleButton") == 0)
-				{
-					cursor = wxCURSOR_MIDDLE_BUTTON;
-				}
-				else if (strcasecmp(cursorName, "notAllowed") == 0)
-				{
-					cursor = wxCURSOR_NO_ENTRY;
-				}
-				else if (strcasecmp(cursorName, "paintBrush") == 0)
-				{
-					cursor = wxCURSOR_PAINT_BRUSH;
-				}
-				else if (strcasecmp(cursorName, "pencil") == 0)
-				{
-					cursor = wxCURSOR_PENCIL;
-				}
-				else if (strcasecmp(cursorName, "pointingHand") == 0)
-				{
-					cursor = wxCURSOR_HAND;
-				}
-				else if (strcasecmp(cursorName, "pointLeft") == 0)
-				{
-					cursor = wxCURSOR_POINT_LEFT;
-				}
-				else if (strcasecmp(cursorName, "pointRight") == 0)
-				{
-					cursor = wxCURSOR_POINT_RIGHT;
-				}
-				else if (strcasecmp(cursorName, "questionArrow") == 0)
-				{
-					cursor = wxCURSOR_QUESTION_ARROW;
-				}
-				else if (strcasecmp(cursorName, "resizeLeftRight") == 0)
-				{
-					cursor = wxCURSOR_SIZEWE;
-				}
-				else if (strcasecmp(cursorName, "resizeUpDown") == 0)
-				{
-					cursor = wxCURSOR_SIZENS;
-				}
-				else if (strcasecmp(cursorName, "rightArrow") == 0)
-				{
-					cursor = wxCURSOR_RIGHT_ARROW;
-				}
-				else if (strcasecmp(cursorName, "rightButton") == 0)
-				{
-					cursor = wxCURSOR_RIGHT_BUTTON;
-				}
-				else if (strcasecmp(cursorName, "sizing") == 0)
-				{
-					cursor = wxCURSOR_SIZING;
-				}
-				else if (strcasecmp(cursorName, "sprayCan") == 0)
-				{
-					cursor = wxCURSOR_SPRAYCAN;
-				}
-				else if (strcasecmp(cursorName, "wait") == 0)
-				{
-					cursor = wxCURSOR_WAIT;
-				}
-
-				solarApp->SetCursor(cursor);
+				const char* cursorName = lua_tostring(L, valueIndex);
+				SDL_Event e = {};
+				e.type = sdl::OnSetCursor;
+				e.user.data1 = strdup(cursorName);
+				SDL_PushEvent(&e);
 			}
-		}*/
+		}
+		else
+		{
+			Rtt_LogException("SetNativeProperty %s is not implemented\n", key);
+		}
 	}
 
 	int LinuxPlatform::PushNativeProperty(lua_State* L, const char* key) const
@@ -1056,7 +952,7 @@ namespace Rtt
 		if (Rtt_StringCompare(key, "appName") == 0)
 		{
 			// Fetch the application's name.
-			lua_pushstring(L, app->GetContext()->GetAppName());
+			lua_pushstring(L, app->GetAppName().c_str());
 		}
 		else if (Rtt_StringCompare(key, "appVersionString") == 0)
 		{
@@ -1215,8 +1111,7 @@ namespace Rtt
 				}
 			}
 		}
-
-		return rc == false ? OperationResult::FailedWith("This API is not supported on this platform.") : Rtt::OperationResult::kSucceeded;
+		return rc == false ? OperationResult::FailedWith("SetPreferences failed") : Rtt::OperationResult::kSucceeded;
 	}
 
 	OperationResult LinuxPlatform::DeletePreferences(const char* categoryName, const char** keyNameArray, U32 keyNameCount) const
@@ -1237,8 +1132,7 @@ namespace Rtt
 			int n = Rtt_DeleteFile(path.c_str());
 			rc = n == 0 ? true : false;
 		}
-
-		return rc == false ? OperationResult::FailedWith("This API is not supported on this platform.") : Rtt::OperationResult::kSucceeded;
+		return rc == false ? OperationResult::FailedWith("DeletePreferences failed") : Rtt::OperationResult::kSucceeded;
 	}
 
 	void LinuxPlatform::Suspend() const
@@ -1285,76 +1179,5 @@ namespace Rtt
 		// Store the rectangle within the control's client area that the give mouse cursor should be displayed.
 	}
 #endif
-
-	//
-	// for native.showAlert
-	//
-		/*
-		msgBox::msgBox(const char *title, const char *msg, const char **buttonLabels, U32 numButtons, LuaResource *resource)
-			: wxFrame(solarApp, wxID_ANY, title, wxDefaultPosition, wxSize(520, 180), wxCAPTION | wxCLOSE_BOX), fCallback(resource)
-		{
-			wxSize sz = GetSize();
-			wxPanel *panel = new wxPanel(this, wxID_ANY);
-			wxBoxSizer *hbox = new wxBoxSizer(wxVERTICAL);
-			wxStaticText *txt = new wxStaticText(panel, wxID_ANY, msg, wxPoint(0, 10), wxSize(sz.x - 20, 60), wxALIGN_CENTRE_HORIZONTAL);
-			wxFont font = txt->GetFont();
-			//	font.SetPointSize(font.GetPointSize() + 2);
-			font.SetWeight(wxFONTWEIGHT_BOLD);
-			txt->SetFont(font);
-
-			// add buttons
-			wxBoxSizer *gs = new wxBoxSizer(wxHORIZONTAL);
-
-			for (int i = 0; i < numButtons; i++)
-			{
-				const char *caption = buttonLabels[i];
-				wxButton *b = new wxButton(panel, i, caption);
-				Connect(i, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(msgBox::ShowMessage));
-				gs->Add(b, 0, 0, 7);
-				gs->AddSpacer(5);
-			}
-
-			Connect(wxID_ANY, wxEVT_CLOSE_WINDOW, wxCloseEventHandler(msgBox::OnClose));
-			hbox->Add(txt, 0, wxALL, 15);
-			hbox->Add(gs, 1, wxALIGN_CENTER_HORIZONTAL | wxALL, 7);
-			panel->SetSizer(hbox);
-			Centre(wxBOTH);
-		}
-
-		msgBox::~msgBox()
-		{
-		}
-
-		void msgBox::ShowMessage(wxCommandEvent &e)
-		{
-			// Invoke the Lua listener.
-			int id = e.GetId();
-
-			if (fCallback)
-			{
-				// Invoke the Lua listener.
-				Rtt::LuaResource *pLuaResource = (Rtt::LuaResource *)fCallback;
-				bool wasCanceled = id >= 0 ? false : true;
-				Rtt::LuaLibNative::AlertComplete(*pLuaResource, id, wasCanceled);
-
-				// Delete the Lua resource.
-				Rtt_DELETE(pLuaResource);
-			}
-			Destroy();
-		}
-
-		void msgBox::OnClose()
-		{
-			// Invoke the Lua listener.
-			Rtt::LuaResource *pLuaResource = (Rtt::LuaResource *)fCallback;
-			bool wasCanceled = true;
-			Rtt::LuaLibNative::AlertComplete(*pLuaResource, -1, wasCanceled);
-
-			// Delete the Lua resource.
-			Rtt_DELETE(pLuaResource);
-
-			Destroy();
-		}
-		*/
 
 }; // namespace Rtt

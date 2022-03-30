@@ -34,20 +34,33 @@ namespace Rtt
 	class SolarApp;
 	class LinuxPlatform;
 
+	struct Config
+	{
+		Config();
+		Config(const std::string& path);
+		~Config();
+
+		as_value& operator[](const std::string& name);
+		const as_value& operator[](const std::string& name) const;
+
+		void Load(const std::string& path);
+		void Save();
+
+	private:
+		std::map<std::string, as_value> fConfig;
+		std::string fPath;
+	};
+
 	struct SolarAppContext : public ref_counted
 	{
-		SolarAppContext(SDL_Window* window, const std::string& path);
-		~SolarAppContext();
+		SolarAppContext(SDL_Window* window);
+		virtual ~SolarAppContext();
 
 		bool IsInitialized() const { return NULL != fRuntime; }
 
 		Runtime* GetRuntime() { return fRuntime; }
 		LinuxRuntimeDelegate* GetDelegate() { return fRuntimeDelegate; }
 		const Runtime* GetRuntime() const { return fRuntime; }
-		LinuxMouseListener* GetMouseListener() { return fMouseListener; }
-		const LinuxMouseListener* GetMouseListener() const { return fMouseListener; }
-		LinuxKeyListener* GetKeyListener() { return fKeyListener; }
-		const LinuxKeyListener* GetKeyListener() const { return fKeyListener; }
 		void Pause();
 		void Resume();
 		void RestartRenderer();
@@ -57,16 +70,14 @@ namespace Rtt
 		int GetHeight() const;
 		void SetHeight(int val);
 		DeviceOrientation::Type GetOrientation() const { return fRuntimeDelegate->fOrientation; }
-		const std::string& GetTitle() const { return fTitle; }
 		void Flush();
-		bool LoadApp();
-		const char* GetAppPath() const { return fPathToApp.c_str(); }
+		bool LoadApp(const std::string& appPath);
+		const std::string& GetAppPath() const { return fPathToApp; }
 		LinuxPlatform* GetPlatform() const { return fPlatform; }
-		const char* GetAppName() const { return fAppName.c_str(); }
+		const std::string& GetAppName() const { return fAppName; }
 		const std::string& GetSaveFolder() const { return fSaveFolder; }
 		const LinuxRuntimeDelegate* GetRuntimeDelegate() const { return fRuntimeDelegate; }
 		void advance();
-		void ResetWindowSize();
 		static int Print(lua_State* L);		// re-defined global.print
 		void DispatchEvent(const MEvent& e)
 		{
@@ -75,15 +86,18 @@ namespace Rtt
 				fRuntime->DispatchEvent(e);
 			}
 		}
+
+		void SetSize(int w, int h);
+
+		std::string GetTitle() const;
+		void SetTitle(const std::string& title);
+
 	private:
 
 		void Init();
 
-		std::string fTitle;
 		LinuxRuntime* fRuntime;
 		LinuxRuntimeDelegate* fRuntimeDelegate;
-		LinuxMouseListener* fMouseListener;
-		LinuxKeyListener* fKeyListener;
 		std::string fPathToApp;
 		std::string fAppName;
 		LinuxPlatform* fPlatform;
@@ -95,6 +109,7 @@ namespace Rtt
 		ProjectSettings* fProjectSettings;
 
 		SDL_Window* fWindow;
+		Config fConfig;
 	};
 }; // namespace Rtt
 

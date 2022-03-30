@@ -13,14 +13,15 @@
 #include "Rtt_Runtime.h"
 #include "Rtt_RenderingStream.h"
 #include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxDialog.h"
 
-#if 0
+using namespace std;
+
 namespace Rtt
 {
-	LinuxDisplayObject::LinuxDisplayObject(const Rect &bounds, const char *elementType)
+	LinuxDisplayObject::LinuxDisplayObject(const Rect& bounds)
 		: PlatformDisplayObject()
-		, fSelfBounds(bounds)
-		, fWindow(NULL)
+		, fBounds(bounds)
 		, fLuaReference(NULL)
 	{
 		// Note: Setting the reference point to center is not done in any of the other implementations because
@@ -50,17 +51,11 @@ namespace Rtt
 
 		// The self bounds needs to be centered around DisplayObject's local origin
 		// even though UIView's bounds will not be.
-		fSelfBounds.MoveCenterToOrigin();
+		fBounds.MoveCenterToOrigin();
 	}
 
 	LinuxDisplayObject::~LinuxDisplayObject()
 	{
-		if (wxTheApp)
-		{
-			delete fWindow;
-			fWindow = NULL;
-		}
-
 		if (fHandle && fHandle->IsValid())
 		{
 			CoronaLuaDeleteRef(fHandle->Dereference(), fLuaReference);
@@ -76,29 +71,23 @@ namespace Rtt
 		return false;
 	}
 
-	void LinuxDisplayObject::GetSelfBounds(Rect &rect) const
+	void LinuxDisplayObject::GetSelfBounds(Rect& rect) const
 	{
-		rect = fSelfBounds;
+		rect = fBounds;
 	}
 
 	void LinuxDisplayObject::SetBackgroundVisible(bool isVisible)
 	{
 	}
 
-	int LinuxDisplayObject::ValueForKey(lua_State *L, const char key[]) const
+	int LinuxDisplayObject::ValueForKey(lua_State* L, const char key[]) const
 	{
 		Rtt_ASSERT(key);
 
-		if (fWindow == NULL)
-		{
-			return 0;
-		}
-
 		int result = 1;
-
 		if (strcmp("isVisible", key) == 0)
 		{
-			bool visible = fWindow->IsShown();
+			bool visible = true; // fWindow->IsShown();
 			lua_pushboolean(L, visible);
 		}
 		else if (strcmp("alpha", key) == 0)
@@ -117,26 +106,17 @@ namespace Rtt
 
 	void LinuxDisplayObject::showControls(bool val)
 	{
-		if (fWindow)
-		{
-			fWindow->Show(val);
-		}
 	}
 
-	bool LinuxDisplayObject::SetValueForKey(lua_State *L, const char key[], int valueIndex)
+	bool LinuxDisplayObject::SetValueForKey(lua_State* L, const char key[], int valueIndex)
 	{
 		Rtt_ASSERT(key);
-		if (fWindow == NULL)
-		{
-			return false;
-		}
 
 		bool result = true;
-
 		if (strcmp("isVisible", key) == 0)
 		{
 			bool visible = lua_toboolean(L, valueIndex) ? true : false;
-			fWindow->Show(visible);
+			//			fWindow->Show(visible);
 		}
 		else if (strcmp("alpha", key) == 0)
 		{
@@ -153,22 +133,15 @@ namespace Rtt
 
 	void LinuxDisplayObject::setBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 	{
-		if (fWindow)
-		{
-			fWindow->SetBackgroundColour(wxColour(r, g, b, a));
-		}
+		// todo
 	}
 
-	void LinuxDisplayObject::Prepare(const Display &display)
+	void LinuxDisplayObject::Prepare(const Display& display)
 	{
 		Super::Prepare(display);
-		if (ShouldPrepare() && fWindow)
+		if (ShouldPrepare())
 		{
-			Rect outBounds;
-			GetScreenBounds(outBounds);
-			fWindow->SetPosition((wxPoint(outBounds.xMin, outBounds.yMin)));
-			fWindow->SetSize(outBounds.Width(), outBounds.Height());
-			fWindow->Show();
+			GetScreenBounds(fBounds);
 		}
 	}
 
@@ -191,4 +164,3 @@ namespace Rtt
 	}
 
 } // namespace Rtt
-#endif

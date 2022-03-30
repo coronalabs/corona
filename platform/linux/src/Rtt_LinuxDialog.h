@@ -12,6 +12,7 @@
 #include "Rtt_LinuxContainer.h"
 
 #include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imfilebrowser.h"
@@ -19,6 +20,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <map>
+
+#define BUTTON_WIDTH 100
 
 namespace Rtt
 {
@@ -37,6 +40,9 @@ namespace Rtt
 		void ProcessEvent(const SDL_Event& evt);
 		SDL_Window* GetWindow() const { return fWindow; }
 		void GetWindowSize(int* w, int* h);
+		static void MoveToCenter();
+		static void FocusHere();
+		static void SetStyle();
 
 	protected:
 
@@ -81,10 +87,12 @@ namespace Rtt
 		DlgMenu(const std::string& appName);
 
 		void Draw();
+		int GetHeight() const { return fMenuSize.y;	}
 
 	private:
 
-		bool isMainMenu;
+		bool fIsMainMenu;
+		ImVec2 fMenuSize;
 	};
 
 	struct DlgNewProject : public Window
@@ -110,6 +118,8 @@ namespace Rtt
 	struct DlgPreferences : public Window
 	{
 		DlgPreferences(const std::string& title, int w, int h);
+		virtual ~DlgPreferences();
+
 		void Draw() override;
 
 	private:
@@ -156,6 +166,37 @@ namespace Rtt
 		int fItemsLen;
 		int fItemCurrent;
 		std::string fTabCurrent;
+	};
+
+	class LuaResource;
+	struct DlgAlert : public Window
+	{
+		DlgAlert(const char* title, const char* msg, const char** buttonLabels, int numButtons, LuaResource* resource);
+		virtual ~DlgAlert();
+
+		void Draw() override;
+
+	private:
+
+		void onClick(int nButton);
+
+		std::string fMsg;
+		std::vector<std::string> fButtons;
+		LuaResource* fCallback;
+	};
+
+	struct DlgRuntimeError : public Window
+	{
+		DlgRuntimeError(const char* title, int w, int h, const char* errorType, const char* message, const char* stacktrace);
+		virtual ~DlgRuntimeError();
+
+		void Draw() override;
+
+	private:
+
+		std::string fErrorType;
+		std::string fMessage;
+		std::string fStackTrace;
 	};
 
 }

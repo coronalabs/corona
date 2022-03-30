@@ -81,4 +81,4 @@
 [submodule "external/MetalANGLE"]
 	path = external/MetalANGLE
 	url = https://github.com/coronalabs/metalangle.git
-	branch = master
+	branch = Solar2D-Changes-Reverted

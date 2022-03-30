@@ -29,7 +29,6 @@
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_LinuxMenuEvents.h"
 #include "Rtt_LinuxApp.h"
 #include "Rtt_HTTPClient.h"
 #include <curl/curl.h>
@@ -57,11 +56,9 @@ extern "C"
 namespace Rtt
 {
 
-	SolarAppContext::SolarAppContext(SDL_Window* window, const std::string& appPath)
+	SolarAppContext::SolarAppContext(SDL_Window* window)
 		: fRuntime(NULL)
 		, fRuntimeDelegate(new LinuxRuntimeDelegate())
-		, fMouseListener(NULL)
-		, fKeyListener(NULL)
 		, fPlatform(NULL)
 		, fTouchDeviceExist(false)
 		, fMode("normal")
@@ -70,81 +67,19 @@ namespace Rtt
 		, fProjectSettings(new ProjectSettings())
 		, fWindow(window)
 	{
-		string exeFileName;
-		const char* homeDir = GetHomePath();
-
-		// set app name
-		if (appPath == "/usr/bin") // deb ?
-		{
-			// for .deb app the appName is exe file name
-			fAppName = exeFileName;
-		}
-		else
-		{
-			const char* slash = strrchr(appPath.c_str(), '/');
-			if (slash)
-			{
-				fAppName = slash + 1;
-			}
-			else
-			{
-				slash = strrchr(appPath.c_str(), '\\');
-				if (slash)
-				{
-					fAppName = slash + 1;
-				}
-			}
-		}
-
-		Rtt_ASSERT(fAppName.size() > 0);
-		string startDir(appPath);
-
-		fSaveFolder.append(homeDir);
-		fSaveFolder.append("/Documents/Solar2D Built Apps");
-
-		string assetsDir = startDir;
-		assetsDir.append("/Resources/resource.car");
-
-		if (Rtt_FileExists(assetsDir.c_str()))
-		{
-			fPathToApp = startDir;
-			chdir(GetAppPath());
-			return;
-		}
-
-		assetsDir = startDir;
-		assetsDir.append("/main.lua");
-
-		if (Rtt_FileExists(assetsDir.c_str()))
-		{
-			fPathToApp = startDir;
-			chdir(GetAppPath());
-			return;
-		}
-
-		// look for welcomescereen
-		startDir = GetStartupPath(NULL);
-		startDir.append("/Resources/homescreen");
-		assetsDir = startDir;
-		assetsDir.append("/main.lua");
-
-		if (Rtt_FileExists(assetsDir.c_str()))
-		{
-			fAppName = HOMESCREEN_ID;
-			fPathToApp = startDir;
-			fIsDebApp = false;
-			chdir(GetAppPath());
-			return;
-		}
-
-		Rtt_LogException("Failed to find app\n");
-		Rtt_ASSERT(0);
 	}
 
 	SolarAppContext::~SolarAppContext()
 	{
-		delete fMouseListener;
-		delete fKeyListener;
+		int w, h, x, y;
+		SDL_GetWindowPosition(fWindow, &x, &y);
+		SDL_GetWindowSize(fWindow, &w, &h);
+		h = -app->GetMenuHeight();
+		fConfig["x"] = x;
+		fConfig["y"] = y;
+		fConfig["w"] = w;
+		fConfig["h"] = h;
+
 		delete fRuntime;
 		delete fRuntimeDelegate;
 		delete fPlatform;
@@ -156,11 +91,7 @@ namespace Rtt
 
 	void SolarAppContext::Init()
 	{
-		const char* homeDir = GetHomePath();
-
-		string appDir(homeDir);
-		appDir.append("/.Solar2D/Sandbox/");
-		appDir.append(IsHomeScreen(fAppName) ? "Simulator" : fAppName);
+		string appDir = GetSandboxPath(GetAppName());
 		if (!Rtt_IsDirectory(appDir.c_str()))
 		{
 			Rtt_MakeDirectory(appDir.c_str());
@@ -206,6 +137,7 @@ namespace Rtt
 
 		if (app->IsRunningOnSimulator())
 		{
+			// it can launch main.lua
 			fRuntime->SetProperty(Runtime::kLinuxMaskSet | Runtime::kIsApplicationNotArchived, true);
 		}
 		else
@@ -240,19 +172,10 @@ namespace Rtt
 		// read build.settings
 		if (fProjectSettings->HasBuildSettings())
 		{
-			string localeName = "fixme"; // = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
-			string langCode = localeName.substr(0, 2);
-			string countryCode = localeName.substr(3, 5);
 			int minWidth = fProjectSettings->GetMinWindowViewWidth();
 			int minHeight = fProjectSettings->GetMinWindowViewHeight();
-			const char* windowTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());
 			const Rtt::NativeWindowMode* nativeWindowMode = fProjectSettings->GetDefaultWindowMode();
 			DeviceOrientation::Type orientation = fProjectSettings->GetDefaultOrientation();
-
-			if (windowTitle != NULL)
-			{
-				fTitle = windowTitle;
-			}
 
 			if (*nativeWindowMode == Rtt::NativeWindowMode::kFullscreen)
 			{
@@ -263,19 +186,16 @@ namespace Rtt
 
 			if (fullScreen)
 			{
-				//				wxDisplay display(wxDisplay::GetFromWindow(solarApp));
-				//				wxRect screen = display.GetClientArea();
-				//				width = screen.width;
-				//				height = screen.height;
+				SDL_DisplayMode DM;
+				SDL_GetCurrentDisplayMode(0, &DM);
+				width = DM.w;
+				height = DM.h;
 			}
 			else
 			{
 				width = fProjectSettings->GetDefaultWindowViewWidth();
 				height = fProjectSettings->GetDefaultWindowViewHeight();
-				//SetMinClientSize(wxSize(minWidth, minHeight));
 			}
-
-			app->GetSavedZoom(width, height);
 
 			switch (orientation)
 			{
@@ -350,8 +270,6 @@ namespace Rtt
 		}
 
 		fPlatform->setWindow(this);
-		fMouseListener = new LinuxMouseListener(*fRuntime);
-		fKeyListener = new LinuxKeyListener(*fRuntime);
 
 		// Initialize Joystick Support:
 		LinuxInputDeviceManager& deviceManager = (LinuxInputDeviceManager&)fPlatform->GetDevice().GetInputDeviceManager();
@@ -389,8 +307,49 @@ namespace Rtt
 		return 0;
 	}
 
-	bool SolarAppContext::LoadApp()
+	bool SolarAppContext::LoadApp(const string& appPath)
 	{
+		fPathToApp = appPath;
+
+		// appName
+
+		const char* homeDir = GetHomePath();
+		fSaveFolder.append(homeDir);
+		fSaveFolder.append("/Documents/Solar2D Built Apps");
+
+		vector<string> tokens;
+		splitString(tokens, appPath, "/");
+		if (tokens.size() >= 2)
+		{
+			fAppName = tokens[tokens.size() - 1];
+
+			// appName = exeFileName for standalone apps
+			if (fAppName == "Resources")
+			{
+				GetStartupPath(&fAppName);
+			}
+		}
+
+		fConfig.Load(GetConfigPath(fAppName));
+
+		// set workdir
+
+		if (Rtt_FileExists((fPathToApp + "/resource.car").c_str()))
+		{
+			chdir(GetAppPath().c_str());
+		}
+		else
+			if (Rtt_FileExists((fPathToApp + "/main.lua").c_str()))
+			{
+				chdir(GetAppPath().c_str());
+			}
+			else
+			{
+				Rtt_ASSERT_NOT_REACHED();
+			}
+
+		// load app
+
 		Init();
 
 		if (Runtime::kSuccess != fRuntime->LoadApplication(Runtime::kLinuxLaunchOption, fRuntimeDelegate->fOrientation))
@@ -425,24 +384,34 @@ namespace Rtt
 		lua_pushcfunction(L, print2console);
 		lua_setglobal(L, "print");
 
-		GetRuntime()->BeginRunLoop();
+		int w = fConfig["w"].to_int() > 0 ? fConfig["w"].to_int() : GetWidth();
+		int h = fConfig["h"].to_int() > 0 ? fConfig["h"].to_int() : GetHeight();
 
-		ResetWindowSize();
-		app->SetTitle(GetAppName());
+		SDL_DisplayMode dm;
+		SDL_GetCurrentDisplayMode(0, &dm);
+		int x = fConfig["x"].to_int() > 0 ? fConfig["x"].to_int() : (dm.w - w) / 2;
+		int y = fConfig["y"].to_int() > 0 ? fConfig["y"].to_int() : (dm.h - h) / 2;
 
-		return true;
-	}
+		SetSize(w, h);
+		SDL_SetWindowPosition(fWindow, x, y);
 
-	void SolarAppContext::ResetWindowSize()
-	{
-		int w, h;
-		SDL_GetWindowSize(fWindow, &w, &h);
-		if (w != GetWidth() || h != GetHeight())
+		string title = fConfig["title"].to_string();
+		if (title.empty())
 		{
-			w = GetWidth();
-			h = GetHeight();
-			SDL_SetWindowSize(fWindow, w, h);
+			string localeName = "en_US"; // fixme
+			string langCode = localeName.substr(0, 2);
+			string countryCode = localeName.substr(3, 2);
+			const char* projectTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());
+			if (projectTitle)
+			{
+				title = projectTitle;
+			}
 		}
+
+		SetTitle(title.empty() ? fAppName : title);
+
+		GetRuntime()->BeginRunLoop();
+		return true;
 	}
 
 	// timer callback
@@ -512,6 +481,31 @@ namespace Rtt
 	void SolarAppContext::SetHeight(int val)
 	{
 		fRuntimeDelegate->SetHeight(val);
+	}
+
+	void SolarAppContext::SetSize(int w, int h)
+	{
+		SetWidth(w);
+		SetHeight(h);
+		SDL_SetWindowSize(fWindow, w, h + app->GetMenuHeight());
+		RestartRenderer();
+
+		fRuntime->DispatchEvent(ResizeEvent());
+
+		// todo: refresh native elements
+	}
+
+	string SolarAppContext::GetTitle() const
+	{
+		return SDL_GetWindowTitle(fWindow);
+	}
+
+	void SolarAppContext::SetTitle(const string& xtitle)
+	{
+		string title = xtitle == HOMESCREEN_ID ? "Solar2D Simulator" : xtitle;
+		SDL_SetWindowTitle(fWindow, title.c_str());
+		SDL_ShowWindow(fWindow);
+		fConfig["title"] = title;
 	}
 
 } // namespace Rtt

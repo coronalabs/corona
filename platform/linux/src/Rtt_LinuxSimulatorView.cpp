@@ -127,6 +127,9 @@ namespace Rtt
 
 	bool Skins::Load(lua_State* L)
 	{
+		if (!fSkins.empty())
+			return true;
+
 		const char* startupPath = GetStartupPath(NULL);
 		string skinDirPath(startupPath);
 		skinDirPath.append("/Resources");
@@ -151,7 +154,7 @@ namespace Rtt
 			if (filename.rfind(".lua") != string::npos && Load(L, filename, sProperties))
 			{
 				string skinTitle(sProperties.windowTitleBarName);
-				skinTitle += to_string(sProperties.screenWidth) + "x" + to_string(sProperties.screenHeight);
+				skinTitle += " (" + to_string(sProperties.screenWidth) + "x" + to_string(sProperties.screenHeight) + ")";
 				sProperties.skinTitle = skinTitle;
 
 				if (sProperties.device.find("android") != string::npos && !sProperties.device.find("tv") != string::npos)

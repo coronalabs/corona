@@ -29,12 +29,14 @@
 #include "Rtt_LinuxDialog.h"
 #include "Rtt_LinuxUtils.h"
 #include "Rtt_LinuxConsoleApp.h"
+#include "Rtt_LinuxDisplayObject.h"
 #include <sys/inotify.h>
 
 enum sdl
 {
 	OnOpenProject = SDL_USEREVENT + 1,
 	OnNewProject,
+	OnCloneProject,
 	OnBuild,
 	OnOpenInEditor,
 	OnRelaunch,
@@ -63,7 +65,15 @@ enum sdl
 	OnStyleColorsClassic,
 	OnStyleColorsDark,
 	OnViewAs,
-	OnChangeView
+	OnChangeView,
+	OnWindowNormal,
+	OnWindowMinimized,
+	OnWindowMaximized,
+	OnWindowFullscreen,
+	OnMouseCursorVisible,
+	OnSetCursor,
+	OnRuntimeError,
+	OnPreferencesChanged
 };
 
 namespace Rtt
@@ -75,59 +85,72 @@ namespace Rtt
 		SolarApp(const std::string& resourceDir);
 		virtual ~SolarApp();
 
-		bool Init();
-		virtual bool LoadApp();
+		bool InitSDL();
+		virtual bool Init();
+		virtual bool LoadApp(const std::string& path);
 		void Run();
 		bool PollEvents();
 
-		Runtime* GetRuntime() { return fContext->GetRuntime(); }
-		LinuxPlatform* GetPlatform() const { return fContext->GetPlatform(); }
+		Runtime* GetRuntime() const { return fContext ? fContext->GetRuntime() : NULL; }
+		LinuxPlatform* GetPlatform() const { return fContext ? fContext->GetPlatform() : NULL; }
 
 		void OnIconized();
-		void ChangeSize(int newWidth, int newHeight);
+		void SetWindowSize(int newWidth, int newHeight);
 		SolarAppContext* GetContext() const { return fContext; }
 
-		virtual void GetSavedZoom(int& width, int& height) {}
 		virtual bool IsRunningOnSimulator() { return false; }
-		bool IsSuspended() const { return fContext->GetRuntime()->IsSuspended(); }
-		virtual void ConfigLoad() {};
-		virtual void ConfigSave() {};
-		virtual std::map<std::string, std::string>* ConfigGet() { return NULL; }
+		bool IsSuspended() const { return GetRuntime()->IsSuspended(); }
 
-		const char* GetAppName() const { return fContext->GetAppName(); }
 		inline bool IsHomeScreen(const std::string& appName) { return appName.compare(HOMESCREEN_ID) == 0; }
-		void SetTitle(const std::string& name);
 
 		void RenderGUI();
 		inline void Pause() { fContext->Pause(); }
 		inline void Resume() { fContext->Resume(); }
-		void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
+		inline void SetActivityIndicator(bool visible) { fActivityIndicator = visible; }
 		void Log(const char* buf, int len);
 
-		const std::string& GetTitle() { return fContext->GetTitle(); };
 		bool IsFullScreen() { return false; }
 		bool IsMinimized() { return false; }
 		bool IsIconized() { return false; }
 		bool IsMaximized() { return false; }
-		
+
+		inline Config& GetConfig() { return fConfig; }
+
+		void AddDisplayObject(LinuxDisplayObject* obj);
+		void RemoveDisplayObject(LinuxDisplayObject* obj);
+		NativeAlertRef ShowNativeAlert(const char* title, const char* msg, const char** buttonLabels, U32 numButtons, LuaResource* resource);
+		virtual void StartConsole() {}
+		virtual void CreateMenu() {}
+		const std::string& GetAppPath() const { return fContext->GetAppPath(); }
+		const std::string& GetAppName() const { return fContext->GetAppName(); }
+		const std::string& GetSaveFolder() const { return fContext->GetSaveFolder(); }
+		void GetWindowPosition(int* x, int* y);
+		void GetWindowSize(int* w, int* h);
+		void SetIcon();
+
+		std::string GetTitle() const { return fContext->GetTitle(); }
+		void SetTitle(const std::string& name) { fContext->SetTitle(name); }
+
+		virtual int GetMenuHeight() const { return 0; }
+
 	protected:
 
 		virtual void SolarEvent(const SDL_Event& e) {}
 
-		SolarAppContext* fContext;
+		smart_ptr<SolarAppContext> fContext;
 		SDL_Window* fWindow;
 		SDL_GLContext fGLcontext;
 
-		std::string fAppPath;
-		std::string fProjectPath;
-		int fWidth;
-		int fHeight;
+		std::string fResourceDir;
+		Config fConfig;
+		smart_ptr<LinuxMouseListener> fMouse;
 
 		// GUI
 		ImGuiContext* fImCtx;
 		smart_ptr<DlgMenu> fMenu;
 		smart_ptr<Window> fDlg;
 		bool fActivityIndicator;
+		std::vector<LinuxDisplayObject*> fNativeObjects;
 
 		// console
 		std::string fLogData;

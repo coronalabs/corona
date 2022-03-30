@@ -27,13 +27,56 @@ namespace Rtt
 
 	DlgBuild::DlgBuild(const std::string& title, int w, int h)
 		: Window(title, w, h)
+		, fBuildResult(NULL)
+		, fBuildSuccessed(false)
+		, fIncludeStandardResources(true)
 	{
 		app->Pause();
+
+		// defaults
+		strncpy(fApplicationNameInput, app->GetAppName().c_str(), sizeof(fApplicationNameInput));
+		strncpy(fVersionNameInput, "1.0.0", sizeof(fVersionNameInput));
+		strncpy(fSaveToFolderInput, app->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
+		strncpy(fProjectPathInput, app->GetAppPath().c_str(), sizeof(fProjectPathInput));
 	}
 
 	DlgBuild::~DlgBuild()
 	{
 		app->Resume();
+	}
+
+	void DlgBuild::DrawResult()
+	{
+		const char* title = "Solar2D Simulator";
+		if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			const ImVec2& window_size = ImGui::GetWindowSize();
+			ImGui::Dummy(ImVec2(100, 10));
+			ImGui::TextUnformatted(fBuildResult);
+
+			string s;
+			ImGui::Dummy(ImVec2(100, 30));
+			int ok_width = 100;
+			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+			if (fBuildSuccessed)
+			{
+				s = "View";
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					OpenURL(fSaveToFolderInput);
+				}
+				ImGui::SameLine();
+			}
+
+			s = "Done";
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
+			{
+				PushEvent(sdl::onCloseDialog);
+			}
+			ImGui::SetItemDefaultFocus();
+			ImGui::EndPopup();
+		}
+		ImGui::OpenPopup(title);
 	}
 
 	//
@@ -44,8 +87,6 @@ namespace Rtt
 		: DlgBuild(title, w, h)
 		, fileDialogKeyStore(ImGuiFileBrowserFlags_EnterNewFilename | ImGuiFileBrowserFlags_CloseOnEsc)
 		, fileDialogSaveTo(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir | ImGuiFileBrowserFlags_CloseOnEsc)
-		, fBuildResult(NULL)
-		, fBuildSuccessed(0)
 		, fCreateLiveBuild(false)
 		, fAppStoreIndex(1)		// google play
 		, fKeyAliases(NULL)
@@ -58,21 +99,16 @@ namespace Rtt
 		package.append(uname).append(".");
 		package.append(app->GetAppName());
 
-		// defaults
-		strncpy(fApplicationNameInput, app->GetAppName(), sizeof(fApplicationNameInput));
-		strncpy(fVersionCodeInput, "1", sizeof(fVersionCodeInput));
-		strncpy(fVersionNameInput, "1.0.0", sizeof(fVersionNameInput));
-		strncpy(fPackageInput, package.c_str(), sizeof(fPackageInput));
-		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
-		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
-
 		std::string keystorePath(GetStartupPath(NULL));
 		keystorePath.append("/Resources/debug.keystore");
 		strncpy(fKeyStoreInput, keystorePath.c_str(), sizeof(fKeyStoreInput));
 
+		// defaults
+		strncpy(fVersionCodeInput, "1", sizeof(fVersionCodeInput));
+		strncpy(fPackageInput, package.c_str(), sizeof(fPackageInput));
+
 		fStorePassword = "android";
 		fAliasPassword = fStorePassword;
-		ReadKeystore(keystorePath, fStorePassword);
 		ReadVersion();
 
 		fileDialogKeyStore.SetTitle("Browse For Keystore");
@@ -164,7 +200,9 @@ namespace Rtt
 	void DlgAndroidBuild::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgAndroidBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		ImGui::BeginDisabled(fThread != NULL);
+
+		if (ImGui::Begin("##DlgAndroidBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 			LinuxPlatform* platform = app->GetPlatform();
@@ -173,21 +211,21 @@ namespace Rtt
 			if (fileDialogKeyStore.HasSelected())
 			{
 				strncpy(fKeyStoreInput, fileDialogKeyStore.GetSelected().string().c_str(), sizeof(fKeyStoreInput));
-				fileDialogKeyStore.ClearSelected();
+				fileDialogKeyStore.Close();
 			}
 
 			fileDialogSaveTo.Display();
 			if (fileDialogSaveTo.HasSelected())
 			{
 				strncpy(fSaveToFolderInput, fileDialogSaveTo.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
-				fileDialogSaveTo.ClearSelected();
+				fileDialogSaveTo.Close();
 			}
 
 			string s;
 			ImGui::Dummy(ImVec2(10, 10));
-			ImGui::PushItemWidth(350);		// input field width
+			ImGui::PushItemWidth(450);		// input field width
 
-			s = "   Application Name :";
+			s = "   Application Name:";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
@@ -195,21 +233,21 @@ namespace Rtt
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
-			s = "   Version Code :";
+			s = "   Version Code:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionCodeInput", fVersionCodeInput, sizeof(fVersionCodeInput), ImGuiInputTextFlags_CharsDecimal);
 
-			s = "   Version Name :";
+			s = "   Version Name:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fVersionNameInput", fVersionNameInput, sizeof(fVersionNameInput), ImGuiInputTextFlags_CharsDecimal);
 
-			s = "   Package :";
+			s = "   Package:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
@@ -221,58 +259,57 @@ namespace Rtt
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::Dummy(ImVec2(70, 10));
 
-			s = "   Project Path :";
+			s = "   Project Path:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fProjectPathInput", fProjectPathInput, sizeof(fProjectPathInput), ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputText("##fProjectPathInput", fProjectPathInput, sizeof(fProjectPathInput), 0);
 
 			// Target App Store
-			ImGui::TextUnformatted("   Target App Store :");
+			ImGui::TextUnformatted("   Target App Store:");
 			ImGui::SameLine();
 			const char* appstores[] = { "Amazon", "Google Play", "Samsung" };
 			ImGui::SetCursorPosX(label_width + 20);
-			ImGui::Combo("##TargetAppStore", &fAppStoreIndex, appstores, IM_ARRAYSIZE(appstores));
+			ImGui::Combo("##fAppStoreIndex", &fAppStoreIndex, appstores, IM_ARRAYSIZE(appstores));
 
-			s = "   Keystore: ";
-			ImGui::TextUnformatted(s.c_str());
+			float leftPadding = ImGui::CalcTextSize("   ").x;
+			ImGui::SetCursorPosX(leftPadding);
+			if (ImGui::Button("Keystore:      "))
+			{
+				filesystem::path path = fKeyStoreInput;
+				path.remove_filename();
+				fileDialogKeyStore.SetPwd(path.c_str());
+				fileDialogKeyStore.Open();
+			}
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fSaveToFolderInput", fKeyStoreInput, sizeof(fKeyStoreInput), 0);
-			ImGui::SameLine();
-			if (ImGui::Button("Browse..."))
-			{
-				fileDialogKeyStore.SetPwd(fKeyStoreInput);
-				fileDialogKeyStore.Open();
-			}
+			ImGui::InputText("##fKeyStoreInput", fKeyStoreInput, sizeof(fKeyStoreInput), 0);
 
 			// Key Alias
-			ImGui::TextUnformatted("   Key Alias :");
+			ImGui::TextUnformatted("   Key Alias:");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
-			ImGui::Combo("##TargetAppStore", &fKeyAliasIndex, fKeyAliases, fKeyAliasesSize);
+			ImGui::Combo("##fKeyAliasIndex", &fKeyAliasIndex, fKeyAliases, fKeyAliasesSize);
 
-			s = "   Save To Folder: ";
-			ImGui::TextUnformatted(s.c_str());
+			ImGui::SetCursorPosX(leftPadding);
+			if (ImGui::Button("Save To Folder:"))
+			{
+				fileDialogSaveTo.SetPwd(fSaveToFolderInput);
+				fileDialogSaveTo.Open();
+				fileDialogSaveTo.Open();
+			}
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
 			ImGui::InputText("##fSaveToFolderInput", fSaveToFolderInput, sizeof(fSaveToFolderInput), 0);
-			ImGui::SameLine();
-			if (ImGui::Button("Browse..."))
-			{
-				fileDialogSaveTo.SetPwd(fSaveToFolderInput);
-				fileDialogSaveTo.Open();
-			}
-
 			ImGui::PopItemWidth();
 
-			ImGui::Dummy(ImVec2(70, 10));
-			ImGui::Checkbox("Create Live Build", &fCreateLiveBuild);
+			//			ImGui::Dummy(ImVec2(70, 10));
+			//			ImGui::Checkbox("Create Live Build", &fCreateLiveBuild);
 
-			// ok + cancel
+						// ok + cancel
 			s = "Build";
 			ImGui::Dummy(ImVec2(70, 40));
 			int ok_width = 100;
@@ -291,42 +328,45 @@ namespace Rtt
 				PushEvent(sdl::onCloseDialog);
 			}
 
-			if (fBuildResult)
+			// hotkeys
+			if (ImGui::IsWindowFocused())
 			{
-				// display result
-				const char* title = "Solar2D Simulator";
-				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+				if (ImGui::IsKeyPressed(ImGuiKey_Enter))
 				{
-					ImGui::Dummy(ImVec2(100, 10));
-					ImGui::TextUnformatted(fBuildResult);
-
-					string s;
-					ImGui::Dummy(ImVec2(100, 30));
-					int ok_width = 100;
-					ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-					if (fBuildSuccessed == 0)
+					if (fileDialogKeyStore.IsOpened())
 					{
-						s = "View";
-						if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-						{
-							OpenURL(fSaveToFolderInput);
-							PushEvent(sdl::onCloseDialog);
-						}
-						ImGui::SameLine();
+						strncpy(fKeyStoreInput, fileDialogKeyStore.GetSelected().string().c_str(), sizeof(fKeyStoreInput));
+						fileDialogKeyStore.Close();
 					}
-
-					s = "Done";
-					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+					if (fileDialogSaveTo.IsOpened())
 					{
-						PushEvent(sdl::onCloseDialog);
+						strncpy(fSaveToFolderInput, fileDialogSaveTo.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
+						fileDialogSaveTo.Close();
 					}
-					ImGui::SetItemDefaultFocus();
-					ImGui::EndPopup();
+					else
+					{
+						fThread = new mythread();
+						fThread->start([this]() { Build(); });
+					}
 				}
-				ImGui::OpenPopup(title);
+				else if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+				{
+					if (fileDialogKeyStore.IsOpened())
+						fileDialogKeyStore.Close();
+					else if (fileDialogSaveTo.IsOpened())
+						fileDialogSaveTo.Close();
+					else
+						PushEvent(sdl::onCloseDialog);
+				}
 			}
+
+			// results
+			if (fBuildResult)
+				DrawResult();
+
 			ImGui::End();
 		}
+		ImGui::EndDisabled();
 
 		// builder ended ?
 		if (fThread)
@@ -344,6 +384,12 @@ namespace Rtt
 	// thread function
 	void DlgAndroidBuild::Build()
 	{
+		if (ReadKeystore(fKeyStoreInput, fStorePassword) == false)
+		{
+			fBuildResult = "ReadKeystore failed.";
+			return;
+		}
+
 		fBuildSuccessed = false;
 		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
@@ -516,8 +562,8 @@ namespace Rtt
 		androidBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
 
 		// build the app (warning! This is blocking call)
-		fBuildSuccessed = packager.Build(&androidBuilderParams, tmp.c_str());
-		fBuildResult = fBuildSuccessed == 0 ? "Android build succeeded" : "Android build failed. Check the log for more details";
+		fBuildSuccessed = packager.Build(&androidBuilderParams, tmp.c_str()) == 0;
+		fBuildResult = fBuildSuccessed ? "Android build succeeded" : "Android build failed. Check the log for more details";
 
 		// install after build
 		/*if (buildResult == 0 && installAfterBuild)
@@ -546,14 +592,7 @@ namespace Rtt
 	DlgHTML5Build::DlgHTML5Build(const std::string& title, int w, int h)
 		: DlgBuild(title, w, h)
 		, fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
-		, fBuildResult(NULL)
-		, fIncludeStandardResources(true)
 	{
-		strncpy(fApplicationNameInput, app->GetAppName(), sizeof(fApplicationNameInput));
-		strncpy(fVersionInput, "1", sizeof(fVersionInput));
-		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
-		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
-
 		fileDialog.SetTitle("Save To Folder");
 		fileDialog.SetWindowSize(w, h);
 	}
@@ -565,7 +604,9 @@ namespace Rtt
 	void DlgHTML5Build::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgHTML5Build", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		ImGui::BeginDisabled(fThread != NULL);
+
+		if (ImGui::Begin("##DlgHTML5Build", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 			LinuxPlatform* platform = app->GetPlatform();
@@ -579,46 +620,45 @@ namespace Rtt
 
 			string s;
 			ImGui::Dummy(ImVec2(10, 10));
-			ImGui::PushItemWidth(350);		// input field width
+			ImGui::PushItemWidth(400);		// input field width
 
-			s = "   Application Name :";
+			s = "   Application Name:";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##fApplicationNameInput", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
-			s = "   Version Code :";
+			s = "   Version Code:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fVersionInput", fVersionInput, sizeof(fVersionInput), ImGuiInputTextFlags_CharsDecimal);
+			ImGui::InputText("##fVersionInput", fVersionNameInput, sizeof(fVersionNameInput), ImGuiInputTextFlags_CharsDecimal);
 
-			s = "   Save To Folder: ";
-			ImGui::TextUnformatted(s.c_str());
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(label_width + 20);
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fSaveToFolderInput", fSaveToFolderInput, sizeof(fSaveToFolderInput), 0);
-			ImGui::SameLine();
-			if (ImGui::Button("Browse..."))
+			float leftPadding = ImGui::CalcTextSize("    ").x;
+			ImGui::SetCursorPosX(leftPadding);
+			if (ImGui::Button("Save To Folder:"))
 			{
 				fileDialog.SetTitle("Browse For Folder");
 				fileDialog.SetPwd(fSaveToFolderInput);
 				fileDialog.Open();
 			}
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(label_width + 20);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
+			ImGui::InputText("##fSaveToFolderInput", fSaveToFolderInput, sizeof(fSaveToFolderInput), 0);
 			ImGui::PopItemWidth();
 
+			ImGui::Dummy(ImVec2(10, 20));
 			ImGui::Checkbox("Include Standard Resources", &fIncludeStandardResources);
 
 			// ok + cancel
 			s = "Build";
-			ImGui::Dummy(ImVec2(70, 40));
 			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::Dummy(ImVec2(100, 30));
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)))
 			{
 				fThread = new mythread();
 				fThread->start([this]() { Build(); });
@@ -627,44 +667,17 @@ namespace Rtt
 
 			s = "Cancel";
 			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
 
 			if (fBuildResult)
-			{
-				// display result
-				const char* title = "Solar2D Simulator";
-				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
-				{
-					ImGui::Dummy(ImVec2(100, 10));
-					ImGui::TextUnformatted(fBuildResult);
+				DrawResult();
 
-					string s = "View";
-					ImGui::Dummy(ImVec2(100, 30));
-					int ok_width = 100;
-					ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-					{
-						OpenURL(fSaveToFolderInput);
-						PushEvent(sdl::onCloseDialog);
-					}
-
-					s = "Done";
-					ImGui::SameLine();
-					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-					{
-						PushEvent(sdl::onCloseDialog);
-					}
-					ImGui::SetItemDefaultFocus();
-
-					ImGui::EndPopup();
-				}
-				ImGui::OpenPopup(title);
-			}
 			ImGui::End();
 		}
+		ImGui::EndDisabled();
 
 		// builder ended ?
 		if (fThread)
@@ -682,6 +695,7 @@ namespace Rtt
 	// thread function
 	void DlgHTML5Build::Build()
 	{
+		fBuildSuccessed = false;
 		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
 		WebAppPackager packager(*service);
@@ -689,7 +703,7 @@ namespace Rtt
 		string appName(fApplicationNameInput);
 		string sourceDir(fProjectPathInput);
 		string outputDir(fSaveToFolderInput);
-		string appVersion(fVersionInput);
+		string appVersion(fVersionNameInput);
 		std::string webtemplate(platform->getInstallDir());
 		bool runAfterBuild = false; // runAfterBuildCheckbox->GetValue();
 		const char* identity = "no-identity";
@@ -760,10 +774,10 @@ namespace Rtt
 		}
 
 		// build the app (warning! This is blocking call)
-		int buildResult = packager.Build(&webBuilderParams, tmpDirName);
-		fBuildResult = buildResult == 0 ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.";
+		fBuildSuccessed = packager.Build(&webBuilderParams, tmpDirName) == 0;
+		fBuildResult = fBuildSuccessed ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.";
 
-		if (buildResult == 0 && runAfterBuild)
+		if (fBuildSuccessed && runAfterBuild)
 		{
 			string command("\"");
 			command.append(outputDir);
@@ -781,14 +795,7 @@ namespace Rtt
 	DlgLinuxBuild::DlgLinuxBuild(const std::string& title, int w, int h)
 		: DlgBuild(title, w, h)
 		, fileDialog(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_CreateNewDir)
-		, fBuildResult(NULL)
-		, fIncludeStandardResources(false)
 	{
-		strncpy(fApplicationNameInput, app->GetAppName(), sizeof(fApplicationNameInput));
-		strncpy(fVersionInput, "1.0.0", sizeof(fVersionInput));
-		strncpy(fSaveToFolderInput, app->GetContext()->GetSaveFolder().c_str(), sizeof(fSaveToFolderInput));
-		strncpy(fProjectPathInput, app->GetContext()->GetAppPath(), sizeof(fProjectPathInput));
-
 		fileDialog.SetTitle("Save To Folder");
 		fileDialog.SetWindowSize(w, h);
 	}
@@ -800,7 +807,9 @@ namespace Rtt
 	void DlgLinuxBuild::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgLinuxBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		ImGui::BeginDisabled(fThread != NULL);
+
+		if (ImGui::Begin("##DlgLinuxBuild", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 			LinuxPlatform* platform = app->GetPlatform();
@@ -814,46 +823,45 @@ namespace Rtt
 
 			string s;
 			ImGui::Dummy(ImVec2(10, 10));
-			ImGui::PushItemWidth(350);		// input field width
+			ImGui::PushItemWidth(400);		// input field width
 
-			s = "   Application Name :";
+			s = "   Application Name:";
 			float label_width = ImGui::CalcTextSize(s.c_str()).x;
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##ApplicationName", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##fApplicationNameInput", fApplicationNameInput, sizeof(fApplicationNameInput), ImGuiInputTextFlags_CharsNoBlank);
 
-			s = "   Version Code :";
+			s = "   Version Code:";
 			ImGui::TextUnformatted(s.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fVersionInput", fVersionInput, sizeof(fVersionInput), ImGuiInputTextFlags_CharsDecimal);
+			ImGui::InputText("##fVersionInput", fVersionNameInput, sizeof(fVersionNameInput), ImGuiInputTextFlags_CharsDecimal);
 
-			s = "   Save To Folder: ";
-			ImGui::TextUnformatted(s.c_str());
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(label_width + 20);
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fSaveToFolderInput", fSaveToFolderInput, sizeof(fSaveToFolderInput), 0);
-			ImGui::SameLine();
-			if (ImGui::Button("Browse..."))
+			float leftPadding = ImGui::CalcTextSize("    ").x;
+			ImGui::SetCursorPosX(leftPadding);
+			if (ImGui::Button("Save To Folder:"))
 			{
 				fileDialog.SetTitle("Browse For Folder");
 				fileDialog.SetPwd(fSaveToFolderInput);
 				fileDialog.Open();
 			}
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(label_width + 20);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
+			ImGui::InputText("##fSaveToFolderInput", fSaveToFolderInput, sizeof(fSaveToFolderInput), 0);
 			ImGui::PopItemWidth();
 
+			ImGui::Dummy(ImVec2(10, 20));
 			ImGui::Checkbox("Include Standard Resources", &fIncludeStandardResources);
 
 			// ok + cancel
 			s = "Build";
-			ImGui::Dummy(ImVec2(70, 40));
 			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::Dummy(ImVec2(100, 30));
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)))
 			{
 				fThread = new mythread();
 				fThread->start([this]() { Build(); });
@@ -862,44 +870,17 @@ namespace Rtt
 
 			s = "Cancel";
 			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
 
 			if (fBuildResult)
-			{
-				// display result
-				const char* title = "Solar2D Simulator";
-				if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
-				{
-					ImGui::Dummy(ImVec2(100, 10));
-					ImGui::TextUnformatted(fBuildResult);
+				DrawResult();
 
-					string s = "View";
-					ImGui::Dummy(ImVec2(100, 30));
-					int ok_width = 100;
-					ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-					{
-						OpenURL(fSaveToFolderInput);
-						PushEvent(sdl::onCloseDialog);
-					}
-
-					s = "Done";
-					ImGui::SameLine();
-					if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-					{
-						PushEvent(sdl::onCloseDialog);
-					}
-					ImGui::SetItemDefaultFocus();
-
-					ImGui::EndPopup();
-				}
-				ImGui::OpenPopup(title);
-			}
 			ImGui::End();
 		}
+		ImGui::EndDisabled();
 
 		// builder ended ?
 		if (fThread)
@@ -917,6 +898,7 @@ namespace Rtt
 	// thread function
 	void DlgLinuxBuild::Build()
 	{
+		fBuildSuccessed = false;
 		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
 		LinuxAppPackager packager(*service);
@@ -924,7 +906,7 @@ namespace Rtt
 		string appName(fApplicationNameInput);
 		string sourceDir(fProjectPathInput);
 		string outputDir(fSaveToFolderInput);
-		string appVersion(fVersionInput);
+		string appVersion(fVersionNameInput);
 		std::string linuxtemplate(platform->getInstallDir());
 		bool runAfterBuild = false; // runAfterBuildCheckbox->GetValue();
 		const char* identity = "no-identity";
@@ -987,8 +969,8 @@ namespace Rtt
 		linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
 
 		// build the app (warning! This is blocking call)
-		int buildResult = packager.Build(&linuxBuilderParams, "/tmp/Solar2D");
-		fBuildResult = buildResult == 0 ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.";
+		fBuildSuccessed = packager.Build(&linuxBuilderParams, "/tmp/Solar2D") == 0;
+		fBuildResult = fBuildSuccessed ? "Your application was built successfully." : "Failed to build the application.\nSee the console for more info.";
 	}
 
 

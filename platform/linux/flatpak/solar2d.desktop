@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Solar2D
+Exec=com.solar2d.simulator
+Type=Application
+Icon=com.solar2d.simulator
+Categories=Education;

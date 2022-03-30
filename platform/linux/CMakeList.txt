@@ -45,13 +45,6 @@ else()
 	message(FATAL_ERROR "*** no libcurl, use 'sudo apt install libcurl-dev' to install it")
 endif()
 
-find_path(cryptoPP crypto++/aes.h REQUIRED)
-if (cryptoPP)
-	message("libcrypto++: ${cryptoPP}")
-else()
-	message(FATAL_ERROR "*** no libcryptoPP, use 'sudo apt install libcrypto++-dev' to install it")
-endif()
-
 #set(COMMON_COMPILER_FLAGS "-Wno-deprecated -O3 -fstrict-aliasing -fvisibility=hidden -ffunction-sections -fdata-sections")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILER_FLAGS} -no-pie -std=c++17")
@@ -890,10 +883,7 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxClearSandboxDialog.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCloneProjectDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMenuEvents.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
@@ -930,10 +920,7 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxClearSandboxDialog.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCloneProjectDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMenuEvents.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
@@ -962,9 +949,9 @@ add_executable( Solar2DBuilder
 )
 
 # adjust EOL in lua_to_native.sh
-add_custom_target(dos2unix
-	COMMAND dos2unix "${CORONA_ROOT}/platform/linux/lua_to_native.sh"
+configure_file("${CORONA_ROOT}/platform/linux/lua_to_native.sh" "${CORONA_ROOT}/platform/linux/lua_to_native_unixeol.sh" @ONLY NEWLINE_STYLE UNIX)
 
+add_custom_target(lua_binaries
 	# copy lua binaries to Native
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/Resources/Native/Corona/linux/bin
 	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/lua" "${CMAKE_CURRENT_BINARY_DIR}/Resources/Native/Corona/linux/bin/"
@@ -974,8 +961,8 @@ DEPENDS luac)
 FOREACH(LUA_FILE ${LUA_SOURCES})
 	get_filename_component(finame ${LUA_FILE} NAME_WE)
 	add_custom_target(${finame}
-		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native.sh" "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
-		DEPENDS dos2unix)
+		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native_unixeol.sh" "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
+		DEPENDS lua_binaries)
 	add_dependencies(Solar2D ${finame})
 	add_dependencies(Solar2DSimulator ${finame}) 
 	add_dependencies(Solar2DBuilder ${finame})
@@ -986,8 +973,8 @@ FOREACH(LUA_FILE ${LUA_SOCKET_SOURCES})
 	SET(MODULE_COMMAND2 "luasocket")
 	get_filename_component(finame ${LUA_FILE} NAME_WE)
 	add_custom_target(${finame}
-		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native.sh" ${MODULE_COMMAND1} ${MODULE_COMMAND2} "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
-		DEPENDS dos2unix)
+		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native_unixeol.sh" ${MODULE_COMMAND1} ${MODULE_COMMAND2} "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
+		DEPENDS lua_binaries)
 	add_dependencies(Solar2D ${finame})
 	add_dependencies(Solar2DSimulator ${finame})
 	add_dependencies(Solar2DBuilder ${finame})
@@ -998,8 +985,8 @@ FOREACH(LUA_FILE ${LUA_REMDEBUG_SOURCES})
 	SET(MODULE_COMMAND2 "remdebug")
 	get_filename_component(finame ${LUA_FILE} NAME_WE)
 	add_custom_target(${finame}
-		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native.sh" ${MODULE_COMMAND1} ${MODULE_COMMAND2} "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
-		DEPENDS dos2unix)
+		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native_unixeol.sh" ${MODULE_COMMAND1} ${MODULE_COMMAND2} "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
+		DEPENDS lua_binaries)
 	add_dependencies(Solar2D ${finame})
 	add_dependencies(Solar2DSimulator ${finame})
 	add_dependencies(Solar2DBuilder ${finame})
@@ -1023,14 +1010,14 @@ target_compile_definitions( Solar2DBuilder PUBLIC
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
-target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
-target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
+target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
+target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
 
 # Enabling functions loaded from dlopen call a function from the Solar2DSimulator
 target_link_options(Solar2D BEFORE PUBLIC -export-dynamic)
 target_link_options(Solar2DSimulator BEFORE PUBLIC -export-dynamic)
 
-target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png jpeg crypto++ curl SDL2)
+target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png jpeg crypto curl SDL2)
 
 # build template
 add_custom_target(create_template ALL 

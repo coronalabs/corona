@@ -9,14 +9,17 @@
 
 #include "Core/Rtt_Build.h"
 #include "Rtt_LinuxDevice.h"
+#include <sys/utsname.h>
 
 namespace Rtt
 {
-	#pragma region Constructors / Destructors
-	LinuxDevice::LinuxDevice(Rtt_Allocator &allocator)
+	static utsname uts;
+
+#pragma region Constructors / Destructors
+	LinuxDevice::LinuxDevice(Rtt_Allocator& allocator)
 		: fAllocator(allocator),
-		  fInputDeviceManager(&allocator),
-		  fOrientation(DeviceOrientation::kUnknown)
+		fInputDeviceManager(&allocator),
+		fOrientation(DeviceOrientation::kUnknown)
 	{
 	}
 
@@ -24,9 +27,9 @@ namespace Rtt
 	{
 	}
 
-	#pragma endregion
+#pragma endregion
 
-	#pragma region Public Member Functions
+#pragma region Public Member Functions
 
 	void LinuxDevice::SetOrientation(DeviceOrientation::Type orientation)
 	{
@@ -51,19 +54,19 @@ namespace Rtt
 
 		switch (type)
 		{
-			case MPlatformDevice::kGyroscopeEvent:
-				break;
-			case MPlatformDevice::kOrientationEvent:
-			case MPlatformDevice::kLocationEvent:
-			case MPlatformDevice::kHeadingEvent:
-			case MPlatformDevice::kMultitouchEvent:
-			case MPlatformDevice::kKeyEvent:
-			case MPlatformDevice::kAccelerometerEvent:
-				hasEventSource = true;
-				break;
-			default:
-				Rtt_ASSERT_NOT_REACHED();
-				break;
+		case MPlatformDevice::kGyroscopeEvent:
+			break;
+		case MPlatformDevice::kOrientationEvent:
+		case MPlatformDevice::kLocationEvent:
+		case MPlatformDevice::kHeadingEvent:
+		case MPlatformDevice::kMultitouchEvent:
+		case MPlatformDevice::kKeyEvent:
+		case MPlatformDevice::kAccelerometerEvent:
+			hasEventSource = true;
+			break;
+		default:
+			Rtt_ASSERT_NOT_REACHED();
+			break;
 		}
 		return hasEventSource;
 	}
@@ -74,16 +77,16 @@ namespace Rtt
 
 		switch (type)
 		{
-			case MPlatformDevice::kOrientationEvent:
-			case MPlatformDevice::kLocationEvent:
-			case MPlatformDevice::kAccelerometerEvent:
-			case MPlatformDevice::kGyroscopeEvent:
-			case MPlatformDevice::kHeadingEvent:
-			case MPlatformDevice::kMultitouchEvent:
-				break;
-			default:
-				Rtt_ASSERT_NOT_REACHED();
-				break;
+		case MPlatformDevice::kOrientationEvent:
+		case MPlatformDevice::kLocationEvent:
+		case MPlatformDevice::kAccelerometerEvent:
+		case MPlatformDevice::kGyroscopeEvent:
+		case MPlatformDevice::kHeadingEvent:
+		case MPlatformDevice::kMultitouchEvent:
+			break;
+		default:
+			Rtt_ASSERT_NOT_REACHED();
+			break;
 		}
 	}
 
@@ -93,16 +96,16 @@ namespace Rtt
 
 		switch (type)
 		{
-			case MPlatformDevice::kOrientationEvent:
-			case MPlatformDevice::kLocationEvent:
-			case MPlatformDevice::kAccelerometerEvent:
-			case MPlatformDevice::kGyroscopeEvent:
-			case MPlatformDevice::kHeadingEvent:
-			case MPlatformDevice::kMultitouchEvent:
-				break;
-			default:
-				Rtt_ASSERT_NOT_REACHED();
-				break;
+		case MPlatformDevice::kOrientationEvent:
+		case MPlatformDevice::kLocationEvent:
+		case MPlatformDevice::kAccelerometerEvent:
+		case MPlatformDevice::kGyroscopeEvent:
+		case MPlatformDevice::kHeadingEvent:
+		case MPlatformDevice::kMultitouchEvent:
+			break;
+		default:
+			Rtt_ASSERT_NOT_REACHED();
+			break;
 		}
 	}
 
@@ -111,34 +114,34 @@ namespace Rtt
 		return fTracker.DoesNotify(type);
 	}
 
-	const char *LinuxDevice::GetModel() const
+	const char* LinuxDevice::GetModel() const
 	{
-		return "Linux";
+		uname(&uts);
+		return uts.nodename ? uts.nodename : "";		// ubuntu
 	}
 
-	const char *LinuxDevice::GetName() const
+	const char* LinuxDevice::GetName() const
 	{
-		fName = "Linux"; // wxGetLinuxDistributionInfo().Id.ToStdString().c_str();
-
-		return fName.c_str();
+		uname(&uts);
+		return uts.release ? uts.release : "";
 	}
 
-	const char *LinuxDevice::GetUniqueIdentifier(IdentifierType t) const
+	const char* LinuxDevice::GetUniqueIdentifier(IdentifierType t) const
 	{
-		const char *result = "";
+		const char* result = "";
 
 		switch (t)
 		{
-			case MPlatformDevice::kDeviceIdentifier:
-				break;
-			case MPlatformDevice::kHardwareIdentifier:
-				break;
-			case MPlatformDevice::kOSIdentifier:
-				break;
-			case MPlatformDevice::kUdidIdentifier:
-				break;
-			default:
-				break;
+		case MPlatformDevice::kDeviceIdentifier:
+			break;
+		case MPlatformDevice::kHardwareIdentifier:
+			break;
+		case MPlatformDevice::kOSIdentifier:
+			break;
+		case MPlatformDevice::kUdidIdentifier:
+			break;
+		default:
+			break;
 		}
 		return result;
 	}
@@ -151,42 +154,30 @@ namespace Rtt
 		return kDeviceEnvironment;
 	}
 
-	const char *LinuxDevice::GetPlatformName() const
+	const char* LinuxDevice::GetPlatformName() const
 	{
-		return "LINUX";
+		uname(&uts);
+		return uts.sysname ? uts.sysname : "";
 	}
 
-	const char *LinuxDevice::GetPlatformVersion() const
+	const char* LinuxDevice::GetPlatformVersion() const
 	{
-		return "1.0";
+		uname(&uts);
+		return uts.version ? uts.version : "";
 	}
 
-	const char *LinuxDevice::GetProductName() const
+	const char* LinuxDevice::GetProductName() const
 	{
 		return "";
 	}
 
-	const char *LinuxDevice::GetArchitectureInfo() const
+	const char* LinuxDevice::GetArchitectureInfo() const
 	{
-/*		switch (wxPlatformInfo::Get().GetArchitecture())
-		{
-			case wxARCH_INVALID:
-				fArchitecture = "unknown";
-				break;
-
-			case wxARCH_32:
-				fArchitecture = "x86";
-				break;
-
-			case wxARCH_64:
-				fArchitecture = "x64";
-				break;
-		}
-		*/
-		return "x64"; // fArchitecture.c_str();
+		uname(&uts);
+		return uts.machine ? uts.machine : "";
 	}
 
-	PlatformInputDeviceManager &LinuxDevice::GetInputDeviceManager()
+	PlatformInputDeviceManager& LinuxDevice::GetInputDeviceManager()
 	{
 		return fInputDeviceManager;
 	}
@@ -204,15 +195,16 @@ namespace Rtt
 		return fOrientation;
 	}
 
-	const char *LinuxDevice::GetPlatform() const
+	const char* LinuxDevice::GetPlatform() const
 	{
-		return "linux";
+		uname(&uts);
+		return uts.sysname ? uts.sysname : "";
 	}
 
-	const char *LinuxDevice::GetManufacturer() const
+	const char* LinuxDevice::GetManufacturer() const
 	{
 		return "Solar2D";
 	}
 
-	#pragma endregion
+#pragma endregion
 }; // namespace Rtt

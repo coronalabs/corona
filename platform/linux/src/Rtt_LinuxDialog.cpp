@@ -15,15 +15,13 @@
 #include "Rtt_Version.h"
 #include "Rtt_FileSystem.h"
 #include "Rtt_LuaContext.h"
+#include "Rtt_LuaLibNative.h"
+#include "Rtt_BitmapUtils.h"
 #include <dirent.h>
 #include <unistd.h>
 #include <pwd.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "imgui/stb_image.h"
-
 using namespace std;
-
 
 extern "C"
 {
@@ -41,51 +39,77 @@ namespace Rtt
 	}
 
 	// Simple helper function to load an image into a OpenGL texture with common settings
-	bool LoadTextureFromFile(const char* filename, GLuint* out_texture, int* out_width, int* out_height)
+	bool LoadTextureFromFile(const char* filename, GLuint* out_texture, int* w, int* h)
 	{
 		// Load from file
-		int image_width = 0;
-		int image_height = 0;
-		unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
-		if (image_data == NULL)
-			return false;
+		FILE * f = fopen(filename, "rb");
+		if (f)
+		{
+			unsigned char* img = bitmapUtil::loadPNG(f, *w, *h);
+			fclose(f);
 
-		// Create a OpenGL texture identifier
-		GLuint image_texture;
-		glGenTextures(1, &image_texture);
-		glBindTexture(GL_TEXTURE_2D, image_texture);
+			if (img)
+			{
+				// Create a OpenGL texture identifier
+				GLuint image_texture;
+				glGenTextures(1, &image_texture);
+				glBindTexture(GL_TEXTURE_2D, image_texture);
 
-		// Setup filtering parameters for display
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+				// Setup filtering parameters for display
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, *w, *h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img);
 
-		// Upload pixels into texture
-#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-#endif
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-		stbi_image_free(image_data);
+				*out_texture = image_texture;
 
-		*out_texture = image_texture;
-		*out_width = image_width;
-		*out_height = image_height;
-
-		return true;
+				free(img);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void DrawActivity()
 	{
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+		Window::MoveToCenter();
 
-		if (ImGui::Begin("##DrawActivity", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
+		ImGui::Begin("##DrawActivity", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+		const char* label = "##spinner";
+		const float indicator_radius = 14;
+		const ImVec4 main_color(0, 0, 1, 1);
+		const ImVec4 backdrop_color(0, 0, 1, 0.7f);
+		const int circle_count = 8;
+		const float speed = 8;
+
+		ImGuiContext& g = *GImGui;
+		const ImGuiID id = window->GetID(label);
+
+		const ImVec2 pos = window->DC.CursorPos;
+		const float circle_radius = indicator_radius / 10.0f;
+		const ImRect bb(pos, ImVec2(pos.x + indicator_radius * 2.0f, pos.y + indicator_radius * 2.0f));
+		ImGui::ItemSize(bb, 0);
+		if (ImGui::ItemAdd(bb, id))
 		{
-			ImGui::Text("%c", "|/-\\"[(int)(ImGui::GetTime() / 0.05f) & 3]);
-			ImGui::End();
+			const float t = g.Time;
+			const auto degree_offset = 2.0f * IM_PI / circle_count;
+			for (int i = 0; i < circle_count; ++i)
+			{
+				const auto x = indicator_radius * std::sin(degree_offset * i);
+				const auto y = indicator_radius * std::cos(degree_offset * i);
+				const auto growth = std::max(0.0f, std::sin(t * speed - i * degree_offset));
+				ImVec4 color;
+				color.x = main_color.x * growth + backdrop_color.x * (1.0f - growth);
+				color.y = main_color.y * growth + backdrop_color.y * (1.0f - growth);
+				color.z = main_color.z * growth + backdrop_color.z * (1.0f - growth);
+				color.w = 1.0f;
+				window->DrawList->AddCircleFilled(ImVec2(pos.x + indicator_radius + x, pos.y + indicator_radius - y), circle_radius + growth * circle_radius, ImGui::GetColorU32(color));
+			}
 		}
+		ImGui::End();
 	}
 
 	//
@@ -94,24 +118,29 @@ namespace Rtt
 
 	Window::Window(const string& title, int w, int h)
 	{
+		// save state
+		window = SDL_GL_GetCurrentWindow();
+		glcontext = SDL_GL_GetCurrentContext();
+		imctx = ImGui::GetCurrentContext();
+
 		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
 
-		ImGuiContext* imctx = ImGui::GetCurrentContext();
 		fImCtx = ImGui::CreateContext();
 		ImGui::SetCurrentContext(fImCtx);
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 
-		// Setup Dear ImGui style
-		ImGui::StyleColorsLight(); // StyleColorsClassic();
+		SetStyle();
 
 		// Setup Platform/Renderer backends
 		ImGui_ImplSDL2_InitForOpenGL(fWindow, fGLcontext);
 		const char* glsl_version = "#version 130";
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
+		// restore state
+		SDL_GL_MakeCurrent(window, glcontext);
 		ImGui::SetCurrentContext(imctx);
 	}
 
@@ -121,9 +150,35 @@ namespace Rtt
 		SDL_DestroyWindow(fWindow);
 	}
 
+	// Setup Dear ImGui style
+	void Window::SetStyle()
+	{
+		Config& cfg = app->GetConfig();
+		if (cfg["ColorScheme"].to_string() == "Light")
+			PushEvent(sdl::OnStyleColorsLight);
+		else if (cfg["ColorScheme"].to_string() == "Dark")
+			PushEvent(sdl::OnStyleColorsDark);
+		else
+			PushEvent(sdl::OnStyleColorsClassic);
+	}
+
 	void Window::GetWindowSize(int* w, int* h)
 	{
 		SDL_GetWindowSize(fWindow, w, h);
+	}
+
+	void Window::MoveToCenter()
+	{
+		// center this window when appearing
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	}
+
+	void Window::FocusHere()
+	{
+		// Auto-focus on window apparition
+		ImGui::SetItemDefaultFocus();
+		//ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 	}
 
 	void Window::begin()
@@ -140,9 +195,7 @@ namespace Rtt
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		// Always center this window when appearing
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+		MoveToCenter();
 
 		// set background color
 		const ImGuiStyle& style = ImGui::GetStyle();
@@ -216,9 +269,11 @@ namespace Rtt
 		, width(0)
 		, height(0)
 	{
+		begin();
 		string iconPath = GetStartupPath(NULL);
 		iconPath.append("/Resources/solar2d.png");
 		LoadTextureFromFile(iconPath.c_str(), &tex_id, &width, &height);
+		end();
 	}
 
 	DlgAbout::~DlgAbout()
@@ -232,7 +287,7 @@ namespace Rtt
 	void DlgAbout::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -267,10 +322,12 @@ namespace Rtt
 
 			s = "OK";
 			ImGui::Dummy(ImVec2(20, 20));
-			ImGui::SetItemDefaultFocus();
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			bool isOkPressed = ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0));
+			FocusHere();
+
+			//  (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
+			if (isOkPressed || ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsKeyPressed(ImGuiKey_Enter))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
@@ -291,7 +348,7 @@ namespace Rtt
 		fileDialog.SetWindowSize(w, h);
 		fileDialog.SetTitle("##DlgOpen");
 		fileDialog.SetTypeFilters({ ".lua" });
-		fileDialog.SetPwd(startFolder);
+		fileDialog.SetPwd(startFolder.empty() ? GetHomePath() : startFolder);
 		fileDialog.Open();
 	}
 
@@ -302,7 +359,7 @@ namespace Rtt
 	void DlgOpen::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgOpen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgOpen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			fileDialog.Display();
 			if (fileDialog.HasSelected())
@@ -330,7 +387,7 @@ namespace Rtt
 
 	DlgMenu::DlgMenu(const std::string& appName)
 	{
-		isMainMenu = appName == "homescreen";
+		fIsMainMenu = appName == "homescreen";
 	}
 
 	void DlgMenu::Draw()
@@ -340,7 +397,7 @@ namespace Rtt
 		bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) | ImGui::IsKeyDown(ImGuiKey_RightShift);
 		bool alt = ImGui::IsKeyDown(ImGuiKey_LeftAlt) | ImGui::IsKeyDown(ImGuiKey_RightAlt);
 
-		if (isMainMenu)
+		if (fIsMainMenu)
 		{
 			// hot keys
 			if (ctrl && !shift && !alt)
@@ -413,6 +470,7 @@ namespace Rtt
 					}
 					ImGui::EndMenu();
 				}
+				fMenuSize = ImGui::GetWindowSize();
 				ImGui::EndMainMenuBar();
 			}
 		}
@@ -472,6 +530,16 @@ namespace Rtt
 			else if (ctrl && !shift && alt && ImGui::IsKeyPressed(ImGuiKey_B, false))
 			{
 				PushEvent(sdl::OnBuildHTML5);
+			}
+			// ZoomIn
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_Equal, false))
+			{
+				PushEvent(sdl::OnZoomIn);
+			}
+			// ZoomOut
+			else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_Minus, false))
+			{
+				PushEvent(sdl::OnZoomOut);
 			}
 
 
@@ -625,6 +693,7 @@ namespace Rtt
 					}
 					ImGui::EndMenu();
 				}
+				fMenuSize = ImGui::GetWindowSize();
 				ImGui::EndMainMenuBar();
 			}
 		}
@@ -669,7 +738,7 @@ namespace Rtt
 	void DlgNewProject::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgNewProject", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgNewProject", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			fileDialog.Display();
 			if (fileDialog.HasSelected())
@@ -700,7 +769,7 @@ namespace Rtt
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##ProjectFolder", fProjectDirInput, sizeof(fProjectDirInput), ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputText("##ProjectFolder", fProjectDirInput, sizeof(fProjectDirInput));
 			ImGui::SameLine();
 			if (ImGui::Button("Browse..."))
 			{
@@ -778,9 +847,8 @@ namespace Rtt
 			// ok + cancel
 			s = "OK";
 			ImGui::Dummy(ImVec2(70, 40));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)))
 			{
 				// sanity check
 				if (*fApplicationNameInput != 0)
@@ -803,7 +871,7 @@ namespace Rtt
 
 			s = "Cancel";
 			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			if (ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
@@ -831,7 +899,6 @@ namespace Rtt
 		// check if project folder already exists and that the height and width are numbers
 		if (Rtt_IsDirectory(projectPath.c_str()))
 		{
-			//wxMessageBox(wxT("Project of that name already exists."), wxT("Duplicate Project Name"), wxICON_INFORMATION);
 			Rtt_LogException("Project of that name already exists\n");
 			return false;
 		}
@@ -917,21 +984,22 @@ namespace Rtt
 		, fOpenlastProject(false)
 		, fStyleIndex(0)
 	{
-		if (app->ConfigGet())
-		{
-			map<string, string>& cfg = *app->ConfigGet();
-			fRelaunchIndex = cfg["relaunchOnFileChange"] == "Always" ? 0 : (cfg["relaunchOnFileChange"] == "Ask" ? 2 : 1);
-			fShowWelcome = atoi(cfg["ShowWelcome"].c_str());
-			fShowErrors = atoi(cfg["showRuntimeErrors"].c_str());
-			fOpenlastProject = atoi(cfg["openLastProject"].c_str());
-			fStyleIndex = cfg["ColorScheme"] == "Light" ? 0 : (cfg["ColorScheme"] == "Dark" ? 2 : 1);
-		}
+		Config& cfg = app->GetConfig();
+		fRelaunchIndex = cfg["relaunchOnFileChange"].to_string() == "Always" ? 0 : (cfg["relaunchOnFileChange"].to_string() == "Ask" ? 2 : 1);
+		fShowWelcome = cfg["ShowWelcome"].to_bool();
+		fShowErrors = cfg["showRuntimeErrors"].to_bool();
+		fOpenlastProject = cfg["openLastProject"].to_bool();
+		fStyleIndex = cfg["ColorScheme"].to_string() == "Light" ? 0 : (cfg["ColorScheme"].to_string() == "Dark" ? 2 : 1);
+	}
+
+	DlgPreferences::~DlgPreferences()
+	{
 	}
 
 	void DlgPreferences::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgAbout", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -963,32 +1031,33 @@ namespace Rtt
 			}
 
 			// ok + cancel
-			s = "OK";
 			ImGui::Dummy(ImVec2(100, 30));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			bool IsOkPressed = ImGui::Button("OK", ImVec2(BUTTON_WIDTH, 0));
+			if (IsOkPressed || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)))
 			{
-				if (app->ConfigGet())
-				{
-					map<string, string>& cfg = *app->ConfigGet();
-					cfg["relaunchOnFileChange"] = fRelaunchIndex == 0 ? "Always" : (fRelaunchIndex == 2 ? "Ask" : "Never");
-					cfg["ShowWelcome"] = to_string(fShowWelcome);
-					cfg["showRuntimeErrors"] = to_string(fShowErrors);
-					cfg["openLastProject"] = to_string(fOpenlastProject);
-					cfg["ColorScheme"] = fStyleIndex == 0 ? "Light" : (fStyleIndex == 2 ? "Dark" : "Standard");
-					app->ConfigSave();
-				}
-				PushEvent(sdl::onCloseDialog);
-			}
-			ImGui::SetItemDefaultFocus();
+				Config& cfg = app->GetConfig();
+				cfg["relaunchOnFileChange"] = fRelaunchIndex == 0 ? "Always" : (fRelaunchIndex == 2 ? "Ask" : "Never");
+				cfg["ShowWelcome"] = fShowWelcome;
+				cfg["showRuntimeErrors"] = fShowErrors;
+				cfg["openLastProject"] = fOpenlastProject;
+				cfg["ColorScheme"] = fStyleIndex == 0 ? "Light" : (fStyleIndex == 2 ? "Dark" : "Standard");
+				cfg.Save();
 
-			s = "Cancel";
-			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-			{
+				PushEvent(sdl::OnPreferencesChanged);
 				PushEvent(sdl::onCloseDialog);
 			}
+
+			ImGui::SameLine();
+			bool IsCancelPressed = ImGui::Button("Cancel", ImVec2(BUTTON_WIDTH, 0));
+			if (IsCancelPressed || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
+			{
+				// reset old values
+				SetStyle();
+				PushEvent(sdl::onCloseDialog);
+			}
+			FocusHere();
+
 			ImGui::End();
 		}
 		end();
@@ -1001,7 +1070,7 @@ namespace Rtt
 	void DlgAskRelaunch::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgAskRelaunch", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgAskRelaunch", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			const ImVec2& window_size = ImGui::GetWindowSize();
 
@@ -1015,9 +1084,8 @@ namespace Rtt
 			// ok + cancel
 			string s = "Relaunch";
 			ImGui::Dummy(ImVec2(100, 30));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)))
 			{
 				SaveMyPreference("Always");
 				PushEvent(sdl::onCloseDialog);
@@ -1027,7 +1095,7 @@ namespace Rtt
 
 			s = "Ignore";
 			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			if (ImGui::Button(s.c_str(), ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				SaveMyPreference("Never");
 				PushEvent(sdl::onCloseDialog);
@@ -1039,9 +1107,9 @@ namespace Rtt
 
 	void DlgAskRelaunch::SaveMyPreference(const char* val)
 	{
-		if (fSaveMyPreference && app->ConfigGet())
+		if (fSaveMyPreference)
 		{
-			map<string, string>& cfg = *app->ConfigGet();
+			Config& cfg = app->GetConfig();
 			cfg["relaunchOnFileChange"] = val;
 		}
 	}
@@ -1068,7 +1136,7 @@ namespace Rtt
 	void DlgViewAs::Draw()
 	{
 		begin();
-		if (ImGui::Begin("##DlgViewAs", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin("##DlgViewAs", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar))
 		{
 			int w, h;
 			GetWindowSize(&w, &h);
@@ -1106,26 +1174,15 @@ namespace Rtt
 				}
 				if (ImGui::BeginTabItem("Desktop"))
 				{
-					DrawView("Desktop");
+					DrawView("desktop");
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
 			}
 
-			// ok + cancel
-			string s = "Select";
-			ImGui::Dummy(ImVec2(100, 30));
-			int ok_width = 100;
-			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
-			{
-				PushEvent(sdl::onCloseDialog);
-			}
-			ImGui::SetItemDefaultFocus();
-
-			s = "Close";
-			ImGui::SameLine();
-			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+			ImGui::Dummy(ImVec2(10, 10));
+			ImGui::SetCursorPosX((window_size.x - BUTTON_WIDTH) * 0.5f);
+			if (ImGui::Button("Close", ImVec2(BUTTON_WIDTH, 0)) || (ImGui::IsWindowFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 			{
 				PushEvent(sdl::onCloseDialog);
 			}
@@ -1173,12 +1230,140 @@ namespace Rtt
 				{
 					SDL_Event e = {};
 					e.type = sdl::OnChangeView;
-					e.user.data1 = (void*) &it->second;
+					e.user.data1 = (void*)&it->second;
 					SDL_PushEvent(&e);
 				}
 			}
 
 		}
+	}
+
+	//
+	// DlgAlert
+	//
+
+	DlgAlert::DlgAlert(const char* title, const char* msg, const char** buttonLabels, int numButtons, LuaResource* resource)
+		: Window(title, 400, 300)
+		, fMsg(msg)
+		, fCallback(resource)
+	{
+		for (int i = 0; i < numButtons; i++)
+		{
+			fButtons.push_back(buttonLabels[i]);
+		}
+	}
+
+	DlgAlert::~DlgAlert()
+	{
+		if (fCallback)
+			delete fCallback;
+	}
+
+	void DlgAlert::Draw()
+	{
+		begin();
+		if (ImGui::Begin("##DlgAlert", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			int w, h;
+			GetWindowSize(&w, &h);
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + w - 40);
+			ImGui::SetCursorPosX(20);
+			ImGui::SetCursorPosY(20);
+			ImGui::TextWrapped("%s", fMsg.c_str());
+			ImGui::PopTextWrapPos();
+
+			ImGui::Dummy(ImVec2(20, 20));
+			ImGui::SetCursorPosX((window_size.x - (BUTTON_WIDTH + 10) * fButtons.size()) * 0.5f);
+			for (int i = fButtons.size() - 1; i >= 0; i--)
+			{
+				if (ImGui::Button(fButtons[i].c_str(), ImVec2(BUTTON_WIDTH, 0)))
+				{
+					onClick(i);
+				}
+				ImGui::SameLine();
+			}
+
+			if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+			{
+				onClick(-1);
+			}
+			ImGui::End();
+		}
+		end();
+	}
+
+	void DlgAlert::onClick(int nButton)
+	{
+		if (fCallback)
+		{
+			// Invoke the Lua listener.
+			LuaLibNative::AlertComplete(*fCallback, nButton, nButton < 0);
+
+			// Delete the Lua resource.
+			delete fCallback;
+			fCallback = NULL;		// lock re-entry
+			PushEvent(sdl::onCloseDialog);
+		}
+	}
+
+	//
+	// DlgRuntimeError
+	//
+
+	DlgRuntimeError::DlgRuntimeError(const char* title, int w, int h, const char* errorType, const char* message, const char* stacktrace)
+		: Window(title, w, h)
+		, fErrorType(errorType)
+		, fMessage(message)
+		, fStackTrace(stacktrace)
+	{
+	}
+
+	DlgRuntimeError::~DlgRuntimeError()
+	{
+	}
+
+	void DlgRuntimeError::Draw()
+	{
+		begin();
+		if (ImGui::Begin("##DlgRuntimeError", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			int w, h;
+			GetWindowSize(&w, &h);
+			const ImVec2& window_size = ImGui::GetWindowSize();
+
+			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + w - 40);
+			ImGui::SetCursorPosX(20);
+			ImGui::SetCursorPosY(20);
+			ImGui::TextWrapped("%s", fMessage.c_str());
+			ImGui::PopTextWrapPos();
+
+			ImGui::Dummy(ImVec2(70, 30));
+			ImGui::TextUnformatted("Do you want to relaunch the project?");
+
+			// ok + cancel
+			string s = "Yes";
+			ImGui::Dummy(ImVec2(70, 30));
+			int ok_width = 100;
+			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter))
+			{
+				PushEvent(sdl::onCloseDialog);
+				PushEvent(sdl::OnRelaunch);
+			}
+			FocusHere();
+
+			s = "No";
+			ImGui::SameLine();
+			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape))
+			{
+				PushEvent(sdl::onCloseDialog);
+			}
+
+			ImGui::End();
+		}
+		end();
 	}
 
 }	// Rtt
