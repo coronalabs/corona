@@ -1047,6 +1047,7 @@ static const char kPulleyJointType[] = "pulley";
 static const char kTouchJointType[] = "touch";
 static const char kGearJointType[] = "gear";
 static const char kRopeJointType[] = "rope";
+static const char kMotorJointType[] = "motor";
 
 /*
 static b2JointType
@@ -1216,7 +1217,7 @@ newJoint( lua_State *L )
 			{
 				jointDef.collideConnected = lua_toboolean( L, 8 );
 			}
-			CoronaLuaLog(L, "WARNING: distance joint collideConnected = %d!", lua_gettop(L));
+			// CoronaLuaLog(L, "WARNING: distance joint collideConnected = %d!", lua_gettop(L));
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
@@ -1237,6 +1238,22 @@ newJoint( lua_State *L )
 			if ( lua_isboolean( L, 6 ) )
 			{
 				jointDef.collideConnected = lua_toboolean( L, 6 );
+			}
+
+			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
+		}
+
+		else if ( strcmp( kMotorJointType, jointType ) == 0 )
+		{
+			b2Body *body1 = e1->GetBody();
+			b2Body *body2 = e2->GetBody();
+
+			b2MotorJointDef jointDef;
+
+			jointDef.Initialize( body1, body2 );
+			if ( lua_isboolean( L, 4 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 4 );
 			}
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
@@ -1319,14 +1336,16 @@ newJoint( lua_State *L )
 			Real px = luaL_torealphysics( L, 4, scale );
 			Real py = luaL_torealphysics( L, 5, scale );
 
-			Real qx = luaL_torealphysics( L, 6, scale );
-			Real qy = luaL_torealphysics( L, 7, scale );
+			// Don't scale the axis vector
+			Real qx = luaL_toreal( L, 6 );
+			Real qy = luaL_toreal( L, 7 );
 
 			// TODO
 			b2WheelJointDef jointDef;
 
 			b2Vec2 point( px, py );
 			b2Vec2 axis( qx, qy );
+			axis.Normalize();
 
 			jointDef.Initialize( body1, body2, point, axis );
 			if ( lua_isboolean( L, 8 ) )

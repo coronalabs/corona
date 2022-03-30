@@ -56,6 +56,8 @@ class PhysicsJoint
 		static int getRotationLimits( lua_State *L );
 		static int setLimits( lua_State *L );
 		static int getLimits( lua_State *L );
+		static int setLinearOffset( lua_State *L );
+		static int getLinearOffset( lua_State *L );
 		static int getGroundAnchorA( lua_State *L );
 		static int getGroundAnchorB( lua_State *L );
 		static int removeSelf( lua_State *L );

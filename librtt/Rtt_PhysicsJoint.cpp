@@ -457,6 +457,51 @@ PhysicsJoint::getLimits( lua_State *L )
 }
 
 int
+PhysicsJoint::setLinearOffset( lua_State *L )
+{
+	b2Joint *baseJoint = GetJoint( L, 1 );
+
+	// This is for motor joints only
+	if ( baseJoint )
+	{
+		const PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
+		Real scale = physics.GetPixelsPerMeter();
+
+		Rtt_Real ox = Rtt_RealDiv( luaL_toreal( L, 2 ), scale );
+		Rtt_Real oy = Rtt_RealDiv( luaL_toreal( L, 3 ), scale );
+
+		b2MotorJoint *joint = (b2MotorJoint*)baseJoint;
+		b2Vec2 offset( ox, oy );
+		joint->SetLinearOffset(offset);
+	}
+
+	return 0;
+}
+
+int
+PhysicsJoint::getLinearOffset( lua_State *L )
+{
+	b2Joint *baseJoint = GetJoint( L, 1 );
+
+	// This is for prismatic ("piston") joints only
+	if ( baseJoint )
+	{
+		const PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
+		Real scale = physics.GetPixelsPerMeter();
+
+		b2MotorJoint *joint = (b2MotorJoint*)baseJoint; // assumption: this cast is OK for both cases (otherwise check type)
+
+		Rtt_Real ox = Rtt_RealMul( Rtt_FloatToReal( joint->GetLinearOffset().x ), scale );
+		Rtt_Real oy = Rtt_RealMul( Rtt_FloatToReal( joint->GetLinearOffset().y ), scale );
+
+		lua_pushnumber( L, ox );
+		lua_pushnumber( L, oy );
+	}
+
+	return 2;
+}
+
+int
 PhysicsJoint::getGroundAnchorA( lua_State *L )
 {
 	b2Joint *baseJoint = GetJoint( L, 1 );
@@ -740,6 +785,43 @@ PhysicsJoint::ValueForKey( lua_State *L )
 				{
 					lua_pushcfunction( L, Self::getRotationLimits );
 				}		
+				else
+				{
+					result = 0;
+				}
+			}
+			else if ( jointType == e_motorJoint )
+			{
+				//////////////////////////////////////////////////////////////////////////////
+				// This is exposed as a "pivot" joint in Corona (aka "revolute" in Box2D terms)
+
+				b2MotorJoint *joint = (b2MotorJoint*)baseJoint;
+
+				if ( 0 == strcmp( "correctionFactor", key ) )
+				{
+					lua_pushnumber( L, joint->GetCorrectionFactor() );
+				}
+				else if ( 0 == strcmp( "maxTorque", key ) )
+				{
+					lua_pushnumber( L, joint->GetMaxTorque() );
+				}
+				else if ( 0 == strcmp( "maxForce", key ) )
+				{
+					lua_pushnumber( L, joint->GetMaxForce() );
+				}
+				else if ( 0 == strcmp( "angularOffset", key ) )
+				{
+					Rtt_Real valueDegrees = Rtt_RealRadiansToDegrees( Rtt_FloatToReal( joint->GetAngularOffset() ) );
+					lua_pushnumber( L, valueDegrees );
+				}
+				else if ( strcmp( "setLinearOffset", key ) == 0 )
+				{
+					lua_pushcfunction( L, Self::setLinearOffset );
+				}
+				else if ( strcmp( "getLinearOffset", key ) == 0 )
+				{
+					lua_pushcfunction( L, Self::getLinearOffset );
+				}
 				else
 				{
 					result = 0;
@@ -1096,6 +1178,44 @@ PhysicsJoint::SetValueForKey( lua_State *L )
 				{
 					Rtt_Real newValue = luaL_toreal( L, 3 );
 					joint->SetDampingRatio( newValue );
+				}
+			}
+		}
+
+		else if ( jointType == e_motorJoint )
+		{
+			//////////////////////////////////////////////////////////////////////////////
+			// This is exposed as a "pivot" joint in Corona (aka "revolute" in Box2D terms)
+
+			b2MotorJoint *joint = (b2MotorJoint*)baseJoint;
+
+			if ( 0 == strcmp( "correctionFactor", key ) )
+			{
+				if ( lua_isnumber( L, 3 ) )
+				{
+					joint->SetCorrectionFactor( lua_tonumber( L, 3 ) );
+				}
+			}
+			else if ( 0 == strcmp( "maxTorque", key ) )
+			{
+				if ( lua_isnumber( L, 3 ) )
+				{
+					joint->SetMaxTorque( lua_tonumber( L, 3 ) );
+				}
+			}
+			else if ( 0 == strcmp( "maxForce", key ) )
+			{
+				if ( lua_isnumber( L, 3 ) )
+				{
+					joint->SetMaxForce( lua_tonumber( L, 3 ) );
+				}
+			}
+			else if ( 0 == strcmp( "angularOffset", key ) )
+			{
+				if ( lua_isnumber( L, 3 ) )
+				{
+					Rtt_Real valueRadians = Rtt_RealDegreesToRadians( luaL_toreal( L, 3 ) );
+					joint->SetAngularOffset( Rtt_RealToFloat( valueRadians ) );
 				}
 			}
 		}
