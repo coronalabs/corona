@@ -931,10 +931,12 @@ PhysicsJoint::ValueForKey( lua_State *L )
 				}
 				else if ( 0 == strcmp( "motorSpeed", key ) )
 				{
-					const PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
-					Real scale = physics.GetPixelsPerMeter();
-					Rtt_Real valuePixels = Rtt_RealMul( Rtt_FloatToReal( joint->GetMotorSpeed() ), scale );
-					lua_pushnumber( L, valuePixels );
+					// const PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
+					// Real scale = physics.GetPixelsPerMeter();
+					// Rtt_Real valuePixels = Rtt_RealMul( Rtt_FloatToReal( joint->GetMotorSpeed() ), scale );
+					// lua_pushnumber( L, valuePixels );
+					Rtt_Real valueDegrees = Rtt_RealRadiansToDegrees( Rtt_FloatToReal( joint->GetMotorSpeed() ) );
+					lua_pushnumber( L, valueDegrees );
 				}
 				else if ( 0 == strcmp( "motorTorque", key ) )  // read-only
 				{
@@ -1363,12 +1365,17 @@ PhysicsJoint::SetValueForKey( lua_State *L )
 			}
 			else if ( 0 == strcmp( "motorSpeed", key ) )
 			{
+				// if ( lua_isnumber( L, 3 ) )
+				// {
+				// 	const PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
+				// 	Real scale = physics.GetPixelsPerMeter();
+				// 	Rtt_Real valueMeters = Rtt_RealDiv( Rtt_FloatToReal( lua_toboolean( L, 3 ) ), scale );
+				// 	joint->SetMotorSpeed( Rtt_RealToFloat( valueMeters ) );
+				// }
 				if ( lua_isnumber( L, 3 ) )
 				{
-					const PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
-					Real scale = physics.GetPixelsPerMeter();
-					Rtt_Real valueMeters = Rtt_RealDiv( Rtt_FloatToReal( lua_toboolean( L, 3 ) ), scale );	
-					joint->SetMotorSpeed( Rtt_RealToFloat( valueMeters ) );
+					Rtt_Real valueRadians = Rtt_RealDegreesToRadians( luaL_toreal( L, 3 ) );
+					joint->SetMotorSpeed( Rtt_RealToFloat( valueRadians ) );
 				}
 			}
 			else if ( 0 == strcmp( "motorTorque", key ) )
