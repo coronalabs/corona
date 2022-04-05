@@ -3183,9 +3183,9 @@ public class NativeToJavaBridge {
 		}
 		return systemUIVisibility;
 	}
-	protected static void callSetNavagationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
+	protected static void callSetNavigationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
 		if (runtime != null) {
-			CoronaEnvironment.getCoronaActivity().setNavagationBarColor(red, green, blue);
+			CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
 		}
 	}
 

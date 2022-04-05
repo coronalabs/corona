@@ -1051,6 +1051,7 @@ AndroidPlatform::SetNativeProperty( lua_State *L, const char *key, int valueInde
 		}
 	}
 	else if (Rtt_StringCompare(key, "navagationBarColor") == 0)
+	else if (Rtt_StringCompare(key, "navigationBarColor") == 0)
 	{
 		if (lua_type(L, valueIndex) == LUA_TTABLE)
 		{
@@ -1077,7 +1078,7 @@ AndroidPlatform::SetNativeProperty( lua_State *L, const char *key, int valueInde
 			}
 			lua_pop(L,1);
 
-			fNativeToJavaBridge->SetNavagationBarColor(red, green, blue);
+			fNativeToJavaBridge->SetNavigationBarColor(red, green, blue);
 		}
 	}
 	else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)

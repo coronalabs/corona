@@ -3556,8 +3556,8 @@ public class CoronaActivity extends Activity {
 		}
 	}
 
-	/* Handles setting navagationBarColor */
-	public void setNavagationBarColor(double red, double green, double blue){
+	/* Handles setting navigationBarColor */
+	public void setNavigationBarColor(double red, double green, double blue){
 		myHandler.post(new Runnable() {
 			public void run() {
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

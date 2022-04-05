@@ -305,7 +305,7 @@ class NativeToJavaBridge
 		void GetSystemUiVisibility( Rtt::String * align );
 
 	public:
-		void SetNavagationBarColor( double red, double green, double blue );
+		void SetNavigationBarColor( double red, double green, double blue );
 
 	public:
 		static bool DecodeBase64( const Rtt::Data<const char> & payload, Rtt::Data<char> & data );

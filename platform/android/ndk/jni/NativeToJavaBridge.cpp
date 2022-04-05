@@ -4139,15 +4139,15 @@ NativeToJavaBridge::GetSystemUiVisibility( Rtt::String * visibility )
 }
 
 void
-NativeToJavaBridge::SetNavagationBarColor( double red, double green, double blue )
+NativeToJavaBridge::SetNavigationBarColor( double red, double green, double blue )
 {
-	NativeTrace trace( "NativeToJavaBridge::SetNavagationBarColor" );
+	NativeTrace trace( "NativeToJavaBridge::SetNavigationBarColor" );
 
 	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
 	if (bridge.isValid())
 	{
 		jmethodID mid = bridge.getEnv()->GetStaticMethodID(
-								bridge.getClass(), "callSetNavagationBarColor", "(Lcom/ansca/corona/CoronaRuntime;DDD)V");
+								bridge.getClass(), "callSetNavigationBarColor", "(Lcom/ansca/corona/CoronaRuntime;DDD)V");
 		bridge.getEnv()->CallStaticVoidMethod(bridge.getClass(), mid, fCoronaRuntime, (jdouble)red, (jdouble)green, (jdouble)blue);
 		HandleJavaException();
 	}
