@@ -1,0 +1,1037 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+# check dependencies
+
+find_package(ZLIB REQUIRED)
+if (ZLIB_FOUND)
+	message("zlib-${ZLIB_VERSION_STRING}; ${ZLIB_INCLUDE_DIR}; ${ZLIB_LIBRARIES}")
+else()
+	message(FATAL_ERROR "*** no zlib, use 'sudo apt install zlib1g-dev' to install it")
+endif()
+
+set(OpenGL_GL_PREFERENCE "LEGACY")
+find_package(OpenGL REQUIRED)
+if (OpenGL_OpenGL_FOUND)
+	message("OpenGL; ${OPENGL_INCLUDE_DIR}; ${OPENGL_LIBRARIES}")
+else()
+	message(FATAL_ERROR "*** no OpenGL, use 'sudo apt install libglu1-mesa-dev' to install it")
+endif()
+
+find_package(OpenAL REQUIRED)
+if (OPENAL_FOUND)
+	message("OpenAL; ${OPENAL_INCLUDE_DIR}; ${OPENAL_LIBRARY}")
+else()
+	message(FATAL_ERROR "*** no OpenAL, use 'sudo apt install libopenal-dev' to install it")
+endif()
+
+find_package(Freetype REQUIRED)
+if (FREETYPE_FOUND)
+	message("Freetype-${FREETYPE_VERSION_STRING}; ${FREETYPE_INCLUDE_DIRS}; ${FREETYPE_LIBRARIES}")
+else()
+	message(FATAL_ERROR "*** no Freetype, use 'sudo apt install libfreetype6-dev' to install it")
+endif()
+
+find_package(PNG REQUIRED)
+if (PNG_FOUND)
+	message("png-${PNG_VERSION_STRING}; ${PNG_INCLUDE_DIRS}; ${PNG_LIBRARIES}")
+else()
+	message(FATAL_ERROR "*** no libpng, use 'sudo apt install libpng-dev' to install it")
+endif()
+
+find_package(CURL REQUIRED)
+if (CURL_FOUND)
+	message("curl-${CURL_VERSION_STRING}; ${CURL_INCLUDE_DIRS}; ${CURL_LIBRARIES}")
+else()
+	message(FATAL_ERROR "*** no libcurl, use 'sudo apt install libcurl-dev' to install it")
+endif()
+
+#set(COMMON_COMPILER_FLAGS "-Wno-deprecated -O3 -fstrict-aliasing -fvisibility=hidden -ffunction-sections -fdata-sections")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILER_FLAGS} -no-pie -std=c++17")
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${COMMON_COMPILER_FLAGS} -no-pie")
+
+include_directories (
+	/usr/include/AL
+	/usr/include/freetype2
+	/usr/include/SDL2
+	${CORONA_ROOT}
+	${CORONA_ROOT}/external/sqlite3
+	${CORONA_ROOT}/external/lua-5.1.3/src
+	${CORONA_ROOT}/external/rsa
+	${CORONA_ROOT}/external/LuaHashMap
+	${CORONA_ROOT}/external/openal-soft/include/AL
+	${CORONA_ROOT}/external/ALmixer
+	${CORONA_ROOT}/external/ALmixer/Isolated
+	${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123
+	${CORONA_ROOT}/external/tremor/Tremor
+	${CORONA_ROOT}/external/luasocket/src
+	${CORONA_ROOT}/external/lpeg
+	${CORONA_ROOT}/external/luafilesystem/src
+	${CORONA_ROOT}/librtt
+	${CORONA_ROOT}/librtt/Corona
+	${CORONA_ROOT}/librtt/Core
+	${CORONA_ROOT}/librtt/Display
+	${CORONA_ROOT}/librtt/input
+	${CORONA_ROOT}/librtt/Renderer
+	${CORONA_ROOT}/plugins/shared
+	${CORONA_ROOT}/platform/shared
+	${CORONA_ROOT}/external/Box2D
+	${CORONA_ROOT}/external/b2Separator-cpp
+  ${CORONA_ROOT}/external/smoothpolygon
+  ${CORONA_ROOT}/modules/simulator
+  ${CORONA_ROOT}/platform
+  ${CORONA_ROOT}/platform/android
+  ${CORONA_ROOT}/platform/linux/src
+  ${CORONA_ROOT}/tools/car
+)
+
+SET( LUA_SOURCES
+	"${CORONA_ROOT}/platform/linux/shell.lua"
+	"${CORONA_ROOT}/platform/resources/init.lua"
+	"${CORONA_ROOT}/platform/resources/json.lua"
+	"${CORONA_ROOT}/platform/resources/dkjson.lua"
+	"${CORONA_ROOT}/platform/resources/runtime.lua"
+	"${CORONA_ROOT}/platform/resources/loader_ccdata.lua"
+	"${CORONA_ROOT}/platform/resources/loader_callback.lua"
+	"${CORONA_ROOT}/platform/resources/launchpad.lua"
+	"${CORONA_ROOT}/subrepos/easing/easing.lua"
+	"${CORONA_ROOT}/subrepos/composer/composer.lua" 
+	"${CORONA_ROOT}/subrepos/composer/composer_scene.lua"
+	"${CORONA_ROOT}/subrepos/timer/timer.lua"
+	"${CORONA_ROOT}/subrepos/transition/transition.lua"
+	"${CORONA_ROOT}/subrepos/transition/transition_v1.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_button.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_momentumScrolling.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_pickerWheel.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_scrollview.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_slider.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_tabbar.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_tableview.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_progressView.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_searchField.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_segmentedControl.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_spinner.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_stepper.lua"
+	"${CORONA_ROOT}/subrepos/widget/widgetLibrary/widget_switch.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_android_sheet.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_android.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_android_holo_dark.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_android_holo_dark_sheet.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_android_holo_light.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_android_holo_light_sheet.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_ios_sheet.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_ios.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_ios7_sheet.lua"
+	"${CORONA_ROOT}/subrepos/widget/widget_theme_ios7.lua"
+	"${CORONA_ROOT}/librtt/Corona/CoronaLibrary.lua"
+	"${CORONA_ROOT}/librtt/Corona/CoronaPrototype.lua"
+	"${CORONA_ROOT}/librtt/Corona/CoronaProvider.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_add_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_average_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_color_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_colorBurn_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_colorDodge_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_darken_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_difference_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_exclusion_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_glow_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_hardLight_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_hardMix_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_hue_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_lighten_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_linearLight_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_luminosity_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_multiply_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_negation_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_normalMapWith1DirLight_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_normalMapWith1PointLight_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_overlay_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_phoenix_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_pinLight_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_reflect_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_saturation_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_screen_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_softLight_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_subtract_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_vividLight_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_composite_yuv420f_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_default_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_bloom_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_blur_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_blurGaussian_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_blurHorizontal_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_blurVertical_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_brightness_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_bulge_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_chromaKey_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_color_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_colorChannelOffset_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_colorMatrix_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_colorPolynomial_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_contrast_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_crosshatch_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_crystallize_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_desaturate_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_dissolve_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_duotone_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_emboss_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_exposure_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_frostedGlass_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_grayscale_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_hue_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_invert_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_iris_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_levels_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_linearWipe_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_median_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_monotone_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_opTile_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_pixelate_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_polkaDots_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_posterize_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_radialWipe_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_saturate_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_scatter_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_sepia_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_sharpenLuminance_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_sobel_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_step_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_straighten_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_swirl_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_vignette_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_vignetteMask_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_water_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_wobble_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_woodCut_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_filter_zoomBlur_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_checkerboard_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_lenticularHalo_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_linearGradient_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_marchingAnts_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_perlinNoise_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_radialGradient_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_random_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_stripes_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/kernel_generator_sunbeams_gl.lua"
+	"${CORONA_ROOT}/librtt/Display/Shader/shell_default_gl.lua"
+	"${CORONA_ROOT}/external/lpeg/re.lua"
+	"${CORONA_ROOT}/platform/resources/linuxPackageApp.lua"
+	"${CORONA_ROOT}/platform/resources/webPackageApp.lua"
+	"${CORONA_ROOT}/plugins/network/shared/network.lua"
+	"${CORONA_ROOT}/tools/CoronaBuilder/CoronaBuilder.lua"
+	"${CORONA_ROOT}/tools/CoronaBuilder/BuilderPluginDownloader.lua"
+	"${CORONA_ROOT}/platform/resources/CoronaBuilderPluginCollector.lua"
+	"${CORONA_ROOT}/platform/android/create_build_properties.lua"
+	"${CORONA_ROOT}/platform/resources/config_require.lua"
+)
+
+SET( LUA_SOCKET_SOURCES
+	"${CORONA_ROOT}/external/luasocket/src/ftp.lua"
+	"${CORONA_ROOT}/external/luasocket/src/headers.lua"
+	"${CORONA_ROOT}/external/luasocket/src/http.lua"
+	"${CORONA_ROOT}/external/luasocket/src/ltn12.lua"
+	"${CORONA_ROOT}/external/luasocket/src/mbox.lua"
+	"${CORONA_ROOT}/external/luasocket/src/mime.lua"
+	"${CORONA_ROOT}/external/luasocket/src/smtp.lua"
+	"${CORONA_ROOT}/external/luasocket/src/socket.lua"
+	"${CORONA_ROOT}/external/luasocket/src/ssl.lua"
+	"${CORONA_ROOT}/external/luasocket/src/tp.lua"
+	"${CORONA_ROOT}/external/luasocket/src/url.lua"
+)
+
+SET( LUA_REMDEBUG_SOURCES
+	"${CORONA_ROOT}/external/remdebug-1.0/src/remdebug/engine.lua"
+)
+
+SET( LUA_FILES
+	${LUA_SOURCES}
+	${LUA_SOCKET_SOURCES}
+	${LUA_REMDEBUG_SOURCES}
+)
+
+SET( LUA51_SOURCES
+    ${CORONA_ROOT}/external/lua-5.1.3/src/lapi.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lauxlib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lbaselib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lcode.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ldblib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ldebug.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ldo.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ldump.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lfunc.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lgc.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/linit.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/liolib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/llex.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lmathlib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lmem.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/loadlib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lobject.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lopcodes.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/loslib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lparser.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lstate.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lstring.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lstrlib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ltable.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ltablib.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/ltm.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lundump.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lvm.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/lzio.c
+		${CORONA_ROOT}/external/lua-5.1.3/src/print.c
+)
+
+set(Lua2CppOutputDir "${CMAKE_CURRENT_BINARY_DIR}/generated_src")
+file(MAKE_DIRECTORY "${Lua2CppOutputDir}")
+
+# mark cpp files generated from lua files as GENERATED
+FOREACH(LUA_FILE ${LUA_FILES})
+	get_filename_component(finame ${LUA_FILE} NAME_WE)
+	string(CONCAT cppfile "${Lua2CppOutputDir}/" ${finame} ".cpp")
+	set_source_files_properties("${cppfile}" PROPERTIES  GENERATED TRUE)
+ENDFOREACH()
+
+# build lua + luac
+
+add_executable( lua
+	${LUA51_SOURCES}
+	${CORONA_ROOT}/external/lua-5.1.3/src/lua.c
+)
+target_link_libraries(lua	m)
+
+add_executable( luac
+	${LUA51_SOURCES}
+	${CORONA_ROOT}/external/lua-5.1.3/src/luac.c
+)
+target_link_libraries(luac m)
+add_dependencies(luac lua)
+
+# build Solar2D binaries
+
+# imgui
+SET( IMGUI_SOURCES
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_draw.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_tables.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_widgets.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_impl_opengl3.cpp
+		${CORONA_ROOT}/platform/linux/src/imgui/imgui_impl_sdl.cpp
+)
+
+SET( SOLAR2D_SOURCES
+		${Lua2CppOutputDir}/init.cpp
+		${Lua2CppOutputDir}/runtime.cpp
+		${Lua2CppOutputDir}/easing.cpp
+		${Lua2CppOutputDir}/json.cpp
+		${Lua2CppOutputDir}/dkjson.cpp
+		${Lua2CppOutputDir}/loader_ccdata.cpp
+		${Lua2CppOutputDir}/loader_callback.cpp
+		${Lua2CppOutputDir}/launchpad.cpp
+		${Lua2CppOutputDir}/composer.cpp
+		${Lua2CppOutputDir}/composer_scene.cpp
+		${Lua2CppOutputDir}/timer.cpp
+		${Lua2CppOutputDir}/transition.cpp
+		${Lua2CppOutputDir}/transition_v1.cpp
+		${Lua2CppOutputDir}/widget.cpp
+		${Lua2CppOutputDir}/widget_button.cpp
+		${Lua2CppOutputDir}/widget_momentumScrolling.cpp
+		${Lua2CppOutputDir}/widget_pickerWheel.cpp
+		${Lua2CppOutputDir}/widget_scrollview.cpp
+		${Lua2CppOutputDir}/widget_slider.cpp
+		${Lua2CppOutputDir}/widget_tabbar.cpp
+		${Lua2CppOutputDir}/widget_tableview.cpp
+		${Lua2CppOutputDir}/widget_progressView.cpp
+		${Lua2CppOutputDir}/widget_searchField.cpp
+		${Lua2CppOutputDir}/widget_segmentedControl.cpp
+		${Lua2CppOutputDir}/widget_spinner.cpp
+		${Lua2CppOutputDir}/widget_stepper.cpp
+		${Lua2CppOutputDir}/widget_switch.cpp
+		${Lua2CppOutputDir}/widget_theme_android_sheet.cpp
+		${Lua2CppOutputDir}/widget_theme_android.cpp
+		${Lua2CppOutputDir}/widget_theme_android_holo_dark.cpp
+		${Lua2CppOutputDir}/widget_theme_android_holo_dark_sheet.cpp
+		${Lua2CppOutputDir}/widget_theme_android_holo_light.cpp
+		${Lua2CppOutputDir}/widget_theme_android_holo_light_sheet.cpp
+		${Lua2CppOutputDir}/widget_theme_ios_sheet.cpp
+		${Lua2CppOutputDir}/widget_theme_ios.cpp
+		${Lua2CppOutputDir}/widget_theme_ios7_sheet.cpp
+		${Lua2CppOutputDir}/widget_theme_ios7.cpp
+		${Lua2CppOutputDir}/shell.cpp
+		${Lua2CppOutputDir}/BuilderPluginDownloader.cpp
+		${Lua2CppOutputDir}/CoronaBuilderPluginCollector.cpp
+
+		${CORONA_ROOT}/external/luasocket/src/auxiliar.c
+		${CORONA_ROOT}/external/luasocket/src/compat.c
+		${CORONA_ROOT}/external/luasocket/src/except.c
+		${CORONA_ROOT}/external/luasocket/src/io.c
+		${CORONA_ROOT}/external/luasocket/src/mime.c
+		${CORONA_ROOT}/external/luasocket/src/select.c
+		${CORONA_ROOT}/external/luasocket/src/timeout.c
+		${CORONA_ROOT}/external/luasocket/src/unix.c
+		${CORONA_ROOT}/external/luasocket/src/buffer.c
+		${CORONA_ROOT}/external/luasocket/src/inet.c
+		${CORONA_ROOT}/external/luasocket/src/luasocket.c
+		${CORONA_ROOT}/external/luasocket/src/options.c
+		${CORONA_ROOT}/external/luasocket/src/tcp.c
+		${CORONA_ROOT}/external/luasocket/src/udp.c
+		${CORONA_ROOT}/external/luasocket/src/usocket.c
+
+		${Lua2CppOutputDir}/ftp.cpp
+		${Lua2CppOutputDir}/headers.cpp
+		${Lua2CppOutputDir}/http.cpp
+		${Lua2CppOutputDir}/ltn12.cpp
+		${Lua2CppOutputDir}/mbox.cpp
+		${Lua2CppOutputDir}/mime.cpp
+		${Lua2CppOutputDir}/smtp.cpp
+		${Lua2CppOutputDir}/socket.cpp
+		${Lua2CppOutputDir}/ssl.cpp
+		${Lua2CppOutputDir}/tp.cpp
+		${Lua2CppOutputDir}/url.cpp
+		
+		${CORONA_ROOT}/external/LuaHashMap/LuaHashMap.c
+		${CORONA_ROOT}/librtt/Core/Rtt_Allocator.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_Array.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_ArrayTuple.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_AutoResource.cpp 
+		${CORONA_ROOT}/librtt/Core/Rtt_FileSystem.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_Fixed.c
+		${CORONA_ROOT}/librtt/Core/Rtt_FixedMath.c
+		${CORONA_ROOT}/librtt/Core/Rtt_Geometry.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_Math.c
+		${CORONA_ROOT}/librtt/Core/Rtt_OperationResult.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_RefCount.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_ResourceHandle.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_SharedCount.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_String.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_StringHash.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_Time.c
+		${CORONA_ROOT}/librtt/Core/Rtt_UseCount.cpp
+		${CORONA_ROOT}/librtt/Core/Rtt_VersionTimestamp.c
+		${CORONA_ROOT}/librtt/Core/Rtt_WeakCount.cpp
+		${CORONA_ROOT}/librtt/Corona/CoronaAssert.c
+		${CORONA_ROOT}/librtt/Corona/CoronaEvent.cpp
+		${CORONA_ROOT}/librtt/Corona/CoronaLibrary.cpp
+		${CORONA_ROOT}/librtt/Corona/CoronaLog.c
+		${CORONA_ROOT}/librtt/Corona/CoronaLua.cpp
+		${CORONA_ROOT}/librtt/Corona/CoronaVersion.c
+		${CORONA_ROOT}/librtt/Corona/CoronaGraphics.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_BitmapMask.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_BitmapPaint.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_BitmapPaintAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ImageSheetPaintAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_BufferBitmap.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_CameraPaint.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ClosedPath.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_CompositeObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_CompositePaint.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ContainerObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_CPUResourcePool.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_Display.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_DisplayDefaults.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_DisplayObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_DisplayPath.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_DisplayV2.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_EmbossedTextObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_EmitterObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_GradientPaint.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_GradientPaintAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_GroupObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ImageFrame.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ImageSheet.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ImageSheetPaint.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ImageSheetUserdata.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_LineObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_LuaLibDisplay.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_LuaLibGraphics.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_OpenPath.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_Paint.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_PaintAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_PlatformBitmap.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_PlatformBitmapTexture.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_RectObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_RectPath.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_Scene.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_Shader.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderBuiltin.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderComposite.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderCompositeAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderData.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderDataAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderFactory.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderInput.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderName.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderProxy.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderResource.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShaderTypes.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShapeAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShapeAdapterCircle.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShapeAdapterMesh.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShapeAdapterPolygon.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShapeAdapterRect.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShapeAdapterRoundedRect.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShapeObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ShapePath.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_SnapshotObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_SpriteObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_SpritePlayer.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_SpriteSourceFrame.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_StageObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_Tesselator.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TesselatorCircle.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TesselatorLine.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TesselatorPolygon.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TesselatorMesh.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TesselatorRect.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TesselatorRoundedRect.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TesselatorShape.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextObject.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureFactory.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResource.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceBitmap.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceBitmapAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCanvas.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCanvasAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceExternal.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceExternalAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_VertexCache.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_InputAxisCollection.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_InputAxisDescriptor.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_InputAxisType.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_InputDeviceCollection.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_InputDeviceConnectionState.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_InputDeviceDescriptor.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_InputDeviceType.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_PlatformInputAxis.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_PlatformInputDevice.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_PlatformInputDeviceManager.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_ReadOnlyInputAxisCollection.cpp
+		${CORONA_ROOT}/librtt/Input/Rtt_ReadOnlyInputDeviceCollection.cpp
+		${CORONA_ROOT}/librtt/b2GLESDebugDraw.cpp
+		${CORONA_ROOT}/librtt/Rtt_Archive.cpp
+		${CORONA_ROOT}/librtt/Rtt_CKWorkflow.cpp
+		${CORONA_ROOT}/librtt/Rtt_DeviceOrientation.cpp
+		${CORONA_ROOT}/librtt/Rtt_DisplayObjectExtensions.cpp
+		${CORONA_ROOT}/librtt/Rtt_Event.cpp
+		${CORONA_ROOT}/librtt/Rtt_ExplicitTemplates.cpp
+		${CORONA_ROOT}/librtt/Rtt_FilePath.cpp
+		${CORONA_ROOT}/librtt/Rtt_GPUStream.cpp
+		${CORONA_ROOT}/librtt/Rtt_HitTestObject.cpp
+		${CORONA_ROOT}/librtt/Rtt_KeyName.cpp
+		${CORONA_ROOT}/librtt/Rtt_Lua.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaAssert.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaAux.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaContainer.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaContext.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaCoronaBaseLib.c
+		${CORONA_ROOT}/librtt/Rtt_LuaData.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibCrypto.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibFacebook.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibFlurry.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibGameNetwork.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibInAppStore.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibMedia.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibNative.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibOpenAL.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibPhysics.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibSQLite.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaLibSystem.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaProxy.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaProxyVTable.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaResource.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaResourceOwner.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaTableIterator.cpp
+		${CORONA_ROOT}/librtt/Rtt_LuaUserdataProxy.cpp
+		${CORONA_ROOT}/librtt/Rtt_Matrix.cpp
+		${CORONA_ROOT}/librtt/Rtt_ParticleSystemObject.cpp
+		${CORONA_ROOT}/librtt/Rtt_PhysicsContact.cpp
+		${CORONA_ROOT}/librtt/Rtt_PhysicsContactListener.cpp
+		${CORONA_ROOT}/librtt/Rtt_PhysicsJoint.cpp
+		${CORONA_ROOT}/librtt/Rtt_PhysicsWorld.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformAudioPlayer.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformAudioRecorder.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformAudioSessionManager.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformData.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformDisplayObject.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformEventSound.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformExitCallback.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformFBConnect.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformFont.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformImageProvider.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformInAppStore.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformLocation.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformModalInteraction.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformNotifier.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformOpenALPlayer.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformReachability.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformSurface.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformTimer.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformVideoPlayer.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformVideoProvider.cpp
+		${CORONA_ROOT}/librtt/Rtt_PlatformWebPopup.cpp
+		${CORONA_ROOT}/librtt/Rtt_Preference.cpp
+		${CORONA_ROOT}/librtt/Rtt_PreferenceCollection.cpp
+		${CORONA_ROOT}/librtt/Rtt_PreferenceValue.cpp
+		${CORONA_ROOT}/librtt/Rtt_RenderingStream.cpp
+		${CORONA_ROOT}/librtt/Rtt_Resource.cpp
+		${CORONA_ROOT}/librtt/Rtt_Runtime.cpp
+		${CORONA_ROOT}/librtt/Rtt_RuntimeDelegate.cpp
+		${CORONA_ROOT}/librtt/Rtt_RuntimeDelegatePlayer.cpp
+		${CORONA_ROOT}/librtt/Rtt_Scheduler.cpp
+		${CORONA_ROOT}/librtt/Rtt_Transform.cpp
+		${Lua2CppOutputDir}/CoronaLibrary.cpp
+		${Lua2CppOutputDir}/CoronaPrototype.cpp
+		${Lua2CppOutputDir}/CoronaProvider.cpp
+		${Lua2CppOutputDir}/kernel_composite_add_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_average_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_color_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_colorBurn_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_colorDodge_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_darken_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_difference_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_exclusion_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_glow_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_hardLight_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_hardMix_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_hue_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_lighten_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_linearLight_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_luminosity_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_multiply_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_negation_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_normalMapWith1DirLight_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_normalMapWith1PointLight_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_overlay_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_phoenix_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_pinLight_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_reflect_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_saturation_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_screen_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_softLight_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_subtract_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_vividLight_gl.cpp
+		${Lua2CppOutputDir}/kernel_composite_yuv420f_gl.cpp
+		${Lua2CppOutputDir}/kernel_default_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_bloom_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_blur_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_blurGaussian_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_blurHorizontal_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_blurVertical_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_brightness_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_bulge_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_chromaKey_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_color_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_colorChannelOffset_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_colorMatrix_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_colorPolynomial_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_contrast_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_crosshatch_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_crystallize_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_desaturate_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_dissolve_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_duotone_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_emboss_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_exposure_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_frostedGlass_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_grayscale_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_hue_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_invert_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_iris_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_levels_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_linearWipe_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_median_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_monotone_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_opTile_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_pixelate_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_polkaDots_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_posterize_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_radialWipe_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_saturate_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_scatter_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_sepia_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_sharpenLuminance_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_sobel_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_step_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_straighten_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_swirl_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_vignette_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_vignetteMask_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_water_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_wobble_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_woodCut_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_zoomBlur_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_checkerboard_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_lenticularHalo_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_linearGradient_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_marchingAnts_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_perlinNoise_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_radialGradient_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_random_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_stripes_gl.cpp
+		${Lua2CppOutputDir}/kernel_generator_sunbeams_gl.cpp
+		${Lua2CppOutputDir}/shell_default_gl.cpp
+		${Lua2CppOutputDir}/linuxPackageApp.cpp
+		${Lua2CppOutputDir}/webPackageApp.cpp
+		${Lua2CppOutputDir}/network.cpp
+		${Lua2CppOutputDir}/create_build_properties.cpp
+		${Lua2CppOutputDir}/CoronaBuilder.cpp
+		${Lua2CppOutputDir}/config_require.cpp
+		${Lua2CppOutputDir}/engine.cpp
+
+		${CORONA_ROOT}/librtt/Renderer/Rtt_CommandBuffer.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_CPUResource.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_FrameBufferObject.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_Geometry_Renderer.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GeometryPool.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GL.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GLCommandBuffer.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GLFrameBufferObject.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GLGeometry.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GLProgram.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GLRenderer.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GLTexture.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_GPUResource.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_HighPrecisionTime.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_Matrix_Renderer.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_Program.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_ProgramFactory.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_RenderData.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_Renderer.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_RenderTypes.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_Texture.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_TextureBitmap.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_TextureVolatile.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_Uniform.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_VideoTexture.cpp
+
+		${CORONA_ROOT}/plugins/shared/CoronaLuaLibrary.cpp
+		${CORONA_ROOT}/plugins/shared/CoronaLuaLibraryMetadata.cpp
+
+		${CORONA_ROOT}/external/lpeg/lpeg.c
+		${Lua2CppOutputDir}/re.cpp
+
+		${CORONA_ROOT}/external/luafilesystem/src/lfs.c
+		${CORONA_ROOT}/external/sqlite3/sqlite3.c
+		${CORONA_ROOT}/external/lsqlite3-7/lsqlite3.c
+
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/b2BroadPhase.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/b2CollideCircle.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/b2CollideEdge.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/b2CollidePolygon.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/b2Collision.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/b2Distance.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/b2DynamicTree.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/b2TimeOfImpact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/Shapes/b2ChainShape.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/Shapes/b2CircleShape.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/Shapes/b2EdgeShape.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Collision/Shapes/b2PolygonShape.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2BlockAllocator.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2Draw.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2FreeList.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2Math.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2Settings.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2StackAllocator.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2Stat.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2Timer.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Common/b2TrackedBlock.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/b2Body.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/b2ContactManager.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/b2Fixture.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/b2Island.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/b2World.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/b2WorldCallbacks.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2ChainAndCircleContact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2ChainAndPolygonContact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2CircleContact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2Contact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2ContactSolver.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2EdgeAndPolygonContact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2PolygonAndCircleContact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Contacts/b2PolygonContact.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2DistanceJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2FrictionJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2GearJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2Joint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2MotorJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2MouseJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2PulleyJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2RopeJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2WeldJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2WheelJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Particle/b2Particle.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Particle/b2ParticleAssembly.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Particle/b2ParticleGroup.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Particle/b2ParticleSystem.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Particle/b2VoronoiDiagram.cpp
+
+		${CORONA_ROOT}/external/b2Separator-cpp/b2Separator.cpp
+		${CORONA_ROOT}/external/smoothpolygon/SmoothPolygon.cpp
+
+		# Lua
+		${LUA51_SOURCES}
+		${CORONA_ROOT}/external/lua-5.1.3/src/luac.c
+
+		# ALmixer + mp3
+		${CORONA_ROOT}/external/ALmixer/ALmixer.c
+		${CORONA_ROOT}/external/ALmixer/CircularQueue.c
+		${CORONA_ROOT}/external/ALmixer/LinkedList.c
+		${CORONA_ROOT}/external/ALmixer/luaal.c
+		${CORONA_ROOT}/external/ALmixer/ALmixer.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/ALmixer_RWops.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/SimpleMutex.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/tErrorLib.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/SoundDecoder.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/SimpleThreadPosix.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/LGPL/mpg123.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/LGPL/oggtremor.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/LGPL/wav.c
+		${CORONA_ROOT}/external/ALmixer/Isolated/LGPL/SDL_sound_minimal.c
+
+		${CORONA_ROOT}/external/tremor/Tremor/bitwise.c
+		${CORONA_ROOT}/external/tremor/Tremor/codebook.c
+		${CORONA_ROOT}/external/tremor/Tremor/dsp.c
+		${CORONA_ROOT}/external/tremor/Tremor/floor0.c
+		${CORONA_ROOT}/external/tremor/Tremor/floor1.c
+		${CORONA_ROOT}/external/tremor/Tremor/floor_lookup.c
+		${CORONA_ROOT}/external/tremor/Tremor/framing.c
+		${CORONA_ROOT}/external/tremor/Tremor/info.c
+		${CORONA_ROOT}/external/tremor/Tremor/mapping0.c
+		${CORONA_ROOT}/external/tremor/Tremor/mdct.c
+		${CORONA_ROOT}/external/tremor/Tremor/misc.c
+		${CORONA_ROOT}/external/tremor/Tremor/res012.c
+		${CORONA_ROOT}/external/tremor/Tremor/vorbisfile.c
+
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/compat.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/dct64.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/equalizer.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/feature.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/format.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/frame.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/icy.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/icy2utf8.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/id3.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/index.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/layer1.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/layer2.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/layer3.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/libmpg123.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/ntom.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/optimize.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/parse.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/readers.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/stringbuf.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/synth.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/synth_8bit.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/synth_s32.c
+		${CORONA_ROOT}/external/mpg123-1.13.1/src/libmpg123/tabinit.c
+
+		# Common Linux specific files
+		${CORONA_ROOT}/platform/linux/src/Rtt_Assert.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_Freetype.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_HTTPClientLinux.cpp
+		${CORONA_ROOT}/librtt/Rtt_HTTPClientCommon.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxInputDevice.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxInputDeviceManager.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCrypto.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDevice.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsolePlatform.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorView.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_BitmapUtils.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_LinuxAppPackager.cpp
+		${CORONA_ROOT}/platform/android/Rtt_AndroidAppPackager.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_WebAppPackager.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_PlatformAppPackager.cpp
+		${CORONA_ROOT}/platform/linux/src/NetworkLibrary.cpp
+		${CORONA_ROOT}/platform/linux/src/NetworkSupport.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_TargetAndroidAppStore.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_DeviceBuildData.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_TargetDevice.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_PlatformDictionaryWrapper.cpp
+		${CORONA_ROOT}/platform/shared/Rtt_PlatformObjectWrapper.cpp
+		${CORONA_ROOT}/modules/simulator/Rtt_LuaLibSimulator.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContainer.cpp
+		${CORONA_ROOT}/platform/linux/src/Rtt_LinuxUtils.cpp
+)
+
+add_executable( Solar2D
+	${SOLAR2D_SOURCES}
+	${IMGUI_SOURCES}
+	${CORONA_ROOT}/platform/linux/src/main.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxApp.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulator.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialog.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialogBuild.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContext.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxAudioRecorder.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxBitmap.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxData.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDisplayObject.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxFont.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxImageProvider.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxPlatform.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeDelegate.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxScreenSurface.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxTextBoxObject.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoObject.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoPlayer.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorServices.cpp
+
+	${CORONA_ROOT}/platform/shared/Rtt_ProjectSettings.cpp
+	${CORONA_ROOT}/platform/shared/Rtt_ReadOnlyProjectSettings.cpp
+	${CORONA_ROOT}/platform/shared/Rtt_NativeWindowMode.cpp
+	${CORONA_ROOT}/platform/shared/ListKeyStore.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
+)
+
+add_executable( Solar2DSimulator
+	${SOLAR2D_SOURCES}
+	${IMGUI_SOURCES}
+	${CORONA_ROOT}/platform/linux/src/main.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxApp.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulator.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialog.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDialogBuild.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxContext.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxAudioRecorder.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxBitmap.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxData.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxDisplayObject.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxFont.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxImageProvider.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxPlatform.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeDelegate.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxScreenSurface.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxTextBoxObject.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoObject.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoPlayer.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorServices.cpp
+
+	${CORONA_ROOT}/platform/shared/Rtt_ProjectSettings.cpp
+	${CORONA_ROOT}/platform/shared/Rtt_ReadOnlyProjectSettings.cpp
+	${CORONA_ROOT}/platform/shared/Rtt_NativeWindowMode.cpp
+	${CORONA_ROOT}/platform/shared/ListKeyStore.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxConsoleApp.cpp
+)
+
+add_executable( Solar2DBuilder
+	${SOLAR2D_SOURCES}
+
+	${CORONA_ROOT}/tools/CoronaBuilder/main.cpp
+	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_CoronaBuilder.cpp
+	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_AppPackagerFactory.cpp
+	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_AppPackagerAndroidFactory.cpp
+	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_AppPackagerHTML5Factory.cpp
+	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_AppPackagerLinuxFactory.cpp
+	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_BuildParams.cpp
+	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_DownloadPluginsMain.cpp
+	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_LuaLibBuilder.cpp
+	${CORONA_ROOT}/tools/car/Rtt_Car.cpp
+)
+
+# adjust EOL in lua_to_native.sh
+configure_file("${CORONA_ROOT}/platform/linux/lua_to_native.sh" "${CORONA_ROOT}/platform/linux/lua_to_native_unixeol.sh" @ONLY NEWLINE_STYLE UNIX)
+
+add_custom_target(lua_binaries
+	# copy lua binaries to Native
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/Resources/Native/Corona/linux/bin
+	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/lua" "${CMAKE_CURRENT_BINARY_DIR}/Resources/Native/Corona/linux/bin/"
+	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/luac" "${CMAKE_CURRENT_BINARY_DIR}/Resources/Native/Corona/linux/bin/"
+DEPENDS luac)
+
+FOREACH(LUA_FILE ${LUA_SOURCES})
+	get_filename_component(finame ${LUA_FILE} NAME_WE)
+	add_custom_target(${finame}
+		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native_unixeol.sh" "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
+		DEPENDS lua_binaries)
+	add_dependencies(Solar2D ${finame})
+	add_dependencies(Solar2DSimulator ${finame}) 
+	add_dependencies(Solar2DBuilder ${finame})
+ENDFOREACH()
+
+FOREACH(LUA_FILE ${LUA_SOCKET_SOURCES})
+	SET(MODULE_COMMAND1 "-m")
+	SET(MODULE_COMMAND2 "luasocket")
+	get_filename_component(finame ${LUA_FILE} NAME_WE)
+	add_custom_target(${finame}
+		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native_unixeol.sh" ${MODULE_COMMAND1} ${MODULE_COMMAND2} "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
+		DEPENDS lua_binaries)
+	add_dependencies(Solar2D ${finame})
+	add_dependencies(Solar2DSimulator ${finame})
+	add_dependencies(Solar2DBuilder ${finame})
+ENDFOREACH()
+
+FOREACH(LUA_FILE ${LUA_REMDEBUG_SOURCES})
+	SET(MODULE_COMMAND1 "-m")
+	SET(MODULE_COMMAND2 "remdebug")
+	get_filename_component(finame ${LUA_FILE} NAME_WE)
+	add_custom_target(${finame}
+		COMMAND ${CMAKE_COMMAND} -E env BUILD_CONFIG="${BUILD_CONFIG}" "${CORONA_ROOT}/platform/linux/lua_to_native_unixeol.sh" ${MODULE_COMMAND1} ${MODULE_COMMAND2} "${LUA_FILE}" "${Lua2CppOutputDir}/" "${CMAKE_CURRENT_BINARY_DIR}"
+		DEPENDS lua_binaries)
+	add_dependencies(Solar2D ${finame})
+	add_dependencies(Solar2DSimulator ${finame})
+	add_dependencies(Solar2DBuilder ${finame})
+ENDFOREACH()
+
+target_compile_definitions( Solar2D PUBLIC
+	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
+	LUA_USE_POPEN Rtt_LUA_COMPILER LUA_DL_DLOPEN 
+	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
+	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
+
+target_compile_definitions( Solar2DSimulator PUBLIC
+	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
+	LUA_USE_POPEN Rtt_AUTHORING_SIMULATOR Rtt_LUA_COMPILER Rtt_SIMULATOR LUA_DL_DLOPEN
+	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
+	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
+
+target_compile_definitions( Solar2DBuilder PUBLIC
+	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
+	LUA_USE_POPEN Rtt_LUA_COMPILER Rtt_SIMULATOR CORONABUILDER_LINUX LUA_DL_DLOPEN 
+	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
+	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
+
+target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
+target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
+
+# Enabling functions loaded from dlopen call a function from the Solar2DSimulator
+target_link_options(Solar2D BEFORE PUBLIC -export-dynamic)
+target_link_options(Solar2DSimulator BEFORE PUBLIC -export-dynamic)
+
+target_link_libraries(Solar2DBuilder dl GL z pthread openal freetype png jpeg crypto curl SDL2)
+
+# build template
+add_custom_target(create_template ALL 
+	COMMAND ${CMAKE_COMMAND} -E tar cfvz "${CMAKE_CURRENT_BINARY_DIR}/Resources/linuxtemplate_x64.tgz" "./Solar2D"
+	DEPENDS Solar2D)
+
+
+# build Resources
+include(platform/linux/CMakeResources.txt)
+
+# install binaries
+install(TARGETS Solar2D RUNTIME DESTINATION bin/Solar2D)
+install(TARGETS Solar2DSimulator RUNTIME DESTINATION bin/Solar2D)
+install(TARGETS Solar2DBuilder RUNTIME DESTINATION bin/Solar2D)
+
+# install Resources
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Resources/" DESTINATION bin/Solar2D/Resources USE_SOURCE_PERMISSIONS)

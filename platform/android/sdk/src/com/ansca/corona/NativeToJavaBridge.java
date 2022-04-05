@@ -2256,9 +2256,9 @@ public class NativeToJavaBridge {
 		return null;
 	}
 
-	protected static void callVibrate(CoronaRuntime runtime)
+	protected static void callVibrate(CoronaRuntime runtime, String hapticType, String hapticStyle)
 	{
-		runtime.getController().vibrate();
+		runtime.getController().vibrate(hapticType, hapticStyle);
 	}
 
 	protected static void callSetLocationAccuracy( double meters, CoronaRuntime runtime )
@@ -3182,6 +3182,11 @@ public class NativeToJavaBridge {
 			systemUIVisibility = "unknown";
 		}
 		return systemUIVisibility;
+	}
+	protected static void callSetNavagationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
+		if (runtime != null) {
+			CoronaEnvironment.getCoronaActivity().setNavagationBarColor(red, green, blue);
+		}
 	}
 
 	/**

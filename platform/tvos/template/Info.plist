@@ -26,6 +26,10 @@
 	<array>
 		<dict>
 			<key>ProfileName</key>
+			<string>DirectionalGamepad</string>
+		</dict>
+		<dict>
+			<key>ProfileName</key>
 			<string>MicroGamepad</string>
 		</dict>
 		<dict>
@@ -33,6 +37,8 @@
 			<string>ExtendedGamepad</string>
 		</dict>
 	</array>
+	<key>GCSupportsMultipleMicroGamepads</key>
+	<true/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIMainStoryboardFile</key>

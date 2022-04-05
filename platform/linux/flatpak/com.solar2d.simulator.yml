@@ -1,0 +1,35 @@
+app-id: com.solar2d.simulator
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+sdk: org.freedesktop.Sdk
+base-version: '2100.9999'
+
+command: /app/bin/Solar2D/Solar2DSimulator
+rename-desktop-file: solar2d.desktop
+rename-icon: solar2d
+
+# Sandbox Permissions
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=pulseaudio
+  - --device=dri
+  - --share=network
+  - --socket=system-bus
+  - --filesystem=host
+        
+modules:
+  - name: solar2d
+    buildsystem: cmake-ninja
+    sources:
+      - type: dir
+        path: ../
+      - type: file
+        path: ./solar2d.desktop
+      - type: file
+        path: ./solar2d.png
+    post-install: 
+      - install -Dm644 ./solar2d.png /app/share/icons/hicolor/128x128/apps/solar2d.png
+      - install -Dm644 ./solar2d.desktop /app/share/applications/solar2d.desktop
+#      - mkdir -p /app/share/icons/
+#      - cp org.test.Hello.png /app/share/icons/
