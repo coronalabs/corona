@@ -8,7 +8,7 @@
 #include "Display/Rtt_ShaderFactory.h"
 #include "Display/Rtt_DisplayObject.h"
 
-#if USE_LIBCEF
+#if USE_LIBCEF == 1
 
 namespace Rtt
 {

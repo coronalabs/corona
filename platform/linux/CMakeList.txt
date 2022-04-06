@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-#set(USE_LIBCEF 0)
+set(USE_LIBCEF 0)
 if (NOT DEFINED USE_LIBCEF)
 	set(USE_LIBCEF 1)
   set(LIBCEF "cef")
