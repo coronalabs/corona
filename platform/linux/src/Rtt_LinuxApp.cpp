@@ -678,6 +678,9 @@ namespace Rtt
 				if (sscanf(s, "%64[^=]=%512[^\n]%*c", key, val) == 2) // Checking scanf read key=val pair
 				{
 					fConfig[key] = val;
+
+					// copy to env
+					setenv(key, val, true);
 				}
 			}
 			fclose(f);
@@ -693,6 +696,9 @@ namespace Rtt
 			for (const auto& it : fConfig)
 			{
 				fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
+
+				// copy to env
+				setenv(it.first.c_str(), it.second.c_str(), true);
 			}
 			fclose(f);
 		}

@@ -556,9 +556,8 @@ namespace Rtt
 		}
 
 		// Fetch the requested preference value.
-		// fixme
 		const char* resultPointer = "";
-		string localeName = "English"; // wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
+		string localeName = "En:En";		// fixme
 		switch (category)
 		{
 		case kLocaleLanguage:

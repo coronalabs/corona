@@ -29,12 +29,7 @@ namespace Rtt
 		// MPlatformServices
 		virtual const MPlatform& Platform() const override { return *fPlatform; }
 
-		virtual void GetPreference(const char* key, String* value) const override
-		{
-			Preference::ReadValueResult val = fPlatform->GetPreference(key, "");
-			const char* str = val.GetValue().ToString().GetValue()->c_str();
-			value->Set(str);
-		}
+		virtual void GetPreference(const char* key, String* value) const override;
 
 		// Pass NULL for value to remove pref
 		virtual void SetPreference(const char* key, const char* value) const override
