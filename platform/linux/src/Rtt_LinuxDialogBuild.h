@@ -63,7 +63,8 @@ namespace Rtt
 		char fAliasPasswordInput[64];
 
 		// for password dialogs
-		bool fSavePassword;
+		bool fSaveStorePassword;
+		bool fSaveAliasPassword;
 		bool fDrawAskKeystorePassword;
 		bool fDrawAskAliasPassword;
 		std::string fInvalidPassword;

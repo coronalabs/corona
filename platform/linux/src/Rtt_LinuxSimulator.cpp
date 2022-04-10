@@ -87,6 +87,9 @@ namespace Rtt
 			fConfig["relaunchOnFileChange"] = "Always";
 			fConfig.Load(GetConfigPath(HOMESCREEN_ID));
 
+			// saved passwords
+			fPwdStore.Load(GetKeystorePath(HOMESCREEN_ID), true);
+
 			StartConsole();
 
 			const string& lastProjectDirectory = fConfig["lastProjectDirectory"].to_string();

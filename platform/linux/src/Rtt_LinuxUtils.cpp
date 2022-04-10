@@ -145,6 +145,15 @@ string GetConfigPath(const string& appName)
 	return path;
 }
 
+string GetKeystorePath(const string& appName)
+{
+	string path = GetHomePath();
+	path.append("/" SOLAR2D_BASEDIR "/Sandbox/");
+	path.append(appName);
+	path.append("/keystore.conf");
+	return path;
+}
+
 string GetPluginsPath()
 {
 	string path = GetHomePath();

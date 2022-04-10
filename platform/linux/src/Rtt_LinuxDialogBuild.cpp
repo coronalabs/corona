@@ -92,7 +92,8 @@ namespace Rtt
 		, fKeyAliases(NULL)
 		, fKeyAliasesSize(0)
 		, fKeyAliasIndex(0)
-		, fSavePassword(true)
+		, fSaveStorePassword(true)
+		, fSaveAliasPassword(true)
 		, fDrawAskKeystorePassword(false)
 		, fDrawAskAliasPassword(false)
 	{
@@ -151,7 +152,7 @@ namespace Rtt
 				ImGui::SetItemDefaultFocus();
 
 				ImGui::Dummy(ImVec2(0, 10));
-				ImGui::Checkbox("Save Password", &fSavePassword);
+				ImGui::Checkbox("Save Password", &fSaveStorePassword);
 
 				string s = "Ok";
 				ImGui::Dummy(ImVec2(70, 30));
@@ -161,6 +162,15 @@ namespace Rtt
 				{
 					if (ReadKeystore(fKeyStoreInput))
 					{
+						// save pwd
+						if (fSaveStorePassword)
+						{
+							string name = fKeyStoreInput;
+							Config& pwdstore = app->GetPwdStore();
+							pwdstore[name] = fStorePasswordInput;
+							pwdstore.Save();
+						}
+
 						fDrawAskKeystorePassword = false;
 					}
 					else
@@ -224,7 +234,7 @@ namespace Rtt
 				ImGui::SetItemDefaultFocus();
 
 				ImGui::Dummy(ImVec2(0, 10));
-				ImGui::Checkbox("Save Password", &fSavePassword);
+				ImGui::Checkbox("Save Password", &fSaveAliasPassword);
 
 				s = "Ok";
 				ImGui::Dummy(ImVec2(70, 30));
@@ -367,7 +377,17 @@ namespace Rtt
 		string resourcesDir(GetStartupPath(NULL));
 		resourcesDir.append("/Resources");
 
-		return listKeyStore.AreKeyStoreAndAliasPasswordsValid(fKeyStoreInput, fStorePasswordInput, keyAlias, fAliasPasswordInput, resourcesDir.c_str());
+		bool ok = listKeyStore.AreKeyStoreAndAliasPasswordsValid(fKeyStoreInput, fStorePasswordInput, keyAlias, fAliasPasswordInput, resourcesDir.c_str());
+		if (ok && fSaveAliasPassword)
+		{
+			string name = fKeyStoreInput;
+			name.append("-");
+			name.append(keyAlias);
+			Config& pwdstore = app->GetPwdStore();
+			pwdstore[name] = fAliasPasswordInput;
+			pwdstore.Save();
+		}
+		return ok;
 	}
 
 	void DlgAndroidBuild::Draw()
@@ -388,9 +408,17 @@ namespace Rtt
 
 				*fStorePasswordInput = 0;
 				*fAliasPasswordInput = 0;
+
+				// read saved keystore pwd
+				Config& pwdstore = app->GetPwdStore();
+				if (pwdstore.HasItem(fKeyStoreInput))
+				{
+					strncpy(fStorePasswordInput, pwdstore[fKeyStoreInput].c_str(), sizeof(fStorePasswordInput));
+				}
+
 				if (ReadKeystore(fKeyStoreInput) == false)
 				{
-					fSavePassword = true;
+					fSaveStorePassword = true;
 					fInvalidPassword.clear();
 					fDrawAskKeystorePassword = true;
 				}
@@ -508,6 +536,18 @@ namespace Rtt
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
+				// read saved alias pwd
+				Rtt_ASSERT(fKeyAliases);
+				const char* keyAlias = fKeyAliases[fKeyAliasIndex];
+				string name = fKeyStoreInput;
+				name.append("-");
+				name.append(keyAlias);
+				Config& pwdstore = app->GetPwdStore();
+				if (pwdstore.HasItem(name))
+				{
+					strncpy(fAliasPasswordInput, pwdstore[name].c_str(), sizeof(fAliasPasswordInput));
+				}
+
 				if (ValidateKeystoreAliasPassword())
 				{
 					fThread = new mythread();
@@ -515,7 +555,7 @@ namespace Rtt
 				}
 				else
 				{
-					fSavePassword = true;
+					fSaveAliasPassword = true;
 					fInvalidPassword.clear();
 					fDrawAskAliasPassword = true;
 				}
