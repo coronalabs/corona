@@ -40,7 +40,7 @@ namespace Rtt
 
 	private:
 
-		bool ReadKeystore(const std::string& keystorePath);
+		bool ReadKeystore();
 		void ReadVersion();
 		void Build();
 		void ClearKeyAliases();
