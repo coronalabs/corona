@@ -32,6 +32,10 @@ void splitString(std::vector<std::string>& cont, const std::string& str, const s
 
 bool OpenURL(const std::string& url);
 
+// EVP Symmetric Encryption and Decryption
+std::string Encrypt(const std::string& str);
+std::string Decrypt(const std::string& str);
+
 //
 // simple thread wrapper
 //
