@@ -529,7 +529,7 @@ namespace Rtt
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fKeyStoreInput", fKeyStoreInput, sizeof(fKeyStoreInput), 0);
+			ImGui::InputText("##fKeyStoreInput", fKeyStoreInput, sizeof(fKeyStoreInput), ImGuiInputTextFlags_ReadOnly);
 
 			// Key Alias
 			ImGui::TextUnformatted("  Key Alias:");
