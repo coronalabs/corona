@@ -632,15 +632,6 @@ jobs:
           asset_path: ./Snap/s2d.snap
           asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.snap
           asset_content_type: application/octet-stream
-      - name: Upload Release Asset for Linux Flatpak
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Flatpak/solar2d.flatpak
-          asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.flatpak
-          asset_content_type: application/octet-stream
       - name: Upload Release Asset Corona Cards iOS
         uses: actions/upload-release-asset@v1
         env:
