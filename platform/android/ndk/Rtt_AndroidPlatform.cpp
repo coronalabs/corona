@@ -1050,7 +1050,6 @@ AndroidPlatform::SetNativeProperty( lua_State *L, const char *key, int valueInde
 			fNativeToJavaBridge->SetSystemUiVisibility(visibility);
 		}
 	}
-	else if (Rtt_StringCompare(key, "navagationBarColor") == 0)
 	else if (Rtt_StringCompare(key, "navigationBarColor") == 0)
 	{
 		if (lua_type(L, valueIndex) == LUA_TTABLE)
