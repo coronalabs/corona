@@ -21,6 +21,7 @@ std::string CalculateMD5(const std::string& filename);
 std::string GetRecentDocsPath();
 std::string GetSandboxPath(const std::string& appName);
 std::string GetConfigPath(const std::string& appName);
+std::string GetKeystorePath(const std::string& appName);
 std::string GetPluginsPath();
 bool ReadRecentDocs(std::vector<std::pair<std::string, std::string>>& recentDocs);
 void UpdateRecentDocs(const std::string& appName, const std::string& path);
@@ -31,6 +32,10 @@ std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
 void splitString(std::vector<std::string>& cont, const std::string& str, const std::string& delims);
 
 bool OpenURL(const std::string& url);
+
+// EVP Symmetric Encryption and Decryption
+std::string Encrypt(const std::string& str);
+std::string Decrypt(const std::string& str);
 
 //
 // simple thread wrapper

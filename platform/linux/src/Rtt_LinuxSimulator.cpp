@@ -83,8 +83,12 @@ namespace Rtt
 			fConfig["showRuntimeErrors"] = true;
 			fConfig["showWelcome"] = true;
 			fConfig["openLastProject"] = false;
+			fConfig["debugBuildProcess"] = 0;
 			fConfig["relaunchOnFileChange"] = "Always";
 			fConfig.Load(GetConfigPath(HOMESCREEN_ID));
+
+			// saved passwords
+			fPwdStore.Load(GetKeystorePath(HOMESCREEN_ID), true);
 
 			StartConsole();
 
@@ -109,6 +113,7 @@ namespace Rtt
 		{
 			Window::SetStyle();
 			CreateMenu();
+			fSkins.Load(fContext->GetRuntime()->VMContext().L());
 
 			bool showErrors = fConfig["showRuntimeErrors"].to_bool();
 			GetRuntime()->SetProperty(Rtt::Runtime::kShowRuntimeErrorsSet, true);
@@ -118,8 +123,6 @@ namespace Rtt
 			if (IsHomeScreen(GetAppName()))
 			{
 				title = "Solar2D Simulator";
-				fSkins.Load(fContext->GetRuntime()->VMContext().L());
-
 				GetPlatform()->fShowRuntimeErrors = fConfig["showRuntimeErrors"].to_bool();
 			}
 			else
@@ -138,7 +141,7 @@ namespace Rtt
 
 		Rtt_LogException("Failed to load app %s\n", path.c_str());
 		return false;
-	}
+}
 
 	void SolarSimulator::SolarEvent(const SDL_Event& e)
 	{
@@ -161,7 +164,7 @@ namespace Rtt
 		case sdl::OnRuntimeError:
 		{
 			char** data = (char**)e.user.data1;
-			fDlg = new DlgRuntimeError("Runtime Error", 640, 350, data[0], data[1], data[2]);
+			fDlg = new DlgRuntimeError("Runtime Error", 500, 200, data[0], data[1], data[2]);
 			free(data[0]);
 			free(data[1]);
 			free(data[2]);
@@ -269,7 +272,7 @@ namespace Rtt
 		}
 
 		case sdl::OnOpenPreferences:
-			fDlg = new DlgPreferences("Solar2D Simulator Preferences", 400, 350);
+			fDlg = new DlgPreferences("Solar2D Simulator Preferences", 400, 380);
 			break;
 
 		case sdl::onCloseDialog:

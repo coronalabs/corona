@@ -39,6 +39,11 @@ namespace Rtt
 	{
 	}
 
+	void LinuxPlatformServices::GetPreference(const char* key, String* value) const
+	{
+		value->Set(getenv(key));
+	}
+
 	void LinuxSimulatorView::OnLinuxPluginGet(const char* appPath, const char* appName, LinuxPlatform* platform)
 	{
 		const char* identity = "no-identity";

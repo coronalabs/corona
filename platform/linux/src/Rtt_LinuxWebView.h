@@ -9,10 +9,9 @@
 
 #pragma once
 
+#include "Rtt_LinuxCEF.h"
 #include "Rtt_LinuxDisplayObject.h"
 #include "Rtt_MPlatform.h"
-
-#if 0 //(wxUSE_WEBVIEW == 1)
 
 namespace Rtt
 {
@@ -30,21 +29,12 @@ namespace Rtt
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex);
 		virtual void Prepare(const Display &display) override;
 		void openURL(const char *url);
-
-		struct eventArg: public wxObject
-		{
-			eventArg(LinuxWebView *thiz, const char *url)
-				: fThiz(thiz)
-				, fRequestURL(url)
-			{};
-
-			LinuxWebView *fThiz;
-			std::string fRequestURL;
-		};
-
 		bool Close();
+		void Draw(Renderer& renderer) const override;
+		bool ProcessEvent(const SDL_Event& evt) override;
 
 	protected:
+
 		static int Load(lua_State *L);
 		static int Request(lua_State *L);
 		static int Stop(lua_State *L);
@@ -52,12 +42,13 @@ namespace Rtt
 		static int Forward(lua_State *L);
 		static int Reload(lua_State *L);
 		static int Resize(lua_State *L);
-		static void onWebPopupNavigatingEvent(wxWebViewEvent &e);
-		static void onWebPopupNavigatedEvent(wxWebViewEvent &e);
-		static void onWebPopupLoadedEvent(wxWebViewEvent &e);
-		static void onWebPopupErrorEvent(wxWebViewEvent &e);
+		static void onWebPopupNavigatingEvent();
+		static void onWebPopupNavigatedEvent();
+		static void onWebPopupLoadedEvent();
+		static void onWebPopupErrorEvent();
 		static int OnDeleteCookies(lua_State *L);
+
+		smart_ptr<WebView> fWebView;
+
 	};
 }; // namespace Rtt
-
-#endif

@@ -92,6 +92,10 @@ namespace Rtt
 		, fKeyAliases(NULL)
 		, fKeyAliasesSize(0)
 		, fKeyAliasIndex(0)
+		, fSaveStorePassword(true)
+		, fSaveAliasPassword(true)
+		, fDrawAskKeystorePassword(false)
+		, fDrawAskAliasPassword(false)
 	{
 		char uname[256] = { 0 };
 		int rc = getlogin_r(uname, sizeof(uname));
@@ -99,27 +103,194 @@ namespace Rtt
 		package.append(uname).append(".");
 		package.append(app->GetAppName());
 
-		std::string keystorePath(GetStartupPath(NULL));
-		keystorePath.append("/Resources/debug.keystore");
-		strncpy(fKeyStoreInput, keystorePath.c_str(), sizeof(fKeyStoreInput));
-
 		// defaults
 		strncpy(fVersionCodeInput, "1", sizeof(fVersionCodeInput));
 		strncpy(fPackageInput, package.c_str(), sizeof(fPackageInput));
 
-		fStorePassword = "android";
-		fAliasPassword = fStorePassword;
 		ReadVersion();
 
 		fileDialogKeyStore.SetTitle("Browse For Keystore");
 		fileDialogKeyStore.SetWindowSize(w, h);
+		fileDialogKeyStore.SetTypeFilters({ ".keystore" });
+
 		fileDialogSaveTo.SetTitle("Browse For Folder");
 		fileDialogSaveTo.SetWindowSize(w, h);
+
+		*fStorePasswordInput = 0;
+		*fAliasPasswordInput = 0;
+
+		Config& cfg = app->GetConfig();
+		if (cfg.HasItem("keystore"))
+		{
+			strncpy(fKeyStoreInput, cfg["keystore"].c_str(), sizeof(fKeyStoreInput));
+		}
+		else
+		{
+			// default keystore
+			std::string keystorePath(GetStartupPath(NULL));
+			keystorePath.append("/Resources/debug.keystore");
+			strncpy(fKeyStoreInput, keystorePath.c_str(), sizeof(fKeyStoreInput));
+		}
+
+		if (ReadKeystore() == false)
+		{
+			Rtt_Log("Failed to read debug keystore %s\n", fKeyStoreInput);
+		}
 	}
 
 	DlgAndroidBuild::~DlgAndroidBuild()
 	{
 		ClearKeyAliases();
+	}
+
+	void DlgAndroidBuild::AskKeystorePassword()
+	{
+		const char* title = "Keystore";
+		if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			if (fInvalidPassword.empty())
+			{
+				const ImVec2& window_size = ImGui::GetWindowSize();
+				ImGui::Dummy(ImVec2(100, 10));
+				ImGui::TextUnformatted("Please enter the password for Keystore");
+
+				ImGui::Dummy(ImVec2(0, 10));
+				ImGui::TextWrapped(fKeyStoreInput);
+
+				ImGui::Dummy(ImVec2(0, 10));
+				ImGui::InputText("##fStorePasswordInput", fStorePasswordInput, sizeof(fStorePasswordInput), ImGuiInputTextFlags_Password);
+				ImGui::SetItemDefaultFocus();
+
+				ImGui::Dummy(ImVec2(0, 10));
+				ImGui::Checkbox("Save Password", &fSaveStorePassword);
+
+				string s = "Ok";
+				ImGui::Dummy(ImVec2(70, 30));
+				int ok_width = 100;
+				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					if (ReadKeystore())
+					{
+						// save pwd
+						if (fSaveStorePassword)
+						{
+							string name = fKeyStoreInput;
+							Config& pwdstore = app->GetPwdStore();
+							pwdstore[name] = fStorePasswordInput;
+							pwdstore.Save();
+						}
+
+						fDrawAskKeystorePassword = false;
+					}
+					else
+					{
+						fInvalidPassword = "The selected keystore is either invalid\nor an incorrect password was entered.";
+					}
+				}
+
+				s = "Cancel";
+				ImGui::SameLine();
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					*fStorePasswordInput = 0;
+					fDrawAskKeystorePassword = false;
+				}
+				ImGui::SetItemDefaultFocus();
+			}
+			else
+			{
+				const ImVec2& window_size = ImGui::GetWindowSize();
+				ImGui::Dummy(ImVec2(100, 10));
+				ImGui::Text("%s", fInvalidPassword.c_str());
+
+				string s = "Ok";
+				ImGui::Dummy(ImVec2(70, 30));
+				int ok_width = 100;
+				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					fInvalidPassword.clear();
+				}
+				ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::OpenPopup(title);
+	}
+
+	void DlgAndroidBuild::AskAliasPassword()
+	{
+		Rtt_ASSERT(fKeyAliases);
+		const char* keyAlias = fKeyAliases[fKeyAliasIndex];
+
+		const char* title = "Key alias";
+		if (ImGui::BeginPopupModal(title, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			if (fInvalidPassword.empty())
+			{
+				const ImVec2& window_size = ImGui::GetWindowSize();
+				ImGui::Dummy(ImVec2(100, 10));
+				ImGui::TextUnformatted("Please enter the password for key alias");
+
+				string s(title);
+				s.append(": ");
+				s.append(keyAlias);
+				ImGui::Dummy(ImVec2(0, 10));
+				ImGui::TextWrapped(s.c_str());
+
+				ImGui::Dummy(ImVec2(0, 10));
+				ImGui::InputText("##fAliasPasswordInput", fAliasPasswordInput, sizeof(fAliasPasswordInput), ImGuiInputTextFlags_Password);
+				ImGui::SetItemDefaultFocus();
+
+				ImGui::Dummy(ImVec2(0, 10));
+				ImGui::Checkbox("Save Password", &fSaveAliasPassword);
+
+				s = "Ok";
+				ImGui::Dummy(ImVec2(70, 30));
+				int ok_width = 100;
+				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					if (ValidateKeystoreAliasPassword())
+					{
+						fDrawAskAliasPassword = false;
+
+						fThread = new mythread();
+						fThread->start([this]() { Build(); });
+					}
+					else
+					{
+						fInvalidPassword = "An incorrect password was entered.";
+					}
+				}
+
+				s = "Cancel";
+				ImGui::SameLine();
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					*fAliasPasswordInput = 0;
+					fDrawAskAliasPassword = false;
+				}
+			}
+			else
+			{
+				const ImVec2& window_size = ImGui::GetWindowSize();
+				ImGui::Dummy(ImVec2(100, 10));
+				ImGui::Text("%s", fInvalidPassword.c_str());
+
+				string s = "Ok";
+				ImGui::Dummy(ImVec2(70, 30));
+				int ok_width = 100;
+				ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
+				if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
+				{
+					fInvalidPassword.clear();
+				}
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::OpenPopup(title);
 	}
 
 	void DlgAndroidBuild::ClearKeyAliases()
@@ -131,16 +302,43 @@ namespace Rtt
 				free(fKeyAliases[i]);
 			}
 			delete[] fKeyAliases;
+			fKeyAliases = NULL;
 		}
 		fKeyAliasesSize = 0;
 		fKeyAliasIndex = 0;
 	}
 
-	bool DlgAndroidBuild::ReadKeystore(const std::string& keystorePath, const std::string& password)
+	bool DlgAndroidBuild::ReadKeystore()
 	{
+		if (*fStorePasswordInput == 0)
+		{
+			// default store ?
+			string debugKeyStorePath = GetStartupPath(NULL);
+			debugKeyStorePath.append("/Resources/debug.keystore");
+			if (debugKeyStorePath == fKeyStoreInput)
+			{
+				strcpy(fStorePasswordInput, "android");
+				strcpy(fAliasPasswordInput, "android");
+			}
+			else
+			{
+				// read saved keystore pwd if exists
+				Config& pwdstore = app->GetPwdStore();
+				if (pwdstore.HasItem(fKeyStoreInput))
+				{
+					strncpy(fStorePasswordInput, pwdstore[fKeyStoreInput].c_str(), sizeof(fStorePasswordInput));
+				}
+				else
+				{
+					fDrawAskKeystorePassword = true;
+					return false;
+				}
+			}
+		}
+
 		ClearKeyAliases();
 		ListKeyStore listKeyStore;  // uses Java to read keystore
-		if (listKeyStore.GetAliasList(keystorePath.c_str(), password.c_str()))
+		if (listKeyStore.GetAliasList(fKeyStoreInput, fStorePasswordInput))
 		{
 			// Succeeded and there is at least one alias - add aliases to alias dropdown
 			if (listKeyStore.GetSize() == 0)
@@ -197,6 +395,29 @@ namespace Rtt
 		}
 	}
 
+	bool DlgAndroidBuild::ValidateKeystoreAliasPassword()
+	{
+		ListKeyStore listKeyStore;
+
+		Rtt_ASSERT(fKeyAliasIndex > 0 && fKeyAliasIndex < fKeyAliasesSize);
+		const char* keyAlias = fKeyAliases[fKeyAliasIndex];
+
+		string resourcesDir(GetStartupPath(NULL));
+		resourcesDir.append("/Resources");
+
+		bool ok = listKeyStore.AreKeyStoreAndAliasPasswordsValid(fKeyStoreInput, fStorePasswordInput, keyAlias, fAliasPasswordInput, resourcesDir.c_str());
+		if (ok && fSaveAliasPassword)
+		{
+			string name = fKeyStoreInput;
+			name.append("-");
+			name.append(keyAlias);
+			Config& pwdstore = app->GetPwdStore();
+			pwdstore[name] = fAliasPasswordInput;
+			pwdstore.Save();
+		}
+		return ok;
+	}
+
 	void DlgAndroidBuild::Draw()
 	{
 		begin();
@@ -212,6 +433,19 @@ namespace Rtt
 			{
 				strncpy(fKeyStoreInput, fileDialogKeyStore.GetSelected().string().c_str(), sizeof(fKeyStoreInput));
 				fileDialogKeyStore.Close();
+
+				Config& cfg = app->GetConfig();
+				cfg["keystore"] = fKeyStoreInput;
+				cfg.Save();
+
+				*fStorePasswordInput = 0;
+				*fAliasPasswordInput = 0;
+				if (ReadKeystore() == false)
+				{
+					fSaveStorePassword = true;
+					fInvalidPassword.clear();
+					fDrawAskKeystorePassword = true;
+				}
 			}
 
 			fileDialogSaveTo.Display();
@@ -219,6 +453,16 @@ namespace Rtt
 			{
 				strncpy(fSaveToFolderInput, fileDialogSaveTo.GetSelected().string().c_str(), sizeof(fSaveToFolderInput));
 				fileDialogSaveTo.Close();
+			}
+
+			if (fDrawAskKeystorePassword)
+			{
+				AskKeystorePassword();
+			}
+
+			if (fDrawAskAliasPassword)
+			{
+				AskAliasPassword();
 			}
 
 			string s;
@@ -285,10 +529,10 @@ namespace Rtt
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);	// hack
-			ImGui::InputText("##fKeyStoreInput", fKeyStoreInput, sizeof(fKeyStoreInput), 0);
+			ImGui::InputText("##fKeyStoreInput", fKeyStoreInput, sizeof(fKeyStoreInput), ImGuiInputTextFlags_ReadOnly);
 
 			// Key Alias
-			ImGui::TextUnformatted("   Key Alias:");
+			ImGui::TextUnformatted("  Key Alias:");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(label_width + 20);
 			ImGui::Combo("##fKeyAliasIndex", &fKeyAliasIndex, fKeyAliases, fKeyAliasesSize);
@@ -316,8 +560,33 @@ namespace Rtt
 			ImGui::SetCursorPosX((window_size.x - ok_width) * 0.5f);
 			if (ImGui::Button(s.c_str(), ImVec2(ok_width, 0)))
 			{
-				fThread = new mythread();
-				fThread->start([this]() { Build(); });
+				if (fKeyAliases)
+				{
+					const char* keyAlias = fKeyAliases[fKeyAliasIndex];
+
+					// read saved alias pwd
+					string name = fKeyStoreInput;
+					name.append("-");
+					name.append(keyAlias);
+					Config& pwdstore = app->GetPwdStore();
+					if (pwdstore.HasItem(name))
+					{
+						strncpy(fAliasPasswordInput, pwdstore[name].c_str(), sizeof(fAliasPasswordInput));
+					}
+
+					if (ValidateKeystoreAliasPassword())
+					{
+						fThread = new mythread();
+						fThread->start([this]() { Build(); });
+					}
+					else
+					{
+						fSaveAliasPassword = true;
+						fInvalidPassword.clear();
+						fDrawAskAliasPassword = true;
+					}
+				}
+				Rtt_LogException("The selected keystore doesn't have any aliases.\n");
 			}
 			ImGui::SetItemDefaultFocus();
 
@@ -384,12 +653,6 @@ namespace Rtt
 	// thread function
 	void DlgAndroidBuild::Build()
 	{
-		if (ReadKeystore(fKeyStoreInput, fStorePassword) == false)
-		{
-			fBuildResult = "ReadKeystore failed.";
-			return;
-		}
-
 		fBuildSuccessed = false;
 		LinuxPlatform* platform = app->GetPlatform();
 		MPlatformServices* service = new LinuxPlatformServices(platform);
@@ -555,7 +818,7 @@ namespace Rtt
 		AndroidAppPackagerParams androidBuilderParams(fApplicationNameInput, fVersionCodeInput, identity, provisionFile,
 			fProjectPathInput, outputDir.c_str(), androidTemplate.c_str(), targetPlatform, targetAppStoreName.c_str(),
 			(S32)Rtt::TargetDevice::VersionForPlatform(Rtt::TargetDevice::kAndroidPlatform), customBuildId, NULL,
-			fPackageInput, isDistribution, fKeyStoreInput, fStorePassword.c_str(), keyAlias, fAliasPassword.c_str(), versionCode);
+			fPackageInput, isDistribution, fKeyStoreInput, fStorePasswordInput, keyAlias, fAliasPasswordInput, versionCode);
 
 		// select build template
 		app->GetPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);

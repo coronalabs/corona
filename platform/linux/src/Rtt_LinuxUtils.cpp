@@ -15,6 +15,10 @@
 #include <sys/timeb.h>
 #include <fcntl.h>
 
+
+#include <openssl/evp.h>
+
+
 using namespace std;
 
 #define SOLAR2D_BASEDIR ".Solar2D"
@@ -141,6 +145,15 @@ string GetConfigPath(const string& appName)
 	return path;
 }
 
+string GetKeystorePath(const string& appName)
+{
+	string path = GetHomePath();
+	path.append("/" SOLAR2D_BASEDIR "/Sandbox/");
+	path.append(appName);
+	path.append("/keystore.conf");
+	return path;
+}
+
 string GetPluginsPath()
 {
 	string path = GetHomePath();
@@ -209,3 +222,81 @@ bool OpenURL(const string& url)
 	return system(cmd.c_str()) == 0;
 }
 
+//
+// Enrypt/Decrypt
+//
+
+unsigned char* key = (unsigned char*)"01234567890123456789012345678901"; // A 256 bit key
+unsigned char* iv = (unsigned char*)"0123456789012345"; // A 128 bit IV
+
+string Encrypt(const string& str)
+{
+	// Buffer for ciphertext. Ensure the buffer is long enough for the ciphertext which may be longer than the plaintext.
+	unique_ptr<unsigned char> ciphertext((unsigned char*)malloc(str.size() + 128));
+	int ciphertext_len = -1;
+
+	EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+	if (ctx)
+	{
+		if (1 == EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+		{
+			int len;
+			if (1 == EVP_EncryptUpdate(ctx, ciphertext.get(), &len, (unsigned char*)str.c_str(), str.size()))
+			{
+				ciphertext_len = len;
+				if (1 == EVP_EncryptFinal_ex(ctx, ciphertext.get() + len, &len))
+				{
+					ciphertext_len += len;
+				}
+			}
+		}
+		EVP_CIPHER_CTX_free(ctx);
+	}
+
+	string hex;
+	if (ciphertext_len > 0)
+	{
+		for (int i = 0; i < ciphertext_len; i++)
+		{
+			char s[3];
+			snprintf(s, sizeof(s), "%02X", ciphertext.get()[i]);
+			hex.append(s);
+		}
+	}
+	return hex;
+}
+
+string Decrypt(const string& str)
+{
+	int ciphertext_len = str.size() / 2;
+	unsigned char* ciphertext = (unsigned char*)malloc(ciphertext_len);
+	for (int i = 0; i < ciphertext_len; i++)
+	{
+		string byteString = str.substr(i * 2, 2);
+		char byte = (char)strtol(byteString.c_str(), NULL, 16);
+		ciphertext[i] = byte;
+	}
+
+	// Buffer for ciphertext. Ensure the buffer is long enough for the ciphertext which may be longer than the plaintext.
+	unique_ptr<unsigned char> decryptedtext((unsigned char*)malloc(str.size()));
+
+	int decryptedtext_len = -1;
+	EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+	if (ctx)
+	{
+		if (1 == EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+		{
+			int len;
+			if (1 == EVP_DecryptUpdate(ctx, decryptedtext.get(), &len, ciphertext, ciphertext_len))
+			{
+				decryptedtext_len = len;
+				if (1 == EVP_DecryptFinal_ex(ctx, decryptedtext.get() + len, &len))
+				{
+					decryptedtext_len += len;
+				}
+			}
+		}
+		EVP_CIPHER_CTX_free(ctx);
+	}
+	return 	decryptedtext_len > 0 ? string((const char*)decryptedtext.get(), decryptedtext_len) : "";
+}

@@ -556,9 +556,8 @@ namespace Rtt
 		}
 
 		// Fetch the requested preference value.
-		// fixme
 		const char* resultPointer = "";
-		string localeName = "English"; // wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
+		string localeName = "En:En";		// fixme
 		switch (category)
 		{
 		case kLocaleLanguage:
@@ -604,16 +603,11 @@ namespace Rtt
 
 	PlatformWebPopup* LinuxPlatform::GetWebPopup() const
 	{
-#if (wxUSE_WEBVIEW == 1)
 		if (!fWebPopup)
 		{
-			fWebPopup = Rtt_NEW(&GetAllocator(), LinuxWebPopup());
+			fWebPopup = new LinuxWebPopup();
 		}
-
 		return fWebPopup;
-#else
-		return NULL;
-#endif
 	}
 
 	bool LinuxPlatform::CanShowPopup(const char* name) const
@@ -688,11 +682,7 @@ namespace Rtt
 
 	PlatformDisplayObject* LinuxPlatform::CreateNativeWebView(const Rect& bounds) const
 	{
-#if (wxUSE_WEBVIEW == 1)
-		return Rtt_NEW(&GetAllocator(), LinuxWebView(bounds));
-#else
-		return NULL;
-#endif
+		return new LinuxWebView(bounds);
 	}
 
 	PlatformDisplayObject* LinuxPlatform::CreateNativeVideo(const Rect& bounds) const

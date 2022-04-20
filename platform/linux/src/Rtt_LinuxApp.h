@@ -115,6 +115,7 @@ namespace Rtt
 		bool IsMaximized() { return false; }
 
 		inline Config& GetConfig() { return fConfig; }
+		inline Config& GetPwdStore() { return fPwdStore; }
 
 		void AddDisplayObject(LinuxDisplayObject* obj);
 		void RemoveDisplayObject(LinuxDisplayObject* obj);
@@ -136,6 +137,7 @@ namespace Rtt
 	protected:
 
 		virtual void SolarEvent(const SDL_Event& e) {}
+		bool DispathNativeObjectsEvent(const SDL_Event& e);
 
 		smart_ptr<SolarAppContext> fContext;
 		SDL_Window* fWindow;
@@ -143,6 +145,7 @@ namespace Rtt
 
 		std::string fResourceDir;
 		Config fConfig;
+		Config fPwdStore;
 		smart_ptr<LinuxMouseListener> fMouse;
 
 		// GUI
