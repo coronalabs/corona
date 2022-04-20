@@ -465,15 +465,15 @@ Renderer::Insert( const RenderData* data )
 
 	bool blendDirty = data->fBlendMode != fPrevious.fBlendMode;
 	bool blendEquationDirty = data->fBlendEquation != fPrevious.fBlendEquation;
-	bool fillDirty0 = data->fFillTexture0 != fPrevious.fFillTexture0;
-	bool fillDirty1 = data->fFillTexture1 != fPrevious.fFillTexture1;
-	bool maskTextureDirty = data->fMaskTexture != fPrevious.fMaskTexture;
-	bool maskUniformDirty = data->fMaskUniform != fPrevious.fMaskUniform;
+	bool fillDirty0 = data->fFillTexture0 != fPrevious.fFillTexture0 && data->fFillTexture0;
+	bool fillDirty1 = data->fFillTexture1 != fPrevious.fFillTexture1 && data->fFillTexture1;
+	bool maskTextureDirty = data->fMaskTexture != fPrevious.fMaskTexture && data->fMaskTexture;
+	bool maskUniformDirty = data->fMaskUniform != fPrevious.fMaskUniform && data->fMaskUniform;
 	bool programDirty = data->fProgram != fPrevious.fProgram || MaskCount() != fCurrentProgramMaskCount;
-	bool userUniformDirty0 = data->fUserUniform0 != fPrevious.fUserUniform0;
-	bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1;
-	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2;
-	bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3;
+	bool userUniformDirty0 = data->fUserUniform0 != fPrevious.fUserUniform0 && data->fUserUniform0;
+	bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1 && data->fUserUniform1;
+	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2 && data->fUserUniform2;
+	bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3 && data->fUserUniform3;
 	
 	Geometry* geometry = data->fGeometry;
 	Rtt_ASSERT( geometry );
@@ -603,7 +603,7 @@ Renderer::Insert( const RenderData* data )
 	}
 
 	// Fill texture [0]
-	if( fillDirty0 && data->fFillTexture0 )
+	if( fillDirty0 )
 	{
 		if( !data->fFillTexture0->fGPUResource )
 		{
@@ -641,7 +641,7 @@ Renderer::Insert( const RenderData* data )
 	}
 
 	// Fill texture [1]
-	if( fillDirty1 && data->fFillTexture1 )
+	if( fillDirty1 )
 	{
 		if( !data->fFillTexture1->fGPUResource )
 		{
@@ -701,13 +701,13 @@ Renderer::Insert( const RenderData* data )
 	}
 
 	// Mask texture
-	if( maskTextureDirty && data->fMaskTexture )
+	if( maskTextureDirty )
 	{
 		BindTexture( data->fMaskTexture, Texture::kMask0 + MaskCount() - 1 );
 		fPrevious.fMaskTexture = data->fMaskTexture;
 	}
 
-	if( maskUniformDirty && data->fMaskUniform )
+	if( maskUniformDirty )
 	{
 		BindUniform( data->fMaskUniform, Uniform::kMaskMatrix0 + MaskCount() - 1 );
 		fPrevious.fMaskUniform = data->fMaskUniform;
@@ -719,25 +719,25 @@ Renderer::Insert( const RenderData* data )
 	}
 
 	// User data
-	if( userUniformDirty0 && data->fUserUniform0 )
+	if( userUniformDirty0 )
 	{
 		BindUniform( data->fUserUniform0, Uniform::kUserData0 );
 		fPrevious.fUserUniform0 = data->fUserUniform0;
 	}
 
-	if( userUniformDirty1 && data->fUserUniform1 )
+	if( userUniformDirty1 )
 	{
 		BindUniform( data->fUserUniform1, Uniform::kUserData1 );
 		fPrevious.fUserUniform1 = data->fUserUniform1;
 	}
 
-	if( userUniformDirty2 && data->fUserUniform2 )
+	if( userUniformDirty2 )
 	{
 		BindUniform( data->fUserUniform2, Uniform::kUserData2 );
 		fPrevious.fUserUniform2 = data->fUserUniform2;
 	}
 
-	if( userUniformDirty3 && data->fUserUniform3 )
+	if( userUniformDirty3 )
 	{
 		BindUniform( data->fUserUniform3, Uniform::kUserData3 );
 		fPrevious.fUserUniform3 = data->fUserUniform3;
