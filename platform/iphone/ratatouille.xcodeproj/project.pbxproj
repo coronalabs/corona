@@ -260,7 +260,9 @@
 		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F52611332500142B00671DFE /* libtachyon-angle.a */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
-		F53B77502811F65500A4ACE8 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
+		F53B775C2811FE3A00A4ACE8 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
+		F53B775F2811FE5100A4ACE8 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
+		F53B77642811FE6E00A4ACE8 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3711BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3721BE430F900C241E6 /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */; };
@@ -275,8 +277,6 @@
 		F5A7520F1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F5A752151BFA401000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A752191BFA401800CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
-		F5B0A6BE2811F5E7007DE6F4 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
-		F5B0A6BF2811F5F5007DE6F4 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
 		F5C36AF324FA93A700775C6E /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; };
 		F5C36AF424FA93A700775C6E /* MetalANGLE.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F5C36BFB24FAB49F00775C6E /* CoronaBeacon.mm in Sources */ = {isa = PBXBuildFile; fileRef = C2074EB91E160FC1009FC33C /* CoronaBeacon.mm */; };
@@ -694,32 +694,32 @@
 			remoteGlobalIDString = F5261110250013F900671DFE;
 			remoteInfo = "tachyon-angle";
 		};
-		F53B77512811F65B00A4ACE8 /* PBXContainerItemProxy */ = {
+		F53B775D2811FE3F00A4ACE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
-			remoteInfo = network;
+			remoteInfo = NetworkPlugin;
 		};
-		F5B0A6B72811F5B2007DE6F4 /* PBXContainerItemProxy */ = {
+		F53B77602811FE5D00A4ACE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
-			remoteInfo = network;
+			remoteInfo = NetworkPlugin;
+		};
+		F53B77622811FE6400A4ACE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = NetworkPlugin;
 		};
 		F5B0A6BA2811F5B2007DE6F4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = A4E253B6166D6FB300DCDC2C;
-			remoteInfo = network;
-		};
-		F5B0A6BC2811F5D4007DE6F4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
 			remoteInfo = network;
 		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
@@ -1509,7 +1509,6 @@
 		F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-core-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5C36CD024FAB50800775C6E /* libtemplate-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libtemplate-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F5D2B87A281173B10037A292 /* libnetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libnetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5EC1D2624FCF2720041F6F8 /* Rtt_MetalAngleTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MetalAngleTypes.h; path = platform/iphone/Rtt_MetalAngleTypes.h; sourceTree = "<group>"; };
 		F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AutoLinkModules.m; path = platform/iphone/AutoLinkModules.m; sourceTree = "<group>"; };
 		F804E0E817E3C4890022E24C /* widget_theme_android.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = widget_theme_android.png; path = ../../subrepos/widget/widget_theme_android.png; sourceTree = "<group>"; };
@@ -1564,7 +1563,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53B77502811F65500A4ACE8 /* libnetwork.a in Frameworks */,
+				F53B775C2811FE3A00A4ACE8 /* libnetwork.a in Frameworks */,
 				A482FB0E183EB7AD0005831B /* libtachyon.a in Frameworks */,
 				A482FB06183EB7980005831B /* libalmixer.a in Frameworks */,
 				A482FB07183EB7980005831B /* libbox2d.a in Frameworks */,
@@ -1577,7 +1576,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5B0A6BF2811F5F5007DE6F4 /* libnetwork.a in Frameworks */,
+				F53B77642811FE6E00A4ACE8 /* libnetwork.a in Frameworks */,
 				A46885EA18062D4800381941 /* libtachyon.a in Frameworks */,
 				A44D43FF164B201300CFE7B3 /* libalmixer.a in Frameworks */,
 				A44D4400164B201300CFE7B3 /* libbox2d.a in Frameworks */,
@@ -1639,7 +1638,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5B0A6BE2811F5E7007DE6F4 /* libnetwork.a in Frameworks */,
+				F53B775F2811FE5100A4ACE8 /* libnetwork.a in Frameworks */,
 				F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */,
 				F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */,
 				F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */,
@@ -1854,6 +1853,7 @@
 				A4B93F9217596F60003466CC /* libtachyon.xcodeproj */,
 				A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */,
 				A49186961642195200A39286 /* plugins.xcodeproj */,
+				F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */,
 				A4693734169DEECA00723568 /* include */,
 				A4841097151147BF0074BD57 /* libplayer */,
 				A46936AD169DEBB700723568 /* libtemplate */,
@@ -1865,7 +1865,6 @@
 				A482FAA2183D74950005831B /* CoronaCards */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -1886,7 +1885,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F5D2B87A281173B10037A292 /* libnetwork.a */,
 				000DCED912B0824800042A5E /* libobjc.dylib */,
 				A4EF76F61A352B43002D3BEF /* CoronaCards.framework */,
 			);
@@ -2595,7 +2593,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				F53B77522811F65B00A4ACE8 /* PBXTargetDependency */,
+				F53B775E2811FE3F00A4ACE8 /* PBXTargetDependency */,
 				A482FAF7183EB72F0005831B /* PBXTargetDependency */,
 				A482FAF9183EB72F0005831B /* PBXTargetDependency */,
 				A482FAFB183EB72F0005831B /* PBXTargetDependency */,
@@ -2618,7 +2616,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				F5B0A6B82811F5B2007DE6F4 /* PBXTargetDependency */,
+				F53B77632811FE6400A4ACE8 /* PBXTargetDependency */,
 				A46885E918062D3E00381941 /* PBXTargetDependency */,
 				A48B827816D595DA00CA01A1 /* PBXTargetDependency */,
 				A44D43F4164B1FD300CFE7B3 /* PBXTargetDependency */,
@@ -2760,7 +2758,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				F5B0A6BD2811F5D4007DE6F4 /* PBXTargetDependency */,
+				F53B77612811FE5D00A4ACE8 /* PBXTargetDependency */,
 				F5C36CDD24FAB65600775C6E /* PBXTargetDependency */,
 				F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */,
 				F52611722500143100671DFE /* PBXTargetDependency */,
@@ -4159,20 +4157,20 @@
 			name = "tachyon-angle";
 			targetProxy = F52611712500143100671DFE /* PBXContainerItemProxy */;
 		};
-		F53B77522811F65B00A4ACE8 /* PBXTargetDependency */ = {
+		F53B775E2811FE3F00A4ACE8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = network;
-			targetProxy = F53B77512811F65B00A4ACE8 /* PBXContainerItemProxy */;
+			name = NetworkPlugin;
+			targetProxy = F53B775D2811FE3F00A4ACE8 /* PBXContainerItemProxy */;
 		};
-		F5B0A6B82811F5B2007DE6F4 /* PBXTargetDependency */ = {
+		F53B77612811FE5D00A4ACE8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = network;
-			targetProxy = F5B0A6B72811F5B2007DE6F4 /* PBXContainerItemProxy */;
+			name = NetworkPlugin;
+			targetProxy = F53B77602811FE5D00A4ACE8 /* PBXContainerItemProxy */;
 		};
-		F5B0A6BD2811F5D4007DE6F4 /* PBXTargetDependency */ = {
+		F53B77632811FE6400A4ACE8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = network;
-			targetProxy = F5B0A6BC2811F5D4007DE6F4 /* PBXContainerItemProxy */;
+			name = NetworkPlugin;
+			targetProxy = F53B77622811FE6400A4ACE8 /* PBXContainerItemProxy */;
 		};
 		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
