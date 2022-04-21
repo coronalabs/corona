@@ -73,6 +73,13 @@
 			remoteGlobalIDString = A484DB7F15EF595500BDE27A;
 			remoteInfo = analytics;
 		};
+		F5D2B8302811722A0037A292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5D2B82C2811722A0037A292 /* NetworkPlugin.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A4E253B6166D6FB300DCDC2C;
+			remoteInfo = network;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -117,6 +124,7 @@
 		A4FDBF5515DC23E700E5001C /* CoronaLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLog.h; path = ../../librtt/Corona/CoronaLog.h; sourceTree = "<group>"; };
 		A4FDBF5615DC23E700E5001C /* CoronaLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLua.h; path = ../../librtt/Corona/CoronaLua.h; sourceTree = "<group>"; };
 		A4FDBF5715DC23E700E5001C /* CoronaMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMacros.h; path = ../../librtt/Corona/CoronaMacros.h; sourceTree = "<group>"; };
+		F5D2B82C2811722A0037A292 /* NetworkPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NetworkPlugin.xcodeproj; path = ../../plugins/network/ios/NetworkPlugin.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +213,7 @@
 		A4FDBF1F15DC232600E5001C = {
 			isa = PBXGroup;
 			children = (
+				F5D2B82C2811722A0037A292 /* NetworkPlugin.xcodeproj */,
 				A4FDBF4815DC23C700E5001C /* Corona */,
 				A47B5B8F15F9BC17001D60AB /* plugins */,
 				A481B86A15DDA6B4009FFE54 /* ads */,
@@ -244,6 +253,14 @@
 			);
 			name = Corona;
 			sourceTree = SOURCE_ROOT;
+		};
+		F5D2B82D2811722A0037A292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F5D2B8312811722A0037A292 /* libnetwork.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -357,6 +374,12 @@
 			mainGroup = A4FDBF1F15DC232600E5001C;
 			productRefGroup = A4FDBF2B15DC232600E5001C /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F5D2B82D2811722A0037A292 /* Products */;
+					ProjectRef = F5D2B82C2811722A0037A292 /* NetworkPlugin.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				A4FDBF2915DC232600E5001C /* plugins */,
@@ -365,6 +388,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F5D2B8312811722A0037A292 /* libnetwork.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnetwork.a;
+			remoteRef = F5D2B8302811722A0037A292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A481B86B15DDA6CC009FFE54 /* Sources */ = {
