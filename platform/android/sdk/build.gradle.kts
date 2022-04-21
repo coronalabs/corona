@@ -4,11 +4,11 @@ plugins {
 
 android {
     ndkVersion = "18.1.5063045"
-    compileSdkVersion(30)
+    compileSdkVersion(32)
 
     defaultConfig {
         minSdkVersion(15)
-        targetSdkVersion(30)
+        targetSdkVersion(32)
         versionCode = 1
         versionName = "1.0"
     }
