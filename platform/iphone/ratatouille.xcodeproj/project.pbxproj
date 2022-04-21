@@ -260,6 +260,7 @@
 		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F52611332500142B00671DFE /* libtachyon-angle.a */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
+		F53B77502811F65500A4ACE8 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3711BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3721BE430F900C241E6 /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */; };
@@ -274,6 +275,8 @@
 		F5A7520F1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F5A752151BFA401000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A752191BFA401800CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
+		F5B0A6BE2811F5E7007DE6F4 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
+		F5B0A6BF2811F5F5007DE6F4 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
 		F5C36AF324FA93A700775C6E /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; };
 		F5C36AF424FA93A700775C6E /* MetalANGLE.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F5C36BFB24FAB49F00775C6E /* CoronaBeacon.mm in Sources */ = {isa = PBXBuildFile; fileRef = C2074EB91E160FC1009FC33C /* CoronaBeacon.mm */; };
@@ -395,9 +398,6 @@
 		F5C36CD524FAB55B00775C6E /* libplayer-core-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */; };
 		F5C36CD624FAB5CC00775C6E /* libplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */; };
 		F5C36CDB24FAB5E500775C6E /* libplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */; };
-		F5D2B87B281173B10037A292 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5D2B87A281173B10037A292 /* libnetwork.a */; };
-		F5D2B87E281174B00037A292 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5D2B87A281173B10037A292 /* libnetwork.a */; };
-		F5D2B87F281174B30037A292 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5D2B87A281173B10037A292 /* libnetwork.a */; };
 		F5EC1D6424FCF2720041F6F8 /* Rtt_MetalAngleTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F5EC1D2624FCF2720041F6F8 /* Rtt_MetalAngleTypes.h */; };
 		F5FD0AE32373933C0066F6A6 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F804E0EC17E3C4890022E24C /* widget_theme_android.png in Resources */ = {isa = PBXBuildFile; fileRef = F804E0E817E3C4890022E24C /* widget_theme_android.png */; };
@@ -693,6 +693,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = F5261110250013F900671DFE;
 			remoteInfo = "tachyon-angle";
+		};
+		F53B77512811F65B00A4ACE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = network;
+		};
+		F5B0A6B72811F5B2007DE6F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = network;
+		};
+		F5B0A6BA2811F5B2007DE6F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A4E253B6166D6FB300DCDC2C;
+			remoteInfo = network;
+		};
+		F5B0A6BC2811F5D4007DE6F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = network;
 		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1476,6 +1504,7 @@
 		F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleFont.mm; sourceTree = "<group>"; };
 		F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = Corona/CoronaLuaObjCHelper.h; sourceTree = SOURCE_ROOT; };
 		F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = Corona/CoronaLuaObjCHelper.mm; sourceTree = SOURCE_ROOT; };
+		F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NetworkPlugin.xcodeproj; path = /Users/vlad/Projects/corona/plugins/network/ios/NetworkPlugin.xcodeproj; sourceTree = "<absolute>"; };
 		F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLES.xcodeproj; path = ../../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj; sourceTree = "<group>"; };
 		F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-core-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1535,11 +1564,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F53B77502811F65500A4ACE8 /* libnetwork.a in Frameworks */,
 				A482FB0E183EB7AD0005831B /* libtachyon.a in Frameworks */,
 				A482FB06183EB7980005831B /* libalmixer.a in Frameworks */,
 				A482FB07183EB7980005831B /* libbox2d.a in Frameworks */,
 				A482FB08183EB7980005831B /* liblua.a in Frameworks */,
-				F5D2B87F281174B30037A292 /* libnetwork.a in Frameworks */,
 				A482FB0C183EB7980005831B /* librtt.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1548,10 +1577,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5B0A6BF2811F5F5007DE6F4 /* libnetwork.a in Frameworks */,
 				A46885EA18062D4800381941 /* libtachyon.a in Frameworks */,
 				A44D43FF164B201300CFE7B3 /* libalmixer.a in Frameworks */,
 				A44D4400164B201300CFE7B3 /* libbox2d.a in Frameworks */,
-				F5D2B87E281174B00037A292 /* libnetwork.a in Frameworks */,
 				A44D4401164B201300CFE7B3 /* liblua.a in Frameworks */,
 				A44D4402164B201300CFE7B3 /* libluafilesystem.a in Frameworks */,
 				C2F911791CDC15F4004A5564 /* libluasocket.a in Frameworks */,
@@ -1610,7 +1639,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5D2B87B281173B10037A292 /* libnetwork.a in Frameworks */,
+				F5B0A6BE2811F5E7007DE6F4 /* libnetwork.a in Frameworks */,
 				F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */,
 				F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */,
 				F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */,
@@ -1836,6 +1865,7 @@
 				A482FAA2183D74950005831B /* CoronaCards */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2250,6 +2280,14 @@
 			path = CoronaCards/Test/en.lproj;
 			sourceTree = SOURCE_ROOT;
 		};
+		F5B0A6B52811F5B2007DE6F4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		F5C36A3F24FA938100775C6E /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2557,6 +2595,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F53B77522811F65B00A4ACE8 /* PBXTargetDependency */,
 				A482FAF7183EB72F0005831B /* PBXTargetDependency */,
 				A482FAF9183EB72F0005831B /* PBXTargetDependency */,
 				A482FAFB183EB72F0005831B /* PBXTargetDependency */,
@@ -2579,6 +2618,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F5B0A6B82811F5B2007DE6F4 /* PBXTargetDependency */,
 				A46885E918062D3E00381941 /* PBXTargetDependency */,
 				A48B827816D595DA00CA01A1 /* PBXTargetDependency */,
 				A44D43F4164B1FD300CFE7B3 /* PBXTargetDependency */,
@@ -2720,6 +2760,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F5B0A6BD2811F5D4007DE6F4 /* PBXTargetDependency */,
 				F5C36CDD24FAB65600775C6E /* PBXTargetDependency */,
 				F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */,
 				F52611722500143100671DFE /* PBXTargetDependency */,
@@ -2831,6 +2872,10 @@
 					ProjectRef = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
 				},
 				{
+					ProductGroup = F5B0A6B52811F5B2007DE6F4 /* Products */;
+					ProjectRef = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+				},
+				{
 					ProductGroup = F5C36A3F24FA938100775C6E /* Products */;
 					ProjectRef = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
 				},
@@ -2937,6 +2982,13 @@
 			fileType = archive.ar;
 			path = "libtachyon-angle.a";
 			remoteRef = F52611322500142B00671DFE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnetwork.a;
+			remoteRef = F5B0A6BA2811F5B2007DE6F4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F5C36A7E24FA938200775C6E /* MetalANGLE.framework */ = {
@@ -4106,6 +4158,21 @@
 			isa = PBXTargetDependency;
 			name = "tachyon-angle";
 			targetProxy = F52611712500143100671DFE /* PBXContainerItemProxy */;
+		};
+		F53B77522811F65B00A4ACE8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network;
+			targetProxy = F53B77512811F65B00A4ACE8 /* PBXContainerItemProxy */;
+		};
+		F5B0A6B82811F5B2007DE6F4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network;
+			targetProxy = F5B0A6B72811F5B2007DE6F4 /* PBXContainerItemProxy */;
+		};
+		F5B0A6BD2811F5D4007DE6F4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network;
+			targetProxy = F5B0A6BC2811F5D4007DE6F4 /* PBXContainerItemProxy */;
 		};
 		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
