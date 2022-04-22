@@ -260,9 +260,9 @@
 		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F52611332500142B00671DFE /* libtachyon-angle.a */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
-		F53B775C2811FE3A00A4ACE8 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */; };
-		F53B775F2811FE5100A4ACE8 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */; };
-		F53B77642811FE6E00A4ACE8 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */; };
+		F5390C6428128D31008BFF30 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F53E1B1328128B9C007FB091 /* libNetworkPlugin.a */; };
+		F53E1B5128128BAA007FB091 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F53E1B1328128B9C007FB091 /* libNetworkPlugin.a */; };
+		F53E1B5228128BD2007FB091 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F53E1B1328128B9C007FB091 /* libNetworkPlugin.a */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3711BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3721BE430F900C241E6 /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */; };
@@ -701,26 +701,12 @@
 			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
 			remoteInfo = NetworkPlugin;
 		};
-		F53B77602811FE5D00A4ACE8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
-			remoteInfo = NetworkPlugin;
-		};
-		F53B77622811FE6400A4ACE8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
-			remoteInfo = NetworkPlugin;
-		};
-		F5B0A6BA2811F5B2007DE6F4 /* PBXContainerItemProxy */ = {
+		F53E1B1228128B9C007FB091 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = A4E253B6166D6FB300DCDC2C;
-			remoteInfo = network;
+			remoteInfo = NetworkPlugin;
 		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1563,7 +1549,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53B775C2811FE3A00A4ACE8 /* libNetworkPlugin.a in Frameworks */,
+				F5390C6428128D31008BFF30 /* libNetworkPlugin.a in Frameworks */,
 				A482FB0E183EB7AD0005831B /* libtachyon.a in Frameworks */,
 				A482FB06183EB7980005831B /* libalmixer.a in Frameworks */,
 				A482FB07183EB7980005831B /* libbox2d.a in Frameworks */,
@@ -1576,7 +1562,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53B77642811FE6E00A4ACE8 /* libNetworkPlugin.a in Frameworks */,
 				A46885EA18062D4800381941 /* libtachyon.a in Frameworks */,
 				A44D43FF164B201300CFE7B3 /* libalmixer.a in Frameworks */,
 				A44D4400164B201300CFE7B3 /* libbox2d.a in Frameworks */,
@@ -1587,6 +1572,7 @@
 				A49186D416421AEC00A39286 /* libplugins.a in Frameworks */,
 				A445AA5F16B204FF00A9A764 /* libgameNetwork.a in Frameworks */,
 				A4F12C2716D437A6002BCCFB /* liblicensing.a in Frameworks */,
+				F53E1B5128128BAA007FB091 /* libNetworkPlugin.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1638,7 +1624,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53B775F2811FE5100A4ACE8 /* libNetworkPlugin.a in Frameworks */,
 				F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */,
 				F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */,
 				F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */,
@@ -1649,6 +1634,7 @@
 				F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */,
 				F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */,
 				F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */,
+				F53E1B5228128BD2007FB091 /* libNetworkPlugin.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2281,7 +2267,7 @@
 		F5B0A6B52811F5B2007DE6F4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */,
+				F53E1B1328128B9C007FB091 /* libNetworkPlugin.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2593,12 +2579,12 @@
 			buildRules = (
 			);
 			dependencies = (
-				F53B775E2811FE3F00A4ACE8 /* PBXTargetDependency */,
 				A482FAF7183EB72F0005831B /* PBXTargetDependency */,
 				A482FAF9183EB72F0005831B /* PBXTargetDependency */,
 				A482FAFB183EB72F0005831B /* PBXTargetDependency */,
 				A482FB01183EB72F0005831B /* PBXTargetDependency */,
 				A482FB03183EB72F0005831B /* PBXTargetDependency */,
+				F53B775E2811FE3F00A4ACE8 /* PBXTargetDependency */,
 			);
 			name = CoronaCards;
 			productName = CoronaCards;
@@ -2616,7 +2602,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				F53B77632811FE6400A4ACE8 /* PBXTargetDependency */,
 				A46885E918062D3E00381941 /* PBXTargetDependency */,
 				A48B827816D595DA00CA01A1 /* PBXTargetDependency */,
 				A44D43F4164B1FD300CFE7B3 /* PBXTargetDependency */,
@@ -2758,7 +2743,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				F53B77612811FE5D00A4ACE8 /* PBXTargetDependency */,
 				F5C36CDD24FAB65600775C6E /* PBXTargetDependency */,
 				F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */,
 				F52611722500143100671DFE /* PBXTargetDependency */,
@@ -2982,11 +2966,11 @@
 			remoteRef = F52611322500142B00671DFE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */ = {
+		F53E1B1328128B9C007FB091 /* libNetworkPlugin.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libNetworkPlugin.a;
-			remoteRef = F5B0A6BA2811F5B2007DE6F4 /* PBXContainerItemProxy */;
+			remoteRef = F53E1B1228128B9C007FB091 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F5C36A7E24FA938200775C6E /* MetalANGLE.framework */ = {
@@ -4161,16 +4145,6 @@
 			isa = PBXTargetDependency;
 			name = NetworkPlugin;
 			targetProxy = F53B775D2811FE3F00A4ACE8 /* PBXContainerItemProxy */;
-		};
-		F53B77612811FE5D00A4ACE8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = NetworkPlugin;
-			targetProxy = F53B77602811FE5D00A4ACE8 /* PBXContainerItemProxy */;
-		};
-		F53B77632811FE6400A4ACE8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = NetworkPlugin;
-			targetProxy = F53B77622811FE6400A4ACE8 /* PBXContainerItemProxy */;
 		};
 		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
