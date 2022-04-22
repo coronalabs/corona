@@ -260,9 +260,9 @@
 		F522FE8824338E1500E64744 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F52611332500142B00671DFE /* libtachyon-angle.a */; };
 		F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
-		F53B775C2811FE3A00A4ACE8 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
-		F53B775F2811FE5100A4ACE8 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
-		F53B77642811FE6E00A4ACE8 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */; };
+		F53B775C2811FE3A00A4ACE8 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */; };
+		F53B775F2811FE5100A4ACE8 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */; };
+		F53B77642811FE6E00A4ACE8 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */; };
 		F564C3701BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3711BE430F900C241E6 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
 		F564C3721BE430F900C241E6 /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */; };
@@ -1563,7 +1563,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53B775C2811FE3A00A4ACE8 /* libnetwork.a in Frameworks */,
+				F53B775C2811FE3A00A4ACE8 /* libNetworkPlugin.a in Frameworks */,
 				A482FB0E183EB7AD0005831B /* libtachyon.a in Frameworks */,
 				A482FB06183EB7980005831B /* libalmixer.a in Frameworks */,
 				A482FB07183EB7980005831B /* libbox2d.a in Frameworks */,
@@ -1576,7 +1576,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53B77642811FE6E00A4ACE8 /* libnetwork.a in Frameworks */,
+				F53B77642811FE6E00A4ACE8 /* libNetworkPlugin.a in Frameworks */,
 				A46885EA18062D4800381941 /* libtachyon.a in Frameworks */,
 				A44D43FF164B201300CFE7B3 /* libalmixer.a in Frameworks */,
 				A44D4400164B201300CFE7B3 /* libbox2d.a in Frameworks */,
@@ -1638,7 +1638,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53B775F2811FE5100A4ACE8 /* libnetwork.a in Frameworks */,
+				F53B775F2811FE5100A4ACE8 /* libNetworkPlugin.a in Frameworks */,
 				F52611732500144000671DFE /* libtachyon-angle.a in Frameworks */,
 				F5C36C3D24FAB49F00775C6E /* libalmixer.a in Frameworks */,
 				F5C36C3E24FAB49F00775C6E /* libbox2d.a in Frameworks */,
@@ -2281,7 +2281,7 @@
 		F5B0A6B52811F5B2007DE6F4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */,
+				F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2982,10 +2982,10 @@
 			remoteRef = F52611322500142B00671DFE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		F5B0A6BB2811F5B2007DE6F4 /* libnetwork.a */ = {
+		F5B0A6BB2811F5B2007DE6F4 /* libNetworkPlugin.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libnetwork.a;
+			path = libNetworkPlugin.a;
 			remoteRef = F5B0A6BA2811F5B2007DE6F4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -4608,10 +4608,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
@@ -4643,10 +4639,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
@@ -4687,7 +4679,6 @@
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -4713,7 +4704,6 @@
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -5285,7 +5275,6 @@
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -5315,7 +5304,6 @@
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
