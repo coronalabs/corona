@@ -10,15 +10,18 @@
 package com.ansca.corona;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 
 import android.app.AlertDialog;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,10 +31,12 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
@@ -846,7 +851,28 @@ public class Controller {
 		
 		// Save the given image to file.
 		try {
-			java.io.FileOutputStream stream = new java.io.FileOutputStream(filePathName);
+			//Work around for Android 10 to save to Photo Folder
+			java.io.FileOutputStream stream = null;
+			if(filePathName.contains("/storage/emulated/0/Pictures/") && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q){
+				final String name = filePathName.replace("/storage/emulated/0/Pictures/", "");
+				ContentResolver resolver = myContext.getContentResolver();
+				ContentValues contentValues = new ContentValues();
+				contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+				if(name.toLowerCase().endsWith(".png")){
+					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
+				}else {
+					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+				}
+				contentValues.put(Images.Media.DATE_ADDED, System.currentTimeMillis());
+				contentValues.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
+				contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
+				Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+				stream = (FileOutputStream) resolver.openOutputStream(Objects.requireNonNull(imageUri));
+			}else{
+				stream = new java.io.FileOutputStream(filePathName);
+
+			}
+
 			result = bitmap.compress(format, quality, stream);
 			stream.flush();
 			stream.close();
