@@ -708,6 +708,20 @@
 			remoteGlobalIDString = A4E253B6166D6FB300DCDC2C;
 			remoteInfo = NetworkPlugin;
 		};
+		F54561DA28131A3400C50F59 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = NetworkPlugin;
+		};
+		F545621928131A3D00C50F59 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = NetworkPlugin;
+		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
@@ -2602,6 +2616,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F54561DB28131A3400C50F59 /* PBXTargetDependency */,
 				A46885E918062D3E00381941 /* PBXTargetDependency */,
 				A48B827816D595DA00CA01A1 /* PBXTargetDependency */,
 				A44D43F4164B1FD300CFE7B3 /* PBXTargetDependency */,
@@ -2743,6 +2758,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F545621A28131A3D00C50F59 /* PBXTargetDependency */,
 				F5C36CDD24FAB65600775C6E /* PBXTargetDependency */,
 				F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */,
 				F52611722500143100671DFE /* PBXTargetDependency */,
@@ -4145,6 +4161,16 @@
 			isa = PBXTargetDependency;
 			name = NetworkPlugin;
 			targetProxy = F53B775D2811FE3F00A4ACE8 /* PBXContainerItemProxy */;
+		};
+		F54561DB28131A3400C50F59 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NetworkPlugin;
+			targetProxy = F54561DA28131A3400C50F59 /* PBXContainerItemProxy */;
+		};
+		F545621A28131A3D00C50F59 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NetworkPlugin;
+			targetProxy = F545621928131A3D00C50F59 /* PBXContainerItemProxy */;
 		};
 		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
