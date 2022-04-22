@@ -116,14 +116,15 @@ namespace Rtt
 	// Dlg base class
 	//
 
-	Window::Window(const string& title, int w, int h)
+	Window::Window(const string& title, int w, int h, Uint32 flags)
 	{
 		// save state
 		window = SDL_GL_GetCurrentWindow();
 		glcontext = SDL_GL_GetCurrentContext();
 		imctx = ImGui::GetCurrentContext();
 
-		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
+		flags |= SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI;
+		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, flags);
 		fGLcontext = SDL_GL_CreateContext(fWindow);
 
 		fImCtx = ImGui::CreateContext();

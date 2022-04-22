@@ -672,7 +672,7 @@ namespace Rtt
 
 		// setup paths
 		androidTemplate.append("/Resources");
-		tmp.append("/CoronaLabs");
+		tmp.append("/Solar2D");
 
 		AndroidAppPackager packager(*service, androidTemplate.c_str());
 		bool foundBuildSettings = packager.ReadBuildSettings(fProjectPathInput);
