@@ -67,6 +67,7 @@ namespace Rtt
 		, fLinuxSimulatorServices(NULL)
 		, fProjectSettings(new ProjectSettings())
 		, fWindow(window)
+		, fBeginRunLoop(true)
 	{
 	}
 
@@ -410,14 +411,18 @@ namespace Rtt
 		}
 
 		SetTitle(title.empty() ? fAppName : title);
-
-		GetRuntime()->BeginRunLoop();
 		return true;
 	}
 
 	// timer callback
 	void SolarAppContext::advance()
 	{
+		if (fBeginRunLoop)
+		{
+			fBeginRunLoop = false;
+			fRuntime->BeginRunLoop();
+		}
+
 		if (fRuntime->IsSuspended())
 		{
 			// render only GUI

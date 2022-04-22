@@ -118,6 +118,7 @@ namespace Rtt
 
 		SDL_Window* fWindow;
 		Config fConfig;
+		bool fBeginRunLoop;
 	};
 }; // namespace Rtt
 
