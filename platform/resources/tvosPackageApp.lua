@@ -1043,18 +1043,23 @@ local function generateOdrFileStructureScript(bundleDir, destDir, odr, appBundle
   
 mkdir -p "$DST_DIR"
 ]==]
-
-  -- BNDL_DIR=BD BNDL_REL_SRC=BR BUNDLE_SUBFOLDER=BS
+  
   for i = 1,#odr do
 		local tag, resource = odr[i].tag, odr[i].resource
 		if type(tag)=="string" and type(resource)=="string" then
 	    local tagBundle = appBundleId .. "." .. tag
-	    script = script .. 'BD="$DST_DIR/' .. tagBundle .. '.assetpack"\n'
-	    script = script .. 'BR="' .. resource .. '"\n'
+	    script = script .. 'BF="$DST_DIR/' .. tagBundle .. '.assetpack"\n'
+	    script = script .. 'BRS="' .. resource .. '"\n'
 	    script = script .. [==[
-BS="$(dirname "$BR")"
-/bin/mkdir -p "$BD/$BS"
-/bin/mv "$SRC_DIR"/"$BR" "$BD/$BS/"
+/bin/mkdir -p "$BF"
+pushd "$SRC_DIR" > /dev/null
+BSF="$(dirname "$BRS")"
+popd > /dev/null
+if [ "$BSF" != "." ]
+ then 
+  /bin/mkdir -p "$BF/$BSF"
+fi
+/bin/mv "$SRC_DIR"/"$BRS" "$BF/$BSF/"
 ]==]
 		else
 			err = "ERROR: invalid On-Demand Resources Entry: " .. json.encode(odr[i]) .. "; 'onDemandResources' should be array of tables with tag and resource fields."
