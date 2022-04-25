@@ -1441,6 +1441,7 @@ class VideoEvent : public VirtualEvent
 		{
 			kReady = 0,
 			kEnded,
+			kFailed,
 
 			kNumPhases
 		}
