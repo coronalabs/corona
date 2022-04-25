@@ -3033,6 +3033,7 @@ VideoEvent::StringForPhase( Phase type )
 	const char* result = NULL;
 	static const char kReadyString[] = "ready";
 	static const char kEndedString[] = "ended";
+	static const char kFailedString[] = "failed";
 
 	switch( type )
 	{
@@ -3041,6 +3042,9 @@ VideoEvent::StringForPhase( Phase type )
 			break;
 		case kEnded:
 			result = kEndedString;
+			break;
+		case kFailed:
+			result = kFailedString;
 			break;
 		default:
 			break;
