@@ -941,7 +941,7 @@ InitializeEvents( CoronaView *view, Rtt::TouchEvent *touchEvents, NSSet *touches
 		{
 			eventPhase = UITouchPhaseToTouchEventPhase( t.phase );
 		}
-        Rtt::Real pressure = [view getForceTouchSupport] || [touch type] == UITouchTypePencil ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+        Rtt::Real pressure = [touch force] != 0 || [touch type] == UITouchTypePencil ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
        
 		
 
@@ -1034,7 +1034,7 @@ PrintTouches( NSSet *touches, const char *header )
 		CGPoint currentTouchPosition = { [touch locationInView:nil].x - [self center].x, [touch locationInView:nil].y - [self center].y };
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kBegan );
 #else
-		Rtt::Real pressure = [self getForceTouchSupport] || [touch type] == UITouchTypePencil ?  [touch force] : Rtt::TouchEvent::kPressureInvalid;
+		Rtt::Real pressure = [touch force] != 0 || [touch type] == UITouchTypePencil ?  [touch force] : Rtt::TouchEvent::kPressureInvalid;
 		Rtt::TouchEvent t( fStartTouchPosition.x, fStartTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kBegan, pressure );
 #endif
 		t.SetId( touch );
@@ -1074,7 +1074,7 @@ PrintTouches( NSSet *touches, const char *header )
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kMoved );
 #else
 		currentTouchPosition = [touch locationInCoronaView:self];
-		Rtt::Real pressure = [self getForceTouchSupport] || [touch type] == UITouchTypePencil ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+		Rtt::Real pressure = [touch force] != 0 || [touch type] == UITouchTypePencil ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
 		Rtt::TouchEvent t( currentTouchPosition.x, currentTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kMoved, pressure );
 #endif
 		t.SetId( touch );
@@ -1113,7 +1113,7 @@ PrintTouches( NSSet *touches, const char *header )
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kEnded, [touch tapCount] );
 #else
 		CGPoint currentTouchPosition = [touch locationInCoronaView:self];
-		Rtt::Real pressure = [self getForceTouchSupport] || [touch type] == UITouchTypePencil ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+		Rtt::Real pressure = [touch force] != 0 || [touch type] == UITouchTypePencil ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
 		Rtt::TouchEvent t( currentTouchPosition.x, currentTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kEnded, pressure );
 #endif
 		t.SetId( touch );
@@ -1172,7 +1172,7 @@ PrintTouches( NSSet *touches, const char *header )
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kCancelled );
 #else
 		CGPoint currentTouchPosition = [touch locationInCoronaView:self];
-		Rtt::Real pressure = [self getForceTouchSupport] || [touch type] == UITouchTypePencil ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+		Rtt::Real pressure = [touch force] != 0 || [touch type] == UITouchTypePencil ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
 		Rtt::TouchEvent t( currentTouchPosition.x, currentTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kCancelled, pressure );
 #endif
 		t.SetId( touch );
@@ -1347,8 +1347,9 @@ PrintTouches( NSSet *touches, const char *header )
 	// Certain selectors only available in iOS 9.0+.
 	if ( [[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0 )
 	{
+        // ToDo: Remove setForce/checking with traits since it no longer appears to work
 		// Update pressure touch support.
-		[self setForceTouchSupport:[currentTraits forceTouchCapability] == UIForceTouchCapabilityAvailable];
+		//[self setForceTouchSupport:[currentTraits forceTouchCapability] == UIForceTouchCapabilityAvailable];
 	}
 }
 
