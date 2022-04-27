@@ -28,7 +28,6 @@
 		070F391018CE208700BC2BEE /* Rtt_DependencyLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 070F390818CE1FD600BC2BEE /* Rtt_DependencyLoader.cpp */; };
 		070F391118CE209B00BC2BEE /* Rtt_DependencyUtilsApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 070F390B18CE1FD600BC2BEE /* Rtt_DependencyUtilsApple.mm */; };
 		0720731917CD2CC2004720D2 /* Rtt_IPhoneTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0720731117CD2C93004720D2 /* Rtt_IPhoneTimer.mm */; };
-		0727BA9F16E6908300981C4B /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0727BA9E16E6908300981C4B /* libnetwork.a */; };
 		0748724918C1C469004FB786 /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 0748724718C1C469004FB786 /* NSData+Base64.h */; };
 		0748724A18C1C469004FB786 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 0748724818C1C469004FB786 /* NSData+Base64.m */; };
 		078DA95B176FD45500A5193E /* Rtt_AppleTextAlignment.mm in Sources */ = {isa = PBXBuildFile; fileRef = 078DA955176FD1EE00A5193E /* Rtt_AppleTextAlignment.mm */; };
@@ -196,7 +195,6 @@
 		A4B2D531184039DD001311C9 /* Rtt_AppleTextAlignment.mm in Sources */ = {isa = PBXBuildFile; fileRef = 078DA955176FD1EE00A5193E /* Rtt_AppleTextAlignment.mm */; };
 		A4B2D532184039F9001311C9 /* Rtt_AppleAudioPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2712B073A000042A5E /* Rtt_AppleAudioPlayer.cpp */; };
 		A4B2D533184039FF001311C9 /* Rtt_AppleAudioRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2912B073A000042A5E /* Rtt_AppleAudioRecorder.mm */; };
-		A4B2D53518404F6C001311C9 /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0727BA9E16E6908300981C4B /* libnetwork.a */; };
 		A4B2D5381842DBE1001311C9 /* CoronaViewRuntimeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B2D5361842DBE1001311C9 /* CoronaViewRuntimeDelegate.h */; };
 		A4B2D5391842DBE1001311C9 /* CoronaViewRuntimeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B2D5361842DBE1001311C9 /* CoronaViewRuntimeDelegate.h */; };
 		A4B2D53A1842DBE1001311C9 /* CoronaViewRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B2D5371842DBE1001311C9 /* CoronaViewRuntimeDelegate.mm */; };
@@ -351,7 +349,6 @@
 		F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A49186A91642195200A39286 /* libplugins.a */; };
 		F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A445AA5D16B2049900A9A764 /* libgameNetwork.a */; };
 		F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4F12C2616D4379F002BCCFB /* liblicensing.a */; };
-		F5C36C4624FAB49F00775C6E /* libnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0727BA9E16E6908300981C4B /* libnetwork.a */; };
 		F5C36C4824FAB49F00775C6E /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
 		F5C36C4924FAB49F00775C6E /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
 		F5C36C4A24FAB49F00775C6E /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
@@ -398,6 +395,9 @@
 		F5C36CD524FAB55B00775C6E /* libplayer-core-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */; };
 		F5C36CD624FAB5CC00775C6E /* libplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */; };
 		F5C36CDB24FAB5E500775C6E /* libplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */; };
+		F5E8ABD928134BF0004295B4 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5E8AB9728134BB7004295B4 /* libNetworkPlugin.a */; };
+		F5E8ABDA28134BF9004295B4 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5E8AB9728134BB7004295B4 /* libNetworkPlugin.a */; };
+		F5E8ABDD28134C36004295B4 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5E8AB9728134BB7004295B4 /* libNetworkPlugin.a */; };
 		F5EC1D6424FCF2720041F6F8 /* Rtt_MetalAngleTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F5EC1D2624FCF2720041F6F8 /* Rtt_MetalAngleTypes.h */; };
 		F5FD0AE32373933C0066F6A6 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
 		F804E0EC17E3C4890022E24C /* widget_theme_android.png in Resources */ = {isa = PBXBuildFile; fileRef = F804E0E817E3C4890022E24C /* widget_theme_android.png */; };
@@ -1198,6 +1198,34 @@
 			remoteGlobalIDString = 0A60525223464F51005CEA98;
 			remoteInfo = MetalANGLE;
 		};
+		F5E8AB9628134BB7004295B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A4E253B6166D6FB300DCDC2C;
+			remoteInfo = NetworkPlugin;
+		};
+		F5E8ABD528134BC7004295B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = NetworkPlugin;
+		};
+		F5E8ABD728134BD5004295B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = NetworkPlugin;
+		};
+		F5E8ABDB28134C20004295B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = NetworkPlugin;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1272,7 +1300,6 @@
 		070F390B18CE1FD600BC2BEE /* Rtt_DependencyUtilsApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_DependencyUtilsApple.mm; path = ../shared/Rtt_DependencyUtilsApple.mm; sourceTree = "<group>"; };
 		0720731017CD2C93004720D2 /* Rtt_IPhoneTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_IPhoneTimer.h; path = platform/iphone/Rtt_IPhoneTimer.h; sourceTree = "<group>"; };
 		0720731117CD2C93004720D2 /* Rtt_IPhoneTimer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_IPhoneTimer.mm; path = platform/iphone/Rtt_IPhoneTimer.mm; sourceTree = "<group>"; };
-		0727BA9E16E6908300981C4B /* libnetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnetwork.a; path = "../../plugins/build-core/network/ios/libnetwork.a"; sourceTree = "<group>"; };
 		0748724718C1C469004FB786 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+Base64.h"; path = "../../../plugins/ios/NSData+Base64.h"; sourceTree = "<group>"; };
 		0748724818C1C469004FB786 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+Base64.m"; path = "../../../plugins/ios/NSData+Base64.m"; sourceTree = "<group>"; };
 		078DA955176FD1EE00A5193E /* Rtt_AppleTextAlignment.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleTextAlignment.mm; sourceTree = "<group>"; };
@@ -1477,6 +1504,7 @@
 		F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleFont.mm; sourceTree = "<group>"; };
 		F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = Corona/CoronaLuaObjCHelper.h; sourceTree = SOURCE_ROOT; };
 		F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = Corona/CoronaLuaObjCHelper.mm; sourceTree = SOURCE_ROOT; };
+		F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NetworkPlugin.xcodeproj; path = ../../plugins/network/ios/NetworkPlugin.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLES.xcodeproj; path = ../../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj; sourceTree = "<group>"; };
 		F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-core-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1539,8 +1567,8 @@
 				A482FB06183EB7980005831B /* libalmixer.a in Frameworks */,
 				A482FB07183EB7980005831B /* libbox2d.a in Frameworks */,
 				A482FB08183EB7980005831B /* liblua.a in Frameworks */,
-				A4B2D53518404F6C001311C9 /* libnetwork.a in Frameworks */,
 				A482FB0C183EB7980005831B /* librtt.a in Frameworks */,
+				F5E8ABDD28134C36004295B4 /* libNetworkPlugin.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1558,7 +1586,7 @@
 				A49186D416421AEC00A39286 /* libplugins.a in Frameworks */,
 				A445AA5F16B204FF00A9A764 /* libgameNetwork.a in Frameworks */,
 				A4F12C2716D437A6002BCCFB /* liblicensing.a in Frameworks */,
-				0727BA9F16E6908300981C4B /* libnetwork.a in Frameworks */,
+				F5E8ABD928134BF0004295B4 /* libNetworkPlugin.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1620,7 +1648,7 @@
 				F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */,
 				F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */,
 				F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */,
-				F5C36C4624FAB49F00775C6E /* libnetwork.a in Frameworks */,
+				F5E8ABDA28134BF9004295B4 /* libNetworkPlugin.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1825,13 +1853,13 @@
 				A4B93F9217596F60003466CC /* libtachyon.xcodeproj */,
 				A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */,
 				A49186961642195200A39286 /* plugins.xcodeproj */,
+				F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */,
 				A4693734169DEECA00723568 /* include */,
 				A4841097151147BF0074BD57 /* libplayer */,
 				A46936AD169DEBB700723568 /* libtemplate */,
 				32CA4F630368D1EE00C91783 /* Rtt_Player.pch */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				A445AA5E16B2049B00A9A764 /* Core Plugins */,
-				A491870516421FAD00A39286 /* Core Plugins (Enterprise-optional) */,
 				A48B829C16D59BA800CA01A1 /* CoronaResources */,
 				A482FAA2183D74950005831B /* CoronaCards */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -1908,7 +1936,6 @@
 			children = (
 				A445AA5D16B2049900A9A764 /* libgameNetwork.a */,
 				A4F12C2616D4379F002BCCFB /* liblicensing.a */,
-				0727BA9E16E6908300981C4B /* libnetwork.a */,
 			);
 			name = "Core Plugins";
 			sourceTree = "<group>";
@@ -2125,13 +2152,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A491870516421FAD00A39286 /* Core Plugins (Enterprise-optional) */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Core Plugins (Enterprise-optional)";
-			sourceTree = SOURCE_ROOT;
-		};
 		A4B93F9317596F60003466CC /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2312,6 +2332,14 @@
 				F5C36AEE24FA938200775C6E /* stencil_operations_mac.app */,
 				F5C36AF024FA938200775C6E /* tri_fan_microbench_mac.app */,
 				F5C36AF224FA938200775C6E /* simple_vertex_shader_tvos.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F5E8AB9328134BB7004295B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F5E8AB9728134BB7004295B4 /* libNetworkPlugin.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2562,6 +2590,7 @@
 				A482FAFB183EB72F0005831B /* PBXTargetDependency */,
 				A482FB01183EB72F0005831B /* PBXTargetDependency */,
 				A482FB03183EB72F0005831B /* PBXTargetDependency */,
+				F5E8ABDC28134C20004295B4 /* PBXTargetDependency */,
 			);
 			name = CoronaCards;
 			productName = CoronaCards;
@@ -2588,6 +2617,7 @@
 				A44D43FC164B1FD300CFE7B3 /* PBXTargetDependency */,
 				A44D43FE164B1FD300CFE7B3 /* PBXTargetDependency */,
 				A44D41D7164A1D9C00CFE7B3 /* PBXTargetDependency */,
+				F5E8ABD828134BD5004295B4 /* PBXTargetDependency */,
 			);
 			name = "libplayer-core";
 			productName = libcorona;
@@ -2730,6 +2760,7 @@
 				F5C36BF424FAB49F00775C6E /* PBXTargetDependency */,
 				F5C36BF624FAB49F00775C6E /* PBXTargetDependency */,
 				F5C36BF824FAB49F00775C6E /* PBXTargetDependency */,
+				F5E8ABD628134BC7004295B4 /* PBXTargetDependency */,
 			);
 			name = "libplayer-core-angle";
 			productName = libcorona;
@@ -2829,6 +2860,10 @@
 				{
 					ProductGroup = A4B93F9317596F60003466CC /* Products */;
 					ProjectRef = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
+				},
+				{
+					ProductGroup = F5E8AB9328134BB7004295B4 /* Products */;
+					ProjectRef = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
 				},
 				{
 					ProductGroup = F5C36A3F24FA938100775C6E /* Products */;
@@ -3350,6 +3385,13 @@
 			fileType = wrapper.application;
 			path = simple_vertex_shader_tvos.app;
 			remoteRef = F5C36AF124FA938200775C6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5E8AB9728134BB7004295B4 /* libNetworkPlugin.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNetworkPlugin.a;
+			remoteRef = F5E8AB9628134BB7004295B4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -4172,6 +4214,21 @@
 			name = MetalANGLE;
 			targetProxy = F5C36CDC24FAB65600775C6E /* PBXContainerItemProxy */;
 		};
+		F5E8ABD628134BC7004295B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NetworkPlugin;
+			targetProxy = F5E8ABD528134BC7004295B4 /* PBXContainerItemProxy */;
+		};
+		F5E8ABD828134BD5004295B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NetworkPlugin;
+			targetProxy = F5E8ABD728134BD5004295B4 /* PBXContainerItemProxy */;
+		};
+		F5E8ABDC28134C20004295B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NetworkPlugin;
+			targetProxy = F5E8ABDB28134C20004295B4 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -4543,10 +4600,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
@@ -4578,10 +4631,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
@@ -4622,7 +4671,6 @@
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -4648,7 +4696,6 @@
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -5220,7 +5267,6 @@
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -5250,7 +5296,6 @@
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/licensing/ios\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../plugins/build-core/network/ios\"",
 					"\"$(SRCROOT)/../../plugins/build-core/gameNetwork-corona/ios\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
