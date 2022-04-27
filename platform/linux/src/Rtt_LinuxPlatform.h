@@ -15,7 +15,6 @@
 #include "Core/Rtt_String.h"
 #include "Rtt_PlatformTimer.h"
 #include "Rtt_PlatformSimulator.h"
-#include "Rtt_LinuxRuntimeErrorDialog.h"
 
 #undef CreateFont
 

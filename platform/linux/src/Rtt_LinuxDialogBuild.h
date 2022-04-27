@@ -40,11 +40,13 @@ namespace Rtt
 
 	private:
 
-		bool ReadKeystore(const std::string& keystorePath, const std::string& password);
+		bool ReadKeystore();
 		void ReadVersion();
 		void Build();
-		void RunBuilder();
 		void ClearKeyAliases();
+		void AskKeystorePassword();
+		void AskAliasPassword();
+		bool ValidateKeystoreAliasPassword();
 
 		ImGui::FileBrowser fileDialogKeyStore;
 		ImGui::FileBrowser fileDialogSaveTo;
@@ -57,8 +59,15 @@ namespace Rtt
 		int fKeyAliasesSize;
 		int fAppStoreIndex;
 		int fKeyAliasIndex;
-		std::string fStorePassword;
-		std::string fAliasPassword;
+		char fStorePasswordInput[64];
+		char fAliasPasswordInput[64];
+
+		// for password dialogs
+		bool fSaveStorePassword;
+		bool fSaveAliasPassword;
+		bool fDrawAskKeystorePassword;
+		bool fDrawAskAliasPassword;
+		std::string fInvalidPassword;
 	};
 
 	struct DlgLinuxBuild : public DlgBuild
@@ -86,7 +95,6 @@ namespace Rtt
 	private:
 
 		void Build();
-		void RunBuilder();
 
 		ImGui::FileBrowser fileDialog;
 		smart_ptr<mythread> fThread;

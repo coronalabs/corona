@@ -33,14 +33,12 @@ namespace Rtt
 		, fInputType(InputType::undefined)
 		, fFontSize(0)
 	{
-		app->AddDisplayObject(this);
 		*fValue = 0;
 		*fOldValue = 0;
 	}
 
 	LinuxTextBoxObject::~LinuxTextBoxObject()
 	{
-		app->RemoveDisplayObject(this);
 	}
 
 	const LuaProxyVTable& LinuxTextBoxObject::ProxyVTable() const
@@ -341,8 +339,8 @@ namespace Rtt
 	{
 		// center this window when appearing
 		float w = fBounds.Width();
-		float h = fBounds.Height();
-		ImVec2 center(fBounds.xMin + w / 2, fBounds.yMin + h / 2);
+		float h = fBounds.Height() + 2;
+		ImVec2 center(fBounds.xMin + w / 2, fBounds.yMin + h + app->GetMenuHeight() / 2);
 		ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 		ImGui::SetNextWindowSize(ImVec2(w, h));
 
@@ -351,7 +349,7 @@ namespace Rtt
 		char fldLabel[32];
 		snprintf(fldLabel, sizeof(fldLabel), "##TextFld%p", this);
 
-		if (ImGui::Begin(windowLabel, NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground))
+		if (ImGui::Begin(windowLabel, NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar))
 		{
 			// set fontsize
 			float fontSize = ImGui::GetTextLineHeight();

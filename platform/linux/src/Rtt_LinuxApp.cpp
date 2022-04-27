@@ -329,7 +329,11 @@ namespace Rtt
 				// When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
 				if (fDlg == NULL && (evt.window.windowID == SDL_GetWindowID(fWindow)) && !io.WantCaptureMouse)
 				{
-					fMouse->OnEvent(evt, fWindow);
+					// focus is in native objects ?
+					if (!DispathNativeObjectsEvent(evt))
+					{
+						fMouse->OnEvent(evt, fWindow);
+					}
 				}
 				break;
 
@@ -382,6 +386,19 @@ namespace Rtt
 			//	Rtt_Log("event %x, advance time %d\n", event.type, advance_time);
 		}
 		return true;
+	}
+
+	bool SolarApp::DispathNativeObjectsEvent(const SDL_Event& evt)
+	{
+		for (int i = 0; i < fNativeObjects.size(); i++)
+		{
+			if (fNativeObjects[i]->ProcessEvent(evt))
+			{
+				// focus is in native object
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void SolarApp::Run()
@@ -633,8 +650,9 @@ namespace Rtt
 	{
 	}
 
-	Config::Config(const string& path)
+	Config::Config(const string& path, bool crypted)
 	{
+		fIsCrypted = crypted;
 		Load(path);
 	}
 
@@ -643,24 +661,39 @@ namespace Rtt
 		Save();
 	}
 
-	void Config::Load(const string& path)
+	void Config::Load(const string& path, bool crypted)
 	{
+		fIsCrypted = crypted;
 		fPath = path;		// save
 		FILE* f = fopen(path.c_str(), "r");
 		if (f)
 		{
-			char s[1024];
-			while (fgets(s, sizeof(s), f))
+			char line[1024];
+			while (fgets(line, sizeof(line), f))
 			{
-				char* comment = strchr(s, '#');
-				if (comment)
-					*comment = 0;
+				string s = line;
+				s = trim(s);
 
-				char key[sizeof(s)];
-				char val[sizeof(s)];
-				if (sscanf(s, "%64[^=]=%512[^\n]%*c", key, val) == 2) // Checking scanf read key=val pair
+				if (fIsCrypted)
 				{
-					fConfig[key] = val;
+					s = Decrypt(s);
+					if (s.empty())
+					{
+						continue;
+					}
+				}
+
+				vector<string> a;
+				splitString(a, s, "=");
+				if (a.size() > 0)
+				{
+					fConfig[a[0]] = a.size() > 1 ? a[1] : "";
+
+					// load to env
+					if (a[0] == "debugBuildProcess" && a.size() > 1)
+					{
+						setenv(a[0].c_str(), a[1].c_str(), true);
+					}
 				}
 			}
 			fclose(f);
@@ -675,7 +708,26 @@ namespace Rtt
 		{
 			for (const auto& it : fConfig)
 			{
-				fprintf(f, "%s=%s\n", it.first.c_str(), it.second.c_str());
+				string s = it.first;
+				s.append("=");
+				s.append(it.second.to_string());
+
+				if (fIsCrypted)
+				{
+					s = Encrypt(s);
+					if (s.empty())
+					{
+						continue;
+					}
+				}
+
+				fprintf(f, "%s\n", s.c_str());
+
+				// save to env
+				if (it.first == "debugBuildProcess")
+				{
+					setenv(it.first.c_str(), it.second.c_str(), true);
+				}
 			}
 			fclose(f);
 		}

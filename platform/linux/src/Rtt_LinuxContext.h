@@ -24,6 +24,7 @@
 #include "Rtt_LinuxKeyListener.h"
 #include "Rtt_LinuxMouseListener.h"
 #include "Rtt_LinuxContainer.h"
+#include "Rtt_LinuxUtils.h"
 #include <string>
 #include <SDL2/SDL.h>
 
@@ -37,18 +38,25 @@ namespace Rtt
 	struct Config
 	{
 		Config();
-		Config(const std::string& path);
+		Config(const std::string& path, bool crypted = false);
 		~Config();
 
 		as_value& operator[](const std::string& name);
 		const as_value& operator[](const std::string& name) const;
+		bool HasItem(const std::string& name) const
+		{
+			const auto& it = fConfig.find(name);
+			return it != fConfig.end();
+		}
 
-		void Load(const std::string& path);
+		void Load(const std::string& path, bool crypted = false);
 		void Save();
 
 	private:
+
 		std::map<std::string, as_value> fConfig;
 		std::string fPath;
+		bool fIsCrypted;
 	};
 
 	struct SolarAppContext : public ref_counted

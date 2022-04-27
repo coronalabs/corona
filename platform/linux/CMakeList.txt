@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+set(USE_LIBCEF 0)
+if (NOT DEFINED USE_LIBCEF)
+	set(USE_LIBCEF 1)
+  set(LIBCEF "cef")
+endif()
+message(STATUS "USE_LIBCEF=" "${USE_LIBCEF}")
+
 # check dependencies
 
 find_package(ZLIB REQUIRED)
 if (ZLIB_FOUND)
-	message("zlib-${ZLIB_VERSION_STRING}; ${ZLIB_INCLUDE_DIR}; ${ZLIB_LIBRARIES}")
+	message(STATUS "zlib-${ZLIB_VERSION_STRING}; ${ZLIB_INCLUDE_DIR}; ${ZLIB_LIBRARIES}")
 else()
 	message(FATAL_ERROR "*** no zlib, use 'sudo apt install zlib1g-dev' to install it")
 endif()
@@ -12,35 +19,35 @@ endif()
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL REQUIRED)
 if (OpenGL_OpenGL_FOUND)
-	message("OpenGL; ${OPENGL_INCLUDE_DIR}; ${OPENGL_LIBRARIES}")
+	message(STATUS "OpenGL; ${OPENGL_INCLUDE_DIR}; ${OPENGL_LIBRARIES}")
 else()
 	message(FATAL_ERROR "*** no OpenGL, use 'sudo apt install libglu1-mesa-dev' to install it")
 endif()
 
 find_package(OpenAL REQUIRED)
 if (OPENAL_FOUND)
-	message("OpenAL; ${OPENAL_INCLUDE_DIR}; ${OPENAL_LIBRARY}")
+	message(STATUS "OpenAL; ${OPENAL_INCLUDE_DIR}; ${OPENAL_LIBRARY}")
 else()
 	message(FATAL_ERROR "*** no OpenAL, use 'sudo apt install libopenal-dev' to install it")
 endif()
 
 find_package(Freetype REQUIRED)
 if (FREETYPE_FOUND)
-	message("Freetype-${FREETYPE_VERSION_STRING}; ${FREETYPE_INCLUDE_DIRS}; ${FREETYPE_LIBRARIES}")
+	message(STATUS "Freetype-${FREETYPE_VERSION_STRING}; ${FREETYPE_INCLUDE_DIRS}; ${FREETYPE_LIBRARIES}")
 else()
 	message(FATAL_ERROR "*** no Freetype, use 'sudo apt install libfreetype6-dev' to install it")
 endif()
 
 find_package(PNG REQUIRED)
 if (PNG_FOUND)
-	message("png-${PNG_VERSION_STRING}; ${PNG_INCLUDE_DIRS}; ${PNG_LIBRARIES}")
+	message(STATUS "png-${PNG_VERSION_STRING}; ${PNG_INCLUDE_DIRS}; ${PNG_LIBRARIES}")
 else()
 	message(FATAL_ERROR "*** no libpng, use 'sudo apt install libpng-dev' to install it")
 endif()
 
 find_package(CURL REQUIRED)
 if (CURL_FOUND)
-	message("curl-${CURL_VERSION_STRING}; ${CURL_INCLUDE_DIRS}; ${CURL_LIBRARIES}")
+	message(STATUS "curl-${CURL_VERSION_STRING}; ${CURL_INCLUDE_DIRS}; ${CURL_LIBRARIES}")
 else()
 	message(FATAL_ERROR "*** no libcurl, use 'sudo apt install libcurl-dev' to install it")
 endif()
@@ -883,10 +890,10 @@ add_executable( Solar2D
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCEF.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorServices.cpp
 
 	${CORONA_ROOT}/platform/shared/Rtt_ProjectSettings.cpp
@@ -920,10 +927,10 @@ add_executable( Solar2DSimulator
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxVideoProvider.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebPopup.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxWebView.cpp
+	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxCEF.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxKeyListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxMouseListener.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntime.cpp
-	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxRuntimeErrorDialog.cpp
 	${CORONA_ROOT}/platform/linux/src/Rtt_LinuxSimulatorServices.cpp
 
 	${CORONA_ROOT}/platform/shared/Rtt_ProjectSettings.cpp
@@ -994,12 +1001,14 @@ ENDFOREACH()
 
 target_compile_definitions( Solar2D PUBLIC
 	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
+	USE_LIBCEF=${USE_LIBCEF}
 	LUA_USE_POPEN Rtt_LUA_COMPILER LUA_DL_DLOPEN 
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
 target_compile_definitions( Solar2DSimulator PUBLIC
 	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
+	USE_LIBCEF=${USE_LIBCEF}
 	LUA_USE_POPEN Rtt_AUTHORING_SIMULATOR Rtt_LUA_COMPILER Rtt_SIMULATOR LUA_DL_DLOPEN
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
@@ -1010,8 +1019,8 @@ target_compile_definitions( Solar2DBuilder PUBLIC
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
-target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
-target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2)
+target_link_libraries(Solar2D	dl GL z pthread openal freetype png jpeg crypto curl SDL2 ${LIBCEF})
+target_link_libraries(Solar2DSimulator	dl GL z pthread openal freetype png jpeg crypto curl SDL2 ${LIBCEF})
 
 # Enabling functions loaded from dlopen call a function from the Solar2DSimulator
 target_link_options(Solar2D BEFORE PUBLIC -export-dynamic)

@@ -129,6 +129,7 @@ namespace Rtt
 		bool fShowErrors;
 		bool fOpenlastProject;
 		int fStyleIndex;
+		bool fDebugBuildProcess;
 	};
 
 	struct DlgAskRelaunch : public Window

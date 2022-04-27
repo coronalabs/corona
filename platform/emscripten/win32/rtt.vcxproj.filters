@@ -1013,9 +1013,6 @@
     <ClCompile Include="..\Rtt_EmscriptenContainer.cpp">
       <Filter>emscripten</Filter>
     </ClCompile>
-    <ClCompile Include="..\win32\Rtt_EmscriptenPlatformWin.cpp">
-      <Filter>emscripten</Filter>
-    </ClCompile>
     <ClCompile Include="..\Rtt_LuaLibWebAudio.cpp">
       <Filter>emscripten</Filter>
     </ClCompile>
@@ -2726,9 +2723,6 @@
       <Filter>emscripten</Filter>
     </ClInclude>
     <ClInclude Include="..\Rtt_EmscriptenContainer.h">
-      <Filter>emscripten</Filter>
-    </ClInclude>
-    <ClInclude Include="..\win32\Rtt_EmscriptenPlatformWin.h">
       <Filter>emscripten</Filter>
     </ClInclude>
     <ClInclude Include="..\Rtt_LuaLibWebAudio.h">

@@ -14,6 +14,7 @@
 #include "Rtt_RenderingStream.h"
 #include "Rtt_LinuxContext.h"
 #include "Rtt_LinuxDialog.h"
+#include "Rtt_LinuxApp.h"
 
 using namespace std;
 
@@ -52,6 +53,8 @@ namespace Rtt
 		// The self bounds needs to be centered around DisplayObject's local origin
 		// even though UIView's bounds will not be.
 		fBounds.MoveCenterToOrigin();
+
+		app->AddDisplayObject(this);
 	}
 
 	LinuxDisplayObject::~LinuxDisplayObject()
@@ -61,6 +64,7 @@ namespace Rtt
 			CoronaLuaDeleteRef(fHandle->Dereference(), fLuaReference);
 			fLuaReference = NULL;
 		}
+		app->RemoveDisplayObject(this);
 	}
 
 	bool LinuxDisplayObject::CanCull() const

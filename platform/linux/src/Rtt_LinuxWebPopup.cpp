@@ -20,8 +20,6 @@
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxApp.h"
 
-#if ( wxUSE_WEBVIEW == 1)
-
 namespace Rtt
 {
 	LinuxWebPopup::LinuxWebPopup() //Interop::RuntimeEnvironment& environment)
@@ -37,40 +35,40 @@ namespace Rtt
 		Close();
 	}
 
-	void LinuxWebPopup::onWebPopupLoadedEvent(wxWebViewEvent &e)
+	void LinuxWebPopup::onWebPopupLoadedEvent()
 	{
 	}
 
-	void LinuxWebPopup::onWebPopupNavigatingEvent(wxWebViewEvent &e)
+	void LinuxWebPopup::onWebPopupNavigatingEvent()
 	{
-		const char *url = e.GetURL().c_str();
-		eventArg *arg = (eventArg*) e.GetEventUserData();
+		//const char *url = e.GetURL().c_str();
+		//eventArg *arg = (eventArg*) e.GetEventUserData();
 
-		// Relay this event to the popup's Lua listener.
-		bool wasCloseRequested = !arg->fThiz->ShouldLoadUrl(url);
+		//// Relay this event to the popup's Lua listener.
+		//bool wasCloseRequested = !arg->fThiz->ShouldLoadUrl(url);
 
-		if (wasCloseRequested)
-		{
-			arg->fThiz->Close();
-		}
+		//if (wasCloseRequested)
+		//{
+		//	arg->fThiz->Close();
+		//}
 	}
 
-	void LinuxWebPopup::onWebPopupNavigatedEvent(wxWebViewEvent &e)
+	void LinuxWebPopup::onWebPopupNavigatedEvent()
 	{
 	}
 
-	void LinuxWebPopup::onWebPopupErrorEvent(wxWebViewEvent &e)
+	void LinuxWebPopup::onWebPopupErrorEvent()
 	{
-		const char *url = e.GetURL().c_str();
-		eventArg *arg = (eventArg*) e.GetEventUserData();
+		//const char *url = e.GetURL().c_str();
+		//eventArg *arg = (eventArg*) e.GetEventUserData();
 
-		// Relay this event to the popup's Lua listener.
-		bool wasCloseRequested = !arg->fThiz->DidFailLoadUrl(url, "", 0);
+		//// Relay this event to the popup's Lua listener.
+		//bool wasCloseRequested = !arg->fThiz->DidFailLoadUrl(url, "", 0);
 
-		if (wasCloseRequested)
-		{
-			arg->fThiz->Close();
-		}
+		//if (wasCloseRequested)
+		//{
+		//	arg->fThiz->Close();
+		//}
 	}
 
 	void LinuxWebPopup::Show(const MPlatform &platform, const char *url)
@@ -91,11 +89,11 @@ namespace Rtt
 			Preinitialize(display);
 			GetScreenBounds(display, screenBounds);
 
-			fWebBrowserPointer = wxWebView::New(solarApp, wxID_ANY, "", wxPoint(screenBounds.xMin, screenBounds.yMin), wxSize(screenBounds.Width(), screenBounds.Height()));
-			fWebBrowserPointer->Bind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent, wxID_ANY, wxID_ANY, new eventArg(this));
-			fWebBrowserPointer->Bind(wxEVT_WEBVIEW_NAVIGATED, onWebPopupNavigatedEvent, wxID_ANY, wxID_ANY, new eventArg(this));
-			fWebBrowserPointer->Bind(wxEVT_WEBVIEW_LOADED, onWebPopupLoadedEvent, wxID_ANY, wxID_ANY, new eventArg(this));
-			fWebBrowserPointer->Bind(wxEVT_WEBVIEW_ERROR, onWebPopupErrorEvent, wxID_ANY, wxID_ANY, new eventArg(this));
+			//fWebBrowserPointer = wxWebView::New(solarApp, wxID_ANY, "", wxPoint(screenBounds.xMin, screenBounds.yMin), wxSize(screenBounds.Width(), screenBounds.Height()));
+			//fWebBrowserPointer->Bind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent, wxID_ANY, wxID_ANY, new eventArg(this));
+			//fWebBrowserPointer->Bind(wxEVT_WEBVIEW_NAVIGATED, onWebPopupNavigatedEvent, wxID_ANY, wxID_ANY, new eventArg(this));
+			//fWebBrowserPointer->Bind(wxEVT_WEBVIEW_LOADED, onWebPopupLoadedEvent, wxID_ANY, wxID_ANY, new eventArg(this));
+			//fWebBrowserPointer->Bind(wxEVT_WEBVIEW_ERROR, onWebPopupErrorEvent, wxID_ANY, wxID_ANY, new eventArg(this));
 		}
 
 		// Navigate to the given URL.
@@ -130,19 +128,19 @@ namespace Rtt
 			updatedUrl = url;
 		}
 
-		fWebBrowserPointer->LoadURL(updatedUrl.c_str());
+	//	fWebBrowserPointer->LoadURL(updatedUrl.c_str());
 	}
 
 	bool LinuxWebPopup::Close()
 	{
 		// Do not continue if there is no web browser to close.
-		if (fWebBrowserPointer && solarApp != NULL)
+		if (fWebBrowserPointer)
 		{
-			// Remove event handlers.
-			fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent);
-			fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_NAVIGATED, onWebPopupNavigatedEvent);
-			fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_LOADED, onWebPopupLoadedEvent);
-			fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_ERROR, onWebPopupErrorEvent);
+			//// Remove event handlers.
+			//fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_NAVIGATING, onWebPopupNavigatingEvent);
+			//fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_NAVIGATED, onWebPopupNavigatedEvent);
+			//fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_LOADED, onWebPopupLoadedEvent);
+			//fWebBrowserPointer->Unbind(wxEVT_WEBVIEW_ERROR, onWebPopupErrorEvent);
 
 			// Release the popup's assigned Lua listener.
 			SetCallback(nullptr);
@@ -239,5 +237,3 @@ namespace Rtt
 		return result;
 	}
 }; // namespace Rtt
-
-#endif

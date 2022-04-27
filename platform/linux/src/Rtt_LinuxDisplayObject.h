@@ -14,6 +14,7 @@
 #include "CoronaLua.h"
 #include "Rtt_PlatformDisplayObject.h"
 #include "Rtt_LinuxContainer.h"
+#include "SDL.h"
 
 #pragma region Forward Declarations
 
@@ -49,6 +50,7 @@ namespace Rtt
 		virtual void Prepare(const Display &display) override;
 		void showControls(bool val);
 		void setBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+		virtual bool ProcessEvent(const SDL_Event& evt) { return false; }
 
 	protected:
 

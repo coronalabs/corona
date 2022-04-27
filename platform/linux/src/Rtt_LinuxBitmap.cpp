@@ -35,6 +35,7 @@ namespace Rtt
 
 		U8 *dst = fData;
 
+		if (rgba)
 		for (int y = 0; y < h; y++)
 		{
 			for (int x = 0; x < w; x++)

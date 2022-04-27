@@ -931,7 +931,7 @@ var platformLibrary =
 		ctx.fillText(line, x, y);
 
 		hh = h > 0 ? h : y + lineHeight;
-		ww = w;
+		ww = w > 0 ? w : 1;
 
 		// it's needs for corona ?
 		if ((ww & 0x3) != 0) {
