@@ -9,7 +9,7 @@ using namespace std;
 namespace Rtt
 {
 	ConsoleWindow::ConsoleWindow(const string& title, int w, int h, string* logData)
-		: Window(title, w, h)
+		: Window(title, w, h, SDL_WINDOW_RESIZABLE)
 		, fLogData(logData)
 	{
 	}

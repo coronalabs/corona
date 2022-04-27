@@ -268,10 +268,7 @@ namespace Rtt
 
 				if (filename != NULL && FileExists(result.GetString()) == false)
 				{
-					// look in the plugins dir
-					String resDir(GetHomePath());
-					resDir.Append("/.Solar2D/Plugins/");
-					PathForFile(filename, resDir.GetString(), result);
+					PathForFile(filename, GetPluginsPath().c_str(), result);
 					Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s || %s || %s)'. File does not exist.\n\n", filename, result1.GetString(), result2.GetString(), result.GetString()));
 				}
 				break;
