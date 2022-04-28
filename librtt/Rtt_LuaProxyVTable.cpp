@@ -243,6 +243,26 @@ LuaDisplayObjectProxyVTable::Constant()
 }
 
 int
+LuaDisplayObjectProxyVTable::hitTest( lua_State *L )
+{
+	DisplayObject* o = (DisplayObject*)LuaProxy::GetProxyableObject( L, 1 );
+	if ( o )
+	{
+		Real x = luaL_checkreal( L, 2 );
+		Real y = luaL_checkreal( L, 3 );
+
+		bool testResult = o->HitTest( x, y );
+		lua_pushboolean(L, testResult);
+	}
+	else
+	{
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
+
+int
 LuaDisplayObjectProxyVTable::translate( lua_State *L )
 {
 	DisplayObject* o = (DisplayObject*)LuaProxy::GetProxyableObject( L, 1 );
@@ -749,9 +769,10 @@ LuaDisplayObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obj
 		"maskRotation",         // 32
 		"isHitTestMasked",		// 33
 		"_setHasListener",		// 34
+		"hitTest",				// 35
 	};
     const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 35, 33, 15, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 36, 12, 6, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -815,6 +836,11 @@ LuaDisplayObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obj
 	case 34:
 		{
 			Lua::PushCachedFunction( L, setHasListener );
+		}
+		break;
+	case 35:
+		{
+			Lua::PushCachedFunction( L, hitTest );
 		}
 		break;
 	default:

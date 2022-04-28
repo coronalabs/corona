@@ -83,6 +83,7 @@ class LuaDisplayObjectProxyVTable : public LuaProxyVTable
 		static const Self& Constant();
 
 	public:
+		static int hitTest( lua_State *L );
 		static int translate( lua_State *L );
 		static int scale( lua_State *L );
 		static int rotate( lua_State *L );
