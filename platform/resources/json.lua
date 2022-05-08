@@ -85,6 +85,7 @@ local function json_decode_file(filename, pos, nullval, ...)
 		-- Couldn't open file
 		return nil, 0, "Cannot open file "..tostring(fileOpenErrorMsg)
 	else
+		local lineno, errorMsg
 		local str = fp:read( '*a' )
 		fp:close()
 		decodedData, lineno, errorMsg = decode_override( str, pos, nullval, ... )
