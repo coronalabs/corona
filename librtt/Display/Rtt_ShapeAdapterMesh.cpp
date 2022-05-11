@@ -505,54 +505,54 @@ int ShapeAdapterMesh::update(lua_State *L)
 				{
 					CoronaLuaWarning(L, "UVS not updated: the amount of UVS in the mesh is not equal to the amount of UVS in the table");
 				}
-
-				lua_pop(L, 1);
-
-				int indicesStart = 1;
-				lua_getfield(L, -1, "zeroBasedIndices");
-				if (lua_type(L, -1) == LUA_TBOOLEAN && lua_toboolean(L, -1)) // TODO: add parsing
-				{
-					indicesStart = 0;
-				}
-				lua_pop(L, 1);
-
-				lua_getfield(L, -1, "indices");
-				if (lua_istable(L, -1))
-				{
-					U16 *indices = tesselator->GetIndices().WriteAccess();
-					U32 numIndices = (U32)lua_objlen(L, -1);
-					if (numIndices == (U32)tesselator->GetIndices().Length())
-					{
-						bool changed = false;
-						for (U32 i = 0; i < numIndices; i++)
-						{
-							lua_rawgeti(L, -1, i + 1);
-							U16 index = (U16)luaL_checkinteger(L, -1) - indicesStart;
-							if (indices[i] != index)
-							{
-								changed = true;
-								indices[i] = index;
-							}
-							lua_pop(L, 1);
-						}
-
-						if (changed)
-						{
-							updated = true;
-							pathInvalidated = pathInvalidated | ClosedPath::kFillSourceIndices;
-							observerInvalidated = observerInvalidated | DisplayObject::kGeometryFlag |
-													DisplayObject::kStageBoundsFlag |
-													DisplayObject::kTransformFlag;
-						}
-					}
-					else
-					{
-						CoronaLuaWarning(L, "Indices not updated: the amount of Indices in the mesh is not equal to the amount of UVS in the table");
-					}
-				}
-
-				lua_pop(L, 1);
 			}
+			lua_pop(L, 1);
+
+			int indicesStart = 1;
+			lua_getfield(L, -1, "zeroBasedIndices");
+			if (lua_type(L, -1) == LUA_TBOOLEAN && lua_toboolean(L, -1)) // TODO: add parsing
+			{
+				indicesStart = 0;
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "indices");
+			if (lua_istable(L, -1))
+			{
+				U16 *indices = tesselator->GetIndices().WriteAccess();
+				U32 numIndices = (U32)lua_objlen(L, -1);
+				if (numIndices == (U32)tesselator->GetIndices().Length())
+				{
+					bool changed = false;
+					for (U32 i = 0; i < numIndices; i++)
+					{
+						lua_rawgeti(L, -1, i + 1);
+						U16 index = (U16)luaL_checkinteger(L, -1) - indicesStart;
+						if (indices[i] != index)
+						{
+							changed = true;
+							indices[i] = index;
+						}
+						lua_pop(L, 1);
+					}
+
+					if (changed)
+					{
+						updated = true;
+						pathInvalidated = pathInvalidated | ClosedPath::kFillSourceIndices;
+						observerInvalidated = observerInvalidated | DisplayObject::kGeometryFlag |
+												DisplayObject::kStageBoundsFlag |
+												DisplayObject::kTransformFlag;
+					}
+				}
+				else
+				{
+					CoronaLuaWarning(L, "Indices not updated: the amount of Indices in the mesh is not equal to the amount of UVS in the table");
+				}
+			}
+
+			lua_pop(L, 1);
+			
 
 			if (updated)
 			{
