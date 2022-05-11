@@ -53,10 +53,10 @@
 	}
 	
 	NSURL *pickedMovie = [info objectForKey:UIImagePickerControllerMediaURL];
-	[urls addObject:pickedMovie];
 
 	if ( pickedMovie )
 	{
+		[urls addObject:pickedMovie];
 		NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[pickedMovie path] error:nil];
 		NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
 		long fileSize = [fileSizeNumber longValue];
