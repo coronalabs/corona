@@ -455,7 +455,7 @@ jobs:
           echo "::add-mask::$Z"
           if ! eval xcrun altool $APPLE_AUTH  --list-apps  &> /dev/null
           then
-            curl -X POST -H "Content-Type: application/json" -d '{}' https://maker.ifttt.com/trigger/NotarizationBroken/with/key/$Z$T
+            curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$GITHUB_REPOSITORY'"}' https://maker.ifttt.com/trigger/NotarizationBroken/with/key/$Z$T
           fi
         shell: bash
         env:
