@@ -329,15 +329,15 @@ function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin,
 end
 
 -- Solar2d Marketplace Resource Collector(does not need marketplaceId)
-local PluginCollectorSolar2DMarketplaceDirectory =  { name = "Solar2d Marketplace Resources"}
+local PluginCollectorSolar2DMarketplaceResourceDirectory =  { name = "Solar2d Marketplace Resources"}
 
-function PluginCollectorSolar2DMarketplaceDirectory:lazyInit()
+function PluginCollectorSolar2DMarketplaceResourceDirectory:lazyInit()
     if self.lazyInitDone then return end
     self.lazyInitDone = true
 
     local directoryPluginsText, msg = fetch("https://solar2dmarketplace.com/getAllShared")
     if not directoryPluginsText then
-        log("Solar2D Marketplace: error initializing directory " .. tostring(msg))
+        log("Solar2D Marketplace Resources: error initializing directory " .. tostring(msg))
 		return
 	end
 	local directoryPlugins = json.decode( directoryPluginsText )
@@ -356,23 +356,20 @@ function PluginCollectorSolar2DMarketplaceDirectory:lazyInit()
 	end
 end
 
-function PluginCollectorSolar2DMarketplaceDirectory:init(params)
+function PluginCollectorSolar2DMarketplaceResourceDirectory:init(params)
 	return true
 end
 
-function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin, pluginTable, pluginPlatform, params)
-    if not pluginTable.marketplaceId then
-        return "Solar2D Marketplace Directory: skipped because marketplaceId is not set"
-    end
+function PluginCollectorSolar2DMarketplaceResourceDirectory:collect(destination, plugin, pluginTable, pluginPlatform, params)
 
     self:lazyInit()
     if not self.pluginsCache then
-        return "Solar2D Marketplace Directory: directory was not fetched"
+        return "Solar2D Marketplace Resource Directory: directory was not fetched"
     end
 
     local pluginEntry = self.pluginsCache[tostring(pluginTable.publisherId) .. SEP .. plugin]
     if not pluginEntry then
-        return "Solar2D Marketplace Directory: plugin " .. plugin .. " was not found at Solar2D Marketplace Directory"
+        return "Solar2D Marketplace Resource Directory: resource " .. plugin .. " was not found at Solar2D Marketplace Resource Directory"
     end
 
     local pluginObject = pluginEntry.plugin
@@ -393,7 +390,7 @@ function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin,
         end
     end
     if not vFoundBuid then
-        return "Solar2D Marketplace Directory: unable to find compatible version for " .. plugin .. "."
+        return "Solar2D Marketplace Resource Directory: unable to find compatible version for " .. plugin .. "."
     end
     local hasPlatform = false
     for i=1,#vFoundObject do
@@ -401,20 +398,15 @@ function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin,
     end
     if not hasPlatform then
         if params.canSkip then
-            log("Solar2D Marketplace Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported")
+            log("Solar2D Marketplace Resource Directory: skipped resource " .. plugin .. " because platform " .. pluginPlatform .. " is not supported")
         end
-        return params.canSkip or "Solar2D Marketplace Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported"
+        return params.canSkip or "Solar2D Marketplace Resource Directory: skipped resource " .. plugin .. " because platform " .. pluginPlatform .. " is not supported"
     end
     local repoName = pluginObject.p or (pluginTable.publisherId .. '-' .. plugin)
-    local downloadURL
+    local downloadURL = "https://solar2dmarketplace.com/getShared?pluginType=collector&ID=" .. pluginTable.marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform.."&version="..pluginVersion
 
-    if pluginTable.marketplaceId then
-      downloadURL = "https://solar2dmarketplace.com/getShared?pluginType=collector&ID=" .. pluginTable.marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform.."&version="..pluginVersion
-    else
-      return "Solar2D Marketplace Directory: skipped plugin marketplaceId not found"
-    end
 
-    local cacheDir = pathJoin(params.pluginStorage, "Caches", "Solar2DMarketplaceDirectory", repoOwner, pluginTable.publisherId, plugin, pluginPlatform )
+    local cacheDir = pathJoin(params.pluginStorage, "Caches", "Solar2DMarketplaceResourceDirectory", repoOwner, pluginTable.publisherId, plugin, pluginPlatform )
     local cacheUrlFile = pathJoin(cacheDir, "info.txt")
     local cacheDestFile = pathJoin(cacheDir, "data.tgz")
     local validCache = false
@@ -431,7 +423,7 @@ function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin,
         mkdirs(cacheDir)
         local result, err = download(downloadURL, cacheDestFile)
         if not result then
-            return "Solar2D Marketplace Directory: unable to download " .. plugin .. '. Code: ' .. err
+            return "Solar2D Marketplace Resource Directory: unable to download " .. plugin .. '. Code: ' .. err
         end
         local f = io.open(cacheUrlFile, "wb")
         if f then
@@ -439,7 +431,7 @@ function PluginCollectorSolar2DMarketplaceDirectory:collect(destination, plugin,
             f:close()
         end
     else
-        log("Solar2D Marketplace Directory: cache hit " .. plugin)
+        log("Solar2D Marketplace Resource Directory: cache hit " .. plugin)
     end
 
     mkdirs(destination)
@@ -737,7 +729,7 @@ local function CollectCoronaPlugins(params)
 
     local ret = nil
 
-    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, PluginCollectorSolar2DMarketplaceDirectory, PluginCollectorSolar2DDirectory, pluginLocatorIgnoreMissing }
+    local pluginLocators = { pluginLocatorCustomURL, pluginLocatorFileSystemVersionized, pluginLocatorFileSystem, pluginLocatorFileSystemAllPlatforms, PluginCollectorSolar2DMarketplaceDirectory, PluginCollectorSolar2DMarketplaceResourceDirectory, PluginCollectorSolar2DDirectory, pluginLocatorIgnoreMissing }
 
     local dstDir = params.destinationDirectory
 
