@@ -25,7 +25,7 @@ env:
 jobs:
   source-code:
     name: Check out and process source code
-    if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
+    if: "!contains(github.ref, 'refs/tags/') || github.repository == 'zero-meta/corona'"
     runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
@@ -367,36 +367,6 @@ jobs:
         with:
           name: Simulator-macOS
           path: ./output
-
-  notarize:
-    needs:
-      - macOS-Simulator
-    runs-on: macos-12
-    steps:
-      - name: Get built simulator
-        uses: actions/download-artifact@v1
-        with:
-          name: Simulator-macOS
-      - name: Notarize
-        run: |
-          if [ -z "$APPLE_AUTH" ]
-          then
-            echo 'Skipping because no authorization provided'
-            exit 0
-          fi
-          if [[ "$GITHUB_REF" == refs/tags/* ]]
-          then
-              : "${BUILD_NUMBER:=${GITHUB_REF#refs/tags/}}"
-          else
-              : "${BUILD_NUMBER:=$GITHUB_RUN_NUMBER}"
-          fi
-          for dmg in ./Simulator-macOS/*.dmg
-          do
-            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH${BUILD_NUMBER}.$(date +"%b%d")"  --file "$dmg"
-          done
-        shell: bash
-        env:
-          APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
 
   Windows-Simulator:
     needs:
