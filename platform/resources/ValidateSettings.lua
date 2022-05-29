@@ -52,7 +52,8 @@ function validateSettings(arg1, arg2)
 
 		print = origPrint
 
-		if ok then
+		-- allow developers to optionally use more complex settings files without raising warnings
+		if ok or validSettings.complexFile then
 			testSettings = (settings == nil) and application or settings
 			application = nil
 			settings = nil
