@@ -95,8 +95,6 @@ settings =
 		neverStripDebugInfo = true,
 	},
 
-	complexFile = true,
-
 	corona_sdk_simulator_path = "", -- used by Corona Editor
 
 	excludeFiles =

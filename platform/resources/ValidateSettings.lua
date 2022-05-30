@@ -12,8 +12,8 @@ function validateSettings(arg1, arg2)
 
 	-- print("validateSettings: ", tostring(arg1), tostring(arg2))
 
-	-- CoronaSDK doesn't expose loadfile() so we need to do it the hard way
-	local function loadfile(path)
+	-- Solar2D doesn't expose loadfile() so we need to do it the hard way
+	local function loadfile( path, checkForTag )
 
 		if path then
 			local fp = io.open(path, 'r')
@@ -22,7 +22,11 @@ function validateSettings(arg1, arg2)
 				local lua = fp:read( '*a' )
 				fp:close()
 
-				return loadstring(lua), ""
+				if not checkForTag then
+					return loadstring(lua), ""
+				else
+					return not not string.find( lua, "isComplexFile" )
+				end
 			else
 				return nil, "Cannot open "..path
 			end
@@ -49,14 +53,19 @@ function validateSettings(arg1, arg2)
 		print = function (...) end -- disable print() while running file under test
 
 		local ok, ret_or_err = pcall(loadSettings)
+		-- if pcall fails, then check for the complex file tag
+		local isComplexFile = not ok and loadfile( testSettingsFile, true )
 
 		print = origPrint
 
 		-- allow developers to optionally use more complex settings files without raising warnings
-		if ok or validSettings.complexFile then
+		if ok or isComplexFile then
 			testSettings = (settings == nil) and application or settings
 			application = nil
 			settings = nil
+			if isComplexFile then
+				return true
+			end
 		else
 			-- this generally means there are undefined functions being called so bail
 			print("WARNING: validate-settings: "..testSettingsFile.." too complex for static analysis")
