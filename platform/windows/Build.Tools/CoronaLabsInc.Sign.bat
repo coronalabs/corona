@@ -48,4 +48,4 @@ echo   [ProgramName]      Optional: Program name to be displayed in the UAC prom
 exit /b 1
 
 :OnSkipSigning
-echo Skipping singing becaues password or key is not found
+echo Skipping signing because password or key is not found
