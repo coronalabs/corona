@@ -1240,6 +1240,7 @@ PrintTouches( NSSet *touches, const char *header )
 #if defined( Rtt_IPHONE_ENV ) //Keyboard events only test on iOS
 - (void)pressesBegan:(NSSet<UIPress *> *)presses
            withEvent:(UIPressesEvent *)event{
+    [super pressesBegan:presses withEvent:event];
     for(UIPress* press : presses) {
         if (@available(iOS 13.4, *)) {
             if(press.key){
@@ -1257,6 +1258,7 @@ PrintTouches( NSSet *touches, const char *header )
 }
 - (void)pressesEnded:(NSSet<UIPress *> *)presses
            withEvent:(UIPressesEvent *)event{
+    [super pressesEnded:presses withEvent:event];
     for(UIPress* press : presses) {
         if (@available(iOS 13.4, *)) {
             if(press.key){
@@ -1265,6 +1267,7 @@ PrintTouches( NSSet *touches, const char *header )
             
         }
     }
+    
 }
 
 - (void)dispatchKeyEvent:(UIKey *)event withPhase:(Rtt::KeyEvent::Phase)phase
