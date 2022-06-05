@@ -34,7 +34,6 @@
 #include "Rtt_AppleBitmap.h"
 #include "Rtt_AppleInputDeviceManager.h"
 #include "Rtt_AppleInputMFiDeviceListener.h"
-#include "Rtt_AppleKeyServices.h"
 #include "Rtt_IPhonePlatformBase.h"
 #include "Rtt_DeviceOrientation.h"
 #include "Rtt_MPlatformDevice.h"
@@ -42,6 +41,7 @@
 #import <objc/runtime.h>
 
 #if defined( Rtt_IPHONE_ENV )
+	#include "Rtt_AppleKeyServices.h"
 	#include "Rtt_IPhonePlatformCore.h"
 	#include "Rtt_IPhoneOrientation.h"
 	#include "Rtt_IPhoneTemplate.h"
