@@ -393,9 +393,10 @@ IPhoneDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kLocationEvent:
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
-        case MPlatformDevice::kKeyEvent:
-            hasEventSource = true; //There is not reliable way to check this
-            break;
+		case MPlatformDevice::kKeyEvent:
+		    if (@available(iOS 13.4, *)) { //Key Events only work on iOS 13.4 >=
+			hasEventSource = true;
+		    }
 		case MPlatformDevice::kInputDeviceStatusEvent:
 			hasEventSource = true;
 			break;
