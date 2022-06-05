@@ -250,6 +250,10 @@
 		C26005721D62A63400C542D0 /* _CoronaSplashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */; };
 		C2A6E5311AB0BEE500509FB2 /* widget_theme_ios7@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = C2A6E5301AB0BEE500509FB2 /* widget_theme_ios7@4x.png */; };
 		C2F911791CDC15F4004A5564 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4359164B1D5200CFE7B3 /* libluasocket.a */; };
+		DB56B4A0284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B49E284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm */; };
+		DB56B4A1284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B49E284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm */; };
+		DB56B4A2284BEB6400EC8B14 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B49F284BEB6400EC8B14 /* Rtt_AppleKeyServices.h */; };
+		DB56B4A3284BEB6400EC8B14 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B49F284BEB6400EC8B14 /* Rtt_AppleKeyServices.h */; };
 		F50E7EB224FA923B009F165B /* _CoronaSplashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */; };
 		F50E7EB324FA923B009F165B /* CoronaResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A48B825C16D594AA00CA01A1 /* CoronaResources.bundle */; };
 		F50E7EB424FA923B009F165B /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
@@ -1494,6 +1498,8 @@
 		C23D8DF21954F30200D6555E /* widget_theme_onOff_mask_android_holo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = widget_theme_onOff_mask_android_holo.png; path = ../../subrepos/widget/widget_theme_onOff_mask_android_holo.png; sourceTree = "<group>"; };
 		C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = _CoronaSplashScreen.png; sourceTree = "<group>"; };
 		C2A6E5301AB0BEE500509FB2 /* widget_theme_ios7@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "widget_theme_ios7@4x.png"; path = "../../subrepos/widget/widget_theme_ios7@4x.png"; sourceTree = "<group>"; };
+		DB56B49E284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleKeyServices.mm; sourceTree = "<group>"; };
+		DB56B49F284BEB6400EC8B14 /* Rtt_AppleKeyServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleKeyServices.h; sourceTree = "<group>"; };
 		F50E7EC424FA923B009F165B /* template-angle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "template-angle.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleInputDevice.h; sourceTree = "<group>"; };
 		F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleInputDevice.mm; sourceTree = "<group>"; };
@@ -1714,6 +1720,8 @@
 				F564C36B1BE430F900C241E6 /* Rtt_AppleInputDeviceManager.mm */,
 				F564C36E1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.h */,
 				F564C36F1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm */,
+				DB56B49F284BEB6400EC8B14 /* Rtt_AppleKeyServices.h */,
+				DB56B49E284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm */,
 				000DCD3A12B073A000042A5E /* Rtt_ApplePlatform.h */,
 				000DCD3B12B073A000042A5E /* Rtt_ApplePlatform.mm */,
 				00E867DC1366435F00AAFA26 /* Rtt_AppleReachability.h */,
@@ -2389,6 +2397,7 @@
 				A415ECA81BD86132003E7114 /* Rtt_IPhoneRuntimeDelegate.h in Headers */,
 				A4728FE71AE7F77B00BC088D /* CoronaLuaObjC+NSObject.h in Headers */,
 				A4543E83151AA23A00486F8A /* CoronaRuntime.h in Headers */,
+				DB56B4A2284BEB6400EC8B14 /* Rtt_AppleKeyServices.h in Headers */,
 				A491870716421FBE00A39286 /* CoronaIOSLoader.h in Headers */,
 				A4728FF01AE8176F00BC088D /* CoronaLuaObjC.h in Headers */,
 				A48DA97E18531077009D1F93 /* CoronaLuaLibrary.h in Headers */,
@@ -2452,6 +2461,7 @@
 				F5C36C5924FAB49F00775C6E /* Rtt_IPhonePlatformBase.h in Headers */,
 				F5C36C5A24FAB49F00775C6E /* CoronaGyroscopeObserver.h in Headers */,
 				F5C36C5B24FAB49F00775C6E /* Rtt_AppleInputDevice.h in Headers */,
+				DB56B4A3284BEB6400EC8B14 /* Rtt_AppleKeyServices.h in Headers */,
 				F5C36C5C24FAB49F00775C6E /* CoronaViewPluginContext.h in Headers */,
 				F5C36C5D24FAB49F00775C6E /* CoronaViewRuntimeDelegate.h in Headers */,
 				F5C36C5E24FAB49F00775C6E /* Rtt_IPhoneOrientation.h in Headers */,
@@ -3832,6 +3842,7 @@
 				A48410E815114A260074BD57 /* Rtt_AppleInAppStore.mm in Sources */,
 				A48410E915114A260074BD57 /* Rtt_AppleInAppStoreApple.mm in Sources */,
 				A48410EA15114A260074BD57 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */,
+				DB56B4A0284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm in Sources */,
 				A48410EB15114A260074BD57 /* Rtt_ApplePlatform.mm in Sources */,
 				A4B2D52718402BDE001311C9 /* Rtt_IPhoneOrientation.mm in Sources */,
 				A48410EC15114A260074BD57 /* Rtt_AppleReachability.mm in Sources */,
@@ -3950,6 +3961,7 @@
 				F5C36C0424FAB49F00775C6E /* Rtt_AppleInAppStore.mm in Sources */,
 				F5C36C0524FAB49F00775C6E /* Rtt_AppleInAppStoreApple.mm in Sources */,
 				F5C36C0624FAB49F00775C6E /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */,
+				DB56B4A1284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm in Sources */,
 				F5C36C0724FAB49F00775C6E /* Rtt_ApplePlatform.mm in Sources */,
 				F5C36C0824FAB49F00775C6E /* Rtt_IPhoneOrientation.mm in Sources */,
 				F5C36C0924FAB49F00775C6E /* Rtt_AppleReachability.mm in Sources */,

@@ -393,7 +393,9 @@ IPhoneDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kLocationEvent:
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
-		case MPlatformDevice::kKeyEvent:
+        case MPlatformDevice::kKeyEvent:
+            hasEventSource = true; //There is not reliable way to check this
+            break;
 		case MPlatformDevice::kInputDeviceStatusEvent:
 			hasEventSource = true;
 			break;
