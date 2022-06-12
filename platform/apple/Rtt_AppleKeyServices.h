@@ -9,17 +9,20 @@
 
 #import <Foundation/Foundation.h>
 
-// Key codes not found in Carbon.
+#ifdef Rtt_MAC_ENV
+#import <AppKit/AppKit.h>
+#import <Carbon/Carbon.h>
+#endif
 enum KeyCodes
 {
-#if __MAC_OS_X_VERSION_MAX_ALLOWED < 101200
-	kVK_RightCommand = 0x36,
-#endif
+    #if __MAC_OS_X_VERSION_MAX_ALLOWED < 101200
+        kVK_RightCommand = 0x36,
+    #endif
 	kVK_Menu = 0x6E,
 	kVK_Back = 0x7F,
 };
 
-@interface MacKeyServices : NSObject
+@interface AppleKeyServices : NSObject
 
 + (NSString*)getNameForKey:(NSNumber*)keyCode;
 
