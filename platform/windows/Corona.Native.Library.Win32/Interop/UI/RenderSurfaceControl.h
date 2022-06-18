@@ -239,15 +239,6 @@ class RenderSurfaceControl : public Control
 		/// <summary>Handle to the control's main device context that OpenGL will render to.</summary>
 		HDC fMainDeviceContextHandle;
 
-		/// <summary>
-		///  <para>
-		///   Handle to the Win32 BeginPaint() device context, which is assigned when a paint message has been received.
-		///  </para>
-		///  <para>Set null if the control is not in the middle of a paint request.</para>
-		///  <para>This device context should be favored over "fMainDeviceContextHandle" for painting if available.</para>
-		/// </summary>
-		HDC fPaintDeviceContextHandle;
-
 		/// <summary>Handle to OpenGL's rendering context.</summary>
 		HGLRC fRenderingContextHandle;
 
