@@ -135,6 +135,7 @@ settings =
 			UIStatusBarHidden = true,
 			LSApplicationQueriesSchemes = { "" },
 			FacebookAppID = "",
+			FacebookClientToken = "",
 			CoronaUseIOS6PortraitOnlyWorkaround = true,
 			CFBundleIdentifier = "",
 			CFBundleShortVersionString = "",
