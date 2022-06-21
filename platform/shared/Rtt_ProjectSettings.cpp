@@ -274,7 +274,7 @@ bool ProjectSettings::LoadFromDirectory(const char* directoryPath)
 				fIsWindowTitleShown = lua_toboolean(luaStatePointer, -1) ? true : false;
 			}
 			lua_pop(luaStatePointer, 1);
-
+			
 			// Fetch the window's title bar text.
 			lua_getfield(luaStatePointer, -1, "titleText");
 			if (lua_istable(luaStatePointer, -1))
@@ -340,6 +340,14 @@ bool ProjectSettings::LoadFromDirectory(const char* directoryPath)
 		fHasConfigLua = true;
 		wasConfigLuaFound = true;
 
+		// Fetch the project's transparency setting.
+		lua_getfield(luaStatePointer, -1, "isTransparent");
+		if (lua_type(luaStatePointer, -1) == LUA_TBOOLEAN)
+		{
+			fIsWindowTransparent = lua_toboolean(luaStatePointer, -1) ? true : false;
+		}
+		lua_pop(luaStatePointer, 1);
+		
 		// Fetch the project's content scaling settings.
 		lua_getfield(luaStatePointer, -1, "content");
 		if (lua_istable(luaStatePointer, -1))
@@ -501,6 +509,7 @@ void ProjectSettings::ResetBuildSettings()
 	fIsWindowMaximizeButtonEnabled = false;
 	fLocalizedWindowTitleTextMap.clear();
 	fIsWindowTitleShown = true;
+	fIsWindowTransparent = false;
 }
 
 void ProjectSettings::ResetConfigLuaSettings()
@@ -736,6 +745,11 @@ double ProjectSettings::GetImageSuffixScaleByIndex(int index) const
 bool ProjectSettings::IsWindowTitleShown() const
 {
 	return fIsWindowTitleShown;
+}
+
+bool ProjectSettings::IsWindowTransparent() const
+{
+	return fIsWindowTransparent;
 }
 
 void ProjectSettings::OnLoadedFrom(lua_State* luaStatePointer)

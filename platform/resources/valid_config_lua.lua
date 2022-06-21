@@ -20,6 +20,7 @@ stoplist = {"imageSuffix", "shaderPrecision"}
 application = {
 	launchPad = true,
 	showRuntimeErrors = true,
+	isTransparent = false,
 
 	content = {
 		graphicsCompatibility = 1,
