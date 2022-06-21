@@ -87,14 +87,6 @@
 		<action android:name="android.intent.action.GET_CONTENT" />
 		<data android:mimeType="image/*" />
 	</intent>
-<<<<<<< HEAD
-	<!-- Needed for checking for Image Picker Intent in Android 11 -->
-	<intent>
-		<action android:name="android.intent.action.GET_CONTENT" />
-		<data android:mimeType="image/*" />
-	</intent>
-=======
->>>>>>> ef49c70f0220a19716f524e23f1415119728a1f0
     </queries>
 </manifest>
 
