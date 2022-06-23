@@ -15,7 +15,7 @@
 namespace Rtt
 {
 
-std::map<UINT_PTR, Rtt::WinTimer *> WinTimer::sTimerMap;
+std::unordered_map<UINT_PTR, Rtt::WinTimer *> WinTimer::sTimerMap;
 UINT_PTR WinTimer::sMostRecentTimerID;
 
 #pragma region Constructors/Destructors
