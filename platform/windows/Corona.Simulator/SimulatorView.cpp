@@ -157,8 +157,6 @@ CSimulatorView::CSimulatorView()
 {
 	CSimulatorApp *applicationPointer = (CSimulatorApp*)AfxGetApp();
 
-	CoInitialize(nullptr);
-
     mRotation = 0;  // current rotation
     mpSkinBitmap = nullptr;
 	mRuntimeEnvironmentPointer = nullptr;
