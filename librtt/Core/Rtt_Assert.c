@@ -266,6 +266,14 @@ Rtt_Log( const char *format, ... )
 #if defined( Rtt_MAC_ENV ) || defined( Rtt_IPHONE_ENV ) || defined( Rtt_TVOS_ENV )
 	#define Rtt_TRAP_WITH_SIGNAL	1
 	#include <signal.h>
+    #include <errno.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <assert.h>
+    #include <stdbool.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <sys/sysctl.h>
 #if 0 // see stacktrace code below
 	#include <execinfo.h>
 	#include <stdio.h>
@@ -275,11 +283,57 @@ Rtt_Log( const char *format, ... )
 	#define Rtt_Log printf
 #endif
 
+//Fix for Arm based Macs (M1), checks if being debugged (see https://developer.apple.com/library/archive/qa/qa1361/_index.html)
+#if defined( Rtt_MAC_ENV )
+static bool AmIBeingDebugged(void)
+    // Returns true if the current process is being debugged (either
+    // running under the debugger or has a debugger attached post facto).
+{
+    int                 junk;
+    int                 mib[4];
+    struct kinfo_proc   info;
+    size_t              size;
+
+    // Initialize the flags so that, if sysctl fails for some bizarre
+    // reason, we get a predictable result.
+
+    info.kp_proc.p_flag = 0;
+
+    // Initialize mib, which tells sysctl the info we want, in this case
+    // we're looking for information about a specific process ID.
+
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_PROC;
+    mib[2] = KERN_PROC_PID;
+    mib[3] = getpid();
+
+    // Call sysctl.
+
+    size = sizeof(info);
+    junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
+    assert(junk == 0);
+
+    // We're being debugged if the P_TRACED flag is set.
+
+    return ( (info.kp_proc.p_flag & P_TRACED) != 0 );
+}
+#endif
+
 static void
 Rtt_UserBreak( )
 {
     #if defined( Rtt_TRAP_WITH_SIGNAL )
-        raise( SIGINT );
+        /*
+         Check for if being debugged before breaking for Mac
+         If not will crash on Arm(M1) Macs
+        */
+        #if defined( Rtt_MAC_ENV ) 
+            if(AmIBeingDebugged()){
+                raise( SIGINT );
+            }
+        #else
+            raise( SIGINT );
+        #endif
     #elif defined( Rtt_WIN_ENV )
 		__debugbreak();
 	#elif defined( __ARMCC_VERSION )
