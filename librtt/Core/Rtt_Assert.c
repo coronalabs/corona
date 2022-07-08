@@ -325,7 +325,7 @@ Rtt_UserBreak( )
     #if defined( Rtt_TRAP_WITH_SIGNAL )
         /*
          Check for if being debugged before breaking for Mac
-         If not will crash on Arm(M1) Macs
+         To pevent crash on Arm(M1) Macs
         */
         #if defined( Rtt_MAC_ENV ) 
             if(AmIBeingDebugged()){
