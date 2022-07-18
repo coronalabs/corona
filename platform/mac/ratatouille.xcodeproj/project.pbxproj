@@ -335,7 +335,6 @@
 		1F34F53D21115FB2006EE117 /* Rtt_LinuxAppPackager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F34F53321115FB1006EE117 /* Rtt_LinuxAppPackager.cpp */; };
 		1F34F54021116446006EE117 /* LinuxAppBuild.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F34F53E21116445006EE117 /* LinuxAppBuild.xib */; };
 		1F34F5432111661E006EE117 /* LinuxAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1F34F5412111661E006EE117 /* LinuxAppBuildController.mm */; };
-		4C0F07B01B2901DC006FA0FB /* Rtt_MacKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F07AF1B2901DC006FA0FB /* Rtt_MacKeyServices.mm */; };
 		4C111FCB1B2A41B200DF8BE8 /* Rtt_KeyName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C111FC91B2A41B200DF8BE8 /* Rtt_KeyName.cpp */; };
 		5019605B186145FC0092E97E /* b2Separator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50196059186145FC0092E97E /* b2Separator.cpp */; };
 		5019605C186145FC0092E97E /* b2Separator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5019605A186145FC0092E97E /* b2Separator.h */; };
@@ -1584,13 +1583,15 @@
 		C2F911111CDBFA19004A5564 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C242172A1CCAD44800D8E4BE /* libluasocket.a */; };
 		C2FBA8321B053642002BFE73 /* CoronaLuaObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4728FFD1AE827C400BC088D /* CoronaLuaObjC.mm */; };
 		C2FCD3C61B3779F300EF7B02 /* LinkedList.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B737F812B709C20057F594 /* LinkedList.c */; };
-		C2FCD3CD1B377A8400EF7B02 /* Rtt_MacKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F07AF1B2901DC006FA0FB /* Rtt_MacKeyServices.mm */; };
 		C2FCD3D81B377CDB00EF7B02 /* Rtt_KeyName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C111FC91B2A41B200DF8BE8 /* Rtt_KeyName.cpp */; };
 		C2FCD3E11B38CF4B00EF7B02 /* Rtt_IOSAppPackager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00B73CE912B720C90057F594 /* Rtt_IOSAppPackager.mm */; };
 		C2FCD3E21B38CF7800EF7B02 /* Rtt_AppleAudioRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000CE91412B7413200D9B6A4 /* Rtt_AppleAudioRecorder.mm */; };
 		C2FCD3E31B38D03C00EF7B02 /* AndroidAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F36554146C44200019808D /* AndroidAppBuildController.mm */; };
 		C2FCD3E41B38D06000EF7B02 /* AppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B00FA014565609008FB6E6 /* AppBuildController.mm */; };
 		C2FCD3E61B38D0BD00EF7B02 /* WebAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A425454E18DB9EF400EE06A8 /* WebAppBuildController.mm */; };
+		DB56B4CA284C2E7D00EC8B14 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */; };
+		DB56B4CB284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */; };
+		DB56B4CC284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */; };
 		E23CD30D147C725200BC9038 /* BuildSessionState.mm in Sources */ = {isa = PBXBuildFile; fileRef = E23CD30C147C725200BC9038 /* BuildSessionState.mm */; };
 		F500FB401FED5CE20050B28B /* webtemplate.zip in Resources */ = {isa = PBXBuildFile; fileRef = F500FB3F1FED5CE20050B28B /* webtemplate.zip */; };
 		F50F51B81B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50F51B61B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp */; };
@@ -2727,8 +2728,6 @@
 		1F34F5412111661E006EE117 /* LinuxAppBuildController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LinuxAppBuildController.mm; sourceTree = "<group>"; };
 		1F34F5422111661E006EE117 /* LinuxAppBuildController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinuxAppBuildController.h; sourceTree = "<group>"; };
 		1F46A96521136B51009CC875 /* linuxPackageApp.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linuxPackageApp.lua; path = ../platform/resources/linuxPackageApp.lua; sourceTree = "<group>"; };
-		4C0F07AE1B290192006FA0FB /* Rtt_MacKeyServices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rtt_MacKeyServices.h; sourceTree = "<group>"; };
-		4C0F07AF1B2901DC006FA0FB /* Rtt_MacKeyServices.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_MacKeyServices.mm; sourceTree = "<group>"; };
 		4C111FC91B2A41B200DF8BE8 /* Rtt_KeyName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_KeyName.cpp; sourceTree = "<group>"; };
 		4C111FCA1B2A41B200DF8BE8 /* Rtt_KeyName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_KeyName.h; sourceTree = "<group>"; };
 		50196059186145FC0092E97E /* b2Separator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = b2Separator.cpp; path = "../../external/b2Separator-cpp/b2Separator.cpp"; sourceTree = "<group>"; };
@@ -3295,6 +3294,8 @@
 		C2F8376C1AC205FA00D33D6E /* CoronaViewRuntimeDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaViewRuntimeDelegate.mm; path = browser/CoronaViewRuntimeDelegate.mm; sourceTree = "<group>"; };
 		C2FCD3CE1B377B5C00EF7B02 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		C2FCEBA51B701A1800587F1E /* gameoverlayrenderer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = gameoverlayrenderer.dylib; path = /Applications/Steam.app/Contents/MacOS/gameoverlayrenderer.dylib; sourceTree = "<group>"; };
+		DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AppleKeyServices.h; path = ../apple/Rtt_AppleKeyServices.h; sourceTree = "<group>"; };
+		DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleKeyServices.mm; path = ../apple/Rtt_AppleKeyServices.mm; sourceTree = "<group>"; };
 		E23CD30B147C725200BC9038 /* BuildSessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildSessionState.h; sourceTree = "<group>"; };
 		E23CD30C147C725200BC9038 /* BuildSessionState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BuildSessionState.mm; sourceTree = "<group>"; };
 		F500FB3F1FED5CE20050B28B /* webtemplate.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = webtemplate.zip; path = ../resources/webtemplate.zip; sourceTree = "<group>"; };
@@ -4217,8 +4218,6 @@
 				00B73CF412B720C90057F594 /* Rtt_MacFBConnect.mm */,
 				00B73CF712B720C90057F594 /* Rtt_MacImageProvider.h */,
 				00B73CF612B720C90057F594 /* Rtt_MacImageProvider.mm */,
-				4C0F07AE1B290192006FA0FB /* Rtt_MacKeyServices.h */,
-				4C0F07AF1B2901DC006FA0FB /* Rtt_MacKeyServices.mm */,
 				A476E627131DB173009A59F2 /* Rtt_MacMapViewObject.h */,
 				A476E628131DB173009A59F2 /* Rtt_MacMapViewObject.mm */,
 				00B73CFB12B720C90057F594 /* Rtt_MacRemotePlayerHost.h */,
@@ -5185,6 +5184,8 @@
 				F57D176A1BE25C7C00AABAC1 /* Rtt_AppleInputHIDDeviceListener.mm */,
 				F57D17731BE2713B00AABAC1 /* Rtt_AppleInputMFiDeviceListener.h */,
 				F57D17741BE2713B00AABAC1 /* Rtt_AppleInputMFiDeviceListener.mm */,
+				DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */,
+				DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */,
 			);
 			name = apple;
 			sourceTree = "<group>";
@@ -5962,6 +5963,7 @@
 				C2B62D8E1BE9642000246515 /* GLViewDelegate.h in Headers */,
 				C2E992821A69816600E99F46 /* CoronaViewPrivate.h in Headers */,
 				C2D3DA671B179D4F00137331 /* Rtt_FileSystem.h in Headers */,
+				DB56B4CA284C2E7D00EC8B14 /* Rtt_AppleKeyServices.h in Headers */,
 				C2D3DA6D1B179DA000137331 /* Rtt_NativeWindowMode.h in Headers */,
 				C2D3DA5C1B179C2400137331 /* Rtt_ProjectSettings.h in Headers */,
 				C2D3DA601B179C2400137331 /* Rtt_ReadOnlyProjectSettings.h in Headers */,
@@ -7232,6 +7234,7 @@
 				00B73DA712B720CA0057F594 /* ResponderPassthroughTextField.m in Sources */,
 				C2F7D7B11C57281D0083EC74 /* NSString+Extensions.m in Sources */,
 				00B73D6912B720CA0057F594 /* Rtt_AndroidAppPackager.cpp in Sources */,
+				DB56B4CB284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */,
 				0089561113404E9700699C04 /* Rtt_AndroidSupportTools.c in Sources */,
 				A498B85616DD64580091A148 /* Rtt_DeviceBuildData.cpp in Sources */,
 				C2FCD3E11B38CF4B00EF7B02 /* Rtt_IOSAppPackager.mm in Sources */,
@@ -7244,7 +7247,6 @@
 				002D72E212FB2C30006C7E9B /* Rtt_MacExitCallback.mm in Sources */,
 				00B73D9812B720CA0057F594 /* Rtt_MacFBConnect.mm in Sources */,
 				00B73D9A12B720CA0057F594 /* Rtt_MacImageProvider.mm in Sources */,
-				4C0F07B01B2901DC006FA0FB /* Rtt_MacKeyServices.mm in Sources */,
 				A476E629131DB173009A59F2 /* Rtt_MacMapViewObject.mm in Sources */,
 				00B73D9C12B720CA0057F594 /* Rtt_MacRemotePlayerHost.mm in Sources */,
 				00B73D9D12B720CA0057F594 /* Rtt_MacServer.mm in Sources */,
@@ -7716,10 +7718,10 @@
 				C2E993071A6B1A3100E99F46 /* Rtt_MacDevice.mm in Sources */,
 				F54D1E131CA35968000B280E /* Rtt_AppleFont.mm in Sources */,
 				C2E993081A6B1A3100E99F46 /* Rtt_MacDeviceIdentifier.c in Sources */,
+				DB56B4CC284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */,
 				C2A377711B34BAB000BB5B88 /* Rtt_MacDisplayObject.mm in Sources */,
 				C2E993541A6B3D3900E99F46 /* Rtt_MacExitCallback.mm in Sources */,
 				C2E993091A6B1A3100E99F46 /* Rtt_MacFont.mm in Sources */,
-				C2FCD3CD1B377A8400EF7B02 /* Rtt_MacKeyServices.mm in Sources */,
 				C2E9930A1A6B1A3100E99F46 /* Rtt_MacPlatform.mm in Sources */,
 				C2A377751B34C8D800BB5B88 /* Rtt_MacTextBoxObject.mm in Sources */,
 				F57AE2051F051610000A4245 /* Rtt_AppleInAppStore.mm in Sources */,

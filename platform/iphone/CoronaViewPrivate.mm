@@ -41,6 +41,7 @@
 #import <objc/runtime.h>
 
 #if defined( Rtt_IPHONE_ENV )
+	#include "Rtt_AppleKeyServices.h"
 	#include "Rtt_IPhonePlatformCore.h"
 	#include "Rtt_IPhoneOrientation.h"
 	#include "Rtt_IPhoneTemplate.h"
@@ -91,6 +92,7 @@ CreatePlatform( CoronaView *view )
 	return nullptr;
 #endif
 }
+
 
 // UITouch (CoronaViewExtensions)
 // ----------------------------------------------------------------------------
@@ -1235,6 +1237,59 @@ PrintTouches( NSSet *touches, const char *header )
 #endif // Rtt_CORE_MOTION
 }
 
+#if defined( Rtt_IPHONE_ENV ) //Keyboard events only test on iOS
+- (void)pressesBegan:(NSSet<UIPress *> *)presses
+           withEvent:(UIPressesEvent *)event{
+    [super pressesBegan:presses withEvent:event];
+    for(UIPress* press : presses) {
+        if (@available(iOS 13.4, *)) {
+            if(press.key){
+                [self dispatchKeyEvent:[presses allObjects].firstObject.key withPhase:Rtt::KeyEvent::kDown];
+                const char* characters = [[presses allObjects].firstObject.key.characters UTF8String];
+                if (strlen(characters) > 1 || isprint(characters[0])) {
+                    Rtt::CharacterEvent e(NULL, characters);
+                    [self dispatchEvent: ( & e )];
+                }
+            }
+        }
+    }
+    
+    
+}
+- (void)pressesEnded:(NSSet<UIPress *> *)presses
+           withEvent:(UIPressesEvent *)event{
+    [super pressesEnded:presses withEvent:event];
+    for(UIPress* press : presses) {
+        if (@available(iOS 13.4, *)) {
+            if(press.key){
+                [self dispatchKeyEvent:press.key withPhase:Rtt::KeyEvent::kUp];
+            }
+            
+        }
+    }
+    
+}
+
+- (void)dispatchKeyEvent:(UIKey *)event withPhase:(Rtt::KeyEvent::Phase)phase
+    API_AVAILABLE(ios(13.4)){
+    using namespace Rtt;
+    
+    NSUInteger modifierFlags = [event modifierFlags];
+    unsigned short keyCode = [event keyCode];
+    NSString *keyName = [AppleKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
+    
+    KeyEvent e(
+               NULL,
+               phase,
+               [keyName UTF8String],
+               keyCode,
+               (modifierFlags & UIKeyModifierShift) || (modifierFlags & UIKeyModifierAlphaShift),
+               (modifierFlags & UIKeyModifierAlternate),
+               (modifierFlags & UIKeyModifierControl),
+               (modifierFlags & UIKeyModifierCommand) );
+    [self dispatchEvent: ( & e )];
+}
+#endif
 - (void)drawView
 {
 	[self pollAndDispatchMotionEvents];
