@@ -7,6 +7,10 @@
 --
 ------------------------------------------------------------------------------
 
+--luacheck: globals platformFallbacks fetch download coronabaselib json lfs SEP isWindows locatorNames
+--luacheck: globals locatorNames pathJoin debugBuildProcess log isDir isFile quoteString mkdirs exec copyFile
+--luacheck: ignore 121/print
+
 platformFallbacks = {
     { "appletvos", "tvos" },
     { "appletvsimulator", "tvos-sim" },
@@ -145,6 +149,15 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
         return "Solar2D Directory: plugin " .. plugin .. " was not found at Solar2D Directory"
     end
 
+    local forceVersion
+    if pluginTable.version then
+        forceVersion = pluginTable.version
+    end
+    local forceBuild
+    if pluginTable.forceBuild then
+        forceBuild = pluginTable.forceBuild
+    end
+
     local pluginObject = pluginEntry.plugin
     local repoOwner = pluginEntry.repo
     if pluginObject.e then
@@ -175,7 +188,7 @@ function PluginCollectorSolar2DDirectory:collect(destination, plugin, pluginTabl
         return params.canSkip or "Solar2D Directory: skipped plugin " .. plugin .. " because platform " .. pluginPlatform .. " is not supported"
     end
     local repoName = pluginObject.p or (pluginTable.publisherId .. '-' .. plugin)
-    local downloadURL = "https://github.com/" .. repoOwner .. "/" .. repoName .. "/releases/download/" .. pluginObject.r .. "/" .. vFoundBuildName .. "-" .. pluginPlatform .. ".tgz"
+    local downloadURL = "https://github.com/" .. repoOwner .. "/" .. repoName .. "/releases/download/" .. (forceVersion or pluginObject.r) .. "/" .. (forceBuild or vFoundBuildName) .. "-" .. pluginPlatform .. ".tgz"
 
     local cacheDir = pathJoin(params.pluginStorage, "Caches", "Solar2Directory", repoOwner, pluginTable.publisherId, plugin, pluginPlatform )
     local cacheUrlFile = pathJoin(cacheDir, "info.txt")
