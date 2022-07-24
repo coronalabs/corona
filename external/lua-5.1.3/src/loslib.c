@@ -19,6 +19,9 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#ifdef NXS_LIB
+  struct tm* nx_localtime(const time_t* timep);
+#endif
 
 static int os_pushresult (lua_State *L, int i, const char *filename) {
   int en = errno;  /* calls to Lua API may change this value */
@@ -155,7 +158,13 @@ static int os_date (lua_State *L) {
     s++;  /* skip `!' */
   }
   else
+    
+#ifdef NXS_LIB
+    stm = nx_localtime(&t);
+#else
     stm = localtime(&t);
+#endif
+
   if (stm == NULL)  /* invalid date? */
     lua_pushnil(L);
   else if (strcmp(s, "*t") == 0) {
