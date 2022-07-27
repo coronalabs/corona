@@ -313,7 +313,7 @@ using namespace Rtt;
 			NSString *liveServerPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Corona Live Server.app"];
 			app = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:[NSURL fileURLWithPath:liveServerPath] options:(NSWorkspaceLaunchAndHide|NSWorkspaceLaunchWithoutActivation) configuration:@{} error:nil];
 		}
-		NSString *dstHtmlPath = [self.dstPath stringByAppendingPathComponent:self.appName];
+		NSString *dstHtmlPath = [self.dstPath stringByAppendingPathComponent:[self.appName stringByAppendingString:@".html5"]];
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			if(!app.finishedLaunching) {
 				while (![[[NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.coronalabs.CoronaLiveServer"] firstObject] isFinishedLaunching]) {

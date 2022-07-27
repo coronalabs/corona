@@ -38,11 +38,16 @@ val coronaSrcDir = project.findProperty("coronaSrcDir") as? String
             "$rootDir/../Corona"
         }
 val coronaBuiltFromSource = file("CMakeLists.txt").exists() && file("../sdk").exists()
+
 val windows = System.getProperty("os.name").toLowerCase().contains("windows")
-val shortOsName = if (windows) "win" else "mac"
+val linux = System.getProperty("os.name").toLowerCase().contains("linux")
+val shortOsName = if (windows) "win" else if (linux) "linux" else "mac"
+
 val nativeDir = if (windows) {
     val resourceDir = coronaResourcesDir?.let { file("$it/../Native/").absolutePath }?.takeIf { file(it).exists() }
     (resourceDir ?: "${System.getenv("CORONA_PATH")}/Native").replace("\\", "/")
+} else if (linux) {
+    "$coronaResourcesDir/Native"    
 } else {
     val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native/").absolutePath }?.takeIf { file(it).exists() }
     resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
@@ -128,10 +133,11 @@ extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.andro
 
 val coronaBuilder = if (windows) {
     "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
+} else if (linux) {
+    "$coronaResourcesDir/../Solar2DBuilder"    
 } else {
     "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
 }
-
 
 val coronaVersionName =
         parsedBuildProperties.lookup<Any?>("buildSettings.android.versionName").firstOrNull()?.toString()
@@ -143,6 +149,8 @@ val coronaVersionCode: Int =
 
 val androidDestPluginPlatform = if (coronaTargetStore.equals("amazon", ignoreCase = true)) {
     "android-kindle"
+} else if (coronaTargetStore.equals("samsung", ignoreCase = true)) {
+    "android-nongoogle"
 } else {
     "android"
 }
@@ -184,10 +192,10 @@ android {
     lintOptions {
         isCheckReleaseBuilds = false
     }
-    compileSdkVersion(30)
+    compileSdkVersion(32)
     defaultConfig {
         applicationId = coronaAppPackage
-        targetSdkVersion(30)
+        targetSdkVersion(32)
         minSdkVersion(extra["minSdkVersion"] as Int)
         versionCode = coronaVersionCode
         versionName = coronaVersionName

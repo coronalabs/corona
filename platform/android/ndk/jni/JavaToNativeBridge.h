@@ -121,6 +121,7 @@ class JavaToNativeBridge
 		void MapTappedEvent(jint id, jdouble latitude, jdouble longitude);
 		void VideoViewPreparedEvent(jint id);
 		void VideoViewEndedEvent(jint id);
+		void VideoViewFailedEvent(jint id);
 		const char* GetBuildId();
 
 	public:

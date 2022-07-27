@@ -3183,6 +3183,11 @@ public class NativeToJavaBridge {
 		}
 		return systemUIVisibility;
 	}
+	protected static void callSetNavigationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
+		if (runtime != null) {
+			CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+		}
+	}
 
 	/**
 	 * Provides access to API Level 21 (Android 5.0 Lollipop) features.

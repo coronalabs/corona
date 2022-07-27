@@ -139,7 +139,7 @@ public class SystemMonitor {
 	public boolean isScreenLocked() {
 		android.app.KeyguardManager keyguardManager;
 		keyguardManager = (android.app.KeyguardManager)fContext.getSystemService(android.content.Context.KEYGUARD_SERVICE);
-		return keyguardManager.inKeyguardRestrictedInputMode();
+		return keyguardManager.isDeviceLocked();
 	}
 	
 	/**
