@@ -302,13 +302,13 @@ GLGeometry::Update( CPUResource* resource )
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			//#390 mesh.path:update() fix 
-            const Geometry::Index* indexData = geometry->GetIndexData();
-            if ( indexData )
-            {
-                glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, fIBO );
-                glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, fIndexCount * sizeof(Geometry::Index), indexData );
-                glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-            }
+			const Geometry::Index* indexData = geometry->GetIndexData();
+			if ( indexData )
+			{
+				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, fIBO );
+				glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, fIndexCount * sizeof(Geometry::Index), indexData );
+				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			}
 		}
 		else
 		{
