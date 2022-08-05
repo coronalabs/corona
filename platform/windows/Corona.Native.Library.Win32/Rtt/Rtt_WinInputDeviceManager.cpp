@@ -963,6 +963,8 @@ void WinInputDeviceManager::OnReceivedMessage(
 			bool wasKeyPreviouslyDown = (arguments.GetLParam() & 0x40000000) ? true : false;
 			if ((isKeyDown && wasKeyPreviouslyDown) || (!isKeyDown && !wasKeyPreviouslyDown))
 			{
+				arguments.SetReturnResult(0);
+				arguments.SetHandled();
 				break;
 			}
 
