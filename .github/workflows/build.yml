@@ -18,7 +18,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_13.4.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_13.4.1.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -47,7 +47,7 @@ jobs:
         runner:
           - macos-12
         xcode:
-          - Xcode_13.4
+          - Xcode_13.4.1
         target:
           - template
           - template-angle
@@ -88,7 +88,6 @@ jobs:
         runner:
           - macos-11
         xcode:
-          - Xcode_12.5.1
           - Xcode_13.2.1
         target:
           - template
@@ -96,11 +95,6 @@ jobs:
         platform:
           - iphone
           - tvos
-        include:
-          - xcode: Xcode_11.3.1
-            target: template
-            platform: iphone
-            runner: macos-10.15
     needs: source-code
     runs-on: ${{ matrix.runner }}
     env:

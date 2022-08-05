@@ -55,7 +55,7 @@
 #include "Renderer/Rtt_Renderer.h"
 #include "Rtt_RenderingStream.h"
 
-#include "Rtt_MacKeyServices.h"
+#include "Rtt_AppleKeyServices.h"
 
 // So we can build with Xcode 8.0
 #ifndef NSAppKitVersionNumber10_12
@@ -999,7 +999,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 // keyDown and keyUp do not trigger modifier key events (shift, control, etc.)
 - (void)flagsChanged:(NSEvent *)event
 {
-    unsigned long mask = [MacKeyServices getModifierMaskForKey:[event keyCode]];
+    unsigned long mask = [AppleKeyServices getModifierMaskForKey:[event keyCode]];
 
     // After certain actions, like using the screenshot tool, MacOS apparently triggers the "a" key event. Can't imagine anyone would like this event.
     if ( [event keyCode] != kVK_ANSI_A )
@@ -1037,7 +1037,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 	
 	NSUInteger modifierFlags = [event modifierFlags];
 	unsigned short keyCode = [event keyCode];
-	NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
+	NSString *keyName = [AppleKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
 	
 	KeyEvent e(
 			   NULL,

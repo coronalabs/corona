@@ -177,7 +177,10 @@ void TextEditorSupport_LaunchTextEditorWithFile(NSString* file_name, NSInteger l
 				NSString* dirname = getDirNameWithMainLua(file_name);
 				NSString* execPath = [NSString stringWithFormat:@"%@/Contents/Resources/app/bin/code", app_path];
 
-				NSMutableArray* args = [NSMutableArray arrayWithObject:@"--wait"];
+				NSMutableArray* args = [[[NSMutableArray alloc] init] autorelease];
+				
+				[args addObject:@"-r"];
+				
 				if ([dirname length] > 0)
 				{
 					[args addObject:@"--add"];
@@ -197,7 +200,6 @@ void TextEditorSupport_LaunchTextEditorWithFile(NSString* file_name, NSInteger l
 				[task setLaunchPath:execPath];
 				[task setArguments:args];
 				[task launch];
-				[task performSelector:@selector(terminate) withObject:nil afterDelay:3.0];
 			}
 			@catch(NSException* the_exception)
 			{
