@@ -416,7 +416,7 @@ function PluginCollectorSolar2DMarketplaceResourceDirectory:collect(destination,
         return params.canSkip or "Solar2D Marketplace Resource Directory: skipped resource " .. plugin .. " because platform " .. pluginPlatform .. " is not supported"
     end
     local repoName = pluginObject.p or (pluginTable.publisherId .. '-' .. plugin)
-    local downloadURL = "https://solar2dmarketplace.com/getShared?pluginType=collector&ID=" .. pluginTable.marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform.."&version="..pluginVersion
+    local downloadURL = "https://solar2dmarketplace.com/getShared?pluginType=collector&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform.."&version="..pluginVersion
 
 
     local cacheDir = pathJoin(params.pluginStorage, "Caches", "Solar2DMarketplaceResourceDirectory", repoOwner, pluginTable.publisherId, plugin, pluginPlatform )
