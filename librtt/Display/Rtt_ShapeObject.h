@@ -51,6 +51,9 @@ class ShapeObject : public DisplayObject
 		virtual void Prepare( const Display& display );
 		virtual void Draw( Renderer& renderer ) const;
 		virtual void GetSelfBounds( Rect& rect ) const;
+		// STEVE CHANGE
+		virtual bool GetCorrectionForOffset( Real & deltaX, Real & deltaY ) const;
+		// /STEVE CHANGE
 
 	public:
 		virtual bool HitTest( Real contentX, Real contentY );

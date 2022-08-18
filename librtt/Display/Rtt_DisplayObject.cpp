@@ -329,6 +329,13 @@ DisplayObject::BuildStageBounds()
 	{
 		GetSelfBounds( fStageBounds );
 		UpdateSelfBounds( fStageBounds );
+		// STEVE CHANGE
+		Real dx, dy;
+		if (GetCorrectionForOffset( dx, dy ))
+		{
+			fStageBounds.Translate( dx, dy );
+		}
+		// /STEVE CHANGE
 		GetSrcToDstMatrix().Apply( fStageBounds );
 		SetValid( kStageBoundsFlag );
 	}
@@ -780,6 +787,14 @@ DisplayObject::LocalToContent( Vertex2& v ) const
 {
 	// TODO: Use GetSrcToDstMatrix()
 	const DisplayObject* object = this;
+	// STEVE CHANGE
+	Real dx, dy;
+	if (GetCorrectionForOffset( dx, dy ))
+	{
+		v.x += dx;
+		v.y += dy;
+	}
+	// /STEVE CHANGE
 	object->GetMatrix().Apply( v );
 
 	while ( ( object = object->GetParent() ) )
@@ -949,7 +964,13 @@ DisplayObject::StageBounds() const
 				 && 0 == const_cast< DisplayObject * >( this )->AsGroupObject()->NumChildren() ) );
 
 		UpdateSelfBounds( rRect );
-
+		// STEVE CHANGE
+		Real dx, dy;
+		if (GetCorrectionForOffset( dx, dy ))
+		{
+			rRect.Translate( dx, dy );
+		}
+		// /STEVE CHANGE
 		const_cast< Self * >( this )->PropagateImplicitSrcToDstInvalidation();
 
 		if ( IsValid( kTransformFlag ) )
@@ -1666,7 +1687,8 @@ DisplayObject::SetAnchorChildren( bool newValue )
 {
 	SetProperty( kIsAnchorChildren, newValue );
 	
-	Invalidate( kTransformFlag );
+	Invalidate( kTransformFlag | kStageBoundsFlag );
+	fTransform.Invalidate();
 }
 
 void
@@ -1758,8 +1780,11 @@ DisplayObject::GetMatrix() const
 	{
 		offset = GetAnchorOffset();
 	}
-
-	return fTransform.GetMatrix( shouldOffset ? & offset : NULL );
+	// STEVE CHANGE
+	Vertex2 deltas;
+	bool correct = GetCorrectionForOffset( deltas.x, deltas.y );
+	// /STEVE CHANGE
+	return fTransform.GetMatrix( shouldOffset ? & offset : NULL, correct ? &deltas : NULL ); // <- STEVE CHANGE
 }
 
 void

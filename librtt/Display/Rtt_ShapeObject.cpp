@@ -178,6 +178,34 @@ ShapeObject::GetSelfBounds( Rect& rect ) const
 	fPath->GetSelfBounds( rect );
 }
 
+// STEVE CHANGE
+bool
+ShapeObject::GetCorrectionForOffset( Real & deltaX, Real & deltaY ) const
+{
+	const Paint *paint = GetPath().GetFill();
+	if ( paint && paint->IsType( Paint::kImageSheet ) )
+	{
+		const ImageSheetPaint *bitmap = (const ImageSheetPaint *)paint;
+		const AutoPtr< ImageSheet >& sheet = bitmap->GetSheet();
+		if ( AutoPtr< ImageSheet >::Null() != sheet )
+		{
+			int index = bitmap->GetFrame(); Rtt_ASSERT( index >= 0 );
+			const ImageFrame *frame = sheet->GetFrame( index );
+
+			if ( frame->IsTrimmed() )
+			{
+				deltaX = frame->GetOffsetX();
+				deltaY = frame->GetOffsetY();
+
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+// /STEVE CHANGE
+
 bool
 ShapeObject::HitTest( Real contentX, Real contentY )
 {
@@ -207,27 +235,15 @@ ShapeObject::HitTest( Real contentX, Real contentY )
 void
 ShapeObject::DidUpdateTransform( Matrix& srcToDst )
 {
-	// For trimmed fills, we need to ensure the appropriate offsets
-	// are applied prior to the original incoming transform
-	const Paint *paint = GetPath().GetFill();
-	if ( paint && paint->IsType( Paint::kImageSheet ) )
+	// STEVE CHANGE
+	Real dx, dy;
+	if (GetCorrectionForOffset( dx, dy ))
 	{
-		const ImageSheetPaint *bitmap = (const ImageSheetPaint *)paint;
-		const AutoPtr< ImageSheet >& sheet = bitmap->GetSheet();
-		if ( AutoPtr< ImageSheet >::Null() != sheet )
-		{
-			int index = bitmap->GetFrame(); Rtt_ASSERT( index >= 0 );
-			const ImageFrame *frame = sheet->GetFrame( index );
-
-			if ( frame->IsTrimmed() )
-			{
-				// Apply offset translation before xform
-				Matrix t;
-				t.Translate( frame->GetOffsetX(), frame->GetOffsetY() );
-				srcToDst.Concat( t );
-			}
-		}
+		Matrix t;
+		t.Translate( dx, dy );
+		srcToDst.Concat( t );
 	}
+	// /STEVE CHANGE
 }
 
 ShaderResource::ProgramMod

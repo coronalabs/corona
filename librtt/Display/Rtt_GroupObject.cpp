@@ -240,7 +240,13 @@ GroupObject::GetSelfBounds( Rect& rect ) const
 		Rect childRect;
 		const DisplayObject* child = fChildren[i];
 		child->GetSelfBounds( childRect );
-
+		// STEVE CHANGE
+		Real dx, dy;
+		if (child->GetCorrectionForOffset( dx, dy ))
+		{
+			childRect.Translate( dx, dy );
+		}
+		// /STEVE CHANGE
 		// Ensure childRect is in the same coordinate space as rect, 
 		// i.e. the parent's (this's) coordinate space.  The child's transform
 		// is relative to the parent's.
@@ -249,6 +255,14 @@ GroupObject::GetSelfBounds( Rect& rect ) const
 		rect.Union( childRect );
 	}
 }
+
+// STEVE CHANGE
+void
+GroupObject::GetSelfBoundsForAnchor( Rect& rect ) const
+{
+	GetSelfBounds( rect );
+}
+// /STEVE CHANGE
 
 bool
 GroupObject::HitTest( Real contentX, Real contentY )

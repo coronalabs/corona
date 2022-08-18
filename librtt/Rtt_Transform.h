@@ -104,11 +104,11 @@ class Transform
 		// the const one, but that required making fBits mutable --- 
 		// and in every other method, the constness of fBits *should* be
 		// enforced by the compiler.
-		const Matrix& GetMatrix( const Vertex2 *anchorOffset ) const
+		const Matrix& GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas = NULL ) const // <- STEVE CHANGE
 		{
-			return const_cast< Self* >( this )->GetMatrix( anchorOffset );
+			return const_cast< Self* >( this )->GetMatrix( anchorOffset, deltas ); // <- STEVE CHANGE
 		}
-		Matrix& GetMatrix( const Vertex2 *anchorOffset );
+		Matrix& GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas = NULL ); // <- STEVE CHANGE
 
 		void CopyInverseMatrix( const Vertex2* refPt, Matrix& outMatrix ) const;
 

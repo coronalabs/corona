@@ -47,6 +47,9 @@ class GroupObject : public DisplayObject
 		virtual void Prepare( const Display& display );
 		virtual void Draw( Renderer& renderer ) const;
 		virtual void GetSelfBounds( Rect& rect ) const;
+		// STEVE CHANGE
+		virtual void GetSelfBoundsForAnchor( Rect& rect ) const;
+		// /STEVE CHANGE
 
 	public:
 		virtual bool HitTest( Real contentX, Real contentY );
