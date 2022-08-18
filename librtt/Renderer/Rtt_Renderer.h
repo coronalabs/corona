@@ -261,8 +261,8 @@ class Renderer
 		
 		MCPUResourceObserver *fCPUResourceObserver;
 		
-		Array<CPUResource*> fCreateQueue;
-		Array<CPUResource*> fUpdateQueue;
+		LightPtrArray<CPUResource> fCreateQueue;
+		LightPtrArray<CPUResource> fUpdateQueue;
 		Array<GPUResource*> fDestroyQueue;
 
 		GeometryPool* fGeometryPool;

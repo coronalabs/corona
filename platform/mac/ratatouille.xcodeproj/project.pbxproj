@@ -335,7 +335,6 @@
 		1F34F53D21115FB2006EE117 /* Rtt_LinuxAppPackager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F34F53321115FB1006EE117 /* Rtt_LinuxAppPackager.cpp */; };
 		1F34F54021116446006EE117 /* LinuxAppBuild.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F34F53E21116445006EE117 /* LinuxAppBuild.xib */; };
 		1F34F5432111661E006EE117 /* LinuxAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1F34F5412111661E006EE117 /* LinuxAppBuildController.mm */; };
-		4C0F07B01B2901DC006FA0FB /* Rtt_MacKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F07AF1B2901DC006FA0FB /* Rtt_MacKeyServices.mm */; };
 		4C111FCB1B2A41B200DF8BE8 /* Rtt_KeyName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C111FC91B2A41B200DF8BE8 /* Rtt_KeyName.cpp */; };
 		5019605B186145FC0092E97E /* b2Separator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50196059186145FC0092E97E /* b2Separator.cpp */; };
 		5019605C186145FC0092E97E /* b2Separator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5019605A186145FC0092E97E /* b2Separator.h */; };
@@ -1584,13 +1583,15 @@
 		C2F911111CDBFA19004A5564 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C242172A1CCAD44800D8E4BE /* libluasocket.a */; };
 		C2FBA8321B053642002BFE73 /* CoronaLuaObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4728FFD1AE827C400BC088D /* CoronaLuaObjC.mm */; };
 		C2FCD3C61B3779F300EF7B02 /* LinkedList.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B737F812B709C20057F594 /* LinkedList.c */; };
-		C2FCD3CD1B377A8400EF7B02 /* Rtt_MacKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F07AF1B2901DC006FA0FB /* Rtt_MacKeyServices.mm */; };
 		C2FCD3D81B377CDB00EF7B02 /* Rtt_KeyName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C111FC91B2A41B200DF8BE8 /* Rtt_KeyName.cpp */; };
 		C2FCD3E11B38CF4B00EF7B02 /* Rtt_IOSAppPackager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00B73CE912B720C90057F594 /* Rtt_IOSAppPackager.mm */; };
 		C2FCD3E21B38CF7800EF7B02 /* Rtt_AppleAudioRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000CE91412B7413200D9B6A4 /* Rtt_AppleAudioRecorder.mm */; };
 		C2FCD3E31B38D03C00EF7B02 /* AndroidAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F36554146C44200019808D /* AndroidAppBuildController.mm */; };
 		C2FCD3E41B38D06000EF7B02 /* AppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B00FA014565609008FB6E6 /* AppBuildController.mm */; };
 		C2FCD3E61B38D0BD00EF7B02 /* WebAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A425454E18DB9EF400EE06A8 /* WebAppBuildController.mm */; };
+		DB56B4CA284C2E7D00EC8B14 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */; };
+		DB56B4CB284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */; };
+		DB56B4CC284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */; };
 		E23CD30D147C725200BC9038 /* BuildSessionState.mm in Sources */ = {isa = PBXBuildFile; fileRef = E23CD30C147C725200BC9038 /* BuildSessionState.mm */; };
 		F500FB401FED5CE20050B28B /* webtemplate.zip in Resources */ = {isa = PBXBuildFile; fileRef = F500FB3F1FED5CE20050B28B /* webtemplate.zip */; };
 		F50F51B81B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50F51B61B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp */; };
@@ -1608,7 +1609,7 @@
 		F53594BE1B6185EA00C8CAAD /* Rtt_TextureResourceCanvasAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F53594B61B6185EA00C8CAAD /* Rtt_TextureResourceCanvasAdapter.h */; };
 		F53C328C2404E2A300BC2BED /* CoronaBuilderPluginCollector.lua in Sources */ = {isa = PBXBuildFile; fileRef = F53C32832404E25600BC2BED /* CoronaBuilderPluginCollector.lua */; };
 		F53C328D2404E2AB00BC2BED /* CoronaBuilderPluginCollector.lua in Sources */ = {isa = PBXBuildFile; fileRef = F53C32832404E25600BC2BED /* CoronaBuilderPluginCollector.lua */; };
-		F545475321178F7400D5EDB7 /* linuxtemplate.tar.gz in Resources */ = {isa = PBXBuildFile; fileRef = F545474A21178F7400D5EDB7 /* linuxtemplate.tar.gz */; };
+		F545475321178F7400D5EDB7 /* linuxtemplate_x64.tgz in Resources */ = {isa = PBXBuildFile; fileRef = F545474A21178F7400D5EDB7 /* linuxtemplate_x64.tgz */; };
 		F54D1E121CA35968000B280E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F54D1E111CA35968000B280E /* Rtt_AppleFont.mm */; };
 		F54D1E131CA35968000B280E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F54D1E111CA35968000B280E /* Rtt_AppleFont.mm */; };
 		F54D8E2A1B4B29120063F98B /* ForceFeedback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F54D8E291B4B29120063F98B /* ForceFeedback.framework */; };
@@ -1635,7 +1636,6 @@
 		F58CA276245651B2002191EA /* Rtt_HTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */; };
 		F58CA27824565212002191EA /* Rtt_HTTPClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27724565212002191EA /* Rtt_HTTPClient.mm */; };
 		F58CA27A24565579002191EA /* Rtt_HTTPClientCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */; };
-		F5A633EE216D74E10052364E /* raspbiantemplate.tar.gz in Resources */ = {isa = PBXBuildFile; fileRef = F5A633E5216D74E10052364E /* raspbiantemplate.tar.gz */; };
 		F5A752271BFA40F000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A752281BFA40F000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A752291BFA40F000CCDB94 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A752261BFA40F000CCDB94 /* CoronaLuaObjCHelper.mm */; };
@@ -2728,8 +2728,6 @@
 		1F34F5412111661E006EE117 /* LinuxAppBuildController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LinuxAppBuildController.mm; sourceTree = "<group>"; };
 		1F34F5422111661E006EE117 /* LinuxAppBuildController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinuxAppBuildController.h; sourceTree = "<group>"; };
 		1F46A96521136B51009CC875 /* linuxPackageApp.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linuxPackageApp.lua; path = ../platform/resources/linuxPackageApp.lua; sourceTree = "<group>"; };
-		4C0F07AE1B290192006FA0FB /* Rtt_MacKeyServices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rtt_MacKeyServices.h; sourceTree = "<group>"; };
-		4C0F07AF1B2901DC006FA0FB /* Rtt_MacKeyServices.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_MacKeyServices.mm; sourceTree = "<group>"; };
 		4C111FC91B2A41B200DF8BE8 /* Rtt_KeyName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_KeyName.cpp; sourceTree = "<group>"; };
 		4C111FCA1B2A41B200DF8BE8 /* Rtt_KeyName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_KeyName.h; sourceTree = "<group>"; };
 		50196059186145FC0092E97E /* b2Separator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = b2Separator.cpp; path = "../../external/b2Separator-cpp/b2Separator.cpp"; sourceTree = "<group>"; };
@@ -3296,6 +3294,8 @@
 		C2F8376C1AC205FA00D33D6E /* CoronaViewRuntimeDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaViewRuntimeDelegate.mm; path = browser/CoronaViewRuntimeDelegate.mm; sourceTree = "<group>"; };
 		C2FCD3CE1B377B5C00EF7B02 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		C2FCEBA51B701A1800587F1E /* gameoverlayrenderer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = gameoverlayrenderer.dylib; path = /Applications/Steam.app/Contents/MacOS/gameoverlayrenderer.dylib; sourceTree = "<group>"; };
+		DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AppleKeyServices.h; path = ../apple/Rtt_AppleKeyServices.h; sourceTree = "<group>"; };
+		DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleKeyServices.mm; path = ../apple/Rtt_AppleKeyServices.mm; sourceTree = "<group>"; };
 		E23CD30B147C725200BC9038 /* BuildSessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildSessionState.h; sourceTree = "<group>"; };
 		E23CD30C147C725200BC9038 /* BuildSessionState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BuildSessionState.mm; sourceTree = "<group>"; };
 		F500FB3F1FED5CE20050B28B /* webtemplate.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = webtemplate.zip; path = ../resources/webtemplate.zip; sourceTree = "<group>"; };
@@ -3307,7 +3307,7 @@
 		F53594B51B6185EA00C8CAAD /* Rtt_TextureResourceCanvasAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceCanvasAdapter.cpp; path = Display/Rtt_TextureResourceCanvasAdapter.cpp; sourceTree = "<group>"; };
 		F53594B61B6185EA00C8CAAD /* Rtt_TextureResourceCanvasAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceCanvasAdapter.h; path = Display/Rtt_TextureResourceCanvasAdapter.h; sourceTree = "<group>"; };
 		F53C32832404E25600BC2BED /* CoronaBuilderPluginCollector.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = CoronaBuilderPluginCollector.lua; path = ../platform/resources/CoronaBuilderPluginCollector.lua; sourceTree = "<group>"; };
-		F545474A21178F7400D5EDB7 /* linuxtemplate.tar.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; name = linuxtemplate.tar.gz; path = ../resources/linuxtemplate.tar.gz; sourceTree = "<group>"; };
+		F545474A21178F7400D5EDB7 /* linuxtemplate_x64.tgz */ = {isa = PBXFileReference; lastKnownFileType = text; name = linuxtemplate_x64.tgz; path = ../resources/linuxtemplate_x64.tgz; sourceTree = "<group>"; };
 		F54D1E111CA35968000B280E /* Rtt_AppleFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleFont.mm; path = ../apple/Rtt_AppleFont.mm; sourceTree = "<group>"; };
 		F54D8E291B4B29120063F98B /* ForceFeedback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ForceFeedback.framework; path = System/Library/Frameworks/ForceFeedback.framework; sourceTree = SDKROOT; };
 		F55407F31C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceExternalAdapter.cpp; path = Display/Rtt_TextureResourceExternalAdapter.cpp; sourceTree = "<group>"; };
@@ -3327,7 +3327,6 @@
 		F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_HTTPClient.h; sourceTree = "<group>"; };
 		F58CA27724565212002191EA /* Rtt_HTTPClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_HTTPClient.mm; sourceTree = SOURCE_ROOT; };
 		F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_HTTPClientCommon.cpp; sourceTree = "<group>"; };
-		F5A633E5216D74E10052364E /* raspbiantemplate.tar.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; name = raspbiantemplate.tar.gz; path = ../resources/raspbiantemplate.tar.gz; sourceTree = "<group>"; };
 		F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = ../platform/iphone/Corona/CoronaLuaObjCHelper.h; sourceTree = "<group>"; };
 		F5A752261BFA40F000CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = ../platform/iphone/Corona/CoronaLuaObjCHelper.mm; sourceTree = "<group>"; };
 		F5B248481B57123B0087FFBC /* Rtt_TextureResourceAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceAdapter.cpp; path = Display/Rtt_TextureResourceAdapter.cpp; sourceTree = "<group>"; };
@@ -4219,8 +4218,6 @@
 				00B73CF412B720C90057F594 /* Rtt_MacFBConnect.mm */,
 				00B73CF712B720C90057F594 /* Rtt_MacImageProvider.h */,
 				00B73CF612B720C90057F594 /* Rtt_MacImageProvider.mm */,
-				4C0F07AE1B290192006FA0FB /* Rtt_MacKeyServices.h */,
-				4C0F07AF1B2901DC006FA0FB /* Rtt_MacKeyServices.mm */,
 				A476E627131DB173009A59F2 /* Rtt_MacMapViewObject.h */,
 				A476E628131DB173009A59F2 /* Rtt_MacMapViewObject.mm */,
 				00B73CFB12B720C90057F594 /* Rtt_MacRemotePlayerHost.h */,
@@ -4282,8 +4279,7 @@
 				F57469D6240291FA00CA5949 /* iostemplate */,
 				F5C39D7C23EBCC280058DD5E /* CoronaSimulator.entitlements */,
 				F500FB3F1FED5CE20050B28B /* webtemplate.zip */,
-				F545474A21178F7400D5EDB7 /* linuxtemplate.tar.gz */,
-				F5A633E5216D74E10052364E /* raspbiantemplate.tar.gz */,
+				F545474A21178F7400D5EDB7 /* linuxtemplate_x64.tgz */,
 				C2088D251D8A1B8300F2AD0B /* device-support */,
 				C220A3B31BFBED7F00161EC8 /* xcodesim_syslog.sh */,
 				C249AAC919D368AB00BB0BDF /* xcodesim_sendapp.sh */,
@@ -5188,6 +5184,8 @@
 				F57D176A1BE25C7C00AABAC1 /* Rtt_AppleInputHIDDeviceListener.mm */,
 				F57D17731BE2713B00AABAC1 /* Rtt_AppleInputMFiDeviceListener.h */,
 				F57D17741BE2713B00AABAC1 /* Rtt_AppleInputMFiDeviceListener.mm */,
+				DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */,
+				DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */,
 			);
 			name = apple;
 			sourceTree = "<group>";
@@ -5965,6 +5963,7 @@
 				C2B62D8E1BE9642000246515 /* GLViewDelegate.h in Headers */,
 				C2E992821A69816600E99F46 /* CoronaViewPrivate.h in Headers */,
 				C2D3DA671B179D4F00137331 /* Rtt_FileSystem.h in Headers */,
+				DB56B4CA284C2E7D00EC8B14 /* Rtt_AppleKeyServices.h in Headers */,
 				C2D3DA6D1B179DA000137331 /* Rtt_NativeWindowMode.h in Headers */,
 				C2D3DA5C1B179C2400137331 /* Rtt_ProjectSettings.h in Headers */,
 				C2D3DA601B179C2400137331 /* Rtt_ReadOnlyProjectSettings.h in Headers */,
@@ -6471,7 +6470,6 @@
 				00B73D6A12B720CA0057F594 /* build.properties in Resources */,
 				C220A3B41BFBED7F00161EC8 /* xcodesim_syslog.sh in Resources */,
 				00B73D6B12B720CA0057F594 /* build.xml in Resources */,
-				F5A633EE216D74E10052364E /* raspbiantemplate.tar.gz in Resources */,
 				C2427BFC1919481B0011CE7A /* CustomDevice.xib in Resources */,
 				A40A90631BD99B0E001D2038 /* TVOSAppBuild.xib in Resources */,
 				00B73DF512B726350057F594 /* MainMenu.nib in Resources */,
@@ -6486,7 +6484,7 @@
 				00B73E2412B727240057F594 /* Password.xib in Resources */,
 				00B73E2512B727240057F594 /* Preferences.xib in Resources */,
 				00E14F6513428CBF0089C390 /* Localizable.strings in Resources */,
-				F545475321178F7400D5EDB7 /* linuxtemplate.tar.gz in Resources */,
+				F545475321178F7400D5EDB7 /* linuxtemplate_x64.tgz in Resources */,
 				C2C756D618CE49CF0018900A /* widget_theme_ios@2x.png in Resources */,
 				C2C756D718CE49CF0018900A /* widget_theme_onOff_mask.png in Resources */,
 				C21D9DBD1BF67C300042C5A9 /* android_syslog.sh in Resources */,
@@ -7236,6 +7234,7 @@
 				00B73DA712B720CA0057F594 /* ResponderPassthroughTextField.m in Sources */,
 				C2F7D7B11C57281D0083EC74 /* NSString+Extensions.m in Sources */,
 				00B73D6912B720CA0057F594 /* Rtt_AndroidAppPackager.cpp in Sources */,
+				DB56B4CB284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */,
 				0089561113404E9700699C04 /* Rtt_AndroidSupportTools.c in Sources */,
 				A498B85616DD64580091A148 /* Rtt_DeviceBuildData.cpp in Sources */,
 				C2FCD3E11B38CF4B00EF7B02 /* Rtt_IOSAppPackager.mm in Sources */,
@@ -7248,7 +7247,6 @@
 				002D72E212FB2C30006C7E9B /* Rtt_MacExitCallback.mm in Sources */,
 				00B73D9812B720CA0057F594 /* Rtt_MacFBConnect.mm in Sources */,
 				00B73D9A12B720CA0057F594 /* Rtt_MacImageProvider.mm in Sources */,
-				4C0F07B01B2901DC006FA0FB /* Rtt_MacKeyServices.mm in Sources */,
 				A476E629131DB173009A59F2 /* Rtt_MacMapViewObject.mm in Sources */,
 				00B73D9C12B720CA0057F594 /* Rtt_MacRemotePlayerHost.mm in Sources */,
 				00B73D9D12B720CA0057F594 /* Rtt_MacServer.mm in Sources */,
@@ -7720,10 +7718,10 @@
 				C2E993071A6B1A3100E99F46 /* Rtt_MacDevice.mm in Sources */,
 				F54D1E131CA35968000B280E /* Rtt_AppleFont.mm in Sources */,
 				C2E993081A6B1A3100E99F46 /* Rtt_MacDeviceIdentifier.c in Sources */,
+				DB56B4CC284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */,
 				C2A377711B34BAB000BB5B88 /* Rtt_MacDisplayObject.mm in Sources */,
 				C2E993541A6B3D3900E99F46 /* Rtt_MacExitCallback.mm in Sources */,
 				C2E993091A6B1A3100E99F46 /* Rtt_MacFont.mm in Sources */,
-				C2FCD3CD1B377A8400EF7B02 /* Rtt_MacKeyServices.mm in Sources */,
 				C2E9930A1A6B1A3100E99F46 /* Rtt_MacPlatform.mm in Sources */,
 				C2A377751B34C8D800BB5B88 /* Rtt_MacTextBoxObject.mm in Sources */,
 				F57AE2051F051610000A4245 /* Rtt_AppleInAppStore.mm in Sources */,

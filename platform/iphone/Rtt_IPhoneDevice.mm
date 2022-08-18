@@ -393,9 +393,13 @@ IPhoneDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kLocationEvent:
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
-		case MPlatformDevice::kKeyEvent:
 		case MPlatformDevice::kInputDeviceStatusEvent:
 			hasEventSource = true;
+			break;
+		case MPlatformDevice::kKeyEvent:
+			if (@available(iOS 13.4, *)) { //Key Events only work on iOS 13.4 >=
+				hasEventSource = true;
+			}
 			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
