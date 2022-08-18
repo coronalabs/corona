@@ -34,12 +34,16 @@
 }
 
 @property (nonatomic, readwrite, assign) Rtt::IPhoneVideoProvider* callback;
+// This is a hack, since new iOS security measures make file inaccessible
+//  as soon as the original URL is released.
+@property (nonatomic, readwrite, assign) NSMutableArray<NSURL*> *urls;
 
 @end
 
 @implementation IPhoneVideoPickerControllerDelegate
 
 @synthesize callback;
+@synthesize urls;
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
@@ -52,6 +56,7 @@
 
 	if ( pickedMovie )
 	{
+		[urls addObject:pickedMovie];
 		NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[pickedMovie path] error:nil];
 		NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
 		long fileSize = [fileSizeNumber longValue];
@@ -81,12 +86,14 @@ IPhoneVideoProvider::IPhoneVideoProvider( const ResourceHandle<lua_State> & hand
 {
 	fDelegate = [[IPhoneVideoPickerControllerDelegate alloc] init];
 	fDelegate.callback = this;
+	fDelegate.urls = [[NSMutableArray alloc] init];
 	fMediaProvider = Rtt_NEW( LuaContext::GetAllocator( handle.Dereference() ), IPhoneMediaProvider );
 }
 
 IPhoneVideoProvider::~IPhoneVideoProvider()
 {
 //	Cleanup();
+	[fDelegate.urls release];
 	[fDelegate release];
 	Rtt_DELETE( fMediaProvider );
 }

@@ -2067,10 +2067,29 @@ NativeToJavaBridge::MakeLowerCase(Rtt::String *stringToConvert)
 }
 
 void
-NativeToJavaBridge::Vibrate()
+NativeToJavaBridge::Vibrate(const char * hapticType, const char* hapticStyle)
 {
-	CallVoidMethod( "callVibrate" );
 	HandleJavaException();
+	NativeTrace trace( "NativeToJavaBridge::Vibrate" );
+
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+
+	if ( bridge.isValid() ) {
+
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(),
+															"callVibrate", "(Lcom/ansca/corona/CoronaRuntime;Ljava/lang/String;Ljava/lang/String;)V" );
+
+		if ( mid != NULL ) {
+			jstringParam hapticTypeJ( bridge.getEnv(), hapticType );
+			jstringParam hapticStyleJ( bridge.getEnv(), hapticStyle );
+
+			bridge.getEnv()->CallStaticVoidMethod(
+					bridge.getClass(), mid, fCoronaRuntime, hapticTypeJ.getValue(), hapticStyleJ.getValue());
+			HandleJavaException();
+
+		}
+	}
 }
 
 void
@@ -4116,6 +4135,21 @@ NativeToJavaBridge::GetSystemUiVisibility( Rtt::String * visibility )
 			}
 		}
 
+	}
+}
+
+void
+NativeToJavaBridge::SetNavigationBarColor( double red, double green, double blue )
+{
+	NativeTrace trace( "NativeToJavaBridge::SetNavigationBarColor" );
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+	if (bridge.isValid())
+	{
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID(
+								bridge.getClass(), "callSetNavigationBarColor", "(Lcom/ansca/corona/CoronaRuntime;DDD)V");
+		bridge.getEnv()->CallStaticVoidMethod(bridge.getClass(), mid, fCoronaRuntime, (jdouble)red, (jdouble)green, (jdouble)blue);
+		HandleJavaException();
 	}
 }
 

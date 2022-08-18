@@ -722,7 +722,8 @@ Rtt_EXPORT int Rtt_DeleteDirectory(const char *dirPath)
 		{
 			result = Rtt_DeleteDirectory(path);
 
-			result = rmdir(path) == 0;
+			// hmmmm.. Why is the 'path' deleting twice ?
+			// result = rmdir(path) == 0;
 		}
 		else
 		{

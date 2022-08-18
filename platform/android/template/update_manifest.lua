@@ -856,9 +856,12 @@ for index = 1, #intentFilters do
 	local nextIntentFilter = intentFilters[index]
 
 	-- Append the start tag.
-	stringBuffer = stringBuffer .. "<intent-filter "
+	stringBuffer = stringBuffer .. "<intent-filter"
 	if ("string" == type(nextIntentFilter.label)) and (string.len(nextIntentFilter.label) > 0) then
-		stringBuffer = stringBuffer .. 'android:label="' .. nextIntentFilter.label .. '"'
+		stringBuffer = stringBuffer .. ' android:label="' .. nextIntentFilter.label .. '"'
+	end
+	if nextIntentFilter.autoVerify ~= nil then
+		stringBuffer = stringBuffer .. ' android:autoVerify="' .. tostring(nextIntentFilter.autoVerify) .. '"'
 	end
 	stringBuffer = stringBuffer .. ">\n"
 

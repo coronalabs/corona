@@ -41,6 +41,7 @@ class IPhoneTimer : public PlatformTimer
 		U32 fInterval;
 		U32 fSavedInterval;
 		Rtt_GLKViewController *fViewController;
+		void SetViewControllerFPS();
 };
 
 // ----------------------------------------------------------------------------

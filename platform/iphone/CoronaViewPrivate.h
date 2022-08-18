@@ -52,7 +52,6 @@ class IPhonePlatformBase;
 @property (nonatomic, readonly) Rtt_GLKViewController *viewController;
 @property (nonatomic, readwrite, getter=inhibitCount, setter=setInhibitCount:) int fInhibitCount;
 @property (nonatomic, readwrite, getter=tapDelay, setter=setTapDelay:) NSTimeInterval fTapDelay;
-@property (nonatomic, readwrite, getter=getForceTouchSupport, setter=setForceTouchSupport:) BOOL fSupportsForceTouch;
 @property (nonatomic, assign) BOOL observeSuspendResume;
 @property (nonatomic, assign) BOOL beginRunLoopManually;
 @property (nonatomic, assign) id< CoronaRuntime > pluginContext; // Weak reference. CoronaViewController has the strong reference.

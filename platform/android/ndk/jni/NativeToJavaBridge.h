@@ -179,7 +179,7 @@ class NativeToJavaBridge
 		bool HasAccelerometer();
 		bool HasGyroscope();
 		bool HasHeadingHardware();
-		void Vibrate();
+		void Vibrate(const char * hapticType = NULL, const char* hapticStyle = NULL);
 		
 		void DisplayObjectDestroy( int id );
 		void DisplayObjectSetVisible( int id, bool visible );
@@ -303,6 +303,9 @@ class NativeToJavaBridge
 	public:
 		void SetSystemUiVisibility( const char *visibility );
 		void GetSystemUiVisibility( Rtt::String * align );
+
+	public:
+		void SetNavigationBarColor( double red, double green, double blue );
 
 	public:
 		static bool DecodeBase64( const Rtt::Data<const char> & payload, Rtt::Data<char> & data );

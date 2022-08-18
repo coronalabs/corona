@@ -100,6 +100,14 @@ static void *Rtt_VideoObjectViewStatusContext = & Rtt_VideoObjectViewStatusConte
 	}
 }
 
+- (void)dispatchFailed
+{
+	using namespace Rtt;
+
+	VideoEvent event( VideoEvent::kFailed );
+	fOwner->DispatchEventWithTarget( event );
+}
+
 - (void)dispatchReadyToPlay
 {
 	using namespace Rtt;
@@ -245,6 +253,7 @@ static void *Rtt_VideoObjectViewStatusContext = & Rtt_VideoObjectViewStatusConte
 
 			case AVPlayerStatusFailed:
 			{
+				[self dispatchFailed];
 			}
 			break;
 		}

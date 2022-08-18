@@ -19,6 +19,9 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#ifdef NXS_LIB
+  struct tm* nx_localtime(const time_t* timep);
+#endif
 
 static int os_pushresult (lua_State *L, int i, const char *filename) {
   int en = errno;  /* calls to Lua API may change this value */
@@ -44,6 +47,23 @@ static int os_execute (lua_State *L) {
   return 1;
 }
 
+static int os_execute2(lua_State* L) {
+#if defined(LUA_USE_POPEN) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
+  const char* cmd = luaL_optstring(L, 1, NULL);
+  int ret = -1;
+  FILE* f = popen(cmd, "r");
+  if (f)
+  {
+    char ch;
+    while ((ch = fgetc(f)) != EOF) {}
+    ret = pclose(f);
+  }
+  lua_pushinteger(L, ret);
+  return 1;
+#else
+  return os_execute(L);
+#endif
+}
 
 static int os_remove (lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
@@ -138,7 +158,13 @@ static int os_date (lua_State *L) {
     s++;  /* skip `!' */
   }
   else
+    
+#ifdef NXS_LIB
+    stm = nx_localtime(&t);
+#else
     stm = localtime(&t);
+#endif
+
   if (stm == NULL)  /* invalid date? */
     lua_pushnil(L);
   else if (strcmp(s, "*t") == 0) {
@@ -230,6 +256,7 @@ static const luaL_Reg syslib[] = {
   {"date",      os_date},
   {"difftime",  os_difftime},
   {"execute",   os_execute},
+  {"execute2",   os_execute2},
   {"exit",      os_exit},
   {"getenv",    os_getenv},
   {"remove",    os_remove},

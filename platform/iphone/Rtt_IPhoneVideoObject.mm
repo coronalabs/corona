@@ -145,6 +145,14 @@ static void *Rtt_AVPlayerViewStatusContext = & Rtt_AVPlayerViewStatusContext;
 	fOwner->DispatchEventWithTarget( event );
 }
 
+- (void)dispatchFailed
+{
+	using namespace Rtt;
+
+	VideoEvent event( VideoEvent::kFailed );
+	fOwner->DispatchEventWithTarget( event );
+}
+
 - (void)didVideoEnd:(NSNotification*)notification
 {
 	using namespace Rtt;
@@ -283,6 +291,7 @@ static void *Rtt_AVPlayerViewStatusContext = & Rtt_AVPlayerViewStatusContext;
 
 			case AVPlayerStatusFailed:
 			{
+				[self dispatchFailed];
 			}
 			break;
 		}

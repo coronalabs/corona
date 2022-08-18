@@ -10,15 +10,18 @@
 package com.ansca.corona;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 
 import android.app.AlertDialog;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,9 +31,12 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
@@ -845,7 +851,28 @@ public class Controller {
 		
 		// Save the given image to file.
 		try {
-			java.io.FileOutputStream stream = new java.io.FileOutputStream(filePathName);
+			//Work around for Android 10 to save to Photo Folder
+			java.io.FileOutputStream stream = null;
+			if(filePathName.contains("/storage/emulated/0/Pictures/") && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q){
+				final String name = filePathName.replace("/storage/emulated/0/Pictures/", "");
+				ContentResolver resolver = myContext.getContentResolver();
+				ContentValues contentValues = new ContentValues();
+				contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+				if(name.toLowerCase().endsWith(".png")){
+					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
+				}else {
+					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+				}
+				contentValues.put(Images.Media.DATE_ADDED, System.currentTimeMillis());
+				contentValues.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
+				contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
+				Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+				stream = (FileOutputStream) resolver.openOutputStream(Objects.requireNonNull(imageUri));
+			}else{
+				stream = new java.io.FileOutputStream(filePathName);
+
+			}
+
 			result = bitmap.compress(format, quality, stream);
 			stream.flush();
 			stream.close();
@@ -1846,15 +1873,70 @@ public class Controller {
 	public void setEventNotification( int eventType, boolean enable ) {
 		mySensorManager.setEventNotification(eventType, enable);
 	}
-
-	public void vibrate() {
+	
+	public void vibrate(String hapticType, String hapticStyle) {
 		Context context = myContext;
 		if (context == null) {
 			return;
 		}
 
 		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-		v.vibrate( 100 );
+		String type = "";
+		if(hapticType != null){
+			type = hapticType;
+		}
+		String style = "";
+		if(hapticStyle != null){
+			style = hapticType;
+		}
+		long[] timings = new long[]{};
+		int[] amplitudes= new int[]{};
+		long[] oldPattern= new long[]{};
+		if(type.equals("impact")){
+			if(style.equals("light")){
+				timings = new long[]{0, 50};
+				amplitudes = new int[]{0, 110};
+				oldPattern = new long[]{0, 20};
+			}
+			else if(style.equals("heavy")){
+				timings = new long[]{0, 60};
+				amplitudes = new int[]{0, 255};
+				oldPattern = new long[]{0, 61};
+			}
+			else{//medium
+				timings = new long[]{0, 43};
+				amplitudes = new int[]{0, 180};
+				oldPattern = new long[]{0, 43};
+			}
+		}else if(type.equals("selection")){
+			timings = new long[]{0, 100};
+			amplitudes = new int[]{0, 100};
+			oldPattern = new long[]{0, 70};
+		}else if(type.equals("notification")){
+			if(style.equals("warning")) {
+				timings = new long[]{0, 30, 40, 30, 50, 60};
+				amplitudes = new int[]{255, 255, 255, 255, 255, 255};
+				oldPattern = new long[]{0, 30, 40, 30, 50, 60};
+			}else if(style.equals("error")){
+				timings = new long[]{0, 27, 45, 50};
+				amplitudes = new int[]{0, 120, 0, 250};
+				oldPattern = new long[]{0, 27, 45, 50};
+			}else{//success
+				timings = new long[]{0, 35, 65, 21};
+				amplitudes = new int[]{0, 250, 0, 180};
+				oldPattern = new long[]{0, 35, 65, 21};
+			}
+		}else{
+			if(!type.isEmpty()){ Log.i("Corona", "WARNING: invalid hapticType");} //just in case user misspells or puts a wrong type
+			v.vibrate( 100 );
+		}
+		if(timings.length != 0 && amplitudes.length != 0 && oldPattern.length != 0) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				v.vibrate(VibrationEffect.createWaveform(timings, amplitudes, -1));
+			}else{
+				v.vibrate(oldPattern, -1);
+			}
+		}
 	}
 
 	public String getManufacturerName() {
