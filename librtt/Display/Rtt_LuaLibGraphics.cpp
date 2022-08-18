@@ -78,10 +78,10 @@ class GraphicsLibrary
 		static int newOutline( lua_State *L ); // This returns an outline in texels.
 		static int newTexture( lua_State *L );
 		static int releaseTextures( lua_State *L );
-        static int undefineEffect( lua_State *L );
-        static int getFontMetrics( lua_State *L );
+    static int undefineEffect( lua_State *L );
+    static int getFontMetrics( lua_State *L );
 
-	private:
+	private
 		Display& fDisplay;
 };
 
@@ -121,8 +121,8 @@ GraphicsLibrary::Open( lua_State *L )
 		{ "newOutline", newOutline }, // This returns an outline in texels.
 		{ "newTexture", newTexture },
 		{ "releaseTextures", releaseTextures },
-        { "undefineEffect", undefineEffect },
-        { "getFontMetrics", getFontMetrics },
+		{ "undefineEffect", undefineEffect },
+		{ "getFontMetrics", getFontMetrics },
 
 		{ NULL, NULL }
 	};
