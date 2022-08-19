@@ -242,7 +242,7 @@ GroupObject::GetSelfBounds( Rect& rect ) const
 		child->GetSelfBounds( childRect );
 		// STEVE CHANGE
 		Real dx, dy;
-		if (child->GetCorrectionForOffset( dx, dy ))
+		if (child->GetTrimmedFrameOffset( dx, dy ))
 		{
 			childRect.Translate( dx, dy );
 		}
@@ -255,14 +255,6 @@ GroupObject::GetSelfBounds( Rect& rect ) const
 		rect.Union( childRect );
 	}
 }
-
-// STEVE CHANGE
-void
-GroupObject::GetSelfBoundsForAnchor( Rect& rect ) const
-{
-	GetSelfBounds( rect );
-}
-// /STEVE CHANGE
 
 bool
 GroupObject::HitTest( Real contentX, Real contentY )

@@ -180,14 +180,14 @@ ShapeObject::GetSelfBounds( Rect& rect ) const
 
 // STEVE CHANGE
 bool
-ShapeObject::GetCorrectionForOffset( Real & deltaX, Real & deltaY ) const
+ShapeObject::GetTrimmedFrameOffset( Real & deltaX, Real & deltaY, bool force ) const
 {
 	const Paint *paint = GetPath().GetFill();
 	if ( paint && paint->IsType( Paint::kImageSheet ) )
 	{
 		const ImageSheetPaint *bitmap = (const ImageSheetPaint *)paint;
 		const AutoPtr< ImageSheet >& sheet = bitmap->GetSheet();
-		if ( AutoPtr< ImageSheet >::Null() != sheet )
+		if ( AutoPtr< ImageSheet >::Null() != sheet && (force || sheet->CorrectsTrimOffsets()) )
 		{
 			int index = bitmap->GetFrame(); Rtt_ASSERT( index >= 0 );
 			const ImageFrame *frame = sheet->GetFrame( index );
@@ -237,7 +237,7 @@ ShapeObject::DidUpdateTransform( Matrix& srcToDst )
 {
 	// STEVE CHANGE
 	Real dx, dy;
-	if (GetCorrectionForOffset( dx, dy ))
+	if (GetTrimmedFrameOffset( dx, dy, true ))
 	{
 		Matrix t;
 		t.Translate( dx, dy );

@@ -52,7 +52,7 @@ class ShapeObject : public DisplayObject
 		virtual void Draw( Renderer& renderer ) const;
 		virtual void GetSelfBounds( Rect& rect ) const;
 		// STEVE CHANGE
-		virtual bool GetCorrectionForOffset( Real & deltaX, Real & deltaY ) const;
+		virtual bool GetTrimmedFrameOffset( Real & deltaX, Real & deltaY, bool force ) const;
 		// /STEVE CHANGE
 
 	public:

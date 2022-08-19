@@ -331,7 +331,7 @@ DisplayObject::BuildStageBounds()
 		UpdateSelfBounds( fStageBounds );
 		// STEVE CHANGE
 		Real dx, dy;
-		if (GetCorrectionForOffset( dx, dy ))
+		if (GetTrimmedFrameOffset( dx, dy ))
 		{
 			fStageBounds.Translate( dx, dy );
 		}
@@ -789,7 +789,7 @@ DisplayObject::LocalToContent( Vertex2& v ) const
 	const DisplayObject* object = this;
 	// STEVE CHANGE
 	Real dx, dy;
-	if (GetCorrectionForOffset( dx, dy ))
+	if (GetTrimmedFrameOffset( dx, dy ))
 	{
 		v.x += dx;
 		v.y += dy;
@@ -966,7 +966,7 @@ DisplayObject::StageBounds() const
 		UpdateSelfBounds( rRect );
 		// STEVE CHANGE
 		Real dx, dy;
-		if (GetCorrectionForOffset( dx, dy ))
+		if (GetTrimmedFrameOffset( dx, dy ))
 		{
 			rRect.Translate( dx, dy );
 		}
@@ -1782,7 +1782,7 @@ DisplayObject::GetMatrix() const
 	}
 	// STEVE CHANGE
 	Vertex2 deltas;
-	bool correct = GetCorrectionForOffset( deltas.x, deltas.y );
+	bool correct = GetTrimmedFrameOffset( deltas.x, deltas.y );
 	// /STEVE CHANGE
 	return fTransform.GetMatrix( shouldOffset ? & offset : NULL, correct ? &deltas : NULL ); // <- STEVE CHANGE
 }

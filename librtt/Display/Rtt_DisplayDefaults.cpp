@@ -47,7 +47,10 @@ DisplayDefaults::DisplayDefaults()
 	fIsNativeTextBoxFontSizeScaled( true ),
 	fShaderCompilerVerbose( kShaderCompilerVerboseDefault ),
 	fIsAnchorClamped( true ),
-	fIsImageSheetSampledInsideFrame( false )
+	fIsImageSheetSampledInsideFrame( false ),
+// STEVE CHANGE
+	fIsImageSheetFrameTrimCorrected( false )
+// /STEVE CHANGE
 {
 }
 
