@@ -812,6 +812,14 @@ DisplayObject::ContentToLocal( Vertex2& v ) const
 	Matrix inverse;
 	Matrix::Invert( srcToDstSpace, inverse );
 	inverse.Apply( v );
+	// STEVE CHANGE
+	Real dx, dy;
+	if (GetTrimmedFrameOffset( dx, dy ))
+	{
+		v.x -= dx;
+		v.y -= dy;
+	}
+	// /STEVE CHANGE
 }
 
 // IsSrcToDstValid() only tells you if the fSrcToDst matrix was explicitly
