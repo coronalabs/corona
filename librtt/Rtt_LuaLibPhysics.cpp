@@ -1487,6 +1487,29 @@ static void _FixtureCreator( b2Body *body,
 	fixture->SetUserData( (void *)(intptr_t)fixtureIndex++ );
 }
 
+// STEVE CHANGE
+static void
+AdjustCenterForTrimming( DisplayObject *display_object, b2Vec2 &center_in_pixels )
+{
+	Vertex2 offset = {};
+	bool hasTrimOffsets = display_object->GetTrimmedFrameOffset( offset.x, offset.y );
+	
+	if ( !hasTrimOffsets && display_object->AsGroupObject() )
+	{
+		Rect bounds;
+		display_object->GetSelfBounds( bounds );
+
+		Vertex2 center;
+		bounds.GetCenter( center );
+		offset.x = center.x - center_in_pixels.x;
+		offset.y = center.y - center_in_pixels.y;
+	}
+	
+	center_in_pixels.x += offset.x;
+	center_in_pixels.y += offset.y;
+}
+// /STEVE CHANGE
+
 static bool
 InitializeFixtureUsing_Rectangle( lua_State *L,
 									int lua_arg_index,
@@ -2163,14 +2186,16 @@ add_b2Body_to_DisplayObject( lua_State *L,
 	{
 		Vertex2 offset = display_object->GetAnchorOffset();
 
-		center_in_pixels.Set( offset.x,
-								offset.y );
+		center_in_pixels.Set( -offset.x,
+								-offset.y );
 	}
 	else
 	{
 		center_in_pixels.SetZero();
 	}
-
+// STEVE CHANGE
+	AdjustCenterForTrimming( display_object, center_in_pixels );
+// /STEVE CHANGE
 	b2World *world = physics.GetWorld();
 	b2Body *body = CreateBody( physics, display_object );
 

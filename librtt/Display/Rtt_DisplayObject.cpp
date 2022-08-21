@@ -333,7 +333,7 @@ DisplayObject::BuildStageBounds()
 		Real dx, dy;
 		if (GetTrimmedFrameOffset( dx, dy ))
 		{
-			fStageBounds.Translate( dx, dy );
+		//	fStageBounds.Translate( dx, dy );
 		}
 		// /STEVE CHANGE
 		GetSrcToDstMatrix().Apply( fStageBounds );
