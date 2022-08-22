@@ -1491,22 +1491,16 @@ static void _FixtureCreator( b2Body *body,
 static void
 AdjustCenterForTrimming( DisplayObject *display_object, b2Vec2 &center_in_pixels )
 {
-	Vertex2 offset = {};
-	bool hasTrimOffsets = display_object->GetTrimmedFrameOffset( offset.x, offset.y );
-	
-	if ( !hasTrimOffsets && display_object->AsGroupObject() )
+	if ( display_object->AsGroupObject() )
 	{
 		Rect bounds;
 		display_object->GetSelfBounds( bounds );
 
 		Vertex2 center;
 		bounds.GetCenter( center );
-		offset.x = center.x - center_in_pixels.x;
-		offset.y = center.y - center_in_pixels.y;
+		center_in_pixels.x = center.x;
+		center_in_pixels.y = center.y;
 	}
-	
-	center_in_pixels.x += offset.x;
-	center_in_pixels.y += offset.y;
 }
 // /STEVE CHANGE
 
