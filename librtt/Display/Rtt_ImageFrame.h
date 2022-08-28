@@ -31,7 +31,7 @@ class ImageFrame
 	public:
 		void SetTrimData( S32 srcX, S32 srcY, S32 srcW, S32 srcH );
 		bool IsTrimmed() const { return fIsTrimmed; }
-
+	
 	public:
 		void UpdateUVVertex(Vertex2& vert ) const;
 
@@ -65,7 +65,7 @@ class ImageFrame
 		S32 GetSrcHeight() const { return fSrcHeight; }
 		Real GetOffsetX() const { return fOffsetX; }
 		Real GetOffsetY() const { return fOffsetY; }
-
+	
 	private:
 		ImageSheet& fOwner;
 

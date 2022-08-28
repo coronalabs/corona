@@ -167,7 +167,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 		virtual void Translate( Real deltaX, Real deltaY );
 		virtual void GetSelfBoundsForAnchor( Rect& rect ) const;
 		// STEVE CHANGE
-		virtual bool GetTrimmedFrameOffset( Real & deltaX, Real & deltaY, bool force = false ) const { return false; }
+		virtual bool GetTrimmedFrameOffset( Real& deltaX, Real& deltaY, bool force = false ) const { return false; }
+		virtual bool GetTrimmedFrameOffsetForAnchor( Real& deltaX, Real& deltaY ) const { return GetTrimmedFrameOffset( deltaX, deltaY ); }
 		// /STEVE CHANGE
 
 	public:

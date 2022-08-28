@@ -246,7 +246,7 @@ Transform::GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas ) // <-
 			dx -= anchorOffset->x; dy -= anchorOffset->y;
 		}
 		// STEVE CHANGE
-		if ( deltas ) // n.b. unlike anchor offsets, which are baked into the final position, we must undo these
+		if ( deltas ) // n.b. not baked into final position, unlike V2 anchors, so we must undo these
 		{
 			dx += deltas->x; dy += deltas->y;
 		}

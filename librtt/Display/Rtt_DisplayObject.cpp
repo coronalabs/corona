@@ -329,13 +329,6 @@ DisplayObject::BuildStageBounds()
 	{
 		GetSelfBounds( fStageBounds );
 		UpdateSelfBounds( fStageBounds );
-		// STEVE CHANGE
-		Real dx, dy;
-		if (GetTrimmedFrameOffset( dx, dy ))
-		{
-		//	fStageBounds.Translate( dx, dy );
-		}
-		// /STEVE CHANGE
 		GetSrcToDstMatrix().Apply( fStageBounds );
 		SetValid( kStageBoundsFlag );
 	}
@@ -972,13 +965,7 @@ DisplayObject::StageBounds() const
 				 && 0 == const_cast< DisplayObject * >( this )->AsGroupObject()->NumChildren() ) );
 
 		UpdateSelfBounds( rRect );
-		// STEVE CHANGE
-		Real dx, dy;
-		if (GetTrimmedFrameOffset( dx, dy ))
-		{
-			rRect.Translate( dx, dy );
-		}
-		// /STEVE CHANGE
+
 		const_cast< Self * >( this )->PropagateImplicitSrcToDstInvalidation();
 
 		if ( IsValid( kTransformFlag ) )
@@ -987,11 +974,17 @@ DisplayObject::StageBounds() const
 		}
 		else
 		{
+			// STEVE CHANGE
+			Real dx, dy;
+			if (GetTrimmedFrameOffset( dx, dy ))
+			{
+				rRect.Translate( dx, dy );
+			}
+			// /STEVE CHANGE
 			// TODO: Should we update all the parent stage bounds?
 			GetMatrix().Apply( rRect );
 			ApplyParentTransform( *this, rRect );
 		}
-
 		const_cast< Self * >( this )->SetValid( kStageBoundsFlag );
 
 #ifdef Rtt_DEBUG
@@ -1695,8 +1688,10 @@ DisplayObject::SetAnchorChildren( bool newValue )
 {
 	SetProperty( kIsAnchorChildren, newValue );
 	
-	Invalidate( kTransformFlag | kStageBoundsFlag );
+	Invalidate( kTransformFlag | kStageBoundsFlag ); // <- STEVE CHANGE
+// STEVE CHANGE
 	fTransform.Invalidate();
+// /STEVE CHANGE
 }
 
 void
@@ -1790,7 +1785,7 @@ DisplayObject::GetMatrix() const
 	}
 	// STEVE CHANGE
 	Vertex2 deltas;
-	bool correct = GetTrimmedFrameOffset( deltas.x, deltas.y );
+	bool correct = GetTrimmedFrameOffsetForAnchor( deltas.x, deltas.y );
 	// /STEVE CHANGE
 	return fTransform.GetMatrix( shouldOffset ? & offset : NULL, correct ? &deltas : NULL ); // <- STEVE CHANGE
 }

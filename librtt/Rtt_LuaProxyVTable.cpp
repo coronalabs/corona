@@ -4784,6 +4784,43 @@ LuaSpriteObjectProxyVTable::setFrame( lua_State *L )
 	return 0;
 }
 
+// STEVE CHANGE
+int
+LuaSpriteObjectProxyVTable::useFrameForAnchors( lua_State *L )
+{
+	SpriteObject *o = (SpriteObject*)LuaProxy::GetProxyableObject( L, 1 );
+	
+	Rtt_WARN_SIM_PROXY_TYPE( L, 1, SpriteObject );
+	
+	if ( o )
+	{
+		int index;
+		if ( lua_isnoneornil( L, 2 ) )
+		{
+			index = o->GetFrame();
+		}		
+		else
+		{
+			index = (int) lua_tointeger( L, 2 );
+			if ( index < 1 )
+			{
+				CoronaLuaWarning(L, "sprite:useFrameForAnchors() given invalid index (%d). Using index of 1 instead", index);
+				index = 1;
+			}
+			else if ( index > o->GetNumFrames() )
+			{
+				CoronaLuaWarning(L, "sprite:useFrameForAnchors() given invalid index (%d). Using index of %d instead", index, o->GetNumFrames() );
+				index = o->GetNumFrames();
+			}
+			--index; // Lua is 1-based
+		}
+		o->UseFrameForAnchors( index ); // Lua is 1-based
+	}
+
+	return 0;
+}
+// /STEVE CHANGE
+
 int
 LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction /* = false */ ) const
 {
@@ -4806,10 +4843,13 @@ LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obje
 		"play",			// 5
 		"pause",		// 6
 		"setSequence",	// 7
-		"setFrame"		// 8
+		"setFrame",		// 8
+	// STEVE CHANGE
+		"useFrameForAnchors"	// 9
+	// /STEVE CHANGE
 	};
 	static const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 9, 0, 7, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 10, 25, 7, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -4874,6 +4914,13 @@ LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obje
 			Lua::PushCachedFunction( L, Self::setFrame );
 		}
 		break;
+	// STEVE CHANGE
+	case 9:
+		{
+			Lua::PushCachedFunction( L, Self::useFrameForAnchors );
+		}
+		break;
+	// /STEVE CHANGE
 	default:
 		{
 			result = Super::ValueForKey( L, object, key, overrideRestriction );
