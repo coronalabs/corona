@@ -47,7 +47,7 @@ val nativeDir = if (windows) {
     val resourceDir = coronaResourcesDir?.let { file("$it/../Native/").absolutePath }?.takeIf { file(it).exists() }
     (resourceDir ?: "${System.getenv("CORONA_PATH")}/Native").replace("\\", "/")
 } else if (linux) {
-    "$coronaResourcesDir/Native"    
+    "$coronaResourcesDir/Native"
 } else {
     val resourceDir = coronaResourcesDir?.let { file("$it/../../../Native/").absolutePath }?.takeIf { file(it).exists() }
     resourceDir ?: "${System.getenv("HOME")}/Library/Application Support/Corona/Native/"
@@ -134,7 +134,7 @@ extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.andro
 val coronaBuilder = if (windows) {
     "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
 } else if (linux) {
-    "$coronaResourcesDir/../Solar2DBuilder"    
+    "$coronaResourcesDir/../Solar2DBuilder"
 } else {
     "$nativeDir/Corona/$shortOsName/bin/CoronaBuilder.app/Contents/MacOS/CoronaBuilder"
 }
@@ -258,6 +258,13 @@ android {
     if (isExpansionFileRequired) {
         assetPacks.add(":preloadedAssets")
     }
+
+    parsedBuildProperties.lookup<JsonArray<JsonObject>>("buildSettings.android.onDemandResources").firstOrNull()?.forEach {
+        it["tag"].let { tag ->
+            assetPacks.add(":pda-$tag")
+        }
+    }
+
     // This is dirty hack because Android Assets refuse to copy assets which start with . or _
     if (!isExpansionFileRequired) {
         android.applicationVariants.all {
@@ -358,6 +365,12 @@ fun coronaAssetsCopySpec(spec: CopySpec) {
     with(spec) {
         file("$coronaTmpDir/excludesfile.properties").takeIf { it.exists() }?.readLines()?.forEach {
             exclude(it)
+        }
+        parsedBuildProperties.lookup<JsonArray<JsonObject>>("buildSettings.android.onDemandResources").firstOrNull()?.forEach {
+            it["resource"].let { res ->
+                exclude("$res")
+                exclude("$res/**")
+            }
         }
         if (!isSimulatorBuild) {
             // use build.settings properties only if this is not simulator build
@@ -793,6 +806,7 @@ tasks.register<Zip>("exportCoronaAppTemplate") {
         exclude("**/*.iml", "**/\\.*")
         include("setup.sh", "setup.bat")
         include("preloadedAssets/build.gradle.kts")
+        include("PAD.kts.template")
         into("template")
     }
     from(android.sdkDirectory) {
@@ -877,13 +891,20 @@ tasks.register<Copy>("installAppTemplateAndAARToSim") {
 fun copyWithAppFilename(dest: String, appName: String?) {
     delete("$dest/$coronaAppFileName.apk")
     delete("$dest/$coronaAppFileName.aab")
+    var hasODR = false
+    parsedBuildProperties.lookup<JsonArray<JsonObject>>("buildSettings.android.onDemandResources").firstOrNull()?.forEach {
+        it["resource"].let { res ->
+            hasODR = true
+        }
+    }
+
     copy {
         into(dest)
         val copyTask = this
         android.applicationVariants.matching {
             it.name.equals("release", true)
         }.all {
-            if(!isExpansionFileRequired) {
+            if(!isExpansionFileRequired && !hasODR) {
                 copyTask.from(packageApplicationProvider!!.get().outputDirectory) {
                     include("*.apk")
                     exclude("*unsigned*")
