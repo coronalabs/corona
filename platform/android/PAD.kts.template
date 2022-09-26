@@ -1,0 +1,50 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+
+val padName = "pad-pack-name"
+val resource = "resource/path"
+val padType = "on-demand"
+// values above are templated
+
+val coronaTmpDir: String? by project
+val coronaSrcDir = project.findProperty("coronaSrcDir") as? String
+    ?: if (file("$rootDir/../test/assets2").exists()) {
+        "$rootDir/../test/assets2"
+    } else {
+        "$rootDir/../Corona"
+    }
+
+plugins {
+    id("com.android.asset-pack")
+}
+
+assetPack {
+    packName.set(padName)
+    dynamicDelivery {
+        deliveryType.set(padType)
+    }
+}
+
+
+val copyS2DAssets = tasks.register<Copy>("copyResourcesForTag") {
+    description = "Copy $padName assets"
+    from(coronaSrcDir) {
+        include("$resource/**/*")
+        include(resource)
+    }
+    file("$coronaTmpDir/excludesfile.properties").takeIf { it.exists() }?.readLines()?.forEach {
+        exclude(it)
+    }
+    exclude("**/Icon\r")
+    exclude("AndroidResources/**")
+    exclude("**/*.lua", "build.settings")
+
+    into("src/main/assets")
+
+    doFirst {
+        delete("src/main/assets")
+    }
+}
+
+project.afterEvaluate {
+    tasks.named("generateAssetPackManifest").dependsOn(copyS2DAssets)
+}

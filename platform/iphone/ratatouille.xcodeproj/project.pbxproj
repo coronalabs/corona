@@ -254,6 +254,8 @@
 		DB56B4A1284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B49E284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm */; };
 		DB56B4A2284BEB6400EC8B14 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B49F284BEB6400EC8B14 /* Rtt_AppleKeyServices.h */; };
 		DB56B4A3284BEB6400EC8B14 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B49F284BEB6400EC8B14 /* Rtt_AppleKeyServices.h */; };
+		DB87234028CD7F0E00E1866A /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B49E284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm */; };
+		DB87237E28CD7F2900E1866A /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B49F284BEB6400EC8B14 /* Rtt_AppleKeyServices.h */; };
 		F50E7EB224FA923B009F165B /* _CoronaSplashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = C26005711D62A63400C542D0 /* _CoronaSplashScreen.png */; };
 		F50E7EB324FA923B009F165B /* CoronaResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A48B825C16D594AA00CA01A1 /* CoronaResources.bundle */; };
 		F50E7EB424FA923B009F165B /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
@@ -2376,6 +2378,7 @@
 				0748724918C1C469004FB786 /* NSData+Base64.h in Headers */,
 				A482FACD183D75070005831B /* CoronaCards.h in Headers */,
 				A4C3189C1A6EDD4500F186DF /* AppleWeakProxy.h in Headers */,
+				DB87237E28CD7F2900E1866A /* Rtt_AppleKeyServices.h in Headers */,
 				A48DA9791853094C009D1F93 /* CoronaIOSLoader.h in Headers */,
 				A4B2D52618402BDE001311C9 /* Rtt_IPhoneOrientation.h in Headers */,
 				A4728FF11AE8176F00BC088D /* CoronaLuaObjC.h in Headers */,
@@ -3776,6 +3779,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB87234028CD7F0E00E1866A /* Rtt_AppleKeyServices.mm in Sources */,
 				F53256051BFD1073009D4A07 /* CoronaLuaObjCHelper.mm in Sources */,
 				A4728FEA1AE7F77B00BC088D /* CoronaLuaObjC+NSObject.m in Sources */,
 				A48E9BFE183F0B7800F67CB3 /* CoronaViewPrivate.mm in Sources */,
@@ -4724,6 +4728,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -4736,6 +4743,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -4747,14 +4755,18 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = bundle;
 			};

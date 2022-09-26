@@ -947,7 +947,7 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
 - (NSString*)appExtension
 {
-	return @"apk";
+	return @"aab";
 }
 
 -(void)sheetDidEnd:(NSWindow*)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo

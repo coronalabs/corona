@@ -47,7 +47,8 @@ DisplayDefaults::DisplayDefaults()
 	fIsNativeTextBoxFontSizeScaled( true ),
 	fShaderCompilerVerbose( kShaderCompilerVerboseDefault ),
 	fIsAnchorClamped( true ),
-	fIsImageSheetSampledInsideFrame( false )
+	fIsImageSheetSampledInsideFrame( false ),
+	fIsExternalTextureRetina( true )
 {
 }
 
