@@ -313,8 +313,12 @@ PhysicsWorld::StepWorld( double elapsedMS )
 		float dt = GetTimeStep();
 		if ( dt > Rtt_REAL_0 )
 		{
+			world.SetAutoClearForces(false);
 			for (S32 i = 0; i < fNumSteps; ++i)
 			{
+				if (i == fNumSteps - 1) {
+					world.SetAutoClearForces(true);
+				}
 				// Simulation timesteps are driven by the render frame rate
 				world.Step( dt * fTimeScale, velocityIterations, positionIterations );
 			}
@@ -336,8 +340,12 @@ PhysicsWorld::StepWorld( double elapsedMS )
 
 			while ( tStep >= dt )
 			{
+				world.SetAutoClearForces(false);
 				for (S32 i = 0; i < fNumSteps; ++i)
 				{
+					if (i == fNumSteps - 1) {
+						world.SetAutoClearForces(true);
+					}
 					world.Step( dt * fTimeScale, velocityIterations, positionIterations );
 				}
 				tStep -= dt;
