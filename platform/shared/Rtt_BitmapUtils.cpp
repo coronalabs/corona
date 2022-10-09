@@ -28,11 +28,15 @@ namespace bitmapUtil
 
 	void jpgErrorHandler(j_common_ptr cinfo)
 	{
+		char jpegLastErrorMsg[JMSG_LENGTH_MAX];
+
+		// Create the message 
+		(*(cinfo->err->format_message)) (cinfo, jpegLastErrorMsg);
+
+		Rtt_LogException("*** libjpeg: %s\n", jpegLastErrorMsg);
+
 		// cinfo->err really points to a jpegErroMgr struct, so coerce pointer 
 		jpegErrorMgr myerr = (jpegErrorMgr)cinfo->err;
-
-		// Always display the message. 
-		(*cinfo->err->output_message) (cinfo);
 
 		// Return control to the setjmp point 
 		longjmp(myerr->setjmp_buffer, 1);
