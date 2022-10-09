@@ -93,6 +93,7 @@ RuntimeEnvironment::RuntimeEnvironment(const RuntimeEnvironment::CreationSetting
 	fGdiPlusToken(0),
 	fFontServices(*this),
 	fDebuggerSemaphoreHandle(nullptr),
+	fLastActivatedSent(true),
 	fSingleWindowInstanceSemaphoreHandle(nullptr)
 {
 	// Do not continue if the given render surface handle (if provided) is already being used by another runtime.
@@ -1701,8 +1702,13 @@ void RuntimeEnvironment::OnMainWindowReceivedMessage(UI::UIComponent &sender, UI
 		{
 			if (fRuntimePointer)
 			{
-				Rtt::WindowStateEvent event(arguments.GetWParam() > 0);
-				fRuntimePointer->DispatchEvent(event);
+				bool foreground = LOWORD(arguments.GetWParam()) > 0;
+				if (fLastActivatedSent != foreground)
+				{
+					fLastActivatedSent = foreground;
+					Rtt::WindowStateEvent event(foreground);
+					fRuntimePointer->DispatchEvent(event);
+				}
 			}
 			break;
 		}
