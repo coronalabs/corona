@@ -1697,6 +1697,15 @@ void RuntimeEnvironment::OnMainWindowReceivedMessage(UI::UIComponent &sender, UI
 {
 	switch (arguments.GetMessageId())
 	{
+		case WM_ACTIVATE:
+		{
+			if (fRuntimePointer)
+			{
+				Rtt::WindowStateEvent event(arguments.GetWParam() > 0);
+				fRuntimePointer->DispatchEvent(event);
+			}
+			break;
+		}
 		case WM_SIZING:
 		{
 			// Make sure the window is not made smaller than the configured min width/height, if provided.

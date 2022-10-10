@@ -529,6 +529,23 @@
 	NSLog(@"notifyRuntimeError: %@", mesg);
 }
 
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+	NSDictionary *event = @{ @"name" : @"windowState",
+							 @"phase" : @"background" };
+
+    [_coronaView sendEvent:event];
+}
+
+- (void) applicationDidBecomeActive:(NSNotification *)notification
+{
+	NSDictionary *event = @{ @"name" : @"windowState",
+							 @"phase" : @"foreground" };
+
+    [_coronaView sendEvent:event];
+}
+
+
 - (void) performPause:(id) sender
 {
 	// NSDEBUG(@"performPause: %@", sender);
