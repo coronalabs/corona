@@ -11,6 +11,7 @@
 
 #include "Display/Rtt_DisplayObject.h"
 #include "Display/Rtt_Display.h"
+#include "Display/Rtt_DisplayDefaults.h"
 
 #include "Rtt_DisplayObjectExtensions.h"
 
@@ -780,14 +781,12 @@ DisplayObject::LocalToContent( Vertex2& v ) const
 {
 	// TODO: Use GetSrcToDstMatrix()
 	const DisplayObject* object = this;
-	// STEVE CHANGE
 	Real dx, dy;
 	if (GetTrimmedFrameOffset( dx, dy ))
 	{
 		v.x += dx;
 		v.y += dy;
 	}
-	// /STEVE CHANGE
 	object->GetMatrix().Apply( v );
 
 	while ( ( object = object->GetParent() ) )
@@ -805,14 +804,13 @@ DisplayObject::ContentToLocal( Vertex2& v ) const
 	Matrix inverse;
 	Matrix::Invert( srcToDstSpace, inverse );
 	inverse.Apply( v );
-	// STEVE CHANGE
+
 	Real dx, dy;
 	if (GetTrimmedFrameOffset( dx, dy ))
 	{
 		v.x -= dx;
 		v.y -= dy;
 	}
-	// /STEVE CHANGE
 }
 
 // IsSrcToDstValid() only tells you if the fSrcToDst matrix was explicitly
@@ -974,13 +972,11 @@ DisplayObject::StageBounds() const
 		}
 		else
 		{
-			// STEVE CHANGE
 			Real dx, dy;
 			if (GetTrimmedFrameOffset( dx, dy ))
 			{
 				rRect.Translate( dx, dy );
 			}
-			// /STEVE CHANGE
 			// TODO: Should we update all the parent stage bounds?
 			GetMatrix().Apply( rRect );
 			ApplyParentTransform( *this, rRect );
@@ -1688,10 +1684,22 @@ DisplayObject::SetAnchorChildren( bool newValue )
 {
 	SetProperty( kIsAnchorChildren, newValue );
 	
-	Invalidate( kTransformFlag | kStageBoundsFlag ); // <- STEVE CHANGE
-// STEVE CHANGE
-	fTransform.Invalidate();
-// /STEVE CHANGE
+	DirtyFlags flags = kTransformFlag;
+	
+	// For backward compatibility purposes, these are tied to the trim correction
+	// feature, since this issue was identified during its development, but some
+	// kind of "invalidateAnchorChildrenImmediately" might be more appropriate.
+	StageObject *canvas = GetStage();
+	DisplayDefaults & defaults = canvas->GetDisplay().GetDefaults();
+	
+	if (defaults.IsImageSheetFrameTrimCorrected())
+	{
+		flags |= kStageBoundsFlag;
+		
+		fTransform.Invalidate();
+	}
+	
+	Invalidate( flags );
 }
 
 void
@@ -1783,11 +1791,11 @@ DisplayObject::GetMatrix() const
 	{
 		offset = GetAnchorOffset();
 	}
-	// STEVE CHANGE
+
 	Vertex2 deltas;
 	bool correct = GetTrimmedFrameOffsetForAnchor( deltas.x, deltas.y );
-	// /STEVE CHANGE
-	return fTransform.GetMatrix( shouldOffset ? & offset : NULL, correct ? &deltas : NULL ); // <- STEVE CHANGE
+
+	return fTransform.GetMatrix( shouldOffset ? & offset : NULL, correct ? &deltas : NULL );
 }
 
 void

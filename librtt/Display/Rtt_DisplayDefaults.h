@@ -61,10 +61,8 @@ class DisplayDefaults
 		bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame;}
 		void SetImageSheetSampledInsideFrame( bool newValue ) { fIsImageSheetSampledInsideFrame = newValue; }
 
-	// STEVE CHANGE
 		bool IsImageSheetFrameTrimCorrected() const { return fIsImageSheetFrameTrimCorrected;}
 		void SetImageSheetFrameTrimCorrected( bool newValue ) { fIsImageSheetFrameTrimCorrected = newValue; }
-	// /STEVE CHANGE
 	public:
 		bool IsV1Compatibility() const { return fV1Compatibility; }
 		void SetV1Compatibility( bool newValue ) { fV1Compatibility = newValue; }
@@ -101,9 +99,7 @@ class DisplayDefaults
 		bool fShaderCompilerVerbose;
 		bool fIsAnchorClamped;
 		bool fIsImageSheetSampledInsideFrame;
-	// STEVE CHANGE
 		bool fIsImageSheetFrameTrimCorrected;
-	// /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------

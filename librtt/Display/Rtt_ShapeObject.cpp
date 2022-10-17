@@ -178,7 +178,6 @@ ShapeObject::GetSelfBounds( Rect& rect ) const
 	fPath->GetSelfBounds( rect );
 }
 
-// STEVE CHANGE
 bool
 ShapeObject::GetTrimmedFrameOffset( Real & deltaX, Real & deltaY, bool force ) const
 {
@@ -204,7 +203,6 @@ ShapeObject::GetTrimmedFrameOffset( Real & deltaX, Real & deltaY, bool force ) c
 
 	return false;
 }
-// /STEVE CHANGE
 
 bool
 ShapeObject::HitTest( Real contentX, Real contentY )
@@ -235,7 +233,6 @@ ShapeObject::HitTest( Real contentX, Real contentY )
 void
 ShapeObject::DidUpdateTransform( Matrix& srcToDst )
 {
-	// STEVE CHANGE
 	Real dx, dy;
 	if (GetTrimmedFrameOffset( dx, dy, true ))
 	{
@@ -243,7 +240,6 @@ ShapeObject::DidUpdateTransform( Matrix& srcToDst )
 		t.Translate( dx, dy );
 		srcToDst.Concat( t );
 	}
-	// /STEVE CHANGE
 }
 
 ShaderResource::ProgramMod

@@ -240,13 +240,13 @@ GroupObject::GetSelfBounds( Rect& rect ) const
 		Rect childRect;
 		const DisplayObject* child = fChildren[i];
 		child->GetSelfBounds( childRect );
-		// STEVE CHANGE
+
 		Real dx, dy;
 		if (child->GetTrimmedFrameOffset( dx, dy ))
 		{
 			childRect.Translate( dx, dy );
 		}
-		// /STEVE CHANGE
+
 		// Ensure childRect is in the same coordinate space as rect, 
 		// i.e. the parent's (this's) coordinate space.  The child's transform
 		// is relative to the parent's.

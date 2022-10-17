@@ -72,17 +72,12 @@ class ImageSheet
 		const ImageFrame* GetFrame( int index ) const { return fFrames[index]; }
 		S32 GetNumFrames() const { return fFrames.Length(); }
 		bool IsEmpty() const { return fFrames.Length() <= 0; }
-
-	// STEVE CHANGE
 		bool CorrectsTrimOffsets() const { return fCorrectTrimOffsets; }
-	// /STEVE CHANGE
 
 	private:
 		SharedPtr< TextureResource > fResource;
 		PtrArray< ImageFrame > fFrames;
-	// STEVE CHANGE
 		bool fCorrectTrimOffsets;
-	// /STEVE CHANGE
 };
 
 // ----------------------------------------------------------------------------

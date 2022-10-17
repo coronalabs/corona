@@ -23,6 +23,7 @@
 #include "Display/Rtt_ShapeObject.h"
 #include "Display/Rtt_ShapePath.h"
 #include "Display/Rtt_TesselatorPolygon.h"
+#include "Display/Rtt_DisplayDefaults.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Rtt_DisplayObjectExtensions.h"
 #include "Rtt_Event.h"
@@ -1487,23 +1488,6 @@ static void _FixtureCreator( b2Body *body,
 	fixture->SetUserData( (void *)(intptr_t)fixtureIndex++ );
 }
 
-// STEVE CHANGE
-static void
-AdjustCenterForTrimming( DisplayObject *display_object, b2Vec2 &center_in_pixels )
-{
-	if ( display_object->AsGroupObject() )
-	{
-		Rect bounds;
-		display_object->GetSelfBounds( bounds );
-
-		Vertex2 center;
-		bounds.GetCenter( center );
-		center_in_pixels.x = center.x;
-		center_in_pixels.y = center.y;
-	}
-}
-// /STEVE CHANGE
-
 static bool
 InitializeFixtureUsing_Rectangle( lua_State *L,
 									int lua_arg_index,
@@ -2180,16 +2164,33 @@ add_b2Body_to_DisplayObject( lua_State *L,
 	{
 		Vertex2 offset = display_object->GetAnchorOffset();
 
-		center_in_pixels.Set( -offset.x,
-								-offset.y );
+		center_in_pixels.Set( offset.x,
+								offset.y );
 	}
 	else
 	{
 		center_in_pixels.SetZero();
 	}
-// STEVE CHANGE
-	AdjustCenterForTrimming( display_object, center_in_pixels );
-// /STEVE CHANGE
+
+	// Trimming is not per se connected to adjusting the group's center; for
+	// backward compatibility purposes, though, we probably don't want to just
+	// blindly apply this fix. It was identified along with some sprite trimming
+	// issues, thus the check for that default, but something like "correctGroupBody"
+	// might be more appropriate if we wanted fine-grained control.
+	DisplayDefaults & defaults = LuaContext::GetRuntime( L )->GetDisplay().GetDefaults();
+	bool isTrimCorrected = defaults.IsImageSheetFrameTrimCorrected();
+	
+	if ( isTrimCorrected && display_object->AsGroupObject() )
+	{
+		Rect bounds;
+		display_object->GetSelfBounds( bounds );
+
+		Vertex2 center;
+		bounds.GetCenter( center );
+		center_in_pixels.x += center.x;
+		center_in_pixels.y += center.y;
+	}
+	
 	b2World *world = physics.GetWorld();
 	b2Body *body = CreateBody( physics, display_object );
 

@@ -3866,7 +3866,6 @@ LuaGroupObjectProxyVTable::Remove( lua_State *L )
 	return Remove( L, parent );
 }
 
-// STEVE CHANGE
 // group:getAnchorOffset()
 int
 LuaGroupObjectProxyVTable::GetAnchorOffset( lua_State *L )
@@ -3892,7 +3891,6 @@ LuaGroupObjectProxyVTable::GetAnchorOffset( lua_State *L )
 
 	return 2;
 }
-// /STEVE CHANGE
 
 int
 LuaGroupObjectProxyVTable::PushChild( lua_State *L, const GroupObject& o )
@@ -3930,10 +3928,10 @@ LuaGroupObjectProxyVTable::PushMethod( lua_State *L, const GroupObject& o, const
 		"remove",			// 1
 		"numChildren",		// 2
 		"anchorChildren",	// 3
-		"getAnchorOffset"	// 4 <- STEVE CHANGE
+		"getAnchorOffset"	// 4
 	};
     static const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 5, 0, 1, __FILE__, __LINE__ ); // <- STEVE CHANGE
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 5, 0, 1, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -3964,15 +3962,12 @@ LuaGroupObjectProxyVTable::PushMethod( lua_State *L, const GroupObject& o, const
 			result = 1;
 		}
 		break;
-	// STEVE CHANGE
 	case 4:
 		{
 			Lua::PushCachedFunction( L, Self::GetAnchorOffset );
 			result = 1;
 		}
 		break;
-	// /STEVE CHANGE
-
 	default:
 		{
             result = 0;
@@ -4784,7 +4779,6 @@ LuaSpriteObjectProxyVTable::setFrame( lua_State *L )
 	return 0;
 }
 
-// STEVE CHANGE
 int
 LuaSpriteObjectProxyVTable::useFrameForAnchors( lua_State *L )
 {
@@ -4819,7 +4813,6 @@ LuaSpriteObjectProxyVTable::useFrameForAnchors( lua_State *L )
 
 	return 0;
 }
-// /STEVE CHANGE
 
 int
 LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction /* = false */ ) const
@@ -4844,9 +4837,7 @@ LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obje
 		"pause",		// 6
 		"setSequence",	// 7
 		"setFrame",		// 8
-	// STEVE CHANGE
 		"useFrameForAnchors"	// 9
-	// /STEVE CHANGE
 	};
 	static const int numKeys = sizeof( keys ) / sizeof( const char * );
 	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 10, 25, 7, __FILE__, __LINE__ );
@@ -4914,13 +4905,11 @@ LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obje
 			Lua::PushCachedFunction( L, Self::setFrame );
 		}
 		break;
-	// STEVE CHANGE
 	case 9:
 		{
 			Lua::PushCachedFunction( L, Self::useFrameForAnchors );
 		}
 		break;
-	// /STEVE CHANGE
 	default:
 		{
 			result = Super::ValueForKey( L, object, key, overrideRestriction );

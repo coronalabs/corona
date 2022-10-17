@@ -48,9 +48,7 @@ DisplayDefaults::DisplayDefaults()
 	fShaderCompilerVerbose( kShaderCompilerVerboseDefault ),
 	fIsAnchorClamped( true ),
 	fIsImageSheetSampledInsideFrame( false ),
-// STEVE CHANGE
 	fIsImageSheetFrameTrimCorrected( false )
-// /STEVE CHANGE
 {
 }
 

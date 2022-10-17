@@ -51,9 +51,7 @@ class ShapeObject : public DisplayObject
 		virtual void Prepare( const Display& display );
 		virtual void Draw( Renderer& renderer ) const;
 		virtual void GetSelfBounds( Rect& rect ) const;
-		// STEVE CHANGE
 		virtual bool GetTrimmedFrameOffset( Real & deltaX, Real & deltaY, bool force ) const;
-		// /STEVE CHANGE
 
 	public:
 		virtual bool HitTest( Real contentX, Real contentY );

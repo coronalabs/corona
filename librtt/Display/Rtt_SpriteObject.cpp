@@ -21,6 +21,9 @@
 #include "Rtt_LuaAux.h"
 #include "Rtt_LuaProxyVTable.h"
 #include "Display/Rtt_SpritePlayer.h"
+#include "Display/Rtt_Display.h"
+#include "Display/Rtt_DisplayDefaults.h"
+#include "Display/Rtt_StageObject.h"
 
 // ----------------------------------------------------------------------------
 
@@ -596,9 +599,7 @@ SpriteObject::SpriteObject(
 			fTimeScale(Rtt_REAL_1),
 			fCurrentSequence(0), // Default is first sequence
 			fCurrentFrame(0),
-		// STEVE CHANGE
 			fFrameForAnchors(NULL),
-		// /STEVE CHANGE
 			fStartTime(0),
 			fPlayTime(0),
 			fTimeScaleIncrement(0),
@@ -681,7 +682,6 @@ SpriteObject::Translate( Real dx, Real dy )
 }
 */
 
-// STEVE CHANGE
 void
 SpriteObject::GetSelfBoundsForAnchor( Rect& rect ) const
 {
@@ -713,7 +713,6 @@ SpriteObject::GetTrimmedFrameOffsetForAnchor( Real& deltaX, Real& deltaY ) const
 		return Super::GetTrimmedFrameOffsetForAnchor( deltaX, deltaY );
 	}
 }
-// /STEVE CHANGE
 
 const LuaProxyVTable&
 SpriteObject::ProxyVTable() const
@@ -767,7 +766,11 @@ SpriteObject::SetBitmapFrame( int frameIndex )
 	{
 		Invalidate( kTransformFlag );
 		
-		GetTransform().Invalidate(); // <- STEVE CHANGE
+		// Any trim correction will change the matrix.
+		StageObject *canvas = GetStage();
+		DisplayDefaults & defaults = canvas->GetDisplay().GetDefaults();
+		
+		if (defaults.IsImageSheetFrameTrimCorrected()) GetTransform().Invalidate();
 	}
 
 	// Store whether or not the new frame is trimmed or not
@@ -1159,7 +1162,6 @@ SpriteObject::SetFrame( int index )
 	}
 }
 
-// STEVE CHANGE
 void
 SpriteObject::UseFrameForAnchors( int index )
 {
@@ -1186,7 +1188,6 @@ SpriteObject::UseFrameForAnchors( int index )
 		GetTransform().Invalidate();
 	}
 }
-// /STEVE CHANGE
 
 /*
 int
