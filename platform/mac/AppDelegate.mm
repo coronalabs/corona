@@ -1621,6 +1621,20 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 - (void)applicationWillResignActive:(NSNotification *)aNotification
 {
+	if(self.simulator && self.simulator->GetPlayer() ) {
+		Runtime& runtime = self.simulator->GetPlayer()->GetRuntime();
+		WindowStateEvent e( false );
+		runtime.DispatchEvent( e );
+	}
+}
+
+- (void) applicationDidBecomeActive:(NSNotification *)notification
+{
+	if(self.simulator && self.simulator->GetPlayer() ) {
+		Runtime& runtime = self.simulator->GetPlayer()->GetRuntime();
+		WindowStateEvent e( true );
+		runtime.DispatchEvent( e );
+	}
 }
 
 -(BOOL)isRelaunchable
