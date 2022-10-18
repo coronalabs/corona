@@ -3866,32 +3866,6 @@ LuaGroupObjectProxyVTable::Remove( lua_State *L )
 	return Remove( L, parent );
 }
 
-// group:getAnchorOffset()
-int
-LuaGroupObjectProxyVTable::GetAnchorOffset( lua_State *L )
-{
-	Rtt_WARN_SIM_PROXY_TYPE( L, 1, GroupObject );
-	GroupObject *group = (GroupObject*)LuaProxy::GetProxyableObject( L, 1 );
-
-	Rtt_ASSERT( ! lua_isnil( L, 1 ) );
-
-	if (group->ShouldOffsetWithAnchor())
-	{
-		Vertex2 offset = group->GetAnchorOffset();
-
-		lua_pushnumber( L, offset.x );
-		lua_pushnumber( L, offset.y );
-	}
-
-	else
-	{
-		lua_pushnumber( L, 0 );
-		lua_pushnumber( L, 0 );
-	}
-
-	return 2;
-}
-
 int
 LuaGroupObjectProxyVTable::PushChild( lua_State *L, const GroupObject& o )
 {
@@ -3927,11 +3901,10 @@ LuaGroupObjectProxyVTable::PushMethod( lua_State *L, const GroupObject& o, const
 		"insert",			// 0
 		"remove",			// 1
 		"numChildren",		// 2
-		"anchorChildren",	// 3
-		"getAnchorOffset"	// 4
+		"anchorChildren"	// 3
 	};
     static const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 5, 0, 1, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 4, 0, 1, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -3959,12 +3932,6 @@ LuaGroupObjectProxyVTable::PushMethod( lua_State *L, const GroupObject& o, const
 	case 3:
 		{
 			lua_pushboolean( L, o.IsAnchorChildren() );
-			result = 1;
-		}
-		break;
-	case 4:
-		{
-			Lua::PushCachedFunction( L, Self::GetAnchorOffset );
 			result = 1;
 		}
 		break;

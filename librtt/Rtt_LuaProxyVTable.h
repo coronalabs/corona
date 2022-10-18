@@ -261,7 +261,6 @@ class LuaGroupObjectProxyVTable : public LuaDisplayObjectProxyVTable
 		static int insert( lua_State *L );
 		static int Remove( lua_State *L, GroupObject *parent );
 		static int Remove( lua_State *L );
-		static int GetAnchorOffset( lua_State *L );
 		static int PushChild( lua_State *L, const GroupObject& o );
 
 	protected:
