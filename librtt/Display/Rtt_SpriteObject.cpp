@@ -1088,6 +1088,16 @@ SpriteObject::SetSequence( const char *name )
 						// Rtt_ASSERT( ! sequence->GetPaint() );
 					}
 
+					// Anchor frame is sequence-related, so invalidate it.
+					if (fFrameForAnchors)
+					{
+						fFrameForAnchors = NULL;
+
+						Invalidate( kTransformFlag );
+						
+						GetTransform().Invalidate();
+					}
+					
 					fCurrentSequence = i;
 					break;
 				}
