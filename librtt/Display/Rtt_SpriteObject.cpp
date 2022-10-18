@@ -22,8 +22,6 @@
 #include "Rtt_LuaProxyVTable.h"
 #include "Display/Rtt_SpritePlayer.h"
 #include "Display/Rtt_Display.h"
-#include "Display/Rtt_DisplayDefaults.h"
-#include "Display/Rtt_StageObject.h"
 
 // ----------------------------------------------------------------------------
 
@@ -767,10 +765,7 @@ SpriteObject::SetBitmapFrame( int frameIndex )
 		Invalidate( kTransformFlag );
 		
 		// Any trim correction will change the matrix.
-		StageObject *canvas = GetStage();
-		DisplayDefaults & defaults = canvas->GetDisplay().GetDefaults();
-		
-		if (defaults.IsImageSheetFrameTrimCorrected()) GetTransform().Invalidate();
+		if (sheet->CorrectsTrimOffsets()) GetTransform().Invalidate();
 	}
 
 	// Store whether or not the new frame is trimmed or not
