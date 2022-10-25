@@ -161,19 +161,19 @@ struct CoronaMemoryCallbacks {
 	 Optional
 	 Query sizes of structured memory, e.g. for texture data 0 = row count, 1 = column count, 2 = bytes per pixel.
 	 @param ws Workspace.
-	 @param index Zero-based dimension index.
-	 @param dim Size of requested dimension.
-	 @return If non-0, `index` < dimension count and `dim` must be populated.
+	 @param index Zero-based size index.
+	 @param size Requested size.
+	 @return If non-0, `index` < size count and `dim` must be populated.
 	*/
-	int ( *getDimension )( CoronaMemoryWorkspace *ws, unsigned int index, size_t *dim );
+	int ( *getSize )( CoronaMemoryWorkspace *ws, unsigned int index, size_t *size );
 
 	/**
 	 Optional
-	 Query strides of structured memory, i.e. the number of bytes between successive entries along a dimensional axis.
+	 Query strides of structured memory, i.e. the number of bytes between successive entries along an axis.
 	 Usually the stride will be the product of lower-dimensional sizes, e.g. row-to-row stride = column count * bytes per pixel, but
 	 sometimes padding is useful, e.g. for alignment or when using a subregion of memory.
 	 @param index Zero-based stride index.
-	 @param stride Size of requested stride.
+	 @param stride Requested stride.
 	 @return If non-0, `index` < stride count and `stride` must be populated.
 	*/
 	int ( *getStride )( CoronaMemoryWorkspace *ws, unsigned int index, size_t *stride );
@@ -254,7 +254,7 @@ struct CoronaMemoryInterface {
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	int ( *resize )( CoronaMemoryCallbacksInfo *mci, unsigned int size );
+	int ( *resize )( CoronaMemoryCallbacksInfo *mci, size_t size, int writeable );
 
 	/**
 	 TODO TODO TODO TODO TODO
@@ -269,7 +269,7 @@ struct CoronaMemoryInterface {
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	int ( *getDimension )( CoronaMemoryCallbacksInfo *mci, unsigned int index, size_t *dim );
+	int ( *getSize )( CoronaMemoryCallbacksInfo *mci, unsigned int index, size_t *size );
 
 	/**
 	 TODO TODO TODO TODO TODO

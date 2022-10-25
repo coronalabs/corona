@@ -12,6 +12,7 @@
 #include "CoronaMemory.h"
 #include "CoronaLua.h"
 #include "Core/Rtt_Types.h"
+#include <string.h>
 
 // ----------------------------------------------------------------------------
 
@@ -25,15 +26,162 @@ static const int DummyMTKey = 5;
 
 // ----------------------------------------------------------------------------
 
-static void AddReadableBytes( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceInfo *mii )
+static const unsigned char * NullRead( CoronaMemoryCallbacksInfo* ) { return NULL; }
+static const unsigned char * NullReadOfSize( CoronaMemoryCallbacksInfo*, size_t ) { return NULL; }
+static void NullCopyTo( CoronaMemoryCallbacksInfo *, unsigned char*, size_t, int ) {}
+static unsigned char * NullWrite( CoronaMemoryCallbacksInfo* ) { return NULL; }
+static unsigned char * NullWriteOfSize( CoronaMemoryCallbacksInfo*, size_t ) { return NULL; }
+static int NullResize( CoronaMemoryCallbacksInfo*, size_t, int ) { return 0; }
+static size_t NullByteCount( CoronaMemoryCallbacksInfo* ) { return 0; }
+static size_t NullGetAlignment( CoronaMemoryCallbacksInfo* ) { return 0; }
+static int NullGetIndexed( CoronaMemoryCallbacksInfo*, unsigned int, size_t* ) { return 0; }
+
+// ----------------------------------------------------------------------------
+
+static const unsigned char * Read( CoronaMemoryCallbacksInfo *mci )
 {
+	return mci->callbacks->getReadableBytes( &mci->workspace );
 }
+
+static const unsigned char * ReadOfSize( CoronaMemoryCallbacksInfo *mci, size_t n )
+{
+	size_t count = mci->callbacks->getByteCount( &mci->workspace );
+
+	if ( count >= n )
+	{
+		return mci->callbacks->getReadableBytes( &mci->workspace );
+	}
+	
+	if ( mci->callbacks->resize && mci->callbacks->resize( &mci->workspace, n, 0 ) )
+	{
+		return mci->callbacks->getReadableBytes( &mci->workspace );
+	}
+	
+	else
+	{
+		return NULL;
+	}
+}
+
+static void CopyTo( CoronaMemoryCallbacksInfo *mci, unsigned char* output, size_t n, int ignoreExtra )
+{
+	size_t count = mci->callbacks->getByteCount( &mci->workspace );
+
+	if ( count > n )
+	{
+		count = n;
+	}
+
+	if ( count > 0 )
+	{
+		memcpy( output, mci->callbacks->getReadableBytes( &mci->workspace ), count );
+
+		if ( count < n && !ignoreExtra )
+		{
+			memset( output + count, 0, n - count );
+		}
+	}
+}
+
+static unsigned char * Write( CoronaMemoryCallbacksInfo *mci )
+{
+	return mci->callbacks->getWriteableBytes( &mci->workspace );
+}
+
+static unsigned char * WriteOfSize( CoronaMemoryCallbacksInfo *mci, size_t n )
+{
+	size_t count = mci->callbacks->getByteCount( &mci->workspace );
+
+	if ( count >= n )
+	{
+		return mci->callbacks->getWriteableBytes( &mci->workspace );
+	}
+	
+	if ( mci->callbacks->resize && mci->callbacks->resize( &mci->workspace, n, 1 ) )
+	{
+		return mci->callbacks->getWriteableBytes( &mci->workspace );
+	}
+	
+	else
+	{
+		return NULL;
+	}
+}
+
+static int Resize( CoronaMemoryCallbacksInfo *mci, size_t size, int writeable )
+{
+	return mci->callbacks->resize( &mci->workspace, size, writeable );
+}
+
+static size_t GetByteCount( CoronaMemoryCallbacksInfo *mci )
+{
+	return mci->callbacks->getByteCount( &mci->workspace );
+}
+
+static size_t GetAlignment( CoronaMemoryCallbacksInfo *mci )
+{
+	return mci->callbacks->getAlignment( &mci->workspace );
+}
+
+static int GetSize( CoronaMemoryCallbacksInfo *mci, unsigned int index, size_t *size )
+{
+	return mci->callbacks->getSize( &mci->workspace, index, size );
+}
+
+static int GetStride( CoronaMemoryCallbacksInfo *mci, unsigned int index, size_t *stride )
+{
+	return mci->callbacks->getStride( &mci->workspace, index, stride );
+}
+
+// ----------------------------------------------------------------------------
 
 static void AddReadableBytes( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceInfo *mii )
 {
+	if (mii->callbacks.getReadableBytes)
+	{
+		mi->getReadableBytes = Read;
+		mi->getReadableBytesOfSize = ReadOfSize;
+		mi->copyBytesTo = CopyTo;
+	}
+
+	else
+	{
+		mi->getReadableBytes = NullRead;
+		mi->getReadableBytesOfSize = NullReadOfSize;
+		mi->copyBytesTo = NullCopyTo;
+	}
 }
 
-// etc.
+static void AddWriteableBytes( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceInfo *mii )
+{
+	if (mii->callbacks.getWriteableBytes)
+	{
+		mi->getWriteableBytes = Write;
+		mi->getWriteableBytesOfSize = WriteOfSize;
+	}
+
+	else
+	{
+		mi->getWriteableBytes = NullWrite;
+		mi->getWriteableBytesOfSize = NullWriteOfSize;
+	}
+}
+
+static void AddResize( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceInfo *mii )
+{
+	mi->resize = mii->callbacks.resize ? Resize : NullResize;
+}
+
+static void AddAlignment( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceInfo *mii )
+{
+	mi->getAlignment = mii->callbacks.getAlignment ? GetAlignment : NullGetAlignment;
+}
+
+static void AddIndexed( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceInfo *mii )
+{
+	mi->getSize = mii->callbacks.getSize ? GetSize : NullGetIndexed;
+	mi->getStride = mii->callbacks.getStride ? GetStride : NullGetIndexed;
+}
 
 // ----------------------------------------------------------------------------
 
@@ -84,8 +232,17 @@ int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *
 
 	lua_rawseti( L, -2, InfoKey ); // ..., env = { ..., info }
 
-	// TODO: interface
+	CoronaMemoryInterface *interface = ( CoronaMemoryInterface* )lua_newuserdata( L, sizeof( CoronaMemoryInterface ) ); // ..., env, interface
 
+	interface->getByteCount = GetByteCount;
+	
+	AddReadableBytes( interface, mii );
+	AddWriteableBytes( interface, mii );
+	AddResize( interface, mii );
+	AddAlignment( interface, mii );
+	AddIndexed( interface, mii );
+	
+	lua_rawseti( L, -2, InterfaceKey ); // ..., env = { ..., interface }
 	lua_pushinteger( L, MemoryVersion ); // ..., env, version
 	lua_rawseti( L, -2, VersionKey ); // ..., env = { ..., version }
 	luaL_newmetatable( L, CORONA_DUMMY_MEMORY_METATABLE ); // ..., env, dummy_mt
@@ -131,10 +288,10 @@ static bool IsMemoryProxy( lua_State *L, int arg )
 // ----------------------------------------------------------------------------
 
 struct LightUserdataEncoding {
-	U16 mGuardBits1 : 2;
-	U16 mID : 12;
-	U16 mGuardBits2 : 2;
-	U16 mContext;
+	U16 fGuardBits1 : 2;
+	U16 fID : 12;
+	U16 fGuardBits2 : 2;
+	U16 fContext;
 
 	static U16 MaxID() { return (1 << 12) - 1; }
 	static U16 GuardBitPattern1() { return (1 << 0) + (0 << 1); }
@@ -142,8 +299,8 @@ struct LightUserdataEncoding {
 };
 
 union LightUserdataPunning {
-	void * mPtr;
-	LightUserdataEncoding mEncoding;
+	void * fPointer;
+	LightUserdataEncoding fEncoding;
 };
 
 static_assert( sizeof( LightUserdataEncoding ) <= sizeof( void* ), "Lossy encoding as light userdata" );
@@ -254,12 +411,12 @@ int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned sh
 	{
 		LightUserdataPunning punning;
 
-		punning.mEncoding.mID = id;
-		punning.mEncoding.mContext = context;
-		punning.mEncoding.mGuardBits1 = LightUserdataEncoding::GuardBitPattern1();
-		punning.mEncoding.mGuardBits2 = LightUserdataEncoding::GuardBitPattern2();
+		punning.fEncoding.fID = id;
+		punning.fEncoding.fContext = context;
+		punning.fEncoding.fGuardBits1 = LightUserdataEncoding::GuardBitPattern1();
+		punning.fEncoding.fGuardBits2 = LightUserdataEncoding::GuardBitPattern2();
 
-		lua_pushlightuserdata(L, punning.mPtr ); // ..., encoding
+		lua_pushlightuserdata(L, punning.fPointer ); // ..., encoding
 	}
 
 	return exists;
@@ -267,7 +424,7 @@ int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned sh
 
 // ----------------------------------------------------------------------------
 
-#define CORONA_MEMORY_STRING_INTERFACE "MemoryStringInterface"
+#define CORONA_MEMORY_STRING_PROXY "MemoryStringProxy"
 
 static const unsigned char* GetStringReadableBytes( CoronaMemoryWorkspace *ws )
 {
@@ -289,9 +446,9 @@ static int GetStringObject( lua_State *L, int arg, CoronaMemoryWorkspace *ws )
 
 // ----------------------------------------------------------------------------
 
-static void GetStringInterface( lua_State *L, int arg, CoronaMemoryCallbacksInfo *info )
+static bool GetStringInterfaceProxy( lua_State *L )
 {
-	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_STRING_INTERFACE ); // ..., object, ..., string_interface?
+	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_STRING_PROXY ); // ..., object, ..., proxy?
 
 	if ( lua_isnil( L, -1 ) )
 	{
@@ -301,18 +458,16 @@ static void GetStringInterface( lua_State *L, int arg, CoronaMemoryCallbacksInfo
 		string_interface_info.callbacks.getByteCount = GetStringByteCount;
 		string_interface_info.getObject = GetStringObject;
 
-		int result = CoronaMemoryCreateInterface( L, &string_interface_info ); // ..., object, ..., nil, string_interface
+		int result = CoronaMemoryCreateInterface( L, &string_interface_info ); // ..., object, ..., nil, proxy
 
 		Rtt_VERIFY( result );
 
-		lua_pushvalue( L, -1 ); // ..., object, ..., nil, string_interface, string_interface
-		lua_setfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_STRING_INTERFACE ); // ..., object, ..., nil, string_interface; registry[STRING_INTERFACE] = string_interface
-		lua_remove( L, -2 ); // ..., object, ..., string_interface
+		lua_pushvalue( L, -1 ); // ..., object, ..., nil, proxy, proxy
+		lua_setfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_STRING_PROXY ); // ..., object, ..., nil, proxy; registry[STRING_PROXY] = proxy
+		lua_remove( L, -2 ); // ..., object, ..., proxy
 	}
 
-	// TODO:
-	info->interface;
-	info->callbacks;
+	return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -320,53 +475,102 @@ static void GetStringInterface( lua_State *L, int arg, CoronaMemoryCallbacksInfo
 CORONA_API
 int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryCallbacksInfo *info )
 {
-	int type = lua_type( L, arg );
+	arg = CoronaLuaNormalize( L, arg );
+
+	int type = lua_type( L, arg ), top = lua_gettop( L );
+	bool found = false;
 
 	if ( LUA_TSTRING == type )
 	{
-		GetStringInterface( L, arg, info );
+		found = GetStringInterfaceProxy( L ); // ..., object, ...[, proxy]
 	}
 
 	else if ( LUA_TLIGHTUSERDATA == type )
 	{
 		LightUserdataPunning punning;
 
-		punning.mPtr = lua_touserdata( L, arg );
+		punning.fPointer = lua_touserdata( L, arg );
 
-		if ( LightUserdataEncoding::GuardBitPattern1() == punning.mEncoding.mGuardBits1 && LightUserdataEncoding::GuardBitPattern2() == punning.mEncoding.mGuardBits2 )
+		if ( LightUserdataEncoding::GuardBitPattern1() == punning.fEncoding.fGuardBits1 && LightUserdataEncoding::GuardBitPattern2() == punning.fEncoding.fGuardBits2 )
 		{
-			// TODO: exists?
-				// do acquire()
-			// TODO special case
-		}
-
-		else
-		{
-			// ERROR
+			lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., object, ..., slots?
+			
+			if ( !lua_isnil( L, -1 ) )
+			{
+				lua_rawgeti( L, -1, ( int )punning.fEncoding.fID + 1 ); // ..., object, ..., slots, proxy?
+				
+				found = !lua_isnil( L, -1 );
+				
+				if ( found )
+				{
+					info->workspace.vars[0].u = 1;
+					info->workspace.vars[1].u = punning.fEncoding.fID;
+					info->workspace.vars[2].u = punning.fEncoding.fContext;
+				}
+			}
 		}
 	}
 
-	else if (luaL_getmetafield( L, arg, "__memory" ) ) // ..., object, ...[, memory]
+	else if (luaL_getmetafield( L, arg, "__memory" ) ) // ..., object, ...[, proxy]
 	{
-		 if ( IsMemoryProxy( L, -1 ) )
-		 {
-			 // TODO rig up interface
-		 }
-
-		 else
-		 {
-			 // ERROR
-		 }
-	}
-
-	else
-	{
-		// ERROR
+		info->workspace.vars[0].u = 0;
+		
+		found = IsMemoryProxy( L, -1 );
 	}
 	
-	info->version = MemoryVersion;
+	int result = 0;
+	
+	if (found)
+	{
+		Rtt_VERIFY( IsMemoryProxy( L, -1 ) );
+		
+		lua_getfenv( L, -1 ); // ..., object, ..., proxy, env
+		lua_rawgeti( L, -1, InfoKey ); // ..., object, ..., proxy, env, info
+		lua_rawgeti( L, -2, InterfaceKey ); // ..., object, ..., proxy, env, info, interface
+		lua_rawgeti( L, -3, VersionKey ); // ..., object, ..., proxy, env, info, interface, version
+	
+		CoronaMemoryInterfaceInfo *interface_info = ( CoronaMemoryInterfaceInfo* )lua_touserdata( L, -3 );
 
-	return 0;
+		info->interface = *( CoronaMemoryInterface* )lua_touserdata( L, -2 );
+		info->callbacks = &interface_info->callbacks;
+		info->version = lua_tointeger( L, -1 );
+
+		size_t dataSize = lua_objlen( L, -4 );
+		
+		if ( dataSize > 0 )
+		{
+			info->workspace.data = lua_touserdata( L, -4 );
+			info->workspace.dataSize = dataSize;
+		}
+		
+		else
+		{
+			lua_rawgeti( L, -4, DataKey ); // ..., object, ..., proxy, env, info, interface, version, data?
+
+			info->workspace.data = lua_touserdata( L, -1 );
+			info->workspace.dataSize = lua_objlen( L, -1 );
+		}
+		
+		lua_settop( L, top ); // ..., object, ...
+		
+		*info->workspace.error = '\0';
+
+		result = interface_info->getObject( L, arg, &info->workspace ); // might adjust stack
+
+		if ( !result )
+		{
+			CORONA_LOG_WARNING( "Failed to get object memory" );
+		}
+	}
+	
+	else
+	{		
+		lua_settop( L, top ); // ..., object, ...
+
+		CORONA_LOG_WARNING( "Unable to find memory interface proxy" );
+	}
+
+	return result;
 }
 
 // ----------------------------------------------------------------------------
