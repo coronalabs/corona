@@ -26,35 +26,38 @@ static const int DummyMTKey = 5;
 
 // ----------------------------------------------------------------------------
 
-static const unsigned char * NullRead( CoronaMemoryCallbacksInfo* ) { return NULL; }
-static const unsigned char * NullReadOfSize( CoronaMemoryCallbacksInfo*, size_t ) { return NULL; }
-static void NullCopyTo( CoronaMemoryCallbacksInfo *, unsigned char*, size_t, int ) {}
-static unsigned char * NullWrite( CoronaMemoryCallbacksInfo* ) { return NULL; }
-static unsigned char * NullWriteOfSize( CoronaMemoryCallbacksInfo*, size_t ) { return NULL; }
-static int NullResize( CoronaMemoryCallbacksInfo*, size_t, int ) { return 0; }
-static size_t NullByteCount( CoronaMemoryCallbacksInfo* ) { return 0; }
-static size_t NullGetAlignment( CoronaMemoryCallbacksInfo* ) { return 0; }
-static int NullGetIndexed( CoronaMemoryCallbacksInfo*, unsigned int, size_t* ) { return 0; }
+static const unsigned char * NullRead( CoronaMemoryAcquireState* ) { return NULL; }
+static const unsigned char * NullReadOfSize( CoronaMemoryAcquireState*, size_t ) { return NULL; }
+static void NullCopyTo( CoronaMemoryAcquireState *, unsigned char*, size_t, int ) {}
+static unsigned char * NullWrite( CoronaMemoryAcquireState* ) { return NULL; }
+static unsigned char * NullWriteOfSize( CoronaMemoryAcquireState*, size_t ) { return NULL; }
+static int NullResize( CoronaMemoryAcquireState*, size_t, int ) { return 0; }
+static size_t NullByteCount( CoronaMemoryAcquireState* ) { return 0; }
+static size_t NullGetAlignment( CoronaMemoryAcquireState* ) { return 0; }
+static int NullGetIndexed( CoronaMemoryAcquireState*, unsigned int, size_t* ) { return 0; }
 
 // ----------------------------------------------------------------------------
 
-static const unsigned char * Read( CoronaMemoryCallbacksInfo *mci )
+#define STATE_CALLBACK( NAME ) state->callbacks->NAME( &state->workspace )
+#define STATE_CALLBACK_WITH_ARGS( NAME, ... ) state->callbacks->NAME( &state->workspace, __VA_ARGS__ )
+
+static const unsigned char * Read( CoronaMemoryAcquireState *state )
 {
-	return mci->callbacks->getReadableBytes( &mci->workspace );
+	return STATE_CALLBACK( getReadableBytes );
 }
 
-static const unsigned char * ReadOfSize( CoronaMemoryCallbacksInfo *mci, size_t n )
+static const unsigned char * ReadOfSize( CoronaMemoryAcquireState *state, size_t n )
 {
-	size_t count = mci->callbacks->getByteCount( &mci->workspace );
+	size_t count = STATE_CALLBACK( getByteCount );
 
 	if ( count >= n )
 	{
-		return mci->callbacks->getReadableBytes( &mci->workspace );
+		return STATE_CALLBACK( getReadableBytes );
 	}
 	
-	if ( mci->callbacks->resize && mci->callbacks->resize( &mci->workspace, n, 0 ) )
+	if ( STATE_CALLBACK_WITH_ARGS( resize, n, 0 ) )
 	{
-		return mci->callbacks->getReadableBytes( &mci->workspace );
+		return STATE_CALLBACK( getReadableBytes );
 	}
 	
 	else
@@ -63,9 +66,9 @@ static const unsigned char * ReadOfSize( CoronaMemoryCallbacksInfo *mci, size_t 
 	}
 }
 
-static void CopyTo( CoronaMemoryCallbacksInfo *mci, unsigned char* output, size_t n, int ignoreExtra )
+static void CopyTo( CoronaMemoryAcquireState *state, unsigned char* output, size_t n, int ignoreExtra )
 {
-	size_t count = mci->callbacks->getByteCount( &mci->workspace );
+	size_t count = STATE_CALLBACK( getByteCount );
 
 	if ( count > n )
 	{
@@ -74,7 +77,7 @@ static void CopyTo( CoronaMemoryCallbacksInfo *mci, unsigned char* output, size_
 
 	if ( count > 0 )
 	{
-		memcpy( output, mci->callbacks->getReadableBytes( &mci->workspace ), count );
+		memcpy( output, STATE_CALLBACK( getReadableBytes ), count );
 
 		if ( count < n && !ignoreExtra )
 		{
@@ -83,23 +86,23 @@ static void CopyTo( CoronaMemoryCallbacksInfo *mci, unsigned char* output, size_
 	}
 }
 
-static unsigned char * Write( CoronaMemoryCallbacksInfo *mci )
+static unsigned char * Write( CoronaMemoryAcquireState *state )
 {
-	return mci->callbacks->getWriteableBytes( &mci->workspace );
+	return STATE_CALLBACK( getWriteableBytes );
 }
 
-static unsigned char * WriteOfSize( CoronaMemoryCallbacksInfo *mci, size_t n )
+static unsigned char * WriteOfSize( CoronaMemoryAcquireState *state, size_t n )
 {
-	size_t count = mci->callbacks->getByteCount( &mci->workspace );
+	size_t count = STATE_CALLBACK( getByteCount );
 
 	if ( count >= n )
 	{
-		return mci->callbacks->getWriteableBytes( &mci->workspace );
+		return STATE_CALLBACK( getWriteableBytes );
 	}
 	
-	if ( mci->callbacks->resize && mci->callbacks->resize( &mci->workspace, n, 1 ) )
+	if ( STATE_CALLBACK_WITH_ARGS( resize, n, 1 ) )
 	{
-		return mci->callbacks->getWriteableBytes( &mci->workspace );
+		return STATE_CALLBACK( getWriteableBytes );
 	}
 	
 	else
@@ -108,30 +111,33 @@ static unsigned char * WriteOfSize( CoronaMemoryCallbacksInfo *mci, size_t n )
 	}
 }
 
-static int Resize( CoronaMemoryCallbacksInfo *mci, size_t size, int writeable )
+static int Resize( CoronaMemoryAcquireState *state, size_t size, int writeable )
 {
-	return mci->callbacks->resize( &mci->workspace, size, writeable );
+	return STATE_CALLBACK_WITH_ARGS( resize, size, writeable );
 }
 
-static size_t GetByteCount( CoronaMemoryCallbacksInfo *mci )
+static size_t GetByteCount( CoronaMemoryAcquireState *state )
 {
-	return mci->callbacks->getByteCount( &mci->workspace );
+	return STATE_CALLBACK( getByteCount );
 }
 
-static size_t GetAlignment( CoronaMemoryCallbacksInfo *mci )
+static size_t GetAlignment( CoronaMemoryAcquireState *state )
 {
-	return mci->callbacks->getAlignment( &mci->workspace );
+	return STATE_CALLBACK( getAlignment );
 }
 
-static int GetSize( CoronaMemoryCallbacksInfo *mci, unsigned int index, size_t *size )
+static int GetSize( CoronaMemoryAcquireState *state, unsigned int index, size_t *size )
 {
-	return mci->callbacks->getSize( &mci->workspace, index, size );
+	return STATE_CALLBACK_WITH_ARGS( getSize, index, size );
 }
 
-static int GetStride( CoronaMemoryCallbacksInfo *mci, unsigned int index, size_t *stride )
+static int GetStride( CoronaMemoryAcquireState *state, unsigned int index, size_t *stride )
 {
-	return mci->callbacks->getStride( &mci->workspace, index, stride );
+	return STATE_CALLBACK_WITH_ARGS( getStride, index, stride );
 }
+
+#undef STATE_CALLBACK
+#undef STATE_CALLBACK_WITH_ARGS
 
 // ----------------------------------------------------------------------------
 
@@ -473,7 +479,7 @@ static bool GetStringInterfaceProxy( lua_State *L )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryCallbacksInfo *info )
+int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireState *state )
 {
 	arg = CoronaLuaNormalize( L, arg );
 
@@ -503,9 +509,9 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryCallbacksIn
 				
 				if ( found )
 				{
-					info->workspace.vars[0].u = 1;
-					info->workspace.vars[1].u = punning.fEncoding.fID;
-					info->workspace.vars[2].u = punning.fEncoding.fContext;
+					state->workspace.vars[0].u = 1;
+					state->workspace.vars[1].u = punning.fEncoding.fID;
+					state->workspace.vars[2].u = punning.fEncoding.fContext;
 				}
 			}
 		}
@@ -513,7 +519,7 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryCallbacksIn
 
 	else if (luaL_getmetafield( L, arg, "__memory" ) ) // ..., object, ...[, proxy]
 	{
-		info->workspace.vars[0].u = 0;
+		state->workspace.vars[0].u = 0;
 		
 		found = IsMemoryProxy( L, -1 );
 	}
@@ -531,31 +537,31 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryCallbacksIn
 	
 		CoronaMemoryInterfaceInfo *interface_info = ( CoronaMemoryInterfaceInfo* )lua_touserdata( L, -3 );
 
-		info->interface = *( CoronaMemoryInterface* )lua_touserdata( L, -2 );
-		info->callbacks = &interface_info->callbacks;
-		info->version = lua_tointeger( L, -1 );
+		state->interface = *( CoronaMemoryInterface* )lua_touserdata( L, -2 );
+		state->callbacks = &interface_info->callbacks;
+		state->version = lua_tointeger( L, -1 );
 
 		size_t dataSize = lua_objlen( L, -4 );
 		
 		if ( dataSize > 0 )
 		{
-			info->workspace.data = lua_touserdata( L, -4 );
-			info->workspace.dataSize = dataSize;
+			state->workspace.data = lua_touserdata( L, -4 );
+			state->workspace.dataSize = dataSize;
 		}
 		
 		else
 		{
 			lua_rawgeti( L, -4, DataKey ); // ..., object, ..., proxy, env, info, interface, version, data?
 
-			info->workspace.data = lua_touserdata( L, -1 );
-			info->workspace.dataSize = lua_objlen( L, -1 );
+			state->workspace.data = lua_touserdata( L, -1 );
+			state->workspace.dataSize = lua_objlen( L, -1 );
 		}
 		
 		lua_settop( L, top ); // ..., object, ...
 		
-		*info->workspace.error = '\0';
+		*state->workspace.error = '\0';
 
-		result = interface_info->getObject( L, arg, &info->workspace ); // might adjust stack
+		result = interface_info->getObject( L, arg, &state->workspace ); // might adjust stack
 
 		if ( !result )
 		{

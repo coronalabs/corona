@@ -214,7 +214,7 @@ struct CoronaMemoryInterfaceInfo {
 	int dataSize;
 };
 
-struct CoronaMemoryCallbacksInfo; // forward reference
+struct CoronaMemoryAcquireState; // forward reference
 
 /**
  Memory operations  built atop the user-provided callbacks.
@@ -227,60 +227,60 @@ struct CoronaMemoryInterface {
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	const unsigned char * ( *getReadableBytes )( CoronaMemoryCallbacksInfo *mci );
+	const unsigned char * ( *getReadableBytes )( CoronaMemoryAcquireState *state );
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	const unsigned char * ( *getReadableBytesOfSize )( CoronaMemoryCallbacksInfo *mci, size_t n ); // possible `resize()`, then `getReadableBytes()`
+	const unsigned char * ( *getReadableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n ); // possible `resize()`, then `getReadableBytes()`
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	void ( *copyBytesTo )( CoronaMemoryCallbacksInfo *mci, unsigned char *output, size_t outputSize, int ignoreExtra ); // `getReadableBytes()`, copy of `min(getByteCount(), outputSize)` to `output`
+	void ( *copyBytesTo )( CoronaMemoryAcquireState *state, unsigned char *output, size_t outputSize, int ignoreExtra ); // `getReadableBytes()`, copy of `min(getByteCount(), outputSize)` to `output`
 																																			   // if `outputSize` > `getByteCount()`
 																																				  // the rest is set to 0, unless `ignoreExtra` is non-0
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	unsigned char * ( *getWriteableBytes )( CoronaMemoryCallbacksInfo *mci );
+	unsigned char * ( *getWriteableBytes )( CoronaMemoryAcquireState *state );
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	unsigned char * ( *getWriteableBytesOfSize )( CoronaMemoryCallbacksInfo *mci, size_t n ); // possible `resize()`, then `getWriteableBytes()`
+	unsigned char * ( *getWriteableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n ); // possible `resize()`, then `getWriteableBytes()`
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	int ( *resize )( CoronaMemoryCallbacksInfo *mci, size_t size, int writeable );
+	int ( *resize )( CoronaMemoryAcquireState *state, size_t size, int writeable );
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	size_t ( *getByteCount )( CoronaMemoryCallbacksInfo *mci );
+	size_t ( *getByteCount )( CoronaMemoryAcquireState *state );
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	size_t ( *getAlignment )( CoronaMemoryCallbacksInfo *mci );
+	size_t ( *getAlignment )( CoronaMemoryAcquireState *state );
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	int ( *getSize )( CoronaMemoryCallbacksInfo *mci, unsigned int index, size_t *size );
+	int ( *getSize )( CoronaMemoryAcquireState *state, unsigned int index, size_t *size );
 
 	/**
 	 TODO TODO TODO TODO TODO
 	*/
-	int ( *getStride )( CoronaMemoryCallbacksInfo *mci, unsigned int index, size_t *stride );
+	int ( *getStride )( CoronaMemoryAcquireState *state, unsigned int index, size_t *stride );
 };
 
 /**
 	TODO TODO TODO TODO TODO 
 */
-struct CoronaMemoryCallbacksInfo {
+struct CoronaMemoryAcquireState {
 	/**
 	 This is the "proper" way to use the memory interface, rather than directly invoking callbacks.
 	 Given an instance `mci`, a raw call take a form like `mci.interface.resize(&mci, newSize, NULL)`.
@@ -309,10 +309,11 @@ struct CoronaMemoryCallbacksInfo {
 };
 
 /**
- Helper to use an interface callback, given a method name, `CoronaMemoryCallbacksInfo` object, and arguments.
- For example, one can do `bytes = CORONA_MEMORY_IFC(getReadableBytes, mci);` to get the readable bytes.
+ Helper to use an interface callback, given a method name, `CoronaMemoryAcquireState` object, and arguments.
+ For example, one can do `bytes = CORONA_MEMORY_IFC(getReadableBytes, state);` to get the readable bytes.
 */
-#define CORONA_MEMORY_IFC( NAME, MCI, ... ) OBJECT.interface.NAME( &MCI, __VA_ARGS__ )
+#define CORONA_MEMORY_IFC( NAME, CMAS ) OBJECT.interface.NAME( &CMAS )
+#define CORONA_MEMORY_IFC_WITH_ARGS( NAME, CMAS, ... ) OBJECT.interface.NAME( &CMAS, __VA_ARGS__ )
 
 // C API
 // ----------------------------------------------------------------------------
@@ -389,10 +390,10 @@ int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned sh
 	Appropriate interface
 	@param L Lua state pointer.
 	@param arg Object that will provide the memory.
-	@param info Interface to use the provided memory.
-	@return If non-0, success, and `info` is populated. (On failure, `info->interface` will be dummied out.)
+	@param state State used to interface with the acquired memory.
+	@return If non-0, success, and `state` is populated. (On failure, `state->interface` will be dummied out.)
 */
 CORONA_API
-int CoronaMemoryAcquireInterface(lua_State *L, int arg, CoronaMemoryCallbacksInfo *info ) CORONA_PUBLIC_SUFFIX;
+int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireState *state ) CORONA_PUBLIC_SUFFIX;
 
 #endif // _CoronaGraphics_H__
