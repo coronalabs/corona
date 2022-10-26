@@ -180,7 +180,7 @@ struct CoronaMemoryCallbacks {
 };
 
 /**
- TODO TODO TODO TODO TODO
+ This structure provides the information needed to create an interface.
 */
 struct CoronaMemoryInterfaceInfo {
 	/**
@@ -191,19 +191,15 @@ struct CoronaMemoryInterfaceInfo {
 
 	/**
 	 Required
+	 Called by `CoronaMemoryAcquireInterface()` to finish the acquire process.
+	 Any state that will be needed by the methods may be assigned to `workspace` and / or the Lua stack. Once
+	 this call begins, neither will be further modified internally.
 	*/
-	int ( *getObject )( lua_State *L, int arg, CoronaMemoryWorkspace *ws ); // required
-																	// used by `MemoryAcquireInterface()` to prepare the callbacks' workspace
-																	// returning non-0 indicates success
-																	// `arg` will be normalized
-																	// cf. the details about the light userdata policy, below
-																	// once this call begins, `ws` is never modified internally
-																	// similarly, the Lua object is no longer used internally
-																							// any changes to the Lua stack will remain after the call
+	int ( *getObject )( lua_State *L, int arg, CoronaMemoryWorkspace *workspace );
 
 	/**
 	 Optional
-	 This is used to associate some user-defined data with the interface, provided through some members in `CoronaMemoryWorkspace`.
+	 This is used to associate some user-defined data with the interface, provided through  `CoronaMemoryWorkspace`.
 	 If `dataSize` is 0, `data` will be `NULL` and `dataSize` 0.
 	 When `dataSize` > 0, the proxy will be created with `lua_newuserdata(L, dataSize`); its block address will be used as `data`
 	 and `dataSize` will supply the workspace member of the same name.
@@ -217,67 +213,74 @@ struct CoronaMemoryInterfaceInfo {
 struct CoronaMemoryAcquireState; // forward reference
 
 /**
- Memory operations built atop the user-provided callbacks.
+ Memory operations built atop the user-provided callbacks, provided when the interface has been acquired.
  Always-fail / no-op stubs will be provided for absent callbacks.
 */
 struct CoronaMemoryInterface {
 	// The following details are found in version 0+:
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 Passthrough wrapper to `getReadableBytes()`, if available, else returns `NULL`.
 	*/
 	const unsigned char * ( *getReadableBytes )( CoronaMemoryAcquireState *state );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 If `getReadableBytes()` is absent, returns `NULL`.
+	 Otherwise, if the byte count is >= `n`, gets the bytes.
+	 Failing that, it will call `resize()`, if present, in read mode.
+	 If the resize was successful, gets the bytes; else returns `NULL`.
 	*/
-	const unsigned char * ( *getReadableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n ); // possible `resize()`, then `getReadableBytes()`
+	const unsigned char * ( *getReadableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 If `getReadableBytes()` is absent, does nothing.
+	 Otherwise, gets the bytes and writes them to `output`, up to a maximum of `outputSize` bytes. If fewer than
+	 `outputSize` bytes were available and `ignoreExtra` is 0, the leftover bytes will be set to 0.
 	*/
-	void ( *copyBytesTo )( CoronaMemoryAcquireState *state, unsigned char *output, size_t outputSize, int ignoreExtra ); // `getReadableBytes()`, copy of `min(getByteCount(), outputSize)` to `output`
-																																			   // if `outputSize` > `getByteCount()`
-																																				  // the rest is set to 0, unless `ignoreExtra` is non-0
+	void ( *copyBytesTo )( CoronaMemoryAcquireState *state, unsigned char *output, size_t outputSize, int ignoreExtra );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 Passthrough wrapper to `getWriteableBytes()`, if available, else returns `NULL`.
 	*/
 	unsigned char * ( *getWriteableBytes )( CoronaMemoryAcquireState *state );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 If `getWriteableBytes()` is absent, returns `NULL`.
+	 Otherwise, if the byte count is >= `n`, gets the bytes.
+	 Failing that, it will call `resize()`, if present, in write mode.
+	 If the resize was successful, gets the bytes; else returns `NULL`.	 
 	*/
-	unsigned char * ( *getWriteableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n ); // possible `resize()`, then `getWriteableBytes()`
+	unsigned char * ( *getWriteableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 Passthrough wrapper to `resize()`, if available, else returns 0.
 	*/
 	int ( *resize )( CoronaMemoryAcquireState *state, size_t size, int writeable );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 Passthrough wrapper to `getByteCount()`. (As a dummy, returns 0.)
 	*/
 	size_t ( *getByteCount )( CoronaMemoryAcquireState *state );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 Passthrough wrapper to `getAlignment()`, if available, else returns 0.
 	*/
 	size_t ( *getAlignment )( CoronaMemoryAcquireState *state );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	  Passthrough wrapper to `getSize()`, if available, else returns 0.
 	*/
 	int ( *getSize )( CoronaMemoryAcquireState *state, unsigned int index, size_t *size );
 
 	/**
-	 TODO TODO TODO TODO TODO
+	 Passthrough wrapper to `getStride()`, if available, else returns 0.
 	*/
 	int ( *getStride )( CoronaMemoryAcquireState *state, unsigned int index, size_t *stride );
 };
 
 /**
-	TODO TODO TODO TODO TODO 
+	This structure maintains some details needed by the memory interface after an acquisition, as well
+	as the workspace provided for the underlying methods.
 */
 struct CoronaMemoryAcquireState {
 	/**
@@ -285,9 +288,7 @@ struct CoronaMemoryAcquireState {
 	 An example raw call, given an instance `state`: `state.interface.resize(&state, newSize, NULL)`.
 	 See also `CORONA_MEMORY_IFC` and `CORONA_MEMORY_IFC_WITH_ARGS`.
 	*/
-	CoronaMemoryInterface interface; // these build on `callbacks` and provide the "proper" way to call them
-
-	// The following should generally be considered implementation details, cf. `MemoryInterfaceInfo`, and not touched by users.
+	CoronaMemoryInterface interface;
 
 	/**
 	 Callbacks used by the interface methods.
@@ -330,20 +331,16 @@ struct CoronaMemoryAcquireState {
  */
 
 /**
-	TODO TODO TODO TODO TODO
+	Create an interface that may be used to provide access to objects' memory.
+	Details may be found under `CoronaMemoryInterfaceInfo` and `CoronaMemoryAcquireInterface()`.
+	The interface is made available through a proxy object. Each proxy receives a unique environment
+	table, whose integer keys are reserved for internal use; other keys are free for custom use.
 	@param L Lua state pointer.
-	@param mii Callback and interface-specific data information.
+	@param info Callback and interface-specific data information.
 	@return If non-0, success, and a memory interface proxy will be on top of the stack.
 */
 CORONA_API
-int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *mii ) CORONA_PUBLIC_SUFFIX; // returns non-0 on success, and pushes a memory interface proxy onto the stack
-																			// at a minimum, the interface must implement `getByteCount()`, plus either `getReadableBytes()` or `getWriteableBytes()`
-																			// if `dataSize` was > 0, do a `lua_touserdata()` on the proxy to retrieve and populate `data`
-																			// to use the interface, assign the proxy to a metatable's `__memory` field
-																			// the proxy will be assigned a memory API version based on the Solar library being linked against
-																			// the proxy is given a unique environment
-																				// integer keys are used internally
-																				// others are fine for custom use
+int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *info ) CORONA_PUBLIC_SUFFIX;
 
 /**
 	Given a memory proxy, as returned by `CoronaMemoryCreateInterface()`, on top of the stack,
@@ -356,22 +353,23 @@ int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *
 	@return If non-0, success, `id` is populated, and the proxy is popped from the stack.
 */
 CORONA_API
-int CoronaMemoryBindLookupSlot( lua_State *L, uint16_t *id ) CORONA_PUBLIC_SUFFIX; // returns non-0 on success, and populates `id`
-													// per the above, the `id` would reference a memory proxy that was on top of the stack, adding it to the registry table
+int CoronaMemoryBindLookupSlot( lua_State *L, uint16_t *id ) CORONA_PUBLIC_SUFFIX;
+
 /**
 	Unbind a lookup slot and detach the proxy associated with it.
+	It is up to the caller to handle any lingering encodings made from `id`, which this will invalidate.
 	@param L Lua state pointer.
 	@param id An ID returned by `CoronaMemoryBindLookupSlot`.
 	@return If non-0, the slot was in use.
 */
 CORONA_API
-int CoronaMemoryReleaseLookupSlot( lua_State *L, uint16_t id ) CORONA_PUBLIC_SUFFIX; // this would be called, say, in an object's `__gc`, a "finalize" event, or some other `destroy()` logic
-											// `id` may again be allocated after this; any lingering encodings are invalidated
+int CoronaMemoryReleaseLookupSlot( lua_State *L, uint16_t id ) CORONA_PUBLIC_SUFFIX;
 
 /**
 	Encode an ID / context pair as a light userdata.
 	If `CoronaMemoryAcquireInterface()` encounters such a value, it will use the proxy bound to the ID. Furthermore, before
-	`getObject()` is called, `vars[0].u` will be non-0, and `vars[1].u` and `vars[2].u` will be set to `id` and `context`, respectively.
+	`getObject()` is called, its workspace is pre-populated: `vars[0].u` will be non-0, and `vars[1].u` and `vars[2].u` will be set
+	to `id` and `context`, respectively.
 	This API is meant, via `context`, to allow multiple values to be provided from a common data source, e.g. an array.
 	@param L Lua state pointer.
 	@param id An ID returned by `CoronaMemoryBindLookupSlot`.
@@ -388,15 +386,19 @@ int CoronaMemoryPushLookupEncoding( lua_State *L, uint16_t id, uint16_t context 
  */
 
 /**
-	TODO TODO TODO TODO TODO
-	Strings -> TODO
-	Light userdata -> TODO
-	else __memory metafield -> TODO
-	vars[0].u will be 0, before getObject()
-	okay to pre-populate remaining vars, but see note about lookup encoding
-	Appropriate interface
+	Acquire a reference to the memory interface of an object on the stack, in order to read from and / or
+	write to its memory.
+	Strings are a special case, having a default interface. Its `getByteCount()` and `getReadableBytes()`
+	will return `lua_objlen( L, arg )` and `lua_tostring( L, arg )`, respectively.
+	Otherwise, a memory interface proxy, as created by `CoronaMemoryCreateInterface()`, must be found.
+	Usually, object will be expected to have a proxy in the `__memory` key of their metatables. The exception
+	are light userdata, described in `CoronaMemoryBindLookupSlot()` and `CoronaMemoryPushLookupEncoding()`.
+	In the non-light userdata case, `vars[0].u` in the workspace will be set to 0 on a successful acquire.
+	To complete the acquisition, the call `ok = getObject( L, arg, &workspace )` is performed, with `ok` being
+	non-0 understood as success.
+	Any changes to the stack made by `getObject()` are left intact.
 	@param L Lua state pointer.
-	@param arg Object that will provide the memory.
+	@param arg Stack index of object that will provide the memory.
 	@param state State used to interface with the acquired memory.
 	@return If non-0, success, and `state` is populated. (On failure, a dummy interface will be assigned.)
 */

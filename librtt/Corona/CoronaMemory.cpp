@@ -28,30 +28,30 @@ static const int DummyMTKey = 4;
 static const int MemoryVersion = 0;
 
 CORONA_API
-int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *mii )
+int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *info )
 {
-	if (!mii->callbacks.getReadableBytes && !mii->callbacks.getWriteableBytes)
+	if (!info->callbacks.getReadableBytes && !info->callbacks.getWriteableBytes)
 	{
 		CORONA_LOG_WARNING( "Interface must have either `getReadableBytes()` or `getWriteableBytes()` callback (or both)" );
 
 		return 0;
 	}
 
-	else if ( !mii->callbacks.getByteCount )
+	else if ( !info->callbacks.getByteCount )
 	{
 		CORONA_LOG_WARNING( "Interface must have `getByteCount()` callback" );
 
 		return 0;
 	}
 
-	else if ( !mii->getObject )
+	else if ( !info->getObject )
 	{
 		CORONA_LOG_WARNING( "Interface must have `getObject()`" );
 
 		return 0;
 	}
 
-	else if ( mii->dataSize < 0 && !lua_isuserdata( L, -1 ) )
+	else if ( info->dataSize < 0 && !lua_isuserdata( L, -1 ) )
 	{
 		CORONA_LOG_WARNING( "`dataSize` < 0 but item on top of stack is not a userdata" );
 
@@ -60,15 +60,15 @@ int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *
 
 	lua_createtable( L, 3, 0 ); // ...[, data], env
 
-	if ( mii->dataSize < 0 )
+	if ( info->dataSize < 0 )
 	{
 		lua_insert( L, -2 ); // ..., env, data
 		lua_rawseti( L, -2, DataKey ); // ..., env = { data }
 	}
 
-	void* info = lua_newuserdata( L, sizeof( CoronaMemoryInterfaceInfo ) ); // ..., env, info
+	void* mii = lua_newuserdata( L, sizeof( CoronaMemoryInterfaceInfo ) ); // ..., env, info
 
-	memcpy( info, &mii, sizeof( CoronaMemoryInterfaceInfo ) );
+	*static_cast< CoronaMemoryInterfaceInfo* >( mii ) = *info;
 
 	lua_rawseti( L, -2, InfoKey ); // ..., env = { ..., info }
 	lua_pushinteger( L, MemoryVersion ); // ..., env, version
@@ -78,7 +78,7 @@ int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *
 	lua_rawseti( L, -3, DummyMTKey ); // ..., env = { ..., dummy_mt_ptr }, dummy_mt
 	lua_pop( L, 1 ); // ..., env
 
-	size_t proxy_size = mii->dataSize > 0 ? ( size_t )mii->dataSize : 0;
+	size_t proxy_size = info->dataSize > 0 ? ( size_t )info->dataSize : 0;
 
 	lua_newuserdata( L, ( size_t )proxy_size ); // ..., env, proxy
 	lua_insert( L, -2 ); // ..., proxy, env
