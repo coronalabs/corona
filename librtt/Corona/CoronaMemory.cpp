@@ -18,11 +18,237 @@
 
 static const int DataKey = 1;
 static const int InfoKey = 2;
-static const int InterfaceKey = 3;
-static const int VersionKey = 4;
-static const int DummyMTKey = 5;
+static const int VersionKey = 3;
+static const int DummyMTKey = 4;
 
 #define CORONA_DUMMY_MEMORY_METATABLE "DummyMemoryMetatable"
+
+// ----------------------------------------------------------------------------
+
+static const int MemoryVersion = 0;
+
+CORONA_API
+int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *mii )
+{
+	if (!mii->callbacks.getReadableBytes && !mii->callbacks.getWriteableBytes)
+	{
+		CORONA_LOG_WARNING( "Interface must have either `getReadableBytes()` or `getWriteableBytes()` callback (or both)" );
+
+		return 0;
+	}
+
+	else if ( !mii->callbacks.getByteCount )
+	{
+		CORONA_LOG_WARNING( "Interface must have `getByteCount()` callback" );
+
+		return 0;
+	}
+
+	else if ( !mii->getObject )
+	{
+		CORONA_LOG_WARNING( "Interface must have `getObject()`" );
+
+		return 0;
+	}
+
+	else if ( mii->dataSize < 0 && !lua_isuserdata( L, -1 ) )
+	{
+		CORONA_LOG_WARNING( "`dataSize` < 0 but item on top of stack is not a userdata" );
+
+		return 0;
+	}
+
+	lua_createtable( L, 3, 0 ); // ...[, data], env
+
+	if ( mii->dataSize < 0 )
+	{
+		lua_insert( L, -2 ); // ..., env, data
+		lua_rawseti( L, -2, DataKey ); // ..., env = { data }
+	}
+
+	void* info = lua_newuserdata( L, sizeof( CoronaMemoryInterfaceInfo ) ); // ..., env, info
+
+	memcpy( info, &mii, sizeof( CoronaMemoryInterfaceInfo ) );
+
+	lua_rawseti( L, -2, InfoKey ); // ..., env = { ..., info }
+	lua_pushinteger( L, MemoryVersion ); // ..., env, version
+	lua_rawseti( L, -2, VersionKey ); // ..., env = { ..., version }
+	luaL_newmetatable( L, CORONA_DUMMY_MEMORY_METATABLE ); // ..., env, dummy_mt
+	lua_pushlightuserdata( L, ( void* )lua_topointer( L, -1 ) ); // ..., env, dummy_mt, dummy_mt_ptr
+	lua_rawseti( L, -3, DummyMTKey ); // ..., env = { ..., dummy_mt_ptr }, dummy_mt
+	lua_pop( L, 1 ); // ..., env
+
+	size_t proxy_size = mii->dataSize > 0 ? ( size_t )mii->dataSize : 0;
+
+	lua_newuserdata( L, ( size_t )proxy_size ); // ..., env, proxy
+	lua_insert( L, -2 ); // ..., proxy, env
+	lua_setfenv( L, -2 ); // ..., proxy; proxy.environment = env
+
+	return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+static bool IsMemoryProxy( lua_State *L, int arg )
+{
+	if ( !lua_isuserdata( L, arg ) )
+	{
+		return false;
+	}
+
+	int top = lua_gettop( L ), is_proxy = 0;
+
+	lua_getfenv( L, arg ); // ..., object, ..., env
+	lua_rawgeti( L, -1, DummyMTKey ); // ..., object, ..., env, dummy_mt_ptr?
+
+	if ( !lua_isnil( L, -1 ) )
+	{
+		luaL_getmetatable( L, CORONA_DUMMY_MEMORY_METATABLE ); // ..., object, ..., env, dummy_mt_ptr, dummy_mt
+
+		is_proxy = lua_touserdata( L, -2 ) == lua_topointer( L, -1 );
+	}
+
+	lua_settop( L, top ); // ..., object, ...
+
+	return is_proxy;
+}
+
+// ----------------------------------------------------------------------------
+
+struct LightUserdataEncoding {
+	U16 fGuardBits1 : 2;
+	U16 fID : 12;
+	U16 fGuardBits2 : 2;
+	U16 fContext;
+
+	static U16 MaxID() { return (1 << 12) - 1; }
+	static U16 GuardBitPattern1() { return (1 << 0) + (0 << 1); }
+	static U16 GuardBitPattern2() { return (0 << 0) + (1 << 1); }
+};
+
+union LightUserdataPunning {
+	void * fPointer;
+	LightUserdataEncoding fEncoding;
+};
+
+static_assert( sizeof( LightUserdataEncoding ) <= sizeof( void* ), "Lossy encoding as light userdata" );
+
+// ----------------------------------------------------------------------------
+
+#define CORONA_MEMORY_LOOKUP_SLOTS "MemoryBindLookupSlots"
+
+CORONA_API
+int CoronaMemoryBindLookupSlot( lua_State *L, U16 *id )
+{
+	if ( !IsMemoryProxy( L, -1 ) )
+	{
+		CORONA_LOG_WARNING( "Expected memory proxy on top of stack" );
+
+		return 0;
+	}
+
+	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., proxy, slots?
+
+	if ( lua_isnil( L, -1 ) )
+	{
+		lua_pop( L, 1 ); // ..., proxy
+		lua_newtable( L ); // ..., proxy, slots
+		lua_pushvalue( L, -1 ); // ..., proxy, slots, slots
+		lua_setfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., proxy, slots; registry[SLOTS] = slots
+	}
+
+	size_t frontier = lua_objlen( L, -1 ); // find a position before a free slot: N.B. that might be a hole, per behavior of Lua's # operator
+
+	if ( frontier < LightUserdataEncoding::MaxID() )
+	{
+		lua_insert( L, -2 ); // ..., slots, proxy
+		lua_rawseti( L, -2, ( int )frontier + 1 ); // ..., slots = { ..., [slot] = proxy }
+		lua_pop( L, 1 ); // ...
+
+		*id = static_cast< U16 >( frontier );
+
+		return 1;
+	}
+
+	else
+	{
+		lua_pop( L, 2 ); // ...
+
+		CORONA_LOG_WARNING( "Lookup slots all bound" );
+
+		return 0;
+	}
+}
+
+// ----------------------------------------------------------------------------
+
+CORONA_API
+int CoronaMemoryReleaseLookupSlot( lua_State *L, U16 id )
+{
+	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
+
+	int top = lua_gettop( L ), exists = 0;
+
+	if ( !lua_isnil( L, -1 ) )
+	{
+		lua_rawgeti( L, -1, ( int )id + 1 ); // ..., slots, exists
+
+		exists = !lua_isnil( L, -1 );
+	}
+
+	if ( exists )
+	{
+		lua_pushnil( L ); // ..., slots, nil
+		lua_rawseti( L, -2, ( int )id + 1 ); // ..., slots = { ..., [slot] = nil }
+	}
+
+	else
+	{
+		CORONA_LOG_WARNING( "Attempt to release lookup slot %u, but not bound", ( unsigned int )id );
+	}
+	
+	lua_settop( L, top ); // ...
+
+	return exists;
+}
+
+// ----------------------------------------------------------------------------
+
+CORONA_API
+int CoronaMemoryPushLookupEncoding( lua_State *L, U16 id, U16 context )
+{
+	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
+
+	int top = lua_gettop( L ), exists = 0;
+
+	if ( !lua_isnil( L, -1 ) )
+	{
+		lua_rawgeti( L, -1, ( int )id + 1 ); // ..., slots, exists
+
+		exists = !lua_isnil( L, -1 );
+	}
+
+	else
+	{
+		CORONA_LOG_WARNING( "Attempt to push lookup encoding (context = %u), but id = %u not bound", ( unsigned int )context, ( unsigned int )id );
+	}
+
+	lua_settop( L, top ); // ...
+
+	if ( exists )
+	{
+		LightUserdataPunning punning;
+
+		punning.fEncoding.fID = id;
+		punning.fEncoding.fContext = context;
+		punning.fEncoding.fGuardBits1 = LightUserdataEncoding::GuardBitPattern1();
+		punning.fEncoding.fGuardBits2 = LightUserdataEncoding::GuardBitPattern2();
+
+		lua_pushlightuserdata(L, punning.fPointer ); // ..., encoding
+	}
+
+	return exists;
+}
 
 // ----------------------------------------------------------------------------
 
@@ -191,245 +417,6 @@ static void AddIndexed( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceIn
 
 // ----------------------------------------------------------------------------
 
-static const int MemoryVersion = 0;
-
-CORONA_API
-int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *mii )
-{
-	if (!mii->callbacks.getReadableBytes && !mii->callbacks.getWriteableBytes)
-	{
-		CORONA_LOG_WARNING( "Interface must have either `getReadableBytes()` or `getWriteableBytes()` callback (or both)" );
-
-		return 0;
-	}
-
-	else if ( !mii->callbacks.getByteCount )
-	{
-		CORONA_LOG_WARNING( "Interface must have `getByteCount()` callback" );
-
-		return 0;
-	}
-
-	else if ( !mii->getObject )
-	{
-		CORONA_LOG_WARNING( "Interface must have `getObject()`" );
-
-		return 0;
-	}
-
-	else if ( mii->dataSize < 0 && !lua_isuserdata( L, -1 ) )
-	{
-		CORONA_LOG_WARNING( "`dataSize` < 0 but item on top of stack is not a userdata" );
-
-		return 0;
-	}
-
-	lua_createtable( L, 3, 0 ); // ...[, data], env
-
-	if ( mii->dataSize < 0 )
-	{
-		lua_insert( L, -2 ); // ..., env, data
-		lua_rawseti( L, -2, DataKey ); // ..., env = { data }
-	}
-
-	void* info = lua_newuserdata( L, sizeof( CoronaMemoryInterfaceInfo ) ); // ..., env, info
-
-	memcpy( info, &mii, sizeof( CoronaMemoryInterfaceInfo ) );
-
-	lua_rawseti( L, -2, InfoKey ); // ..., env = { ..., info }
-
-	CoronaMemoryInterface *interface = ( CoronaMemoryInterface* )lua_newuserdata( L, sizeof( CoronaMemoryInterface ) ); // ..., env, interface
-
-	interface->getByteCount = GetByteCount;
-	
-	AddReadableBytes( interface, mii );
-	AddWriteableBytes( interface, mii );
-	AddResize( interface, mii );
-	AddAlignment( interface, mii );
-	AddIndexed( interface, mii );
-	
-	lua_rawseti( L, -2, InterfaceKey ); // ..., env = { ..., interface }
-	lua_pushinteger( L, MemoryVersion ); // ..., env, version
-	lua_rawseti( L, -2, VersionKey ); // ..., env = { ..., version }
-	luaL_newmetatable( L, CORONA_DUMMY_MEMORY_METATABLE ); // ..., env, dummy_mt
-	lua_pushlightuserdata( L, ( void* )lua_topointer( L, -1 ) ); // ..., env, dummy_mt, dummy_mt_ptr
-	lua_rawseti( L, -3, DummyMTKey ); // ..., env = { ..., dummy_mt_ptr }, dummy_mt
-	lua_pop( L, 1 ); // ..., env
-
-	size_t proxy_size = mii->dataSize > 0 ? ( size_t )mii->dataSize : 0;
-
-	lua_newuserdata( L, ( size_t )proxy_size ); // ..., env, proxy
-	lua_insert( L, -2 ); // ..., proxy, env
-	lua_setfenv( L, -2 ); // ..., proxy; proxy.environment = env
-
-	return 1;
-}
-
-// ----------------------------------------------------------------------------
-
-static bool IsMemoryProxy( lua_State *L, int arg )
-{
-	if ( !lua_isuserdata( L, arg ) )
-	{
-		return false;
-	}
-
-	int top = lua_gettop( L ), is_proxy = 0;
-
-	lua_getfenv( L, arg ); // ..., object, ..., env
-	lua_rawgeti( L, -1, DummyMTKey ); // ..., object, ..., env, dummy_mt_ptr?
-
-	if ( !lua_isnil( L, -1 ) )
-	{
-		luaL_getmetatable( L, CORONA_DUMMY_MEMORY_METATABLE ); // ..., object, ..., env, dummy_mt_ptr, dummy_mt
-
-		is_proxy = lua_touserdata( L, -2 ) == lua_topointer( L, -1 );
-	}
-
-	lua_settop( L, top ); // ..., object, ...
-
-	return is_proxy;
-}
-
-// ----------------------------------------------------------------------------
-
-struct LightUserdataEncoding {
-	U16 fGuardBits1 : 2;
-	U16 fID : 12;
-	U16 fGuardBits2 : 2;
-	U16 fContext;
-
-	static U16 MaxID() { return (1 << 12) - 1; }
-	static U16 GuardBitPattern1() { return (1 << 0) + (0 << 1); }
-	static U16 GuardBitPattern2() { return (0 << 0) + (1 << 1); }
-};
-
-union LightUserdataPunning {
-	void * fPointer;
-	LightUserdataEncoding fEncoding;
-};
-
-static_assert( sizeof( LightUserdataEncoding ) <= sizeof( void* ), "Lossy encoding as light userdata" );
-
-// ----------------------------------------------------------------------------
-
-#define CORONA_MEMORY_LOOKUP_SLOTS "MemoryBindLookupSlots"
-
-CORONA_API
-int CoronaMemoryBindLookupSlot( lua_State *L, unsigned short *id )
-{
-	if ( !IsMemoryProxy( L, -1 ) )
-	{
-		CORONA_LOG_WARNING( "Expected memory proxy on top of stack" );
-
-		return 0;
-	}
-
-	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., proxy, slots?
-
-	if ( lua_isnil( L, -1 ) )
-	{
-		lua_pop( L, 1 ); // ..., proxy
-		lua_newtable( L ); // ..., proxy, slots
-		lua_pushvalue( L, -1 ); // ..., proxy, slots, slots
-		lua_setfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., proxy, slots; registry[SLOTS] = slots
-	}
-
-	size_t frontier = lua_objlen( L, -1 ); // find a position before a free slot: N.B. that might be a hole, per behavior of Lua's # operator
-
-	if ( frontier < LightUserdataEncoding::MaxID() )
-	{
-		lua_insert( L, -2 ); // ..., slots, proxy
-		lua_rawseti( L, -2, ( int )frontier + 1 ); // ..., slots = { ..., [slot] = proxy }
-		lua_pop( L, 1 ); // ...
-
-		*id = static_cast< unsigned short >( frontier );
-
-		return 1;
-	}
-
-	else
-	{
-		lua_pop( L, 2 ); // ...
-
-		CORONA_LOG_WARNING( "Lookup slots all bound" );
-
-		return 0;
-	}
-}
-
-// ----------------------------------------------------------------------------
-
-CORONA_API
-int CoronaMemoryReleaseLookupSlot( lua_State *L, unsigned short id )
-{
-	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
-
-	int top = lua_gettop( L ), exists = 0;
-
-	if ( !lua_isnil( L, -1 ) )
-	{
-		lua_rawgeti( L, -1, ( int )id + 1 ); // ..., slots, exists
-
-		exists = !lua_isnil( L, -1 );
-	}
-
-	if ( exists )
-	{
-		lua_pushnil( L ); // ..., slots, nil
-		lua_rawseti( L, -2, ( int )id + 1 ); // ..., slots = { ..., [slot] = nil }
-	}
-
-	else
-	{
-		CORONA_LOG_WARNING( "Attempt to release lookup slot %u, but not bound", ( unsigned int )id );
-	}
-	
-	lua_settop( L, top ); // ...
-
-	return exists;
-}
-
-// ----------------------------------------------------------------------------
-
-CORONA_API
-int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned short context )
-{
-	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
-
-	int top = lua_gettop( L ), exists = 0;
-
-	if ( !lua_isnil( L, -1 ) )
-	{
-		lua_rawgeti( L, -1, ( int )id + 1 ); // ..., slots, exists
-
-		exists = !lua_isnil( L, -1 );
-	}
-
-	else
-	{
-		CORONA_LOG_WARNING( "Attempt to push lookup encoding (context = %u), but id = %u not bound", ( unsigned int )context, ( unsigned int )id );
-	}
-
-	lua_settop( L, top ); // ...
-
-	if ( exists )
-	{
-		LightUserdataPunning punning;
-
-		punning.fEncoding.fID = id;
-		punning.fEncoding.fContext = context;
-		punning.fEncoding.fGuardBits1 = LightUserdataEncoding::GuardBitPattern1();
-		punning.fEncoding.fGuardBits2 = LightUserdataEncoding::GuardBitPattern2();
-
-		lua_pushlightuserdata(L, punning.fPointer ); // ..., encoding
-	}
-
-	return exists;
-}
-
-// ----------------------------------------------------------------------------
-
 #define CORONA_MEMORY_STRING_PROXY "MemoryStringProxy"
 
 static const unsigned char* GetStringReadableBytes( CoronaMemoryWorkspace *ws )
@@ -478,11 +465,36 @@ static bool GetStringInterfaceProxy( lua_State *L )
 
 // ----------------------------------------------------------------------------
 
+static void PopulateInterface( CoronaMemoryAcquireState *state, CoronaMemoryInterfaceInfo *mii )
+{
+	state->interface.getByteCount = GetByteCount;
+	
+	AddReadableBytes( &state->interface, mii );
+	AddWriteableBytes( &state->interface, mii );
+	AddResize( &state->interface, mii );
+	AddAlignment( &state->interface, mii );
+	AddIndexed( &state->interface, mii );
+}
+
+static void DummyInterface( CoronaMemoryAcquireState *state )
+{
+	state->interface.getReadableBytes = NullRead;
+	state->interface.getReadableBytesOfSize = NullReadOfSize;
+	state->interface.copyBytesTo = NullCopyTo;
+	state->interface.getWriteableBytes = NullWrite;
+	state->interface.getWriteableBytesOfSize = NullWriteOfSize;
+	state->interface.resize = NullResize;
+	state->interface.getByteCount = NullByteCount;
+	state->interface.getAlignment = NullGetAlignment;
+	state->interface.getSize = NullGetIndexed;
+	state->interface.getStride = NullGetIndexed;
+}
+
+// ----------------------------------------------------------------------------
+
 CORONA_API
 int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireState *state )
 {
-	arg = CoronaLuaNormalize( L, arg );
-
 	int type = lua_type( L, arg ), top = lua_gettop( L );
 	bool found = false;
 
@@ -524,7 +536,7 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 		found = IsMemoryProxy( L, -1 );
 	}
 	
-	int result = 0;
+	CoronaMemoryInterfaceInfo *interface_info = NULL;
 	
 	if (found)
 	{
@@ -532,14 +544,11 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 		
 		lua_getfenv( L, -1 ); // ..., object, ..., proxy, env
 		lua_rawgeti( L, -1, InfoKey ); // ..., object, ..., proxy, env, info
-		lua_rawgeti( L, -2, InterfaceKey ); // ..., object, ..., proxy, env, info, interface
-		lua_rawgeti( L, -3, VersionKey ); // ..., object, ..., proxy, env, info, interface, version
+		lua_rawgeti( L, -3, VersionKey ); // ..., object, ..., proxy, env, info, version
 	
-		CoronaMemoryInterfaceInfo *interface_info = ( CoronaMemoryInterfaceInfo* )lua_touserdata( L, -3 );
-
-		state->interface = *( CoronaMemoryInterface* )lua_touserdata( L, -2 );
+		interface_info = ( CoronaMemoryInterfaceInfo* )lua_touserdata( L, -2 );
 		state->callbacks = &interface_info->callbacks;
-		state->version = lua_tointeger( L, -1 );
+		state->version = ( int )lua_tointeger( L, -1 );
 
 		size_t dataSize = lua_objlen( L, -4 );
 		
@@ -551,29 +560,42 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 		
 		else
 		{
-			lua_rawgeti( L, -4, DataKey ); // ..., object, ..., proxy, env, info, interface, version, data?
+			lua_rawgeti( L, -4, DataKey ); // ..., object, ..., proxy, env, info, version, data?
 
 			state->workspace.data = lua_touserdata( L, -1 );
 			state->workspace.dataSize = lua_objlen( L, -1 );
 		}
-		
-		lua_settop( L, top ); // ..., object, ...
-		
+	}
+	
+	else
+	{
+		CORONA_LOG_WARNING( "Unable to find memory interface proxy" );
+	}
+	
+	lua_settop( L, top ); // ..., object, ...
+	
+	int result = 0;
+	
+	if ( found )
+	{
 		*state->workspace.error = '\0';
 
-		result = interface_info->getObject( L, arg, &state->workspace ); // might adjust stack
+		result = interface_info->getObject( L, arg, &state->workspace ); // n.b. might adjust stack
 
-		if ( !result )
+		if ( result )
+		{
+			PopulateInterface( state, interface_info );
+		}
+		
+		else
 		{
 			CORONA_LOG_WARNING( "Failed to get object memory" );
 		}
 	}
-	
-	else
-	{		
-		lua_settop( L, top ); // ..., object, ...
 
-		CORONA_LOG_WARNING( "Unable to find memory interface proxy" );
+	if ( !result )
+	{
+		DummyInterface( state );
 	}
 
 	return result;

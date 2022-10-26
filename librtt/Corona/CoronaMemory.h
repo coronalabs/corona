@@ -12,7 +12,7 @@
 #define _CoronaMemory_H__
 
 #include "CoronaMacros.h"
-
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -217,9 +217,8 @@ struct CoronaMemoryInterfaceInfo {
 struct CoronaMemoryAcquireState; // forward reference
 
 /**
- Memory operations  built atop the user-provided callbacks.
- It uses the Pimpl idiom to handle versioning, providing always-fail / no-op stubs for absent callbacks (optional and omitted, or
- unavailable in the corresponding memory API).
+ Memory operations built atop the user-provided callbacks.
+ Always-fail / no-op stubs will be provided for absent callbacks.
 */
 struct CoronaMemoryInterface {
 	// The following details are found in version 0+:
@@ -282,8 +281,9 @@ struct CoronaMemoryInterface {
 */
 struct CoronaMemoryAcquireState {
 	/**
-	 This is the "proper" way to use the memory interface, rather than directly invoking callbacks.
-	 Given an instance `mci`, a raw call take a form like `mci.interface.resize(&mci, newSize, NULL)`.
+	 This is the "proper" way to use the interface's callbacks, rather than directly invoking them.
+	 An example raw call, given an instance `state`: `state.interface.resize(&state, newSize, NULL)`.
+	 See also `CORONA_MEMORY_IFC` and `CORONA_MEMORY_IFC_WITH_ARGS`.
 	*/
 	CoronaMemoryInterface interface; // these build on `callbacks` and provide the "proper" way to call them
 
@@ -296,21 +296,26 @@ struct CoronaMemoryAcquireState {
 	
 	/**
 	 Workspace for the current acquire, provided to underlying callbacks.
+	 This will also be seen by `getObject()`; initial values may be supplied to it through `vars`. (N.B. a few
+	 variables will be stomped on, however, q.v. the comments on `CoronaMemoryAcquireInterface()` and
+	 `CoronaMemoryPushLookupEncoding()`.)
 	*/
 	CoronaMemoryWorkspace workspace;
 
 	/**
-	 Version of memory API, as seen by the corresponding `MemoryCreateInterface()`; it describes the memory feature set known to the object.
-	 Currently, this is 0 (original feature set), but it would be incremented if and when important features arise, such as new APIs being
-	 added, with corresponding changelists in the docs.
-	 The upshot is that one plugin might be linked against one feature level than another, so the version must be consulted to set `interface`.
+	 Version of memory API known to the object, describing its feature set.
+	 It is supplied by `CoronaMemoryCreateInterface()`, corresponding to the Solar library linked by its caller.
+	 Currently, it is always 0 (base feature set), but would be incremented if important new features were added.
+	 The upshot is that consumers and providers of memory might be in separate plugins, say, that were linked
+	 against different feature levels. The version must therefore be consulted to provide a suitable  `interface`.
 	*/
 	int version;
 };
 
 /**
- Helper to use an interface callback, given a method name, `CoronaMemoryAcquireState` object, and arguments.
- For example, one can do `bytes = CORONA_MEMORY_IFC(getReadableBytes, state);` to get the readable bytes.
+ Helpers to use interface callbacks, given a method name and `CoronaMemoryAcquireState` object.
+ For example, one can do `bytes = CORONA_MEMORY_IFC(getReadableBytes, state);` to get the readable bytes, or
+ `ok = CORONA_MEMORY_IFC_WITH_ARGS(resize, state, newSize, writeable)` to attempt a resize of writeable bytes.
 */
 #define CORONA_MEMORY_IFC( NAME, CMAS ) OBJECT.interface.NAME( &CMAS )
 #define CORONA_MEMORY_IFC_WITH_ARGS( NAME, CMAS, ... ) OBJECT.interface.NAME( &CMAS, __VA_ARGS__ )
@@ -318,11 +323,11 @@ struct CoronaMemoryAcquireState {
 // C API
 // ----------------------------------------------------------------------------
 
-/////////////////////
-// 
-// Memory providers:
-// 
-/////////////////////
+/**
+ *
+ * Memory providers:
+ *
+ */
 
 /**
 	TODO TODO TODO TODO TODO
@@ -341,44 +346,46 @@ int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *
 																				// others are fine for custom use
 
 /**
-	TODO TODO TODO TODO TODO
-	N.B. A few bits are reserved, so (assuming `sizeof(unsigned short)` = 16, there are < 2^16 available slots.
+	Given a memory proxy, as returned by `CoronaMemoryCreateInterface()`, on top of the stack,
+	associates it with a lookup slot. While the proxy is bound to the slot, encodings may be made
+	referencing it via calls to `CoronaMemoryPushLookupEncoding()`.
+	N.B. A few bits are reserved, so there are fewer than 2^16 available slots. If all slots happen
+	to be in use, the bind will fail.
 	@param L Lua state pointer.
-	@param id ID used to refer to the proxy and form encodings.
+	@param id ID used to refer to the proxy / lookup slot.
 	@return If non-0, success, `id` is populated, and the proxy is popped from the stack.
 */
 CORONA_API
-int CoronaMemoryBindLookupSlot( lua_State *L, unsigned short *id ) CORONA_PUBLIC_SUFFIX; // returns non-0 on success, and populates `id`
+int CoronaMemoryBindLookupSlot( lua_State *L, uint16_t *id ) CORONA_PUBLIC_SUFFIX; // returns non-0 on success, and populates `id`
 													// per the above, the `id` would reference a memory proxy that was on top of the stack, adding it to the registry table
 /**
-	TODO TODO TODO TODO TODO
+	Unbind a lookup slot and detach the proxy associated with it.
 	@param L Lua state pointer.
 	@param id An ID returned by `CoronaMemoryBindLookupSlot`.
 	@return If non-0, the slot was in use.
 */
 CORONA_API
-int CoronaMemoryReleaseLookupSlot( lua_State *L, unsigned short id ) CORONA_PUBLIC_SUFFIX; // this would be called, say, in an object's `__gc`, a "finalize" event, or some other `destroy()` logic
+int CoronaMemoryReleaseLookupSlot( lua_State *L, uint16_t id ) CORONA_PUBLIC_SUFFIX; // this would be called, say, in an object's `__gc`, a "finalize" event, or some other `destroy()` logic
 											// `id` may again be allocated after this; any lingering encodings are invalidated
 
 /**
-	Encodes an ID / context pair as a light userdata.
-	If `CoronaMemoryAcquireInterface()` encounters such a value, it will use the bound proxy rather than consult a `__memory`
-	metafield. Furthermore, before `getObject()` is called, `vars[0].u` will be non-0, while `vars[1].u` and `vars[2].u` will
-	be assigned `id` and `context`, respectively.
-	This API is meant, via `context`, to allow multiple values to be produced from a common data source such as an array.
+	Encode an ID / context pair as a light userdata.
+	If `CoronaMemoryAcquireInterface()` encounters such a value, it will use the proxy bound to the ID. Furthermore, before
+	`getObject()` is called, `vars[0].u` will be non-0, and `vars[1].u` and `vars[2].u` will be set to `id` and `context`, respectively.
+	This API is meant, via `context`, to allow multiple values to be provided from a common data source, e.g. an array.
 	@param L Lua state pointer.
 	@param id An ID returned by `CoronaMemoryBindLookupSlot`.
-	@param context User-defined value used to associate some information with the ID. 
+	@param context 16-bit user-defined value to pair with the ID.
 	@return If non-0, success, and the userdata will be on top of the stack.
 */
 CORONA_API
-int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned short context ) CORONA_PUBLIC_SUFFIX;
+int CoronaMemoryPushLookupEncoding( lua_State *L, uint16_t id, uint16_t context ) CORONA_PUBLIC_SUFFIX;
 
-/////////////////////
-// 
-// Memory consumers:
-//
-/////////////////////
+/**
+ *
+ * Memory consumers:
+ *
+ */
 
 /**
 	TODO TODO TODO TODO TODO
@@ -391,7 +398,7 @@ int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned sh
 	@param L Lua state pointer.
 	@param arg Object that will provide the memory.
 	@param state State used to interface with the acquired memory.
-	@return If non-0, success, and `state` is populated. (On failure, `state->interface` will be dummied out.)
+	@return If non-0, success, and `state` is populated. (On failure, a dummy interface will be assigned.)
 */
 CORONA_API
 int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireState *state ) CORONA_PUBLIC_SUFFIX;
