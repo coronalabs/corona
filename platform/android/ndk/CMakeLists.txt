@@ -552,9 +552,9 @@ add_library( corona SHARED
 		${Lua2CppOutputDir}/kernel_filter_blurGaussian_gl.cpp
 		${Lua2CppOutputDir}/kernel_filter_blurHorizontal_gl.cpp
 		${Lua2CppOutputDir}/kernel_filter_blurVertical_gl.cpp
-		${Lua2CppOutputDir}/librtt/Display/Shader/kernel_filter_blurGaussianLinear_gl.cpp
-		${Lua2CppOutputDir}/librtt/Display/Shader/kernel_filter_blurLinearHorizontal_gl.cpp
-		${Lua2CppOutputDir}/librtt/Display/Shader/kernel_filter_blurLinearVertical_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_blurGaussianLinear_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_blurLinearHorizontal_gl.cpp
+		${Lua2CppOutputDir}/kernel_filter_blurLinearVertical_gl.cpp
 		${Lua2CppOutputDir}/kernel_filter_brightness_gl.cpp
 		${Lua2CppOutputDir}/kernel_filter_bulge_gl.cpp
 		${Lua2CppOutputDir}/kernel_filter_chromaKey_gl.cpp
