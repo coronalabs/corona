@@ -12,7 +12,6 @@
 #define _CoronaMemory_H__
 
 #include "CoronaMacros.h"
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -353,7 +352,7 @@ int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *
 	@return If non-0, success, `id` is populated, and the proxy is popped from the stack.
 */
 CORONA_API
-int CoronaMemoryBindLookupSlot( lua_State *L, uint16_t *id ) CORONA_PUBLIC_SUFFIX;
+int CoronaMemoryBindLookupSlot( lua_State *L, unsigned short *id ) CORONA_PUBLIC_SUFFIX;
 
 /**
 	Unbind a lookup slot and detach the proxy associated with it.
@@ -363,7 +362,7 @@ int CoronaMemoryBindLookupSlot( lua_State *L, uint16_t *id ) CORONA_PUBLIC_SUFFI
 	@return If non-0, the slot was in use.
 */
 CORONA_API
-int CoronaMemoryReleaseLookupSlot( lua_State *L, uint16_t id ) CORONA_PUBLIC_SUFFIX;
+int CoronaMemoryReleaseLookupSlot( lua_State *L, unsigned short id ) CORONA_PUBLIC_SUFFIX;
 
 /**
 	Encode an ID / context pair as a light userdata.
@@ -377,7 +376,7 @@ int CoronaMemoryReleaseLookupSlot( lua_State *L, uint16_t id ) CORONA_PUBLIC_SUF
 	@return If non-0, success, and the userdata will be on top of the stack.
 */
 CORONA_API
-int CoronaMemoryPushLookupEncoding( lua_State *L, uint16_t id, uint16_t context ) CORONA_PUBLIC_SUFFIX;
+int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned short context ) CORONA_PUBLIC_SUFFIX;
 
 /**
  *

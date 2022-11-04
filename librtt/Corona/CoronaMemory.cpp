@@ -138,7 +138,7 @@ static_assert( sizeof( LightUserdataEncoding ) <= sizeof( void* ), "Lossy encodi
 #define CORONA_MEMORY_LOOKUP_SLOTS "MemoryBindLookupSlots"
 
 CORONA_API
-int CoronaMemoryBindLookupSlot( lua_State *L, U16 *id )
+int CoronaMemoryBindLookupSlot( lua_State *L, unsigned short *id )
 {
 	if ( !IsMemoryProxy( L, -1 ) )
 	{
@@ -183,7 +183,7 @@ int CoronaMemoryBindLookupSlot( lua_State *L, U16 *id )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaMemoryReleaseLookupSlot( lua_State *L, U16 id )
+int CoronaMemoryReleaseLookupSlot( lua_State *L, unsigned short id )
 {
 	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
 
@@ -215,7 +215,7 @@ int CoronaMemoryReleaseLookupSlot( lua_State *L, U16 id )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaMemoryPushLookupEncoding( lua_State *L, U16 id, U16 context )
+int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned short context )
 {
 	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
 
