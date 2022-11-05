@@ -828,7 +828,9 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 	[self resizeNativeDisplayObjects];
 
 	// Update rectangle used for mouseMoved: events
-	[self removeTrackingRect:trackingRectTag];
+	if(trackingRectTag) {
+		[self removeTrackingRect:trackingRectTag];
+	}
 	trackingRectTag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
 
 	if (! isSimulatorView && sizeChanged && self.isReady && self.runtime != NULL )
@@ -1054,7 +1056,9 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 - (void)viewDidMoveToWindow
 {
 	// We may have called addTrackingRect: in a setFrame: call before we get here
-	[self removeTrackingRect:trackingRectTag];
+	if(trackingRectTag) {
+		[self removeTrackingRect:trackingRectTag];
+	}
 
 	// Limit mouse events to the view's bounds
 	NSRect r = [self bounds];
