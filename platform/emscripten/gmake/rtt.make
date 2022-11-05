@@ -303,6 +303,9 @@ OBJECTS := \
 	$(OBJDIR)/kernel_filter_bloom_gl.o \
 	$(OBJDIR)/kernel_filter_blur_gl.o \
 	$(OBJDIR)/kernel_filter_blurGaussian_gl.o \
+	$(OBJDIR)/kernel_filter_blurLinearVertical_gl.o \
+	$(OBJDIR)/kernel_filter_blurLinearHorizontal_gl.o \
+	$(OBJDIR)/kernel_filter_blurGaussianLinear_gl.o \
 	$(OBJDIR)/kernel_filter_blurHorizontal_gl.o \
 	$(OBJDIR)/kernel_filter_blurVertical_gl.o \
 	$(OBJDIR)/kernel_filter_brightness_gl.o \
@@ -1389,6 +1392,18 @@ $(OBJDIR)/kernel_filter_blur_gl.o: ../lua/kernel_filter_blur_gl.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/kernel_filter_blurGaussian_gl.o: ../lua/kernel_filter_blurGaussian_gl.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/kernel_filter_blurLinearVertical_gl.o: ../lua/kernel_filter_blurLinearVertical_gl.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/kernel_filter_blurLinearHorizontal_gl.o: ../lua/kernel_filter_blurLinearHorizontal_gl.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/kernel_filter_blurGaussianLinear_gl.o: ../lua/kernel_filter_blurGaussianLinear_gl.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
