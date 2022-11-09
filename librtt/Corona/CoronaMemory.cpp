@@ -30,7 +30,7 @@ static const int MemoryVersion = 0;
 CORONA_API
 int CoronaMemoryCreateInterface( lua_State *L, const CoronaMemoryInterfaceInfo *info )
 {
-	if (!info->callbacks.getReadableBytes && !info->callbacks.getWriteableBytes)
+	if ( !info->callbacks.getReadableBytes && !info->callbacks.getWriteableBytes )
 	{
 		CORONA_LOG_WARNING( "Interface must have either `getReadableBytes()` or `getWriteableBytes()` callback (or both)" );
 
@@ -121,13 +121,13 @@ struct LightUserdataEncoding {
 	U16 fGuardBits2 : 2;
 	U16 fContext;
 
-	static U16 MaxID() { return (1 << 12) - 1; }
-	static U16 GuardBitPattern1() { return (1 << 0) + (0 << 1); }
-	static U16 GuardBitPattern2() { return (0 << 0) + (1 << 1); }
+	static U16 MaxID() { return ( 1 << 12 ) - 1; }
+	static U16 GuardBitPattern1() { return ( 1 << 0 ) + ( 0 << 1 ); }
+	static U16 GuardBitPattern2() { return ( 0 << 0 ) + ( 1 << 1 ); }
 };
 
 union LightUserdataPunning {
-	void * fPointer;
+	void* fPointer;
 	LightUserdataEncoding fEncoding;
 };
 
@@ -185,21 +185,21 @@ int CoronaMemoryBindLookupSlot( lua_State *L, unsigned short *id )
 CORONA_API
 int CoronaMemoryReleaseLookupSlot( lua_State *L, unsigned short id )
 {
-	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
-
 	int top = lua_gettop( L ), exists = 0;
+
+	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
 
 	if ( !lua_isnil( L, -1 ) )
 	{
-		lua_rawgeti( L, -1, ( int )id + 1 ); // ..., slots, exists
+		lua_rawgeti( L, -1, ( int )id + 1 ); // ..., slots, true, exists
 
 		exists = !lua_isnil( L, -1 );
 	}
 
 	if ( exists )
 	{
-		lua_pushnil( L ); // ..., slots, nil
-		lua_rawseti( L, -2, ( int )id + 1 ); // ..., slots = { ..., [slot] = nil }
+		lua_pushnil( L ); // ..., slots, true, nil
+		lua_rawseti( L, -3, ( int )id + 1 ); // ..., slots = { ..., [slot] = nil }, true
 	}
 
 	else
@@ -217,20 +217,15 @@ int CoronaMemoryReleaseLookupSlot( lua_State *L, unsigned short id )
 CORONA_API
 int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned short context )
 {
-	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
-
 	int top = lua_gettop( L ), exists = 0;
+
+	lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., slots?
 
 	if ( !lua_isnil( L, -1 ) )
 	{
 		lua_rawgeti( L, -1, ( int )id + 1 ); // ..., slots, exists
 
 		exists = !lua_isnil( L, -1 );
-	}
-
-	else
-	{
-		CORONA_LOG_WARNING( "Attempt to push lookup encoding (context = %u), but id = %u not bound", ( unsigned int )context, ( unsigned int )id );
 	}
 
 	lua_settop( L, top ); // ...
@@ -244,7 +239,12 @@ int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned sh
 		punning.fEncoding.fGuardBits1 = LightUserdataEncoding::GuardBitPattern1();
 		punning.fEncoding.fGuardBits2 = LightUserdataEncoding::GuardBitPattern2();
 
-		lua_pushlightuserdata(L, punning.fPointer ); // ..., encoding
+		lua_pushlightuserdata( L, punning.fPointer ); // ..., encoding
+	}
+
+	else
+	{
+		CORONA_LOG_WARNING( "Attempt to push lookup encoding (context = %u), but id = %u not bound", ( unsigned int )context, ( unsigned int )id );
 	}
 
 	return exists;
@@ -252,11 +252,11 @@ int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned sh
 
 // ----------------------------------------------------------------------------
 
-static const unsigned char * NullRead( CoronaMemoryAcquireState* ) { return NULL; }
-static const unsigned char * NullReadOfSize( CoronaMemoryAcquireState*, size_t ) { return NULL; }
-static void NullCopyTo( CoronaMemoryAcquireState *, unsigned char*, size_t, int ) {}
-static unsigned char * NullWrite( CoronaMemoryAcquireState* ) { return NULL; }
-static unsigned char * NullWriteOfSize( CoronaMemoryAcquireState*, size_t ) { return NULL; }
+static const void* NullRead( CoronaMemoryAcquireState* ) { return NULL; }
+static const void* NullReadOfSize( CoronaMemoryAcquireState*, size_t ) { return NULL; }
+static void NullCopyTo( CoronaMemoryAcquireState *, void*, size_t, int ) {}
+static void* NullWrite( CoronaMemoryAcquireState* ) { return NULL; }
+static void* NullWriteOfSize( CoronaMemoryAcquireState*, size_t ) { return NULL; }
 static int NullResize( CoronaMemoryAcquireState*, size_t, int ) { return 0; }
 static size_t NullByteCount( CoronaMemoryAcquireState* ) { return 0; }
 static size_t NullGetAlignment( CoronaMemoryAcquireState* ) { return 0; }
@@ -267,12 +267,12 @@ static int NullGetIndexed( CoronaMemoryAcquireState*, unsigned int, size_t* ) { 
 #define STATE_CALLBACK( NAME ) state->callbacks->NAME( &state->workspace )
 #define STATE_CALLBACK_WITH_ARGS( NAME, ... ) state->callbacks->NAME( &state->workspace, __VA_ARGS__ )
 
-static const unsigned char * Read( CoronaMemoryAcquireState *state )
+static const void* Read( CoronaMemoryAcquireState *state )
 {
 	return STATE_CALLBACK( getReadableBytes );
 }
 
-static const unsigned char * ReadOfSize( CoronaMemoryAcquireState *state, size_t n )
+static const void* ReadOfSize( CoronaMemoryAcquireState *state, size_t n )
 {
 	size_t count = STATE_CALLBACK( getByteCount );
 
@@ -292,7 +292,7 @@ static const unsigned char * ReadOfSize( CoronaMemoryAcquireState *state, size_t
 	}
 }
 
-static void CopyTo( CoronaMemoryAcquireState *state, unsigned char* output, size_t n, int ignoreExtra )
+static void CopyTo( CoronaMemoryAcquireState *state, void* output, size_t n, int ignoreExtra )
 {
 	size_t count = STATE_CALLBACK( getByteCount );
 
@@ -307,17 +307,17 @@ static void CopyTo( CoronaMemoryAcquireState *state, unsigned char* output, size
 
 		if ( count < n && !ignoreExtra )
 		{
-			memset( output + count, 0, n - count );
+			memset( static_cast<unsigned char*>( output ) + count, 0, n - count );
 		}
 	}
 }
 
-static unsigned char * Write( CoronaMemoryAcquireState *state )
+static void* Write( CoronaMemoryAcquireState *state )
 {
 	return STATE_CALLBACK( getWriteableBytes );
 }
 
-static unsigned char * WriteOfSize( CoronaMemoryAcquireState *state, size_t n )
+static void* WriteOfSize( CoronaMemoryAcquireState *state, size_t n )
 {
 	size_t count = STATE_CALLBACK( getByteCount );
 
@@ -369,7 +369,7 @@ static int GetStride( CoronaMemoryAcquireState *state, unsigned int index, size_
 
 static void AddReadableBytes( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceInfo *mii )
 {
-	if (mii->callbacks.getReadableBytes)
+	if ( mii->callbacks.getReadableBytes )
 	{
 		mi->getReadableBytes = Read;
 		mi->getReadableBytesOfSize = ReadOfSize;
@@ -386,7 +386,7 @@ static void AddReadableBytes( CoronaMemoryInterface *mi, const CoronaMemoryInter
 
 static void AddWriteableBytes( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceInfo *mii )
 {
-	if (mii->callbacks.getWriteableBytes)
+	if ( mii->callbacks.getWriteableBytes )
 	{
 		mi->getWriteableBytes = Write;
 		mi->getWriteableBytesOfSize = WriteOfSize;
@@ -419,9 +419,9 @@ static void AddIndexed( CoronaMemoryInterface *mi, const CoronaMemoryInterfaceIn
 
 #define CORONA_MEMORY_STRING_PROXY "MemoryStringProxy"
 
-static const unsigned char* GetStringReadableBytes( CoronaMemoryWorkspace *ws )
+static const void* GetStringReadableBytes( CoronaMemoryWorkspace *ws )
 {
-	return static_cast< const unsigned char* >( ws->vars[0].cp );
+	return ws->vars[0].cp;
 }
 
 static size_t GetStringByteCount( CoronaMemoryWorkspace *ws )
@@ -467,27 +467,27 @@ static bool GetStringInterfaceProxy( lua_State *L )
 
 static void PopulateInterface( CoronaMemoryAcquireState *state, CoronaMemoryInterfaceInfo *mii )
 {
-	state->interface.getByteCount = GetByteCount;
+	state->methods.getByteCount = GetByteCount;
 	
-	AddReadableBytes( &state->interface, mii );
-	AddWriteableBytes( &state->interface, mii );
-	AddResize( &state->interface, mii );
-	AddAlignment( &state->interface, mii );
-	AddIndexed( &state->interface, mii );
+	AddReadableBytes( &state->methods, mii );
+	AddWriteableBytes( &state->methods, mii );
+	AddResize( &state->methods, mii );
+	AddAlignment( &state->methods, mii );
+	AddIndexed( &state->methods, mii );
 }
 
 static void DummyInterface( CoronaMemoryAcquireState *state )
 {
-	state->interface.getReadableBytes = NullRead;
-	state->interface.getReadableBytesOfSize = NullReadOfSize;
-	state->interface.copyBytesTo = NullCopyTo;
-	state->interface.getWriteableBytes = NullWrite;
-	state->interface.getWriteableBytesOfSize = NullWriteOfSize;
-	state->interface.resize = NullResize;
-	state->interface.getByteCount = NullByteCount;
-	state->interface.getAlignment = NullGetAlignment;
-	state->interface.getSize = NullGetIndexed;
-	state->interface.getStride = NullGetIndexed;
+	state->methods.getReadableBytes = NullRead;
+	state->methods.getReadableBytesOfSize = NullReadOfSize;
+	state->methods.copyBytesTo = NullCopyTo;
+	state->methods.getWriteableBytes = NullWrite;
+	state->methods.getWriteableBytesOfSize = NullWriteOfSize;
+	state->methods.resize = NullResize;
+	state->methods.getByteCount = NullByteCount;
+	state->methods.getAlignment = NullGetAlignment;
+	state->methods.getSize = NullGetIndexed;
+	state->methods.getStride = NullGetIndexed;
 }
 
 // ----------------------------------------------------------------------------
@@ -512,13 +512,13 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 		if ( LightUserdataEncoding::GuardBitPattern1() == punning.fEncoding.fGuardBits1 && LightUserdataEncoding::GuardBitPattern2() == punning.fEncoding.fGuardBits2 )
 		{
 			lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., object, ..., slots?
-			
+
 			if ( !lua_isnil( L, -1 ) )
 			{
 				lua_rawgeti( L, -1, ( int )punning.fEncoding.fID + 1 ); // ..., object, ..., slots, proxy?
 				
 				found = !lua_isnil( L, -1 );
-				
+
 				if ( found )
 				{
 					state->workspace.vars[0].u = 1;
@@ -529,7 +529,7 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 		}
 	}
 
-	else if (luaL_getmetafield( L, arg, "__memory" ) ) // ..., object, ...[, proxy]
+	else if ( luaL_getmetafield( L, arg, "__memory" ) ) // ..., object, ...[, proxy]
 	{
 		state->workspace.vars[0].u = 0;
 		
@@ -538,7 +538,7 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 	
 	CoronaMemoryInterfaceInfo *interface_info = NULL;
 	
-	if (found)
+	if ( found )
 	{
 		Rtt_VERIFY( IsMemoryProxy( L, -1 ) );
 		

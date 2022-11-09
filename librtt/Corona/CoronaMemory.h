@@ -102,7 +102,7 @@ struct CoronaMemoryCallbacks {
 	 It CAN return `NULL`, say if `object` is temporarily invalid or empty, but `getByteCount()` MUST then return 0; conversely,
 	 if the latter returns non-0, `getReadableBytes()`'s result MUST point to memory at least satisfying that number of bytes.
 	*/
-	const unsigned char * ( *getReadableBytes )( CoronaMemoryWorkspace *ws );
+	const void* ( *getReadableBytes )( CoronaMemoryWorkspace *ws );
 
 	/**
 	 Optional, but see note above
@@ -116,7 +116,7 @@ struct CoronaMemoryCallbacks {
 	 @return Writeable memory corresponding to `object`.
 	 `NULL` results are as per `getReadableBytes()`.
 	*/
-	unsigned char * ( *getWriteableBytes )( CoronaMemoryWorkspace *ws );
+	void* ( *getWriteableBytes )( CoronaMemoryWorkspace *ws );
 
 	/**
 	 Required
@@ -154,7 +154,7 @@ struct CoronaMemoryCallbacks {
 	 @param ws Workspace.
 	 @return May be 0 ("normal" memory) or a suitable power of 2.
 	*/
-	size_t ( *getAlignment )(CoronaMemoryWorkspace *ws );
+	size_t ( *getAlignment )( CoronaMemoryWorkspace *ws );
 
 	/**
 	 Optional
@@ -221,7 +221,7 @@ struct CoronaMemoryInterface {
 	/**
 	 Passthrough wrapper to `getReadableBytes()`, if available, else returns `NULL`.
 	*/
-	const unsigned char * ( *getReadableBytes )( CoronaMemoryAcquireState *state );
+	const void* ( *getReadableBytes )( CoronaMemoryAcquireState *state );
 
 	/**
 	 If `getReadableBytes()` is absent, returns `NULL`.
@@ -229,19 +229,19 @@ struct CoronaMemoryInterface {
 	 Failing that, it will call `resize()`, if present, in read mode.
 	 If the resize was successful, gets the bytes; else returns `NULL`.
 	*/
-	const unsigned char * ( *getReadableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
+	const void* ( *getReadableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
 
 	/**
 	 If `getReadableBytes()` is absent, does nothing.
 	 Otherwise, gets the bytes and writes them to `output`, up to a maximum of `outputSize` bytes. If fewer than
 	 `outputSize` bytes were available and `ignoreExtra` is 0, the leftover bytes will be set to 0.
 	*/
-	void ( *copyBytesTo )( CoronaMemoryAcquireState *state, unsigned char *output, size_t outputSize, int ignoreExtra );
+	void ( *copyBytesTo )( CoronaMemoryAcquireState *state, void* output, size_t outputSize, int ignoreExtra );
 
 	/**
 	 Passthrough wrapper to `getWriteableBytes()`, if available, else returns `NULL`.
 	*/
-	unsigned char * ( *getWriteableBytes )( CoronaMemoryAcquireState *state );
+	void* ( *getWriteableBytes )( CoronaMemoryAcquireState *state );
 
 	/**
 	 If `getWriteableBytes()` is absent, returns `NULL`.
@@ -249,7 +249,7 @@ struct CoronaMemoryInterface {
 	 Failing that, it will call `resize()`, if present, in write mode.
 	 If the resize was successful, gets the bytes; else returns `NULL`.	 
 	*/
-	unsigned char * ( *getWriteableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
+	void* ( *getWriteableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
 
 	/**
 	 Passthrough wrapper to `resize()`, if available, else returns 0.
@@ -284,15 +284,15 @@ struct CoronaMemoryInterface {
 struct CoronaMemoryAcquireState {
 	/**
 	 This is the "proper" way to use the interface's callbacks, rather than directly invoking them.
-	 An example raw call, given an instance `state`: `state.interface.resize(&state, newSize, NULL)`.
-	 See also `CORONA_MEMORY_IFC` and `CORONA_MEMORY_IFC_WITH_ARGS`.
+	 An example raw call, given an instance `state`: `state.methods.resize(&state, newSize, 0)`.
+	 See also `CORONA_MEMORY_IFC` and related macros.
 	*/
-	CoronaMemoryInterface interface;
+	CoronaMemoryInterface methods;
 
 	/**
 	 Callbacks used by the interface methods.
 	*/
-	const CoronaMemoryCallbacks * callbacks;
+	const CoronaMemoryCallbacks *callbacks;
 	
 	/**
 	 Workspace for the current acquire, provided to underlying callbacks.
@@ -314,11 +314,31 @@ struct CoronaMemoryAcquireState {
 
 /**
  Helpers to use interface callbacks, given a method name and `CoronaMemoryAcquireState` object.
- For example, one can do `bytes = CORONA_MEMORY_IFC(getReadableBytes, state);` to get the readable bytes, or
- `ok = CORONA_MEMORY_IFC_WITH_ARGS(resize, state, newSize, writeable)` to attempt a resize of writeable bytes.
+ For example, one can do `bytes = CORONA_MEMORY_IFC(state, getReadableBytes);` to get the readable bytes, or
+ `ok = CORONA_MEMORY_IFC_WITH_ARGS(state, resize, newSize, writeable)` to attempt a resize of writeable bytes.
 */
-#define CORONA_MEMORY_IFC( NAME, CMAS ) OBJECT.interface.NAME( &CMAS )
-#define CORONA_MEMORY_IFC_WITH_ARGS( NAME, CMAS, ... ) OBJECT.interface.NAME( &CMAS, __VA_ARGS__ )
+#define CORONA_MEMORY_IFC( STATE, NAME ) STATE.methods.NAME( &STATE )
+#define CORONA_MEMORY_IFC_WITH_ARGS( STATE, NAME, ... ) STATE.methods.NAME( &STATE, __VA_ARGS__ )
+
+/**
+ Variant for use with `get`-prefixed methods; it will dispense with that part.
+*/
+#define CORONA_MEMORY_GET( STATE, NAME ) CORONA_MEMORY_IFC( STATE, get##NAME )
+#define CORONA_MEMORY_GET_WITH_ARGS( STATE, NAME, ... ) CORONA_MEMORY_IFC_WITH_ARGS( STATE, get##NAME, __VA_ARGS__ )
+
+/**
+ Indicates whether a callbacks exists. (N.B. it will still have a dummy method, if not.)
+*/
+#define CORONA_MEMORY_HAS( STATE, NAME ) !!STATE.callbacks.NAME
+
+/**
+ Pointer-based variants of the above.
+*/
+#define CORONA_MEMORY_IFC_P( PSTATE, NAME ) PSTATE->methods.NAME( PSTATE )
+#define CORONA_MEMORY_IFC_WITH_ARGS_P( PSTATE, NAME, ... ) PSTATE->methods.NAME( PSTATE, __VA_ARGS__ )
+#define CORONA_MEMORY_GET_P( PSTATE, NAME ) CORONA_MEMORY_IFC_P( PSTATE, get##NAME )
+#define CORONA_MEMORY_GET_WITH_ARGS_P( PSTATE, NAME, ... ) CORONA_MEMORY_IFC_WITH_ARGS_P( PSTATE, get##NAME, __VA_ARGS__ )
+#define CORONA_MEMORY_HAS_P( PSTATE, NAME ) !!PSTATE->callbacks.NAME
 
 // C API
 // ----------------------------------------------------------------------------

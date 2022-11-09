@@ -599,7 +599,8 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 
 
 #pragma region Corona Memory APIs
-CORONA_API int CoronaMemoryCreateInterface(lua_State *L, const struct CoronaMemoryInterfaceInfo *info)
+CORONA_API
+int CoronaMemoryCreateInterface(lua_State *L, const struct CoronaMemoryInterfaceInfo *info)
 {
 	typedef int(*CoronaCallbackType)(lua_State *, const struct CoronaMemoryInterfaceInfo *);
 	CoronaCallbackLoad();
