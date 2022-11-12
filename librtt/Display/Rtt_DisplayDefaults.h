@@ -61,8 +61,12 @@ class DisplayDefaults
 		bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame;}
 		void SetImageSheetSampledInsideFrame( bool newValue ) { fIsImageSheetSampledInsideFrame = newValue; }
 
-		bool IsExternalTextureRetina() const { return fIsExternalTextureRetina;}
+		bool IsImageSheetFrameTrimCorrected() const { return fIsImageSheetFrameTrimCorrected;}
+		void SetImageSheetFrameTrimCorrected( bool newValue ) { fIsImageSheetFrameTrimCorrected = newValue; }
+
+    bool IsExternalTextureRetina() const { return fIsExternalTextureRetina;}
 		void SetExternalTextureRetina( bool newValue ) { fIsExternalTextureRetina = newValue; }
+
 	public:
 		bool IsV1Compatibility() const { return fV1Compatibility; }
 		void SetV1Compatibility( bool newValue ) { fV1Compatibility = newValue; }
@@ -99,6 +103,7 @@ class DisplayDefaults
 		bool fShaderCompilerVerbose;
 		bool fIsAnchorClamped;
 		bool fIsImageSheetSampledInsideFrame;
+		bool fIsImageSheetFrameTrimCorrected;
 		bool fIsExternalTextureRetina;
 };
 
