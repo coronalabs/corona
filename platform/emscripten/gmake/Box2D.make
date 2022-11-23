@@ -114,6 +114,7 @@ OBJECTS := \
 	$(OBJDIR)/b2RevoluteJoint.o \
 	$(OBJDIR)/b2RopeJoint.o \
 	$(OBJDIR)/b2WeldJoint.o \
+	$(OBJDIR)/b2FakeJoint.o \
 	$(OBJDIR)/b2WheelJoint.o \
 	$(OBJDIR)/b2Particle.o \
 	$(OBJDIR)/b2ParticleAssembly.o \
@@ -361,6 +362,10 @@ $(OBJDIR)/b2RopeJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2RopeJoi
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/b2WeldJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2WeldJoint.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/b2FakeJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2FakeJoint.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

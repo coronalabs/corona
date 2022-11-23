@@ -1042,6 +1042,7 @@ static const char kPivotJointType[] = "pivot";
 static const char kPistonJointType[] = "piston";
 static const char kFrictionJointType[] = "friction";
 static const char kWeldJointType[] = "weld"; // note: has no type-specific methods
+static const char kFakeJointType[] = "fake";
 static const char kWheelJointType[] = "wheel"; // combines a piston and a pivot joint, like a wheel on a shock absorber
 static const char kPulleyJointType[] = "pulley";
 static const char kTouchJointType[] = "touch";
@@ -1321,6 +1322,22 @@ newJoint( lua_State *L )
 
 			jointDef.Initialize( body1, body2, point1 );
 			if ( lua_isboolean( L, 6 ) )
+			{
+				jointDef.collideConnected = lua_toboolean( L, 6 );
+			}
+
+			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
+		}
+
+		else if ( strcmp( kFakeJointType, jointType ) == 0 )
+		{
+			b2Body *body1 = e1->GetBody();
+			b2Body *body2 = e2->GetBody();
+
+			b2FakeJointDef jointDef;
+
+			jointDef.Initialize( body1, body2 );
+			if ( lua_isboolean( L, 4 ) )
 			{
 				jointDef.collideConnected = lua_toboolean( L, 6 );
 			}

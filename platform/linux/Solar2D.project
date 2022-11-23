@@ -1026,6 +1026,7 @@
           <VirtualDirectory Name="include">
             <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2WheelJoint.h"/>
             <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2WeldJoint.h"/>
+            <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2FakeJoint.h"/>
             <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2RopeJoint.h"/>
             <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2RevoluteJoint.h"/>
             <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2PulleyJoint.h"/>
@@ -1039,6 +1040,7 @@
           </VirtualDirectory>
           <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2WheelJoint.cpp"/>
           <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2WeldJoint.cpp"/>
+          <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2FakeJoint.cpp"/>
           <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2RopeJoint.cpp"/>
           <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp"/>
           <File Name="../../external/Box2D/Box2D/Dynamics/Joints/b2PulleyJoint.cpp"/>

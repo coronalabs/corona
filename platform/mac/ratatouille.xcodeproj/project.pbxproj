@@ -335,6 +335,8 @@
 		1F34F53D21115FB2006EE117 /* Rtt_LinuxAppPackager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F34F53321115FB1006EE117 /* Rtt_LinuxAppPackager.cpp */; };
 		1F34F54021116446006EE117 /* LinuxAppBuild.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F34F53E21116445006EE117 /* LinuxAppBuild.xib */; };
 		1F34F5432111661E006EE117 /* LinuxAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1F34F5412111661E006EE117 /* LinuxAppBuildController.mm */; };
+		4123D2F7292CCD1A008C1068 /* b2FakeJoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 4123D2EF292CCD1A008C1068 /* b2FakeJoint.h */; };
+		4123D2F8292CCD1A008C1068 /* b2FakeJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4123D2F6292CCD1A008C1068 /* b2FakeJoint.cpp */; };
 		4C111FCB1B2A41B200DF8BE8 /* Rtt_KeyName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C111FC91B2A41B200DF8BE8 /* Rtt_KeyName.cpp */; };
 		5019605B186145FC0092E97E /* b2Separator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50196059186145FC0092E97E /* b2Separator.cpp */; };
 		5019605C186145FC0092E97E /* b2Separator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5019605A186145FC0092E97E /* b2Separator.h */; };
@@ -2734,6 +2736,8 @@
 		1F34F5412111661E006EE117 /* LinuxAppBuildController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LinuxAppBuildController.mm; sourceTree = "<group>"; };
 		1F34F5422111661E006EE117 /* LinuxAppBuildController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinuxAppBuildController.h; sourceTree = "<group>"; };
 		1F46A96521136B51009CC875 /* linuxPackageApp.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linuxPackageApp.lua; path = ../platform/resources/linuxPackageApp.lua; sourceTree = "<group>"; };
+		4123D2EF292CCD1A008C1068 /* b2FakeJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2FakeJoint.h; sourceTree = "<group>"; };
+		4123D2F6292CCD1A008C1068 /* b2FakeJoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2FakeJoint.cpp; sourceTree = "<group>"; };
 		4C111FC91B2A41B200DF8BE8 /* Rtt_KeyName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_KeyName.cpp; sourceTree = "<group>"; };
 		4C111FCA1B2A41B200DF8BE8 /* Rtt_KeyName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_KeyName.h; sourceTree = "<group>"; };
 		50196059186145FC0092E97E /* b2Separator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = b2Separator.cpp; path = "../../external/b2Separator-cpp/b2Separator.cpp"; sourceTree = "<group>"; };
@@ -4626,6 +4630,8 @@
 		50E7D4B8198090420005948F /* Joints */ = {
 			isa = PBXGroup;
 			children = (
+				4123D2F6292CCD1A008C1068 /* b2FakeJoint.cpp */,
+				4123D2EF292CCD1A008C1068 /* b2FakeJoint.h */,
 				50E7D4B9198090420005948F /* b2DistanceJoint.cpp */,
 				50E7D4BA198090420005948F /* b2DistanceJoint.h */,
 				50E7D4BB198090420005948F /* b2FrictionJoint.cpp */,
@@ -5726,6 +5732,7 @@
 				50E7D546198090430005948F /* b2Particle.h in Headers */,
 				50E7D50B198090430005948F /* b2Timer.h in Headers */,
 				50E7D50D198090430005948F /* b2TrackedBlock.h in Headers */,
+				4123D2F7292CCD1A008C1068 /* b2FakeJoint.h in Headers */,
 				50E7D550198090430005948F /* b2VoronoiDiagram.h in Headers */,
 				50E7D542198090430005948F /* b2WeldJoint.h in Headers */,
 				50E7D544198090430005948F /* b2WheelJoint.h in Headers */,
@@ -7197,6 +7204,7 @@
 				50E7D529198090430005948F /* b2PolygonAndCircleContact.cpp in Sources */,
 				50E7D52B198090430005948F /* b2PolygonContact.cpp in Sources */,
 				50E7D4F5198090430005948F /* b2PolygonShape.cpp in Sources */,
+				4123D2F8292CCD1A008C1068 /* b2FakeJoint.cpp in Sources */,
 				50E7D539198090430005948F /* b2PrismaticJoint.cpp in Sources */,
 				50E7D53B198090430005948F /* b2PulleyJoint.cpp in Sources */,
 				50E7D53D198090430005948F /* b2RevoluteJoint.cpp in Sources */,

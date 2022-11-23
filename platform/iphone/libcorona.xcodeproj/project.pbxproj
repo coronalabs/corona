@@ -343,6 +343,8 @@
 		0797EB6E181F0F6A00FA57B5 /* Rtt_PlatformVideoProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0797EB6C181F0F6900FA57B5 /* Rtt_PlatformVideoProvider.cpp */; };
 		0797EB6F181F0F6A00FA57B5 /* Rtt_PlatformVideoProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 0797EB6D181F0F6900FA57B5 /* Rtt_PlatformVideoProvider.h */; };
 		07EB77C6178DD3450089B3C5 /* Rtt_SurfaceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 07EB77C5178DD3450089B3C5 /* Rtt_SurfaceInfo.h */; };
+		41FDA85D292DBF6F00ABB854 /* b2FakeJoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 41FDA85B292DBF6F00ABB854 /* b2FakeJoint.h */; };
+		41FDA85E292DBF6F00ABB854 /* b2FakeJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41FDA85C292DBF6F00ABB854 /* b2FakeJoint.cpp */; };
 		5009C120186239480075E34C /* Rtt_PhysicsTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5009C11F186239480075E34C /* Rtt_PhysicsTypes.h */; };
 		5009C125186239780075E34C /* b2Separator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5009C123186239780075E34C /* b2Separator.cpp */; };
 		5009C126186239780075E34C /* b2Separator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5009C124186239780075E34C /* b2Separator.h */; };
@@ -1261,6 +1263,8 @@
 		0797EB6C181F0F6900FA57B5 /* Rtt_PlatformVideoProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_PlatformVideoProvider.cpp; sourceTree = "<group>"; };
 		0797EB6D181F0F6900FA57B5 /* Rtt_PlatformVideoProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_PlatformVideoProvider.h; sourceTree = "<group>"; };
 		07EB77C5178DD3450089B3C5 /* Rtt_SurfaceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_SurfaceInfo.h; sourceTree = "<group>"; };
+		41FDA85B292DBF6F00ABB854 /* b2FakeJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2FakeJoint.h; sourceTree = "<group>"; };
+		41FDA85C292DBF6F00ABB854 /* b2FakeJoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2FakeJoint.cpp; sourceTree = "<group>"; };
 		5009C11F186239480075E34C /* Rtt_PhysicsTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_PhysicsTypes.h; sourceTree = "<group>"; };
 		5009C123186239780075E34C /* b2Separator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = b2Separator.cpp; path = "../../external/b2Separator-cpp/b2Separator.cpp"; sourceTree = "<group>"; };
 		5009C124186239780075E34C /* b2Separator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = b2Separator.h; path = "../../external/b2Separator-cpp/b2Separator.h"; sourceTree = "<group>"; };
@@ -2545,6 +2549,8 @@
 		50E7D5A8198091050005948F /* Joints */ = {
 			isa = PBXGroup;
 			children = (
+				41FDA85C292DBF6F00ABB854 /* b2FakeJoint.cpp */,
+				41FDA85B292DBF6F00ABB854 /* b2FakeJoint.h */,
 				50E7D5A9198091050005948F /* b2DistanceJoint.cpp */,
 				50E7D5AA198091050005948F /* b2DistanceJoint.h */,
 				50E7D5AB198091050005948F /* b2FrictionJoint.cpp */,
@@ -3019,6 +3025,7 @@
 				50E7D5D1198091060005948F /* Box2D.h in Headers */,
 				50E7D5DA198091060005948F /* b2Distance.h in Headers */,
 				50E7D5FD198091060005948F /* b2TrackedBlock.h in Headers */,
+				41FDA85D292DBF6F00ABB854 /* b2FakeJoint.h in Headers */,
 				50E7D610198091060005948F /* b2CircleContact.h in Headers */,
 				50E7D61A198091060005948F /* b2PolygonAndCircleContact.h in Headers */,
 				50E7D624198091060005948F /* b2Joint.h in Headers */,
@@ -3609,6 +3616,7 @@
 				50E7D5FE198091060005948F /* b2Body.cpp in Sources */,
 				50E7D621198091060005948F /* b2GearJoint.cpp in Sources */,
 				50E7D5F8198091060005948F /* b2Stat.cpp in Sources */,
+				41FDA85E292DBF6F00ABB854 /* b2FakeJoint.cpp in Sources */,
 				50E7D63A198091060005948F /* b2ParticleGroup.cpp in Sources */,
 				50E7D5E1198091060005948F /* b2CircleShape.cpp in Sources */,
 				50E7D602198091060005948F /* b2Fixture.cpp in Sources */,

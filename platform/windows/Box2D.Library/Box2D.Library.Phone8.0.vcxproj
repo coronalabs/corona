@@ -173,6 +173,7 @@
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2FakeJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2Particle.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleGroup.h" />
@@ -231,6 +232,7 @@
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2FakeJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2Particle.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleGroup.cpp" />

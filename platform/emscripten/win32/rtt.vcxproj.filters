@@ -577,6 +577,9 @@
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp">
       <Filter>box2D\Dynamic\Joints</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2FakeJoint.cpp">
+      <Filter>box2D\Dynamic\Joints</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp">
       <Filter>box2D\Dynamic\Joints</Filter>
     </ClCompile>
@@ -2228,6 +2231,9 @@
       <Filter>box2D\Dynamic\Joints</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.h">
+      <Filter>box2D\Dynamic\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2FakeJoint.h">
       <Filter>box2D\Dynamic\Joints</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h">

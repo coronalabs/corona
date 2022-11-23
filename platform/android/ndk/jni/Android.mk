@@ -931,6 +931,7 @@ LIBBOX2D_FILES := \
 	$(LIBBOX2D_DIR)/Dynamics/Joints/b2RevoluteJoint.cpp \
 	$(LIBBOX2D_DIR)/Dynamics/Joints/b2RopeJoint.cpp \
 	$(LIBBOX2D_DIR)/Dynamics/Joints/b2WeldJoint.cpp \
+	$(LIBBOX2D_DIR)/Dynamics/Joints/b2FakeJoint.cpp \
 	$(LIBBOX2D_DIR)/Dynamics/Joints/b2WheelJoint.cpp \
 	$(LIBBOX2D_DIR)/Particle/b2Particle.cpp \
 	$(LIBBOX2D_DIR)/Particle/b2ParticleAssembly.cpp \

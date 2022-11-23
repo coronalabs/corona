@@ -609,6 +609,7 @@
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2FakeJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2Particle.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleAssembly.cpp" />
