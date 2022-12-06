@@ -108,6 +108,37 @@ public:
 		}
 		return PlatformBitmap::kRGBA;
 	}
+
+	// Override this method to return correct bytes order when format is PlatformBitmap::kRGBA
+	// Temporary fixed for alpha channel index in GraphicsLibrary::newOutline()
+	virtual bool GetColorByteIndexesExternal(int *alphaIndex, int *redIndex, int *greenIndex, int *blueIndex) const override
+	{
+		bool hasSucceeded = false;
+		if (GetFormat() == PlatformBitmap::kRGBA)
+		{
+			if (alphaIndex != NULL)
+			{
+				*alphaIndex = 3;
+				hasSucceeded = true;
+			}
+			if (blueIndex != NULL)
+			{
+				*blueIndex = 2;
+				hasSucceeded = true;
+			}
+			if (greenIndex != NULL)
+			{
+				*greenIndex = 1;
+				hasSucceeded = true;
+			}
+			if (redIndex != NULL)
+			{
+				*redIndex = 0;
+				hasSucceeded = true;
+			}
+		}
+		return hasSucceeded;
+	}
 	
 	int GetField(lua_State* L, const char* field)
 	{

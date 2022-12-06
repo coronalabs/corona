@@ -144,6 +144,9 @@ class PlatformBitmap
 
 		virtual U8 GetByteAlignment() const;
 
+		// For external bitmap to fetch the correct bytes order
+		virtual bool GetColorByteIndexesExternal(int *alphaIndex, int *redIndex, int *greenIndex, int *blueIndex) const;
+
 #ifdef Rtt_ANDROID_ENV
 		void SwapRGB();
 		static void SwapBitmapRGB( char * base, int w, int h );

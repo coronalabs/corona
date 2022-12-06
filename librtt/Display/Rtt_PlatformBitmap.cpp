@@ -238,6 +238,13 @@ PlatformBitmap::CalculateRotation( Orientation start, Orientation end )
 	return result;
 }
 
+// For external bitmap to fetch the correct bytes order.
+bool
+PlatformBitmap::GetColorByteIndexesExternal(int *alphaIndex, int *redIndex, int *greenIndex, int *blueIndex) const
+{
+	return false;
+}
+
 // Retrieves the color byte indexes for a single pixel for the given image format.
 // This function takes endianness into account.
 // Index arguments will be replaced with corresponding byte indexes.

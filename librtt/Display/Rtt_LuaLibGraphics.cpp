@@ -503,10 +503,14 @@ GraphicsLibrary::newOutline( lua_State *L )
 	const unsigned char *raw_bitmap_buffer = static_cast< const unsigned char * >( platform_bitmap->GetBits( NULL ) );
 
 	int alphaIndex;
-	PlatformBitmap::Format format = platform_bitmap->GetFormat();
-	if ( ! PlatformBitmap::GetColorByteIndexesFor( format, & alphaIndex, NULL, NULL, NULL ) )
+	// No effect when platform_bitmap is not an "ExternalBitmap"
+	if ( ! platform_bitmap->GetColorByteIndexesExternal( & alphaIndex, NULL, NULL, NULL ) )
 	{
-		alphaIndex = 0;
+		PlatformBitmap::Format format = platform_bitmap->GetFormat();
+		if ( ! PlatformBitmap::GetColorByteIndexesFor( format, & alphaIndex, NULL, NULL, NULL ) )
+		{
+			alphaIndex = 0;
+		}
 	}
 #ifdef Rtt_ANDROID_ENV
 	// TODO: AndroidBitmap::GetFormat() is returning the wrong format,
