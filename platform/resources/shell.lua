@@ -368,7 +368,7 @@ function PluginSync:addPluginToQueueIfRequired( required_plugin )
 
 	-- Find reasons to queue the plugin for download.
 	local should_queue = false
-	local maxAge = system.getPreference("simulator", "SimPluginCacheMaxAge","number") or 86400
+	local maxAge = (system.getPreference("simulator", "SimPluginCacheMaxAge","number") or 24) * 3600
 
 	local manifest = self.clientCatalog[ key ]
 	should_queue = should_queue or ( not manifest )
