@@ -48,6 +48,7 @@ DisplayDefaults::DisplayDefaults()
 	fShaderCompilerVerbose( kShaderCompilerVerboseDefault ),
 	fIsAnchorClamped( true ),
 	fIsImageSheetSampledInsideFrame( false ),
+	fIsImageSheetFrameTrimCorrected( false ),
 	fIsExternalTextureRetina( true )
 {
 }
