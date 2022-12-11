@@ -776,8 +776,6 @@ export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVE
   return nil
 end
 
-
-
 --
 -- prePackageApp
 --
@@ -1008,14 +1006,19 @@ local function packageApp( options )
 			setStatus("Creating IPA for store submission...")
 			-- note we move the app to the "Payload" directory to preserve permissions and for speed which means the .app doesn't exist anymore
 			runScript( "mv " .. quoteString(makepath(options.dstDir, options.dstFile..".app")) .." ".. quoteString(makepath(ipaTmpDir, "Payload")) )
-			
+
 			--move odr resources to "Payload" folder
 			if odrOutputDir then
 				runScript( "mv " .. quoteString(makepath(odrOutputDir)) .." ".. quoteString(makepath(ipaTmpDir, "Payload")) )
 			end
-			
+
 			if bundleSwiftSupportDir then
 				runScript( "mv " .. bundleSwiftSupportDir .." ".. quoteString(ipaTmpDir) )
+			end
+
+			--remove standard resources(Corona Resources Bundle) if users selects
+			if options.includeStandardResources == false then
+				runScript("rm "..quoteString(makepath(ipaTmpDir, "CoronaResources.bundle")))
 			end
 
 			runScript( "cd " .. quoteString(ipaTmpDir) .. "; zip --symlinks -r " .. appBundleFileIPA .. " *" )
