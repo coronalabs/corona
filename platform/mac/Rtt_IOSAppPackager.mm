@@ -297,7 +297,6 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
                     
 					lua_pushboolean( L, macParams->IsLiveBuild() );
 					lua_setfield( L, -2, "liveBuild" );
-     
                     lua_pushboolean( L, macParams->IncludeStandardResources() );
 					lua_setfield( L, -2, "includeStandardResources" );
 

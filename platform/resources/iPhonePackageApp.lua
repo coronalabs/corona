@@ -983,6 +983,12 @@ local function packageApp( options )
 
 	runScript( "chmod 755 " .. appBundleFile )
 
+	--remove standard resources(Corona Resources Bundle) if users selects
+
+	if options.includeStandardResources == false then
+		runScript("rm -rf "..quoteString(makepath(appBundleFileUnquoted, "CoronaResources.bundle")))
+	end
+
 	-- If building with a distribution identity, create an IPA of the .app which can be used by Application Loader
 	local appBundleFileIPA = quoteString(makepath(options.dstDir, options.dstFile) .. ".ipa")
 	-- remove old IPA for extra cleanliness, even if we are not building a new IPA for distribution (it's stale so let's remove it)
@@ -1014,11 +1020,6 @@ local function packageApp( options )
 
 			if bundleSwiftSupportDir then
 				runScript( "mv " .. bundleSwiftSupportDir .." ".. quoteString(ipaTmpDir) )
-			end
-
-			--remove standard resources(Corona Resources Bundle) if users selects
-			if options.includeStandardResources == false then
-				runScript("rm "..quoteString(makepath(ipaTmpDir, "CoronaResources.bundle")))
 			end
 
 			runScript( "cd " .. quoteString(ipaTmpDir) .. "; zip --symlinks -r " .. appBundleFileIPA .. " *" )
@@ -1325,6 +1326,7 @@ function iPhonePostPackage( params )
 	local targetDevice = params.targetDevice
 	local targetPlatform = params.targetPlatform
 	local liveBuild = params.liveBuild
+	local includeStandardResources = params.includeStandardResources
 	local verbose = ( debugBuildProcess and debugBuildProcess > 1 )
 	local osPlatform = params.osPlatform
 	local err = nil
@@ -1347,6 +1349,7 @@ function iPhonePostPackage( params )
 		osPlatform=osPlatform,
 		sdkType=params.sdkType,
 		liveBuild=liveBuild,
+		includeStandardResources=includeStandardResources,
 	}
 
 	local customSettingsFile = srcAssets .. "/build.settings"
