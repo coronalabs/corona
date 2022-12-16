@@ -574,7 +574,9 @@ TextureFactory::FindOrCreateExternal(const std::string &cacheKey,
 		return fOwnedTextures[cacheKey];
 	}
 	
-	TextureResource *resource = TextureResourceExternal::Create( *this, callbacks, context, true );
+	bool isRetina = GetDisplay().GetDefaults().IsExternalTextureRetina();
+
+	TextureResource *resource = TextureResourceExternal::Create( *this, callbacks, context, isRetina );
 	SharedPtr< TextureResource > result = SharedPtr< TextureResource >( resource );
 	
 	fCache[cacheKey] = CacheEntry( result );

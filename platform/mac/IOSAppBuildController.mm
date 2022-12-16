@@ -262,6 +262,7 @@ static NSString *kValueNone = @"None";
     Rtt_ASSERT(appDelegate);
 
 	BOOL isLiveBuild = (fEnableLiveBuild.state == NSOnState);
+    BOOL includeStandardResources = (fIncludeStandardResources.state == NSOnState);
     BOOL shouldSendToDevice = ([postBuildRadioGroup selectedRow] == 0); // first item in radio group
     BOOL shouldOpenInXcodeSimulator = ([postBuildRadioGroup selectedRow] == 1);
     BOOL shouldSendToAppStore = ([postBuildRadioGroup selectedRow] == 2);
@@ -436,6 +437,7 @@ static NSString *kValueNone = @"None";
 
     params->SetStripDebug( isStripDebug );
 	params->SetLiveBuild(isLiveBuild);
+    params->SetIncludeStandardResources(includeStandardResources);
 	if(currentSDK.customTemplate)
 	{
 		params->SetCustomTemplate([currentSDK.customTemplate UTF8String]);

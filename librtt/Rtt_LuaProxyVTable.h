@@ -432,6 +432,7 @@ class LuaSpriteObjectProxyVTable : public LuaShapeObjectProxyVTable
 		static int pause( lua_State *L );
 		static int setSequence( lua_State *L );
 		static int setFrame( lua_State *L );
+		static int useFrameForAnchors( lua_State *L );
 
 	public:
 		LuaSpriteObjectProxyVTable() {}
