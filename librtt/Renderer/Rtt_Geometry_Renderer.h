@@ -110,6 +110,7 @@ class Geometry : public CPUResource
 		void AttachPerVertexColors( ArrayU32* colors, U32 size );
 
 		const U32* GetPerVertexColorData() const;
+		U32* GetWriteablePerVertexColorData(); // <- STEVE CHANGE
 		bool SetVertexColor( U32 index, U32 color );
 
 		// More space may be allocated than is initially needed. By default,
