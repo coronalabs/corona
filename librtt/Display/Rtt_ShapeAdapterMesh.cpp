@@ -68,13 +68,10 @@ ShapeAdapterMesh::GetMeshMode(lua_State *L, int index)
 }
 
 // STEVE CHANGE
-static int CreateBuffer( lua_State *L )
+static int MarkBuffer( lua_State *L )
 {
-	int size = luaL_checkint( L, 1 );
-
-	lua_newuserdata( L, size );
-	lua_pushvalue( L, -1 );
-	lua_pushboolean( L, 1 );
+	lua_settop(L, 1);
+	lua_pushboolean(L, 1);
 	lua_rawset( L, lua_upvalueindex(1) );
 
 	return 1;
@@ -101,8 +98,8 @@ if (!exists)
 	lua_setfield( L, -2, "__mode" );
 	lua_setmetatable( L, -1 );
 	lua_pushvalue( L, -1 );
-	lua_pushcclosure( L, CreateBuffer, 1 );
-	lua_setfield( L, LUA_REGISTRYINDEX, "_CreateBuffer" );
+	lua_pushcclosure( L, MarkBuffer, 1 );
+	lua_setfield( L, LUA_REGISTRYINDEX, "_MarkBuffer" );
 	lua_setfield( L, LUA_REGISTRYINDEX, "_BufferWT" );
 }
 // /STEVE HACK
@@ -133,7 +130,7 @@ if (!exists)
 	// /STEVE CHANGE
 	
 	TesselatorMesh::ArrayIndex& indices = tesselator.GetIndices();
-	U16 minIndex = std::numeric_limits<U16>::max(); // <- STEVE CHANGE
+	U16 minIndex = std::numeric_limits<U16>::max(), maxIndex = 0; // <- STEVE CHANGE
 	U32 baseOffset = 0; // <- STEVE CHANGE
 	lua_getfield( L, index, "indices" );
 	if (lua_istable( L, -1 ))
@@ -147,6 +144,7 @@ if (!exists)
 			{
 				U16 index = lua_tointeger( L, -1 ) - indicesStart;
 				minIndex = index < minIndex ? index : minIndex; // <- STEVE CHANGE
+				maxIndex = index > maxIndex ? index : maxIndex; // <- STEVE CHANGE
 				indices.Append(index);
 			}
 			lua_pop( L, 1 );
@@ -171,11 +169,7 @@ if (!exists)
 			U32 numIndices = lua_tointeger( L, -1 );
 			if ( numIndices > 0 )
 			{
-				indices.Reserve( numIndices );
-				for ( U32 i = 0; i < numIndices; i++ )
-				{
-					indices.WriteAccess()[i] = minIndex;
-				}
+				indices.PadToSize( numIndices, minIndex );
 			}
 		}
 		lua_pop( L, 1 );
@@ -191,7 +185,13 @@ if (!exists)
 	{
 		Rtt_ASSERT (lua_objlen( L, -1 ) % 2 == 0);
 		U32 numVertices = (U32)lua_objlen( L, -1 )/2;
-		mesh.Reserve( numVertices );
+		// STEVE CHANGE
+		if ( rebaseIndices && minIndex < std::numeric_limits<U16>::max() )
+		{
+			numVertices = maxIndex + 1;
+		}
+		// /STEVE CHANGE
+		mesh.Reserve( numVertices - baseOffset ); // <- STEVE CHANGE
 		for(U32 i=baseOffset; i<numVertices; i++) // <- STEVE CHANGE
 		{
 			lua_rawgeti( L, -1, 2*i+1 );
@@ -247,9 +247,15 @@ if (!exists)
 	if (lua_istable( L, -1))
 	{
 		U32 numUVs = (U32)lua_objlen( L, -1 )/2;
+		// STEVE CHANGE
+		if ( rebaseIndices && minIndex < std::numeric_limits<U16>::max() )
+		{
+			numUVs = maxIndex + 1;
+		}
+		// /STEVE CHANGE
 		if ( numUVs - baseOffset == (U32)mesh.Length() ) // <- STEVE CHANGE
 		{
-			UVs.Reserve( numUVs );
+			UVs.Reserve( numUVs - baseOffset ); // <- STEVE CHANGE
 			for(U32 i=baseOffset; i<numUVs; i++) // <- STEVE CHANGE
 			{
 				lua_rawgeti( L, -1, 2*i+1 );
@@ -514,8 +520,6 @@ int ShapeAdapterMesh::setUV( lua_State *L )
 
 static const unsigned char* AuxGetBuffer( lua_State *L, int index, size_t valueSize, size_t &len, size_t &n )
 {
-	index = CoronaLuaNormalize( L, index );
-
 	lua_getfield( L, LUA_REGISTRYINDEX, "_BufferWT" ); // ..., buffer, ..., wt
 	lua_pushvalue( L, index ); // ..., buffer, ..., wt, buffer
 	lua_rawget( L, -2 ); // ..., buffer, ..., wt, is_buffer
@@ -546,6 +550,8 @@ static const unsigned char* IssueWarning( const unsigned char* buffer, const cha
 
 static const unsigned char* GetBuffer( lua_State *L, int index, size_t valueSize, size_t outputLength, size_t element, size_t &n, size_t &stride )
 {
+	index = CoronaLuaNormalize( L, index );
+
 	size_t len;
 
 	const unsigned char* buffer = AuxGetBuffer( L, index, valueSize, len, n );
@@ -554,7 +560,7 @@ static const unsigned char* GetBuffer( lua_State *L, int index, size_t valueSize
 	{
 		lua_getfield( L, index, "buffer" ); // ..., t, ..., buffer
 
-		buffer = AuxGetBuffer( L, -1, valueSize, len, n );
+		buffer = AuxGetBuffer( L, lua_gettop( L ), valueSize, len, n );
 
 		lua_pop( L, 1 ); // ..., t, ...
 
@@ -636,6 +642,11 @@ static const unsigned char* GetBuffer( lua_State *L, int index, size_t valueSize
 				{
 					buffer = IssueWarning( buffer, "Buffer not large enough to supply `count` values" );
 				}
+
+				else if ( count > 0 )
+				{
+					n = count;
+				}
 			}
 
 			else
@@ -715,13 +726,29 @@ int ShapeAdapterMesh::update(lua_State *L)
 			// /STEVE CHANGE
 
 			lua_getfield(L, -1, "indices");
-			U16 minIndex = std::numeric_limits<U16>::max(); // <- STEVE CHANGE
+			U16 minIndex = std::numeric_limits<U16>::max(), maxIndex = 0; // <- STEVE CHANGE
 			// STEVE CHANGE
+			size_t stride;
 			U16 *indices = tesselator->GetIndices().WriteAccess();
 			bool changed = false;
 			U32 numIndices, indicesOutputLen = (U32)tesselator->GetIndices().Length();
+			const unsigned char* fromIndices = GetBuffer(L, -1, sizeof(U16), indicesOutputLen, 0, numIndices, stride);
+
+			if (fromIndices)
+			{
+				for (U32 i = 0; i < numIndices; i++)
+				{
+					U16 newIndex;
+					memcpy(&newIndex, fromIndices, sizeof(U16));
+					changed |= newIndex != indices[i];
+					indices[i] = newIndex;
+					minIndex = newIndex < minIndex ? newIndex : minIndex;
+					maxIndex = newIndex > maxIndex ? newIndex : maxIndex;
+					fromIndices += stride;
+				}
+			}
 			// /STEVE CHANGE
-			if (lua_istable(L, -1))
+			else if (lua_istable(L, -1)) //<- STEVE CHANGE
 			{
 				// STEVE CHANGED moved indices
 				/*U32 */numIndices = (U32)lua_objlen(L, -1); // <- STEVE CHANGE
@@ -733,6 +760,7 @@ int ShapeAdapterMesh::update(lua_State *L)
 						lua_rawgeti(L, -1, i + 1);
 						U16 index = (U16)luaL_checkinteger(L, -1) - indicesStart;
 						minIndex = index < minIndex ? index : minIndex; // <- STEVE CHANGE
+						maxIndex = index > maxIndex ? index : maxIndex; // <- STEVE CHANGE
 						if (indices[i] != index)
 						{
 							changed = true;
@@ -747,27 +775,6 @@ int ShapeAdapterMesh::update(lua_State *L)
 					CoronaLuaWarning(L, "Indices not updated: the amount of Indices in the mesh is less than the amount in the table"); // <- STEVE CHANGE
 				}
 			}
-			// STEVE CHANGE
-			else
-			{
-				size_t stride;
-
-				const unsigned char* fromIndices = GetBuffer(L, -1, sizeof(U16), indicesOutputLen, 0, numIndices, stride);
-
-				if (fromIndices)
-				{
-					for (U32 i = 0; i < numIndices; i++)
-					{
-						U16 newIndex;
-						memcpy(&newIndex, fromIndices, sizeof(U16));
-						changed |= newIndex != indices[i];
-						indices[i] = newIndex;
-						minIndex = newIndex < minIndex ? newIndex : minIndex;
-						fromIndices += stride;
-					}
-				}
-			}
-			// /STEVE CHANGE
 			// STEVE CHANGE moved if (changed)
 			U32 baseOffset = 0; // <- STEVE CHANGE
 			if (changed)
@@ -808,12 +815,31 @@ int ShapeAdapterMesh::update(lua_State *L)
 			bool updatedVertices = false; // <- STEVE CHANGE
 			Vertex2 *mesh = tesselator->GetMesh().WriteAccess(); // <- STEVE CHANGE
 			U32 numVertices, verticesOutputLen = (U32)tesselator->GetMesh().Length(); // <- STEVE CHANGE
-			if (lua_istable(L, -1))
+			// STEVE CHANGE
+			const unsigned char* fromVertices = GetBuffer(L, -1, sizeof(Vertex2), verticesOutputLen, baseOffset, numVertices, stride);
+
+			if (fromVertices)
+			{
+				updatedVertices = true;
+				if (rebaseIndices && minIndex < std::numeric_limits<U16>::max())
+				{
+					numVertices = maxIndex - minIndex + 1;
+				}
+				CopyToOutput(mesh, fromVertices, numVertices, stride);
+			}
+			// /STEVE CHANGE
+			else if (lua_istable(L, -1)) // <- STEVE CHANGE
 			{
 				/*U32 */numVertices = (U32)lua_objlen(L, -1) / 2; // <- STEVE CHANGE
 				// STEVE CHANGE moved mesh
 				if(numVertices <= verticesOutputLen) // <- STEVE CHANGE
 				{
+					// STEVE CHANGE
+					if (rebaseIndices && minIndex < std::numeric_limits<U16>::max())
+					{
+						numVertices = maxIndex - minIndex + 1;
+					}
+					// /STEVE CHANGE
 					updatedVertices = true; // <- STEVE CHANGE
 					for (U32 i = 0, j = baseOffset; i < numVertices; i++, j++) // <- STEVE CHANGE
 					{
@@ -834,20 +860,6 @@ int ShapeAdapterMesh::update(lua_State *L)
 				}
 
 			}
-			// STEVE CHANGE
-			else
-			{
-				size_t stride;
-
-				const unsigned char* fromVertices = GetBuffer(L, -1, sizeof(Vertex2), verticesOutputLen, baseOffset, numVertices, stride);
-
-				if (fromVertices)
-				{
-					updatedVertices = true;
-					CopyToOutput(mesh, fromVertices, numVertices, stride);
-				}
-			}
-			// / STEVE CHANGE
 			// STEVE CHANGE moved vertex update
 			if (updatedVertices)
 			{
@@ -892,12 +904,31 @@ int ShapeAdapterMesh::update(lua_State *L)
 			bool updatedUVs = false; // <- STEVE CHANGE
 			Vertex2 *uvs = tesselator->GetUV().WriteAccess(); // <- STEVE CHANGE
 			U32 numUVs, uvsOutputLen = (U32)tesselator->GetUV().Length(); // <- STEVE CHANGE
-			if (lua_istable(L, -1))
+			// STEVE CHANGE
+			const unsigned char* fromUVs = GetBuffer(L, -1, sizeof(Vertex2), uvsOutputLen, baseOffset, numUVs, stride);
+
+			if (fromUVs)
+			{
+				updatedUVs = true;
+				if (rebaseIndices && minIndex < std::numeric_limits<U16>::max())
+				{
+					numUVs = maxIndex - minIndex + 1;
+				}
+				CopyToOutput(uvs, fromUVs, numUVs, stride);
+			}
+			// /STEVE CHANGE
+			else if (lua_istable(L, -1)) // <- STEVE CHANGE
 			{
 				/*U32 */numUVs = (U32)lua_objlen(L, -1) / 2; // <- STEVE CHANGE
 				// Vertex2 *uvs = tesselator->GetUV().WriteAccess(); <- STEVE CHANGE
 				if (numUVs <= uvsOutputLen) // <- STEVE CHANGE
 				{
+					// STEVE CHANGE
+					if (rebaseIndices && minIndex < std::numeric_limits<U16>::max())
+					{
+						numUVs = maxIndex - minIndex + 1;
+					}
+					// /STEVE CHANGE
 					updatedUVs = true; // <- STEVE CHANGE
 					for (U32 i = 0, j = baseOffset; i < numUVs; i++, j++) // <- STEVE CHANGE
 					{
@@ -916,20 +947,6 @@ int ShapeAdapterMesh::update(lua_State *L)
 					CoronaLuaWarning(L, "UVS not updated: the amount of UVS in the mesh is less than the amount of UVS in the table"); // <- STEVE CHANGE
 				}
 			}
-			// STEVE CHANGE
-			else
-			{
-				size_t stride;
-
-				const unsigned char* fromUVs = GetBuffer(L, -1, sizeof(Vertex2), uvsOutputLen, baseOffset, numUVs, stride);
-
-				if (fromUVs)
-				{
-					updatedUVs = true;
-					CopyToOutput(uvs, fromUVs, numUVs, stride);
-				}
-			}
-			// / STEVE CHANGE
 			// STEVE CHANGE moved uv update
 			if (updatedUVs)
 			{
@@ -953,22 +970,24 @@ int ShapeAdapterMesh::update(lua_State *L)
 			lua_getfield(L, -1, "fillVertexColors");
 			U32 *fvcs = NULL; // <- STEVE CHANGE
 			U32 numFVCs, fvcsOutputLen = path->GetFillVertexCount(); // <- STEVE CHANGE
-			if (lua_istable(L, -1))
+			const unsigned char* fromFVCs = GetBuffer(L, -1, sizeof(U32), fvcsOutputLen, baseOffset, numFVCs, stride);
+
+			if (fromFVCs)
+			{
+				// STEVE CHANGE
+				if (rebaseIndices && minIndex < std::numeric_limits<U16>::max())
+				{
+					numFVCs = maxIndex - minIndex + 1;
+				}
+				// /STEVE CHANGE
+				fvcs = path->GetFillVertexColors();
+				CopyToOutput(fvcs, fromFVCs, numFVCs, stride);
+			}
+			else if (lua_istable(L, -1))
 			{
 				// TODO!
 			}
-			else
-			{
-				size_t stride;
 
-				const unsigned char* fromFVCs = GetBuffer(L, -1, sizeof(U32), fvcsOutputLen, baseOffset, numFVCs, stride);
-
-				if (fromFVCs)
-				{
-					fvcs = path->GetFillVertexColors();
-					CopyToOutput(fvcs, fromFVCs, numFVCs, stride);
-				}
-			}
 			if (fvcs)
 			{
 				observerInvalidated |= DisplayObject::kGeometryFlag | DisplayObject::kColorFlag;
@@ -977,7 +996,7 @@ int ShapeAdapterMesh::update(lua_State *L)
 				if (!indices && numFVCs < fvcsOutputLen)
 				{
 					Color white = ColorWhite();
-					for (int i = 0, iMax = uvsOutputLen - numUVs; i < iMax; i++)
+					for (int i = 0, iMax = fvcsOutputLen - numFVCs; i < iMax; i++)
 					{
 						fvcs[numFVCs + i] = white;
 					}
