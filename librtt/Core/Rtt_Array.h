@@ -353,23 +353,22 @@ namespace Rtt
 			{
 				Expand(sizeof(T), size);
 			}
-
+			
+			U32 oldLength = (U32)fLength;
+			
 			if (std::is_pod<T>::value)
 			{
-				S32 oldLength = fLength;
-				T * out = WriteAccess();
-
 				fLength = (S32)size;
 
-				for (S32 i = oldLength; i < fLength; i++)
+				for (U32 i = oldLength; i < size; i++)
 				{
-					out[i] = pad;
+					WriteAccess()[i] = pad;
 				}
 			}
 
 			else
 			{
-				for (U32 i = 0, iMax = size - fLength; i < iMax; i++)
+				for (U32 i = oldLength; i < size; i++)
 				{
 					Append(pad);
 				}

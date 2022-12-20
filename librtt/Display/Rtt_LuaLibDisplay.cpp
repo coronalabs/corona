@@ -184,7 +184,16 @@ DisplayLibrary::DisplayLibrary( Display& display )
 DisplayLibrary::~DisplayLibrary()
 {
 }
+// STEVE CHANGE
+static int MarkBuffer( lua_State *L )
+{
+	lua_settop(L, 1);
+	lua_pushboolean(L, 1);
+	lua_rawset( L, lua_upvalueindex(1) );
 
+	return 0;
+}
+// /STEVE CHANGE
 int
 DisplayLibrary::Open( lua_State *L )
 {
@@ -229,7 +238,23 @@ DisplayLibrary::Open( lua_State *L )
 
 		{ NULL, NULL }
 	};
-
+	// STEVE HACK
+	lua_getfield( L, LUA_REGISTRYINDEX, "_BufferWT" );
+	bool exists = !lua_isnil( L, -1 );
+	lua_pop( L, 1 );
+	if (!exists)
+	{
+		lua_newtable( L );
+		lua_createtable( L, 0, 1 );
+		lua_pushliteral( L, "k" );
+		lua_setfield( L, -2, "__mode" );
+		lua_setmetatable( L, -1 );
+		lua_pushvalue( L, -1 );
+		lua_pushcclosure( L, MarkBuffer, 1 );
+		lua_setfield( L, LUA_REGISTRYINDEX, "_MarkBuffer" );
+		lua_setfield( L, LUA_REGISTRYINDEX, "_BufferWT" );
+	}
+	// /STEVE HACK
 	// Set library as upvalue for each library function
 	Self *library = Rtt_NEW( & display->GetRuntime().GetAllocator(), Self( * display ) );
 

@@ -68,13 +68,174 @@ ShapeAdapterMesh::GetMeshMode(lua_State *L, int index)
 }
 
 // STEVE CHANGE
-static int MarkBuffer( lua_State *L )
+static const unsigned char* AuxGetBuffer( lua_State *L, int index, size_t valueSize, size_t &len, U32 &n )
 {
-	lua_settop(L, 1);
-	lua_pushboolean(L, 1);
-	lua_rawset( L, lua_upvalueindex(1) );
+	index = CoronaLuaNormalize( L, index );
 
-	return 1;
+	lua_getfield( L, LUA_REGISTRYINDEX, "_BufferWT" ); // ..., buffer, ..., wt
+	lua_pushvalue( L, index ); // ..., buffer, ..., wt, buffer
+	lua_rawget( L, -2 ); // ..., buffer, ..., wt, is_buffer
+
+	unsigned char* buffer = NULL;
+
+	if ( lua_toboolean( L, -1 ) )
+	{
+		buffer = static_cast< unsigned char* >( lua_touserdata( L, index ) );
+		len = lua_objlen( L, index );
+		n = (U32)(len / valueSize);
+	}
+
+	lua_pop( L, 2 ); // ..., buffer, ...
+
+	return buffer;
+}
+
+static const unsigned char* IssueWarning( const unsigned char* buffer, const char * warning )
+{
+	if (buffer)
+	{
+		CORONA_LOG_WARNING( "%s", warning );
+	}
+
+	return NULL;
+}
+
+static const unsigned char* GetBuffer( lua_State *L, int index, size_t valueSize, size_t outputLength, size_t element, U32 &n, size_t &stride )
+{
+	index = CoronaLuaNormalize( L, index );
+
+	size_t len;
+
+	const unsigned char* buffer = AuxGetBuffer( L, index, valueSize, len, n );
+
+	if ( !buffer && lua_istable( L, index ) )
+	{
+		lua_getfield( L, index, "buffer" ); // ..., t, ..., buffer
+
+		buffer = AuxGetBuffer( L, -1, valueSize, len, n );
+
+		lua_pop( L, 1 ); // ..., t, ...
+
+		if (buffer)
+		{
+			lua_getfield( L, index, "count" ); // ..., t, ..., count
+			lua_getfield( L, index, "stride" ); // ..., t, ..., count, stride
+			lua_getfield( L, index, "offset" ); // ..., t, ..., count, stride, offset
+
+			// Supplied own `count`? If a `stride` of 0 is not explicitly supplied, this is expected to be <= what the
+			// buffer can hold (`size` / `stride`, where the latter defaults to value size).
+			size_t count = 0;
+
+			if ( lua_type( L, -3 ) == LUA_TNUMBER )
+			{
+				count = lua_tointeger( L, -3 );
+			}
+
+			// Can it also fit in the output?
+			if ( count > outputLength )
+			{
+				buffer = IssueWarning( buffer, "Too many values to fit in output" );
+			}
+
+			// Possible strides include 0 (repeat the first element `count` times) or >= the value size.
+			// By default, the value size is used.
+			stride = 0;
+
+			bool repeatFirstValue = false;
+
+			if ( lua_type( L, -2 ) == LUA_TNUMBER )
+			{
+				stride = lua_tointeger( L, -2 );
+
+				if ( stride > 0 && stride <= valueSize )
+				{
+					buffer = IssueWarning( buffer, "`stride` is too low" );
+				}
+
+				else if ( 0 == stride )
+				{
+					if ( 0 == count )
+					{
+						buffer = IssueWarning( buffer, "Explicit zero `stride` expects `count`" );
+					}
+
+					else
+					{
+						repeatFirstValue = true;
+					}
+				}
+			}
+
+			if ( 0 == stride && !repeatFirstValue )
+			{
+				stride = valueSize;
+			}
+
+			// Get any custom `offset` and use it to find the final count, ensuring the data still fits.
+			// This will be added to any offset into the stream, e.g. starting at some vertex #3 versus
+			// right from the start. If all is well, update the buffer with respect to the offset.
+			size_t offset = element * stride;
+
+			if ( lua_type( L, -1 ) == LUA_TNUMBER )
+			{
+				offset += lua_tointeger( L, -1 );
+			}
+							
+			if ( stride > 0 )
+			{
+				n = ( len - offset ) / stride;
+
+				if ( 0 == n )
+				{
+					buffer = IssueWarning( buffer, "Buffer not large enough to supply any values" );
+				}
+
+				else if ( count > n )
+				{
+					buffer = IssueWarning( buffer, "Buffer not large enough to supply `count` values" );
+				}
+
+				else if ( count > 0 )
+				{
+					n = count;
+				}
+			}
+
+			else
+			{
+				n = count;
+
+				if ( len - offset < valueSize )
+				{
+					buffer = IssueWarning( buffer, "Buffer not large enough to supply (repeated) value" );
+				}
+			}
+
+			if ( buffer )
+			{
+				buffer += offset;
+			}
+
+			lua_pop( L, 3 ); // ..., t, ...
+		}
+	}
+
+	return buffer;
+}
+
+template<typename T> void CopyToOutput (T * to, const unsigned char * from, U32 count, size_t stride)
+{
+	if ( sizeof( T ) == stride )
+	{
+		memcpy( to, from, count * sizeof( T ) );
+	}
+	else
+	{
+		for ( U32 i = 0; i < count; i++, from += stride )
+		{
+			memcpy( &to[i], from, sizeof( T ) );
+		}
+	}
 }
 // /STEVE CHANGE
 
@@ -86,23 +247,7 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 		return false;
 	}
 	index = Lua::Normalize( L, index );
-// STEVE HACK
-lua_getfield( L, LUA_REGISTRYINDEX, "_BufferWT" );
-bool exists = !lua_isnil( L, -1 );
-lua_pop( L, 1 );
-if (!exists)
-{
-	lua_newtable( L );
-	lua_createtable( L, 0, 1 );
-	lua_pushliteral( L, "k" );
-	lua_setfield( L, -2, "__mode" );
-	lua_setmetatable( L, -1 );
-	lua_pushvalue( L, -1 );
-	lua_pushcclosure( L, MarkBuffer, 1 );
-	lua_setfield( L, LUA_REGISTRYINDEX, "_MarkBuffer" );
-	lua_setfield( L, LUA_REGISTRYINDEX, "_BufferWT" );
-}
-// /STEVE HACK
+
 	// STEVE CHANGE moved indices
 	int indicesStart = 1;
 	lua_getfield( L, index, "zeroBasedIndices" );
@@ -112,28 +257,35 @@ if (!exists)
 	}
 	lua_pop( L, 1);
 	// STEVE CHANGE
-	lua_getfield( L, index, "rebaseIndices" );
-	bool rebaseIndices = lua_toboolean( L, -1 );
-	lua_pop( L, 1 );
-
-	lua_getfield( L, index, "vertexCount" );
-	U32 vertexCount = std::numeric_limits<U32>::max();
-	if ( lua_type( L, -1 ) == LUA_TNUMBER )
-	{
-		vertexCount = lua_tointeger( L, -1 );
-	}
-	lua_pop( L, 1 );
-
-	lua_getfield( L, index, "hasUVs" );
-	bool hasUVs = lua_toboolean( L, -1 );
+	lua_getfield( L, index, "adjustFromIndices" );
+	bool adjustFromIndices = lua_toboolean( L, -1 );
 	lua_pop( L, 1 );
 	// /STEVE CHANGE
 	
 	TesselatorMesh::ArrayIndex& indices = tesselator.GetIndices();
 	U16 minIndex = std::numeric_limits<U16>::max(), maxIndex = 0; // <- STEVE CHANGE
-	U32 baseOffset = 0; // <- STEVE CHANGE
+	U32 baseVertex = 0, vertexCount = 0; // <- STEVE CHANGE
 	lua_getfield( L, index, "indices" );
-	if (lua_istable( L, -1 ))
+	// STEVE CHANGE
+	size_t stride;
+	U32 numIndices, indicesOutputLen = (U32)indices.Length();
+	const unsigned char* fromIndices = GetBuffer(L, -1, sizeof(U16), ~0, 0, numIndices, stride);
+
+	if (fromIndices)
+	{
+		indices.Reserve( numIndices );
+		for (U32 i = 0; i < numIndices; i++)
+		{
+			U16 newIndex;
+			memcpy(&newIndex, fromIndices, sizeof(U16));
+			indices.Append(newIndex);
+			minIndex = newIndex < minIndex ? newIndex : minIndex;
+			maxIndex = newIndex > maxIndex ? newIndex : maxIndex;
+			fromIndices += stride;
+		}
+	}
+	// /STEVE CHANGE
+	else if (lua_istable( L, -1 )) // <- STEVE CHANGE
 	{
 		U32 numIndices = (U32)lua_objlen( L, -1 );
 		indices.Reserve( numIndices );
@@ -149,53 +301,66 @@ if (!exists)
 			}
 			lua_pop( L, 1 );
 		}
-		// STEVE CHANGE
-		if ( rebaseIndices && minIndex < std::numeric_limits<U16>::max() )
+	}
+	// STEVE CHANGE
+	if ( adjustFromIndices && minIndex < std::numeric_limits<U16>::max() )
+	{
+		if ( minIndex > 0 )
 		{
-			baseOffset += minIndex;
+			baseVertex += minIndex;
 			for ( U32 i = 0; i < numIndices; i++ )
 			{
 				indices.WriteAccess()[i] -= minIndex;
 			}
 		}
-		// /STEVE CHANGE
-	}
-	// STEVE CHANGE
-	else
-	{
-		lua_getfield( L, index, "indexCount" );
-		if ( lua_type( L, -1 ) == LUA_TNUMBER )
-		{
-			U32 numIndices = lua_tointeger( L, -1 );
-			if ( numIndices > 0 )
-			{
-				indices.PadToSize( numIndices, minIndex );
-			}
-		}
-		lua_pop( L, 1 );
+		
+		vertexCount = maxIndex - minIndex + 1;
+// STEVE HACK!
+lua_pushinteger(L, baseVertex);
+lua_setglobal(L, "BASE_VERTEX_HACK");
+// /STEVE HACK!
 	}
 	// /STEVE CHANGE
 	lua_pop( L, 1);
 	// /STEVE CHANGE moved indices
 
 	ArrayVertex2& mesh = tesselator.GetMesh();
+	U32 numVertices; // <- STEVE CHANGE
 	Rtt_ASSERT( mesh.Length() == 0 );
 	lua_getfield( L, index, "vertices" );
-	if (lua_istable( L, -1 ))
+	// STEVE CHANGE
+	const unsigned char* fromVertices = GetBuffer(L, -1, sizeof(Vertex2), ~0, baseVertex, numVertices, stride);
+
+	if (fromVertices)
+	{
+		if ( vertexCount )
+		{
+			numVertices = vertexCount; // ^^ TODO: validate that we have this many...
+		}
+		mesh.Reserve( numVertices );
+		for ( U32 i = 0; i < numVertices; i++, fromVertices += stride )
+		{
+			Vertex2 v;
+			memcpy( &v, fromVertices, sizeof( Vertex2 ) );
+			mesh.Append( v );
+		}
+	}
+	// /STEVE CHANGE
+	else if (lua_istable( L, -1 )) // <- STEVE CHANGE
 	{
 		Rtt_ASSERT (lua_objlen( L, -1 ) % 2 == 0);
-		U32 numVertices = (U32)lua_objlen( L, -1 )/2;
+		/*U32*/ numVertices = (U32)lua_objlen( L, -1 )/2; // <- STEVE CHANGE
 		// STEVE CHANGE
-		if ( rebaseIndices && minIndex < std::numeric_limits<U16>::max() )
+		if ( vertexCount )
 		{
-			numVertices = maxIndex + 1;
+			numVertices = vertexCount;
 		}
 		// /STEVE CHANGE
-		mesh.Reserve( numVertices - baseOffset ); // <- STEVE CHANGE
-		for(U32 i=baseOffset; i<numVertices; i++) // <- STEVE CHANGE
+		mesh.Reserve( numVertices );
+		for(U32 i=0,j=baseVertex; i<numVertices; i++, j++) // <- STEVE CHANGE
 		{
-			lua_rawgeti( L, -1, 2*i+1 );
-			lua_rawgeti( L, -2, 2*i+2 );
+			lua_rawgeti( L, -1, 2*j+1 ); // <- STEVE CHANGE
+			lua_rawgeti( L, -2, 2*j+2 ); // <- STEVE CHANGE
 			if ( lua_type( L, -2 ) == LUA_TNUMBER &&
 			     lua_type( L, -1 ) == LUA_TNUMBER )
 			{
@@ -207,7 +372,6 @@ if (!exists)
 
 		Rect r;
 		numVertices = mesh.Length();
-		numVertices -= baseOffset; // <- STEVE CHANGE
 		for ( U32 i = 0; i < numVertices; i++ )
 		{
 			r.Union( mesh[i] );
@@ -229,37 +393,48 @@ if (!exists)
 		tesselator.SetVertexOffset(vertexOffset);
 
 	}
-	// STEVE CHANGE
-	else if (vertexCount < std::numeric_limits<U32>::max())
-	{
-		Vertex2 zero = {0, 0};
-		mesh.PadToSize( vertexCount - baseOffset, zero );
-		tesselator.SetVertexOffset( zero );
-	}
-	// /STEVE CHANGE
 	lua_pop( L, 1);
 	
 	// STEVE CHANGE moved count check down
 	
 	
 	ArrayVertex2& UVs = tesselator.GetUV();
+	U32 numUVs; // <- STEVE CHANGE
 	lua_getfield( L, index, "uvs" );
-	if (lua_istable( L, -1))
+	// STEVE CHANGE
+	const unsigned char* fromUVs = GetBuffer(L, -1, sizeof(Vertex2), ~0, baseVertex, numUVs, stride);
+
+	if (fromVertices)
 	{
-		U32 numUVs = (U32)lua_objlen( L, -1 )/2;
-		// STEVE CHANGE
-		if ( rebaseIndices && minIndex < std::numeric_limits<U16>::max() )
+		if ( vertexCount )
 		{
-			numUVs = maxIndex + 1;
+			numUVs = vertexCount; // ^^ TODO: validate that we have this many...
+		}
+		UVs.Reserve( numUVs );
+		for ( U32 i = 0; i < numUVs; i++, fromUVs += stride )
+		{
+			Vertex2 v;
+			memcpy( &v, fromUVs, sizeof( Vertex2 ) );
+			UVs.Append( v );
+		}
+	}
+	// /STEVE CHANGE
+	else if (lua_istable( L, -1)) // <- STEVE CHANGE
+	{
+		/*U32*/ numUVs = (U32)lua_objlen( L, -1 )/2; // <- STEVE CHANGE
+		// STEVE CHANGE
+		if ( vertexCount )
+		{
+			numUVs = vertexCount;
 		}
 		// /STEVE CHANGE
-		if ( numUVs - baseOffset == (U32)mesh.Length() ) // <- STEVE CHANGE
+		if ( numUVs == (U32)mesh.Length() )
 		{
-			UVs.Reserve( numUVs - baseOffset ); // <- STEVE CHANGE
-			for(U32 i=baseOffset; i<numUVs; i++) // <- STEVE CHANGE
+			UVs.Reserve( numUVs );
+			for(U32 i=0, j=baseVertex; i<numUVs; i++, j++) // <- STEVE CHANGE
 			{
-				lua_rawgeti( L, -1, 2*i+1 );
-				lua_rawgeti( L, -2, 2*i+2 );
+				lua_rawgeti( L, -1, 2*j+1 ); // <- STEVE CHANGE
+				lua_rawgeti( L, -2, 2*j+2 ); // <- STEVE CHANGE
 				if ( lua_type( L, -2 ) == LUA_TNUMBER &&
 					 lua_type( L, -1 ) == LUA_TNUMBER )
 				{
@@ -270,15 +445,8 @@ if (!exists)
 			}
 		}		
 	}
-	// STEVE CHANGE
-	else if (hasUVs)
-	{
-		Vertex2 zero = {0, 0};
-		UVs.PadToSize( mesh.Length(), zero );
-	}
-	// /STEVE CHANGE
 	lua_pop( L, 1);
-
+	
 	// STEVE CHANGE moved indices up
 	// STEVE CHANGE moved
 	if (mesh.Length() < 3)
@@ -515,179 +683,6 @@ int ShapeAdapterMesh::setUV( lua_State *L )
 	return 0;
 }
 
-// STEVE CHANGE
-
-
-static const unsigned char* AuxGetBuffer( lua_State *L, int index, size_t valueSize, size_t &len, size_t &n )
-{
-	lua_getfield( L, LUA_REGISTRYINDEX, "_BufferWT" ); // ..., buffer, ..., wt
-	lua_pushvalue( L, index ); // ..., buffer, ..., wt, buffer
-	lua_rawget( L, -2 ); // ..., buffer, ..., wt, is_buffer
-
-	unsigned char* buffer = NULL;
-
-	if ( lua_toboolean( L, -1 ) )
-	{
-		buffer = static_cast< unsigned char* >( lua_touserdata( L, index ) );
-		len = lua_objlen( L, index );
-		n = len / valueSize;
-	}
-
-	lua_pop( L, 2 ); // ..., buffer, ...
-
-	return buffer;
-}
-
-static const unsigned char* IssueWarning( const unsigned char* buffer, const char * warning )
-{
-	if (buffer)
-	{
-		CORONA_LOG_WARNING( "%s", warning );
-	}
-
-	return NULL;
-}
-
-static const unsigned char* GetBuffer( lua_State *L, int index, size_t valueSize, size_t outputLength, size_t element, size_t &n, size_t &stride )
-{
-	index = CoronaLuaNormalize( L, index );
-
-	size_t len;
-
-	const unsigned char* buffer = AuxGetBuffer( L, index, valueSize, len, n );
-
-	if ( !buffer && lua_istable( L, index ) )
-	{
-		lua_getfield( L, index, "buffer" ); // ..., t, ..., buffer
-
-		buffer = AuxGetBuffer( L, lua_gettop( L ), valueSize, len, n );
-
-		lua_pop( L, 1 ); // ..., t, ...
-
-		if (buffer)
-		{
-			lua_getfield( L, index, "count" ); // ..., t, ..., count
-			lua_getfield( L, index, "stride" ); // ..., t, ..., count, stride
-			lua_getfield( L, index, "offset" ); // ..., t, ..., count, stride, offset
-
-			// Supplied own `count`? If a `stride` of 0 is not explicitly supplied, this is expected to be <= what the
-			// buffer can hold (`size` / `stride`, where the latter defaults to value size).
-			size_t count = 0;
-
-			if ( lua_type( L, -3 ) == LUA_TNUMBER )
-			{
-				count = lua_tointeger( L, -3 );
-			}
-
-			// Can it also fit in the output?
-			if ( count > outputLength )
-			{
-				buffer = IssueWarning( buffer, "Too many values to fit in output" );
-			}
-
-			// Possible strides include 0 (repeat the first element `count` times) or >= the value size.
-			// By default, the value size is used.
-			stride = 0;
-
-			bool repeatFirstValue = false;
-
-			if ( lua_type( L, -2 ) == LUA_TNUMBER )
-			{
-				stride = lua_tointeger( L, -2 );
-
-				if ( stride > 0 && stride <= valueSize )
-				{
-					buffer = IssueWarning( buffer, "`stride` is too low" );
-				}
-
-				else if ( 0 == stride )
-				{
-					if ( 0 == count )
-					{
-						buffer = IssueWarning( buffer, "Explicit zero `stride` expects `count`" );
-					}
-
-					else
-					{
-						repeatFirstValue = true;
-					}
-				}
-			}
-
-			if ( 0 == stride && !repeatFirstValue )
-			{
-				stride = valueSize;
-			}
-
-			// Get any custom `offset` and use it to find the final count, ensuring the data still fits.
-			// This will be added to any offset into the stream, e.g. starting at some vertex #3 versus
-			// right from the start. If all is well, update the buffer with respect to the offset.
-			size_t offset = element * stride;
-
-			if ( lua_type( L, -1 ) == LUA_TNUMBER )
-			{
-				offset += lua_tointeger( L, -1 );
-			}
-							
-			if ( stride > 0 )
-			{
-				n = ( len - offset ) / stride;
-
-				if ( 0 == n )
-				{
-					buffer = IssueWarning( buffer, "Buffer not large enough to supply any values" );
-				}
-
-				else if ( count > n )
-				{
-					buffer = IssueWarning( buffer, "Buffer not large enough to supply `count` values" );
-				}
-
-				else if ( count > 0 )
-				{
-					n = count;
-				}
-			}
-
-			else
-			{
-				n = count;
-
-				if ( len - offset < valueSize )
-				{
-					buffer = IssueWarning( buffer, "Buffer not large enough to supply (repeated) value" );
-				}
-			}
-
-			if ( buffer )
-			{
-				buffer += offset;
-			}
-
-			lua_pop( L, 3 ); // ..., t, ...
-		}
-	}
-
-	return buffer;
-}
-
-template<typename T> void CopyToOutput (T * to, const unsigned char * from, size_t count, size_t stride)
-{
-	if ( sizeof( T ) == stride )
-	{
-		memcpy( to, from, count * sizeof( T ) );
-	}
-	else
-	{
-		for ( U32 i = 0; i < count; i++, from += stride )
-		{
-			memcpy( &to[i], from, sizeof( T ) );
-		}
-	}
-}
-
-// /STEVE CHANGE
-
 int ShapeAdapterMesh::update(lua_State *L)
 {
 	int result = 0;
@@ -739,7 +734,10 @@ int ShapeAdapterMesh::update(lua_State *L)
 			{
 				U16 newIndex;
 				memcpy(&newIndex, fromIndices, sizeof(U16));
-				changed |= newIndex != indices[i];
+				if (newIndex != indices[i])
+				{
+					changed = true;
+				}
 				indices[i] = newIndex;
 				minIndex = newIndex < minIndex ? newIndex : minIndex;
 				maxIndex = newIndex > maxIndex ? newIndex : maxIndex;
@@ -779,7 +777,7 @@ int ShapeAdapterMesh::update(lua_State *L)
 		if (changed)
 		{
 			// STEVE CHANGE
-			if (rebaseIndices && minIndex < std::numeric_limits<U16>::max())
+			if (rebaseIndices && minIndex > 0 && minIndex < std::numeric_limits<U16>::max())
 			{
 				for (U32 i = 0; i < numIndices; ++i)
 				{
@@ -985,23 +983,6 @@ int ShapeAdapterMesh::update(lua_State *L)
 		else if (lua_istable(L, -1))
 		{
 			// TODO!
-		}
-
-		if (fvcs)
-		{
-			observerInvalidated |= DisplayObject::kGeometryFlag | DisplayObject::kColorFlag;
-
-			// Pad any shortfall with white, unless there is an index buffer too.
-			if (!indices && numFVCs < fvcsOutputLen)
-			{
-				Color white = ColorWhite();
-				for (int i = 0, iMax = fvcsOutputLen - numFVCs; i < iMax; i++)
-				{
-					fvcs[numFVCs + i] = white;
-				}
-			}
-
-			updated = true;
 		}
 		lua_pop(L, 1);
 		// /STEVE CHANGE
