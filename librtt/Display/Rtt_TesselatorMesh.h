@@ -53,6 +53,11 @@ class TesselatorMesh : public TesselatorShape
 		const Vertex2 & GetVertexOffset() const { return fVertexOffset; } ;
 		void SetVertexOffset(const Vertex2 & offset) { fVertexOffset = offset; } ;
 
+		// STEVE CHANGE
+		const U16 GetLowestIndex() const { return fLowestIndex; }
+		void SetLowestIndex(const U16 index) { fLowestIndex = index; }
+		// /STEVE CHANGE
+
 	public:
 		// Update the polygons
 		void Update();
@@ -65,6 +70,7 @@ class TesselatorMesh : public TesselatorShape
 
 		Vertex2 fVertexOffset;
 		Rect fSelfBounds;
+		U16 fLowestIndex; // <- STEVE CHANGE
 		bool fIsMeshValid;
 		mutable S32 fStrokeCount;
 };
