@@ -232,6 +232,12 @@ static void UpdateIndexRange( U16 index, U16 &minIndex, U16 &maxIndex )
 	maxIndex = index > maxIndex ? index : maxIndex;
 }
 
+static bool HasIndices( U16 minIndex, U16 maxIndex )
+{
+	return maxIndex > 0 // i.e. has changed from default of 0?
+		|| 0 == minIndex; // i.e. maxIndex == 0 but minIndex no longer max unsigned U16?
+}
+
 template<typename T> T GetValueFromStream( const unsigned char* &from, size_t stride )
 {
 	T v;
@@ -313,7 +319,7 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 		}
 	}
 
-	bool hasIndices = minIndex < std::numeric_limits<U16>::max();
+	bool hasIndices = HasIndices( minIndex, maxIndex );
 	if ( hasIndices )
 	{
 		tesselator.SetLowestIndex( minIndex );
@@ -771,7 +777,7 @@ int ShapeAdapterMesh::update(lua_State *L)
 		}
 
 		U32 baseVertex = 0;
-		bool hasIndices = minIndex < std::numeric_limits<U16>::max();
+		bool hasIndices = HasIndices( minIndex, maxIndex );
 		if ( !hasIndices )
 		{
 			baseVertex = lowestIndex;
