@@ -426,7 +426,6 @@ ShapePath::SetStrokeVertexColor( U32 index, U32 color )
 	return fStrokeGeometry->SetVertexColor( index, color );
 }
 
-// STEVE CHANGE
 U32* ShapePath::GetFillVertexColors()
 {
 	fFillGeometry->AttachPerVertexColors( &fFillSource.Colors(), GetFillVertexCount() );
@@ -440,7 +439,6 @@ U32* ShapePath::GetStrokeVertexColors()
 
 	return fStrokeGeometry->GetWriteablePerVertexColorData();
 }
-// /STEVE CHANGE
 
 U32
 ShapePath::GetFillVertexCount() const

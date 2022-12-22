@@ -184,16 +184,7 @@ DisplayLibrary::DisplayLibrary( Display& display )
 DisplayLibrary::~DisplayLibrary()
 {
 }
-// STEVE CHANGE
-static int MarkBuffer( lua_State *L )
-{
-	lua_settop(L, 1);
-	lua_pushboolean(L, 1);
-	lua_rawset( L, lua_upvalueindex(1) );
 
-	return 0;
-}
-// /STEVE CHANGE
 int
 DisplayLibrary::Open( lua_State *L )
 {

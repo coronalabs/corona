@@ -462,13 +462,11 @@ const U32*
 	return fPerVertexColors ? fPerVertexColors->ReadAccess() : NULL;
 }
 
-// STEVE CHANGE
 U32*
 	Geometry::GetWriteablePerVertexColorData()
 {
 	return fPerVertexColors ? fPerVertexColors->WriteAccess() : NULL;
 }
-// /STEVE CHANGE
 
 bool 
 	Geometry::SetVertexColor(U32 index, U32 color)

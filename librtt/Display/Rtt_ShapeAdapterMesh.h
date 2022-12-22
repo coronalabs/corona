@@ -51,7 +51,7 @@ class ShapeAdapterMesh : public ShapeAdapter
 		static int getUV( lua_State *L );
 		static int getVertexOffset( lua_State *L );
 		static int update(lua_State *L);
-		static int getLowestIndex( lua_State *L ); // <- STEVE CHANGE
+		static int getLowestIndex( lua_State *L );
 };
 
 // ----------------------------------------------------------------------------
