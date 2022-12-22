@@ -95,11 +95,11 @@ static const unsigned char* AuxGetBuffer( lua_State *L, size_t valueSize, size_t
 	return buffer;
 }
 
-static const unsigned char* IssueWarning( const unsigned char* buffer, const char * warning )
+static const unsigned char* IssueWarning( lua_State *L, const unsigned char* buffer, const char * warning )
 {
 	if (buffer)
 	{
-		CORONA_LOG_WARNING( "%s", warning );
+		CoronaLuaWarning( L, "%s", warning );
 	}
 
 	return NULL;
@@ -137,7 +137,7 @@ static const unsigned char* GetBuffer( lua_State *L, size_t valueSize, size_t el
 			// Can it also fit in the output?
 			if ( outputLength && count > *outputLength )
 			{
-				buffer = IssueWarning( buffer, "Too many values to fit in output" );
+				buffer = IssueWarning( L, buffer, "Too many values to fit in output" );
 			}
 
 			// Possible strides include 0 (repeat the first element `count` times) or >= the value size.
@@ -152,14 +152,14 @@ static const unsigned char* GetBuffer( lua_State *L, size_t valueSize, size_t el
 
 				if ( stride > 0 && stride <= valueSize )
 				{
-					buffer = IssueWarning( buffer, "`stride` is too low" );
+					buffer = IssueWarning( L, buffer, "`stride` is too low" );
 				}
 
 				else if ( 0 == stride )
 				{
 					if ( 0 == count )
 					{
-						buffer = IssueWarning( buffer, "Explicit zero `stride` expects `count`" );
+						buffer = IssueWarning( L, buffer, "Explicit zero `stride` expects `count`" );
 					}
 
 					else
@@ -190,12 +190,12 @@ static const unsigned char* GetBuffer( lua_State *L, size_t valueSize, size_t el
 
 				if ( 0 == n )
 				{
-					buffer = IssueWarning( buffer, "Buffer not large enough to supply any values" );
+					buffer = IssueWarning( L, buffer, "Buffer not large enough to supply any values" );
 				}
 
 				else if ( count > n )
 				{
-					buffer = IssueWarning( buffer, "Buffer not large enough to supply `count` values" );
+					buffer = IssueWarning( L, buffer, "Buffer not large enough to supply `count` values" );
 				}
 
 				else if ( count > 0 )
@@ -210,7 +210,7 @@ static const unsigned char* GetBuffer( lua_State *L, size_t valueSize, size_t el
 
 				if ( len - offset < valueSize )
 				{
-					buffer = IssueWarning( buffer, "Buffer not large enough to supply (repeated) value" );
+					buffer = IssueWarning( L, buffer, "Buffer not large enough to supply (repeated) value" );
 				}
 			}
 
