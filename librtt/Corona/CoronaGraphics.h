@@ -12,7 +12,7 @@
 #define _CoronaGraphics_H__
 
 #include "CoronaMacros.h"
-
+#include "CoronaPublicTypes.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -185,5 +185,135 @@ void* CoronaExternalGetUserData( lua_State *L, int index ) CORONA_PUBLIC_SUFFIX;
 CORONA_API
 int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format) CORONA_PUBLIC_SUFFIX;
 
+// ----------------------------------------------------------------------------
+
+/**
+  This structure accounts for renderer APIs that make sense from different call sites.
+*/
+typedef struct CoronaRendererOpParams
+{
+    union {
+        /**
+         A renderer supplied from a draw-related method.
+        */
+        const CoronaRenderer * renderer;
+        
+        /**
+         A state belonging to a plugin API.
+        */
+        lua_State * luaState;
+    } u;
+
+    /**
+     If non-0, the renderer is available through `luaState`; else `renderer`.
+    */
+    int useLuaState;
+} CoronaRendererOpParams;
+
+/**
+ Operation that uses a boxed renderer.
+*/
+typedef void (*CoronaRendererOp)( const CoronaRenderer * renderer, void * userData );
+
+/**
+ Schedule an operation for the end of the frame, e.g. to ensure a state is restored.
+ @param renderer Renderer access.
+ @param onEndFrame Operation to call.
+ @param userData Arbitrary data supplied to `onEndFrame`.
+ @param opID Optional. If non-NULL, this is populated with a non-0 ID on success.
+ @return If non-0, the operation was scheduled.
+*/
+CORONA_API
+int CoronaRendererScheduleEndFrameOp( CoronaRendererOpParams * renderer, CoronaRendererOp onEndFrame, void * userData, unsigned long * opID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Cancel an operation scheduled for the end of the frame.
+ @param renderer Renderer access.
+ @param opID An ID returned by `CoronaRendererScheduleEndFrameOp` on this frame.
+ @return If non-0, the operation was cancelled.
+*/
+CORONA_API
+int CoronaRendererCancelEndFrameOp( CoronaRendererOpParams * renderer, unsigned long opID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Add an operation to be called when the renderer performs a clear, e.g. to wipe some buffer.
+ @param renderer Renderer access.
+ @param onClear Operation to call.
+ @param userData Arbitrary data supplied to `onClear`.
+ @param opID Optional. If non-NULL, this is populated with a non-0 ID on success.
+ @return If non-0, the operation was installed.
+*/
+CORONA_API
+int CoronaRendererInstallClearOp( CoronaRendererOpParams * renderer, CoronaRendererOp onClear, void * userData, unsigned long * opID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Remove an installed clear operation.
+ @param renderer Renderer access.
+ @param opID An ID returned by `CoronaRendererInstallClearOp`.
+ @return If non-0, the operation was removed.
+*/
+CORONA_API
+int CoronaRendererRemoveClearOp( CoronaRendererOpParams * renderer, unsigned long opID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Do some action after first committing any in-progress rendering operations.
+ @param renderer Boxed renderer.
+ @param action Action to perform.
+ @param userData Arbitrary data supplied to `action`.
+ @return If non-0, the action was done.
+*/
+CORONA_API
+int CoronaRendererDo( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+ Operation that responds to data read from a command's buffer.
+*/
+typedef void (*CoronaCommandReader)( const CoronaCommandBuffer * commandBuffer, const unsigned char * from, unsigned int size );
+
+/**
+ Operation that writes data into a command's buffer.
+*/
+typedef void (*CoronaCommandWriter)( const CoronaCommandBuffer * commandBuffer, unsigned char * to, const void * data, unsigned int size );
+
+/**
+ IO operations that constitute a command.
+*/
+typedef struct CoronaCommand {
+    /**
+     The operation where the command executes, given the data written earlier.
+    */
+    CoronaCommandReader reader;
+    
+    /**
+     When the command is issued, a range of bytes are allocated and this is called to write
+     into them from a data source.
+    */
+    CoronaCommandWriter writer;
+} CoronaCommand;
+
+/**
+ Permanently register a custom graphics command.
+ @param L Lua state pointer.
+ @param command Command operations.
+ @param commandID This is populated with a non-0 ID on success. 
+ @return If non-0, the command was registered.
+*/
+CORONA_API
+int CoronaRendererRegisterCommand( lua_State * L, const CoronaCommand * command, unsigned long * commandID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Issue a registered graphics command, adding it to the command buffer being built.
+ @param renderer Boxed renderer.
+ @param commandID An ID returned by `CoronaRendererRegisterCommand`.
+ @param data Data source used by the command's writer.
+ @param size Size in bytes to reserve for the command's payload. Used by the command's writer.
+ @return If non-0, the command was issued.
+*/
+CORONA_API
+int CoronaRendererIssueCommand( const CoronaRenderer * renderer, unsigned long commandID, void * data, unsigned int size ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
 
 #endif // _CoronaGraphics_H__

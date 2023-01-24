@@ -25,9 +25,8 @@
 #include "CoronaMacros.h"
 #include "CoronaVersion.h"
 #include "CoronaGraphics.h"
-// STEVE CHANGE
 #include "CoronaObjects.h"
-// /STEVE CHANGE
+
 //#include "CoronaWin32.h"
 #include <Windows.h>
 
@@ -600,8 +599,68 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 }
 #pragma endregion
 
+#pragma region Corona Renderer API
+CORONA_API
+int CoronaRendererScheduleEndFrameOp(CoronaRendererOpParams* renderer, CoronaRendererOp onEndFrame, void* userData, unsigned long* opID)
+{
+	typedef int(*CoronaCallbackType)(CoronaRendererOpParams* renderer, CoronaRendererOp onEndFrame, void* userData, unsigned long* opID);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(renderer, onEndFrame, userData, opID);
+}
 
-// STEVE CHANGE
+CORONA_API
+int CoronaRendererCancelEndFrameOp(CoronaRendererOpParams* renderer, unsigned long opID)
+{
+	typedef int(*CoronaCallbackType)(CoronaRendererOpParams* renderer, unsigned long opID);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(renderer, opID);
+}
+
+CORONA_API
+int CoronaRendererInstallClearOp(CoronaRendererOpParams* renderer, CoronaRendererOp onClear, void* userData, unsigned long* opID)
+{
+
+	typedef int(*CoronaCallbackType)(CoronaRendererOpParams* renderer, CoronaRendererOp onClear, void* userData, unsigned long* opID);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(renderer, onClear, userData, opID);
+}
+
+CORONA_API
+int CoronaRendererRemoveClearOp(CoronaRendererOpParams* renderer, unsigned long opID)
+{
+
+	typedef int(*CoronaCallbackType)(CoronaRendererOpParams* renderer, unsigned long opID);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(renderer, opID);
+}
+
+CORONA_API
+int CoronaRendererDo(const CoronaRenderer* renderer, CoronaRendererOp action, void* userData)
+{
+
+	typedef int(*CoronaCallbackType)(const CoronaRenderer* renderer, CoronaRendererOp action, void* userData);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(renderer, action, userData);
+}
+
+CORONA_API
+int CoronaRendererRegisterCommand(lua_State* L, const CoronaCommand* command, unsigned long* commandID)
+{
+	typedef int(*CoronaCallbackType)(lua_State* L, const CoronaCommand* command, unsigned long* commandID);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, command, commandID);
+}
+
+CORONA_API
+int CoronaRendererIssueCommand(const CoronaRenderer* renderer, unsigned long commandID, void* data, unsigned int size)
+{
+
+	typedef int(*CoronaCallbackType)(const CoronaRenderer* renderer, unsigned long commandID, void* data, unsigned int size);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(renderer, commandID, data, size);
+}
+#pragma endregion
+
 #pragma region Corona Objects API
 CORONA_API
 int CoronaObjectsBuildMethodStream(lua_State* L, const CoronaObjectParamsHeader* head)
@@ -723,12 +782,11 @@ int CoronaObjectsPushText(lua_State* L, void* userData, const CoronaObjectParams
 	return CoronaCallbackInvoke(L, userData, params);
 }
 
-CORONA_API
 int CoronaObjectInvalidate(const CoronaDisplayObject* object)
 {
-    typedef int(*CoronaCallbackType)(const CoronaDisplayObject*);
-    CoronaCallbackLoad();
-    return CoronaCallbackInvoke(object);
+	typedef int(*CoronaCallbackType)(const CoronaDisplayObject*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(object);
 }
 
 CORONA_API
@@ -770,5 +828,5 @@ int CoronaObjectSendMessage(const CoronaDisplayObject* object, const char* messa
 	CoronaCallbackLoad();
 	return CoronaCallbackInvoke(object, message, payload, size);
 }
-// /STEVE CHANGE
+
 #pragma endregion

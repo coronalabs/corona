@@ -22,6 +22,8 @@
 #include "Core/Rtt_Real.h"
 #include "Core/Rtt_Time.h"
 
+#include "Corona/CoronaGraphics.h"
+
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
@@ -225,6 +227,24 @@ class Renderer
 		// whether or not objects *on*screen need to be re-blitted
 		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
 		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
+    
+        struct CustomOp {
+            CoronaRendererOp fAction;
+            unsigned long fID;
+            void * fUserData;
+        };
+
+        U16 AddCustomCommand( const CoronaCommand & command );
+        U16 AddClearOp( CoronaRendererOp action, void * userData );
+        U16 AddEndFrameOp( CoronaRendererOp action, void * userData );
+
+        void Inject( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData );
+
+        bool IssueCustomCommand( U16 id, const void * data, U32 size );
+    
+    public:
+        Array< CustomOp > & GetClearOps() { return fClearOps; }
+        Array< CustomOp > & GetEndFrameOps() { return fEndFrameOps; }
 
 	public:
 		void InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped );
@@ -317,6 +337,12 @@ class Renderer
 		Real fContentScaleY; // Temporary holder.
 
 		U32 fTimeDependencyCount;
+    
+    Array< CoronaCommand > fPendingCommands;
+    Array< CustomOp > fClearOps;
+    Array< CustomOp > fEndFrameOps;
+
+    U16 fCommandCount;
 	
 		struct RectPair {
 			Rect fClipped;

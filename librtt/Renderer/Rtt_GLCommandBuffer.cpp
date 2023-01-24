@@ -20,6 +20,7 @@
 #include "Renderer/Rtt_Texture.h"
 #include "Renderer/Rtt_Uniform.h"
 #include "Display/Rtt_ShaderResource.h"
+#include "Display/Rtt_ObjectBoxList.h"
 #include "Core/Rtt_Config.h"
 #include "Core/Rtt_Allocator.h"
 #include "Core/Rtt_Assert.h"
@@ -302,7 +303,8 @@ GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 	 fTimeTransform( NULL ),
 	 fTimerQueries( new U32[kTimerQueryCount] ),
 	 fTimerQueryIndex( 0 ),
-	 fElapsedTimeGPU( 0.0f )
+	 fElapsedTimeGPU( 0.0f ),
+     fCustomCommands( allocator )
 {
 	for(U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
 	{
@@ -691,6 +693,29 @@ GLCommandBuffer::GetCachedParam( CommandBuffer::QueryableParams param )
 	return result;
 }
 
+void
+GLCommandBuffer::AddCommand( const CoronaCommand & command )
+{
+    fCustomCommands.Append( command );
+}
+
+void
+GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
+{
+    ObjectBoxList list;
+
+    Command custom = Command( kNumCommands + id );
+
+    WRITE_COMMAND( custom );
+    Write< U32 >( size );
+
+    U8 * buffer = Reserve( size );
+
+    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    
+    fCustomCommands[id].writer( commandBuffer, buffer, data, size );
+}
+
 Real 
 GLCommandBuffer::Execute( bool measureGPU )
 {
@@ -722,6 +747,10 @@ GLCommandBuffer::Execute( bool measureGPU )
 	}
 #endif
 
+    ObjectBoxList list;
+    
+    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    
 	// Reset the offset pointer to the start of the buffer.
 	// This is safe to do here, as preparation work is done
 	// on another CommandBuffer while this one is executing.
@@ -736,7 +765,7 @@ GLCommandBuffer::Execute( bool measureGPU )
 
 // printf( "GLCommandBuffer::Execute [%d/%d] %d\n", i, fNumCommands, command );
 
-		Rtt_ASSERT( command < kNumCommands );
+        Rtt_ASSERT( command < kNumCommands + fCustomCommands.Length() );
 		switch( command )
 		{
 			case kCommandBindFrameBufferObject:
@@ -1020,9 +1049,26 @@ GLCommandBuffer::Execute( bool measureGPU )
 				CHECK_ERROR_AND_BREAK;
 			}
 			default:
-				DEBUG_PRINT( "Unknown command(%d)", command );
-				Rtt_ASSERT_NOT_REACHED();
-				break;
+            {
+                U16 id = command - kNumCommands;
+
+                if (id < fCustomCommands.Length())
+                {
+                    U32 size = Read< U32 >();
+
+                    fCustomCommands[id].reader( commandBuffer, fOffset, size );
+
+                    fOffset += size;
+                }
+
+                else
+                {
+                    DEBUG_PRINT( "Unknown command(%d)", command );
+                    Rtt_ASSERT_NOT_REACHED();
+                }
+
+                break;
+            }
 		}
 	}
 
@@ -1058,22 +1104,25 @@ void
 GLCommandBuffer::Write( T value )
 {
 	U32 size = sizeof(T);
-	U32 bytesNeeded = fBytesUsed + size;
-	if( bytesNeeded > fBytesAllocated )
-	{
-		U32 doubleSize = fBytesUsed ? 2 * fBytesUsed : 4;
-		U32 newSize = Max( bytesNeeded, doubleSize );
-		U8* newBuffer = new U8[newSize];
 
-		memcpy( newBuffer, fBuffer, fBytesUsed );
-		delete [] fBuffer;
+    /*
+    U32 bytesNeeded = fBytesUsed + size;
+    if( bytesNeeded > fBytesAllocated )
+    {
+        U32 doubleSize = fBytesUsed ? 2 * fBytesUsed : 4;
+        U32 newSize = Max( bytesNeeded, doubleSize );
+        U8* newBuffer = new U8[newSize];
 
-		fBuffer = newBuffer;
-		fBytesAllocated = newSize;
-	}
+        memcpy( newBuffer, fBuffer, fBytesUsed );
+        delete [] fBuffer;
 
-	memcpy( fBuffer + fBytesUsed, &value, size );
-	fBytesUsed += size;
+        fBuffer = newBuffer;
+        fBytesAllocated = newSize;
+    }*/
+    U8 * writePos = Reserve( size );
+
+    memcpy( /*fBuffer + fBytesUsed*/writePos, &value, size );
+    //fBytesUsed += size;
 }
 
 void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
@@ -1163,6 +1212,30 @@ void GLCommandBuffer::WriteUniform( Uniform* uniform )
 		case Uniform::kMat4:	Write<Mat4>(*reinterpret_cast<Mat4*>(uniform->GetData()));	break;
 		default:				Rtt_ASSERT_NOT_REACHED();									break;
 	}
+}
+
+U8 *
+GLCommandBuffer::Reserve( U32 size )
+{
+    U32 bytesNeeded = fBytesUsed + size;
+    if( bytesNeeded > fBytesAllocated )
+    {
+        U32 doubleSize = fBytesUsed ? 2 * fBytesUsed : 4;
+        U32 newSize = Max( bytesNeeded, doubleSize );
+        U8* newBuffer = new U8[newSize];
+
+        memcpy( newBuffer, fBuffer, fBytesUsed );
+        delete [] fBuffer;
+
+        fBuffer = newBuffer;
+        fBytesAllocated = newSize;
+    }
+
+    U8 * buffer = fBuffer + fBytesUsed;
+
+    fBytesUsed += size;
+
+    return buffer;
 }
 
 // ----------------------------------------------------------------------------

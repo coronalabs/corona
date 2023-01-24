@@ -13,6 +13,8 @@
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_Uniform.h"
 
+#include "Core/Rtt_Array.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -60,7 +62,10 @@ class GLCommandBuffer : public CommandBuffer
 		virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type );
 		virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type );
 		virtual S32 GetCachedParam( CommandBuffer::QueryableParams param );
-		
+
+        virtual void AddCommand( const CoronaCommand & command );
+        virtual void IssueCommand( U16 id, const void * data, U32 size );
+
 		// Execute all buffered commands. A valid OpenGL context must be active.
 		virtual Real Execute( bool measureGPU );
 	
@@ -89,6 +94,8 @@ class GLCommandBuffer : public CommandBuffer
 		void ApplyUniforms( GPUResource* resource );
 		void ApplyUniform( GPUResource* resource, U32 index );
 		void WriteUniform( Uniform* uniform );
+    
+        U8 * Reserve( U32 size );
 
 		UniformUpdate fUniformUpdates[Uniform::kNumBuiltInVariables];
 		Program::Version fCurrentPrepVersion;
@@ -101,6 +108,8 @@ class GLCommandBuffer : public CommandBuffer
 		Real fElapsedTimeGPU;
 		TimeTransform* fTimeTransform;
 		S32 fCachedQuery[kNumQueryableParams];
+    
+        Array< CoronaCommand > fCustomCommands;
 		
 };
 
