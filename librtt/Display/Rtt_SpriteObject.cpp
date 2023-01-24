@@ -23,6 +23,8 @@
 #include "Display/Rtt_SpritePlayer.h"
 #include "Display/Rtt_Display.h"
 
+#include "Display/Rtt_LuaLibDisplay.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -550,8 +552,15 @@ SpriteObjectSequence::GetEffectiveNumFrames() const
 
 // ----------------------------------------------------------------------------
 
+static SpriteObject *
+NewSprite( Rtt_Allocator * allocator, RectPath * path, const AutoPtr< ImageSheet > & sheet, SpritePlayer & player )
+{
+    return Rtt_NEW( allocator, SpriteObject( path, allocator, sheet, player ) );
+}
+
 SpriteObject*
 SpriteObject::Create(
+    lua_State * L,
 	Rtt_Allocator *pAllocator,
 	const AutoPtr< ImageSheet >& sheet,
 	SpritePlayer& player )
@@ -569,7 +578,8 @@ SpriteObject::Create(
 
 			RectPath *path = RectPath::NewRect( pAllocator, width, height );
 
-			result = Rtt_NEW( pAllocator, SpriteObject( path, pAllocator, sheet, player ) );
+            auto * spriteFactory = GetObjectFactory( L, &NewSprite );
+            result = spriteFactory( pAllocator, path, sheet, player );
 		}
 		else
 		{
