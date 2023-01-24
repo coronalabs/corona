@@ -58,6 +58,8 @@ class CommandBuffer
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
 
+		virtual bool HasFramebufferBlit( bool * canScale ) const = 0;
+
 	public:
 		CommandBuffer( Rtt_Allocator* allocator );
 		virtual ~CommandBuffer();
@@ -75,7 +77,8 @@ class CommandBuffer
 		// Derived classes are responsible for taking state changes specified
 		// here and transcribing them into equivalent, buffered commands used
 		// by the underlying rendering API.
-		virtual void BindFrameBufferObject( FrameBufferObject* fbo ) = 0;
+		virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer = false ) = 0;
+		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect ) = 0;
 		virtual void BindGeometry( Geometry* geometry ) = 0;
 		virtual void BindTexture( Texture* texture, U32 unit ) = 0;
 		virtual void BindUniform( Uniform* uniform, U32 unit ) = 0;
@@ -92,12 +95,12 @@ class CommandBuffer
 		virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
 		virtual S32 GetCachedParam( CommandBuffer::QueryableParams param ) = 0;
 
-        virtual void AddCommand( const CoronaCommand & command ) = 0;
-        virtual void IssueCommand( U16 id, const void * data, U32 size ) = 0;
+    virtual void AddCommand( const CoronaCommand & command ) = 0;
+    virtual void IssueCommand( U16 id, const void * data, U32 size ) = 0;
 
-        virtual const unsigned char * GetBaseAddress() const = 0;
-    
-        virtual bool WriteNamedUniform( const char * uniformName, const void * data, unsigned int size ) = 0;
+    virtual const unsigned char * GetBaseAddress() const = 0;
+
+    virtual bool WriteNamedUniform( const char * uniformName, const void * data, unsigned int size ) = 0;
     
 		// Execute the generated command buffer. This function should only be
 		// called from a thread with an active rendering context. If requested

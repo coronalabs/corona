@@ -384,6 +384,30 @@ ResizeEvent::Push( lua_State *L ) const
 
 // ----------------------------------------------------------------------------
 
+/// Creates a new event indicating that the main was activated or deactivated
+WindowStateEvent::WindowStateEvent(bool foreground) : fForeground(foreground)
+{
+}
+
+const char*
+WindowStateEvent::Name() const
+{
+	static const char kName[] = "windowState";
+	return kName;
+}
+
+int
+WindowStateEvent::Push( lua_State *L ) const
+{
+	Super::Push( L );
+	lua_pushstring( L, fForeground?"foreground":"background");
+	lua_setfield( L, -2, kPhaseKey );
+	return 1;
+}
+
+
+// ----------------------------------------------------------------------------
+
 /// Creates a new event data object that stores a single accelerometer measurement.
 /// @param gravity Pointer to an array of 3 elements storing smoothed acceleration data.
 /// @param instant Pointer to an array of 3 elements storing acceleration deltas based on smoother/gravity data.
@@ -3033,6 +3057,7 @@ VideoEvent::StringForPhase( Phase type )
 	const char* result = NULL;
 	static const char kReadyString[] = "ready";
 	static const char kEndedString[] = "ended";
+	static const char kFailedString[] = "failed";
 
 	switch( type )
 	{
@@ -3041,6 +3066,9 @@ VideoEvent::StringForPhase( Phase type )
 			break;
 		case kEnded:
 			result = kEndedString;
+			break;
+		case kFailed:
+			result = kFailedString;
 			break;
 		default:
 			break;

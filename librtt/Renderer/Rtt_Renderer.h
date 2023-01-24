@@ -173,6 +173,8 @@ class Renderer
         static U32 GetMaxUniformVectorsCount();
 		static U32 GetMaxVertexTextureUnits();
 
+		bool HasFramebufferBlit(  bool * canScale ) const;
+
 		struct Statistics
 		{
 			Statistics();
@@ -228,23 +230,27 @@ class Renderer
 		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
 		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
     
-        struct CustomOp {
-            CoronaRendererOp fAction;
-            unsigned long fID;
-            void * fUserData;
-        };
+    struct CustomOp {
+        CoronaRendererOp fAction;
+        unsigned long fID;
+        void * fUserData;
+    };
 
-        U16 AddCustomCommand( const CoronaCommand & command );
-        U16 AddClearOp( CoronaRendererOp action, void * userData );
-        U16 AddEndFrameOp( CoronaRendererOp action, void * userData );
+    U16 AddCustomCommand( const CoronaCommand & command );
+    U16 AddClearOp( CoronaRendererOp action, void * userData );
+    U16 AddEndFrameOp( CoronaRendererOp action, void * userData );
 
-        void Inject( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData );
+    void Inject( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData );
 
-        bool IssueCustomCommand( U16 id, const void * data, U32 size );
-    
-    public:
-        Array< CustomOp > & GetClearOps() { return fClearOps; }
-        Array< CustomOp > & GetEndFrameOps() { return fEndFrameOps; }
+    bool IssueCustomCommand( U16 id, const void * data, U32 size );
+
+  public:
+      Array< CustomOp > & GetClearOps() { return fClearOps; }
+      Array< CustomOp > & GetEndFrameOps() { return fEndFrameOps; }
+
+	public:
+		void InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped );
+		void IssueCaptures( Texture * fill0 );
 
 	protected:
 		// Destroys all queued GPU resources passed into the DestroyQueue() method.
@@ -286,8 +292,8 @@ class Renderer
 		
 		MCPUResourceObserver *fCPUResourceObserver;
 		
-		Array<CPUResource*> fCreateQueue;
-		Array<CPUResource*> fUpdateQueue;
+		LightPtrArray<CPUResource> fCreateQueue;
+		LightPtrArray<CPUResource> fUpdateQueue;
 		Array<GPUResource*> fDestroyQueue;
 
 		GeometryPool* fGeometryPool;
@@ -337,11 +343,33 @@ class Renderer
 
 		U32 fTimeDependencyCount;
     
-        Array< CoronaCommand > fPendingCommands;
-        Array< CustomOp > fClearOps;
-        Array< CustomOp > fEndFrameOps;
+    Array< CoronaCommand > fPendingCommands;
+    Array< CustomOp > fClearOps;
+    Array< CustomOp > fEndFrameOps;
 
-        U16 fCommandCount;
+    U16 fCommandCount;
+
+    Array< CoronaCommand > fPendingCommands;
+    Array< CustomOp > fClearOps;
+    Array< CustomOp > fEndFrameOps;
+
+    U16 fCommandCount;
+	
+		struct RectPair {
+			Rect fClipped;
+			Rect fUnclipped;
+			RectPair * fNext;
+		};
+	
+		struct CaptureGroup {
+			FrameBufferObject * fFBO;
+			Texture * fTexture;
+			RectPair * fFirst;
+			RectPair * fLast;
+		};
+	
+		Array< CaptureGroup > fCaptureGroups;
+		Array< RectPair > fCaptureRects;
 };
 
 // ----------------------------------------------------------------------------

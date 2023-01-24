@@ -210,7 +210,7 @@ Transform::Invalidate()
 // * user transform 
 // * translation (of final positions)
 Matrix&
-Transform::GetMatrix( const Vertex2 *anchorOffset )
+Transform::GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas )
 {
 	if ( ! IsValid() )
 	{
@@ -225,6 +225,12 @@ Transform::GetMatrix( const Vertex2 *anchorOffset )
 			// Anchor offset applied first b/c it determines registration pt
 			fMatrix.Translate( anchorOffset->x, anchorOffset->y );
 		}
+
+		if ( deltas )
+		{
+			fMatrix.Translate( -deltas->x, -deltas->y );
+		}
+
 		fMatrix.Scale( fScaleX, fScaleY );
 		fMatrix.Rotate( fRotation );
 
@@ -238,6 +244,11 @@ Transform::GetMatrix( const Vertex2 *anchorOffset )
 		if ( isV1 && anchorOffset )
 		{
 			dx -= anchorOffset->x; dy -= anchorOffset->y;
+		}
+
+		if ( deltas ) // n.b. unlike V2 anchors, these are NOT baked into the final position
+		{
+			dx += deltas->x; dy += deltas->y;
 		}
 
 		fMatrix.Translate( dx, dy );

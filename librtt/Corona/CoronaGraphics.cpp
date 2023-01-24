@@ -20,12 +20,14 @@
 #include "Display/Rtt_TextureFactory.h"
 #include "Rtt_Runtime.h"
 #include "Display/Rtt_Display.h"
+
 #include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderFactory.h"
 #include "Display/Rtt_ShaderResource.h"
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_Matrix_Renderer.h"
+
 #include "Renderer/Rtt_Renderer.h"
 
 #include "Display/Rtt_TextureResourceExternalAdapter.h"

@@ -45,6 +45,7 @@ namespace /*anonymous*/
 	{
 		kCommandBindFrameBufferObject,
 		kCommandUnBindFrameBufferObject,
+		kCommandCaptureRect,
 		kCommandBindGeometry,
 		kCommandBindTexture,
 		kCommandBindProgram,
@@ -313,18 +314,24 @@ CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders()
 #endif
 }
 
+bool
+GLCommandBuffer::HasFramebufferBlit( bool * canScale ) const
+{
+	return GLFrameBufferObject::HasFramebufferBlit( canScale );
+}
+
 GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 :    CommandBuffer( allocator ),
 	 fCurrentPrepVersion( Program::kMaskCount0 ),
 	 fCurrentDrawVersion( Program::kMaskCount0 ),
 	 fProgram( NULL ),
-     fDefaultFBO( 0 ),
+   fDefaultFBO( 0 ),
 	 fTimeTransform( NULL ),
 	 fTimerQueries( new U32[kTimerQueryCount] ),
 	 fTimerQueryIndex( 0 ),
 	 fElapsedTimeGPU( 0.0f ),
-     fCustomCommands( allocator ),
-     fExtraUniforms( NULL )
+   fCustomCommands( allocator ),
+   fExtraUniforms( NULL )
 {
 	for(U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
 	{
@@ -433,17 +440,39 @@ GLCommandBuffer::ClearUserUniforms()
 }
 
 void
-GLCommandBuffer::BindFrameBufferObject(FrameBufferObject* fbo)
+GLCommandBuffer::BindFrameBufferObject(FrameBufferObject* fbo, bool asDrawBuffer) // <- STEVE)
 {
 	if( fbo )
 	{
 		WRITE_COMMAND( kCommandBindFrameBufferObject );
 		Write<GPUResource*>( fbo->GetGPUResource() );
+		Write<bool>( asDrawBuffer );
 	}
 	else
 	{
 		WRITE_COMMAND( kCommandUnBindFrameBufferObject );
 	}
+}
+
+void
+GLCommandBuffer::CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& unclipped )
+{
+	WRITE_COMMAND( kCommandCaptureRect );
+	
+	if (!fbo)
+	{
+		Write<GPUResource*>( texture.GetGPUResource() );
+	}
+	
+	else
+	{
+		Write<GPUResource*>( NULL );
+	}
+	
+	Write<Rect>( rect );
+	Write<Rect>( unclipped );
+	Write<U32>( texture.GetWidth() );
+	Write<U32>( texture.GetHeight() );
 }
 
 void 
@@ -816,19 +845,20 @@ GLCommandBuffer::Execute( bool measureGPU )
 	}
 #endif
 
-    ObjectBoxList list;
-    
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
-    
-    GLProgram::ExtraUniforms extraUniforms;
-    
-    fExtraUniforms = &extraUniforms;
+  ObjectBoxList list;
+
+  OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+
+  GLProgram::ExtraUniforms extraUniforms;
+
+  fExtraUniforms = &extraUniforms;
 
 	// Reset the offset pointer to the start of the buffer.
 	// This is safe to do here, as preparation work is done
 	// on another CommandBuffer while this one is executing.
 	fOffset = fBuffer;
 
+	S32 windowHeight;
 	//GL_CHECK_ERROR();
 
 	for( U32 i = 0; i < fNumCommands; ++i )
@@ -843,8 +873,10 @@ GLCommandBuffer::Execute( bool measureGPU )
 			case kCommandBindFrameBufferObject:
 			{
 				GLFrameBufferObject* fbo = Read<GLFrameBufferObject*>();
-				fbo->Bind();
-				DEBUG_PRINT( "Bind FrameBufferObject: OpenGL name: %i, OpenGL Texture name, if any: %d",
+				bool asDrawBuffer = Read<bool>();
+				fbo->Bind( asDrawBuffer );
+				DEBUG_PRINT( "Bind FrameBufferObject (as draw buffer = %s): OpenGL name: %i, OpenGL Texture name, if any: %d",
+								asDrawBuffer ? "true" : "false",
 								fbo->GetName(),
 								fbo->GetTextureName() );
 				CHECK_ERROR_AND_BREAK;
@@ -855,6 +887,53 @@ GLCommandBuffer::Execute( bool measureGPU )
 				DEBUG_PRINT( "Unbind FrameBufferObject: OpenGL name: %i (fDefaultFBO)", fDefaultFBO );
 				CHECK_ERROR_AND_BREAK;
 			}
+		  case kCommandCaptureRect:
+		  {
+			  GLTexture* texture = Read<GLTexture*>();
+			  Rect rect = Read<Rect>();
+			  Rect unclipped = Read<Rect>();
+			  U32 texW = Read<U32>();
+			  U32 texH = Read<U32>();
+			  U32 x = 0, w = rect.xMax - rect.xMin;
+			  U32 y = 0, h = rect.yMax - rect.yMin;
+			  
+			  if (unclipped.xMin < 0)
+			  {
+				  x = -unclipped.xMin;
+			  }
+			  
+			  if (unclipped.yMax > rect.yMax)
+			  {
+				  y = unclipped.yMax - rect.yMax;
+			  }
+			  
+			  if (!texture)
+			  {
+				  S32 w1 = texW, w2 = unclipped.xMax - unclipped.xMin;
+				  S32 h1 = texH, h2 = unclipped.yMax - unclipped.yMin;
+				  
+				  if (( abs( w1 - w2 ) > 5 || abs( h1 - h2 ) > 5 )) // more than a rounding difference?
+				  {
+					  x = x * w1 / w2;
+					  y = y * h1 / h2;
+					  w = w * w1 / w2;
+					  h = h * h1 / h2;
+				  }
+				  
+				  GLFrameBufferObject::Blit( rect.xMin, windowHeight - rect.yMax, rect.xMax, windowHeight - rect.yMin, x, y, x + w, y + h, GL_COLOR_BUFFER_BIT, GL_NEAREST );
+			  }
+			  else
+			  {
+				  texture->Bind( 0 );
+
+				  glCopyTexSubImage2D( GL_TEXTURE_2D, 0, x, y, rect.xMin, (windowHeight - h) - rect.yMin, w, h );
+				  
+				  GL_CHECK_ERROR();
+			  }
+			  
+			  DEBUG_PRINT( "Capture Rect: (%f, %f, %f, %f), using FBO = %s", rect.xMin, rect.yMin, rect.xMax, rect.yMax, !texture ? "true" : "false" );
+			  CHECK_ERROR_AND_BREAK;
+		  }
 			case kCommandBindGeometry:
 			{
 				GLGeometry* geometry = Read<GLGeometry*>();
@@ -1007,6 +1086,7 @@ GLCommandBuffer::Execute( bool measureGPU )
 				GLint y = Read<GLint>();
 				GLsizei width = Read<GLsizei>();
 				GLsizei height = Read<GLsizei>();
+				windowHeight = height;
 				glViewport( x, y, width, height );
 				DEBUG_PRINT( "Set viewport: x=%i, y=%i, width=%i, height=%i", x, y, width, height );
 				CHECK_ERROR_AND_BREAK;

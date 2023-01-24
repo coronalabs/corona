@@ -79,6 +79,22 @@
 #undef CreateFont
 #endif
 
+FactoryReplacement
+GetFactoryReplacement( lua_State * L )
+{
+    Rtt::DisplayObject::BoxedFunction * funcBox = (Rtt::DisplayObject::BoxedFunction *)lua_touserdata( L, lua_upvalueindex( 2 ) );
+
+    if (funcBox)
+    {
+        return *(FactoryReplacement *)&funcBox->fFunc; // https://stackoverflow.com/a/16682718
+    }
+
+    else
+    {
+        return NULL;
+    }
+}
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -232,6 +248,8 @@ DisplayLibrary::Open( lua_State *L )
 
 	// Set library as upvalue for each library function
 	Self *library = Rtt_NEW( & display->GetRuntime().GetAllocator(), Self( * display ) );
+
+    display->GatherObjectFactories( kVTable, library );
 
 	// Store the library singleton in the registry so it persists
 	// using kMetatableName as the unique key.
@@ -525,8 +543,8 @@ DisplayLibrary::ValueForKey( lua_State *L )
 
 // ----------------------------------------------------------------------------
 
-static GroupObject*
-GetParent( lua_State *L, int& nextArg )
+GroupObject*
+LuaLibDisplay::GetParent( lua_State *L, int& nextArg )
 {
 	GroupObject* parent = NULL;
 
@@ -588,7 +606,8 @@ DisplayLibrary::PushImage(
 	Real w,
 	Real h )
 {
-	ShapeObject* v = RectObject::NewRect( display.GetAllocator(), w, h );
+    auto * rectFactory = GetObjectFactory( L, &RectObject::NewRect );
+    ShapeObject* v = rectFactory( display.GetAllocator(), w, h );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 	if ( Rtt_VERIFY( result ) )
@@ -697,6 +716,12 @@ DisplayLibrary::PushImage(
 	return v;
 }
 
+static ShapeObject *
+NewShape( Rtt_Allocator * allocator, ClosedPath * path )
+{
+    return Rtt_NEW( allocator, ShapeObject( path ) );
+}
+
 int
 DisplayLibrary::newCircle( lua_State *L )
 {
@@ -704,14 +729,16 @@ DisplayLibrary::newCircle( lua_State *L )
 	Display& display = library->GetDisplay();
 
 	int nextArg = 1;
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	Real x = luaL_checkreal( L, nextArg++ );
 	Real y = luaL_checkreal( L, nextArg++ );
 	Real r = luaL_checkreal( L, nextArg++ );
 
 	ShapePath *path = ShapePath::NewCircle( display.GetAllocator(), r );
-	ShapeObject *v = Rtt_NEW( display.GetAllocator(), ShapeObject( path ) );
+
+    auto * circleFactory = GetObjectFactory( L, &NewShape );
+    ShapeObject *v = circleFactory( display.GetAllocator(), path );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 	AssignDefaultFillColor( display, * v );
@@ -729,7 +756,7 @@ DisplayLibrary::newPolygon( lua_State *L )
 	Display& display = library->GetDisplay();
 
 	int nextArg = 1;
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	Real x = luaL_checkreal( L, nextArg++ );
 	Real y = luaL_checkreal( L, nextArg++ );
@@ -739,7 +766,8 @@ DisplayLibrary::newPolygon( lua_State *L )
 	TesselatorPolygon *tesselator = (TesselatorPolygon *)path->GetTesselator();
 	if ( ShapeAdapterPolygon::InitializeContour( L, nextArg, * tesselator ) )
 	{
-		ShapeObject *v = Rtt_NEW( display.GetAllocator(), ShapeObject( path ) );
+        auto * polygonFactory = GetObjectFactory( L, &NewShape );
+        ShapeObject *v = polygonFactory( display.GetAllocator(), path );
 
 		result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 		AssignDefaultFillColor( display, * v );
@@ -775,7 +803,7 @@ DisplayLibrary::newMesh( lua_State *L )
 	
 	if ( lua_istable( L, nextArg ) && LuaProxy::IsProxy(L, nextArg))
 	{
-		parent = GetParent( L, nextArg );
+		parent = LuaLibDisplay::GetParent( L, nextArg );
 	}
 	
 	if(lua_type(L, nextArg) == LUA_TNUMBER && lua_type(L, nextArg+1) == LUA_TNUMBER)
@@ -790,7 +818,7 @@ DisplayLibrary::newMesh( lua_State *L )
 		if ( lua_istable( L, -1) )
 		{
 			int parentArg = Lua::Normalize( L, -1 );
-			parent = GetParent( L, parentArg );
+			parent = LuaLibDisplay::GetParent( L, parentArg );
 		}
 		lua_pop( L, 1 );
 		
@@ -820,8 +848,9 @@ DisplayLibrary::newMesh( lua_State *L )
 	TesselatorMesh *tesselator = (TesselatorMesh *)path->GetTesselator();
 	if ( ShapeAdapterMesh::InitializeMesh( L, nextArg, * tesselator ) )
 	{
-		ShapeObject *v = Rtt_NEW( display.GetAllocator(), ShapeObject( path ) );
-		
+        auto * meshFactory = GetObjectFactory( L, &NewShape );
+        ShapeObject *v = meshFactory( display.GetAllocator(), path );
+
 		if (tesselator->GetFillPrimitive() == Geometry::kIndexedTriangles)
 		{
 			path->Invalidate( ShapePath::kFillSourceIndices );
@@ -851,14 +880,17 @@ DisplayLibrary::newRect( lua_State *L )
 	Display& display = library->GetDisplay();
 
 	int nextArg = 1;
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	Real x = luaL_checkreal( L, nextArg++ );
 	Real y = luaL_checkreal( L, nextArg++ );
 	Real w = luaL_checkreal( L, nextArg++ );
 	Real h = luaL_checkreal( L, nextArg++ );
 
-	ShapeObject* v = RectObject::NewRect( display.GetAllocator(), w, h );
+
+    auto * rectFactory = GetObjectFactory( L, &RectObject::NewRect );
+    ShapeObject* v = rectFactory( display.GetAllocator(), w, h );
+
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 
 	if ( display.GetDefaults().IsV1Compatibility() )
@@ -879,7 +911,7 @@ DisplayLibrary::newRoundedRect( lua_State *L )
 	Display& display = library->GetDisplay();
 
 	int nextArg = 1;
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	Real x = luaL_checkreal( L, nextArg++ );
 	Real y = luaL_checkreal( L, nextArg++ );
@@ -888,7 +920,9 @@ DisplayLibrary::newRoundedRect( lua_State *L )
 	Real r = luaL_checkreal( L, nextArg++ );
 
 	ShapePath *path = ShapePath::NewRoundedRect( display.GetAllocator(), w, h, r );
-	ShapeObject *v = Rtt_NEW( display.GetAllocator(), ShapeObject( path ) );
+
+    auto * roundedRectFactory = GetObjectFactory( L, &NewShape );
+    ShapeObject *v = roundedRectFactory( display.GetAllocator(), path );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 
@@ -903,6 +937,12 @@ DisplayLibrary::newRoundedRect( lua_State *L )
 	return result;
 }
 
+LineObject *
+NewLine( Rtt_Allocator * allocator, OpenPath * path )
+{
+    return Rtt_NEW( allocator, LineObject( path ) );
+}
+
 int
 DisplayLibrary::newLine( lua_State *L )
 {
@@ -912,7 +952,7 @@ DisplayLibrary::newLine( lua_State *L )
 	Rtt_Allocator *pAllocator = runtime.Allocator();
 
 	int nextArg = 1;
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	// number of parameters (excluding self)
 	int numArgs = lua_gettop( L );
@@ -966,7 +1006,9 @@ DisplayLibrary::newLine( lua_State *L )
 
 	int result = 0;
 	{
-		LineObject* o = Rtt_NEW( pAllocator, LineObject( path ) );
+        auto * lineFactory = GetObjectFactory( L, &NewLine );
+        LineObject* o = lineFactory( pAllocator, path );
+        
 		result = LuaLibDisplay::AssignParentAndPushResult( L, display, o, parent );
 		o->Translate( translate_to_origin.x, translate_to_origin.y );
 
@@ -996,7 +1038,7 @@ DisplayLibrary::newImage( lua_State *L )
 #endif
 	// [parentGroup,]
 	int nextArg = 1;
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	// Only required param is "filename"
 	// filename [, baseDirectory]
@@ -1118,7 +1160,7 @@ DisplayLibrary::newImageRect( lua_State *L )
 	int nextArg = 1;
 
 	// NOTE: GetParent() increments nextArg if parent found
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	// Only required param is "filename"
 	// filename [, baseDirectory]
@@ -1221,6 +1263,12 @@ DisplayLibrary::newImageRect( lua_State *L )
 	return result;
 }
 
+static EmitterObject *
+NewEmitter( Rtt_Allocator * allocator )
+{
+    return Rtt_NEW( allocator, EmitterObject );
+}
+
 // display.newEmitter( [parentGroup,] params_table, w, h )
 int
 DisplayLibrary::newEmitter( lua_State *L )
@@ -1235,7 +1283,9 @@ DisplayLibrary::newEmitter( lua_State *L )
 
 	int result = 0;
 
-	EmitterObject *eo = Rtt_NEW( runtime.Allocator(), EmitterObject );
+    auto * emitterFactory = GetObjectFactory( L, &NewEmitter );
+    EmitterObject *eo = emitterFactory( /*runtime.Allocator()*/NULL );
+    
 	if( eo->Initialize( L, display ) )
 	{
 		result = LuaLibDisplay::AssignParentAndPushResult( L, display, eo, NULL );
@@ -1248,6 +1298,18 @@ DisplayLibrary::newEmitter( lua_State *L )
 	}
 
 	return result;
+}
+
+static TextObject *
+NewEmbossedText( Rtt_Allocator * allocator, Display& display, const char text[], PlatformFont *font, Real w, Real h, const char alignment[] )
+{
+    return Rtt_NEW( allocator, EmbossedTextObject( display, text, font, w, h, alignment ) );
+}
+
+static TextObject *
+NewText(  Rtt_Allocator * allocator, Display& display, const char text[], PlatformFont *font, Real w, Real h, const char alignment[] )
+{
+    return Rtt_NEW( allocator, TextObject( display, text, font, w, h, alignment ) );
 }
 
 static int CreateTextObject( lua_State *L, bool isEmbossed )
@@ -1286,7 +1348,7 @@ static int CreateTextObject( lua_State *L, bool isEmbossed )
 			if ( lua_istable( L, -1) )
 			{
 				int parentArg = Lua::Normalize( L, -1 );
-				parent = GetParent( L, parentArg );
+				parent = LuaLibDisplay::GetParent( L, parentArg );
 			}
 			else if (lua_type( L, -1 ) != LUA_TNIL)
 			{
@@ -1386,7 +1448,7 @@ static int CreateTextObject( lua_State *L, bool isEmbossed )
 		//Legacy support
 		
 		// NOTE: GetParent() increments nextArg if parent found
-		parent = GetParent( L, nextArg );
+		parent = LuaLibDisplay::GetParent( L, nextArg );
 		
 		str = luaL_checkstring( L, nextArg++ );
 		if ( Rtt_VERIFY( str ) )
@@ -1427,11 +1489,13 @@ static int CreateTextObject( lua_State *L, bool isEmbossed )
 	TextObject* textObject;
 	if (isEmbossed)
 	{
-		textObject = Rtt_NEW( runtime.Allocator(), EmbossedTextObject( display, str, font, w, h, alignment ) );
+        auto * textFactory = GetObjectFactory( L, &NewEmbossedText );
+        textObject = textFactory( runtime.Allocator(), display, str, font, w, h, alignment );
 	}
 	else
 	{
-		textObject = Rtt_NEW( runtime.Allocator(), TextObject( display, str, font, w, h, alignment ) );
+        auto * textFactory = GetObjectFactory( L, &NewText );
+        textObject = textFactory( runtime.Allocator(), display, str, font, w, h, alignment );
 	}
 	result = LuaLibDisplay::AssignParentAndPushResult( L, display, textObject, parent );
 	
@@ -1478,6 +1542,12 @@ DisplayLibrary::newEmbossedText( lua_State *L )
 	return CreateTextObject( L, isEmbossed );
 }
 
+static GroupObject *
+NewGroup( Rtt_Allocator * context )
+{
+    return Rtt_NEW( context, GroupObject( context, NULL ) );
+}
+
 // display.newGroup( [child1 [, child2 [, child3 ... ]]] )
 // With no args, create an empty group and set parent to root
 // 
@@ -1495,7 +1565,8 @@ DisplayLibrary::newGroup( lua_State *L )
 	Display& display = library->GetDisplay();
 	Rtt_Allocator* context = display.GetAllocator();
 
-	GroupObject *o = Rtt_NEW( context, GroupObject( context, NULL ) );
+    auto * groupFactory = GetObjectFactory( L, &NewGroup );
+    GroupObject *o = groupFactory( context );
 	GroupObject *parent = NULL; // Default parent is root
 
 	DisplayObject *child = NULL;
@@ -1545,6 +1616,12 @@ DisplayLibrary::newGroup( lua_State *L )
 	return result;
 }
 
+static ContainerObject *
+NewContainer( Rtt_Allocator * context, Rtt::StageObject * stageObject, Real w, Real h )
+{
+    return Rtt_NEW( context, ContainerObject( context, stageObject, w, h ) );
+}
+
 // display.newContainer( [parent, ] w, h )
 int
 DisplayLibrary::newContainer( lua_State *L )
@@ -1570,17 +1647,25 @@ DisplayLibrary::_newContainer( lua_State *L )
 	int nextArg = 1;
 
 	// NOTE: GetParent() increments nextArg if parent found
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	Real w = luaL_checkreal( L, nextArg++ );
 	Real h = luaL_checkreal( L, nextArg++ );
 
-	ContainerObject *o = Rtt_NEW( context, ContainerObject( context, NULL, w, h ) );
+    auto * containerFactory = GetObjectFactory( L, &NewContainer );
+    ContainerObject *o = containerFactory( context, NULL, w, h );
+    
 	o->Initialize( display );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, o, parent );
 
 	return result;
+}
+
+static SnapshotObject *
+NewSnapshot( Rtt_Allocator * context, Display & display, Real w, Real h )
+{
+    return Rtt_NEW( context, SnapshotObject( context, display, w, h ) );
 }
 
 // display.newSnapshot( [parent, ] w, h )
@@ -1601,12 +1686,13 @@ DisplayLibrary::newSnapshot( lua_State *L )
 	int nextArg = 1;
 
 	// NOTE: GetParent() increments nextArg if parent found
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 
 	Real w = luaL_checkreal( L, nextArg++ );
 	Real h = luaL_checkreal( L, nextArg++ );
 
-	SnapshotObject *o = Rtt_NEW( context, SnapshotObject( context, display, w, h ) );
+    auto * snapshotFactory = GetObjectFactory( L, &NewSnapshot );
+    SnapshotObject *o = snapshotFactory( context, display, w, h );
 
 	if ( display.GetDefaults().IsV1Compatibility() )
 	{
@@ -1627,7 +1713,7 @@ DisplayLibrary::newSprite( lua_State *L )
 	int result = 0;
 
 	int nextArg = 1;
-	GroupObject *parent = GetParent( L, nextArg );
+	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
 	ImageSheetUserdata *ud = ImageSheet::ToUserdata( L, nextArg );
 
 	if ( ud )
@@ -1643,7 +1729,8 @@ DisplayLibrary::newSprite( lua_State *L )
 			Rtt_Allocator *context = display.GetAllocator();
 
 			SpritePlayer& player = display.GetSpritePlayer();
-			SpriteObject *o = SpriteObject::Create( context, ud->GetSheet(), player );
+            SpriteObject *o = SpriteObject::Create( L, context, ud->GetSheet(), player );
+            
 			if ( o )
 			{
 				// Need to assign parent so we can call Initialize()
@@ -1808,6 +1895,16 @@ DisplayLibrary::getDefault( lua_State *L )
 		bool value = defaults.IsImageSheetSampledInsideFrame();
 		lua_pushboolean( L, value ? 1 : 0 );
 	}
+	else if ( ( Rtt_StringCompare( key, "isImageSheetFrameTrimCorrected" ) == 0 ) )
+	{
+		bool value = defaults.IsImageSheetFrameTrimCorrected();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
+	else if ( ( Rtt_StringCompare( key, "isExternalTextureRetina" ) == 0 ) )
+	{
+		bool value = defaults.IsExternalTextureRetina();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
 	else if ( key )
 	{
 		luaL_error( L, "ERROR: display.getDefault() given invalid key (%s)", key );
@@ -1932,6 +2029,16 @@ DisplayLibrary::setDefault( lua_State *L )
 	{
 		bool value = lua_toboolean( L, index ) ? true : false;
 		defaults.SetImageSheetSampledInsideFrame( value );
+	}
+	else if ( ( Rtt_StringCompare( key, "isImageSheetFrameTrimCorrected" ) == 0 ) )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetImageSheetFrameTrimCorrected( value );
+  }
+	else if ( ( Rtt_StringCompare( key, "isExternalTextureRetina" ) == 0 ) )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetExternalTextureRetina( value );
 	}
 	else if ( key )
 	{
