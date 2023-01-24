@@ -48,6 +48,9 @@ class ShapePath : public ClosedPath
 		ShapePath( Rtt_Allocator *pAllocator, TesselatorShape *tesselator );
 		virtual ~ShapePath();
 
+        VertexCache & GetFillSource() { return fFillSource; }
+        VertexCache & GetStrokeSource() { return fStrokeSource; }
+
 	protected:
 		void TesselateFill();
 		void TesselateStroke();

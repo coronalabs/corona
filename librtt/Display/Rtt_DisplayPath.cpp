@@ -17,6 +17,8 @@
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Rtt_LuaUserdataProxy.h"
 
+#include <vector>
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -45,7 +47,42 @@ DisplayPath::UpdateGeometry( Geometry& dst, const VertexCache& src, const Matrix
 
 	Rtt_ASSERT( ! updateTexture || ( vertices.Length() == texVertices.Length() ) );
 
-	for ( U32 i = 0, iMax = vertices.Length(); i < iMax; i++ )
+    const ArrayFloat * floatArray = src.ExtraFloatArray( ZKey() );
+    const ArrayIndex * indexArray = src.ExtraIndexArray( IndicesKey() );
+
+    std::vector< float > temp;
+    const float zero = 0.f, * zsource;
+    size_t step = 0U;
+
+    if (floatArray)
+    {
+        if (indexArray)
+        {
+            for (S32 i = 0; i < indexArray->Length(); ++i)
+            {
+                U16 index = (*indexArray)[i];
+
+                temp.push_back( (*floatArray)[index] );
+            }
+
+            zsource = temp.data();
+        }
+
+        else
+        {
+            zsource = floatArray->ReadAccess();
+        }
+
+        ++step;
+    }
+
+    else
+    {
+        zsource = &zero;
+        step = 0U;
+    }
+
+    for ( U32 i = 0, iMax = vertices.Length(); i < iMax; i++, zsource += step )
 	{
 		Rtt_ASSERT( i < dst.GetVerticesAllocated() );
 
@@ -58,7 +95,7 @@ DisplayPath::UpdateGeometry( Geometry& dst, const VertexCache& src, const Matrix
 
 			dst.x = v.x;
 			dst.y = v.y;
-			dst.z = 0.f;
+            dst.z = *zsource;
 		}
 
 		if ( updateTexture )
@@ -87,6 +124,22 @@ DisplayPath::UpdateGeometry( Geometry& dst, const VertexCache& src, const Matrix
 		}
 		dst.SetIndicesUsed(numIndices);
 	}
+}
+
+const void *
+DisplayPath::ZKey()
+{
+    static int key;
+
+    return &key;
+}
+
+const void *
+DisplayPath::IndicesKey()
+{
+    static int key;
+
+    return &key;
 }
 
 // ----------------------------------------------------------------------------

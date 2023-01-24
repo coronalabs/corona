@@ -75,6 +75,8 @@
 
 #include "Rtt_LuaAux.h"
 
+#include "Display/Rtt_TesselatorPolygon.h"
+
 #ifdef Rtt_WIN_ENV
 #undef CreateFont
 #endif
@@ -747,6 +749,22 @@ DisplayLibrary::newCircle( lua_State *L )
 	return result;
 }
 
+static void
+LoadZ( lua_State * L, int index, ShapePath * path )
+{
+    VertexCache & cache = path->GetFillSource();
+    ArrayFloat * floatArray = cache.ExtraFloatArray( DisplayPath::ZKey(), true );
+
+    for (int i = 3, n = (( int )lua_objlen( L, index ) / 3) * 3; i <= n; i += 3, lua_pop( L, 1 ))
+    {
+        lua_rawgeti( L, index, i ); // ..., z
+
+        Real z = luaL_toreal( L, -1 );
+
+        floatArray->Append( z );
+    }
+}
+
 int
 DisplayLibrary::newPolygon( lua_State *L )
 {
@@ -762,12 +780,21 @@ DisplayLibrary::newPolygon( lua_State *L )
 	Real y = luaL_checkreal( L, nextArg++ );
 
 	ShapePath *path = ShapePath::NewPolygon( display.GetAllocator() );
-
+    bool hasZ = lua_toboolean( L, nextArg + 1 );
 	TesselatorPolygon *tesselator = (TesselatorPolygon *)path->GetTesselator();
-	if ( ShapeAdapterPolygon::InitializeContour( L, nextArg, * tesselator ) )
+	if ( ShapeAdapterPolygon::InitializeContour( L, nextArg, * tesselator, hasZ ) )
 	{
-        auto * polygonFactory = GetObjectFactory( L, &NewShape );
-        ShapeObject *v = polygonFactory( display.GetAllocator(), path );
+    auto * polygonFactory = GetObjectFactory( L, &NewShape );
+    ShapeObject *v = polygonFactory( display.GetAllocator(), path );
+
+    if (hasZ)
+    {
+        ArrayIndex * indexArray = path->GetFillSource().ExtraIndexArray( 0U, true ); // FIXME!
+
+        tesselator->SetTriangulationArray( indexArray );
+
+        LoadZ( L, nextArg, path );
+    }
 
 		result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
 		AssignDefaultFillColor( display, * v );
@@ -842,14 +869,29 @@ DisplayLibrary::newMesh( lua_State *L )
 					   nextArg, lua_typename( L, lua_type( L, nextArg ) ));
 		return result;
 	}
+
+  lua_getfield( L, nextArg, "hasZ" ); // ..., hasZ
+
+  bool hasZ = lua_toboolean( L, -1 );
+
+  lua_pop( L, 1 ); // ...
 	
 	ShapePath *path = ShapePath::NewMesh( display.GetAllocator(), ShapeAdapterMesh::GetMeshMode( L, nextArg) );
 	
 	TesselatorMesh *tesselator = (TesselatorMesh *)path->GetTesselator();
-	if ( ShapeAdapterMesh::InitializeMesh( L, nextArg, * tesselator ) )
+	if ( ShapeAdapterMesh::InitializeMesh( L, nextArg, * tesselator, hasZ ) )
 	{
-        auto * meshFactory = GetObjectFactory( L, &NewShape );
-        ShapeObject *v = meshFactory( display.GetAllocator(), path );
+    auto * meshFactory = GetObjectFactory( L, &NewShape );
+    ShapeObject *v = meshFactory( display.GetAllocator(), path );
+
+    if (hasZ)
+    {
+        lua_getfield( L, nextArg, "vertices" ); // ..., vertices
+
+        LoadZ( L, -1, path );
+
+        lua_pop( L, 1 ); // ...
+    }
 
 		if (tesselator->GetFillPrimitive() == Geometry::kIndexedTriangles)
 		{
