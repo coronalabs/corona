@@ -206,6 +206,7 @@ Display::Display( Runtime& owner )
 	fStream( Rtt_NEW( owner.GetAllocator(), GPUStream( owner.GetAllocator() ) ) ),
 	fTarget( owner.Platform().CreateScreenSurface() ),
 	fImageSuffix( LUA_REFNIL ),
+    fObjectFactories( LUA_REFNIL ),
 	fDrawMode( kDefaultDrawMode ),
 	fIsAntialiased( false ),
 	fIsCollecting( false ),
@@ -224,6 +225,7 @@ Display::~Display()
 	if ( L )
 	{
 		luaL_unref( L, LUA_REGISTRYINDEX, fImageSuffix );
+        luaL_unref( L, LUA_REGISTRYINDEX, fObjectFactories );
 	}
 
     //Needs to be done before deletes, because it uses scene etc
@@ -1182,6 +1184,46 @@ Display::PushImageSuffixTable() const
 	return wasPushed;
 }
 
+void
+Display::GatherObjectFactories( const luaL_Reg funcs[], void * library )
+{
+    lua_State *L = GetL();
+
+    if ( L && LUA_REFNIL == fObjectFactories )
+    {
+        lua_newtable( L );
+
+        for (int i = 0; funcs[i].func; ++i)
+        {
+            if (strncmp(funcs[i].name, "new", 3U) == 0)
+            {
+                lua_pushlightuserdata( L, library );
+                lua_pushnil( L );
+                lua_pushcclosure( L, funcs[i].func, 2 );
+                lua_setfield( L, -2, funcs[i].name );
+            }
+        }
+
+        fObjectFactories = luaL_ref( L, LUA_REGISTRYINDEX );
+    }
+}
+
+bool
+Display::PushObjectFactories() const
+{
+    bool wasPushed = false;
+    if (LUA_REFNIL != fObjectFactories)
+    {
+        lua_State *L = GetL();
+        if (L)
+        {
+            lua_rawgeti(L, LUA_REGISTRYINDEX, fObjectFactories);
+            wasPushed = true;
+        }
+    }
+    return wasPushed;
+}
+
 GroupObject *
 Display::Overlay()
 {
@@ -1428,6 +1470,20 @@ Display::ScaleMode
 Display::GetScaleMode() const
 {
 	return fStream->GetScaleMode();
+}
+
+void
+Display::ContentToScreenUnrounded( float& x, float& y ) const
+{
+    float w = 0;
+    float h = 0;
+    ContentToScreenUnrounded( x, y, w, h );
+}
+
+void
+Display::ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const
+{
+    fStream->ContentToScreenUnrounded( x, y, w, h );
 }
 
 void
@@ -1834,6 +1890,12 @@ size_t
 Display::GetMaxVertexTextureUnits()
 {
 	return Renderer::GetMaxVertexTextureUnits();
+}
+
+bool
+Display::HasFramebufferBlit( bool * canScale ) const
+{
+    return fRenderer->HasFramebufferBlit( canScale );
 }
 
 void

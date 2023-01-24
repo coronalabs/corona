@@ -171,6 +171,8 @@ class Renderer
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
 		static size_t GetMaxVertexTextureUnits();
 
+		bool HasFramebufferBlit(  bool * canScale ) const;
+
 		struct Statistics
 		{
 			Statistics();
@@ -244,6 +246,10 @@ class Renderer
         Array< CustomOp > & GetClearOps() { return fClearOps; }
         Array< CustomOp > & GetEndFrameOps() { return fEndFrameOps; }
 
+	public:
+		void InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped );
+		void IssueCaptures( Texture * fill0 );
+
 	protected:
 		// Destroys all queued GPU resources passed into the DestroyQueue() method.
 		void DestroyQueuedGPUResources();
@@ -281,8 +287,8 @@ class Renderer
 		
 		MCPUResourceObserver *fCPUResourceObserver;
 		
-		Array<CPUResource*> fCreateQueue;
-		Array<CPUResource*> fUpdateQueue;
+		LightPtrArray<CPUResource> fCreateQueue;
+		LightPtrArray<CPUResource> fUpdateQueue;
 		Array<GPUResource*> fDestroyQueue;
 
 		GeometryPool* fGeometryPool;
@@ -332,11 +338,27 @@ class Renderer
 
 		U32 fTimeDependencyCount;
     
-        Array< CoronaCommand > fPendingCommands;
-        Array< CustomOp > fClearOps;
-        Array< CustomOp > fEndFrameOps;
+    Array< CoronaCommand > fPendingCommands;
+    Array< CustomOp > fClearOps;
+    Array< CustomOp > fEndFrameOps;
 
-        U16 fCommandCount;
+    U16 fCommandCount;
+	
+		struct RectPair {
+			Rect fClipped;
+			Rect fUnclipped;
+			RectPair * fNext;
+		};
+	
+		struct CaptureGroup {
+			FrameBufferObject * fFBO;
+			Texture * fTexture;
+			RectPair * fFirst;
+			RectPair * fLast;
+		};
+	
+		Array< CaptureGroup > fCaptureGroups;
+		Array< RectPair > fCaptureRects;
 };
 
 // ----------------------------------------------------------------------------

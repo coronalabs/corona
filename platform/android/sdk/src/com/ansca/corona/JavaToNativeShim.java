@@ -117,6 +117,7 @@ public class JavaToNativeShim {
 	private static native void nativeMapTappedEvent( long bridgeAddress, int id, double latitude, double longitude );
 	private static native void nativeVideoViewPrepared( long bridgeAddress, int id );
 	private static native void nativeVideoViewEnded( long bridgeAddress, int id );
+	private static native void nativeVideoViewFailed( long bridgeAddress, int id );
 	private static native Object nativeGetCoronaRuntime( long bridgeAddress );
 
 	// Load all C/C++ libraries and their dependencies.
@@ -786,6 +787,14 @@ public class JavaToNativeShim {
 			return;
 		}
 		nativeVideoViewEnded(runtime.getJavaToNativeBridgeAddress(), id);
+	}
+
+	public static void videoViewFailed(CoronaRuntime runtime, int id)
+	{
+		if (runtime == null || runtime.wasDisposed()) {
+			return;
+		}
+		nativeVideoViewFailed(runtime.getJavaToNativeBridgeAddress(), id);
 	}
 
 	public static CoronaRuntime getCoronaRuntimeFromBridge(long address) {

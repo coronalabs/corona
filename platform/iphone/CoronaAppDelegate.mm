@@ -186,7 +186,7 @@
 }
 
 #if ! defined( Rtt_TVOS_ENV )
-// It doesn't make sense to ask all the plugins if this orientation is supported since the enterprise delegate should be the master
+
 - (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)windowArg
 {
 	NSUInteger result = UIInterfaceOrientationMaskAll;
@@ -209,6 +209,14 @@
           result = supportedOrientations;
       }
   }
+    //Allow Plugin Devs to adjust orientation(i.e Video Players)
+    for ( id delegate in _fCoronaPluginDelegates ) {
+            if ( [delegate respondsToSelector:_cmd] && delegate != _fEnterpriseDelegate )
+            {
+                result = [delegate application:application supportedInterfaceOrientationsForWindow:windowArg];
+            }
+        }
+
 
 	if ( [_fEnterpriseDelegate respondsToSelector:_cmd] )
 	{

@@ -282,7 +282,7 @@ end
 local function getLiveBuildManifestScript(appDir, manifestFile)
 	-- local genManifestSh = "cd ".. appDir .." && find . -print0 | xargs -0 stat -f '%m %N' > " .. manifestFile
 
-	local genManifestSh = "cd ".. appDir .." &&  find . -print0 | xargs -0 stat -f '0 / %m / %N%T //' | sed -e 's![*@] //$! //!' -e 's!/ \./!/ /!' > "..manifestFile
+	local genManifestSh = "cd ".. appDir .." &&  find . -print0 | xargs -0 stat -f '0 / %m / %N%T //' | sed -e 's![*@] //$! //!' -e 's!/ \\./!/ /!' > "..manifestFile
 
 	return genManifestSh
 end
@@ -1033,41 +1033,35 @@ end
 
 
 -- this function moves files from main bundle to target OnDemandResources directory
-local function generateOdrFileStructureScript(bundleDir, destDir, odr, appBundleId)
+local function generateOdrFileStructure(bundleDir, destDir, odr, appBundleId)
 	local err = nil
 	if type(odr) ~= "table" then
-		return "", "ERROR: 'onDemandResources' should be array of tables with tag and resource fields."
+		return " 'onDemandResources' should be array of tables with tag and resource fields."
 	end
-	
-  local script = 'SRC_DIR='..quoteString(bundleDir)..'\nDST_DIR='..quoteString(destDir).. [==[
-  
-mkdir -p "$DST_DIR"
-]==]
-  
-  for i = 1,#odr do
+
+	for i = 1,#odr do
 		local tag, resource = odr[i].tag, odr[i].resource
 		if type(tag)=="string" and type(resource)=="string" then
-	    local tagBundle = appBundleId .. "." .. tag
-	    script = script .. 'BNDL_DIR="$DST_DIR/' .. tagBundle .. '.assetpack"\n'
-	    script = script .. 'BNDL_REL_SRC="' .. resource .. '"\n'
-	    script = script .. [==[
-
-/bin/mkdir -p "$BNDL_DIR"
-pushd "$SRC_DIR" > /dev/null
-BUNDLE_SUBFOLDER="$(dirname "$BNDL_REL_SRC")"
-popd > /dev/null
-if [ "$BUNDLE_SUBFOLDER" != "." ]
- then 
-  /bin/mkdir -p "$BNDL_DIR/$BUNDLE_SUBFOLDER"
-fi
-/bin/mv "$SRC_DIR"/"$BNDL_REL_SRC" "$BNDL_DIR/$BUNDLE_SUBFOLDER/"
+			local tagBundle = appBundleId .. "." .. tag
+			local script = 'SRC_DIR='..quoteString(bundleDir) ..'\n'
+			script = script ..'DST_DIR='..quoteString(destDir) .. '\n'
+			script = script .. 'BNDL_DIR="$DST_DIR/' .. tagBundle .. '.assetpack"\n'
+			script = script .. 'BNDL_REL_SRC="' .. resource .. '"\n'
+			script = script .. [==[
+BSF="$(dirname "$BNDL_REL_SRC")"
+/bin/mkdir -p "$BNDL_DIR/$BSF"
+/bin/mv "$SRC_DIR"/"$BNDL_REL_SRC" "$BNDL_DIR/$BSF/"
 ]==]
+			local result, errMsg = runScript( script )
+			if result ~= 0 then
+				return "error running script " .. tostring(errMsg)
+			end
+
 		else
-			err = "ERROR: invalid On-Demand Resources Entry: " .. json.encode(odr[i]) .. "; 'onDemandResources' should be array of tables with tag and resource fields."
-			break
+			return " invalid On-Demand Resources Entry: " .. json.encode(odr[i]) .. "; 'onDemandResources' should be array of tables with tag and resource fields."
 		end
   end
-  return script, err
+  return nil
 end
 
 -- generates plists for ODR resources. One describing each bundle and some in app bundle to aggregate them
@@ -1150,8 +1144,8 @@ local function generateOdrPlists (bundleDir, odrDir, odr, appBundleId)
 end
 
 -- this will generate script for signing each bundle individually
-local function generateOdrCodesignScript(destDir, odr, appBundleId, identity, developerBase)
-	
+local function generateOdrCodesign(destDir, odr, appBundleId, identity, developerBase)
+
 	local codesign_allocate = xcodetoolhelper['codesign_allocate']
 	local codesign = xcodetoolhelper['codesign']
 
@@ -1166,16 +1160,18 @@ export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVE
 ]==]
 
 	local allocate_script = 'export CODESIGN_ALLOCATE=' .. codesign_allocate .. '\n\n'
-	
-	local script = devbase_shell .. export_path .. allocate_script
-	
+
 	for i = 1,#odr do
+		local script = devbase_shell .. export_path .. allocate_script
 		local tag, resource = odr[i].tag, odr[i].resource
 		local quotedpath = quoteString(makepath(destDir,appBundleId .. "." .. tag .. ".assetpack"))
 		script = script .. codesign .. " --verbose -f -s "..quoteString(identity).." "..quotedpath .. "\n"
+		local result, errMsg = runScript( script )
+		if result ~= 0 then
+			return " codesigning error for  " .. tostring(resource) .. ": "..tostring(errMsg)
+		end
 	end
-  
-  return script
+  return nil
 end
 
 
@@ -1279,28 +1275,21 @@ local function packageApp( options )
 
 		-- step 1: move resources into appropriate folders
 		odrOutputDir = captureCommandOutput('mktemp -d -t CLtmpXXXXXX_ODR') .. "/OnDemandResources"
-		local moveFilesScript, errMsg = generateOdrFileStructureScript(appBundleFileUnquoted, odrOutputDir, odrData, options.bundleid)
+		local errMsg = generateOdrFileStructure(appBundleFileUnquoted, odrOutputDir, odrData, options.bundleid)
 		if errMsg then
-			return errMsg
-		end
-		local result, errMsg = runScript( moveFilesScript )
-		if result ~= 0 then
-			errMsg = "ERROR: error while copying On-Demand Resources: "..tostring(errMsg)
-			return errMsg
+			return "ERROR: error while copying On-Demand Resources: " .. tostring(errMsg)
 		end
 
 		-- step 2: generate necessary Plists
-		local errMsg = generateOdrPlists(appBundleFileUnquoted, odrOutputDir, odrData, options.bundleid)
+		errMsg = generateOdrPlists(appBundleFileUnquoted, odrOutputDir, odrData, options.bundleid)
 		if errMsg then
 			return "ERROR: error while generating On-Demand Resources medatada: "..errMsg
 		end
 
 		-- step 3: codesign ODRs
-		local odrCodesignScript = generateOdrCodesignScript(odrOutputDir, odrData, options.bundleid, options.signingIdentity, iPhoneSDKRoot )
-		local result, errMsg = runScript( odrCodesignScript )
-		if result ~= 0 then
-			errMsg = "ERROR: codesigning On-Demand Resource packages: "..tostring(errMsg)
-			return errMsg
+		errMsg = generateOdrCodesign(odrOutputDir, odrData, options.bundleid, options.signingIdentity, iPhoneSDKRoot )
+		if errMsg then
+			return "ERROR: codesignig On-Demand Resources: "..errMsg
 		end
 	end
 
@@ -1504,6 +1493,18 @@ function buildExe( options )
 	local pluginsDir = buildDir
 	local dstFrameworksDir = dstDir .. "/Frameworks"
 
+	local sdkVersion = captureCommandOutput("xcrun --sdk appletvos --show-sdk-version" )
+	if not sdkVersion then
+		return "ERROR: Could not find TVos SDK Version"
+	end
+	sdkVersion = tonumber(string.match(sdkVersion, '%d+'))
+	if not sdkVersion then
+		return "ERROR: Could not parse TVos SDK Version"
+	end
+	local stripBitcode = (sdkVersion>=16)
+	local stripBitcodeScript = 'cd "' ..dstFrameworksDir ..  '" && for F in *.framework ; do  if (xcrun otool -l  "$F/${F%.*}" | grep LLVM -q ) ; then xcrun bitcode_strip -r "$F/${F%.*}" -o "$F/${F%.*}".tmp ; mv "$F/${F%.*}".tmp "$F/${F%.*}"  ; fi  ; done '
+
+
 	local pluginDirNames = getPluginDirNames( pluginsDir )
 	for i=1,#pluginDirNames do
 		local pluginName = pluginDirNames[i]
@@ -1522,6 +1523,10 @@ function buildExe( options )
 				print( "Plugins: The plugin (" .. pluginName .. ") is missing a .framework file at path (" .. pluginFrameworkPath .. ")" )
 			end
 		end
+	end
+
+	if stripBitcode then
+		runScript(stripBitcodeScript)
 	end
 
 	-- Move the helper files/plugin libs out of the .app bundle into the tmp dir

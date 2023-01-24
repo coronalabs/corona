@@ -39,6 +39,7 @@ export MONTH
 export DAY
 export BUILD
 export WORKSPACE
+export TEMPLATE_TARGET
 
 if [ -n "$CERT_PASSWORD" ]
 then

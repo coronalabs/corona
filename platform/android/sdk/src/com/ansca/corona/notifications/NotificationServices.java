@@ -435,7 +435,8 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					// Set up a pending intent that uniquely identifies the notification by ID and to tell
 					// the alarm manager to send the notification to the AlarmManagerBroadcastReceiver class.
 					android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
-							context, 0, AlarmManagerBroadcastReceiver.createIntentFrom(context, scheduledSettings), 0);
+							context, 0, AlarmManagerBroadcastReceiver.createIntentFrom(context, scheduledSettings), android.app.PendingIntent.FLAG_IMMUTABLE);
+
 
 					// Schedule the notification using the Android alarm manager.
 					android.app.AlarmManager alarmManager;
@@ -563,7 +564,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					alarmManager = (android.app.AlarmManager)context.getSystemService(serviceName);
 					ScheduledNotificationSettings scheduledSettings = (ScheduledNotificationSettings)settings;
 					android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
-							context, 0, AlarmManagerBroadcastReceiver.createIntentFrom(context, scheduledSettings), 0);
+							context, 0, AlarmManagerBroadcastReceiver.createIntentFrom(context, scheduledSettings), android.app.PendingIntent.FLAG_IMMUTABLE);
 					alarmManager.cancel(pendingIntent);
 				}
 				else if (settings instanceof StatusBarNotificationSettings) {
@@ -1006,11 +1007,11 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 			// Set an intent to be invoked when the notification has been tapped.
 			android.content.Intent intent;
 			intent = StatusBarBroadcastReceiver.createContentIntentFrom(context, settings);
-			builder.setContentIntent(android.app.PendingIntent.getBroadcast(context, 0, intent, 0));
+			builder.setContentIntent(android.app.PendingIntent.getBroadcast(context, 0, intent, android.app.PendingIntent.FLAG_IMMUTABLE));
 
 			// Set an intent to be invoked when the notification has been cleared/removed.
 			intent = StatusBarBroadcastReceiver.createDeleteIntentFrom(context, settings);
-			builder.setDeleteIntent(android.app.PendingIntent.getBroadcast(context, 0, intent, 0));
+			builder.setDeleteIntent(android.app.PendingIntent.getBroadcast(context, 0, intent, android.app.PendingIntent.FLAG_IMMUTABLE));
 
 			// Return the notification builder object.
 			return builder;

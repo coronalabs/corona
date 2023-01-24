@@ -16,6 +16,7 @@ import android.app.UiModeManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -3555,6 +3556,18 @@ public class CoronaActivity extends Activity {
 		}
 	}
 
+	/* Handles setting navigationBarColor */
+	public void setNavigationBarColor(double red, double green, double blue){
+		myHandler.post(new Runnable() {
+			public void run() {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					getWindow().setNavigationBarColor(Color.rgb(((int) red*255), ((int) green*255), ((int) blue*255)));
+				}
+			}
+		});
+
+	}
+
 	/** Default handling of permissions on Android 6+.
 	 * <!-- TODO: CLEAN THIS UP SINCE IT'LL BE AVAILABLE FOR ENTERPRISE DEVS TO CREATE!
 	 * OPEN THIS UP TO ENTERPRISE WHEN READY!--> */
@@ -3791,6 +3804,28 @@ public class CoronaActivity extends Activity {
 				}
 			}
 			catch (Exception ex) {}
+		}
+	}
+
+	@Override
+	public void onTrimMemory(int level) {
+		super.onTrimMemory(level);
+		if( level == android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
+			|| level == android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+		{
+			if (fCoronaRuntime != null) {
+				com.ansca.corona.events.EventManager eventManager = fCoronaRuntime.getController().getEventManager();
+				if (eventManager != null) {
+					eventManager.addEvent(new com.ansca.corona.events.RunnableEvent(new java.lang.Runnable() {
+						@Override
+						public void run() {
+							if (fCoronaRuntime.getController() != null) {
+								JavaToNativeShim.memoryWarningEvent(fCoronaRuntime);
+							}
+						}
+					}));
+				}
+			}
 		}
 	}
 }

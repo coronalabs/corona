@@ -27,6 +27,7 @@ namespace Rtt {
 	const char* AppleInputDevice::sMFiProfileExtendedGamepad = "extendedGamepad";
 	const char* AppleInputDevice::sMFiProfileGamepad = "gamepad";
 	const char* AppleInputDevice::sMFiProfileMicroGamepad = "microGamepad";
+	const char* AppleInputDevice::sMFiProfileDirectionalGamepad = "directionalGamepad";
 
 	
 	AppleInputDevice::AppleInputDevice(const InputDeviceDescriptor &descriptor)

@@ -25,9 +25,8 @@
 #include "CoronaMacros.h"
 #include "CoronaVersion.h"
 #include "CoronaGraphics.h"
-// STEVE CHANGE
 #include "CoronaObjects.h"
-// /STEVE CHANGE
+
 //#include "CoronaWin32.h"
 #include <Windows.h>
 
@@ -600,7 +599,6 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 }
 #pragma endregion
 
-// STEVE CHANGE
 #pragma region Corona Renderer API
 CORONA_API
 int CoronaRendererScheduleEndFrameOp(CoronaRendererOpParams* renderer, CoronaRendererOp onEndFrame, void* userData, unsigned long* opID)
@@ -830,5 +828,5 @@ int CoronaObjectSendMessage(const CoronaDisplayObject* object, const char* messa
 	CoronaCallbackLoad();
 	return CoronaCallbackInvoke(object, message, payload, size);
 }
-// /STEVE CHANGE
+
 #pragma endregion

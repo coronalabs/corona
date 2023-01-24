@@ -231,6 +231,12 @@ LuaLibSystem::getInfo( lua_State *L )
 		Runtime *runtime = LuaContext::GetRuntime( L );
 		lua_pushboolean( L, runtime->GetDisplay().GetGpuSupportsHighPrecisionFragmentShaders() );
 	}
+	else if ( Rtt_StringCompare( key, "gpuSupportsScaledCaptures" ) == 0 )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		bool canScale = false;
+		lua_pushboolean( L, runtime->GetDisplay().HasFramebufferBlit( &canScale ) && canScale );
+	}
 	else if ( Rtt_StringCompare( key, "maxVertexTextureUnits" ) == 0 )
 	{
 		Runtime *runtime = LuaContext::GetRuntime( L );

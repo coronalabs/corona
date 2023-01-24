@@ -56,6 +56,8 @@ class CommandBuffer
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
 
+		virtual bool HasFramebufferBlit( bool * canScale ) const = 0;
+
 	public:
 		CommandBuffer( Rtt_Allocator* allocator );
 		virtual ~CommandBuffer();
@@ -73,7 +75,8 @@ class CommandBuffer
 		// Derived classes are responsible for taking state changes specified
 		// here and transcribing them into equivalent, buffered commands used
 		// by the underlying rendering API.
-		virtual void BindFrameBufferObject( FrameBufferObject* fbo ) = 0;
+		virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer = false ) = 0;
+		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect ) = 0;
 		virtual void BindGeometry( Geometry* geometry ) = 0;
 		virtual void BindTexture( Texture* texture, U32 unit ) = 0;
 		virtual void BindUniform( Uniform* uniform, U32 unit ) = 0;
