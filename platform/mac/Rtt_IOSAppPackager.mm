@@ -138,7 +138,7 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 			{
 				if (fSimulatorServices != NULL)
 				{
-					fSimulatorServices->SetBuildMessage("Collecting plugins locally");
+					fSimulatorServices->SetBuildMessage("Collecting plugins");
 				}
 
 				lua_State *L = fVM;
@@ -250,6 +250,10 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 			}
 			if ( PlatformAppPackager::kNoError == result )
 			{
+				if (fSimulatorServices != NULL)
+				{
+					fSimulatorServices->SetBuildMessage("Packaging app");
+				}
 				lua_State *L = fVM;
 				lua_getglobal( L, "iPhonePostPackage" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
 
@@ -293,6 +297,8 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
                     
 					lua_pushboolean( L, macParams->IsLiveBuild() );
 					lua_setfield( L, -2, "liveBuild" );
+                    lua_pushboolean( L, macParams->IncludeStandardResources() );
+					lua_setfield( L, -2, "includeStandardResources" );
 
 					// By default, assumes ARM architecture, so we need to override
 					// when building for Xcode simulator

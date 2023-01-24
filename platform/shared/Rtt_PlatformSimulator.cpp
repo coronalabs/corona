@@ -300,6 +300,9 @@ PlatformSimulator::LoadConfig( const char deviceConfigFile[], Config& rConfig )
 			case TargetDevice::kWinPhoneSilverlightPlatform:
 				rConfig.osName.Set("winphone");
 				break;
+			case TargetDevice::kNxSPlatform:
+				rConfig.osName.Set("nx64");
+				break;
 			default:
 				rConfig.osName.Set("simulator");
 				break;
@@ -356,6 +359,7 @@ PlatformSimulator::LoadConfig( const char deviceConfigFile[], Config& rConfig )
 			case TargetDevice::kOSXPlatform:
 			case TargetDevice::kTVOSPlatform:
 			case TargetDevice::kWin32Platform:
+			case TargetDevice::kNxSPlatform:
 				rConfig.supportsInputDevices = true;
 				break;
 			default:

@@ -46,7 +46,7 @@ static StaticTargetDeviceFinalizer sTargetDeviceFinalizer;
 
 
 #if defined( Rtt_WIN_ENV )
-const char *kDefaultSkinName = "Samsung Galaxy S5";
+const char *kDefaultSkinName = "Samsung Galaxy S21";
 #else
 const char *kDefaultSkinName = "iPhone 5";
 #endif
@@ -339,6 +339,7 @@ static const char kOSXPlatformTag1[] = "osx";
 static const char kOSXPlatformTag2[] = "macos";
 static const char kWinPhoneSilverlightPlatformTag[] = "winphonesilverlight";
 static const char kTVOSPlatformTag[] = "tvos";
+static const char kNXSPlatformTag[] = "nx64";
 
 const char*
 TargetDevice::TagForPlatform( TargetDevice::Platform platform )
@@ -377,6 +378,8 @@ TargetDevice::TagForPlatform( TargetDevice::Platform platform )
 		case kTVOSPlatform:
 			result = kTVOSPlatformTag;
 			break;
+		case kNxSPlatform:
+			result = kNXSPlatformTag;
 		default:
 			Rtt_ASSERT_NOT_IMPLEMENTED();
 			break;
@@ -432,6 +435,10 @@ TargetDevice::PlatformForTag( const char *str )
 		else if ( 0 == Rtt_StringCompareNoCase( str, kTVOSPlatformTag ) )
 		{
 			result = kTVOSPlatform;
+		}
+		else if (0 == Rtt_StringCompareNoCase(str, kNXSPlatformTag))
+		{
+			result = kNxSPlatform;
 		}
 	}
 
@@ -678,6 +685,10 @@ TargetDevice::PlatformForDeviceType( const char *typeName )
 		else if (substringSearchCallback(typeName, "winphone"))
 		{
 			platformType = kWinPhoneSilverlightPlatform;
+		}
+		else if (substringSearchCallback(typeName, "nx64"))
+		{
+			platformType = kNxSPlatform;
 		}
 	}
 

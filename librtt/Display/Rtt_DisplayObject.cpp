@@ -11,6 +11,7 @@
 
 #include "Display/Rtt_DisplayObject.h"
 #include "Display/Rtt_Display.h"
+#include "Display/Rtt_DisplayDefaults.h"
 
 #include "Rtt_DisplayObjectExtensions.h"
 
@@ -786,6 +787,12 @@ DisplayObject::LocalToContent( Vertex2& v ) const
 {
 	// TODO: Use GetSrcToDstMatrix()
 	const DisplayObject* object = this;
+	Real dx, dy;
+	if (GetTrimmedFrameOffset( dx, dy ))
+	{
+		v.x += dx;
+		v.y += dy;
+	}
 	object->GetMatrix().Apply( v );
 
 	while ( ( object = object->GetParent() ) )
@@ -803,6 +810,13 @@ DisplayObject::ContentToLocal( Vertex2& v ) const
 	Matrix inverse;
 	Matrix::Invert( srcToDstSpace, inverse );
 	inverse.Apply( v );
+
+	Real dx, dy;
+	if (GetTrimmedFrameOffset( dx, dy ))
+	{
+		v.x -= dx;
+		v.y -= dy;
+	}
 }
 
 // IsSrcToDstValid() only tells you if the fSrcToDst matrix was explicitly
@@ -964,11 +978,15 @@ DisplayObject::StageBounds() const
 		}
 		else
 		{
+			Real dx, dy;
+			if (GetTrimmedFrameOffset( dx, dy ))
+			{
+				rRect.Translate( dx, dy );
+			}
 			// TODO: Should we update all the parent stage bounds?
 			GetMatrix().Apply( rRect );
 			ApplyParentTransform( *this, rRect );
 		}
-
 		const_cast< Self * >( this )->SetValid( kStageBoundsFlag );
 
 #ifdef Rtt_DEBUG
@@ -1672,7 +1690,22 @@ DisplayObject::SetAnchorChildren( bool newValue )
 {
 	SetProperty( kIsAnchorChildren, newValue );
 	
-	Invalidate( kTransformFlag );
+	DirtyFlags flags = kTransformFlag;
+	
+	// For backward compatibility purposes, these are tied to the trim correction
+	// feature, since this issue was identified during its development, but some
+	// kind of "invalidateAnchorChildrenImmediately" might be more appropriate.
+	StageObject *canvas = GetStage();
+	DisplayDefaults & defaults = canvas->GetDisplay().GetDefaults();
+	
+	if (defaults.IsImageSheetFrameTrimCorrected())
+	{
+		flags |= kStageBoundsFlag;
+		
+		fTransform.Invalidate();
+	}
+	
+	Invalidate( flags );
 }
 
 void
@@ -1765,7 +1798,10 @@ DisplayObject::GetMatrix() const
 		offset = GetAnchorOffset();
 	}
 
-	return fTransform.GetMatrix( shouldOffset ? & offset : NULL );
+	Vertex2 deltas;
+	bool correct = GetTrimmedFrameOffsetForAnchor( deltas.x, deltas.y );
+
+	return fTransform.GetMatrix( shouldOffset ? & offset : NULL, correct ? &deltas : NULL );
 }
 
 void

@@ -35,7 +35,7 @@ class PlatformBitmap
 			kBGRA, // Channels are (left to right) from MSB to LSB, so A is in the least-significant 8 bits
 			kABGR, // Channels are (left to right) from MSB to LSB, so A is in the most-significant 8 bits
 			kARGB,
-
+			kLUMINANCE_ALPHA,
 			kNumFormats
 		}
 		Format;

@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build.Tools", "Build.Tools", "{3018FE52-B8E3-42F4-86C4-EC6637DD008D}"
+	ProjectSection(SolutionItems) = preProject
+		Build.Tools\CoronaLabsInc.Sign.bat = Build.Tools\CoronaLabsInc.Sign.bat
+		Build.Tools\LuaToCppFile.bat = Build.Tools\LuaToCppFile.bat
+		Build.Tools\LuaToCppSchema.xml = Build.Tools\LuaToCppSchema.xml
+		Build.Tools\LuaToCppTask.targets = Build.Tools\LuaToCppTask.targets
+		Build.Tools\UpdateProjectFileVersion.vbs = Build.Tools\UpdateProjectFileVersion.vbs
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emscripten", "win32\rtt.vcxproj", "{49F4771E-92A6-45D2-816C-072A4EB23E28}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Emscripten = Debug|Emscripten
+		Debug|x86 = Debug|x86
+		emscripten|Emscripten = emscripten|Emscripten
+		emscripten|x86 = emscripten|x86
+		Release|Emscripten = Release|Emscripten
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.Debug|Emscripten.ActiveCfg = Debug|Emscripten
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.Debug|Emscripten.Build.0 = Debug|Emscripten
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.Debug|x86.ActiveCfg = Debug|Win32
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.Debug|x86.Build.0 = Debug|Win32
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.emscripten|Emscripten.ActiveCfg = emscripten|Emscripten
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.emscripten|Emscripten.Build.0 = emscripten|Emscripten
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.emscripten|x86.ActiveCfg = emscripten|Win32
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.emscripten|x86.Build.0 = emscripten|Win32
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.Release|Emscripten.ActiveCfg = Release|Emscripten
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.Release|Emscripten.Build.0 = Release|Emscripten
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.Release|x86.ActiveCfg = Release|Win32
+		{49F4771E-92A6-45D2-816C-072A4EB23E28}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DAA4B0F1-B7A9-43EA-AE8F-1D9768F31FEA}
+	EndGlobalSection
+EndGlobal

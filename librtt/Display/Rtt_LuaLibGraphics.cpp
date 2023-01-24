@@ -78,6 +78,7 @@ class GraphicsLibrary
 		static int newOutline( lua_State *L ); // This returns an outline in texels.
 		static int newTexture( lua_State *L );
 		static int releaseTextures( lua_State *L );
+        static int undefineEffect( lua_State *L );
         static int getFontMetrics( lua_State *L );
 
 	private:
@@ -120,6 +121,7 @@ GraphicsLibrary::Open( lua_State *L )
 		{ "newOutline", newOutline }, // This returns an outline in texels.
 		{ "newTexture", newTexture },
 		{ "releaseTextures", releaseTextures },
+        { "undefineEffect", undefineEffect },
         { "getFontMetrics", getFontMetrics },
 
 		{ NULL, NULL }
@@ -670,7 +672,63 @@ SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &fa
 	return ret;
 }
 
+//helper function to parse lua table to create capture resource
+SharedPtr<TextureResource> CreateResourceCaptureFromTable(Rtt::TextureFactory &factory, lua_State *L, int index)
+{
+	Display &display = factory.GetDisplay();
 	
+	static unsigned int sNextRenderTextureID = 1;
+	SharedPtr<TextureResource> ret;
+	
+	Real width = -1, height = -1;
+	
+	lua_getfield( L, index, "width" );
+	if (lua_isnumber( L, -1 ))
+	{
+		width = lua_tonumber( L, -1 );
+	}
+	lua_pop( L, 1 );
+	
+	lua_getfield( L, index, "height" );
+	if (lua_isnumber( L, -1 ))
+	{
+		height = lua_tonumber( L, -1 );
+	}
+	lua_pop( L, 1 );
+	
+	if( width > 0 && height > 0 )
+	{
+		S32 unused = 0; // n.b. ContentToScreen(x,y) NOT okay for dimensions!
+		
+		int pixelWidth = Rtt_RealToInt( width );
+		int pixelHeight = Rtt_RealToInt( height );
+		display.ContentToScreen( unused, unused, pixelWidth, pixelHeight );
+
+		pixelWidth *= (float)display.WindowWidth() / display.ScreenWidth();
+		pixelHeight *= (float)display.WindowHeight() / display.ScreenHeight();
+	
+		int texSize = display.GetMaxTextureSize();
+		pixelWidth = Min(texSize, pixelWidth);
+		pixelHeight = Min(texSize, pixelHeight);
+		
+		char filename[30];
+		snprintf(filename, 30, "corona://FBOcap_%u", sNextRenderTextureID++);
+
+		SharedPtr<TextureResource> texSource = factory.FindOrCreateCapture( filename, width, height, pixelWidth, pixelHeight );
+		if( texSource.NotNull() )
+		{
+			factory.Retain(texSource);
+			ret = texSource;
+		}
+	}
+	else
+	{
+		CoronaLuaError( L, "display.newTexture() requires valid width and height" );
+	}
+	
+	return ret;
+}
+
 // graphics.newTexture(  {type=, filename, [baseDir=], [isMask=], } )
 int
 GraphicsLibrary::newTexture( lua_State *L )
@@ -696,6 +754,12 @@ GraphicsLibrary::newTexture( lua_State *L )
 				Self *library = ToLibrary( L );
 				Display& display = library->GetDisplay();
 				ret = CreateResourceCanvasFromTable(display.GetTextureFactory(), L, index, 0 == strcmp( "maskCanvas", textureType ));
+			}
+			else if ( 0 == strcmp( "capture", textureType ) )
+			{
+				Self *library = ToLibrary( L );
+				Display& display = library->GetDisplay();
+				ret = CreateResourceCaptureFromTable(display.GetTextureFactory(), L, index);
 			}
 			else
 			{
@@ -750,6 +814,10 @@ GraphicsLibrary::releaseTextures( lua_State *L )
 			{
 				type = TextureResource::kTextureResourceCanvas;
 			}
+			else if ( strcmp(str, "capture") == 0 )
+			{
+				type = TextureResource::kTextureResourceCapture;
+			}
 			else if ( strcmp(str, "external") == 0 )
 			{
 				type = TextureResource::kTextureResourceExternal;
@@ -786,7 +854,41 @@ GraphicsLibrary::releaseTextures( lua_State *L )
 	
 	return result;
 }
+
+// ----------------------------------------------------------------------------
+
+int
+GraphicsLibrary::undefineEffect( lua_State *L )
+{
+    GraphicsLibrary *library = GraphicsLibrary::ToLibrary( L );
+    Display& display = library->GetDisplay();
+
+    int index = 1; // index of params
+    
+    ShaderFactory& factory = display.GetShaderFactory();
+
+    lua_pushboolean( L, factory.UndefineEffect( L, index ) );
+
+    return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+int
+GraphicsLibrary::undefineEffect( lua_State *L )
+{
+	GraphicsLibrary *library = GraphicsLibrary::ToLibrary( L );
+	Display& display = library->GetDisplay();
+
+	int index = 1; // index of params
 	
+	ShaderFactory& factory = display.GetShaderFactory();
+
+	lua_pushboolean( L, factory.UndefineEffect( L, index ) );
+
+	return 1;
+}
+
 // ----------------------------------------------------------------------------
 
 int

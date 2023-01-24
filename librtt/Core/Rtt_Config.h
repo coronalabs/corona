@@ -336,18 +336,17 @@
 	#define Rtt_VPRINTF_SUPPORTED
 	#define Rtt_NETWORK
 
+	// disabled in order to reduce app size
+	// #define Rtt_SQLITE
+
 	#if EMSCRIPTEN
 		#define Rtt_OPENGLES
 		#define Rtt_EGL
-
 		#define Rtt_BROWSER_ENV
 	#else
 		#define Rtt_OPENGL_EXT_APPLE
 		#define Rtt_LUA_C_MODULE_DYLIB
 	#endif
-
-	//#define Rtt_SQLITE
-
 #endif
 
 //
@@ -355,14 +354,17 @@
 //
 #if defined( Rtt_NXS_ENV )
 
+#define Rtt_OPENGL_CLIENT_SIDE_ARRAYS 1
 #define Rtt_USE_GLOBAL_VARIABLES
 #define Rtt_VPRINTF_SUPPORTED
 #define Rtt_USE_LIMITS
 #define Rtt_ALLOCATOR_SYSTEM
 #define Rtt_LUA_LFS
 #define Rtt_NETWORK
+#define Rtt_SQLITE
 
 #include <sys/stat.h>
+#include "Rtt_NX_Allocator.h"
 #include "Rtt_FileSystem.h"
 
 #endif

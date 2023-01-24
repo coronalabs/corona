@@ -32,18 +32,6 @@ local function quoteString( str )
 	return "\"" .. str .. "\""
 end
 
-local function dir_exists(path)
-    local cd = lfs.currentdir()
-    local is = lfs.chdir(path) and true or false
-    lfs.chdir(cd)
-    return is
-end
-
-local function file_exists(name)
-   local f = io.open(name,"r")
-   if f~=nil then io.close(f) return true else return false end
-end
-
 local function globToPattern(g)
   local p = "^"  -- pattern being built
   local i = 0    -- index in g
@@ -223,6 +211,20 @@ local function copyFile(src, dst)
 	return false;
 end
 
+local function moveFiles( src, dst, fltr )
+	logd('Moving ' .. fltr .. ' files from ' .. src .. ' to ' .. dst)
+	if windows then
+		local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst .. '" ' .. fltr ..' /mov 2> nul'
+		-- robocopy failed when exit code is > 7... Windows  ¯\_(ツ)_/¯ 
+		return processExecute(cmd)>7 and 1 or 0
+	else
+		local cmd = 'mkdir -p ' .. quoteString(dst)
+		os.execute(cmd)
+		local cmd = 'mv ' .. quoteString(src) .. '/' .. fltr .. ' ' ..  quoteString(dst)
+		return os.execute(cmd)
+	end
+end
+
 local function copyDir( src, dst )
 	if windows then
 		local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst.. '" /e 2> nul'
@@ -239,7 +241,7 @@ local function removeDir( dir )
 		local cmd = 'rmdir /s/q "' .. dir .. '"'
 		return processExecute(cmd)
 	else
-		os.execute("rm -f -r " .. quoteString(dir))
+		return os.execute("rm -f -r " .. quoteString(dir))
 	end
 end
 
@@ -249,20 +251,22 @@ local function nxsDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
 		return nil
 	end
 
-	local collectorParams = { 
-		pluginPlatform = 'nx',
+	local collectorParams = {
+		pluginPlatform = 'nx64',
 		plugins = buildSettings.plugins or {},
 		destinationDirectory = tmpDir,
 		build = buildRevision,
 		extractLocation = pluginDstDir,
 	}
-	
+
 	local pluginCollector = require "CoronaBuilderPluginCollector"
 	return pluginCollector.collect(collectorParams)
 end
 
 local function getExcludePredecate()
 	local excludes = {
+--			"*.nro",
+--			"*.nrr",
 			"*.config",
 			"*.lu",
 			"*.lua",
@@ -308,9 +312,7 @@ local function getExcludePredecate()
 --			logd('Exclude rule: ', excludes[i])
 --		end
 
-		return
-
-		function(fileName)
+		return function(fileName)
 			for i = 1, #excludes do
 				local rc = fileName:find(excludes[i])
 				if rc ~= nil then
@@ -361,16 +363,8 @@ local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate
 	end
 end
 
-local function GetFileName(url)
-  return url:match("^.+/(.+)$")
-end
-
-local function GetFileExtension(url)
-  return url:match("^.+(%..+)$")
-end
-
 local function deleteUnusedFiles(srcDir, excludePredicate)
-	-- logd('Deleting unused assets from ' .. srcDir)
+--	 logd('Deleting unused assets from ' .. srcDir)
 	for file in lfs.dir(srcDir) do
 		local f = pathJoin(srcDir, file)
 		if excludePredicate(file) then
@@ -381,20 +375,25 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
 			end
 		else
 			if file ~= '..' and file ~= '.' then
-				local result, reason = os.remove(f);
+				local result
+				if isDir(f) then
+					result = removeDir(f)
+				else
+					result, reason = os.remove(f);
+				end
 				if result then
 --					logd('Excluded ' .. f)
 				else
 					logd("Failed to exclude" .. f) 
 				end
 			end
-    end
+		end
 	end
 end
 
 --
 -- global script to call from C++
--- 
+--
 function nxsPackageApp( args )
 
 	local nxsRoot = os.getenv("NINTENDO_SDK_ROOT")
@@ -423,7 +422,7 @@ function nxsPackageApp( args )
 	end
 	logd("template location: " .. template);
 
-	if not file_exists(template) then
+	if not isFile(template) then
 		return 'Missing template: ' .. template
 	end
 
@@ -458,6 +457,32 @@ function nxsPackageApp( args )
 	end
 	logd('appFolder: ' .. appFolder)
 
+
+	-- Download plugins
+	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
+	lfs.mkdir(pluginDownloadDir)
+	lfs.mkdir(pluginExtractDir)
+	local msg = nxsDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginExtractDir)
+	if type(msg) == 'string' then
+		return msg
+	end
+
+	-- Copy lua plugins over to the app folder
+	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
+	if isDir( luaPluginDir ) then
+		copyDir(luaPluginDir, pluginExtractDir)
+		removeDir(pathJoin(pluginExtractDir, 'lua'))
+	end
+	luaPluginDir = pathJoin(pluginExtractDir, 'lua_51')
+	if isDir( luaPluginDir ) then
+		copyDir(luaPluginDir, pluginExtractDir)
+		removeDir(pathJoin(pluginExtractDir, 'lua_51'))
+	end
+	if isDir( pluginExtractDir ) then
+		copyDir(pluginExtractDir, appFolder)
+	end
+
 	-- unzip standard template
 
 	local templateFolder = pathJoin(args.tmpDir, 'nxtemplate')
@@ -482,14 +507,14 @@ function nxsPackageApp( args )
 	if ret ~= 0 then
 		return 'Failed to unpack template ' .. template .. ' to ' .. templateFolder ..  ', err=' .. ret
 	end
-	logd('Unzipped ' .. template, ' to ', templateFolder)
+	logd('Unzipped ' .. template .. ' to ' .. templateFolder)
 
 	-- gather files into appFolder (tmp folder)
 	local ret = copyDir( args.srcDir, appFolder )
 	if ret ~= 0 then
 		return "Failed to copy " .. args.srcDir .. ' to ' .. appFolder
 	end
-	logd("Copied ", args.srcDir, ' to ', appFolder)
+	logd("Copied " .. args.srcDir .. ' to ' .. appFolder)
 
 	if args.useStandartResources then
 		local ret = copyDir( pathJoin(templateFolder, 'res_widget'), appFolder )
@@ -509,11 +534,15 @@ function nxsPackageApp( args )
 		-- delete .lua, .lu, etc
 	deleteUnusedFiles(appFolder, getExcludePredecate())
 
+	-- move *.nrr files to /.nrr folder
+	local nrrFolder =  pathJoin(appFolder, '.nrr')
+	moveFiles(appFolder, nrrFolder, '*.nrr')
+
 	-- build App 
-	-- sample: AuthoringTool.exe creatensp -o Rtt.nsp --metartt.nmeta --type Application --desc Application.desc--program program0.ncd/code assets2
+	-- sample: AuthoringTool.exe creatensp -o Rtt.nsp --metartt.nmeta --type Application --nro nrofolder --desc Application.desc--program program0.ncd/code assets2
 
 	local metafile = args.nmetaPath
-	if not file_exists(metafile) then
+	if not isFile(metafile) then
 		return 'Missing ' .. metafile .. ' file'
 	end
 	log('Using ' .. metafile)
@@ -522,23 +551,38 @@ function nxsPackageApp( args )
 	local descfile = pathJoin(nxsRoot, "\\Resources\\SpecFiles\\Application.desc")
 	local solar2Dfile = pathJoin(args.tmpDir, '\\nxtemplate\\code')
 	local assets = pathJoin(args.tmpDir, '\\nxsapp')
+	local nroFolder = appFolder
 
+	-- update .npdm file
+	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe'
+	cmd = cmd .. ' --desc ' .. nxsRoot .. '\\Resources\\SpecFiles\\Application.desc'
+	cmd = cmd .. ' --meta "' ..  metafile .. '"'
+	cmd = cmd .. ' -o "' ..  solar2Dfile .. '\\main.npdm"'
+	logd('\Creating the NPDM File ... ', cmd)
+	local rc, stdout = processExecute(cmd, true);
+	log('\MakeMeta retcode ' .. rc)
+	if type(stdout) == 'string' and string.len(stdout) > 0 then
+		log('\MakeMeta output\n' .. stdout)
+	end
+
+	-- create .nsp file
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
 	cmd = cmd .. ' --meta "' ..  metafile .. '"'
+	cmd = cmd .. ' --nro "' ..  nroFolder .. '"'
 	cmd = cmd .. ' --desc "' ..  descfile .. '"'
 	cmd = cmd .. ' --program "' ..  solar2Dfile .. '"'
 	cmd = cmd .. ' "' .. assets .. '"'
 	cmd = 'cmd /c "'.. cmd .. '"'
 	
-	logd('\nBuilding ... ', cmd)
+	logd('\nBuilding App ... ', cmd)
 	local rc, stdout = processExecute(cmd, true);
 	log('\nAuthoringTool retcode ' .. rc)
 	if type(stdout) == 'string' and string.len(stdout) > 0 then
 		log('\nAuthoringTool output\n' .. stdout)
 	end
 
-	if not file_exists(nspfile) then
+	if not isFile(nspfile) then
 		return 'Failed to build NX Switch App'
 	else
 		log('\nBuild succeeded: ' .. nspfile)

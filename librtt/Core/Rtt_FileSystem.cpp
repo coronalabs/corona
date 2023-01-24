@@ -413,6 +413,77 @@ Rtt_EXPORT int Rtt_FileExistsWithSameCase(const char *filePath, const char *root
 	return result;
 }
 
+// file wrapper for NX, it's needs to flush data
+#if defined(Rtt_NXS_ENV)
+
+nnFile::nnFile(const char* path, const char* mode)
+	: fHandle({})
+	, fPos(0)
+{
+	nn::Result result;
+	int m;
+	if (mode[0] == 'w')
+	{
+		result = nn::fs::DeleteFile(path);
+		result = nn::fs::CreateFile(path, 0);
+		m = nn::fs::OpenMode::OpenMode_Write | nn::fs::OpenMode::OpenMode_AllowAppend;
+	}
+	else if (mode[0] == 'r')
+		m = nn::fs::OpenMode::OpenMode_Read;
+	else
+		// todo
+		Rtt_ASSERT_NOT_REACHED();
+
+	result = nn::fs::OpenFile(&fHandle, path, m);
+	if (result.IsFailure())
+	{
+		int err = result.GetDescription();
+		Rtt_Log("Failed to open %s, err=%d\n", path, err);
+	}
+}
+
+nnFile::~nnFile()
+{
+	close();
+}
+
+bool nnFile::isOpen() const
+{
+	return fHandle.handle != NULL;
+}
+
+int nnFile::write(void* data, int size)
+{
+	nn::Result result;
+	
+	// Specify this flag to flush immediately after writing
+	nn::fs::WriteOption wo = nn::fs::WriteOption::MakeValue(nn::fs::WriteOptionFlag_Flush);
+
+	result = nn::fs::WriteFile(fHandle, fPos, data, size, wo);
+	if (result.IsFailure())
+	{
+		int err = result.GetDescription();
+		Rtt_Log("Write failed, err=%d\n", err);
+		return -1;
+	}
+
+	nn::fs::FlushFile(fHandle);
+	fPos += size;
+	return size;
+}
+
+void nnFile::close()
+{
+	if (isOpen())
+	{
+		nn::fs::FlushFile(fHandle);
+		nn::fs::CloseFile(fHandle);
+		fHandle = {};
+	}
+}
+
+#endif
+
 #ifndef Rtt_WIN_PHONE_ENV
 Rtt_EXPORT void* Rtt_FileMemoryMap(int fileDescriptor, size_t byteOffset, size_t byteCount, int canWrite)
 {
@@ -651,7 +722,8 @@ Rtt_EXPORT int Rtt_DeleteDirectory(const char *dirPath)
 		{
 			result = Rtt_DeleteDirectory(path);
 
-			result = rmdir(path) == 0;
+			// hmmmm.. Why is the 'path' deleting twice ?
+			// result = rmdir(path) == 0;
 		}
 		else
 		{

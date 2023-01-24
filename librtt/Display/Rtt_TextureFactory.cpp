@@ -399,7 +399,7 @@ TextureFactory::SetVideoSource( VideoSource source )
 static BufferBitmap *
 NewContainerMaskBitmap( Rtt_Allocator *pAllocator )
 {
-#if defined(Rtt_NXS_ENV) || defined(Rtt_LINUX_ENV)
+#if defined(Rtt_LINUX_ENV)
 	const size_t kLength = 8;
 	const size_t kBorder = 2;
 	const PlatformBitmap::Format kFormat = PlatformBitmap::kRGBA;
@@ -560,7 +560,29 @@ TextureFactory::FindOrCreateCanvas(const std::string &cacheKey,
 	return result;
 }
 
+SharedPtr< TextureResource >
+TextureFactory::FindOrCreateCapture(
+		const std::string &cacheKey,
+		Real w, Real h,
+		int pixelW, int pixelH )
+{
+	SharedPtr< TextureResource > result = Find(cacheKey);
+	if (result.NotNull())
+	{
+		return result;
+	}
 	
+	TextureResourceCapture *resource = TextureResourceCapture::Create( * this, w, h, pixelW, pixelH );
+	result = SharedPtr< TextureResource >( resource );
+	
+	resource->SetWeakResource( result );
+	
+	fCache[cacheKey] = CacheEntry( result );
+	result->SetCacheKey(cacheKey);
+	
+	
+	return result;	
+}
 	
 SharedPtr< TextureResource >
 TextureFactory::FindOrCreateExternal(const std::string &cacheKey,
@@ -574,7 +596,9 @@ TextureFactory::FindOrCreateExternal(const std::string &cacheKey,
 		return fOwnedTextures[cacheKey];
 	}
 	
-	TextureResource *resource = TextureResourceExternal::Create( *this, callbacks, context, true );
+	bool isRetina = GetDisplay().GetDefaults().IsExternalTextureRetina();
+
+	TextureResource *resource = TextureResourceExternal::Create( *this, callbacks, context, isRetina );
 	SharedPtr< TextureResource > result = SharedPtr< TextureResource >( resource );
 	
 	fCache[cacheKey] = CacheEntry( result );

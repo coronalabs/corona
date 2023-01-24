@@ -169,6 +169,8 @@ class Renderer
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
 		static size_t GetMaxVertexTextureUnits();
 
+		bool HasFramebufferBlit(  bool * canScale ) const;
+
 		struct Statistics
 		{
 			Statistics();
@@ -224,6 +226,10 @@ class Renderer
 		void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
 		U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
 
+	public:
+		void InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped );
+		void IssueCaptures( Texture * fill0 );
+
 	protected:
 		// Destroys all queued GPU resources passed into the DestroyQueue() method.
 		void DestroyQueuedGPUResources();
@@ -261,8 +267,8 @@ class Renderer
 		
 		MCPUResourceObserver *fCPUResourceObserver;
 		
-		Array<CPUResource*> fCreateQueue;
-		Array<CPUResource*> fUpdateQueue;
+		LightPtrArray<CPUResource> fCreateQueue;
+		LightPtrArray<CPUResource> fUpdateQueue;
 		Array<GPUResource*> fDestroyQueue;
 
 		GeometryPool* fGeometryPool;
@@ -311,6 +317,22 @@ class Renderer
 		Real fContentScaleY; // Temporary holder.
 
 		U32 fTimeDependencyCount;
+	
+		struct RectPair {
+			Rect fClipped;
+			Rect fUnclipped;
+			RectPair * fNext;
+		};
+	
+		struct CaptureGroup {
+			FrameBufferObject * fFBO;
+			Texture * fTexture;
+			RectPair * fFirst;
+			RectPair * fLast;
+		};
+	
+		Array< CaptureGroup > fCaptureGroups;
+		Array< RectPair > fCaptureRects;
 };
 
 // ----------------------------------------------------------------------------

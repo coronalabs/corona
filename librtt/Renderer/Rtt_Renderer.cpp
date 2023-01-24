@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -33,12 +33,12 @@
 
 // ----------------------------------------------------------------------------
 
-namespace /*anonymous*/ 
+namespace /*anonymous*/
 {
 	// To avoid the cost of a system call, return zero if stats are disabled.
 	#define START_TIMING() fStatisticsEnabled ? Rtt_GetPreciseAbsoluteTime() : 0;
 
-	// To avoid loss of precision, Rtt_AbsoluteToMilliseconds() is not used 
+	// To avoid loss of precision, Rtt_AbsoluteToMilliseconds() is not used
 	// here when converting to milliseconds because it uses integer division.
 	#define STOP_TIMING(start) fStatisticsEnabled ? Rtt_PreciseAbsoluteToMilliseconds( Rtt_GetPreciseAbsoluteTime() - start ) : 0.0f;
 
@@ -133,6 +133,8 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fTexelSize( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec4 ) ) ),
 	fContentScale( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec2 ) ) ),
 	fViewProjectionMatrix( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kMat4 ) ) ),
+	fCaptureGroups( allocator ),
+	fCaptureRects( allocator ),
 	fMaskCountIndex( 0 ),
 	fMaskCount( allocator ),
 	fCurrentProgramMaskCount( 0 ),
@@ -150,12 +152,13 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 
 Renderer::~Renderer()
 {
+	Rtt_DELETE( fGeometryPool );
+	
 	DestroyQueuedGPUResources();
 	
 	Rtt_DELETE( fBackCommandBuffer );
 	Rtt_DELETE( fFrontCommandBuffer );
-	Rtt_DELETE( fGeometryPool );
-    
+	
 	Rtt_DELETE( fTotalTime );
 	Rtt_DELETE( fDeltaTime );
 	Rtt_DELETE( fTexelSize );
@@ -168,14 +171,14 @@ Renderer::~Renderer()
 	}
 }
 
-void 
+void
 Renderer::Initialize()
 {
 	fBackCommandBuffer->Initialize();
 	fFrontCommandBuffer->Initialize();
 }
 
-void 
+void
 Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY )
 {
 	fContentScaleX = contentScaleX;
@@ -229,7 +232,7 @@ Renderer::EndFrame()
 	DEBUG_PRINT( "--End Frame: Renderer--\n\n" );
 }
 
-void 
+void
 Renderer::GetFrustum( Real* viewMatrix, Real* projMatrix ) const
 {
 	const U32 ELEMENTS_PER_MAT4 = 16;
@@ -237,7 +240,7 @@ Renderer::GetFrustum( Real* viewMatrix, Real* projMatrix ) const
 	memcpy( projMatrix, fProjMatrix, ELEMENTS_PER_MAT4 * sizeof( Real ) );
 }
 
-void 
+void
 Renderer::SetFrustum( const Real* viewMatrix, const Real* projMatrix )
 {
 	Rtt_ASSERT( viewMatrix );
@@ -256,7 +259,7 @@ Renderer::SetFrustum( const Real* viewMatrix, const Real* projMatrix )
 	DEBUG_PRINT( "Set frustum: view=%p, projection=%p\n", viewMatrix, projMatrix );
 }
 
-void 
+void
 Renderer::GetViewport( S32& x, S32& y, S32& width, S32& height ) const
 {
 	x = fViewport[0];
@@ -265,7 +268,7 @@ Renderer::GetViewport( S32& x, S32& y, S32& width, S32& height ) const
 	height = fViewport[3];
 }
 
-void 
+void
 Renderer::SetViewport( S32 x, S32 y, S32 width, S32 height )
 {
 	fViewport[0] = x;
@@ -281,7 +284,7 @@ Renderer::SetViewport( S32 x, S32 y, S32 width, S32 height )
 
 
 
-void 
+void
 Renderer::GetScissor( S32& x, S32& y, S32& width, S32& height ) const
 {
 	x = fScissor[0];
@@ -322,13 +325,13 @@ Renderer::SetScissor( S32 x, S32 y, S32 width, S32 height )
 	DEBUG_PRINT( "Set scissor window: x=%i, y=%i, width=%i, height=%i\n", x, y, width, height );
 }
 
-bool 
+bool
 Renderer::GetScissorEnabled() const
 {
 	return fScissorEnabled;
 }
 
-void 
+void
 Renderer::SetScissorEnabled( bool enabled )
 {
 	fScissorEnabled = enabled;
@@ -354,13 +357,13 @@ Renderer::SetMultisampleEnabled( bool enabled )
 	DEBUG_PRINT( "Enabled multisample testing\n" );
 }
 
-FrameBufferObject* 
+FrameBufferObject*
 Renderer::GetFrameBufferObject() const
 {
 	return fFrameBufferObject;
 }
 
-void 
+void
 Renderer::SetFrameBufferObject( FrameBufferObject* fbo )
 {
 	fFrameBufferObject = fbo;
@@ -385,7 +388,7 @@ Renderer::SetFrameBufferObject( FrameBufferObject* fbo )
 	DEBUG_PRINT( "Bind FrameBufferObject: %p\n", fbo );
 }
 
-void 
+void
 Renderer::Clear( Real r, Real g, Real b, Real a )
 {
 	CheckAndInsertDrawCommand();
@@ -394,7 +397,7 @@ Renderer::Clear( Real r, Real g, Real b, Real a )
 	DEBUG_PRINT( "Clear: r=%f, g=%f, b=%f, a=%f\n", r, g, b, a );
 }
 
-void 
+void
 Renderer::PushMask( Texture* maskTexture, Uniform* maskMatrix )
 {
 	CheckAndInsertDrawCommand();
@@ -409,7 +412,7 @@ Renderer::PushMask( Texture* maskTexture, Uniform* maskMatrix )
 	DEBUG_PRINT( "Push mask: texture=%p, uniform=%p\n", maskTexture, maskMatrix );
 }
 
-void 
+void
 Renderer::PopMask()
 {
 	--MaskCount();
@@ -424,7 +427,7 @@ Renderer::PopMask()
 	DEBUG_PRINT( "Pop mask\n" );
 }
 
-void 
+void
 Renderer::PushMaskCount()
 {
 	++fMaskCountIndex;
@@ -441,7 +444,7 @@ Renderer::PushMaskCount()
 	}
 }
 
-void 
+void
 Renderer::PopMaskCount()
 {
 	Rtt_ASSERT( fMaskCountIndex > 0 );
@@ -449,7 +452,7 @@ Renderer::PopMaskCount()
 	--fMaskCountIndex;
 }
 
-void 
+void
 Renderer::Insert( const RenderData* data )
 {
 	// For debug visualization, the number of insertions may be limited
@@ -464,22 +467,22 @@ Renderer::Insert( const RenderData* data )
 
 	bool blendDirty = data->fBlendMode != fPrevious.fBlendMode;
 	bool blendEquationDirty = data->fBlendEquation != fPrevious.fBlendEquation;
-	bool fillDirty0 = data->fFillTexture0 != fPrevious.fFillTexture0;
-	bool fillDirty1 = data->fFillTexture1 != fPrevious.fFillTexture1;
-	bool maskTextureDirty = data->fMaskTexture != fPrevious.fMaskTexture;
-	bool maskUniformDirty = data->fMaskUniform != fPrevious.fMaskUniform;
+	bool fillDirty0 = data->fFillTexture0 != fPrevious.fFillTexture0 && data->fFillTexture0;
+	bool fillDirty1 = data->fFillTexture1 != fPrevious.fFillTexture1 && data->fFillTexture1;
+	bool maskTextureDirty = data->fMaskTexture != fPrevious.fMaskTexture; // since PushMask() can stomp on the previous texture, a "not NULL" check here is unreliable
+	bool maskUniformDirty = data->fMaskUniform != fPrevious.fMaskUniform; // ...ditto
 	bool programDirty = data->fProgram != fPrevious.fProgram || MaskCount() != fCurrentProgramMaskCount;
-	bool userUniformDirty0 = data->fUserUniform0 != fPrevious.fUserUniform0;
-	bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1;
-	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2;
-	bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3;
+	bool userUniformDirty0 = data->fUserUniform0 != fPrevious.fUserUniform0 && data->fUserUniform0;
+	bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1 && data->fUserUniform1;
+	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2 && data->fUserUniform2;
+	bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3 && data->fUserUniform3;
 	
 	Geometry* geometry = data->fGeometry;
 	Rtt_ASSERT( geometry );
 	fDegenerateVertexCount = 0;
 
 	// Geometry that is stored on the GPU does not need to be copied
-	// over each frame. As a consequence, they can not be batched.	
+	// over each frame. As a consequence, they can not be batched.
 	if( geometry->GetStoredOnGPU() && !fWireframeEnabled )
 	{
 		FlushBatch();
@@ -515,7 +518,9 @@ Renderer::Insert( const RenderData* data )
 				|| userUniformDirty0
 				|| userUniformDirty1
 				|| userUniformDirty2
-				|| userUniformDirty3 );
+				|| userUniformDirty3
+				|| fCaptureGroups.Length() > 0 );
+
 
 		// Only triangle strips are batched. All other primitive types
 		// force the previous batch to draw and a new one to be started.
@@ -602,14 +607,19 @@ Renderer::Insert( const RenderData* data )
 	}
 
 	// Fill texture [0]
-	if( fillDirty0 && data->fFillTexture0 )
+	if( fillDirty0 )
 	{
 		if( !data->fFillTexture0->fGPUResource )
 		{
 			QueueCreate( data->fFillTexture0 );
 		}
 
-		fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
+		bool postponeBind = fCaptureGroups.Length() > 0 && !HasFramebufferBlit( NULL );
+		if (!postponeBind)
+		{
+			fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
+		}
+
 		fPrevious.fFillTexture0 = data->fFillTexture0;
 		INCREMENT( fStatistics.fTextureBindCount );
 
@@ -640,7 +650,7 @@ Renderer::Insert( const RenderData* data )
 	}
 
 	// Fill texture [1]
-	if( fillDirty1 && data->fFillTexture1 )
+	if( fillDirty1 )
 	{
 		if( !data->fFillTexture1->fGPUResource )
 		{
@@ -703,14 +713,14 @@ Renderer::Insert( const RenderData* data )
 	if( maskTextureDirty && data->fMaskTexture )
 	{
 		BindTexture( data->fMaskTexture, Texture::kMask0 + MaskCount() - 1 );
-		fPrevious.fMaskTexture = data->fMaskTexture;
 	}
+	fPrevious.fMaskTexture = data->fMaskTexture; // avoid NULL textures keeping this value dirty...
 
 	if( maskUniformDirty && data->fMaskUniform )
 	{
 		BindUniform( data->fMaskUniform, Uniform::kMaskMatrix0 + MaskCount() - 1 );
-		fPrevious.fMaskUniform = data->fMaskUniform;
 	}
+	fPrevious.fMaskUniform = data->fMaskUniform; // ...as with textures
 
 	if( data->fMaskTexture )
 	{
@@ -718,37 +728,42 @@ Renderer::Insert( const RenderData* data )
 	}
 
 	// User data
-	if( userUniformDirty0 && data->fUserUniform0 )
+	if( userUniformDirty0 )
 	{
 		BindUniform( data->fUserUniform0, Uniform::kUserData0 );
 		fPrevious.fUserUniform0 = data->fUserUniform0;
 	}
 
-	if( userUniformDirty1 && data->fUserUniform1 )
+	if( userUniformDirty1 )
 	{
 		BindUniform( data->fUserUniform1, Uniform::kUserData1 );
 		fPrevious.fUserUniform1 = data->fUserUniform1;
 	}
 
-	if( userUniformDirty2 && data->fUserUniform2 )
+	if( userUniformDirty2 )
 	{
 		BindUniform( data->fUserUniform2, Uniform::kUserData2 );
 		fPrevious.fUserUniform2 = data->fUserUniform2;
 	}
 
-	if( userUniformDirty3 && data->fUserUniform3 )
+	if( userUniformDirty3 )
 	{
 		BindUniform( data->fUserUniform3, Uniform::kUserData3 );
 		fPrevious.fUserUniform3 = data->fUserUniform3;
 	}
-	
+
+	if (fCaptureGroups.Length() > 0)
+	{
+		IssueCaptures( data->fFillTexture0 );
+	}
+
 	DEBUG_PRINT( "Insert RenderData: data=%p\n", data );
 	#if ENABLE_DEBUG_PRINT
 		data->Log();
 	#endif
 }
 
-void 
+void
 Renderer::Render()
 {
 	Rtt_AbsoluteTime start = START_TIMING();
@@ -756,7 +771,7 @@ Renderer::Render()
 	fStatistics.fRenderTimeCPU = STOP_TIMING(start);
 }
 
-void 
+void
 Renderer::Swap()
 {
 	// Create GPUResources
@@ -835,13 +850,133 @@ Renderer::TallyTimeDependency( bool usesTime )
 	}
 }
 
-void 
+void
+Renderer::InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped )
+{
+	RectPair pair = {};
+	
+	pair.fClipped = clipped;
+	pair.fUnclipped = unclipped;
+	
+	fCaptureRects.Append( pair );
+	
+	RectPair * newPair = &fCaptureRects.WriteAccess()[fCaptureRects.Length() - 1];
+	CaptureGroup* captureGroups = fCaptureGroups.WriteAccess(), * group = NULL;
+	
+	for (S32 i = 0, iMax = fCaptureGroups.Length(); i < iMax; ++i)
+	{
+		if (captureGroups[i].fFBO == fbo || captureGroups[i].fTexture == texture)
+		{
+			group = &captureGroups[i];
+			
+			break;
+		}
+	}
+	
+	if (group)
+	{
+		Rtt_ASSERT( group->fLast );
+		
+		group->fLast->fNext = newPair;
+		group->fLast = newPair;
+	}
+	
+	else
+	{
+		CaptureGroup group;
+		
+		group.fFBO = fbo;
+		group.fTexture = texture;
+		group.fFirst = group.fLast = newPair;
+		
+		if (NULL == texture->GetGPUResource())
+		{
+			QueueCreate( texture );
+		}
+		
+		if (fbo && NULL == fbo->GetGPUResource())
+		{
+			QueueCreate( fbo );
+		}
+		
+		fCaptureGroups.Append( group );
+	}
+}
+
+void
+Renderer::IssueCaptures( Texture * fill0 )
+{
+	Rtt_ASSERT( fCaptureGroups.Length() > 0 );
+	Rtt_ASSERT( fCaptureRects.Length() > 0 );
+	
+	bool hasFramebufferBlit = HasFramebufferBlit( NULL );
+	FrameBufferObject * oldFBO = NULL;
+	Texture * mostRecentTexture = NULL;
+	
+	if (hasFramebufferBlit)
+	{
+		oldFBO = GetFrameBufferObject();
+	}
+	
+	else if (fill0) // will need to restore fill texture?
+	{
+		CaptureGroup* groups = fCaptureGroups.WriteAccess();
+		
+		for (S32 i = 0, iMax = fCaptureGroups.Length() - 1; i < iMax; ++i) // no need to swap in last spot
+		{
+			if (groups[i].fTexture == fill0) // found: put in last spot to keep binding
+			{
+				CaptureGroup temp = groups[iMax];
+				
+				groups[iMax] = groups[i];
+				groups[i] = temp;
+				
+				break;
+			}
+		}
+	}
+	
+	const CaptureGroup* groups = fCaptureGroups.ReadAccess();
+	
+	for (S32 i = 0, iMax = fCaptureGroups.Length(); i < iMax; ++i)
+	{
+		if (hasFramebufferBlit)
+		{
+			fBackCommandBuffer->BindFrameBufferObject( groups[i].fFBO, true );
+		}
+		
+		else
+		{
+			mostRecentTexture = groups[i].fTexture;
+		}
+		
+		for (const RectPair* cur = groups[i].fFirst; cur; cur = cur->fNext)
+		{
+			fBackCommandBuffer->CaptureRect( groups[i].fFBO, *groups[i].fTexture, cur->fClipped, cur->fUnclipped );
+		}
+	}
+	
+	if (hasFramebufferBlit)
+	{
+		fBackCommandBuffer->BindFrameBufferObject( oldFBO );
+	}
+	
+	else if (fill0 && fill0 != mostRecentTexture) // wasn't copied to? 
+	{
+		fBackCommandBuffer->BindTexture( fill0, 0 );
+	}
+	
+	fCaptureGroups.Clear();
+	fCaptureRects.Clear();
+}
+
+void
 Renderer::QueueUpdate( CPUResource* resource )
 {
 	fUpdateQueue.Append( resource );
 }
 
-void 
+void
 Renderer::QueueDestroy( GPUResource* resource )
 {
 	fDestroyQueue.Append( resource );
@@ -897,6 +1032,12 @@ Renderer::GetMaxVertexTextureUnits()
 }
 
 bool
+Renderer::HasFramebufferBlit( bool * canScale ) const
+{
+	return fBackCommandBuffer->HasFramebufferBlit( canScale );
+}
+
+bool
 Renderer::GetStatisticsEnabled() const
 {
 	return fStatisticsEnabled;
@@ -926,7 +1067,7 @@ Renderer::SetMaximumRenderDataCount( U32 count )
 	fInsertionLimit = count;
 }
 
-void 
+void
 Renderer::BindTexture( Texture* texture, U32 unit )
 {
 	if( !texture->fGPUResource )
@@ -938,7 +1079,7 @@ Renderer::BindTexture( Texture* texture, U32 unit )
 	INCREMENT( fStatistics.fTextureBindCount );
 }
 
-void 
+void
 Renderer::BindUniform( Uniform* uniform, U32 unit )
 {
 	if( !uniform->fGPUResource )
@@ -950,7 +1091,7 @@ Renderer::BindUniform( Uniform* uniform, U32 unit )
 	INCREMENT( fStatistics.fUniformBindCount );
 }
 
-void 
+void
 Renderer::CheckAndInsertDrawCommand()
 {
 	if( fRenderDataCount != 0 )

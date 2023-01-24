@@ -282,6 +282,139 @@ TVOSPlatform::RuntimeErrorNotification( const char *errorType, const char *messa
     NSLog(@"Runtime Error: %s: %s\n%s", errorType, message, stacktrace);
 }
 
+static Rtt_INLINE
+double DegreesToRadians( double degrees )
+{
+	return degrees * M_PI/180;
+}
+
+bool
+TVOSPlatform::SaveBitmap( PlatformBitmap* bitmap, const char* cFilePath, float jpegQuality ) const
+{
+	NSString* filePath = [NSString stringWithUTF8String:cFilePath];
+	Rtt_ASSERT( bitmap );
+	PlatformBitmap::Orientation orientation = bitmap->GetOrientation();
+	bool isSideways = PlatformBitmap::kLeft == orientation || PlatformBitmap::kRight == orientation;
+
+	const void* buffer = bitmap->GetBits( & GetAllocator() );
+	size_t w = bitmap->Width();
+	size_t h = bitmap->Height();
+	size_t wDst = w;
+	size_t hDst = h;
+	if ( isSideways )
+	{
+		Swap( wDst, hDst );
+	}
+
+	size_t bytesPerPixel = PlatformBitmap::BytesPerPixel( bitmap->GetFormat() );
+//	size_t bitsPerPixel = (bytesPerPixel << 3);
+	size_t bytesPerRow = w*bytesPerPixel;
+	NSInteger numBytes = h*bytesPerRow;
+//	const size_t kBitsPerComponent = 8;
+
+#if 0
+	NSData* data = [NSData dataWithBytesNoCopy:& buffer length:numBytes freeWhenDone:NO];
+	UIImage* image = [UIImage imageWithData:data];
+	UIImageWriteToSavedPhotosAlbum( image, nil, nil, nil );
+#else
+
+
+
+	CGBitmapInfo srcBitmapInfo = CGBitmapInfo(kCGBitmapByteOrderDefault);
+	CGBitmapInfo dstBitmapInfo = CGBitmapInfo(kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big);
+    bool enablePngAlphaSave = false;
+    NSString *lowercase = [filePath lowercaseString];
+    if ( [lowercase hasSuffix:@"png"] ||  filePath == NULL)
+    {
+        enablePngAlphaSave = true;
+		srcBitmapInfo = CGBitmapInfo(kCGBitmapByteOrderDefault | kCGImageAlphaLast);
+        dstBitmapInfo = kCGImageAlphaPremultipliedLast;
+        
+
+    }
+
+	CGDataProviderRef dataProvider = CGDataProviderCreateWithData( NULL, buffer, numBytes, NULL );
+	CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+	CGImageRef imageRef = CGImageCreate(w, h, 8, 32, w*bytesPerPixel,
+                                        colorspace, srcBitmapInfo, dataProvider,
+                                        NULL, true, kCGRenderingIntentDefault);
+
+
+	Rtt_ASSERT( w == CGImageGetWidth( imageRef ) );
+	Rtt_ASSERT( h == CGImageGetHeight( imageRef ) );
+
+
+	//void* pixels = calloc( bytesPerRow, h );
+	CGContextRef context = CGBitmapContextCreate(NULL, wDst, hDst, 8, wDst*bytesPerPixel, colorspace, dstBitmapInfo);
+
+	// On iPhone, when the image is sideways, we have to rotate the bits b/c when
+	// we read them in using glReadPixels, the window buffer is physically oriented
+	// as upright, so glReadPixels returns them assuming the buffer is physically
+	// oriented upright, rather than sideways.
+	if ( isSideways )
+	{
+		S32 angle = - ( bitmap->DegreesToUprightBits() );
+		CGFloat dx = (CGFloat)wDst;
+		CGFloat dy = (CGFloat)hDst;
+		if ( 90 == angle )
+		{
+			dy = 0.f;
+		}
+		if ( -90 == angle )
+		{
+			dx = 0.f;
+		}
+
+		CGContextTranslateCTM( context, dx, dy );
+		CGContextRotateCTM( context, DegreesToRadians( angle ) );
+	}
+	else if ( PlatformBitmap::kDown == orientation )
+	{
+		CGContextTranslateCTM( context, wDst, hDst );
+		CGContextRotateCTM( context, DegreesToRadians( 180 ) );
+	}
+
+	CGContextDrawImage( context, CGRectMake( 0.0, 0.0, w, h ), imageRef );
+	CGImageRef flippedImageRef = CGBitmapContextCreateImage(context);
+	UIImage* image = [[UIImage alloc] initWithCGImage:flippedImageRef];
+
+	if ( filePath )
+	{
+		NSData *imageData = nil;
+        if (enablePngAlphaSave)
+		{
+            imageData = UIImagePNGRepresentation( image );
+		}
+        else
+		{
+            imageData = UIImageJPEGRepresentation( image, jpegQuality );
+		}
+
+        [imageData writeToFile:filePath atomically:YES];
+	}
+
+	[image release];
+	CGImageRelease( flippedImageRef );
+	CGColorSpaceRelease( colorspace );
+	CGContextRelease( context );
+	//free( pixels );
+
+
+//	UIImage* image = [[UIImage alloc] initWithCGImage:imageRef];
+//	UIImageWriteToSavedPhotosAlbum( image, nil, nil, nil );
+//	[image release];
+
+	CGImageRelease( imageRef );
+	CGDataProviderRelease( dataProvider );
+#endif
+
+	bitmap->FreeBits();
+
+	return true;
+}
+
+
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

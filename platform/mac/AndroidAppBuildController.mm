@@ -947,7 +947,14 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 
 - (NSString*)appExtension
 {
-	return @"apk";
+    BOOL shouldSendToDevice = ([postBuildRadioGroup selectedRow] == 0); // first item in radio group
+    
+    //Use apk extension for sending app to device 
+    if(shouldSendToDevice){
+        return @"apk";
+    }else{
+        return @"aab";
+    }
 }
 
 -(void)sheetDidEnd:(NSWindow*)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo

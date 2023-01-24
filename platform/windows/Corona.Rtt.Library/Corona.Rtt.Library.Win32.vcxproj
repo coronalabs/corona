@@ -604,6 +604,9 @@
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua">
       <FileType>Document</FileType>
     </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussianLinear_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearHorizontal_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearVertical_gl.lua" />
     <LuaToCpp Include="..\..\resources\ValidateSettings.lua" />
     <LuaToCpp Include="..\..\resources\valid_build_settings.lua" />
     <LuaToCpp Include="..\..\resources\valid_config_lua.lua" />

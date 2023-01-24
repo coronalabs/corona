@@ -9,6 +9,8 @@
 
 #include "Core/Rtt_Build.h"
 
+#include <sys/sysctl.h>
+
 #import "OSXAppBuildController.h"
 
 #import "AppleSigningIdentityController.h"
@@ -169,6 +171,34 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 			|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"]);
 }
 
+- (void)checkAndWarnARM //Apple Silicon(Arm) computers require signing to test locally
+{
+    //Check for ARM
+    cpu_type_t type;
+    size_t size = sizeof(type);
+    sysctlbyname("hw.cputype", &type, &size, NULL, 0);
+    cpu_type_t typeWithABIInfoRemoved = type & ~CPU_ARCH_MASK;
+    IdentityMenuItem* item = currentProvisioningProfileItem;
+    
+    if (typeWithABIInfoRemoved == CPU_TYPE_ARM  && ![[NSUserDefaults standardUserDefaults] boolForKey:@"macOSARMSignWarn"] && item == [fSigningIdentities itemAtIndex:1])
+    {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"WARNING: Signing Required to run App"];
+        [alert setInformativeText:@"Apple requires Apple Silicon(ARM) based Apps to be signed in order run on Apple Silicon(M1) based Macs"];
+        
+        [alert addButtonWithTitle:@"Ok"];
+        [alert setShowsSuppressionButton:YES];
+        [alert runModal];
+        
+        if(alert.suppressionButton.state == 1){
+            [[NSUserDefaults standardUserDefaults] setObject:@(YES) forKey:@"macOSARMSignWarn"];
+        }
+        
+        
+    }
+    
+}
+
 - (void)willShowAlert:(NSAlert*)alert
 {
 	NSString *validationMessage = nil;
@@ -290,6 +320,10 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 	{
 		return;
 	}
+    
+    if( [self isDeveloperBuild] ){
+        [self checkAndWarnARM];
+    }
 
 	NSWindow *buildWindow = [self window];
 
@@ -427,26 +461,10 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 	params->SetStripDebug( isStripDebug );
 	params->SetRuntime([appDelegate runtime]);
 
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-	// Manual enabling of inclusion of Fuse plugins
-	BOOL includeFusePlugins  = NO;
-	NSString *includeFusePluginsStr = [[NSUserDefaults standardUserDefaults] stringForKey:@"debugMonetizationPlugin"];
-
-	if (includeFusePluginsStr != nil)
-	{
-		includeFusePlugins = [includeFusePluginsStr boolValue];
-	}
-
-	// params->SetIncludeFusePlugins( includeFusePlugins );
-
-	// params->SetUsesMonetization( ([fEnableMonetization state] == NSOnState) );
-#endif // AUTO_INCLUDE_MONETIZATION_PLUGIN
-
 	// Some IDEs will terminate us quite abruptly so make sure we're on disk before starting a long operation
 	[[NSUserDefaults standardUserDefaults] synchronize];
 
 	// Do the actual build
-
 	[self logEvent:@"build"];
 
 	NSString* tmpDirBase = NSTemporaryDirectory();

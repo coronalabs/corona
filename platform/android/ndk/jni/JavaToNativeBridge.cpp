@@ -1698,6 +1698,25 @@ JavaToNativeBridge::VideoViewEndedEvent(jint id)
 	view->DispatchEventWithTarget( e );
 }
 
+void
+JavaToNativeBridge::VideoViewFailedEvent(jint id)
+{
+	// Validate.
+	if (!fPlatform)
+	{
+		return;
+	}
+
+	// Fetch the display object by ID.
+	Rtt::AndroidVideoObject *view = (Rtt::AndroidVideoObject*)(fPlatform->GetNativeDisplayObjectById(id));
+	if (!view)
+	{
+		return;
+	}
+
+	Rtt::VideoEvent e( Rtt::VideoEvent::kFailed );
+	view->DispatchEventWithTarget( e );
+}
 const char*
 JavaToNativeBridge::GetBuildId()
 {

@@ -84,7 +84,12 @@ function M:setSdkType( sdkType, minVersion )
 	minVersion = minVersion or self.options.minVersion
 	self.options.minVersion = minVersion
 
-	if tonumber(minVersion) >= 10 then
+	local sdkVersion = xcrun( sdkType, "--show-sdk-version" )
+	assert( sdkVersion, "ERROR: Could not find iPhone SDK Version" )
+	sdkVersion = tonumber(string.match(sdkVersion, '%d+'))
+	assert( sdkVersion, "ERROR: Cannot convert iPhone SDK Version:", sdkVersion )
+
+	if tonumber(minVersion) >= 10 or sdkVersion >= 16 then
 		modernSlices()
 	else
 		legacySlices()
@@ -234,7 +239,7 @@ modernSlices = function ()
 			"arm64",
 		},
 	}
-	options.architecture = "armv7" -- default
+	options.architecture = "arm64" -- default
 end
 
 legacySlices()

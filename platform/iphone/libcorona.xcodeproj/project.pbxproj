@@ -733,6 +733,9 @@
 		AA2ED7D82708264E00CEE021 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2ED7D52708264E00CEE021 /* CoronaObjects.cpp */; };
 		AA2ED7D92708264E00CEE021 /* CoronaPublicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2ED7D62708264E00CEE021 /* CoronaPublicTypes.h */; };
 		AAA5812B270D393F002A51A7 /* Rtt_ObjectBoxList.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA5812A270D393F002A51A7 /* Rtt_ObjectBoxList.h */; };
+		AA2C69B729147BC40093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69B529147B3B0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
+		AA2C69B829147BC40093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69B629147B3B0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
+		AA2C69B929147BC40093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69B429147B3A0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
 		C20EF66F1C0E832B00DF0532 /* launchpad.lua in Sources */ = {isa = PBXBuildFile; fileRef = C20EF66E1C0E824000DF0532 /* launchpad.lua */; };
 		C22711D518D1646A005AE714 /* composer_scene.lua in Sources */ = {isa = PBXBuildFile; fileRef = C24FA4FC18D14D50002039FB /* composer_scene.lua */; };
 		C26B11D218775CC300C3F259 /* composer.lua in Sources */ = {isa = PBXBuildFile; fileRef = C26B11D118775A9E00C3F259 /* composer.lua */; };
@@ -1652,6 +1655,9 @@
 		AA2ED7D52708264E00CEE021 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
 		AA2ED7D62708264E00CEE021 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
 		AAA5812A270D393F002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
+		AA2C69B429147B3A0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearVertical_gl.lua; path = Display/Shader/kernel_filter_blurLinearVertical_gl.lua; sourceTree = "<group>"; };
+		AA2C69B529147B3B0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurGaussianLinear_gl.lua; path = Display/Shader/kernel_filter_blurGaussianLinear_gl.lua; sourceTree = "<group>"; };
+		AA2C69B629147B3B0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearHorizontal_gl.lua; path = Display/Shader/kernel_filter_blurLinearHorizontal_gl.lua; sourceTree = "<group>"; };
 		C20EF66E1C0E824000DF0532 /* launchpad.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = launchpad.lua; path = ../platform/resources/launchpad.lua; sourceTree = "<group>"; };
 		C23D8DEA1954F27D00D6555E /* widget_theme_android_holo_dark_sheet.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = widget_theme_android_holo_dark_sheet.lua; path = ../subrepos/widget/widget_theme_android_holo_dark_sheet.lua; sourceTree = "<group>"; };
 		C23D8DED1954F27D00D6555E /* widget_theme_android_holo_dark.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = widget_theme_android_holo_dark.lua; path = ../subrepos/widget/widget_theme_android_holo_dark.lua; sourceTree = "<group>"; };
@@ -2831,6 +2837,9 @@
 				50B9673B17CF278B00BB1178 /* kernel_filter_blurGaussian_gl.lua */,
 				0720210D17C8167E00B6D424 /* kernel_filter_blurHorizontal_gl.lua */,
 				0720210E17C8167E00B6D424 /* kernel_filter_blurVertical_gl.lua */,
+				AA2C69B529147B3B0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */,
+				AA2C69B629147B3B0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */,
+				AA2C69B429147B3A0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */,
 				A47428FA17694EE700C63853 /* kernel_filter_brightness_gl.lua */,
 				A47428FB17694EE700C63853 /* kernel_filter_bulge_gl.lua */,
 				A47428FC17694EE700C63853 /* kernel_filter_chromaKey_gl.lua */,
@@ -3689,6 +3698,9 @@
 				50B5987417BDAA1D006CA2C9 /* kernel_composite_glow_gl.lua in Sources */,
 				50B5987517BDAA1D006CA2C9 /* kernel_composite_linearLight_gl.lua in Sources */,
 				0720211017C816DD00B6D424 /* kernel_filter_blurVertical_gl.lua in Sources */,
+				AA2C69B929147BC40093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */,
+				AA2C69B829147BC40093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */,
+				AA2C69B729147BC40093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */,
 				0720211217C816DF00B6D424 /* kernel_filter_levels_gl.lua in Sources */,
 				0720211117C816DE00B6D424 /* kernel_filter_bloom_gl.lua in Sources */,
 				50B5987617BDAA1D006CA2C9 /* kernel_composite_phoenix_gl.lua in Sources */,
