@@ -126,11 +126,6 @@ struct LightUserdataEncoding {
 	static U16 GuardBitPattern2() { return ( 0 << 0 ) + ( 1 << 1 ); }
 };
 
-union LightUserdataPunning {
-	void* fPointer;
-	LightUserdataEncoding fEncoding;
-};
-
 static_assert( sizeof( LightUserdataEncoding ) <= sizeof( void* ), "Lossy encoding as light userdata" );
 
 // ----------------------------------------------------------------------------
@@ -232,14 +227,21 @@ int CoronaMemoryPushLookupEncoding( lua_State *L, unsigned short id, unsigned sh
 
 	if ( exists )
 	{
-		LightUserdataPunning punning;
+		LightUserdataEncoding encoding;
 
-		punning.fEncoding.fID = id;
-		punning.fEncoding.fContext = context;
-		punning.fEncoding.fGuardBits1 = LightUserdataEncoding::GuardBitPattern1();
-		punning.fEncoding.fGuardBits2 = LightUserdataEncoding::GuardBitPattern2();
+		encoding.fID = id;
+		encoding.fContext = context;
+		encoding.fGuardBits1 = LightUserdataEncoding::GuardBitPattern1();
+		encoding.fGuardBits2 = LightUserdataEncoding::GuardBitPattern2();
 
-		lua_pushlightuserdata( L, punning.fPointer ); // ..., encoding
+		// See:
+		// https://stackoverflow.com/a/51228315, "How do we Type Pun correctly?"
+		// https://tttapa.github.io/Pages/Programming/Cpp/Practices/type-punning.html#std-memcpy
+		void* ptr = NULL; // since it might be > encoding size
+
+		memcpy( &ptr, &encoding, sizeof( LightUserdataEncoding ) );
+
+		lua_pushlightuserdata( L, ptr ); // ..., encoding
 	}
 
 	else
@@ -505,25 +507,28 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 
 	else if ( LUA_TLIGHTUSERDATA == type )
 	{
-		LightUserdataPunning punning;
+		// see notes in CoronaMemoryPushLookupEncoding()
+		void* ptr = lua_touserdata( L, arg );
 
-		punning.fPointer = lua_touserdata( L, arg );
+		LightUserdataEncoding encoding;
 
-		if ( LightUserdataEncoding::GuardBitPattern1() == punning.fEncoding.fGuardBits1 && LightUserdataEncoding::GuardBitPattern2() == punning.fEncoding.fGuardBits2 )
+		memcpy( &encoding, &ptr, sizeof( LightUserdataEncoding ) );
+
+		if ( LightUserdataEncoding::GuardBitPattern1() == encoding.fGuardBits1 && LightUserdataEncoding::GuardBitPattern2() == encoding.fGuardBits2 )
 		{
 			lua_getfield( L, LUA_REGISTRYINDEX, CORONA_MEMORY_LOOKUP_SLOTS ); // ..., object, ..., slots?
 
 			if ( !lua_isnil( L, -1 ) )
 			{
-				lua_rawgeti( L, -1, ( int )punning.fEncoding.fID + 1 ); // ..., object, ..., slots, proxy?
+				lua_rawgeti( L, -1, ( int )encoding.fID + 1 ); // ..., object, ..., slots, proxy?
 				
 				found = !lua_isnil( L, -1 );
 
 				if ( found )
 				{
 					state->workspace.vars[0].u = 1;
-					state->workspace.vars[1].u = punning.fEncoding.fID;
-					state->workspace.vars[2].u = punning.fEncoding.fContext;
+					state->workspace.vars[1].u = encoding.fID;
+					state->workspace.vars[2].u = encoding.fContext;
 				}
 			}
 		}
@@ -544,7 +549,7 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 		
 		lua_getfenv( L, -1 ); // ..., object, ..., proxy, env
 		lua_rawgeti( L, -1, InfoKey ); // ..., object, ..., proxy, env, info
-		lua_rawgeti( L, -3, VersionKey ); // ..., object, ..., proxy, env, info, version
+		lua_rawgeti( L, -2, VersionKey ); // ..., object, ..., proxy, env, info, version
 	
 		interface_info = ( CoronaMemoryInterfaceInfo* )lua_touserdata( L, -2 );
 		state->callbacks = &interface_info->callbacks;
@@ -560,7 +565,7 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 		
 		else
 		{
-			lua_rawgeti( L, -4, DataKey ); // ..., object, ..., proxy, env, info, version, data?
+			lua_rawgeti( L, -3, DataKey ); // ..., object, ..., proxy, env, info, version, data?
 
 			state->workspace.data = lua_touserdata( L, -1 );
 			state->workspace.dataSize = lua_objlen( L, -1 );
