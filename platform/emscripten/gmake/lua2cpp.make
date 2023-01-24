@@ -84,6 +84,9 @@ SRCS =	../shell.lua \
 		$(ROOT)/../librtt/Display/Shader/kernel_filter_blurGaussian_gl.lua \
 		$(ROOT)/../librtt/Display/Shader/kernel_filter_blurHorizontal_gl.lua \
 		$(ROOT)/../librtt/Display/Shader/kernel_filter_blurVertical_gl.lua \
+		$(ROOT)/../librtt/Display/Shader/kernel_filter_blurGaussianLinear_gl.lua \
+		$(ROOT)/../librtt/Display/Shader/kernel_filter_blurLinearHorizontal_gl.lua \
+		$(ROOT)/../librtt/Display/Shader/kernel_filter_blurLinearVertical_gl.lua \
 		$(ROOT)/../librtt/Display/Shader/kernel_filter_brightness_gl.lua \
 		$(ROOT)/../librtt/Display/Shader/kernel_filter_bulge_gl.lua \
 		$(ROOT)/../librtt/Display/Shader/kernel_filter_chromaKey_gl.lua \

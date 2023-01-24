@@ -3901,10 +3901,10 @@ LuaGroupObjectProxyVTable::PushMethod( lua_State *L, const GroupObject& o, const
 		"insert",			// 0
 		"remove",			// 1
 		"numChildren",		// 2
-		"anchorChildren",	// 3
+		"anchorChildren"	// 3
 	};
     static const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 4, 2, 1, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 4, 0, 1, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -3935,7 +3935,6 @@ LuaGroupObjectProxyVTable::PushMethod( lua_State *L, const GroupObject& o, const
 			result = 1;
 		}
 		break;
-
 	default:
 		{
             result = 0;
@@ -4748,6 +4747,41 @@ LuaSpriteObjectProxyVTable::setFrame( lua_State *L )
 }
 
 int
+LuaSpriteObjectProxyVTable::useFrameForAnchors( lua_State *L )
+{
+	SpriteObject *o = (SpriteObject*)LuaProxy::GetProxyableObject( L, 1 );
+	
+	Rtt_WARN_SIM_PROXY_TYPE( L, 1, SpriteObject );
+	
+	if ( o )
+	{
+		int index;
+		if ( lua_isnoneornil( L, 2 ) )
+		{
+			index = o->GetFrame();
+		}		
+		else
+		{
+			index = (int) lua_tointeger( L, 2 );
+			if ( index < 1 )
+			{
+				CoronaLuaWarning(L, "sprite:useFrameForAnchors() given invalid index (%d). Using index of 1 instead", index);
+				index = 1;
+			}
+			else if ( index > o->GetNumFrames() )
+			{
+				CoronaLuaWarning(L, "sprite:useFrameForAnchors() given invalid index (%d). Using index of %d instead", index, o->GetNumFrames() );
+				index = o->GetNumFrames();
+			}
+			--index; // Lua is 1-based
+		}
+		o->UseFrameForAnchors( index ); // Lua is 1-based
+	}
+
+	return 0;
+}
+
+int
 LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object, const char key[], bool overrideRestriction /* = false */ ) const
 {
 	if ( ! key ) { return 0; }
@@ -4769,10 +4803,11 @@ LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obje
 		"play",			// 5
 		"pause",		// 6
 		"setSequence",	// 7
-		"setFrame"		// 8
+		"setFrame",		// 8
+		"useFrameForAnchors"	// 9
 	};
 	static const int numKeys = sizeof( keys ) / sizeof( const char * );
-	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 9, 0, 7, __FILE__, __LINE__ );
+	static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 10, 25, 7, __FILE__, __LINE__ );
 	StringHash *hash = &sHash;
 
 	int index = hash->Lookup( key );
@@ -4835,6 +4870,11 @@ LuaSpriteObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obje
 	case 8:
 		{
 			Lua::PushCachedFunction( L, Self::setFrame );
+		}
+		break;
+	case 9:
+		{
+			Lua::PushCachedFunction( L, Self::useFrameForAnchors );
 		}
 		break;
 	default:

@@ -21,6 +21,7 @@
 #include "Rtt_LuaAux.h"
 #include "Rtt_LuaProxyVTable.h"
 #include "Display/Rtt_SpritePlayer.h"
+#include "Display/Rtt_Display.h"
 
 // ----------------------------------------------------------------------------
 
@@ -596,6 +597,7 @@ SpriteObject::SpriteObject(
 			fTimeScale(Rtt_REAL_1),
 			fCurrentSequence(0), // Default is first sequence
 			fCurrentFrame(0),
+			fFrameForAnchors(NULL),
 			fStartTime(0),
 			fPlayTime(0),
 			fTimeScaleIncrement(0),
@@ -678,6 +680,38 @@ SpriteObject::Translate( Real dx, Real dy )
 }
 */
 
+void
+SpriteObject::GetSelfBoundsForAnchor( Rect& rect ) const
+{
+	if ( NULL != fFrameForAnchors )
+	{
+		// cf. TesselatorRect
+		rect.Initialize( fFrameForAnchors->GetWidth() / 2, fFrameForAnchors->GetHeight() / 2 );
+	}
+	
+	else
+	{
+		Super::GetSelfBoundsForAnchor( rect );
+	}
+}
+
+bool
+SpriteObject::GetTrimmedFrameOffsetForAnchor( Real& deltaX, Real& deltaY ) const
+{
+	if ( NULL != fFrameForAnchors )
+	{
+		deltaX = fFrameForAnchors->IsTrimmed() ? fFrameForAnchors->GetOffsetX() : 0;
+		deltaY = fFrameForAnchors->IsTrimmed() ? fFrameForAnchors->GetOffsetY() : 0;
+
+		return true;
+	}
+
+	else
+	{
+		return Super::GetTrimmedFrameOffsetForAnchor( deltaX, deltaY );
+	}
+}
+
 const LuaProxyVTable&
 SpriteObject::ProxyVTable() const
 {
@@ -729,11 +763,14 @@ SpriteObject::SetBitmapFrame( int frameIndex )
 	if ( isTrimmed || IsProperty( kIsPreviousFrameTrimmed ) )
 	{
 		Invalidate( kTransformFlag );
+		
+		// Any trim correction will change the matrix.
+		if (sheet->CorrectsTrimOffsets()) GetTransform().Invalidate();
 	}
 
 	// Store whether or not the new frame is trimmed or not
 	SetProperty( kIsPreviousFrameTrimmed, isTrimmed );
-
+	
 	// Update texture coords for new frame
 	Invalidate( kGeometryFlag );
 	GetPath().Invalidate( ClosedPath::kFillSourceTexture );
@@ -1051,6 +1088,16 @@ SpriteObject::SetSequence( const char *name )
 						// Rtt_ASSERT( ! sequence->GetPaint() );
 					}
 
+					// Anchor frame is sequence-related, so invalidate it.
+					if (fFrameForAnchors)
+					{
+						fFrameForAnchors = NULL;
+
+						Invalidate( kTransformFlag );
+						
+						GetTransform().Invalidate();
+					}
+					
 					fCurrentSequence = i;
 					break;
 				}
@@ -1117,6 +1164,33 @@ SpriteObject::SetFrame( int index )
 
 		int frameIndex = sequence->GetEffectiveFrame( index );
 		SetBitmapFrame( frameIndex );
+	}
+}
+
+void
+SpriteObject::UseFrameForAnchors( int index )
+{
+	const SpriteObjectSequence *sequence = GetCurrentSequence();
+
+	if (sequence)
+	{
+		Paint *paint = Super::GetPath().GetFill();
+		Rtt_ASSERT( paint->IsCompatibleType( Paint::kBitmap ) );
+
+		ImageSheetPaint *bitmapPaint = (ImageSheetPaint *)paint->AsPaint(Paint::kImageSheet);
+
+		// Ensure 0 <= frameIndex < sheet->GetNumFrames()
+		int maxFrameIndex = sequence->GetNumFrames() - 1;
+		index = Min( index, maxFrameIndex );
+		index = Max( index, 0 );
+		index = sequence->GetEffectiveFrame( index );
+		
+		const AutoPtr< ImageSheet >& sheet = bitmapPaint->GetSheet();
+		fFrameForAnchors = sheet->GetFrame( index );
+
+		Invalidate( kTransformFlag );
+		
+		GetTransform().Invalidate();
 	}
 }
 

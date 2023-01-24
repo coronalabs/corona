@@ -29,6 +29,9 @@ static const char kFilterBlurString[] = "blur";
 static const char kFilterBlurGaussianString[] = "blurGaussian";
 static const char kFilterBlurHorizontalString[] = "blurHorizontal";
 static const char kFilterBlurVerticalString[] = "blurVertical";
+static const char kFilterBlurGaussianLinearString[] = "blurGaussianLinear";
+static const char kFilterBlurLinearHorizontalString[] = "blurLinearHorizontal";
+static const char kFilterBlurLinearVerticalString[] = "blurLinearVertical";
 static const char kFilterBrightnessString[] = "brightness";
 static const char kFilterBulgeString[] = "bulge";
 static const char kFilterChromaKeyString[] = "chromaKey";
@@ -118,6 +121,15 @@ ShaderBuiltin::StringForFilter( Filter filter )
 			break;
 		case kFilterBlurVertical:
 			result = kFilterBlurVerticalString;
+			break;
+		case kFilterBlurGaussianLinear:
+			result = kFilterBlurGaussianLinearString;
+			break;
+		case kFilterBlurLinearHorizontal:
+			result = kFilterBlurLinearHorizontalString;
+			break;
+		case kFilterBlurLinearVertical:
+			result = kFilterBlurLinearVerticalString;
 			break;
 		case kFilterBrightness:
 			result = kFilterBrightnessString;
@@ -461,6 +473,9 @@ int luaload_kernel_filter_blur_gl( lua_State *L );
 int luaload_kernel_filter_blurGaussian_gl( lua_State *L );
 int luaload_kernel_filter_blurHorizontal_gl( lua_State *L );
 int luaload_kernel_filter_blurVertical_gl( lua_State *L );
+int luaload_kernel_filter_blurGaussianLinear_gl( lua_State *L );
+int luaload_kernel_filter_blurLinearHorizontal_gl( lua_State *L );
+int luaload_kernel_filter_blurLinearVertical_gl( lua_State *L );
 int luaload_kernel_filter_brightness_gl( lua_State *L );
 int luaload_kernel_filter_bulge_gl( lua_State *L );
 int luaload_kernel_filter_chromaKey_gl( lua_State *L );
@@ -512,6 +527,9 @@ static const luaL_Reg kBuiltInFilterFuncs[] =
 	{ kFilterBlurGaussianString, 				Corona::Lua::Open< luaload_kernel_filter_blurGaussian_gl > },
 	{ kFilterBlurHorizontalString, 				Corona::Lua::Open< luaload_kernel_filter_blurHorizontal_gl > },
 	{ kFilterBlurVerticalString, 				Corona::Lua::Open< luaload_kernel_filter_blurVertical_gl > },
+	{ kFilterBlurGaussianLinearString, 			Corona::Lua::Open< luaload_kernel_filter_blurGaussianLinear_gl > },
+	{ kFilterBlurLinearHorizontalString, 		Corona::Lua::Open< luaload_kernel_filter_blurLinearHorizontal_gl > },
+	{ kFilterBlurLinearVerticalString, 			Corona::Lua::Open< luaload_kernel_filter_blurLinearVertical_gl > },
 	{ kFilterBrightnessString, 					Corona::Lua::Open< luaload_kernel_filter_brightness_gl > },
 	{ kFilterBulgeString, 						Corona::Lua::Open< luaload_kernel_filter_bulge_gl > },
 	{ kFilterChromaKeyString, 					Corona::Lua::Open< luaload_kernel_filter_chromaKey_gl > },

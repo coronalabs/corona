@@ -1887,7 +1887,7 @@ public class Controller {
 		}
 		String style = "";
 		if(hapticStyle != null){
-			style = hapticType;
+			style = hapticStyle;
 		}
 		long[] timings = new long[]{};
 		int[] amplitudes= new int[]{};
