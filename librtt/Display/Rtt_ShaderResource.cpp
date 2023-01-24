@@ -57,6 +57,11 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
 	fVertexDataMap(),
 	fUniformDataMap(),
 	fDefaultData( NULL ),
+    fEffectCallbacks( NULL ),
+    fDetailNames( NULL ),
+    fDetailValues( NULL ),
+    fDetailsCount( 0U ),
+    fShellTransform( NULL ),
 	fTimeTransform( NULL ),
 	fUsesUniforms( false ),
 	fUsesTime( false )
@@ -70,6 +75,11 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
 	fVertexDataMap(),
 	fUniformDataMap(),
 	fDefaultData( NULL ),
+    fEffectCallbacks( NULL ),
+    fDetailNames( NULL ),
+    fDetailValues( NULL ),
+    fDetailsCount( 0U ),
+    fShellTransform( NULL ),
 	fTimeTransform( NULL ),
 	fUsesUniforms( false ),
 	fUsesTime( false )
@@ -106,6 +116,30 @@ ShaderResource::~ShaderResource()
 	{
 		Rtt_DELETE( fTimeTransform );
 	}
+
+    SetEffectCallbacks( NULL );
+    SetShellTransform( NULL );
+}
+
+void
+ShaderResource::AddEffectDetail( const char * name, const char * value )
+{
+    fDetailNames.push_back( name );
+    fDetailValues.push_back( value );
+}
+
+int
+ShaderResource::GetEffectDetail( int index, CoronaEffectDetail & detail ) const
+{
+    if (index >= 0 && index < fDetailNames.size() )
+    {
+        detail.name = fDetailNames[index].c_str();
+        detail.value = fDetailValues[index].c_str();
+
+        return 1;
+    }
+
+    return 0;
 }
 
 void
@@ -124,6 +158,38 @@ Program *
 ShaderResource::GetProgramMod(ProgramMod mod) const
 {
 	return fPrograms[mod];
+}
+
+void
+ShaderResource::SetEffectCallbacks( CoronaEffectCallbacks * callbacks )
+{
+    if (NULL != fEffectCallbacks)
+    {
+        Rtt_DELETE( fEffectCallbacks );
+        
+        fEffectCallbacks = NULL;
+    }
+    
+    if (NULL != callbacks) // clone to allow removal of original
+    {
+        fEffectCallbacks = Rtt_NEW( NULL, CoronaEffectCallbacks( *callbacks ) );
+    }
+}
+
+void
+ShaderResource::SetShellTransform( CoronaShellTransform * shellTransform )
+{
+    if (NULL != fShellTransform)
+    {
+        Rtt_DELETE( fShellTransform );
+        
+        fShellTransform = NULL;
+    }
+    
+    if (NULL != shellTransform) // clone to allow removal of original
+    {
+        fShellTransform = Rtt_NEW( NULL, CoronaShellTransform( *shellTransform ) );
+    }
 }
 
 int
@@ -152,6 +218,16 @@ ShaderResource::GetDataIndex( const char *key ) const
 			}
 		}
 	}
+
+    if (-1 == result && fEffectCallbacks && fEffectCallbacks->getDataIndex)
+    {
+        result = fEffectCallbacks->getDataIndex( key );
+
+        if (result >= 0)
+        {
+            result += ShaderData::kNumData;
+        }
+    }
 
 	return result;
 }

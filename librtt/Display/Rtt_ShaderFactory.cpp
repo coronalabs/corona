@@ -519,6 +519,148 @@ ShaderFactory::BindUniformDataMap( lua_State *L, int index, const SharedPtr< Sha
 	return result;
 }
 
+static int sDataTypeCookie;
+
+void
+ShaderFactory::BindDataType( lua_State * L, int index, const SharedPtr< ShaderResource >& resource )
+{
+    Rtt_LUA_STACK_GUARD(L);
+
+    lua_getfield( L, index, "dataType" ); // ..., name?
+
+    if (lua_isstring( L, -1 ))
+    {
+        lua_pushlightuserdata( L, &sDataTypeCookie ); // ..., name, cookie
+        lua_rawget( L, LUA_REGISTRYINDEX ); // ..., name, dataTypes?
+
+        if (!lua_istable( L, -1 ))
+        {
+            CoronaLuaWarning( L, "No data types registered" );
+
+            lua_pop( L, 1 ); // ..., name
+        }
+
+        else
+        {
+            const char * name = lua_tostring( L, -2 );
+
+            lua_insert( L, -2 ); // ..., dataTypes, name
+            lua_rawget( L, -2 ); // ..., dataTypes, dataType?
+            lua_remove( L, -2 ); // ..., dataType?
+
+            if (!lua_isnil( L, -1 ))
+            {
+                resource->SetEffectCallbacks( (CoronaEffectCallbacks *)lua_touserdata( L, -1 ) );
+            }
+            
+            else
+            {
+                CoronaLuaWarning( L, "No data type registered under '%s'", name );
+            }
+        }
+    }
+
+    else if (!lua_isnil( L, -1 ))
+    {
+        CoronaLuaWarning( L, "`dataType` expected to be a string, got %s", luaL_typename( L, -1 ) );
+    }
+
+    lua_pop( L, 1 ); // ...
+}
+
+
+void
+ShaderFactory::BindDetails( lua_State * L, int index, const SharedPtr< ShaderResource >& resource )
+{
+    Rtt_LUA_STACK_GUARD(L);
+    
+    lua_getfield( L, index, "details" ); // ..., details?
+
+    if (lua_istable( L, -1 ))
+    {
+        for (lua_pushnil( L ); lua_next( L, -2 ); lua_pop( L, 1 )) // ..., details[, key, value]
+        {
+            bool isKeyString = lua_isstring( L, -2 ), isValueString = lua_isstring( L, -1 ) || lua_isnumber( L, -1 );
+
+            if (isKeyString && isValueString)
+            {
+                resource->AddEffectDetail( lua_tostring( L, -2 ), lua_tostring( L, -1 ) );    // ..., details, key, value (might now be string)
+            }
+
+            else if (isKeyString)
+            {
+                CoronaLuaWarning( L, "Invalid effect details: expected string, but got '%s' value (key = %s)", luaL_typename( L, -1 ), lua_tostring( L, -2) );
+            }
+
+            else if (isValueString)
+            {
+                CoronaLuaWarning( L, "Invalid effect details: expected string, but got '%s' key (value = %s)", luaL_typename( L, -2 ), lua_tostring( L, -1 ) );
+            }
+
+            else
+            {
+                CoronaLuaWarning( L, "Invalid effect details: expected strings, got '%s' key and '%s' value", luaL_typename( L, -2 ), luaL_typename( L, -1 ) );
+            }
+        }
+    }
+
+    else if (!lua_isnil( L, -1 ))
+    {
+        CoronaLuaWarning( L, "Expected details table, got %s", luaL_typename( L, -1 ) );
+    }
+        
+    lua_pop( L, 1 ); // ...
+}
+
+static int sShellTransformCookie;
+
+void
+ShaderFactory::BindShellTransform( lua_State * L, int index, const SharedPtr< ShaderResource >& resource )
+{
+    Rtt_LUA_STACK_GUARD(L);
+
+    lua_getfield( L, index, "shellTransform" ); // ..., name?
+
+    if (lua_isstring( L, -1 ))
+    {
+        lua_pushlightuserdata( L, &sShellTransformCookie ); // ..., name, cookie
+        lua_rawget( L, LUA_REGISTRYINDEX ); // ..., name, transforms?
+
+        if (!lua_istable( L, -1 ))
+        {
+            CoronaLuaWarning( L, "No shell transforms registered" );
+
+            lua_pop( L, 1 ); // ..., name
+        }
+
+        else
+        {
+            const char * name = lua_tostring( L, -2 );
+
+            lua_insert( L, -2 ); // ..., transforms, name
+            lua_rawget( L, -2 ); // ..., transforms, xform?
+            lua_remove( L, -2 ); // ..., xform?
+
+            if (!lua_isnil( L, -1 ))
+            {
+                resource->SetShellTransform( (CoronaShellTransform *)lua_touserdata( L, -1 ) );
+            }
+
+            else
+            {
+                CoronaLuaWarning( L, "No shell transform registered under '%s'", name );
+            }
+        }
+    }
+
+    else if (!lua_isnil( L, -1 ))
+    {
+        CoronaLuaWarning( L, "`shellTransform` expected to be a string, got %s", luaL_typename( L, -1 ) );
+    }
+
+    lua_pop( L, 1 ); // ...
+}
+
 static void
 Modulo( Real *x, Real range, Real, Real )
 {
@@ -652,6 +794,10 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
 	ShaderName name( resource->GetCategory(), resource->GetName().c_str() );
 	ShaderData *defaultData = Rtt_NEW( fOwner.GetAllocator(), ShaderData( resource ) );
 	resource->SetDefaultData( defaultData );
+
+    BindDataType( L, shaderIndex, resource );
+    BindDetails( L, shaderIndex, resource );
+    BindShellTransform( L, shaderIndex, resource );
 
 	if (resource->UsesTime())
 	{
@@ -1375,6 +1521,133 @@ ShaderFactory::NewShaderGraph( lua_State *L, int index, int localStubsIndex )
 	//terminalNode->Shader::Log();
 	
 	return terminalNode;
+}
+
+bool
+ShaderFactory::RegisterDataType( const char * name, const CoronaEffectCallbacks & callbacks )
+{
+    lua_State *L = fL;
+
+    if (callbacks.size != sizeof( CoronaEffectCallbacks ))
+    {
+        CoronaLuaError(L, "Data Type - invalid binary version for callback structure; size value isn't valid");
+
+        return false;
+    }
+
+    lua_pushlightuserdata( L, &sDataTypeCookie ); // ..., cookie
+    lua_rawget( L, LUA_REGISTRYINDEX ); // ..., dataTypes?
+
+    if (lua_isnil( L, -1 ))
+    {
+        lua_pop( L, 1 ); // ...
+        lua_newtable( L ); // ..., dataTypes
+        lua_pushlightuserdata( L, &sDataTypeCookie ); // ..., dataTypes, cookie
+        lua_pushvalue( L, -2 ); // ..., dataTypes, cookie, dataTypes
+        lua_rawset( L, LUA_REGISTRYINDEX ); // ..., dataTypes; registry = { ..., [cookie] = dataTypes }
+    }
+
+    lua_getfield( L, -1, name ); // ..., dataTypes, dataType?
+
+    if (!lua_isnil( L, -1 ))
+    {
+        lua_pop( L, 2 ); // ...
+
+        return false;
+    }
+
+    else
+    {
+        void * out = lua_newuserdata( L, sizeof( CoronaEffectCallbacks ) ); // ..., dataTypes, nil, callbacks
+
+        memcpy( out, &callbacks, sizeof( CoronaEffectCallbacks ) );
+
+        lua_setfield( L, -3, name ); // ..., dataTypes = { ..., [name] = callbacks }, nil
+        lua_pop( L, 2 ); // ...
+
+        return true;
+    }
+}
+
+bool
+ShaderFactory::RegisterShellTransform( const char * name, const CoronaShellTransform & transform )
+{
+    lua_State *L = fL;
+    
+    if (transform.size != sizeof( CoronaShellTransform ))
+    {
+        CoronaLuaError(L, "Shell transform - invalid binary version for callback structure; size value isn't valid");
+
+        return false;
+    }
+
+    lua_pushlightuserdata( L, &sShellTransformCookie ); // ..., cookie
+    lua_rawget( L, LUA_REGISTRYINDEX ); // ..., transforms?
+
+    if (lua_isnil( L, -1 ))
+    {
+        lua_pop( L, 1 ); // ...
+        lua_newtable( L ); // ..., transforms
+        lua_pushlightuserdata( L, &sShellTransformCookie ); // ..., transforms, cookie
+        lua_pushvalue( L, -2 ); // ..., transforms, cookie, transforms
+        lua_rawset( L, LUA_REGISTRYINDEX ); // ..., transforms; registry = { ..., [cookie] = transforms }
+    }
+
+    lua_getfield( L, -1, name ); // ..., transforms, xform?
+
+    if (!lua_isnil( L, -1 ))
+    {
+        lua_pop( L, 2 ); // ...
+
+        return false;
+    }
+
+    else
+    {
+        void * out = lua_newuserdata( L, sizeof( CoronaShellTransform ) ); // ..., transforms, nil, xform
+
+        memcpy( out, &transform, sizeof( CoronaShellTransform ) );
+
+        lua_setfield( L, -3, name ); // ..., transforms = { ..., [name] = xform }, nil
+        lua_pop( L, 2 ); // ...
+
+        return true;
+    }
+}
+
+static bool Unregister( lua_State *L, void * cookie, const char *name )
+{
+    lua_pushlightuserdata( L, cookie ); // ..., cookie
+    lua_rawget( L, LUA_REGISTRYINDEX ); // ..., set?
+
+    bool found = false;
+
+    if (!lua_isnil( L, -1 ))
+    {
+        lua_getfield( L, -1, name ); // ..., set, item?
+        
+        found = !lua_isnil( L, -1 );
+        
+        lua_pushnil( L ); // ..., set, item?, nil
+        lua_setfield( L, -3, name ); // ..., set = { ..., [name] = nil }, item?
+        lua_pop( L, 1 ); // ..., set
+    }
+
+    lua_pop( L, 1 ); // ...
+
+    return found;
+}
+
+bool
+ShaderFactory::UnregisterDataType( const char * name )
+{
+    return Unregister( fL, &sDataTypeCookie, name );
+}
+
+bool
+ShaderFactory::UnregisterShellTransform( const char * name )
+{
+    return Unregister( fL, &sShellTransformCookie, name );
 }
 
 const Shader *

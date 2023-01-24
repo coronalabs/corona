@@ -29,6 +29,7 @@ class FrameBufferObject;
 class Program;
 class Texture;
 class Uniform;
+class ShaderData;
 
 // ----------------------------------------------------------------------------
 
@@ -51,6 +52,7 @@ class CommandBuffer
 		QueryableParams;
 		
 	public:
+        static size_t GetMaxUniformVectorsCount();
 		static size_t GetMaxVertexTextureUnits();
 		static size_t GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
@@ -93,9 +95,13 @@ class CommandBuffer
 		virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
 		virtual S32 GetCachedParam( CommandBuffer::QueryableParams param ) = 0;
 
-        virtual void AddCommand( const CoronaCommand & command ) = 0;
-        virtual void IssueCommand( U16 id, const void * data, U32 size ) = 0;
+    virtual void AddCommand( const CoronaCommand & command ) = 0;
+    virtual void IssueCommand( U16 id, const void * data, U32 size ) = 0;
 
+    virtual const unsigned char * GetBaseAddress() const = 0;
+
+    virtual bool WriteNamedUniform( const char * uniformName, const void * data, unsigned int size ) = 0;
+    
 		// Execute the generated command buffer. This function should only be
 		// called from a thread with an active rendering context. If requested
 		// (and the platform supports it), this function should return the time

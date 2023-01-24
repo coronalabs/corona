@@ -1886,7 +1886,13 @@ Display::GetGpuSupportsHighPrecisionFragmentShaders()
 	return Renderer::GetGpuSupportsHighPrecisionFragmentShaders();
 }
 
-size_t
+U32
+Display::GetMaxUniformVectorsCount()
+{
+    return Renderer::GetMaxUniformVectorsCount();
+}
+
+U32
 Display::GetMaxVertexTextureUnits()
 {
 	return Renderer::GetMaxVertexTextureUnits();

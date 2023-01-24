@@ -13,6 +13,7 @@
 
 #include "Corona/CoronaLibrary.h"
 #include "Corona/CoronaLua.h"
+#include "Corona/CoronaGraphics.h"
 #include "Rtt_FilePath.h"
 #include "Display/Rtt_BitmapMask.h"
 #include "Display/Rtt_Display.h"
@@ -34,6 +35,12 @@
 #include "Rtt_LuaLibNative.h"
 
 #include <float.h>
+
+#include <algorithm>
+#include <string>
+#include <vector>
+
+#define CORONA_SHELL_TRANSFORMS_METATABLE_NAME "graphics.ShellTransforms"
 
 #define ENABLE_DEBUG_PRINT	( 0 )
 
@@ -74,6 +81,7 @@ class GraphicsLibrary
 		static int newGradient( lua_State *L );
 		static int newImageSheet( lua_State *L );
 		static int defineEffect( lua_State *L );
+        static int defineShellTransform( lua_State * L );
 		static int listEffects( lua_State *L );
 		static int newOutline( lua_State *L ); // This returns an outline in texels.
 		static int newTexture( lua_State *L );
@@ -117,6 +125,7 @@ GraphicsLibrary::Open( lua_State *L )
 		{ "newGradient", newGradient },
 		{ "newImageSheet", newImageSheet },
 		{ "defineEffect", defineEffect },
+        { "defineShellTransform", defineShellTransform },
 		{ "listEffects", listEffects },
 		{ "newOutline", newOutline }, // This returns an outline in texels.
 		{ "newTexture", newTexture },
@@ -305,6 +314,291 @@ GraphicsLibrary::defineEffect( lua_State *L )
 
 	lua_pushboolean( L, factory.DefineEffect( L, index ) );
 	return 1;
+}
+
+// graphics.defineShellTransform( params )
+int
+GraphicsLibrary::defineShellTransform( lua_State * L )
+{
+    int ok = 0;
+
+    struct PairWithPriority {
+        PairWithPriority()
+            : fPriority( 0 )
+        {
+        }
+
+        std::string fOriginal;
+        std::string fModifier;
+        int fPriority;
+    };
+
+    struct TransformEntry {
+        std::string fName;
+        std::vector< PairWithPriority > fFindAndInsertAfter;
+        std::vector< PairWithPriority > fFindAndReplace;
+    };
+
+    struct Transformations {
+        std::vector< TransformEntry > mArray;
+    };
+
+    struct TransformData {
+        const char ** stringList;
+        unsigned int count;
+        char * newString[1];
+    };
+
+    ok = lua_istable( L, 1 );
+
+    if (ok)
+    {
+        lua_getfield( L, 1, "name" ); // params, name
+
+        ok = lua_isstring( L, -1 );
+
+        if (!ok)
+        {
+            Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-string modification value" ) );
+        }
+    }
+
+    else
+    {
+        Rtt_TRACE_SIM( ( "graphics.defineShellTransform() expected table" ) );
+    }
+
+    if (!ok)
+    {
+        lua_pushboolean( L, 0 ); // params[, name], false
+
+        return 1;
+    }
+
+    const char * name = lua_tostring( L, -1 );
+
+    lua_pop( L, 1 ); // params
+
+    Transformations * xforms = (Transformations *)lua_newuserdata( L, sizeof( Transformations ) ); // params, transformations
+
+    new (xforms) Transformations;
+
+    for (lua_pushnil( L ); lua_next( L, 1 ); lua_pop( L, 1 )) // params, transformations[, name, xforms]
+    {
+        bool isKeyString = LUA_TSTRING == lua_type( L, -2 );
+
+        if (isKeyString && strcmp( lua_tostring( L, -2 ), "name" ) == 0)
+        {
+            continue;
+        }
+
+        else if (isKeyString && lua_istable( L, -1 ))
+        {
+            xforms->mArray.push_back( TransformEntry() );
+
+            TransformEntry & entry = xforms->mArray.back();
+
+            entry.fName = lua_tostring( L, -2 );
+
+            const char * keys[] = { "findAndInsertAfter", "findAndReplace", NULL };
+
+            for (int i = 0; keys[i]; ++i)
+            {
+                lua_getfield( L, -1, keys[i] ); // params, transformations, name, xforms, xform?
+
+                if (!lua_isnil( L, -1 ))
+                {
+                    std::vector< PairWithPriority > * set;
+                    
+                    if (0 == i)
+                    {
+                        set = &entry.fFindAndInsertAfter;
+                    }
+                    
+                    else
+                    {
+                        set = &entry.fFindAndReplace;
+                    }
+
+                    for (lua_pushnil( L ); lua_next( L, -2 ); lua_pop( L, 1 )) // params, transformations, name, xforms, xform[, original, modification]
+                    {
+                        int priority = 0;
+
+                        if (lua_istable( L, -1 ))
+                        {
+                            lua_getfield( L, -1, "priority" ); // params, transformations, name, xforms, xform, original, modificationTable, priority?
+
+                            if (lua_isnumber( L, -1 ))
+                            {
+                                priority = lua_tointeger( L, -1 );
+                            }
+
+                            else
+                            {
+                                Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-string modification value" ) );
+                            }
+
+                            lua_pop( L, 1 ); // params, transformations, name, xforms, xform, original, modificationTable
+                            lua_getfield( L, -1, "value" ); // params, transformations, name, xforms, xform, original, modificationTable, modification?
+                            lua_remove( L, -2 ); // params, transformations, name, xforms, xform, original, modification?
+                        }
+
+                        if (LUA_TSTRING == lua_type( L, -2 ) && lua_isstring( L, -1 )) // n.b. harmless to transform second one to string, if number
+                        {
+                            set->push_back( PairWithPriority() );
+
+                            PairWithPriority & pwp = set->back();
+
+                            pwp.fOriginal = lua_tostring( L, -2 );
+                            pwp.fModifier = lua_tostring( L, -1 );
+                            pwp.fPriority = priority;
+                        }
+
+                        else
+                        {
+                            if (lua_type( L, -2 ) != LUA_TSTRING)
+                            {
+                                Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-string original value" ) );
+                            }
+
+                            if (!lua_isstring( L, -1 ))
+                            {
+                                Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-string modification value" ) );
+                            }
+                        }
+                    }
+
+                    std::sort( set->begin(), set->end(), []( const PairWithPriority & p1, const PairWithPriority & p2 ) {
+                        return p1.fPriority < p2.fPriority;
+                    });
+                }
+
+                lua_pop( L, 1 ); // params, transformations, name, xforms
+            }
+        }
+
+        else
+        {
+            if (lua_type( L, -2 ) != LUA_TSTRING)
+            {
+                Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-string source name" ) );
+            }
+
+            if (!lua_istable( L, -1 ))
+            {
+                Rtt_TRACE_SIM( ( "graphics.defineShellTransform(): non-table source value" ) );
+            }
+        }
+    }
+
+    if (luaL_newmetatable( L, CORONA_SHELL_TRANSFORMS_METATABLE_NAME )) // params, transformations, mt
+    {
+        lua_pushcfunction( L, []( lua_State * L ) {
+            (( Transformations * )lua_touserdata( L, 1 ))->~Transformations();
+
+            return 0;
+        } ); // params, transformations, mt, GC
+        lua_setfield( L, -2, "__gc" ); // params, transformations, mt = { __gc = GC }
+    }
+
+    lua_setmetatable( L, -2 ); // params, transformations; transformations.metatable = mt
+
+    CoronaShellTransform transform = {};
+
+    transform.size = sizeof( CoronaShellTransform );
+
+    transform.begin = []( CoronaShellTransformParams * params, void * workSpace, void * )
+    {
+        TransformData * transformData = static_cast< TransformData * >( workSpace );
+        const Transformations * transformations = static_cast< const Transformations * >( params->userData );
+
+        transformData->count = transformations->mArray.size();
+        transformData->stringList = static_cast< const char ** >( malloc( params->nsources * sizeof( const char * ) ) );
+
+        for (size_t i = 0; i < transformData->count; ++i)
+        {
+            transformData->newString[i] = NULL;
+        }
+
+        int newStringIndex = 0;
+
+        for (size_t i = 0; i < params->nsources; ++i)
+        {
+            const char * source = params->sources[i];
+
+            for (const TransformEntry & entry : transformations->mArray)
+            {
+                if (entry.fName == params->hints[i])
+                {
+                    std::string updated = source;
+
+                    for (const PairWithPriority & pwp : entry.fFindAndInsertAfter)
+                    {
+                        size_t pos = updated.find( pwp.fOriginal );
+
+                        if (std::string::npos != pos)
+                        {
+                            updated.insert( pos + pwp.fOriginal.size(), pwp.fModifier );
+                        }
+                    }
+
+                    for (const PairWithPriority & pwp : entry.fFindAndReplace)
+                    {
+                        while (true)
+                        {
+                            size_t pos = updated.find( pwp.fOriginal );
+
+                            if (std::string::npos == pos)
+                            {
+                                break;
+                            }
+
+                            updated.replace( pos, pwp.fOriginal.size(), pwp.fModifier );
+                        }
+                    }
+
+                    source = transformData->newString[newStringIndex++] = strdup( updated.c_str() );
+                }
+            }
+
+            transformData->stringList[i] = source;
+        }
+
+        return transformData->stringList;
+    };
+
+    transform.finish = []( void * workSpace, void * )
+    {
+        TransformData * transformData = static_cast< TransformData * >( workSpace );
+
+        for (size_t i = 0; i < transformData->count; ++i)
+        {
+            free( transformData->newString[i] );
+        }
+
+        free( transformData->stringList );
+    };
+
+    transform.workSpace = sizeof( TransformData );
+
+    if (xforms->mArray.size() > 1U)
+    {
+        transform.workSpace += (xforms->mArray.size() - 1U) * sizeof( char * );
+    }
+
+    transform.userData = xforms;
+
+    ok = CoronaShaderRegisterShellTransform( L, name, &transform );
+
+    if (ok)
+    {
+        lua_pushboolean( L, 1 ); // params, transformations, true
+        lua_rawset( L, LUA_REGISTRYINDEX ); // params; registry = { ..., [transformations] = true }
+    }
+
+    lua_pushboolean( L, ok ); // params[, transformations], ok
+
+    return 1;
 }
 
 // graphics.listEffects( category )

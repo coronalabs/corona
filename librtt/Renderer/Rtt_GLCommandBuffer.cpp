@@ -19,6 +19,7 @@
 #include "Renderer/Rtt_Program.h"
 #include "Renderer/Rtt_Texture.h"
 #include "Renderer/Rtt_Uniform.h"
+#include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
 #include "Display/Rtt_ObjectBoxList.h"
 #include "Core/Rtt_Config.h"
@@ -132,6 +133,31 @@ namespace Rtt
 {
 
 // ----------------------------------------------------------------------------
+
+size_t
+CommandBuffer::GetMaxUniformVectorsCount()
+{
+    GLint count;
+
+#ifndef Rtt_OPENGLES
+    glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS, &count );
+#else
+    glGetIntegerv( GL_MAX_VERTEX_UNIFORM_VECTORS, &count );
+#endif
+    GL_CHECK_ERROR();
+    
+#ifndef Rtt_OPENGLES
+    count /= 4; // as vectors
+#endif
+
+    count -=    4 // kViewProjectionMatrix
+                + 3 * 4 // kMaskMatrix*, assuming 3 vectors each
+                + 2 // kTotalTime, kDeltaTime, again 1 vector each
+                + 1 // kTexelSize, ditto
+                + 1;// kContentScale, the same
+
+    return count;
+}
 
 size_t
 CommandBuffer::GetMaxVertexTextureUnits()
@@ -299,12 +325,13 @@ GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 	 fCurrentPrepVersion( Program::kMaskCount0 ),
 	 fCurrentDrawVersion( Program::kMaskCount0 ),
 	 fProgram( NULL ),
-     fDefaultFBO( 0 ),
+   fDefaultFBO( 0 ),
 	 fTimeTransform( NULL ),
 	 fTimerQueries( new U32[kTimerQueryCount] ),
 	 fTimerQueryIndex( 0 ),
 	 fElapsedTimeGPU( 0.0f ),
-     fCustomCommands( allocator )
+   fCustomCommands( allocator ),
+   fExtraUniforms( NULL )
 {
 	for(U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
 	{
@@ -716,6 +743,77 @@ GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
     fCustomCommands[id].writer( commandBuffer, buffer, data, size );
 }
 
+static GLsizei
+WriteCount( GLsizei size, GLsizei count, GLsizei valueCount )
+{
+    GLsizei n = size / (valueCount * sizeof( float ) );
+    
+    return count < n ? count : n;
+}
+
+bool
+GLCommandBuffer::WriteNamedUniform( const char * uniformName, const void * data, unsigned int size )
+{
+    if (!fExtraUniforms)
+    {
+        Rtt_Log( "No shader bound yet" );
+        
+        return false;
+    }
+    
+    U32 nameLength = (U32)strlen( uniformName );
+    
+    if (nameLength >= GLProgram::kUniformNameBufferSize)
+    {
+        Rtt_Log( "ERROR: Uniform name is %i characters long, maximum length is %i", nameLength, GLProgram::kUniformNameBufferSize - 1 );
+        
+        return false;
+    }
+    
+    // TODO: validate offset? (probably in CoronaGraphics call)
+    GLenum type;
+    GLint count, location = fExtraUniforms->Find( uniformName, count, type );
+    
+    if (location >= 0)
+    {
+        const float * floatData = static_cast< const float * >( data );
+        
+        switch (type)
+        {
+        case GL_FLOAT:
+            glUniform1fv( location, WriteCount( size, count, 1 ), floatData );
+            break;
+        case GL_FLOAT_VEC2:
+            glUniform2fv( location, WriteCount( size, count, 2 ), floatData );
+            break;
+        case GL_FLOAT_VEC3:
+            glUniform3fv( location, WriteCount( size, count, 3 ), floatData );
+            break;
+        case GL_FLOAT_VEC4:
+            glUniform4fv( location, WriteCount( size, count, 4 ), floatData );
+            break;
+        case GL_FLOAT_MAT2:
+            glUniformMatrix2fv( location, WriteCount( size, count, 4 ), GL_FALSE, floatData );
+            break;
+        case GL_FLOAT_MAT3:
+            glUniformMatrix3fv( location, WriteCount( size, count, 9 ), GL_FALSE, floatData );
+            break;
+        case GL_FLOAT_MAT4:
+            glUniformMatrix4fv( location, WriteCount( size, count, 16 ), GL_FALSE, floatData );
+            break;
+        default:
+            Rtt_ASSERT_NOT_REACHED();
+        }
+    }
+    
+    else
+    {
+        Rtt_Log( "WARNING: Unable to write to uniform `%s`'s range", uniformName );
+    }
+    
+    return true;
+}
+
 Real 
 GLCommandBuffer::Execute( bool measureGPU )
 {
@@ -747,10 +845,14 @@ GLCommandBuffer::Execute( bool measureGPU )
 	}
 #endif
 
-    ObjectBoxList list;
-    
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
-    
+  ObjectBoxList list;
+
+  OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+
+  GLProgram::ExtraUniforms extraUniforms;
+
+  fExtraUniforms = &extraUniforms;
+
 	// Reset the offset pointer to the start of the buffer.
 	// This is safe to do here, as preparation work is done
 	// on another CommandBuffer while this one is executing.
@@ -855,6 +957,9 @@ GLCommandBuffer::Execute( bool measureGPU )
 				fCurrentDrawVersion = Read<Program::Version>();
 				GLProgram* program = Read<GLProgram*>();
 				program->Bind( fCurrentDrawVersion );
+ 
+                extraUniforms = program->GetExtraUniformsInfo( fCurrentDrawVersion );
+
 				DEBUG_PRINT( "Bind Program: program=%p version=%i", program, fCurrentDrawVersion );
 				CHECK_ERROR_AND_BREAK;
 			}
@@ -1074,6 +1179,7 @@ GLCommandBuffer::Execute( bool measureGPU )
 
 	fBytesUsed = 0;
 	fNumCommands = 0;
+    fExtraUniforms = NULL;
 	
 #ifdef ENABLE_GPU_TIMER_QUERIES
 	if( measureGPU )

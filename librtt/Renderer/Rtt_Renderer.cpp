@@ -28,6 +28,9 @@
 #include "Renderer/Rtt_MCPUResourceObserver.h"
 #include "Display/Rtt_ObjectBoxList.h"
 
+#include "Display/Rtt_ShaderData.h"
+#include "Display/Rtt_ShaderResource.h"
+
 #define ENABLE_DEBUG_PRINT	0
 
 #include <limits>
@@ -483,8 +486,8 @@ Renderer::PopMaskCount()
 	--fMaskCountIndex;
 }
 
-void
-Renderer::Insert( const RenderData* data )
+void 
+Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
 {
 	// For debug visualization, the number of insertions may be limited
 	if( fInsertionCount++ > fInsertionLimit )
@@ -738,6 +741,21 @@ Renderer::Insert( const RenderData* data )
 		fPrevious.fProgram = data->fProgram;
 		INCREMENT( fStatistics.fProgramBindCount );
 		fCurrentProgramMaskCount = MaskCount();
+        
+        if (shaderData)
+        {
+            ShaderResource* shaderResource = data->fProgram->GetShaderResource();
+            const CoronaEffectCallbacks * effectCallbacks = shaderResource->GetEffectCallbacks();
+        
+            if (effectCallbacks && effectCallbacks->shaderBind)
+            {
+                ObjectBoxList list;
+                
+                OBJECT_BOX_STORE( Renderer, renderer, this );
+                
+                effectCallbacks->shaderBind( renderer, shaderData->GetExtraSpace() );
+            }
+        }
 	}
 
 	// Mask texture
@@ -1130,7 +1148,13 @@ Renderer::GetGpuSupportsHighPrecisionFragmentShaders()
 	return CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders();
 }
 
-size_t
+U32
+Renderer::GetMaxUniformVectorsCount()
+{
+    return CommandBuffer::GetMaxUniformVectorsCount();
+}
+
+U32
 Renderer::GetMaxVertexTextureUnits()
 {
 	return CommandBuffer::GetMaxVertexTextureUnits();
@@ -1433,6 +1457,27 @@ Renderer::CopyIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* des
 		memcpy( destination++, &vertexData[ indexData[index + 2] ], vertexSize );
 		memcpy( destination++, &vertexData[ indexData[index] ], vertexSize );
 	}
+}
+
+int
+Renderer::GetVersionCode( bool addingMask ) const
+{
+    if (fWireframeEnabled)
+    {
+        return Program::kWireframe;
+    }
+    
+    else
+    {
+        int count = fCurrentProgramMaskCount;
+        
+        if (addingMask)
+        {
+            ++count;
+        }
+        
+        return count <= 3 ? static_cast<Program::Version>( count ) : -1;
+    }
 }
 
 // ----------------------------------------------------------------------------

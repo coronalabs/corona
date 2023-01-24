@@ -15,6 +15,9 @@
 #include "Display/Rtt_ShaderTypes.h"
 #include "Renderer/Rtt_Uniform.h"
 
+#include "Corona/CoronaGraphics.h"
+#include <vector>
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -81,6 +84,14 @@ class ShaderResource
 
 		bool UsesTime() const { return fUsesTime; }
 		void SetUsesTime( bool newValue ) { fUsesTime = newValue; }
+    
+        const CoronaEffectCallbacks * GetEffectCallbacks() const { return fEffectCallbacks; }
+        void SetEffectCallbacks( CoronaEffectCallbacks * callbacks );
+        const CoronaShellTransform * GetShellTransform() const { return fShellTransform; }
+        void SetShellTransform( CoronaShellTransform * shellTransform );
+        void AddEffectDetail( const char * name, const char * value );
+
+        int GetEffectDetail( int index, CoronaEffectDetail & detail ) const;
 
 		TimeTransform *GetTimeTransform() const { return fTimeTransform; }
 		void SetTimeTransform( TimeTransform *transform ) { fTimeTransform = transform; }
@@ -122,6 +133,11 @@ class ShaderResource
 		VertexDataMap fVertexDataMap;
 		UniformDataMap fUniformDataMap;
 		ShaderData *fDefaultData;
+        CoronaEffectCallbacks *fEffectCallbacks;
+        CoronaShellTransform *fShellTransform;
+        std::vector< std::string > fDetailNames;
+        std::vector< std::string > fDetailValues;
+        U32 fDetailsCount;
 		TimeTransform *fTimeTransform;
 		bool fUsesUniforms;
 		bool fUsesTime;

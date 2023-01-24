@@ -12,6 +12,9 @@
 
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_Uniform.h"
+#include "Renderer/Rtt_GLProgram.h"
+
+#include "Core/Rtt_Array.h"
 
 #include "Core/Rtt_Array.h"
 
@@ -50,7 +53,7 @@ class GLCommandBuffer : public CommandBuffer
 		virtual void BindGeometry( Geometry* geometry );
 		virtual void BindTexture( Texture* texture, U32 unit );
 		virtual void BindUniform( Uniform* uniform, U32 unit );
-		virtual void BindProgram( Program* program, Program::Version version);
+		virtual void BindProgram( Program* program, Program::Version version );
 		virtual void SetBlendEnabled( bool enabled );
 		virtual void SetBlendFunction( const BlendMode& mode );
 		virtual void SetBlendEquation( RenderTypes::BlendEquation mode );
@@ -63,8 +66,12 @@ class GLCommandBuffer : public CommandBuffer
 		virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type );
 		virtual S32 GetCachedParam( CommandBuffer::QueryableParams param );
 
-        virtual void AddCommand( const CoronaCommand & command );
-        virtual void IssueCommand( U16 id, const void * data, U32 size );
+    virtual void AddCommand( const CoronaCommand & command );
+    virtual void IssueCommand( U16 id, const void * data, U32 size );
+
+    virtual const unsigned char * GetBaseAddress() const { return fBuffer; }
+
+    virtual bool WriteNamedUniform( const char * uniformName, const void * data, unsigned int size );
 
 		// Execute all buffered commands. A valid OpenGL context must be active.
 		virtual Real Execute( bool measureGPU );
@@ -95,7 +102,7 @@ class GLCommandBuffer : public CommandBuffer
 		void ApplyUniform( GPUResource* resource, U32 index );
 		void WriteUniform( Uniform* uniform );
     
-        U8 * Reserve( U32 size );
+    U8 * Reserve( U32 size );
 
 		UniformUpdate fUniformUpdates[Uniform::kNumBuiltInVariables];
 		Program::Version fCurrentPrepVersion;
@@ -109,8 +116,9 @@ class GLCommandBuffer : public CommandBuffer
 		TimeTransform* fTimeTransform;
 		S32 fCachedQuery[kNumQueryableParams];
     
-        Array< CoronaCommand > fCustomCommands;
-		
+    Array< CoronaCommand > fCustomCommands;
+
+    GLProgram::ExtraUniforms* fExtraUniforms;
 };
 
 // ----------------------------------------------------------------------------

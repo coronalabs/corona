@@ -329,7 +329,8 @@ class Display
 		static U32 GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
-		static size_t GetMaxVertexTextureUnits();
+        static U32 GetMaxUniformVectorsCount();
+		static U32 GetMaxVertexTextureUnits();
 
 		bool HasFramebufferBlit( bool * canScale ) const;
 
