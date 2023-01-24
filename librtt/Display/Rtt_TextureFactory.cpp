@@ -560,7 +560,29 @@ TextureFactory::FindOrCreateCanvas(const std::string &cacheKey,
 	return result;
 }
 
+SharedPtr< TextureResource >
+TextureFactory::FindOrCreateCapture(
+		const std::string &cacheKey,
+		Real w, Real h,
+		int pixelW, int pixelH )
+{
+	SharedPtr< TextureResource > result = Find(cacheKey);
+	if (result.NotNull())
+	{
+		return result;
+	}
 	
+	TextureResourceCapture *resource = TextureResourceCapture::Create( * this, w, h, pixelW, pixelH );
+	result = SharedPtr< TextureResource >( resource );
+	
+	resource->SetWeakResource( result );
+	
+	fCache[cacheKey] = CacheEntry( result );
+	result->SetCacheKey(cacheKey);
+	
+	
+	return result;	
+}
 	
 SharedPtr< TextureResource >
 TextureFactory::FindOrCreateExternal(const std::string &cacheKey,

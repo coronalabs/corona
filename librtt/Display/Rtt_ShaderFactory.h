@@ -114,6 +114,7 @@ class ShaderFactory
 	public:
 		bool DefineEffect( lua_State *L, int shaderIndex );
         bool UndefineEffect( lua_State *L, int nameIndex );
+
 		Shader *NewShaderGraph( lua_State *L, int index, int localStubsIndex );
 				
 	protected:

@@ -37,6 +37,7 @@ class TextureResource
 	enum TextureResourceType{
 		kTextureResourceBitmap,
 		kTextureResourceCanvas,
+		kTextureResourceCapture,
 		kTextureResourceExternal,
 		
 		kTextureResource_Any

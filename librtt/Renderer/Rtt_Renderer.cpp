@@ -133,6 +133,8 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fTexelSize( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec4 ) ) ),
 	fContentScale( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec2 ) ) ),
 	fViewProjectionMatrix( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kMat4 ) ) ),
+	fCaptureGroups( allocator ),
+	fCaptureRects( allocator ),
 	fMaskCountIndex( 0 ),
 	fMaskCount( allocator ),
 	fCurrentProgramMaskCount( 0 ),
@@ -516,7 +518,9 @@ Renderer::Insert( const RenderData* data )
 				|| userUniformDirty0
 				|| userUniformDirty1
 				|| userUniformDirty2
-				|| userUniformDirty3 );
+				|| userUniformDirty3
+				|| fCaptureGroups.Length() > 0 );
+
 
 		// Only triangle strips are batched. All other primitive types
 		// force the previous batch to draw and a new one to be started.
@@ -610,7 +614,12 @@ Renderer::Insert( const RenderData* data )
 			QueueCreate( data->fFillTexture0 );
 		}
 
-		fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
+		bool postponeBind = fCaptureGroups.Length() > 0 && !HasFramebufferBlit( NULL );
+		if (!postponeBind)
+		{
+			fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
+		}
+
 		fPrevious.fFillTexture0 = data->fFillTexture0;
 		INCREMENT( fStatistics.fTextureBindCount );
 
@@ -742,7 +751,12 @@ Renderer::Insert( const RenderData* data )
 		BindUniform( data->fUserUniform3, Uniform::kUserData3 );
 		fPrevious.fUserUniform3 = data->fUserUniform3;
 	}
-	
+
+	if (fCaptureGroups.Length() > 0)
+	{
+		IssueCaptures( data->fFillTexture0 );
+	}
+
 	DEBUG_PRINT( "Insert RenderData: data=%p\n", data );
 	#if ENABLE_DEBUG_PRINT
 		data->Log();
@@ -837,6 +851,126 @@ Renderer::TallyTimeDependency( bool usesTime )
 }
 
 void
+Renderer::InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped )
+{
+	RectPair pair = {};
+	
+	pair.fClipped = clipped;
+	pair.fUnclipped = unclipped;
+	
+	fCaptureRects.Append( pair );
+	
+	RectPair * newPair = &fCaptureRects.WriteAccess()[fCaptureRects.Length() - 1];
+	CaptureGroup* captureGroups = fCaptureGroups.WriteAccess(), * group = NULL;
+	
+	for (S32 i = 0, iMax = fCaptureGroups.Length(); i < iMax; ++i)
+	{
+		if (captureGroups[i].fFBO == fbo || captureGroups[i].fTexture == texture)
+		{
+			group = &captureGroups[i];
+			
+			break;
+		}
+	}
+	
+	if (group)
+	{
+		Rtt_ASSERT( group->fLast );
+		
+		group->fLast->fNext = newPair;
+		group->fLast = newPair;
+	}
+	
+	else
+	{
+		CaptureGroup group;
+		
+		group.fFBO = fbo;
+		group.fTexture = texture;
+		group.fFirst = group.fLast = newPair;
+		
+		if (NULL == texture->GetGPUResource())
+		{
+			QueueCreate( texture );
+		}
+		
+		if (fbo && NULL == fbo->GetGPUResource())
+		{
+			QueueCreate( fbo );
+		}
+		
+		fCaptureGroups.Append( group );
+	}
+}
+
+void
+Renderer::IssueCaptures( Texture * fill0 )
+{
+	Rtt_ASSERT( fCaptureGroups.Length() > 0 );
+	Rtt_ASSERT( fCaptureRects.Length() > 0 );
+	
+	bool hasFramebufferBlit = HasFramebufferBlit( NULL );
+	FrameBufferObject * oldFBO = NULL;
+	Texture * mostRecentTexture = NULL;
+	
+	if (hasFramebufferBlit)
+	{
+		oldFBO = GetFrameBufferObject();
+	}
+	
+	else if (fill0) // will need to restore fill texture?
+	{
+		CaptureGroup* groups = fCaptureGroups.WriteAccess();
+		
+		for (S32 i = 0, iMax = fCaptureGroups.Length() - 1; i < iMax; ++i) // no need to swap in last spot
+		{
+			if (groups[i].fTexture == fill0) // found: put in last spot to keep binding
+			{
+				CaptureGroup temp = groups[iMax];
+				
+				groups[iMax] = groups[i];
+				groups[i] = temp;
+				
+				break;
+			}
+		}
+	}
+	
+	const CaptureGroup* groups = fCaptureGroups.ReadAccess();
+	
+	for (S32 i = 0, iMax = fCaptureGroups.Length(); i < iMax; ++i)
+	{
+		if (hasFramebufferBlit)
+		{
+			fBackCommandBuffer->BindFrameBufferObject( groups[i].fFBO, true );
+		}
+		
+		else
+		{
+			mostRecentTexture = groups[i].fTexture;
+		}
+		
+		for (const RectPair* cur = groups[i].fFirst; cur; cur = cur->fNext)
+		{
+			fBackCommandBuffer->CaptureRect( groups[i].fFBO, *groups[i].fTexture, cur->fClipped, cur->fUnclipped );
+		}
+	}
+	
+	if (hasFramebufferBlit)
+	{
+		fBackCommandBuffer->BindFrameBufferObject( oldFBO );
+	}
+	
+	else if (fill0 && fill0 != mostRecentTexture) // wasn't copied to? 
+	{
+		fBackCommandBuffer->BindTexture( fill0, 0 );
+	}
+	
+	fCaptureGroups.Clear();
+	fCaptureRects.Clear();
+}
+
+void
 Renderer::QueueUpdate( CPUResource* resource )
 {
 	fUpdateQueue.Append( resource );
@@ -895,6 +1029,12 @@ size_t
 Renderer::GetMaxVertexTextureUnits()
 {
 	return CommandBuffer::GetMaxVertexTextureUnits();
+}
+
+bool
+Renderer::HasFramebufferBlit( bool * canScale ) const
+{
+	return fBackCommandBuffer->HasFramebufferBlit( canScale );
 }
 
 bool
