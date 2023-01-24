@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -15,7 +15,7 @@
 const char *ReplaceString(const char *c_subject, const char * c_search, const char * c_replace);
 
 void ReplaceString(std::string& subject, const std::string& search,
-				   const std::string& replace);
+                   const std::string& replace);
 
 
 class ListKeyStore
@@ -25,19 +25,20 @@ class ListKeyStore
 
 public:
 	ListKeyStore();
-	
+
 	~ListKeyStore();
-	
-	void InitAliasList( int count ) 
+
+	void InitAliasList( int count )
 	{
 		myCount = count;
 		myAliases = new char *[ count ];
 
-		for ( int i = 0; i < count; i++ ) {
+		for ( int i = 0; i < count; i++ )
+		{
 			myAliases[i] = NULL;
 		}
 	}
-	
+
 	int GetSize() const
 	{
 		return myCount;
@@ -52,8 +53,9 @@ public:
 	{
 		return myAliases[index];
 	}
-	
-	enum KeyStoreStatus {
+
+	enum KeyStoreStatus
+	{
 		KeyStoreStatusOk = 0,
 		KeyStoreStatusBad1 = 1, // TODO: huh? lol, huh?, indeed
 		KeyStoreStatusBad2 = 2,

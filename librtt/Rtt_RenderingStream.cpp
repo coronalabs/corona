@@ -445,6 +445,26 @@ RenderingStream::ScreenHeight() const
 	return result;
 }
 
+void
+RenderingStream::ContentToScreenUnrounded( float& x, float& y ) const
+{
+	float w = 0;
+	float h = 0;
+	ContentToScreenUnrounded(x, y, w, h);
+}
+
+void
+RenderingStream::ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const
+{
+	Rtt_Real xScreen = GetSx();
+	x = Rtt_RealDiv(GetXOriginOffset() + x, xScreen);
+	w = Rtt_RealDiv(w, xScreen);
+
+	Rtt_Real yScreen = GetSy();
+	y = Rtt_RealDiv(GetYOriginOffset() + y, yScreen);
+	h = Rtt_RealDiv(h, yScreen);
+}
+
 // Converts the given content coordinates to pixel coordinates.
 void
 RenderingStream::ContentToScreen( S32& x, S32& y ) const

@@ -25,6 +25,8 @@
 
 #include <string.h>
 
+#include "Display/Rtt_ObjectBoxList.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -43,7 +45,8 @@ Shader::Shader( Rtt_Allocator *allocator, const SharedPtr< ShaderResource >& res
 	fRoot( NULL ),
 	fRenderData( NULL ),
 	fOutputReady( false ),
-	fDirty(false)
+	fDirty(false),
+    fIsDrawing( false )
 {
 	Rtt_ASSERT( resource.NotNull() );
 	if ( data )
@@ -64,7 +67,8 @@ Shader::Shader()
 	fRoot( NULL ),
 	fRenderData( NULL ),
 	fOutputReady( false ),
-	fDirty(false)
+	fDirty(false),
+    fIsDrawing( false )
 {
 
 }
@@ -215,7 +219,7 @@ Shader::RenderToTexture( Renderer& renderer, Geometry& cache ) const
 				renderer.SetViewport( 0, 0, w, h );
 				renderer.Clear( 0.0f, 0.0f, 0.0f, 0.0f );
 				
-				renderer.Insert( fRenderData );
+				renderer.Insert( fRenderData, GetData() );
 			}
 			renderer.PopMaskCount();
 		}
@@ -244,14 +248,36 @@ Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMo
 	Program *program = fResource->GetProgramMod(mod);
 	
 	objectData.fProgram = program;
+
+    const CoronaEffectCallbacks * callbacks = fResource->GetEffectCallbacks();
+
+    if (callbacks && callbacks->prepare)
+    {
+        Rtt::ObjectBoxList list;
+        
+        OBJECT_BOX_STORE( Shader, shader, this );
+        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+
+        if (shader && renderData)
+        {
+            callbacks->prepare( shader, fData->GetExtraSpace(), renderData, w, h, int( mod ) );
+        }
+    }
 }
 
 void
 Shader::Draw( Renderer& renderer, const RenderData& objectData ) const
 {
-	// No-op
-	renderer.TallyTimeDependency( fResource->UsesTime() );
-	renderer.Insert( & objectData );
+    DrawState state( fResource->GetEffectCallbacks(), fIsDrawing );
+
+    if (DoAnyBeforeDrawAndThenOriginal( state, renderer, objectData ))
+    {
+        // No-op
+        renderer.TallyTimeDependency( fResource->UsesTime() );
+        renderer.Insert( & objectData, GetData() );
+    }
+
+    DoAnyAfterDraw( state, renderer, objectData );
 }
 
 void
@@ -263,6 +289,17 @@ Shader::PushProxy( lua_State *L ) const
 void
 Shader::DetachProxy()
 {
+    const CoronaEffectCallbacks * effectCallbacks = fResource->GetEffectCallbacks();
+    
+    if (effectCallbacks && effectCallbacks->shaderDetach)
+    {
+        Rtt::ObjectBoxList list;
+        
+        OBJECT_BOX_STORE( Shader, shader, this );
+        
+        effectCallbacks->shaderDetach( shader, GetData()->GetExtraSpace() );
+    }
+    
 	fData->DetachProxy();
 	fData = NULL;
 }
@@ -291,6 +328,68 @@ bool
 Shader::IsTerminal(Shader *shader) const
 {
 	return (this==shader);
+}
+
+Shader::DrawState::DrawState( const CoronaEffectCallbacks * callbacks, bool & drawing )
+:    fDrawing( drawing ),
+    fWasDrawing( drawing )
+{
+    fDrawing = true;
+
+    const CoronaShaderDrawParams drawParams = {};
+
+    if (!fWasDrawing && callbacks && memcmp( &callbacks->drawParams, &drawParams, sizeof( CoronaShaderDrawParams ) ) != 0)
+    {
+        params = callbacks->drawParams;
+    }
+
+    else
+    {
+        params = drawParams;
+    }
+}
+
+Shader::DrawState::~DrawState()
+{
+    fDrawing = fWasDrawing;
+}
+
+bool
+Shader::DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & renderer, const RenderData & objectData ) const
+{
+    if (state.params.before)
+    {
+        Rtt::ObjectBoxList list;
+        
+        OBJECT_BOX_STORE( Shader, shader, this );
+        OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
+        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+
+        if (shader && rendererObject && renderData)
+        {
+            state.params.before( shader, fData->GetExtraSpace(), rendererObject, renderData );
+        }
+    }
+
+    return !state.params.ignoreOriginal;
+}
+
+void
+Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const RenderData & objectData ) const
+{
+    if (state.params.after)
+    {
+        Rtt::ObjectBoxList list;
+        
+        OBJECT_BOX_STORE( Shader, shader, this );
+        OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
+        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+
+        if (shader && rendererObject && renderData)
+        {
+            state.params.after( shader, fData->GetExtraSpace(), rendererObject, renderData );
+        }
+    }
 }
 
 // ----------------------------------------------------------------------------

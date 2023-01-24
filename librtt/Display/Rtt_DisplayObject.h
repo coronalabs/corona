@@ -67,6 +67,10 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 	public:
 		typedef DisplayObject Self;
 
+        struct BoxedFunction {
+            void * fFunc;
+        };
+    
 		enum RenderFlag
 		{
 			kGeometryFlag = 0x01,
@@ -118,6 +122,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 			kIsAnchorChildren = 0x200, // Group-specific property
 			kIsRenderedOffscreen = 0x400,
 			kIsRestricted = 0x800,
+            kIsDummyStageBounds = 0x1000,
 
 			// NOTE: Current maximum of 16 PropertyMasks!!!
 		};
@@ -166,6 +171,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 		virtual void Prepare( const Display& display );
 		virtual void Translate( Real deltaX, Real deltaY );
 		virtual void GetSelfBoundsForAnchor( Rect& rect ) const;
+		virtual bool GetTrimmedFrameOffset( Real& deltaX, Real& deltaY, bool force = false ) const { return false; }
+		virtual bool GetTrimmedFrameOffsetForAnchor( Real& deltaX, Real& deltaY ) const { return GetTrimmedFrameOffset( deltaX, deltaY ); }
 
 	public:
 		virtual bool HitTest( Real contentX, Real contentY );
@@ -181,6 +188,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 
 	public:
 		virtual bool CanCull() const;
+        virtual bool CanHitTest() const;
 
 	public:
 		// MLuaProxyable
@@ -191,6 +199,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 	public:
 		virtual void AddedToParent( lua_State * L, GroupObject * parent );
 		virtual void RemovedFromParent( lua_State * L, GroupObject * parent );
+    
+        virtual void SendMessage( const char * message, const void * payload, U32 size ) const {}
 
 	public:
 		virtual const LuaProxyVTable& ProxyVTable() const;
@@ -351,6 +361,9 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 
 		Rtt_INLINE bool IsForceDraw() const { return (fProperties & kIsForceDraw) != 0; }
 		Rtt_INLINE void SetForceDraw( bool newValue ) { SetProperty( kIsForceDraw, newValue ); }
+    
+        Rtt_INLINE bool IsDummyStageBounds() const { return (fProperties & kIsDummyStageBounds) != 0; }
+        Rtt_INLINE void SetDummyStageBounds( bool newValue ) { SetProperty( kIsDummyStageBounds, newValue ); }
 
 		Rtt_INLINE bool IsOffScreen() const { return (fProperties & kIsOffScreen) != 0; }
 		Rtt_INLINE void SetOffScreen( bool newValue ) { SetProperty( kIsOffScreen, newValue ); }
@@ -375,12 +388,12 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 		void UpdateAlphaCumulative( U8 alphaCumulativeFromAncestors );
 
 		Rtt_INLINE bool IsNotHidden() const { return IsVisible() && Alpha() > 0; }
-		Rtt_INLINE bool ShouldHitTest() const { return IsNotHidden() || IsHitTestable(); }
+        Rtt_INLINE bool ShouldHitTest() const { return (IsNotHidden() || IsHitTestable()) && CanHitTest(); }
 		bool ShouldDraw() const
 		{
 			return ( ! IsDirty() && IsNotHidden() ) || IsForceDraw();
 		}
-		bool ShouldPrepare() const{ return IsDirty() && ShouldHitTest(); }
+        bool ShouldPrepare() const { return IsDirty() && ( ShouldHitTest() || IsDummyStageBounds() ); }
 
 		void SetTransform( const Transform& newValue );
 		const Transform& GetTransform() const { return fTransform; }

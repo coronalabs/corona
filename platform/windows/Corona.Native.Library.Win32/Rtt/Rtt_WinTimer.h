@@ -12,6 +12,7 @@
 #include "Core\Rtt_Build.h"
 #include "Rtt_PlatformTimer.h"
 #include <Windows.h>
+#include <unordered_map>
 
 
 namespace Rtt
@@ -79,8 +80,12 @@ class WinTimer : public PlatformTimer
 
 		HWND fWindowHandle;
 		UINT_PTR fTimerPointer;
+		UINT_PTR fTimerID;
 		U32 fIntervalInMilliseconds;
 		S32 fNextIntervalTimeInTicks;
+
+		static std::unordered_map<UINT_PTR, WinTimer*> sTimerMap; // timer callback might be called after Stop(), so use this as a guard
+		static UINT_PTR sMostRecentTimerID; // use an incrementing index as key, to be robust against the rare case that a new timer is reallocated into the same memory
 };
 
 }	// namespace Rtt

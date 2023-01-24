@@ -30,6 +30,7 @@
 // ----------------------------------------------------------------------------
 
 struct lua_State;
+struct luaL_Reg;
 
 namespace Rtt
 {
@@ -186,6 +187,9 @@ class Display
 		virtual void GetImageSuffix( String& outSuffix ) const;
 		virtual bool GetImageFilename( const char *filename, MPlatform::Directory baseDir, String& outFilename ) const;
 		virtual bool PushImageSuffixTable() const;
+    
+        void GatherObjectFactories( const luaL_Reg funcs[], void * library );
+        bool PushObjectFactories() const;
 
 	public:
 		virtual GroupObject *Overlay();
@@ -258,6 +262,9 @@ class Display
 		virtual void SetScaleMode( ScaleMode mode, Rtt_Real screenWidth, Rtt_Real screenHeight );
 		virtual ScaleMode GetScaleMode() const;
 
+		void ContentToScreenUnrounded( float& x, float& y ) const;
+		void ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const;
+
 		virtual void ContentToScreen( S32& x, S32& y ) const;
 		virtual void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
 		virtual void ContentToPixels( S32& x, S32& y, S32& w, S32& h ) const;
@@ -322,7 +329,10 @@ class Display
 		static U32 GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
 		static bool GetGpuSupportsHighPrecisionFragmentShaders();
-		static size_t GetMaxVertexTextureUnits();
+        static U32 GetMaxUniformVectorsCount();
+		static U32 GetMaxVertexTextureUnits();
+
+		bool HasFramebufferBlit( bool * canScale ) const;
 
 	public:
 		Scene& GetScene() { return *fScene; }
@@ -386,6 +396,8 @@ class Display
 		RenderingStream *fStream;
 		PlatformSurface *fTarget;
 		int fImageSuffix;
+    
+        int fObjectFactories;
 
 		U8 fDrawMode; // stores current physics drawing mode; ranges from 0-2
 		bool fIsAntialiased;

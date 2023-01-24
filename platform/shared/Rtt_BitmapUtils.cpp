@@ -14,10 +14,7 @@
 #include <jpeglib.h>
 #include <cstring>		// for memcpy
 #include <memory>
-
-#ifndef Rtt_LINUX_ENV
 #include <SDL.h>
-#endif
 
 namespace bitmapUtil
 {
@@ -31,11 +28,15 @@ namespace bitmapUtil
 
 	void jpgErrorHandler(j_common_ptr cinfo)
 	{
+		char jpegLastErrorMsg[JMSG_LENGTH_MAX];
+
+		// Create the message 
+		(*(cinfo->err->format_message)) (cinfo, jpegLastErrorMsg);
+
+		Rtt_LogException("*** libjpeg: %s\n", jpegLastErrorMsg);
+
 		// cinfo->err really points to a jpegErroMgr struct, so coerce pointer 
 		jpegErrorMgr myerr = (jpegErrorMgr)cinfo->err;
-
-		// Always display the message. 
-		(*cinfo->err->output_message) (cinfo);
 
 		// Return control to the setjmp point 
 		longjmp(myerr->setjmp_buffer, 1);
@@ -43,9 +44,6 @@ namespace bitmapUtil
 
 	uint8_t* loadJPG(FILE* infile, int& w, int& h)
 	{
-#ifdef Rtt_LINUX_ENV
-		return NULL;
-#else
 		struct jpeg_decompress_struct cinfo;
 		struct JpegErrorMgr jerr;
 
@@ -81,11 +79,9 @@ namespace bitmapUtil
 		jpeg_finish_decompress(&cinfo);
 		jpeg_destroy_decompress(&cinfo);
 		return im;
-#endif
 	}
 
 	// get pixel value from SDL surface
-#ifndef Rtt_LINUX_ENV
 	Uint32 getSurfacePixel(SDL_Surface* surface, int x, int y)
 	{
 		int bpp = surface->format->BytesPerPixel;
@@ -109,7 +105,6 @@ namespace bitmapUtil
 			return 0;       // shouldn't happen, but avoids warnings
 		}
 	}
-#endif
 
 	bool	saveJPG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format, float jpegQuality)
 	{
@@ -209,7 +204,6 @@ namespace bitmapUtil
 
 	uint8_t* loadBMP(const char* path, int& w, int& h, Rtt::PlatformBitmap::Format& format)
 	{
-#if !defined(Rtt_LINUX_ENV)
 		SDL_Surface* img = SDL_LoadBMP(path);
 		if (img)
 		{
@@ -245,8 +239,6 @@ namespace bitmapUtil
 			format = Rtt::PlatformBitmap::Format::kRGBA;
 			return im;
 		}
-#endif
-		return NULL;
 	}
 
 	//
@@ -327,9 +319,8 @@ namespace bitmapUtil
 
 	void pngWriteFunc(png_structp png_ptr, png_bytep data, png_size_t length)
 	{
-#ifndef Rtt_LINUX_ENV
-		fwrite(data, length, 1, (FILE*)png_ptr->io_ptr);
-#endif
+		FILE* f = (FILE*)png_get_io_ptr(png_ptr); // was png_ptr->io_ptr
+		fwrite(data, length, 1, f);
 	}
 
 	bool	savePNG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format)

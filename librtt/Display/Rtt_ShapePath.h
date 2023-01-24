@@ -82,6 +82,9 @@ class ShapePath : public ClosedPath
 		bool SetFillVertexColor( U32 index, U32 color );
 		bool SetStrokeVertexColor( U32 index, U32 color );
 
+		U32* GetFillVertexColors();
+		U32* GetStrokeVertexColors();
+
 		U32 GetFillVertexCount() const;
 		U32 GetStrokeVertexCount() const;
 

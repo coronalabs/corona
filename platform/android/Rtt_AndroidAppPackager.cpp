@@ -256,7 +256,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, const char * tmpDirBase )
 			gradleGo.append(EscapeArgument(tmpDir));
 			gradleGo.append(" && cd template &&");
 			
-#if defined(Rtt_MAC_ENV)
+#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
 			bool java8Installed = 0 == system("JAVA_VERSION=1.8 /usr/bin/java -version > /dev/null 2>/dev/null");
 			if(java8Installed) {
 				gradleGo.append(" ./setup.sh && JAVA_VERSION=1.8 ./gradlew");

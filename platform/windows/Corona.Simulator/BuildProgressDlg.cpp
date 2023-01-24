@@ -368,7 +368,7 @@ void CBuildProgressDlg::BuildForNxS()
 
 	strSrcDir.SetTCHAR(fProjectSettingsPointer->GetDir());
 	strName.SetTCHAR(fProjectSettingsPointer->GetName());
-	strNmetaPath.SetTCHAR(fProjectSettingsPointer->GetKeystorePath());		// it's .nmeta path
+	strNmetaPath.SetTCHAR(fProjectSettingsPointer->GetDir() + L"\\build.nmeta");		// it's .nmeta path
 	strSaveDir.SetTCHAR(fProjectSettingsPointer->GetSaveDir());
 	CFrameWnd* pFrameWnd = (CFrameWnd*)AfxGetApp()->GetMainWnd();
 	CSimulatorView* pView = (CSimulatorView*)pFrameWnd->GetActiveView();

@@ -231,6 +231,17 @@ LuaLibSystem::getInfo( lua_State *L )
 		Runtime *runtime = LuaContext::GetRuntime( L );
 		lua_pushboolean( L, runtime->GetDisplay().GetGpuSupportsHighPrecisionFragmentShaders() );
 	}
+  else if ( Rtt_StringCompare( key, "maxUniformVectorsCount" ) == 0 )
+  {
+      Runtime *runtime = LuaContext::GetRuntime( L );
+      lua_pushnumber( L, runtime->GetDisplay().GetMaxUniformVectorsCount() );
+  }
+	else if ( Rtt_StringCompare( key, "gpuSupportsScaledCaptures" ) == 0 )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		bool canScale = false;
+		lua_pushboolean( L, runtime->GetDisplay().HasFramebufferBlit( &canScale ) && canScale );
+	}
 	else if ( Rtt_StringCompare( key, "maxVertexTextureUnits" ) == 0 )
 	{
 		Runtime *runtime = LuaContext::GetRuntime( L );
@@ -326,20 +337,7 @@ getTimer( lua_State *L )
 static int
 vibrate( lua_State *L )
 {
-	const char* hapticType = NULL;
-	const char* hapticStyle = NULL;
-
-    if ( lua_type( L, 1 ) == LUA_TSTRING)
-    {
-		hapticType = lua_tostring(L, 1);
-    } 
-	if(lua_type( L, 2 ) == LUA_TSTRING)
-	{
-		hapticStyle = lua_tostring(L, 2);
-    }
-
-    LuaContext::GetPlatform( L ).GetDevice().Vibrate(hapticType, hapticStyle);
-    
+	LuaContext::GetPlatform( L ).GetDevice().Vibrate();
 	return 0;
 }
 

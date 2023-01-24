@@ -72,10 +72,12 @@ class ImageSheet
 		const ImageFrame* GetFrame( int index ) const { return fFrames[index]; }
 		S32 GetNumFrames() const { return fFrames.Length(); }
 		bool IsEmpty() const { return fFrames.Length() <= 0; }
+		bool CorrectsTrimOffsets() const { return fCorrectTrimOffsets; }
 
 	private:
 		SharedPtr< TextureResource > fResource;
 		PtrArray< ImageFrame > fFrames;
+		bool fCorrectTrimOffsets;
 };
 
 // ----------------------------------------------------------------------------
