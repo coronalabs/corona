@@ -172,7 +172,7 @@ OBJECTS := \
 	$(OBJDIR)/CoronaLibrary.o \
 	$(OBJDIR)/CoronaGraphics.o \
 	$(OBJDIR)/CoronaMemory.o \
-	$(OBJDIR)/CoronaObjects.cpp.o \
+	$(OBJDIR)/CoronaObjects.o \
 	$(OBJDIR)/CoronaLua.o \
 	$(OBJDIR)/Rtt_BitmapMask.o \
 	$(OBJDIR)/Rtt_BitmapPaint.o \
