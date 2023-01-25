@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -48,11 +48,11 @@ Shader::Shader( Rtt_Allocator *allocator, const SharedPtr< ShaderResource >& res
 	fDirty(false),
     fIsDrawing( false )
 {
-	Rtt_ASSERT( resource.NotNull() );
-	if ( data )
-	{
-		data->SetOwner( this );
-	}
+    Rtt_ASSERT( resource.NotNull() );
+    if ( data )
+    {
+        data->SetOwner( this );
+    }
 }
 
 //This should not be called externally
@@ -74,75 +74,75 @@ Shader::Shader()
 }
 Shader::~Shader()
 {
-	Paint *owner = GetPaint();
-	if ( owner )
-	{
-		DisplayObject *observer = owner->GetObserver();
-		if ( fData )
-		{
-			fData->QueueRelease( observer );
-		}
-		
-		observer->QueueRelease( fTexture );
-		observer->QueueRelease( fFBO );
-	}
-	Rtt_DELETE( fRenderData );
-	Rtt_DELETE( fData );
+    Paint *owner = GetPaint();
+    if ( owner )
+    {
+        DisplayObject *observer = owner->GetObserver();
+        if ( fData )
+        {
+            fData->QueueRelease( observer );
+        }
+        
+        observer->QueueRelease( fTexture );
+        observer->QueueRelease( fFBO );
+    }
+    Rtt_DELETE( fRenderData );
+    Rtt_DELETE( fData );
 }
 
 Shader *
 Shader::Clone( Rtt_Allocator *allocator ) const
 {
-	ShaderData *data = NULL;
-	if ( fData )
-	{
-		data = fData->Clone( allocator );
-	}
-	return Rtt_NEW( allocator, Shader(fAllocator, fResource, data ) );
+    ShaderData *data = NULL;
+    if ( fData )
+    {
+        data = fData->Clone( allocator );
+    }
+    return Rtt_NEW( allocator, Shader(fAllocator, fResource, data ) );
 }
 void Shader::Log(std::string preprend, bool last)
 {
-	printf( "Shader::Log(%p)::(Effect:%s)\n", this, fResource->GetName().c_str() );
+    printf( "Shader::Log(%p)::(Effect:%s)\n", this, fResource->GetName().c_str() );
 }
 void Shader::Log()
 {
-	Log("",false);
+    Log("",false);
 }
 void
 Shader::SetTextureBounds( const TextureInfo& textureInfo )
 {
-	if ( ! fTexture )
-	{
-		fTexture = Rtt_NEW( fAllocator, TextureVolatile( fAllocator, textureInfo.fWidth, textureInfo.fHeight,
-														textureInfo.fFormat, textureInfo.fFilter, textureInfo.fWrap, textureInfo.fWrap ) );
-								
-		fFBO = Rtt_NEW( fAllocator, FrameBufferObject( fAllocator, fTexture ) );
-	}
+    if ( ! fTexture )
+    {
+        fTexture = Rtt_NEW( fAllocator, TextureVolatile( fAllocator, textureInfo.fWidth, textureInfo.fHeight,
+                                                        textureInfo.fFormat, textureInfo.fFilter, textureInfo.fWrap, textureInfo.fWrap ) );
+                                
+        fFBO = Rtt_NEW( fAllocator, FrameBufferObject( fAllocator, fTexture ) );
+    }
 }
 Texture *
 Shader::GetTexture() const
 {
-	return fTexture;
+    return fTexture;
 }
 void
 Shader::UpdateCache( const TextureInfo& textureInfo, const RenderData& objectData )
 {
-	if ( fOutputReady ) { return; }
-	fOutputReady = true;
+    if ( fOutputReady ) { return; }
+    fOutputReady = true;
 
-	if ( ! fRenderData )
-	{
-		fRenderData = Rtt_NEW( fAllocator, RenderData );
-	}
-	//Uses default because we're using axis aligned regions in the intermediate Render calls
-	fRenderData->fProgram = fResource->GetProgramMod(ShaderResource::kDefault);
+    if ( ! fRenderData )
+    {
+        fRenderData = Rtt_NEW( fAllocator, RenderData );
+    }
+    //Uses default because we're using axis aligned regions in the intermediate Render calls
+    fRenderData->fProgram = fResource->GetProgramMod(ShaderResource::kDefault);
 }
 
 void
 Shader::RenderToTexture( Renderer& renderer, Geometry& cache ) const
 {
-	//if ( ! fOutputReady ) { return; }
-	fOutputReady = false;
+    //if ( ! fOutputReady ) { return; }
+    fOutputReady = false;
 
 	//if ( fDirty )
 	if ( fTexture )
@@ -224,22 +224,22 @@ Shader::RenderToTexture( Renderer& renderer, Geometry& cache ) const
 			renderer.PopMaskCount();
 		}
 
-		// Restore state so further rendering is unaffected
-		renderer.SetViewport( x, y, width, height );
-		renderer.SetFrustum( viewMatrix, projMatrix );
-		
-		renderer.SetFrameBufferObject( fbo );
-		
-		//fDirty = true;
-	}
+        // Restore state so further rendering is unaffected
+        renderer.SetViewport( x, y, width, height );
+        renderer.SetFrustum( viewMatrix, projMatrix );
+        
+        renderer.SetFrameBufferObject( fbo );
+        
+        //fDirty = true;
+    }
 }
 void
 Shader::UpdatePaint( RenderData& data ) const
 {
-	data.fUserUniform0 = fData->GetUniform( ShaderData::kData0 );
-	data.fUserUniform1 = fData->GetUniform( ShaderData::kData1 );
-	data.fUserUniform2 = fData->GetUniform( ShaderData::kData2 );
-	data.fUserUniform3 = fData->GetUniform( ShaderData::kData3 );
+    data.fUserUniform0 = fData->GetUniform( ShaderData::kData0 );
+    data.fUserUniform1 = fData->GetUniform( ShaderData::kData1 );
+    data.fUserUniform2 = fData->GetUniform( ShaderData::kData2 );
+    data.fUserUniform3 = fData->GetUniform( ShaderData::kData3 );
 }
 
 void
@@ -283,7 +283,7 @@ Shader::Draw( Renderer& renderer, const RenderData& objectData ) const
 void
 Shader::PushProxy( lua_State *L ) const
 {
-	fData->PushProxy( L );
+    fData->PushProxy( L );
 }
 
 void
@@ -307,27 +307,27 @@ Shader::DetachProxy()
 Paint *
 Shader::GetPaint() const
 {
-	Paint *result = fOwner; // Outermost node should have something here...
-	if ( ! result )
-	{
-		// Recurse up hierarchies to get the paint object to invalidate
-		if ( fRoot )
-		{
-			result = fRoot->GetPaint();
-		}
-	}
-	return result;
+    Paint *result = fOwner; // Outermost node should have something here...
+    if ( ! result )
+    {
+        // Recurse up hierarchies to get the paint object to invalidate
+        if ( fRoot )
+        {
+            result = fRoot->GetPaint();
+        }
+    }
+    return result;
 }
 
 bool
 Shader::UsesUniforms() const
 {
-	return fResource->UsesUniforms();
+    return fResource->UsesUniforms();
 }
 bool
 Shader::IsTerminal(Shader *shader) const
 {
-	return (this==shader);
+    return (this==shader);
 }
 
 Shader::DrawState::DrawState( const CoronaEffectCallbacks * callbacks, bool & drawing )
@@ -390,6 +390,16 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
             state.params.after( shader, fData->GetExtraSpace(), rendererObject, renderData );
         }
     }
+}
+
+bool
+Shader::IsCompatible( const Geometry* geometry )
+{
+    Rtt_ASSERT( geometry );
+
+    const FormatExtensionList* shaderList = fResource->GetExtensionList();
+
+    return FormatExtensionList::Compatible( shaderList, geometry->GetExtensionList() );
 }
 
 // ----------------------------------------------------------------------------

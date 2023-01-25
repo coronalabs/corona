@@ -216,62 +216,96 @@ typedef struct CoronaRendererOpParams
 typedef void (*CoronaRendererOp)( const CoronaRenderer * renderer, void * userData );
 
 /**
- Schedule an operation for the end of the frame, e.g. to ensure a state is restored.
- @param renderer Renderer access.
- @param onEndFrame Operation to call.
- @param userData Arbitrary data supplied to `onEndFrame`.
- @param opID Optional. If non-NULL, this is populated with a non-0 ID on success.
- @return If non-0, the operation was scheduled.
-*/
-CORONA_API
-int CoronaRendererScheduleEndFrameOp( CoronaRendererOpParams * renderer, CoronaRendererOp onEndFrame, void * userData, unsigned long * opID ) CORONA_PUBLIC_SUFFIX;
-
-/**
- Cancel an operation scheduled for the end of the frame.
- @param renderer Renderer access.
- @param opID An ID returned by `CoronaRendererScheduleEndFrameOp` on this frame.
- @return If non-0, the operation was cancelled.
-*/
-CORONA_API
-int CoronaRendererCancelEndFrameOp( CoronaRendererOpParams * renderer, unsigned long opID ) CORONA_PUBLIC_SUFFIX;
-
-/**
- Add an operation to be called when the renderer performs a clear, e.g. to wipe some buffer.
- @param renderer Renderer access.
- @param onClear Operation to call.
- @param userData Arbitrary data supplied to `onClear`.
- @param opID Optional. If non-NULL, this is populated with a non-0 ID on success.
- @return If non-0, the operation was installed.
-*/
-CORONA_API
-int CoronaRendererInstallClearOp( CoronaRendererOpParams * renderer, CoronaRendererOp onClear, void * userData, unsigned long * opID ) CORONA_PUBLIC_SUFFIX;
-
-/**
- Remove an installed clear operation.
- @param renderer Renderer access.
- @param opID An ID returned by `CoronaRendererInstallClearOp`.
- @return If non-0, the operation was removed.
-*/
-CORONA_API
-int CoronaRendererRemoveClearOp( CoronaRendererOpParams * renderer, unsigned long opID ) CORONA_PUBLIC_SUFFIX;
-
-/**
- Do some action after first committing any in-progress rendering operations.
- Should be avoided in shader bind callbacks, using the raw operation instead. (TODO: should this be considered a bug?)
- @param renderer Boxed renderer.
- @param action Action to perform.
- @param userData Arbitrary data supplied to `action`.
- @return If non-0, the action was done.
-*/
-CORONA_API
-int CoronaRendererDo( const CoronaRenderer * renderer, CoronaRendererOp action, void * userData ) CORONA_PUBLIC_SUFFIX;
-
-/**
  Invalidate the display hierarchy.
  @param L Lua state.
 */
 CORONA_API
 void CoronaRendererInvalidate( lua_State * L ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Operation performed when processing a dirty state block, i.e. preparing to draw, with the new contents to apply.
+ When `restore` is 0, the working contents are supplied as "new"; those committed before the last draw (or failing
+ that, the block's defaults), as "old". This happens after any other built-in state is updated, e.g. shader binds.
+ Otherwise, this is a "restore": it happens at the start of frame (`commandBuffer` will have been reset), the "new"
+ contents are the block's defaults, and the "old" the last commit as above.
+*/
+typedef void (*CoronaStateBlockDirty)( const CoronaCommandBuffer * commandBuffer, const CoronaRenderer * renderer, const void * newContents, const void * oldContents, unsigned int size, int restore, void * userData );
+
+/**
+ This structure describes a state block.
+*/
+struct CoronaStateBlock {
+    /**
+     Required
+     Size of block, in bytes.
+    */
+    unsigned int blockSize;
+    
+    /**
+     Optional
+     If non-`NULL`, the default block contents (>= `blockSize` bytes, in size); else all 0s.
+    */
+    void * defaultContents;
+
+    /**
+     Optional
+     If non-`NULL`, data supplied to the dirty state handler.
+    */
+    void * userData;
+
+    /**
+     Required
+     Draw-time dirty state handler.
+    */
+    CoronaStateBlockDirty stateDirty;
+    
+    /**
+     Optional
+     If non-`NULL`, the `restore`-time dirty state handler; else `stateDirty`.
+    */
+    CoronaStateBlockDirty defaultStateDirty;
+
+    /**
+     Optional
+     TODO: used e.g. in Vulkan
+    */
+    int dontHash;
+};
+
+/**
+ Permanently register a state block.
+ @param L Lua state pointer.
+ @param block Block configuration.
+ @param blockID This is populated with a non-0 ID on success.
+ @return If non-0, the block was registered.
+*/
+CORONA_API
+int CoronaRendererRegisterStateBlock( lua_State * L, const CoronaStateBlock * block, unsigned long * blockID ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Read the working contents of a state block.
+ @param renderer Boxed renderer.
+ @param blockID  An ID returned by `CoronaRendererRegisterStateBlock`.
+ @param data If not `NULL`, populated with the block's working contents.
+ @param size On input, the size of `data` (if not `NULL`), in bytes; on output, the block size.
+ @return If non-0, the block was read.
+*/
+CORONA_API
+int CoronaRendererReadStateBlock( const CoronaRenderer * renderer, unsigned long blockID, void * data, unsigned int * size ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Update the working contents of a state block.
+ When drawing, any block with uncommitted changes will have its dirty handler called.
+ Similarly, when the frame ends, "restore" handlers are called for any block with non-default contents.
+ Changes are considered committed after a draw or restore.
+ @param renderer Boxed renderer.
+ @param blockID An ID returned by `CoronaRendererRegisterStateBlock`.
+ @param data Data to write.
+ @param size Size of `data`, in bytes. If the block size is smaller, it will be clamped.
+ @return If non-0, the block was written.
+*/
+CORONA_API
+int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned long blockID, const void * data, unsigned int size ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 
@@ -466,6 +500,121 @@ unsigned int CoronaGeometryCopyData( void * dst, const CoronaGeometryMappingLayo
 CORONA_API
 void * CoronaGeometryGetMappingFromRenderData( const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout ) CORONA_PUBLIC_SUFFIX;
 
+/**
+ Primitive types that may be used by extended attributes; these extend the set used by Solar's vertices.
+*/
+typedef enum {
+    /**
+     Signed 32-bit integer.
+    */
+    kAttributeType_Int = kAttributeType_Count,
+
+    // TODO: signed / unsigned (short, int); float16 / 32; etc.
+    
+    /**
+     Attempt to keep the underlying type stable yet allow new values.
+    */
+    kMaxVertexMemberType = 0xFFFF
+} CoronaVertexExtensionAttributeType;
+
+/**
+ Configuration for a vertex extension attribute.
+*/
+typedef struct CoronaVertexExtensionAttribute {
+    /**
+     Name of attribute in shader.
+    */
+    const char * name;
+
+    /**
+     Primitive type of attribute.
+    */
+    CoronaVertexExtensionAttributeType type;
+
+    /**
+     If non-0 and the type is integral, on the GPU side components resolve to
+     floating point values in [0, 1] or [-1, +1], according to signedness.
+    */
+    unsigned char normalized;
+
+    /**
+     Number of components, from 1 to 4.
+    */
+    unsigned char components;
+
+    /**
+     If > 1, attributes `name .. 1`, ..., `name .. N` are registered, each with the
+     remaining (non-instancing) properties that would normally go to `name`.
+     The input is coalesced so that `name .. 1` sees the first value, `name .. 2`
+     the second, and so on; when the attribute does advance, the window slides
+     forward: `name .. 1` will be on the second value, `name .. 2` the third, etc.
+     Given `M` instances, the combined stream will have `max(ceil(M / R), N)`
+     elements, `R` being the instances-to-replicate count.
+    */
+    unsigned short windowSize;
+    
+    /**
+     If > 0, the attribute has instance granularity: in particular, over the course of (at
+     most) this many instances, all vertices use value `N`; the next batch then goes
+     with value `N + 1`, and so on.
+     If 0 but windowed, this is interpreted as 1.
+     If not windowed, the attribute's data will comprise `ceil(M / R)` elements, where
+     `M` is the instance count and `R` the instances-to-replicate count.
+     To query support, call `system.getInfo( "instancingSupport" )`.
+    */
+    unsigned int instancesToReplicate;
+} CoronaVertexExtensionAttribute;
+
+/**
+ Configuration for a vertex format that extends Solar's own, for use by effects and geometry.
+*/
+typedef struct CoronaVertexExtension {
+    /**
+     Required
+     When creating an instance of this type, set this member to `size = sizeof(CoronaVertexExtension)`.
+     This is required for identifying the API version used.
+    */
+    unsigned long size;
+
+	/**
+	 If non-0, extension is instanced.
+	 This is instancing via a shader ID, and redundant if any attributes also request instancing.
+	 To query support, call `system.getInfo( "instancingSupport" )`.
+	*/
+	int instanceByID;
+	
+    /**
+     Number of extension attributes.
+    */
+    unsigned int count;
+    
+    /**
+     Additional vertex attributes.
+    */
+    CoronaVertexExtensionAttribute * attributes;
+} CoronaVertexExtension;
+
+/**
+ Register a vertex extension, i.e. a type expected by an effect&mdash;and supplied by some
+ geometry&mdash;that includes new members as well as those in stock Solar vertices.
+ @param L Lua state.
+ @param name Unused extension name.
+ @param extension Extension configuration.
+ @return If non-0, the extension was registered.
+*/
+CORONA_API
+int CoronaGeometryRegisterVertexExtension( lua_State * L, const char * name, const CoronaVertexExtension * extension ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ Unregister a vertex extension. @see CoronaGeometryRegisterVertexExtension
+ Effects currently using the transform are unaffected.
+ @param L Lua state.
+ @param name Name of registered extension.
+ @return If non-0, the extension was unregistered.
+*/
+CORONA_API
+int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name ) CORONA_PUBLIC_SUFFIX;
+
 // ----------------------------------------------------------------------------
 
 /**
@@ -645,7 +794,7 @@ int CoronaShaderRegisterShellTransform( lua_State * L, const char * name, const 
 
 /**
  Unregister a shell transform. @see CoronaShaderRegisterShellTransform
- Effects currently using the transform are unaffected. 
+ Effects currently using the transform are unaffected.
  @param L Lua state.
  @param name Name of registered transform.
  @return If non-0, the transform was unregistered.

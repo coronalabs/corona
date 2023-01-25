@@ -757,14 +757,6 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
 CORONA_API
 int CoronaObjectInvalidate( const CoronaDisplayObject * object ) CORONA_PUBLIC_SUFFIX;
 
-/**
- @param object Boxed display object.
- @params hasBounds If non-0, set dummy bounds (the full content region), else clear them.
- @return If non-0, the bounds were set.
-*/
-CORONA_API
-int CoronaObjectSetHasDummyStageBounds( const CoronaDisplayObject * object, int hasBounds ) CORONA_PUBLIC_SUFFIX;
-
 // ----------------------------------------------------------------------------
 
 /**

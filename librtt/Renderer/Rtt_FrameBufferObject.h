@@ -29,12 +29,22 @@ class FrameBufferObject : public CPUResource
 		typedef FrameBufferObject Self;
 
 	public:
-		FrameBufferObject( Rtt_Allocator* allocator, Texture* texture );
+		struct ExtraOptions {
+			U8 depthBits;
+			U8 stencilBits;
+		};
+
+		FrameBufferObject( Rtt_Allocator* allocator, Texture* texture, ExtraOptions * options = NULL );
+	
 		virtual ResourceType GetType() const;
 		Texture* GetTexture() const;
-		
+		U8 GetDepthBits() const { return fDepthBits; }
+		U8 GetStencilBits() const { return fStencilBits; }
+
 	private:
 		Texture* fTexture;
+		U8 fDepthBits;
+		U8 fStencilBits;
 };
 
 // ----------------------------------------------------------------------------

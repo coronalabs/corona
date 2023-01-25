@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -22,10 +22,10 @@ static const Color kBlack = 0xFF000000;
 static const Color kWhite = 0xFFFFFFFF;
 
 #ifdef Rtt_AUTHORING_SIMULATOR
-	// Simulator should always show errors
-	static bool kShaderCompilerVerboseDefault = true;
+    // Simulator should always show errors
+    static bool kShaderCompilerVerboseDefault = true;
 #else
-	static bool kShaderCompilerVerboseDefault = false;
+    static bool kShaderCompilerVerboseDefault = false;
 #endif
 
 
@@ -49,7 +49,17 @@ DisplayDefaults::DisplayDefaults()
 	fIsAnchorClamped( true ),
 	fIsImageSheetSampledInsideFrame( false ),
 	fIsImageSheetFrameTrimCorrected( false ),
-	fIsExternalTextureRetina( true )
+	fIsExternalTextureRetina( true ),
+    fSkipsCull( false ),
+    fSkipsHitTest( false ),
+    fEnableDepthInScene( false ),
+    fEnableStencilInScene( false ),
+    fAddDepthToResource( false ),
+    fAddStencilToResource( false ),
+    fSceneDepthClear( 1.0 ),
+    fAddedDepthClear( 1.0 ),
+    fSceneStencilClear( 0 ),
+    fAddedStencilClear( 0 )
 {
 }
 

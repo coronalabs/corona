@@ -205,6 +205,14 @@ SnapshotObject::Initialize( lua_State *L, Display& display, Real contentW, Real 
 
 	if (!fFrameBufferObject)
 	{
+		/* TODO
+			fHasDepth = display.GetDefaults().GetAddDepthToResource();
+			fHasStencil = display.GetDefaults().GetAddStencilToResource();
+			fDepthClearValue = display.GetDefaults().GetAddedDepthClearValue();
+			fStencilClearValue = display.GetDefaults().GetAddedStencilClearValue();
+		 
+			TODO: add appropriate frame buffer resources...
+		 */
 		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture() ) );
 	}
 }
@@ -339,10 +347,18 @@ SnapshotObject::RenderToFBO(
 		renderer.SetViewport( 0, 0, texW, texH );
 		if ( clearColor )
 		{
+			/* TODO
+				Renderer::ExtraClearOptions extra;
+				
+				extra.clearDepth = fHasDepth;
+				extra.clearStencil = fHasStencil;
+				extra.depthClearValue = fDepthClearValue;
+				extra.stencilClearValue = fStencilClearValue;
+			  */
 			ColorUnion color;
 			color.pixel = * clearColor;
 			const Real inv255 = 1.f / 255.f;
-			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255 );
+			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255/*, &extra */ );
 		}
 
 		object.Draw( renderer );

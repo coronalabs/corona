@@ -16,9 +16,11 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-FrameBufferObject::FrameBufferObject( Rtt_Allocator* allocator, Texture* texture )
+FrameBufferObject::FrameBufferObject( Rtt_Allocator* allocator, Texture* texture, ExtraOptions * options )
 :	CPUResource( allocator ),
-	fTexture( texture )
+	fTexture( texture ),
+	fDepthBits( options ? options->depthBits : 0 ),
+	fStencilBits( options ? options->stencilBits : 0 )
 {
 }
 
