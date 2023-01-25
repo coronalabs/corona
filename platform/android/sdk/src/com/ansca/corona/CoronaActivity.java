@@ -3806,4 +3806,26 @@ public class CoronaActivity extends Activity {
 			catch (Exception ex) {}
 		}
 	}
+
+	@Override
+	public void onTrimMemory(int level) {
+		super.onTrimMemory(level);
+		if( level == android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
+			|| level == android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+		{
+			if (fCoronaRuntime != null) {
+				com.ansca.corona.events.EventManager eventManager = fCoronaRuntime.getController().getEventManager();
+				if (eventManager != null) {
+					eventManager.addEvent(new com.ansca.corona.events.RunnableEvent(new java.lang.Runnable() {
+						@Override
+						public void run() {
+							if (fCoronaRuntime.getController() != null) {
+								JavaToNativeShim.memoryWarningEvent(fCoronaRuntime);
+							}
+						}
+					}));
+				}
+			}
+		}
+	}
 }

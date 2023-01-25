@@ -45,6 +45,7 @@ namespace /*anonymous*/
     {
         kCommandBindFrameBufferObject,
         kCommandUnBindFrameBufferObject,
+		kCommandCaptureRect,
         kCommandBindGeometry,
         kCommandBindTexture,
         kCommandBindProgram,
@@ -319,6 +320,12 @@ CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders()
 #endif
 }
 
+bool
+GLCommandBuffer::HasFramebufferBlit( bool * canScale ) const
+{
+	return GLFrameBufferObject::HasFramebufferBlit( canScale );
+}
+
 void
 GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support ) const
 {
@@ -340,14 +347,14 @@ GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support ) const
 
 GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 :    CommandBuffer( allocator ),
-     fCurrentPrepVersion( Program::kMaskCount0 ),
-     fCurrentDrawVersion( Program::kMaskCount0 ),
-     fProgram( NULL ),
+	 fCurrentPrepVersion( Program::kMaskCount0 ),
+	 fCurrentDrawVersion( Program::kMaskCount0 ),
+	 fProgram( NULL ),
      fDefaultFBO( 0 ),
-     fTimeTransform( NULL ),
-     fTimerQueries( new U32[kTimerQueryCount] ),
-     fTimerQueryIndex( 0 ),
-     fElapsedTimeGPU( 0.0f ),
+	 fTimeTransform( NULL ),
+	 fTimerQueries( new U32[kTimerQueryCount] ),
+	 fTimerQueryIndex( 0 ),
+	 fElapsedTimeGPU( 0.0f ),
      fCustomCommands( allocator ),
      fExtraUniforms( NULL )
 {
@@ -458,17 +465,39 @@ GLCommandBuffer::ClearUserUniforms()
 }
 
 void
-GLCommandBuffer::BindFrameBufferObject(FrameBufferObject* fbo)
+GLCommandBuffer::BindFrameBufferObject(FrameBufferObject* fbo, bool asDrawBuffer)
 {
-    if( fbo )
-    {
-        WRITE_COMMAND( kCommandBindFrameBufferObject );
-        Write<GPUResource*>( fbo->GetGPUResource() );
-    }
-    else
-    {
-        WRITE_COMMAND( kCommandUnBindFrameBufferObject );
-    }
+	if( fbo )
+	{
+		WRITE_COMMAND( kCommandBindFrameBufferObject );
+		Write<GPUResource*>( fbo->GetGPUResource() );
+		Write<bool>( asDrawBuffer );
+	}
+	else
+	{
+		WRITE_COMMAND( kCommandUnBindFrameBufferObject );
+	}
+}
+
+void
+GLCommandBuffer::CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& unclipped )
+{
+	WRITE_COMMAND( kCommandCaptureRect );
+	
+	if (!fbo)
+	{
+		Write<GPUResource*>( texture.GetGPUResource() );
+	}
+	
+	else
+	{
+		Write<GPUResource*>( NULL );
+	}
+	
+	Write<Rect>( rect );
+	Write<Rect>( unclipped );
+	Write<U32>( texture.GetWidth() );
+	Write<U32>( texture.GetHeight() );
 }
 
 void
@@ -867,7 +896,7 @@ GLCommandBuffer::WriteNamedUniform( const char * uniformName, const void * data,
     return true;
 }
 
-Real
+Real 
 GLCommandBuffer::Execute( bool measureGPU )
 {
     DEBUG_PRINT( "--Begin Rendering: GLCommandBuffer --" );
@@ -898,20 +927,21 @@ GLCommandBuffer::Execute( bool measureGPU )
     }
 #endif
 
-    ObjectBoxList list;
-    
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
-    
-    GLProgram::ExtraUniforms extraUniforms;
-    
-    fExtraUniforms = &extraUniforms;
+  ObjectBoxList list;
 
-    // Reset the offset pointer to the start of the buffer.
-    // This is safe to do here, as preparation work is done
-    // on another CommandBuffer while this one is executing.
-    fOffset = fBuffer;
+  OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
 
-    //GL_CHECK_ERROR();
+  GLProgram::ExtraUniforms extraUniforms;
+
+  fExtraUniforms = &extraUniforms;
+
+	// Reset the offset pointer to the start of the buffer.
+	// This is safe to do here, as preparation work is done
+	// on another CommandBuffer while this one is executing.
+	fOffset = fBuffer;
+
+	S32 windowHeight;
+	//GL_CHECK_ERROR();
 
     GLGeometry* geometry = NULL;
     Geometry::Vertex* instancingData = NULL;
@@ -925,13 +955,15 @@ GLCommandBuffer::Execute( bool measureGPU )
 // printf( "GLCommandBuffer::Execute [%d/%d] %d\n", i, fNumCommands, command );
 
         Rtt_ASSERT( command < kNumCommands + fCustomCommands.Length() );
-        switch( command )
-        {
-            case kCommandBindFrameBufferObject:
-            {
-                GLFrameBufferObject* fbo = Read<GLFrameBufferObject*>();
-				fbo->Bind();
-                DEBUG_PRINT( "Bind FrameBufferObject: OpenGL name: %i, OpenGL Texture name, if any: %d",
+		switch( command )
+		{
+			case kCommandBindFrameBufferObject:
+			{
+				GLFrameBufferObject* fbo = Read<GLFrameBufferObject*>();
+				bool asDrawBuffer = Read<bool>();
+				fbo->Bind( asDrawBuffer );
+				DEBUG_PRINT( "Bind FrameBufferObject (as draw buffer = %s): OpenGL name: %i, OpenGL Texture name, if any: %d",
+								asDrawBuffer ? "true" : "false",
 								fbo->GetName(),
                                 fbo->GetTextureName() );
                 CHECK_ERROR_AND_BREAK;
@@ -942,6 +974,53 @@ GLCommandBuffer::Execute( bool measureGPU )
                 DEBUG_PRINT( "Unbind FrameBufferObject: OpenGL name: %i (fDefaultFBO)", fDefaultFBO );
                 CHECK_ERROR_AND_BREAK;
             }
+            case kCommandCaptureRect:
+		      {
+			      GLTexture* texture = Read<GLTexture*>();
+			      Rect rect = Read<Rect>();
+			      Rect unclipped = Read<Rect>();
+			      U32 texW = Read<U32>();
+			      U32 texH = Read<U32>();
+			      U32 x = 0, w = rect.xMax - rect.xMin;
+			      U32 y = 0, h = rect.yMax - rect.yMin;
+			  
+			      if (unclipped.xMin < 0)
+			      {
+				      x = -unclipped.xMin;
+			      }
+			  
+			      if (unclipped.yMax > rect.yMax)
+			      {
+				      y = unclipped.yMax - rect.yMax;
+			      }
+			  
+			      if (!texture)
+			      {
+				      S32 w1 = texW, w2 = unclipped.xMax - unclipped.xMin;
+				      S32 h1 = texH, h2 = unclipped.yMax - unclipped.yMin;
+				  
+				      if (( abs( w1 - w2 ) > 5 || abs( h1 - h2 ) > 5 )) // more than a rounding difference?
+				      {
+					      x = x * w1 / w2;
+					      y = y * h1 / h2;
+					      w = w * w1 / w2;
+					      h = h * h1 / h2;
+				      }
+				  
+				      GLFrameBufferObject::Blit( rect.xMin, windowHeight - rect.yMax, rect.xMax, windowHeight - rect.yMin, x, y, x + w, y + h, GL_COLOR_BUFFER_BIT, GL_NEAREST );
+			      }
+			      else
+			      {
+				      texture->Bind( 0 );
+
+				      glCopyTexSubImage2D( GL_TEXTURE_2D, 0, x, y, rect.xMin, (windowHeight - h) - rect.yMin, w, h );
+				  
+				      GL_CHECK_ERROR();
+			      }
+			  
+			      DEBUG_PRINT( "Capture Rect: (%f, %f, %f, %f), using FBO = %s", rect.xMin, rect.yMin, rect.xMax, rect.yMax, !texture ? "true" : "false" );
+			      CHECK_ERROR_AND_BREAK;
+		      }
             case kCommandBindGeometry:
             {
                 geometry = Read<GLGeometry*>();
@@ -1199,6 +1278,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                 GLint y = Read<GLint>();
                 GLsizei width = Read<GLsizei>();
                 GLsizei height = Read<GLsizei>();
+				windowHeight = height;
                 glViewport( x, y, width, height );
                 DEBUG_PRINT( "Set viewport: x=%i, y=%i, width=%i, height=%i", x, y, width, height );
                 CHECK_ERROR_AND_BREAK;
@@ -1371,7 +1451,7 @@ template <typename T>
 void
 GLCommandBuffer::Write( T value )
 {
-    U32 size = sizeof(T);
+	U32 size = sizeof(T);
 
     /*
     U32 bytesNeeded = fBytesUsed + size;
@@ -1470,16 +1550,16 @@ void GLCommandBuffer::ApplyUniform( GPUResource* resource, U32 index )
 
 void GLCommandBuffer::WriteUniform( Uniform* uniform )
 {
-    switch( uniform->GetDataType() )
-    {
-        case Uniform::kScalar:    Write<Real>(*reinterpret_cast<Real*>(uniform->GetData()));    break;
-        case Uniform::kVec2:    Write<Vec2>(*reinterpret_cast<Vec2*>(uniform->GetData()));    break;
-        case Uniform::kVec3:    Write<Vec3>(*reinterpret_cast<Vec3*>(uniform->GetData()));    break;
-        case Uniform::kVec4:    Write<Vec4>(*reinterpret_cast<Vec4*>(uniform->GetData()));    break;
-        case Uniform::kMat3:    Write<Mat3>(*reinterpret_cast<Mat3*>(uniform->GetData()));    break;
-        case Uniform::kMat4:    Write<Mat4>(*reinterpret_cast<Mat4*>(uniform->GetData()));    break;
-        default:                Rtt_ASSERT_NOT_REACHED();                                    break;
-    }
+	switch( uniform->GetDataType() )
+	{
+		case Uniform::kScalar:	Write<Real>(*reinterpret_cast<Real*>(uniform->GetData()));	break;
+		case Uniform::kVec2:	Write<Vec2>(*reinterpret_cast<Vec2*>(uniform->GetData()));	break;
+		case Uniform::kVec3:	Write<Vec3>(*reinterpret_cast<Vec3*>(uniform->GetData()));	break;
+		case Uniform::kVec4:	Write<Vec4>(*reinterpret_cast<Vec4*>(uniform->GetData()));	break;
+		case Uniform::kMat3:	Write<Mat3>(*reinterpret_cast<Mat3*>(uniform->GetData()));	break;
+		case Uniform::kMat4:	Write<Mat4>(*reinterpret_cast<Mat4*>(uniform->GetData()));	break;
+		default:				Rtt_ASSERT_NOT_REACHED();									break;
+	}
 }
 
 U8 *

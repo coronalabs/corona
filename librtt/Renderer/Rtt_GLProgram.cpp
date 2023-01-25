@@ -25,6 +25,7 @@
 #endif
 
 #include "Display/Rtt_ShaderResource.h"
+#include "Corona/CoronaLog.h"
 
 #include <string>
 #include <vector>
@@ -79,25 +80,25 @@ namespace /*anonymous*/
             GLchar* infoLog = new GLchar[length];
             glGetProgramInfoLog( name, length, NULL, infoLog );
 
-            if ( isVerbose )
-            {
-                Rtt_LogException( "%s", infoLog );
-            }
-            else
-            {
-                Rtt_LogException(
-                    "ERROR: A shader failed to compile. To see errors, add the following to the top of your main.lua:\n"
-                    "\tdisplay.setDefault( 'isShaderCompilerVerbose', true )\n" );
-            }
-            delete[] infoLog;
-        }
-    }
-    
-    const char* kWireframeSource =
-        "void main()" \
-        "{" \
-            "gl_FragColor = vec4(1.0);" \
-        "}";}
+			if ( isVerbose )
+			{
+				Rtt_LogException( "%s", infoLog );
+			}
+			else
+			{
+				Rtt_LogException(
+					"ERROR: A shader failed to compile. To see errors, add the following to the top of your main.lua:\n"
+					"\tdisplay.setDefault( 'isShaderCompilerVerbose', true )\n" );
+			}
+			delete[] infoLog;
+		}
+	}
+	
+	const char* kWireframeSource =
+		"void main()" \
+		"{" \
+			"gl_FragColor = vec4(1.0);" \
+		"}";}
 
 // ----------------------------------------------------------------------------
 
@@ -138,15 +139,15 @@ GLProgram::GLProgram()
 void
 GLProgram::Create( CPUResource* resource )
 {
-    Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
-    fResource = resource;
-    
-    #if !DEFER_CREATION
-        for( U32 i = 0; i < kMaximumMaskCount + 1; ++i )
-        {
-            Create( fData[i], i );
-        }
-    #endif
+	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
+	fResource = resource;
+	
+	#if !DEFER_CREATION
+		for( U32 i = 0; i < kMaximumMaskCount + 1; ++i )
+		{
+			Create( fData[i], i );
+		}
+	#endif
     
     Program* program = static_cast<Program*>( fResource );
     ShaderResource* shaderResource = program->GetShaderResource();

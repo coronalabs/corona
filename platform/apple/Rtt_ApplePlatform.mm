@@ -44,6 +44,7 @@
 #include <string.h>
 
 #if !defined( Rtt_NO_GUI )
+<<<<<<< HEAD
     // This is a hack to hold on to symbols required for running plugins
     // Because some plugins are dynamically linked, linker wouldn't know which symbols app uses
     // and will strip this plugin interfaces as unused
@@ -122,6 +123,117 @@
         (void*)CoronaGroupObjectGetNumChildren,
         (void*)CoronaObjectSendMessage
     };
+=======
+	// This is a hack to hold on to symbols required for running plugins
+	// Because some plugins are dynamically linked, linker wouldn't know which symbols app uses
+	// and will strip this plugin interfaces as unused
+
+	#include "CoronaLuaObjCHelper.h"
+	#include "CoronaEvent.h"
+	#include "Corona/CoronaGraphics.h"
+    #include "Corona/CoronaObjects.h"
+
+	volatile void* fakeVariableToPreventSymbolStripping[] __attribute__((used)) = {
+		(void*)CoronaEventNameKey,
+		(void*)CoronaEventProviderKey,
+		(void*)CoronaEventPhaseKey,
+		(void*)CoronaEventTypeKey,
+		(void*)CoronaEventResponseKey,
+		(void*)CoronaEventIsErrorKey,
+		(void*)CoronaEventErrorCodeKey,
+		(void*)CoronaEventDataKey,
+		(void*)CoronaEventAdsRequestName,
+		(void*)CoronaEventGameNetworkName,
+		(void*)CoronaEventPopupName,
+		
+		(void*)CoronaLuaCreateDictionary,
+		(void*)CoronaLuaPushValue,
+		
+		(void*)CoronaExternalPushTexture,
+		(void*)CoronaExternalGetUserData,
+		(void*)CoronaExternalFormatBPP,
+
+    (void*)CoronaRendererScheduleEndFrameOp,
+    (void*)CoronaRendererCancelEndFrameOp,
+    (void*)CoronaRendererInstallClearOp,
+    (void*)CoronaRendererRemoveClearOp,
+    (void*)CoronaRendererDo,
+    (void*)CoronaRendererInvalidate,
+    (void*)CoronaRendererRegisterCommand,
+    (void*)CoronaRendererIssueCommand,
+
+    (void*)CoronaCommandBufferGetBaseAddress,
+    (void*)CoronaCommandBufferWriteNamedUniform,
+
+    (void*)CoronaGeometryCopyData,
+    (void*)CoronaGeometryGetMappingFromRenderData,
+        
+    (void*)CoronaShaderGetEffectDetail,
+    (void*)CoronaShaderRegisterShellTransform,
+    (void*)CoronaShaderUnregisterShellTransform,
+    (void*)CoronaShaderRawDraw,
+    (void*)CoronaShaderGetVersion,
+    (void*)CoronaShaderRegisterEffectDataType,
+    (void*)CoronaShaderUnregisterEffectDataType,
+
+    (void*)CoronaMultiplyMatrix4x4,
+    (void*)CoronaCreateViewMatrix,
+    (void*)CoronaCreateOrthoMatrix,
+    (void*)CoronaCreatePerspectiveMatrix,
+        
+    (void*)CoronaObjectsBuildMethodStream,
+    (void*)CoronaObjectsPushContainer,
+    (void*)CoronaObjectsPushEmbossedText,
+    (void*)CoronaObjectsPushEmitter,
+    (void*)CoronaObjectsPushGroup,
+    (void*)CoronaObjectsPushImage,
+    (void*)CoronaObjectsPushImageRect,
+    (void*)CoronaObjectsPushLine,
+    (void*)CoronaObjectsPushMesh,
+    (void*)CoronaObjectsPushPolygon,
+    (void*)CoronaObjectsPushRect,
+    (void*)CoronaObjectsPushRoundedRect,
+    (void*)CoronaObjectsPushSnapshot,
+    (void*)CoronaObjectsPushSprite,
+    (void*)CoronaObjectsPushText,
+    (void*)CoronaObjectInvalidate,
+    (void*)CoronaObjectSetHasDummyStageBounds,
+    (void*)CoronaObjectGetParent,
+    (void*)CoronaGroupObjectGetChild,
+    (void*)CoronaGroupObjectGetNumChildren,
+    (void*)CoronaObjectSendMessage
+
+    (void*)CoronaRendererScheduleEndFrameOp,
+    (void*)CoronaRendererCancelEndFrameOp,
+    (void*)CoronaRendererInstallClearOp,
+    (void*)CoronaRendererRemoveClearOp,
+    (void*)CoronaRendererDo,
+    (void*)CoronaRendererRegisterCommand,
+    (void*)CoronaRendererIssueCommand,
+
+    (void*)CoronaObjectsBuildMethodStream,
+    (void*)CoronaObjectsPushContainer,
+    (void*)CoronaObjectsPushEmbossedText,
+    (void*)CoronaObjectsPushEmitter,
+    (void*)CoronaObjectsPushGroup,
+    (void*)CoronaObjectsPushImage,
+    (void*)CoronaObjectsPushImageRect,
+    (void*)CoronaObjectsPushLine,
+    (void*)CoronaObjectsPushMesh,
+    (void*)CoronaObjectsPushPolygon,
+    (void*)CoronaObjectsPushRect,
+    (void*)CoronaObjectsPushRoundedRect,
+    (void*)CoronaObjectsPushSnapshot,
+    (void*)CoronaObjectsPushSprite,
+    (void*)CoronaObjectsPushText,
+    (void*)CoronaObjectInvalidate,
+    (void*)CoronaObjectSetHasDummyStageBounds,
+    (void*)CoronaObjectGetParent,
+    (void*)CoronaGroupObjectGetChild,
+    (void*)CoronaGroupObjectGetNumChildren,
+    (void*)CoronaObjectSendMessage
+	};
+>>>>>>> 6a2f8d6a48dad8e6740f43a2042095874ac00842
 
 #endif
 

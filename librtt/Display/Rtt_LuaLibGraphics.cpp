@@ -43,6 +43,10 @@
 
 #define CORONA_SHELL_TRANSFORMS_METATABLE_NAME "graphics.ShellTransforms"
 
+#define ENABLE_DEBUG_PRINT	( 0 )
+
+#define CORONA_SHELL_TRANSFORMS_METATABLE_NAME "graphics.ShellTransforms"
+
 #define ENABLE_DEBUG_PRINT    ( 0 )
 
 // ----------------------------------------------------------------------------
@@ -1220,56 +1224,119 @@ SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &fa
     
     return ret;
 }
-    
+
+//helper function to parse lua table to create capture resource
+SharedPtr<TextureResource> CreateResourceCaptureFromTable(Rtt::TextureFactory &factory, lua_State *L, int index)
+{
+	Display &display = factory.GetDisplay();
+	
+	static unsigned int sNextRenderTextureID = 1;
+	SharedPtr<TextureResource> ret;
+	
+	Real width = -1, height = -1;
+	
+	lua_getfield( L, index, "width" );
+	if (lua_isnumber( L, -1 ))
+	{
+		width = lua_tonumber( L, -1 );
+	}
+	lua_pop( L, 1 );
+	
+	lua_getfield( L, index, "height" );
+	if (lua_isnumber( L, -1 ))
+	{
+		height = lua_tonumber( L, -1 );
+	}
+	lua_pop( L, 1 );
+	
+	if( width > 0 && height > 0 )
+	{
+		S32 unused = 0; // n.b. ContentToScreen(x,y) NOT okay for dimensions!
+		
+		int pixelWidth = Rtt_RealToInt( width );
+		int pixelHeight = Rtt_RealToInt( height );
+		display.ContentToScreen( unused, unused, pixelWidth, pixelHeight );
+
+		pixelWidth *= (float)display.WindowWidth() / display.ScreenWidth();
+		pixelHeight *= (float)display.WindowHeight() / display.ScreenHeight();
+	
+		int texSize = display.GetMaxTextureSize();
+		pixelWidth = Min(texSize, pixelWidth);
+		pixelHeight = Min(texSize, pixelHeight);
+		
+		char filename[30];
+		snprintf(filename, 30, "corona://FBOcap_%u", sNextRenderTextureID++);
+
+		SharedPtr<TextureResource> texSource = factory.FindOrCreateCapture( filename, width, height, pixelWidth, pixelHeight );
+		if( texSource.NotNull() )
+		{
+			factory.Retain(texSource);
+			ret = texSource;
+		}
+	}
+	else
+	{
+		CoronaLuaError( L, "display.newTexture() requires valid width and height" );
+	}
+	
+	return ret;
+}
+
 // graphics.newTexture(  {type=, filename, [baseDir=], [isMask=], } )
 int
 GraphicsLibrary::newTexture( lua_State *L )
 {
-    int result = 0;
-    int index = 1;
-    SharedPtr<TextureResource> ret;
-    
-    if( lua_istable( L, index ) )
-    {
-        lua_getfield( L, index, "type" );
-        const char *textureType = lua_tostring( L, -1 );
-        if ( textureType )
-        {
-            if ( 0 == strcmp( "image", textureType ) )
-            {
-                Self *library = ToLibrary( L );
-                Display& display = library->GetDisplay();
-                ret = CreateResourceBitmapFromTable(display.GetTextureFactory(), L, index);
-            }
-            else if ( 0 == strcmp( "canvas", textureType ) || 0 == strcmp( "maskCanvas", textureType ) )
-            {
-                Self *library = ToLibrary( L );
-                Display& display = library->GetDisplay();
-                ret = CreateResourceCanvasFromTable(display.GetTextureFactory(), L, index, 0 == strcmp( "maskCanvas", textureType ));
-            }
-            else
-            {
-                CoronaLuaError( L, "display.newTexture() unrecognized type" );
-            }
-        }
-        else
-        {
-            CoronaLuaError( L, "display.newTexture() requires type field in parameters table" );
-        }
-        lua_pop( L, 1 );
-    }
-    else
-    {
-        CoronaLuaError( L, "display.newTexture() requires a table" );
-    }
-    
-    if(    ret.NotNull() )
-    {
-        ret->PushProxy( L );
-        result = 1;
-    }
-    
-    return result;
+	int result = 0;
+	int index = 1;
+	SharedPtr<TextureResource> ret;
+	
+	if( lua_istable( L, index ) )
+	{
+		lua_getfield( L, index, "type" );
+		const char *textureType = lua_tostring( L, -1 );
+		if ( textureType )
+		{
+			if ( 0 == strcmp( "image", textureType ) )
+			{
+				Self *library = ToLibrary( L );
+				Display& display = library->GetDisplay();
+				ret = CreateResourceBitmapFromTable(display.GetTextureFactory(), L, index);
+			}
+			else if ( 0 == strcmp( "canvas", textureType ) || 0 == strcmp( "maskCanvas", textureType ) )
+			{
+				Self *library = ToLibrary( L );
+				Display& display = library->GetDisplay();
+				ret = CreateResourceCanvasFromTable(display.GetTextureFactory(), L, index, 0 == strcmp( "maskCanvas", textureType ));
+			}
+			else if ( 0 == strcmp( "capture", textureType ) )
+			{
+				Self *library = ToLibrary( L );
+				Display& display = library->GetDisplay();
+				ret = CreateResourceCaptureFromTable(display.GetTextureFactory(), L, index);
+			}
+			else
+			{
+				CoronaLuaError( L, "display.newTexture() unrecognized type" );
+			}
+		}
+		else
+		{
+			CoronaLuaError( L, "display.newTexture() requires type field in parameters table" );
+		}
+		lua_pop( L, 1 );
+	}
+	else
+	{
+		CoronaLuaError( L, "display.newTexture() requires a table" );
+	}
+	
+	if(	ret.NotNull() )
+	{
+		ret->PushProxy( L );
+		result = 1;
+	}
+	
+	return result;
 }
 
     
@@ -1278,63 +1345,67 @@ GraphicsLibrary::newTexture( lua_State *L )
 int
 GraphicsLibrary::releaseTextures( lua_State *L )
 {
-    int result = 0;
-    
-    Self *library = ToLibrary( L );
-    Display& display = library->GetDisplay();
-    
-    int index = 1;
-    
-    TextureResource::TextureResourceType type = TextureResource::kTextureResource_Any;
-    
-    if( lua_type(L, index) == LUA_TSTRING )
-    {
-        const char *str = lua_tostring( L, index );
-        if( str )
-        {
-            if ( strcmp(str, "image") == 0 )
-            {
-                type = TextureResource::kTextureResourceBitmap;
-            }
-            else if ( strcmp(str, "canvas") == 0 )
-            {
-                type = TextureResource::kTextureResourceCanvas;
-            }
-            else if ( strcmp(str, "external") == 0 )
-            {
-                type = TextureResource::kTextureResourceExternal;
-            }
-        }
-    }
-    else if( lua_type(L, index) == LUA_TTABLE )
-    {
-        lua_getfield( L, index, "type" );
-        if( lua_type(L, -1) == LUA_TSTRING )
-        {
-            const char *str = lua_tostring( L, -1 );
-            if( str )
-            {
-                if ( strcmp(str, "image") == 0 )
-                {
-                    type = TextureResource::kTextureResourceBitmap;
-                }
-                else if ( strcmp(str, "canvas") == 0 )
-                {
-                    type = TextureResource::kTextureResourceCanvas;
-                }
-                else if ( strcmp(str, "external") == 0 )
-                {
-                    type = TextureResource::kTextureResourceExternal;
-                }
-            }
-        }
-        lua_pop( L, 1 );
-    }
-    
-    
-    display.GetTextureFactory().ReleaseByType( type );
-    
-    return result;
+	int result = 0;
+	
+	Self *library = ToLibrary( L );
+	Display& display = library->GetDisplay();
+	
+	int index = 1;
+	
+	TextureResource::TextureResourceType type = TextureResource::kTextureResource_Any;
+	
+	if( lua_type(L, index) == LUA_TSTRING )
+	{
+		const char *str = lua_tostring( L, index );
+		if( str )
+		{
+			if ( strcmp(str, "image") == 0 )
+			{
+				type = TextureResource::kTextureResourceBitmap;
+			}
+			else if ( strcmp(str, "canvas") == 0 )
+			{
+				type = TextureResource::kTextureResourceCanvas;
+			}
+			else if ( strcmp(str, "capture") == 0 )
+			{
+				type = TextureResource::kTextureResourceCapture;
+			}
+			else if ( strcmp(str, "external") == 0 )
+			{
+				type = TextureResource::kTextureResourceExternal;
+			}
+		}
+	}
+	else if( lua_type(L, index) == LUA_TTABLE )
+	{
+		lua_getfield( L, index, "type" );
+		if( lua_type(L, -1) == LUA_TSTRING )
+		{
+			const char *str = lua_tostring( L, -1 );
+			if( str )
+			{
+				if ( strcmp(str, "image") == 0 )
+				{
+					type = TextureResource::kTextureResourceBitmap;
+				}
+				else if ( strcmp(str, "canvas") == 0 )
+				{
+					type = TextureResource::kTextureResourceCanvas;
+				}
+				else if ( strcmp(str, "external") == 0 )
+				{
+					type = TextureResource::kTextureResourceExternal;
+				}
+			}
+		}
+		lua_pop( L, 1 );
+	}
+	
+	
+	display.GetTextureFactory().ReleaseByType( type );
+	
+	return result;
 }
 
 // ----------------------------------------------------------------------------

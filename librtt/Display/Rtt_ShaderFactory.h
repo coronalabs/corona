@@ -17,6 +17,8 @@
 #include "Display/Rtt_ShaderTypes.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 
+#include "CoronaGraphics.h"
+
 // ----------------------------------------------------------------------------
 
 struct lua_State;
@@ -120,6 +122,7 @@ class ShaderFactory
 	public:
 		bool DefineEffect( lua_State *L, int shaderIndex );
         bool UndefineEffect( lua_State *L, int nameIndex );
+
 		Shader *NewShaderGraph( lua_State *L, int index, int localStubsIndex );
         
         bool RegisterDataType( const char * name, const CoronaEffectCallbacks & callbacks );

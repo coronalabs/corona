@@ -184,18 +184,18 @@ class Display
         virtual void UnloadResources();
         virtual void ReloadResources();
 
-    public:
-        virtual void GetImageSuffix( String& outSuffix ) const;
-        virtual bool GetImageFilename( const char *filename, MPlatform::Directory baseDir, String& outFilename ) const;
-        virtual bool PushImageSuffixTable() const;
+	public:
+		virtual void GetImageSuffix( String& outSuffix ) const;
+		virtual bool GetImageFilename( const char *filename, MPlatform::Directory baseDir, String& outFilename ) const;
+		virtual bool PushImageSuffixTable() const;
     
         void GatherObjectFactories( const luaL_Reg funcs[], void * library );
         bool PushObjectFactories() const;
 
-    public:
-        virtual GroupObject *Overlay();
-        virtual GroupObject *Orphanage();
-        virtual GroupObject *HitTestOrphanage();
+	public:
+		virtual GroupObject *Overlay();
+		virtual GroupObject *Orphanage();
+		virtual GroupObject *HitTestOrphanage();
 
     public:
         virtual S32 RenderedContentWidth() const;
@@ -259,13 +259,16 @@ class Display
         Alignment GetXAlign() const { return (Alignment)fXAlign; }
         Alignment GetYAlign() const { return (Alignment)fYAlign; }
 */
-        // Sets the scaling mode and updates content scale factors based on window size
-        virtual void SetScaleMode( ScaleMode mode, Rtt_Real screenWidth, Rtt_Real screenHeight );
-        virtual ScaleMode GetScaleMode() const;
-	
-        virtual void ContentToScreen( S32& x, S32& y ) const;
-        virtual void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
-        virtual void ContentToPixels( S32& x, S32& y, S32& w, S32& h ) const;
+		// Sets the scaling mode and updates content scale factors based on window size
+		virtual void SetScaleMode( ScaleMode mode, Rtt_Real screenWidth, Rtt_Real screenHeight );
+		virtual ScaleMode GetScaleMode() const;
+
+		void ContentToScreenUnrounded( float& x, float& y ) const;
+		void ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const;
+
+		virtual void ContentToScreen( S32& x, S32& y ) const;
+		virtual void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
+		virtual void ContentToPixels( S32& x, S32& y, S32& w, S32& h ) const;
 
     public:
         // Generalized function for calculating proper content scaling factors
@@ -330,6 +333,7 @@ class Display
         static U32 GetMaxUniformVectorsCount();
         static U32 GetMaxVertexTextureUnits();
 
+        bool HasFramebufferBlit( bool * canScale ) const;
         void GetVertexAttributes( VertexAttributeSupport & support ) const;
 
     public:
@@ -388,22 +392,22 @@ class Display
         TextureFactory *fTextureFactory;
         Scene *fScene;
 
-        // TODO: Refactor data structure portions out
-        // We temporarily use RenderingStream b/c it contains key data
-        // about window size/orientation
-        RenderingStream *fStream;
-        PlatformSurface *fTarget;
-        int fImageSuffix;
+		// TODO: Refactor data structure portions out
+		// We temporarily use RenderingStream b/c it contains key data
+		// about window size/orientation
+		RenderingStream *fStream;
+		PlatformSurface *fTarget;
+		int fImageSuffix;
     
         int fObjectFactories;
 
-        U8 fDrawMode; // stores current physics drawing mode; ranges from 0-2
-        bool fIsAntialiased;
-        bool fIsCollecting; // guards against nested calls to Collect()
-        bool fIsRestricted;
-        mutable bool fAllowFeatureResult;
-//        U8 fScaleMode;
-        U32 fShouldRestrictFeature;
+		U8 fDrawMode; // stores current physics drawing mode; ranges from 0-2
+		bool fIsAntialiased;
+		bool fIsCollecting; // guards against nested calls to Collect()
+		bool fIsRestricted;
+		mutable bool fAllowFeatureResult;
+//		U8 fScaleMode;
+		U32 fShouldRestrictFeature;
 };
 
 // ----------------------------------------------------------------------------

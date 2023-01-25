@@ -106,7 +106,7 @@ class DisplayDefaults
         void SetSceneDepthClearValue( float newValue ) { fSceneDepthClear = newValue; }
     
         float GetAddedDepthClearValue() const { return fAddedDepthClear; }
-        void SetAddedDepthClearValue( U32 newValue ) { fAddedDepthClear = newValue; }
+        void SetAddedDepthClearValue( float newValue ) { fAddedDepthClear = newValue; }
     
         U32 GetSceneStencilClearValue() const { return fSceneStencilClear; }
         void SetSceneStencilClearValue( float newValue ) { fSceneStencilClear = newValue; }

@@ -136,9 +136,9 @@ class Renderer
         // operation, so that the mask count prior to the operation is restored.
         void PopMaskCount();
 
-        // Generate the minimum set of commands needed to ensure that the given
-        // RenderData is properly drawn on the next call to Render().
-        void Insert( const RenderData* data, const ShaderData * shaderData = NULL );
+		// Generate the minimum set of commands needed to ensure that the given
+		// RenderData is properly drawn on the next call to Render().
+		void Insert( const RenderData* data, const ShaderData * shaderData = NULL );
 
         // Render all data added since the last call to swap(). It is both safe
         // and expected that Render() is called while another thread is adding
@@ -174,12 +174,13 @@ class Renderer
         // Render triangles as outlines with no interior. Useful for debugging.
         void SetWireframeEnabled( bool enabled );
 
-        static U32 GetMaxTextureSize();
-        static const char *GetGlString( const char *s );
-        static bool GetGpuSupportsHighPrecisionFragmentShaders();
+		static U32 GetMaxTextureSize();
+		static const char *GetGlString( const char *s );
+		static bool GetGpuSupportsHighPrecisionFragmentShaders();
         static U32 GetMaxUniformVectorsCount();
-        static U32 GetMaxVertexTextureUnits();
+		static U32 GetMaxVertexTextureUnits();
 
+        bool HasFramebufferBlit(  bool * canScale ) const;
         void GetVertexAttributes( VertexAttributeSupport & support ) const;
 
         struct Statistics
@@ -259,6 +260,10 @@ class Renderer
 
         bool IssueCustomCommand( U16 id, const void * data, U32 size );
     
+	public:
+		void InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped );
+		void IssueCaptures( Texture * fill0 );
+
     protected:
         // Destroys all queued GPU resources passed into the DestroyQueue() method.
         void DestroyQueuedGPUResources();
@@ -301,10 +306,10 @@ class Renderer
         const U32& MaskCount() const { return fMaskCount[fMaskCountIndex]; }
         U32& MaskCount() { return fMaskCount[fMaskCountIndex]; }
 
-	public:
+    public:
         int GetVersionCode( bool addingMask ) const;
 
-    protected:
+	protected:
 		Rtt_Allocator* fAllocator;
 		
 		MCPUResourceObserver *fCPUResourceObserver;
@@ -366,6 +371,22 @@ class Renderer
 
         U32 fTimeDependencyCount;
     
+        struct RectPair {
+			Rect fClipped;
+			Rect fUnclipped;
+			RectPair * fNext;
+		};
+	
+		struct CaptureGroup {
+			FrameBufferObject * fFBO;
+			Texture * fTexture;
+			RectPair * fFirst;
+			RectPair * fLast;
+		};
+	
+		Array< CaptureGroup > fCaptureGroups;
+		Array< RectPair > fCaptureRects;
+
         Array< CoronaCommand > fPendingCommands;
 
         U16 fCommandCount;

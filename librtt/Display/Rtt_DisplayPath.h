@@ -52,19 +52,19 @@ class DisplayPath
             kIndicesMask = 0x4,
         };
 
-        static void UpdateGeometry(
-            Geometry& dst,
-            const VertexCache& src,
-            const Matrix& srcToDstSpace,
-            U32 flags,
-            ArrayIndex *indices );
+		static void UpdateGeometry(
+			Geometry& dst,
+			const VertexCache& src,
+			const Matrix& srcToDstSpace,
+			U32 flags,
+		    ArrayIndex *indices );
     
         static const void * ZKey();
         static const void * IndicesKey();
 
-    public:
-        DisplayPath();
-        virtual ~DisplayPath();
+	public:
+		DisplayPath();
+		virtual ~DisplayPath();
 
         class ExtensionAdapter : public MLuaUserdataAdapter
         {

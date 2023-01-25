@@ -86,8 +86,8 @@ DisplayPath::UpdateGeometry( Geometry& dst, const VertexCache& src, const Matrix
     }
 
     for ( U32 i = 0, iMax = vertices.Length(); i < iMax; i++, zsource += step )
-    {
-        Rtt_ASSERT( i < dst.GetVerticesAllocated() );
+	{
+		Rtt_ASSERT( i < dst.GetVerticesAllocated() );
 
         Geometry::Vertex& dst = dstVertices[i];
 
@@ -96,10 +96,10 @@ DisplayPath::UpdateGeometry( Geometry& dst, const VertexCache& src, const Matrix
             Vertex2 v = vertices[i];
             srcToDstSpace.Apply( v );
 
-            dst.x = v.x;
-            dst.y = v.y;
+			dst.x = v.x;
+			dst.y = v.y;
             dst.z = *zsource;
-        }
+		}
 
         if ( updateTexture )
         {

@@ -1271,8 +1271,14 @@ const U32*
     return fPerVertexColors ? fPerVertexColors->ReadAccess() : NULL;
 }
 
-bool
-    Geometry::SetVertexColor(U32 index, U32 color)
+U32*
+	Geometry::GetWriteablePerVertexColorData()
+{
+	return fPerVertexColors ? fPerVertexColors->WriteAccess() : NULL;
+}
+
+bool 
+	Geometry::SetVertexColor(U32 index, U32 color)
 {
     if (!fPerVertexColors || index >= fPerVertexColors->Length())
     {

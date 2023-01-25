@@ -232,6 +232,12 @@ LuaLibSystem::getInfo( lua_State *L )
         Runtime *runtime = LuaContext::GetRuntime( L );
         lua_pushboolean( L, runtime->GetDisplay().GetGpuSupportsHighPrecisionFragmentShaders() );
     }
+	else if ( Rtt_StringCompare( key, "gpuSupportsScaledCaptures" ) == 0 )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		bool canScale = false;
+		lua_pushboolean( L, runtime->GetDisplay().HasFramebufferBlit( &canScale ) && canScale );
+	}
     else if ( Rtt_StringCompare( key, "maxUniformVectorsCount" ) == 0 )
     {
         Runtime *runtime = LuaContext::GetRuntime( L );
@@ -369,8 +375,8 @@ getTimer( lua_State *L )
 static int
 vibrate( lua_State *L )
 {
-    LuaContext::GetPlatform( L ).GetDevice().Vibrate();
-    return 0;
+	LuaContext::GetPlatform( L ).GetDevice().Vibrate();
+	return 0;
 }
 
 static int

@@ -28,6 +28,15 @@
 #include "Renderer/Rtt_Matrix_Renderer.h"
 #include "Renderer/Rtt_Renderer.h"
 
+#include "Display/Rtt_Shader.h"
+#include "Display/Rtt_ShaderData.h"
+#include "Display/Rtt_ShaderFactory.h"
+#include "Display/Rtt_ShaderResource.h"
+#include "Renderer/Rtt_CommandBuffer.h"
+#include "Renderer/Rtt_Matrix_Renderer.h"
+
+#include "Renderer/Rtt_Renderer.h"
+
 #include "Display/Rtt_TextureResourceExternalAdapter.h"
 
 
@@ -94,27 +103,6 @@ static Rtt::Renderer &
 GetRenderer( lua_State * L )
 {
     return Rtt::LuaContext::GetRuntime( L )->GetDisplay().GetRenderer();
-}
-
-static Rtt::Renderer *
-GetRenderer( CoronaRendererOpParams * params )
-{
-    Rtt::Renderer * renderer = NULL;
-    
-    if (params)
-    {
-        if (params->useLuaState)
-        {
-            renderer = &GetRenderer( params->u.luaState );
-        }
-        
-        else
-        {
-            renderer = OBJECT_BOX_LOAD( Renderer, params->u.renderer );
-        }
-    }
-    
-    return renderer;
 }
 
 CORONA_API

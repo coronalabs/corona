@@ -31,7 +31,8 @@ class GLCommandBuffer : public CommandBuffer
     public:
         typedef CommandBuffer Super;
         typedef GLCommandBuffer Self;
-    
+
+		bool HasFramebufferBlit( bool * canScale ) const;
         void GetVertexAttributes( VertexAttributeSupport & support ) const;
 
     public:
@@ -46,8 +47,9 @@ class GLCommandBuffer : public CommandBuffer
 
         // Generate the appropriate buffered OpenGL commands to accomplish the
         // specified state changes.
-        virtual void BindFrameBufferObject( FrameBufferObject* fbo );
-        virtual void BindGeometry( Geometry* geometry );
+        virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer );
+		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect );
+		virtual void BindGeometry( Geometry* geometry );
         virtual void BindTexture( Texture* texture, U32 unit );
         virtual void BindUniform( Uniform* uniform, U32 unit );
         virtual void BindProgram( Program* program, Program::Version version );
@@ -90,34 +92,34 @@ class GLCommandBuffer : public CommandBuffer
         template <typename T>
         T Read();
 
-        // Templatized helper function for writing an arbitrary argument to the
-        // command buffer.
-        template <typename T>
-        void Write(T);
-        
-        struct UniformUpdate
-        {
-            Uniform* uniform;
-            U32 timestamp;
-        };
-        
-        void ApplyUniforms( GPUResource* resource );
-        void ApplyUniform( GPUResource* resource, U32 index );
-        void WriteUniform( Uniform* uniform );
+		// Templatized helper function for writing an arbitrary argument to the
+		// command buffer.
+		template <typename T>
+		void Write(T);
+		
+		struct UniformUpdate
+		{
+			Uniform* uniform;
+			U32 timestamp;
+		};
+		
+		void ApplyUniforms( GPUResource* resource );
+		void ApplyUniform( GPUResource* resource, U32 index );
+		void WriteUniform( Uniform* uniform );
     
         U8 * Reserve( U32 size );
 
-        UniformUpdate fUniformUpdates[Uniform::kNumBuiltInVariables];
-        Program::Version fCurrentPrepVersion;
-        Program::Version fCurrentDrawVersion;
-    
-        Program* fProgram;
-        S32 fDefaultFBO;
-        U32* fTimerQueries;
-        U32 fTimerQueryIndex;
-        Real fElapsedTimeGPU;
-        TimeTransform* fTimeTransform;
-        S32 fCachedQuery[kNumQueryableParams];
+		UniformUpdate fUniformUpdates[Uniform::kNumBuiltInVariables];
+		Program::Version fCurrentPrepVersion;
+		Program::Version fCurrentDrawVersion;
+	
+		Program* fProgram;
+		S32 fDefaultFBO;
+		U32* fTimerQueries;
+		U32 fTimerQueryIndex;
+		Real fElapsedTimeGPU;
+		TimeTransform* fTimeTransform;
+		S32 fCachedQuery[kNumQueryableParams];
     
         Array< CoronaCommand > fCustomCommands;
 

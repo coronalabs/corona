@@ -26,6 +26,7 @@
 #include "CoronaVersion.h"
 #include "CoronaGraphics.h"
 #include "CoronaObjects.h"
+
 //#include "CoronaWin32.h"
 #include <Windows.h>
 
@@ -700,6 +701,7 @@ int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name )
     CoronaCallbackLoad();
     return CoronaCallbackInvoke(L, name);
 }
+
 #pragma endregion
 
 #pragma Corona Shader API

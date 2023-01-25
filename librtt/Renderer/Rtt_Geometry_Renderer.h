@@ -169,8 +169,9 @@ class Geometry : public CPUResource
 
         void AttachPerVertexColors( ArrayU32* colors, U32 size );
 
-        const U32* GetPerVertexColorData() const;
-        bool SetVertexColor( U32 index, U32 color );
+		const U32* GetPerVertexColorData() const;
+		U32* GetWriteablePerVertexColorData();
+		bool SetVertexColor( U32 index, U32 color );
 
         const FormatExtensionList * GetExtensionList() const;
         const Vertex* GetExtendedVertexData() const;

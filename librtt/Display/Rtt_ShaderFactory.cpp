@@ -2059,4 +2059,3 @@ ShaderFactory::PushList( lua_State *L, ShaderTypes::Category category ) const
 } // namespace Rtt
 
 // ----------------------------------------------------------------------------
-

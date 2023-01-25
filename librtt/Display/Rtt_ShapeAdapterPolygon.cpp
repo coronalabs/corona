@@ -34,7 +34,7 @@ ShapeAdapterPolygon::Constant()
 
 bool
 ShapeAdapterPolygon::InitializeContour(
-	lua_State *L, int index, TesselatorPolygon& tesselator )
+	lua_State *L, int index, TesselatorPolygon& tesselator, bool hasZ )
 {
 	bool result = false;
 
@@ -47,14 +47,16 @@ ShapeAdapterPolygon::InitializeContour(
 		// This is used to find the center of the body.
 		Rect bounds;
 
-		int numVertices = (int) lua_objlen( L, index ) >> 1;
+        int componentCount = hasZ ? 3 : 2;
+        int numVertices = (int) lua_objlen( L, index ) / componentCount;
+        
 		for ( int i = 0; i < numVertices; i++ )
 		{
 			// Lua is one-based, so the first element must be at index 1.
-			lua_rawgeti( L, index, ( ( i * 2 ) + 1 ) );
+            lua_rawgeti( L, index, ( ( i * componentCount ) + 1 ) );
 
 			// Lua is one-based, so the second element must be at index 2.
-			lua_rawgeti( L, index, ( ( i * 2 ) + 2 ) );
+            lua_rawgeti( L, index, ( ( i * componentCount ) + 2 ) );
 
 			Vertex2 v = { luaL_toreal( L, -2 ),
 							luaL_toreal( L, -1 ) };

@@ -71,17 +71,17 @@ class DisplayObject : public MDrawable, public MLuaProxyable
             void * fFunc;
         };
     
-        enum RenderFlag
-        {
-            kGeometryFlag = 0x01,
-            kPaintFlag = 0x2,
-            kColorFlag = 0x4,
-            kTransformFlag = 0x08,
-            kProgramFlag = 0x10,
-            kProgramDataFlag = 0x20,
-            kMaskFlag = 0x40,
-            kStageBoundsFlag = 0x80, // TODO: Rename to kContentBoundsFlag
-            kContainerFlag = 0x100,
+		enum RenderFlag
+		{
+			kGeometryFlag = 0x01,
+			kPaintFlag = 0x2,
+			kColorFlag = 0x4,
+			kTransformFlag = 0x08,
+			kProgramFlag = 0x10,
+			kProgramDataFlag = 0x20,
+			kMaskFlag = 0x40,
+			kStageBoundsFlag = 0x80, // TODO: Rename to kContentBoundsFlag
+			kContainerFlag = 0x100,
 
             // NOTE: By default, do NOT dirty:
             // * mask
@@ -187,8 +187,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         virtual void DidMoveOffscreen();
         virtual void WillMoveOnscreen();
 
-    public:
-        virtual bool CanCull() const;
+	public:
+		virtual bool CanCull() const;
         virtual bool CanHitTest() const;
 
     public:
@@ -197,17 +197,17 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         virtual LuaProxy* GetProxy() const;
         virtual void ReleaseProxy();
 
-    public:
-        virtual void AddedToParent( lua_State * L, GroupObject * parent );
-        virtual void RemovedFromParent( lua_State * L, GroupObject * parent );
+	public:
+		virtual void AddedToParent( lua_State * L, GroupObject * parent );
+		virtual void RemovedFromParent( lua_State * L, GroupObject * parent );
     
         virtual void SendMessage( const char * message, const void * payload, U32 size ) const {}
 
-    public:
-        virtual const LuaProxyVTable& ProxyVTable() const;
-        
-        void QueueRelease( CPUResource *resource );
-        void QueueRelease( LuaUserdataProxy *proxy );
+	public:
+		virtual const LuaProxyVTable& ProxyVTable() const;
+		
+		void QueueRelease( CPUResource *resource );
+		void QueueRelease( LuaUserdataProxy *proxy );
 
         // Effectively calls o:addEventListener( eventName, listener ) where listener is object on stack at 'index'
         void AddEventListener( lua_State *L, int index, const char *eventName ) const;

@@ -35,17 +35,17 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 Shader::Shader( Rtt_Allocator *allocator, const SharedPtr< ShaderResource >& resource, ShaderData *data )
-:    fResource( resource ),
-    fAllocator(allocator),
-    fData( data ),
-    fCategory( fResource->GetCategory() ),
-    fOwner( NULL ),
-    fFBO( NULL ),
-    fTexture( NULL ),
-    fRoot( NULL ),
-    fRenderData( NULL ),
-    fOutputReady( false ),
-    fDirty(false),
+:	fResource( resource ),
+	fAllocator(allocator),
+	fData( data ),
+	fCategory( fResource->GetCategory() ),
+	fOwner( NULL ),
+	fFBO( NULL ),
+	fTexture( NULL ),
+	fRoot( NULL ),
+	fRenderData( NULL ),
+	fOutputReady( false ),
+	fDirty(false),
     fIsDrawing( false )
 {
     Rtt_ASSERT( resource.NotNull() );
@@ -57,17 +57,17 @@ Shader::Shader( Rtt_Allocator *allocator, const SharedPtr< ShaderResource >& res
 
 //This should not be called externally
 Shader::Shader()
-:    fResource( ),
-    fAllocator(NULL),
-    fData( NULL ),
-    fCategory(ShaderTypes::kCategoryDefault),
-    fOwner( NULL ),
-    fFBO( NULL ),
-    fTexture( NULL ),
-    fRoot( NULL ),
-    fRenderData( NULL ),
-    fOutputReady( false ),
-    fDirty(false),
+:	fResource( ),
+	fAllocator(NULL),
+	fData( NULL ),
+	fCategory(ShaderTypes::kCategoryDefault),
+	fOwner( NULL ),
+	fFBO( NULL ),
+	fTexture( NULL ),
+	fRoot( NULL ),
+	fRenderData( NULL ),
+	fOutputReady( false ),
+	fDirty(false),
     fIsDrawing( false )
 {
 
@@ -144,85 +144,85 @@ Shader::RenderToTexture( Renderer& renderer, Geometry& cache ) const
     //if ( ! fOutputReady ) { return; }
     fOutputReady = false;
 
-    //if ( fDirty )
-    if ( fTexture )
-    {
-        // ????: (optionally???) Copy geometry
-        
-        // Save current state so we can restore it later
-        FrameBufferObject *fbo = renderer.GetFrameBufferObject();
-        Rtt::Real viewMatrix[16];
-        Rtt::Real projMatrix[16];
-        renderer.GetFrustum( viewMatrix, projMatrix );
-        
-        S32 x, y, width, height;
-        renderer.GetViewport( x, y, width, height );
-        {
-            
-            
-            //Assumes textures are same w/h format/filter
-            Real w = Rtt_IntToReal( fTexture->GetWidth() );
-            Real h = Rtt_IntToReal( fTexture->GetHeight() );
-            
-            Rect bounds;
-            bounds.xMin = 0;
-            bounds.xMax = w;
-            bounds.yMin = 0;
-            bounds.yMax = h;
-            
-            
-            
-            // Update shader params
-            if ( UsesUniforms() )
-            {
-                // Update uniforms in fRenderData
-                UpdatePaint( * fRenderData );
-            }
-            else
-            {
-                // Update geometry for per-vertex shader params
-                Real ux, uy, uz, uw;
-                GetData()->CopyVertexData( ux, uy, uz, uw );
-                
-                Geometry::Vertex *dstVertices = cache.GetVertexData();
-                for ( U32 i = 0, iMax = cache.GetVerticesUsed(); i < iMax; i++ )
-                {
-                    Geometry::Vertex& v = dstVertices[i];
-                    
-                    v.ux = ux;
-                    v.uy = uy;
-                    v.uz = uz;
-                    v.uw = uw;
-                }
-            }
-            
-            fRenderData->fGeometry = & cache; // Use same geometry
-            
-            Rtt::Real offscreenViewMatrix[16];
-            Rtt::CreateViewMatrix( 0.0f, 0.0f, 0.5f,
-                                  0.0f, 0.0f, 0.0f,
-                                  0.0f, 1.0f, 0.0f,
-                                  offscreenViewMatrix );
-            
-            
-            Rtt::Real offscreenProjMatrix[16];
-            Rtt::CreateOrthoMatrix(
-                                   bounds.xMin, bounds.xMax,
-                                   bounds.yMin, bounds.yMax,
-                                   0.0f, 1.0f, offscreenProjMatrix );
-            
-            
-            renderer.SetFrameBufferObject( fFBO );
-            renderer.PushMaskCount();
-            {
-                renderer.SetFrustum( offscreenViewMatrix, offscreenProjMatrix );
-                renderer.SetViewport( 0, 0, w, h );
-                renderer.Clear( 0.0f, 0.0f, 0.0f, 0.0f );
-                
-                renderer.Insert( fRenderData, GetData() );
-            }
-            renderer.PopMaskCount();
-        }
+	//if ( fDirty )
+	if ( fTexture )
+	{
+		// ????: (optionally???) Copy geometry
+		
+		// Save current state so we can restore it later
+		FrameBufferObject *fbo = renderer.GetFrameBufferObject();
+		Rtt::Real viewMatrix[16];
+		Rtt::Real projMatrix[16];
+		renderer.GetFrustum( viewMatrix, projMatrix );
+		
+		S32 x, y, width, height;
+		renderer.GetViewport( x, y, width, height );
+		{
+			
+			
+			//Assumes textures are same w/h format/filter
+			Real w = Rtt_IntToReal( fTexture->GetWidth() );
+			Real h = Rtt_IntToReal( fTexture->GetHeight() );
+			
+			Rect bounds;
+			bounds.xMin = 0;
+			bounds.xMax = w;
+			bounds.yMin = 0;
+			bounds.yMax = h;
+			
+			
+			
+			// Update shader params
+			if ( UsesUniforms() )
+			{
+				// Update uniforms in fRenderData
+				UpdatePaint( * fRenderData );
+			}
+			else
+			{
+				// Update geometry for per-vertex shader params
+				Real ux, uy, uz, uw;
+				GetData()->CopyVertexData( ux, uy, uz, uw );
+				
+				Geometry::Vertex *dstVertices = cache.GetVertexData();
+				for ( U32 i = 0, iMax = cache.GetVerticesUsed(); i < iMax; i++ )
+				{
+					Geometry::Vertex& v = dstVertices[i];
+					
+					v.ux = ux;
+					v.uy = uy;
+					v.uz = uz;
+					v.uw = uw;
+				}
+			}
+			
+			fRenderData->fGeometry = & cache; // Use same geometry
+			
+			Rtt::Real offscreenViewMatrix[16];
+			Rtt::CreateViewMatrix( 0.0f, 0.0f, 0.5f,
+								  0.0f, 0.0f, 0.0f,
+								  0.0f, 1.0f, 0.0f,
+								  offscreenViewMatrix );
+			
+			
+			Rtt::Real offscreenProjMatrix[16];
+			Rtt::CreateOrthoMatrix(
+								   bounds.xMin, bounds.xMax,
+								   bounds.yMin, bounds.yMax,
+								   0.0f, 1.0f, offscreenProjMatrix );
+			
+			
+			renderer.SetFrameBufferObject( fFBO );
+			renderer.PushMaskCount();
+			{
+				renderer.SetFrustum( offscreenViewMatrix, offscreenProjMatrix );
+				renderer.SetViewport( 0, 0, w, h );
+				renderer.Clear( 0.0f, 0.0f, 0.0f, 0.0f );
+				
+				renderer.Insert( fRenderData, GetData() );
+			}
+			renderer.PopMaskCount();
+		}
 
         // Restore state so further rendering is unaffected
         renderer.SetViewport( x, y, width, height );
@@ -245,9 +245,9 @@ Shader::UpdatePaint( RenderData& data ) const
 void
 Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMod mod )
 {
-    Program *program = fResource->GetProgramMod(mod);
-    
-    objectData.fProgram = program;
+	Program *program = fResource->GetProgramMod(mod);
+	
+	objectData.fProgram = program;
 
     const CoronaEffectCallbacks * callbacks = fResource->GetEffectCallbacks();
 
@@ -300,8 +300,8 @@ Shader::DetachProxy()
         effectCallbacks->shaderDetach( shader, GetData()->GetExtraSpace() );
     }
     
-    fData->DetachProxy();
-    fData = NULL;
+	fData->DetachProxy();
+	fData = NULL;
 }
 
 Paint *

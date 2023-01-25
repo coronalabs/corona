@@ -51,9 +51,9 @@ class ShapePath : public ClosedPath
         VertexCache & GetFillSource() { return fFillSource; }
         VertexCache & GetStrokeSource() { return fStrokeSource; }
 
-    protected:
-        void TesselateFill();
-        void TesselateStroke();
+	protected:
+		void TesselateFill();
+		void TesselateStroke();
 
         void UpdateFill( RenderData& data, const Matrix& srcToDstSpace );
         void UpdateStroke( const Matrix& srcToDstSpace );
@@ -82,8 +82,11 @@ class ShapePath : public ClosedPath
         bool SetFillVertexColor( U32 index, U32 color );
         bool SetStrokeVertexColor( U32 index, U32 color );
 
-        U32 GetFillVertexCount() const;
-        U32 GetStrokeVertexCount() const;
+		U32* GetFillVertexColors();
+		U32* GetStrokeVertexColors();
+
+		U32 GetFillVertexCount() const;
+		U32 GetStrokeVertexCount() const;
 
         Geometry *GetFillGeometry() const { return fFillGeometry; }
         Geometry *GetStrokeGeometry() const { return fStrokeGeometry; }

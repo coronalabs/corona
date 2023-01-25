@@ -193,26 +193,26 @@ Display::ScaleModeFromString( const char *scaleName )
 // ----------------------------------------------------------------------------
 
 Display::Display( Runtime& owner )
-:    fOwner( owner ),
-    fDelegate( NULL ),
-    fDefaults( Rtt_NEW( owner.Allocator(), DisplayDefaults ) ),
-    fDeltaTimeInSeconds( 0.0f ),
-    fPreviousTime( owner.GetElapsedTime() ),
-    fRenderer( NULL ),
-    fShaderFactory( NULL ),
-    fSpritePlayer( Rtt_NEW( owner.Allocator(), SpritePlayer( owner.Allocator() ) ) ),
-    fTextureFactory( Rtt_NEW( owner.Allocator(), TextureFactory( * this ) ) ),
-    fScene( Rtt_NEW( & owner.GetAllocator(), Scene( owner.Allocator(), * this ) ) ),
-    fStream( Rtt_NEW( owner.GetAllocator(), GPUStream( owner.GetAllocator() ) ) ),
-    fTarget( owner.Platform().CreateScreenSurface() ),
-    fImageSuffix( LUA_REFNIL ),
+:	fOwner( owner ),
+	fDelegate( NULL ),
+	fDefaults( Rtt_NEW( owner.Allocator(), DisplayDefaults ) ),
+	fDeltaTimeInSeconds( 0.0f ),
+	fPreviousTime( owner.GetElapsedTime() ),
+	fRenderer( NULL ),
+	fShaderFactory( NULL ),
+	fSpritePlayer( Rtt_NEW( owner.Allocator(), SpritePlayer( owner.Allocator() ) ) ),
+	fTextureFactory( Rtt_NEW( owner.Allocator(), TextureFactory( * this ) ) ),
+	fScene( Rtt_NEW( & owner.GetAllocator(), Scene( owner.Allocator(), * this ) ) ),
+	fStream( Rtt_NEW( owner.GetAllocator(), GPUStream( owner.GetAllocator() ) ) ),
+	fTarget( owner.Platform().CreateScreenSurface() ),
+	fImageSuffix( LUA_REFNIL ),
     fObjectFactories( LUA_REFNIL ),
-    fDrawMode( kDefaultDrawMode ),
-    fIsAntialiased( false ),
-    fIsCollecting( false ),
-    fIsRestricted( false ),
-    fAllowFeatureResult( false ), // When IsRestricted(), default to *not* allowing.
-    fShouldRestrictFeature( 0 )
+	fDrawMode( kDefaultDrawMode ),
+	fIsAntialiased( false ),
+	fIsCollecting( false ),
+	fIsRestricted( false ),
+	fAllowFeatureResult( false ), // When IsRestricted(), default to *not* allowing.
+	fShouldRestrictFeature( 0 )
 {
 }
 
@@ -221,12 +221,12 @@ Display::~Display()
     CameraPaint::Finalize();
     Paint::Finalize();
 
-    lua_State *L = GetL();
-    if ( L )
-    {
-        luaL_unref( L, LUA_REGISTRYINDEX, fImageSuffix );
+	lua_State *L = GetL();
+	if ( L )
+	{
+		luaL_unref( L, LUA_REGISTRYINDEX, fImageSuffix );
         luaL_unref( L, LUA_REGISTRYINDEX, fObjectFactories );
-    }
+	}
 
     //Needs to be done before deletes, because it uses scene etc
     fTextureFactory->ReleaseByType( TextureResource::kTextureResource_Any );
@@ -1481,6 +1481,20 @@ Display::GetScaleMode() const
 }
 
 void
+Display::ContentToScreenUnrounded( float& x, float& y ) const
+{
+    float w = 0;
+    float h = 0;
+    ContentToScreenUnrounded( x, y, w, h );
+}
+
+void
+Display::ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const
+{
+    fStream->ContentToScreenUnrounded( x, y, w, h );
+}
+
+void
 Display::ContentToScreen( S32& x, S32& y ) const
 {
     S32 w = 0;
@@ -1890,6 +1904,12 @@ U32
 Display::GetMaxVertexTextureUnits()
 {
     return Renderer::GetMaxVertexTextureUnits();
+}
+
+bool
+Display::HasFramebufferBlit( bool * canScale ) const
+{
+    return fRenderer->HasFramebufferBlit( canScale );
 }
 
 void
