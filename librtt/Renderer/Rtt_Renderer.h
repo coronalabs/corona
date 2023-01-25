@@ -301,17 +301,17 @@ class Renderer
         const U32& MaskCount() const { return fMaskCount[fMaskCountIndex]; }
         U32& MaskCount() { return fMaskCount[fMaskCountIndex]; }
 
-    public:
+	public:
         int GetVersionCode( bool addingMask ) const;
 
     protected:
-        Rtt_Allocator* fAllocator;
-        
-        MCPUResourceObserver *fCPUResourceObserver;
-        
-        Array<CPUResource*> fCreateQueue;
-        Array<CPUResource*> fUpdateQueue;
-        Array<GPUResource*> fDestroyQueue;
+		Rtt_Allocator* fAllocator;
+		
+		MCPUResourceObserver *fCPUResourceObserver;
+		
+		LightPtrArray<CPUResource> fCreateQueue;
+		LightPtrArray<CPUResource> fUpdateQueue;
+		Array<GPUResource*> fDestroyQueue;
 
         GeometryPool* fGeometryPool;
         GeometryPool* fInstancingGeometryPool;

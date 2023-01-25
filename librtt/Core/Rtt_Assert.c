@@ -266,6 +266,14 @@ Rtt_Log( const char *format, ... )
 #if defined( Rtt_MAC_ENV ) || defined( Rtt_IPHONE_ENV ) || defined( Rtt_TVOS_ENV )
 	#define Rtt_TRAP_WITH_SIGNAL	1
 	#include <signal.h>
+    #include <errno.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <assert.h>
+    #include <stdbool.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <sys/sysctl.h>
 #if 0 // see stacktrace code below
 	#include <execinfo.h>
 	#include <stdio.h>
@@ -275,11 +283,23 @@ Rtt_Log( const char *format, ... )
 	#define Rtt_Log printf
 #endif
 
+
+
 static void
 Rtt_UserBreak( )
 {
     #if defined( Rtt_TRAP_WITH_SIGNAL )
-        raise( SIGINT );
+        /*
+         Check for if being debugged before breaking for Mac
+         To pevent crash on Arm(M1) Macs
+        */
+        #if defined( Rtt_MAC_ENV )
+            #ifdef Rtt_DEBUG
+                raise( SIGINT );
+            #endif
+        #else
+            raise( SIGINT );
+        #endif
     #elif defined( Rtt_WIN_ENV )
 		__debugbreak();
 	#elif defined( __ARMCC_VERSION )

@@ -17,6 +17,7 @@
         <activity
             android:name="com.ansca.corona.CoronaActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"
+            android:exported="true"
             android:icon="@mipmap/ic_launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,7 +60,7 @@
          notifications after the device boots up, because they will only be shown if the app is running.
          This receiver only works if the "android.permission.RECEIVE_BOOT_COMPLETED" permission has been set.
         -->
-        <receiver android:name="com.ansca.corona.SystemStartupBroadcastReceiver">
+        <receiver android:name="com.ansca.corona.SystemStartupBroadcastReceiver"  android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

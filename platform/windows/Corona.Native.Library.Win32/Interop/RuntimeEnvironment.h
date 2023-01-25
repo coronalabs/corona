@@ -1023,6 +1023,8 @@ class RuntimeEnvironment
 		/// </summary>
 		HANDLE fSingleWindowInstanceSemaphoreHandle;
 
+		bool fLastActivatedSent;
+
 		#pragma endregion
 };
 

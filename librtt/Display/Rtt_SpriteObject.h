@@ -190,6 +190,8 @@ class SpriteObject : public RectObject
 		virtual void Prepare( const Display& display );
 //		virtual void Translate( Real dx, Real dy );
 //		virtual void Draw( Renderer& renderer ) const;
+		virtual void GetSelfBoundsForAnchor( Rect& rect ) const;
+		virtual bool GetTrimmedFrameOffsetForAnchor( Real& deltaX, Real& deltaY ) const;
 
 	public:
 		virtual const LuaProxyVTable& ProxyVTable() const;
@@ -214,6 +216,9 @@ class SpriteObject : public RectObject
 		int GetNumSequences() const;
 		void SetFrame( int index );
 
+	public:
+		void UseFrameForAnchors( int index );
+	
 	public:
 		// Read-only properties
 		int GetFrame() const;
@@ -247,6 +252,7 @@ class SpriteObject : public RectObject
 		Real fTimeScale;
 		int fCurrentSequence; // index into fSequences of current sequence
 		int fCurrentFrame; // which frame in sheet are we currently showing
+		const ImageFrame *fFrameForAnchors;
 		U64 fStartTime;
 		U64 fPlayTime; // when paused, stores amount of time played
 		U64 fTimeScaleIncrement; // Stores the extra amount of time it need to be added for a given timeScale

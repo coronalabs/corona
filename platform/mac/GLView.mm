@@ -55,7 +55,7 @@
 #include "Renderer/Rtt_Renderer.h"
 #include "Rtt_RenderingStream.h"
 
-#include "Rtt_MacKeyServices.h"
+#include "Rtt_AppleKeyServices.h"
 
 // So we can build with Xcode 8.0
 #ifndef NSAppKitVersionNumber10_12
@@ -828,7 +828,9 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 	[self resizeNativeDisplayObjects];
 
 	// Update rectangle used for mouseMoved: events
-	[self removeTrackingRect:trackingRectTag];
+	if(trackingRectTag) {
+		[self removeTrackingRect:trackingRectTag];
+	}
 	trackingRectTag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
 
 	if (! isSimulatorView && sizeChanged && self.isReady && self.runtime != NULL )
@@ -999,7 +1001,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 // keyDown and keyUp do not trigger modifier key events (shift, control, etc.)
 - (void)flagsChanged:(NSEvent *)event
 {
-    unsigned long mask = [MacKeyServices getModifierMaskForKey:[event keyCode]];
+    unsigned long mask = [AppleKeyServices getModifierMaskForKey:[event keyCode]];
 
     // After certain actions, like using the screenshot tool, MacOS apparently triggers the "a" key event. Can't imagine anyone would like this event.
     if ( [event keyCode] != kVK_ANSI_A )
@@ -1037,7 +1039,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 	
 	NSUInteger modifierFlags = [event modifierFlags];
 	unsigned short keyCode = [event keyCode];
-	NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
+	NSString *keyName = [AppleKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
 	
 	KeyEvent e(
 			   NULL,
@@ -1054,7 +1056,9 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 - (void)viewDidMoveToWindow
 {
 	// We may have called addTrackingRect: in a setFrame: call before we get here
-	[self removeTrackingRect:trackingRectTag];
+	if(trackingRectTag) {
+		[self removeTrackingRect:trackingRectTag];
+	}
 
 	// Limit mouse events to the view's bounds
 	NSRect r = [self bounds];

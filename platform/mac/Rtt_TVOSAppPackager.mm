@@ -139,7 +139,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 			{
 				if (fSimulatorServices != NULL)
 				{
-					fSimulatorServices->SetBuildMessage("Collecting plugins locally");
+					fSimulatorServices->SetBuildMessage("Collecting plugins");
 				}
 
 				lua_State *L = fVM;
@@ -252,6 +252,10 @@ TVOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 			}
 			if ( PlatformAppPackager::kNoError == result )
 			{
+				if (fSimulatorServices != NULL)
+				{
+					fSimulatorServices->SetBuildMessage("Packaging app");
+				}
 				lua_State *L = fVM;
 				lua_getglobal( L, "tvosPostPackage" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
 

@@ -23,6 +23,7 @@
 #include "Display/Rtt_ShapeObject.h"
 #include "Display/Rtt_ShapePath.h"
 #include "Display/Rtt_TesselatorPolygon.h"
+#include "Display/Rtt_DisplayDefaults.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Rtt_DisplayObjectExtensions.h"
 #include "Rtt_Event.h"
@@ -2171,6 +2172,25 @@ add_b2Body_to_DisplayObject( lua_State *L,
 		center_in_pixels.SetZero();
 	}
 
+	// Trimming is not per se connected to adjusting the group's center; for
+	// backward compatibility purposes, though, we probably don't want to just
+	// blindly apply this fix. It was identified along with some sprite trimming
+	// issues, thus the check for that default, but something like "correctGroupBody"
+	// might be more appropriate if we wanted fine-grained control.
+	DisplayDefaults & defaults = LuaContext::GetRuntime( L )->GetDisplay().GetDefaults();
+	bool isTrimCorrected = defaults.IsImageSheetFrameTrimCorrected();
+	
+	if ( isTrimCorrected && display_object->AsGroupObject() )
+	{
+		Rect bounds;
+		display_object->GetSelfBounds( bounds );
+
+		Vertex2 center;
+		bounds.GetCenter( center );
+		center_in_pixels.x += center.x;
+		center_in_pixels.y += center.y;
+	}
+	
 	b2World *world = physics.GetWorld();
 	b2Body *body = CreateBody( physics, display_object );
 

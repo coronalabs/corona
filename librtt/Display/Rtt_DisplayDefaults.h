@@ -58,11 +58,18 @@ class DisplayDefaults
         RenderTypes::TextureWrap GetTextureWrapY() const { return (RenderTypes::TextureWrap)fWrapY; }
         void SetTextureWrapY( RenderTypes::TextureWrap newValue ) { fWrapY = newValue; }
 
-        bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame;}
-        void SetImageSheetSampledInsideFrame( bool newValue ) { fIsImageSheetSampledInsideFrame = newValue; }
-    public:
-        bool IsV1Compatibility() const { return fV1Compatibility; }
-        void SetV1Compatibility( bool newValue ) { fV1Compatibility = newValue; }
+		bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame;}
+		void SetImageSheetSampledInsideFrame( bool newValue ) { fIsImageSheetSampledInsideFrame = newValue; }
+
+		bool IsImageSheetFrameTrimCorrected() const { return fIsImageSheetFrameTrimCorrected;}
+		void SetImageSheetFrameTrimCorrected( bool newValue ) { fIsImageSheetFrameTrimCorrected = newValue; }
+
+    bool IsExternalTextureRetina() const { return fIsExternalTextureRetina;}
+		void SetExternalTextureRetina( bool newValue ) { fIsExternalTextureRetina = newValue; }
+
+	public:
+		bool IsV1Compatibility() const { return fV1Compatibility; }
+		void SetV1Compatibility( bool newValue ) { fV1Compatibility = newValue; }
 
         bool IsByteColorRange() const { return IsV1Compatibility(); }
         
@@ -126,6 +133,8 @@ class DisplayDefaults
         bool fShaderCompilerVerbose;
         bool fIsAnchorClamped;
         bool fIsImageSheetSampledInsideFrame;
+		bool fIsImageSheetFrameTrimCorrected;
+		bool fIsExternalTextureRetina;
         bool fSkipsCull;
         bool fSkipsHitTest;
         bool fEnableDepthInScene;

@@ -241,10 +241,16 @@ GroupObject::GetSelfBounds( Rect& rect ) const
         const DisplayObject* child = fChildren[i];
         child->GetSelfBounds( childRect );
 
-        // Ensure childRect is in the same coordinate space as rect,
-        // i.e. the parent's (this's) coordinate space.  The child's transform
-        // is relative to the parent's.
-        child->GetMatrix().Apply( childRect ); // Super::ApplyTransform( * child, childRect );
+		Real dx, dy;
+		if (child->GetTrimmedFrameOffset( dx, dy ))
+		{
+			childRect.Translate( dx, dy );
+		}
+
+		// Ensure childRect is in the same coordinate space as rect, 
+		// i.e. the parent's (this's) coordinate space.  The child's transform
+		// is relative to the parent's.
+		child->GetMatrix().Apply( childRect ); // Super::ApplyTransform( * child, childRect );
 
         rect.Union( childRect );
     }

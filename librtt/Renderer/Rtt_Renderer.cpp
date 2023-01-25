@@ -41,9 +41,9 @@ namespace /*anonymous*/
     // To avoid the cost of a system call, return zero if stats are disabled.
     #define START_TIMING() fStatisticsEnabled ? Rtt_GetPreciseAbsoluteTime() : 0;
 
-    // To avoid loss of precision, Rtt_AbsoluteToMilliseconds() is not used
-    // here when converting to milliseconds because it uses integer division.
-    #define STOP_TIMING(start) fStatisticsEnabled ? Rtt_PreciseAbsoluteToMilliseconds( Rtt_GetPreciseAbsoluteTime() - start ) : 0.0f;
+	// To avoid loss of precision, Rtt_AbsoluteToMilliseconds() is not used
+	// here when converting to milliseconds because it uses integer division.
+	#define STOP_TIMING(start) fStatisticsEnabled ? Rtt_PreciseAbsoluteToMilliseconds( Rtt_GetPreciseAbsoluteTime() - start ) : 0.0f;
 
     // Used to track the frequency of certain events for profiling purposes.
     #define INCREMENT( var ) if( fStatisticsEnabled ) ++var;
@@ -302,6 +302,8 @@ Renderer::SetViewport( S32 x, S32 y, S32 width, S32 height )
     DEBUG_PRINT( "Set viewport: x=%i, y=%i, width=%i, height=%i\n", x, y, width, height );
 }
 
+
+
 void
 Renderer::GetScissor( S32& x, S32& y, S32& width, S32& height ) const
 {
@@ -498,24 +500,25 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     Rtt_ASSERT( fBackCommandBuffer != NULL );
     Rtt_ASSERT( fFrontCommandBuffer != NULL );
 
-    bool blendDirty = data->fBlendMode != fPrevious.fBlendMode;
-    bool blendEquationDirty = data->fBlendEquation != fPrevious.fBlendEquation;
-    bool fillDirty0 = data->fFillTexture0 != fPrevious.fFillTexture0;
-    bool fillDirty1 = data->fFillTexture1 != fPrevious.fFillTexture1;
-    bool maskTextureDirty = data->fMaskTexture != fPrevious.fMaskTexture;
-    bool maskUniformDirty = data->fMaskUniform != fPrevious.fMaskUniform;
-    bool programDirty = data->fProgram != fPrevious.fProgram || MaskCount() != fCurrentProgramMaskCount;
-    bool userUniformDirty0 = data->fUserUniform0 != fPrevious.fUserUniform0;
-    bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1;
-    bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2;
-    bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3;
+	bool blendDirty = data->fBlendMode != fPrevious.fBlendMode;
+	bool blendEquationDirty = data->fBlendEquation != fPrevious.fBlendEquation;
+	bool fillDirty0 = data->fFillTexture0 != fPrevious.fFillTexture0 && data->fFillTexture0;
+	bool fillDirty1 = data->fFillTexture1 != fPrevious.fFillTexture1 && data->fFillTexture1;
+	bool maskTextureDirty = data->fMaskTexture != fPrevious.fMaskTexture; // since PushMask() can stomp on the previous texture, a "not NULL" check here is unreliable
+	bool maskUniformDirty = data->fMaskUniform != fPrevious.fMaskUniform; // ...ditto
+	bool programDirty = data->fProgram != fPrevious.fProgram || MaskCount() != fCurrentProgramMaskCount;
+	bool userUniformDirty0 = data->fUserUniform0 != fPrevious.fUserUniform0 && data->fUserUniform0;
+	bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1 && data->fUserUniform1;
+	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2 && data->fUserUniform2;
+	bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3 && data->fUserUniform3;
+	
 
     ArrayS32 dirtyIndices( fAllocator );
     U32 largestDirtySize = EnumerateDirtyBlocks( dirtyIndices );
 
-    Geometry* geometry = data->fGeometry;
-    Rtt_ASSERT( geometry );
-    fDegenerateVertexCount = 0;
+	Geometry* geometry = data->fGeometry;
+	Rtt_ASSERT( geometry );
+	fDegenerateVertexCount = 0;
 
     const ShaderResource* shaderResource = data->fProgram->GetShaderResource();
     const FormatExtensionList* programList = shaderResource->GetExtensionList();
@@ -715,13 +718,13 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         fPrevious.fBlendEquation = data->fBlendEquation;
     }
 
-    // Fill texture [0]
-    if( fillDirty0 && data->fFillTexture0 )
-    {
-        if( !data->fFillTexture0->fGPUResource )
-        {
-            QueueCreate( data->fFillTexture0 );
-        }
+	// Fill texture [0]
+	if( fillDirty0 )
+	{
+		if( !data->fFillTexture0->fGPUResource )
+		{
+			QueueCreate( data->fFillTexture0 );
+		}
 
 		fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
         fPrevious.fFillTexture0 = data->fFillTexture0;
@@ -753,13 +756,13 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         INCREMENT( fStatistics.fUniformBindCount );
     }
 
-    // Fill texture [1]
-    if( fillDirty1 && data->fFillTexture1 )
-    {
-        if( !data->fFillTexture1->fGPUResource )
-        {
-            QueueCreate( data->fFillTexture1 );
-        }
+	// Fill texture [1]
+	if( fillDirty1 )
+	{
+		if( !data->fFillTexture1->fGPUResource )
+		{
+			QueueCreate( data->fFillTexture1 );
+		}
 
         fBackCommandBuffer->BindTexture( data->fFillTexture1, Texture::kFill1 );
         fPrevious.fFillTexture1 = data->fFillTexture1;
@@ -834,44 +837,44 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         }
     }
 
-    // Mask texture
-    if( maskTextureDirty && data->fMaskTexture )
-    {
-        BindTexture( data->fMaskTexture, Texture::kMask0 + MaskCount() - 1 );
-        fPrevious.fMaskTexture = data->fMaskTexture;
-    }
+	// Mask texture
+	if( maskTextureDirty && data->fMaskTexture )
+	{
+		BindTexture( data->fMaskTexture, Texture::kMask0 + MaskCount() - 1 );
+	}
+	fPrevious.fMaskTexture = data->fMaskTexture; // avoid NULL textures keeping this value dirty...
 
-    if( maskUniformDirty && data->fMaskUniform )
-    {
-        BindUniform( data->fMaskUniform, Uniform::kMaskMatrix0 + MaskCount() - 1 );
-        fPrevious.fMaskUniform = data->fMaskUniform;
-    }
+	if( maskUniformDirty && data->fMaskUniform )
+	{
+		BindUniform( data->fMaskUniform, Uniform::kMaskMatrix0 + MaskCount() - 1 );
+	}
+	fPrevious.fMaskUniform = data->fMaskUniform; // ...as with textures
 
     if( data->fMaskTexture )
     {
         --MaskCount();
     }
 
-    // User data
-    if( userUniformDirty0 && data->fUserUniform0 )
-    {
-        BindUniform( data->fUserUniform0, Uniform::kUserData0 );
-        fPrevious.fUserUniform0 = data->fUserUniform0;
-    }
+	// User data
+	if( userUniformDirty0 )
+	{
+		BindUniform( data->fUserUniform0, Uniform::kUserData0 );
+		fPrevious.fUserUniform0 = data->fUserUniform0;
+	}
 
-    if( userUniformDirty1 && data->fUserUniform1 )
-    {
-        BindUniform( data->fUserUniform1, Uniform::kUserData1 );
-        fPrevious.fUserUniform1 = data->fUserUniform1;
-    }
+	if( userUniformDirty1 )
+	{
+		BindUniform( data->fUserUniform1, Uniform::kUserData1 );
+		fPrevious.fUserUniform1 = data->fUserUniform1;
+	}
 
-    if( userUniformDirty2 && data->fUserUniform2 )
-    {
-        BindUniform( data->fUserUniform2, Uniform::kUserData2 );
-        fPrevious.fUserUniform2 = data->fUserUniform2;
-    }
+	if( userUniformDirty2 )
+	{
+		BindUniform( data->fUserUniform2, Uniform::kUserData2 );
+		fPrevious.fUserUniform2 = data->fUserUniform2;
+	}
 
-    if( userUniformDirty3 && data->fUserUniform3 )
+    if( userUniformDirty3 )
     {
         BindUniform( data->fUserUniform3, Uniform::kUserData3 );
         fPrevious.fUserUniform3 = data->fUserUniform3;

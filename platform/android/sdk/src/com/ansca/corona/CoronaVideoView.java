@@ -10,6 +10,9 @@
 package com.ansca.corona;
 
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * View used to play videos.
  * <p>
@@ -28,7 +31,7 @@ public class CoronaVideoView extends android.widget.VideoView {
 	 * <p>
 	 * Instances of this class are created by Corona's native.newVideo() Lua function.
 	 */
-	public static class CenteredLayout extends android.widget.FrameLayout {
+	public static class CenteredLayout extends android.widget.FrameLayout implements com.ansca.corona.NativePropertyResponder {
 		/** The video view that is centered within this layout. */
 		private CoronaVideoView fVideoView;
 
@@ -89,6 +92,19 @@ public class CoronaVideoView extends android.widget.VideoView {
 			// The video view needs this ID to dispatch Corona Lua events. Pass it through.
 			fVideoView.setId(id);
 		}
+
+		@Override
+		public List<Object> getNativePropertyResponder() {
+			List<Object> out = new LinkedList<Object>();
+			out.add(fVideoView);
+			out.add(this);
+			return out;
+		}
+
+		@Override
+		public Runnable getCustomPropertyAction(String key, boolean booleanValue, String stringValue, int integerValue, double doubleValue) {
+			return null;
+		}
 	}
 
 
@@ -100,6 +116,13 @@ public class CoronaVideoView extends android.widget.VideoView {
 
 	/** Previous normalized volume value (ranging 0 and 1.0) that was applied before mute() was called. */
 	private float fPrevVolume;
+
+	/** If set to true, error would be handled internally */
+	private boolean fIgnoreErrors;
+
+	public void IgnoreErrors(boolean ignore) {
+		fIgnoreErrors = ignore;
+	}
 
 	/** Set true to enable tapping the view to pause/resume the video. */
 	private boolean fTouchTogglesPlay;
@@ -153,6 +176,7 @@ public class CoronaVideoView extends android.widget.VideoView {
 		fTouchTogglesPlay = false;
 		fExternalOnPreparedListener = null;
 		fExternalOnCompletionListener = null;
+		fIgnoreErrors = false;
 		fTaskDispatcher = null;
 		fProxyServer = null;
 		if (runtime != null) {
@@ -182,8 +206,7 @@ public class CoronaVideoView extends android.widget.VideoView {
 			}
 		});
 
-		// Set up a listener to be invoked when we've reached the end of the video.
-		super.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {
+		android.media.MediaPlayer.OnCompletionListener completedListener = new android.media.MediaPlayer.OnCompletionListener() {
 			@Override
 			public void onCompletion(android.media.MediaPlayer mediaPlayer) {
 				// Dispatch a Corona Lua event, if configured.
@@ -195,6 +218,23 @@ public class CoronaVideoView extends android.widget.VideoView {
 				if (fExternalOnCompletionListener != null) {
 					fExternalOnCompletionListener.onCompletion(mediaPlayer);
 				}
+			}
+		};
+
+		// Set up a listener to be invoked when we've reached the end of the video.
+		super.setOnCompletionListener(completedListener);
+
+		super.setOnErrorListener(new android.media.MediaPlayer.OnErrorListener() {
+			@Override
+			public boolean onError(android.media.MediaPlayer mediaPlayer, int what, int extra) {
+				if (fTaskDispatcher != null) {
+					fTaskDispatcher.send(new VideoViewFailedTask(getId()));
+				}
+				// Dispatch manual events, since listener would be ignored
+				if(fIgnoreErrors) {
+					completedListener.onCompletion(mediaPlayer);
+				}
+				return fIgnoreErrors;
 			}
 		});
 	}
@@ -486,6 +526,19 @@ public class CoronaVideoView extends android.widget.VideoView {
 		@Override
 		public void executeUsing(CoronaRuntime runtime) {
 			com.ansca.corona.JavaToNativeShim.videoViewEnded(runtime, fId);
+		}
+	}
+
+	private static class VideoViewFailedTask implements CoronaRuntimeTask {
+		private int fId;
+
+		public VideoViewFailedTask(int id) {
+			fId = id;
+		}
+
+		@Override
+		public void executeUsing(CoronaRuntime runtime) {
+			com.ansca.corona.JavaToNativeShim.videoViewFailed(runtime, fId);
 		}
 	}
 

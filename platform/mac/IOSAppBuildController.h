@@ -31,6 +31,10 @@
         IBOutlet NSButton *appStoreSendButton;
         IBOutlet NSScrollView *appStoreSendButtonMesg;
         IBOutlet NSPopUpButton *availableSimulatorsPopup;
+        
+        //ToDo: Move to App Build Controller (when more added to more platfroms)
+        
+        IBOutlet NSButton *fIncludeStandardResources;
 }
 
 @end

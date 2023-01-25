@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --
 -- This file is part of the Corona game engine.
--- For overview and more information on licensing please refer to README.md 
+-- For overview and more information on licensing please refer to README.md
 -- Home page: https://github.com/coronalabs/corona
 -- Contact: support@coronalabs.com
 --
@@ -29,7 +29,7 @@ local function decode_override(str, pos, nullval, ...)
 end
 
 local function encode_override(value, state)
-	-- Enforce a default exception handler for data that JSON 
+	-- Enforce a default exception handler for data that JSON
 	-- cannot encode.  To restore the default behavior define
 	-- an exception handler that calls error()
 	if state == nil then
@@ -69,7 +69,7 @@ local function json_prettify(obj)
 	end
 
 	local keyorder = {}
-	for k, v in pairs(obj) do
+	for k, _ in pairs(obj) do
 		keyorder[#keyorder + 1] = k
 	end
 	table.sort(keyorder)
@@ -78,13 +78,14 @@ local function json_prettify(obj)
 end
 
 local function json_decode_file(filename, pos, nullval, ...)
-	local decodedData = nil
+	local decodedData
 	local fp, fileOpenErrorMsg = io.open(filename, 'r')
 
 	if not fp then
 		-- Couldn't open file
 		return nil, 0, "Cannot open file "..tostring(fileOpenErrorMsg)
 	else
+		local lineno, errorMsg
 		local str = fp:read( '*a' )
 		fp:close()
 		decodedData, lineno, errorMsg = decode_override( str, pos, nullval, ... )

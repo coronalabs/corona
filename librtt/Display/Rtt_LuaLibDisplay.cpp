@@ -1937,6 +1937,16 @@ DisplayLibrary::getDefault( lua_State *L )
         bool value = defaults.IsImageSheetSampledInsideFrame();
         lua_pushboolean( L, value ? 1 : 0 );
     }
+    else if ( ( Rtt_StringCompare( key, "isImageSheetFrameTrimCorrected" ) == 0 ) )
+	{
+		bool value = defaults.IsImageSheetFrameTrimCorrected();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
+	else if ( ( Rtt_StringCompare( key, "isExternalTextureRetina" ) == 0 ) )
+	{
+		bool value = defaults.IsExternalTextureRetina();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
     else if ( ( Rtt_StringCompare( key, "skipsCulling" ) == 0 ) )
     {
         bool value = defaults.GetSkipsCull();
@@ -2108,6 +2118,16 @@ DisplayLibrary::setDefault( lua_State *L )
         bool value = lua_toboolean( L, index ) ? true : false;
         defaults.SetImageSheetSampledInsideFrame( value );
     }
+	else if ( ( Rtt_StringCompare( key, "isImageSheetFrameTrimCorrected" ) == 0 ) )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetImageSheetFrameTrimCorrected( value );
+    }
+	else if ( ( Rtt_StringCompare( key, "isExternalTextureRetina" ) == 0 ) )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetExternalTextureRetina( value );
+	}
     else if ( ( Rtt_StringCompare( key, "skipsCulling" ) == 0 ) )
     {
         bool value = lua_toboolean( L, index ) ? true : false;

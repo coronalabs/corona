@@ -16,6 +16,7 @@ import android.app.UiModeManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -3553,6 +3554,18 @@ public class CoronaActivity extends Activity {
 			}
 			return null;
 		}
+	}
+
+	/* Handles setting navigationBarColor */
+	public void setNavigationBarColor(double red, double green, double blue){
+		myHandler.post(new Runnable() {
+			public void run() {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					getWindow().setNavigationBarColor(Color.rgb(((int) red*255), ((int) green*255), ((int) blue*255)));
+				}
+			}
+		});
+
 	}
 
 	/** Default handling of permissions on Android 6+.
