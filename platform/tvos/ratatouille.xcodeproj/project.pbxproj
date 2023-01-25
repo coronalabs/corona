@@ -587,6 +587,7 @@
 		A4E0762F1BD2C463003A733A /* PluginLibrary.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4E076071BD1D01F003A733A /* PluginLibrary.mm */; };
 		A4E076341BD2C515003A733A /* CoronaCards.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4E075911BD1BC09003A733A /* CoronaCards.framework */; };
 		AA76CF15272CB55000CE3F89 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */; };
+		AA2C6AF6291C37690093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */; };
 		AA2C69F929147C9D0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69F729147C4E0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
 		AA2C69FA29147C9D0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69F829147C4E0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
 		AA2C69FB29147C9D0093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69BB29147C4E0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
@@ -2563,6 +2564,8 @@
 		AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = ../../librtt/Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
 		AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = ../../librtt/Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
 		AAA58168270D399C002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = ../../librtt/Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
+		AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = ../../librtt/Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
+		AA2C6AF5291C37690093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = ../../librtt/Corona/CoronaMemory.h; sourceTree = "<group>"; };
 		AA2C69BB29147C4E0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearVertical_gl.lua; path = ../../librtt/Display/Shader/kernel_filter_blurLinearVertical_gl.lua; sourceTree = "<group>"; };
 		AA2C69F729147C4E0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurGaussianLinear_gl.lua; path = ../../librtt/Display/Shader/kernel_filter_blurGaussianLinear_gl.lua; sourceTree = "<group>"; };
 		AA2C69F829147C4E0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearHorizontal_gl.lua; path = ../../librtt/Display/Shader/kernel_filter_blurLinearHorizontal_gl.lua; sourceTree = "<group>"; };
@@ -3230,6 +3233,8 @@
 				A4551E8F1BAA180C00FB3BDF /* CoronaMacros.h */,
 				AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */,
 				AA2ED7912708257E00CEE021 /* CoronaObjects.h */,
+				AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */,
+				AA2C6AF5291C37690093B0BE /* CoronaMemory.h */,
 				A4551E901BAA180C00FB3BDF /* CoronaPrototype.lua */,
 				A4551E911BAA180C00FB3BDF /* CoronaProvider.lua */,
 				AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */,
@@ -5669,6 +5674,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA2C6AF6291C37690093B0BE /* CoronaMemory.cpp in Sources */,
 				A4AD17361BAA0D8F00BCF507 /* main.mm in Sources */,
 				C2F9117C1CDC4C31004A5564 /* compat.c in Sources */,
 				C221F5611D4BE37F00F45E77 /* Rtt_FileSystem.cpp in Sources */,

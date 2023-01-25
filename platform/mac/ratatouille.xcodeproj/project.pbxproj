@@ -691,6 +691,8 @@
 		AAA5811F270D38A6002A51A7 /* CoronaObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA5811B270D38A5002A51A7 /* CoronaObjects.h */; };
 		AAA58121270D38A6002A51A7 /* CoronaPublicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA5811C270D38A6002A51A7 /* CoronaPublicTypes.h */; };
 		AAA58124270D38C9002A51A7 /* Rtt_ObjectBoxList.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA58123270D38C9002A51A7 /* Rtt_ObjectBoxList.h */; };
+		AA2C6AAB291C35A90093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */; };
+		AA2C6AAD291C35A90093B0BE /* CoronaMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */; };
 		AA2C69A92914777C0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A0291476D90093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
 		AA2C69AA2914777C0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A7291476D90093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
 		AA2C69AB2914777C0093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A8291476D90093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
@@ -3204,6 +3206,8 @@
 		AAA5811B270D38A5002A51A7 /* CoronaObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaObjects.h; path = Corona/CoronaObjects.h; sourceTree = "<group>"; };
 		AAA5811C270D38A6002A51A7 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
 		AAA58123270D38C9002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
+		AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
+		AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = Corona/CoronaMemory.h; sourceTree = "<group>"; };
 		AA2C69A0291476D90093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurGaussianLinear_gl.lua; path = Display/Shader/kernel_filter_blurGaussianLinear_gl.lua; sourceTree = "<group>"; };
 		AA2C69A7291476D90093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearHorizontal_gl.lua; path = Display/Shader/kernel_filter_blurLinearHorizontal_gl.lua; sourceTree = "<group>"; };
 		AA2C69A8291476D90093B0BE /* kernel_filter_blurLinearVertical_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearVertical_gl.lua; path = Display/Shader/kernel_filter_blurLinearVertical_gl.lua; sourceTree = "<group>"; };
@@ -5052,6 +5056,8 @@
 				F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */,
 				F5A752261BFA40F000CCDB94 /* CoronaLuaObjCHelper.mm */,
 				A491861A1641DD6100A39286 /* CoronaMacros.h */,
+				AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */,
+				AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */,
 				A491861B1641DD6100A39286 /* CoronaPrototype.lua */,
 				A491861C1641DD6100A39286 /* CoronaProvider.lua */,
 				A40C523E16F847EA00AE2ECF /* CoronaVersion.c */,
@@ -5478,6 +5484,7 @@
 				F53594BD1B6185EA00C8CAAD /* Rtt_TextureResourceCanvasAdapter.h in Headers */,
 				C2DA96501B46460F00DAF684 /* Rtt_ImageSheetPaint.h in Headers */,
 				C2DA96441B46460F00DAF684 /* Rtt_ImageSheetPaintAdapter.h in Headers */,
+				AA2C6AAD291C35A90093B0BE /* CoronaMemory.h in Headers */,
 				F5C757B41C7538A4004A3604 /* CoronaGraphics.h in Headers */,
 				C2DA96111B46460F00DAF684 /* Rtt_ImageSheetUserdata.h in Headers */,
 				C2DA96181B46460F00DAF684 /* Rtt_LineObject.h in Headers */,
@@ -5849,6 +5856,7 @@
 				C229E02A1B32221B00D87A7C /* Rtt_LuaLibOpenAL.h in Headers */,
 				C229E02B1B32221B00D87A7C /* Rtt_LuaLibPhysics.h in Headers */,
 				C229E02C1B32221B00D87A7C /* Rtt_LuaLibSQLite.h in Headers */,
+				AA2C6AAE291C35A90093B0BE /* CoronaMemory.h in Headers */,
 				C229E02E1B32221B00D87A7C /* Rtt_LuaLibSystem.h in Headers */,
 				C229E02F1B32221B00D87A7C /* Rtt_LuaProxy.h in Headers */,
 				F5FA0AFC1C73D61700E926A7 /* Rtt_TextureResourceExternal.h in Headers */,
@@ -7073,6 +7081,7 @@
 				5038C07417B4851B003139F4 /* kernel_generator_perlinNoise_gl.lua in Sources */,
 				50D0DF1E17B2182F0023DDAE /* kernel_generator_radialGradient_gl.lua in Sources */,
 				50A052E3179F066900EF9239 /* kernel_generator_random_gl.lua in Sources */,
+				AA2C6AAB291C35A90093B0BE /* CoronaMemory.cpp in Sources */,
 				50E0248E17B321C60015DF1F /* kernel_generator_stripes_gl.lua in Sources */,
 				5087FFC117C731D60072BC7D /* kernel_generator_sunbeams_gl.lua in Sources */,
 				000CE8B812B73F7500D9B6A4 /* lsqlite3.c in Sources */,
@@ -7547,6 +7556,7 @@
 				C229E1551B32221B00D87A7C /* Rtt_ShapePath.cpp in Sources */,
 				C229E1561B32221B00D87A7C /* Rtt_SharedCount.cpp in Sources */,
 				C229E1571B32221B00D87A7C /* Rtt_SnapshotObject.cpp in Sources */,
+				AA2C6AAC291C35A90093B0BE /* CoronaMemory.cpp in Sources */,
 				C229E1581B32221B00D87A7C /* Rtt_SpriteObject.cpp in Sources */,
 				C229E1591B32221B00D87A7C /* Rtt_SpritePlayer.cpp in Sources */,
 				C229E15A1B32221B00D87A7C /* Rtt_SpriteSourceFrame.cpp in Sources */,

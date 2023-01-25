@@ -26,6 +26,7 @@
 #include "CoronaVersion.h"
 #include "CoronaGraphics.h"
 #include "CoronaObjects.h"
+#include "CoronaMemory.h"
 
 //#include "CoronaWin32.h"
 #include <Windows.h>
@@ -965,4 +966,46 @@ int CoronaObjectSendMessage(const CoronaDisplayObject* object, const char* messa
 	return CoronaCallbackInvoke(object, message, payload, size);
 }
 
+#pragma endregion
+
+#pragma region Corona Memory APIs
+CORONA_API
+int CoronaMemoryCreateInterface(lua_State *L, const struct CoronaMemoryInterfaceInfo *info)
+{
+	typedef int(*CoronaCallbackType)(lua_State *, const struct CoronaMemoryInterfaceInfo *);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, info);
+}
+
+CORONA_API
+void* CoronaMemoryBindLookupSlot(lua_State *L, unsigned short *id)
+{
+	typedef void*(*CoronaCallbackType)(lua_State*, unsigned short *);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, id);
+}
+
+CORONA_API
+int CoronaMemoryReleaseLookupSlot(lua_State *L, unsigned short id)
+{
+	typedef int(*CoronaCallbackType)(lua_State *, unsigned short);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, id);
+}
+
+CORONA_API
+void* CoronaMemoryPushLookupEncoding(lua_State *L, unsigned short id, unsigned short context)
+{
+	typedef void*(*CoronaCallbackType)(lua_State *, unsigned short, unsigned short);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, id, context);
+}
+
+CORONA_API
+int CoronaMemoryAcquireInterface(lua_State *L, int arg, struct CoronaMemoryAcquireState *state)
+{
+	typedef int(*CoronaCallbackType)(lua_State *, int, struct CoronaMemoryAcquireState *);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, arg, state);
+}
 #pragma endregion
