@@ -60,7 +60,7 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 	local pluginDirectories = {}
 
 	for _, pd in pairs(pluginsToDownload) do
-		local plugin, developer, supportedPlatforms = unpack( pd )
+		local plugin, developer, supportedPlatforms, marketplaceId = unpack( pd )
 		local supportedPlatform = true
 		if supportedPlatforms then
 			supportedPlatform = supportedPlatforms[platform]
@@ -73,8 +73,14 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 			local downloadURL
 			if type(supportedPlatform) == 'table' and type(supportedPlatform.url) == 'string' then
 				downloadURL = supportedPlatform.url
+			elseif marketplaceId then
+				downloadURL ="https://solar2dmarketplace.com/marketplacePlugins?pluginType=downloader&ID=" ..marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform
 			else
-				local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. platform
+				local ghpage = "solar2d"
+				if(developer== "com.coronalabs")then 
+					ghpage = "coronalabs"
+				end
+				local downloadInfoURL = 'https://api.github.com/repos/'..ghpage ..'/'.. developer .. '-' .. plugin..'/releases/latest'
 				local downloadInfoText, msg = builder.fetch(downloadInfoURL)
 				if not downloadInfoText then
 					print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
@@ -82,7 +88,20 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 				end
 
 				local downloadInfoJSON = json.decode(downloadInfoText)
-				downloadURL = downloadInfoJSON.url
+				if not downloadInfoJSON.assets then
+					print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+					return
+				end
+				print(platform)
+				for assetI= 1,#downloadInfoJSON.assets do
+					local asset =  downloadInfoJSON.assets[assetI]
+					if string.find(asset.name, platform..".tgz", 1, true) then		
+						local foundBuildMin = string.sub(asset.name,1,9)
+						if tonumber(build) >= tonumber(foundBuildMin) then
+							downloadURL = asset["browser_download_url"]
+						end
+					end
+				end
 			end
 			if not downloadURL then
 				print("ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').')
@@ -103,6 +122,7 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 				lfs.mkdir(unpackLocation)
 				local ret = unpackPlugin(pluginArchivePath, unpackLocation)
 				if ret ~= 0 then
+					print(downloadURL)
 					print("ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
 					return
 				end
@@ -443,80 +463,11 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		print("SPLASH\t" .. tostring(splashScreenImage))
 	end
 	local addedPluginsToDownload = {}
-	if #pluginsToDownload > 0 or alwaysQuery then
-		local authorisedPlugins = {}
-
-		if user then
-			local authURL = serverBackend .. '/v1/plugins/show/' .. user
-
-			local authorisedPluginsText, msg = builder.fetch(authURL)
-
-			if not authorisedPluginsText then
-				print("ERROR: Unable to retrieve authorised plugins list (" .. msg .. ").")
-				return 1
-			end
-
-			local authPluginsJson = json.decode( authorisedPluginsText )
-			if not authPluginsJson then
-				print("ERROR: Unable to parse authorised plugins list.")
-				return 1
-			end
-
-			if authPluginsJson.status ~= 'success' then
-				print("ERROR: Retrieving authorised plugins was unsuccessful. Info: " .. authorisedPluginsText)
-				return 1
-			end
-
-			if not authPluginsJson.data then
-				print("ERROR: received empty data for authorised plugins.")
-				return 1
-			end
-
-			for _, ap in pairs(authPluginsJson.data) do -- ap : authorisedPlugin
-				authorisedPlugins[ tostring(ap['plugin_name']) .. ' ' .. tostring(ap['plugin_developer'])] = ap['status']
-			end
-		end
-
-		local authErrors = false
-		for _, pd in pairs(pluginsToDownload) do
-			local plugin, developer, supportedPlatforms = unpack( pd )
-			addedPluginsToDownload[plugin .. " " .. developer] = true
-			local supportedPlatform = true
-			if supportedPlatforms then
-				supportedPlatform = supportedPlatforms[platform]
-				if platform == 'iphone' then
-					supportedPlatform = supportedPlatform or supportedPlatforms['ios']
-				end
-			end
-			if supportedPlatform then
-				if type(supportedPlatform) == 'table' and type(supportedPlatform.url) == 'string' then
-					if supportedPlatform.url == "" then
-						print("ERROR: empty custom URL for: " .. plugin .. " (" .. developer .. ")")
-						authErrors = true
-					end
-				else
-					local status = authorisedPlugins[plugin .. ' ' .. developer] or 0
-					if status == 0 then
-						print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
-						print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
-						authErrors = true
-					end
-				end
-			end
-		end
-		if authErrors then
-			print("ERROR: exiting due to plugins above not being activated.")
-			return 1
-		end
-	else
-		print("No build.settings plugins to download")
-	end
-
 
 	for pluginName, pluginTable in pairs(buildDataPluginEntry) do
 		local publisherId = pluginTable['publisherId']
 		if not addedPluginsToDownload[pluginName .. " " .. publisherId] then
-			table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms} )
+			table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms, pluginTable.marketplaceId} )
 		end
 	end	
 
