@@ -59,6 +59,7 @@
     <ClCompile Include="..\..\..\librtt\Corona\CoronaLibrary.cpp" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaLog.c" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaLua.cpp" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaMemory.cpp" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaVersion.c" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaGraphics.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_BitmapMask.cpp" />
@@ -347,6 +348,7 @@
     <ClInclude Include="..\..\..\librtt\Corona\CoronaLog.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaLua.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaMacros.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaMemory.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaVersion.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaGraphics.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_BitmapMask.h" />
