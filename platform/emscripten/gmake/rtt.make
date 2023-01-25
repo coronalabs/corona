@@ -170,6 +170,9 @@ OBJECTS := \
 	$(OBJDIR)/Rtt_WeakCount.o \
 	$(OBJDIR)/CoronaEvent.o \
 	$(OBJDIR)/CoronaLibrary.o \
+	$(OBJDIR)/CoronaGraphics.o \
+	$(OBJDIR)/CoronaMemory.o \
+	$(OBJDIR)/CoronaObjects.cpp.o \
 	$(OBJDIR)/CoronaLua.o \
 	$(OBJDIR)/Rtt_BitmapMask.o \
 	$(OBJDIR)/Rtt_BitmapPaint.o \
@@ -860,6 +863,18 @@ $(OBJDIR)/CoronaEvent.o: ../../../librtt/Corona/CoronaEvent.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/CoronaLibrary.o: ../../../librtt/Corona/CoronaLibrary.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/CoronaGraphics.o: ../../../librtt/Corona/CoronaGraphics.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/CoronaMemory.o: ../../../librtt/Corona/CoronaMemory.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/CoronaObjects.o: ../../../librtt/Corona/CoronaObjects.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
