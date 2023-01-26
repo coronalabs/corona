@@ -59,7 +59,7 @@ size_t Rtt_WriteDataToFile(const char *filename, Rtt::Data<const unsigned char> 
 std::vector<std::string> Rtt_ListFiles(const char *directoryName);
 
 	// wraper for NN file system
-	#if defined(Rtt_NINTENDO_ENV)
+	#if defined(Rtt_NXS_ENV)
 	#include <nn/fs.h>
 	struct nnFile
 	{
@@ -67,15 +67,13 @@ std::vector<std::string> Rtt_ListFiles(const char *directoryName);
 		~nnFile();
 
 		bool isOpen() const;
-		int getc();
-		int nnungetc(int c);
-		bool load();
+		int write(void* data, int size);
+		void close();
+
+	private:
 
 		nn::fs::FileHandle fHandle;
-		long int fPos;		// current position
-		uint8_t* fData;
-		int64_t fSize;
-		std::string fPath;
+		int64_t fPos;
 	};
 	#endif
 

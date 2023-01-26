@@ -1,8 +1,6 @@
 # Solar2D Game Engine
 Download the latest build from the [Releases](https://github.com/coronalabs/corona/releases) page and join the community on [Discord](https://discord.gg/Abf5V9G) and the [forums](https://forums.solar2d.com/).
 
-For Linux, we suggest using the actively developed fork [Solar2DTux](https://github.com/DannyGlover/Solar2DTux).
-
 ## Rebranded Corona SDK
 > Simple to learn and use, completely free and open source 2D game engine.
 
@@ -47,7 +45,7 @@ The easiest and recommended way to get started with Solar2D is to download binar
 
 
 ### API documentation and guides
-Exhaustive Solar2D API documentation, as well as getting started and more advanced guides are available on [docs.coronalabs.com](http://docs.coronalabs.com).
+Exhaustive Solar2D API documentation, as well as getting started and more advanced guides are available on [docs.coronalabs.com](https://docs.coronalabs.com).
 
 ## Source Code and licensing
 Solar2D is licensed under [MIT](LICENSE) open source license.

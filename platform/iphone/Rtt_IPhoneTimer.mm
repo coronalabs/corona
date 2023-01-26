@@ -40,16 +40,20 @@ IPhoneTimer::Start()
 		return;
 	}
 	
-	NSInteger fps = 1000.0 / fInterval;
-	
-	fViewController.preferredFramesPerSecond = fps;
-
+	SetViewControllerFPS();
 }
 
 void
 IPhoneTimer::Stop()
 {
 
+}
+
+void
+IPhoneTimer::SetViewControllerFPS()
+{
+	NSInteger fps = 1000.0 / fInterval;
+	fViewController.preferredFramesPerSecond = fps;
 }
 
 void
@@ -62,7 +66,8 @@ IPhoneTimer::SetInterval( U32 milliseconds )
 		if ( wasRunning ) { Stop(); }
 
 		fInterval = milliseconds;
-
+		SetViewControllerFPS();
+		
 		if ( wasRunning ) { Start(); }
 	}
 }
@@ -70,7 +75,7 @@ IPhoneTimer::SetInterval( U32 milliseconds )
 bool
 IPhoneTimer::IsRunning() const
 {
-	return (fViewController.paused == YES);
+	return !fViewController.paused;
 }
 
 // ----------------------------------------------------------------------------

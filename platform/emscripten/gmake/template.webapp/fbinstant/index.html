@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, user-scalable=no, minimal-ui">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="full-screen" content="yes" />
+	<meta name="screen-orientation" content="portrait" />
+	<link href="css/style.css" rel="stylesheet" type="text/css" />
+	<style>
+		body {
+			background-color: black;
+		}
+
+			body > div {
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+			}
+	</style>
+</head>
+
+<body>
+	<script src="https://connect.facebook.net/en_US/fbinstant.6.0.js"></script>
+
+	<div>
+		<canvas id="canvas" align="center" oncontextmenu="event.preventDefault()"></canvas>
+	</div>
+
+	<script type='text/javascript'>
+
+		const assets = ['coronaHtml5App.data', 'coronaHtml5App.js', 'coronaHtml5App.html.mem']
+		var preloaded = {};
+
+		window.addEventListener('load', function () {
+			FBInstant.initializeAsync().then(function () {
+
+				// Preload assets
+				var xml = [];
+				var loadedAssets = 0;
+				assets.forEach(function (imgName, i) {
+					xml[i] = new XMLHttpRequest();
+
+					xml[i].addEventListener("progress", function (oEvent) {
+						if (oEvent.lengthComputable) {
+							var p = Math.ceil(loadedAssets / assets.length * 100);
+							var p2 = Math.floor(oEvent.loaded / oEvent.total / assets.length * 100);
+							p += p2;
+							FBInstant.setLoadingProgress(p);
+						} else {
+							// Unable to compute progress information since the total size is unknown
+						}
+					});
+
+					xml[i].addEventListener("load", function (evt) {
+						var p = Math.ceil(++loadedAssets / assets.length * 100);
+						FBInstant.setLoadingProgress(p);
+
+						// Finished loading. Start the game
+						if (loadedAssets == assets.length) {
+							FBInstant.startGameAsync().then(function () {
+								startGame();
+							});
+						}
+
+					});
+
+					xml[i].addEventListener("error", function (evt) {
+						alert("An error occurred while transferring the file.");
+					});
+
+					xml[i].addEventListener("abort", function (evt) {
+						alert("The transfer has been canceled by the user.");
+					});
+
+					var img = './' + imgName;
+					xml[i].open('GET', img, true);
+					xml[i].send(null);
+				});
+			});
+		});
+
+		function selectContext() {
+			FBInstant.context.chooseAsync()
+        .then(function () {
+        	startGame();
+        })
+		}
+
+		var Module = {
+			preRun: [],
+			postRun: [],
+			print: function () { },
+			printErr: function (text) {
+				if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+				if (0) { // XXX disabled for safety typeof dump == 'function') {
+					dump(text + '\n'); // fast, straight to the real console
+				} else {
+					console.error(text);
+					if (typeof (text) === "string" && text.toUpperCase().indexOf("ERROR") >= 0) alert(text);
+				}
+			},
+			canvas: (function () {
+				var canvas = document.getElementById('canvas');
+
+				// As a default initial behavior, pop up an alert when webgl context is lost. To make your
+				// application robust, you may want to override this behavior before shipping!
+				// See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+				canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+				return canvas;
+			})(),
+			setStatus: function (text, current, total) {
+			},
+			totalDependencies: 0,
+			monitorRunDependencies: function (left) {
+				this.totalDependencies = Math.max(this.totalDependencies, left);
+				Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.',
+          this.totalDependencies - left, this.totalDependencies);
+			}
+		};
+
+		Module.setStatus('Downloading...', 0, 0);
+
+		window.addEventListener('error', function (event) {
+			// TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+			Module.setStatus('Exception thrown, see JavaScript console', 0, 0);
+			Module.setStatus = function (text) {
+				if (text) Module.printErr('[post-exception status] ' + text);
+			};
+		});
+
+		function startGame() {
+			// set 'progress' cursor, later in coronaHtml5App.js it will be set to 'default' 
+			document.body.style.cursor = 'progress';
+
+			var app = document.createElement('script');
+			app.setAttribute('src', 'coronaHtml5App.js');
+			document.head.appendChild(app);
+		}
+
+	</script>
+</body>
+</html>

@@ -70,6 +70,7 @@ class LuaLibDisplay
 		static Color toColorByte( lua_State *L, int index );
 
 	public:
+		static GroupObject*GetParent( lua_State *L, int& nextArg );
 		static int PushColorChannels( lua_State *L, Color c, bool isBytes );
 		static Color toColor( lua_State *L, int index, bool isBytes );
 		static void ArrayToColor( lua_State *L, int index, Color& outColor, bool isBytes );
@@ -84,6 +85,19 @@ class LuaLibDisplay
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt
+
+typedef void (*FactoryReplacement)();
+
+FactoryReplacement GetFactoryReplacement( lua_State * L );
+
+template<typename F> F *
+GetObjectFactory( lua_State * L, F * defaultFactory )
+{
+    F * replacement = (F *)GetFactoryReplacement( L );    // the GatherFactories() version might have a factory subbed in (else nil) that lets
+                                                        // us instantiate an object using a derived type, for overloading purposes
+
+    return replacement ? replacement : defaultFactory;
+}
 
 // ----------------------------------------------------------------------------
 

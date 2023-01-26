@@ -28,6 +28,8 @@
 
 static const char *const fnames[] = {"input", "output"};
 
+// for NxS platform
+int is_mounted(const char* path);
 
 static int pushresult (lua_State *L, int i, const char *filename) {
   int en = errno;  /* calls to Lua API may change this value */
@@ -175,6 +177,20 @@ static int io_tostring (lua_State *L) {
 static int io_open (lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
   const char *mode = luaL_optstring(L, 2, "r");
+
+#if defined(Rtt_NXS_ENV) 
+  if (!is_mounted(filename))
+  {
+    lua_pushnil(L);
+    if (filename)
+      lua_pushfstring(L, "%s not mounted", filename);
+    else
+      lua_pushfstring(L, "not mounted");
+    lua_pushinteger(L, 0);
+    return 3;
+  }
+#endif
+
   FILE **pf = newfile(L);
   *pf = fopen(filename, mode);
 #if defined( Rtt_ANDROID_ENV ) && defined( Rtt_DEBUG )

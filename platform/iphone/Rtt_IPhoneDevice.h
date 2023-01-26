@@ -57,7 +57,8 @@ class IPhoneDevice : public MPlatformDevice
 		virtual PlatformInputDeviceManager& GetInputDeviceManager();
 	
 	public:
-		virtual void Vibrate() const;
+		virtual void Vibrate(const char * hapticType, const char* hapticStyle) const;
+		virtual void Vibrate() const { Vibrate(NULL, NULL); }
 
 	public:
 		virtual void BeginNotifications( EventType type ) const;

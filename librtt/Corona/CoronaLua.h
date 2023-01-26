@@ -124,7 +124,7 @@ CORONA_API void CoronaLuaLog( lua_State *L, const char *fmt, ... ) __attribute__
 CORONA_API void CoronaLuaLogPrefix( lua_State *L, const char *prefix, const char *fmt, ... ) __attribute__ ((format (printf, 3, 4))) CORONA_PUBLIC_SUFFIX;
 CORONA_API void CoronaLuaWarning( lua_State *L, const char *format, ... ) __attribute__ ((format (printf, 2, 3))) CORONA_PUBLIC_SUFFIX;
 CORONA_API void CoronaLuaError( lua_State *L, const char *format, ... ) __attribute__ ((format (printf, 2, 3)))  CORONA_PUBLIC_SUFFIX;
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV )
 CORONA_API void CoronaLuaLog(lua_State *L, _Printf_format_string_ const char *fmt, ...) CORONA_PUBLIC_SUFFIX;
 CORONA_API void CoronaLuaLogPrefix(lua_State *L, _Printf_format_string_ const char *prefix, const char *fmt, ...) CORONA_PUBLIC_SUFFIX;
 CORONA_API void CoronaLuaWarning(lua_State *L, _Printf_format_string_ const char *format, ...) CORONA_PUBLIC_SUFFIX;

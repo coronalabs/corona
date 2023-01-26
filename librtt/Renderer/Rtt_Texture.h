@@ -36,6 +36,7 @@ class Texture : public CPUResource
 			kBGRA,
 			kABGR,
 			kARGB,
+			kLuminanceAlpha,
 			kNumFormats
 		}
 		Format;

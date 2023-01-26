@@ -3,19 +3,18 @@ plugins {
 }
 
 android {
-    buildToolsVersion("29.0.3")
     ndkVersion = "18.1.5063045"
-    compileSdkVersion(29)
+    compileSdkVersion(32)
 
     defaultConfig {
         minSdkVersion(15)
-        targetSdkVersion(29)
+        targetSdkVersion(32)
         versionCode = 1
         versionName = "1.0"
     }
 
     sourceSets["main"].manifest.srcFile(file("AndroidManifest-New.xml"))
-    sourceSets["main"].java.srcDirs(file("src"), file("../../../external/JNLua/src/main"))
+    sourceSets["main"].java.srcDirs(file("src"), file("../../../external/JNLua/src/main"), file("../../../plugins/network/android/src"))
     sourceSets["main"].java.filter.exclude("**/script/**")
     sourceSets["main"].res.srcDirs(file("res-new"))
 
@@ -55,6 +54,26 @@ tasks.create<Copy>("updateWidgetResources") {
     }
 }
 
-dependencies {
-    api(files("../../../plugins/build-core/network/android/network.jar"))
+tasks.create<Copy>("generateNetworkHelper") {
+
+    from("../../../plugins/network/android/src/")
+    include("**/LuaHelper.java.template")
+    val outputDir = file("$buildDir/generated/source/networkJava")
+    into(outputDir)
+    rename { it.removeSuffix(".template") }
+
+    val networkLua = file("../../../plugins/network/shared/network.lua")
+    val luaCode = networkLua.readText()
+            .replace("lib.", "network.")
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .lines()
+            .joinToString("\\n\" +\n\"","\"", "\";")
+    this.inputs.file(networkLua)
+    expand(mutableMapOf("luaCode" to luaCode))
+
+    val task = this
+    android.libraryVariants.all {
+        registerJavaGeneratingTask(task, outputDir)
+    }
 }

@@ -46,7 +46,37 @@ class TextureResourceCanvasAdapter : public TextureResourceAdapter
 		static int invalidate( lua_State *L );
 
 };
-	
+
+class TextureResourceCaptureAdapter : public TextureResourceAdapter
+{
+	public:
+		typedef TextureResourceCaptureAdapter Self;
+		typedef TextureResourceAdapter Super;
+		
+	public:
+		static const TextureResourceCaptureAdapter& Constant();
+		
+	protected:
+		TextureResourceCaptureAdapter(){};
+		
+	public:
+		virtual int ValueForKey(
+								const LuaUserdataProxy& sender,
+								lua_State *L,
+								const char *key ) const override;
+
+		virtual bool SetValueForKey(LuaUserdataProxy& sender,
+									lua_State *L,
+									const char *key,
+									int valueIndex ) const override;
+
+		virtual StringHash *GetHash( lua_State *L ) const override;
+		
+	private:
+		static int newCaptureEvent( lua_State *L );
+
+};
+
 } // namespace Rtt
 
 

@@ -930,6 +930,12 @@
     <ClCompile Include="..\..\..\external\vulkan\utils\volk.c">
       <Filter>external\vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaObjects.cpp">
+      <Filter>librtt\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaMemory.cpp">
+      <Filter>librtt\Corona</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\external\ALmixer\luaal.h">
@@ -1865,6 +1871,18 @@
     <ClInclude Include="..\..\..\external\vulkan\utils\volk.h">
       <Filter>external\vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaObjects.h">
+      <Filter>librtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaPublicTypes.h">
+      <Filter>librtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ObjectBoxList.h">
+      <Filter>librtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaMemory.h">
+      <Filter>librtt\Corona</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <LuaToCpp Include="..\..\resources\loader_callback.lua">
@@ -2300,6 +2318,15 @@
       <Filter>platform\resources</Filter>
     </LuaToCpp>
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\shell_default_vulkan.lua">
+      <Filter>librtt\Display\Shader</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussianLinear_gl.lua">
+      <Filter>librtt\Display\Shader</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearHorizontal_gl.lua">
+      <Filter>librtt\Display\Shader</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearVertical_gl.lua">
       <Filter>librtt\Display\Shader</Filter>
     </LuaToCpp>
   </ItemGroup>

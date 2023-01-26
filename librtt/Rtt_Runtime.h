@@ -401,6 +401,11 @@ class Runtime : public MCallback,
 		bool fErrorHandlerRecursionGuard;
 	public:
 		const char* GetBuildId() { return fBuildId.GetString(); }
+
+#ifdef Rtt_USE_ALMIXER
+	public:
+		PlatformOpenALPlayer* getOpenALPlayer() const{ return fOpenALPlayer; }
+#endif
 };
 
 // Use this guard to surround code blocks that call Lua as a side effect of

@@ -28,7 +28,6 @@ RenderSurfaceControl::RenderSurfaceControl(HWND windowHandle, const Params & par
 	fReceivedMessageEventHandler(this, &RenderSurfaceControl::OnReceivedMessage),
 	fRenderFrameEventHandlerPointer(nullptr),
 	fMainDeviceContextHandle(nullptr),
-	fPaintDeviceContextHandle(nullptr),
 	fRenderingContextHandle(nullptr),
 	fVulkanContext(nullptr)
 {
@@ -78,12 +77,7 @@ void RenderSurfaceControl::SelectRenderingContext()
 	BOOL wasSelected = FALSE;
 	if (fRenderingContextHandle)
 	{
-		// Favor the Win32 BeginPaint() function's device context over our main device context, if available.
-		if (fPaintDeviceContextHandle)
-		{
-			wasSelected = ::wglMakeCurrent(fPaintDeviceContextHandle, fRenderingContextHandle);
-		}
-		else if (fMainDeviceContextHandle)
+		if (fMainDeviceContextHandle)
 		{
 			wasSelected = ::wglMakeCurrent(fMainDeviceContextHandle, fRenderingContextHandle);
 		}
@@ -127,12 +121,8 @@ void RenderSurfaceControl::SwapBuffers()
 	{
 		return;
 	}
-
-	if (fPaintDeviceContextHandle)
-	{
-		::SwapBuffers(fPaintDeviceContextHandle);
-	}
-	else if (fMainDeviceContextHandle)
+	
+	if (fMainDeviceContextHandle)
 	{
 		::SwapBuffers(fMainDeviceContextHandle);
 	}
@@ -319,7 +309,6 @@ void RenderSurfaceControl::DestroyContext()
 		}
 		fMainDeviceContextHandle = nullptr;
 	}
-	fPaintDeviceContextHandle = nullptr;
 	fRendererVersion.SetString(nullptr);
 	fRendererVersion.SetMajorNumber(0);
 	fRendererVersion.SetMinorNumber(0);
@@ -494,26 +483,12 @@ void RenderSurfaceControl::OnReceivedMessage(UIComponent& sender, HandleMessageE
 		}
 		case WM_PAINT:
 		{
-			// Fetch this paint request's device context in case it is not targeting the display/monitor.
-			// For example, it could reference a printer device context.
-			PAINTSTRUCT paintStruct{};
-			HWND windowHandle = GetWindowHandle();
-			fPaintDeviceContextHandle = ::BeginPaint(windowHandle, &paintStruct);
-			bool hasPaintDeviceContext = (fPaintDeviceContextHandle != nullptr);
-
 			// Request the owner of this control to paint its content.
 			OnPaint();
 
-			// Release the BeginPaint() function's device context, if received.
-			if (hasPaintDeviceContext)
-			{
-				::EndPaint(windowHandle, &paintStruct);
-				fPaintDeviceContextHandle = nullptr;
-			}
-
 			// Flag that we've painted to the control's entire region.
 			// Note: Windows will keep sending this control paint messages until we've flagged it as validated.
-			ValidateRect(windowHandle, nullptr);
+			ValidateRect(GetWindowHandle(), nullptr);
 
 			// Flag that the paint message has been handled.
 			arguments.SetHandled();

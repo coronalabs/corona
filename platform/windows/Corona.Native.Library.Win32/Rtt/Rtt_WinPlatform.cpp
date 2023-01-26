@@ -2085,7 +2085,7 @@ namespace Rtt
 		// Note: This is a blocking multi-tasking function call.
 		UINT buttonType = isSimulatingDevice ? MB_YESNO : MB_OK;
 		int buttonIndex = ::MessageBoxW(
-			windowHandle, strMessage.GetTCHAR(), L"Corona Runtime Error", MB_ICONERROR | buttonType);
+			windowHandle, strMessage.GetTCHAR(), L"Solar2D Runtime Error", MB_ICONERROR | buttonType);
 		if (isSimulatingDevice)
 		{
 			// Relaunch the Corona Simulator project if the user clicked the "yes" button.

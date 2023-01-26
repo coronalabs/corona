@@ -192,7 +192,7 @@ Rtt_VLogException(const char *format, va_list ap)
 			}
 
 			// Output the string to stdout and the Visual Studio debugger.
-#if defined(Rtt_NINTENDO_ENV) || defined( Rtt_LINUX_ENV )
+#if defined(Rtt_NXS_ENV) || defined( Rtt_LINUX_ENV )
 			fputs(stringPointer, stdout);
 #elif defined(Rtt_WIN_PHONE_ENV)
 			if (fLogHandler)
@@ -245,7 +245,7 @@ Rtt_VLogException(const char *format, va_list ap)
 int
 Rtt_Log( const char *format, ... )
 {
-	int result;
+	int result = 0;
 
 	if (Rtt_LogIsEnabled())
 	{
@@ -266,6 +266,14 @@ Rtt_Log( const char *format, ... )
 #if defined( Rtt_MAC_ENV ) || defined( Rtt_IPHONE_ENV ) || defined( Rtt_TVOS_ENV )
 	#define Rtt_TRAP_WITH_SIGNAL	1
 	#include <signal.h>
+    #include <errno.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <assert.h>
+    #include <stdbool.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <sys/sysctl.h>
 #if 0 // see stacktrace code below
 	#include <execinfo.h>
 	#include <stdio.h>
@@ -275,11 +283,50 @@ Rtt_Log( const char *format, ... )
 	#define Rtt_Log printf
 #endif
 
+
+#if defined( Rtt_MAC_ENV )
+#include <sys/sysctl.h>
+#include <mach/machine.h>
+ static bool isAppleSilicon(void)
+ {
+    cpu_type_t type;
+    size_t size = sizeof(type);
+    sysctlbyname("hw.cputype", &type, &size, NULL, 0);
+
+    int procTranslated;
+    size = sizeof(procTranslated);
+    // Checks whether process is translated by Rosetta
+    sysctlbyname("sysctl.proc_translated", &procTranslated, &size, NULL, 0);
+
+    // Removes CPU_ARCH_ABI64 or CPU_ARCH_ABI64_32 encoded with the Type
+    cpu_type_t typeWithABIInfoRemoved = type & ~CPU_ARCH_MASK;
+
+    if (typeWithABIInfoRemoved == CPU_TYPE_X86)
+    {
+        if (procTranslated == 0)
+        {
+            return false;
+        }
+    }
+    return true;
+    
+ }
+ #endif
 static void
 Rtt_UserBreak( )
 {
     #if defined( Rtt_TRAP_WITH_SIGNAL )
-        raise( SIGINT );
+        /*
+         Check for if being debugged before breaking for Mac
+         To pevent crash on Arm(M1) Macs
+        */
+        #if defined( Rtt_MAC_ENV ) && defined( Rtt_DEBUG )
+            if(isAppleSilicon() == false){
+                raise( SIGINT );
+            }
+        #else
+            raise( SIGINT );
+        #endif
     #elif defined( Rtt_WIN_ENV )
 		__debugbreak();
 	#elif defined( __ARMCC_VERSION )

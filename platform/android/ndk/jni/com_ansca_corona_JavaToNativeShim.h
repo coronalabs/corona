@@ -512,6 +512,9 @@ JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeVideoViewPre
 JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeVideoViewEnded
   (JNIEnv *, jclass, jlong, jint);
 
+JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeVideoViewFailed
+        (JNIEnv *, jclass, jlong, jint);
+
 JNIEXPORT jobject JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeGetCoronaRuntime
   (JNIEnv *, jclass, jlong);
 

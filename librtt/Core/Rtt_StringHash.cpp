@@ -14,7 +14,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined(Rtt_WIN_ENV) || defined(Rtt_NINTENDO_ENV)
+#if defined(Rtt_WIN_ENV)
 // strndup() is POSIX so when we update VC we'll get it officially.  For now, define a helper on Win32
 static char *
 strndup (const char *src, size_t size)

@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import json
 import os
 import subprocess
 
 platform = os.environ['TEMPLATE_PLATFORM']
 SDKs = {"tvos":"appletvos", "iphone":"iphoneos"}
-xcodeVersion = subprocess.check_output(['/usr/bin/xcrun', '--sdk', SDKs[platform],'--show-sdk-version']).strip()
+xcodeVersion = subprocess.check_output(['/usr/bin/xcrun', '--sdk', SDKs[platform],'--show-sdk-version']).decode().strip()
 coronaVersion =  int(float(xcodeVersion)*10000)
-xcode = subprocess.check_output(['/usr/bin/xcodebuild', '-version']).split('\n')[0].strip()
+xcode = subprocess.check_output(['/usr/bin/xcodebuild', '-version']).decode().split('\n')[0].strip()
 
 def getCustomTemplateName():
     target = os.environ['TEMPLATE_TARGET']

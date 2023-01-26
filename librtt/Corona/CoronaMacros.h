@@ -63,7 +63,7 @@
 
 // Windows uses different linkage visibility attributes that depend on whether
 // the declaration is used in the implementation or in a public header.
-#if (( defined( _WIN32 ) || defined( _WIN64 ) || defined( WINAPI_FAMILY ) ) && !defined(Rtt_ANDROID_ENV) && !defined(Rtt_NINTENDO_ENV) )
+#if (( defined( _WIN32 ) || defined( _WIN64 ) || defined( WINAPI_FAMILY ) ) && !defined(Rtt_ANDROID_ENV) && !defined(Rtt_NXS_ENV) )
 	#define CORONA_EXPORT					CORONA_EXTERN_C __declspec( dllexport )
 	#define CORONA_IMPORT					CORONA_EXTERN_C __declspec( dllimport )
 

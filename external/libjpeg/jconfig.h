@@ -18,7 +18,7 @@
  * EDIT A COPY NAMED JCONFIG.H.
  */
 
-#ifdef NINTENDO_LIB
+#ifdef NXS_LIB
 #define fclose	nFileClose
 #define fopen	nFileOpen
 #define freopen	nFileReopen

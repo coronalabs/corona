@@ -281,6 +281,24 @@ class ResizeEvent : public VirtualEvent
 // ----------------------------------------------------------------------------
 
 // Immediately broadcast to "Runtime"
+class WindowStateEvent : public VirtualEvent
+{
+	public:
+		typedef VirtualEvent Super;
+
+	public:
+		WindowStateEvent(bool foreground);
+
+	public:
+		virtual const char* Name() const;
+		virtual int Push( lua_State *L ) const;
+	private:
+		bool fForeground;
+};
+
+// ----------------------------------------------------------------------------
+
+// Immediately broadcast to "Runtime"
 class AccelerometerEvent : public VirtualEvent
 {
 	public:
@@ -1441,6 +1459,7 @@ class VideoEvent : public VirtualEvent
 		{
 			kReady = 0,
 			kEnded,
+			kFailed,
 
 			kNumPhases
 		}
