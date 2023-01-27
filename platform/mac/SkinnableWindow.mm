@@ -63,6 +63,7 @@
                skinImage:(NSString*)path
              orientation:(Rtt::DeviceOrientation::Type)orientation
                    scale:(float)scale
+		   isTransparent:(BOOL)isTransparent
 {
 	self = [super initWithContentRect:NSZeroRect
 							styleMask:NSBorderlessWindowMask
@@ -76,11 +77,18 @@
 		fExponent = 0;
 		fCurrentSkinOrientation = orientation;
         fOriginalSkinOrientation = orientation;
-
 		// Tell OpenGL we want it to use the best resolution the current display
 		// is capable of so that we take advantage of Retina screens
 		[fScreenView setWantsBestResolutionOpenGLSurface:YES];
 		[fScreenView setZoomLevel:1.0];
+
+		if (isTransparent)
+		{
+			NSOpenGLContext* context = [fScreenView openGLContext];
+			GLint opacity = 0;
+
+			[context setValues: &opacity forParameter: NSOpenGLCPSurfaceOpacity];
+		}
 
 		// Set the background color to clear so that (along with the setOpaque 
 		// call below) we can see through the window.

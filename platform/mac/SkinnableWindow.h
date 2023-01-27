@@ -31,7 +31,8 @@
                    title:(NSString*)title
                skinImage:(NSString*)path
              orientation:(Rtt::DeviceOrientation::Type)orientation
-                   scale:(float)scale;
+                   scale:(float)scale
+		   isTransparent:(BOOL)isTransparent;
 
 - (void)setOrientation:(Rtt::DeviceOrientation::Type)orientation;
 - (void)rotate:(BOOL)clockwise;
