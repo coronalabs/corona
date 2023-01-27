@@ -77,8 +77,8 @@ class DisplayPath
         public:
             static bool IsLineObject( const DisplayObject* object );
             static bool IsFillPaint( const DisplayObject* object, const Paint* paint );
-            static Geometry *GetGeometry( DisplayObject* object, bool isFill = false );
-            static const Geometry *GetGeometry( const DisplayObject* object, bool isFill = false );
+            static Geometry *GetGeometry( DisplayObject* object, bool isFill );
+            static const Geometry *GetGeometry( const DisplayObject* object, bool isFill );
         
         public:
             virtual int ValueForKey(

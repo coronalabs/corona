@@ -22,7 +22,7 @@ FrameBufferObject::FrameBufferObject( Rtt_Allocator* allocator, Texture* texture
 	fTexture( texture ),
 	fDepthBits( options ? options->depthBits : 0 ),
 	fStencilBits( options ? options->stencilBits : 0 ),
-	fMustClear( options->mustClear )
+	fMustClear( options ? options->mustClear : true )
 {
 	fTexture->SetTarget( true );
 }

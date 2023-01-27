@@ -978,9 +978,9 @@ int CoronaMemoryCreateInterface(lua_State *L, const struct CoronaMemoryInterface
 }
 
 CORONA_API
-void* CoronaMemoryBindLookupSlot(lua_State *L, unsigned short *id)
+int CoronaMemoryBindLookupSlot(lua_State *L, unsigned short *id)
 {
-	typedef void*(*CoronaCallbackType)(lua_State*, unsigned short *);
+	typedef int(*CoronaCallbackType)(lua_State*, unsigned short *);
 	CoronaCallbackLoad();
 	return CoronaCallbackInvoke(L, id);
 }
@@ -994,9 +994,9 @@ int CoronaMemoryReleaseLookupSlot(lua_State *L, unsigned short id)
 }
 
 CORONA_API
-void* CoronaMemoryPushLookupEncoding(lua_State *L, unsigned short id, unsigned short context)
+int CoronaMemoryPushLookupEncoding(lua_State *L, unsigned short id, unsigned short context)
 {
-	typedef void*(*CoronaCallbackType)(lua_State *, unsigned short, unsigned short);
+	typedef int(*CoronaCallbackType)(lua_State *, unsigned short, unsigned short);
 	CoronaCallbackLoad();
 	return CoronaCallbackInvoke(L, id, context);
 }

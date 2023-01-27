@@ -156,7 +156,7 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fScissorEnabled( false ),
     fMultisampleEnabled( false ),
     fFrameBufferObject( NULL ),
-    fInsertionLimit( std::numeric_limits<U32>::max() ),
+    fInsertionLimit( (std::numeric_limits<U32>::max)() ),
     fRenderDataCount( 0 ),
 	fVertexOffset( 0 ),
 	fCurrentGeometry( NULL ),

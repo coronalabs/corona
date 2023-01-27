@@ -56,6 +56,10 @@ class VulkanCommandBuffer : public CommandBuffer
 		typedef VulkanCommandBuffer Self;
 
 	public:
+		virtual bool HasFramebufferBlit( bool * canScale ) const { Rtt_ASSERT_NOT_IMPLEMENTED(); return false; }
+		virtual void GetVertexAttributes( VertexAttributeSupport & support ) const { Rtt_ASSERT_NOT_IMPLEMENTED(); }
+
+	public:
 		VulkanCommandBuffer( Rtt_Allocator* allocator, VulkanRenderer & renderer );
 		virtual ~VulkanCommandBuffer();
 
@@ -72,11 +76,16 @@ class VulkanCommandBuffer : public CommandBuffer
 	public:
 		// Generate the appropriate buffered Vulkan commands to accomplish the
 		// specified state changes.
-		virtual void BindFrameBufferObject( FrameBufferObject* fbo );
+		virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer );
+		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
 		virtual void BindGeometry( Geometry* geometry );
 		virtual void BindTexture( Texture* texture, U32 unit );
 		virtual void BindUniform( Uniform* uniform, U32 unit );
 		virtual void BindProgram( Program* program, Program::Version version );
+        virtual void BindInstancing( U32 count, Geometry::Vertex* instanceData ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
+        virtual void DirtyVertexFormat() { Rtt_ASSERT_NOT_IMPLEMENTED(); }
+        virtual void BindVertexFormat( FormatExtensionList* extensionList, U16 fullCount, U16 vertexSize ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
+        virtual void BindVertexOffset( U32 offset, U32 extraVertexCount ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
 		virtual void SetBlendEnabled( bool enabled );
 		virtual void SetBlendFunction( const BlendMode& mode );
 		virtual void SetBlendEquation( RenderTypes::BlendEquation mode );
@@ -84,10 +93,19 @@ class VulkanCommandBuffer : public CommandBuffer
 		virtual void SetScissorEnabled( bool enabled );
 		virtual void SetScissorRegion( int x, int y, int width, int height );
 		virtual void SetMultisampleEnabled( bool enabled );
+        virtual void ClearDepth( Real depth ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
+        virtual void ClearStencil( U32 stencil ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
 		virtual void Clear( Real r, Real g, Real b, Real a );
 		virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type );
 		virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type );
 		virtual S32 GetCachedParam( CommandBuffer::QueryableParams param );
+		
+		virtual void AddCommand( const CoronaCommand & command ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
+        virtual void IssueCommand( U16 id, const void * data, U32 size ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
+
+        virtual const unsigned char * GetBaseAddress() const { Rtt_ASSERT_NOT_IMPLEMENTED(); return NULL; }
+    
+        virtual bool WriteNamedUniform( const char * uniformName, const void * data, unsigned int size ) { Rtt_ASSERT_NOT_IMPLEMENTED(); return false; }
 		
 		virtual void WillRender();
 

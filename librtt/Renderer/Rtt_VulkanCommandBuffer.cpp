@@ -331,7 +331,7 @@ VulkanCommandBuffer::EmitProgram( Program * program, Program::Version version )
 }
 
 void
-VulkanCommandBuffer::BindFrameBufferObject( FrameBufferObject* fbo )
+VulkanCommandBuffer::BindFrameBufferObject( FrameBufferObject* fbo, bool ) // TODO: as draw buffer
 {
 	size_t height = fFBOStack.size();
 

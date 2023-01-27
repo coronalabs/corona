@@ -259,6 +259,7 @@ TextureResourceCapture::Create(
 	
 	if (display.HasFramebufferBlit( NULL ))
 	{
+		// TODO: extra options
 		fbo = Rtt_NEW( pAllocator, FrameBufferObject( pAllocator, texture ) );
 	}
 	

@@ -205,15 +205,19 @@ SnapshotObject::Initialize( lua_State *L, Display& display, Real contentW, Real 
 
 	if (!fFrameBufferObject)
 	{
+		FrameBufferObject::ExtraOptions opts = {};
 		/* TODO
 			fHasDepth = display.GetDefaults().GetAddDepthToResource();
 			fHasStencil = display.GetDefaults().GetAddStencilToResource();
 			fDepthClearValue = display.GetDefaults().GetAddedDepthClearValue();
 			fStencilClearValue = display.GetDefaults().GetAddedStencilClearValue();
 		 
-			TODO: add appropriate frame buffer resources...
+			TODO:
+				if (opts.depthBits) add appropriate frame buffer resources...
+				if (opts.stencilBits) ditto
 		 */
-		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture(), false ) );
+
+		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture(), &opts ) ); // n.b. mustClear = false
 	}
 }
 
