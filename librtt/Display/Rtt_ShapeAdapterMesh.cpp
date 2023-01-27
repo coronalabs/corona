@@ -67,32 +67,34 @@ ShapeAdapterMesh::GetMeshMode(lua_State *L, int index)
 	return ret;
 }
 
-static bool IsValidBuffer( lua_State *L, unsigned char* &buffer, size_t &len )
+static bool IsValidBuffer( lua_State *L, const void* &buffer, size_t &len )
 {
-	if ( LUA_TUSERDATA == lua_type( L, -1 ) ) // TODO: generalize with memory API
-	{
-		buffer = static_cast< unsigned char* >( lua_touserdata( L, -1 ) );
-		len = lua_objlen( L, -1 );
-		
-		return true;
-	}
-	
-	else
-	{
-		return false;
-	}
+    CoronaMemoryAcquireState state;
+
+    if ( CoronaMemoryAcquireInterface( L, -1, &state ) && CORONA_MEMORY_HAS( state, getReadableBytes ) )
+    {
+        buffer = CORONA_MEMORY_GET( state, ReadableBytes );
+        len = CORONA_MEMORY_GET( state, ByteCount );
+        
+        return true;
+    }
+    
+    else
+    {
+        return false;
+    }
 }
 
 static const unsigned char* AuxGetBuffer( lua_State *L, size_t valueSize, size_t &len, U32 &n )
 {
-	unsigned char* buffer = NULL;
+    const void* buffer = NULL;
 
-	if ( IsValidBuffer( L, buffer, len ) )
-	{
-		n = (U32)(len / valueSize);
-	}
+    if ( IsValidBuffer( L, buffer, len ) )
+    {
+        n = (U32)(len / valueSize);
+    }
 
-	return buffer;
+    return static_cast< const unsigned char * >( buffer );
 }
 
 static const unsigned char* IssueWarning( lua_State *L, const unsigned char* buffer, const char * warning )
