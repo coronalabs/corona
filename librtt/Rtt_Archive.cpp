@@ -451,7 +451,7 @@ ArchiveReader::Initialize( const void* data, size_t numBytes )
 {
 	const U8 kHeader[] = { 'r', 'a', 'c', ArchiveWriter::kVersion };
 	const size_t kHeaderSize = sizeof( kHeader );
-	bool result = ( numBytes > kHeaderSize && 0 == memcmp( data, kHeader, kHeaderSize ) );
+	bool result = ( data && numBytes > kHeaderSize && 0 == memcmp( data, kHeader, kHeaderSize ) );
 	if ( result )
 	{
 		fPos = ((U8*)data) + kHeaderSize;

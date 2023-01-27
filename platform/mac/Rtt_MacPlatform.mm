@@ -1992,6 +1992,7 @@ MacPlatform::SetNativeProperty(lua_State *L, const char *key, int valueIndex) co
 	else if (Rtt_StringCompare(key, "preferredScreenEdgesDeferringSystemGestures")==0 ||
 			 Rtt_StringCompare(key, "prefersHomeIndicatorAutoHidden")==0 ||
 			 Rtt_StringCompare(key, "androidSystemUiVisibility")==0 ||
+			 Rtt_StringCompare(key, "navigationBarColor")==0 ||
 			 Rtt_StringCompare(key, "applicationIconBadgeNumber")==0 ||
 			 Rtt_StringCompare(key, "applicationSupportsShakeToEdit")==0 ||
 			 Rtt_StringCompare(key, "networkActivityIndicatorVisible")==0 ||

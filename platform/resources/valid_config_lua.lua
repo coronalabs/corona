@@ -21,6 +21,7 @@ application = {
 	launchPad = true,
 	showRuntimeErrors = true,
 	isTransparent = false,
+	backend = "gl",
 
 	content = {
 		graphicsCompatibility = 1,

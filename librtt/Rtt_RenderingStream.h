@@ -268,6 +268,9 @@ class RenderingStream
 		void SetScaleMode( Display::ScaleMode mode, Rtt_Real screenWidth, Rtt_Real screenHeight );
 		Display::ScaleMode GetScaleMode() const { return (Display::ScaleMode)fScaleMode; }
 
+		void ContentToScreenUnrounded( float& x, float& y ) const;
+		void ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const;
+
 		void ContentToScreen( S32& x, S32& y ) const;
 		void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
 		void ContentToPixels( S32& x, S32& y ) const;

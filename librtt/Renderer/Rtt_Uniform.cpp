@@ -70,6 +70,13 @@ Uniform::Uniform( Rtt_Allocator* allocator, DataType type )
 	Allocate();
 }
 
+Uniform::Uniform( DataType type )
+:	CPUResource( NULL ),
+	fType( type ),
+	fData( NULL )
+{
+}
+
 Uniform::~Uniform()
 {
 	Deallocate();

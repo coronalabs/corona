@@ -1554,6 +1554,7 @@ public class NativeToJavaBridge {
 			CoronaStatusBarApiListener listener = runtime.getController().getCoronaStatusBarApiListener();
 			CoronaStatusBarSettings statusBarMode = listener.getStatusBarMode();
 			boolean hasNavigationBar = listener.HasSoftwareKeys();
+
 			if (listener != null) {
 				if (listener.IsAndroidTV()) {
 					int contentHeight = JavaToNativeShim.getContentHeightInPixels(runtime);
@@ -1568,7 +1569,12 @@ public class NativeToJavaBridge {
 						result[0] = cutout.getSafeInsetTop();
 						result[1] = cutout.getSafeInsetLeft();
 						result[2] = cutout.getSafeInsetRight();
-						result[3] = cutout.getSafeInsetBottom();
+						//Android InsetBottom does not always return correct navbar height
+						if(hasNavigationBar && cutout.getSafeInsetBottom() == 0 && !runtime.getController().getSystemUiVisibility().contains("immersive")){
+							result[3] = listener.getNavigationBarHeight();
+						}else{
+							result[3] = cutout.getSafeInsetBottom();
+						}
 					}
 					else {
                         result[0] = (statusBarMode != CoronaStatusBarSettings.HIDDEN) ? listener.getStatusBarHeight() : 0;
@@ -2256,9 +2262,9 @@ public class NativeToJavaBridge {
 		return null;
 	}
 
-	protected static void callVibrate(CoronaRuntime runtime)
+	protected static void callVibrate(CoronaRuntime runtime, String hapticType, String hapticStyle)
 	{
-		runtime.getController().vibrate();
+		runtime.getController().vibrate(hapticType, hapticStyle);
 	}
 
 	protected static void callSetLocationAccuracy( double meters, CoronaRuntime runtime )
@@ -3182,6 +3188,11 @@ public class NativeToJavaBridge {
 			systemUIVisibility = "unknown";
 		}
 		return systemUIVisibility;
+	}
+	protected static void callSetNavigationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
+		if (runtime != null) {
+			CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+		}
 	}
 
 	/**

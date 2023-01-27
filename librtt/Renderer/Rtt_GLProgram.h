@@ -16,10 +16,14 @@
 #include "Renderer/Rtt_Uniform.h"
 #include "Core/Rtt_Assert.h"
 
+#include "Corona/CoronaGraphics.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
 {
+
+struct GLProgramUniformsCache;
 
 // ----------------------------------------------------------------------------
 
@@ -77,8 +81,30 @@ class GLProgram : public GPUResource
 		void UpdateShaderSource( Program* program, Program::Version version, VersionData& data );
 		void Reset( VersionData& data );
 
+        enum { kUniformNameBufferSize = 64 };
+    
+        class ExtraUniforms {
+        public:
+            ExtraUniforms();
+            ExtraUniforms( Program::Version version, const VersionData * versionData, GLProgramUniformsCache ** cache );
+            
+            GLint Find( const char * name, GLint & size, GLenum & type );
+        private:
+            GLProgramUniformsCache ** fCache;
+            const VersionData * fVersionData;
+            Program::Version fVersion;
+            
+        };
+    
+        ExtraUniforms GetExtraUniformsInfo( Program::Version version );
+    
 		VersionData fData[Program::kNumVersions];
 		CPUResource* fResource;
+    
+        CoronaShellTransformStateCleanup fCleanupShellTransform;
+        GLProgramUniformsCache * fUniformsCache;
+    
+        friend class GLCommandBuffer;
 };
 
 // ----------------------------------------------------------------------------

@@ -15,6 +15,9 @@
 namespace Rtt
 {
 
+std::unordered_map<UINT_PTR, Rtt::WinTimer *> WinTimer::sTimerMap;
+UINT_PTR WinTimer::sMostRecentTimerID;
+
 #pragma region Constructors/Destructors
 WinTimer::WinTimer(MCallback& callback, HWND windowHandle)
 :	PlatformTimer(callback)
@@ -46,7 +49,13 @@ void WinTimer::Start()
 	// We do this because Windows timers can invoke later than expected.
 	// To compensate, we'll schedule when to invoke the timer's callback using "fIntervalEndTimeInTicks".
 	fNextIntervalTimeInTicks = (S32)::GetTickCount() + (S32)fIntervalInMilliseconds;
-	fTimerPointer = ::SetTimer(fWindowHandle, (UINT_PTR)this, 10, WinTimer::OnTimerElapsed);
+	fTimerID = ++sMostRecentTimerID; // ID should be non-0, so pre-increment for first time
+	fTimerPointer = ::SetTimer(fWindowHandle, fTimerID, 10, WinTimer::OnTimerElapsed);
+
+	if (IsRunning())
+	{
+		sTimerMap[fTimerID] = this;
+	}
 }
 
 void WinTimer::Stop()
@@ -58,8 +67,12 @@ void WinTimer::Stop()
 	}
 
 	// Stop the timer.
-	::KillTimer(fWindowHandle, fTimerPointer);
+	::KillTimer(fWindowHandle, fTimerID);
+
+	sTimerMap.erase(fTimerID);
+
 	fTimerPointer = NULL;
+	fTimerID = 0;
 }
 
 void WinTimer::SetInterval(U32 milliseconds)
@@ -99,8 +112,11 @@ void WinTimer::Evaluate()
 #pragma region Private Methods/Functions
 VOID CALLBACK WinTimer::OnTimerElapsed(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-	WinTimer *timer = (WinTimer*)idEvent;
-	timer->Evaluate();
+	auto timer = sTimerMap.find(idEvent);
+	if (sTimerMap.end() != timer)
+	{
+		timer->second->Evaluate();
+	}
 }
 
 S32 WinTimer::CompareTicks(S32 x, S32 y)

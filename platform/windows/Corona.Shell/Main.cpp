@@ -221,6 +221,7 @@ int APIENTRY wWinMain(
 	// This child control will be automatically sized to fit the main window's client area via WM_SIZE messages above.
 	// Note: Rendering to a child control forces Windows to render OpenGL in non-exclusive fullscreen mode when
 	//       displaying the window as a maximized borderless window, which allows us to display native Win32 UI.
+	HWND testSurfaceHandle = NULL;
 	{
 		RECT clientBounds{};
 		::GetClientRect(sMainWindowHandle, &clientBounds);
@@ -234,6 +235,11 @@ int APIENTRY wWinMain(
 		windowClassSettings.hbrBackground = (HBRUSH)::GetStockObject(BLACK_BRUSH);
 		windowClassSettings.lpszClassName = L"CoronaLabs.Corona.RenderSurface";
 		auto atom = ::RegisterClassExW(&windowClassSettings);
+		testSurfaceHandle = ::CreateWindowW(
+				windowClassSettings.lpszClassName, nullptr, controlStyles, 0, 0,
+				clientBounds.right - clientBounds.left, clientBounds.bottom - clientBounds.top,
+				sMainWindowHandle, nullptr, instanceHandle, nullptr);
+		ShowWindow(testSurfaceHandle, SW_HIDE);
 		sRenderSurfaceWindowHandle = ::CreateWindowW(
 				windowClassSettings.lpszClassName, nullptr, controlStyles, 0, 0,
 				clientBounds.right - clientBounds.left, clientBounds.bottom - clientBounds.top,
@@ -251,6 +257,7 @@ int APIENTRY wWinMain(
 	Corona::Win32::LaunchSettings& settings = coronaRuntime.GetLaunchSettings();
 	settings.SetMainWindowHandle(sMainWindowHandle);
 	settings.SetRenderSurfaceHandle(sRenderSurfaceWindowHandle);
+	settings.SetTestSurfaceHandle(testSurfaceHandle);
 
 	// Fetch the command line arguments (if any) and copy them to Corona's launch settings.
 	bool hasCommandLineArguments = false;

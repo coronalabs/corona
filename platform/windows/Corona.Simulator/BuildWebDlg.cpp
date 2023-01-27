@@ -283,7 +283,7 @@ void CBuildWebDlg::OnOK()  // OnBuild()
 		CString sCoronaLiveServerExe = ((CSimulatorApp *)AfxGetApp())->GetApplicationDir() + _T("\\Corona.LiveServer.exe");
 		try
 		{
-			CString sAppPath = CString(_T("html5:")) + m_pProject->GetSaveDir() + _T("\\") + m_pProject->GetName();
+			CString sAppPath = CString(_T("html5:")) + m_pProject->GetSaveDir() + _T("\\") + m_pProject->GetName() + _T(".html5");
 			::ShellExecute(nullptr, nullptr, sCoronaLiveServerExe, sAppPath, nullptr, SW_SHOWNORMAL);
 		}
 		catch (...) {}

@@ -1275,12 +1275,25 @@ public class ViewManager {
 					if (context != null) {
 						// If the given URL is to a local file within the APK or expansion file,
 						// then create a content URI for it.
+						String path = url;
+						String suffix = "";
 						com.ansca.corona.storage.FileServices fs = new com.ansca.corona.storage.FileServices(context);
-						if (fs.doesAssetFileExist(url)) {
+						try {
+							android.net.Uri uri = android.net.Uri.parse(url);
+							if(uri.getScheme() == null) {
+								path = uri.getPath();
+								int index = url.indexOf(path);
+								if(index>=0) {
+									suffix = url.substring(index+path.length());
+								}
+							}
+						} catch (Throwable ignore) { }
+
+						if (fs.doesAssetFileExist(path)) {
 							android.net.Uri contentProviderUri =
-									com.ansca.corona.storage.FileContentProvider.createContentUriForFile(context, url);
+									com.ansca.corona.storage.FileContentProvider.createContentUriForFile(context, path);
 							if (contentProviderUri != null) {
-								url = contentProviderUri.toString();
+								url = contentProviderUri.toString() + suffix;
 							}
 						}
 					}

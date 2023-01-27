@@ -142,7 +142,8 @@ ImageSheet::Initialize( lua_State *L )
 ImageSheet::ImageSheet(
 	Rtt_Allocator *allocator, const SharedPtr< TextureResource >& resource )
 :	fResource( resource ),
-	fFrames( allocator )
+	fFrames( allocator ),
+	fCorrectTrimOffsets( false )
 {
 }
 
@@ -310,6 +311,8 @@ ImageSheet::Initialize( lua_State *L, int optionsIndex )
 		textureContentH = textureH;
 	}
 	
+	fCorrectTrimOffsets = fResource->GetTextureFactory().GetDisplay().GetDefaults().IsImageSheetFrameTrimCorrected();
+
 	bool intrudeHalfTexel = fResource->GetTextureFactory().GetDisplay().GetDefaults().IsImageSheetSampledInsideFrame();
 
 	if ( numFrames > 0 )

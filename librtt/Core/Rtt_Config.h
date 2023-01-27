@@ -336,18 +336,17 @@
 	#define Rtt_VPRINTF_SUPPORTED
 	#define Rtt_NETWORK
 
+	// disabled in order to reduce app size
+	// #define Rtt_SQLITE
+
 	#if EMSCRIPTEN
 		#define Rtt_OPENGLES
 		#define Rtt_EGL
-
 		#define Rtt_BROWSER_ENV
 	#else
 		#define Rtt_OPENGL_EXT_APPLE
 		#define Rtt_LUA_C_MODULE_DYLIB
 	#endif
-
-	//#define Rtt_SQLITE
-
 #endif
 
 //

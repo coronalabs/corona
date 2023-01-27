@@ -303,14 +303,20 @@ ShaderComposite::Prepare( RenderData& objectData, int w, int h, ShaderResource::
 void
 ShaderComposite::Draw( Renderer& renderer, const RenderData& objectData ) const
 {
-	// Create geometry for a quad (based on texture bounds of fFillTexture0/fFillTexture1)
-	Geometry& cache = GetGeometry();
+    DrawState state( fResource->GetEffectCallbacks(), fIsDrawing );
 
-	RenderToTexture( renderer, cache );
-	
-	renderer.TallyTimeDependency( fResource->UsesTime() );
-	renderer.Insert( & objectData );
-	
+    if (DoAnyBeforeDrawAndThenOriginal( state, renderer, objectData ))
+    {
+        // Create geometry for a quad (based on texture bounds of fFillTexture0/fFillTexture1)
+        Geometry& cache = GetGeometry();
+
+        RenderToTexture( renderer, cache );
+        
+        renderer.TallyTimeDependency( fResource->UsesTime() );
+        renderer.Insert( & objectData, GetData() );
+    }
+
+    DoAnyAfterDraw( state, renderer, objectData );
 }	
 
 void

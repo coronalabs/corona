@@ -18,6 +18,7 @@
 #include "Core/Rtt_Math.h"
 
 #include <string.h>
+#include <type_traits>
 
 // ----------------------------------------------------------------------------
 
@@ -137,7 +138,7 @@ namespace Rtt
 
 		void Reserve(U32 length)
 		{
-			Super::Preallocate(sizeof(T), length);
+			Super::Preallocate(length, sizeof(T));
 		}
 
 	protected:
@@ -341,16 +342,36 @@ namespace Rtt
 	void
 		Array< T >::PadToSize(U32 size, const T& pad)
 	{
-		if (size > 0)
+		if (size > fLength)
 		{
 			if (!fLength)
 			{
 				Reserve(size);
 			}
 
-			while (fLength < size)
+			else
 			{
-				Append(pad);
+				Expand(sizeof(T), size);
+			}
+			
+			U32 oldLength = (U32)fLength;
+			
+			if (std::is_pod<T>::value)
+			{
+				fLength = (S32)size;
+
+				for (U32 i = oldLength; i < size; i++)
+				{
+					WriteAccess()[i] = pad;
+				}
+			}
+
+			else
+			{
+				for (U32 i = oldLength; i < size; i++)
+				{
+					Append(pad);
+				}
 			}
 		}
 	}

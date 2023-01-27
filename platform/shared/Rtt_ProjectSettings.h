@@ -14,6 +14,7 @@
 #include "Rtt_DeviceOrientation.h"
 #include <map>
 #include <set>
+#include <string>
 extern "C"
 {
 	struct lua_State;
@@ -353,6 +354,12 @@ class ProjectSettings
 		 */
 		bool IsWindowTransparent() const;
 	
+		 * Get a string describing the backend status.
+		 * @return
+		 * Returns one of "gl", "vulkanWanted", "vulkanRequired".
+		 */
+		const std::string & Backend() const;
+
 	protected:
 		/**
 		 * Called after the LoadFromDirectory() method has successfully loaded information from the
@@ -493,6 +500,9 @@ class ProjectSettings
 
 		/** Set to true if the window should be transparent. False to be opaque.*/
 		bool fIsWindowTransparent;
+
+		/** One of the following: "gl", "wantVulkan", "requireVulkan".*/
+		std::string fBackend;
 };
 
 } // namespace Rtt

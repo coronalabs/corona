@@ -1050,6 +1050,36 @@ AndroidPlatform::SetNativeProperty( lua_State *L, const char *key, int valueInde
 			fNativeToJavaBridge->SetSystemUiVisibility(visibility);
 		}
 	}
+	else if (Rtt_StringCompare(key, "navigationBarColor") == 0)
+	{
+		if (lua_type(L, valueIndex) == LUA_TTABLE)
+		{
+			//red
+			lua_rawgeti(L, valueIndex, 1);
+			double red = 0;
+			if(lua_isnumber(L, -1)){
+					red = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+
+			//green
+			lua_rawgeti(L, valueIndex, 2);
+			double green = 0;
+			if(lua_isnumber(L, -1)){
+					green = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+			//blue
+			lua_rawgeti(L, valueIndex, 3);
+			double blue = 0;
+			if(lua_isnumber(L, -1)){
+					blue = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+
+			fNativeToJavaBridge->SetNavigationBarColor(red, green, blue);
+		}
+	}
 	else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)
 	{
 		CoronaLuaWarning(L, "native.setProperty(\"%s\") is not supported on Android.", key);

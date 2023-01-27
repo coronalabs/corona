@@ -79,6 +79,11 @@ class TextureFactory
 			const std::string &cacheKey,
 			Real w, Real h,
 			int pixelW, int pixelH, bool isMask );
+
+		SharedPtr< TextureResource > FindOrCreateCapture(
+			const std::string &cacheKey,
+			Real w, Real h,
+			int pixelW, int pixelH );
 	
 		SharedPtr< TextureResource > FindOrCreateExternal(
 			const std::string &cacheKey,

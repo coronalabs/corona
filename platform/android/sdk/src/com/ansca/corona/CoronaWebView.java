@@ -489,6 +489,9 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 				return;
 			}
 
+			//Fixes loading issue when alpha is used on long site 
+			view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
 			// Check if an error occurred for the given URL.
 			com.ansca.corona.events.DidFailLoadUrlTask errorEvent = fReceivedErrorEvents.get(url);
 			

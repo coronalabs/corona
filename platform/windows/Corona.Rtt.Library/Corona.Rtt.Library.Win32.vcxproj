@@ -31,6 +31,7 @@
     <ClCompile Include="..\..\..\external\luafilesystem\src\lfs.c" />
     <ClCompile Include="..\..\..\external\LuaHashMap\LuaHashMap.c" />
     <ClCompile Include="..\..\..\external\smoothpolygon\SmoothPolygon.cpp" />
+    <ClCompile Include="..\..\..\external\vulkan\utils\volk.c" />
     <ClCompile Include="..\..\..\librtt\b2GLESDebugDraw.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Array.cpp" />
@@ -59,6 +60,8 @@
     <ClCompile Include="..\..\..\librtt\Corona\CoronaLibrary.cpp" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaLog.c" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaLua.cpp" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaObjects.cpp" />
+    <ClCompile Include="..\..\..\librtt\Corona\CoronaMemory.cpp" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaVersion.c" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaGraphics.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_BitmapMask.cpp" />
@@ -188,11 +191,19 @@
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_RenderTypes.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderBinary.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderBinaryVersions.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderCode.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Texture.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_TextureBitmap.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_TextureVolatile.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Uniform.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VideoTexture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanContext.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanFrameBufferObject.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanGeometry.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanProgram.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanRenderer.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanTexture.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Archive.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_CachedPath.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_CKWorkflow.cpp" />
@@ -302,6 +313,7 @@
     <ClInclude Include="..\..\..\external\luafilesystem\src\lfs.h" />
     <ClInclude Include="..\..\..\external\LuaHashMap\LuaHashMap.h" />
     <ClInclude Include="..\..\..\external\smoothpolygon\SmoothPolygon.h" />
+    <ClInclude Include="..\..\..\external\vulkan\utils\volk.h" />
     <ClInclude Include="..\..\..\librtt\b2GLESDebugDraw.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Array.h" />
@@ -347,6 +359,9 @@
     <ClInclude Include="..\..\..\librtt\Corona\CoronaLog.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaLua.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaMacros.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaObjects.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaPublicTypes.h" />
+    <ClInclude Include="..\..\..\librtt\Corona\CoronaMemory.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaVersion.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaGraphics.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_BitmapMask.h" />
@@ -380,6 +395,7 @@
     <ClInclude Include="..\..\..\librtt\Display\Rtt_LuaLibGraphics.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_MDisplayDelegate.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_MDrawable.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ObjectBoxList.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_OpenPath.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_Paint.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_PaintAdapter.h" />
@@ -468,12 +484,22 @@
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_RenderTypes.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderBinary.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderBinaryVersions.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderCode.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Texture.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_TextureBitmap.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_TextureVolatile.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Uniform.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VideoSource.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VideoTexture.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanCommandBuffer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanContext.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanExports.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanFrameBufferObject.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanGeometry.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanIncludes.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanProgram.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanRenderer.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanTexture.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Archive.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_CachedPath.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Callback.h" />
@@ -600,6 +626,10 @@
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua">
       <FileType>Document</FileType>
     </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\shell_default_vulkan.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussianLinear_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearHorizontal_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearVertical_gl.lua" />
     <LuaToCpp Include="..\..\resources\ValidateSettings.lua" />
     <LuaToCpp Include="..\..\resources\valid_build_settings.lua" />
     <LuaToCpp Include="..\..\resources\valid_config_lua.lua" />
@@ -868,12 +898,30 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>vulkan-1.lib;shaderc_combinedd.lib;spirv-cross-cored.lib;spirv-cross-glsld.lib;</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
+    <PreBuildEvent>
+      <Command>set DIRECTORY=$(ProjectDir)../../../external/vulkan/Lib32
+set LIBRARYROOT=%DIRECTORY%/shaderc_combinedd
+set LIBRARY=%LIBRARYROOT%.lib
+set ARCHIVE=%LIBRARYROOT%.7z
+set ZIP=$(ProjectDir)../Build.Tools/7za
+
+if NOT EXIST %LIBRARY% (
+  %ZIP% e %ARCHIVE% -o%DIRECTORY%
+)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.App|Win32'">
     <ClCompile>
@@ -881,11 +929,19 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>vulkan-1.lib;shaderc_combinedd.lib;spirv-cross-cored.lib;spirv-cross-glsld.lib;</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">
     <ClCompile>
@@ -909,6 +965,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -916,6 +974,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>shaderc_combined.lib;spirv-cross-core.lib;spirv-cross-glsl.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">
     <ClCompile>
@@ -926,6 +990,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -933,6 +999,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>shaderc_combined.lib;spirv-cross-core.lib;spirv-cross-glsl.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
