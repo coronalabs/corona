@@ -148,15 +148,14 @@ END_MESSAGE_MAP()
 #pragma region Constructor/Destructor
 /// Creates a new Corona Simulator CView.
 CSimulatorView::CSimulatorView()
-:	mSimulatorServices(*this),
+:	mScopedComInitializer(Interop::ScopedComInitializer::ApartmentType::kSingleThreaded),
+	mSimulatorServices(*this),
 	mMessageDlgPointer(nullptr),
 	mProgressDlgPointer(nullptr),
 	mDeviceConfig(*Rtt_AllocatorCreate()),
 	mRuntimeLoadedEventHandler(this, &CSimulatorView::OnRuntimeLoaded)
 {
 	CSimulatorApp *applicationPointer = (CSimulatorApp*)AfxGetApp();
-
-	CoInitialize(nullptr);
 
     mRotation = 0;  // current rotation
     mpSkinBitmap = nullptr;
