@@ -12,7 +12,7 @@
 #include "Core/Rtt_Allocator.h"
 #include <stddef.h>
 
-#include "Rtt_Math.h"
+#include "../Core/Rtt_Math.h"
 
 // ----------------------------------------------------------------------------
 

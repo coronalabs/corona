@@ -74,7 +74,7 @@ TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factor
 		TODO: add appropriate frame buffer resources...
 	 */	
 	FrameBufferObject * fbo = Rtt_NEW( pAllocator,
-									  FrameBufferObject( pAllocator, texture, false ) );
+									  FrameBufferObject( pAllocator, texture, nullptr ) );
 
 	GroupObject *cache = Rtt_NEW( pAllocator,
 								 GroupObject(display.GetAllocator(), display.GetStageOffscreen() ) );

@@ -422,15 +422,18 @@ int luaload_shell_default_vulkan(lua_State * L);
 bool
 ShaderBuiltin::PushDefaultShell( lua_State *L, const char * backend )
 {
+#if defined( Rtt_WIN_ENV )
 	if (strcmp( backend, "vulkanBackend" ) == 0)
 	{
 		lua_pushcfunction( L, Corona::Lua::Open< luaload_shell_default_vulkan > );
 	}
-
 	else
 	{
 		lua_pushcfunction( L, Corona::Lua::Open< luaload_shell_default_gl > );
 	}
+#else
+	lua_pushcfunction( L, Corona::Lua::Open< luaload_shell_default_gl > );
+#endif
 
 	return ( !! Rtt_VERIFY( 0 == Corona::Lua::DoCall( L, 0, 1 ) ) );
 }

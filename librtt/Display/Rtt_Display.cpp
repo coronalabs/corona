@@ -258,6 +258,7 @@ Display::Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orie
 	{
 		Rtt_Allocator *allocator = GetRuntime().GetAllocator();
 
+#if defined( Rtt_WIN_ENV )
 		if (strcmp( backend, "glBackend" ) == 0)
 		{
 			fRenderer = Rtt_NEW( allocator, GLRenderer( allocator ) );
@@ -267,11 +268,13 @@ Display::Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orie
 		{
 			fRenderer = VulkanExports::CreateVulkanRenderer( allocator, backendContext, &InvalidateDisplay, this );
 		}
-
 		else
 		{
 			Rtt_ASSERT_NOT_REACHED();
 		}
+#else
+		fRenderer = Rtt_NEW( allocator, GLRenderer( allocator ) );
+#endif
 
 		fRenderer->Initialize();
 		
