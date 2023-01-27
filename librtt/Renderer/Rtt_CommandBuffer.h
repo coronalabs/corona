@@ -51,9 +51,13 @@ class CommandBuffer
 			kNumQueryableParams,
 		}
 		QueryableParams;
+	
+	public:
+		void ReadBytes( void * value, size_t size );
+		void WriteBytes( const void * value, size_t size );
 		
 	public:
-        static size_t GetMaxUniformVectorsCount();
+		static size_t GetMaxUniformVectorsCount();
 		static size_t GetMaxVertexTextureUnits();
 		static size_t GetMaxTextureSize();
 		static const char *GetGlString( const char *s );
@@ -109,6 +113,8 @@ class CommandBuffer
         virtual const unsigned char * GetBaseAddress() const = 0;
     
         virtual bool WriteNamedUniform( const char * uniformName, const void * data, unsigned int size ) = 0;
+        
+        virtual void WillRender() {}
     
         // Execute the generated command buffer. This function should only be
         // called from a thread with an active rendering context. If requested

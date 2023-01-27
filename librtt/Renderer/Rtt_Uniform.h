@@ -52,6 +52,7 @@ class Uniform : public CPUResource
 			kDeltaTime,
 			kTexelSize,
 			kContentScale,
+			kContentSize, // used by Vulkan backend
 			kUserData0,
 			kUserData1,
 			kUserData2,
@@ -62,6 +63,7 @@ class Uniform : public CPUResource
 
 	public:
 		Uniform( Rtt_Allocator* allocator, DataType type );
+		Uniform( DataType type );
 		virtual ~Uniform();
 
 		virtual ResourceType GetType() const;

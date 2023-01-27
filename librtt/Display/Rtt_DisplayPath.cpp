@@ -337,7 +337,7 @@ DisplayPath::ExtensionAdapter::WillFinalize( LuaUserdataProxy& sender ) const
     DisplayObject* object = (DisplayObject*)sender.GetUserdata();
     if (!object) { return; }
     
-    Geometry* geometry = GetGeometry( object );
+    Geometry* geometry = GetGeometry( object, fIsFill );
     
     Rtt_ASSERT( geometry );
     

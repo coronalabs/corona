@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Renderer/Rtt_FrameBufferObject.h"
+#include "Renderer/Rtt_Texture.h"
 
 // ----------------------------------------------------------------------------
 
@@ -20,8 +21,10 @@ FrameBufferObject::FrameBufferObject( Rtt_Allocator* allocator, Texture* texture
 :	CPUResource( allocator ),
 	fTexture( texture ),
 	fDepthBits( options ? options->depthBits : 0 ),
-	fStencilBits( options ? options->stencilBits : 0 )
+	fStencilBits( options ? options->stencilBits : 0 ),
+	fMustClear( options ? options->mustClear : true )
 {
+	fTexture->SetTarget( true );
 }
 
 CPUResource::ResourceType FrameBufferObject::GetType() const

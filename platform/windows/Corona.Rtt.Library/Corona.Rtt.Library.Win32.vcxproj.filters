@@ -130,6 +130,9 @@
     <Filter Include="external\remdebug-1.0\src">
       <UniqueIdentifier>{8902cd3f-285c-41da-b8b9-53800540d898}</UniqueIdentifier>
     </Filter>
+    <Filter Include="external\vulkan">
+      <UniqueIdentifier>{5872729e-673e-4f2f-8b82-69ff24ad96e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\external\ALmixer\luaal.c">
@@ -899,6 +902,33 @@
     </ClCompile>
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceCollection.cpp">
       <Filter>librtt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ShaderCode.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanCommandBuffer.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanContext.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanFrameBufferObject.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanGeometry.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanProgram.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanRenderer.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_VulkanTexture.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\vulkan\utils\volk.c">
+      <Filter>external\vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\librtt\Corona\CoronaObjects.cpp">
       <Filter>librtt\Corona</Filter>
@@ -1808,6 +1838,39 @@
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h">
       <Filter>librtt</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_ShaderCode.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanCommandBuffer.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanContext.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanExports.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanFrameBufferObject.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanGeometry.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanIncludes.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanProgram.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanRenderer.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_VulkanTexture.h">
+      <Filter>librtt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\vulkan\utils\volk.h">
+      <Filter>external\vulkan</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\librtt\Corona\CoronaObjects.h">
       <Filter>librtt\Corona</Filter>
     </ClInclude>
@@ -2253,6 +2316,9 @@
     </LuaToCpp>
     <LuaToCpp Include="..\..\resources\ValidateSettings.lua">
       <Filter>platform\resources</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\shell_default_vulkan.lua">
+      <Filter>librtt\Display\Shader</Filter>
     </LuaToCpp>
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussianLinear_gl.lua">
       <Filter>librtt\Display\Shader</Filter>
