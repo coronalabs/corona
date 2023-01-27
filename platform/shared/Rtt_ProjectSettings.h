@@ -354,6 +354,7 @@ class ProjectSettings
 		 */
 		bool IsWindowTransparent() const;
 	
+		/**
 		 * Get a string describing the backend status.
 		 * @return
 		 * Returns one of "gl", "vulkanWanted", "vulkanRequired".
