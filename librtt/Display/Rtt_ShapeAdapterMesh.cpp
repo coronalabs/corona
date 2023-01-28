@@ -17,6 +17,7 @@
 #include "Display/Rtt_TesselatorMesh.h"
 #include "Rtt_LuaContext.h"
 #include "CoronaLua.h"
+#include "CoronaMemory.h"
 
 #include <limits>
 
