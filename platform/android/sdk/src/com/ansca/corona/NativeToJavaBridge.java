@@ -2057,6 +2057,10 @@ public class NativeToJavaBridge {
 			luaState.pushBoolean(currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES);
 			valuesPushed = 1;
 		}
+		else if (key.equals("hasSoftwareKeys")) {
+			luaState.pushBoolean(CoronaEnvironment.getCoronaActivity().HasSoftwareKeys());
+			valuesPushed = 1;
+		}
 
 		// Push nil if failed to fetch the requested value.
 		if (valuesPushed <= 0) {
