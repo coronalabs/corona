@@ -1193,14 +1193,34 @@ SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &fa
     }
     lua_pop( L, 1 );
     
+    if ( width <= 0 && pixelWidth > 0 )
+    {
+        width = pixelWidth;
+    }
+    if ( height <= 0 && pixelHeight > 0 )
+    {
+        height = pixelHeight;
+    }
+
     if( width > 0 && height > 0 )
     {
         
         if (pixelWidth <= 0 || pixelHeight <= 0)
         {
+            S32 unused = 0, oldPixelWidth = pixelWidth, oldPixelHeight = pixelHeight;
             pixelWidth = Rtt_RealToInt( width );
             pixelHeight = Rtt_RealToInt( height );
-            display.ContentToScreen( pixelWidth, pixelHeight );
+            display.ContentToScreen( unused, unused, pixelWidth, pixelHeight );
+            
+            // if one of the values was specified, use that instead:
+            if (oldPixelWidth > 0)
+            {
+                pixelWidth = oldPixelWidth;
+            }
+            else if (oldPixelHeight > 0)
+            {
+                pixelHeight = oldPixelHeight;
+            }
         }
         
         int texSize = display.GetMaxTextureSize();
