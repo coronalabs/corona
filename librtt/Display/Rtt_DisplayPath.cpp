@@ -210,7 +210,7 @@ DisplayPath::ExtensionAdapter::ValueForKey(
             {
                 const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
                 
-                if (block && (block->fInstanceData || geometry->GetExtensionList()->instancedByID))
+                if ( Geometry::UsesInstancing( block, geometry->GetExtensionList() ) )
                 {
                     lua_pushnumber( L, block->fCount );
                 }

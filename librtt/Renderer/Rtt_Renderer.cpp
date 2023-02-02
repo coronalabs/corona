@@ -592,7 +592,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     }
     
     const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
-    bool isInstanced = block && (block->fInstanceData || extensionList->instancedByID);
+    bool isInstanced = Geometry::UsesInstancing( block, extensionList );
 
     // Geometry that is stored on the GPU does not need to be copied
     // over each frame. As a consequence, they can not be batched.
