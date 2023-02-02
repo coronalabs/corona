@@ -179,6 +179,8 @@ class Geometry : public CPUResource
  
         ExtensionBlock * GetExtensionBlock() const { return fExtension; }
         ExtensionBlock * EnsureExtension();
+     
+        static bool UsesInstancing( const ExtensionBlock* block, const FormatExtensionList* list );
     
         // More space may be allocated than is initially needed. By default,
         // the use count is zero and must be set for Geometry to be useful.
