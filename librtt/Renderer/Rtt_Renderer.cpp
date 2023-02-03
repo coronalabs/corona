@@ -30,7 +30,9 @@
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
 
-#define ENABLE_DEBUG_PRINT    0
+#include "Rtt_GPUStream.h"
+
+#define ENABLE_DEBUG_PRINT	0
 
 #include <limits>
 
@@ -154,7 +156,10 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fScissorEnabled( false ),
     fMultisampleEnabled( false ),
     fFrameBufferObject( NULL ),
-    fInsertionLimit( std::numeric_limits<U32>::max() ),
+    fInsertionLimit( (std::numeric_limits<U32>::max)() ),
+    fRenderDataCount( 0 ),
+	fVertexOffset( 0 ),
+	fCurrentGeometry( NULL ),
     fTimeDependencyCount( 0 )
 {
     // Always have at least 1 mask count.
@@ -207,7 +212,7 @@ CallOps( Rtt::Renderer * renderer, Rtt::Array< Renderer::CustomOp > & ops, Rtt::
 }
 
 void
-Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY )
+Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool )
 {
     fContentScaleX = contentScaleX;
     fContentScaleY = contentScaleY;
@@ -270,7 +275,24 @@ Renderer::EndFrame()
     DEBUG_PRINT( "--End Frame: Renderer--\n\n" );
 }
 
+
 void
+Renderer::BeginDrawing()
+{
+	fBackCommandBuffer->WillRender();
+}
+
+void
+Renderer::CaptureFrameBuffer( RenderingStream & stream, BufferBitmap & bitmap, S32 x_in_pixels, S32 y_in_pixels, S32 w_in_pixels, S32 h_in_pixels )
+{
+	stream.CaptureFrameBuffer( bitmap,
+		x_in_pixels,
+		y_in_pixels,
+		w_in_pixels,
+		h_in_pixels );
+}
+
+void 
 Renderer::GetFrustum( Real* viewMatrix, Real* projMatrix ) const
 {
     const U32 ELEMENTS_PER_MAT4 = 16;
@@ -570,7 +592,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     }
     
     const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
-    bool isInstanced = block && (block->fInstanceData || extensionList->instancedByID);
+    bool isInstanced = Geometry::UsesInstancing( block, extensionList );
 
     // Geometry that is stored on the GPU does not need to be copied
     // over each frame. As a consequence, they can not be batched.

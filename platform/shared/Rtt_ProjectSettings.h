@@ -345,6 +345,22 @@ class ProjectSettings
 		 */
 		bool IsWindowTitleShown() const;
 
+		/**
+		 * Determines if the window should be transparent.
+		 * @return
+		 * Returns true if the window should be transparent.
+		 *
+		 * Returns false if it should be opaque.
+		 */
+		bool IsWindowTransparent() const;
+	
+		/**
+		 * Get a string describing the backend status.
+		 * @return
+		 * Returns one of "gl", "vulkanWanted", "vulkanRequired".
+		 */
+		const std::string & Backend() const;
+
 	protected:
 		/**
 		 * Called after the LoadFromDirectory() method has successfully loaded information from the
@@ -482,6 +498,12 @@ class ProjectSettings
 
 		/** Set to true if the Corona window should display its title. False to not show it.*/
 		bool fIsWindowTitleShown;
+
+		/** Set to true if the window should be transparent. False to be opaque.*/
+		bool fIsWindowTransparent;
+
+		/** One of the following: "gl", "wantVulkan", "requireVulkan".*/
+		std::string fBackend;
 };
 
 } // namespace Rtt

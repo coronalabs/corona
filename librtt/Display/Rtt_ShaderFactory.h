@@ -51,9 +51,9 @@ class ShaderFactory
         static void PushTable( lua_State *L, const char *key );
         static void RegisterBuiltin( lua_State *L, ShaderTypes::Category category );
 
-    public:
-        ShaderFactory( Display& owner, const ProgramHeader& programHeader );
-        ~ShaderFactory();
+	public:
+		ShaderFactory( Display& owner, const ProgramHeader& programHeader, const char * backend );
+		~ShaderFactory();
 
     protected:
         bool Initialize();
@@ -154,15 +154,16 @@ class ShaderFactory
         Shader& GetDefault() const { return *fDefaultShader; }
         Shader& GetDefaultColorShader() const;
 
-    private:
-        Rtt_Allocator *fAllocator;
-        Shader *fDefaultShader;
-        mutable Shader *fDefaultColorShader;
-        lua_State *fL;
-        Display& fOwner;
-        Program *fDefaultShell;
-        Program *fDefaultKernel;
-        ProgramHeader *fProgramHeader;
+	private:
+		Rtt_Allocator *fAllocator;
+		Shader *fDefaultShader;
+		mutable Shader *fDefaultColorShader;
+		lua_State *fL;
+		Display& fOwner;
+		Program *fDefaultShell;
+		Program *fDefaultKernel;
+		ProgramHeader *fProgramHeader;
+		const char *fBackend;
 };
 
 // ----------------------------------------------------------------------------

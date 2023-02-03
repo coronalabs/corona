@@ -572,11 +572,6 @@ int CoronaMemoryAcquireInterface( lua_State *L, int arg, CoronaMemoryAcquireStat
 		}
 	}
 	
-	else
-	{
-		CORONA_LOG_WARNING( "Unable to find memory interface proxy" );
-	}
-	
 	lua_settop( L, top ); // ..., object, ...
 	
 	int result = 0;

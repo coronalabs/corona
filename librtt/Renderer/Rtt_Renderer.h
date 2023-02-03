@@ -36,6 +36,8 @@ class FrameBufferObject;
 class GeometryPool;
 class Texture;
 class Uniform;
+class RenderingStream;
+class BufferBitmap;
 class ShaderData;
 
 // ----------------------------------------------------------------------------
@@ -54,17 +56,22 @@ class Renderer
         // be called when a valid rendering context is active.
         virtual void Initialize();
 
-        // Perform any per-frame preparation. Total time is the time in seconds
-        // since the start of the application. Delta time is the amount of time
-        // in seconds it took to complete the previous frame.
-        virtual void BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY );
+		// Perform any per-frame preparation. Total time is the time in seconds
+		// since the start of the application. Delta time is the amount of time
+		// in seconds it took to complete the previous frame.
+		virtual void BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool isCapture = false );
 
         // Perform any per-frame finalization.
         virtual void EndFrame();
 
-        // Get the current view and projection matrices. These 4x4 matrices are
-        // returned via the given pointers, which are assumed to be non-null.
-        void GetFrustum( Real* viewMatrix, Real* projectionMatrix ) const;
+		void BeginDrawing();
+
+		virtual void CaptureFrameBuffer( RenderingStream & stream, BufferBitmap & bitmap, S32 x_in_pixels, S32 y_in_pixels, S32 w_in_pixels, S32 h_in_pixels );
+		virtual void EndCapture() {}
+
+		// Get the current view and projection matrices. These 4x4 matrices are
+		// returned via the given pointers, which are assumed to be non-null.
+		void GetFrustum( Real* viewMatrix, Real* projectionMatrix ) const;
 
         // Set the viewing frustum to use while rendering. This function may be
         // called multiple times per frame. Each call to Insert() will use the

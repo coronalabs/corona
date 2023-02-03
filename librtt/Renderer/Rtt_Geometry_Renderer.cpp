@@ -1341,6 +1341,14 @@ Geometry::EnsureExtension()
     
     return fExtension;
 }
+ 
+bool
+Geometry::UsesInstancing( const ExtensionBlock* block, const FormatExtensionList* list )
+{
+    bool instancedByID = list && list->instancedByID;
+
+    return block && (block->fInstanceData || instancedByID);
+}
 
 // ----------------------------------------------------------------------------
 

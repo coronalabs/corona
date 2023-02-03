@@ -32,6 +32,7 @@ class FrameBufferObject : public CPUResource
 		struct ExtraOptions {
 			U8 depthBits;
 			U8 stencilBits;
+			bool mustClear;
 		};
 
 		FrameBufferObject( Rtt_Allocator* allocator, Texture* texture, ExtraOptions * options = NULL );
@@ -40,11 +41,13 @@ class FrameBufferObject : public CPUResource
 		Texture* GetTexture() const;
 		U8 GetDepthBits() const { return fDepthBits; }
 		U8 GetStencilBits() const { return fStencilBits; }
+		bool GetMustClear() const { return fMustClear; }
 
 	private:
 		Texture* fTexture;
 		U8 fDepthBits;
 		U8 fStencilBits;
+		bool fMustClear;
 };
 
 // ----------------------------------------------------------------------------

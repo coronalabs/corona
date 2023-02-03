@@ -210,7 +210,7 @@ DisplayPath::ExtensionAdapter::ValueForKey(
             {
                 const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
                 
-                if (block && (block->fInstanceData || geometry->GetExtensionList()->instancedByID))
+                if ( Geometry::UsesInstancing( block, geometry->GetExtensionList() ) )
                 {
                     lua_pushnumber( L, block->fCount );
                 }
@@ -337,7 +337,7 @@ DisplayPath::ExtensionAdapter::WillFinalize( LuaUserdataProxy& sender ) const
     DisplayObject* object = (DisplayObject*)sender.GetUserdata();
     if (!object) { return; }
     
-    Geometry* geometry = GetGeometry( object );
+    Geometry* geometry = GetGeometry( object, fIsFill );
     
     Rtt_ASSERT( geometry );
     

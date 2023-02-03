@@ -27,7 +27,8 @@
 				viewRect:(NSRect)screenRect
 				   title:(NSString*)title
 			 orientation:(Rtt::DeviceOrientation::Type)orientation
-                   scale:(float)scale;
+                   scale:(float)scale
+		   isTransparent:(BOOL)isTransparent;
 
 - (void)setOrientation:(Rtt::DeviceOrientation::Type)orientation;
 - (void)rotate:(BOOL)clockwise;

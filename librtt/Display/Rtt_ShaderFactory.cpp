@@ -85,15 +85,16 @@ ShaderFactory::RegisterBuiltin( lua_State *L, ShaderTypes::Category category )
 
 // ----------------------------------------------------------------------------
 
-ShaderFactory::ShaderFactory( Display& owner, const ProgramHeader& programHeader )
-:    fAllocator( owner.GetAllocator() ),
-    fDefaultColorShader( NULL ),
-    fDefaultShader( NULL ),
-    fL( CoronaLuaNew( kCoronaLuaFlagOpenStandardLibs ) ),
-    fOwner( owner ),
-    fDefaultShell( NULL ),
-    fDefaultKernel( NULL ),
-    fProgramHeader( Rtt_NEW( fAllocator, ProgramHeader( programHeader ) ) )
+ShaderFactory::ShaderFactory( Display& owner, const ProgramHeader& programHeader, const char * backend )
+:	fAllocator( owner.GetAllocator() ),
+	fDefaultColorShader( NULL ),
+	fDefaultShader( NULL ),
+	fL( CoronaLuaNew( kCoronaLuaFlagOpenStandardLibs ) ),
+	fOwner( owner ),
+	fDefaultShell( NULL ),
+	fDefaultKernel( NULL ),
+	fProgramHeader( Rtt_NEW( fAllocator, ProgramHeader( programHeader ) ) ),
+	fBackend( backend )
 {
     lua_State *L = fL;
 
@@ -150,10 +151,10 @@ ShaderFactory::Initialize()
         }
     }
 #else
-    // Load the default shell and kernel shader source code to be dynamically compiled later.
-    if ( ShaderBuiltin::PushDefaultShell( L ) )
-    {
-        int tableIndex = lua_gettop( L );
+	// Load the default shell and kernel shader source code to be dynamically compiled later.
+	if ( ShaderBuiltin::PushDefaultShell( L, fBackend ) )
+	{
+		int tableIndex = lua_gettop( L );
 
         lua_getfield( L, tableIndex, "vertex" );
         const char *shellVert = lua_tostring( L, -1 );
@@ -303,24 +304,34 @@ ShaderFactory::NewProgram(
 //    Rtt_TRACE( ( "Fragment source:\n%s\n", program->GetFragmentShaderSource() ) );
     lua_pop( L, 1 );
 
-    //TODO - move this into a delegate block, rather than extending this
-    {
-        #if defined( Rtt_OPENGLES )
-            // We are using OpenGL ES, so assume it's v.2.0
-            // We could also look at GL_ES_VERSION_2_0 and GL_ES_VERSION_3_0.
-            Program::Language language = Program::kOpenGL_ES_2;
-        #else // NOT Rtt_OPENGLES
-            // We are using Desktop OpenGL, so assume it's OpenGL 2.1
-            // We could also look at GL_VERSION_2_0 and GL_VERSION_2_1.
-            Program::Language language = Program::kOpenGL_2_1;
-        #endif
-        
-        std::string header = Program::HeaderForLanguage( language, * fProgramHeader );
-        
-        if (ShaderResource::k25D == mod)
-        {
-            header = header + std::string("#define TEX_COORD_Z 1\n");
-        }
+	//TODO - move this into a delegate block, rather than extending this
+	{
+		Program::Language language;
+
+		if (strcmp( fBackend, "vulkanBackend" ) == 0)
+		{
+			language = Program::kVulkanGLSL;
+		}
+
+		else
+		{
+		#if defined( Rtt_OPENGLES )
+			// We are using OpenGL ES, so assume it's v.2.0
+			// We could also look at GL_ES_VERSION_2_0 and GL_ES_VERSION_3_0.
+			language = Program::kOpenGL_ES_2;
+		#else // NOT Rtt_OPENGLES
+			// We are using Desktop OpenGL, so assume it's OpenGL 2.1
+			// We could also look at GL_VERSION_2_0 and GL_VERSION_2_1.
+			language = Program::kOpenGL_2_1;
+		#endif
+		}
+		
+		std::string header = Program::HeaderForLanguage( language, * fProgramHeader );
+		
+		if (ShaderResource::k25D == mod)
+		{
+			header = header + std::string("#define TEX_COORD_Z 1\n");
+		}
 
 #if defined( Rtt_EMSCRIPTEN_ENV )
         header = header +  "#define Rtt_WEBGL_ENV\n";

@@ -218,6 +218,7 @@ Shader::RenderToTexture( Renderer& renderer, Geometry& cache ) const
 				renderer.SetFrustum( offscreenViewMatrix, offscreenProjMatrix );
 				renderer.SetViewport( 0, 0, w, h );
 				renderer.Clear( 0.0f, 0.0f, 0.0f, 0.0f );
+				renderer.BeginDrawing();
 				
 				renderer.Insert( fRenderData, GetData() );
 			}

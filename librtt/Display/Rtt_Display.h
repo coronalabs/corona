@@ -121,10 +121,10 @@ class Display
         Display( Runtime& owner );
         virtual ~Display();
 
-    public:
-        //! \Return true for success. False for failure.
-        virtual bool Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orientation );
-        virtual void Teardown();
+	public:
+		//! \Return true for success. False for failure.
+		virtual bool Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orientation, const char * backend, void * backendContext );
+		virtual void Teardown();
 
     protected:
         void ReadRenderingConfig( lua_State *L, int index, ProgramHeader& programHeader );

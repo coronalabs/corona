@@ -878,6 +878,11 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	}
 }
 
+- (BOOL) settingsIsTransparent
+{
+	return (BOOL) _projectSettings->IsWindowTransparent();
+}
+
 // ----------------------------------------------------------------------------
 
 @end

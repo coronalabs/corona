@@ -140,39 +140,44 @@ LuaLibSystem::getInfo( lua_State *L )
 
         Rtt_ASSERT( env );
 
-        lua_pushstring( L, env );
-    }
-    else if ( Rtt_StringCompare( key, "platformName" ) == 0 )
-    {
-        lua_pushstring( L, device.GetPlatformName() );
-    }
-    else if ( Rtt_StringCompare( key, "platform" ) == 0 )
-    {
-        lua_pushstring( L, device.GetPlatform() );
-    }
-    else if ( Rtt_StringCompare( key, "platformVersion" ) == 0 )
-    {
-        lua_pushstring( L, device.GetPlatformVersion() );
-    }
-    else if ( Rtt_StringCompare( key, "graphicsPipelineVersion" ) == 0 )
-    {
-        lua_pushstring( L, "2.0" );
-    }
-    else if ( Rtt_StringCompare( key, "architectureInfo" ) == 0 )
-    {
-        lua_pushstring( L, device.GetArchitectureInfo() );
-    }
-    else if ( Rtt_StringCompare( key, "textureMemoryUsed" ) == 0 )
-    {
-        TextureFactory& factory = LuaContext::GetRuntime( L )->GetDisplay().GetTextureFactory();
-        lua_pushinteger( L, factory.GetTextureMemoryUsed() );
-    }
-    else if ( Rtt_StringCompare( key, "maxTextureSize" ) == 0 )
-    {
-        Runtime *runtime = LuaContext::GetRuntime( L );
-        lua_pushinteger( L, runtime->GetDisplay().GetMaxTextureSize() );
-    }
-    
+		lua_pushstring( L, env );
+	}
+	else if ( Rtt_StringCompare( key, "platformName" ) == 0 )
+	{
+		lua_pushstring( L, device.GetPlatformName() );
+	}
+	else if ( Rtt_StringCompare( key, "platform" ) == 0 )
+	{
+		lua_pushstring( L, device.GetPlatform() );
+	}
+	else if ( Rtt_StringCompare( key, "platformVersion" ) == 0 )
+	{
+		lua_pushstring( L, device.GetPlatformVersion() );
+	}
+	else if ( Rtt_StringCompare( key, "graphicsPipelineVersion" ) == 0 )
+	{
+		lua_pushstring( L, "2.0" );
+	}
+	else if (Rtt_StringCompare( key, "graphicsBackend" ) == 0 )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		lua_pushstring( L, runtime->GetBackend() );
+	}
+	else if ( Rtt_StringCompare( key, "architectureInfo" ) == 0 )
+	{
+		lua_pushstring( L, device.GetArchitectureInfo() );
+	}
+	else if ( Rtt_StringCompare( key, "textureMemoryUsed" ) == 0 )
+	{
+		TextureFactory& factory = LuaContext::GetRuntime( L )->GetDisplay().GetTextureFactory();
+		lua_pushinteger( L, factory.GetTextureMemoryUsed() );
+	}
+	else if ( Rtt_StringCompare( key, "maxTextureSize" ) == 0 )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		lua_pushinteger( L, runtime->GetDisplay().GetMaxTextureSize() );
+	}
+	
 #ifdef OLD_GRAPHICS
     else if ( Rtt_StringCompare( key, "maxTextureUnits" ) == 0 )
     {

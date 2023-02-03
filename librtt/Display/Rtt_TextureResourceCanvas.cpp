@@ -74,7 +74,7 @@ TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factor
 		TODO: add appropriate frame buffer resources...
 	 */	
 	FrameBufferObject * fbo = Rtt_NEW( pAllocator,
-									  FrameBufferObject( pAllocator, texture ) );
+									  FrameBufferObject( pAllocator, texture, nullptr ) );
 
 	GroupObject *cache = Rtt_NEW( pAllocator,
 								 GroupObject(display.GetAllocator(), display.GetStageOffscreen() ) );
@@ -209,6 +209,8 @@ void TextureResourceCanvas::Render(Rtt::Renderer &renderer, GroupObject *group, 
 			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255/*, &extra */ );
 		}
 		
+		renderer.BeginDrawing();
+		
 		group->WillDraw( renderer );
 		group->Draw( renderer );
 		group->DidDraw( renderer );
@@ -257,6 +259,7 @@ TextureResourceCapture::Create(
 	
 	if (display.HasFramebufferBlit( NULL ))
 	{
+		// TODO: extra options
 		fbo = Rtt_NEW( pAllocator, FrameBufferObject( pAllocator, texture ) );
 	}
 	

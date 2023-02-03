@@ -64,6 +64,8 @@ SimulatorAnalytics::~SimulatorAnalytics()
 	{
 		AnalyticsProviderFinish();
 	}
+
+	LuaContext::Delete( fVMContext );
 }
 
 bool
