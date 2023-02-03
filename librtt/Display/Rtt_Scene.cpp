@@ -211,7 +211,7 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
         Rtt::Real totalTime = Rtt_AbsoluteToMilliseconds( elapsedTime ) / kMillisecondsPerSecond;
         Rtt::Real deltaTime = Rtt_AbsoluteToMilliseconds( elapsedTime - fOwner.GetPreviousTime() ) / kMillisecondsPerSecond;
 
-        renderer.BeginFrame( totalTime, deltaTime, fOwner.GetSx(), fOwner.GetSy() );
+        renderer.BeginFrame( totalTime, deltaTime, fOwner.GetDefaults().GetTimeTransform(), fOwner.GetSx(), fOwner.GetSy() );
         
         fOwner.GetTextureFactory().Preload( renderer );
         fOwner.GetTextureFactory().UpdateTextures(renderer);

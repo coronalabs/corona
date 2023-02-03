@@ -675,71 +675,6 @@ ShaderFactory::BindShellTransform( lua_State * L, int index, const SharedPtr< Sh
     lua_pop( L, 1 ); // ...
 }
 
-static void
-Modulo( Real *x, Real range, Real, Real )
-{
-    *x = fmod( *x, range ); // TODO?: Rtt_RealFmod
-}
-
-static void
-PingPong( Real *x, Real range, Real, Real )
-{
-    Real pos = fmod( *x, Rtt_REAL_2 * range ); // TODO?: Rtt_RealFmod
-
-    if (pos > range)
-    {
-        pos = Rtt_REAL_2 * range - pos;
-    }
-
-    *x = pos;
-}
-
-static void
-Sine( Real *x, Real amplitude, Real speed, Real shift )
-{
-    Real t = *x;
-
-    *x = amplitude * Rtt_RealSin( speed * t + shift );
-}
-
-static void
-GetNumberArg( lua_State * L, Real * value, const char * func, const char * name )
-{
-    lua_getfield( L, -2, name ); // ..., xform, func, value?
-        
-    if (!lua_isnil( L, -1 ))
-    {
-        if (lua_isnumber( L, -1 ))
-        {
-            *value = (Real)lua_tonumber( L, -1 );
-        }
-
-        else
-        {
-            CoronaLuaWarning( L, "graphics.defineEffect() ignoring invalid '%s' parameter for %s time transform (expected number but got %s)",
-                        name, func, lua_typename( L, lua_type( L, -1 ) ) );
-        }
-    }
-
-    lua_pop( L, 1 ); // ..., xform, func
-}
-
-static void
-GetPositiveNumberArg( lua_State * L, Real * value, const char * func, const char * name )
-{
-    Real old = *value;
-
-    GetNumberArg( L, value, func, name );
-
-    if (*value <= Rtt_REAL_0)
-    {
-        *value = old;
-
-        CoronaLuaWarning( L, "graphics.defineEffect() ignoring invalid '%s' parameter for %s time transform (must be positive number)",
-            name, func );
-    }
-}
-
 void
 ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< ShaderResource >& resource)
 {
@@ -749,51 +684,16 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
 
     if (lua_istable( L, -1 ))
     {
-        lua_getfield( L, -1, "func" );    // ..., xform, func
+        const char *func = TimeTransform::FindFunc( L, -1, "graphics.defineEffect()" );
 
         if (lua_isstring( L, -1 ))
         {
-            const char *func = lua_tostring( L, -1 );
-            TimeTransform *transform = NULL;
-            bool isModulo = strcmp(func, "modulo") == 0;
-
-            if (isModulo || strcmp( func, "pingpong" ) == 0)
-            {
-                Real range = Rtt_REAL_1;
-                
-                GetPositiveNumberArg( L, &range, func, "range" );
-
-                transform = Rtt_NEW( fAllocator, TimeTransform );
-
-                transform->func = isModulo ? &Modulo : &PingPong;
-                transform->arg1 = range;
-            }
-
-            else if (strcmp( func, "sine" ) == 0)
-            {
-                Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, shift = Rtt_REAL_0;
-
-                GetNumberArg( L, &amplitude, func, "amplitude" );
-                GetPositiveNumberArg( L, &period, func, "period" );
-                GetNumberArg( L, &shift, func, "shift" );
-
-                transform = Rtt_NEW( fAllocator, TimeTransform );
-
-                transform->func = &Sine;
-                transform->arg1 = amplitude;
-                transform->arg2 = (Rtt_REAL_2 * M_PI) / period;
-                transform->arg3 = shift;
-            }
-
-            else
-            {
-                CoronaLuaWarning( L, "graphics.defineEffect() ignoring unknown %s time transform", func );
-            }
-
+            TimeTransform *transform = Rtt_NEW( fAllocator, TimeTransform );
+ 
+            transform->SetFunc( L, -1, "graphics.defineEffect()", func );
+             
             resource->SetTimeTransform( transform );
         }
-
-        lua_pop( L, 1 ); // ..., xform
     }
 
     lua_pop( L, 1 ); // ...

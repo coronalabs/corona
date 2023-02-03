@@ -351,7 +351,6 @@ GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 	 fCurrentDrawVersion( Program::kMaskCount0 ),
 	 fProgram( NULL ),
      fDefaultFBO( 0 ),
-	 fTimeTransform( NULL ),
 	 fTimerQueries( new U32[kTimerQueryCount] ),
 	 fTimerQueryIndex( 0 ),
 	 fElapsedTimeGPU( 0.0f ),
@@ -525,7 +524,7 @@ GLCommandBuffer::BindProgram( Program* program, Program::Version version )
     fCurrentPrepVersion = version;
     fProgram = program;
 
-    fTimeTransform = program->GetShaderResource()->GetTimeTransform();
+    AcquireTimeTransform( program->GetShaderResource() );
 }
 
 void
@@ -1480,12 +1479,16 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
     Real rawTotalTime;
     bool transformed = false;
 
-    if (fTimeTransform)
+    if (fUsesTime)
     {
         const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
-        if (time.uniform)
+        if (fTimeTransform)
         {
             transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
+        }
+        if (transformed || !TimeTransform::Matches( fTimeTransform, fLastTimeTransform ))
+        {
+            fUniformUpdates[Uniform::kTotalTime].timestamp = glProgram->GetUniformTimestamp( Uniform::kTotalTime, fCurrentPrepVersion ) - 1; // force a refresh
         }
     }
 
@@ -1498,7 +1501,7 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
         }
     }
 
-    if (transformed)
+    if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
     {
         fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
     }

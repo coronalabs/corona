@@ -212,7 +212,7 @@ CallOps( Rtt::Renderer * renderer, Rtt::Array< Renderer::CustomOp > & ops, Rtt::
 }
 
 void
-Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool )
+Renderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTimeTransform, Real contentScaleX, Real contentScaleY, bool )
 {
     fContentScaleX = contentScaleX;
     fContentScaleY = contentScaleY;
@@ -249,6 +249,7 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real c
     fBackCommandBuffer->BindUniform( fDeltaTime, Uniform::kDeltaTime );
     
     fBackCommandBuffer->ClearUserUniforms();
+    fBackCommandBuffer->PrepareTimeTransforms( defTimeTransform );
     
     fBackCommandBuffer->SetBlendEnabled( fPrevious.fBlendEquation != RenderTypes::kDisabledEquation );
     fBackCommandBuffer->SetBlendFunction( fPrevious.fBlendMode );

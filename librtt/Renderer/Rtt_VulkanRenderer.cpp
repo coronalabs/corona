@@ -597,7 +597,7 @@ VulkanRenderer::~VulkanRenderer()
 }
 
 void
-VulkanRenderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool isCapture )
+VulkanRenderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform * defTimeTransform, Real contentScaleX, Real contentScaleY, bool isCapture )
 {
 	InitializePipelineState();
 
@@ -654,7 +654,7 @@ VulkanRenderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, 
 		SetFrameBufferObject( fPrimaryFBO );
 	}
 
-	Super::BeginFrame( totalTime, deltaTime, contentScaleX, contentScaleY );
+	Super::BeginFrame( totalTime, deltaTime, defTimeTransform, contentScaleX, contentScaleY );
 
 	vulkanCommandBuffer->ClearExecuteResult();
 }
