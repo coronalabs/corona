@@ -23,8 +23,6 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-struct TimeTransform;
-
 //
 class GLCommandBuffer : public CommandBuffer
 {
@@ -118,7 +116,6 @@ class GLCommandBuffer : public CommandBuffer
 		U32* fTimerQueries;
 		U32 fTimerQueryIndex;
 		Real fElapsedTimeGPU;
-		TimeTransform* fTimeTransform;
 		S32 fCachedQuery[kNumQueryableParams];
     
         Array< CoronaCommand > fCustomCommands;

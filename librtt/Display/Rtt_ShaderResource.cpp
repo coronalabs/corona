@@ -14,6 +14,9 @@
 #include "Display/Rtt_ShaderData.h"
 #include "Renderer/Rtt_Program.h"
 
+#include "Display/Rtt_Display.h"
+#include "CoronaLua.h"
+
 #include <string.h>
 
 // ----------------------------------------------------------------------------
@@ -50,6 +53,207 @@ TimeTransform::Apply( Uniform *time, Real *old, U32 now )
 	return false;
 }
 
+static void
+Modulo( Real *x, Real range, Real, Real )
+{
+    *x = fmod( *x, range ); // TODO?: Rtt_RealFmod
+}
+
+static void
+PingPong( Real *x, Real range, Real, Real )
+{
+    Real pos = fmod( *x, Rtt_REAL_2 * range ); // TODO?: Rtt_RealFmod
+
+    if (pos > range)
+    {
+        pos = Rtt_REAL_2 * range - pos;
+    }
+
+    *x = pos;
+}
+
+static void
+Sine( Real *x, Real amplitude, Real speed, Real shift )
+{
+    Real t = *x;
+
+    *x = amplitude * Rtt_RealSin( speed * t + shift );
+}
+
+int
+TimeTransform::Push( lua_State *L ) const
+{
+    if ( func )
+    {
+        lua_newtable( L );
+
+        if ( &Modulo == func || &PingPong == func )
+        {
+            lua_pushstring( L, &Modulo == func ? "modulo" : "pingpong" );
+            lua_setfield( L, -2, "func" );
+            lua_pushnumber( L, arg1 );
+            lua_setfield( L, -2, "range" );
+        }
+
+        else if ( &Sine == func )
+        {
+            lua_pushliteral( L, "sine" );
+            lua_setfield( L, -2, "func" );
+            lua_pushnumber( L, arg1 );
+            lua_setfield( L, -2, "amplitude" );
+            lua_pushnumber( L, (Rtt_REAL_2 * M_PI) / arg2 );
+            lua_setfield( L, -2, "period" );
+            lua_pushnumber( L, arg3 );
+            lua_setfield( L, -2, "shift" );
+        }
+
+        else
+        {
+            Rtt_ASSERT_NOT_REACHED();
+
+            return 0;
+        }
+    }
+
+    else
+    {
+        lua_pushnil( L );
+    }
+
+    return 1;
+}
+
+static void
+GetNumberArg( lua_State * L, int arg, Real * value, const char * func, const char * name, const char * what )
+{
+    lua_getfield( L, arg, name ); // ..., xform, ..., value?
+        
+    if (!lua_isnil( L, -1 ))
+    {
+        if (lua_isnumber( L, -1 ))
+        {
+            *value = (Real)lua_tonumber( L, -1 );
+        }
+
+        else
+        {
+            CoronaLuaWarning( L, "%s ignoring invalid '%s' parameter for %s time transform (expected number but got %s)",
+                        what, name, func, lua_typename( L, lua_type( L, -1 ) ) );
+        }
+    }
+
+    lua_pop( L, 1 ); // ..., xform, ...
+}
+
+static void
+GetPositiveNumberArg( lua_State * L, int arg, Real * value, const char * func, const char * name, const char * what )
+{
+    Real old = *value;
+
+    GetNumberArg( L, arg, value, func, name, what );
+
+    if (*value <= Rtt_REAL_0)
+    {
+        *value = old;
+
+        CoronaLuaWarning( L, "%s ignoring invalid '%s' parameter for %s time transform (must be positive number)",
+            what, name, func );
+    }
+}
+
+void
+TimeTransform::SetDefault()
+{
+    func = &PingPong;
+    arg1 = Display::GetGpuSupportsHighPrecisionFragmentShaders() ? 3600 * 5 : 50;
+    arg2 = arg3 = 0;
+}
+
+void
+TimeTransform::SetFunc( lua_State *L, int arg, const char *what, const char *fname )
+{
+    switch (*fname)
+    {
+    case 'm': // modulo
+    case 'p': // pingpong
+        {
+            Real range = Rtt_REAL_1;
+                
+            GetPositiveNumberArg( L, arg, &range, fname, "range", what );
+
+            bool isModulo = 'm' == *fname;
+
+            func = isModulo ? &Modulo : &PingPong;
+            arg1 = range;
+        }
+        break;
+
+    case 's': // sine
+        {
+            Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, shift = Rtt_REAL_0;
+
+            GetNumberArg( L, arg, &amplitude, fname, "amplitude", what );
+            GetPositiveNumberArg( L, arg, &period, fname, "period", what );
+            GetNumberArg( L, arg, &shift, fname, "shift", what );
+
+            func = &Sine;
+            arg1 = amplitude;
+            arg2 = (Rtt_REAL_2 * M_PI) / period;
+            arg3 = shift;
+        }
+        break;
+
+    default:
+        Rtt_ASSERT_NOT_REACHED();
+    }
+}
+
+bool
+TimeTransform::Matches( const TimeTransform *xform1, const TimeTransform *xform2 )
+{
+	if (xform1 == xform2)
+	{
+		return true;
+	}
+
+	else if (NULL == xform1 || NULL == xform2)
+	{
+		return false;
+	}
+
+	else
+	{
+		return xform1->func == xform2->func && xform1->arg1 == xform2->arg1 && xform1->arg2 == xform2->arg2 && xform1->arg3 == xform2->arg3;
+	}
+}
+
+const char*
+TimeTransform::FindFunc( lua_State *L, int arg, const char *what )
+{
+	const char *fname = NULL;
+
+    lua_getfield( L, arg, "func" );    // ..., xform, ..., func
+
+    if (lua_isstring( L, -1 ))
+    {
+        fname = lua_tostring( L, -1 );
+
+        bool isValid = strcmp( fname, "modulo" ) == 0 ||
+                        strcmp( fname, "pingpong" ) == 0 ||
+                        strcmp( fname, "sine" ) == 0;
+            
+		if ( !isValid )
+        {
+            CoronaLuaWarning( L, "%s ignoring unknown %s time transform", what, fname );
+
+			fname = NULL;
+        }
+    }
+
+    lua_pop( L, 1 ); // ..., xform, ...
+
+	return fname;
+}
 
 ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category )
 :	fCategory( category ),

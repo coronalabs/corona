@@ -10,6 +10,7 @@
 #include "Core/Rtt_Build.h"
 
 #include "Display/Rtt_DisplayDefaults.h"
+#include "Display/Rtt_ShaderResource.h"
 
 // ----------------------------------------------------------------------------
 
@@ -61,6 +62,29 @@ DisplayDefaults::DisplayDefaults()
     fSceneStencilClear( 0 ),
     fAddedStencilClear( 0 )
 {
+	static TimeTransform sTransform;
+
+	fTimeTransform = &sTransform;
+
+	SetTimeTransform( NULL );
+}
+
+const TimeTransform* DisplayDefaults::GetTimeTransform() const
+{
+	return fTimeTransform;
+}
+
+void DisplayDefaults::SetTimeTransform( const TimeTransform *transform )
+{
+	if ( transform )
+	{
+		*fTimeTransform = *transform;
+	}
+
+	else
+	{
+		fTimeTransform->SetDefault();
+	}
 }
 
 // ----------------------------------------------------------------------------

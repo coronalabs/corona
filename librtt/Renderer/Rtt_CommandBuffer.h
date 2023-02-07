@@ -29,8 +29,9 @@ class FrameBufferObject;
 class Program;
 class Texture;
 class Uniform;
-class ShaderData;
+class ShaderResource;
 struct FormatExtensionList;
+struct TimeTransform;
 
 // ----------------------------------------------------------------------------
 
@@ -123,6 +124,12 @@ class CommandBuffer
         // it is valid if the time returned is actually for a previous frame.
         virtual Real Execute( bool measureGPU ) = 0;
 
+    public:
+        void PrepareTimeTransforms( const TimeTransform* transform );
+
+    protected:
+        void AcquireTimeTransform( ShaderResource* resource );
+
     private:
         virtual void InitializeFBO() = 0;
         virtual void InitializeCachedParams() = 0;
@@ -135,6 +142,10 @@ class CommandBuffer
         U32 fNumCommands;
         U32 fBytesAllocated;
         U32 fBytesUsed;
+        TimeTransform* fDefaultTimeTransform;
+		TimeTransform* fTimeTransform;
+        TimeTransform* fLastTimeTransform;
+        bool fUsesTime;
 };
 
 // ----------------------------------------------------------------------------
