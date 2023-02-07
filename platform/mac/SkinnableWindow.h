@@ -24,6 +24,7 @@
 	NSPoint fMouseDownLocation;
 
 	SkinView* fSkinView;
+	BOOL fIsTransparent;
 }
 
 - (id)initWithScreenView:(GLView*)screenView
