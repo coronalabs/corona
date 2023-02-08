@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --
 -- This file is part of the Corona game engine.
--- For overview and more information on licensing please refer to README.md 
+-- For overview and more information on licensing please refer to README.md
 -- Home page: https://github.com/coronalabs/corona
 -- Contact: support@coronalabs.com
 --
@@ -12,7 +12,6 @@ local json = require('json')
 local lfs = require('lfs')
 local builder = require('builder')
 
-local serverBackend = 'https://backendapi.coronalabs.com'
 local verbosity = 3
 local androidBuild = false
 local alwaysQuery = false
@@ -35,7 +34,7 @@ local function unpackPlugin( archive, dst )
 	end
 end
 
-local function getPluginDirectories(platform, build, pluginsToDownload)
+local function getPluginDirectories(platform, build, pluginsToDownload, buildSettingsPlugins)
 
 	local pluginsDest
 	if windows then
@@ -59,6 +58,7 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 
 	local pluginDirectories = {}
 
+<<<<<<< Updated upstream
 	for _, pd in pairs(pluginsToDownload) do
 		local plugin, developer, supportedPlatforms, marketplaceId = unpack( pd )
 		local supportedPlatform = true
@@ -117,20 +117,38 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 					print("ERROR: unable to download " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
 					return
 				end
+=======
+	local pluginCollector = require "CoronaBuilderPluginCollector"
+	local collectorParams = {
+	  pluginPlatform = platform,
+	  plugins = buildSettingsPlugins or {},
+	  destinationDirectory = pluginsDest,
+	  build = "9999",
+		download = builder.download,
+		fetch = builder.fetch
+	}
+	local res = pluginCollector.collect(collectorParams)
+	if(res)then
+		print(res)
+		return 1
+	end
+>>>>>>> Stashed changes
 
-				local unpackLocation = pluginsDest .. plugin .. '_' .. developer
+	for _, pd in pairs(pluginsToDownload) do
+		local plugin, developer = unpack( pd )
+				local pluginArchivePath = pluginsDest .. plugin
+				local unpackLocation = pluginsDest .. developer .. '_' .. plugin
 				lfs.mkdir(unpackLocation)
-				local ret = unpackPlugin(pluginArchivePath, unpackLocation)
+				local ret = unpackPlugin(pluginArchivePath..'/data.tgz', unpackLocation)
 				if ret ~= 0 then
 					print(downloadURL)
 					print("ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
 					return
 				end
-
 				table.insert(pluginDirectories, unpackLocation)
-			end
-
-		end
+				--clean up archives
+				os.remove(pluginArchivePath..'/data.tgz')
+				print(lfs.rmdir(pluginArchivePath))
 	end
 
 	return pluginDirectories
@@ -138,31 +156,11 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 end
 
 
-local function androidDownloadPlugins( platform, build, pluginsToDownload )
-
-	local pluginDirectories = getPluginDirectories(platform, build, pluginsToDownload)
-	if not pluginDirectories then
-		return
-	end
-
-	if #pluginDirectories > 0 and verbosity>0 then
-		print()
-		print("Plugins were successfully downloaded")
-		print("General guidelines on how to use plugins with Corona Native can be found here: https://docs.coronalabs.com/native/android/index.html")
-		print("Plugins may have special instructions for integrating them into an Android Studio project, please refer to the individual plugin documentation before integration")
-		print("Plugin download locations:")
-		for _, pluginDir in pairs(pluginDirectories) do
-			print('\t"' .. pluginDir .. '"')
-		end
-	end
-
-	return true
-end
 
 
-local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forceLoad )
+local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forceLoad, buildSettingsPlugins )
 	-- download plugins and unpack them
-	local pluginDirectories = getPluginDirectories(platform, build, pluginsToDownload)
+	local pluginDirectories = getPluginDirectories(platform, build, pluginsToDownload, buildSettingsPlugins )
 	if not pluginDirectories then
 		return
 	end
@@ -285,48 +283,6 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 
 end
 
-function fetchDependenciesForDirectories(root, deps, urlSuffix)
-	local fetched = {}
-	local toFetch = {}
-	for i=1, #deps do
-		local dep = deps[i]
-		fetched[dep] = true
-	end
-	for i=1, #deps do
-		local dep = deps[i]
-		local toDownload = {}
-		local metadataFile = root .. dirSeparator .. dep .. dirSeparator .. "metadata.lua"
-		pcall( function()
-			local metadata = dofile(root .. dirSeparator .. dep .. dirSeparator .. "metadata.lua")
-			toDownload = metadata.coronaManifest.dependencies
-		end	)
-		for plugin, developer in pairs(toDownload) do
-			if not fetched[plugin .. '_' .. developer] then
-				toFetch[plugin .. '_' .. developer] = {plugin, developer}
-			end
-		end
-	end
-
-	for _, pd in pairs(toFetch) do
-		local plugin, developer = unpack(pd)
-		local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. urlSuffix
-		local downloadInfoText, msg = builder.fetch(downloadInfoURL)
-		if not downloadInfoText then
-			print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
-			return 1
-		end
-
-		local downloadInfoJSON = json.decode(downloadInfoText)
-		local downloadURL = downloadInfoJSON.url
-		if not downloadURL then
-			print("ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').')
-			return 1
-		end
-		print("plugin\t" .. plugin .. '_' .. developer .. ".tgz\t"  .. downloadURL)
-	end
-	return 0
-end
-
 -- in offline build `user` is nil
 function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	if args[1] ~= 'download' then
@@ -337,15 +293,10 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	local buildDataPluginEntry = {}
 	local buildData = {}
 	local forceLoad = false
-	local fetchDependencies = false
 	for i=#args,1,-1 do
 		if args[i] == '--force-load' then
 			table.remove(args, i)
 			forceLoad = true
-		elseif args[i] == '--android-build' then -- this switches into android build mode. Emits output instead of downloading anything
-			table.remove(args, i)
-			verbosity = 0
-			androidBuild = true
 		elseif args[i] == '--build-data' then -- build data contains info about additional plugins and metadata
 			table.remove(args, i)
 			buildData = json.decode(io.read('*all')) or {}
@@ -374,14 +325,6 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 
 	local platform = args[2]
 
-	if fetchDependencies then
-		table.remove(args, 1)
-		table.remove(args, 1)
-		local root = args[1]
-		table.remove(args, 1)
-		local urlSuffix = ('/%s.%s/%s/'):format(buildYear, buildRevision, platform)
-		return fetchDependenciesForDirectories(root, args, urlSuffix)
-	end
 
 	if type(platform) ~= 'string' then
 		print("ERROR: missing platform parameter to 'plugins download' subcommand.")
@@ -469,18 +412,17 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		if not addedPluginsToDownload[pluginName .. " " .. publisherId] then
 			table.insert( pluginsToDownload, {pluginName, publisherId, pluginTable.supportedPlatforms, pluginTable.marketplaceId} )
 		end
-	end	
+	end
 
 	local build = buildYear .. '.' .. buildRevision
 	if platform == 'ios' then
 
 		-- config for native plugins
-
-		local simConfig =  iOSDownloadPlugins('iphoneos', 'iphone', build, pluginsToDownload, forceLoad )
+		local simConfig =  iOSDownloadPlugins('iphoneos', 'iphone', build, pluginsToDownload, forceLoad, settings.plugins )
 		if not simConfig then
 			return 1
 		end
-		local devConfig = iOSDownloadPlugins('iphonesimulator', 'iphone-sim', build, pluginsToDownload, forceLoad )
+		local devConfig = iOSDownloadPlugins('iphonesimulator', 'iphone-sim', build, pluginsToDownload, forceLoad, settings.plugins )
 		if not devConfig then
 			return 1
 		end
@@ -521,12 +463,6 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		end
 		config:close()
 
-
-	elseif platform == 'android' or platform == 'android-kindle' or platform == 'android-nongoogle' then
-		local androidConfSuccess = androidDownloadPlugins(platform, build, pluginsToDownload)
-		if not androidConfSuccess then
-			return 1
-		end
 	else
 		print("ERROR: unsupported platform '".. platform .."'.")
 		return 1
@@ -536,22 +472,9 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		print("Done downloading plugins!")
 	end
 
-	if androidBuild then
-		if user then
-			local downloadInfoText, msg = builder.fetch(serverBackend.. "/v1/buildid/native/" .. user)
-			if not downloadInfoText then
-				print("ERROR: unable to fetch build ID: ", msg )
-				return 1
-			end
-			print("BUILD\t" .. downloadInfoText)
-		else
-			print("BUILD\tOffline")
-		end
-	end
 
 	return 0
 end
-
 
 function DownloadAndroidOfflinePlugins(args, user, buildYear, buildRevision)
 	local buildData
