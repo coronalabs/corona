@@ -330,16 +330,17 @@ public class CoronaVideoView extends android.widget.VideoView {
 
 		// Set up the view to play the video referenced by the given URL.
 		String uriString = uri.toString();
-		if (android.webkit.URLUtil.isHttpUrl(uriString) || android.webkit.URLUtil.isHttpsUrl(uriString)) {
-			// We were given an "http:" or "https:" URL.
+		if (android.webkit.URLUtil.isHttpUrl(uriString)) {
+			// We were given an "http:" URL.
 			// Set up our own internal HTTP proxy to the given URL.
 			// We will give the Google VideoView the proxy's localhost URL later, once it's ready.
 			// Note: This proxy works-around an issue where Google's implementation will display "Can't play the video" when
 			//       seeking a streaming video from a server that does not support HTTP range requests without an upper bound.
 			//       The proxy applies an upper bound to range requests, providing the HTTP 206 response Google is looking for.
 			fProxyServer = new ProxyServer(this, uri);
-		}
-		else {
+		} else {
+			// Https urls seems to not need a ProxyServer anymore for HTTPs, looks Google fixed this issue?
+
 			// Do not use a proxy for all other URLs such as "file:" and "content:".
 			// Load the video as-is via Google's VideoView APIs.
 			setVideoURI(uri);
