@@ -58,66 +58,6 @@ local function getPluginDirectories(platform, build, pluginsToDownload, buildSet
 
 	local pluginDirectories = {}
 
-<<<<<<< Updated upstream
-	for _, pd in pairs(pluginsToDownload) do
-		local plugin, developer, supportedPlatforms, marketplaceId = unpack( pd )
-		local supportedPlatform = true
-		if supportedPlatforms then
-			supportedPlatform = supportedPlatforms[platform]
-			if platform == 'iphone' then
-				supportedPlatform = supportedPlatform or supportedPlatforms['ios']
-			end
-		end
-
-		if supportedPlatform then
-			local downloadURL
-			if type(supportedPlatform) == 'table' and type(supportedPlatform.url) == 'string' then
-				downloadURL = supportedPlatform.url
-			elseif marketplaceId then
-				downloadURL ="https://solar2dmarketplace.com/marketplacePlugins?pluginType=downloader&ID=" ..marketplaceId .. "&plugin=" .. plugin .. "_" .. pluginTable.publisherId .. "&type=" .. pluginPlatform
-			else
-				local ghpage = "solar2d"
-				if(developer== "com.coronalabs")then 
-					ghpage = "coronalabs"
-				end
-				local downloadInfoURL = 'https://api.github.com/repos/'..ghpage ..'/'.. developer .. '-' .. plugin..'/releases/latest'
-				local downloadInfoText, msg = builder.fetch(downloadInfoURL)
-				if not downloadInfoText then
-					print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
-					return
-				end
-
-				local downloadInfoJSON = json.decode(downloadInfoText)
-				if not downloadInfoJSON.assets then
-					print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
-					return
-				end
-				print(platform)
-				for assetI= 1,#downloadInfoJSON.assets do
-					local asset =  downloadInfoJSON.assets[assetI]
-					if string.find(asset.name, platform..".tgz", 1, true) then		
-						local foundBuildMin = string.sub(asset.name,1,9)
-						if tonumber(build) >= tonumber(foundBuildMin) then
-							downloadURL = asset["browser_download_url"]
-						end
-					end
-				end
-			end
-			if not downloadURL then
-				print("ERROR: unable to parse plugin download location for " .. plugin .. ' ('.. developer.. ').')
-				return
-			end
-
-			if androidBuild then
-				print("plugin\t" .. plugin .. '_' .. developer .. ".tgz\t"  .. downloadURL)
-			else
-				local pluginArchivePath = pluginsDest .. plugin .. '_' .. developer .. ".tgz"
-				local err, msg = builder.download(downloadURL, pluginArchivePath)
-				if msg then
-					print("ERROR: unable to download " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
-					return
-				end
-=======
 	local pluginCollector = require "CoronaBuilderPluginCollector"
 	local collectorParams = {
 	  pluginPlatform = platform,
@@ -132,7 +72,6 @@ local function getPluginDirectories(platform, build, pluginsToDownload, buildSet
 		print(res)
 		return 1
 	end
->>>>>>> Stashed changes
 
 	for _, pd in pairs(pluginsToDownload) do
 		local plugin, developer = unpack( pd )
