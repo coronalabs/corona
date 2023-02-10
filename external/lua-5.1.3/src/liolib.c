@@ -29,7 +29,7 @@
 static const char *const fnames[] = {"input", "output"};
 
 // for NxS platform
-int IsStorageMounted();
+int is_mounted(const char* path);
 
 static int pushresult (lua_State *L, int i, const char *filename) {
   int en = errno;  /* calls to Lua API may change this value */
@@ -179,13 +179,13 @@ static int io_open (lua_State *L) {
   const char *mode = luaL_optstring(L, 2, "r");
 
 #if defined(Rtt_NXS_ENV) 
-  if (!IsStorageMounted())
+  if (!is_mounted(filename))
   {
     lua_pushnil(L);
     if (filename)
-      lua_pushfstring(L, "%s: no mounted storage", filename);
+      lua_pushfstring(L, "%s not mounted", filename);
     else
-      lua_pushfstring(L, "no mounted storage");
+      lua_pushfstring(L, "not mounted");
     lua_pushinteger(L, 0);
     return 3;
   }

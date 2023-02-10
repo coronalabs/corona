@@ -350,6 +350,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Corona/CoronaLua.cpp
 		${CORONA_ROOT}/librtt/Corona/CoronaVersion.c
 		${CORONA_ROOT}/librtt/Corona/CoronaGraphics.cpp
+		${CORONA_ROOT}/librtt/Corona/CoronaMemory.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_BitmapMask.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_BitmapPaint.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_BitmapPaintAdapter.cpp
