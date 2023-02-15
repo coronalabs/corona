@@ -175,11 +175,10 @@ namespace bitmapUtil
 			uint8_t* dst = rgb.get();
 			for (int i = 0; i < width * height; i++)
 			{
-				// hmmmm, actually src contains ARGB format!
-				src++;
-				*dst++ = *src++;
-				*dst++ = *src++;
-				*dst++ = *src++;
+				*dst++ = src[2];
+				*dst++ = src[1];
+				*dst++ = src[0];
+				src += 4;
 			}
 			data = rgb.get();
 			break;
