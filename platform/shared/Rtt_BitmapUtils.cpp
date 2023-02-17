@@ -364,13 +364,28 @@ namespace bitmapUtil
 		png_set_write_fn(png_ptr, (png_voidp)out, pngWriteFunc, NULL);
 		png_set_IHDR(png_ptr, info_ptr, width, height, 8, bpp == 3 ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
+		png_write_info(png_ptr, info_ptr);
+
+		bool free_data = false;
 		if (format == Rtt::PlatformBitmap::Format::kBGRA)
 		{
-			png_set_swap_alpha(png_ptr);
+			// BGRA ==> RGBA
+			U8* rgba = (U8*)malloc(width * height * 4);
+			U8* src = data;
+			U8* dst = rgba;
+			for (int i = 0; i < width * height; i++)
+			{
+				dst[0] = src[2];
+				dst[1] = src[1];
+				dst[2] = src[0];
+				dst[3] = src[3];
+				dst += 4;
+				src += 4;
+			}
+			data = rgba;
+			free_data = true;
 		}
-		//	 png_set_bgr(png_ptr);
 
-		png_write_info(png_ptr, info_ptr);
 		for (int y = 0; y < height; y++)
 		{
 			png_write_row(png_ptr, data + (width * bpp) * y);
@@ -379,6 +394,12 @@ namespace bitmapUtil
 		png_write_end(png_ptr, info_ptr);
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		fclose(out);
+
+		if (free_data)
+		{
+			free(data);
+		}
+
 		return true;
 	}
 }
