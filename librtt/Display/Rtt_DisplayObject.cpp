@@ -1445,6 +1445,8 @@ DisplayObject::SetSelfBounds( Real width, Real height )
 void
 DisplayObject::SetGeometricProperty( enum GeometricProperty p, Real newValue )
 {
+	if (isnan(newValue)) { return; }
+
 	Real currentValue;
 
 	switch( p )
