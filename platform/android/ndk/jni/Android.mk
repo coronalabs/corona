@@ -62,7 +62,7 @@ endif
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 #	LOCAL_CFLAGS := $(LOCAL_CFLAGS) -DHAVE_NEON=0
-#	LOCAL_ARM_NEON  := true	
+#	LOCAL_ARM_NEON  := true
 endif
 
 include $(BUILD_SHARED_LIBRARY)
@@ -119,7 +119,7 @@ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 #	LOCAL_CFLAGS += -marm -DOPENAL_FIXED_POINT -DOPENAL_FIXED_POINT_SHIFT=16
 #	Not sure if fixed point really helps with armv7. It was originally for armv5/6. Need to benchmark.
 	LOCAL_CFLAGS += -DOPENAL_FIXED_POINT -DOPENAL_FIXED_POINT_SHIFT=16
-#	LOCAL_ARM_NEON  := true	
+#	LOCAL_ARM_NEON  := true
 endif
 
 
@@ -201,15 +201,15 @@ LOCAL_CFLAGS     := \
 
 #	-DNO_8BIT \
 #	-DHAVE_CONFIG_H \
-#	-DHAVE_CONFIG_H 
-#	-DFPM_ARM 
+#	-DHAVE_CONFIG_H
+#	-DFPM_ARM
 #LOCAL_LDLIBS     := -llog
 
 LOCAL_LDLIBS     := -llog -Wl,-s
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 #	LOCAL_CFLAGS := $(LOCAL_CFLAGS) -DHAVE_NEON=0
-#	LOCAL_ARM_NEON  := true	
+#	LOCAL_ARM_NEON  := true
 endif
 
 include $(BUILD_SHARED_LIBRARY)
@@ -246,7 +246,7 @@ LIBALMIXER_FILES := \
 	$(LIBALMIXER_DIR)/Isolated/LGPL/mpg123.c \
 	$(LIBALMIXER_DIR)/Isolated/LGPL/oggtremor.c \
 	$(LIBALMIXER_DIR)/Isolated/LGPL/SDL_sound_minimal.c \
-	
+
 LIBVORBIS_FILES = \
 	$(LIBVORBIS_DIR)/bitwise.c \
 	$(LIBVORBIS_DIR)/codebook.c \
@@ -287,7 +287,7 @@ LOCAL_LDLIBS     += -lOpenSLES
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 #	LOCAL_CFLAGS := $(LOCAL_CFLAGS) -DHAVE_NEON=0
-#	LOCAL_ARM_NEON  := true	
+#	LOCAL_ARM_NEON  := true
 endif
 
 include $(BUILD_SHARED_LIBRARY)
@@ -330,7 +330,7 @@ LOCAL_ARM_MODE := arm
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 #	LOCAL_CFLAGS := $(LOCAL_CFLAGS) -DHAVE_NEON=0
-#	LOCAL_ARM_NEON  := true	
+#	LOCAL_ARM_NEON  := true
 endif
 
 include $(BUILD_SHARED_LIBRARY)
@@ -354,8 +354,6 @@ LOCAL_CFLAGS := -DANDROID_NDK \
 				-DOPENAL_FIXED_POINT -DOPENAL_FIXED_POINT_SHIFT=16 \
 				$(MY_CFLAGS)
 
-# These flags are for libjpeg
-LOCAL_CFLAGS += -DAVOID_TABLES -O3 -fstrict-aliasing -fprefetch-loop-arrays
 
 # Flags to help reduce binary size.
 # fvisibility=hidden will hide the elf symbpls which default to public
@@ -367,13 +365,12 @@ ifeq ($(APP_OPTIM),release)
 endif
 #                -DRtt_TRIAL
 #                -DRtt_DEBUG \
-#				-DRtt_REAL_FIXED 
+#				-DRtt_REAL_FIXED
 
 LIBALMIXER_DIR := $(CORONA_ROOT)/external/ALmixer
 LIBB2SEPARATORCPP_DIR := $(CORONA_ROOT)/external/b2Separator-cpp
 LIBBOX2D_DIR := $(CORONA_ROOT)/external/Box2D/Box2D
 LIBBOX2D_INC := $(CORONA_ROOT)/external/Box2D
-LIBJPEG_DIR := $(CORONA_ROOT)/external/libjpeg
 LIBLUA_DIR := $(CORONA_ROOT)/external/lua-5.1.3
 LIBOPENAL_DIR := $(CORONA_ROOT)/external/openal-soft_apportable/jni/OpenAL
 LIBPNG_DIR := $(CORONA_ROOT)/external/lpng1256
@@ -403,7 +400,6 @@ LOCAL_C_INCLUDES := \
 	$(CORONA_ROOT)/platform/shared \
 	$(LIBBOX2D_INC) \
 	$(CORONA_ROOT) \
-    $(LIBJPEG_DIR) \
     $(LIBB2SEPARATORCPP_DIR) \
     $(LIBSMOOTHPOLYGON_DIR) \
 
@@ -944,53 +940,7 @@ LIBB2SEPARATORCPP_FILES := \
 LIBSMOOTHPOLYGON_FILES := \
 	$(LIBSMOOTHPOLYGON_DIR)/SmoothPolygon.cpp
 
-LIBJPEG_FILES =  \
-	$(LIBJPEG_DIR)/jcapimin.c \
-	$(LIBJPEG_DIR)/jcapistd.c \
-	$(LIBJPEG_DIR)/jccoefct.c \
-	$(LIBJPEG_DIR)/jccolor.c \
-	$(LIBJPEG_DIR)/jcdctmgr.c \
-	$(LIBJPEG_DIR)/jchuff.c \
-	$(LIBJPEG_DIR)/jcinit.c \
-	$(LIBJPEG_DIR)/jcmainct.c \
-	$(LIBJPEG_DIR)/jcmarker.c \
-	$(LIBJPEG_DIR)/jcmaster.c \
-	$(LIBJPEG_DIR)/jcomapi.c \
-	$(LIBJPEG_DIR)/jcparam.c \
-	$(LIBJPEG_DIR)/jcphuff.c \
-	$(LIBJPEG_DIR)/jcprepct.c \
-	$(LIBJPEG_DIR)/jcsample.c \
-	$(LIBJPEG_DIR)/jctrans.c \
-	$(LIBJPEG_DIR)/jdapimin.c \
-	$(LIBJPEG_DIR)/jdapistd.c \
-	$(LIBJPEG_DIR)/jdatadst.c \
-	$(LIBJPEG_DIR)/jdatasrc.c \
-	$(LIBJPEG_DIR)/jdcoefct.c \
-	$(LIBJPEG_DIR)/jdcolor.c \
-	$(LIBJPEG_DIR)/jddctmgr.c \
-	$(LIBJPEG_DIR)/jdhuff.c \
-	$(LIBJPEG_DIR)/jdinput.c \
-	$(LIBJPEG_DIR)/jdmainct.c \
-	$(LIBJPEG_DIR)/jdmarker.c \
-	$(LIBJPEG_DIR)/jdmaster.c \
-	$(LIBJPEG_DIR)/jdmerge.c \
-	$(LIBJPEG_DIR)/jdphuff.c \
-	$(LIBJPEG_DIR)/jdpostct.c \
-	$(LIBJPEG_DIR)/jdsample.c \
-	$(LIBJPEG_DIR)/jdtrans.c \
-	$(LIBJPEG_DIR)/jerror.c \
-	$(LIBJPEG_DIR)/jfdctflt.c \
-	$(LIBJPEG_DIR)/jfdctfst.c \
-	$(LIBJPEG_DIR)/jfdctint.c \
-	$(LIBJPEG_DIR)/jidctflt.c \
-	$(LIBJPEG_DIR)/jidctred.c \
-	$(LIBJPEG_DIR)/jquant1.c \
-	$(LIBJPEG_DIR)/jquant2.c \
-	$(LIBJPEG_DIR)/jutils.c \
-	$(LIBJPEG_DIR)/jmemmgr.c \
-	$(LIBJPEG_DIR)/jmem-android.c \
-	$(LIBJPEG_DIR)/jidctint.c \
-	$(LIBJPEG_DIR)/jidctfst.S \
+
 
 LOCAL_SRC_FILES := \
     importgl.c \
@@ -1015,7 +965,7 @@ LOCAL_LDLIBS := -lGLESv2 -lEGL -ljnigraphics -ldl -llog -lz -lOpenSLES
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 #	LOCAL_CFLAGS := $(LOCAL_CFLAGS) -DHAVE_NEON=0
-#	LOCAL_ARM_NEON  := true	
+#	LOCAL_ARM_NEON  := true
 endif
 
 include $(BUILD_SHARED_LIBRARY)
@@ -1040,5 +990,3 @@ $(call import-module,ads)
 $(call import-module,analytics)
 
 $(call import-module,cpufeatures)
-
-
