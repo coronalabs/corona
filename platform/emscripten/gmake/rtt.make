@@ -174,6 +174,7 @@ OBJECTS := \
 	$(OBJDIR)/CoronaMemory.o \
 	$(OBJDIR)/CoronaObjects.o \
 	$(OBJDIR)/CoronaLua.o \
+	$(OBJDIR)/CoronaMemory.o \
 	$(OBJDIR)/Rtt_BitmapMask.o \
 	$(OBJDIR)/Rtt_BitmapPaint.o \
 	$(OBJDIR)/Rtt_BitmapPaintAdapter.o \
@@ -879,6 +880,10 @@ $(OBJDIR)/CoronaObjects.o: ../../../librtt/Corona/CoronaObjects.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/CoronaLua.o: ../../../librtt/Corona/CoronaLua.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/CoronaMemory.o: ../../../librtt/Corona/CoronaMemory.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

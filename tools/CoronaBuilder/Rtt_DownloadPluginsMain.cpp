@@ -37,6 +37,7 @@ int DownloadPluginsMain::Run(int argc, const char* args[])
 	}
 	else {
 		lua_getglobal(L, "DownloadPluginsMain");
+        HTTPClient::registerFetcherModuleLoaders(L);
 	}
 	
 	Rtt_ASSERT(lua_type(L, -1) == LUA_TFUNCTION);

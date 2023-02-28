@@ -990,7 +990,9 @@ Display::Capture( DisplayObject *object,
         if( output_file_will_be_png_format )
         {
             // This should ONLY be done for PNGs.
+#if !defined(Rtt_NXS_ENV)
             bitmap->UndoPremultipliedAlpha();
+#endif
         }
 
         if( optional_output_color )
