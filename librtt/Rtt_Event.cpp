@@ -1852,6 +1852,14 @@ HitEvent::ScreenToContent( const Display& display, Real xScreen, Real yScreen, R
 	outYContent = Rtt_RealMul( yScreen, display.GetSy() );
 	outYContent -= display.GetYOriginOffset();
 }
+void
+HitEvent::ContentToDelta(const Display& display, Real xContent, Real yContent, Real& outXDelta, Real& outYDelta )
+{
+    outXDelta = Rtt_RealMul( outXDelta, display.GetSx() );
+    outXDelta -= xContent;
+    outYDelta = Rtt_RealMul( outYDelta, display.GetSx() );
+    outYDelta -= yContent;
+}
 
 void
 HitEvent::Dispatch( lua_State *L, Runtime& runtime ) const
@@ -2059,8 +2067,8 @@ TouchEvent::TouchEvent( Real x, Real y, Real xStartScreen, Real yStartScreen, Ph
 	fXStartContent( xStartScreen ),
 	fYStartContent( yStartScreen ),
 	fPressure( pressure ),
-	fDeltaX( x - xStartScreen ),
-	fDeltaY( y - yStartScreen )
+	fDeltaX( x ),
+	fDeltaY( y )
 {
 }
 
@@ -2090,9 +2098,10 @@ TouchEvent::Push( lua_State *L ) const
 		lua_setfield( L, -2, kXStartKey );
 		lua_pushnumber( L, Rtt_RealToFloat( fYStartContent ) );
 		lua_setfield( L, -2, kYStartKey );
-		lua_pushinteger( L, Rtt_RealToInt( fDeltaX) );
+        
+        lua_pushnumber( L, Rtt_RealToFloat( fDeltaX ) );
 		lua_setfield( L, -2, kXDeltaKey );
-		lua_pushinteger( L, Rtt_RealToInt( fDeltaY ));
+        lua_pushnumber( L, Rtt_RealToFloat( fDeltaY ));
 		lua_setfield( L, -2, kYDeltaKey );
 		
 		if ( fPressure >= kPressureThreshold )
@@ -2115,7 +2124,7 @@ void
 TouchEvent::Dispatch( lua_State *L, Runtime& runtime ) const
 {
 	ScreenToContent( runtime.GetDisplay(), fXStartScreen, fYStartScreen, fXStartContent, fYStartContent );
-
+    ContentToDelta(runtime.GetDisplay(), fXStartContent, fYStartContent, fDeltaX, fDeltaY );
 	Super::Dispatch( L, runtime );
 }
 
@@ -2123,6 +2132,7 @@ bool
 TouchEvent::DispatchFocused( lua_State *L, Runtime& runtime, StageObject& stage, DisplayObject *focus ) const
 {
 	ScreenToContent( runtime.GetDisplay(), fXStartScreen, fYStartScreen, fXStartContent, fYStartContent );
+    ContentToDelta(runtime.GetDisplay(), fXStartContent, fYStartContent, fDeltaX, fDeltaY );
 
 	return Super::DispatchFocused( L, runtime, stage, focus );
 }
