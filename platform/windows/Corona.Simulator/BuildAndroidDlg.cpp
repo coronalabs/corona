@@ -67,9 +67,6 @@ BEGIN_MESSAGE_MAP(CBuildAndroidDlg, CDialog)
 	ON_EN_KILLFOCUS(IDC_BUILD_KEYSTORE, &CBuildAndroidDlg::OnKillFocusKeystorePath)
 	ON_CBN_SELCHANGE(IDC_BUILD_KEYALIAS, &CBuildAndroidDlg::OnChangeAliasList)
 	ON_CBN_SETFOCUS(IDC_BUILD_KEYALIAS, &CBuildAndroidDlg::OnSetFocusAliasList)
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-	ON_BN_CLICKED(IDC_ENABLE_MONETIZATION, &CBuildAndroidDlg::OnBnClickedEnableMonetization)
-#endif
 	ON_WM_HELPINFO()
 	ON_WM_SYSCOMMAND()
 	ON_BN_CLICKED(IDC_CREATE_LIVE_BUILD, &CBuildAndroidDlg::OnBnClickedCreateLiveBuild)
@@ -250,32 +247,7 @@ BOOL CBuildAndroidDlg::OnInitDialog()
 	// Set up the "Live Build" checkbox.
 	CheckDlgButton(IDC_CREATE_LIVE_BUILD, m_pProject->GetCreateLiveBuild() ? BST_CHECKED : BST_UNCHECKED);
 
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-	// Initialize the "Enable Monetization" checkbox
-	CButton *enableMonetizationBtn = (CButton *)GetDlgItem(IDC_ENABLE_MONETIZATION);
-	bool debugMonetizationPlugin = AfxGetApp()->GetProfileInt(REGISTRY_SECTION, REGISTRY_DEBUG_MONETIZATION_PLUGIN, 
-		REGISTRY_DEBUG_MONETIZATION_PLUGIN_DEFAULT) ? true : false;
 
-	if (debugMonetizationPlugin)
-	{
-		// Load setting from project
-		enableMonetizationBtn->SetCheck((m_pProject->GetEnableMonetization() ? BST_CHECKED : BST_UNCHECKED));
-	}
-	else
-	{
-		// Hide and disable "Enable Monetization" checkbox
-		enableMonetizationBtn->ShowWindow(SW_HIDE);
-		enableMonetizationBtn->SetCheck(BST_UNCHECKED);
-		m_pProject->SetEnableMonetization(false);
-	}
-
-#else
-	// Disable dialog control
-	CButton *enableMonetizationBtn = (CButton *)GetDlgItem(IDC_ENABLE_MONETIZATION);
-	enableMonetizationBtn->ShowWindow(SW_HIDE);
-	enableMonetizationBtn->SetCheck(BST_UNCHECKED);
-
-#endif // AUTO_INCLUDE_MONETIZATION_PLUGIN
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -932,36 +904,6 @@ UINT CBuildAndroidDlg::DisplayWarningMessageWithHelp(UINT nTitleID, UINT nMessag
 	return ::MessageBoxIndirect(&mbp);
 }
 
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-// Called when the user changes the "Enable Monetization" checkbox
-void CBuildAndroidDlg::OnBnClickedEnableMonetization()
-{
-	CButton *enableMonetizationBtn = (CButton *) GetDlgItem(IDC_ENABLE_MONETIZATION);
-
-	// If they uncheck the box, ask them if they are sure
-	if (enableMonetizationBtn->GetCheck() == BST_UNCHECKED)
-	{
-		CString title;
-		CString message;
-		DWORD answer = IDNO;
-
-		title.LoadString(IDS_ENABLE_MONETIZATION);
-		message.LoadString(IDS_MONETIZATION_WARNING);
-		//answer = MessageBox(message, title, MB_YESNO | MB_ICONWARNING | MB_HELP);
-		answer = DisplayWarningMessageWithHelp(IDS_ENABLE_MONETIZATION, IDS_MONETIZATION_WARNING, L"https://fusepowered.com/corona");
-
-		// The dialog asks whether they really want to disable monetization so
-		// if they answer "No" we need to re-check the checkbox
-		if (answer == IDNO)
-		{
-			enableMonetizationBtn->SetCheck(BST_CHECKED);
-		}
-	}
-
-	m_pProject->SetEnableMonetization((enableMonetizationBtn->GetCheck() == BST_CHECKED));
-}
-#endif // AUTO_INCLUDE_MONETIZATION_PLUGIN
-
 
 
 void CBuildAndroidDlg::OnBnClickedCreateLiveBuild()
@@ -990,6 +932,24 @@ void CBuildAndroidDlg::OnBnClickedCreateLiveBuild()
 			}
 		}
 	}
+}
+
+void CBuildAndroidDlg::OnRadioClickedCopyToDevice()
+{
+	
+	
+}
+
+void CBuildAndroidDlg::OnRadioClickedShowInFiles()
+{
+
+
+}
+
+void CBuildAndroidDlg::OnRadioClickedDoNothing()
+{
+
+
 }
 
 void CBuildAndroidDlg::LogAnalytics(const char *eventName, const char *key, const char *value)

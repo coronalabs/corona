@@ -12,6 +12,9 @@
 #include <gdiplus.h>
 #include <io.h>
 #include <Fcntl.h>
+#include <stdio.h>
+#include <iostream>
+#include <cstdio>
 
 #include "Simulator.h"
 #include "MainFrm.h"
