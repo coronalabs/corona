@@ -460,11 +460,11 @@ RenderingStream::ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const
 {
 	Rtt_Real xScreen = GetSx();
 	x = Rtt_RealToInt(Rtt_RealDiv(GetXOriginOffset() + Rtt_IntToReal(x), xScreen) + Rtt_REAL_HALF);
-	w = Rtt_RealToInt(Rtt_RealDiv(Rtt_IntToReal(w), xScreen) + Rtt_REAL_HALF);
+	w = Rtt_RealToInt(Rtt_RealDiv(Rtt_IntToReal(w), xScreen));
 
 	Rtt_Real yScreen = GetSy();
 	y = Rtt_RealToInt(Rtt_RealDiv(GetYOriginOffset() + Rtt_IntToReal(y), yScreen) + Rtt_REAL_HALF);
-	h = Rtt_RealToInt(Rtt_RealDiv(Rtt_IntToReal(h), yScreen) + Rtt_REAL_HALF);
+	h = Rtt_RealToInt(Rtt_RealDiv(Rtt_IntToReal(h), yScreen));
 }
 
 void
