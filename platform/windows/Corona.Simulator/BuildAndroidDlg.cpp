@@ -247,7 +247,14 @@ BOOL CBuildAndroidDlg::OnInitDialog()
 	// Set up the "Live Build" checkbox.
 	CheckDlgButton(IDC_CREATE_LIVE_BUILD, m_pProject->GetCreateLiveBuild() ? BST_CHECKED : BST_UNCHECKED);
 
-
+	// Set up the "Build to Device" Radio Group
+	CButton* pCopyToDevice = (CButton*)GetDlgItem(IDC_COPY_TO_DEVICE);
+	CButton* pShowInFiles = (CButton*)GetDlgItem(IDC_SHOW_IN_FILES);
+	CButton* pDoNothing = (CButton*)GetDlgItem(IDC_DO_NOTHING);
+	pCopyToDevice->SetCheck((m_pProject->GetAfterBuild() == "2") ? BST_CHECKED : BST_UNCHECKED);
+	pShowInFiles->SetCheck((m_pProject->GetAfterBuild() == "1") ? BST_CHECKED : BST_UNCHECKED);
+	pDoNothing->SetCheck((m_pProject->GetAfterBuild() == "0") ? BST_CHECKED : BST_UNCHECKED);
+	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -698,6 +705,14 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 	}
 	isLiveBuild = (IsDlgButtonChecked(IDC_CREATE_LIVE_BUILD) == BST_CHECKED);
 	
+	CString afterBuild = _T("0");
+	CButton* pCopyToDevice = (CButton*)GetDlgItem(IDC_COPY_TO_DEVICE);
+	CButton* pShowInFiles = (CButton*)GetDlgItem(IDC_SHOW_IN_FILES);
+	if (pCopyToDevice->GetCheck() == BST_CHECKED)
+		afterBuild = _T("2");
+	else if (pShowInFiles->GetCheck() == BST_CHECKED)
+		afterBuild = _T("1");
+
 	// Store field settings to project.
 	m_pProject->SetName(sAppName);
 	m_pProject->SetAndroidVersionCode(iVersionCode);
@@ -708,6 +723,7 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 	m_pProject->SetSaveDir(sBuildDir);
 	m_pProject->SetTargetOS(_T("Android 2.3.3"));		// <- This string is only used by logging/analytics.
 	m_pProject->SetCreateLiveBuild(isLiveBuild);
+	m_pProject->SetAfterBuild(afterBuild);
 
 	// Update global build settings in registry.
 	stringBuffer.SetUTF8(pTargetStore->GetStringId());
@@ -804,6 +820,17 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 		}
 		catch (...) {}
 	}
+
+	//After Build Options
+	if (afterBuild == "2") // Copy to Device
+	{
+		CString sAppPath = m_pProject->GetPath();
+	}
+	else if (afterBuild == "1") // Show in Files
+	{
+		CString sAppPath = m_pProject->GetPath();
+		::ShellExecute(nullptr, nullptr, _T("explorer"), sAppPath, nullptr, SW_SHOWNORMAL);
+	}//else do nothing
 
 	// Close this window.
 	CDialog::OnOK();
@@ -932,24 +959,6 @@ void CBuildAndroidDlg::OnBnClickedCreateLiveBuild()
 			}
 		}
 	}
-}
-
-void CBuildAndroidDlg::OnRadioClickedCopyToDevice()
-{
-	
-	
-}
-
-void CBuildAndroidDlg::OnRadioClickedShowInFiles()
-{
-
-
-}
-
-void CBuildAndroidDlg::OnRadioClickedDoNothing()
-{
-
-
 }
 
 void CBuildAndroidDlg::LogAnalytics(const char *eventName, const char *key, const char *value)

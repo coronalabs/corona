@@ -320,9 +320,10 @@
 #define IDC_INCLUDE_STANDART_RESOURCES  1104
 #define IDC_CREATE_FB_INSTANT_ARCHIVE   1105
 #define IDC_BUILD_NMETA_PATH            1106
-#define IDC_COPY_TO_DEVICE              1107
-#define IDC_SHOW_IN_FILES               1108
-#define IDC_DO_NOTHING                  1109
+#define IDC_ON_COMPLETE_OPTIONS         1107
+#define IDC_COPY_TO_DEVICE              1108
+#define IDC_SHOW_IN_FILES               1109
+#define IDC_DO_NOTHING                  1110
 #define ID_Menu                         32771
 #define ID_FILE_OPENFORBUILD            32772
 #define ID_FILE_RELAUNCH                32774

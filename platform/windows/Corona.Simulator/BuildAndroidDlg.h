@@ -88,9 +88,6 @@ protected:
 	UINT DisplayWarningMessageWithHelp(UINT nTitleID, UINT nMessageID, CString helpURL);
 	static void CALLBACK CBuildAndroidDlg::HelpCallback(LPHELPINFO lpHelpInfo);
 	afx_msg void OnBnClickedCreateLiveBuild();
-	afx_msg void OnRadioClickedCopyToDevice();
-	afx_msg void OnRadioClickedShowInFiles();
-	afx_msg void OnRadioClickedDoNothing();
 	void LogAnalytics(const char *eventName, const char *key = NULL, const char *value = NULL);
 
 };
