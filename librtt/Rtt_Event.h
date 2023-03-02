@@ -863,7 +863,6 @@ class HitEvent : public VirtualEvent
 
 	protected:
 		static void ScreenToContent( const Display& display,  Real xScreen, Real yScreen, Real& outXContent, Real& outYContent );
-        static void ContentToDelta( const Display& display, Real xContent, Real yContent, Real& outXDelta, Real& outYDelta );
 		bool DispatchEvent( lua_State *L, HitTestObject& parent ) const;
 
 	private:
