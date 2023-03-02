@@ -2044,9 +2044,7 @@ TouchEvent::TouchEvent()
 	fYStartScreen( Rtt_REAL_0 ),
 	fXStartContent( Rtt_REAL_0 ),
 	fYStartContent( Rtt_REAL_0 ),
-	fPressure( kPressureInvalid ),
-	fDeltaX( Rtt_REAL_0 ),
-	fDeltaY( Rtt_REAL_0 )
+	fPressure( kPressureInvalid )
 {
 }
 
@@ -2058,9 +2056,7 @@ TouchEvent::TouchEvent( Real x, Real y, Real xStartScreen, Real yStartScreen, Ph
 	fYStartScreen( yStartScreen ),
 	fXStartContent( xStartScreen ),
 	fYStartContent( yStartScreen ),
-	fPressure( pressure ),
-	fDeltaX( x ),
-	fDeltaY( y )
+	fPressure( pressure )
 {
 }
 
@@ -2175,8 +2171,7 @@ MultitouchEvent::Dispatch( lua_State *L, Runtime& runtime ) const
 		if ( object )
 		{
 			// Dispatch focused per-object touch events
-			e.DispatchFocused( L, runtime, stage, object );
-
+			e.DispatchFocused( L, runtime, stage, object);
 			// Cleanup: remove per-object focus at the end of the touch (e.g. phase is "ended" or "cancelled")
 			if ( shouldCleanup )
 			{
