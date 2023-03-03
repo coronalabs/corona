@@ -85,7 +85,7 @@ protected:
 	CString GetTrialKeyAliasPassword();
 	void DisplayWarningMessage(UINT nMessageID);
 	void DisplayWarningMessage(UINT nMessageID, CString filename); // override with additional info
-	UINT DisplayWarningMessageWithHelp(UINT nTitleID, UINT nMessageID, CString helpURL);
+	UINT DisplayWarningMessageWithHelp(UINT nTitleID, UINT nMessageID, CString helpURL, bool isYesNo = true);
 	static void CALLBACK CBuildAndroidDlg::HelpCallback(LPHELPINFO lpHelpInfo);
 	afx_msg void OnBnClickedCreateLiveBuild();
 	void LogAnalytics(const char *eventName, const char *key = NULL, const char *value = NULL);

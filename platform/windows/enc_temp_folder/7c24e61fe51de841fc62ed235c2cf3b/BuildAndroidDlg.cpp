@@ -256,7 +256,9 @@ BOOL CBuildAndroidDlg::OnInitDialog()
 
 	pCopyToDevice->SetCheck((m_pProject->GetAfterBuild() == AB_COPY_TO_DEVICE) ? BST_CHECKED : BST_UNCHECKED);
 	pShowInFiles->SetCheck((m_pProject->GetAfterBuild() == AB_SHOW_IN_FILES) ? BST_CHECKED : BST_UNCHECKED);
-	pDoNothing->SetCheck((m_pProject->GetAfterBuild() == AB_DO_NOTHING || m_pProject->GetAfterBuild() == "") ? BST_CHECKED : BST_UNCHECKED); //Default option
+	pDoNothing->SetCheck((m_pProject->GetAfterBuild() == AB_DO_NOTHING || m_pProject->GetAfterBuild() == "") ? BST_CHECKED : BST_UNCHECKED);
+	OutputDebugString(_T("Run123/"));
+	OutputDebugString(m_pProject->GetAfterBuild());
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
