@@ -1649,6 +1649,15 @@
     <ClCompile Include="GeneratedFiles\launchpad_luaload.cpp">
       <Filter>GeneratedFiles</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\kernel_filter_blurGaussianLinear_gl_luaload.cpp">
+      <Filter>GeneratedFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\kernel_filter_blurLinearHorizontal_gl_luaload.cpp">
+      <Filter>GeneratedFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\kernel_filter_blurLinearVertical_gl_luaload.cpp">
+      <Filter>GeneratedFiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Rtt_EmscriptenAudioPlayer.h">
