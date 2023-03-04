@@ -563,7 +563,7 @@ void Exec(CString command) {
 		nullptr,
 		_T("open"),
 		_T("cmd"),
-		_T(" /K \"")+command+_T("\""), // params                            
+		_T(" /C \"")+command+_T("\""), // params                            
 		nullptr,
 		SW_SHOW);
 }
