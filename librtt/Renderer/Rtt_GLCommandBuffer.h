@@ -47,7 +47,7 @@ class GLCommandBuffer : public CommandBuffer
         // specified state changes.
         virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer );
 		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect );
-		virtual void BindGeometry( Geometry* geometry );
+		virtual void BindGeometry( Geometry* geometry, U32 vertexExtra );
         virtual void BindTexture( Texture* texture, U32 unit );
         virtual void BindUniform( Uniform* uniform, U32 unit );
         virtual void BindProgram( Program* program, Program::Version version );
