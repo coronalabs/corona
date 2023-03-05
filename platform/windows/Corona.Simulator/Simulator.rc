@@ -859,8 +859,7 @@ BEGIN
     IDS_ANDROID_BUILD       "Building Android App"
     IDS_ANDROID_SDK_LICENSE """You are about to build an Android app for the first time with this build system.\nIt uses the Android SDK and you must read and accept its license agreement in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes.\nPress 'Yes' to accept, 'No' to decline or 'Help' to read the license agreement."""
     IDS_BUILD_NMETA_NAME_NOT_PROVIDED "You must provide path to .nmeta file."
-    IDS_ADB_NOT_INSTALLED         "ADB Not Installed"
-    IDS_ADB_NOT_INSTALLED_WARNING "You must have Android Device Bridge Installed to Copy App to Device"
+    IDS_APK_NOT_FOUND         "APK not found for build, so cannot install on device"
 END
 
 STRINGTABLE

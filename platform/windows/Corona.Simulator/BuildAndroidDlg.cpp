@@ -818,12 +818,12 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 	//After Build Options
 	if (afterBuild == AB_COPY_TO_DEVICE) // Copy to Device
 	{
-		if (PathFileExists(_T("C:\\Program Files (x86)\\Android\\android-sdk\\platform-tools\\adb.exe"))) { // this should be where adb is installed
-			CString apkPath = m_pProject->GetSaveDir() + _T("\\") + m_pProject->GetName() + _T(".apk"); // apk path
-			Exec(_T("cd C:\\Program Files (x86)\\Android\\android-sdk\\platform-tools & adb install -r \"") + apkPath + _T("\" & adb logcat Corona:v *:s")); // install apk and print logs
+		CString apkPath = m_pProject->GetSaveDir() + _T("\\") + m_pProject->GetName() + _T(".apk"); // apk path
+		if (PathFileExists(apkPath)) { // check if apk exist (may be aab)
+			Exec(_T("cd C:\\Program Files (x86)\\Corona Labs\\Corona\\adb & adb install -r \"") + apkPath + _T("\" & adb logcat Corona:v *:s")); // install apk and print logs
 		}
-		else { // adb is not installed
-			DisplayWarningMessageWithHelp(IDS_ADB_NOT_INSTALLED, IDS_ADB_NOT_INSTALLED_WARNING, _T("https://docs.coronalabs.com/guide/basics/debugging/index.html#device-debugging-android"), false);
+		else { // apk not installed
+			DisplayWarningMessage(IDS_APK_NOT_FOUND);
 		}
 		
 	}
