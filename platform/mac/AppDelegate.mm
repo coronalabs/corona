@@ -1074,11 +1074,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 		}
 	}
     
-    //Allow for Dragging Main.lua file on Sim
-    if (@available(macOS 10.13, *)) {
-        [[fHomeScreen window] registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
-    }
-    
     
     // Calling this makes the Welcome window fail to appear (the subsequent call seems to work without it)
     //[[NSProcessInfo processInfo] setAutomaticTerminationSupportEnabled:YES];
@@ -1284,6 +1279,10 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
     if ([extParams.path hasSuffix:[builtinExtDirectory stringByAppendingPathComponent:@"welcome"]])
     {
         fHomeScreen = extView;
+        //Allow for Dragging Main.lua file on Sim
+        if (@available(macOS 10.13, *)) {
+            [[fHomeScreen window] registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
+        }
     }
     
     // Save the fact that this extension is running in the user's defaults
