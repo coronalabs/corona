@@ -500,10 +500,11 @@ GLCommandBuffer::CaptureRect( FrameBufferObject* fbo, Texture& texture, const Re
 }
 
 void
-GLCommandBuffer::BindGeometry( Geometry* geometry )
+GLCommandBuffer::BindGeometry( Geometry* geometry, U32 vertexExtra )
 {
     WRITE_COMMAND( kCommandBindGeometry );
     Write<GPUResource*>( geometry->GetGPUResource() );
+    Write<U32>( vertexExtra );
 }
 
 void
@@ -1023,7 +1024,14 @@ GLCommandBuffer::Execute( bool measureGPU )
             case kCommandBindGeometry:
             {
                 geometry = Read<GLGeometry*>();
+                U32 vertexExtra = Read<U32>();
                 geometry->Bind();
+                if ( !formatDirty && geometry->StoredOnGPU() && !geometry->HasArrayObject() )
+                {
+                    const U32 size = sizeof(Geometry::Vertex) * (1 + vertexExtra);
+                    
+                    geometry->BindStockAttributes( size );
+                }
                 DEBUG_PRINT( "Bind Geometry %p (stored on GPU = %s)", geometry, geometry->StoredOnGPU() ? "true" : "false" );
                 CHECK_ERROR_AND_BREAK;
             }

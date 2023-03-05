@@ -86,7 +86,7 @@ class CommandBuffer
         // by the underlying rendering API.
         virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer = false ) = 0;
 		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect ) = 0;
-		virtual void BindGeometry( Geometry* geometry ) = 0;
+		virtual void BindGeometry( Geometry* geometry, U32 vertexExtra = 0 ) = 0;
         virtual void BindTexture( Texture* texture, U32 unit ) = 0;
         virtual void BindUniform( Uniform* uniform, U32 unit ) = 0;
         virtual void BindProgram( Program* program, Program::Version version ) = 0;

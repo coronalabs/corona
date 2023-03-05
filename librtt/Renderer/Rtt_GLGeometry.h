@@ -41,6 +41,7 @@ class GLGeometry : public GPUResource
         static void VertexAttribDivisor( GLuint index, GLuint divisor);
     
         bool StoredOnGPU() const { return !!fVBO; }
+        bool HasArrayObject() const { return !!fVAO; }
         GLbyte* GetBaseOffset() const { return (GLbyte*)fPositionStart + fVertexOffset * sizeof(Geometry::Vertex); }
     
         void SpliceVertexRateData( const Geometry::Vertex* vertexData, Geometry::Vertex* extendedVertexData, const FormatExtensionList * list, size_t & size );

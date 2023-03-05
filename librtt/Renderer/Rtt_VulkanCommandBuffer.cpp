@@ -352,7 +352,7 @@ VulkanCommandBuffer::BindFrameBufferObject( FrameBufferObject* fbo, bool ) // TO
 }
 
 void 
-VulkanCommandBuffer::BindGeometry( Geometry* geometry )
+VulkanCommandBuffer::BindGeometry( Geometry* geometry, U32 )
 {
 	WRITE_COMMAND( kCommandBindGeometry );
 	Write<GPUResource*>( geometry->GetGPUResource() );

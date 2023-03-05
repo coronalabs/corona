@@ -571,6 +571,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     }
 
     const FormatExtensionList* extensionList = geometry->GetExtensionList();
+    const U32 vertexExtra = extensionList ? extensionList->ExtraVertexCount() : 0;
     bool formatsDirty = !FormatExtensionList::Match( previousGeometryList, extensionList );
 
     if (!formatsDirty && data->fProgram != fPrevious.fProgram)
@@ -608,7 +609,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
                 QueueCreate( geometry );
             }
         
-            fBackCommandBuffer->BindGeometry( geometry );
+            fBackCommandBuffer->BindGeometry( geometry, vertexExtra );
             fPrevious.fGeometry = geometry;
 
             if (isInstanced)
@@ -681,7 +682,6 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         
         // Depending on batching, wireframe, etc, the amount of space
         // needed may be more than what is used by the Geometry itself.
-        const U32 vertexExtra = extensionList ? extensionList->ExtraVertexCount() : 0;
         const U32 verticesComputed = ComputeRequiredVertices( geometry, fWireframeEnabled );
         const U32 verticesRequired = verticesComputed * (1 + vertexExtra);
 //        bool enoughSpace = fCurrentGeometry;
