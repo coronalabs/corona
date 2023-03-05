@@ -138,6 +138,7 @@
 @property (nonatomic, readonly) bool showWindowTitle;
 @property (nonatomic, readwrite, retain) CoronaWindowController *view;
 
+
 - (id) initParams:(NSString *)title path:(NSString *)path width:(int)w height:(int)h resizable:(bool) resizable showWindowTitle:(bool) showWindowTitle;
 
 @end
@@ -1073,6 +1074,12 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 		}
 	}
     
+    //Allow for Dragging Main.lua file on Sim
+    if (@available(macOS 10.13, *)) {
+        [[fHomeScreen window] registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
+    }
+    
+    
     // Calling this makes the Welcome window fail to appear (the subsequent call seems to work without it)
     //[[NSProcessInfo processInfo] setAutomaticTerminationSupportEnabled:YES];
     [[NSProcessInfo processInfo] disableSuddenTermination];
@@ -1322,7 +1329,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
     NSMenuItem *windowMenuItem = [appMenu itemWithTitle:kWindowMenuItemName];
     NSMenu *windowMenu = [windowMenuItem submenu];
     long welcomeItemIdx = [windowMenu indexOfItemWithTitle:@"Welcome to Solar2D"];
-    
     if (welcomeItemIdx == -1)
     {
         // for some reason we can't find the Welcome menuitem, bail
@@ -1392,6 +1398,8 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	}
 #endif
 }
+
+
 
 - (void) startDebugAndOpenPanel
 {
@@ -1646,7 +1654,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 -(BOOL) isRunning
 {
     NSWindow *mainWindow = [NSApp mainWindow];
-    
     if (nil != mainWindow)
     {
         if (mainWindow == [fHomeScreen window])
@@ -3879,9 +3886,14 @@ static void BringToFrontCallback(CFNotificationCenterRef center, void *observer,
 	[self consoleMenuitem:nil];
 }
 
+
 // -----------------------------------------------------------------------------
 // END: Simulator UI
 // -----------------------------------------------------------------------------
+
+
+
+
 
 @end
 
