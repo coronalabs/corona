@@ -171,7 +171,7 @@ public class NativeToJavaBridge {
 			}
 			catch ( Throwable ex ) {
 				ex.printStackTrace();
-				err.append("\n\terror loading class '").append(classPath).append("': ").append(ex.toString()).append(" message: ").append(ex.getMessage() == null? "null" : ex.getMessage());
+				err.append("\n\terror loading class '").append(classPath).append("': ").append(ex);
 			}
 			if(result == 0) {
 				L.pushString(err.toString());
