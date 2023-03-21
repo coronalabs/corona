@@ -28,11 +28,15 @@ namespace bitmapUtil
 
 	void jpgErrorHandler(j_common_ptr cinfo)
 	{
+		char jpegLastErrorMsg[JMSG_LENGTH_MAX];
+
+		// Create the message 
+		(*(cinfo->err->format_message)) (cinfo, jpegLastErrorMsg);
+
+		Rtt_LogException("*** libjpeg: %s\n", jpegLastErrorMsg);
+
 		// cinfo->err really points to a jpegErroMgr struct, so coerce pointer 
 		jpegErrorMgr myerr = (jpegErrorMgr)cinfo->err;
-
-		// Always display the message. 
-		(*cinfo->err->output_message) (cinfo);
 
 		// Return control to the setjmp point 
 		longjmp(myerr->setjmp_buffer, 1);
@@ -171,11 +175,10 @@ namespace bitmapUtil
 			uint8_t* dst = rgb.get();
 			for (int i = 0; i < width * height; i++)
 			{
-				// hmmmm, actually src contains ARGB format!
-				src++;
-				*dst++ = *src++;
-				*dst++ = *src++;
-				*dst++ = *src++;
+				*dst++ = src[2];
+				*dst++ = src[1];
+				*dst++ = src[0];
+				src += 4;
 			}
 			data = rgb.get();
 			break;
@@ -313,10 +316,26 @@ namespace bitmapUtil
 		return im;
 	}
 
+	struct png_buffer_t
+	{
+		char* buffer;
+		size_t size;
+	};
+
 	void pngWriteFunc(png_structp png_ptr, png_bytep data, png_size_t length)
 	{
-		FILE* f = (FILE*)png_get_io_ptr(png_ptr); // was png_ptr->io_ptr
-		fwrite(data, length, 1, f);
+		// with libpng15 next line causes pointer deference error; use libpng12 
+		struct png_buffer_t* p = (struct png_buffer_t*)png_get_io_ptr(png_ptr); // was png_ptr->io_ptr
+
+		size_t nsize = p->size + length;
+		p->buffer = (char*)(p->buffer ? realloc(p->buffer, nsize) : malloc(nsize));
+		if (p->buffer)
+		{
+			memcpy(p->buffer + p->size, data, length);
+			p->size += length;
+			return;
+		}
+		Rtt_LogException("png writer: no memory\n");
 	}
 
 	bool	savePNG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format)
@@ -326,14 +345,7 @@ namespace bitmapUtil
 		int bpp = Rtt::PlatformBitmap::BytesPerPixel(format);
 		if (bpp != 3 && bpp != 4)
 		{
-			//		printf("png writer: bpp must be 3 or 4\n");
-			return false;
-		}
-
-		FILE* out = fopen(filename, "wb");
-		if (out == NULL)
-		{
-			//		printf("png writer: can't create %s\n", filename);
+			Rtt_LogException("png writer: bpp must be 3 or 4\n");
 			return false;
 		}
 
@@ -343,31 +355,44 @@ namespace bitmapUtil
 		png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 		if (png_ptr == NULL)
 		{
-			// @@ log error here!
-			fclose(out);
+			Rtt_LogException("png writer: png_create_write_struct failed\n");
 			return false;
 		}
 
 		info_ptr = png_create_info_struct(png_ptr);
 		if (info_ptr == NULL)
 		{
-			// @@ log error here!
 			png_destroy_write_struct(&png_ptr, NULL);
-			fclose(out);
+			Rtt_LogException("png writer: png_create_info_struct failed\n");
 			return false;
 		}
 
-		png_init_io(png_ptr, out);
-		png_set_write_fn(png_ptr, (png_voidp)out, pngWriteFunc, NULL);
-		png_set_IHDR(png_ptr, info_ptr, width, height, 8, bpp == 3 ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+		png_buffer_t png_buffer = {};
+		png_set_write_fn(png_ptr, &png_buffer, pngWriteFunc, NULL);
 
+		png_set_IHDR(png_ptr, info_ptr, width, height, 8, bpp == 3 ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+		png_write_info(png_ptr, info_ptr);
+
+		bool free_data = false;
 		if (format == Rtt::PlatformBitmap::Format::kBGRA)
 		{
-			png_set_swap_alpha(png_ptr);
+			// BGRA ==> RGBA
+			U8* rgba = (U8*)malloc(width * height * 4);
+			U8* src = data;
+			U8* dst = rgba;
+			for (int i = 0; i < width * height; i++)
+			{
+				dst[0] = src[2];
+				dst[1] = src[1];
+				dst[2] = src[0];
+				dst[3] = src[3];
+				dst += 4;
+				src += 4;
+			}
+			data = rgba;
+			free_data = true;
 		}
-		//	 png_set_bgr(png_ptr);
 
-		png_write_info(png_ptr, info_ptr);
 		for (int y = 0; y < height; y++)
 		{
 			png_write_row(png_ptr, data + (width * bpp) * y);
@@ -375,8 +400,26 @@ namespace bitmapUtil
 
 		png_write_end(png_ptr, info_ptr);
 		png_destroy_write_struct(&png_ptr, &info_ptr);
-		fclose(out);
-		return true;
+
+		if (free_data)
+		{
+			free(data);
+		}
+
+		size_t bytes = 0;
+		FILE* out = fopen(filename, "wb");
+		if (out)
+		{
+			bytes = fwrite(png_buffer.buffer, 1, png_buffer.size, out);
+			fclose(out);
+		}
+		else
+		{
+			Rtt_LogException("png writer: failed to create %s\n", filename);
+		}
+
+		free(png_buffer.buffer);
+		return bytes == png_buffer.size;
 	}
 }
 

@@ -844,9 +844,6 @@ CoronaViewListenerAdapter( lua_State *L )
 {
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-#ifdef Rtt_ORIENTATION
-	[[NSNotificationCenter defaultCenter] addObserver:self.orientationObserver selector:@selector(didOrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-#endif
 }
 
 - (void)removeApplicationObserver

@@ -171,6 +171,7 @@ OBJECTS := \
 	$(OBJDIR)/CoronaEvent.o \
 	$(OBJDIR)/CoronaLibrary.o \
 	$(OBJDIR)/CoronaLua.o \
+	$(OBJDIR)/CoronaMemory.o \
 	$(OBJDIR)/Rtt_BitmapMask.o \
 	$(OBJDIR)/Rtt_BitmapPaint.o \
 	$(OBJDIR)/Rtt_BitmapPaintAdapter.o \
@@ -303,6 +304,9 @@ OBJECTS := \
 	$(OBJDIR)/kernel_filter_bloom_gl.o \
 	$(OBJDIR)/kernel_filter_blur_gl.o \
 	$(OBJDIR)/kernel_filter_blurGaussian_gl.o \
+	$(OBJDIR)/kernel_filter_blurLinearVertical_gl.o \
+	$(OBJDIR)/kernel_filter_blurLinearHorizontal_gl.o \
+	$(OBJDIR)/kernel_filter_blurGaussianLinear_gl.o \
 	$(OBJDIR)/kernel_filter_blurHorizontal_gl.o \
 	$(OBJDIR)/kernel_filter_blurVertical_gl.o \
 	$(OBJDIR)/kernel_filter_brightness_gl.o \
@@ -864,6 +868,10 @@ $(OBJDIR)/CoronaLua.o: ../../../librtt/Corona/CoronaLua.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
+$(OBJDIR)/CoronaMemory.o: ../../../librtt/Corona/CoronaMemory.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
 $(OBJDIR)/Rtt_BitmapMask.o: ../../../librtt/Display/Rtt_BitmapMask.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
@@ -1389,6 +1397,18 @@ $(OBJDIR)/kernel_filter_blur_gl.o: ../lua/kernel_filter_blur_gl.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/kernel_filter_blurGaussian_gl.o: ../lua/kernel_filter_blurGaussian_gl.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/kernel_filter_blurLinearVertical_gl.o: ../lua/kernel_filter_blurLinearVertical_gl.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/kernel_filter_blurLinearHorizontal_gl.o: ../lua/kernel_filter_blurLinearHorizontal_gl.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/kernel_filter_blurGaussianLinear_gl.o: ../lua/kernel_filter_blurGaussianLinear_gl.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

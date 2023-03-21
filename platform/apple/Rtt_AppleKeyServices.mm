@@ -15,6 +15,8 @@
 #ifdef Rtt_MAC_ENV
 #import <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
+#elif defined( Rtt_IPHONE_ENV ) || defined( Rtt_TVOS_ENV )
+#import <UIKit/UIKit.h>
 #endif
 
 @implementation AppleKeyServices

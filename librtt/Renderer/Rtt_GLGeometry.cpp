@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -299,6 +300,15 @@ GLGeometry::Update( CPUResource* resource )
 			glBindBuffer( GL_ARRAY_BUFFER, fVBO );
 			glBufferSubData( GL_ARRAY_BUFFER, 0, fVertexCount * sizeof(Geometry::Vertex), vertexData );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			//#390 mesh.path:update() fix 
+			const Geometry::Index* indexData = geometry->GetIndexData();
+			if ( indexData )
+			{
+				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, fIBO );
+				glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, fIndexCount * sizeof(Geometry::Index), indexData );
+				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			}
 		}
 		else
 		{

@@ -282,7 +282,7 @@ end
 local function getLiveBuildManifestScript(appDir, manifestFile)
 	-- local genManifestSh = "cd ".. appDir .." && find . -print0 | xargs -0 stat -f '%m %N' > " .. manifestFile
 
-	local genManifestSh = "cd ".. appDir .." &&  find . -print0 | xargs -0 stat -f '0 / %m / %N%T //' | sed -e 's![*@] //$! //!' -e 's!/ \./!/ /!' > "..manifestFile
+	local genManifestSh = "cd ".. appDir .." &&  find . -print0 | xargs -0 stat -f '0 / %m / %N%T //' | sed -e 's![*@] //$! //!' -e 's!/ \\./!/ /!' > "..manifestFile
 
 	return genManifestSh
 end
@@ -1493,6 +1493,18 @@ function buildExe( options )
 	local pluginsDir = buildDir
 	local dstFrameworksDir = dstDir .. "/Frameworks"
 
+	local sdkVersion = captureCommandOutput("xcrun --sdk appletvos --show-sdk-version" )
+	if not sdkVersion then
+		return "ERROR: Could not find TVos SDK Version"
+	end
+	sdkVersion = tonumber(string.match(sdkVersion, '%d+'))
+	if not sdkVersion then
+		return "ERROR: Could not parse TVos SDK Version"
+	end
+	local stripBitcode = (sdkVersion>=16)
+	local stripBitcodeScript = 'cd "' ..dstFrameworksDir ..  '" && for F in *.framework ; do  if (xcrun otool -l  "$F/${F%.*}" | grep LLVM -q ) ; then xcrun bitcode_strip -r "$F/${F%.*}" -o "$F/${F%.*}".tmp ; mv "$F/${F%.*}".tmp "$F/${F%.*}"  ; fi  ; done '
+
+
 	local pluginDirNames = getPluginDirNames( pluginsDir )
 	for i=1,#pluginDirNames do
 		local pluginName = pluginDirNames[i]
@@ -1511,6 +1523,10 @@ function buildExe( options )
 				print( "Plugins: The plugin (" .. pluginName .. ") is missing a .framework file at path (" .. pluginFrameworkPath .. ")" )
 			end
 		end
+	end
+
+	if stripBitcode then
+		runScript(stripBitcodeScript)
 	end
 
 	-- Move the helper files/plugin libs out of the .app bundle into the tmp dir

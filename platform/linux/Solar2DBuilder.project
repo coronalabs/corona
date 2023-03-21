@@ -697,6 +697,9 @@
         <File Name="lua/kernel_filter_blurVertical_gl.cpp"/>
         <File Name="lua/kernel_filter_blurHorizontal_gl.cpp"/>
         <File Name="lua/kernel_filter_blurGaussian_gl.cpp"/>
+        <File Name="lua/kernel_filter_blurLinearVertical_gl.cpp"/>
+        <File Name="lua/kernel_filter_blurLinearHorizontal_gl.cpp"/>
+        <File Name="lua/kernel_filter_blurGaussianLinear_gl.cpp"/>
         <File Name="lua/kernel_filter_blur_gl.cpp"/>
         <File Name="lua/kernel_filter_bloom_gl.cpp"/>
         <File Name="lua/kernel_default_gl.cpp"/>
