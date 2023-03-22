@@ -49,6 +49,7 @@
 #import <AppKit/NSFontManager.h>
 #import <AppKit/NSOpenGL.h>
 #import <AppKit/NSWindow.h>
+#import <AppKit/NSWorkspace.h>
 #import <Foundation/NSString.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <netinet/in.h>
@@ -1240,6 +1241,24 @@ MacPlatform::PushSystemInfo( lua_State *L, const char *key ) const
 		lua_pushboolean(L, res);
 		pushedValues = 1;
 	}
+    else if ( Rtt_StringCompare( key, "reduceMotion" ) == 0 )
+    {
+        BOOL res = [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
+    else if ( Rtt_StringCompare( key, "reduceTransparency" ) == 0 )
+    {
+        BOOL res = [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceTransparency];
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
+    else if ( Rtt_StringCompare( key, "differentiateWithoutColor" ) == 0 )
+    {
+        BOOL res = [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldDifferentiateWithoutColor];
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
 	else
 	{
 		// Attempt to fetch the requested system info from the base class.
