@@ -175,7 +175,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <PreloadFile>C:\corona\platform\test\assets2@/</PreloadFile>
-      <AdditionalOptions>-s LEGACY_VM_SUPPORT=1 -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -s ALLOW_MEMORY_GROWTH=1 -s USE_SDL=2  --js-library ../Rtt_PlatformWebAudioPlayer.js --js-library ../Rtt_EmscriptenPlatform.js  --js-library ../Rtt_EmscriptenVideo.js -lidbfs.js %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-s LEGACY_VM_SUPPORT=1 -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -s ALLOW_MEMORY_GROWTH=1 -s USE_SDL=2  --js-library ../Rtt_PlatformWebAudioPlayer.js --js-library ../Rtt_EmscriptenPlatform.js  --js-library ../Rtt_EmscriptenVideo.js -lidbfs.js -s EXPORTED_FUNCTIONS=__get_daylight,__get_timezone,__get_tzname %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -1158,8 +1158,11 @@
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_composite_yuv420v_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_default_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_bloom_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussianLinear_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussian_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurHorizontal_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearHorizontal_gl.lua" />
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearVertical_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurVertical_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blur_gl.lua" />
     <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_brightness_gl.lua" />

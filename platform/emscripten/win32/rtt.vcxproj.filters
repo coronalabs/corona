@@ -3277,5 +3277,14 @@
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua">
       <Filter>LuaFiles</Filter>
     </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussianLinear_gl.lua">
+      <Filter>LuaFiles\shader</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearHorizontal_gl.lua">
+      <Filter>LuaFiles\shader</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearVertical_gl.lua">
+      <Filter>LuaFiles\shader</Filter>
+    </LuaToCpp>
   </ItemGroup>
 </Project>
