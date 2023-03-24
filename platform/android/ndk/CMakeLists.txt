@@ -23,7 +23,9 @@ include_directories (
 	${CORONA_ROOT}/external/openal-soft/include/AL
 	${CORONA_ROOT}/external/ALmixer
 	${CORONA_ROOT}/external/ALmixer/Isolated
-	${CORONA_ROOT}/external/lpng1256
+	${CORONA_ROOT}/external/libpng
+	# Generated pnglibconf.h, note that external/libpng also has an identical pnglibconf.h for now
+	${CMAKE_CURRENT_BINARY_DIR}/libpng_build/
 	${CORONA_ROOT}/external/luasocket/src
 	${CORONA_ROOT}/external/lpeg
 	${CORONA_ROOT}/external/luafilesystem/src
@@ -37,6 +39,13 @@ include_directories (
     ${CORONA_ROOT}/external/smoothpolygon
     ${ANDROID_NDK_ROOT}/sources/android/cpufeatures
 )
+
+option(PNG_SHARED "" OFF)
+option(PNG_STATIC "" ON)
+option(PNG_EXECUTABLES "" OFF)
+option(PNG_TESTS "" OFF)
+option(PNG_HARDWARE_OPTIMIZATIONS "" OFF)
+add_subdirectory(${CORONA_ROOT}/external/libpng ${CMAKE_CURRENT_BINARY_DIR}/libpng_build/)
 
 SET( LUA_SOURCES
 	"${CORONA_ROOT}/platform/android/ndk/shell.lua"
@@ -641,24 +650,6 @@ add_library( corona SHARED
 		${CORONA_ROOT}/platform/shared/Rtt_DependencyLoader.cpp
 		${CORONA_ROOT}/platform/shared/Rtt_DependencyUtilsAndroid.cpp
 
-		${CORONA_ROOT}/external/lpng1256/png.c
-		${CORONA_ROOT}/external/lpng1256/pngerror.c
-		${CORONA_ROOT}/external/lpng1256/pnggccrd.c
-		${CORONA_ROOT}/external/lpng1256/pngget.c
-		${CORONA_ROOT}/external/lpng1256/pngmem.c
-		${CORONA_ROOT}/external/lpng1256/pngpread.c
-		${CORONA_ROOT}/external/lpng1256/pngread.c
-		${CORONA_ROOT}/external/lpng1256/pngrio.c
-		${CORONA_ROOT}/external/lpng1256/pngrtran.c
-		${CORONA_ROOT}/external/lpng1256/pngrutil.c
-		${CORONA_ROOT}/external/lpng1256/pngset.c
-		${CORONA_ROOT}/external/lpng1256/pngtrans.c
-		${CORONA_ROOT}/external/lpng1256/pngvcrd.c
-		${CORONA_ROOT}/external/lpng1256/pngwio.c
-		${CORONA_ROOT}/external/lpng1256/pngwrite.c
-		${CORONA_ROOT}/external/lpng1256/pngwtran.c
-		${CORONA_ROOT}/external/lpng1256/pngwutil.c
-
 		${CORONA_ROOT}/external/lpeg/lpeg.c
 		${Lua2CppOutputDir}/re.cpp
 
@@ -725,4 +716,5 @@ add_library( corona SHARED
 		${CORONA_ROOT}/external/smoothpolygon/SmoothPolygon.cpp
 )
 
-target_link_libraries ( corona lua jnlua5.1 mpg123 OpenAL almixer cpufeatures GLESv2 EGL jnigraphics dl log z OpenSLES )
+target_link_libraries ( corona lua jnlua5.1 mpg123 OpenAL almixer cpufeatures GLESv2 EGL jnigraphics dl log z OpenSLES
+						png_static )
