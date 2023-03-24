@@ -1108,55 +1108,49 @@
     <ClCompile Include="..\..\..\shared\Rtt_DependencyUtilsAndroid.cpp">
       <Filter>plugins-shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngerror.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngerror.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pnggccrd.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngget.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngget.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngmem.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngmem.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngpread.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngpread.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngread.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngread.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngrio.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngrio.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngrtran.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngrtran.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngrutil.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngrutil.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngset.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngset.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngtrans.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngtrans.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngwio.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngvcrd.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngwrite.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngwio.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngwtran.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngwrite.c">
+    <ClCompile Include="..\..\..\..\external\libpng\pngwutil.c">
       <Filter>png</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngwtran.c">
-      <Filter>png</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngwutil.c">
-      <Filter>png</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\external\lpng1256\png.c">
+    <ClCompile Include="..\..\..\..\external\libpng\png.c">
       <Filter>png</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\external\luafilesystem\src\lfs.c">
@@ -2608,7 +2602,7 @@
     <ClInclude Include="..\..\..\shared\Rtt_DependencyLoader.h">
       <Filter>plugins-shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\external\lpng1256\png.h">
+    <ClInclude Include="..\..\..\..\external\libpng\png.h">
       <Filter>png</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\external\luafilesystem\src\lfs.h">
