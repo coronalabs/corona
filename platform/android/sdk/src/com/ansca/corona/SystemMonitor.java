@@ -101,7 +101,7 @@ public class SystemMonitor {
 	 * Forces this object to check the status of the system now and sends events to Corona Lua listeners.
 	 */
 	public void update() {
-		isLowOnMemory();
+//		isLowOnMemory();
 	}
 	
 	/**

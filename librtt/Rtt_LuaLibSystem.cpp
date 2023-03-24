@@ -49,6 +49,15 @@ namespace Rtt
 
 static const char kNotificationMetatable[] = "notification";
 
+#if defined(Rtt_NXS_ENV) 
+extern "C"
+{
+	extern const char* sSaveMountPoint;
+	extern const char* sTmpMountPoint;
+	int is_mounted(const char* path);
+}
+#endif
+
 static void PushStringOrNil( lua_State *L, const char *str )
 {
 	if ( str )
@@ -1137,6 +1146,18 @@ LuaLibSystem::PushDirectory(lua_State *L, MPlatform::Directory directory)
 bool
 LuaLibSystem::IsWritableDirectory( MPlatform::Directory dir )
 {
+#if defined(Rtt_NXS_ENV) 
+	if (dir == MPlatform::kDocumentsDir && is_mounted(sSaveMountPoint) == false)
+	{
+		return false;
+	}
+
+	if (dir == MPlatform::kTmpDir && is_mounted(sTmpMountPoint) == false)
+	{
+		return false;
+	}
+#endif
+
 	return ( ( dir == MPlatform::kDocumentsDir ) ||
 			 ( dir == MPlatform::kTmpDir ) ||
 			 ( dir == MPlatform::kApplicationSupportDir ) ||

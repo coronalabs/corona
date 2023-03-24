@@ -33,11 +33,11 @@ int DownloadPluginsMain::Run(int argc, const char* args[])
 		lua_getglobal(L, "DownloadAndroidOfflinePlugins");
 		args++;
 		argc--;
-		HTTPClient::registerFetcherModuleLoaders(L);
 	}
 	else {
 		lua_getglobal(L, "DownloadPluginsMain");
 	}
+    HTTPClient::registerFetcherModuleLoaders(L);
 	
 	Rtt_ASSERT(lua_type(L, -1) == LUA_TFUNCTION);
 	lua_createtable(L, argc, 0);
