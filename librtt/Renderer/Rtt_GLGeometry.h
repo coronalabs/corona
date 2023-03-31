@@ -41,8 +41,6 @@ class GLGeometry : public GPUResource
         static void VertexAttribDivisor( GLuint index, GLuint divisor);
     
         bool StoredOnGPU() const { return !!fVBO; }
-        bool HasArrayObject() const { return !!fVAO; }
-        GLbyte* GetBaseOffset() const { return (GLbyte*)fPositionStart + fVertexOffset * sizeof(Geometry::Vertex); }
     
         void SpliceVertexRateData( const Geometry::Vertex* vertexData, Geometry::Vertex* extendedVertexData, const FormatExtensionList * list, size_t & size );
     
@@ -50,12 +48,10 @@ class GLGeometry : public GPUResource
         virtual void Update( CPUResource* resource );
         virtual void Destroy();
 
-        void BindStockAttributes( size_t size );
-        void SetVertexOffset( U32 offset, size_t sizeExtra, bool formatDirty );
+        void BindStockAttributes( size_t size, U32 offset );
 		void Bind();
 
-        void ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSize, bool mainDirty, const Geometry::Vertex* instancingData, U32 instanceCount );
-        U32 GetVertexOffset() const { return fVertexOffset; }
+        void ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSize, U32 offset, const Geometry::Vertex* instancingData, U32 instanceCount );
 
     private:
         GLvoid* fPositionStart;
@@ -68,7 +64,6 @@ class GLGeometry : public GPUResource
         GLuint fInstancesVBO;
         S32 fInstancesAllocated;
         U32 fVertexCount;
-        U32 fVertexOffset;
         U32 fIndexCount;
 };
 

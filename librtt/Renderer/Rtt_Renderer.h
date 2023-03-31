@@ -368,6 +368,7 @@ class Renderer
         U32 fCachedVertexOffset;
         U32 fCachedVertexCount;
         U32 fCachedVertexExtra;
+		U32 fOffsetCorrection;
         Geometry::PrimitiveType fPreviousPrimitiveType;
         Geometry::Vertex* fCurrentVertex;
         Geometry* fCurrentGeometry;
