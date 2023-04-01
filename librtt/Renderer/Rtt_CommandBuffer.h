@@ -86,14 +86,12 @@ class CommandBuffer
         // by the underlying rendering API.
         virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer = false ) = 0;
 		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect ) = 0;
-		virtual void BindGeometry( Geometry* geometry, U32 vertexExtra = 0 ) = 0;
+		virtual void BindGeometry( Geometry* geometry ) = 0;
         virtual void BindTexture( Texture* texture, U32 unit ) = 0;
         virtual void BindUniform( Uniform* uniform, U32 unit ) = 0;
         virtual void BindProgram( Program* program, Program::Version version ) = 0;
         virtual void BindInstancing( U32 count, Geometry::Vertex* instanceData ) = 0;
-        virtual void DirtyVertexFormat() = 0;
-        virtual void BindVertexFormat( FormatExtensionList* extensionList, U16 fullCount, U16 vertexSize ) = 0;
-        virtual void BindVertexOffset( U32 offset, U32 extraVertexCount ) = 0;
+        virtual void BindVertexFormat( FormatExtensionList* extensionList, U16 fullCount, U16 vertexSize, U32 offset ) = 0;
         virtual void SetBlendEnabled( bool enabled ) = 0;
         virtual void SetBlendFunction( const BlendMode& mode ) = 0;
         virtual void SetBlendEquation( RenderTypes::BlendEquation equation ) = 0;

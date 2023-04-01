@@ -277,7 +277,7 @@ struct FormatExtensionList {
     static size_t GetVertexSize( const FormatExtensionList * list );
     static bool Compatible( const FormatExtensionList * shaderList, const FormatExtensionList * geometryList );
     static bool Match( const FormatExtensionList * list1, const FormatExtensionList * list2 );
-    static void ReconcileFormats( CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList );
+    static void ReconcileFormats( CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset );
     
     void Build( const CoronaVertexExtension * extension );
     
