@@ -130,6 +130,8 @@ Profiling* Profiling::Open( Rtt_Allocator* allocator, const char* name )
     }
 
     profiling->Push();
+	
+	return profiling;
 }
 
 void Profiling::AddEntry( void* list, const char* name )

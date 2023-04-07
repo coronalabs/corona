@@ -225,6 +225,7 @@ function EventDispatcher:dispatchEvent( event )
 			display._addProfileEntry( profile, obj )
 			if self:hasEventListener( eventName, obj ) then
 				-- Fetch method stored as property of object.
+				local method = obj[eventName]
 				if ( type(method) == "function" ) then
 					-- Dispatch event to table listener.
 					local ok, handled = _pcall( method, obj, event )

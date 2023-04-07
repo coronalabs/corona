@@ -66,8 +66,8 @@ class Profiling {
 		};
 	
 	private:
-		static InstrumentList* fFirst;
-		static InstrumentList* fTop;
+		static Profiling* fFirst;
+		static Profiling* fTop;
 
 		Array<Entry>* fArray1;
 		Array<Entry>* fArray2;

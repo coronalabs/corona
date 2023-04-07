@@ -234,6 +234,12 @@ DisplayLibrary::Open( lua_State *L )
 		{ "colorSample", colorSample },
 		{ "setDrawMode", setDrawMode },
 		{ "getSafeAreaInsets", getSafeAreaInsets },
+		{ "enableStatistics", enableStatistics },
+		{ "getStatistics", getStatistics },
+		{ "getTimings", getTimings },
+		{ "_beginProfile", _beginProfile },
+		{ "_addProfileEntry", _addProfileEntry },
+		{ "_endProfile", _endProfile },
 
 		{ NULL, NULL }
 	};
@@ -2676,7 +2682,7 @@ DisplayLibrary::_beginProfile( lua_State *L )
 	{
 		char buf[128];
 
-		sprintf( buf, "%s:%s", lua_tostring( L, 2 ), lua_tostring( L, 1 ) );
+		snprintf( buf, sizeof( buf ) - 1, "%s:%s", lua_tostring( L, 2 ), lua_tostring( L, 1 ) );
 
 		Profiling* profiling = Profiling::Open( lib->GetDisplay().GetAllocator(), buf );
 
@@ -2708,7 +2714,7 @@ DisplayLibrary::_addProfileEntry( lua_State *L )
 			break;
 
 		case LUA_TNUMBER:
-			sprintf( buf, "%g", lua_tonumber( L, 2 ) );
+			snprintf( buf, sizeof( buf ) - 1, "%g", lua_tonumber( L, 2 ) );
 			str = buf;
 			break;
 
@@ -2717,7 +2723,7 @@ DisplayLibrary::_addProfileEntry( lua_State *L )
 			break;
 
 		default:
-			sprintf( buf, "%s:%u", luaL_typename( L, 2 ), lua_topointer( L, 2 ) );
+			snprintf( buf, sizeof( buf ) - 1, "%s:0x%p", luaL_typename( L, 2 ), lua_topointer( L, 2 ) );
 			str = buf;
 		}
 
@@ -2726,6 +2732,7 @@ DisplayLibrary::_addProfileEntry( lua_State *L )
 
 	return 0;
 }
+
 int
 DisplayLibrary::_endProfile( lua_State *L )
 {
