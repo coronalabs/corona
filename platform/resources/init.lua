@@ -186,6 +186,8 @@ function cloneArray( array )
 	return clone
 end
 
+local _pcall = pcall
+
 function EventDispatcher:dispatchEvent( event )
 	local result = false;
 	local eventName = event.name
@@ -194,34 +196,47 @@ function EventDispatcher:dispatchEvent( event )
 	local functionDict = self._functionListeners
 	local functionArray = ( functionDict and functionDict[eventName] ) or nil
 	if ( functionArray ~= nil ) and ( #functionArray > 0 ) then
+		local profile = display._beginProfile( "functionListeners", eventName )
 		local functionArrayClone = cloneArray( functionArray )
 		for index = 1, #functionArrayClone do
 			local func = functionArrayClone[ index ]
+			display._addProfileEntry( profile, func )
 			if self:hasEventListener( eventName, func ) then
 				-- Dispatch event to function listener.
-				local handled = func( event )
+				local ok, handled = _pcall( func, event )
+				if not ok then
+					display._endProfile( profile )
+					error( handled )
+				end
 				result = handled or result
 			end
 		end
+		display._endProfile( profile )
 	end
 
 	-- array of table listeners is self._tableListeners[eventName]
 	local tableDict = self._tableListeners
 	local tableArray = ( tableDict and tableDict[eventName] ) or nil
 	if ( tableArray ~= nil ) and ( #tableArray > 0 ) then
+		local profile = display._beginProfile( "tableListeners", eventName )
 		local tableArrayClone = cloneArray( tableArray )
 		for index = 1, #tableArrayClone do
 			local obj = tableArrayClone[ index ]
+			display._addProfileEntry( profile, obj )
 			if self:hasEventListener( eventName, obj ) then
 				-- Fetch method stored as property of object.
-				local method = obj[eventName]
 				if ( type(method) == "function" ) then
 					-- Dispatch event to table listener.
-					local handled = method( obj, event )
+					local ok, handled = _pcall( method, obj, event )
+					if not ok then
+						display._endProfile( profile )
+						error( handled )
+					end
 					result = handled or result
 				end
 			end
 		end
+		display._endProfile( profile )
 	end
 
 	return result

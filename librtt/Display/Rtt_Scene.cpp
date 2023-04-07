@@ -24,6 +24,7 @@
 #include "Rtt_PlatformSurface.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_PhysicsWorld.h"
+#include "Rtt_Profiling.h"
 
 ////
 //
@@ -189,13 +190,18 @@ Scene::Clear( Renderer& renderer )
 	Real inv255 = 1.f / 255.f;
 	renderer.Clear( c.rgba.r * inv255, c.rgba.g * inv255, c.rgba.b * inv255, c.rgba.a * inv255 );
 }
+
+#define ADD_ENTRY( what ) if ( profiling ) { profiling->AddEntry( what ); }
+
 void
-Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
+Scene::Render( Renderer& renderer, PlatformSurface& rTarget, Profiling* profiling )
 {
 	Rtt_ASSERT( fCurrentStage );
 
 	U8 drawMode = fOwner.GetDrawMode();
 
+	ADD_ENTRY( "Scene: Begin Render" );
+	
 	if ( ! IsValid() )
 	{
 		const Rtt::Real kMillisecondsPerSecond = 1000.0f;
@@ -205,9 +211,16 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
 
 		renderer.BeginFrame( totalTime, deltaTime, fOwner.GetSx(), fOwner.GetSy() );
 		
+		ADD_ENTRY( "Scene: Preload" );
+		
 		fOwner.GetTextureFactory().Preload( renderer );
+		
+		ADD_ENTRY( "Scene: UpdateTextures" );
+		
 		fOwner.GetTextureFactory().UpdateTextures(renderer);
 
+		ADD_ENTRY( "Scene: Setup" );
+		
 		// Set antialiasing once:
 		// NOTE: Assumes Runtime::ReadConfig() has already have been called.
 		bool isMultisampleEnabled = fOwner.IsAntialiased();
@@ -220,6 +233,8 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
 		fOwner.GetViewProjectionMatrix(viewMatrix, projMatrix);
 		renderer.SetFrustum( glm::value_ptr(viewMatrix), glm::value_ptr(projMatrix) );
 		
+		ADD_ENTRY( "Scene: Issue Clear Command" );
+		
 		Clear( renderer );
 
 		Matrix identity;
@@ -227,6 +242,8 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
 		canvas->UpdateTransform( identity );
 		canvas->Prepare( fOwner );
 
+		ADD_ENTRY( "Scene: Issue Draw Commands" );
+		
 		canvas->WillDraw( renderer );
 		{
 			// In PhysicsDebugDrawMode, do NOT draw display objects
@@ -261,16 +278,25 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
 			fIsValid = true;
 		}
 		
+		ADD_ENTRY( "Scene: Swap" );
+		
 		renderer.Swap(); // Swap back and front command buffers
+		
+		ADD_ENTRY( "Scene: Process Render Commands" );
+		
 		renderer.Render(); // Render front command buffer
 		
 //		renderer.GetFrameStatistics().Log();
-		
+
+		ADD_ENTRY( "Scene: Flush" );
+
 		rTarget.Flush();
 	}
 	
 	// This needs to be done at the sync point (DMZ)
 	Collect();
+	
+	ADD_ENTRY( "Scene: End Render" );
 }
 
 void
@@ -301,6 +327,8 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, DisplayObject& obje
 		fIsValid = true;
 	}
 }
+
+#undef ADD_ENTRY
 
 void
 Scene::RenderOverlay( Display& display, Renderer& renderer, const Matrix& srcToDstSpace )
