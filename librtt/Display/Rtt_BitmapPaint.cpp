@@ -66,12 +66,29 @@ BitmapPaint::NewBitmap( Runtime& runtime, const char* filename, MPlatform::Direc
 }
 
 BitmapPaint*
-BitmapPaint::NewBitmap( Runtime& runtime, const FilePath& data, U32 flags, bool isMask )
+BitmapPaint::NewBitmap( Runtime& runtime, const FilePath& data, U32 flags, bool isMask, bool* onlyForHitTests )
 {
 	BitmapPaint *result = NULL;
 
 	const char *filename = data.GetFilename();
 	MPlatform::Directory baseDir = data.GetBaseDir();
+	
+	if ( isMask && NULL != onlyForHitTests )
+	{
+		const char *stripped = BitmapMask::StripHitTestPrefix( filename );
+
+		if ( stripped != filename )
+		{
+			*onlyForHitTests = true;
+
+			if ( !*stripped ) // no bitmap?
+			{
+				return result;
+			}
+
+			filename = stripped;
+		}
+	}
 
 	TextureFactory& factory = runtime.GetDisplay().GetTextureFactory();
 	SharedPtr< TextureResource > pTexture =

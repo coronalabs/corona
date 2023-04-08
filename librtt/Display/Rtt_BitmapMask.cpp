@@ -25,22 +25,25 @@ namespace Rtt
 BitmapMask*
 BitmapMask::Create( Runtime& runtime, const FilePath& maskData )
 {
-	BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, maskData, PlatformBitmap::kIsBitsFullResolution, true );
+	bool onlyForHitTests = false;
+	BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, maskData, PlatformBitmap::kIsBitsFullResolution, true, &onlyForHitTests );
 	BitmapMask *result = NULL;
 
-	if ( Rtt_VERIFY( paint ) )
+	if ( Rtt_VERIFY( paint || onlyForHitTests ) )
 	{
-		result = Rtt_NEW( runtime.GetAllocator(), BitmapMask( paint ) );
+		result = Rtt_NEW( runtime.GetAllocator(), BitmapMask( paint, onlyForHitTests ) );
 	}
 
 	return result;
 }
 
-BitmapMask::BitmapMask( BitmapPaint *paint )
+BitmapMask::BitmapMask( BitmapPaint *paint, bool onlyForHitTests, bool isTemporary )
 :	fPaint( paint ),
 	fTransform(),
 	fContentWidth( Rtt_REAL_NEG_1 ),
-	fContentHeight( Rtt_REAL_NEG_1 )
+	fContentHeight( Rtt_REAL_NEG_1 ),
+	fOnlyForHitTests( onlyForHitTests ),
+	fIsTemporary( isTemporary )
 {
 	Rtt_ASSERT( paint );
 }
@@ -49,13 +52,41 @@ BitmapMask::BitmapMask( BitmapPaint *paint, Real contentW, Real contentH )
 :	fPaint( paint ),
 	fTransform(),
 	fContentWidth( contentW > Rtt_REAL_0 ? contentW : Rtt_REAL_NEG_1 ),
-	fContentHeight( contentH > Rtt_REAL_0 ? contentH : Rtt_REAL_NEG_1 )
+	fContentHeight( contentH > Rtt_REAL_0 ? contentH : Rtt_REAL_NEG_1 ),
+	fOnlyForHitTests( false ),
+	fIsTemporary( false )
 {
 }
 
 BitmapMask::~BitmapMask()
 {
-	Rtt_DELETE( fPaint );
+	if ( !fIsTemporary )
+	{
+		Rtt_DELETE( fPaint );
+	}
+}
+
+static const char kHitTestOnlyPrefix[] = "hitTestOnly://";
+
+const char*
+BitmapMask::StripHitTestPrefix( const char* filename )
+{
+	if ( Rtt_StringStartsWith( filename, kHitTestOnlyPrefix ) )
+	{
+		return filename + strlen( kHitTestOnlyPrefix );
+	}
+
+	else
+	{
+		return filename;
+	}
+}
+
+void
+BitmapMask::EncodeFilenameForHitTests( String& encoded, const char* filename )
+{
+	encoded.Set( kHitTestOnlyPrefix );
+	encoded.Append( filename );
 }
 
 void

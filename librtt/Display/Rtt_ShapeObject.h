@@ -44,6 +44,10 @@ class ShapeObject : public DisplayObject
 	public:
 		ShapeObject( ClosedPath *path );
 		~ShapeObject();
+	
+		static bool IsShapeObject( const DisplayObject& object );
+
+		const BitmapPaint* GetBitmapPaint() const;
 
 	public:
 		// MDrawable

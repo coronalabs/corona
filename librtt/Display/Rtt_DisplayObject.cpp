@@ -19,6 +19,7 @@
 #include "Display/Rtt_BitmapPaint.h"
 #include "Display/Rtt_Scene.h"
 #include "Display/Rtt_StageObject.h"
+#include "Display/Rtt_ShapeObject.h"
 #include "Rtt_Event.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaProxy.h"
@@ -318,7 +319,32 @@ DisplayObject::UpdateSelfBounds( Rect& rRect ) const
 	if ( IsHitTestMasked() )
 	{
 		Rect maskBounds;
-		fMask->GetSelfBounds( maskBounds );
+
+		if ( fMask->GetOnlyForHitTests() && !fMask->GetPaint() )
+		{
+			if ( !ShapeObject::IsShapeObject( *this ) )
+			{
+				return;
+			}
+
+			const ShapeObject &o = static_cast<const ShapeObject&>( *this );
+			const BitmapPaint* tempPaint = o.GetBitmapPaint();
+
+			if ( !tempPaint )
+			{
+				return;
+			}
+
+			BitmapMask temp( const_cast<BitmapPaint*>( tempPaint ), true, true );
+
+			temp.GetSelfBounds( maskBounds );
+		}
+
+		else
+		{
+			fMask->GetSelfBounds( maskBounds );
+		}
+		
 		rRect.Intersect( maskBounds );
 	}
 }
@@ -1302,7 +1328,7 @@ DisplayObject::UpdateMask()
 {
 	Rtt_ASSERT( ! IsValid( kMaskFlag ) );
 
-	if ( fMask )
+	if ( fMask && !fMask->GetOnlyForHitTests() )
 	{
 /*
 		Matrix xform = GetSrcToDstMatrix();
@@ -1333,7 +1359,7 @@ DisplayObject::SetMask( Rtt_Allocator *allocator, BitmapMask *mask )
 
 		if ( mask )
 		{
-			if( ! fMaskUniform )
+			if( ! fMaskUniform && !fMask->GetOnlyForHitTests() )
 			{
 				fMaskUniform = Rtt_NEW( allocator, Uniform( allocator, Uniform::kMat3 ) );
 			}
