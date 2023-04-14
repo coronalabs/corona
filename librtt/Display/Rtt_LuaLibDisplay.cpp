@@ -64,9 +64,11 @@
 #include "Display/Rtt_SpriteObject.h"
 #include "Display/Rtt_TextObject.h"
 #include "Renderer/Rtt_Texture.h"
+#include "Renderer/Rtt_Renderer.h"
 
 #include "Rtt_Event.h"
 #include "Rtt_LuaResource.h"
+#include "Rtt_Profiling.h"
 
 #include "Core/Rtt_StringHash.h"
 #include "Core/Rtt_String.h"
@@ -162,6 +164,12 @@ class DisplayLibrary
 		static int colorSample( lua_State *L );
 		static int setDrawMode( lua_State *L );
 		static int getSafeAreaInsets( lua_State *L );
+		static int enableStatistics( lua_State *L );
+		static int getStatistics( lua_State *L );
+		static int getTimings( lua_State *L );
+		static int _beginProfile( lua_State *L );
+		static int _addProfileEntry( lua_State *L );
+		static int _endProfile( lua_State *L );
 
 	private:
 		static void GetRect( lua_State *L, Rect &bounds );
@@ -226,6 +234,12 @@ DisplayLibrary::Open( lua_State *L )
 		{ "colorSample", colorSample },
 		{ "setDrawMode", setDrawMode },
 		{ "getSafeAreaInsets", getSafeAreaInsets },
+		{ "enableStatistics", enableStatistics },
+		{ "getStatistics", getStatistics },
+		{ "getTimings", getTimings },
+		{ "_beginProfile", _beginProfile },
+		{ "_addProfileEntry", _addProfileEntry },
+		{ "_endProfile", _endProfile },
 
 		{ NULL, NULL }
 	};
@@ -293,6 +307,8 @@ DisplayLibrary::Finalizer( lua_State *L )
 
 	delete library;
 
+	Profiling::DestroyAll( L );
+	
 	return 0;
 }
 
@@ -2588,6 +2604,145 @@ DisplayLibrary::getSafeAreaInsets( lua_State *L )
 	return 4;
 }
 
+int
+DisplayLibrary::enableStatistics( lua_State *L )
+{
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	
+	lib->GetDisplay().GetRenderer().SetStatisticsEnabled( lua_toboolean( L, 1 ) );
+	
+	return 0;
+}
+
+int
+DisplayLibrary::getStatistics( lua_State *L )
+{
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	if ( lua_istable( L, 1 ) )
+	{
+		Renderer::Statistics stats;
+		
+		if ( lib->GetDisplay().GetRenderer().GetStatisticsEnabled() )
+		{
+			stats = lib->GetDisplay().GetRenderer().GetFrameStatistics();
+		}
+
+		lua_pushnumber( L, stats.fResourceCreateTime );
+		lua_setfield( L, 1, "resourceCreateTime" );
+		lua_pushnumber( L, stats.fResourceUpdateTime );
+		lua_setfield( L, 1, "resourceUpdateTime" );
+		lua_pushnumber( L, stats.fResourceDestroyTime );
+		lua_setfield( L, 1, "resourceDestroyTime" );
+        lua_pushnumber( L, stats.fPreparationTime );
+		lua_setfield( L, 1, "preparationTime" );
+		lua_pushnumber( L, stats.fRenderTimeCPU );
+		lua_setfield( L, 1, "renderTimeCPU" );
+		lua_pushnumber( L, stats.fRenderTimeGPU );
+		lua_setfield( L, 1, "renderTimeGPU" );
+		lua_pushinteger( L, stats.fDrawCallCount );
+		lua_setfield( L, 1, "drawCallCount" );
+		lua_pushinteger( L, stats.fTriangleCount );
+		lua_setfield( L, 1, "triangleCount" );
+		lua_pushinteger( L, stats.fLineCount );
+		lua_setfield( L, 1, "lineCount" );
+		lua_pushinteger( L, stats.fGeometryBindCount );
+		lua_setfield( L, 1, "geometryBindCount" );
+		lua_pushinteger( L, stats.fProgramBindCount );
+		lua_setfield( L, 1, "programBindCount" );
+		lua_pushinteger( L, stats.fTextureBindCount );
+		lua_setfield( L, 1, "textureBindCount" );
+		lua_pushinteger( L, stats.fTextureBindCount );
+		lua_setfield( L, 1, "textureBindCount" );
+	}
+
+	return 0;
+}
+
+int
+DisplayLibrary::getTimings( lua_State *L )
+{
+	if ( lua_isstring( L, 2 ) )
+	{
+		Profiling* profiling = Profiling::Get( lua_tostring( L, 2 ) );
+
+		if ( NULL != profiling )
+		{
+			return profiling->Visit( L );
+		}
+	}
+
+	return 0;
+}
+
+int
+DisplayLibrary::_beginProfile( lua_State *L )
+{
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	if ( lua_isstring( L, 1 ) && lua_isstring( L, 2 ) )
+	{
+		char buf[128];
+
+		snprintf( buf, sizeof( buf ) - 1, "%s:%s", lua_tostring( L, 2 ), lua_tostring( L, 1 ) );
+
+		Profiling* profiling = Profiling::Open( lib->GetDisplay().GetAllocator(), buf );
+
+		if ( profiling )
+		{
+			lua_pushlightuserdata( L, profiling );
+
+			return 1;
+		}
+	}
+
+	lua_pushnil( L );
+
+	return 1;
+}
+
+int
+DisplayLibrary::_addProfileEntry( lua_State *L )
+{
+	if ( lua_islightuserdata( L, 1 ) )
+	{
+		const char* str;
+		char buf[128];
+		
+		switch ( lua_type( L, 2 ) )
+		{
+		case LUA_TSTRING:
+			str = lua_tostring( L, 2 );
+			break;
+
+		case LUA_TNUMBER:
+			snprintf( buf, sizeof( buf ) - 1, "%g", lua_tonumber( L, 2 ) );
+			str = buf;
+			break;
+
+		case LUA_TBOOLEAN:
+			str = lua_toboolean( L, 2 ) ? "true" : "false";
+			break;
+
+		default:
+			snprintf( buf, sizeof( buf ) - 1, "%s:0x%p", luaL_typename( L, 2 ), lua_topointer( L, 2 ) );
+			str = buf;
+		}
+
+		Profiling::AddEntry( lua_touserdata( L, 1 ), str );
+	}
+
+	return 0;
+}
+
+int
+DisplayLibrary::_endProfile( lua_State *L )
+{
+	if ( lua_islightuserdata( L, 1 ) )
+	{
+		Profiling::Close( lua_touserdata( L, 1 ) );
+	}
+
+	return 0;
+}
 
 // ----------------------------------------------------------------------------
 
