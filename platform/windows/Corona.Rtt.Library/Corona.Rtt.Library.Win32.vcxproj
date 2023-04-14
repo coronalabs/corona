@@ -267,6 +267,7 @@
     <ClCompile Include="..\..\..\librtt\Rtt_Preference.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceCollection.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceValue.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Profiling.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Rendering.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RenderingStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Resource.cpp" />
@@ -569,6 +570,7 @@
     <ClInclude Include="..\..\..\librtt\Rtt_Preference.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceValue.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Profiling.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Rendering.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RenderingStream.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Resource.h" />

@@ -526,40 +526,48 @@ Display::Restart( int newWidth, int newHeight )
 void
 Display::Update()
 {
-    Profiling::RAII up( GetAllocator(), "update" );
+    Profiling::EntryRAII up( GetAllocator(), "update" );
 
-    up.fProfiling->AddEntry( "Display::Update Begin" );
+    up.Add( "Display::Update Begin" );
     
 	Runtime& runtime = fOwner;
 	lua_State *L = fOwner.VMContext().L();
 	fSpritePlayer->Run( L, Rtt_AbsoluteToMilliseconds(runtime.GetElapsedTime()) );
 
+	up.Add( "Run sprite player" );
+
 	GetScene().QueueUpdateOfUpdatables();
+
+	up.Add( "Queue updatables" );
 
 	if ( fDelegate )
 	{
 		fDelegate->WillDispatchFrameEvent( * this );
 	}
 
-    up.fProfiling->AddEntry( "FrameEvent" );
-    
+	up.Add( "Prepare for frame event" );
+
 	const FrameEvent& fe = FrameEvent::Constant();
 	fe.Dispatch( L, runtime );
 	
-    up.fProfiling->AddEntry( "RenderEvent" );
+    up.Add( "FrameEvent" );
     
 	const RenderEvent& re = RenderEvent::Constant();
 	re.Dispatch( L, runtime );
     
-    up.fProfiling->AddEntry( "Display::Update End" );
+    up.Add( "LateUpdate" );
+
+	Profiling::ResetSums();
+
+    up.Add( "Display::Update End" );
 }
 
 void
 Display::Render()
 {
-    Profiling::RAII rp( GetAllocator(), "render" );
+    Profiling::EntryRAII rp( GetAllocator(), "render" );
 
-    rp.fProfiling->AddEntry( "Display::Render Begin" );
+    rp.Add( "Display::Render Begin" );
 
 	{
 		Rtt_AbsoluteTime elapsedTime = GetRuntime().GetElapsedTime();
@@ -574,9 +582,9 @@ Display::Render()
 		//fDeltaTimeInSeconds = ( 1.0f / 30.0f );
 	}
 
-	GetScene().Render( * fRenderer, * fTarget, rp.fProfiling );
+	GetScene().Render( * fRenderer, * fTarget, rp.GetProfiling() );
 
-    rp.fProfiling->AddEntry( "Display::Render End" );
+    rp.Add( "Display::Render End" );
 }
 
 void
