@@ -32,6 +32,8 @@
 #include "Rtt_LuaContainer.h"
 #include <algorithm>
 
+#include "Rtt_Profiling.h"
+
 // -----------------------------------------------------------------------------
 
 #define VERTICES_PER_QUADS	( 6 )
@@ -929,6 +931,8 @@ void EmitterObject::Draw( Renderer& renderer ) const
 		return;
 	}
 
+	SUMMED_TIMING( ed, "Emitter: Draw" );
+
 #if defined(Rtt_EMSCRIPTEN_ENV)
 	if (fData.fGeometry->GetStoredOnGPU())
 	{
@@ -1013,6 +1017,8 @@ const LuaProxyVTable &EmitterObject::ProxyVTable() const
 
 void EmitterObject::Prepare( const Display &display )
 {
+	SUMMED_TIMING( ep, "Emitter: Prepare" );
+
 	Rtt_ASSERT( fParticles );
 
 	if( ! ShouldHitTest() )

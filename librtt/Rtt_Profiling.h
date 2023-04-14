@@ -32,11 +32,13 @@ class Profiling {
 		void Commit();
 		void Push();
 		void AddEntry( const char* name, bool isListName = false );
-		int Visit( lua_State* L ) const;
+		int VisitEntries( lua_State* L ) const;
 
 		static Profiling* Open( Rtt_Allocator* allocator, const char* name );
 		static void AddEntry( void* profiling, const char* name );
 		static void Close( void* profiling );
+		static void ResetSums();
+		static int VisitSums( lua_State* L );
 	
 	public:
 		static bool Find( const Profiling* profiling );
@@ -44,14 +46,6 @@ class Profiling {
 		static Profiling* GetOrCreate( Rtt_Allocator* allocator, const char* name );
 		static Profiling* Get( const char* name );
 
-	public:
-		struct RAII {
-			RAII( Rtt_Allocator* allocator, const char* name );
-			~RAII();
-
-			Profiling* fProfiling;
-		};
-	
 	private:
 		struct Entry {
 			typedef char ShortName[64];
@@ -64,17 +58,78 @@ class Profiling {
 			ShortName fName;
 			U64 fTime;
 		};
+
+	public:
+		class EntryRAII {
+		public:
+			EntryRAII( Rtt_Allocator* allocator, const char* name );
+			~EntryRAII();
+
+		public:
+			void Add( const char* name ) const;
+
+			Profiling* GetProfiling() const { return fProfiling; }
+
+		private:
+			Profiling* fProfiling;
+		};
 	
+		class Sum {
+		public:
+			Sum( const char* name );
+			
+			void AddTiming( U64 diff );
+			bool Acquire();
+			bool Release();
+
+			static void EnableSums( bool newValue );
+
+		private:
+			void Reset();
+			
+			static bool fEnabled; // make sums no-op in not-yet-profiled scopes (not ideal)
+
+		private:
+			Sum* fNext;
+			Entry::ShortName fName;
+			U64 fTotalTime;
+			U32 fTimingCount;
+			U32 fRefCount;
+
+			friend class Profiling;
+		};
+
+		class SumRAII {
+		public:
+			SumRAII( Sum& sum );
+			~SumRAII();
+			
+		private:
+			Sum& fSum;
+			U64 fBegan;
+		};
+
 	private:
-		static Profiling* fFirst;
-		static Profiling* fTop;
+		static Profiling* fFirstList;
+		static Profiling* fTopList;
+		static Sum* fFirstSum;
 
 		Array<Entry>* fArray1;
 		Array<Entry>* fArray2;
 		Entry::ShortName fName;
-		Profiling* fNext{NULL};
-		Profiling* fBelow{NULL};
+		Profiling* fNext;
+		Profiling* fBelow;
 };
+
+#define PROFILE_SUMS 1 // set this to non-0 to include sums in profiling
+
+#ifdef PROFILE_SUMS
+	#define SUMMED_TIMING( var, name ) static Profiling::Sum var( name ); Profiling::SumRAII var##w( var )
+	#define ENABLE_SUMMED_TIMING( enable ) Profiling::Sum::EnableSums( enable )
+#else
+	#define SUMMED_TIMING( var, name )
+	#define ENABLE_SUMMED_TIMING( enable )
+#endif
 
 // ----------------------------------------------------------------------------
 

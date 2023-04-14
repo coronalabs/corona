@@ -30,6 +30,8 @@
 #include "Rtt_LuaProxyVTable.h"
 #include "Rtt_Runtime.h"
 
+#include "Rtt_Profiling.h"
+
 #include "Display/Rtt_ClosedPath.h"
 
 // ----------------------------------------------------------------------------
@@ -271,6 +273,8 @@ SnapshotObject::UpdateTransform( const Matrix& parentToDstSpace )
 void
 SnapshotObject::Prepare( const Display& display )
 {
+	SUMMED_TIMING( sp, "Snapshot: Prepare" );
+
 	if ( ShouldRenderGroup() )
 	{
 		GroupObject& group = GetGroup();
@@ -371,13 +375,19 @@ SnapshotObject::DrawGroup( Renderer& renderer, const GroupObject& group, const C
 void
 SnapshotObject::Draw( Renderer& renderer ) const
 {
+	SUMMED_TIMING( sd, "Snapshot: Draw" );
+
 	if ( ShouldRenderGroup() )
-	{
+	{		
+		SUMMED_TIMING( srg, "Snapshot: Render Group" );
+
 		DrawGroup( renderer, GetGroup(), & fClearColor );
 	}
 
 	if ( ShouldRenderCanvas() )
 	{
+		SUMMED_TIMING( srg, "Snapshot: Render Canvas" );
+
 		DrawGroup( renderer, GetCanvas(), NULL );
 		
 		// Append/release children of other fCanvas into fGroup
