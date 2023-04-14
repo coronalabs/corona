@@ -687,14 +687,14 @@
 		A4FBC5681A2D5915004D9A01 /* Rtt_MacDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00B73CED12B720C90057F594 /* Rtt_MacDevice.mm */; };
 		A4FBC5691A2D5919004D9A01 /* Rtt_MacDeviceIdentifier.c in Sources */ = {isa = PBXBuildFile; fileRef = 00B73CEF12B720C90057F594 /* Rtt_MacDeviceIdentifier.c */; };
 		A4FBC56A1A2D59F4004D9A01 /* Rtt_PlatformObjectWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000CEA1512B7469B00D9B6A4 /* Rtt_PlatformObjectWrapper.cpp */; };
-		AA2C6AAB291C35A90093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */; };
-		AA2C6AAD291C35A90093B0BE /* CoronaMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */; };
 		AA2C69A92914777C0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A0291476D90093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
 		AA2C69AA2914777C0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A7291476D90093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
 		AA2C69AB2914777C0093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A8291476D90093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
 		AA2C69AC291478430093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A0291476D90093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
 		AA2C69AD291478430093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A7291476D90093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
 		AA2C69AE291478430093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A8291476D90093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
+		AA2C6AAB291C35A90093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */; };
+		AA2C6AAD291C35A90093B0BE /* CoronaMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */; };
 		C200AAEA19626D86005828AA /* CoronaPListSupport.lua in Resources */ = {isa = PBXBuildFile; fileRef = C200AAE919626D86005828AA /* CoronaPListSupport.lua */; };
 		C200AAEB19627074005828AA /* CoronaPListSupport.lua in Sources */ = {isa = PBXBuildFile; fileRef = C200AAE919626D86005828AA /* CoronaPListSupport.lua */; };
 		C2038B101DDCF1970071594F /* AnalyticsProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = C2038B0F1DDCF1970071594F /* AnalyticsProvider.mm */; };
@@ -1597,6 +1597,8 @@
 		C2FCD3E31B38D03C00EF7B02 /* AndroidAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F36554146C44200019808D /* AndroidAppBuildController.mm */; };
 		C2FCD3E41B38D06000EF7B02 /* AppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B00FA014565609008FB6E6 /* AppBuildController.mm */; };
 		C2FCD3E61B38D0BD00EF7B02 /* WebAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A425454E18DB9EF400EE06A8 /* WebAppBuildController.mm */; };
+		DB0B8BDC299300D00039E6D3 /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */; };
+		DB0B8BE3299300DF0039E6D3 /* CoronaMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */; };
 		DB56B4CA284C2E7D00EC8B14 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */; };
 		DB56B4CB284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */; };
 		DB56B4CC284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */; };
@@ -3201,11 +3203,11 @@
 		A4F36553146C44200019808D /* AndroidAppBuildController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AndroidAppBuildController.h; sourceTree = "<group>"; };
 		A4F36554146C44200019808D /* AndroidAppBuildController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AndroidAppBuildController.mm; sourceTree = "<group>"; };
 		A4FBC4F71A2D5479004D9A01 /* libCoronaCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCoronaCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
-		AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = Corona/CoronaMemory.h; sourceTree = "<group>"; };
 		AA2C69A0291476D90093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurGaussianLinear_gl.lua; path = Display/Shader/kernel_filter_blurGaussianLinear_gl.lua; sourceTree = "<group>"; };
 		AA2C69A7291476D90093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearHorizontal_gl.lua; path = Display/Shader/kernel_filter_blurLinearHorizontal_gl.lua; sourceTree = "<group>"; };
 		AA2C69A8291476D90093B0BE /* kernel_filter_blurLinearVertical_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearVertical_gl.lua; path = Display/Shader/kernel_filter_blurLinearVertical_gl.lua; sourceTree = "<group>"; };
+		AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
+		AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = Corona/CoronaMemory.h; sourceTree = "<group>"; };
 		C200AAE919626D86005828AA /* CoronaPListSupport.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaPListSupport.lua; path = ../platform/resources/CoronaPListSupport.lua; sourceTree = "<group>"; };
 		C2038B0F1DDCF1970071594F /* AnalyticsProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AnalyticsProvider.mm; sourceTree = "<group>"; };
 		C2038B111DDCF1BD0071594F /* AnalyticsProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AnalyticsProvider.h; sourceTree = "<group>"; };
@@ -5757,6 +5759,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB0B8BE3299300DF0039E6D3 /* CoronaMemory.h in Headers */,
 				C229DFDF1B32221B00D87A7C /* CoronaAssert.h in Headers */,
 				C229DFE01B32221B00D87A7C /* CoronaEvent.h in Headers */,
 				C229DFE11B32221B00D87A7C /* CoronaLibrary.h in Headers */,
@@ -5843,7 +5846,6 @@
 				C229E02A1B32221B00D87A7C /* Rtt_LuaLibOpenAL.h in Headers */,
 				C229E02B1B32221B00D87A7C /* Rtt_LuaLibPhysics.h in Headers */,
 				C229E02C1B32221B00D87A7C /* Rtt_LuaLibSQLite.h in Headers */,
-				AA2C6AAE291C35A90093B0BE /* CoronaMemory.h in Headers */,
 				C229E02E1B32221B00D87A7C /* Rtt_LuaLibSystem.h in Headers */,
 				C229E02F1B32221B00D87A7C /* Rtt_LuaProxy.h in Headers */,
 				F5FA0AFC1C73D61700E926A7 /* Rtt_TextureResourceExternal.h in Headers */,
@@ -7358,6 +7360,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB0B8BDC299300D00039E6D3 /* CoronaMemory.cpp in Sources */,
 				F53C328D2404E2AB00BC2BED /* CoronaBuilderPluginCollector.lua in Sources */,
 				F5FFADBE23FFC80E004E61A9 /* CoronaOfflineiOSPackager.lua in Sources */,
 				F5DB5B1A21136F9D00EC5CBC /* linuxPackageApp.lua in Sources */,
@@ -7540,7 +7543,6 @@
 				C229E1551B32221B00D87A7C /* Rtt_ShapePath.cpp in Sources */,
 				C229E1561B32221B00D87A7C /* Rtt_SharedCount.cpp in Sources */,
 				C229E1571B32221B00D87A7C /* Rtt_SnapshotObject.cpp in Sources */,
-				AA2C6AAC291C35A90093B0BE /* CoronaMemory.cpp in Sources */,
 				C229E1581B32221B00D87A7C /* Rtt_SpriteObject.cpp in Sources */,
 				C229E1591B32221B00D87A7C /* Rtt_SpritePlayer.cpp in Sources */,
 				C229E15A1B32221B00D87A7C /* Rtt_SpriteSourceFrame.cpp in Sources */,
