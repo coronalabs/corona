@@ -50,9 +50,7 @@ namespace /*anonymous*/
         kCommandBindTexture,
         kCommandBindProgram,
         kCommandBindInstancing,
-        kCommandDirtyVertexFormat,
         kCommandResolveVertexFormat,
-        kCommandBindVertexOffset,
         kCommandApplyUniformScalar,
         kCommandApplyUniformVec2,
         kCommandApplyUniformVec3,
@@ -351,7 +349,6 @@ GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
 	 fCurrentDrawVersion( Program::kMaskCount0 ),
 	 fProgram( NULL ),
      fDefaultFBO( 0 ),
-	 fTimeTransform( NULL ),
 	 fTimerQueries( new U32[kTimerQueryCount] ),
 	 fTimerQueryIndex( 0 ),
 	 fElapsedTimeGPU( 0.0f ),
@@ -525,7 +522,7 @@ GLCommandBuffer::BindProgram( Program* program, Program::Version version )
     fCurrentPrepVersion = version;
     fProgram = program;
 
-    fTimeTransform = program->GetShaderResource()->GetTimeTransform();
+    AcquireTimeTransform( program->GetShaderResource() );
 }
 
 void
@@ -537,17 +534,12 @@ GLCommandBuffer::BindInstancing( U32 count, Geometry::Vertex* instanceData )
 }
 
 void
-GLCommandBuffer::DirtyVertexFormat()
-{
-    WRITE_COMMAND( kCommandDirtyVertexFormat );
-}
-
-void
-GLCommandBuffer::BindVertexFormat( FormatExtensionList* list, U16 fullCount, U16 vertexSize )
+GLCommandBuffer::BindVertexFormat( FormatExtensionList* list, U16 fullCount, U16 vertexSize, U32 offset )
 {
     WRITE_COMMAND( kCommandResolveVertexFormat );
     Write( fullCount );
     Write( vertexSize );
+	Write( offset );
     Write<U16>( list->attributeCount );
     
     for (U32 i = 0; i < list->attributeCount; ++i)
@@ -561,14 +553,6 @@ GLCommandBuffer::BindVertexFormat( FormatExtensionList* list, U16 fullCount, U16
     {
         Write(list->groups[i]);
     }
-}
-
-void
-GLCommandBuffer::BindVertexOffset( U32 offset, U32 extraVertexCount )
-{
-    WRITE_COMMAND( kCommandBindVertexOffset );
-    Write<U32>( offset );
-    Write<U32>( extraVertexCount );
 }
 
 void
@@ -945,8 +929,8 @@ GLCommandBuffer::Execute( bool measureGPU )
 
     GLGeometry* geometry = NULL;
     Geometry::Vertex* instancingData = NULL;
-    U32 currentAttributeCount = 0, instanceCount = 0, vertexOffset = 0;
-    bool formatDirty = false, clearingDepth = false, clearingStencil = false;
+    U32 currentAttributeCount = 0, instanceCount = 0;
+    bool clearingDepth = false, clearingStencil = false;
 
     for( U32 i = 0; i < fNumCommands; ++i )
     {
@@ -1056,18 +1040,13 @@ GLCommandBuffer::Execute( bool measureGPU )
                 instancingData = Read<Geometry::Vertex*>();
                 CHECK_ERROR_AND_BREAK;
             }
-            case kCommandDirtyVertexFormat:
-            {
-                formatDirty = true;
-                DEBUG_PRINT( "Dirtied stock attributes" );
-                CHECK_ERROR_AND_BREAK;
-            }
             case kCommandResolveVertexFormat:
             {
                 Rtt_ASSERT( geometry );
                 
                 U16 fullCount = Read<U16>();
                 U16 vertexSize = Read<U16>();
+				U32 offset = Read<U32>();
                 FormatExtensionList list = {};
                 
                 // Reconstitute any attribute attached to the geometry.
@@ -1105,10 +1084,6 @@ GLCommandBuffer::Execute( bool measureGPU )
                     }
                     
                     currentAttributeCount = list.attributeCount;
-                    
-                    DEBUG_PRINT( "Bound offset %i", vertexOffset );
-                    
-                    geometry->SetVertexOffset( vertexOffset, 0, false );
                 }
                 
                 bool hasDivisors = GLGeometry::SupportsDivisors();
@@ -1131,28 +1106,11 @@ GLCommandBuffer::Execute( bool measureGPU )
                 }
                 
                 // Commit the format.
-                geometry->ResolveVertexFormat( &list, vertexSize, formatDirty, instancingData, instanceCount );
+                geometry->ResolveVertexFormat( &list, vertexSize, offset, instancingData, instanceCount );
 
                 DEBUG_PRINT( "Resolved geometry vertex format" );
                 
                 instancingData = NULL;
-                formatDirty = false;
-                CHECK_ERROR_AND_BREAK;
-            }
-            case kCommandBindVertexOffset:
-            {
-                Rtt_ASSERT( geometry );
-                Rtt_ASSERT( !geometry->StoredOnGPU());
-                
-                vertexOffset = Read<U32>();
-                U32 extraVertexCount = Read<U32>();
-
-                if (0 == vertexOffset)
-                {
-                    geometry->SetVertexOffset( 0, extraVertexCount * sizeof(Geometry::Vertex), formatDirty );
-                }
-                
-                DEBUG_PRINT( "Bind vertex offset=%i (extra vertex count = %i)", vertexOffset, extraVertexCount );
                 CHECK_ERROR_AND_BREAK;
             }
             case kCommandApplyUniformScalar:
@@ -1359,7 +1317,6 @@ GLCommandBuffer::Execute( bool measureGPU )
                 GLenum mode = Read<GLenum>();
                 GLint offset = Read<GLint>();
                 GLsizei count = Read<GLsizei>();
-                offset -= geometry->GetVertexOffset();
                 if (0 == instanceCount)
                 {
                     glDrawArrays( mode, offset, count );
@@ -1480,12 +1437,16 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
     Real rawTotalTime;
     bool transformed = false;
 
-    if (fTimeTransform)
+    if (fUsesTime)
     {
         const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
-        if (time.uniform)
+        if (fTimeTransform)
         {
             transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
+        }
+        if (transformed || !TimeTransform::Matches( fTimeTransform, fLastTimeTransform ))
+        {
+            fUniformUpdates[Uniform::kTotalTime].timestamp = glProgram->GetUniformTimestamp( Uniform::kTotalTime, fCurrentPrepVersion ) - 1; // force a refresh
         }
     }
 
@@ -1498,7 +1459,7 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
         }
     }
 
-    if (transformed)
+    if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
     {
         fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
     }

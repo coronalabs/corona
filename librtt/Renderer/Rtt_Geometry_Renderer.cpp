@@ -640,7 +640,7 @@ FormatExtensionList::Build( const CoronaVertexExtension * extension )
 }
 
 void
-FormatExtensionList::ReconcileFormats( CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList )
+FormatExtensionList::ReconcileFormats( CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset )
 {
     FormatExtensionList reconciledList = {};
     
@@ -684,7 +684,7 @@ FormatExtensionList::ReconcileFormats( CommandBuffer * buffer, const FormatExten
     
     U32 geometryAttributeCount = geometryList ? geometryList->attributeCount : 0;
     
-    buffer->BindVertexFormat( &reconciledList, geometryAttributeCount, FormatExtensionList::GetVertexSize( geometryList ) );
+    buffer->BindVertexFormat( &reconciledList, geometryAttributeCount, FormatExtensionList::GetVertexSize( geometryList ), offset );
 }
 
 FormatExtensionList::Iterator::Iterator( const FormatExtensionList* list, GroupFilter filter, IterationPolicy policy )

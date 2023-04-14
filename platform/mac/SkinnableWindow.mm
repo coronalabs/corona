@@ -81,6 +81,8 @@
 		// is capable of so that we take advantage of Retina screens
 		[fScreenView setWantsBestResolutionOpenGLSurface:YES];
 		[fScreenView setZoomLevel:1.0];
+		
+		fIsTransparent = isTransparent;
 
 		if (isTransparent)
 		{
@@ -147,7 +149,7 @@
 		Rtt_ASSERT( fScreenView );
 		if ( ! fSkinView )
 		{
-			SkinView* skinView = [[SkinView alloc] initWithFrame:NSZeroRect];
+			SkinView* skinView = [[SkinView alloc] initWithFrame:NSZeroRect isTransparent:fIsTransparent];
 			fSkinView = skinView;
 			[skinView autorelease];
 		}

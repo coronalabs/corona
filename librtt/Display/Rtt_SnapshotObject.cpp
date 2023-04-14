@@ -170,9 +170,10 @@ SnapshotObject::Initialize( lua_State *L, Display& display, Real contentW, Real 
 	Rtt_ASSERT( GetStage() );
 	
 	// Calculate pixel dimensions for texture
+	S32 unused = 0;
 	S32 pixelW = Rtt_RealToInt( contentW );
 	S32 pixelH = Rtt_RealToInt( contentH );
-	display.ContentToScreen( pixelW, pixelH );
+	display.ContentToScreen( unused, unused, pixelW, pixelH );
 
 	TextureFactory& factory = display.GetTextureFactory();
 

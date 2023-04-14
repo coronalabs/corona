@@ -249,7 +249,7 @@ static size_t Internal_GetMaxTextureSize()
 
 		if (isTransparent)
 		{
-			[[self layer] setOpacity:0.0];
+			[[self layer] setOpacity:0.125];
 		}
 	
 		[[self layer] addSublayer:[self layerView]];

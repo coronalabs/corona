@@ -18,6 +18,8 @@
 
 namespace Rtt
 {
+    
+struct TimeTransform;
 
 // ----------------------------------------------------------------------------
 
@@ -114,6 +116,9 @@ class DisplayDefaults
         U32 GetAddedStencilClearValue() const { return fAddedStencilClear; }
         void SetAddedStencilClearValue( float newValue ) { fAddedStencilClear = newValue; }
 
+        const TimeTransform* GetTimeTransform() const;
+        void SetTimeTransform( const TimeTransform *transform );
+
     private:
         Color fClearColor;
         Color fFillColor;
@@ -145,6 +150,7 @@ class DisplayDefaults
         float fAddedDepthClear;
         U32 fSceneStencilClear;
         U32 fAddedStencilClear;
+        TimeTransform *fTimeTransform;
 };
 
 // ----------------------------------------------------------------------------

@@ -78,14 +78,12 @@ class VulkanCommandBuffer : public CommandBuffer
 		// specified state changes.
 		virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer );
 		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
-		virtual void BindGeometry( Geometry* geometry );
+		virtual void BindGeometry( Geometry* geometry, U32 );
 		virtual void BindTexture( Texture* texture, U32 unit );
 		virtual void BindUniform( Uniform* uniform, U32 unit );
 		virtual void BindProgram( Program* program, Program::Version version );
         virtual void BindInstancing( U32 count, Geometry::Vertex* instanceData ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
-        virtual void DirtyVertexFormat() { Rtt_ASSERT_NOT_IMPLEMENTED(); }
-        virtual void BindVertexFormat( FormatExtensionList* extensionList, U16 fullCount, U16 vertexSize ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
-        virtual void BindVertexOffset( U32 offset, U32 extraVertexCount ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
+        virtual void BindVertexFormat( FormatExtensionList* extensionList, U16 fullCount, U16 vertexSize, U32 offset ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
 		virtual void SetBlendEnabled( bool enabled );
 		virtual void SetBlendFunction( const BlendMode& mode );
 		virtual void SetBlendEquation( RenderTypes::BlendEquation mode );
@@ -188,7 +186,6 @@ class VulkanCommandBuffer : public CommandBuffer
 		U32* fTimerQueries;
 		U32 fTimerQueryIndex;*/
 		Real fElapsedTimeGPU;
-		TimeTransform* fTimeTransform;
 		S32 fCachedQuery[kNumQueryableParams];
 		VulkanRenderer & fRenderer;
 		Uniform fContentSize;

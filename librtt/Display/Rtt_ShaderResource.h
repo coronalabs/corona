@@ -22,6 +22,8 @@
 
 // ----------------------------------------------------------------------------
 
+struct lua_State;
+
 namespace Rtt
 {
 
@@ -38,6 +40,12 @@ struct TimeTransform
     }
 
     bool Apply( Uniform *time, Real *old, U32 now );
+    int Push( lua_State *L ) const;
+    void SetDefault();
+    void SetFunc( lua_State *L, int arg, const char *what, const char *fname );
+
+    static bool Matches( const TimeTransform *xform1, const TimeTransform *xform2 );
+    static const char* FindFunc( lua_State *L, int arg, const char *what );
 
     Func func;
     Real arg1, arg2, arg3, cached;

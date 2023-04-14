@@ -23,8 +23,6 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-struct TimeTransform;
-
 //
 class GLCommandBuffer : public CommandBuffer
 {
@@ -54,9 +52,7 @@ class GLCommandBuffer : public CommandBuffer
         virtual void BindUniform( Uniform* uniform, U32 unit );
         virtual void BindProgram( Program* program, Program::Version version );
         virtual void BindInstancing( U32 count, Geometry::Vertex* instanceData );
-        virtual void DirtyVertexFormat();
-        virtual void BindVertexFormat( FormatExtensionList* list, U16 fullCount, U16 vertexSize );
-        virtual void BindVertexOffset( U32 offset, U32 extraVertexCount );
+        virtual void BindVertexFormat( FormatExtensionList* list, U16 fullCount, U16 vertexSize, U32 offset );
         virtual void SetBlendEnabled( bool enabled );
         virtual void SetBlendFunction( const BlendMode& mode );
         virtual void SetBlendEquation( RenderTypes::BlendEquation mode );
@@ -118,7 +114,6 @@ class GLCommandBuffer : public CommandBuffer
 		U32* fTimerQueries;
 		U32 fTimerQueryIndex;
 		Real fElapsedTimeGPU;
-		TimeTransform* fTimeTransform;
 		S32 fCachedQuery[kNumQueryableParams];
     
         Array< CoronaCommand > fCustomCommands;

@@ -1947,6 +1947,11 @@ DisplayLibrary::getDefault( lua_State *L )
 		bool value = defaults.IsExternalTextureRetina();
 		lua_pushboolean( L, value ? 1 : 0 );
 	}
+    else if ( ( Rtt_StringCompare( key, "timeTransform" ) == 0 ) )
+    {
+        const TimeTransform* transform = defaults.GetTimeTransform();
+        result = transform->Push( L );
+    }
     else if ( ( Rtt_StringCompare( key, "skipsCulling" ) == 0 ) )
     {
         bool value = defaults.GetSkipsCull();
@@ -2128,6 +2133,35 @@ DisplayLibrary::setDefault( lua_State *L )
 		bool value = lua_toboolean( L, index ) ? true : false;
 		defaults.SetExternalTextureRetina( value );
 	}
+    else if ( ( Rtt_StringCompare( key, "timeTransform" ) == 0 ) )
+    {
+        if ( lua_isstring( L, index ) )
+        {
+            const char* str = lua_tostring( L, index );
+            if ( Rtt_StringCompare( str, "none" ) == 0 )
+            {
+                TimeTransform dummy; // n.b. leave func NULL
+
+                defaults.SetTimeTransform( &dummy );
+            }
+            else if ( Rtt_StringCompare( str, "default" ) == 0 )
+            {
+                defaults.SetTimeTransform( NULL );
+            }
+        }
+        else
+        {
+            const char* fname = TimeTransform::FindFunc( L, index, "display.setDefault()" );
+            if (fname)
+            {
+                TimeTransform transform;
+
+                transform.SetFunc( L, index, "display.setDefault()", fname );
+                        
+                defaults.SetTimeTransform( &transform );
+            }
+        }
+    }
     else if ( ( Rtt_StringCompare( key, "skipsCulling" ) == 0 ) )
     {
         bool value = lua_toboolean( L, index ) ? true : false;

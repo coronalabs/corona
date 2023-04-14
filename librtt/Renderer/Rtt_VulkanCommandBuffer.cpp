@@ -146,7 +146,6 @@ VulkanCommandBuffer::VulkanCommandBuffer( Rtt_Allocator* allocator, VulkanRender
 	fCurrentDrawVersion( Program::kMaskCount0 ),
 	fProgram( NULL ),
 	fDefaultFBO( NULL ),
-	fTimeTransform( NULL ),
 	fCurrentGeometry( NULL ),
 //	fTimerQueries( new U32[kTimerQueryCount] ),
 //	fTimerQueryIndex( 0 ),
@@ -353,7 +352,7 @@ VulkanCommandBuffer::BindFrameBufferObject( FrameBufferObject* fbo, bool ) // TO
 }
 
 void 
-VulkanCommandBuffer::BindGeometry( Geometry* geometry )
+VulkanCommandBuffer::BindGeometry( Geometry* geometry, U32 )
 {
 	WRITE_COMMAND( kCommandBindGeometry );
 	Write<GPUResource*>( geometry->GetGPUResource() );
@@ -379,7 +378,7 @@ VulkanCommandBuffer::BindProgram( Program* program, Program::Version version )
 	fCurrentPrepVersion = version;
 	fProgram = program;
 
-	fTimeTransform = program->GetShaderResource()->GetTimeTransform();
+	AcquireTimeTransform( program->GetShaderResource() );
 }
 
 void
@@ -1785,16 +1784,20 @@ void VulkanCommandBuffer::ApplyUniforms( GPUResource* resource )
 	Real rawTotalTime;
 	bool transformed = false;
 
-	if (fTimeTransform)
-	{
-		const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
-		if (time.uniform)
-		{
-			transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
-		}
-	}
-	
 	VulkanProgram* vulkanProgram = static_cast< VulkanProgram * >( resource );
+
+	if (fUsesTime)
+    {
+        const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
+        if (fTimeTransform)
+        {
+            transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
+        }
+        if (transformed || !TimeTransform::Matches( fTimeTransform, fLastTimeTransform ))
+        {
+            fUniformUpdates[Uniform::kTotalTime].timestamp = vulkanProgram->GetUniformTimestamp( Uniform::kTotalTime, fCurrentPrepVersion ) - 1; // force a refresh
+        }
+    }
 
 	for( U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
 	{
@@ -1805,7 +1808,7 @@ void VulkanCommandBuffer::ApplyUniforms( GPUResource* resource )
 		}
 	}
 
-	if (transformed)
+	if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
 	{
 		fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
 	}

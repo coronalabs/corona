@@ -694,7 +694,7 @@ GLGeometry::Destroy()
 }
 
 void
-GLGeometry::BindStockAttributes( size_t size )
+GLGeometry::BindStockAttributes( size_t size, U32 offset )
 {
     const GLbyte* positionStart = (const GLbyte*)fPositionStart;
     const GLbyte* texCoordStart = (const GLbyte*)fTexCoordStart;
@@ -703,8 +703,6 @@ GLGeometry::BindStockAttributes( size_t size )
     
     if (!StoredOnGPU())
     {
-        ptrdiff_t offset = GetBaseOffset() - positionStart;
-        
         positionStart += offset;
         texCoordStart += offset;
         colorScaleStart += offset;
@@ -745,19 +743,6 @@ GLGeometry::Bind()
     }
 }
 
-void
-GLGeometry::SetVertexOffset( U32 offset, size_t sizeExtra, bool formatDirty )
-{
-    fVertexOffset = offset;
-    
-    if (0 == offset && !formatDirty)
-    {
-        const size_t size = sizeof(Geometry::Vertex) + sizeExtra;
-        
-        BindStockAttributes( size );
-    }
-}
-
 static void
 BindExtensionAttribute( const Geometry::ExtensionAttribute& attribute, GLuint attributeIndex, size_t size, GLbyte* start, U32 offsetExtra )
 {
@@ -775,23 +760,24 @@ BindExtensionAttribute( const Geometry::ExtensionAttribute& attribute, GLuint at
 }
 
 void
-GLGeometry::ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSize, bool mainDirty, const Geometry::Vertex* instancingData, U32 instanceCount )
+GLGeometry::ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSize, U32 offset, const Geometry::Vertex* instancingData, U32 instanceCount )
 {
     bool storedOnGPU = StoredOnGPU();
 
-    if (storedOnGPU)
+	if (storedOnGPU && ( !fVAO || ( list && list->HasVertexRateData() ) ) )
     {
         glBindBuffer( GL_ARRAY_BUFFER, fVBO );
     }
     
-    if (mainDirty && !fVAO) // a VAO does not have this info, but already has it bound
+	offset *= sizeof( Geometry::Vertex );
+    if ( !fVAO ) // a VAO does not have this info, but already has it bound
     {
-        BindStockAttributes( vertexSize );
+        BindStockAttributes( vertexSize, offset );
     }
 
     Rtt_ASSERT( list );
     
-    for (auto iter = FormatExtensionList::AllGroups( list ); !iter.IsDone(); iter.Advance())
+    for ( auto iter = FormatExtensionList::AllGroups( list ); !iter.IsDone(); iter.Advance() )
     {
         const Geometry::ExtensionGroup* group = iter.GetGroup();
         const Geometry::ExtensionAttribute* first = iter.GetAttribute();
@@ -835,7 +821,7 @@ GLGeometry::ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSiz
             
             if (!storedOnGPU)
             {
-                start = GetBaseOffset();
+                start = ((GLbyte*)fPositionStart) + offset;
             }
         }
         

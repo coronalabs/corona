@@ -39,6 +39,7 @@ class Uniform;
 class RenderingStream;
 class BufferBitmap;
 class ShaderData;
+struct TimeTransform;
 
 // ----------------------------------------------------------------------------
 
@@ -59,7 +60,7 @@ class Renderer
 		// Perform any per-frame preparation. Total time is the time in seconds
 		// since the start of the application. Delta time is the amount of time
 		// in seconds it took to complete the previous frame.
-		virtual void BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool isCapture = false );
+		virtual void BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTimeTransform, Real contentScaleX, Real contentScaleY, bool isCapture = false );
 
         // Perform any per-frame finalization.
         virtual void EndFrame();
@@ -367,6 +368,7 @@ class Renderer
         U32 fCachedVertexOffset;
         U32 fCachedVertexCount;
         U32 fCachedVertexExtra;
+		U32 fOffsetCorrection;
         Geometry::PrimitiveType fPreviousPrimitiveType;
         Geometry::Vertex* fCurrentVertex;
         Geometry* fCurrentGeometry;

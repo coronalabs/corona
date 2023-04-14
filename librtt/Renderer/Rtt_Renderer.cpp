@@ -212,7 +212,7 @@ CallOps( Rtt::Renderer * renderer, Rtt::Array< Renderer::CustomOp > & ops, Rtt::
 }
 
 void
-Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool )
+Renderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTimeTransform, Real contentScaleX, Real contentScaleY, bool )
 {
     fContentScaleX = contentScaleX;
     fContentScaleY = contentScaleY;
@@ -249,6 +249,7 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real c
     fBackCommandBuffer->BindUniform( fDeltaTime, Uniform::kDeltaTime );
     
     fBackCommandBuffer->ClearUserUniforms();
+    fBackCommandBuffer->PrepareTimeTransforms( defTimeTransform );
     
     fBackCommandBuffer->SetBlendEnabled( fPrevious.fBlendEquation != RenderTypes::kDisabledEquation );
     fBackCommandBuffer->SetBlendFunction( fPrevious.fBlendMode );
@@ -570,6 +571,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     }
 
     const FormatExtensionList* extensionList = geometry->GetExtensionList();
+    const U32 vertexExtra = extensionList ? extensionList->ExtraVertexCount() : 0;
     bool formatsDirty = !FormatExtensionList::Match( previousGeometryList, extensionList );
 
     if (!formatsDirty && data->fProgram != fPrevious.fProgram)
@@ -584,15 +586,9 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         formatsDirty = !FormatExtensionList::Match( previousProgramList, programList );
     }
 
-    // Updating the format can potentially duplicate some bind
-    // logic, so make note of it.
-    if (formatsDirty)
-    {
-        fBackCommandBuffer->DirtyVertexFormat();
-    }
-    
     const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
     bool isInstanced = Geometry::UsesInstancing( block, extensionList );
+	bool mustReconcileFormats = formatsDirty;
 
     // Geometry that is stored on the GPU does not need to be copied
     // over each frame. As a consequence, they can not be batched.
@@ -613,9 +609,9 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
             if (isInstanced)
             {
                 fBackCommandBuffer->BindInstancing( block->fCount, NULL );
-                
-                formatsDirty = true;
             }
+			
+			mustReconcileFormats = true; // geometry is new
         }
 
         fCachedVertexOffset = fVertexOffset;
@@ -675,12 +671,12 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         if( storedOnGPU )
         {
             batch = false;
+            mustReconcileFormats = true; // pointers out of date
         }
         fPrevious.fGeometry = geometry;
         
         // Depending on batching, wireframe, etc, the amount of space
         // needed may be more than what is used by the Geometry itself.
-        const U32 vertexExtra = extensionList ? extensionList->ExtraVertexCount() : 0;
         const U32 verticesComputed = ComputeRequiredVertices( geometry, fWireframeEnabled );
         const U32 verticesRequired = verticesComputed * (1 + vertexExtra);
 //        bool enoughSpace = fCurrentGeometry;
@@ -696,7 +692,10 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         {
             UpdateBatch( batch, enoughSpace, storedOnGPU, verticesRequired );
 
-            fBackCommandBuffer->BindVertexOffset( fVertexOffset, vertexExtra );
+            if ( 0 == fVertexOffset )
+			{
+				mustReconcileFormats = true; // geometry is new
+			}
         }
         
         fVertexExtra = vertexExtra;
@@ -711,7 +710,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
 
             InsertInstancing( block, programList, extensionList );
             
-            formatsDirty = true; // pointers out of date
+            mustReconcileFormats = true; // pointers out of date
         }
 
         fCurrentVertex += verticesRequired;
@@ -931,9 +930,14 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
 		IssueCaptures( data->fFillTexture0 );
 	}
 
-    if (formatsDirty)
+    if (mustReconcileFormats)
     {
-        FormatExtensionList::ReconcileFormats( fBackCommandBuffer, programList, extensionList );
+		if ( !geometry->GetStoredOnGPU() )
+		{
+			fOffsetCorrection = fVertexOffset;
+		}
+		
+        FormatExtensionList::ReconcileFormats( fBackCommandBuffer, programList, extensionList, fVertexOffset );
     }
     
     if (dirtyIndices.Length() > 0)
@@ -1396,7 +1400,7 @@ Renderer::CheckAndInsertDrawCommand()
         }
         else
         {
-            fBackCommandBuffer->Draw( fVertexOffset, fVertexCount - fDegenerateVertexCount, fPreviousPrimitiveType );
+            fBackCommandBuffer->Draw( fVertexOffset - fOffsetCorrection, fVertexCount - fDegenerateVertexCount, fPreviousPrimitiveType );
         }
         INCREMENT( fStatistics.fDrawCallCount );
 

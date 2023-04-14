@@ -720,7 +720,7 @@ Display::Capture( DisplayObject *object,
         }
     }
 
-	fRenderer->BeginFrame( 0.1f, 0.1f, GetSx(), GetSy(), true );
+	fRenderer->BeginFrame( 0.1f, 0.1f, GetDefaults().GetTimeTransform(), GetSx(), GetSy(), true );
 
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
@@ -990,7 +990,9 @@ Display::Capture( DisplayObject *object,
         if( output_file_will_be_png_format )
         {
             // This should ONLY be done for PNGs.
+#if !defined(Rtt_NXS_ENV)
             bitmap->UndoPremultipliedAlpha();
+#endif
         }
 
         if( optional_output_color )
