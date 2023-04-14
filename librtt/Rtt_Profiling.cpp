@@ -31,6 +31,8 @@ void Profiling::Entry::SetName( const char* name )
 }
 
 Profiling::Profiling( Rtt_Allocator* allocator, const char* name )
+:   fNext(NULL),
+    fBelow(NULL)
 {
     fArray1 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
     fArray2 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
@@ -58,14 +60,14 @@ void Profiling::Commit()
         fBelow->AddEntry( fName, true );
     }
 
-    fTop = fBelow;
+    fTopList = fBelow;
     fBelow = NULL;
 }
 
 void Profiling::Push()
 {
-    fBelow = fTop;
-    fTop = this;
+    fBelow = fTopList;
+    fTopList = this;
 }
 
 void Profiling::AddEntry( const char* name, bool isListName )
@@ -79,7 +81,7 @@ void Profiling::AddEntry( const char* name, bool isListName )
     fArray1->Append( entry );
 }
 
-int Profiling::Visit( lua_State* L ) const
+int Profiling::VisitEntries( lua_State* L ) const
 {
     if ( lua_istable( L, 1 ) )
     {
@@ -106,14 +108,14 @@ int Profiling::Visit( lua_State* L ) const
         }
 
         lua_pushinteger( L, length * 2 );
-
-        return 1;
     }
 
     else
     {
-        return 0;
+        lua_pushinteger( L, 0 );
     }
+
+    return 1;
 }
 
 Profiling* Profiling::Open( Rtt_Allocator* allocator, const char* name )
@@ -122,53 +124,38 @@ Profiling* Profiling::Open( Rtt_Allocator* allocator, const char* name )
 
     Rtt_ASSERT( profiling );
 
-    if ( Profiling::Find( profiling ) )
+    if ( !Profiling::Find( profiling ) )
     {
-        CoronaLog( "List %s is already in use!", name ); // TODO: use some other logging...
-
+        profiling->Push();
+	
+	    return profiling;
+    }
+    
+    else
+    {
         return NULL;
     }
-
-    profiling->Push();
-	
-	return profiling;
 }
 
-void Profiling::AddEntry( void* list, const char* name )
+void Profiling::AddEntry( void* profiling, const char* name )
 {
-    if ( NULL != list )
+    if ( NULL != profiling && fTopList == profiling )
     {
-        if ( fTop == list )
-        {
-            fTop->AddEntry( name );
-        }
-
-        else
-        {
-            CoronaLog( "List %s is invalid or not active", name ); // TODO?
-        }
+        fTopList->AddEntry( name );
     }
 }
 
-void Profiling::Close( void* list )
+void Profiling::Close( void* profiling )
 {
-    if ( NULL != list )
+    if ( NULL != profiling && fTopList == profiling )
     {
-        if ( fTop == list )
-        {
-            fTop->Commit();
-        }
-
-        else
-        {
-            CoronaLog( "List is invalid or not active" ); // TODO?
-        }
+        fTopList->Commit();
     }
 }
 
 bool Profiling::Find( const Profiling* profiling )
 {
-    for ( const Profiling* cur = fTop; cur; cur = cur->fBelow )
+    for ( const Profiling* cur = fTopList; cur; cur = cur->fBelow )
     {
         if ( profiling == cur )
         {
@@ -181,7 +168,7 @@ bool Profiling::Find( const Profiling* profiling )
 
 int Profiling::DestroyAll( struct lua_State* L )
 {
-    Profiling* cur = fFirst;
+    Profiling* cur = fFirstList;
 
     while ( cur )
     {
@@ -192,7 +179,10 @@ int Profiling::DestroyAll( struct lua_State* L )
         cur = next;
     }
 
-    fFirst = fTop = NULL;
+    fFirstList = NULL;
+    fTopList = NULL;
+
+    // n.b. leave sums list intact
 
     return 0;
 }
@@ -211,7 +201,7 @@ Profiling* Profiling::GetOrCreate( Rtt_Allocator* allocator, const char* name )
 
         if ( NULL != profiling )
         {
-            CoronaLog( "Found list %s, but with shorter name %s", name, shorter ); // TODO
+            Rtt_Log( "Found profiling list %s, but with shorter name %s", name, shorter );
 
             return profiling;
         }
@@ -220,11 +210,11 @@ Profiling* Profiling::GetOrCreate( Rtt_Allocator* allocator, const char* name )
 
         if ( 0 != Rtt_StringCompare( name, profiling->fName ) )
         {
-            CoronaLog( "List created, but name %s shortened to %s", name, shorter ); // TODO
+            Rtt_Log( "Profiling list created, but name %s shortened to %s", name, shorter );
         }
 
-        profiling->fNext = fFirst;
-        fFirst = profiling;
+        profiling->fNext = fFirstList;
+        fFirstList = profiling;
     }
 
     return profiling;
@@ -232,7 +222,7 @@ Profiling* Profiling::GetOrCreate( Rtt_Allocator* allocator, const char* name )
 
 Profiling* Profiling::Get( const char* name )
 {
-    for ( Profiling* cur = fFirst; cur; cur = cur->fNext )
+    for ( Profiling* cur = fFirstList; cur; cur = cur->fNext )
     {
         if ( 0 == Rtt_StringCompare( name, cur->fName ) )
         {
@@ -243,28 +233,160 @@ Profiling* Profiling::Get( const char* name )
     return NULL;
 }
 
-Profiling* Profiling::fFirst;
-Profiling* Profiling::fTop;
+void Profiling::ResetSums()
+{
+    for ( Sum* sum = fFirstSum; sum; sum = sum->fNext )
+    {
+        sum->Reset();
+    }
+}
 
-Profiling::RAII::RAII( Rtt_Allocator* allocator, const char* name )
+int Profiling::VisitSums( lua_State* L)
+{
+    if ( lua_istable( L, 1 ) )
+    {
+        int index = 1;
+
+        for ( const Sum* sum = fFirstSum; sum; sum = sum->fNext )
+        {
+            if ( 0 == sum->fTimingCount )
+            {
+                continue;
+            }
+
+            lua_pushstring( L, sum->fName );
+            lua_rawseti( L, 1, index );
+            lua_pushinteger( L, Rtt_AbsoluteToMicroseconds( sum->fTotalTime ) );
+            lua_rawseti( L, 1, index + 1 );
+            lua_pushinteger( L, sum->fTimingCount );
+            lua_rawseti( L, 1, index + 2 );
+
+            index += 3;
+        }
+
+        lua_pushinteger( L, index - 1 );
+    }
+
+    else
+    {
+        lua_pushinteger( L, 0 );
+    }
+    
+    return 1;
+}
+
+Profiling* Profiling::fFirstList;
+Profiling* Profiling::fTopList;
+Profiling::Sum* Profiling::fFirstSum;
+
+Profiling::EntryRAII::EntryRAII( Rtt_Allocator* allocator, const char* name )
 {
     fProfiling = Profiling::GetOrCreate( allocator, name );
 
     Rtt_ASSERT( fProfiling );
 
-    if ( Profiling::Find( fProfiling ) )
+    if ( !Profiling::Find( fProfiling ) )
     {
-        CoronaLog( "List %s is already in use!", name ); // TODO
+        fProfiling->Push();
     }
 
-    fProfiling->Push();
+    else
+    {
+        Rtt_ASSERT_NOT_REACHED(); // possible, but indicates misuse
+    }
 }
 
-Profiling::RAII::~RAII()
+Profiling::EntryRAII::~EntryRAII()
 {
     Rtt_ASSERT( fProfiling );
 
     fProfiling->Commit();
+}
+
+void Profiling::EntryRAII::Add( const char* name ) const
+{
+    fProfiling->AddEntry( name );
+}
+
+Profiling::Sum::Sum( const char* name )
+{
+    Entry::SetShortName( fName, name );
+
+    fNext = fFirstSum;
+    fFirstSum = this;
+}
+			
+void Profiling::Sum::AddTiming( U64 diff )
+{
+    fTotalTime += diff;
+
+    ++fTimingCount;
+}
+
+bool Profiling::Sum::Acquire()
+{
+    if ( fEnabled )
+    {
+        bool acquired = 0 == fRefCount;
+
+        ++fRefCount;
+
+        return acquired;
+    }
+
+    else
+    {
+        return false;
+    }
+}
+
+bool Profiling::Sum::Release()
+{
+    if ( fEnabled )
+    {
+        Rtt_ASSERT( fRefCount > 0 );
+
+        --fRefCount;
+
+        return 0 == fRefCount;
+    }
+
+    else
+    {
+        return false;
+    }
+}
+			
+void Profiling::Sum::EnableSums( bool newValue )
+{
+    fEnabled = newValue;
+}
+			
+void Profiling::Sum::Reset()
+{
+    Rtt_ASSERT( 0 == fRefCount );
+
+    fTotalTime = 0;
+    fTimingCount = 0;
+}
+			
+bool Profiling::Sum::fEnabled;
+
+Profiling::SumRAII::SumRAII( Sum& sum )
+:   fSum( sum )
+{
+    if ( fSum.Acquire() )
+    {
+        fBegan = Rtt_GetAbsoluteTime();
+    }
+}
+
+Profiling::SumRAII::~SumRAII()
+{
+    if ( fSum.Release() )
+    {
+        fSum.AddTiming( Rtt_GetAbsoluteTime() - fBegan );
+    }
 }
 
 // ----------------------------------------------------------------------------

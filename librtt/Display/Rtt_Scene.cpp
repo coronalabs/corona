@@ -199,8 +199,6 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, Profiling* profilin
 	Rtt_ASSERT( fCurrentStage );
 
 	U8 drawMode = fOwner.GetDrawMode();
-
-	ADD_ENTRY( "Scene: Begin Render" );
 	
 	if ( ! IsValid() )
 	{
@@ -211,15 +209,15 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, Profiling* profilin
 
 		renderer.BeginFrame( totalTime, deltaTime, fOwner.GetSx(), fOwner.GetSy() );
 		
-		ADD_ENTRY( "Scene: Preload" );
+		ADD_ENTRY( "Scene: Begin Render" );
 		
 		fOwner.GetTextureFactory().Preload( renderer );
-		
-		ADD_ENTRY( "Scene: UpdateTextures" );
+
+		ADD_ENTRY( "Scene: Preload" );
 		
 		fOwner.GetTextureFactory().UpdateTextures(renderer);
-
-		ADD_ENTRY( "Scene: Setup" );
+		
+		ADD_ENTRY( "Scene: UpdateTextures" );
 		
 		// Set antialiasing once:
 		// NOTE: Assumes Runtime::ReadConfig() has already have been called.
@@ -232,17 +230,20 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, Profiling* profilin
 		glm::mat4 projMatrix;
 		fOwner.GetViewProjectionMatrix(viewMatrix, projMatrix);
 		renderer.SetFrustum( glm::value_ptr(viewMatrix), glm::value_ptr(projMatrix) );
-		
-		ADD_ENTRY( "Scene: Issue Clear Command" );
+
+		ADD_ENTRY( "Scene: Setup" );
 		
 		Clear( renderer );
 
 		Matrix identity;
 		StageObject *canvas = fCurrentStage;
+
+		ENABLE_SUMMED_TIMING( true );
+
 		canvas->UpdateTransform( identity );
 		canvas->Prepare( fOwner );
-
-		ADD_ENTRY( "Scene: Issue Draw Commands" );
+		
+		ADD_ENTRY( "Scene: Issue Clear Command" );
 		
 		canvas->WillDraw( renderer );
 		{
@@ -261,6 +262,8 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, Profiling* profilin
 			}
 		}
 		canvas->DidDraw( renderer );
+		
+		ENABLE_SUMMED_TIMING( false );
 
 		// Draw overlay *last* because it goes above everything else.
 		// This draws the status bar of the device.
@@ -278,25 +281,27 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, Profiling* profilin
 			fIsValid = true;
 		}
 		
-		ADD_ENTRY( "Scene: Swap" );
+		ADD_ENTRY( "Scene: Issue Draw Commands" );
 		
 		renderer.Swap(); // Swap back and front command buffers
 		
-		ADD_ENTRY( "Scene: Process Render Commands" );
+		ADD_ENTRY( "Scene: Swap" );
 		
 		renderer.Render(); // Render front command buffer
 		
 //		renderer.GetFrameStatistics().Log();
-
-		ADD_ENTRY( "Scene: Flush" );
+		
+		ADD_ENTRY( "Scene: Process Render Commands" );
 
 		rTarget.Flush();
+
+		ADD_ENTRY( "Scene: Flush" );
 	}
 	
 	// This needs to be done at the sync point (DMZ)
 	Collect();
 	
-	ADD_ENTRY( "Scene: End Render" );
+	ADD_ENTRY( "Scene: Collect" );
 }
 
 void

@@ -166,6 +166,7 @@ class DisplayLibrary
 		static int getSafeAreaInsets( lua_State *L );
 		static int enableStatistics( lua_State *L );
 		static int getStatistics( lua_State *L );
+		static int getSums( lua_State *L );
 		static int getTimings( lua_State *L );
 		static int _beginProfile( lua_State *L );
 		static int _addProfileEntry( lua_State *L );
@@ -236,6 +237,7 @@ DisplayLibrary::Open( lua_State *L )
 		{ "getSafeAreaInsets", getSafeAreaInsets },
 		{ "enableStatistics", enableStatistics },
 		{ "getStatistics", getStatistics },
+		{ "getSums", getSums },
 		{ "getTimings", getTimings },
 		{ "_beginProfile", _beginProfile },
 		{ "_addProfileEntry", _addProfileEntry },
@@ -2659,6 +2661,12 @@ DisplayLibrary::getStatistics( lua_State *L )
 }
 
 int
+DisplayLibrary::getSums ( lua_State* L )
+{
+    return Profiling::VisitSums( L );
+}
+
+int
 DisplayLibrary::getTimings( lua_State *L )
 {
 	if ( lua_isstring( L, 2 ) )
@@ -2667,7 +2675,7 @@ DisplayLibrary::getTimings( lua_State *L )
 
 		if ( NULL != profiling )
 		{
-			return profiling->Visit( L );
+			return profiling->VisitEntries( L );
 		}
 	}
 

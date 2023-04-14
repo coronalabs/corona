@@ -37,6 +37,8 @@
 
 #include "Display/Rtt_ShaderFactory.h"
 
+#include "Rtt_Profiling.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -354,9 +356,18 @@ DisplayObject::BuildStageBounds()
 {
 	if ( ! IsValid( kStageBoundsFlag ) )
 	{
-		GetSelfBounds( fStageBounds );
-		UpdateSelfBounds( fStageBounds );
-		GetSrcToDstMatrix().Apply( fStageBounds );
+		{
+			SUMMED_TIMING( gsb, "DisplayObject: GetSelfBounds" );
+			GetSelfBounds( fStageBounds );
+		}
+		{
+			SUMMED_TIMING( usb, "DisplayObject: UpdateSelfBounds" );
+			UpdateSelfBounds( fStageBounds );
+		}
+		{
+			SUMMED_TIMING( as2db, "DisplayObject: Apply source-to-dest matrix to bounds" );
+			GetSrcToDstMatrix().Apply( fStageBounds );
+		}
 		SetValid( kStageBoundsFlag );
 	}
 }
@@ -410,6 +421,8 @@ DisplayObject::CullOffscreen( const Rect& screenBounds )
 bool
 DisplayObject::UpdateTransform( const Matrix& parentToDstSpace )
 {
+    SUMMED_TIMING( dut, "DisplayObject: UpdateTransform" );
+
 	// By default, assume transform was not updated
 	bool result = false;
 
@@ -482,6 +495,8 @@ DisplayObject::UpdateTransform( const Matrix& parentToDstSpace )
 void
 DisplayObject::Prepare( const Display& display )
 {
+	SUMMED_TIMING( dp, "Display Object: Prepare" );
+
 	// If UpdateTransform() was called, then either:
 	// (1) certain flags should be valid
 	// (2) it was a no-op b/c ShouldHitTest() was false
