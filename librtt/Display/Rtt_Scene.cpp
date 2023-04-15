@@ -296,8 +296,6 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, DisplayObject& obje
 		object.Draw( renderer );
 		object.DidDraw( renderer );
 
-		rTarget.Flush();
-
 		fIsValid = true;
 	}
 }
