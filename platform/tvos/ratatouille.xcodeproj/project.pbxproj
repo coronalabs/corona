@@ -4767,7 +4767,7 @@
 					};
 					A4AD17301BAA0D8F00BCF507 = {
 						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = BG2J43EA88;
+						DevelopmentTeam = A6QFRGXX8S;
 						ProvisioningStyle = Manual;
 					};
 					A4AD17521BAA14A600BCF507 = {
@@ -4800,7 +4800,7 @@
 						CreatedOnToolsVersion = 7.1;
 					};
 					F5C5E0D3251E112100217C19 = {
-						DevelopmentTeam = BG2J43EA88;
+						DevelopmentTeam = A6QFRGXX8S;
 						ProvisioningStyle = Manual;
 					};
 					F5C5E103251E114A00217C19 = {
@@ -6698,11 +6698,13 @@
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
+				PRODUCT_BUNDLE_IDENTIFIER = tech.scotth.CoronaSim;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "tvOS Corona Sim Template";
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -6719,11 +6721,13 @@
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
+				PRODUCT_BUNDLE_IDENTIFIER = tech.scotth.CoronaSim;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "tvOS Corona Sim Template";
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -7052,15 +7056,17 @@
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					Rtt_MetalANGLE,
 				);
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
+				PRODUCT_BUNDLE_IDENTIFIER = tech.scotth.CoronaSim;
 				PRODUCT_NAME = template;
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "tvOS Corona Sim Template";
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -7077,15 +7083,17 @@
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					Rtt_MetalANGLE,
 				);
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
+				PRODUCT_BUNDLE_IDENTIFIER = tech.scotth.CoronaSim;
 				PRODUCT_NAME = template;
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "tvOS Corona Sim Template";
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
