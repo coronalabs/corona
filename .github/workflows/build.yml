@@ -551,32 +551,6 @@ jobs:
           name: Simulator-Windows
           path: ./output
 
-  publish-snap:
-    runs-on: ubuntu-20.04
-    needs:
-      - linux
-      - release
-    steps:
-      - uses: actions/download-artifact@v1
-        with:
-          name: Snap
-      - name: Determine release
-        run: |
-          if ls Snap/*2100.9999* &> /dev/null
-          then
-            export SNAP_RELEASE=edge
-          else
-            export SNAP_RELEASE=stable
-          fi
-          echo "SNAP_RELEASE=$SNAP_RELEASE" >> $GITHUB_ENV
-          find Snap -name '*.snap' -execdir mv -v {} s2d.snap \; -quit
-      - uses: snapcore/action-publish@v1
-        continue-on-error: true
-        with:
-          store_login: ${{ secrets.SNAP_STORE_LOGIN }}
-          snap: ./Snap/s2d.snap
-          release: ${{ env.SNAP_RELEASE }}
-
 
   release:
     if: startsWith(github.ref, 'refs/tags')
