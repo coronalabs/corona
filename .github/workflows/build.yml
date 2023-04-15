@@ -13,14 +13,14 @@ on:
       buildYear:
         description: 'Build Year'
         required: true
-        default: '2100'
+        default: '1998'
 
 
 env:
   WORKSPACE: ${{ github.workspace }}
   DEVELOPER_DIR: /Applications/Xcode_14.3.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
-  YEAR: ${{ github.event.inputs.buildYear }}
+  YEAR: 1998
 
 jobs:
   source-code:
