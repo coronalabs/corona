@@ -48,7 +48,7 @@ jobs:
           - macos-12
         xcode:
           - Xcode_13.4.1
-          - Xcode_14.3
+          - Xcode_14.2
         target:
           - template
           - template-angle
