@@ -4787,7 +4787,7 @@
 					};
 					A4E075901BD1BC09003A733A = {
 						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = BG2J43EA88;
+						DevelopmentTeam = A6QFRGXX8S;
 						ProvisioningStyle = Manual;
 					};
 					A4E075BE1BD1C3E0003A733A = {
@@ -4804,7 +4804,7 @@
 						ProvisioningStyle = Manual;
 					};
 					F5C5E103251E114A00217C19 = {
-						DevelopmentTeam = BG2J43EA88;
+						DevelopmentTeam = A6QFRGXX8S;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -6894,6 +6894,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -6929,6 +6930,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -7111,6 +7113,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -7146,6 +7149,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
