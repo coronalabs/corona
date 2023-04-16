@@ -11,6 +11,15 @@ You are welcome to build and use this Simulators from fork but don't expect the 
 Download the latest build from the [Releases](https://github.com/coronalabs/corona/releases) page
 
 
+
+## Current Features in Solar2D for Relase [1]
+
+- Drag main.lua Welcome Screen Launch Project
+
+
+
+
+
 ## FAQ
 
 ### Does this replace coronalabs/corona repo/releases?
