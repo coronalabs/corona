@@ -2825,9 +2825,6 @@
 				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0730;
 				TargetAttributes = {
-					A43B955B15C779EE003E6F9F = {
-						DevelopmentTeam = BG2J43EA88;
-					};
 					A4693558169D62DA00723568 = {
 						LastSwiftMigration = 0820;
 					};
@@ -4427,6 +4424,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios\"",
@@ -4465,6 +4463,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../plugins/sdk-facebook/ios\"",
