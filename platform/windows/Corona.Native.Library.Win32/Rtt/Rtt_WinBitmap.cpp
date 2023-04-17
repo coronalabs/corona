@@ -613,7 +613,6 @@ WinFileGrayscaleBitmap::WinFileGrayscaleBitmap( const char *inPath, Rtt_Allocato
 	: WinFileBitmap(context)
 {
 #ifdef Rtt_DEBUG
-	// Store the path.
 	fPath.Set( inPath );
 #endif
 
@@ -624,16 +623,13 @@ WinFileGrayscaleBitmap::WinFileGrayscaleBitmap( const char *inPath, Rtt_Allocato
 		return;
 	}
 
-	// Convert the given bitmap to an 8-bit grayscaled bitmap.
 	if ( fWidth && fHeight )
 	{
-		// Calculate the pitch of the image, which is the width of the image padded to the byte packing alignment.
 		U32 pitch = fWidth;
 		U32 delta = fWidth % kBytePackingAlignment;
 		if (delta > 0)
 			pitch += kBytePackingAlignment - delta;
 
-		// Create the 8-bit grayscaled bitmap.
 		// --------------------------------------------------------------------------------------------------------
 		// Microsoft GDI cannot create a grayscaled bitmap that OpenGL needs for masking.
 		// GDI can only create 8-bit bitmaps with color palettes. So we have to create the bitmap binary ourselves.
@@ -659,8 +655,16 @@ WinFileGrayscaleBitmap::WinFileGrayscaleBitmap( const char *inPath, Rtt_Allocato
 				// These numbers (2/8, 5/8, 1/8) were hoisted up into higher denominators (e.g. 4/16, 10/16, 2/16),
 				// and the intervals around them searched: e.g. 4/16 += 1/16, 4/16 += 2/16, etc. and compared against
 				// the ground truth values (0.30, 0.59, 0.11); with a 64 denominator the end results only differ by
-				// 1 (out of 255) at most, and never for solid black or white. Further iteration didn't seem to help.
-				out[rowBase + xIndex] = ( 19 * colors[2] + 38 * colors[1] + 7 * colors[0] ) / 64;
+				// 1 (out of 255) at most, and never for solid black or white. It seems to be stuck with this slight
+				// imperfection. :)
+				// These are the constants that will give that result:
+				//    out[rowBase + xIndex] = ( 19 * colors[2] + 38 * colors[1] + 7 * colors[0] ) / 64;
+				// The 19 is a common factor and will incur one multiply opcode. It can actually be turned into
+				// (21 - 2) to factor the 7 out. Godbolt showed the following reduce to lea and shr operations:
+				U32 tmp1 = colors[2] + 2 * colors[1];
+				U32 tmp2 = 3 * tmp1 + colors[0];
+
+				out[rowBase + xIndex] = 7 * tmp2 / 64 - tmp1 / 32;
 
 				colors += 4;
  			}
@@ -668,18 +672,15 @@ WinFileGrayscaleBitmap::WinFileGrayscaleBitmap( const char *inPath, Rtt_Allocato
 			rowBase += pitch;
 		}
 
+		fData = bitmapBuffer;
+
 		// Set the image width to the pitch in case it is larger. Otherwise it will not be rendered correctly.
 		// Ideally, you shouldn't do this because it will make the DisplayObject wider than expected by at
 		// most 3 pixels (assuming the packing alignment is 4 bytes), but until the DisplayObject can compensate
 		// for pitch then this will have to do for now.
 		fWidth = pitch;
-
-		// Store the grayscale bitmap binary.
-		// The base class will provide the bits via the inherited member variable "fData".
-		fData = bitmapBuffer;
 	}
 
-	// The source data is no longer needed.
 	Rtt_FREE( data );
 }
 
@@ -697,11 +698,6 @@ WinFileGrayscaleBitmap::FreeBits() const
 {
 	// Do not delete the grayscale bitmap until this object's destructor has been called.
 	// This improves hit-test performance in "Rtt_PlatformBitmap.cpp" which tests a pixel's transparency value.
-}
-
-void
-WinFileGrayscaleBitmap::Lock( Rtt_Allocator* )
-{
 }
 
 U32
@@ -1143,11 +1139,6 @@ PlatformBitmap::Format
 WinTextBitmap::GetFormat() const
 {
 	return PlatformBitmap::kMask;
-}
-
-void
-WinTextBitmap::Lock( Rtt_Allocator* )
-{
 }
 
 const void * 
