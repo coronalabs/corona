@@ -27,6 +27,8 @@
 #include "Core/Rtt_Types.h"
 #include "Renderer/Rtt_MCPUResourceObserver.h"
 
+#include "Display/Rtt_ShaderResource.h"
+
 #define ENABLE_DEBUG_PRINT	0
 
 #include <limits>
@@ -450,6 +452,14 @@ Renderer::PopMaskCount()
 	--fMaskCountIndex;
 }
 
+static bool
+OnlyTryingToDowngradeMod( const Program* newProgram, const Program* oldProgram )
+{
+    const ShaderResource* resource = newProgram->GetShaderResource();
+
+    return NULL != oldProgram && resource == oldProgram->GetShaderResource() && resource->GetProgramMod( ShaderResource::k25D ) == oldProgram;
+}
+
 void
 Renderer::Insert( const RenderData* data )
 {
@@ -463,13 +473,21 @@ Renderer::Insert( const RenderData* data )
 	Rtt_ASSERT( fBackCommandBuffer != NULL );
 	Rtt_ASSERT( fFrontCommandBuffer != NULL );
 
+	// If using deformed rects, avoid some batch-breaking when only other objects with the same effect are drawn, by not
+	// falling back to non-deformed variant. The deformed variant is a superset, with some additional operations. (TODO:
+	// In theory rendering many "normal" objects in a row will outweigh the switching cost. One idea here is to emit the
+	// geometry as though it were batch-friendly, since it might be, but perform speculative bind texture and draw commands
+	// If we do indeed cross the critical point, keep the commands; otherwise convert them to no-ops.)
+    bool programsDifferWeakly = data->fProgram != fPrevious.fProgram;
+    bool programsDifferStrongly = programsDifferWeakly && !OnlyTryingToDowngradeMod( data->fProgram, fPrevious.fProgram );
+
 	bool blendDirty = data->fBlendMode != fPrevious.fBlendMode;
 	bool blendEquationDirty = data->fBlendEquation != fPrevious.fBlendEquation;
 	bool fillDirty0 = data->fFillTexture0 != fPrevious.fFillTexture0 && data->fFillTexture0;
 	bool fillDirty1 = data->fFillTexture1 != fPrevious.fFillTexture1 && data->fFillTexture1;
 	bool maskTextureDirty = data->fMaskTexture != fPrevious.fMaskTexture; // since PushMask() can stomp on the previous texture, a "not NULL" check here is unreliable
 	bool maskUniformDirty = data->fMaskUniform != fPrevious.fMaskUniform; // ...ditto
-	bool programDirty = data->fProgram != fPrevious.fProgram || MaskCount() != fCurrentProgramMaskCount;
+	bool programDirty = programsDifferStrongly || MaskCount() != fCurrentProgramMaskCount;
 	bool userUniformDirty0 = data->fUserUniform0 != fPrevious.fUserUniform0 && data->fUserUniform0;
 	bool userUniformDirty1 = data->fUserUniform1 != fPrevious.fUserUniform1 && data->fUserUniform1;
 	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2 && data->fUserUniform2;
@@ -552,6 +570,8 @@ Renderer::Insert( const RenderData* data )
 		if( !batch || !enoughSpace )
 		{
 			UpdateBatch( batch, enoughSpace, storedOnGPU, verticesRequired );
+
+			programsDifferStrongly = programsDifferWeakly; // if batch broke, no use avoiding this change
 		}
 
 		// Copy the the incoming vertex data into the current Geometry
@@ -686,7 +706,7 @@ Renderer::Insert( const RenderData* data )
 
 	// NOTE: The mask count is incremented just in time to select the correct program version, so we re-compare
 	// instead of using programDirty which does the equivalent calculation for batching purposes.
-	if( data->fProgram != fPrevious.fProgram || MaskCount() != fCurrentProgramMaskCount )
+	if( programsDifferStrongly || MaskCount() != fCurrentProgramMaskCount )
 	{
 		if( !data->fProgram->fGPUResource )
 		{
