@@ -19,6 +19,8 @@
 	#include <EGL/egl.h>
 #endif
 
+#include "Rtt_Profiling.h"
+
 #include <stdio.h>
 
 // ----------------------------------------------------------------------------
@@ -213,6 +215,8 @@ GLGeometry::Create( CPUResource* resource )
 	bool shouldStoreOnGPU = geometry->GetStoredOnGPU();
 	if ( shouldStoreOnGPU )
 	{
+		SUMMED_TIMING( glgcs, "Geometry GPU Resource (stored on GPU): Create" );
+
 		if ( isVertexArrayObjectSupported() )
 		{
 			createVertexArrayObject( geometry, fVAO, fVBO, fIBO );
@@ -242,6 +246,8 @@ GLGeometry::Create( CPUResource* resource )
 void
 GLGeometry::Update( CPUResource* resource )
 {
+	SUMMED_TIMING( glgu, "Geometry GPU Resource: Update" );
+
 	Rtt_ASSERT( CPUResource::kGeometry == resource->GetType() );
 	Geometry* geometry = static_cast<Geometry*>( resource );
 

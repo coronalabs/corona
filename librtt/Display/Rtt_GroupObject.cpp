@@ -336,6 +336,8 @@ GroupObject::Insert( S32 index, DisplayObject* newChild, bool resetTransform )
 		
 		if ( oldParent != this )
 		{
+			SUMMED_TIMING( np, "Group: Insert (new parent)" );
+
 			// Leave it up to the caller to decide the semantics of insertion.
 			// For newly-created object, we don't want to reset the transform
 			// b/c we also need to translate it to the specified position.
@@ -351,6 +353,8 @@ GroupObject::Insert( S32 index, DisplayObject* newChild, bool resetTransform )
 			// If newChild had a parent, remove it
 			if ( oldParent )
 			{
+				SUMMED_TIMING( rc, "Group: Insert (release child)" );
+
 				oldParent->Release( oldParent->Find( * newChild ) );
 			}
 
@@ -364,6 +368,8 @@ GroupObject::Insert( S32 index, DisplayObject* newChild, bool resetTransform )
 		}
 		else
 		{
+			SUMMED_TIMING( sp, "Group: Insert (same parent)" );
+
 			// newChild already belongs in this group
 			S32 oldIndex = oldParent->Find( * newChild );
 
@@ -413,6 +419,8 @@ GroupObject::Release( S32 index )
 S32
 GroupObject::Find( const DisplayObject& child ) const
 {
+	SUMMED_TIMING( fc, "Group: Find child" );
+
 	S32 i = 0, iMax = fChildren.Length();
 	for ( ;
 		  i < iMax && ( & child != fChildren[i] );
