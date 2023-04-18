@@ -239,36 +239,9 @@ void WinFileBitmap::FileView::Close()
 	fData = NULL;
 }
 
-// https://arxiv.org/pdf/2202.02864v1.pdf
-static void FastPremult( U32 *pixel, int len )
-{
-	for (int i = 0; i < len; ++i, ++pixel)
-	{
-		UINT32 color = *pixel;
-		UINT32 alfa = color >> 24;
-		UINT32 rb, ga;
-
-		color |= 0xff000000;
-		rb = color & 0x00ff00ff;
-		rb *= alfa;
-		rb += 0x00800080;
-		rb += ( rb >> 8 ) & 0x00ff00ff;
-		rb &= 0xff00ff00;
-		ga = ( color >> 8 ) & 0x00ff00ff;
-		ga *= alfa;
-		ga += 0x00800080;
-		ga += ( ga >> 8 ) & 0x00ff00ff;
-		ga &= 0xff00ff00;
-
-		*pixel = ga | ( rb >> 8 );
-	}
-}
-
-
 static U8* LockBitmapData( Rtt_Allocator& allocator, Gdiplus::Bitmap* src, U32* width, U32* height, const char* inPath )
 {
-	U32 pixelCount = src->GetWidth() * src->GetHeight();
-	void* out = Rtt_MALLOC( allocator, pixelCount * 4 );
+	void* out = Rtt_MALLOC( allocator, src->GetWidth() * src->GetHeight() * 4 );
 
 	if ( NULL == out )
 	{
@@ -282,13 +255,13 @@ static U8* LockBitmapData( Rtt_Allocator& allocator, Gdiplus::Bitmap* src, U32* 
 	// to set all of these, though Width, Height, and PixelFormat seem to get set by LockBits() just fine.
 	srcData.Width = src->GetWidth();
 	srcData.Height = src->GetHeight();
-	srcData.PixelFormat = PixelFormat32bppARGB;
+	srcData.PixelFormat = PixelFormat32bppPARGB;
 	srcData.Scan0 = out;
 	srcData.Stride = srcData.Width * 4;
 
 	Gdiplus::Rect rc( 0, 0, src->GetWidth(), src->GetHeight() );
 
-	if ( Gdiplus::Ok == src->LockBits( &rc, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeUserInputBuf, PixelFormat32bppARGB, &srcData ) )
+	if ( Gdiplus::Ok == src->LockBits( &rc, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeUserInputBuf, PixelFormat32bppPARGB, &srcData ) )
 	{
 		Rtt_ASSERT( width );
 		Rtt_ASSERT( height );
@@ -297,8 +270,6 @@ static U8* LockBitmapData( Rtt_Allocator& allocator, Gdiplus::Bitmap* src, U32* 
 		*height = srcData.Height;
 
 		src->UnlockBits( &srcData );
-
-		FastPremult( reinterpret_cast<U32*>( out ), pixelCount );
 
 		return static_cast<U8*>( out );
 	}
@@ -657,14 +628,7 @@ WinFileGrayscaleBitmap::WinFileGrayscaleBitmap( const char *inPath, Rtt_Allocato
 				// the ground truth values (0.30, 0.59, 0.11); with a 64 denominator the end results only differ by
 				// 1 (out of 255) at most, and never for solid black or white. It seems to be stuck with this slight
 				// imperfection. :)
-				// These are the constants that will give that result:
-				//    out[rowBase + xIndex] = ( 19 * colors[2] + 38 * colors[1] + 7 * colors[0] ) / 64;
-				// The 19 is a common factor and will incur one multiply opcode. It can actually be turned into
-				// (21 - 2) to factor the 7 out. Godbolt showed the following reduce to lea and shr operations:
-				U32 tmp1 = colors[2] + 2 * colors[1];
-				U32 tmp2 = 3 * tmp1 + colors[0];
-
-				out[rowBase + xIndex] = 7 * tmp2 / 64 - tmp1 / 32;
+				out[rowBase + xIndex] = ( 19 * colors[2] + 38 * colors[1] + 7 * colors[0] ) / 64;
 
 				colors += 4;
  			}
