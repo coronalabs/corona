@@ -112,6 +112,13 @@ WinBitmap::Lock()
 	if ( fBitmap == NULL )
 		return;
 
+	if ( fLockedBitmapData )
+	{
+		Rtt_ASSERT( fData );
+
+		return;
+	}
+
 	Gdiplus::Rect rect;
 
 	rect.X = rect.Y = 0;

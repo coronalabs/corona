@@ -28,7 +28,7 @@ class UserdataWrapper;
 class BitmapMask
 {
 	public:
-		static BitmapMask* Create( Runtime& runtime, const FilePath& maskData );
+		static BitmapMask* Create( Runtime& runtime, const FilePath& maskData, bool onlyForHitTests );
 
 	public:
 		BitmapMask( BitmapPaint *paint, bool onlyForHitTests, bool isTemporary = false );
@@ -38,14 +38,14 @@ class BitmapMask
 		~BitmapMask();
 
 	public:
+		static const char kHitTestOnlyTable[];
+
+	public:
 		const BitmapPaint* GetPaint() const { return fPaint; }
 		BitmapPaint* GetPaint() { return fPaint; }
 	
 	public:
 	   bool GetOnlyForHitTests() const { return fOnlyForHitTests; }
-
-	   static const char* StripHitTestPrefix( const char* filename );
-	   static void EncodeFilenameForHitTests( String& encoded, const char* filename );
 
 	public:
 		const Transform& GetTransform() const { return fTransform; }

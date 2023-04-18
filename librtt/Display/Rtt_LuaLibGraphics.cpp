@@ -210,17 +210,27 @@ GraphicsLibrary::newMask( lua_State *L )
 int
 GraphicsLibrary::newHitTestOnlyMask( lua_State *L )
 {
-	if ( lua_isstring( L, 1 ) )
+	int result = GraphicsLibrary::newMask( L );
+
+	if ( result )
 	{
-		String str;
+		lua_getfield( L, LUA_REGISTRYINDEX, BitmapMask::kHitTestOnlyTable );
 
-		BitmapMask::EncodeFilenameForHitTests( str, lua_tostring( L, 1 ) );
-
-		lua_pushstring( L, str.GetString() );
-		lua_replace( L, 1 );
+		if ( lua_istable( L, -1 ) )
+		{
+			lua_pushvalue( L, -2 );
+			lua_pushboolean( L, 1 );
+			lua_rawset( L, -3 );
+			lua_pop( L, 1 );
+		}
+		
+		else
+		{
+			result = 0;
+		}
 	}
 
-	return newMask( L );
+	return result;
 }
 
 // graphics.newHitTestOnlyMaskFromPaint( [opts] )
@@ -228,14 +238,9 @@ int
 GraphicsLibrary::newHitTestOnlyMaskFromPaint( lua_State *L )
 {
 	lua_settop( L, 0 ); // TODO: any options?
+	lua_pushliteral( L, "" );
 
-	String str;
-
-	BitmapMask::EncodeFilenameForHitTests( str, "" );
-
-	lua_pushstring( L, str.GetString() );
-
-	return newMask( L );
+	return newHitTestOnlyMask( L );
 }
 
 // graphics.newVertexArray( x1, y1 [,x2, y2, ... ] )
@@ -937,6 +942,13 @@ LuaLibGraphics::Initialize( lua_State *L, Display& display )
 
 	CoronaLuaPushModule( L, GraphicsLibrary::kName );
 	lua_setglobal( L, GraphicsLibrary::kName ); // graphics = library
+
+	lua_newtable( L );
+	lua_createtable( L, 0, 1 );
+	lua_pushliteral( L, "k" );
+	lua_setfield( L, -2, "__mode" );
+	lua_setmetatable( L, -2 );
+	lua_setfield( L, LUA_REGISTRYINDEX, BitmapMask::kHitTestOnlyTable );
 }
 
 // ----------------------------------------------------------------------------

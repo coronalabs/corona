@@ -23,10 +23,9 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 BitmapMask*
-BitmapMask::Create( Runtime& runtime, const FilePath& maskData )
+BitmapMask::Create( Runtime& runtime, const FilePath& maskData, bool onlyForHitTests )
 {
-	bool onlyForHitTests = false;
-	BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, maskData, PlatformBitmap::kIsBitsFullResolution, true, &onlyForHitTests );
+	BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, maskData, PlatformBitmap::kIsBitsFullResolution, true, onlyForHitTests );
 	BitmapMask *result = NULL;
 
 	if ( Rtt_VERIFY( paint || onlyForHitTests ) )
@@ -45,7 +44,7 @@ BitmapMask::BitmapMask( BitmapPaint *paint, bool onlyForHitTests, bool isTempora
 	fOnlyForHitTests( onlyForHitTests ),
 	fIsTemporary( isTemporary )
 {
-	Rtt_ASSERT( paint );
+	Rtt_ASSERT( paint || onlyForHitTests );
 }
 
 BitmapMask::BitmapMask( BitmapPaint *paint, Real contentW, Real contentH )
@@ -66,28 +65,7 @@ BitmapMask::~BitmapMask()
 	}
 }
 
-static const char kHitTestOnlyPrefix[] = "hitTestOnly://";
-
-const char*
-BitmapMask::StripHitTestPrefix( const char* filename )
-{
-	if ( Rtt_StringStartsWith( filename, kHitTestOnlyPrefix ) )
-	{
-		return filename + strlen( kHitTestOnlyPrefix );
-	}
-
-	else
-	{
-		return filename;
-	}
-}
-
-void
-BitmapMask::EncodeFilenameForHitTests( String& encoded, const char* filename )
-{
-	encoded.Set( kHitTestOnlyPrefix );
-	encoded.Append( filename );
-}
+const char BitmapMask::kHitTestOnlyTable[] = "hitTestOnlyTableKey";
 
 void
 BitmapMask::GetSelfBounds( Rect& rect ) const
