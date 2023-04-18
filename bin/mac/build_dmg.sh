@@ -74,7 +74,7 @@ then
 	fi
 fi
 
-set -x 
+set -x
 
 if [[ -e "$TMPPATH" ]]
 then
@@ -199,9 +199,9 @@ xcrun SetFile -a E "$TMPPATH/${PRODUCT_DIR}/Documentation.html" # hide extension
 			rm -r "$ZD"
 		done
 
-		
-		codesign --timestamp --deep --force --options runtime --strict --sign 'Developer ID Application: Corona Labs Inc' "${LIBRARIES[@]}"
-		codesign --timestamp --deep --force --options runtime --strict --sign 'Developer ID Application: Corona Labs Inc' --entitlements "$ENTITLEMENTS"  "${EXECUTABLES[@]}"
+
+		codesign --timestamp --deep --force --options runtime --strict --sign 'Apple Development' "${LIBRARIES[@]}"
+		codesign --timestamp --deep --force --options runtime --strict --sign 'Apple Development' --entitlements "$ENTITLEMENTS"  "${EXECUTABLES[@]}"
 	)
 	}
 
