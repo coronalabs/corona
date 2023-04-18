@@ -121,10 +121,10 @@ class Profiling {
 		Profiling* fBelow;
 };
 
-#define PROFILE_SUMS 1 // set this to non-0 to include sums in profiling
+#define PROFILE_SUMS 1 // include sums in profiling?
 
-#ifdef PROFILE_SUMS
-	#define SUMMED_TIMING( var, name ) static Profiling::Sum var( name ); Profiling::SumRAII var##w( var )
+#if PROFILE_SUMS != 0
+	#define SUMMED_TIMING( var, name ) static Profiling::Sum s_##var( name ); Profiling::SumRAII var##_w( s_##var )
 	#define ENABLE_SUMMED_TIMING( enable ) Profiling::Sum::EnableSums( enable )
 #else
 	#define SUMMED_TIMING( var, name )
