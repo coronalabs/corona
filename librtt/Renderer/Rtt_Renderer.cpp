@@ -542,6 +542,8 @@ Renderer::Insert( const RenderData* data )
 		if( primitiveType != fPreviousPrimitiveType || primitiveType != Geometry::kTriangleStrip )
 		{
 			batch = false;
+
+			programsDifferStrongly = programsDifferWeakly; // non-strips do not always populate 'q' member of vertex
 		}
 		
 		// If the previous RenderData had its Geometry stored on the GPU,
@@ -570,8 +572,6 @@ Renderer::Insert( const RenderData* data )
 		if( !batch || !enoughSpace )
 		{
 			UpdateBatch( batch, enoughSpace, storedOnGPU, verticesRequired );
-
-			programsDifferStrongly = programsDifferWeakly; // if batch broke, no use avoiding this change
 		}
 
 		// Copy the the incoming vertex data into the current Geometry
