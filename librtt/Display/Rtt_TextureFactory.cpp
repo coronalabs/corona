@@ -182,14 +182,14 @@ SharedPtr< TextureResource >
 TextureFactory::CreateAndAdd( const std::string& key,
 								PlatformBitmap *bitmap,
 								bool useCache,
-								bool isRetina, bool onlyForHitTests )
+								bool isRetina )
 {
 	TextureResource *resource = TextureResourceBitmap::Create( * this, bitmap, isRetina );
 	SharedPtr< TextureResource > result = SharedPtr< TextureResource >( resource );
 
 	bool shouldPreload = fDisplay.GetDefaults().ShouldPreloadTextures();
 
-	if ( shouldPreload && !onlyForHitTests )
+	if ( shouldPreload )
 	{
 		// Add to create queue
 		AddToPreloadQueue( result );
@@ -234,7 +234,7 @@ TextureFactory::FindOrCreate(
 	const char *filename,
 	MPlatform::Directory baseDir,
 	U32 flags,
-	bool isMask, bool onlyForHitTests )
+	bool isMask )
 {
 	SharedPtr< TextureResource > result;
 	
@@ -277,7 +277,7 @@ TextureFactory::FindOrCreate(
 	if ( result.IsNull() )
 	{
 		PlatformBitmap *bitmap = CreateBitmap( filePath.GetString(), flags, isMask );
-		result = CreateAndAdd( key, bitmap, true, isRetina, onlyForHitTests );
+		result = CreateAndAdd( key, bitmap, true, isRetina );
 	}
 
 	return result;

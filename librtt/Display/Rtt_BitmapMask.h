@@ -31,7 +31,7 @@ class BitmapMask
 		static BitmapMask* Create( Runtime& runtime, const FilePath& maskData );
 
 	public:
-		BitmapMask( BitmapPaint *paint, bool onlyForHitTests, bool isTemporary = false );
+		BitmapMask( BitmapPaint *paint );
 		BitmapMask( BitmapPaint *paint, Real contentW, Real contentH );
 
 	public:
@@ -40,12 +40,6 @@ class BitmapMask
 	public:
 		const BitmapPaint* GetPaint() const { return fPaint; }
 		BitmapPaint* GetPaint() { return fPaint; }
-	
-	public:
-	   bool GetOnlyForHitTests() const { return fOnlyForHitTests; }
-
-	   static const char* StripHitTestPrefix( const char* filename );
-	   static void EncodeFilenameForHitTests( String& encoded, const char* filename );
 
 	public:
 		const Transform& GetTransform() const { return fTransform; }
@@ -64,8 +58,6 @@ class BitmapMask
 		Transform fTransform;
 		Real fContentWidth;
 		Real fContentHeight;
-		bool fOnlyForHitTests;
-		bool fIsTemporary;
 };
 
 // ----------------------------------------------------------------------------

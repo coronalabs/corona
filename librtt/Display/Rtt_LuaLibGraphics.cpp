@@ -71,8 +71,6 @@ class GraphicsLibrary
 
 	public:
 		static int newMask( lua_State *L );
-		static int newHitTestOnlyMask( lua_State *L );
-		static int newHitTestOnlyMaskFromPaint( lua_State *L );
 		static int newGradient( lua_State *L );
 		static int newImageSheet( lua_State *L );
 		static int defineEffect( lua_State *L );
@@ -115,8 +113,6 @@ GraphicsLibrary::Open( lua_State *L )
 	const luaL_Reg kVTable[] =
 	{
 		{ "newMask", newMask },
-		{ "newHitTestOnlyMask", newHitTestOnlyMask },
-		{ "newHitTestOnlyMaskFromPaint", newHitTestOnlyMaskFromPaint },
 //		{ "newVertexArray", newVertexArray },
 		{ "newGradient", newGradient },
 		{ "newImageSheet", newImageSheet },
@@ -204,38 +200,6 @@ GraphicsLibrary::newMask( lua_State *L )
 	}
 
 	return result;
-}
-
-// graphics.newHitTestOnlyMask( filename [, baseDir] )
-int
-GraphicsLibrary::newHitTestOnlyMask( lua_State *L )
-{
-	if ( lua_isstring( L, 1 ) )
-	{
-		String str;
-
-		BitmapMask::EncodeFilenameForHitTests( str, lua_tostring( L, 1 ) );
-
-		lua_pushstring( L, str.GetString() );
-		lua_replace( L, 1 );
-	}
-
-	return newMask( L );
-}
-
-// graphics.newHitTestOnlyMaskFromPaint( [opts] )
-int
-GraphicsLibrary::newHitTestOnlyMaskFromPaint( lua_State *L )
-{
-	lua_settop( L, 0 ); // TODO: any options?
-
-	String str;
-
-	BitmapMask::EncodeFilenameForHitTests( str, "" );
-
-	lua_pushstring( L, str.GetString() );
-
-	return newMask( L );
 }
 
 // graphics.newVertexArray( x1, y1 [,x2, y2, ... ] )

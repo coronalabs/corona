@@ -57,37 +57,6 @@ ShapeObject::~ShapeObject()
 }
 
 bool
-ShapeObject::IsShapeObject( const DisplayObject &object )
-{
-	const LuaProxyVTable* t = &object.ProxyVTable(), * shapeVTable = &LuaShapeObjectProxyVTable::Constant();
-
-	while ( shapeVTable != t )
-	{
-		const LuaProxyVTable* parent = &t->Parent();
-
-		if ( parent == t )
-		{
-			return false;
-		}
-
-		else
-		{
-			t = parent;
-		}
-	}
-
-	return true;
-}
-
-const BitmapPaint*
-ShapeObject::GetBitmapPaint() const
-{
-	Rtt_ASSERT( fPath );
-
-	return (BitmapPaint*)fPath->GetFill()->AsPaint( Paint::kBitmap );
-}
-
-bool
 ShapeObject::UpdateTransform( const Matrix& parentToDstSpace )
 {
 	bool shouldUpdate = Super::UpdateTransform( parentToDstSpace );
@@ -309,25 +278,12 @@ ShapeObject::SetSelfBounds( Real width, Real height )
 void
 ShapeObject::DidSetMask( BitmapMask *mask, Uniform *uniform )
 {
-	Rtt_ASSERT( !mask || mask->GetPaint() || mask->GetOnlyForHitTests() );
-
-	Texture *maskTexture = ( mask && !mask->GetOnlyForHitTests() ? mask->GetPaint()->GetTexture() : NULL );
+	Texture *maskTexture = ( mask ? mask->GetPaint()->GetTexture() : NULL );
 
 	fFillData.fMaskTexture = maskTexture;
 	fFillData.fMaskUniform = uniform;
 	fStrokeData.fMaskTexture = maskTexture;
 	fStrokeData.fMaskUniform = uniform;
-
-	if ( mask && !mask->GetPaint() )
-	{
-		const BitmapPaint *bitmapPaint = GetBitmapPaint();
-
-		if ( bitmapPaint )
-		{
-			SetMaskGeometricProperty( kScaleX, GetGeometricProperty( kWidth ) / bitmapPaint->GetBitmap()->Width() );
-			SetMaskGeometricProperty( kScaleY, GetGeometricProperty( kHeight ) / bitmapPaint->GetBitmap()->Height() );
-		}
-	}
 }
 
 void
@@ -366,21 +322,6 @@ ShapeObject::SetFill( Paint* newValue )
 	fPath->SetFill( newValue );
 
 	DidChangePaint( fFillData );
-
-	BitmapMask *mask = GetMask();
-
-	if ( mask && !mask->GetPaint() )
-	{
-		Rtt_ASSERT( mask->GetOnlyForHitTests() );
-
-		const BitmapPaint *paint = GetBitmapPaint();
-
-		if ( paint )
-		{
-			SetMaskGeometricProperty( kScaleX, GetGeometricProperty( kWidth ) / paint->GetBitmap()->Width() );
-			SetMaskGeometricProperty( kScaleY, GetGeometricProperty( kHeight ) / paint->GetBitmap()->Height() );
-		}
-	}
 }
 
 void
