@@ -121,7 +121,7 @@ class Profiling {
 		Profiling* fBelow;
 };
 
-#define PROFILE_SUMS 1 // include sums in profiling?
+#define PROFILE_SUMS 0 // include sums in profiling?
 
 #if PROFILE_SUMS != 0
 	#define SUMMED_TIMING( var, name ) static Profiling::Sum s_##var( name ); Profiling::SumRAII var##_w( s_##var )
