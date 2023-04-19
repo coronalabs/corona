@@ -2679,7 +2679,9 @@ DisplayLibrary::getTimings( lua_State *L )
 		}
 	}
 
-	return 0;
+	lua_pushinteger( L, 0 );
+
+	return 1;
 }
 
 int
