@@ -8170,6 +8170,7 @@
 				COMBINE_HIDPI_IMAGES = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rtt;
 			};
 			name = Debug;
@@ -8180,6 +8181,7 @@
 				COMBINE_HIDPI_IMAGES = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(inherited)",
 					"-fno-operator-names",
@@ -8360,6 +8362,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = NO;
@@ -8398,6 +8401,7 @@
 					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.Corona_Simulator;
 				PRODUCT_NAME = template;
@@ -8414,6 +8418,7 @@
 				COMBINE_HIDPI_IMAGES = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(inherited)",
 					"-fno-operator-names",
@@ -8704,6 +8709,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = NO;
@@ -8742,6 +8748,7 @@
 					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.Corona_Simulator;
 				PRODUCT_NAME = "Corona Simulator";
@@ -8764,6 +8771,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = NO;
@@ -8802,6 +8810,7 @@
 					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.Corona_Simulator;
 				PRODUCT_NAME = "Corona Simulator";
@@ -8972,6 +8981,7 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "rtt-simulator";
 			};
 			name = Debug;
@@ -9056,6 +9066,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -9108,6 +9119,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -9160,6 +9172,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
