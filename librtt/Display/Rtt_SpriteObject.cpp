@@ -563,8 +563,10 @@ SpriteObject::Create(
     lua_State * L,
 	Rtt_Allocator *pAllocator,
 	const AutoPtr< ImageSheet >& sheet,
-	SpritePlayer& player )
+	SpritePlayer& player,
+	Display& display )
 {
+	auto * spriteFactory = GetObjectFactory( L, &NewSprite, display ); // n.b. done first to ensure factory function is consumed
 	SpriteObject *result = NULL;
 
 	if ( ! sheet->IsEmpty() )
@@ -578,7 +580,6 @@ SpriteObject::Create(
 
 			RectPath *path = RectPath::NewRect( pAllocator, width, height );
 
-            auto * spriteFactory = GetObjectFactory( L, &NewSprite );
             result = spriteFactory( pAllocator, path, sheet, player );
 		}
 		else
@@ -598,7 +599,7 @@ SpriteObject::SpriteObject(
 		RectPath *path,
 		Rtt_Allocator *pAllocator,
 		const AutoPtr<ImageSheet> &sheet,
-		SpritePlayer &player)
+		SpritePlayer &player )
 		: Super(path),
 			fPaint(NULL),
 			fSheet(sheet),

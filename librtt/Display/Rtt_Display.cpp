@@ -208,6 +208,7 @@ Display::Display( Runtime& owner )
 	fTarget( owner.Platform().CreateScreenSurface() ),
 	fImageSuffix( LUA_REFNIL ),
     fObjectFactories( LUA_REFNIL ),
+    fFactoryFunc( NULL ),
 	fDrawMode( kDefaultDrawMode ),
 	fIsAntialiased( false ),
 	fIsCollecting( false ),

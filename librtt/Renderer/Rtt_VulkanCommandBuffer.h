@@ -78,7 +78,7 @@ class VulkanCommandBuffer : public CommandBuffer
 		// specified state changes.
 		virtual void BindFrameBufferObject( FrameBufferObject* fbo, bool asDrawBuffer );
 		virtual void CaptureRect( FrameBufferObject* fbo, Texture& texture, const Rect& rect, const Rect& rawRect ) { Rtt_ASSERT_NOT_IMPLEMENTED(); }
-		virtual void BindGeometry( Geometry* geometry, U32 );
+		virtual void BindGeometry( Geometry* geometry );
 		virtual void BindTexture( Texture* texture, U32 unit );
 		virtual void BindUniform( Uniform* uniform, U32 unit );
 		virtual void BindProgram( Program* program, Program::Version version );

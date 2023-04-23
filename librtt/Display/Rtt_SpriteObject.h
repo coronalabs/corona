@@ -170,7 +170,8 @@ class SpriteObject : public RectObject
             lua_State * L,
 			Rtt_Allocator *pAllocator,
 			const AutoPtr< ImageSheet >& sheet,
-			SpritePlayer& player );
+			SpritePlayer& player,
+			Display& display );
 
     public:
 		SpriteObject(
