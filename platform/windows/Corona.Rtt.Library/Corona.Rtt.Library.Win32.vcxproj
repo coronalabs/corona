@@ -142,6 +142,8 @@
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvas.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCapture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCaptureAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceExternal.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_VertexCache.cpp" />
@@ -446,6 +448,8 @@
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvas.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCapture.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCaptureAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceExternal.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_VertexCache.h" />
