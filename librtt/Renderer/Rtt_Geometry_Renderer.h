@@ -19,6 +19,7 @@
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
+struct CoronaVertexExtension;
 
 namespace Rtt
 {
