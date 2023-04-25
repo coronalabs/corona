@@ -12,14 +12,17 @@
 
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_Uniform.h"
-#include "Renderer/Rtt_GLProgram.h"
 
 #include "Core/Rtt_Array.h"
 
 // ----------------------------------------------------------------------------
 
+struct CoronaCommand;
+
 namespace Rtt
 {
+
+class GLExtraUniforms;
 
 // ----------------------------------------------------------------------------
 
@@ -67,7 +70,7 @@ class GLCommandBuffer : public CommandBuffer
         virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type );
         virtual S32 GetCachedParam( CommandBuffer::QueryableParams param );
 
-        virtual void AddCommand( const CoronaCommand & command );
+        virtual void AddCommand( const CoronaCommand * command );
         virtual void IssueCommand( U16 id, const void * data, U32 size );
 
         virtual const unsigned char * GetBaseAddress() const { return fBuffer; }
@@ -116,9 +119,9 @@ class GLCommandBuffer : public CommandBuffer
 		Real fElapsedTimeGPU;
 		S32 fCachedQuery[kNumQueryableParams];
     
-        Array< CoronaCommand > fCustomCommands;
+        LightPtrArray< const CoronaCommand > fCustomCommands;
 
-        GLProgram::ExtraUniforms* fExtraUniforms;
+        GLExtraUniforms* fExtraUniforms;
 };
 
 // ----------------------------------------------------------------------------

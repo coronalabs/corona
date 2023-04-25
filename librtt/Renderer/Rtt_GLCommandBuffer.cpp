@@ -30,6 +30,8 @@
 #include <string.h>
 #include "Core/Rtt_String.h"
 
+#include "CoronaGraphics.h"
+
 #define ENABLE_DEBUG_PRINT    0
 
 // TODO: Temporary hack
@@ -787,7 +789,7 @@ GLCommandBuffer::GetCachedParam( CommandBuffer::QueryableParams param )
 }
 
 void
-GLCommandBuffer::AddCommand( const CoronaCommand & command )
+GLCommandBuffer::AddCommand( const CoronaCommand* command )
 {
     fCustomCommands.Append( command );
 }
@@ -806,7 +808,7 @@ GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
 
     OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
     
-    fCustomCommands[id].writer( commandBuffer, buffer, data, size );
+    fCustomCommands[id]->writer( commandBuffer, buffer, data, size );
 }
 
 static GLsizei
@@ -915,7 +917,7 @@ GLCommandBuffer::Execute( bool measureGPU )
 
   OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
 
-  GLProgram::ExtraUniforms extraUniforms;
+  GLExtraUniforms extraUniforms;
 
   fExtraUniforms = &extraUniforms;
 
@@ -1029,7 +1031,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                 GLProgram* program = Read<GLProgram*>();
                 program->Bind( fCurrentDrawVersion );
  
-                extraUniforms = program->GetExtraUniformsInfo( fCurrentDrawVersion );
+                program->GetExtraUniformsInfo( fCurrentDrawVersion, extraUniforms );
 
                 DEBUG_PRINT( "Bind Program: program=%p version=%i", program, fCurrentDrawVersion );
                 CHECK_ERROR_AND_BREAK;
@@ -1355,7 +1357,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                 {
                     U32 size = Read< U32 >();
 
-                    fCustomCommands[id].reader( commandBuffer, fOffset, size );
+                    fCustomCommands[id]->reader( commandBuffer, fOffset, size );
 
                     fOffset += size;
                 }

@@ -16,11 +16,10 @@
 #include "Core/Rtt_Types.h"
 #include "Core/Rtt_Real.h"
 
-#include "Corona/CoronaGraphics.h"
-
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
+struct CoronaCommand;
 
 namespace Rtt
 {
@@ -106,7 +105,7 @@ class CommandBuffer
         virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
         virtual S32 GetCachedParam( CommandBuffer::QueryableParams param ) = 0;
 
-        virtual void AddCommand( const CoronaCommand & command ) = 0;
+        virtual void AddCommand( const CoronaCommand * command ) = 0;
         virtual void IssueCommand( U16 id, const void * data, U32 size ) = 0;
 
         virtual const unsigned char * GetBaseAddress() const = 0;

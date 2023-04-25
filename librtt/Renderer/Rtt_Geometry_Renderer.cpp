@@ -17,6 +17,8 @@
 #include "Display/Rtt_DisplayTypes.h"
 #include "Renderer/Rtt_RenderTypes.h"
 
+#include "CoronaGraphics.h"
+
 #include <cstring>
 #include <stddef.h>
 #include <string.h>
@@ -119,6 +121,12 @@ Geometry::ExtensionAttribute::GetSize() const
     }
         
     return count;
+}
+
+bool
+Geometry::ExtensionAttribute::IsFloat() const
+{
+    return !!normalized || (CoronaVertexExtensionAttributeType)kAttributeType_Float == type;
 }
 
 U32

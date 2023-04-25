@@ -19,6 +19,7 @@
 #include "Display/Rtt_ShaderResource.h"
 #include "Rtt_LuaAux.h"
 #include "Rtt_LuaUserdataProxy.h"
+#include "CoronaGraphics.h"
 
 #include <string.h>
 

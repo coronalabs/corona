@@ -18,6 +18,7 @@
 #include "Rtt_LuaUserdataProxy.h"
 
 #include "CoronaLua.h"
+#include "CoronaGraphics.h"
 #include "Rtt_LuaContext.h"
 
 #include <vector>

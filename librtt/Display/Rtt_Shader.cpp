@@ -27,6 +27,8 @@
 
 #include "Display/Rtt_ObjectBoxList.h"
 
+#include "CoronaGraphics.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -332,21 +334,21 @@ Shader::IsTerminal(Shader *shader) const
 }
 
 Shader::DrawState::DrawState( const CoronaEffectCallbacks * callbacks, bool & drawing )
-:    fDrawing( drawing ),
+:   fDrawing( drawing ),
     fWasDrawing( drawing )
 {
     fDrawing = true;
-
-    const CoronaShaderDrawParams drawParams = {};
+    
+    static const CoronaShaderDrawParams drawParams = {};
 
     if (!fWasDrawing && callbacks && memcmp( &callbacks->drawParams, &drawParams, sizeof( CoronaShaderDrawParams ) ) != 0)
     {
-        params = callbacks->drawParams;
+        fParams = &callbacks->drawParams;
     }
 
     else
     {
-        params = drawParams;
+        fParams = &drawParams;
     }
 }
 
@@ -358,7 +360,7 @@ Shader::DrawState::~DrawState()
 bool
 Shader::DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & renderer, const RenderData & objectData ) const
 {
-    if (state.params.before)
+    if (state.fParams->before)
     {
         Rtt::ObjectBoxList list;
         
@@ -368,17 +370,17 @@ Shader::DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & rend
 
         if (shader && rendererObject && renderData)
         {
-            state.params.before( shader, fData->GetExtraSpace(), rendererObject, renderData );
+            state.fParams->before( shader, fData->GetExtraSpace(), rendererObject, renderData );
         }
     }
 
-    return !state.params.ignoreOriginal;
+    return !state.fParams->ignoreOriginal;
 }
 
 void
 Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const RenderData & objectData ) const
 {
-    if (state.params.after)
+    if (state.fParams->after)
     {
         Rtt::ObjectBoxList list;
         
@@ -388,7 +390,7 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
 
         if (shader && rendererObject && renderData)
         {
-            state.params.after( shader, fData->GetExtraSpace(), rendererObject, renderData );
+            state.fParams->after( shader, fData->GetExtraSpace(), rendererObject, renderData );
         }
     }
 }

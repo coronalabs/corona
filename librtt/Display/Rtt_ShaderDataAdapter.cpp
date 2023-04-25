@@ -19,6 +19,7 @@
 #include "Rtt_LuaContext.h"
 
 #include "Corona/CoronaLua.h"
+#include "CoronaGraphics.h"
 
 // ----------------------------------------------------------------------------
 

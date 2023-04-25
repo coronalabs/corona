@@ -15,11 +15,11 @@
 #include "Display/Rtt_DisplayTypes.h"
 #include "Core/Rtt_Real.h" // TODO: Rtt_Real.h depends on Rtt_Types being included before it
 #include "Core/Rtt_SharedPtr.h"
-#include "Corona/CoronaGraphics.h"
 
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
+struct CoronaVertexExtension;
 
 namespace Rtt
 {
@@ -90,13 +90,13 @@ class Geometry : public CPUResource
 
         struct ExtensionAttribute {
             size_t nameHash;
-            CoronaVertexExtensionAttributeType type;
+            U16 type;
             U16 offset : 13;
             U16 components : 2;
             U16 normalized : 1;
             
             U32 GetSize() const;
-            bool IsFloat() const { return !!normalized || (CoronaVertexExtensionAttributeType)kAttributeType_Float == type; }
+            bool IsFloat() const;
         };
     
         struct ExtensionGroup {

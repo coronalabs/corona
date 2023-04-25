@@ -17,12 +17,14 @@
 #include "Display/Rtt_ShaderTypes.h"
 #include "Renderer/Rtt_Uniform.h"
 
-#include "Corona/CoronaGraphics.h"
 #include <vector>
 
 // ----------------------------------------------------------------------------
 
 struct lua_State;
+struct CoronaEffectCallbacks;
+struct CoronaEffectDetail;
+struct CoronaShellTransform;
 
 namespace Rtt
 {

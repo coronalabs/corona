@@ -15,6 +15,8 @@
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_GL.h"
 
+#include "CoronaGraphics.h"
+
 #if defined( Rtt_EGL )
     #include <EGL/egl.h>
 #endif

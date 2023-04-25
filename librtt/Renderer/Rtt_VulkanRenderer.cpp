@@ -19,7 +19,6 @@
 #include "Renderer/Rtt_FrameBufferObject.h"
 #include "Display/Rtt_BufferBitmap.h"
 #include "Core/Rtt_Assert.h"
-#include "CoronaLog.h"
 
 // ----------------------------------------------------------------------------
 
@@ -181,13 +180,13 @@ BufferDescriptor::BufferDescriptor( VulkanContext * context, VkDescriptorPool po
 			{
 				buffer.Wipe();
 
-				CORONA_LOG_ERROR( "Failed to allocate buffer descriptor" );
+				Rtt_TRACE_SIM(( "ERROR: Failed to allocate buffer descriptor" ));
 			}
 		}
 
 		else
 		{
-			CORONA_LOG_ERROR( "Failed to create buffer" );
+			Rtt_TRACE_SIM(( "ERROR: Failed to create buffer" ));
 
 			break;
 		}
@@ -231,7 +230,7 @@ BufferDescriptor::TryToAddMemory( std::vector< VkMappedMemoryRange > & ranges, V
 
 		if (dynamicBuffer && fIndex == fBuffers.size())
 		{
-			CORONA_LOG_ERROR( "Failed to add memory: buffer full!" );
+			Rtt_TRACE_SIM(( "ERROR: Failed to add memory: buffer full!" ));
 
 			return; // TODO: much more than this needs hardening
 		}
@@ -300,7 +299,7 @@ AddPool( VulkanContext * context, const VkDescriptorPoolSize * sizes, uint32_t s
 
 	else
 	{
-		CORONA_LOG_ERROR( "Failed to create descriptor pool!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to create descriptor pool!" ));
 
 		return VK_NULL_HANDLE;
 	}
@@ -472,7 +471,7 @@ VulkanRenderer::VulkanRenderer( Rtt_Allocator* allocator, VulkanContext * contex
 
 	else
 	{
-		CORONA_LOG_ERROR( "Failed to create UBO descriptor set layout!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to create UBO descriptor set layout!" ));
 	}
 
 	if (VK_SUCCESS == vkCreateDescriptorSetLayout( context->GetDevice(), &createDescriptorSetLayoutInfo, context->GetAllocator(), &fUserDataLayout ))
@@ -481,7 +480,7 @@ VulkanRenderer::VulkanRenderer( Rtt_Allocator* allocator, VulkanContext * contex
 
 	else
 	{
-		CORONA_LOG_ERROR( "Failed to create uniform user data descriptor set layout!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to create uniform user data descriptor set layout!" ));
 	}
 
 	// if samplerIndexing...
@@ -501,7 +500,7 @@ VulkanRenderer::VulkanRenderer( Rtt_Allocator* allocator, VulkanContext * contex
 
 	else
 	{
-		CORONA_LOG_ERROR( "Failed to create texture descriptor set layout!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to create texture descriptor set layout!" ));
 	}
 	
 	VkPipelineLayoutCreateInfo createPipelineLayoutInfo = {};
@@ -519,7 +518,7 @@ VulkanRenderer::VulkanRenderer( Rtt_Allocator* allocator, VulkanContext * contex
 
 	else
 	{
-		CORONA_LOG_ERROR( "Failed to create pipeline layout!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to create pipeline layout!" ));
 	}
 
 	fSwapchainTexture = Rtt_NEW( allocator, TextureSwapchain( allocator, context ) );
@@ -551,7 +550,7 @@ VulkanRenderer::VulkanRenderer( Rtt_Allocator* allocator, VulkanContext * contex
 
 		if (!fFrameResources[i].AddSynchronizationObjects( context->GetDevice(), context->GetAllocator() )) // TODO: could fail at other steps...
 		{
-			CORONA_LOG_ERROR( "Failed to create some synchronziation objects!" );
+			Rtt_TRACE_SIM(( "ERROR: Failed to create some synchronziation objects!" ));
 
 			// for (j = 0; j <= i; ++j)
 			fFrameResources[i].CleanUpCommandPool( context->GetDevice(), context->GetAllocator() );
@@ -869,7 +868,7 @@ VulkanRenderer::MakeSwapchain()
 
 	else
 	{
-		CORONA_LOG_ERROR( "Failed to create swap chain!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to create swap chain!" ));
 
 		return VK_NULL_HANDLE;
 	}
@@ -1186,7 +1185,7 @@ VulkanRenderer::ResolvePipeline()
 
 		else
 		{
-			CORONA_LOG_ERROR( "Failed to create pipeline!" );
+			Rtt_TRACE_SIM(( "ERROR: Failed to create pipeline!" ));
         }
 	}
 

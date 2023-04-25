@@ -18,6 +18,7 @@
     #include "Renderer/Rtt_ShaderBinaryVersions.h"
 #endif
 #include "Core/Rtt_Assert.h"
+#include "Core/Rtt_Traits.h"
 #include <cstdio>
 #include <string.h> // memset.
 #ifdef Rtt_WIN_PHONE_ENV
@@ -26,6 +27,7 @@
 
 #include "Display/Rtt_ShaderResource.h"
 #include "Corona/CoronaLog.h"
+#include "CoronaGraphics.h"
 
 #include <string>
 #include <vector>
@@ -148,6 +150,8 @@ GLProgram::Create( CPUResource* resource )
 			Create( fData[i], i );
 		}
 	#endif
+
+    Rtt_STATIC_ASSERT( ( Traits::IsSame< decltype(fCleanupShellTransform),  CoronaShellTransformStateCleanup >::Value ) );
     
     Program* program = static_cast<Program*>( fResource );
     ShaderResource* shaderResource = program->GetShaderResource();
@@ -309,7 +313,9 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
         
         const char * prim = "float", * vec = "vec";
 
-        if (IsDoubleType( attribute.type ))
+        CoronaVertexExtensionAttributeType type = (CoronaVertexExtensionAttributeType)attribute.type;
+
+        if (IsDoubleType( type ))
         {
             prim = "double";
             vec = "dvec";
@@ -648,14 +654,14 @@ GLProgram::Reset( VersionData& data )
     data.fHeaderNumLines = 0;
 }
 
-GLProgram::ExtraUniforms::ExtraUniforms()
+GLExtraUniforms::GLExtraUniforms()
 :   fVersion( Program::kNumVersions ),
     fVersionData( NULL ),
     fCache( NULL )
 {
 }
 
-GLProgram::ExtraUniforms::ExtraUniforms( Program::Version version, const VersionData * versionData, GLProgramUniformsCache ** cache )
+GLExtraUniforms::GLExtraUniforms( Program::Version version, const GLProgram::VersionData * versionData, GLProgramUniformsCache ** cache )
 :   fVersion( version ),
     fVersionData( versionData ),
     fCache( cache )
@@ -663,7 +669,7 @@ GLProgram::ExtraUniforms::ExtraUniforms( Program::Version version, const Version
 }
 
 GLint
-GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
+GLExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
 {
     if (!fCache)
     {
@@ -699,7 +705,7 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
     }
 
     // Does the uniform even exist?
-    const VersionData & versionData = fVersionData[fVersion];
+    const GLProgram::VersionData & versionData = fVersionData[fVersion];
     GLint location = glGetUniformLocation( versionData.fProgram, reinterpret_cast< const GLchar * >( name ) );
 
     if (-1 == location)
@@ -731,13 +737,13 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
         
         glGetProgramiv( versionData.fProgram, GL_ACTIVE_UNIFORMS, &count );
         
-        GLchar nameBuf[kUniformNameBufferSize];
+        GLchar nameBuf[GLProgram::kUniformNameBufferSize];
         GLsizei length;
         GLint uniformIndex;
         
         for (uniformIndex = 0; uniformIndex < count; ++uniformIndex)
         {
-            glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
+            glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, GLProgram::kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
 
             const char * bracket = strchr( nameBuf, '[' );
             
@@ -805,12 +811,10 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
     return location;
 }
 
-GLProgram::ExtraUniforms
-GLProgram::GetExtraUniformsInfo( Program::Version version )
+void
+GLProgram::GetExtraUniformsInfo( Program::Version version, GLExtraUniforms& extraUniforms )
 {
-    ExtraUniforms extraUniforms( version, fData, &fUniformsCache );
-    
-    return extraUniforms;
+    extraUniforms = GLExtraUniforms( version, fData, &fUniformsCache );
 }
 
 // ----------------------------------------------------------------------------
