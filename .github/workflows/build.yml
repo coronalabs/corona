@@ -41,6 +41,47 @@ jobs:
           name: SourceCode
           path: ./output
 
+  Xcode-template-matrix-13:
+    strategy:
+      matrix:
+        runner:
+          - macos-13
+        xcode:
+          - Xcode_14.3
+        target:
+          - template
+          - template-angle
+        platform:
+          - iphone
+          - tvos
+    needs: source-code
+    runs-on: ${{ matrix.runner }}
+    env:
+      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
+      TEMPLATE_TARGET: ${{ matrix.target }}
+      TEMPLATE_PLATFORM: ${{ matrix.platform }}
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build templates
+        working-directory: ./platform/${{ matrix.platform }}
+        run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Build templates JSON spec
+        run: ./tools/GHAction/generate_xcode_jsons.py
+      - name: Upload templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
+          path: ./output
+
   Xcode-template-matrix-12:
     strategy:
       matrix:
@@ -48,7 +89,7 @@ jobs:
           - macos-12
         xcode:
           - Xcode_13.4.1
-          - Xcode_14.3
+          - Xcode_14.2
         target:
           - template
           - template-angle
@@ -128,6 +169,7 @@ jobs:
     needs:
       - Xcode-template-matrix
       - Xcode-template-matrix-12
+      - Xcode-template-matrix-13
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
@@ -151,7 +193,7 @@ jobs:
   webtemplate:
     needs:
       - source-code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
@@ -266,7 +308,7 @@ jobs:
 
   native:
     needs: source-code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -313,7 +355,7 @@ jobs:
 
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -343,7 +385,7 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -407,7 +449,7 @@ jobs:
   notarize:
     needs:
       - macOS-Simulator
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: Get built simulator
         uses: actions/download-artifact@v1
@@ -435,7 +477,7 @@ jobs:
           APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
 
   check-notarization:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: Check notarization credentials
         run: |
