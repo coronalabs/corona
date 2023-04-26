@@ -188,18 +188,6 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 {
     // Always have at least 1 mask count.
     fMaskCount.Append( 0 );
-
-_CrtSetAllocHook([]( int allocType, void *userData, size_t size,
-                   int blockType, long requestNumber,
-                   const unsigned char *filename, int lineNumber)
-{
-    if ( (32 == size || 64 == size) && blockType == _NORMAL_BLOCK && filename )
-    {
-        int i = 0;
-    }
-
-    return TRUE;
-});
 }
 
 Renderer::~Renderer()
