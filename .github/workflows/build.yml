@@ -26,7 +26,7 @@ jobs:
   source-code:
     name: Check out and process source code
     if: "!contains(github.ref, 'refs/tags/') || github.repository == 'scottrules44/Solar2d-98'"
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v2
@@ -45,10 +45,10 @@ jobs:
     strategy:
       matrix:
         runner:
-          - macos-12
+          - macos-13
         xcode:
-          - Xcode_13.4.1
           - Xcode_14.2
+          - Xcode_14.3
         target:
           - template
           - template-angle
@@ -87,9 +87,9 @@ jobs:
     strategy:
       matrix:
         runner:
-          - macos-11
+          - macos-12
         xcode:
-          - Xcode_13.2.1
+          - Xcode_14.2.0
         target:
           - template
           - template-angle
@@ -151,7 +151,7 @@ jobs:
   webtemplate:
     needs:
       - source-code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
@@ -266,7 +266,7 @@ jobs:
 
   native:
     needs: source-code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -313,7 +313,7 @@ jobs:
 
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -343,7 +343,7 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -407,7 +407,7 @@ jobs:
   notarize:
     needs:
       - macOS-Simulator
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: Get built simulator
         uses: actions/download-artifact@v1
@@ -435,7 +435,7 @@ jobs:
           APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
 
   check-notarization:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: Check notarization credentials
         run: |
