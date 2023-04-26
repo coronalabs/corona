@@ -8338,7 +8338,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				SDKROOT = macosx;
@@ -8398,6 +8398,7 @@
 					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.Corona_Simulator;
 				PRODUCT_NAME = template;
@@ -8742,6 +8743,7 @@
 					"$(SYSTEM_APPS_DIR)/Steam.app/Contents/MacOS",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../modules/platform/mac/build/Release\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.Corona_Simulator;
 				PRODUCT_NAME = "Corona Simulator";
@@ -8873,7 +8875,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -8949,7 +8951,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				SDKROOT = macosx;

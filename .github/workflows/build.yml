@@ -41,7 +41,7 @@ jobs:
           name: SourceCode
           path: ./output
 
-  Xcode-template-matrix-12:
+  Xcode-template-matrix-13:
     strategy:
       matrix:
         runner:
@@ -127,7 +127,7 @@ jobs:
   collect-ios-templates:
     needs:
       - Xcode-template-matrix
-      - Xcode-template-matrix-12
+      - Xcode-template-matrix-13
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
