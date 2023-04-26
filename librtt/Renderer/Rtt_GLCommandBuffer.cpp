@@ -10,6 +10,7 @@
 #include "Renderer/Rtt_GLCommandBuffer.h"
 
 #include "Renderer/Rtt_FrameBufferObject.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_GL.h"
 #include "Renderer/Rtt_GLFrameBufferObject.h"
@@ -542,18 +543,18 @@ GLCommandBuffer::BindVertexFormat( FormatExtensionList* list, U16 fullCount, U16
     Write( fullCount );
     Write( vertexSize );
 	Write( offset );
-    Write<U16>( list->attributeCount );
+    Write<U16>( list->GetAttributeCount() );
     
-    for (U32 i = 0; i < list->attributeCount; ++i)
+    for (U32 i = 0; i < list->GetAttributeCount(); ++i)
     {
-        Write(list->attributes[i]);
+        Write(list->GetAttributes()[i]);
     }
         
-    Write<U16>( list->groupCount );
+    Write<U16>( list->GetGroupCount() );
 
-    for (U32 i = 0; i < list->groupCount; ++i)
+    for (U32 i = 0; i < list->GetGroupCount(); ++i)
     {
-        Write(list->groups[i]);
+        Write(list->GetGroups()[i]);
     }
 }
 
@@ -1049,33 +1050,34 @@ GLCommandBuffer::Execute( bool measureGPU )
                 U16 fullCount = Read<U16>();
                 U16 vertexSize = Read<U16>();
 				U32 offset = Read<U32>();
-                FormatExtensionList list = {};
                 
                 // Reconstitute any attribute attached to the geometry.
-                list.attributeCount = Read<U16>();
+                U16 attributeCount = Read<U16>();
                 
-                std::vector< Geometry::ExtensionAttribute > attributes;
-                std::vector< Geometry::ExtensionGroup > groups;
+                Array< FormatExtensionList::Attribute > attributeArr( fAllocator );
+
+                std::vector< FormatExtensionList::Attribute > attributes;
+                std::vector< FormatExtensionList::Group > groups;
                 
-                for (U32 i = 0; i < list.attributeCount; ++i)
+                for (U32 i = 0; i < attributeCount; ++i)
                 {
-                    Geometry::ExtensionAttribute attribute = Read<Geometry::ExtensionAttribute>();
+                    FormatExtensionList::Attribute attribute = Read<FormatExtensionList::Attribute>();
                     
-                    attributes.push_back( attribute );
+                    attributeArr.Append( attribute );
                 }
                 
-                list.attributes = attributes.data();
+                U16 groupCount = Read<U16>();
                 
-                list.groupCount = Read<U16>();
+                Array< FormatExtensionList::Group > groupArr( fAllocator );
                 
-                for (U32 i = 0; i < list.groupCount; ++i)
+                for (U32 i = 0; i < groupCount; ++i)
                 {
-                    Geometry::ExtensionGroup group = Read<Geometry::ExtensionGroup>();
+                    FormatExtensionList::Group group = Read<FormatExtensionList::Group>();
                     
-                    groups.push_back( group );
+                    groupArr.Append( group );
                 }
-                
-                list.groups = groups.data();
+
+                FormatExtensionList list = FormatExtensionList::FromArrays( groupArr, attributeArr );
 
                 // Bring the enabled arrays into agreement.
                 if (!geometry->StoredOnGPU())
@@ -1085,7 +1087,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                         fullCount = currentAttributeCount;
                     }
                     
-                    currentAttributeCount = list.attributeCount;
+                    currentAttributeCount = list.GetAttributeCount();
                 }
                 
                 bool hasDivisors = GLGeometry::SupportsDivisors();
@@ -1102,7 +1104,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                     }
                 }
                 
-                for (U32 i = list.attributeCount; i < fullCount; ++i)
+                for (U32 i = list.GetAttributeCount(); i < fullCount; ++i)
                 {
                     glDisableVertexAttribArray( Geometry::FirstExtraAttribute() + i );
                 }

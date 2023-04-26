@@ -11,6 +11,7 @@
 
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_FrameBufferObject.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_GeometryPool.h"
 #include "Renderer/Rtt_GPUResource.h"
@@ -185,6 +186,18 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 {
     // Always have at least 1 mask count.
     fMaskCount.Append( 0 );
+
+_CrtSetAllocHook([]( int allocType, void *userData, size_t size,
+                   int blockType, long requestNumber,
+                   const unsigned char *filename, int lineNumber)
+{
+    if ( (32 == size || 64 == size) && blockType == _NORMAL_BLOCK && filename )
+    {
+        int i = 0;
+    }
+
+    return TRUE;
+});
 }
 
 Renderer::~Renderer()
@@ -1561,7 +1574,7 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
 
     for (auto iter = FormatExtensionList::InstancedGroups( programList ); !iter.IsDone(); iter.Advance())
     {
-        const Geometry::ExtensionGroup* group = iter.GetGroup();
+        const FormatExtensionList::Group* group = iter.GetGroup();
         
         verticesRequired += group->GetVertexCount( block->fCount, iter.GetAttribute() );
     }
@@ -1579,7 +1592,7 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
     
     for (auto iter = FormatExtensionList::InstancedGroups( programList ); !iter.IsDone(); iter.Advance())
     {
-        const Geometry::ExtensionGroup* programGroup = iter.GetGroup();
+        const FormatExtensionList::Group* programGroup = iter.GetGroup();
         
         // Find the geometry group corresponding to this program group. Merge
         // the corresponding instance data.
@@ -1589,8 +1602,8 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
 
         Rtt_ASSERT( -1 != geometryGroupIndex );
         
-        Geometry::ExtensionGroup geometryGroup = geometryList->groups[geometryGroupIndex];
-        U32 vertexCount = geometryGroup.GetVertexCount( block->fCount, &geometryList->attributes[geometryAttributeIndex] );
+        FormatExtensionList::Group geometryGroup = geometryList->GetGroups()[geometryGroupIndex];
+        U32 vertexCount = geometryGroup.GetVertexCount( block->fCount, geometryList->GetAttributes() + geometryAttributeIndex );
 
         if (geometryList->HasVertexRateData())
         {

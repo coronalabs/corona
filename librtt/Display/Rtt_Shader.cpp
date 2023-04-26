@@ -25,6 +25,7 @@
 
 #include <string.h>
 
+#include "Renderer/Rtt_FormatExtensionList.h"
 #include "Display/Rtt_ObjectBoxList.h"
 
 #include "CoronaGraphics.h"

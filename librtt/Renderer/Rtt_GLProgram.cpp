@@ -11,7 +11,8 @@
 #include "Renderer/Rtt_GLGeometry.h"
 
 #include "Renderer/Rtt_CommandBuffer.h"
-#include "Renderer/Rtt_Geometry_Renderer.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
+//#include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_Texture.h"
 #ifdef Rtt_USE_PRECOMPILED_SHADERS
     #include "Renderer/Rtt_ShaderBinary.h"
@@ -301,9 +302,9 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
 {
     extensionList->SortNames();
     
-    for (int i = 0; i < extensionList->attributeCount; ++i)
+    for (int i = 0; i < extensionList->GetAttributeCount(); ++i)
     {
-        const Geometry::ExtensionAttribute& attribute = extensionList->attributes[i];
+        const FormatExtensionList::Attribute& attribute = extensionList->GetAttributes()[i];
         char buf[64], count[2] = {};
         
         if (attribute.components > 1)
@@ -327,16 +328,16 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
             vec = "ivec";
         }
             
-        sprintf( buf, "attribute %s%s a_%s;\n", *count ? vec : prim, count, extensionList->names[i].str );
+        sprintf( buf, "attribute %s%s a_%s;\n", *count ? vec : prim, count, extensionList->FindNameByAttribute( i ) );
         
         extensionAttributes += buf;
     }
     
     extensionAttributes += "\n";
     
-    for (int i = 0; i < extensionList->attributeCount; ++i)
+    for (int i = 0; i < extensionList->GetAttributeCount(); ++i)
     {
-        AppendMacroName( extensionList->names[i].str, extensionAttributes );
+        AppendMacroName( extensionList->FindNameByAttribute( i ), extensionAttributes );
     }
 }
 
@@ -535,15 +536,14 @@ GLProgram::Update( Program::Version version, VersionData& data )
     {
         GLuint first = Geometry::FirstExtraAttribute();
 
-        for (U32 i = 0; i < extensionList->attributeCount; ++i)
+        for (U32 i = 0; i < extensionList->GetAttributeCount(); ++i)
         {
-            const FormatExtensionList::NamePair& pair = extensionList->names[i];
-           
+            S32 index;
             char buf[BUFSIZ];
             
-            sprintf( buf, "a_%s", pair.str );
+            sprintf( buf, "a_%s", extensionList->FindNameByAttribute( i, &index ) );
             
-            glBindAttribLocation( data.fProgram, first + pair.index, buf );
+            glBindAttribLocation( data.fProgram, first + index, buf );
         }
 
         GL_CHECK_ERROR();

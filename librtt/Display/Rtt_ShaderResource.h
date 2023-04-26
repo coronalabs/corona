@@ -31,7 +31,7 @@ namespace Rtt
 
 class Program;
 class ShaderData;
-struct FormatExtensionList;
+class FormatExtensionList;
 
 struct TimeTransform
 {

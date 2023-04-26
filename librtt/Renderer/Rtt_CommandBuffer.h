@@ -29,7 +29,7 @@ class Program;
 class Texture;
 class Uniform;
 class ShaderResource;
-struct FormatExtensionList;
+class FormatExtensionList;
 struct TimeTransform;
 
 // ----------------------------------------------------------------------------
