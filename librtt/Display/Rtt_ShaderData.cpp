@@ -44,6 +44,11 @@ ShaderData::~ShaderData()
 	{
 		fProxy->DetachUserdata();
 	}
+
+	for ( int i = 0; i < kNumData; i++ )
+	{
+		Rtt_DELETE( fUniformData[i] );
+	}
 }
 
 void
@@ -62,6 +67,8 @@ ShaderData::QueueRelease( DisplayObject *observer )
 	for ( int i = 0; i < kNumData; i++ )
 	{
 		observer->QueueRelease( fUniformData[i] );
+
+		fUniformData[i] = NULL;
 	}
 	observer->QueueRelease( fProxy );
 }
