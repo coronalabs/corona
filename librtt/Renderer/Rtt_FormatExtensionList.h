@@ -21,6 +21,7 @@ namespace Rtt
 {
 
 class CommandBuffer;
+class String;
 
 // ----------------------------------------------------------------------------
 
@@ -115,14 +116,14 @@ class FormatExtensionList {
         static size_t GetVertexSize( const FormatExtensionList * list );
         static bool Compatible( const FormatExtensionList * shaderList, const FormatExtensionList * geometryList );
         static bool Match( const FormatExtensionList * list1, const FormatExtensionList * list2 );
-        static void ReconcileFormats( CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset );
+        static void ReconcileFormats( Rtt_Allocator* allocator, CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset );
     
     public:
-        void Build( const CoronaVertexExtension * extension );
+        void Build( Rtt_Allocator* allocator, const CoronaVertexExtension * extension );
     
     private:
         struct NamePair {
-            const char* str;
+            String* str;
             S32 index;
         
             bool operator<( const NamePair & other ) const { return index < other.index; }

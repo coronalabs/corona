@@ -11,20 +11,14 @@
 
 #include "Core/Rtt_String.h"
 #include "Core/Rtt_Assert.h"
+#include "Core/Rtt_Array.h"
 
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_FormatExtensionList.h"
 
 #include "CoronaGraphics.h"
-/*
-#include <cstring>
-#include <stddef.h>
-#include <string.h>*/
-#include <algorithm>/*
-#include <functional>
-#include <string>
-#include <vector>
-*/
+#include <algorithm>
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -224,7 +218,7 @@ FormatExtensionList::FindNameByAttribute( U32 attributeIndex, S32* index ) const
             *index = pair.index;
         }
 
-        return pair.str;
+        return pair.str->GetString();
     }
 
     else
@@ -254,7 +248,7 @@ FormatExtensionList::FindName( const char* name ) const
     {
         for (U32 i = 0; i < fAttributeCount; ++i)
         {
-            if (0 == Rtt_StringCompare( name, fNames[i].str ))
+            if (0 == Rtt_StringCompare( name, fNames[i].str->GetString() ))
             {
                 FormatExtensionList::NamePair temp = fNames[i]; // move to front
                 
@@ -463,12 +457,30 @@ FormatExtensionList::Match( const FormatExtensionList * list1, const FormatExten
     }
 }
 
-void
-FormatExtensionList::Build( const CoronaVertexExtension * extension )
+static size_t
+Hash( const String* str )
 {
-    std::vector< Attribute > vattributes;
-    std::vector< Group > vgroups;
-    std::vector< std::string > vnames;
+    // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
+    const U64 kPrime = 0x100000001B3;
+    const U64 kOffsetBasis = 0xCBF29CE484222325;
+
+    U64 hash = kOffsetBasis;
+
+    for ( int i = 0, length = str->GetLength(); i < length; i++)
+    {
+        hash *= kPrime;
+        hash ^= str->GetString()[i];
+    }
+
+    return (size_t)hash;
+}
+
+void
+FormatExtensionList::Build( Rtt_Allocator* allocator, const CoronaVertexExtension * extension )
+{
+    Array< Attribute > attributes( allocator );
+    Array< Group > groups( allocator );
+    LightPtrArray< String > names( allocator );
     
     for (int i = 0; i < extension->count; ++i)
     {
@@ -499,22 +511,24 @@ FormatExtensionList::Build( const CoronaVertexExtension * extension )
             
             for (int j = 0; j < attributeData.windowSize; ++j)
             {
-                vnames.push_back( attributeData.name );
+                String* str = Rtt_NEW( allocator, String( allocator, attributeData.name ) );
+
+                names.Append( str );
                
                 char buf[3] = {}; // two digits, cf. kWindowSizeLimit
                 
                 sprintf( buf, "%i", j + 1 );
                 
-                vnames.back() += buf;
+                str->Append( buf );
                 
-                attribute.nameHash = std::hash<std::string>{}( vnames.back() );
+                attribute.nameHash = Hash( str );
                 
-                vattributes.push_back( attribute );
+                attributes.Append( attribute );
                 
                 attribute.offset += attribute.GetSize();
             }
             
-            vgroups.push_back( group );
+            groups.Append( group );
         }
         
         // Otherwise, merge desciptors with common divisors.
@@ -524,22 +538,22 @@ FormatExtensionList::Build( const CoronaVertexExtension * extension )
             
             if (!attributeData.instancesToReplicate) // not instanced?
             {
-                if (!HasVertexRateGroup( vgroups.data(), vgroups.size() )) // assumed to be first
+                if (!HasVertexRateGroup( groups.ReadAccess(), groups.Length() )) // assumed to be first
                 {
-                    vgroups.insert( vgroups.begin(), Group{} );
+                    groups.Insert( 0, Group{} );
                 }
                 
                 groupIndex = 0;
-                attributeIndex = vgroups[0].count;
+                attributeIndex = groups[0].count;
             }
             
             else
             {
-                for (U32 j = 0; j < vgroups.size(); ++j) // group exists?
+                for (S32 j = 0, length = groups.Length(); j < length; ++j) // group exists?
                 {
-                    attributeIndex += vgroups[j].count; // skip over group, if windowed, or to end otherwise
+                    attributeIndex += groups[j].count; // skip over group, if windowed, or to end otherwise
                     
-                    if (!vgroups[j].IsWindowed() && vgroups[j].divisor == attributeData.instancesToReplicate)
+                    if (!groups[j].IsWindowed() && groups[j].divisor == attributeData.instancesToReplicate)
                     {
                         groupIndex = j;
                         
@@ -549,50 +563,48 @@ FormatExtensionList::Build( const CoronaVertexExtension * extension )
                 
                 if (-1 == groupIndex)
                 {
-                    groupIndex = vgroups.size();
+                    groupIndex = groups.Length();
                     
                     Group group = {};
                     
                     group.divisor = attributeData.instancesToReplicate;
 
-                    vgroups.push_back( group );
+                    groups.Append( group );
                 }
             }
             
-            Group & group = vgroups[groupIndex];
+            Group & group = groups[groupIndex];
             
             attribute.offset = group.size;
 
             group.size += attribute.GetSize();
             
             ++group.count;
-     
-            attribute.nameHash = std::hash<std::string>{}( attributeData.name );
+
+            String* str = Rtt_NEW( allocator, String( allocator, attributeData.name ) );
+
+            attribute.nameHash = Hash( str );
             
-            vattributes.insert( vattributes.begin() + attributeIndex, attribute );
-            vnames.insert( vnames.begin() + attributeIndex, attributeData.name );
+            attributes.Insert( attributeIndex, attribute );
+            names.Insert( attributeIndex, str );
         }
     }
     
-    fAttributeCount = vattributes.size();
+    fAttributeCount = (U16)attributes.Length();
     fAttributes = Rtt_NEW( NULL, Attribute[fAttributeCount] );
 
-    memcpy( fAttributes, vattributes.data(), fAttributeCount * sizeof(Attribute) );
+    memcpy( fAttributes, attributes.ReadAccess(), fAttributeCount * sizeof(Attribute) );
     
-    fGroupCount = vgroups.size();
+    fGroupCount = (U16)groups.Length();
     fGroups = Rtt_NEW( NULL, Group[fGroupCount] );
     
-    memcpy( fGroups, vgroups.data(), fGroupCount * sizeof(Group) );
+    memcpy( fGroups, groups.ReadAccess(), fGroupCount * sizeof(Group) );
     
-    fNames = Rtt_NEW( NULL, FormatExtensionList::NamePair[vnames.size()] );
+    fNames = Rtt_NEW( NULL, FormatExtensionList::NamePair[names.Length()] );
 
     for (U32 i = 0; i < fAttributeCount; ++i)
     {
-        char* name = Rtt_NEW( NULL, char[vnames[i].length() + 1] );
-        
-        strcpy( name, vnames[i].c_str() );
-        
-        fNames[i].str = name;
+        fNames[i].str = names[i];
         fNames[i].index = (S32)i; // preserve attribute index against reordering
     }
     
@@ -602,13 +614,11 @@ FormatExtensionList::Build( const CoronaVertexExtension * extension )
 }
 
 void
-FormatExtensionList::ReconcileFormats( CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset )
+FormatExtensionList::ReconcileFormats( Rtt_Allocator* allocator, CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset )
 {
-    FormatExtensionList reconciledList = {};
-    
-    std::vector<Attribute> attributes;
-    std::vector<Group> groups;
-    std::vector<U32> groupIndices;
+    Array<Attribute> attributes( allocator );
+    Array<Group> groups( allocator );
+    Array<U32> groupIndices( allocator );
 
     Rtt_ASSERT( geometryList || !shaderList );
 
@@ -620,29 +630,33 @@ FormatExtensionList::ReconcileFormats( CommandBuffer * buffer, const FormatExten
         
         const Attribute& geometryAttribute = geometryList->fAttributes[geometryAttributeIndex];
         
-        attributes.push_back( geometryAttribute );
+        attributes.Append( geometryAttribute );
         
         U32 groupIndex = geometryList->FindGroup( geometryAttributeIndex );
-        
-        if (groupIndices.end() == std::find( groupIndices.begin(), groupIndices.end(), groupIndex ))
+
+        bool indexFound = false;
+
+        for (S32 i = 0, length = groupIndices.Length(); i < length && !indexFound; i++)
         {
-            groupIndices.push_back( groupIndex );
+            indexFound = groupIndex == groupIndices[i];
+        }
+
+        if ( !indexFound )
+        {
+            groupIndices.Append( groupIndex );
          
             Group group = geometryList->fGroups[groupIndex];
             
             group.count = 0;
-            groupIndex = groups.size();
+            groupIndex = groups.Length();
             
-            groups.push_back( group );
+            groups.Append( group );
         }
         
         ++groups[groupIndex].count;
     }
-    
-    reconciledList.fAttributes = attributes.data();
-    reconciledList.fGroups = groups.data();
-    reconciledList.fAttributeCount = attributes.size();
-    reconciledList.fGroupCount = groups.size();
+
+    FormatExtensionList reconciledList = FormatExtensionList::FromArrays( groups, attributes );
     
     U32 geometryAttributeCount = geometryList ? geometryList->fAttributeCount : 0;
     

@@ -945,7 +945,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
 			fOffsetCorrection = fVertexOffset;
 		}
 		
-        FormatExtensionList::ReconcileFormats( fBackCommandBuffer, programList, extensionList, fVertexOffset );
+        FormatExtensionList::ReconcileFormats( fAllocator, fBackCommandBuffer, programList, extensionList, fVertexOffset );
     }
     
     if (dirtyIndices.Length() > 0)

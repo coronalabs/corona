@@ -1688,7 +1688,7 @@ ShaderFactory::RegisterVertexExtension( const char * name, const CoronaVertexExt
             
             new (sharedList) SharedExtensionListPtr( list );
             
-            list->Build( &extension );
+            list->Build( fAllocator, &extension );
             
             lua_pushlightuserdata( L, &sVertexExtensionCookie ); // ..., vertexExtensions, nil, sharedList, cookie
             lua_rawget( L, -4 ); // ..., vertexExtensions, nil, sharedList, sharedListMT

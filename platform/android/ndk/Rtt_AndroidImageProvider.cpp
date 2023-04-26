@@ -136,7 +136,7 @@ AndroidImageProvider::AddProperties( lua_State *L, void* userdata )
 		{
 			Runtime& runtime = *(LuaContext::GetRuntime( L ));
 			BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, resultPointer->SelectedImageFileName, MPlatform::kUnknownDir, 0 );
-			LuaLibDisplay::PushImage( L, NULL, paint, runtime.GetDisplay(), NULL );
+			LuaLibDisplay::PushImage( L, NULL, paint, runtime.GetDisplay(), NULL, NULL );
 			lua_setfield( L, -2, "target" );
 		}
 	}
