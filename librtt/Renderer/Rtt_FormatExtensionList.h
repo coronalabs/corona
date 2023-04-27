@@ -32,7 +32,7 @@ class FormatExtensionList {
    
     public:
         struct Attribute {
-            size_t nameHash;
+            U32 nameHash;
             U16 type;
             U16 offset : 13;
             U16 components : 2;

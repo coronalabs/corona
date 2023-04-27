@@ -457,24 +457,6 @@ FormatExtensionList::Match( const FormatExtensionList * list1, const FormatExten
     }
 }
 
-static size_t
-Hash( const String* str )
-{
-    // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-    const U64 kPrime = 0x100000001B3;
-    const U64 kOffsetBasis = 0xCBF29CE484222325;
-
-    U64 hash = kOffsetBasis;
-
-    for ( int i = 0, length = str->GetLength(); i < length; i++)
-    {
-        hash *= kPrime;
-        hash ^= str->GetString()[i];
-    }
-
-    return (size_t)hash;
-}
-
 void
 FormatExtensionList::Build( Rtt_Allocator* allocator, const CoronaVertexExtension * extension )
 {
@@ -521,7 +503,7 @@ FormatExtensionList::Build( Rtt_Allocator* allocator, const CoronaVertexExtensio
                 
                 str->Append( buf );
                 
-                attribute.nameHash = Hash( str );
+                attribute.nameHash = str->GetHash32();
                 
                 attributes.Append( attribute );
                 
@@ -583,7 +565,7 @@ FormatExtensionList::Build( Rtt_Allocator* allocator, const CoronaVertexExtensio
 
             String* str = Rtt_NEW( allocator, String( allocator, attributeData.name ) );
 
-            attribute.nameHash = Hash( str );
+            attribute.nameHash = str->GetHash32();
             
             attributes.Insert( attributeIndex, attribute );
             names.Insert( attributeIndex, str );
