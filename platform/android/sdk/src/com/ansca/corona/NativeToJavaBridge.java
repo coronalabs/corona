@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -74,7 +74,7 @@ import com.naef.jnlua.LuaState;
 
 
 public class NativeToJavaBridge {
-	
+
 	private android.content.Context myContext;
 
 	NativeToJavaBridge( android.content.Context context )
@@ -91,7 +91,7 @@ public class NativeToJavaBridge {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * A test routine, to see if the bridge can be crossed.
 	 */
@@ -99,7 +99,7 @@ public class NativeToJavaBridge {
 	{
 		System.out.println( "NativeToJavaBridge.ping()" );
 	}
-	
+
 	private static HashMap< String, JavaFunction > sPluginCache = new HashMap< String, JavaFunction >();
 
 	protected static int instantiateClass( LuaState L, CoronaRuntime runtime, Class<?> c ) {
@@ -169,10 +169,6 @@ public class NativeToJavaBridge {
 			catch ( Exception ex ) {
 				err.append("\n\tno Java class '").append(classPath).append("'");
 			}
-			catch ( Throwable ex ) {
-				ex.printStackTrace();
-				err.append("\n\terror loading class '").append(classPath).append("': ").append(ex);
-			}
 			if(result == 0) {
 				L.pushString(err.toString());
 				result = 1;
@@ -227,7 +223,7 @@ public class NativeToJavaBridge {
 					try {
 						inputStream.close();
 					} catch (Exception e) {}
-					
+
 				}
 			}
 		}
@@ -246,7 +242,7 @@ public class NativeToJavaBridge {
 		com.naef.jnlua.LuaError luaError = new com.naef.jnlua.LuaError(null, ex);
 		return luaError.toString();
 	}
-	
+
 	protected static String getAudioOutputSettings()
 	{
 		if (android.os.Build.VERSION.SDK_INT >= 17) // getProperty
@@ -272,7 +268,7 @@ public class NativeToJavaBridge {
 			runtime.onLoaded(luaStateMemoryAddress);
 		}
 	}
-	
+
 	protected static void callOnRuntimeWillLoadMain(CoronaRuntime runtime)
 	{
 		if (runtime != null) {
@@ -286,25 +282,25 @@ public class NativeToJavaBridge {
 			runtime.onStarted();
 		}
 	}
-	
+
 	protected static void callOnRuntimeSuspended(CoronaRuntime runtime)
 	{
 		if (runtime != null) {
 			runtime.onSuspended();
 		}
 	}
-	
+
 	protected static void callOnRuntimeResumed(CoronaRuntime runtime)
 	{
 		if (runtime != null) {
 			runtime.onResumed();
 		}
 	}
-	
+
 	protected static void callOnAudioEnabled() {
 		MediaManager.onUsingAudio();
 	}
-	
+
 	protected static int callInvokeLuaErrorHandler(long luaStateMemoryAddress)
 	{
 		return CoronaEnvironment.invokeLuaErrorHandler(luaStateMemoryAddress);
@@ -324,7 +320,7 @@ public class NativeToJavaBridge {
 		if (listener != null) {
 			pushArgumentsToLuaTable(runtime, luaStateMemoryAddress, listener.getIntent());
 		}
-		
+
 	}
 
 	private static void pushArgumentsToLuaTable(CoronaRuntime runtime, long luaStateMemoryAddress, android.content.Intent intent)
@@ -505,10 +501,10 @@ public class NativeToJavaBridge {
 		// Return true to indicate that we successfully pushed the value into Lua.
 		return true;
 	}
-	
+
 	/**
 	 * Test to see if the named asset exists
-	 * 
+	 *
 	 * @param assetName		Asset to find
 	 * @return				True if it exists, false otherwise
 	 */
@@ -575,11 +571,11 @@ public class NativeToJavaBridge {
 		boolean exists = false;
 		android.content.Context context = CoronaEnvironment.getApplicationContext();
 		if (context != null) {
-			java.io.File destinationFile = 
+			java.io.File destinationFile =
 				new java.io.File(context.getFileStreamPath("coronaResources"), runtime.getPath() + assetName);
 			exists = destinationFile.exists();
 		}
-		
+
 		return exists;
 	}
 
@@ -605,7 +601,7 @@ public class NativeToJavaBridge {
 		// Return true to indicate that the asset was found.
 		return true;
 	}
-	
+
 	protected static byte[] callGetBytesFromFile( String filePathName ) {
 		// Fetch the application context.
 		android.content.Context context = CoronaEnvironment.getApplicationContext();
@@ -643,7 +639,7 @@ public class NativeToJavaBridge {
 	 */
 	private android.graphics.BitmapFactory.Options getBitmapFileInfo(String imageFileName) {
 		BitmapFactory.Options options = null;
-		
+
 		// Validate.
 		if ((imageFileName == null) || (imageFileName.length() <= 0)) {
 			return null;
@@ -661,7 +657,7 @@ public class NativeToJavaBridge {
 				options = new BitmapFactory.Options();
 				options.inJustDecodeBounds = true;
 				BitmapFactory.decodeStream(stream, null, options);
-				
+
 				// The option object's dimensions will be -1 if we have failed to load the file.
 				// In this case, we want to return null from this function.
 				if (options.outWidth < 0) {
@@ -678,7 +674,7 @@ public class NativeToJavaBridge {
 				catch (Exception ex) { }
 			}
 		}
-		
+
 		// Return the result. Will be null if failed to load the image.
 		return options;
 	}
@@ -719,7 +715,7 @@ public class NativeToJavaBridge {
 		catch (Exception ex) { }
 		return rotationInDegrees;
 	}
-	
+
 	/**
 	 * Instances of this class are returned from the loadBitmap() method to indicate if it successfully
 	 * loaded a bitmap, and if so, provide information about that loaded bitmap.
@@ -730,7 +726,7 @@ public class NativeToJavaBridge {
 		private int fHeight;
 		private float fScaleFactor;
 		private int fRotationInDegrees;
-		
+
 		public LoadBitmapResult(Bitmap bitmap, float scaleFactor, int rotationInDegrees) {
 			fBitmap = bitmap;
 			fWidth = 0;
@@ -738,7 +734,7 @@ public class NativeToJavaBridge {
 			fScaleFactor = scaleFactor;
 			fRotationInDegrees = rotationInDegrees;
 		}
-		
+
 		public LoadBitmapResult(int width, int height, float scaleFactor, int rotationInDegrees) {
 			fBitmap = null;
 			fWidth = width;
@@ -746,11 +742,11 @@ public class NativeToJavaBridge {
 			fScaleFactor = scaleFactor;
 			fRotationInDegrees = rotationInDegrees;
 		}
-		
+
 		public boolean wasSuccessful() {
 			return (fBitmap != null);
 		}
-		
+
 		public Bitmap getBitmap() {
 			return fBitmap;
 		}
@@ -768,7 +764,7 @@ public class NativeToJavaBridge {
 			}
 			return fHeight;
 		}
-		
+
 		public float getScaleFactor() {
 			return fScaleFactor;
 		}
@@ -777,10 +773,10 @@ public class NativeToJavaBridge {
 			return fRotationInDegrees;
 		}
 	}
-	
+
 	private LoadBitmapResult loadBitmap(String filePath, int maxWidth, int maxHeight, boolean loadImageInfoOnly) {
 		Bitmap result = null;
-		
+
 		// Attempt to fetch the image file's dimensions first.
 		BitmapFactory.Options options = getBitmapFileInfo(filePath);
 		if (options == null) {
@@ -789,7 +785,7 @@ public class NativeToJavaBridge {
 		}
 		int originalWidth = options.outWidth;
 		int originalHeight = options.outHeight;
-		
+
 		// Get a stream to the given file.
 		// A path that does not start with a '/' is assumed to be an asset file.
 		com.ansca.corona.storage.FileServices fileServices;
@@ -807,7 +803,7 @@ public class NativeToJavaBridge {
 		if (!isAssetFile) {
 			rotationInDegrees = getImageExifRotationInDegreesFrom(filePath);
 		}
-		
+
 		// If a maximum pixel width and height has been provided (ie: a max value greater than zero),
 		// then use the smallest of the maximum lengths to downsample the image with below.
 		int maxImageLength = 0;
@@ -837,7 +833,7 @@ public class NativeToJavaBridge {
 								   "' to fit max pixel size of " + Integer.toString(maxImageLength) + ".");
 			}
 		}
-		
+
 		// Check if we have enough memory to load the image at full 32-bit color quality.
 		// If we don't have enough memory, then load the image at 16-bit quality.
 		// Note: We can't determine the memory usage of this app, so we have to guess based on the max JVM heap size.
@@ -873,7 +869,7 @@ public class NativeToJavaBridge {
 			// Return the image file's information.
 			return new LoadBitmapResult(expectedWidth, expectedHeight, expectedScale, rotationInDegrees);
 		}
-		
+
 		// Load the image file to an uncompressed bitmap in memory.
 		Bitmap bitmap = null;
 		try {
@@ -909,13 +905,13 @@ public class NativeToJavaBridge {
 			Log.v("Corona", "Unable to decode file '" + filePath + "'");
 			return null;
 		}
-		
+
 		// If the image was downsampled, then calculate the scaling factor.
 		float downsampleScale = 1.0f;
 		if (bitmap.getWidth() != originalWidth) {
 			downsampleScale = (float)bitmap.getWidth() / (float)originalWidth;
 		}
-		
+
 		// Image file was loaded successfully. Return the bitmap in a result object.
 		return new LoadBitmapResult(bitmap, downsampleScale, rotationInDegrees);
 	}
@@ -936,7 +932,7 @@ public class NativeToJavaBridge {
 		if (!f.exists()) {
 			filePath = runtime.getPath() + filePath;
 		}
-		
+
 		// Attempt to fetch the given path's URL scheme, if it has one.
 		android.net.Uri uri = android.net.Uri.parse(android.net.Uri.encode(filePath, ":/\\."));
 		String scheme = uri.getScheme();
@@ -1145,17 +1141,17 @@ public class NativeToJavaBridge {
 		}
 		String destinationFilePathName = destinationFile.getPath();
 
-		SaveImageToPhotoLibraryRequestPermissionsResultHandler resultHandler 
+		SaveImageToPhotoLibraryRequestPermissionsResultHandler resultHandler
 			= new SaveImageToPhotoLibraryRequestPermissionsResultHandler(
 				runtime, fileServices, filePathName, destinationFilePathName);
 
-		return resultHandler.handleSaveMedia();		
+		return resultHandler.handleSaveMedia();
 	}
 
 	/**
 	 * Save a bitmap.
 	 * Warning: User must define: android.permission.WRITE_EXTERNAL_STORAGE
-	 * 
+	 *
 	 */
 	protected static boolean callSaveBitmap( CoronaRuntime runtime, int[] pixels, int width, int height, int quality, String filePathName )
 	{
@@ -1170,7 +1166,7 @@ public class NativeToJavaBridge {
 			Log.v( "Corona", "callSaveBitmap has null CoronaActivity" );
 			return false;
 		}
-		
+
 		// If a file name was not provided, then generate a unique file name in the pictures directory.
 		boolean addToPhotoLibrary = false;
 		if ((filePathName == null) || (filePathName.length() <= 0)) {
@@ -1183,7 +1179,7 @@ public class NativeToJavaBridge {
 			filePathName = newFile.getPath();
 			addToPhotoLibrary = true;
 		}
-		
+
 		// Copy the pixel array into a bitmap object.
 		android.graphics.Bitmap bitmap = null;
 		try {
@@ -1196,7 +1192,7 @@ public class NativeToJavaBridge {
 		if (bitmap == null) {
 			return false;
 		}
-		
+
 		SaveBitmapRequestPermissionsResultHandler resultHandler = new SaveBitmapRequestPermissionsResultHandler(
 			runtime, bitmap, quality, filePathName, addToPhotoLibrary);
 
@@ -1204,11 +1200,11 @@ public class NativeToJavaBridge {
 	}
 
 	/** Default handling of the write external storage permission for saving media on Android 6+. */
-	private abstract static class SaveMediaRequestPermissionsResultHandler 
+	private abstract static class SaveMediaRequestPermissionsResultHandler
 		implements CoronaActivity.OnRequestPermissionsResultHandler {
 
 		protected CoronaRuntime fCoronaRuntime;
-		
+
 		protected SaveMediaRequestPermissionsResultHandler(CoronaRuntime runtime) {
 			fCoronaRuntime = runtime;
 		}
@@ -1216,12 +1212,12 @@ public class NativeToJavaBridge {
 		public boolean handleSaveMedia() {
 			// Check for WRITE_EXTERNAL_STORAGE permission.
 			PermissionsServices permissionsServices = new PermissionsServices(CoronaEnvironment.getApplicationContext());
-			PermissionState writeExternalStoragePermissionState = 
+			PermissionState writeExternalStoragePermissionState =
 				permissionsServices.getPermissionStateFor(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE);
 			switch(writeExternalStoragePermissionState) {
 				case MISSING:
 					// The Corona developer forgot to add the permission to the AndroidManifest.xml.
-					permissionsServices.showPermissionMissingFromManifestAlert(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE, 
+					permissionsServices.showPermissionMissingFromManifestAlert(PermissionsServices.Permission.WRITE_EXTERNAL_STORAGE,
 						"Saving Images requires access to the device's Storage!");
 					break;
 				case DENIED:
@@ -1264,7 +1260,7 @@ public class NativeToJavaBridge {
 	}
 
 	/** Default handling of the write external storage permission for saveBitmap() on Android 6+. */
-	private static class SaveBitmapRequestPermissionsResultHandler 
+	private static class SaveBitmapRequestPermissionsResultHandler
 		extends NativeToJavaBridge.SaveMediaRequestPermissionsResultHandler {
 
 		// Arguments for the saveBitmap() method that we can now call safely.
@@ -1304,7 +1300,7 @@ public class NativeToJavaBridge {
 	}
 
 	/** Default handling of the write external storage permission for saveImageToPhotoLibrary() on Android 6+. */
-	private static class SaveImageToPhotoLibraryRequestPermissionsResultHandler 
+	private static class SaveImageToPhotoLibraryRequestPermissionsResultHandler
 		extends NativeToJavaBridge.SaveMediaRequestPermissionsResultHandler {
 
 		// Arguments/dependencies for the saveImageToPhotoLibrary() method that we can now call safely.
@@ -1325,10 +1321,10 @@ public class NativeToJavaBridge {
 		@Override
 		public boolean executeSaveMedia() {
 			// Validate arguments.
-			if (fFileServices == null 
-				|| fSourceFilePathName == null 
-				|| fSourceFilePathName.length() <= 0 
-				|| fCoronaRuntime == null 
+			if (fFileServices == null
+				|| fSourceFilePathName == null
+				|| fSourceFilePathName.length() <= 0
+				|| fCoronaRuntime == null
 				|| fCoronaRuntime.getController() == null) {
 				return false;
 			}
@@ -1345,12 +1341,12 @@ public class NativeToJavaBridge {
 			return true;
 		}
 	}
-	
+
 	protected static boolean callRenderText(
 		CoronaRuntime runtime, long nativeImageMemoryAddress, String text, String fontName, float fontSize,
 		boolean isBold, int wrapWidth, int clipWidth, int clipHeight, String alignment)
 	{
-		return callRenderText(runtime, nativeImageMemoryAddress, text, fontName, fontSize, 
+		return callRenderText(runtime, nativeImageMemoryAddress, text, fontName, fontSize,
 							  isBold, wrapWidth, clipWidth, clipHeight, alignment, null);
 	}
 
@@ -1408,10 +1404,10 @@ public class NativeToJavaBridge {
 		// Returns true if the bitmap's pixels were successfully loaded to the native bitmap object.
 		return wasCopied;
 	}
-	
+
 	/**
 	 * Return a list of available fonts
-	 * 
+	 *
 	 * @return 			List of fonts
 	 */
 	protected static String[] callGetFonts()
@@ -1444,10 +1440,10 @@ public class NativeToJavaBridge {
 		}
 		return array;
 	}
-	
+
 	/**
 	 * Set the Corona callback timer.
-	 * 
+	 *
 	 * @param milliseconds
 	 */
 	protected static void callSetTimer( int milliseconds, CoronaRuntime runtime)
@@ -1525,11 +1521,11 @@ public class NativeToJavaBridge {
 			listener.setStatusBarMode(CoronaStatusBarSettings.fromCoronaIntId(mode));
 		}
 	}
-	
+
 	protected static int callGetStatusBarMode(CoronaRuntime runtime)
 	{
 		CoronaStatusBarSettings mode = CoronaStatusBarSettings.HIDDEN;
-		
+
 		synchronized (runtime.getController()) {
 			CoronaStatusBarApiListener listener = runtime.getController().getCoronaStatusBarApiListener();
 			if (listener != null) {
@@ -1538,10 +1534,10 @@ public class NativeToJavaBridge {
 		}
 		return mode.toCoronaIntId();
 	}
-	
+
 	protected static int callGetStatusBarHeight(CoronaRuntime runtime) {
 		int height = 0;
-		
+
 		synchronized (runtime.getController()) {
 			CoronaStatusBarApiListener listener = runtime.getController().getCoronaStatusBarApiListener();
 			if (listener != null) {
@@ -1598,16 +1594,16 @@ public class NativeToJavaBridge {
                     }
 				}
 			}
-			else { 
+			else {
 				for (int i = 0; i < 4; i++) {
 					result [ i ] = 0;
 				}
 			}
-			
+
 		}
 		return result;
 	}
-	
+
 	protected static void callShowNativeAlert( CoronaRuntime runtime, String title, String msg, String[] buttonLabels )
 	{
 		runtime.getController().showNativeAlert( title, msg, buttonLabels );
@@ -1622,22 +1618,22 @@ public class NativeToJavaBridge {
 	{
 		runtime.getController().showTrialAlert();
 	}
-	
+
 	protected static void callShowNativeActivityIndicator(CoronaRuntime runtime)
 	{
 		runtime.getController().showNativeActivityIndicator();
 	}
-	
+
 	protected static void callCloseNativeActivityIndicator(CoronaRuntime runtime)
 	{
 		runtime.getController().closeNativeActivityIndicator();
 	}
-	
+
 	protected static boolean callHasMediaSource(CoronaRuntime runtime, int mediaSourceType)
 	{
 		return runtime.getController().hasMediaSource(mediaSourceType);
 	}
-	
+
 	protected static boolean callHasAccessToMediaSource(CoronaRuntime runtime, int mediaSourceType)
 	{
 		return runtime.getController().hasAccessToMediaSource(mediaSourceType);
@@ -1652,7 +1648,7 @@ public class NativeToJavaBridge {
 	{
 		runtime.getController().showVideoPickerWindow(videoSourceType, maxTime, quality);
 	}
-	
+
 	protected static boolean callCanShowPopup(CoronaRuntime runtime, String name)
 	{
 		return runtime.getController().canShowPopup(name);
@@ -1662,17 +1658,17 @@ public class NativeToJavaBridge {
 	{
 		runtime.getController().showSendMailWindow((java.util.HashMap<String, Object>)dictionaryOfSettings);
 	}
-	
+
 	protected static void callShowSendSmsPopup(CoronaRuntime runtime, java.util.HashMap dictionaryOfSettings)
 	{
 		runtime.getController().showSendSmsWindow((java.util.HashMap<String, Object>)dictionaryOfSettings);
 	}
-	
+
 	protected static boolean callShowAppStorePopup(CoronaRuntime runtime, java.util.HashMap dictionaryOfSettings)
 	{
 		return runtime.getController().showAppStoreWindow((java.util.HashMap<String, Object>)dictionaryOfSettings);
 	}
-	
+
 	protected static void callShowRequestPermissionsPopup(CoronaRuntime runtime, java.util.HashMap dictionaryOfSettings)
 	{
 		runtime.getController().showRequestPermissionsWindow((java.util.HashMap<String, Object>)dictionaryOfSettings);
@@ -1687,17 +1683,17 @@ public class NativeToJavaBridge {
 	{
 		runtime.getController().setAccelerometerInterval( frequencyInHz );
 	}
-	
+
 	protected static void callSetGyroscopeInterval( int frequencyInHz, CoronaRuntime runtime )
 	{
 		runtime.getController().setGyroscopeInterval( frequencyInHz );
 	}
-	
+
 	protected static boolean callHasAccelerometer(CoronaRuntime runtime)
 	{
 		return runtime.getController().hasAccelerometer();
 	}
-	
+
 	protected static boolean callHasGyroscope(CoronaRuntime runtime)
 	{
 		return runtime.getController().hasGyroscope();
@@ -1707,17 +1703,17 @@ public class NativeToJavaBridge {
 	{
 		return runtime.getController().hasHeadingHardware();
 	}
-	
+
 	protected static void callSetEventNotification( CoronaRuntime runtime, int eventType, boolean enable )
 	{
 		runtime.getController().setEventNotification( eventType, enable );
 	}
-	
+
 	protected static String callGetManufacturerName(CoronaRuntime runtime)
 	{
 		return runtime.getController().getManufacturerName();
 	}
-	
+
 	protected static String callGetModel(CoronaRuntime runtime)
 	{
 		return runtime.getController().getModel();
@@ -1732,7 +1728,7 @@ public class NativeToJavaBridge {
 	{
 		return runtime.getController().getUniqueIdentifier( identifierType );
 	}
-	
+
 	protected static String callGetPlatformVersion(CoronaRuntime runtime)
 	{
 		return runtime.getController().getPlatformVersion();
@@ -1742,7 +1738,7 @@ public class NativeToJavaBridge {
 	{
 		return runtime.getController().getProductName();
 	}
-	
+
 	protected static float callGetDefaultFontSize(CoronaRuntime runtime)
 	{
 		return runtime.getController().getDefaultFontSize();
@@ -1975,7 +1971,7 @@ public class NativeToJavaBridge {
 		            			nameToPush = permissionsServices.getPAAppPermissionNameFromAndroidPermission(nameToPush);
 		            			if (usedPANames.contains(nameToPush)) continue;
 		            			usedPANames.add(nameToPush);
-		            		}	
+		            		}
 		            	}
 			            // Push this string to the top of the stack
 			            luaState.pushString(nameToPush);
@@ -2019,9 +2015,9 @@ public class NativeToJavaBridge {
 		            			nameToPush = permissionsServices.getPAAppPermissionNameFromAndroidPermission(nameToPush);
 		            			if (usedPANames.contains(nameToPush)) continue;
 		            			usedPANames.add(nameToPush);
-		            		}	
+		            		}
 		            	}
-		            	
+
 			            // Push this string to the top of the stack
 			            luaState.pushString(nameToPush);
 
@@ -2075,7 +2071,7 @@ public class NativeToJavaBridge {
 		// Return the number of values pushed to Lua.
 		return valuesPushed;
 	}
-	
+
 	protected static String callGetPreference( int category, CoronaRuntime runtime )
 	{
 		String result = "";
@@ -2289,7 +2285,7 @@ public class NativeToJavaBridge {
 	{
 		return runtime.getController().getMediaManager().getVolume( id );
 	}
-	
+
 	protected static void callSetVolume( CoronaRuntime runtime, long id, float v )
 	{
 		runtime.getController().getMediaManager().setVolume( id, v );
@@ -2307,7 +2303,7 @@ public class NativeToJavaBridge {
 		runtime.getViewManager().setTextSelection( id, startPosition, endPosition );
 	}
 
-	protected static void callTextFieldSetReturnKey( CoronaRuntime runtime, int id, String imeType ) 
+	protected static void callTextFieldSetReturnKey( CoronaRuntime runtime, int id, String imeType )
 	{
 		runtime.getViewManager().setTextReturnKey( id, imeType );
 	}
@@ -2320,45 +2316,45 @@ public class NativeToJavaBridge {
 	protected static void callTextFieldSetColor( CoronaRuntime runtime, int id, int r, int g, int b, int a )
 	{
 		int color = Color.argb( a, r, g, b );
-		
+
 		runtime.getViewManager().setTextViewColor(id, color);
 	}
-	
+
 	protected static void callTextFieldSetText( CoronaRuntime runtime, int id, String text )
 	{
 		runtime.getViewManager().setTextViewText(id, text);
 	}
-	
+
 	protected static void callTextFieldSetSize( CoronaRuntime runtime, int id, float fontSize )
 	{
 		runtime.getViewManager().setTextViewSize(id, fontSize);
 	}
-	
+
 	protected static void callTextFieldSetFont( CoronaRuntime runtime, int id, String fontName, float fontSize, boolean isBold )
 	{
 		runtime.getViewManager().setTextViewFont(id, fontName, fontSize, isBold);
 	}
-	
+
 	protected static void callTextFieldSetAlign( CoronaRuntime runtime, int id, String align )
 	{
 		runtime.getViewManager().setTextViewAlign(id, align);
 	}
-	
+
 	protected static void callTextFieldSetSecure( CoronaRuntime runtime, int id, boolean isSecure )
 	{
-		runtime.getViewManager().setTextViewPassword(id, isSecure);	
+		runtime.getViewManager().setTextViewPassword(id, isSecure);
 	}
-	
+
 	protected static void callTextFieldSetInputType( CoronaRuntime runtime, int id, String inputType )
 	{
-		runtime.getViewManager().setTextViewInputType(id, inputType);	
+		runtime.getViewManager().setTextViewInputType(id, inputType);
 	}
 
 	protected static void callTextFieldSetEditable( CoronaRuntime runtime, int id, boolean isEditable )
 	{
-		runtime.getViewManager().setTextViewEditable(id, isEditable);	
+		runtime.getViewManager().setTextViewEditable(id, isEditable);
 	}
-	
+
 	protected static int[]  callTextFieldGetColor( CoronaRuntime runtime, int id )
 	{
 		int argb = runtime.getViewManager().getTextViewColor(id);
@@ -2369,15 +2365,15 @@ public class NativeToJavaBridge {
 		result[1] = Color.green( argb );
 		result[2] = Color.blue( argb );
 		result[3] = Color.alpha( argb );
-		    
+
 	    return result;
 	}
-	
+
 	protected static String callTextFieldGetText( int id, CoronaRuntime runtime )
 	{
 		return runtime.getViewManager().getTextViewText(id);
 	}
-	
+
 	protected static String callTextFieldGetPlaceholder( int id, CoronaRuntime runtime )
 	{
 		return runtime.getViewManager().getTextViewPlaceholder(id);
@@ -2392,12 +2388,12 @@ public class NativeToJavaBridge {
 	{
 		return "";
 	}
-	
+
 	protected static String callTextFieldGetAlign( int id, CoronaRuntime runtime )
 	{
 		return runtime.getViewManager().getTextViewAlign(id);
 	}
-	
+
 	protected static boolean callTextFieldGetSecure( CoronaRuntime runtime, int id )
 	{
 		return runtime.getViewManager().getTextViewPassword(id);
@@ -2412,47 +2408,47 @@ public class NativeToJavaBridge {
 	{
 		return runtime.getViewManager().isTextViewSingleLine(id);
 	}
-	
+
 	protected static boolean callTextFieldIsEditable( CoronaRuntime runtime, int id )
 	{
 		return runtime.getViewManager().isTextViewEditable(id);
 	}
-	
+
 	protected static void callDisplayObjectDestroy( CoronaRuntime runtime, int id )
 	{
 		runtime.getViewManager().destroyDisplayObject(id);
 	}
-	
+
 	protected static void callDisplayObjectSetVisible( CoronaRuntime runtime, int id, boolean visible )
 	{
 		runtime.getViewManager().setDisplayObjectVisible(id, visible);
 	}
-	
+
 	protected static void callDisplayObjectUpdateScreenBounds( CoronaRuntime runtime, int id, int x, int y, int w, int h )
 	{
 		runtime.getViewManager().displayObjectUpdateScreenBounds(id, x, y, w, h);
 	}
-	
+
 	protected static void callDisplayObjectSetAlpha( CoronaRuntime runtime, int id, float alpha )
 	{
 		runtime.getViewManager().setDisplayObjectAlpha(id, alpha);
 	}
-	
+
 	protected static void callDisplayObjectSetBackground( CoronaRuntime runtime, int id, boolean bg )
 	{
 		runtime.getViewManager().setDisplayObjectBackground(id, bg);
 	}
-	
+
 	protected static boolean callDisplayObjectGetVisible( CoronaRuntime runtime, int id )
 	{
 		return runtime.getViewManager().getDisplayObjectVisible(id);
 	}
-	
+
 	protected static float callDisplayObjectGetAlpha( CoronaRuntime runtime, int id )
 	{
 		return runtime.getViewManager().getDisplayObjectAlpha(id);
 	}
-	
+
 	protected static boolean callDisplayObjectGetBackground( CoronaRuntime runtime, int id )
 	{
 		return 	runtime.getViewManager().getDisplayObjectBackground(id);
@@ -2472,12 +2468,12 @@ public class NativeToJavaBridge {
 	{
 		return runtime.getController().getMediaManager().getAudioRecorder( id ).startRecording( file );
 	}
-	
+
 	protected static void callRecordStop( long id, CoronaRuntime runtime )
 	{
 		runtime.getController().getMediaManager().getAudioRecorder( id ).stopRecording();
 	}
-	
+
 	protected static ByteBuffer callRecordGetBytes( CoronaRuntime runtime, long id )
 	{
 		AudioByteBufferHolder buffer = runtime.getController().getMediaManager().getAudioRecorder( id ).getNextBuffer();
@@ -2485,10 +2481,10 @@ public class NativeToJavaBridge {
 			ByteBuffer directBuffer = buffer.myBuffer;
 			return directBuffer;
 		}
-			
+
 		return null;
 	}
-	
+
 	protected static int callRecordGetCurrentByteCount( CoronaRuntime runtime, long id )
 	{
 		AudioByteBufferHolder buffer = runtime.getController().getMediaManager().getAudioRecorder( id ).getCurrentBuffer();
@@ -2496,7 +2492,7 @@ public class NativeToJavaBridge {
 			return buffer.myValidBytes;
 		return 0;
 	}
-	
+
 	protected static void callRecordReleaseCurrentBuffer( long id, CoronaRuntime runtime )
 	{
 		runtime.getController().getMediaManager().getAudioRecorder( id ).releaseCurrentBuffer();
@@ -2515,15 +2511,15 @@ public class NativeToJavaBridge {
 	protected static void callWebViewRequestReload(int id, CoronaRuntime runtime) {
 		runtime.getViewManager().requestWebViewReload(id);
 	}
-	
+
 	protected static void callWebViewRequestStop(int id, CoronaRuntime runtime) {
 		runtime.getViewManager().requestWebViewStop(id);
 	}
-	
+
 	protected static void callWebViewRequestGoBack(int id, CoronaRuntime runtime) {
 		runtime.getViewManager().requestWebViewGoBack(id);
 	}
-	
+
 	protected static void callWebViewRequestGoForward(int id, CoronaRuntime runtime) {
 		runtime.getViewManager().requestWebViewGoForward(id);
 	}
@@ -2546,7 +2542,7 @@ public class NativeToJavaBridge {
 	{
 		runtime.getViewManager().videoViewPlay(id);
 	}
-	
+
 	protected static void callVideoViewPause(CoronaRuntime runtime, int id)
 	{
 		runtime.getViewManager().videoViewPause(id);
@@ -2698,7 +2694,7 @@ public class NativeToJavaBridge {
 		int functionListener = CoronaLua.newRef( luaState, -1 );
 		double longitude = luaState.checkNumber(-2);
 		double latitude = luaState.checkNumber(-3);
-		
+
 		final double latitudeFinal = latitude;
 		final double longitudeFinal = longitude;
 		final int functionListenerFinal = functionListener;
@@ -2734,7 +2730,7 @@ public class NativeToJavaBridge {
 				//This is run on the gl thread
 				com.ansca.corona.CoronaRuntimeTask task = new com.ansca.corona.CoronaRuntimeTask() {
 					@Override
-					public void executeUsing(com.ansca.corona.CoronaRuntime runtime) {	
+					public void executeUsing(com.ansca.corona.CoronaRuntime runtime) {
 						LuaState L = runtime.getLuaState();
 						CoronaLua.newEvent( L, "nearestAddress");
 						if (addressFinal != null) {
@@ -2743,47 +2739,47 @@ public class NativeToJavaBridge {
 									L.pushString( addressFinal.getThoroughfare() );
 									L.setField( -2, "street" );
 								}
-								
+
 								if ( addressFinal.getSubThoroughfare() != null) {
 									L.pushString( addressFinal.getSubThoroughfare() );
 									L.setField( -2, "streetDetail" );
 								}
-								
+
 								if ( addressFinal.getLocality() != null) {
 									L.pushString( addressFinal.getLocality() );
 									L.setField( -2, "city" );
 								}
-								
+
 								if ( addressFinal.getSubLocality() != null) {
 									L.pushString( addressFinal.getSubLocality() );
 									L.setField( -2, "cityDetail" );
 								}
-								
+
 								if ( addressFinal.getAdminArea() != null) {
 									L.pushString( addressFinal.getAdminArea() );
 									L.setField( -2, "region" );
 								}
-								
+
 								if ( addressFinal.getSubAdminArea() != null) {
 									L.pushString( addressFinal.getSubAdminArea() );
 									L.setField( -2, "regionDetail" );
 								}
-								
+
 								if ( addressFinal.getPostalCode() != null) {
 									L.pushString( addressFinal.getPostalCode() );
 									L.setField( -2, "postalCode" );
 								}
-								
+
 								if ( addressFinal.getCountryName() != null) {
 									L.pushString( addressFinal.getCountryName() );
 									L.setField( -2, "country" );
 								}
-								
+
 								if ( addressFinal.getCountryCode() != null) {
 									L.pushString( addressFinal.getCountryCode() );
 									L.setField( -2, "countryCode" );
 								}
-								
+
 								CoronaLua.dispatchEvent( L, functionListenerFinal, 0 );
 							}
 							catch (Exception ex) {
@@ -2834,7 +2830,7 @@ public class NativeToJavaBridge {
 		luaState.checkArg(-1, CoronaLua.isListener(luaState, -1, "mapLocation"), "The third arguement of requestLocation should be a listener.");
 		final int functionListenerFinal = CoronaLua.newRef( luaState, -1 );
 		final String locationFinal = luaState.checkString(-2);
-		
+
 		final CoronaRuntimeTaskDispatcher dispatcher = runtime.getTaskDispatcher();
 
 		//This is run on a third thread.  We do this so that we can make none blocking calls
@@ -2842,7 +2838,7 @@ public class NativeToJavaBridge {
 			@Override
 			public void run() {
 				Location location = NativeToJavaBridge.getLocationFromName(locationFinal);
-				
+
 				if (dispatcher != null) {
 					if (location != null) {
 						dispatcher.send(new com.ansca.corona.maps.MapRequestLocationTask(functionListenerFinal, location.getLatitude(), location.getLongitude(), locationFinal));
@@ -2873,7 +2869,7 @@ public class NativeToJavaBridge {
 		if (runtime != null) {
 			luaState = runtime.getLuaState();
 		}
-		
+
 		// Using coroutines will give a different lua state than what the runtime has so this is to verify its the same one
 		if (luaState == null || CoronaRuntimeProvider.getLuaStateMemoryAddress(luaState) != luaStateMemoryAddress) {
 			luaState = new com.naef.jnlua.LuaState(luaStateMemoryAddress);
@@ -2944,35 +2940,35 @@ public class NativeToJavaBridge {
 	protected static void callFlurryEvent( String eventId )
 	{
 	}
-	
+
 	protected static void callStoreInit(CoronaRuntime runtime, final String storeName) {
 		CoronaStoreApiListener listener = runtime.getController().getCoronaStoreApiListener();
 		if (listener != null) {
 			listener.storeInit(storeName);
 		}
 	}
-	
+
 	protected static void callStorePurchase(CoronaRuntime runtime, final String productName) {
 		CoronaStoreApiListener listener = runtime.getController().getCoronaStoreApiListener();
 		if (listener != null) {
 			listener.storePurchase(productName);
 		}
 	}
-	
+
 	protected static void callStoreFinishTransaction(CoronaRuntime runtime, final String transactionStringId) {
 		CoronaStoreApiListener listener = runtime.getController().getCoronaStoreApiListener();
 		if (listener != null) {
 			listener.storeFinishTransaction(transactionStringId);
 		}
 	}
-	
+
 	protected static void callStoreRestoreCompletedTransactions(CoronaRuntime runtime) {
 		CoronaStoreApiListener listener = runtime.getController().getCoronaStoreApiListener();
 		if (listener != null) {
 			listener.storeRestore();
 		}
 	}
-	
+
 	protected static String[] callGetAvailableStoreNames() {
 		return com.ansca.corona.purchasing.StoreServices.getAvailableInAppStoreNames();
 	}
