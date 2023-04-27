@@ -6644,7 +6644,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ $CONFIGURATION == *-template ]]; then\necho \"Skipping creation of agent app in template build\"\nexit 0\nfi\n\nif [[ $CONFIGURATION == \"Debug\" ]]; then\necho \"Skipping codesign of components in Debug build\"\nexit 0\nfi\n\n# Xcode will sign the main app for us via the normal Xcode settings.\n# But we need to sign any additional external tools we bundle with the simulator that aren't already signed.\n\n# sign zipalign\ncodesign -f -s \"Developer ID Application: Corona Labs Inc\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/zipalign\"\n\n# sign that annoying Corona Terminal shell script which needs to die\ncodesign -f -s \"Developer ID Application: Corona Labs Inc\" \"$SRCROOT/../../bin/mac/Corona Terminal\"\n\n";
+			shellScript = "if [[ $CONFIGURATION == *-template ]]; then\necho \"Skipping creation of agent app in template build\"\nexit 0\nfi\n\nif [[ $CONFIGURATION == \"Debug\" ]]; then\necho \"Skipping codesign of components in Debug build\"\nexit 0\nfi\n\n# Xcode will sign the main app for us via the normal Xcode settings.\n# But we need to sign any additional external tools we bundle with the simulator that aren't already signed.\n\n# sign zipalign\ncodesign -f -s \"Apple Development\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/zipalign\"\n\n# sign that annoying Corona Terminal shell script which needs to die\ncodesign -f -s \"Apple Development\" \"$SRCROOT/../../bin/mac/Corona Terminal\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		A4F7A7A91444D6FE0010CDE1 /* Run script (copy Simulator extensions) */ = {
