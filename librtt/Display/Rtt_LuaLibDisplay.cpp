@@ -128,14 +128,14 @@ class DisplayLibrary
             GroupObject *parent,
             Real w,
             Real h,
-			LuaLibDisplay::FactoryReplacement rectFactory );
+			LuaLibDisplay::FactoryReplacement rectFactory = NULL );
         static ShapeObject* PushImage(
             lua_State *L,
             Vertex2* topLeft,
             BitmapPaint* paint,
             Display& display,
             GroupObject *parent,
-			LuaLibDisplay::FactoryReplacement rectFactory );
+			LuaLibDisplay::FactoryReplacement rectFactory = NULL );
 
     public:
         static int newCircle( lua_State *L );
@@ -2368,7 +2368,7 @@ DisplayLibrary::capture( lua_State *L )
     // Note: This screenshot will be automatically rendered on top of the display. If the user does
     //       not want to see it, then he/she should do a display.remove() the returned image object.
     Vertex2 topLeft = { Rtt_REAL_0, Rtt_REAL_0 };
-    ShapeObject *v = PushImage( L, & topLeft, paint, display, NULL, NULL );
+    ShapeObject *v = PushImage( L, & topLeft, paint, display, NULL );
     if( ! v )
     {
         // Nothing to do.
@@ -2437,7 +2437,7 @@ DisplayLibrary::captureScreen( lua_State *L )
     // Note: This screenshot will be automatically rendered on top of the display. If the user does
     //       not want to see it, then he/she should do a display.remove() the returned image object.
     Vertex2 topLeft = { Rtt_REAL_0, Rtt_REAL_0 };
-    ShapeObject *v = PushImage( L, & topLeft, paint, display, NULL, NULL );
+    ShapeObject *v = PushImage( L, & topLeft, paint, display, NULL );
     if( ! v )
     {
         // Nothing to do.
@@ -2587,7 +2587,7 @@ DisplayLibrary::captureBounds( lua_State *L )
     // Note: This screenshot will be automatically rendered on top of the display. If the user does
     //       not want to see it, then he/she should do a "display:remove()" on the returned object.
     Vertex2 topLeft = { Rtt_REAL_0, Rtt_REAL_0 };
-    ShapeObject *v = PushImage( L, & topLeft, paint, runtime->GetDisplay(), NULL, NULL );
+    ShapeObject *v = PushImage( L, & topLeft, paint, runtime->GetDisplay(), NULL );
     if( ! v )
     {
         Rtt_DELETE(paint);
