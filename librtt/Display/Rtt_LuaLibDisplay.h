@@ -53,14 +53,14 @@ class LuaLibDisplay
 			GroupObject *parent,
 			Real w,
 			Real h,
-			FactoryReplacement replacement );
+			FactoryReplacement replacement = NULL );
 		static ShapeObject* PushImage(
 			lua_State *L,
 			Vertex2* topLeft,
 			BitmapPaint* paint,
 			Display& display,
 			GroupObject *parent,
-			FactoryReplacement replacement );
+			FactoryReplacement replacement = NULL );
 		static void Initialize( lua_State *L, Display& display );
  
 	public:

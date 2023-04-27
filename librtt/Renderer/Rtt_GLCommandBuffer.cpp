@@ -31,7 +31,7 @@
 #include <string.h>
 #include "Core/Rtt_String.h"
 
-#include "CoronaGraphics.h"
+#include "Corona/CoronaGraphics.h"
 
 #define ENABLE_DEBUG_PRINT    0
 

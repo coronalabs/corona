@@ -16,7 +16,7 @@
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_FormatExtensionList.h"
 
-#include "CoronaGraphics.h"
+#include "Corona/CoronaGraphics.h"
 #include <algorithm>
 
 // ----------------------------------------------------------------------------

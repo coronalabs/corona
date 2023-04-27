@@ -32,7 +32,7 @@
 #include "Display/Rtt_ShaderResource.h"
 
 #include "Rtt_GPUStream.h"
-#include "CoronaGraphics.h"
+#include "Corona/CoronaGraphics.h"
 
 #define ENABLE_DEBUG_PRINT	0
 

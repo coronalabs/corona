@@ -28,7 +28,7 @@
 
 #include "Display/Rtt_ShaderResource.h"
 #include "Corona/CoronaLog.h"
-#include "CoronaGraphics.h"
+#include "Corona/CoronaGraphics.h"
 
 #include <string>
 #include <vector>
