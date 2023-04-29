@@ -13,6 +13,14 @@ then
     security unlock-keychain -p 'Password123' build.keychain
     security set-keychain-settings build.keychain
     security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 'Password123' build.keychain > /dev/null
+    
+    security delete-keychain sign.keychain || true
+    security create-keychain -p 'Password123' sign.keychain
+    security default-keychain -s sign.keychain
+    security import "$WORKSPACE/tools/GHAction/CertificatesID.p12" -A -P "$CERT_PASSWORD"
+    security unlock-keychain -p 'Password123' sign.keychain
+    security set-keychain-settings sign.keychain
+    security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 'Password123' sign.keychain > /dev/null
 
     mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
     for PLATFORM_DIR in iphone tvos
