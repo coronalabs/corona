@@ -1475,10 +1475,7 @@
 					Rtt_STDLIB_EXIT,
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"../../external/osx-xmlrpc",
-				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "../../tools/CoronaBuilder/CoronaBuilder-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.coronalabs.${PRODUCT_NAME:rfc1034identifier}";
@@ -1511,10 +1508,7 @@
 					Rtt_STDLIB_EXIT,
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"../../external/osx-xmlrpc",
-				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "../../tools/CoronaBuilder/CoronaBuilder-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.coronalabs.${PRODUCT_NAME:rfc1034identifier}";
