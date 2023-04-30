@@ -13,20 +13,20 @@ on:
       buildYear:
         description: 'Build Year'
         required: true
-        default: '2100'
+        default: '1998'
 
 
 env:
   WORKSPACE: ${{ github.workspace }}
   DEVELOPER_DIR: /Applications/Xcode_14.3.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
-  YEAR: ${{ github.event.inputs.buildYear }}
+  YEAR: 1998
 
 jobs:
   source-code:
     name: Check out and process source code
-    if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
-    runs-on: macos-12
+    if: "!contains(github.ref, 'refs/tags/') || github.repository == 'scottrules44/Solar2d-98'"
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v2
@@ -47,49 +47,8 @@ jobs:
         runner:
           - macos-13
         xcode:
-          - Xcode_14.3
-        target:
-          - template
-          - template-angle
-        platform:
-          - iphone
-          - tvos
-    needs: source-code
-    runs-on: ${{ matrix.runner }}
-    env:
-      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
-      TEMPLATE_TARGET: ${{ matrix.target }}
-      TEMPLATE_PLATFORM: ${{ matrix.platform }}
-    steps:
-      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - name: Get processed code
-        uses: actions/download-artifact@v1
-        with:
-          name: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build templates
-        working-directory: ./platform/${{ matrix.platform }}
-        run: ./gh_build_templates.sh
-        env:
-          CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Build templates JSON spec
-        run: ./tools/GHAction/generate_xcode_jsons.py
-      - name: Upload templates
-        uses: actions/upload-artifact@v1
-        with:
-          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
-          path: ./output
-
-  Xcode-template-matrix-12:
-    strategy:
-      matrix:
-        runner:
-          - macos-12
-        xcode:
-          - Xcode_13.4.1
           - Xcode_14.2
+          - Xcode_14.3
         target:
           - template
           - template-angle
@@ -128,9 +87,9 @@ jobs:
     strategy:
       matrix:
         runner:
-          - macos-11
+          - macos-12
         xcode:
-          - Xcode_13.2.1
+          - Xcode_14.2.0
         target:
           - template
           - template-angle
@@ -168,7 +127,6 @@ jobs:
   collect-ios-templates:
     needs:
       - Xcode-template-matrix
-      - Xcode-template-matrix-12
       - Xcode-template-matrix-13
     runs-on: ubuntu-20.04
     steps:
@@ -308,7 +266,7 @@ jobs:
 
   native:
     needs: source-code
-    runs-on: macos-13
+    runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -470,7 +428,7 @@ jobs:
           fi
           for dmg in ./Simulator-macOS/*.dmg
           do
-            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH${BUILD_NUMBER}.$(date +"%b%d")"  --file "$dmg"
+            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "tech.scotth.CoronaSim.GH${BUILD_NUMBER}.$(date +"%b%d")"  --file "$dmg"
           done
         shell: bash
         env:
@@ -593,32 +551,6 @@ jobs:
           name: Simulator-Windows
           path: ./output
 
-  publish-snap:
-    runs-on: ubuntu-20.04
-    needs:
-      - linux
-      - release
-    steps:
-      - uses: actions/download-artifact@v1
-        with:
-          name: Snap
-      - name: Determine release
-        run: |
-          if ls Snap/*2100.9999* &> /dev/null
-          then
-            export SNAP_RELEASE=edge
-          else
-            export SNAP_RELEASE=stable
-          fi
-          echo "SNAP_RELEASE=$SNAP_RELEASE" >> $GITHUB_ENV
-          find Snap -name '*.snap' -execdir mv -v {} s2d.snap \; -quit
-      - uses: snapcore/action-publish@v1
-        continue-on-error: true
-        with:
-          store_login: ${{ secrets.SNAP_STORE_LOGIN }}
-          snap: ./Snap/s2d.snap
-          release: ${{ env.SNAP_RELEASE }}
-
 
   release:
     if: startsWith(github.ref, 'refs/tags')
@@ -740,87 +672,3 @@ jobs:
           asset_path: ./Native/AndroidDebugSymbols.zip
           asset_name: AndroidDebugSymbols-${{ env.YEAR }}.${{ env.BUILD }}.zip
           asset_content_type: application/zip
-
-  notify-chats:
-    if: startsWith(github.ref, 'refs/tags')
-    runs-on: ubuntu-20.04
-    needs:
-      - release
-    steps:
-      - run: echo "BUILD=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-      - name: Notify slack Builds channel
-        run: |
-          [ -z "$SLACK_BOT_TOKEN" ] &&  exit 0
-          curl https://slack.com/api/chat.postMessage -X POST -H "Content-type: application/json" -H "Authorization: Bearer $SLACK_BOT_TOKEN" -d  @- << EOF
-          {
-            "channel":"C01629K0E9W",
-            "link_names":true,
-            "text": "New Solar2D build <https://github.com/coronalabs/corona/releases/tag/${{ env.BUILD }}|${{ env.BUILD }}> is @here!"
-          }
-          EOF
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      - name: Notify slack General channel
-        run: |
-          [ -z "$SLACK_BOT_TOKEN" ] &&  exit 0
-          curl https://slack.com/api/chat.postMessage -X POST -H "Content-type: application/json" -H "Authorization: Bearer $SLACK_BOT_TOKEN" -d  @- << EOF
-          {
-            "channel":"C0ASY7G1X",
-            "link_names":true,
-            "text": "New Solar2D Build <https://github.com/coronalabs/corona/releases/tag/${{ env.BUILD }}|${{ env.BUILD }}> is up!"
-          }
-          EOF
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      - name: Notify Disord Builds channel
-        run: |
-          [ -z "$DISCORD_WEBHOOK_BUILDS" ] &&  exit 0
-          curl "$DISCORD_WEBHOOK_BUILDS" -X POST -H "Content-type: application/json" -d  @- << EOF
-          {
-            "content": "New Solar2D Build [${{ env.BUILD }}](https://github.com/coronalabs/corona/releases/tag/${{ env.BUILD }}) is up!"
-          }
-          EOF
-        env:
-          DISCORD_WEBHOOK_BUILDS: ${{ secrets.DISCORD_WEBHOOK_BUILDS }}
-
-  notify-group: # Sends an email to the https://groups.google.com/forum/#!forum/solar2d-builds
-    needs:
-      - Windows-Simulator
-      - macOS-Simulator
-      - linux
-      - CoronaCards-Android
-      - CoronaCards-iOS
-      - notarize
-      - release
-      - source-code
-    runs-on: ubuntu-20.04
-    if: always() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v1
-      - uses: actions/checkout@v2
-      - run: ./tools/GHAction/daily_env.sh
-      - name: notify
-        run: |
-          git fetch --prune --unshallow
-          git fetch origin '+refs/tags/*:refs/tags/*'
-          T="R7NmWb1brmEx65"
-          echo "::add-mask::$T"
-          Z="cNgt1OO-"
-          echo "::add-mask::$Z"
-          TEXT="Run: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
-          if [[ "$GITHUB_REF" == refs/tags/* ]] && [[ "$WORKFLOW_CONCLUSION" == "success" ]]
-          then
-          TEXT="$TEXT
-          Release: https://github.com/${{github.repository}}/releases/tag/$BUILD_NUMBER"
-          GIT_LOG=$(git log --format='* %s (%h)' --ancestry-path $(git describe --tags --abbrev=0 $GITHUB_REF^)..$(git describe --tags --abbrev=0 $GITHUB_REF)) || true
-          if [ -n "$GIT_LOG" ]
-          then
-          TEXT="$TEXT
-
-          Git log since previous release:
-          $GIT_LOG
-          "
-          fi
-          fi
-          TEXT="${TEXT//$'\n'/<br>}"
-          curl -X POST -H "Content-Type: application/json" -d '{"value1":"'"$YEAR.$BUILD_NUMBER"' '"$WORKFLOW_CONCLUSION"'","value2":"'"$TEXT"'"}' https://maker.ifttt.com/trigger/Solar2DBuild/with/key/$Z$T
