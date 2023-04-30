@@ -102,6 +102,9 @@ jobs:
       DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
       TEMPLATE_TARGET: ${{ matrix.target }}
       TEMPLATE_PLATFORM: ${{ matrix.platform }}
+      S2D_MIN_VER_IOS: "8.0"
+      S2D_MIN_VER_TVOS: "9.0"
+      S2D_MIN_VER_MACOS: "10.9"
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -143,6 +146,9 @@ jobs:
       DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
       TEMPLATE_TARGET: ${{ matrix.target }}
       TEMPLATE_PLATFORM: ${{ matrix.platform }}
+      S2D_MIN_VER_IOS: "8.0"
+      S2D_MIN_VER_TVOS: "9.0"
+      S2D_MIN_VER_MACOS: "10.9"
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code

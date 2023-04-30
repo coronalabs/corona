@@ -8337,7 +8337,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_MACOS:default=10.13)";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				SDKROOT = macosx;
@@ -8490,7 +8490,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -8514,7 +8513,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -8536,7 +8534,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Release-template";
@@ -8864,7 +8861,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_MACOS:default=10.13)";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -8939,7 +8936,7 @@
 					"$(SRCROOT)/../../external/SDL_sound.framework/Headers",
 					"$(SRCROOT)/../../external/SDL.framework/Headers",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_MACOS:default=10.13)";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				SDKROOT = macosx;
