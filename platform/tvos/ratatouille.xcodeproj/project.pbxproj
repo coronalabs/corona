@@ -6610,7 +6610,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Scott Harrison (A6QFRGXX8S)";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -6662,7 +6662,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Scott Harrison (A6QFRGXX8S)";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6707,7 +6707,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.scotthtech.coronaDev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				PROVISIONING_PROFILE_SPECIFIER = "tvOS Corona Sim";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "tvOS Corona Sim";
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
@@ -6731,7 +6731,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.scotthtech.coronaDev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				PROVISIONING_PROFILE_SPECIFIER = "tvOS Corona Sim";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "tvOS Corona Sim";
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
