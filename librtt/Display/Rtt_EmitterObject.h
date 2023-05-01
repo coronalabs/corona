@@ -224,6 +224,26 @@ public:
 
 	////
 	//
+	enum Scaling
+	{
+		kScaling_Legacy = 0, // Default. Fixed size across all scales.
+		kScaling_Rescale, // Rescale particles to absolutePosition.
+		kScaling_RescaleX, // Uniform particle rescale, using x-axis as measure.
+		kScaling_RescaleY, // Uniform particle rescale, using y-axis as measure.
+		kScaling_RescaleMin, // Uniform particle rescale, using shorter axis as measure.
+		kScaling_RescaleMax, // Uniform particle rescale, using longer axis as measure.
+		kScaling_RescaleMean, // Uniform particle rescale, using average of axis lengths.
+
+		kScaling_Count
+	};
+
+	Scaling GetScaling() const { return fScaling; }
+
+	static const char* GetStringForScaling( Scaling scaling );
+	static Scaling GetScalingForString( const char* string, Scaling def );
+
+	////
+	//
 	enum State
 	{
 		kState_Playing, // Default. Emits particles.
@@ -322,8 +342,10 @@ private:
 	EmitterObjectParticle *fParticles;
 
 	int fParticleCount;
-
+	
+	Scaling fScaling;
 	State fState;
+
 	//
 	////
 

@@ -58,6 +58,9 @@ class DisplayDefaults
 		RenderTypes::TextureWrap GetTextureWrapY() const { return (RenderTypes::TextureWrap)fWrapY; }
 		void SetTextureWrapY( RenderTypes::TextureWrap newValue ) { fWrapY = newValue; }
 
+		U8 GetEmitterScaling() const { return fEmitterScaling; }
+		void SetEmitterScaling( U8 newValue ) { fEmitterScaling = newValue; }
+
 		bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame;}
 		void SetImageSheetSampledInsideFrame( bool newValue ) { fIsImageSheetSampledInsideFrame = newValue; }
 
@@ -96,6 +99,7 @@ class DisplayDefaults
 		U8 fMinTextureFilter;
 		U8 fWrapX;
 		U8 fWrapY;
+		U8 fEmitterScaling;
 		bool fV1Compatibility;
 		bool fPreloadTextures;
 		bool fIsNativeTextFieldFontSizeScaled;
