@@ -337,6 +337,7 @@
 					"$(PROJECT_DIR)/../../../external/live-libs/mac/lib/",
 					"$(SDKROOT)/usr/lib/system",
 				);
+				MACOSX_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_MACOS:default=10.13)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaLiveServer;
 				PRODUCT_NAME = "Corona Live Server";
 			};
@@ -355,6 +356,7 @@
 					"$(PROJECT_DIR)/../../../external/live-libs/mac/lib/",
 					"$(SDKROOT)/usr/lib/system",
 				);
+				MACOSX_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_MACOS:default=10.13)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaLiveServer;
 				PRODUCT_NAME = "Corona Live Server";
 			};
