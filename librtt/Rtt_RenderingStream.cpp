@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+
 #include "Core/Rtt_Build.h"
 
 #include "Rtt_RenderingStream.h"
@@ -438,7 +439,6 @@ RenderingStream::ScreenHeight() const
 	Rtt_Real originOffset = GetYOriginOffset();
 	Rtt_Real margins = Rtt_RealMul(Rtt_IntToReal(2), originOffset);
 	S32 result = Rtt_RealToInt(Rtt_RealDiv(Rtt_IntToReal(ContentHeight()) + margins, GetSy()) + Rtt_REAL_HALF);
-
 	// TODO: Does this account for Alignment? Let's assert for now:
 	Rtt_ASSERT( DeviceHeight() == result );
 
@@ -465,6 +465,20 @@ RenderingStream::ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const
 	Rtt_Real yScreen = GetSy();
 	y = Rtt_RealToInt(Rtt_RealDiv(GetYOriginOffset() + Rtt_IntToReal(y), yScreen) + Rtt_REAL_HALF);
 	h = Rtt_RealToInt(Rtt_RealDiv(Rtt_IntToReal(h), yScreen) + Rtt_REAL_HALF);
+
+}
+
+void
+RenderingStream::ContentToScreen( Rtt_Real& x, Rtt_Real& y, Rtt_Real& w, Rtt_Real& h ) const
+{
+	Rtt_Real xScreen = GetSx();
+	x = Rtt_RealToInt(Rtt_RealDiv(GetXOriginOffset() + Rtt_IntToReal(x), xScreen));
+	w = Rtt_RealToInt(Rtt_RealDiv(Rtt_RealToFloat(w), xScreen));
+
+	Rtt_Real yScreen = GetSy();
+	y = Rtt_RealToInt(Rtt_RealDiv(GetYOriginOffset() + Rtt_IntToReal(y), yScreen));
+	h = Rtt_RealToInt(Rtt_RealDiv(Rtt_RealToFloat(h), yScreen));
+
 }
 
 void
