@@ -29,7 +29,7 @@ jobs:
     runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
       - run: ./tools/GHAction/daily_env.sh
@@ -179,7 +179,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v2
       - name: Collect templates together
         run: |
@@ -254,7 +254,7 @@ jobs:
       - run: ./tools/GHAction/daily_env.sh
       - run: mkdir docs
       - name: Get Sample Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -297,7 +297,7 @@ jobs:
       - run: ./tools/GHAction/daily_env.sh
       - run: mkdir docs
       - name: Get Sample Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -339,7 +339,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get Native
         uses: actions/download-artifact@v1
         with:
@@ -424,7 +424,7 @@ jobs:
           cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
       - run: mkdir docs
       - name: Get Sample Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -524,7 +524,7 @@ jobs:
         shell: bash
       - run: mkdir -f docs
       - name: Get Sample Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -637,7 +637,7 @@ jobs:
       - CoronaCards-iOS
       - native
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ./tools/GHAction/daily_env.sh
       - name: Generate Change Log
         run: |
@@ -803,7 +803,7 @@ jobs:
     if: always() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
     steps:
       - uses: technote-space/workflow-conclusion-action@v1
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ./tools/GHAction/daily_env.sh
       - name: notify
         run: |
