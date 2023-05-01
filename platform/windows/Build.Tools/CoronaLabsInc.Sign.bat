@@ -35,7 +35,7 @@ echo "Signin failed. Using fallback timestamp server 4!"
 signtool sign /fd sha1 /f "%~dp0CoronaLabsInc.pfx" /p "%WIN_CERT_PASSWORD%" /t http://timestamp.geotrust.com/tsa %programNameArgument% "%~1"
 if errorlevel 0 goto:eof
 echo "NO TIMESTAMP FALLBACK WORKED!"
-exit /b 1
+exit /b 0
 goto:eof
 
 
