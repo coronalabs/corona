@@ -421,8 +421,8 @@ RotatePoint( Vertex2& dir, float ca, float sa )
 {
 	Vertex2 tmp = dir;
 
-	dir.x = tmp.x * ca + tmp.y * sa;
-	dir.y = tmp.y * ca - tmp.x * sa;
+	dir.x = tmp.x * ca - tmp.y * sa;
+	dir.y = tmp.y * ca + tmp.x * sa;
 }
 
 static Vertex2
