@@ -2094,6 +2094,11 @@ DisplayLibrary::capture( lua_State *L )
 														saveToFile,
 														false,
 														cropObjectToScreenBounds );
+    
+    //Rerender and Invalidate to prevent errors on start up
+    display.Invalidate();
+    display.Render();
+    
 	if( ! paint )
 	{
 		CoronaLuaError(L, "display.capture() unable to capture screen. The platform or device might not be supported" );
