@@ -453,18 +453,18 @@ PerpFromYDir( const Vertex2& yDir ) // right, from below
 	return xDir;
 }
 
-static void Rescale( Geometry::Vertex *output_vertices, EmitterObject::Scaling scaling, const Vertex2& base_position, const Vertex2& right, const Vertex2& below, float rotation, float halfSize, const Vector4& color )
+static void Rescale( Geometry::Vertex *output_vertices, EmitterObject::Mapping mapping, const Vertex2& base_position, const Vertex2& right, const Vertex2& below, float rotation, float halfSize, const Vector4& color )
 {
 	Vertex2 xDir = DiffPoints( right, base_position ), yDir = DiffPoints( below, base_position );
 	
-	switch ( scaling )
+	switch ( mapping )
 	{
-	case EmitterObject::kScaling_Rescale:
+	case EmitterObject::kMapping_Rescale:
 		break;
-	case EmitterObject::kScaling_RescaleX:
+	case EmitterObject::kMapping_RescaleX:
 		yDir = PerpFromXDir( xDir );
 		break;
-	case EmitterObject::kScaling_RescaleY:
+	case EmitterObject::kMapping_RescaleY:
 		xDir = PerpFromYDir( yDir );
 		break;
 	default:
@@ -472,7 +472,7 @@ static void Rescale( Geometry::Vertex *output_vertices, EmitterObject::Scaling s
 			Rtt_Real xLength = Rtt_RealSqrt( xDir.x * xDir.x + xDir.y * xDir.y );
 			Rtt_Real yLength = Rtt_RealSqrt( yDir.x * yDir.x + yDir.y * yDir.y );
 
-			if ( EmitterObject::kScaling_RescaleMean == scaling && !Rtt_RealIsZero( xLength ) && !Rtt_RealIsZero( yLength ) ) // if length of 0, fall back to max
+			if ( EmitterObject::kMapping_RescaleMean == mapping && !Rtt_RealIsZero( xLength ) && !Rtt_RealIsZero( yLength ) ) // if length of 0, fall back to max
 			{
 				Rtt_Real meanLength = Rtt_RealDiv2( xLength + yLength );
 
@@ -482,7 +482,7 @@ static void Rescale( Geometry::Vertex *output_vertices, EmitterObject::Scaling s
 			else
 			{
 				bool xIsShorter = xLength < yLength;
-				bool fromXDir = ( EmitterObject::kScaling_RescaleMin == scaling ) ? xIsShorter : !xIsShorter;
+				bool fromXDir = ( EmitterObject::kMapping_RescaleMin == mapping ) ? xIsShorter : !xIsShorter;
 
 				if ( fromXDir )
 				{
@@ -563,21 +563,21 @@ void EmitterObjectParticle::UpdateVertices( EmitterObject *eo,
 	//
 	////
 
-	EmitterObject::Scaling scaling = eo->GetScaling();
+	EmitterObject::Mapping mapping = eo->GetMapping();
 
-	if ( EmitterObject::kScaling_Legacy != scaling )
+	if ( EmitterObject::kMapping_Legacy != mapping )
 	{
-		if ( EmitterObject::kScaling_RescaleY != scaling )
+		if ( EmitterObject::kMapping_RescaleY != mapping )
 		{
 			eo->TransformParticlePosition(fSpawnTimeTransform, right);
 		}
 
-		if ( EmitterObject::kScaling_RescaleX != scaling )
+		if ( EmitterObject::kMapping_RescaleX != mapping )
 		{
 			eo->TransformParticlePosition(fSpawnTimeTransform, below);
 		}
 
-		Rescale( output_vertices, scaling, base_position, right, below, fRotation, halfSize, color );
+		Rescale( output_vertices, mapping, base_position, right, below, fRotation, halfSize, color );
 	}
 	else
 	{
@@ -633,7 +633,7 @@ EmitterObject::EmitterObject()
 , fTextureFileName()
 , fParticles( NULL )
 , fParticleCount( 0 )
-, fScaling( kScaling_Legacy )
+, fMapping( kMapping_Legacy )
 , fState( kState_Playing )
 , fTextureResource()
 , fData()
@@ -767,20 +767,20 @@ bool EmitterObject::Initialize( lua_State *L, Display &display )
 	fParticles = (EmitterObjectParticle *)Rtt_MALLOC( display.GetAllocator(),
 													sizeof( EmitterObjectParticle ) * (int)fMaxParticles );
 
-	// Get any scaling, else use the display default.
-	lua_getfield( L, index - 1, "emitterScaling" );
+	// Get any mapping, else use the display default.
+	lua_getfield( L, index - 1, "emitterMapping" );
 
 	if ( lua_isstring( L, -1 ) )
 	{
-		fScaling = GetScalingForString( lua_tostring( L, -1 ), kScaling_Rescale );
+		fMapping = GetMappingForString( lua_tostring( L, -1 ), kMapping_Rescale );
 	}
 	else if ( lua_toboolean( L, -1 ) )
 	{
-		fScaling = kScaling_Rescale;
+		fMapping = kMapping_Rescale;
 	}
 	else
 	{
-		fScaling = (Scaling)display.GetDefaults().GetEmitterScaling();
+		fMapping = (Mapping)display.GetDefaults().GetEmitterMapping();
 	}
 
 	lua_pop( L, 1 );
@@ -1255,56 +1255,56 @@ void EmitterObject::Pause()
 
 // -----------------------------------------------------------------------------
 
-const char* EmitterObject::GetStringForScaling( Scaling scaling )
+const char* EmitterObject::GetStringForMapping( Mapping mapping )
 {
-	switch ( scaling )
+	switch ( mapping )
 	{
-		kScaling_Rescale:
+		kMapping_Rescale:
 			return "rescale";
-		kScaling_RescaleX:
+		kMapping_RescaleX:
 			return "rescaleX";
-		kScaling_RescaleY:
+		kMapping_RescaleY:
 			return "rescaleY";
-		kScaling_RescaleMin:
+		kMapping_RescaleMin:
 			return "rescaleMin";
-		kScaling_RescaleMax:
+		kMapping_RescaleMax:
 			return "rescaleMax";
-		kScaling_RescaleMean:
+		kMapping_RescaleMean:
 			return "rescaleMean";
 		default:
 			return "legacy";
 	}
 }
 
-EmitterObject::Scaling EmitterObject::GetScalingForString( const char* string, Scaling def )
+EmitterObject::Mapping EmitterObject::GetMappingForString( const char* string, Mapping def )
 {
 	if ( 0 == Rtt_StringCompare( string, "rescale" ) )
 	{
-		return kScaling_Rescale;
+		return kMapping_Rescale;
 	}
 	else if ( 0 == Rtt_StringCompare( string, "rescaleX" ) )
 	{
-		return kScaling_RescaleX;
+		return kMapping_RescaleX;
 	}
 	else if ( 0 == Rtt_StringCompare( string, "rescaleY" ) )
 	{
-		return kScaling_RescaleY;
+		return kMapping_RescaleY;
 	}
 	else if ( 0 == Rtt_StringCompare( string, "rescaleMin" ) )
 	{
-		return kScaling_RescaleMin;
+		return kMapping_RescaleMin;
 	}
 	else if ( 0 == Rtt_StringCompare( string, "rescaleMax" ) )
 	{
-		return kScaling_RescaleMax;
+		return kMapping_RescaleMax;
 	}
 	else if ( 0 == Rtt_StringCompare( string, "rescaleMean" ) )
 	{
-		return kScaling_RescaleMean;
+		return kMapping_RescaleMean;
 	}
 	else if ( 0 == Rtt_StringCompare( string, "legacy" ) )
 	{
-		return kScaling_Legacy;
+		return kMapping_Legacy;
 	}
 	else
 	{

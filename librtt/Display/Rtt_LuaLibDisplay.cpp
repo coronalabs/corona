@@ -1776,8 +1776,8 @@ DisplayLibrary::getDefault( lua_State *L )
 	}
 	else if ( Rtt_StringCompare( key, "emitterScaling" ) == 0 )
 	{
-		EmitterObject::Scaling scaling = (EmitterObject::Scaling)defaults.GetEmitterScaling();
-		lua_pushstring( L, EmitterObject::GetStringForScaling( scaling ) );
+		EmitterObject::Mapping mapping = (EmitterObject::Mapping)defaults.GetEmitterMapping();
+		lua_pushstring( L, EmitterObject::GetStringForMapping( mapping ) );
 	}
 	else if ( Rtt_StringCompare( key, "graphicsCompatibility" ) == 0 )
 	{
@@ -1908,11 +1908,11 @@ DisplayLibrary::setDefault( lua_State *L )
 		RenderTypes::TextureWrap wrap = RenderTypes::TextureWrapForString( value );
 		defaults.SetTextureWrapY( wrap );
 	}
-	else if ( Rtt_StringCompare( key, "emitterScaling" ) == 0 )
+	else if ( Rtt_StringCompare( key, "emitterMapping" ) == 0 )
 	{
 		const char *value = lua_tostring( L, index );
-		EmitterObject::Scaling scaling = EmitterObject::GetScalingForString( value, EmitterObject::kScaling_Legacy );
-		defaults.SetEmitterScaling( (U8)scaling );
+		EmitterObject::Mapping mapping = EmitterObject::GetMappingForString( value, EmitterObject::kMapping_Legacy );
+		defaults.SetEmitterMapping( (U8)mapping );
 	}
 	else if ( Rtt_StringCompare( key, "preloadTextures" ) == 0 )
 	{
