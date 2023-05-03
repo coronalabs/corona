@@ -1106,8 +1106,11 @@ PrintTouches( NSSet *touches, const char *header )
 	// Rtt_TRACE(  ( "touch(%p)\n\tmove(%d)\n", touch, touch.tapCount ) );
 
 #ifndef Rtt_TVOS_ENV
-	Rtt::DragEvent e( fStartTouchPosition.x, fStartTouchPosition.y, currentTouchPosition.x, currentTouchPosition.y );
-	[self dispatchEvent: (&e)];
+    if([NSThread isMainThread]) {
+        Rtt::DragEvent e( fStartTouchPosition.x, fStartTouchPosition.y, currentTouchPosition.x, currentTouchPosition.y );
+        [self dispatchEvent: (&e)];
+    }
+	
 #endif
 }
 
