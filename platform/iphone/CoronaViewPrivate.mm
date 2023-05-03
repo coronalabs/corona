@@ -1080,7 +1080,12 @@ PrintTouches( NSSet *touches, const char *header )
 	if ( fInhibitCount > 0 ) { return; }
 
 	UITouch *touch = touches.anyObject;
-	CGPoint currentTouchPosition;
+#ifdef Rtt_TVOS_ENV
+	CGPoint currentTouchPosition = { [touch locationInView:self].x - [self center].x, [touch locationInView:self].y - [self center].y };
+#else
+	CGPoint currentTouchPosition = [touch locationInCoronaView:self];
+#endif
+
 
 #ifdef Rtt_MULTITOUCH
 	if ( self.multipleTouchEnabled )
@@ -1091,10 +1096,8 @@ PrintTouches( NSSet *touches, const char *header )
 #endif
 	{
 #ifdef Rtt_TVOS_ENV
-		currentTouchPosition = { [touch locationInView:self].x - [self center].x, [touch locationInView:self].y - [self center].y };
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kMoved );
 #else
-		currentTouchPosition = [touch locationInCoronaView:self];
 		Rtt::Real pressure = [CoronaView getTouchForce:touch];
 		Rtt::TouchEvent t( currentTouchPosition.x, currentTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kMoved, pressure );
 #endif
@@ -1106,11 +1109,8 @@ PrintTouches( NSSet *touches, const char *header )
 	// Rtt_TRACE(  ( "touch(%p)\n\tmove(%d)\n", touch, touch.tapCount ) );
 
 #ifndef Rtt_TVOS_ENV
-    if([NSThread isMainThread]) {
-        Rtt::DragEvent e( fStartTouchPosition.x, fStartTouchPosition.y, currentTouchPosition.x, currentTouchPosition.y );
-        [self dispatchEvent: (&e)];
-    }
-	
+	Rtt::DragEvent e( fStartTouchPosition.x, fStartTouchPosition.y, currentTouchPosition.x, currentTouchPosition.y );
+	[self dispatchEvent: (&e)];
 #endif
 }
 
