@@ -297,7 +297,7 @@ UITextClearButtonModeForString( const char *value )
 }
 
 static const char *
-StringForUITextClearButtonModeType( UITextSpellCheckingType value )
+StringForUITextClearButtonModeType( UITextFieldViewMode value )
 {
 	const char *result = kUITextClearButtonModeDefaultString;
 
@@ -725,7 +725,7 @@ IPhoneTextFieldObject::SetValueForKey( lua_State *L, const char key[], int value
 	{
 		const char *value = lua_tostring( L, valueIndex );
 
-		UITextClearButtonMode newValue = UITextClearButtonModeForString( value );
+        UITextFieldViewMode newValue = UITextClearButtonModeForString( value );
 		t.clearButtonMode = newValue;
 	}
 	else
