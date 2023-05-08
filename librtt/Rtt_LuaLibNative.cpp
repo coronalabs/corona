@@ -583,6 +583,14 @@ requestExitApplication( lua_State *L )
 	return 0;
 }
 
+// native.requestExitActivity()
+static int
+requestExitActivity( lua_State *L )
+{
+	const MPlatform& platform = LuaContext::GetPlatform( L );
+	platform.RequestSystem( L, "exitActivity", 0 );
+	return 0;
+}
 
 static const char kFonts[PlatformFont::kNumSystemFonts + 1] = "01";
 
@@ -883,6 +891,7 @@ LuaLibNative::Initialize( lua_State *L )
 		{ "newWebView", newWebView },
 		{ "newVideo", newVideo },
 		{ "requestExit", requestExitApplication },
+		{ "requestExitActivity", requestExitActivity },
 		{ "newFont", newFont },
 		{ "getFontNames", getFontNames },
 		{ "setKeyboardFocus", setKeyboardFocus },

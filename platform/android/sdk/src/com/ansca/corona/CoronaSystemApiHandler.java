@@ -40,6 +40,23 @@ public class CoronaSystemApiHandler implements com.ansca.corona.listeners.Corona
 				@Override
 				public void run() {
 					if (fActivity != null) {
+						if(android.os.Build.VERSION.SDK_INT>=16 && android.os.Build.VERSION.SDK_INT<21){
+						    fActivity.finishAffinity();
+						} else if(android.os.Build.VERSION.SDK_INT>=21){
+						    fActivity.finishAndRemoveTask();
+						}
+					}
+					java.lang.System.exit(0);
+				}
+			});
+		}
+		else if (actionName.equals("exitActivity")) {
+			// Exit the application by destroying the activity window which also destroys the Corona runtime.
+			// Note that the application process will still be alive, which we need to keep notifications alive.
+			fActivity.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if (fActivity != null) {
 						fActivity.finish();
 					}
 				}

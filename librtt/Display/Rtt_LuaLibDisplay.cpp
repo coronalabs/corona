@@ -2482,7 +2482,8 @@ DisplayLibrary::save( lua_State *L )
 	String bitmapPath( runtime->GetAllocator() );
 
 	platform.PathForFile( imageName, baseDir, MPlatform::kDefaultPathFlags, bitmapPath );
-	platform.SaveBitmap( paint->GetBitmap(), bitmapPath.GetString(), jpegQuality );
+	bool result = platform.SaveBitmap( paint->GetBitmap(), bitmapPath.GetString(), jpegQuality );
+	CoronaLuaLog(L, "display.save() SaveBitmap result: %s", result ? "true" : "false");
 
 	Rtt_DELETE( paint );
 
@@ -2618,11 +2619,16 @@ DisplayLibrary::saveWithReturn( lua_State *L )
 	String bitmapPath( runtime->GetAllocator() );
 
 	platform.PathForFile( imageName, baseDir, MPlatform::kDefaultPathFlags, bitmapPath );
-	platform.SaveBitmap( paint->GetBitmap(), bitmapPath.GetString(), jpegQuality );
+	bool result = platform.SaveBitmap( paint->GetBitmap(), bitmapPath.GetString(), jpegQuality );
+	CoronaLuaLog(L, "display.save() SaveBitmap result: %s", result ? "true" : "false");
 
 	Rtt_DELETE( paint );
 
-	lua_pushinteger( L, 0);
+	if (result) {
+		lua_pushinteger( L, 0);
+	} else {
+		lua_pushinteger( L, -6);
+	}
 	return 1;
 }
 
