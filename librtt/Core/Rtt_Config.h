@@ -60,6 +60,11 @@
 // By default, assume little endian
 #define Rtt_LITTLE_ENDIAN	1
 
+#if defined( Rtt_NXS_ENV )
+#	undef Rtt_LITTLE_ENDIAN
+#	define Rtt_BIG_ENDIAN	1
+#endif
+
 // Apple (Mac + iPhone)
 // ----------------------------------------------------------------------------
 
