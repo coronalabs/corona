@@ -18,9 +18,10 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_14.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_14.3.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
+
 
 jobs:
   source-code:
@@ -29,7 +30,7 @@ jobs:
     runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
       - run: ./tools/GHAction/daily_env.sh
@@ -39,6 +40,71 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: SourceCode
+          path: ./output
+
+
+  native:
+    needs: source-code
+    runs-on: macos-13
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build Native
+        run: JAVA_HOME="$JAVA_HOME_11_X64" ./tools/GHAction/build_native.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Upload Corona Native
+        uses: actions/upload-artifact@v1
+        with:
+          name: Native
+          path: ./output
+
+
+  Xcode-template-matrix-13:
+    strategy:
+      matrix:
+        runner:
+          - macos-13
+        xcode:
+          - Xcode_14.3
+        target:
+          - template
+          - template-angle
+        platform:
+          - iphone
+          - tvos
+    needs: source-code
+    runs-on: ${{ matrix.runner }}
+    env:
+      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
+      TEMPLATE_TARGET: ${{ matrix.target }}
+      TEMPLATE_PLATFORM: ${{ matrix.platform }}
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build templates
+        working-directory: ./platform/${{ matrix.platform }}
+        run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Build templates JSON spec
+        run: ./tools/GHAction/generate_xcode_jsons.py
+      - name: Upload templates
+        uses: actions/upload-artifact@v1
+        with:
+          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
   Xcode-template-matrix-12:
@@ -61,6 +127,9 @@ jobs:
       DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
       TEMPLATE_TARGET: ${{ matrix.target }}
       TEMPLATE_PLATFORM: ${{ matrix.platform }}
+      S2D_MIN_VER_IOS: "8.0"
+      S2D_MIN_VER_TVOS: "9.0"
+      S2D_MIN_VER_MACOS: "10.9"
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -82,6 +151,7 @@ jobs:
         with:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
+
 
   Xcode-template-matrix:
     strategy:
@@ -102,6 +172,9 @@ jobs:
       DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
       TEMPLATE_TARGET: ${{ matrix.target }}
       TEMPLATE_PLATFORM: ${{ matrix.platform }}
+      S2D_MIN_VER_IOS: "8.0"
+      S2D_MIN_VER_TVOS: "9.0"
+      S2D_MIN_VER_MACOS: "10.9"
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -124,14 +197,16 @@ jobs:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
+
   collect-ios-templates:
     needs:
       - Xcode-template-matrix
       - Xcode-template-matrix-12
+      - Xcode-template-matrix-13
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v2
       - name: Collect templates together
         run: |
@@ -148,10 +223,11 @@ jobs:
           name: Collected-ios-templates
           path: ./output
 
+
   webtemplate:
     needs:
       - source-code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
@@ -206,7 +282,7 @@ jobs:
       - run: ./tools/GHAction/daily_env.sh
       - run: mkdir docs
       - name: Get Sample Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -223,11 +299,23 @@ jobs:
           name: Snap
           path: ./output/*.snap
 
-  native:
-    needs: source-code
-    runs-on: macos-12
+
+  linux-flatpak:
+    needs:
+      - source-code
+      - native
+      - webtemplate
+    runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get Webtemplate
+        uses: actions/download-artifact@v1
+        with:
+          name: Webtemplate
+      - name: Get Native
+        uses: actions/download-artifact@v1
+        with:
+          name: Native
       - name: Get processed code
         uses: actions/download-artifact@v1
         with:
@@ -235,22 +323,28 @@ jobs:
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
-      - name: Build Native
-        run: ./tools/GHAction/build_native.sh
-        env:
-          CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Upload Corona Native
-        uses: actions/upload-artifact@v1
+      - run: mkdir docs
+      - name: Get Sample Code
+        uses: actions/checkout@v3
         with:
-          name: Native
-          path: ./output
+          repository: coronalabs/samples-coronasdk
+          path: docs/SampleCode
+      - name: Run build script
+        run: platform/linux/gh_action_flatpak.sh
+        continue-on-error: true
+      - run: touch solar2d.flatpak
+      - name: Upload flatpak
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: Flatpak
+          path: ./solar2d.flatpak
 
   CoronaCards-Android:
     needs: native
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get Native
         uses: actions/download-artifact@v1
         with:
@@ -270,9 +364,10 @@ jobs:
           name: CoronaCards-Android
           path: ./output
 
+
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -295,6 +390,7 @@ jobs:
           name: CoronaCards-iOS
           path: ./output
 
+
   macOS-Simulator:
     needs:
       - source-code
@@ -302,7 +398,7 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -335,7 +431,7 @@ jobs:
           cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
       - run: mkdir docs
       - name: Get Sample Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -383,7 +479,7 @@ jobs:
         shell: bash
       - run: mkdir -f docs
       - name: Get Sample Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -464,11 +560,12 @@ jobs:
     needs:
       - Windows-Simulator
       - macOS-Simulator
+      - linux
       - CoronaCards-Android
       - CoronaCards-iOS
       - native
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ./tools/GHAction/daily_env.sh
       - name: Generate Change Log
         run: |
@@ -503,6 +600,13 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: Native
+      - uses: actions/download-artifact@v1
+        with:
+          name: Flatpak
+      - uses: actions/download-artifact@v1
+        with:
+          name: Snap
+      - run: find Snap -name '*.snap' -execdir mv -v {} s2d.snap \; -quit
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -530,6 +634,15 @@ jobs:
           asset_path: ./Simulator-Windows/Corona-${{ env.BUILD }}.msi
           asset_name: Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD }}.msi
           asset_content_type: application/x-msi
+      - name: Upload Release Asset for Linux Snap
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Snap/s2d.snap
+          asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.snap
+          asset_content_type: application/octet-stream
       - name: Upload Release Asset Corona Cards iOS
         uses: actions/upload-release-asset@v1
         env:
