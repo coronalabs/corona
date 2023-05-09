@@ -913,7 +913,21 @@ local function packageApp( options )
 			identity=options.signingIdentity,
 			platform="iphoneos"
 		}
-		local bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
+		local sdkVersion = captureCommandOutput("xcrun --sdk iphoneos --show-sdk-version")
+		if not sdkVersion then
+			return "Unable to get iOS SDK version"
+		end
+		sdkVersion = tonumber(string.match(sdkVersion, '%d+%.?%d*'))
+		if not sdkVersion then
+			return "Unable to parse SDK version"
+		end
+
+		local bundleScript
+		if sdkVersion >= 16.4 then
+			bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --destination "{app}/Frameworks" --strip-bitcode '
+		else
+			bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
+		end
 
 		if not options.signingIdentity then
 			bundleOptions.identity = "-"
