@@ -2660,14 +2660,14 @@ DisplayLibrary::colorSample( lua_State *L )
 	LuaResource *resource = Rtt_NEW( LuaContext::GetAllocator( L ),
 										LuaResource( LuaContext::GetContext( L )->LuaState(),
 														3 /*!< Callback index. */ ) );
-
 	RGBA color;
 	color.Clear();
-
+    
 	display.ColorSample( pos_x,
 							pos_y,
 							color );
-
+    display.Render(); // rerender if no texture has been created
+    
 	ColorSampleEvent e( pos_x,
 							pos_y,
 							color );
