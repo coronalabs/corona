@@ -338,6 +338,37 @@ TRACE_CALL;
 		// Nothing to do.
 	}
 	lua_pop( L, 1 );
+
+	lua_getfield( L, -1, "filter" );
+	if( lua_istable( L, -1 ) )
+	{
+		b2Filter& filter = particleSystemDef.filter;
+
+		lua_getfield( L, -1, "categoryBits" );
+		if ( ! lua_isnil( L, -1 ) )
+		{
+			uint16 categoryBits = (uint16)lua_tonumber( L, -1 );
+			filter.categoryBits = categoryBits;
+		}
+		lua_pop( L, 1 );
+
+		lua_getfield( L, -1, "maskBits" );
+		if ( ! lua_isnil( L, -1 ) )
+		{
+			uint16 maskBits = (uint16)lua_tonumber( L, -1 );
+			filter.maskBits = maskBits;
+		}
+		lua_pop( L, 1 );
+
+		lua_getfield( L, -1, "groupIndex" );
+		if ( ! lua_isnil( L, -1 ) )
+		{
+			int16 groupIndex = (int16)lua_tonumber( L, -1 );
+			filter.groupIndex = groupIndex;
+		}
+		lua_pop( L, 1 );
+	}
+	lua_pop( L, 1 );
 }
 
 bool ParticleSystemObject::Initialize( lua_State *L,
