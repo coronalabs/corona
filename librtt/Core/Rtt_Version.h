@@ -36,9 +36,9 @@
 
 // Used to determine if this is an internal/locally built version of Corona.
 // This will never be defined for customer builds.
-#if Rtt_BUILD_REVISION == Rtt_LOCAL_BUILD_REVISION
+// #if Rtt_BUILD_REVISION == Rtt_LOCAL_BUILD_REVISION
 #define Rtt_IS_LOCAL_BUILD
-#endif
+// #endif
 
 #define Rtt_EXPIRATION_CUTOFF_INDIES_SIMULATOR_SKINS 1353196800
 
