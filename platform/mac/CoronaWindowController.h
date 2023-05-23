@@ -28,7 +28,7 @@ namespace Rtt
 
 //typedef void (^windowCloseCompletionBlock)(void);
 
-@interface CoronaWindowController : NSWindowController< NSDraggingDestination,CoronaViewControllerDelegate
+@interface CoronaWindowController : NSWindowController< CoronaViewControllerDelegate
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
 , CAAnimationDelegate
 #endif

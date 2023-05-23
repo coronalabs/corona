@@ -345,7 +345,6 @@ MacSimulator::Initialize(
 	NSWindowController *windowController = [[NSWindowController alloc] initWithWindow:instanceWindow];
 	
 	[instanceWindow setDelegate:(id <NSWindowDelegate>)windowController];
-    
 
     fWindow = instanceWindow;
 	fWindowController = windowController;
