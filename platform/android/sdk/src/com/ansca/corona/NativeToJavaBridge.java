@@ -2057,8 +2057,12 @@ public class NativeToJavaBridge {
 			valuesPushed = 1;
 		}
 		else if (key.equals("darkMode")) {
-			int currentNightMode = context.getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
-			luaState.pushBoolean(currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES);
+			try {
+				int currentNightMode = context.getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+				luaState.pushBoolean(currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES);
+			} catch(Exception ex) {
+				luaState.pushBoolean(false);
+			}
 			valuesPushed = 1;
 		}
 		else if (key.equals("hasSoftwareKeys")) {

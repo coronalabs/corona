@@ -1766,32 +1766,36 @@ public class CoronaActivity extends Activity {
 	 */
 	@Override
 	protected void onDestroy() {
-		// Clear all cached photos.
-		// TODO: Photos should be stored under CoronaEnvironment.getInternalTemporaryDirectory()
-		//       which will be automatically cleared everytime a new activity gets launched.
-		CameraActivity.clearCachedPhotos(this);
+		try {
+			// Clear all cached photos.
+			// TODO: Photos should be stored under CoronaEnvironment.getInternalTemporaryDirectory()
+			//       which will be automatically cleared everytime a new activity gets launched.
+			CameraActivity.clearCachedPhotos(this);
 
-		// Unsubscribe from events.
-		fEventHandler.dispose();
+			// Unsubscribe from events.
+			fEventHandler.dispose();
 
-		// wait renderer thread completing
-		myGLView.requestExitAndWait();
+			// wait renderer thread completing
+			myGLView.requestExitAndWait();
 
-		// Destroy the Corona runtime and this activity's views.
-		myGLView = null;
-		myStore.disable();
+			// Destroy the Corona runtime and this activity's views.
+			myGLView = null;
+			myStore.disable();
 
-		fSplashView = null;
+			fSplashView = null;
 
-		fCoronaRuntime.dispose();
-		fCoronaRuntime = null;
+			fCoronaRuntime.dispose();
+			fCoronaRuntime = null;
 
-		// Remove this activity's reference from the CoronaEnvironment last in case the above
-		// destroy methods require access to this activity.
-		CoronaEnvironment.setCoronaActivity(null);
+			// Remove this activity's reference from the CoronaEnvironment last in case the above
+			// destroy methods require access to this activity.
+			CoronaEnvironment.setCoronaActivity(null);
 
-		// Destroy this activity.
-		super.onDestroy();
+			// Destroy this activity.
+			super.onDestroy();
+		} catch(Exception ex) {
+			Log.e("Corona", "ERROR: Failed to destroy activity: " + ex.toString());
+		}
 	}
 
 	/**
