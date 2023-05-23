@@ -5,6 +5,8 @@ if [ -n "$BUILD_NUMBER" ]
 then
 	sed -i .bak -E "s/define[[:space:]]*Rtt_BUILD_REVISION.*$/define Rtt_BUILD_REVISION $BUILD_NUMBER/" librtt/Core/Rtt_Version.h
 	sed -i .bak -E "s/define[[:space:]]*Rtt_BUILD_YEAR[[:space:]]*[[:digit:]]*$/define Rtt_BUILD_YEAR $YEAR/" librtt/Core/Rtt_Version.h
+    sed -i .bak -E "s/^#define[[:space:]]*Rtt_IS_LOCAL_BUILD[[:space:]]*[[:digit:]]*$/\/\/ #define Rtt_IS_LOCAL_BUILD/" librtt/Core/Rtt_Version.h
+
 	rm -f librtt/Core/Rtt_Version.h.bak
 fi
 
