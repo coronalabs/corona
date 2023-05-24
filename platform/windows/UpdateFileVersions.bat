@@ -12,9 +12,10 @@ if NOT "%2"=="" goto OnShowCommandLineHelp
 REM Set the major version to the current year in 2 digit form.
 REM Set minor and build number according to the given argument.
 REM Warning: Windows install programs cannot have more than 3 digits for the major/minor version.
+set tempBuildNumber=%BUILD_NUMBER:~0,5%
 set /a majorVersion = %DATE:~-2%
-set /a minorVersion = %1 / 10000
-set /a buildNumber = %1 %% 10000
+set /a minorVersion = %tempBuildNumber% / 10000
+set /a buildNumber = %tempBuildNumber% %% 10000
 
 
 REM Update all project files.
@@ -50,6 +51,8 @@ cscript.exe //NoLogo Build.Tools\UpdateProjectFileVersion.vbs Corona.LiveServer\
 if ERRORLEVEL 1 goto OnError
 
 @echo on
+
+echo %BUILD_NUMBER% %majorVersion% %minorVersion% %buildNumber%
 
 goto:eof
 
