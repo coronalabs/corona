@@ -249,9 +249,9 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Basic, const CoronaDisplayObject * self, void *
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to parenting, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, lua_State * L, CoronaGroupObject * groupObject )`.
+ These are method params related to parenting, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const CoronaGroupObject * groupObject )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Parent, const CoronaDisplayObject * self, void * userData, lua_State * L, CoronaGroupObject * groupObject );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Parent, const CoronaDisplayObject * self, void * userData, lua_State * L, const CoronaGroupObject * groupObject );
 
 /**
  CoronaObjectMatrixParams
@@ -314,7 +314,7 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Translate, const CoronaDisplayObject * self, vo
 
  These are method params related to insertions, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, int childParentChanged )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, CoronaGroupObject * self, void * userData, int childParentChanged );
+CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, const CoronaGroupObject * self, void * userData, int childParentChanged );
 
 /**
  CoronaGroupBasicParams
@@ -760,20 +760,30 @@ int CoronaObjectInvalidate( const CoronaDisplayObject * object ) CORONA_PUBLIC_S
 // ----------------------------------------------------------------------------
 
 /**
- @params object Boxed display object.
- @return Boxed parent, if `object` was valid (otherwise `NULL`). It remains valid while `object` does.
+ Object populated by certain functions in this API.
+ 
+ It should be considered opaque, but is made available to be declared on the stack.
+*/
+struct CoronaStackObject {
+	unsigned char mData[32];
+};
+
+/**
+ @param object Boxed display object.
+ @param parent On success, the boxed parent. It may be cast to a `CoronaGroupObject *`.
+ @return If non-0, the parent was retrieved.
 */
 CORONA_API
-CoronaGroupObject * CoronaObjectGetParent( const CoronaDisplayObject * object ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectGetParent( const CoronaDisplayObject * object, CoronaStackObject * parent ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param groupObject Boxed group object.
  @param index Index of child belonging to `groupObject`, from 0 to `numChildren`.
- @return Boxed child, if `groupObject` and `index` were valid (otherwise `NULL`). It remains valid
-         while `groupObject` does.
+ @param child On success, the boxed child. It may be cast to a `CoronaDisplayObject *`.
+ @return If non-0, the child was retrieved.
 */
 CORONA_API
-CoronaDisplayObject * CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index ) CORONA_PUBLIC_SUFFIX;
+int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, CoronaStackObject * child ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param groupObject Boxed group object.

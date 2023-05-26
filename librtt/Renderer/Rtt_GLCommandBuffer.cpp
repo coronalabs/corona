@@ -800,7 +800,7 @@ GLCommandBuffer::AddCommand( const CoronaCommand* command )
 void
 GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
 {
-    ObjectBoxList list;
+    OBJECT_BOX_SCOPE();
 
     Command custom = Command( kNumCommands + id );
 
@@ -916,19 +916,19 @@ GLCommandBuffer::Execute( bool measureGPU )
     }
 #endif
 
-  ObjectBoxList list;
+    OBJECT_BOX_SCOPE();
 
-  OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
 
-  GLExtraUniforms extraUniforms;
+    GLExtraUniforms extraUniforms;
 
-  fExtraUniforms = &extraUniforms;
+    fExtraUniforms = &extraUniforms;
 
 	// Reset the offset pointer to the start of the buffer.
 	// This is safe to do here, as preparation work is done
 	// on another CommandBuffer while this one is executing.
 	fOffset = fBuffer;
-
+    
 	S32 windowHeight;
 	//GL_CHECK_ERROR();
 

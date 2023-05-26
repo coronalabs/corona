@@ -257,7 +257,7 @@ Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMo
 
     if (callbacks && callbacks->prepare)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_BOX_SCOPE();
         
         OBJECT_BOX_STORE( Shader, shader, this );
         OBJECT_BOX_STORE( RenderData, renderData, &objectData );
@@ -297,7 +297,7 @@ Shader::DetachProxy()
     
     if (effectCallbacks && effectCallbacks->shaderDetach)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_BOX_SCOPE();
         
         OBJECT_BOX_STORE( Shader, shader, this );
         
@@ -363,7 +363,7 @@ Shader::DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & rend
 {
     if (state.fParams->before)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_BOX_SCOPE();
         
         OBJECT_BOX_STORE( Shader, shader, this );
         OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
@@ -383,7 +383,7 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
 {
     if (state.fParams->after)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_BOX_SCOPE();
         
         OBJECT_BOX_STORE( Shader, shader, this );
         OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );

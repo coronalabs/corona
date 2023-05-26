@@ -96,6 +96,12 @@ GroupObject::AsGroupObject()
     return this;
 }
 
+const GroupObject*
+GroupObject::AsGroupObject() const
+{
+    return this;
+}
+
 bool
 GroupObject::UpdateTransform( const Matrix& parentToDstSpace )
 {
