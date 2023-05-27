@@ -659,6 +659,20 @@ WinTextBitmap::WinTextBitmap(
 }
 #else
 
+bool ContainsRTLCharacters(const WinString& winStr)
+{
+	const wchar_t* str = winStr.GetUTF16();
+	size_t len = wcslen(str);
+	for (int i = 0; i < len; i++)
+	{
+		wchar_t c = str[i];
+		if (aft_isrtl(c))
+		{
+			return true;
+		}
+	}
+	return false;
+}
 WinTextBitmap::WinTextBitmap(
 	Interop::RuntimeEnvironment& environment, const char str[], const WinFont& font,
 	int width, int height, const Interop::Graphics::HorizontalAlignment& alignment, Real& baselineOffset)
@@ -669,6 +683,7 @@ WinTextBitmap::WinTextBitmap(
 	// Convert the given UTF-8 text to UTF-16.
 	WinString stringConverter;
 	stringConverter.SetUTF8(str);
+	bool containgRTL = ContainsRTLCharacters (stringConverter);
 
 	auto fontAscender = .0f;
 
@@ -702,14 +717,20 @@ WinTextBitmap::WinTextBitmap(
 
 	UINT flags = DT_NOPREFIX | DT_WORDBREAK | DT_NOCLIP | DT_EDITCONTROL;
 	const char* align = alignment.GetCoronaStringId();
+
+	if (containgRTL)
+	{
+		flags |= DT_RTLREADING;
+	}
+
 	if (strcmp(align, "left") == 0)
 	{
-		flags |= DT_LEFT;
+		flags |= (containgRTL? DT_RIGHT: DT_LEFT);
 	}
 	else
 	if (strcmp(align, "right") == 0)
 	{
-		flags |= DT_RIGHT;
+		flags |= (containgRTL ? DT_LEFT : DT_RIGHT);
 	}
 	else
 	{
