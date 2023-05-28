@@ -240,90 +240,90 @@ typedef struct CoronaObjectParamsHeader {
  
  Inherits from IgnorableMethodParams.
 
- This is for the most basic method params, whose functions have signature `method( const CoronaDisplayObject * self, void * userData )`.
+ This is for the most basic method params, whose functions have signature `method( CoronaDisplayObject self, void * userData )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Basic, const CoronaDisplayObject * self, void * userData );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Basic, CoronaDisplayObject self, void * userData );
 
 /**
  CoronaObjectParentParams
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to parenting, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const CoronaGroupObject * groupObject )`.
+ These are method params related to parenting, whose functions have signature `method( CoronaDisplayObject self, void * userData, lua_State * L, CoronaGroupObject groupObject )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Parent, const CoronaDisplayObject * self, void * userData, lua_State * L, const CoronaGroupObject * groupObject );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Parent, CoronaDisplayObject self, void * userData, lua_State * L, CoronaGroupObject groupObject );
 
 /**
  CoronaObjectMatrixParams
  
  Inherits from IgnorableMethodParams.
 
- These are method params that provide an input/output matrix, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float matrix[6] )`.
+ These are method params that provide an input/output matrix, whose functions have signature `method( CoronaDisplayObject self, void * userData, float matrix[6] )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Matrix, const CoronaDisplayObject * self, void * userData, float matrix[6] );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Matrix, CoronaDisplayObject self, void * userData, float matrix[6] );
 
 /**
  CoronaObjectDrawParams
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to draw opportunities, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, const CoronaRenderer * renderer )`.
+ These are method params related to draw opportunities, whose functions have signature `method( CoronaDisplayObject self, void * userData, CoronaRenderer renderer )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Draw, const CoronaDisplayObject * self, void * userData, const CoronaRenderer * renderer );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Draw, CoronaDisplayObject self, void * userData, CoronaRenderer renderer );
 
 /**
  CoronaObjectRectResultParams
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to rectangular outputs, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float * xMin, float * yMin, float * xMax, float * yMax )`.
+ These are method params related to rectangular outputs, whose functions have signature `method( CoronaDisplayObject self, void * userData, float * xMin, float * yMin, float * xMax, float * yMax )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( RectResult, const CoronaDisplayObject * self, void * userData, float * xMin, float * yMin, float * xMax, float * yMax );
+CORONA_OBJECTS_BOOKENDED_PARAMS( RectResult, CoronaDisplayObject self, void * userData, float * xMin, float * yMin, float * xMax, float * yMax );
 
 /**
  CoronaObjectRotateParams
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to rotations, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float delta )`.
+ These are method params related to rotations, whose functions have signature `method( CoronaDisplayObject self, void * userData, float delta )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Rotate, const CoronaDisplayObject * self, void * userData, float delta );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Rotate, CoronaDisplayObject self, void * userData, float delta );
 
 /**
  CoronaObjectScaleParams
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to scalings, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float sx, float sy, int isNew )`.
+ These are method params related to scalings, whose functions have signature `method( CoronaDisplayObject self, void * userData, float sx, float sy, int isNew )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Scale, const CoronaDisplayObject * self, void * userData, float sx, float sy, int isNew );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Scale, CoronaDisplayObject self, void * userData, float sx, float sy, int isNew );
 
 /**
  CoronaObjectTranslateParams
  
  Inherits from IgnorableMethodParams.
  
- These are method params related to translations, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, float x, float y )`.
+ These are method params related to translations, whose functions have signature `method( CoronaDisplayObject self, void * userData, float x, float y )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Translate, const CoronaDisplayObject * self, void * userData, float x, float y );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Translate, CoronaDisplayObject self, void * userData, float x, float y );
 
 /**
  CoronaObjectDidInsertParams
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to insertions, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, int childParentChanged )`.
+ These are method params related to insertions, whose functions have signature `method( CoronaDisplayObject self, void * userData, int childParentChanged )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, const CoronaGroupObject * self, void * userData, int childParentChanged );
+CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, CoronaGroupObject self, void * userData, int childParentChanged );
 
 /**
  CoronaGroupBasicParams
  
  Inherits from IgnorableMethodParams.
 
- This is for the most basic group method params, whose functions have signature `method( const CoronaGroupObject * self, void * userData )`.
+ This is for the most basic group method params, whose functions have signature `method( CoronaGroupObject self, void * userData )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObject * self, void * userData );
+CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, CoronaGroupObject self, void * userData );
 
 // ----------------------------------------------------------------------------
 
@@ -373,9 +373,9 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObject * self, voi
  
  Inherits from EarlyOutableIgnorableMethodParams.
 
- These are method params related to boolean outputs, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, int * result )`.
+ These are method params related to boolean outputs, whose functions have signature `method( CoronaDisplayObject self, void * userData, int * result )`.
 */
-CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResult, const CoronaDisplayObject * self, void * userData, int * result );
+CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResult, CoronaDisplayObject self, void * userData, int * result );
 
 /**
  CoronaObjectBooleanResultPointParams
@@ -383,9 +383,9 @@ CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResult, const CoronaDispla
  Inherits from EarlyOutableIgnorableMethodParams.
 
  These are method params related to point inputs and boolean outputs, whose functions have
- signature `method( const CoronaDisplayObject * self, void * userData, float x, float y, int * result )`.
+ signature `method( CoronaDisplayObject self, void * userData, float x, float y, int * result )`.
 */
-CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultPoint, const CoronaDisplayObject * self, void * userData, float x, float y, int * result );
+CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultPoint, CoronaDisplayObject self, void * userData, float x, float y, int * result );
 
 /**
  CoronaObjectBooleanResultMatrixParams
@@ -393,13 +393,13 @@ CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultPoint, const CoronaD
  Inherits from EarlyOutableIgnorableMethodParams.
  
  These are method params related to matrix inputs and boolean outputs, whose functions have
- signature `method( const CoronaDisplayObject * self, void * userData, const float matrix[6], int * result )`.
+ signature `method( CoronaDisplayObject self, void * userData, const float matrix[6], int * result )`.
 */
-CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultMatrix, const CoronaDisplayObject * self, void * userData, const float matrix[6], int * result );
+CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS( BooleanResultMatrix, CoronaDisplayObject self, void * userData, const float matrix[6], int * result );
 
 // ----------------------------------------------------------------------------
 
-typedef void (*CoronaObjectSetValueBookend) ( const CoronaDisplayObject * self, void * userData, lua_State * L, const char key[], int valueIndex, int * result );
+typedef void (*CoronaObjectSetValueBookend) ( CoronaDisplayObject self, void * userData, lua_State * L, const char key[], int valueIndex, int * result );
 
 /**
  CoronaObjectSetValueParams
@@ -430,7 +430,7 @@ typedef void (*CoronaObjectSetValueBookend) ( const CoronaDisplayObject * self, 
  The `before` and `after` functions may be NULL, in which case the respective function is
  not called. Similarly, the stock behavior is skipped if `ignoreOriginal` is non-0.
  
- Its functions have signature  `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const char key[], int valueIndex, int * result )`.
+ Its functions have signature  `method( CoronaDisplayObject self, void * userData, lua_State * L, const char key[], int valueIndex, int * result )`.
 */
 typedef struct CoronaObjectSetValueParams {
     CoronaObjectParamsHeader header;
@@ -440,7 +440,7 @@ typedef struct CoronaObjectSetValueParams {
 
 // ----------------------------------------------------------------------------
 
-typedef void (*CoronaObjectValueBookend) ( const CoronaDisplayObject * self, void * userData, lua_State * L, const char key[], int * result );
+typedef void (*CoronaObjectValueBookend) ( CoronaDisplayObject self, void * userData, lua_State * L, const char key[], int * result );
 
 /**
  CoronaObjectValueParams
@@ -474,7 +474,7 @@ typedef void (*CoronaObjectValueBookend) ( const CoronaDisplayObject * self, voi
  Although only the top value on the stack will actually be used as the ultimate value, the
  intermediate results can be accumulated, say to concatenate multiple values at the end.
  
- Its functions have signature `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const char key[], int * result )`.
+ Its functions have signature `method( CoronaDisplayObject self, void * userData, lua_State * L, const char key[], int * result )`.
 */
 typedef struct CoronaObjectValueParams {
     CoronaObjectParamsHeader header;
@@ -486,31 +486,31 @@ typedef struct CoronaObjectValueParams {
 
 /**
  These are method params related to create events, whose `action` has signature
- `method( const CoronaDisplayObject * self, void ** userData )`.
+ `method( CoronaDisplayObject self, void ** userData )`.
  
  The original value of `*userData` comes from the argument to a `CoronaObjectsPush*` function;
  its value after this method concludes will be used by any subsequent methods.
 */
 typedef struct CoronaObjectOnCreateParams {
     CoronaObjectParamsHeader header;
-    void (*action)( const CoronaDisplayObject * self, void ** userData );
+    void (*action)( CoronaDisplayObject self, void ** userData );
 } CoronaObjectOnCreateParams;
 
 /**
  These are method params related to finalize events, whose `action` has signature
- `method( const CoronaDisplayObject * self, void * userData )`.
+ `method( CoronaDisplayObject self, void * userData )`.
 */
 typedef struct CoronaObjectOnFinalizeParams {
     CoronaObjectParamsHeader header;
-    void (*action)( const CoronaDisplayObject * self, void * userData );
+    void (*action)( CoronaDisplayObject self, void * userData );
 } CoronaObjectOnFinalizeParams;
 
 /**
-These method params belong to messages, with `action` having signature `method( const CoronaDisplayObject * self, void * userData, const char * message, const void * data, unsigned int size )`.
+These method params belong to messages, with `action` having signature `method( CoronaDisplayObject self, void * userData, const char * message, const void * data, unsigned int size )`.
 */
 typedef struct CoronaObjectOnMessageParams {
     CoronaObjectParamsHeader header;
-    void (*action)( const CoronaDisplayObject * self, void * userData, const char * message, const void * data, unsigned int size );
+    void (*action)( CoronaDisplayObject self, void * userData, const char * message, const void * data, unsigned int size );
 } CoronaObjectOnMessageParams;
 
 /**
@@ -755,42 +755,33 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
  @return If non-0, the object was invalidated.
 */
 CORONA_API
-int CoronaObjectInvalidate( const CoronaDisplayObject * object ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectInvalidate( CoronaDisplayObject object ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 
 /**
- Object populated by certain functions in this API.
- 
- It should be considered opaque, but is made available to be declared on the stack.
-*/
-struct CoronaStackObject {
-	unsigned char mData[32];
-};
-
-/**
  @param object Boxed display object.
- @param parent On success, the boxed parent. It may be cast to a `CoronaGroupObject *`.
+ @param parent On success, populated with the parent.
  @return If non-0, the parent was retrieved.
 */
 CORONA_API
-int CoronaObjectGetParent( const CoronaDisplayObject * object, CoronaStackObject * parent ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectGetParent( CoronaDisplayObject object, CoronaGroupObject * parent ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param groupObject Boxed group object.
  @param index Index of child belonging to `groupObject`, from 0 to `numChildren`.
- @param child On success, the boxed child. It may be cast to a `CoronaDisplayObject *`.
+ @param child On success, populated with the child.
  @return If non-0, the child was retrieved.
 */
 CORONA_API
-int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, CoronaStackObject * child ) CORONA_PUBLIC_SUFFIX;
+int CoronaGroupObjectGetChild( CoronaGroupObject groupObject, int index, CoronaDisplayObject * child ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param groupObject Boxed group object.
  @return Count of children (`numChildren`), if `groupObject` was valid (otherwise 0).
 */
 CORONA_API
-int CoronaGroupObjectGetNumChildren( const CoronaGroupObject * groupObject ) CORONA_PUBLIC_SUFFIX;
+int CoronaGroupObjectGetNumChildren( CoronaGroupObject groupObject ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 
@@ -803,6 +794,6 @@ int CoronaGroupObjectGetNumChildren( const CoronaGroupObject * groupObject ) COR
  @return If non-0, the message was delivered.
 */
 CORONA_API
-int CoronaObjectSendMessage( const CoronaDisplayObject * object, const char * message, const void * payload, unsigned int size ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectSendMessage( CoronaDisplayObject object, const char * message, const void * payload, unsigned int size ) CORONA_PUBLIC_SUFFIX;
 
 #endif // _CoronaObjects_H__

@@ -262,7 +262,7 @@ Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMo
         OBJECT_BOX_STORE( Shader, shader, this );
         OBJECT_BOX_STORE( RenderData, renderData, &objectData );
 
-        if (shader && renderData)
+        if (allStored)
         {
             callbacks->prepare( shader, fData->GetExtraSpace(), renderData, w, h, int( mod ) );
         }
@@ -369,7 +369,7 @@ Shader::DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & rend
         OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
         OBJECT_BOX_STORE( RenderData, renderData, &objectData );
 
-        if (shader && rendererObject && renderData)
+        if (allStored)
         {
             state.fParams->before( shader, fData->GetExtraSpace(), rendererObject, renderData );
         }
@@ -389,7 +389,7 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
         OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
         OBJECT_BOX_STORE( RenderData, renderData, &objectData );
 
-        if (shader && rendererObject && renderData)
+        if (allStored)
         {
             state.fParams->after( shader, fData->GetExtraSpace(), rendererObject, renderData );
         }

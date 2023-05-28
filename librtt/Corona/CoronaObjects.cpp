@@ -277,22 +277,15 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-static_assert( sizeof(ObjectBox) <= sizeof(CoronaStackObject), "`ObjectBox` larger than `CoronaStackObject`" );
-
-// ----------------------------------------------------------------------------
-
 ObjectBoxScope::ObjectBoxScope()
 :   fIndex( 0 ),
     fXor1( 0 ),
-    fXor2( 0 ),
-    fNextFreeSlot( kNoFreeSlot ),
-    fShift1( 0 ),
-    fShift2( 0 )
+    fXor2( 0 )
 {
     fOffset = Rtt_GetAbsoluteTime();
     fSeed = wyhash64( fOffset, (U64)this );
 
-    UpdateHash();
+    UpdateHash( kNoFreeSlot );
 }
 
 const U8 kNumBits = sizeof(UPtr) * 8;
@@ -314,55 +307,74 @@ GetXorValues<U64>( U64& xor1, U64& xor2, U64* seed )
     xor2 = wyrand( seed );
 }
 
+const U64 kOmitHashMask = (U64)ObjectBoxScope::kNoFreeSlot;
+const U64 kKeepHashMask = ~kOmitHashMask;
+
 void
 ObjectBoxScope::UpdateCodingFactors()
 {
     GetXorValues( fXor1, fXor2, &fSeed );
 
-    fShift1 = fXor1 % kHalfNumBits;
-    fShift2 = fXor2 % kHalfNumBits;
+    U16 shift1 = fXor1 % kHalfNumBits;
+    U16 shift2 = fXor2 % kHalfNumBits;
+
+    fHashEx = ( fHashEx & kKeepHashMask ) | ( shift1 << 8 ) | shift2;
 }
 
 void
-ObjectBoxScope::UpdateHash()
+ObjectBoxScope::UpdateHash( U16 slot )
 {
-    fHash = wyhash64( fIndex++, fOffset );
+    fHashEx = ( wyhash64( fIndex++, fOffset ) & kKeepHashMask ) | slot;
+}
+
+U64
+ObjectBoxScope::GetHash() const
+{
+    return fHashEx & kKeepHashMask;
 }
 
 static UPtr
 RotateBitsLeft( const UPtr& v, U8 shift )
 {
-    return (v << shift) | (v >> (kNumBits - shift));
+    return (v << shift) | ( v >> ( kNumBits - shift ) );
 }
 
 static UPtr
 RotateBitsRight( const UPtr& v, U8 shift )
 {
-    return (v >> shift) | (v << (kNumBits - shift));
+    return (v >> shift) | ( v << ( kNumBits - shift ) );
 }
 
 UPtr
 ObjectBoxScope::Encode( const void* object ) const
 {
+    U16 shifts = (U16)( fHashEx & kOmitHashMask );
     UPtr p = (UPtr)object;
 
     p ^= fXor1;
-    p = RotateBitsLeft( p, fShift1 );
+    p = RotateBitsLeft( p, shifts >> 8 );
     p ^= fXor2;
     
-    return RotateBitsRight( p, fShift2 );
+    return RotateBitsRight( p, shifts & 0xFF );
 }
         
 void*
 ObjectBoxScope::Decode( const UPtr& encoded ) const
 {
-    UPtr p = RotateBitsLeft( encoded, fShift2 );
+    U16 shifts = (U16)( fHashEx & kOmitHashMask );
+    UPtr p = RotateBitsLeft( encoded, shifts & 0xFF );
 
     p ^= fXor2;
-    p = RotateBitsRight( p, fShift1 );
+    p = RotateBitsRight( p, shifts >> 8 );
     p ^= fXor1;
     
     return (void*)p;
+}
+
+U16
+ObjectBoxScope::GetNextFreeSlot() const
+{
+    return (U16)( fHashEx & kOmitHashMask );
 }
 
 static std::vector<ObjectBoxScope> sScopes; // only accessed through RAII views, so all "released" by end of frame
@@ -384,126 +396,211 @@ ObjectBoxScopeView::ObjectBoxScopeView()
         sScopes.emplace_back();
     }
 
-    fScope = &sScopes[fSlot];
-        
-    fScope->UpdateCodingFactors();
+    sScopes[fSlot].UpdateCodingFactors();
 }
         
 ObjectBoxScopeView::~ObjectBoxScopeView()
 {
     ObjectBoxScope& scope = sScopes[fSlot];
 
-    scope.UpdateHash(); // invalidate objects
-    scope.SetNextFreeSlot( sFirstFreeSlot );
+    scope.UpdateHash( sFirstFreeSlot ); // invalidate objects
 
     sFirstFreeSlot = fSlot;
 }
 
+struct TypeNode {
+    const char* fName;
+    int fParent;
+};
+
+static std::vector< TypeNode > sTypes;
+
 static int
 CorrectType( const void* object, int type )
 {
-    if ( ObjectBox::kDisplayObject == type )
+    Rtt_ASSERT( type < sTypes.size() );
+
+    if ( GetDisplayObjectType() == type )
     {
         const GroupObject* group = static_cast< const DisplayObject* >( object )->AsGroupObject();
 
         if ( NULL != group )
         {
-            type = ObjectBox::kGroupObject;
+            return OBJECT_BOX_LIST_GET_TYPE( GroupObject );
         }
     }
 
     return type;
 }
 
-ObjectBox::ObjectBox( ObjectBoxScopeView* view, const void* object, int type )
-:   fStateHash( view->GetScope()->GetHash() ),
-    fSlot( view->GetSlot() ),
-    fType( CorrectType( object, type ) )
+const U16 kSlotMask = 0xFF;
+const int kSlotShift = 8;
+const int kTypeMask = ( 1 << kSlotShift ) - 1;
+
+static U16
+PackSlotAndType( U16 slot, int type )
 {
-    fObjectHash = view->GetScope()->Encode( object );
+    return ( ( slot & kSlotMask ) << kSlotShift ) | ( type & kTypeMask );
 }
 
-ObjectBox::ObjectBox( ObjectBoxScope* scope, U16 slot, const void* object, int type )
-:   fStateHash( scope->GetHash() ),
-    fSlot( slot ),
-    fType( CorrectType( object, type ) )
+int
+ObjectBox::Populate( unsigned char data[], U16 slot, const void* object, int type )
 {
-    fObjectHash = scope->Encode( object );
-}
+    ObjectBox* box = reinterpret_cast< ObjectBox* >( data );
 
-static bool IsCompatible( int requested, int type )
-{
-    if ( requested != ObjectBox::kDisplayObject )
+    type = CorrectType( object, type );
+
+    int stored = type >= 0;
+    U64 hashEx = ObjectBoxScope::kNoFreeSlot;
+    UPtr objectHash = 0;
+
+    if ( stored )
     {
-        return false;
+        const ObjectBoxScope& scope = sScopes[slot];
+
+        hashEx = scope.GetHash() | PackSlotAndType( slot, type );
+        objectHash = scope.Encode( object );
     }
 
-    return requested == type || ObjectBox::kGroupObject == type;
+    memcpy( data, &hashEx, 8 );
+    memcpy( data + 8, &objectHash, sizeof(UPtr) );
+
+    return stored;
+}
+
+static int
+NodeValue( const TypeNode* node )
+{
+    return (int)( node - sTypes.data() );
+}
+
+static bool IsCompatible( const TypeNode* node, int type )
+{
+    while ( NodeValue( node ) != type )
+    {
+        if ( node->fParent >= 0 )
+        {
+            node = &sTypes[node->fParent];
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static U16
+ExtractSlot( U64 hashEx )
+{
+    return (U16)( ( hashEx & kOmitHashMask ) >> kSlotShift );
+}
+
+static int
+ExtractType( U64 hashEx )
+{
+    return (int)( hashEx & kTypeMask );
 }
 
 void*
-ObjectBox::Extract( const ObjectBox* box, int type, ObjectBoxScope** pScope, U16* scopeSlot )
+ObjectBox::Extract( const unsigned char buffer[], int type, U16* scopeSlot )
 {
-    if (NULL == box)
+    if ( type < sTypes.size() )
     {
-        Rtt_TRACE_SIM(( "WARNING: NULL %s supplied", StringForType( type ) ));
+        Rtt_TRACE_SIM(( "WARNING: Unknown type %i supplied", type ));;
 
         return NULL;
     }
 
-    Rtt_ASSERT( box->fSlot < sScopes.size() );
+    U64 hashEx;
 
-    ObjectBoxScope& scope = sScopes[box->fSlot];
+    memcpy( &hashEx, buffer, 8 );
 
-    if ( box->fType != type && !IsCompatible( type, box->fType ) )
+    if ( NULL == buffer )
     {
-        Rtt_TRACE_SIM(( "WARNING: Expected %s but have %s", StringForType( type ), StringForType( box->fType ) ));
+        Rtt_TRACE_SIM(( "WARNING: NULL %s supplied", sTypes[type].fName ));
+
+        return NULL;
+    }
+    
+    TypeNode& node = sTypes[type];
+    int boxedType = ExtractType( hashEx );
+
+    if ( !IsCompatible( &node, boxedType ) )
+    {
+        Rtt_TRACE_SIM(( "WARNING: Expected %s but have %s", sTypes[type].fName, StringForType( boxedType ) ));
 
         return NULL;
     }
 
-    if ( box->fStateHash != scope.GetHash() )
+    U16 slot = ExtractSlot( hashEx );
+
+    Rtt_ASSERT( slot < sScopes.size() );
+
+    const ObjectBoxScope& scope = sScopes[slot];
+
+    if ( ( hashEx & kKeepHashMask ) != scope.GetHash() )
     {
-        Rtt_TRACE_SIM(( "WARNING: %s object has been invalidated", StringForType( type ) ));
+        Rtt_TRACE_SIM(( "WARNING: %s object has been invalidated", sTypes[type].fName ));
 
         return NULL;
-    }
-
-    if ( NULL != pScope )
-    {
-        *pScope = &scope;
     }
 
     if ( NULL != scopeSlot )
     {
-        *scopeSlot = box->fSlot;
+        *scopeSlot = slot;
     }
 
-    return scope.Decode( box->fObjectHash );
+    UPtr objectHash;
+
+    memcpy( &objectHash, buffer + 8, sizeof(UPtr) );
+
+    return scope.Decode( objectHash );
+}
+
+int
+ObjectBox::AddType( const char* name, int parent )
+{
+    if ( ObjectBox::kMaxType == sTypes.size() )
+    {
+        Rtt_TRACE_SIM(( "ERROR: Unable to box value of type %s (capacity exceeded)", name ));
+
+        return NULL;
+    }
+
+    TypeNode node;
+
+    node.fName = name; // n.b. assumed to be constant literal
+    node.fParent = parent;
+
+    sTypes.push_back( node );
+
+    return sTypes.size() - 1;
 }
 
 const char *
 ObjectBox::StringForType (int type)
 {
-    switch (type)
+    if ( type >= 0 && type < sTypes.size() )
     {
-    case kRenderer:
-        return "Renderer";
-    case kRenderData:
-        return "RenderData";
-    case kShader:
-        return "Shader";
-    case kShaderData:
-        return "ShaderData";
-    case kDisplayObject:
-        return "DisplayObject";
-    case kGroupObject:
-        return "GroupObject";
-    case kCommandBuffer:
-        return "CommandBuffer";
-    default:
+        return sTypes[type].fName;
+    }
+
+    else
+    {
         return "Unknown";
     }
+}
+
+template<>
+bool
+GetParentTypeNode< CoronaGroupObject >( int& parent )
+{
+    parent = GetDisplayObjectType();
+
+    return parent >= 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1883,7 +1980,7 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaObjectInvalidate( const CoronaDisplayObject * object )
+int CoronaObjectInvalidate( CoronaDisplayObject object )
 {
     auto * displayObject = OBJECT_BOX_LOAD( DisplayObject, object );
 
@@ -1900,7 +1997,7 @@ int CoronaObjectInvalidate( const CoronaDisplayObject * object )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaObjectGetParent( const CoronaDisplayObject * object, CoronaStackObject * parent )
+int CoronaObjectGetParent( CoronaDisplayObject object, CoronaGroupObject * parent )
 {
     OBJECT_BOX_SCOPE_EXISTING();
 
@@ -1908,9 +2005,9 @@ int CoronaObjectGetParent( const CoronaDisplayObject * object, CoronaStackObject
     
     if (displayObject && parent)
     {
-        OBJECT_BOX_STORE_IN_STACK_OBJECT( GroupObject, parent, displayObject->GetParent() );
+        OBJECT_BOX_STORE_VIA_POINTER( GroupObject, parent, displayObject->GetParent() );
         
-        return 1;
+        return allStored;
     }
 
     return 0;
@@ -1919,7 +2016,7 @@ int CoronaObjectGetParent( const CoronaDisplayObject * object, CoronaStackObject
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, CoronaStackObject * child )
+int CoronaGroupObjectGetChild( CoronaGroupObject groupObject, int index, CoronaDisplayObject * child )
 {
     OBJECT_BOX_SCOPE_EXISTING();
 
@@ -1927,9 +2024,9 @@ int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index,
 
     if (go && child && index >= 0 && index < go->NumChildren())
     {
-        OBJECT_BOX_STORE_IN_STACK_OBJECT( DisplayObject, child, &go->ChildAt( index ) );
+        OBJECT_BOX_STORE_VIA_POINTER( DisplayObject, child, &go->ChildAt( index ) );
 
-        return 1;
+        return allStored;
     }
 
     return 0;
@@ -1938,7 +2035,7 @@ int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index,
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaGroupObjectGetNumChildren( const CoronaGroupObject * groupObject )
+int CoronaGroupObjectGetNumChildren( CoronaGroupObject groupObject )
 {
     auto * go = OBJECT_BOX_LOAD( GroupObject, groupObject );
 
@@ -1948,7 +2045,7 @@ int CoronaGroupObjectGetNumChildren( const CoronaGroupObject * groupObject )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaObjectSendMessage( const CoronaDisplayObject * object, const char * message, const void * payload, unsigned int size )
+int CoronaObjectSendMessage( CoronaDisplayObject object, const char * message, const void * payload, unsigned int size )
 {
     auto * displayObject = OBJECT_BOX_LOAD( DisplayObject, object );
 
