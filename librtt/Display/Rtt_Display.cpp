@@ -792,12 +792,12 @@ Display::Capture( DisplayObject *object,
     Rtt_Real y_in_pixels = 0;
     Rtt_Real w_in_pixels = w_in_content_units;
     Rtt_Real h_in_pixels = h_in_content_units;
-    {
+    if(!optional_output_color){
 
         ContentToScreen( x_in_pixels,
-                            y_in_pixels,
-                            w_in_pixels,
-                            h_in_pixels );
+                        y_in_pixels,
+                        w_in_pixels,
+                        h_in_pixels);
 
         // We ONLY want the w_in_pixels and h_in_pixels.
         // Using anything but 0 here breaks Android.
