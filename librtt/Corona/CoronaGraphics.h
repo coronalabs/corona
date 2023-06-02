@@ -201,7 +201,7 @@ void CoronaRendererInvalidate( lua_State * L ) CORONA_PUBLIC_SUFFIX;
  Otherwise, this is a "restore": it happens at the start of frame (`commandBuffer` will have been reset), the "new"
  contents are the block's defaults, and the "old" the last commit as above.
 */
-typedef void (*CoronaStateBlockDirty)( CoronaCommandBuffer commandBuffer, CoronaRenderer renderer, const void * newContents, const void * oldContents, unsigned int size, int restore, void * userData );
+typedef void (*CoronaStateBlockDirty)( const CoronaCommandBuffer * commandBuffer, const CoronaRenderer * renderer, const void * newContents, const void * oldContents, unsigned int size, int restore, void * userData );
 
 /**
  This structure describes a state block.
@@ -263,7 +263,7 @@ int CoronaRendererRegisterStateBlock( lua_State * L, const CoronaStateBlock * bl
  @return If non-0, the block was read.
 */
 CORONA_API
-int CoronaRendererReadStateBlock( CoronaRenderer renderer, unsigned long blockID, void * data, unsigned int * size ) CORONA_PUBLIC_SUFFIX;
+int CoronaRendererReadStateBlock( const CoronaRenderer * renderer, unsigned long blockID, void * data, unsigned int * size ) CORONA_PUBLIC_SUFFIX;
 
 /**
  Update the working contents of a state block.
@@ -277,19 +277,19 @@ int CoronaRendererReadStateBlock( CoronaRenderer renderer, unsigned long blockID
  @return If non-0, the block was written.
 */
 CORONA_API
-int CoronaRendererWriteStateBlock( CoronaRenderer renderer, unsigned long blockID, const void * data, unsigned int size ) CORONA_PUBLIC_SUFFIX;
+int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned long blockID, const void * data, unsigned int size ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 
 /**
  Operation that responds to data read from a command's buffer.
 */
-typedef void (*CoronaCommandReader)( CoronaCommandBuffer commandBuffer, const unsigned char * from, unsigned int size );
+typedef void (*CoronaCommandReader)( const CoronaCommandBuffer * commandBuffer, const unsigned char * from, unsigned int size );
 
 /**
  Operation that writes data into a command's buffer.
 */
-typedef void (*CoronaCommandWriter)( CoronaCommandBuffer commandBuffer, unsigned char * to, const void * data, unsigned int size );
+typedef void (*CoronaCommandWriter)( const CoronaCommandBuffer * commandBuffer, unsigned char * to, const void * data, unsigned int size );
 
 /**
  IO operations that constitute a command.
@@ -326,7 +326,7 @@ int CoronaRendererRegisterCommand( lua_State * L, const CoronaCommand * command,
  @return If non-0, the command was issued.
 */
 CORONA_API
-int CoronaRendererIssueCommand( CoronaRenderer renderer, unsigned long commandID, void * data, unsigned int size ) CORONA_PUBLIC_SUFFIX;
+int CoronaRendererIssueCommand( const CoronaRenderer * renderer, unsigned long commandID, void * data, unsigned int size ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 
@@ -342,7 +342,7 @@ int CoronaRendererIssueCommand( CoronaRenderer renderer, unsigned long commandID
  @return If non-NULL, the base address.
 */
 CORONA_API
-const unsigned char * CoronaCommandBufferGetBaseAddress( CoronaCommandBuffer commandBuffer ) CORONA_PUBLIC_SUFFIX;
+const unsigned char * CoronaCommandBufferGetBaseAddress( const CoronaCommandBuffer * commandBuffer ) CORONA_PUBLIC_SUFFIX;
 
 /**
  This structure accounts for different uniform writing needs.
@@ -385,7 +385,7 @@ typedef struct CoronaWriteUniformParams {
  @return If non-0, the write occurred.
 */
 CORONA_API
-int CoronaCommandBufferWriteNamedUniform( CoronaCommandBuffer commandBuffer, const char * uniformName, const CoronaWriteUniformParams * params, unsigned int size ) CORONA_PUBLIC_SUFFIX;
+int CoronaCommandBufferWriteNamedUniform( const CoronaCommandBuffer * commandBuffer, const char * uniformName, const CoronaWriteUniformParams * params, unsigned int size ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 
@@ -470,7 +470,7 @@ unsigned int CoronaGeometryCopyData( void * dst, const CoronaGeometryMappingLayo
  @return If non-NULL, the render data's geometry vertex stream, as mapped by the layout.
 */
 CORONA_API
-void * CoronaGeometryGetMappingFromRenderData( CoronaRenderData renderData, const char * name, CoronaGeometryMappingLayout * layout ) CORONA_PUBLIC_SUFFIX;
+void * CoronaGeometryGetMappingFromRenderData( const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout ) CORONA_PUBLIC_SUFFIX;
 
 /**
  Primitive types that may be used by extended attributes; these extend the set used by Solar's vertices.
@@ -613,7 +613,7 @@ typedef struct CoronaEffectDetail {
  @return If non-0, the detail was found.
 */
 CORONA_API
-int CoronaShaderGetEffectDetail( CoronaShader shader, int index, CoronaEffectDetail * detail ) CORONA_PUBLIC_SUFFIX;
+int CoronaShaderGetEffectDetail( const CoronaShader * shader, int index, CoronaEffectDetail * detail ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
 
@@ -776,7 +776,7 @@ int CoronaShaderUnregisterShellTransform( lua_State * L, const char * name ) COR
 
 // ----------------------------------------------------------------------------
 
-typedef void (*CoronaShaderDrawBookend)( CoronaShader shader, void * userData, CoronaRenderer renderer, CoronaRenderData renderData );
+typedef void (*CoronaShaderDrawBookend)( const CoronaShader * shader, void * userData, const CoronaRenderer * renderer, const CoronaRenderData * renderData );
 
 /**
  This may be used to augment and/or override how a shader draws an object.
@@ -817,7 +817,7 @@ typedef struct CoronaShaderDrawParams {
  @return If non-0, the draw was performed.
  */
 CORONA_API
-int CoronaShaderRawDraw( CoronaShader shader, CoronaRenderData renderData, CoronaRenderer renderer ) CORONA_PUBLIC_SUFFIX;
+int CoronaShaderRawDraw( const CoronaShader * shader, const CoronaRenderData * renderData, const CoronaRenderer * renderer ) CORONA_PUBLIC_SUFFIX;
 
 /**
  Get the version that the shader is prepared to draw..
@@ -827,24 +827,24 @@ int CoronaShaderRawDraw( CoronaShader shader, CoronaRenderData renderData, Coron
  @return -1 on error; otherwise, the version.
 */
 CORONA_API
-int CoronaShaderGetVersion( CoronaRenderData renderData, CoronaRenderer renderer ) CORONA_PUBLIC_SUFFIX;
+int CoronaShaderGetVersion( const CoronaRenderData * renderData, const CoronaRenderer * renderer ) CORONA_PUBLIC_SUFFIX;
 
 /**
  Operation called when a particular mod / version of a shader becomes bound.
  This can happen via a regular draw or during a `CoronaShaderRawDraw()`.
  In this and the many operations that follow, if extra space was requested for the data type, `userData` will point to it.
 */
-typedef void (*CoronaShaderBind)( CoronaRenderer renderer, void * userData );
+typedef void (*CoronaShaderBind)( const CoronaRenderer * renderer, void * userData );
 
 /**
  Operation called when a shader is detached from a paint, say to clean up resources.
 */
-typedef void (*CoronaShaderDetach)( CoronaShader shader, void * userData );
+typedef void (*CoronaShaderDetach)( const CoronaShader * shader, void * userData );
 
 /**
  Operation called before a shader mod is used to draw, say to set up some resources.
 */
-typedef void (*CoronaShaderPrepare)( CoronaShader shader, void * userData, CoronaRenderData renderData, int w, int h, int mod );
+typedef void (*CoronaShaderPrepare)( const CoronaShader * shader, void * userData, const CoronaRenderData * renderData, int w, int h, int mod );
 
 /**
  Operation called if `name` is not found in the vertex data / uniform userdata. A return value >= 0 is a "data index",

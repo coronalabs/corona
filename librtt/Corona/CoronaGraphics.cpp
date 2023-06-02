@@ -14,7 +14,7 @@
 
 #include "Rtt_LuaContext.h"
 
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 #include "Display/Rtt_TextureResource.h"
 #include "Core/Rtt_SharedPtr.h"
 #include "Display/Rtt_TextureFactory.h"
@@ -99,6 +99,14 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 
 // ----------------------------------------------------------------------------
 
+OBJECT_HANDLE_DEFINE_TYPE( Renderer );
+OBJECT_HANDLE_DEFINE_TYPE( RenderData );
+OBJECT_HANDLE_DEFINE_TYPE( Shader );
+OBJECT_HANDLE_DEFINE_TYPE( ShaderData );
+OBJECT_HANDLE_DEFINE_TYPE( CommandBuffer );
+
+// ----------------------------------------------------------------------------
+
 static Rtt::Renderer &
 GetRenderer( lua_State * L )
 {
@@ -132,9 +140,9 @@ int CoronaRendererRegisterStateBlock( lua_State * L, const CoronaStateBlock * bl
 }
 
 CORONA_API
-int CoronaRendererReadStateBlock( CoronaRenderer renderer, unsigned long blockID, void * data, unsigned int * size )
+int CoronaRendererReadStateBlock( const CoronaRenderer * renderer, unsigned long blockID, void * data, unsigned int * size )
 {
-    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (rendererObject && blockID && size)
     {
@@ -161,9 +169,9 @@ int CoronaRendererReadStateBlock( CoronaRenderer renderer, unsigned long blockID
 }
 
 CORONA_API
-int CoronaRendererWriteStateBlock( CoronaRenderer renderer, unsigned long blockID, const void * data, unsigned int size )
+int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned long blockID, const void * data, unsigned int size )
 {
-    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (rendererObject && blockID)
     {
@@ -192,7 +200,7 @@ int CoronaRendererWriteStateBlock( CoronaRenderer renderer, unsigned long blockI
 // ----------------------------------------------------------------------------
 
 static void
-CommandCopyWriter( CoronaCommandBuffer, unsigned char * to, const void * data, unsigned int size )
+CommandCopyWriter( const CoronaCommandBuffer *, unsigned char * to, const void * data, unsigned int size )
 {
     if (data)
     {
@@ -233,9 +241,9 @@ int CoronaRendererRegisterCommand( lua_State * L, const CoronaCommand * command,
 }
 
 CORONA_API
-int CoronaRendererIssueCommand( CoronaRenderer renderer, unsigned long commandID, void * data, unsigned int size )
+int CoronaRendererIssueCommand( const CoronaRenderer * renderer, unsigned long commandID, void * data, unsigned int size )
 {
-    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (rendererObject && commandID && rendererObject->IssueCustomCommand( commandID - 1U, data, size ))
     {
@@ -248,9 +256,9 @@ int CoronaRendererIssueCommand( CoronaRenderer renderer, unsigned long commandID
 // ----------------------------------------------------------------------------
 
 CORONA_API
-const unsigned char * CoronaCommandBufferGetBaseAddress( CoronaCommandBuffer commandBuffer )
+const unsigned char * CoronaCommandBufferGetBaseAddress( const CoronaCommandBuffer * commandBuffer )
 {
-    const Rtt::CommandBuffer * commandBufferObject = OBJECT_BOX_LOAD( CommandBuffer, commandBuffer );
+    const Rtt::CommandBuffer * commandBufferObject = OBJECT_HANDLE_LOAD( CommandBuffer, commandBuffer );
     
     if (commandBufferObject)
     {
@@ -261,9 +269,9 @@ const unsigned char * CoronaCommandBufferGetBaseAddress( CoronaCommandBuffer com
 }
 
 CORONA_API
-int CoronaCommandBufferWriteNamedUniform( CoronaCommandBuffer commandBuffer, const char * uniformName, const CoronaWriteUniformParams * params, unsigned int size )
+int CoronaCommandBufferWriteNamedUniform( const CoronaCommandBuffer * commandBuffer, const char * uniformName, const CoronaWriteUniformParams * params, unsigned int size )
 {
-    Rtt::CommandBuffer * commandBufferObject = OBJECT_BOX_LOAD( CommandBuffer, commandBuffer );
+    Rtt::CommandBuffer * commandBufferObject = OBJECT_HANDLE_LOAD( CommandBuffer, commandBuffer );
     
     if (commandBufferObject && params)
     {
@@ -459,9 +467,9 @@ static bool GetLayout( const Rtt::Geometry * geometry, const char * name, Corona
 }
 
 CORONA_API
-void * CoronaGeometryGetMappingFromRenderData( CoronaRenderData renderData, const char * name, CoronaGeometryMappingLayout * layout )
+void * CoronaGeometryGetMappingFromRenderData( const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout )
 {
-    Rtt::RenderData * renderDataObject = OBJECT_BOX_LOAD( RenderData, renderData );
+    Rtt::RenderData * renderDataObject = OBJECT_HANDLE_LOAD( RenderData, renderData );
 
     if (renderDataObject && GetLayout( renderDataObject->fGeometry, name, layout ))
     {
@@ -491,9 +499,9 @@ int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaShaderGetEffectDetail( CoronaShader shader, int index, CoronaEffectDetail * detail )
+int CoronaShaderGetEffectDetail( const CoronaShader * shader, int index, CoronaEffectDetail * detail )
 {
-    const Rtt::Shader * shaderObject = OBJECT_BOX_LOAD( Shader, shader );
+    const Rtt::Shader * shaderObject = OBJECT_HANDLE_LOAD( Shader, shader );
 
     if (shaderObject)
     {
@@ -536,11 +544,11 @@ int CoronaShaderUnregisterShellTransform( lua_State * L, const char * name )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-int CoronaShaderRawDraw( CoronaShader shader, CoronaRenderData renderData, CoronaRenderer renderer )
+int CoronaShaderRawDraw( const CoronaShader * shader, const CoronaRenderData * renderData, const CoronaRenderer * renderer )
 {
-    const Rtt::Shader * shaderObject = OBJECT_BOX_LOAD( Shader, shader );
-    const Rtt::RenderData * renderDataObject = OBJECT_BOX_LOAD( RenderData, renderData );
-    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    const Rtt::Shader * shaderObject = OBJECT_HANDLE_LOAD( Shader, shader );
+    const Rtt::RenderData * renderDataObject = OBJECT_HANDLE_LOAD( RenderData, renderData );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (shaderObject && renderDataObject && rendererObject)
     {
@@ -553,10 +561,10 @@ int CoronaShaderRawDraw( CoronaShader shader, CoronaRenderData renderData, Coron
 }
 
 CORONA_API
-int CoronaShaderGetVersion( CoronaRenderData renderData, CoronaRenderer renderer )
+int CoronaShaderGetVersion( const CoronaRenderData * renderData, const CoronaRenderer * renderer )
 {
-    const Rtt::RenderData * renderDataObject = OBJECT_BOX_LOAD( RenderData, renderData );
-    const Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    const Rtt::RenderData * renderDataObject = OBJECT_HANDLE_LOAD( RenderData, renderData );
+    const Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (renderDataObject && rendererObject)
     {

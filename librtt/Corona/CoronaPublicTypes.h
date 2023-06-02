@@ -11,13 +11,7 @@
 #ifndef _CoronaPublicTypes_H__
 #define _CoronaPublicTypes_H__
 
-/**
- Types used by certain "object" functions in the API.
- 
- These should be considered opaque, but are made available here to be passed by
- value and declared on the stack.
-*/
-#define CORONA_DECLARE_PUBLIC_TYPE( TYPE ) typedef struct { unsigned char data[ sizeof( void* ) + 8 ]; } Corona ## TYPE
+#define CORONA_DECLARE_PUBLIC_TYPE( TYPE ) struct Corona##TYPE
 
 CORONA_DECLARE_PUBLIC_TYPE( Renderer );
 CORONA_DECLARE_PUBLIC_TYPE( RenderData );

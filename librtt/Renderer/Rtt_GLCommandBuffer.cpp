@@ -22,7 +22,7 @@
 #include "Renderer/Rtt_Uniform.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 #include "Core/Rtt_Config.h"
 #include "Core/Rtt_Allocator.h"
 #include "Core/Rtt_Assert.h"
@@ -800,7 +800,7 @@ GLCommandBuffer::AddCommand( const CoronaCommand* command )
 void
 GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
 {
-    OBJECT_BOX_SCOPE();
+    OBJECT_HANDLE_SCOPE();
 
     Command custom = Command( kNumCommands + id );
 
@@ -809,7 +809,7 @@ GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
 
     U8 * buffer = Reserve( size );
 
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    OBJECT_HANDLE_STORE( CommandBuffer, commandBuffer, this );
     
     fCustomCommands[id]->writer( commandBuffer, buffer, data, size );
 }
@@ -916,9 +916,9 @@ GLCommandBuffer::Execute( bool measureGPU )
     }
 #endif
 
-    OBJECT_BOX_SCOPE();
+    OBJECT_HANDLE_SCOPE();
 
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    OBJECT_HANDLE_STORE( CommandBuffer, commandBuffer, this );
 
     GLExtraUniforms extraUniforms;
 

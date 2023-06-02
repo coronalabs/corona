@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include "Renderer/Rtt_FormatExtensionList.h"
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 
 #include "CoronaGraphics.h"
 
@@ -257,10 +257,10 @@ Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMo
 
     if (callbacks && callbacks->prepare)
     {
-        OBJECT_BOX_SCOPE();
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( Shader, shader, this );
-        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+        OBJECT_HANDLE_STORE( Shader, shader, this );
+        OBJECT_HANDLE_STORE( RenderData, renderData, &objectData );
 
         if (allStored)
         {
@@ -297,9 +297,9 @@ Shader::DetachProxy()
     
     if (effectCallbacks && effectCallbacks->shaderDetach)
     {
-        OBJECT_BOX_SCOPE();
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( Shader, shader, this );
+        OBJECT_HANDLE_STORE( Shader, shader, this );
         
         effectCallbacks->shaderDetach( shader, GetData()->GetExtraSpace() );
     }
@@ -363,11 +363,11 @@ Shader::DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & rend
 {
     if (state.fParams->before)
     {
-        OBJECT_BOX_SCOPE();
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( Shader, shader, this );
-        OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
-        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+        OBJECT_HANDLE_STORE( Shader, shader, this );
+        OBJECT_HANDLE_STORE( Renderer, rendererObject, &renderer );
+        OBJECT_HANDLE_STORE( RenderData, renderData, &objectData );
 
         if (allStored)
         {
@@ -383,11 +383,11 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
 {
     if (state.fParams->after)
     {
-        OBJECT_BOX_SCOPE();
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( Shader, shader, this );
-        OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
-        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+        OBJECT_HANDLE_STORE( Shader, shader, this );
+        OBJECT_HANDLE_STORE( Renderer, rendererObject, &renderer );
+        OBJECT_HANDLE_STORE( RenderData, renderData, &objectData );
 
         if (allStored)
         {

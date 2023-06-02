@@ -27,7 +27,7 @@
 #include "Core/Rtt_Math.h"
 #include "Core/Rtt_Types.h"
 #include "Renderer/Rtt_MCPUResourceObserver.h"
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
 
@@ -876,9 +876,9 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         
             if (effectCallbacks && effectCallbacks->shaderBind)
             {
-                OBJECT_BOX_SCOPE();
+                OBJECT_HANDLE_SCOPE();
                 
-                OBJECT_BOX_STORE( Renderer, renderer, this );
+                OBJECT_HANDLE_STORE( Renderer, renderer, this );
                 
                 effectCallbacks->shaderBind( renderer, shaderData->GetExtraSpace() );
 
@@ -1497,10 +1497,10 @@ Renderer::UpdateDirtyBlocks( const ArrayS32& dirtyIndices, U32 largestDirtySize 
     newContents.Reserve( largestDirtySize );
     oldContents.Reserve( largestDirtySize );
  
-    OBJECT_BOX_SCOPE();
+    OBJECT_HANDLE_SCOPE();
     
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
-    OBJECT_BOX_STORE( Renderer, renderer, this );
+    OBJECT_HANDLE_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
+    OBJECT_HANDLE_STORE( Renderer, renderer, this );
     
     const U8* workingState = fWorkingState.ReadAccess();
     U8* currentState = fCurrentState.WriteAccess();
@@ -1527,10 +1527,10 @@ Renderer::RestoreDefaultBlocks()
         return;
     }
 
-    OBJECT_BOX_SCOPE();
+    OBJECT_HANDLE_SCOPE();
     
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
-    OBJECT_BOX_STORE( Renderer, renderer, this );
+    OBJECT_HANDLE_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
+    OBJECT_HANDLE_STORE( Renderer, renderer, this );
  
     Array< U8 > newContents( fAllocator ), oldContents( fAllocator );
     const U8* defaultState = fDefaultState.ReadAccess();
