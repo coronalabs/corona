@@ -532,7 +532,28 @@ setMask( lua_State *L )
 				FilePath *maskData = *ud;
 				if ( maskData )
 				{
-					mask = BitmapMask::Create( * runtime, * maskData );
+					bool onlyForHitTests = false;
+
+					lua_getfield( L, LUA_REGISTRYINDEX, BitmapMask::kHitTestOnlyTable );
+
+					if ( lua_istable( L, -1 ))
+					{
+						lua_pushvalue( L, 2 );
+						lua_rawget( L, -2 );
+
+						onlyForHitTests = lua_toboolean( L, -1 );
+
+						lua_pop( L, 1 );
+					}
+
+					else
+					{
+						Rtt_TRACE_SIM( ( "WARNING: Hit test only table missing for masks.\n" ) );
+					}
+
+					lua_pop( L, 1 );
+
+					mask = BitmapMask::Create( * runtime, * maskData, onlyForHitTests );
 				}
 			}
 		}

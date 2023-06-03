@@ -23,40 +23,49 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 BitmapMask*
-BitmapMask::Create( Runtime& runtime, const FilePath& maskData )
+BitmapMask::Create( Runtime& runtime, const FilePath& maskData, bool onlyForHitTests )
 {
-	BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, maskData, PlatformBitmap::kIsBitsFullResolution, true );
+	BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, maskData, PlatformBitmap::kIsBitsFullResolution, true, onlyForHitTests );
 	BitmapMask *result = NULL;
 
-	if ( Rtt_VERIFY( paint ) )
+	if ( Rtt_VERIFY( paint || onlyForHitTests ) )
 	{
-		result = Rtt_NEW( runtime.GetAllocator(), BitmapMask( paint ) );
+		result = Rtt_NEW( runtime.GetAllocator(), BitmapMask( paint, onlyForHitTests ) );
 	}
 
 	return result;
 }
 
-BitmapMask::BitmapMask( BitmapPaint *paint )
+BitmapMask::BitmapMask( BitmapPaint *paint, bool onlyForHitTests, bool isTemporary )
 :	fPaint( paint ),
 	fTransform(),
 	fContentWidth( Rtt_REAL_NEG_1 ),
-	fContentHeight( Rtt_REAL_NEG_1 )
+	fContentHeight( Rtt_REAL_NEG_1 ),
+	fOnlyForHitTests( onlyForHitTests ),
+	fIsTemporary( isTemporary )
 {
-	Rtt_ASSERT( paint );
+	Rtt_ASSERT( paint || onlyForHitTests );
 }
 
 BitmapMask::BitmapMask( BitmapPaint *paint, Real contentW, Real contentH )
 :	fPaint( paint ),
 	fTransform(),
 	fContentWidth( contentW > Rtt_REAL_0 ? contentW : Rtt_REAL_NEG_1 ),
-	fContentHeight( contentH > Rtt_REAL_0 ? contentH : Rtt_REAL_NEG_1 )
+	fContentHeight( contentH > Rtt_REAL_0 ? contentH : Rtt_REAL_NEG_1 ),
+	fOnlyForHitTests( false ),
+	fIsTemporary( false )
 {
 }
 
 BitmapMask::~BitmapMask()
 {
-	Rtt_DELETE( fPaint );
+	if ( !fIsTemporary )
+	{
+		Rtt_DELETE( fPaint );
+	}
 }
+
+const char BitmapMask::kHitTestOnlyTable[] = "hitTestOnlyTableKey";
 
 void
 BitmapMask::GetSelfBounds( Rect& rect ) const

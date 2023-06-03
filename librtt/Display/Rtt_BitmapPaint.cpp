@@ -66,16 +66,21 @@ BitmapPaint::NewBitmap( Runtime& runtime, const char* filename, MPlatform::Direc
 }
 
 BitmapPaint*
-BitmapPaint::NewBitmap( Runtime& runtime, const FilePath& data, U32 flags, bool isMask )
+BitmapPaint::NewBitmap( Runtime& runtime, const FilePath& data, U32 flags, bool isMask, bool onlyForHitTests )
 {
 	BitmapPaint *result = NULL;
 
 	const char *filename = data.GetFilename();
 	MPlatform::Directory baseDir = data.GetBaseDir();
+	
+	if ( onlyForHitTests && '\0' == *filename )
+	{
+		return NULL;
+	}
 
 	TextureFactory& factory = runtime.GetDisplay().GetTextureFactory();
 	SharedPtr< TextureResource > pTexture =
-		factory.FindOrCreate( filename, baseDir, flags, isMask );
+		factory.FindOrCreate( filename, baseDir, flags, isMask, onlyForHitTests );
 
 	if ( pTexture.NotNull() )
 	{

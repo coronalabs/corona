@@ -40,7 +40,7 @@ class BitmapPaint : public Paint
 		static BitmapPaint* NewBitmap( Runtime& runtime, const char* filename, MPlatform::Directory baseDir, U32 flags );
 
 		// Load bitmap mask from file or reuse bitmap from image cache
-		static BitmapPaint* NewBitmap( Runtime& runtime, const FilePath& data, U32 flags, bool isMask );
+		static BitmapPaint* NewBitmap( Runtime& runtime, const FilePath& data, U32 flags, bool isMask, bool onlyForHitTests = false );
 
 		// Wrap platform bitmap in Paint-compatible interface. Typically used
 		// in conjunction with PlatformImageProvider
