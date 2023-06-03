@@ -927,19 +927,27 @@ int CoronaObjectInvalidate(const CoronaDisplayObject * object)
 }
 
 CORONA_API
-const CoronaGroupObject * CoronaObjectGetParent(const CoronaDisplayObject * object, unsigned int* ref)
+const CoronaAny * CoronaObjectGetAvailableSlot(void)
 {
-	typedef const CoronaGroupObject* (*CoronaCallbackType)(const CoronaDisplayObject*, unsigned int*);
+	typedef const CoronaAny* (*CoronaCallbackType)(void);
 	CoronaCallbackLoad();
-	return CoronaCallbackInvoke(object, ref);
+	return CoronaCallbackInvoke();
 }
 
 CORONA_API
-const CoronaDisplayObject * CoronaGroupObjectGetChild(const CoronaGroupObject * object, int index, unsigned int* ref)
+int CoronaObjectGetParent(const CoronaDisplayObject * object, const CoronaGroupObject* parent)
 {
-	typedef const CoronaDisplayObject* (*CoronaCallbackType)(const CoronaGroupObject*, int, unsigned int*);
+	typedef int (*CoronaCallbackType)(const CoronaDisplayObject*, const CoronaGroupObject*);
 	CoronaCallbackLoad();
-	return CoronaCallbackInvoke(object, index, ref);
+	return CoronaCallbackInvoke(object, parent);
+}
+
+CORONA_API
+int CoronaGroupObjectGetChild(const CoronaGroupObject * object, int index, const CoronaDisplayObject* child)
+{
+	typedef int (*CoronaCallbackType)(const CoronaGroupObject*, int, const CoronaDisplayObject*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(object, index, child);
 }
 
 CORONA_API

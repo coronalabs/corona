@@ -57,7 +57,7 @@ union GenericParams {
     AFTER_HEADER_STRUCT( OnMessage );
 
     #undef AFTER_HEADER_OFFSET
-    #define AFTER_HEADER_OFFSET(NAME) offsetof( PARAMS( NAME ), ignoreOriginal )
+    #define AFTER_HEADER_OFFSET(NAME) offsetof( PARAMS( NAME ), before )
 
     AFTER_HEADER_STRUCT( Basic );
     AFTER_HEADER_STRUCT( GroupBasic );
@@ -1431,39 +1431,50 @@ int CoronaObjectInvalidate( const CoronaDisplayObject * object )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-const CoronaGroupObject * CoronaObjectGetParent( const CoronaDisplayObject * object, unsigned int * ref )
+const CoronaAny * CoronaObjectGetAvailableSlot()
 {
-    OBJECT_HANDLE_SCOPE_EXISTING();
+    Rtt::ObjectHandleScope* scope = Rtt::ObjectHandleScope::Current();
 
-    auto * displayObject = OBJECT_HANDLE_LOAD( DisplayObject, object );
-    
-    if (displayObject && ref)
+    if ( NULL == scope )
     {
-        OBJECT_HANDLE_STORE_EXTERNAL( GroupObject, parent, displayObject->GetParent(), ref );
-        
-        return parent;
+        return NULL;
     }
 
-    return NULL;
+    return reinterpret_cast< const CoronaAny * >( scope->GetFreeSlot() );
 }
 
 // ----------------------------------------------------------------------------
 
 CORONA_API
-const CoronaDisplayObject * CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, unsigned int * ref )
+int CoronaObjectGetParent( const CoronaDisplayObject * object, const CoronaGroupObject * parent )
+{
+    OBJECT_HANDLE_SCOPE_EXISTING();
+
+    auto * displayObject = OBJECT_HANDLE_LOAD( DisplayObject, object );
+    
+    if (displayObject && parent)
+    {
+        return OBJECT_HANDLE_STORE_EXTERNAL( GroupObject, parent, displayObject->GetParent(), parent );
+    }
+
+    return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+CORONA_API
+int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, const CoronaDisplayObject * child )
 {
     OBJECT_HANDLE_SCOPE_EXISTING();
 
     auto * go = OBJECT_HANDLE_LOAD( GroupObject, groupObject );
 
-    if (go && ref && index >= 0 && index < go->NumChildren())
+    if (go && child && index >= 0 && index < go->NumChildren())
     {
-        OBJECT_HANDLE_STORE_EXTERNAL( DisplayObject, child, &go->ChildAt( index ), ref );
-
-        return child;
+        return OBJECT_HANDLE_STORE_EXTERNAL( DisplayObject, child, &go->ChildAt( index ), child );
     }
 
-    return NULL;
+    return 0;
 }
 
 // ----------------------------------------------------------------------------

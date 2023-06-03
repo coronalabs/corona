@@ -210,8 +210,8 @@ typedef struct CoronaObjectParamsHeader {
                                                                   \
     typedef struct CoronaObject##NAME##Params {     \
         CoronaObjectParamsHeader header;            \
-        unsigned short ignoreOriginal;              \
         CoronaObject##NAME##Bookend before, after;  \
+        int ignoreOriginal;                         \
     } CoronaObject##NAME##Params
 
 /**
@@ -330,10 +330,10 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObject * self, voi
 #define CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS(NAME, ...)    \
     typedef void (*CoronaObject##NAME##Bookend) (__VA_ARGS__);      \
                                                                     \
-    typedef struct CoronaObject##NAME##Params {             \
-        CoronaObjectParamsHeader header;                    \
-        unsigned char ignoreOriginal, earlyOutIfNonZero;    \
-        CoronaObject##NAME##Bookend before, after;          \
+    typedef struct CoronaObject##NAME##Params {   \
+        CoronaObjectParamsHeader header;          \
+        CoronaObject##NAME##Bookend before, after;\
+        int ignoreOriginal, earlyOutIfNonZero;    \
     } CoronaObject##NAME##Params
 
 /**
@@ -430,12 +430,12 @@ typedef void (*CoronaObjectSetValueBookend) ( const CoronaDisplayObject * self, 
  The `before` and `after` functions may be NULL, in which case the respective function is
  not called. Similarly, the stock behavior is skipped if `ignoreOriginal` is non-0.
  
- Its functions have signature  `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const char key[], int valueIndex, int * result )`.
+ Its functions have signature `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const char key[], int valueIndex, int * result )`.
 */
 typedef struct CoronaObjectSetValueParams {
     CoronaObjectParamsHeader header;
-    unsigned char ignoreOriginal, disallowEarlyOut;
     CoronaObjectSetValueBookend before, after;
+    int ignoreOriginal, disallowEarlyOut;
 } CoronaObjectSetValueParams;
 
 // ----------------------------------------------------------------------------
@@ -478,8 +478,8 @@ typedef void (*CoronaObjectValueBookend) ( const CoronaDisplayObject * self, voi
 */
 typedef struct CoronaObjectValueParams {
     CoronaObjectParamsHeader header;
-    unsigned char ignoreOriginal, disallowEarlyOut : 1, earlyOutIfZero : 1;
     CoronaObjectValueBookend before, after;
+    int ignoreOriginal, disallowEarlyOut, earlyOutIfZero;
 } CoronaObjectValueParams;
 
 // ----------------------------------------------------------------------------
@@ -760,24 +760,30 @@ int CoronaObjectInvalidate( const CoronaDisplayObject * object ) CORONA_PUBLIC_S
 // ----------------------------------------------------------------------------
 
 /**
+ Get a slot in the current scope, to be used by certain functions to receive objects.
+ @return Handle to the slot, or NULL if all are in use.
+*/
+CORONA_API
+const CoronaAny * CoronaObjectGetAvailableSlot( void ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
  @param object Boxed display object.
- @param parent On success, populated with the parent.
+ @param parent Handle to receive the parent. (Obtained from `CoronaObjectGetAvailableSlot`.)
  @return If non-0, the parent was retrieved.
 */
 CORONA_API
-const CoronaGroupObject* CoronaObjectGetParent( const CoronaDisplayObject * object, unsigned int* ref ) CORONA_PUBLIC_SUFFIX;
+int CoronaObjectGetParent( const CoronaDisplayObject * object, const CoronaGroupObject* parent ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param groupObject Boxed group object.
  @param index Index of child belonging to `groupObject`, from 0 to `numChildren`.
- @param child On success, populated with the child.
+ @param child Handle to receive the child. (Obtained from `CoronaObjectGetAvailableSlot`.)
  @return If non-0, the child was retrieved.
-
- TODO!
-
 */
 CORONA_API
-const CoronaDisplayObject* CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, unsigned int* ref ) CORONA_PUBLIC_SUFFIX;
+int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, const CoronaDisplayObject* child ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param groupObject Boxed group object.

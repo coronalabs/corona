@@ -83,6 +83,7 @@ struct TypedDummy : public ObjectHandleDummy {
 
 class ObjectHandleScope {
     public:
+        using Self = ObjectHandleScope;
         using TypeNode = ObjectHandleDummy::TypeNode;
 
         enum {
@@ -90,40 +91,83 @@ class ObjectHandleScope {
         };
 
     public:
-        ObjectHandleScope();
+        ObjectHandleScope(); // n.b. does not become current until first Add()
         ~ObjectHandleScope();
+        
+    public:
+        bool Set( const ObjectHandleDummy* handle, const void* object, const TypeNode* type );
 
     public:
-        const ObjectHandleDummy* Add( const void* object, const TypeNode* type, unsigned int* externalRef = NULL );
+        const ObjectHandleDummy* Add( const void* object, const TypeNode* type );
+        const ObjectHandleDummy* GetFreeSlot();
         static void* Extract( const ObjectHandleDummy* handle, const TypeNode* type );
 
     public:
         struct Box {
+            enum {
+                kDynamicBit = 0x1
+            };
+
             const TypeNode* fType;
             void* fObject;
+
+            uintptr_t AsUint() const { return reinterpret_cast< uintptr_t >( this ); }
+
+            void Set( const void* object, const TypeNode* type )
+            {
+                fObject = const_cast< void* >( object );
+                fType = type->Correct( object );
+            }
         };
 
     public:
-        static ObjectHandleScope* Current() { return sCurrent; }
+        static Self* Current() { return sCurrent; }
 
-        bool InUse() const { return 0 != fHash; }
-        bool OwnsHandle( const ObjectHandleDummy* handle, Box** box ) const;
+        bool Initialized() const { return 0 != fHash; }
+        bool OwnsHandle( const ObjectHandleDummy* handle, const Box** box ) const;
         const TypeNode* Contains( const void* object ) const;
+
+    public:
+        class ClearIf {
+            public:
+                ClearIf( Self& scope, bool clear )
+                :   fScope( scope ),
+                    fClear( clear )
+                {
+                }
+
+                ~ClearIf()
+                {
+                    if ( fClear )
+                    {
+                        fScope.Clear();
+                    }
+                }
+
+            private:
+                Self& fScope;
+                bool fClear;
+        };
 
     private:
         void Init();
+        void Clear() { fBoxesUsed = 0; }
 
-        Box* FindBox( unsigned int* ref );
+        Box* FindFreeBox();
+        Box* FindBoxFromHandle( const uintptr_t& uintHandle ) const;
+
+        const ObjectHandleDummy* ToHandle( const uintptr_t& uint );
+
+        uintptr_t Mix( const uintptr_t& uint ) const { return uint ^ fHash; }
 
     private:
-        static ObjectHandleScope* sCurrent;
+        static Self* sCurrent;
 
     private:
-        ObjectHandleScope* fPrevious;
+        Self* fPrevious;
         Box fBoxes[ kTotal ];
         uintptr_t fHash;
         U32 fBoxesUsed;
-        U32 fExternalMask;
 };
 
 static const ObjectHandleDummy::TypeNode*
@@ -135,8 +179,10 @@ GetDisplayObjectType();
 
 #define OBJECT_HANDLE_GET_TYPE( TYPE ) Rtt::TypedDummy< Rtt::TYPE >::GetType()
 
-#define OBJECT_HANDLE_DEFINE_TYPE( TYPE )   struct Corona##TYPE : public Rtt::TypedDummy< Rtt::TYPE > {}; \
-                                            Rtt::ObjectHandleDummy::TypeNode Corona##TYPE::sNode( #TYPE )
+#define AUX_OBJECT_HANDLE_DEFINE_TYPE( TYPE, DUMMY_TYPE )   struct Corona##TYPE : public Rtt::TypedDummy< DUMMY_TYPE > {}; \
+                                                            Rtt::ObjectHandleDummy::TypeNode Corona##TYPE::sNode( #TYPE )
+
+#define OBJECT_HANDLE_DEFINE_TYPE( TYPE ) AUX_OBJECT_HANDLE_DEFINE_TYPE( TYPE, Rtt::TYPE )
 
 // ----------------------------------------------------------------------------
 
@@ -147,11 +193,11 @@ GetDisplayObjectType();
                                         Rtt_ASSERT( currentScope ); \
                                         Rtt::ObjectHandleScope& handleScope = *currentScope
 
-#define OBJECT_HANDLE_STORE( TYPE, NAME, OBJECT )   Rtt_ASSERT( !handleScope.InUse() || Rtt::ObjectHandleScope::Current() == &handleScope ); \
+#define OBJECT_HANDLE_STORE( TYPE, NAME, OBJECT )   Rtt_ASSERT( !handleScope.Initialized() || Rtt::ObjectHandleScope::Current() == &handleScope ); \
                                                     const auto* NAME = reinterpret_cast< const Corona##TYPE* >( handleScope.Add( OBJECT, OBJECT_HANDLE_GET_TYPE( TYPE ) ) ); \
                                                     allStored = allStored &= NULL != NAME
 
-#define OBJECT_HANDLE_STORE_EXTERNAL( TYPE, NAME, OBJECT, REF ) const auto* NAME = reinterpret_cast< const Corona##TYPE* >( handleScope.Add( OBJECT, OBJECT_HANDLE_GET_TYPE( TYPE ), REF ) )
+#define OBJECT_HANDLE_STORE_EXTERNAL( TYPE, NAME, OBJECT, REF ) handleScope.Set( REF, OBJECT, OBJECT_HANDLE_GET_TYPE( TYPE ) )
 
 #define OBJECT_HANDLE_LOAD( TYPE, HANDLE ) static_cast< Rtt::TYPE* >( Rtt::ObjectHandleScope::Extract( HANDLE, OBJECT_HANDLE_GET_TYPE( TYPE ) ) )
 

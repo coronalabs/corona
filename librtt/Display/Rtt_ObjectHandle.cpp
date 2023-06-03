@@ -17,6 +17,9 @@
 #include "../../external/wyhash/wyhash.h"
 
 // ----------------------------------------------------------------------------
+
+AUX_OBJECT_HANDLE_DEFINE_TYPE( Any, void );
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -32,7 +35,8 @@ ObjectHandleDummy::TypeNode::TypeNode( const char* name )
 {
 }
 
-ObjectHandleDummy::TypeNode* ObjectHandleDummy::TypeNode::sHead;
+ObjectHandleDummy::TypeNode*
+ObjectHandleDummy::TypeNode::sHead;
 
 void
 ObjectHandleDummy::TypeNode::Init( const ObjectHandleDummy::TypeNode* parent )
@@ -82,14 +86,13 @@ ObjectHandleDummy::TypeNode::Correct( const void* object ) const
 ObjectHandleScope::ObjectHandleScope()
 :   fPrevious( NULL),
     fHash( 0 ),
-    fBoxesUsed( 0 ),
-    fExternalMask( 0 )
+    fBoxesUsed( 0 )
 {
 }
         
 ObjectHandleScope::~ObjectHandleScope()
 {
-    if ( fBoxesUsed > 0 )
+    if ( Initialized() )
     {
         Rtt_ASSERT( this == sCurrent );
 
@@ -97,14 +100,15 @@ ObjectHandleScope::~ObjectHandleScope()
     }
 }
 
-ObjectHandleScope* ObjectHandleScope::sCurrent;
+ObjectHandleScope*
+ObjectHandleScope::sCurrent;
 
 template< bool is64Bit = sizeof(uintptr_t) == 8 >
 class HashValue {
     public:
         uintptr_t GetValue() const { return fValue; }
 
-        void Update( const U64& hash )
+        void operator=( const U64& hash )
         {
             fValue = hash;
         }
@@ -126,7 +130,7 @@ class HashValue< false > {
             return static_cast< uintptr_t >( GetHash() );
         }
 
-        void Update( const U64& hash )
+        void operator=( const U64& hash )
         {
             GetHash() = hash;
         }
@@ -154,7 +158,7 @@ ObjectHandleScope::Init()
 
     while ( 0 == hv.GetValue() )
     {
-        hv.Update( wyrand( &sSeed ) );
+        hv = wyrand( &sSeed );
     }
 
     fHash = hv.GetValue();
@@ -164,23 +168,11 @@ ObjectHandleScope::Init()
 }
 
 ObjectHandleScope::Box* 
-ObjectHandleScope::FindBox( unsigned int* ref )
+ObjectHandleScope::FindFreeBox()
 {
-    if ( NULL != ref && 0 != *ref )
+    if ( !Initialized() )
     {
-        U32 index = *ref - 1; // correct for "resolved" state
-
-        if ( index < fBoxesUsed && fExternalMask & ( 1 << index ) )
-        {
-            return &fBoxes[index];
-        }
-
-        else
-        {
-            Rtt_TRACE_SIM(( "ERROR: Provided invalid external reference: %u", *ref ));
-
-            return NULL;
-        }
+        Init();
     }
 
     if ( kTotal == fBoxesUsed )
@@ -188,40 +180,98 @@ ObjectHandleScope::FindBox( unsigned int* ref )
         return NULL;
     }
 
-    if ( NULL != ref )
-    {
-        fExternalMask |= 1 << fBoxesUsed;
-
-        *ref = fBoxesUsed + 1; // add 1 since 0 means unresolved
-    }
-
     return &fBoxes[ fBoxesUsed++ ];
 }
-  
+
+static uintptr_t
+HandleToUint( const ObjectHandleDummy* handle )
+{
+    return reinterpret_cast< uintptr_t >( handle );
+}
+
+ObjectHandleScope::Box*
+ObjectHandleScope::FindBoxFromHandle( const uintptr_t& uintHandle ) const
+{
+    Box* box = reinterpret_cast< Box* >( uintHandle & ~Box::kDynamicBit );
+
+    if ( box >= fBoxes && box < fBoxes + kTotal )
+    {
+        return box;
+    }
+
+    else
+    {
+        return NULL;
+    }
+}
+
 const ObjectHandleDummy*
-ObjectHandleScope::Add( const void* object, const ObjectHandleDummy::TypeNode* type, unsigned int* externalRef )
+ObjectHandleScope::ToHandle( const uintptr_t& uint )
+{
+    return reinterpret_cast< ObjectHandleDummy* >( uint ^ fHash );
+}
+
+bool
+ObjectHandleScope::Set( const ObjectHandleDummy* handle, const void* object, const TypeNode* type )
+{
+    Rtt_ASSERT( type && type->IsInitialized() );
+
+    uintptr_t uintHandle = Mix( HandleToUint( handle ) );
+
+    if ( 0 == ( uintHandle & Box::kDynamicBit ) )
+    {
+        Rtt_TRACE_SIM(( "ERROR: Slot for %s object not dynamic", type->GetName() ));
+
+        return false;
+    }
+
+    Box* box = FindBoxFromHandle( uintHandle );
+
+    if ( NULL == box )
+    {
+        Rtt_TRACE_SIM(( "ERROR: Handle for dynamic %s object not found in current scope", type->GetName() ));
+
+        return false;
+    }
+
+    box->Set( object, type );
+
+    return true;
+}
+
+const ObjectHandleDummy*
+ObjectHandleScope::Add( const void* object, const ObjectHandleDummy::TypeNode* type )
 {
     Rtt_ASSERT( type );
     Rtt_ASSERT( object );
 
-    if ( 0 == fHash )
-    {
-        Init();
-    }
-
-    Box* box = FindBox( externalRef );
+    Box* box = FindFreeBox();
 
     if ( NULL == box )
     {
         return NULL;
     }
 
-    box->fObject = const_cast< void* >( object );
-    box->fType = type->Correct( object );
+    box->Set( object, type );
 
-    uintptr_t uintBox = reinterpret_cast< uintptr_t >( box ) ^ fHash;
+    return ToHandle( box->AsUint() );
+}
 
-    return reinterpret_cast< ObjectHandleDummy* >( uintBox );
+const ObjectHandleDummy*
+ObjectHandleScope::GetFreeSlot()
+{
+    Box* box = FindFreeBox();
+
+    if ( NULL == box )
+    {
+        return NULL;
+    }
+
+    static_assert( alignof(Box) > 1, "Box assumed to be have alignment >= 2" );
+
+    box->Set( NULL, NULL );
+
+    return ToHandle( box->AsUint() | Box::kDynamicBit );
 }
 
 void*
@@ -229,9 +279,9 @@ ObjectHandleScope::Extract( const ObjectHandleDummy* handle, const ObjectHandleD
 {
     Rtt_ASSERT( node && node->IsInitialized() );
 
-    Box* box = NULL;
+    const Box* box = NULL;
 
-    for ( ObjectHandleScope* scope = sCurrent; scope && !scope->OwnsHandle( handle, &box ); scope = scope->fPrevious ) {}
+    for ( const Self* scope = sCurrent; scope && !scope->OwnsHandle( handle, &box ); scope = scope->fPrevious ) {}
 
     if ( NULL == box )
     {
@@ -251,12 +301,11 @@ ObjectHandleScope::Extract( const ObjectHandleDummy* handle, const ObjectHandleD
 }
         
 bool
-ObjectHandleScope::OwnsHandle( const ObjectHandleDummy* handle, Box** box ) const
+ObjectHandleScope::OwnsHandle( const ObjectHandleDummy* handle, const Box** box ) const
 {
-    uintptr_t uintBox = reinterpret_cast< uintptr_t >( handle ) ^ fHash;
-    Box* pBox = reinterpret_cast< Box* >( uintBox );
+    const Box* pBox = FindBoxFromHandle( Mix( HandleToUint( handle ) ) );
 
-    if ( pBox >= fBoxes && pBox <= &fBoxes[kTotal] )
+    if ( NULL != pBox )
     {
         *box = pBox;
 
