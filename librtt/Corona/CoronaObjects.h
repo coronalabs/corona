@@ -211,7 +211,7 @@ typedef struct CoronaObjectParamsHeader {
     typedef struct CoronaObject##NAME##Params {     \
         CoronaObjectParamsHeader header;            \
         CoronaObject##NAME##Bookend before, after;  \
-        int ignoreOriginal;                         \
+        int ignoreOriginal, separateScopes;         \
     } CoronaObject##NAME##Params
 
 /**
@@ -330,10 +330,10 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObject * self, voi
 #define CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS(NAME, ...)    \
     typedef void (*CoronaObject##NAME##Bookend) (__VA_ARGS__);      \
                                                                     \
-    typedef struct CoronaObject##NAME##Params {   \
-        CoronaObjectParamsHeader header;          \
-        CoronaObject##NAME##Bookend before, after;\
-        int ignoreOriginal, earlyOutIfNonZero;    \
+    typedef struct CoronaObject##NAME##Params {               \
+        CoronaObjectParamsHeader header;                      \
+        CoronaObject##NAME##Bookend before, after;            \
+        int ignoreOriginal, earlyOutIfNonZero, separateScopes;\
     } CoronaObject##NAME##Params
 
 /**
@@ -435,7 +435,7 @@ typedef void (*CoronaObjectSetValueBookend) ( const CoronaDisplayObject * self, 
 typedef struct CoronaObjectSetValueParams {
     CoronaObjectParamsHeader header;
     CoronaObjectSetValueBookend before, after;
-    int ignoreOriginal, disallowEarlyOut;
+    int ignoreOriginal, disallowEarlyOut, separateScopes;
 } CoronaObjectSetValueParams;
 
 // ----------------------------------------------------------------------------
@@ -479,7 +479,7 @@ typedef void (*CoronaObjectValueBookend) ( const CoronaDisplayObject * self, voi
 typedef struct CoronaObjectValueParams {
     CoronaObjectParamsHeader header;
     CoronaObjectValueBookend before, after;
-    int ignoreOriginal, disallowEarlyOut, earlyOutIfZero;
+    int ignoreOriginal, disallowEarlyOut, earlyOutIfZero, separateScopes;
 } CoronaObjectValueParams;
 
 // ----------------------------------------------------------------------------
@@ -511,6 +511,7 @@ These method params belong to messages, with `action` having signature `method( 
 typedef struct CoronaObjectOnMessageParams {
     CoronaObjectParamsHeader header;
     void (*action)( const CoronaDisplayObject * self, void * userData, const char * message, const void * data, unsigned int size );
+    int preserveScope;
 } CoronaObjectOnMessageParams;
 
 /**

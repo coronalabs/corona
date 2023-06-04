@@ -124,7 +124,6 @@ class ObjectHandleScope {
         static Self* Current() { return sCurrent; }
 
         bool Initialized() const { return 0 != fHash; }
-        bool OwnsHandle( const ObjectHandleDummy* handle, const Box** box ) const;
         const TypeNode* Contains( const void* object ) const;
 
     public:
@@ -151,7 +150,7 @@ class ObjectHandleScope {
 
     private:
         void Init();
-        void Clear() { fBoxesUsed = 0; }
+        void Clear();
 
         Box* FindFreeBox();
         Box* FindBoxFromHandle( const uintptr_t& uintHandle ) const;
@@ -191,13 +190,25 @@ GetDisplayObjectType();
 
 #define OBJECT_HANDLE_SCOPE_EXISTING()  Rtt::ObjectHandleScope* currentScope = Rtt::ObjectHandleScope::Current(); \
                                         Rtt_ASSERT( currentScope ); \
+                                        int allStored = 1; \
                                         Rtt::ObjectHandleScope& handleScope = *currentScope
+
+#define OBJECT_HANDLE_SUBSCOPE( PARAMS ) Rtt::ObjectHandleScope::ClearIf cifRAII( handleScope, PARAMS.separateScopes )
+
+#define OBJECT_HANDLE_DECLARE( TYPE, NAME ) const Corona##TYPE* NAME = nullptr
 
 #define OBJECT_HANDLE_STORE( TYPE, NAME, OBJECT )   Rtt_ASSERT( !handleScope.Initialized() || Rtt::ObjectHandleScope::Current() == &handleScope ); \
                                                     const auto* NAME = reinterpret_cast< const Corona##TYPE* >( handleScope.Add( OBJECT, OBJECT_HANDLE_GET_TYPE( TYPE ) ) ); \
                                                     allStored = allStored &= NULL != NAME
 
-#define OBJECT_HANDLE_STORE_EXTERNAL( TYPE, NAME, OBJECT, REF ) handleScope.Set( REF, OBJECT, OBJECT_HANDLE_GET_TYPE( TYPE ) )
+#define OBJECT_HANDLE_STORE_LAZILY( TYPE, NAME, OBJECT, FORCE ) Rtt_ASSERT( !handleScope.Initialized() || Rtt::ObjectHandleScope::Current() == &handleScope ); \
+                                                                if ( !NAME || FORCE ) { \
+                                                                    Rtt_ASSERT( FORCE || !handleScope.Contains( OBJECT ) ); \
+                                                                    NAME = reinterpret_cast< const Corona##TYPE* >( handleScope.Add( OBJECT, OBJECT_HANDLE_GET_TYPE( TYPE ) ) ); \
+                                                                } \
+                                                                allStored = allStored &= NULL != NAME
+
+#define OBJECT_HANDLE_STORE_EXTERNAL( TYPE, NAME, OBJECT ) handleScope.Set( NAME, OBJECT, OBJECT_HANDLE_GET_TYPE( TYPE ) )
 
 #define OBJECT_HANDLE_LOAD( TYPE, HANDLE ) static_cast< Rtt::TYPE* >( Rtt::ObjectHandleScope::Extract( HANDLE, OBJECT_HANDLE_GET_TYPE( TYPE ) ) )
 

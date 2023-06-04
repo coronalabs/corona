@@ -92,12 +92,7 @@ ObjectHandleScope::ObjectHandleScope()
         
 ObjectHandleScope::~ObjectHandleScope()
 {
-    if ( Initialized() )
-    {
-        Rtt_ASSERT( this == sCurrent );
-
-        sCurrent = fPrevious;
-    }
+    Clear();
 }
 
 ObjectHandleScope*
@@ -167,6 +162,21 @@ ObjectHandleScope::Init()
     sCurrent = this;
 }
 
+void
+ObjectHandleScope::Clear()
+{
+    if ( Initialized() )
+    {
+        Rtt_ASSERT( this == sCurrent );
+
+        sCurrent = fPrevious;
+    }
+
+    fPrevious = NULL;
+    fHash = 0;
+    fBoxesUsed = 0;
+}
+
 ObjectHandleScope::Box* 
 ObjectHandleScope::FindFreeBox()
 {
@@ -194,7 +204,7 @@ ObjectHandleScope::FindBoxFromHandle( const uintptr_t& uintHandle ) const
 {
     Box* box = reinterpret_cast< Box* >( uintHandle & ~Box::kDynamicBit );
 
-    if ( box >= fBoxes && box < fBoxes + kTotal )
+    if ( box >= fBoxes && box < fBoxes + fBoxesUsed )
     {
         return box;
     }
@@ -220,7 +230,7 @@ ObjectHandleScope::Set( const ObjectHandleDummy* handle, const void* object, con
 
     if ( 0 == ( uintHandle & Box::kDynamicBit ) )
     {
-        Rtt_TRACE_SIM(( "ERROR: Slot for %s object not dynamic", type->GetName() ));
+        Rtt_TRACE_SIM(( "ERROR: Slot for `%s` not dynamic", type->GetName() ));
 
         return false;
     }
@@ -229,7 +239,7 @@ ObjectHandleScope::Set( const ObjectHandleDummy* handle, const void* object, con
 
     if ( NULL == box )
     {
-        Rtt_TRACE_SIM(( "ERROR: Handle for dynamic %s object not found in current scope", type->GetName() ));
+        Rtt_TRACE_SIM(( "ERROR: Handle for dynamic `%s` not found in any scope", type->GetName() ));
 
         return false;
     }
@@ -279,46 +289,35 @@ ObjectHandleScope::Extract( const ObjectHandleDummy* handle, const ObjectHandleD
 {
     Rtt_ASSERT( node && node->IsInitialized() );
 
+    uintptr_t uintHandle = HandleToUint( handle );
     const Box* box = NULL;
 
-    for ( const Self* scope = sCurrent; scope && !scope->OwnsHandle( handle, &box ); scope = scope->fPrevious ) {}
+    for ( const Self* scope = sCurrent; scope && !box; scope = scope->fPrevious )
+    {
+        box = scope->FindBoxFromHandle( scope->Mix( uintHandle ) );
+    }
 
     if ( NULL == box )
     {
-        Rtt_TRACE_SIM(( "ERROR: Handle for %s object not found in current scope", node->GetName() ));
+        Rtt_TRACE_SIM(( "ERROR: Handle for `%s` not found in any scope", node->GetName() ));
 
         return NULL;
     }
 
     if ( !node->IsCompatible( box->fType ) )
     {
-        Rtt_TRACE_SIM(( "ERROR: Expected %s but have %s", node->GetName(), box->fType->GetName() ));
+        Rtt_TRACE_SIM(( "ERROR: Expected `%s` but have `%s`", node->GetName(), box->fType->GetName() ));
 
         return NULL;
     }
 
     return box->fObject;
 }
-        
-bool
-ObjectHandleScope::OwnsHandle( const ObjectHandleDummy* handle, const Box** box ) const
-{
-    const Box* pBox = FindBoxFromHandle( Mix( HandleToUint( handle ) ) );
-
-    if ( NULL != pBox )
-    {
-        *box = pBox;
-
-        return true;
-    }
-
-    return false;
-}
 
 const ObjectHandleDummy::TypeNode*
 ObjectHandleScope::Contains( const void* object ) const
 {
-    for ( int i = 0; i < kTotal; i++ )
+    for ( int i = 0; i < fBoxesUsed; i++ )
     {
         if ( fBoxes[i].fObject == object )
         {
