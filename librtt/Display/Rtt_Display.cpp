@@ -804,8 +804,6 @@ Display::Capture( DisplayObject *object,
         x_in_pixels = 0;
         y_in_pixels = 0;
     }
-
-    
 #    if defined( Rtt_OPENGLES )
         const Texture::Format kFormat = Texture::kRGBA;
 #    else

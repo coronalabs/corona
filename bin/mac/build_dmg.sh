@@ -74,7 +74,7 @@ then
 	fi
 fi
 
-set -x 
+set -x
 
 if [[ -e "$TMPPATH" ]]
 then
@@ -122,6 +122,9 @@ fi
 
 mkdir -p "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Android"
 cp -v -X "$SRCROOT"/platform/android/resources/debug.keystore "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Android/"
+
+mkdir -p "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/iOS"
+ditto -v -X "$SRCROOT"/platform/iphone/Images.xcassets "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/iOS/Images.xcassets"
 
 if [ "$ENTERPRISE" != "" ]
 then
