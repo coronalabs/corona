@@ -57,7 +57,7 @@ then
 	# Get the base buildnum with a dash at the front of it suitable for concatenating with "${PRODUCT_DIR}"
 	# (the code that follows is ok with this not being set)
 	# shellcheck disable=2001
-	BUILD_NUM=$(echo "$FULL_BUILD_NUM" | sed -e 's/.*\.\(.*\)/-\1/')
+	BUILD_NUM=$(echo "$FULL_BUILD_NUM" | sed -e 's/[^.]*\.\(.*\)/-\1/')
 else
 	echo "Error: FULL_BUILD_NUM is a required parameter"
 	exit 1
