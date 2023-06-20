@@ -1981,8 +1981,74 @@ InitializeFixtureUsing_Radius( lua_State *L,
 			radius = Rtt_REAL_16TH;
 		}
 		circleDef.m_radius = Rtt_RealToFloat( radius );
-		
+
 		circleDef.m_p = ( center_in_pixels * meter_per_pixels_scale );
+
+		InitializeFixtureFromLua( L,
+									fixtureDef,
+									&circleDef,
+									lua_arg_index );
+
+		_FixtureCreator( body,
+							&fixtureDef,
+							fixtureIndex );
+
+		lua_pop( L, 1 );
+		return true;
+	}
+
+	lua_pop( L, 1 );
+	return false;
+}
+
+static bool
+InitializeFixtureUsing_Circle( lua_State *L,
+							int lua_arg_index,
+							int &fixtureIndex,
+							b2Vec2 &center_in_pixels,
+							DisplayObject *display_object,
+							b2Body *body,
+							float meter_per_pixels_scale )
+{
+	lua_getfield( L, lua_arg_index, "circle" );
+	if ( lua_istable( L, -1 ) )
+	{
+		DEBUG_PRINT( "%s\n", __FUNCTION__ );
+
+		Real pixels_per_meter_scale = ( 1.0f / meter_per_pixels_scale );
+		bool hasCenter = true;
+		//float angle = 0.f;
+
+		lua_getfield( L, -1, "x" );
+		hasCenter &= ( lua_type( L, -1 ) == LUA_TNUMBER );
+		Real x = luaL_torealphysics( L, -1, pixels_per_meter_scale );
+		lua_pop( L, 1 );
+
+		lua_getfield( L, -1, "y" );
+		hasCenter &= ( lua_type( L, -1 ) == LUA_TNUMBER );
+		Real y = luaL_torealphysics( L, -1, pixels_per_meter_scale );
+		lua_pop( L, 1 );
+
+		lua_getfield( L, -1, "radius" );
+		Real radius = Rtt_FloatToReal( lua_tonumber( L, -1 ) );
+		radius *= meter_per_pixels_scale; // Convert to meters.
+		lua_pop( L, 1 );
+
+		b2FixtureDef fixtureDef;
+
+		if( hasCenter )
+		{
+			center_in_pixels.Set( x, y );
+		}
+
+		b2CircleShape circleDef;
+		if ( radius < Rtt_REAL_0 )
+		{
+			radius = Rtt_REAL_16TH;
+		}
+		circleDef.m_radius = Rtt_RealToFloat( radius );
+
+		circleDef.m_p.Set(center_in_pixels.x, center_in_pixels.y);
 
 		InitializeFixtureFromLua( L,
 									fixtureDef,
@@ -2355,6 +2421,13 @@ add_b2Body_to_DisplayObject( lua_State *L,
 											body,
 											meter_per_pixels_scale ) ||
 				InitializeFixtureUsing_Box( L,
+											lua_arg_index,
+											fixtureIndex,
+											center_in_pixels,
+											display_object,
+											body,
+											meter_per_pixels_scale ) ||
+				InitializeFixtureUsing_Circle( L,
 											lua_arg_index,
 											fixtureIndex,
 											center_in_pixels,
