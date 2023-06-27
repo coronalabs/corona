@@ -58,7 +58,7 @@ class AppPackagerParams
 		bool fIncludeFusePlugins;
 		bool fUsesMonetization;
 		bool fLiveBuild;
-        bool fIncludeStandardResources;
+        bool fIncludeStandardResources = true;
 		String fCoronaUser;
 
 	public:

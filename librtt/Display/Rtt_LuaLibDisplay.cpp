@@ -18,6 +18,7 @@
 #include "Display/Rtt_ContainerObject.h"
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_DisplayDefaults.h"
+#include "Display/Rtt_EmitterObject.h"
 #include "Display/Rtt_GradientPaint.h"
 #include "Display/Rtt_GroupObject.h"
 #include "Display/Rtt_ImageSheetPaint.h"
@@ -1791,6 +1792,11 @@ DisplayLibrary::getDefault( lua_State *L )
 		RenderTypes::TextureWrap wrap = defaults.GetTextureWrapY();
 		lua_pushstring( L, RenderTypes::StringForTextureWrap( wrap ) );
 	}
+	else if ( Rtt_StringCompare( key, "emitterScaling" ) == 0 )
+	{
+		EmitterObject::Mapping mapping = (EmitterObject::Mapping)defaults.GetEmitterMapping();
+		lua_pushstring( L, EmitterObject::GetStringForMapping( mapping ) );
+	}
 	else if ( Rtt_StringCompare( key, "graphicsCompatibility" ) == 0 )
 	{
 		int version = defaults.IsV1Compatibility() ? 1 : 2;
@@ -1919,6 +1925,12 @@ DisplayLibrary::setDefault( lua_State *L )
 		const char *value = lua_tostring( L, index );
 		RenderTypes::TextureWrap wrap = RenderTypes::TextureWrapForString( value );
 		defaults.SetTextureWrapY( wrap );
+	}
+	else if ( Rtt_StringCompare( key, "emitterMapping" ) == 0 )
+	{
+		const char *value = lua_tostring( L, index );
+		EmitterObject::Mapping mapping = EmitterObject::GetMappingForString( value, EmitterObject::kMapping_Legacy );
+		defaults.SetEmitterMapping( (U8)mapping );
 	}
 	else if ( Rtt_StringCompare( key, "preloadTextures" ) == 0 )
 	{
@@ -2112,6 +2124,11 @@ DisplayLibrary::capture( lua_State *L )
 														saveToFile,
 														false,
 														cropObjectToScreenBounds );
+    
+    //Rerender and Invalidate to prevent errors on start up
+    display.Invalidate();
+    display.Render();
+    
 	if( ! paint )
 	{
 		CoronaLuaError(L, "display.capture() unable to capture screen. The platform or device might not be supported" );
@@ -2533,14 +2550,14 @@ DisplayLibrary::colorSample( lua_State *L )
 	LuaResource *resource = Rtt_NEW( LuaContext::GetAllocator( L ),
 										LuaResource( LuaContext::GetContext( L )->LuaState(),
 														3 /*!< Callback index. */ ) );
-
 	RGBA color;
 	color.Clear();
-
+    
 	display.ColorSample( pos_x,
 							pos_y,
 							color );
-
+    display.Render(); // rerender if no texture has been created
+    
 	ColorSampleEvent e( pos_x,
 							pos_y,
 							color );
