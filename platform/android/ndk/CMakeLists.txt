@@ -507,6 +507,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Rtt_Preference.cpp
 		${CORONA_ROOT}/librtt/Rtt_PreferenceCollection.cpp
 		${CORONA_ROOT}/librtt/Rtt_PreferenceValue.cpp
+		${CORONA_ROOT}/librtt/Rtt_Profiling.cpp
 		${CORONA_ROOT}/librtt/Rtt_RenderingStream.cpp
 		${CORONA_ROOT}/librtt/Rtt_Resource.cpp
 		${CORONA_ROOT}/librtt/Rtt_Runtime.cpp

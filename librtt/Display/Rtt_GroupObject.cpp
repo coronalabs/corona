@@ -18,6 +18,8 @@
 #include "Renderer/Rtt_Renderer.h"
 #include "Rtt_LuaProxyVTable.h"
 
+#include "Rtt_Profiling.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -101,6 +103,8 @@ GroupObject::UpdateTransform( const Matrix& parentToDstSpace )
 
 	if ( ShouldHitTest() )
 	{
+		SUMMED_TIMING( gut, "Group: post-Super::UpdateTransform" );
+
 		Rect screenBounds;
 
 		// Ensure receiver points to same stage as its parent
@@ -111,6 +115,8 @@ GroupObject::UpdateTransform( const Matrix& parentToDstSpace )
 		// Get cull bounds
 		if ( stage )
 		{
+			SUMMED_TIMING( gcb, "Group: Get Cull Bounds" );
+
 			const Rect *snapshotBounds = stage->GetSnapshotBounds();
 			screenBounds = ( snapshotBounds
 				? (* snapshotBounds)
@@ -120,6 +126,8 @@ GroupObject::UpdateTransform( const Matrix& parentToDstSpace )
 		const Matrix& xform = GetSrcToDstMatrix();
 
 		U8 alphaCumulativeFromAncestors = AlphaCumulative();
+
+		SUMMED_TIMING( ed, "Group: Visit Children" );
 
 		for ( S32 i = 0, iMax = fChildren.Length(); i < iMax; i++ )
 		{
@@ -141,8 +149,14 @@ GroupObject::UpdateTransform( const Matrix& parentToDstSpace )
 				// Only leaf nodes are culled, so we only need to build stage bounds
 				// of leaf nodes to determine if they should be culled.
 // TODO: BuildStageBounds is expensive --- accumulate iteratively if numChildren is large
-				child->BuildStageBounds();
-				child->CullOffscreen( screenBounds );
+				{
+					SUMMED_TIMING( bsb, "Group: Build Child Stage Bounds" );
+					child->BuildStageBounds();
+				}
+				{
+					SUMMED_TIMING( co, "Group: Cull Offscreen" );
+					child->CullOffscreen( screenBounds );
+				}
 			}
 		}
 	}
@@ -158,6 +172,8 @@ GroupObject::Prepare( const Display& display )
 	// Only build if is visible in the hittest sense
 	if ( ShouldHitTest() )
 	{
+		SUMMED_TIMING( gp, "Group: post-Super::Prepare" );
+
 		// A child's build can be invalidated, so always traverse children
 
 		// Propagate certain flags to children
@@ -196,6 +212,8 @@ GroupObject::Draw( Renderer& renderer ) const
 	{
 		Rtt_ASSERT( ! IsDirty() );
 		Rtt_ASSERT( ! IsOffScreen() );
+
+		SUMMED_TIMING( gd, "Group: Draw" );
 
 		// TODO: This needs to be done in the Build stage...
 ///		U8 oldAlpha = renderer.SetAlpha( Alpha(), true );
@@ -318,6 +336,8 @@ GroupObject::Insert( S32 index, DisplayObject* newChild, bool resetTransform )
 		
 		if ( oldParent != this )
 		{
+			SUMMED_TIMING( np, "Group: Insert (new parent)" );
+
 			// Leave it up to the caller to decide the semantics of insertion.
 			// For newly-created object, we don't want to reset the transform
 			// b/c we also need to translate it to the specified position.
@@ -333,6 +353,8 @@ GroupObject::Insert( S32 index, DisplayObject* newChild, bool resetTransform )
 			// If newChild had a parent, remove it
 			if ( oldParent )
 			{
+				SUMMED_TIMING( rc, "Group: Insert (release child)" );
+
 				oldParent->Release( oldParent->Find( * newChild ) );
 			}
 
@@ -346,6 +368,8 @@ GroupObject::Insert( S32 index, DisplayObject* newChild, bool resetTransform )
 		}
 		else
 		{
+			SUMMED_TIMING( sp, "Group: Insert (same parent)" );
+
 			// newChild already belongs in this group
 			S32 oldIndex = oldParent->Find( * newChild );
 
@@ -395,6 +419,8 @@ GroupObject::Release( S32 index )
 S32
 GroupObject::Find( const DisplayObject& child ) const
 {
+	SUMMED_TIMING( fc, "Group: Find child" );
+
 	S32 i = 0, iMax = fChildren.Length();
 	for ( ;
 		  i < iMax && ( & child != fChildren[i] );
