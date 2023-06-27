@@ -18,6 +18,7 @@
 #include "Display/Rtt_ContainerObject.h"
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_DisplayDefaults.h"
+#include "Display/Rtt_EmitterObject.h"
 #include "Display/Rtt_GradientPaint.h"
 #include "Display/Rtt_GroupObject.h"
 #include "Display/Rtt_ImageSheetPaint.h"
@@ -1773,6 +1774,11 @@ DisplayLibrary::getDefault( lua_State *L )
 		RenderTypes::TextureWrap wrap = defaults.GetTextureWrapY();
 		lua_pushstring( L, RenderTypes::StringForTextureWrap( wrap ) );
 	}
+	else if ( Rtt_StringCompare( key, "emitterScaling" ) == 0 )
+	{
+		EmitterObject::Mapping mapping = (EmitterObject::Mapping)defaults.GetEmitterMapping();
+		lua_pushstring( L, EmitterObject::GetStringForMapping( mapping ) );
+	}
 	else if ( Rtt_StringCompare( key, "graphicsCompatibility" ) == 0 )
 	{
 		int version = defaults.IsV1Compatibility() ? 1 : 2;
@@ -1901,6 +1907,12 @@ DisplayLibrary::setDefault( lua_State *L )
 		const char *value = lua_tostring( L, index );
 		RenderTypes::TextureWrap wrap = RenderTypes::TextureWrapForString( value );
 		defaults.SetTextureWrapY( wrap );
+	}
+	else if ( Rtt_StringCompare( key, "emitterMapping" ) == 0 )
+	{
+		const char *value = lua_tostring( L, index );
+		EmitterObject::Mapping mapping = EmitterObject::GetMappingForString( value, EmitterObject::kMapping_Legacy );
+		defaults.SetEmitterMapping( (U8)mapping );
 	}
 	else if ( Rtt_StringCompare( key, "preloadTextures" ) == 0 )
 	{

@@ -224,6 +224,26 @@ public:
 
 	////
 	//
+	enum Mapping
+	{
+		kMapping_Legacy = 0, // Default. Fixed size across all scales.
+		kMapping_Rescale, // Rescale particles to absolutePosition.
+		kMapping_RescaleX, // Uniform particle rescale, using x-axis as measure.
+		kMapping_RescaleY, // Uniform particle rescale, using y-axis as measure.
+		kMapping_RescaleMin, // Uniform particle rescale, using shorter axis as measure.
+		kMapping_RescaleMax, // Uniform particle rescale, using longer axis as measure.
+		kMapping_RescaleMean, // Uniform particle rescale, using average of axis lengths.
+
+		kMapping_Count
+	};
+
+	Mapping GetMapping() const { return fMapping; }
+
+	static const char* GetStringForMapping( Mapping mapping );
+	static Mapping GetMappingForString( const char* string, Mapping def );
+
+	////
+	//
 	enum State
 	{
 		kState_Playing, // Default. Emits particles.
@@ -322,8 +342,10 @@ private:
 	EmitterObjectParticle *fParticles;
 
 	int fParticleCount;
-
+	
+	Mapping fMapping;
 	State fState;
+
 	//
 	////
 
