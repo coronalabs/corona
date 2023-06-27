@@ -30,6 +30,8 @@
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
 
+#include "Rtt_Profiling.h"
+
 #include "Rtt_GPUStream.h"
 
 #define ENABLE_DEBUG_PRINT	0
@@ -962,31 +964,35 @@ Renderer::Render()
 void
 Renderer::Swap()
 {
-    // Create GPUResources
-    Rtt_AbsoluteTime start = START_TIMING();
-    for(S32 i = 0; i < fCreateQueue.Length(); ++i)
-    {
-        CPUResource* data = fCreateQueue[i];
-        GPUResource* gpuResource = data->GetGPUResource();
-        gpuResource->Create( data );
-    }
-    fCreateQueue.Remove(0, fCreateQueue.Length(), false);
-    fStatistics.fResourceCreateTime = STOP_TIMING(start);
+	ENABLE_SUMMED_TIMING( true );
 
-    // Update GPUResources
-    start = START_TIMING();
-    for(S32 i = 0; i < fUpdateQueue.Length(); ++i)
-    {
-        CPUResource* data = fUpdateQueue[i];
-        data->GetGPUResource()->Update( data );
-    }
-    fUpdateQueue.Remove(0, fUpdateQueue.Length(), false);
-    fStatistics.fResourceUpdateTime = STOP_TIMING(start);
+	// Create GPUResources
+	Rtt_AbsoluteTime start = START_TIMING();
+	for(S32 i = 0; i < fCreateQueue.Length(); ++i)
+	{
+		CPUResource* data = fCreateQueue[i];
+		GPUResource* gpuResource = data->GetGPUResource();
+		gpuResource->Create( data );
+	}
+	fCreateQueue.Remove(0, fCreateQueue.Length(), false);
+	fStatistics.fResourceCreateTime = STOP_TIMING(start);
 
-    // Destroy GPUResources
-    start = START_TIMING();
-    DestroyQueuedGPUResources();
-    fStatistics.fResourceDestroyTime = STOP_TIMING(start);
+	// Update GPUResources
+	start = START_TIMING();
+	for(S32 i = 0; i < fUpdateQueue.Length(); ++i)
+	{
+		CPUResource* data = fUpdateQueue[i];
+		data->GetGPUResource()->Update( data );
+	}
+	fUpdateQueue.Remove(0, fUpdateQueue.Length(), false);
+	fStatistics.fResourceUpdateTime = STOP_TIMING(start);
+	
+	ENABLE_SUMMED_TIMING( false );
+
+	// Destroy GPUResources
+	start = START_TIMING();
+	DestroyQueuedGPUResources();
+	fStatistics.fResourceDestroyTime = STOP_TIMING(start);
 
     CommandBuffer* temp = fFrontCommandBuffer;
     fFrontCommandBuffer = fBackCommandBuffer;

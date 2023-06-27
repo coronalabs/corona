@@ -24,6 +24,7 @@
 #include "Rtt_PlatformSurface.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_PhysicsWorld.h"
+#include "Rtt_Profiling.h"
 
 ////
 //
@@ -197,64 +198,83 @@ Scene::Clear( Renderer& renderer )
     renderer.Clear( c.rgba.r * inv255, c.rgba.g * inv255, c.rgba.b * inv255, c.rgba.a * inv255, &extra );
     renderer.BeginDrawing();
 }
+
+#define ADD_ENTRY( what ) if ( profiling ) { profiling->AddEntry( what ); }
+
 void
-Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
+Scene::Render( Renderer& renderer, PlatformSurface& rTarget, Profiling* profiling )
 {
     Rtt_ASSERT( fCurrentStage );
 
-    U8 drawMode = fOwner.GetDrawMode();
+	U8 drawMode = fOwner.GetDrawMode();
+	
+	if ( ! IsValid() )
+	{
+		const Rtt::Real kMillisecondsPerSecond = 1000.0f;
+		Rtt_AbsoluteTime elapsedTime = fOwner.GetElapsedTime();
+		Rtt::Real totalTime = Rtt_AbsoluteToMilliseconds( elapsedTime ) / kMillisecondsPerSecond;
+		Rtt::Real deltaTime = Rtt_AbsoluteToMilliseconds( elapsedTime - fOwner.GetPreviousTime() ) / kMillisecondsPerSecond;
 
-    if ( ! IsValid() )
-    {
-        const Rtt::Real kMillisecondsPerSecond = 1000.0f;
-        Rtt_AbsoluteTime elapsedTime = fOwner.GetElapsedTime();
-        Rtt::Real totalTime = Rtt_AbsoluteToMilliseconds( elapsedTime ) / kMillisecondsPerSecond;
-        Rtt::Real deltaTime = Rtt_AbsoluteToMilliseconds( elapsedTime - fOwner.GetPreviousTime() ) / kMillisecondsPerSecond;
+		renderer.BeginFrame( totalTime, deltaTime, fOwner.GetDefaults().GetTimeTransform(), fOwner.GetSx(), fOwner.GetSy() );
+		
+		ADD_ENTRY( "Scene: Begin Render" );
+		
+		fOwner.GetTextureFactory().Preload( renderer );
 
-        renderer.BeginFrame( totalTime, deltaTime, fOwner.GetDefaults().GetTimeTransform(), fOwner.GetSx(), fOwner.GetSy() );
-        
-        fOwner.GetTextureFactory().Preload( renderer );
-        fOwner.GetTextureFactory().UpdateTextures(renderer);
+		ADD_ENTRY( "Scene: Preload" );
+		
+		fOwner.GetTextureFactory().UpdateTextures(renderer);
+		
+		ADD_ENTRY( "Scene: UpdateTextures" );
+		
+		// Set antialiasing once:
+		// NOTE: Assumes Runtime::ReadConfig() has already have been called.
+		bool isMultisampleEnabled = fOwner.IsAntialiased();
+		renderer.SetMultisampleEnabled( isMultisampleEnabled );
 
-        // Set antialiasing once:
-        // NOTE: Assumes Runtime::ReadConfig() has already have been called.
-        bool isMultisampleEnabled = fOwner.IsAntialiased();
-        renderer.SetMultisampleEnabled( isMultisampleEnabled );
+		renderer.SetViewport( 0, 0, fOwner.WindowWidth(), fOwner.WindowHeight() );
+		
+		glm::mat4 viewMatrix;
+		glm::mat4 projMatrix;
+		fOwner.GetViewProjectionMatrix(viewMatrix, projMatrix);
+		renderer.SetFrustum( glm::value_ptr(viewMatrix), glm::value_ptr(projMatrix) );
 
-        renderer.SetViewport( 0, 0, fOwner.WindowWidth(), fOwner.WindowHeight() );
-        
-        glm::mat4 viewMatrix;
-        glm::mat4 projMatrix;
-        fOwner.GetViewProjectionMatrix(viewMatrix, projMatrix);
-        renderer.SetFrustum( glm::value_ptr(viewMatrix), glm::value_ptr(projMatrix) );
-        
-        Clear( renderer );
+		ADD_ENTRY( "Scene: Setup" );
+		
+		Clear( renderer );
 
-        Matrix identity;
-        StageObject *canvas = fCurrentStage;
-        canvas->UpdateTransform( identity );
-        canvas->Prepare( fOwner );
+		Matrix identity;
+		StageObject *canvas = fCurrentStage;
 
-        canvas->WillDraw( renderer );
-        {
-            // In PhysicsDebugDrawMode, do NOT draw display objects
-            if ( drawMode < Display::kPhysicsDebugDrawMode )
-            {
-                fOwner.SetWireframe( Display::kWireframeDrawMode == drawMode );
-                canvas->Draw( renderer );
-                fOwner.SetWireframe( false );
-            }
+		ENABLE_SUMMED_TIMING( true );
 
-            // Only draw physics debug info for physics-based draw modes
-            if ( drawMode >= Display::kPhysicsHybridDrawMode )
-            {
-                fOwner.GetRuntime().GetPhysicsWorld().DebugDraw( renderer );
-            }
-        }
-        canvas->DidDraw( renderer );
+		canvas->UpdateTransform( identity );
+		canvas->Prepare( fOwner );
+		
+		ADD_ENTRY( "Scene: Issue Clear Command" );
+		
+		canvas->WillDraw( renderer );
+		{
+			// In PhysicsDebugDrawMode, do NOT draw display objects
+			if ( drawMode < Display::kPhysicsDebugDrawMode )
+			{
+				fOwner.SetWireframe( Display::kWireframeDrawMode == drawMode );
+				canvas->Draw( renderer );
+				fOwner.SetWireframe( false );
+			}
 
-        // Draw overlay *last* because it goes above everything else.
-        // This draws the status bar of the device.
+			// Only draw physics debug info for physics-based draw modes
+			if ( drawMode >= Display::kPhysicsHybridDrawMode )
+			{
+				fOwner.GetRuntime().GetPhysicsWorld().DebugDraw( renderer );
+			}
+		}
+		canvas->DidDraw( renderer );
+		
+		ENABLE_SUMMED_TIMING( false );
+
+		// Draw overlay *last* because it goes above everything else.
+		// This draws the status bar of the device.
 
 #if Rtt_DisableOverlay == 0
         RenderOverlay( fOwner, renderer, identity );
@@ -262,23 +282,34 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget )
 
         renderer.EndFrame();
 
-        // When shader code depends on time, then frame is time-dependent.
-        // So only set valid when frame is *in*dependent of time.
-        if ( ! renderer.IsFrameTimeDependent() )
-        {
-            fIsValid = true;
-        }
-        
-        renderer.Swap(); // Swap back and front command buffers
-        renderer.Render(); // Render front command buffer
-        
-//        renderer.GetFrameStatistics().Log();
-        
-        rTarget.Flush();
-    }
-    
-    // This needs to be done at the sync point (DMZ)
-    Collect();
+		// When shader code depends on time, then frame is time-dependent.
+		// So only set valid when frame is *in*dependent of time.
+		if ( ! renderer.IsFrameTimeDependent() )
+		{
+			fIsValid = true;
+		}
+		
+		ADD_ENTRY( "Scene: Issue Draw Commands" );
+		
+		renderer.Swap(); // Swap back and front command buffers
+		
+		ADD_ENTRY( "Scene: Swap" );
+		
+		renderer.Render(); // Render front command buffer
+		
+//		renderer.GetFrameStatistics().Log();
+		
+		ADD_ENTRY( "Scene: Process Render Commands" );
+
+		rTarget.Flush();
+
+		ADD_ENTRY( "Scene: Flush" );
+	}
+	
+	// This needs to be done at the sync point (DMZ)
+	Collect();
+	
+	ADD_ENTRY( "Scene: Collect" );
 }
 
 void
@@ -309,6 +340,8 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, DisplayObject& obje
         fIsValid = true;
     }
 }
+
+#undef ADD_ENTRY
 
 void
 Scene::RenderOverlay( Display& display, Renderer& renderer, const Matrix& srcToDstSpace )

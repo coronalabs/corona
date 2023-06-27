@@ -19,6 +19,8 @@
     #include <EGL/egl.h>
 #endif
 
+#include "Rtt_Profiling.h"
+
 #include <stdio.h>
 #include <stddef.h>
 
@@ -422,19 +424,21 @@ GLGeometry::SpliceVertexRateData( const Geometry::Vertex* vertexData, Geometry::
 void
 GLGeometry::Create( CPUResource* resource )
 {
-    Rtt_ASSERT( CPUResource::kGeometry == resource->GetType() );
-    Geometry* geometry = static_cast<Geometry*>( resource );
+	Rtt_ASSERT( CPUResource::kGeometry == resource->GetType() );
+	Geometry* geometry = static_cast<Geometry*>( resource );
+	
+	bool shouldStoreOnGPU = geometry->GetStoredOnGPU();
+	if ( shouldStoreOnGPU )
+	{
+		SUMMED_TIMING( glgcs, "Geometry GPU Resource (stored on GPU): Create" );
 
-    bool shouldStoreOnGPU = geometry->GetStoredOnGPU();
-    if ( shouldStoreOnGPU )
-    {
-        if ( isVertexArrayObjectSupported() )
-        {
-            createVertexArrayObject( geometry, fVAO, fVBO, fIBO );
-        }
-        else
-        {
-            createVBO( geometry, fVBO, fIBO );
+		if ( isVertexArrayObjectSupported() )
+		{
+			createVertexArrayObject( geometry, fVAO, fVBO, fIBO );
+		}
+		else
+		{
+			createVBO( geometry, fVBO, fIBO );
 
             Geometry::Vertex kVertex; // Uninitialized! Used for offset calculation only.
 
@@ -465,8 +469,10 @@ GLGeometry::Create( CPUResource* resource )
 void
 GLGeometry::Update( CPUResource* resource )
 {
-    Rtt_ASSERT( CPUResource::kGeometry == resource->GetType() );
-    Geometry* geometry = static_cast<Geometry*>( resource );
+	SUMMED_TIMING( glgu, "Geometry GPU Resource: Update" );
+
+	Rtt_ASSERT( CPUResource::kGeometry == resource->GetType() );
+	Geometry* geometry = static_cast<Geometry*>( resource );
 
     const FormatExtensionList* extensionList = geometry->GetExtensionList();
     bool gainedExtension = -1 == fInstancesAllocated && NULL != extensionList;

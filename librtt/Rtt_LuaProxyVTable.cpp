@@ -49,6 +49,7 @@
 #include <string.h>
 
 #include "Rtt_Lua.h"
+#include "Rtt_Profiling.h"
 
 // ----------------------------------------------------------------------------
 
@@ -3835,20 +3836,22 @@ LuaGroupObjectProxyVTable::Insert( lua_State *L, GroupObject *parent )
 {
     int index = (int) lua_tointeger( L, 2 );
 
-    int childIndex = 3; // index of child object (table owned by proxy)
-    if ( 0 == index )
-    {
-        // Optional index arg missing, so insert at end
-        --childIndex;
-        index = parent->NumChildren();
-    }
-    else
-    {
-        // Map Lua indices to C++ indices
-        --index;
-    }
-    Rtt_ASSERT( index >= 0 );
-    Rtt_ASSERT( lua_istable( L, childIndex ) );
+	ENABLE_SUMMED_TIMING( true );
+
+	int childIndex = 3; // index of child object (table owned by proxy)
+	if ( 0 == index )
+	{
+		// Optional index arg missing, so insert at end
+		--childIndex;
+		index = parent->NumChildren();
+	}
+	else
+	{
+		// Map Lua indices to C++ indices
+		--index;
+	}
+	Rtt_ASSERT( index >= 0 );
+	Rtt_ASSERT( lua_istable( L, childIndex ) );
 
     // Default to false if no arg specified
     bool resetTransform = lua_toboolean( L, childIndex + 1 ) != 0;
@@ -3860,26 +3863,30 @@ LuaGroupObjectProxyVTable::Insert( lua_State *L, GroupObject *parent )
         {
             GroupObject* oldParent = child->GetParent();
 
-            // Display an error if they're indexing beyond the array (bug http://bugs.coronalabs.com/?18838 )
-            const S32 maxIndex = parent->NumChildren();
-            if ( index > maxIndex || index < 0 )
-            {
-                CoronaLuaWarning(L, "group index %d out of range (should be 1 to %d)", (index+1), maxIndex );
-            }
-            
-            parent->Insert( index, child, resetTransform );
+			// Display an error if they're indexing beyond the array (bug http://bugs.coronalabs.com/?18838 )
+			const S32 maxIndex = parent->NumChildren();
+			if ( index > maxIndex || index < 0 )
+			{
+				CoronaLuaWarning(L, "group index %d out of range (should be 1 to %d)", (index+1), maxIndex );
+			}
 
-            // Detect re-insertion of a child back onto the display --- when a
-            // child is placed into a new parent that has a canvas and the oldParent
-            // was the Orphanage(), then re-acquire a lua ref for the proxy
-            if ( oldParent != parent )
-            {
-                StageObject* canvas = parent->GetStage();
-                if ( canvas && oldParent == canvas->GetDisplay().Orphanage() )
-                {
-                    lua_pushvalue( L, childIndex ); // push table representing child
-                    child->GetProxy()->AcquireTableRef( L ); // reacquire a ref for table
-                    lua_pop( L, 1 );
+			SUMMED_TIMING( pi, "Group: Insert (into parent)" );
+			
+			parent->Insert( index, child, resetTransform );
+
+			SUMMED_TIMING( ai, "Group: Insert (post-parent insert)" );
+
+			// Detect re-insertion of a child back onto the display --- when a
+			// child is placed into a new parent that has a canvas and the oldParent 
+			// was the Orphanage(), then re-acquire a lua ref for the proxy
+			if ( oldParent != parent )
+			{
+				StageObject* canvas = parent->GetStage();
+				if ( canvas && oldParent == canvas->GetDisplay().Orphanage() )
+				{
+					lua_pushvalue( L, childIndex ); // push table representing child
+					child->GetProxy()->AcquireTableRef( L ); // reacquire a ref for table
+					lua_pop( L, 1 );
 
                     child->WillMoveOnscreen();
                 }
@@ -3895,6 +3902,7 @@ LuaGroupObjectProxyVTable::Insert( lua_State *L, GroupObject *parent )
         luaL_error( L, "ERROR: attempt to insert display object into itself" );
     }
 
+	ENABLE_SUMMED_TIMING( false );
 
     return 0;
 }
@@ -3923,16 +3931,20 @@ LuaDisplayObjectProxyVTable::PushAndRemove( lua_State *L, GroupObject* parent, S
             Rtt_ASSERT( LuaContext::GetRuntime( L )->GetDisplay().HitTestOrphanage() != parent
                         || LuaContext::GetRuntime( L )->GetDisplay().Orphanage() != parent );
 
-            DisplayObject* child = parent->Release( index );
+			SUMMED_TIMING( par1, "Object: PushAndRemove (release)" );
 
-            if (child != NULL)
-            {
-                // If child is the same as global focus, clear global focus
-                DisplayObject *globalFocus = stage->GetFocus();
-                if ( globalFocus == child )
-                {
-                    stage->SetFocus( NULL );
-                }
+			DisplayObject* child = parent->Release( index );
+
+			if (child != NULL)
+			{
+				SUMMED_TIMING( par2, "Object: PushAndRemove (rest)" );
+
+				// If child is the same as global focus, clear global focus
+				DisplayObject *globalFocus = stage->GetFocus();
+				if ( globalFocus == child )
+				{
+					stage->SetFocus( NULL );
+				}
 
                 // Always the per-object focus
                 stage->SetFocus( child, NULL );

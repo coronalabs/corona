@@ -88,15 +88,17 @@ namespace /*anonymous*/
     struct Mat3 { Rtt::Real data[9]; };
     struct Mat4 { Rtt::Real data[16]; };
 
-    // NOT USED: const Rtt::Real kNanosecondsToMilliseconds = 1.0f / 1000000.0f;
-    const U32 kTimerQueryCount = 3;
-    
-    // The Uniform timestamp counter must be the same for both the
-    // front and back CommandBuffers, though only one CommandBuffer
-    // will ever write the timestamp on any given frame. If it were
-    // ever the case that more than two CommandBuffers were used,
-    // this would need to be made a shared member variable.
-    static U32 gUniformTimestamp = 0;
+#ifdef ENABLE_GPU_TIMER_QUERIES
+    const Rtt::Real kNanosecondsToMilliseconds = 1.0f / 1000000.0f;
+#endif
+	const U32 kTimerQueryCount = 3;
+	
+	// The Uniform timestamp counter must be the same for both the
+	// front and back CommandBuffers, though only one CommandBuffer
+	// will ever write the timestamp on any given frame. If it were
+	// ever the case that more than two CommandBuffers were used,
+	// this would need to be made a shared member variable.
+	static U32 gUniformTimestamp = 0;
 
     // Extract location and data from buffer
     #define READ_UNIFORM_DATA( Type ) \

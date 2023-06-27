@@ -24,6 +24,7 @@
     #include <GLES2/gl2ext.h>
 #endif
 
+#include "Rtt_Profiling.h"
 #include "Display/Rtt_ShaderResource.h"
 #include "Corona/CoronaLog.h"
 
@@ -139,6 +140,8 @@ GLProgram::GLProgram()
 void
 GLProgram::Create( CPUResource* resource )
 {
+	SUMMED_TIMING( glpc, "Program GPU Resource: Create" );
+
 	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
 	fResource = resource;
 	
@@ -162,12 +165,14 @@ GLProgram::Create( CPUResource* resource )
 void
 GLProgram::Update( CPUResource* resource )
 {
-    Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
-    if( fData[Program::kMaskCount0].fProgram ) Update( Program::kMaskCount0, fData[Program::kMaskCount0] );
-    if( fData[Program::kMaskCount1].fProgram ) Update( Program::kMaskCount1, fData[Program::kMaskCount1] );
-    if( fData[Program::kMaskCount2].fProgram ) Update( Program::kMaskCount2, fData[Program::kMaskCount2] );
-    if( fData[Program::kMaskCount3].fProgram ) Update( Program::kMaskCount3, fData[Program::kMaskCount3] );
-    if( fData[Program::kWireframe].fProgram ) Update( Program::kWireframe, fData[Program::kWireframe]);
+	SUMMED_TIMING( glpu, "Program GPU Resource: Update" );
+
+	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );	
+	if( fData[Program::kMaskCount0].fProgram ) Update( Program::kMaskCount0, fData[Program::kMaskCount0] );
+	if( fData[Program::kMaskCount1].fProgram ) Update( Program::kMaskCount1, fData[Program::kMaskCount1] );
+	if( fData[Program::kMaskCount2].fProgram ) Update( Program::kMaskCount2, fData[Program::kMaskCount2] );
+	if( fData[Program::kMaskCount3].fProgram ) Update( Program::kMaskCount3, fData[Program::kMaskCount3] );
+	if( fData[Program::kWireframe].fProgram ) Update( Program::kWireframe, fData[Program::kWireframe]);
 }
 
 void

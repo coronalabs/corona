@@ -267,7 +267,8 @@ class Display
 		void ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const;
 
 		virtual void ContentToScreen( S32& x, S32& y ) const;
-		virtual void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
+        virtual void ContentToScreen( Rtt_Real& x, Rtt_Real& y, Rtt_Real& w, Rtt_Real& h ) const;
+        virtual void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
 		virtual void ContentToPixels( S32& x, S32& y, S32& w, S32& h ) const;
 
     public:

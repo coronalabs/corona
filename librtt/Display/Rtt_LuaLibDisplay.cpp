@@ -18,6 +18,7 @@
 #include "Display/Rtt_ContainerObject.h"
 #include "Display/Rtt_Display.h"
 #include "Display/Rtt_DisplayDefaults.h"
+#include "Display/Rtt_EmitterObject.h"
 #include "Display/Rtt_GradientPaint.h"
 #include "Display/Rtt_GroupObject.h"
 #include "Display/Rtt_ImageSheetPaint.h"
@@ -64,9 +65,11 @@
 #include "Display/Rtt_SpriteObject.h"
 #include "Display/Rtt_TextObject.h"
 #include "Renderer/Rtt_Texture.h"
+#include "Renderer/Rtt_Renderer.h"
 
 #include "Rtt_Event.h"
 #include "Rtt_LuaResource.h"
+#include "Rtt_Profiling.h"
 
 #include "Core/Rtt_StringHash.h"
 #include "Core/Rtt_String.h"
@@ -163,9 +166,16 @@ class DisplayLibrary
         static int captureBounds( lua_State *L );
         static int captureScreen( lua_State *L );
         static int save( lua_State *L );
-        static int colorSample( lua_State *L );
-        static int setDrawMode( lua_State *L );
-        static int getSafeAreaInsets( lua_State *L );
+		static int colorSample( lua_State *L );
+		static int setDrawMode( lua_State *L );
+		static int getSafeAreaInsets( lua_State *L );
+		static int enableStatistics( lua_State *L );
+		static int getStatistics( lua_State *L );
+		static int getSums( lua_State *L );
+		static int getTimings( lua_State *L );
+		static int _beginProfile( lua_State *L );
+		static int _addProfileEntry( lua_State *L );
+		static int _endProfile( lua_State *L );
 
     private:
         static void GetRect( lua_State *L, Rect &bounds );
@@ -199,37 +209,44 @@ DisplayLibrary::Open( lua_State *L )
     const char kMetatableName[] = __FILE__; // Globally unique string to prevent collision
     CoronaLuaInitializeGCMetatable( L, kMetatableName, Finalizer );
 
-    // Functions in library
-    const luaL_Reg kVTable[] =
-    {
-        { "newCircle", newCircle },
-        { "newPolygon", newPolygon },
-        { "newRect", newRect },
-        { "newRoundedRect", newRoundedRect },
-        { "newLine", newLine },
-        { "newImage", newImage },
-        { "newImageRect", newImageRect },
-        { "newEmitter", newEmitter },
-        { "newText", newText },
-        { "newEmbossedText", newEmbossedText },
-        { "newGroup", newGroup },
-        { "newContainer", newContainer },
-        { "_newContainer", _newContainer },
-        { "newSnapshot", newSnapshot },
-        { "newSprite", newSprite },
-        { "newMesh", newMesh },
-        { "getDefault", getDefault },
-        { "setDefault", setDefault },
-        { "getCurrentStage", getCurrentStage },
-        { "_collectOrphans", collectOrphans },
-        { "setStatusBar", setStatusBar },
-        { "capture", capture },
-        { "captureBounds", captureBounds },
-        { "captureScreen", captureScreen },
-        { "save", save },
-        { "colorSample", colorSample },
-        { "setDrawMode", setDrawMode },
-        { "getSafeAreaInsets", getSafeAreaInsets },
+	// Functions in library
+	const luaL_Reg kVTable[] =
+	{
+		{ "newCircle", newCircle },
+		{ "newPolygon", newPolygon },
+		{ "newRect", newRect },
+		{ "newRoundedRect", newRoundedRect },
+		{ "newLine", newLine },
+		{ "newImage", newImage },
+		{ "newImageRect", newImageRect },
+		{ "newEmitter", newEmitter },
+		{ "newText", newText },
+		{ "newEmbossedText", newEmbossedText },
+		{ "newGroup", newGroup },
+		{ "newContainer", newContainer },
+		{ "_newContainer", _newContainer },
+		{ "newSnapshot", newSnapshot },
+		{ "newSprite", newSprite },
+		{ "newMesh", newMesh },
+		{ "getDefault", getDefault },
+		{ "setDefault", setDefault },
+		{ "getCurrentStage", getCurrentStage },
+		{ "_collectOrphans", collectOrphans },
+		{ "setStatusBar", setStatusBar },
+		{ "capture", capture },
+		{ "captureBounds", captureBounds },
+		{ "captureScreen", captureScreen },
+		{ "save", save },
+		{ "colorSample", colorSample },
+		{ "setDrawMode", setDrawMode },
+		{ "getSafeAreaInsets", getSafeAreaInsets },
+		{ "enableStatistics", enableStatistics },
+		{ "getStatistics", getStatistics },
+		{ "getSums", getSums },
+		{ "getTimings", getTimings },
+		{ "_beginProfile", _beginProfile },
+		{ "_addProfileEntry", _addProfileEntry },
+		{ "_endProfile", _endProfile },
 
         { NULL, NULL }
     };
@@ -299,7 +316,9 @@ DisplayLibrary::Finalizer( lua_State *L )
 
     delete library;
 
-    return 0;
+	Profiling::DestroyAll( L );
+	
+	return 0;
 }
 
 DisplayLibrary *
@@ -1844,90 +1863,95 @@ DisplayLibrary::getDefault( lua_State *L )
 
     DisplayDefaults& defaults = display.GetDefaults();
 
-    if ( Rtt_StringCompare( key, "anchorX" ) == 0 )
-    {
-        lua_pushnumber( L, defaults.GetAnchorX() );
-    }
-    else if ( Rtt_StringCompare( key, "anchorY" ) == 0 )
-    {
-        lua_pushnumber( L, defaults.GetAnchorY() );
-    }
-    else if ( Rtt_StringCompare( key, "fillColor" ) == 0 )
-    {
-        Color c = defaults.GetFillColor();
-        result = PushColor( L, c, defaults.IsByteColorRange() );
-    }
-    else if ( Rtt_StringCompare( key, "strokeColor" ) == 0 )
-    {
-        Color c = defaults.GetStrokeColor();
-        result = PushColor( L, c, defaults.IsByteColorRange() );
-    }
-    else if ( Rtt_StringCompare( key, "lineColor" ) == 0 )
-    {
-        Color c = defaults.GetLineColor();
-        result = PushColor( L, c, defaults.IsByteColorRange() );
-    }
-    else if ( Rtt_StringCompare( key, "background" ) == 0 )
-    {
-        Color c = defaults.GetClearColor();
-        result = PushColor( L, c, defaults.IsByteColorRange() );
-    }
-    else if ( Rtt_StringCompare( key, "magTextureFilter" ) == 0 )
-    {
-        RenderTypes::TextureFilter filter = defaults.GetMagTextureFilter();
-        lua_pushstring( L, RenderTypes::StringForTextureFilter( filter ) );
-    }
-    else if ( Rtt_StringCompare( key, "minTextureFilter" ) == 0 )
-    {
-        RenderTypes::TextureFilter filter = defaults.GetMinTextureFilter();
-        lua_pushstring( L, RenderTypes::StringForTextureFilter( filter ) );
-    }
-    else if ( Rtt_StringCompare( key, "textureWrapX" ) == 0 )
-    {
-        RenderTypes::TextureWrap wrap = defaults.GetTextureWrapX();
-        lua_pushstring( L, RenderTypes::StringForTextureWrap( wrap ) );
-    }
-    else if ( Rtt_StringCompare( key, "textureWrapY" ) == 0 )
-    {
-        RenderTypes::TextureWrap wrap = defaults.GetTextureWrapY();
-        lua_pushstring( L, RenderTypes::StringForTextureWrap( wrap ) );
-    }
-    else if ( Rtt_StringCompare( key, "graphicsCompatibility" ) == 0 )
-    {
-        int version = defaults.IsV1Compatibility() ? 1 : 2;
-        lua_pushinteger( L, version );
-    }
-    else if ( Rtt_StringCompare( key, "isByteColorRange" ) == 0 )
-    {
-        bool isByteColorRange = defaults.IsByteColorRange();
-        lua_pushboolean( L, isByteColorRange );
-    }
-    else if ( Rtt_StringCompare( key, "isNativeTextFieldFontSizeScaled" ) == 0 )
-    {
-        bool value = defaults.IsNativeTextFieldFontSizeScaled();
-        lua_pushboolean( L, value ? 1 : 0 );
-    }
-    else if ( Rtt_StringCompare( key, "isNativeTextBoxFontSizeScaled" ) == 0 )
-    {
-        bool value = defaults.IsNativeTextBoxFontSizeScaled();
-        lua_pushboolean( L, value ? 1 : 0 );
-    }
-    else if ( Rtt_StringCompare( key, "isShaderCompilerVerbose" ) == 0 )
-    {
-        bool value = defaults.IsShaderCompilerVerbose();
-        lua_pushboolean( L, value ? 1 : 0 );
-    }
-    else if ( ( Rtt_StringCompare( key, "isAnchorClamped" ) == 0 ) )
-    {
-        bool value = defaults.IsAnchorClamped();
-        lua_pushboolean( L, value ? 1 : 0 );
-    }
-    else if ( ( Rtt_StringCompare( key, "isImageSheetSampledInsideFrame" ) == 0 ) )
-    {
-        bool value = defaults.IsImageSheetSampledInsideFrame();
-        lua_pushboolean( L, value ? 1 : 0 );
-    }
-    else if ( ( Rtt_StringCompare( key, "isImageSheetFrameTrimCorrected" ) == 0 ) )
+	if ( Rtt_StringCompare( key, "anchorX" ) == 0 )
+	{
+		lua_pushnumber( L, defaults.GetAnchorX() );
+	}
+	else if ( Rtt_StringCompare( key, "anchorY" ) == 0 )
+	{
+		lua_pushnumber( L, defaults.GetAnchorY() );
+	}
+	else if ( Rtt_StringCompare( key, "fillColor" ) == 0 )
+	{
+		Color c = defaults.GetFillColor();
+		result = PushColor( L, c, defaults.IsByteColorRange() );
+	}
+	else if ( Rtt_StringCompare( key, "strokeColor" ) == 0 )
+	{
+		Color c = defaults.GetStrokeColor();
+		result = PushColor( L, c, defaults.IsByteColorRange() );
+	}
+	else if ( Rtt_StringCompare( key, "lineColor" ) == 0 )
+	{
+		Color c = defaults.GetLineColor();
+		result = PushColor( L, c, defaults.IsByteColorRange() );
+	}
+	else if ( Rtt_StringCompare( key, "background" ) == 0 )
+	{
+		Color c = defaults.GetClearColor();
+		result = PushColor( L, c, defaults.IsByteColorRange() );
+	}
+	else if ( Rtt_StringCompare( key, "magTextureFilter" ) == 0 )
+	{
+		RenderTypes::TextureFilter filter = defaults.GetMagTextureFilter();
+		lua_pushstring( L, RenderTypes::StringForTextureFilter( filter ) );
+	}
+	else if ( Rtt_StringCompare( key, "minTextureFilter" ) == 0 )
+	{
+		RenderTypes::TextureFilter filter = defaults.GetMinTextureFilter();
+		lua_pushstring( L, RenderTypes::StringForTextureFilter( filter ) );
+	}
+	else if ( Rtt_StringCompare( key, "textureWrapX" ) == 0 )
+	{
+		RenderTypes::TextureWrap wrap = defaults.GetTextureWrapX();
+		lua_pushstring( L, RenderTypes::StringForTextureWrap( wrap ) );
+	}
+	else if ( Rtt_StringCompare( key, "textureWrapY" ) == 0 )
+	{
+		RenderTypes::TextureWrap wrap = defaults.GetTextureWrapY();
+		lua_pushstring( L, RenderTypes::StringForTextureWrap( wrap ) );
+	}
+	else if ( Rtt_StringCompare( key, "emitterScaling" ) == 0 )
+	{
+		EmitterObject::Mapping mapping = (EmitterObject::Mapping)defaults.GetEmitterMapping();
+		lua_pushstring( L, EmitterObject::GetStringForMapping( mapping ) );
+	}
+	else if ( Rtt_StringCompare( key, "graphicsCompatibility" ) == 0 )
+	{
+		int version = defaults.IsV1Compatibility() ? 1 : 2;
+		lua_pushinteger( L, version );
+	}
+	else if ( Rtt_StringCompare( key, "isByteColorRange" ) == 0 )
+	{
+		bool isByteColorRange = defaults.IsByteColorRange();
+		lua_pushboolean( L, isByteColorRange );
+	}
+	else if ( Rtt_StringCompare( key, "isNativeTextFieldFontSizeScaled" ) == 0 )
+	{
+		bool value = defaults.IsNativeTextFieldFontSizeScaled();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
+	else if ( Rtt_StringCompare( key, "isNativeTextBoxFontSizeScaled" ) == 0 )
+	{
+		bool value = defaults.IsNativeTextBoxFontSizeScaled();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
+	else if ( Rtt_StringCompare( key, "isShaderCompilerVerbose" ) == 0 )
+	{
+		bool value = defaults.IsShaderCompilerVerbose();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
+	else if ( ( Rtt_StringCompare( key, "isAnchorClamped" ) == 0 ) )
+	{
+		bool value = defaults.IsAnchorClamped();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
+	else if ( ( Rtt_StringCompare( key, "isImageSheetSampledInsideFrame" ) == 0 ) )
+	{
+		bool value = defaults.IsImageSheetSampledInsideFrame();
+		lua_pushboolean( L, value ? 1 : 0 );
+	}
+	else if ( ( Rtt_StringCompare( key, "isImageSheetFrameTrimCorrected" ) == 0 ) )
 	{
 		bool value = defaults.IsImageSheetFrameTrimCorrected();
 		lua_pushboolean( L, value ? 1 : 0 );
@@ -2009,110 +2033,116 @@ DisplayLibrary::setDefault( lua_State *L )
     DisplayDefaults& defaults = display.GetDefaults();
     Color c = LuaLibDisplay::toColor( L, index, defaults.IsByteColorRange() );
 
-    if ( Rtt_StringCompare( key, "anchorX" ) == 0 )
-    {
-        float anchorX = lua_tonumber( L, index );
-        if ( defaults.IsAnchorClamped() )
-        {
-            anchorX = Clamp( anchorX, 0.f, 1.f );
-        }
-        defaults.SetAnchorX( anchorX );
-    }
-    else if ( Rtt_StringCompare( key, "anchorY" ) == 0 )
-    {
-        float anchorY = lua_tonumber( L, index );
-        if ( defaults.IsAnchorClamped() )
-        {
-            anchorY = Clamp( anchorY, 0.f, 1.f );
-        }
-        defaults.SetAnchorY( anchorY );
-    }
-    else if ( Rtt_StringCompare( key, "fillColor" ) == 0 )
-    {
-        defaults.SetFillColor( c );
-    }
-    else if ( Rtt_StringCompare( key, "strokeColor" ) == 0 )
-    {
-        defaults.SetStrokeColor( c );
-    }
-    else if ( Rtt_StringCompare( key, "lineColor" ) == 0 )
-    {
-        defaults.SetLineColor( c );
-    }
-//    else if ( Rtt_StringCompare( key, "textColor" ) == 0 )
-//    {
-//        defaults.SetTextColor( c );
-//    }
-    else if ( Rtt_StringCompare( key, "background" ) == 0 )
-    {
-        defaults.SetClearColor( c );
-        display.Invalidate(); // Invalidate scene so background is updated
-    }
-    else if ( Rtt_StringCompare( key, "magTextureFilter" ) == 0 )
-    {
-        const char *value = lua_tostring( L, index );
-        RenderTypes::TextureFilter filter = RenderTypes::TextureFilterForString( value );
-        defaults.SetMagTextureFilter( filter );
-    }
-    else if ( Rtt_StringCompare( key, "minTextureFilter" ) == 0 )
-    {
-        const char *value = lua_tostring( L, index );
-        RenderTypes::TextureFilter filter = RenderTypes::TextureFilterForString( value );
-        defaults.SetMinTextureFilter( filter );
-    }
-    else if ( Rtt_StringCompare( key, "textureWrapX" ) == 0 )
-    {
-        const char *value = lua_tostring( L, index );
-        RenderTypes::TextureWrap wrap = RenderTypes::TextureWrapForString( value );
-        defaults.SetTextureWrapX( wrap );
-    }
-    else if ( Rtt_StringCompare( key, "textureWrapY" ) == 0 )
-    {
-        const char *value = lua_tostring( L, index );
-        RenderTypes::TextureWrap wrap = RenderTypes::TextureWrapForString( value );
-        defaults.SetTextureWrapY( wrap );
-    }
-    else if ( Rtt_StringCompare( key, "preloadTextures" ) == 0 )
-    {
-        bool preloadTextures = lua_toboolean( L, index );
-    
-        defaults.SetPreloadTextures( preloadTextures );
-    }
-    else if ( Rtt_StringCompare( key, "cameraSource" ) == 0 )
-    {
-        VideoSource source = kCamera;
-        const char *value = lua_tostring( L, index );
-        if ( Rtt_StringCompare( value, "front" ) == 0 )
-        {
-            source = kCameraFront;
-        }
-        display.GetTextureFactory().SetVideoSource(source);
-    }
-    else if ( Rtt_StringCompare( key, "isNativeTextFieldFontSizeScaled" ) == 0 )
-    {
-        bool value = lua_toboolean( L, index ) ? true : false;
-        defaults.SetIsNativeTextFieldFontSizeScaled( value );
-    }
-    else if ( Rtt_StringCompare( key, "isNativeTextBoxFontSizeScaled" ) == 0 )
-    {
-        bool value = lua_toboolean( L, index ) ? true : false;
-        defaults.SetIsNativeTextBoxFontSizeScaled( value );
-    }
-    else if ( Rtt_StringCompare( key, "isShaderCompilerVerbose" ) == 0 )
-    {
-        bool value = lua_toboolean( L, index ) ? true : false;
-        defaults.SetShaderCompilerVerbose( value );
-    }
-    else if ( ( Rtt_StringCompare( key, "isAnchorClamped" ) == 0 ) )
-    {
-        bool value = lua_toboolean( L, index ) ? true : false;
-        defaults.SetAnchorClamped( value );
-    }
-    else if ( ( Rtt_StringCompare( key, "isImageSheetSampledInsideFrame" ) == 0 ) )
-    {
-        bool value = lua_toboolean( L, index ) ? true : false;
-        defaults.SetImageSheetSampledInsideFrame( value );
-    }
+	if ( Rtt_StringCompare( key, "anchorX" ) == 0 )
+	{
+		float anchorX = lua_tonumber( L, index );
+		if ( defaults.IsAnchorClamped() )
+		{
+			anchorX = Clamp( anchorX, 0.f, 1.f );
+		}
+		defaults.SetAnchorX( anchorX );
+	}
+	else if ( Rtt_StringCompare( key, "anchorY" ) == 0 )
+	{
+		float anchorY = lua_tonumber( L, index );
+		if ( defaults.IsAnchorClamped() )
+		{
+			anchorY = Clamp( anchorY, 0.f, 1.f );
+		}
+		defaults.SetAnchorY( anchorY );
+	}
+	else if ( Rtt_StringCompare( key, "fillColor" ) == 0 )
+	{
+		defaults.SetFillColor( c );
+	}
+	else if ( Rtt_StringCompare( key, "strokeColor" ) == 0 )
+	{
+		defaults.SetStrokeColor( c );
+	}
+	else if ( Rtt_StringCompare( key, "lineColor" ) == 0 )
+	{
+		defaults.SetLineColor( c );
+	}
+//	else if ( Rtt_StringCompare( key, "textColor" ) == 0 )
+//	{
+//		defaults.SetTextColor( c );
+//	}
+	else if ( Rtt_StringCompare( key, "background" ) == 0 )
+	{
+		defaults.SetClearColor( c );
+		display.Invalidate(); // Invalidate scene so background is updated
+	}
+	else if ( Rtt_StringCompare( key, "magTextureFilter" ) == 0 )
+	{
+		const char *value = lua_tostring( L, index );
+		RenderTypes::TextureFilter filter = RenderTypes::TextureFilterForString( value );
+		defaults.SetMagTextureFilter( filter );
+	}
+	else if ( Rtt_StringCompare( key, "minTextureFilter" ) == 0 )
+	{
+		const char *value = lua_tostring( L, index );
+		RenderTypes::TextureFilter filter = RenderTypes::TextureFilterForString( value );
+		defaults.SetMinTextureFilter( filter );
+	}
+	else if ( Rtt_StringCompare( key, "textureWrapX" ) == 0 )
+	{
+		const char *value = lua_tostring( L, index );
+		RenderTypes::TextureWrap wrap = RenderTypes::TextureWrapForString( value );
+		defaults.SetTextureWrapX( wrap );
+	}
+	else if ( Rtt_StringCompare( key, "textureWrapY" ) == 0 )
+	{
+		const char *value = lua_tostring( L, index );
+		RenderTypes::TextureWrap wrap = RenderTypes::TextureWrapForString( value );
+		defaults.SetTextureWrapY( wrap );
+	}
+	else if ( Rtt_StringCompare( key, "emitterMapping" ) == 0 )
+	{
+		const char *value = lua_tostring( L, index );
+		EmitterObject::Mapping mapping = EmitterObject::GetMappingForString( value, EmitterObject::kMapping_Legacy );
+		defaults.SetEmitterMapping( (U8)mapping );
+	}
+	else if ( Rtt_StringCompare( key, "preloadTextures" ) == 0 )
+	{
+		bool preloadTextures = lua_toboolean( L, index );
+	
+		defaults.SetPreloadTextures( preloadTextures );
+	}
+	else if ( Rtt_StringCompare( key, "cameraSource" ) == 0 )
+	{
+		VideoSource source = kCamera;
+		const char *value = lua_tostring( L, index );
+		if ( Rtt_StringCompare( value, "front" ) == 0 )
+		{
+			source = kCameraFront;
+		}
+		display.GetTextureFactory().SetVideoSource(source);
+	}
+	else if ( Rtt_StringCompare( key, "isNativeTextFieldFontSizeScaled" ) == 0 )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetIsNativeTextFieldFontSizeScaled( value );
+	}
+	else if ( Rtt_StringCompare( key, "isNativeTextBoxFontSizeScaled" ) == 0 )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetIsNativeTextBoxFontSizeScaled( value );
+	}
+	else if ( Rtt_StringCompare( key, "isShaderCompilerVerbose" ) == 0 )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetShaderCompilerVerbose( value );
+	}
+	else if ( ( Rtt_StringCompare( key, "isAnchorClamped" ) == 0 ) )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetAnchorClamped( value );
+	}
+	else if ( ( Rtt_StringCompare( key, "isImageSheetSampledInsideFrame" ) == 0 ) )
+	{
+		bool value = lua_toboolean( L, index ) ? true : false;
+		defaults.SetImageSheetSampledInsideFrame( value );
+	}
 	else if ( ( Rtt_StringCompare( key, "isImageSheetFrameTrimCorrected" ) == 0 ) )
 	{
 		bool value = lua_toboolean( L, index ) ? true : false;
@@ -2344,14 +2374,19 @@ DisplayLibrary::capture( lua_State *L )
     Display& display = library->GetDisplay();
     Runtime *runtime = & display.GetRuntime();
 
-    // Do a screenshot of the given display object.
-    BitmapPaint *paint = display.CaptureDisplayObject( displayObject,
-                                                        saveToFile,
-                                                        false,
-                                                        cropObjectToScreenBounds );
-    if( ! paint )
-    {
-        CoronaLuaError(L, "display.capture() unable to capture screen. The platform or device might not be supported" );
+	// Do a screenshot of the given display object.
+	BitmapPaint *paint = display.CaptureDisplayObject( displayObject,
+														saveToFile,
+														false,
+														cropObjectToScreenBounds );
+    
+    //Rerender and Invalidate to prevent errors on start up
+    display.Invalidate();
+    display.Render();
+    
+	if( ! paint )
+	{
+		CoronaLuaError(L, "display.capture() unable to capture screen. The platform or device might not be supported" );
 
         // Nothing to do.
         return 0;
@@ -2766,21 +2801,21 @@ DisplayLibrary::colorSample( lua_State *L )
         return 0;
     }
 
-    // Result callback.
-    LuaResource *resource = Rtt_NEW( LuaContext::GetAllocator( L ),
-                                        LuaResource( LuaContext::GetContext( L )->LuaState(),
-                                                        3 /*!< Callback index. */ ) );
-
-    RGBA color;
-    color.Clear();
-
-    display.ColorSample( pos_x,
-                            pos_y,
-                            color );
-
-    ColorSampleEvent e( pos_x,
-                            pos_y,
-                            color );
+	// Result callback.
+	LuaResource *resource = Rtt_NEW( LuaContext::GetAllocator( L ),
+										LuaResource( LuaContext::GetContext( L )->LuaState(),
+														3 /*!< Callback index. */ ) );
+	RGBA color;
+	color.Clear();
+    
+	display.ColorSample( pos_x,
+							pos_y,
+							color );
+    display.Render(); // rerender if no texture has been created
+    
+	ColorSampleEvent e( pos_x,
+							pos_y,
+							color );
 
     resource->DispatchEvent( e );
 
@@ -2843,6 +2878,153 @@ DisplayLibrary::getSafeAreaInsets( lua_State *L )
     return 4;
 }
 
+int
+DisplayLibrary::enableStatistics( lua_State *L )
+{
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	
+	lib->GetDisplay().GetRenderer().SetStatisticsEnabled( lua_toboolean( L, 1 ) );
+	
+	return 0;
+}
+
+int
+DisplayLibrary::getStatistics( lua_State *L )
+{
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	if ( lua_istable( L, 1 ) )
+	{
+		Renderer::Statistics stats;
+		
+		if ( lib->GetDisplay().GetRenderer().GetStatisticsEnabled() )
+		{
+			stats = lib->GetDisplay().GetRenderer().GetFrameStatistics();
+		}
+
+		lua_pushnumber( L, stats.fResourceCreateTime );
+		lua_setfield( L, 1, "resourceCreateTime" );
+		lua_pushnumber( L, stats.fResourceUpdateTime );
+		lua_setfield( L, 1, "resourceUpdateTime" );
+		lua_pushnumber( L, stats.fResourceDestroyTime );
+		lua_setfield( L, 1, "resourceDestroyTime" );
+        lua_pushnumber( L, stats.fPreparationTime );
+		lua_setfield( L, 1, "preparationTime" );
+		lua_pushnumber( L, stats.fRenderTimeCPU );
+		lua_setfield( L, 1, "renderTimeCPU" );
+		lua_pushnumber( L, stats.fRenderTimeGPU );
+		lua_setfield( L, 1, "renderTimeGPU" );
+		lua_pushinteger( L, stats.fDrawCallCount );
+		lua_setfield( L, 1, "drawCallCount" );
+		lua_pushinteger( L, stats.fTriangleCount );
+		lua_setfield( L, 1, "triangleCount" );
+		lua_pushinteger( L, stats.fLineCount );
+		lua_setfield( L, 1, "lineCount" );
+		lua_pushinteger( L, stats.fGeometryBindCount );
+		lua_setfield( L, 1, "geometryBindCount" );
+		lua_pushinteger( L, stats.fProgramBindCount );
+		lua_setfield( L, 1, "programBindCount" );
+		lua_pushinteger( L, stats.fTextureBindCount );
+		lua_setfield( L, 1, "textureBindCount" );
+		lua_pushinteger( L, stats.fTextureBindCount );
+		lua_setfield( L, 1, "textureBindCount" );
+	}
+
+	return 0;
+}
+
+int
+DisplayLibrary::getSums ( lua_State* L )
+{
+    return Profiling::VisitSums( L );
+}
+
+int
+DisplayLibrary::getTimings( lua_State *L )
+{
+	if ( lua_isstring( L, 2 ) )
+	{
+		Profiling* profiling = Profiling::Get( lua_tostring( L, 2 ) );
+
+		if ( NULL != profiling )
+		{
+			return profiling->VisitEntries( L );
+		}
+	}
+
+	lua_pushinteger( L, 0 );
+
+	return 1;
+}
+
+int
+DisplayLibrary::_beginProfile( lua_State *L )
+{
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	if ( lua_isstring( L, 1 ) && lua_isstring( L, 2 ) )
+	{
+		char buf[128];
+
+		snprintf( buf, sizeof( buf ) - 1, "%s:%s", lua_tostring( L, 2 ), lua_tostring( L, 1 ) );
+
+		Profiling* profiling = Profiling::Open( lib->GetDisplay().GetAllocator(), buf );
+
+		if ( profiling )
+		{
+			lua_pushlightuserdata( L, profiling );
+
+			return 1;
+		}
+	}
+
+	lua_pushnil( L );
+
+	return 1;
+}
+
+int
+DisplayLibrary::_addProfileEntry( lua_State *L )
+{
+	if ( lua_islightuserdata( L, 1 ) )
+	{
+		const char* str;
+		char buf[128];
+		
+		switch ( lua_type( L, 2 ) )
+		{
+		case LUA_TSTRING:
+			str = lua_tostring( L, 2 );
+			break;
+
+		case LUA_TNUMBER:
+			snprintf( buf, sizeof( buf ) - 1, "%g", lua_tonumber( L, 2 ) );
+			str = buf;
+			break;
+
+		case LUA_TBOOLEAN:
+			str = lua_toboolean( L, 2 ) ? "true" : "false";
+			break;
+
+		default:
+			snprintf( buf, sizeof( buf ) - 1, "%s:0x%p", luaL_typename( L, 2 ), lua_topointer( L, 2 ) );
+			str = buf;
+		}
+
+		Profiling::AddEntry( lua_touserdata( L, 1 ), str );
+	}
+
+	return 0;
+}
+
+int
+DisplayLibrary::_endProfile( lua_State *L )
+{
+	if ( lua_islightuserdata( L, 1 ) )
+	{
+		Profiling::Close( lua_touserdata( L, 1 ) );
+	}
+
+	return 0;
+}
 
 // ----------------------------------------------------------------------------
 

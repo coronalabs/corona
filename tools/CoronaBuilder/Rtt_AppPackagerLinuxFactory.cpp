@@ -45,7 +45,7 @@ namespace Rtt
 		}
 
 		bool includeStandardResources = true;
-		lua_getfield(L, index, "includeWidgetResources");
+		lua_getfield(L, index, "includeStandardResources");
 		if(lua_type(L, -1) == LUA_TBOOLEAN)
 		{
 			includeStandardResources = lua_toboolean(L, -1);

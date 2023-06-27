@@ -36,37 +36,37 @@
 	<true/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleBlackTranslucent</string>
-    <key>NSAppleMusicUsageDescription</key>
-	<string>NSAppleMusicUsageDescription should be set to a valid usage description</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
-	<string>NSBluetoothPeripheralUsageDescription should be set to a valid usage description</string>
-    <key>NSCalendarsUsageDescription</key>
-	<string>NSCalendarsUsageDescription should be set to a valid usage description</string>
-    <key>NSCameraUsageDescription</key>
-	<string>NSCameraUsageDescription should be set to a valid usage description</string>
-    <key>NSContactsUsageDescription</key>
-	<string>NSContactsUsageDescription should be set to a valid usage description</string>
-    <key>NSHomeKitUsageDescription</key>
-	<string>NSHomeKitUsageDescription should be set to a valid usage description</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-	<string>NSLocationAlwaysUsageDescription should be set to a valid usage description</string>
-    <key>NSLocationUsageDescription</key>
-	<string>NSLocationUsageDescription should be set to a valid usage description</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-	<string>NSLocationWhenInUseUsageDescription should be set to a valid usage description</string>
-    <key>NSMicrophoneUsageDescription</key>
-	<string>NSMicrophoneUsageDescription should be set to a valid usage description</string>
-    <key>NSMotionUsageDescription</key>
-	<string>NSMotionUsageDescription should be set to a valid usage description</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-	<string>NSPhotoLibraryUsageDescription should be set to a valid usage description</string>
-    <key>NSRemindersUsageDescription</key>
-	<string>NSRemindersUsageDescription should be set to a valid usage description</string>
-    <key>NSSiriUsageDescription</key>
-	<string>NSSiriUsageDescription should be set to a valid usage description</string>
-    <key>NSSpeechRecognitionUsageDescription</key>
-	<string>NSSpeechRecognitionUsageDescription should be set to a valid usage description</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>NSPhotoLibraryAddUsageDescription should be set to a valid usage descripiton</string>
+	<key>NSAppleMusicUsageDescription</key>
+ 	<string>Set Apple Music description in build settings</string>
+     <key>NSBluetoothPeripheralUsageDescription</key>
+ 	<string>Set Bluetooth Peripheral description in build settings</string>
+     <key>NSCalendarsUsageDescription</key>
+ 	<string>Set Calendars Peripheral description in build settings</string>
+     <key>NSCameraUsageDescription</key>
+ 	<string>Set Camera Usage Description in build settings</string>
+     <key>NSContactsUsageDescription</key>
+ 	<string>Set Contacts Usage Description in build settings</string>
+     <key>NSHomeKitUsageDescription</key>
+ 	<string>Set Home Kit Usage Description in build settings</string>
+     <key>NSLocationAlwaysUsageDescription</key>
+ 	<string>Set Location Always Usage Description in build settings</string>
+     <key>NSLocationUsageDescription</key>
+ 	<string>Set Location Usage Description in build settings</string>
+     <key>NSLocationWhenInUseUsageDescription</key>
+ 	<string>Set Location When In Use Usage description in build settings</string>
+     <key>NSMicrophoneUsageDescription</key>
+ 	<string>Set Microphone Recognition Usage description in build settings</string>
+     <key>NSMotionUsageDescription</key>
+ 	<string>Set Motion Usage description in build settings</string>
+     <key>NSPhotoLibraryUsageDescription</key>
+ 	<string>Set Photo Usage description in build settings</string>
+     <key>NSRemindersUsageDescription</key>
+ 	<string>Set Reminders Usage description in build settings</string>
+     <key>NSSiriUsageDescription</key>
+ 	<string>Set Siri Usage description in build settings</string>
+     <key>NSSpeechRecognitionUsageDescription</key>
+ 	<string>Set Speech Recognition Usage description in build settings</string>
+ 	<key>NSPhotoLibraryAddUsageDescription</key>
+ 	<string>Set Photo Library Add Usage description in build settings</string>
 </dict>
 </plist>
