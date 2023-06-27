@@ -81,22 +81,6 @@
 #undef CreateFont
 #endif
 
-FactoryReplacement
-GetFactoryReplacement( lua_State * L )
-{
-    Rtt::DisplayObject::BoxedFunction * funcBox = (Rtt::DisplayObject::BoxedFunction *)lua_touserdata( L, lua_upvalueindex( 2 ) );
-
-    if (funcBox)
-    {
-        return *(FactoryReplacement *)&funcBox->fFunc; // https://stackoverflow.com/a/16682718
-    }
-
-    else
-    {
-        return NULL;
-    }
-}
-
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -143,13 +127,15 @@ class DisplayLibrary
             Display& display,
             GroupObject *parent,
             Real w,
-            Real h );
+            Real h,
+			LuaLibDisplay::FactoryReplacement rectFactory = NULL );
         static ShapeObject* PushImage(
             lua_State *L,
             Vertex2* topLeft,
             BitmapPaint* paint,
             Display& display,
-            GroupObject *parent );
+            GroupObject *parent,
+			LuaLibDisplay::FactoryReplacement rectFactory = NULL );
 
     public:
         static int newCircle( lua_State *L );
@@ -606,9 +592,10 @@ DisplayLibrary::PushImage(
     Display& display,
     GroupObject *parent,
     Real w,
-    Real h )
+    Real h,
+	LuaLibDisplay::FactoryReplacement  replacement )
 {
-    auto * rectFactory = GetObjectFactory( L, &RectObject::NewRect );
+    auto * rectFactory = ChooseObjectFactory( replacement, &RectObject::NewRect );
     ShapeObject* v = rectFactory( display.GetAllocator(), w, h );
 
     int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
@@ -642,7 +629,8 @@ DisplayLibrary::PushImage(
     Vertex2* topLeft,
     BitmapPaint* paint,
     Display& display,
-    GroupObject *parent )
+    GroupObject *parent,
+	LuaLibDisplay::FactoryReplacement  replacement )
 {
     // Fetch image's width and height. (Might be auto-downscaled here due to texture size limitations.)
     PlatformBitmap *bitmap = paint->GetBitmap();
@@ -653,7 +641,7 @@ DisplayLibrary::PushImage(
     Real height = Rtt_IntToReal( bitmap ? bitmap->UprightHeight() : texture->GetHeight() );
 
     // Create the image object with the above dimensions.
-    ShapeObject* v = PushImage( L, topLeft, paint, display, parent, width, height );
+    ShapeObject* v = PushImage( L, topLeft, paint, display, parent, width, height, replacement );
 
     v->SetObjectDesc("ImageObject");
     
@@ -729,6 +717,7 @@ DisplayLibrary::newCircle( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * circleFactory = GetObjectFactory( L, &NewShape, display ); // n.b. done early to ensure factory is consumed
 
 	int nextArg = 1;
 	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
@@ -739,7 +728,6 @@ DisplayLibrary::newCircle( lua_State *L )
 
 	ShapePath *path = ShapePath::NewCircle( display.GetAllocator(), r );
 
-    auto * circleFactory = GetObjectFactory( L, &NewShape );
     ShapeObject *v = circleFactory( display.GetAllocator(), path );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
@@ -772,6 +760,7 @@ DisplayLibrary::newPolygon( lua_State *L )
 
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * polygonFactory = GetObjectFactory( L, &NewShape, display ); // n.b. done early to ensure factory is consumed
 
 	int nextArg = 1;
 	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
@@ -784,7 +773,6 @@ DisplayLibrary::newPolygon( lua_State *L )
     TesselatorPolygon *tesselator = (TesselatorPolygon *)path->GetTesselator();
     if ( ShapeAdapterPolygon::InitializeContour( L, nextArg, * tesselator, hasZ ) )
     {
-        auto * polygonFactory = GetObjectFactory( L, &NewShape );
         ShapeObject *v = polygonFactory( display.GetAllocator(), path );
 
         if (hasZ)
@@ -822,6 +810,7 @@ DisplayLibrary::newMesh( lua_State *L )
     
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * meshFactory = GetObjectFactory( L, &NewShape, display ); // n.b. done early to ensure factory is consumed
     
     int nextArg = 1;
 
@@ -881,17 +870,16 @@ DisplayLibrary::newMesh( lua_State *L )
 	TesselatorMesh *tesselator = (TesselatorMesh *)path->GetTesselator();
 	if ( ShapeAdapterMesh::InitializeMesh( L, nextArg, * tesselator, hasZ ) )
 	{
-    auto * meshFactory = GetObjectFactory( L, &NewShape );
-    ShapeObject *v = meshFactory( display.GetAllocator(), path );
+        ShapeObject *v = meshFactory( display.GetAllocator(), path );
 
-    if (hasZ)
-    {
-        lua_getfield( L, nextArg, "vertices" ); // ..., vertices
+        if (hasZ)
+        {
+            lua_getfield( L, nextArg, "vertices" ); // ..., vertices
 
-        LoadZ( L, -1, path );
+            LoadZ( L, -1, path );
 
-        lua_pop( L, 1 ); // ...
-    }
+            lua_pop( L, 1 ); // ...
+        }
 
 		if (tesselator->GetFillPrimitive() == Geometry::kIndexedTriangles)
 		{
@@ -920,6 +908,7 @@ DisplayLibrary::newRect( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * rectFactory = GetObjectFactory( L, &RectObject::NewRect, display ); // n.b. done early to ensure factory is consumed
 
 	int nextArg = 1;
 	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
@@ -929,8 +918,6 @@ DisplayLibrary::newRect( lua_State *L )
     Real w = luaL_checkreal( L, nextArg++ );
     Real h = luaL_checkreal( L, nextArg++ );
 
-
-    auto * rectFactory = GetObjectFactory( L, &RectObject::NewRect );
     ShapeObject* v = rectFactory( display.GetAllocator(), w, h );
 
 	int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
@@ -951,6 +938,7 @@ DisplayLibrary::newRoundedRect( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * roundedRectFactory = GetObjectFactory( L, &NewShape, display ); // n.b. done early to ensure factory is consumed
 
 	int nextArg = 1;
 	GroupObject *parent = LuaLibDisplay::GetParent( L, nextArg );
@@ -963,7 +951,6 @@ DisplayLibrary::newRoundedRect( lua_State *L )
 
 	ShapePath *path = ShapePath::NewRoundedRect( display.GetAllocator(), w, h, r );
 
-    auto * roundedRectFactory = GetObjectFactory( L, &NewShape );
     ShapeObject *v = roundedRectFactory( display.GetAllocator(), path );
 
     int result = LuaLibDisplay::AssignParentAndPushResult( L, display, v, parent );
@@ -990,6 +977,7 @@ DisplayLibrary::newLine( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display &display = library->GetDisplay();
+    auto * lineFactory = GetObjectFactory( L, &NewLine, display ); // n.b. done early to ensure factory is consumed
     Runtime &runtime = *LuaContext::GetRuntime( L );
     Rtt_Allocator *pAllocator = runtime.Allocator();
 
@@ -1048,7 +1036,6 @@ DisplayLibrary::newLine( lua_State *L )
 
 	int result = 0;
 	{
-        auto * lineFactory = GetObjectFactory( L, &NewLine );
         LineObject* o = lineFactory( pAllocator, path );
         
 		result = LuaLibDisplay::AssignParentAndPushResult( L, display, o, parent );
@@ -1073,6 +1060,7 @@ DisplayLibrary::newImage( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * replacement = LuaLibDisplay::GetFactoryReplacement( L, display ); // n.b. done early to ensure factory is consumed
 
     int result = 0;
 #ifdef Rtt_DEBUG
@@ -1127,7 +1115,7 @@ DisplayLibrary::newImage( lua_State *L )
 
         if ( paint )
         {
-            result = NULL != PushImage( L, p, paint, display, parent );
+            result = NULL != PushImage( L, p, paint, display, parent, replacement );
         }
     }
     else if ( lua_isuserdata( L, nextArg ) )
@@ -1172,7 +1160,7 @@ DisplayLibrary::newImage( lua_State *L )
 
             if ( paint )
             {
-                result = NULL != PushImage( L, p, paint, display, parent, w, h );
+                result = NULL != PushImage( L, p, paint, display, parent, w, h, replacement );
             }
         }
     }
@@ -1195,6 +1183,7 @@ DisplayLibrary::newImageRect( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * replacement = LuaLibDisplay::GetFactoryReplacement( L, display ); // n.b. done early to ensure factory is consumed
 
     int result = 0;
 
@@ -1239,7 +1228,7 @@ DisplayLibrary::newImageRect( lua_State *L )
             }
             if ( Rtt_VERIFY( paint ) )
             {
-                result = NULL != PushImage( L, NULL, paint, display, parent, w, h );
+                result = NULL != PushImage( L, NULL, paint, display, parent, w, h, replacement );
             }
         }
         else
@@ -1282,7 +1271,7 @@ DisplayLibrary::newImageRect( lua_State *L )
 
                 if ( Rtt_VERIFY( paint ) )
                 {
-                    result = NULL != PushImage( L, NULL, paint, display, parent, w, h );
+                    result = NULL != PushImage( L, NULL, paint, display, parent, w, h, replacement );
                 }
             }
             else
@@ -1317,6 +1306,7 @@ DisplayLibrary::newEmitter( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * emitterFactory = GetObjectFactory( L, &NewEmitter, display ); // n.b. done early to ensure factory is consumed
 
     if ( display.ShouldRestrict( Display::kDisplayNewEmitter ) )
     {
@@ -1325,8 +1315,7 @@ DisplayLibrary::newEmitter( lua_State *L )
 
     int result = 0;
 
-    auto * emitterFactory = GetObjectFactory( L, &NewEmitter );
-    EmitterObject *eo = emitterFactory( /*runtime.Allocator()*/NULL );
+    EmitterObject *eo = emitterFactory( display.GetAllocator() );
     
 	if( eo->Initialize( L, display ) )
 	{
@@ -1370,6 +1359,7 @@ static int CreateTextObject( lua_State *L, bool isEmbossed )
 	
 	DisplayLibrary::Self *library = DisplayLibrary::ToLibrary( L );
 	Display& display = library->GetDisplay();
+    auto * replacementFactory = LuaLibDisplay::GetFactoryReplacement( L, display ); // n.b. done early to ensure factory is consumed
 	Runtime& runtime = display.GetRuntime();
 	
 	Real fontSize = Rtt_REAL_0;		// A font size of zero means use the system default font.
@@ -1531,12 +1521,12 @@ static int CreateTextObject( lua_State *L, bool isEmbossed )
 	TextObject* textObject;
 	if (isEmbossed)
 	{
-        auto * textFactory = GetObjectFactory( L, &NewEmbossedText );
+        auto * textFactory = ChooseObjectFactory( replacementFactory, &NewEmbossedText );
         textObject = textFactory( runtime.Allocator(), display, str, font, w, h, alignment );
 	}
 	else
 	{
-        auto * textFactory = GetObjectFactory( L, &NewText );
+        auto * textFactory = ChooseObjectFactory( replacementFactory, &NewText );
         textObject = textFactory( runtime.Allocator(), display, str, font, w, h, alignment );
 	}
 	result = LuaLibDisplay::AssignParentAndPushResult( L, display, textObject, parent );
@@ -1605,9 +1595,9 @@ DisplayLibrary::newGroup( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * groupFactory = GetObjectFactory( L, &NewGroup, display ); // n.b. done early to ensure factory is consumed
     Rtt_Allocator* context = display.GetAllocator();
 
-    auto * groupFactory = GetObjectFactory( L, &NewGroup );
     GroupObject *o = groupFactory( context );
 	GroupObject *parent = NULL; // Default parent is root
 
@@ -1683,6 +1673,7 @@ DisplayLibrary::_newContainer( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * containerFactory = GetObjectFactory( L, &NewContainer, display ); // n.b. done early to ensure factory is consumed
     Rtt_Allocator* context = display.GetAllocator();
 
     // [parentGroup,]
@@ -1694,7 +1685,6 @@ DisplayLibrary::_newContainer( lua_State *L )
     Real w = luaL_checkreal( L, nextArg++ );
     Real h = luaL_checkreal( L, nextArg++ );
 
-    auto * containerFactory = GetObjectFactory( L, &NewContainer );
     ContainerObject *o = containerFactory( context, NULL, w, h );
     
 	o->Initialize( display );
@@ -1716,6 +1706,7 @@ DisplayLibrary::newSnapshot( lua_State *L )
 {
     Self *library = ToLibrary( L );
     Display& display = library->GetDisplay();
+    auto * snapshotFactory = GetObjectFactory( L, &NewSnapshot, display ); // n.b. done early to ensure factory is consumed
 
     if ( display.ShouldRestrict( Display::kDisplayNewSnapshot ) )
     {
@@ -1733,7 +1724,6 @@ DisplayLibrary::newSnapshot( lua_State *L )
     Real w = luaL_checkreal( L, nextArg++ );
     Real h = luaL_checkreal( L, nextArg++ );
 
-    auto * snapshotFactory = GetObjectFactory( L, &NewSnapshot );
     SnapshotObject *o = snapshotFactory( context, display, w, h );
 
     if ( display.GetDefaults().IsV1Compatibility() )
@@ -1771,7 +1761,7 @@ DisplayLibrary::newSprite( lua_State *L )
             Rtt_Allocator *context = display.GetAllocator();
 
 			SpritePlayer& player = display.GetSpritePlayer();
-            SpriteObject *o = SpriteObject::Create( L, context, ud->GetSheet(), player );
+            SpriteObject *o = SpriteObject::Create( L, context, ud->GetSheet(), player, display );
             
 			if ( o )
 			{
@@ -2872,9 +2862,10 @@ LuaLibDisplay::PushImage(
     Display& display,
     GroupObject *parent,
     Real w,
-    Real h )
+    Real h,
+	FactoryReplacement replacement )
 {
-    return DisplayLibrary::PushImage( L, topLeft, paint, display, parent, w, h );
+    return DisplayLibrary::PushImage( L, topLeft, paint, display, parent, w, h, replacement );
 }
 
 ShapeObject*
@@ -2883,9 +2874,10 @@ LuaLibDisplay::PushImage(
     Vertex2* topLeft,
     BitmapPaint* paint,
     Display& display,
-    GroupObject *parent )
+    GroupObject *parent,
+	FactoryReplacement replacement )
 {
-    return DisplayLibrary::PushImage( L, topLeft, paint, display, parent );
+    return DisplayLibrary::PushImage( L, topLeft, paint, display, parent, replacement );
 }
 
 void
@@ -2898,6 +2890,24 @@ LuaLibDisplay::Initialize( lua_State *L, Display& display )
 
     CoronaLuaPushModule( L, DisplayLibrary::kName );
     lua_setglobal( L, DisplayLibrary::kName ); // display = library
+}
+
+LuaLibDisplay::FactoryReplacement
+LuaLibDisplay::GetFactoryReplacement( lua_State * L, Display& display )
+{
+    void* funcBox = display.GetFactoryFunc();
+
+    if (funcBox)
+    {
+        display.SetFactoryFunc( NULL );
+
+        return *(FactoryReplacement *)&funcBox; // https://stackoverflow.com/a/16682718
+    }
+
+    else
+    {
+        return NULL;
+    }
 }
 
 // NOTE: All transformations should be applied AFTER this call.

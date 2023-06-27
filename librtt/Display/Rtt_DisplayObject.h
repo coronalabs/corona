@@ -66,10 +66,6 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 
     public:
         typedef DisplayObject Self;
-
-        struct BoxedFunction {
-            void * fFunc;
-        };
     
 		enum RenderFlag
 		{
