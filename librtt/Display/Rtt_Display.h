@@ -354,6 +354,10 @@ class Display
 #endif
 
         void Collect( lua_State *L );
+ 
+    public:
+        void* GetFactoryFunc() const { return fFactoryFunc; }
+        void SetFactoryFunc( void* func ) { fFactoryFunc = func; }
 
     public:
         // TODO: Remove in favor of SetRestrictedFeature/IsRestrictedFeature/ShouldRestrictFeature
@@ -400,6 +404,7 @@ class Display
 		int fImageSuffix;
     
         int fObjectFactories;
+        void * fFactoryFunc;
 
 		U8 fDrawMode; // stores current physics drawing mode; ranges from 0-2
 		bool fIsAntialiased;

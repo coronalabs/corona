@@ -37,6 +37,9 @@ class LuaLibDisplay
 {
 	public:
 		typedef LuaLibDisplay Self;
+ 
+	public:
+		typedef void (*FactoryReplacement)();
 
 	public:
 		static const char* ReferencePoints();
@@ -49,14 +52,19 @@ class LuaLibDisplay
 			Display& display,
 			GroupObject *parent,
 			Real w,
-			Real h );
+			Real h,
+			FactoryReplacement replacement = NULL );
 		static ShapeObject* PushImage(
 			lua_State *L,
 			Vertex2* topLeft,
 			BitmapPaint* paint,
 			Display& display,
-			GroupObject *parent );
+			GroupObject *parent,
+			FactoryReplacement replacement = NULL );
 		static void Initialize( lua_State *L, Display& display );
+ 
+	public:
+		static FactoryReplacement GetFactoryReplacement( lua_State * L, Rtt::Display& display );
 
 	public:
 		static int AssignParentAndPushResult(
@@ -86,16 +94,18 @@ class LuaLibDisplay
 
 } // namespace Rtt
 
-typedef void (*FactoryReplacement)();
-
-FactoryReplacement GetFactoryReplacement( lua_State * L );
+template<typename F> F *
+ChooseObjectFactory( Rtt::LuaLibDisplay::FactoryReplacement replacement, F * defaultFactory )
+{
+	return replacement ? (F *)replacement : defaultFactory;
+}
 
 template<typename F> F *
-GetObjectFactory( lua_State * L, F * defaultFactory )
+GetObjectFactory( lua_State * L, F * defaultFactory, Rtt::Display& display )
 {
-    F * replacement = (F *)GetFactoryReplacement( L );    // the GatherFactories() version might have a factory subbed in (else nil) that lets
-                                                        // us instantiate an object using a derived type, for overloading purposes
-
+    F * replacement = (F *)Rtt::LuaLibDisplay::GetFactoryReplacement( L, display ); // the GatherFactories() version might have a factory subbed in (else nil) that lets
+																					// us instantiate an object using a derived type, for overloading purposes
+ 
     return replacement ? replacement : defaultFactory;
 }
 

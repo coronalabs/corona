@@ -418,12 +418,14 @@ PushFactory( lua_State * L, const char * name )
 }
 
 static bool
-CallNewFactory( lua_State * L, const char * name, Rtt::DisplayObject::BoxedFunction * funcBox  )
+CallNewFactory( lua_State * L, const char * name, void * funcBox )
 {
     if (PushFactory( L, name ) ) // stream, ...[, factories, factory]
     {
-        lua_pushlightuserdata( L, funcBox ); // stream, ..., factories, factory, funcBox
-        lua_setupvalue( L, -2, 2 ); // stream, ..., factories, factory; factory.upvalue[2] = funcBox
+        Rtt::Display & display = Rtt::LuaContext::GetRuntime( L )->GetDisplay();
+
+        display.SetFactoryFunc( funcBox );
+
         lua_insert( L, 2 ); // stream, factory, ..., factories
         lua_pop( L, 1 ); // stream, factory, ...
         lua_call( L, lua_gettop( L ) - 2, 1 ); // stream, object?
@@ -644,9 +646,7 @@ int PushObject( lua_State * L, void * userData, const CoronaObjectParams * param
     sStreamAndUserData.stream = (unsigned char *)lua_touserdata( L, 1 );
     sStreamAndUserData.userData = userData;
 
-    Rtt::DisplayObject::BoxedFunction funcBox = { *(void **)&func }; // https://stackoverflow.com/a/16682718
-    
-    if (CallNewFactory( L, name, &funcBox )) // stream[, object]
+    if (CallNewFactory( L, name, *(void **)&func )) // stream[, object]
     {
         T * object = (T *)Rtt::LuaProxy::GetProxyableObject( L, 2 );
 
