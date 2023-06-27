@@ -44,13 +44,13 @@ public class CoronaRuntime {
 	 * <p>
 	 * This constructor was made internal so that only the Corona can make instances of this class.
 	 */
-	CoronaRuntime(android.content.Context context, boolean isCoronaKit) {
+	CoronaRuntime(android.content.Context context, boolean isCoronaKit, boolean wantsDepthBuffer, boolean wantsStencilBuffer) {
 		fLuaState = null;
 		fWasDisposed = false;
 		fTaskDispatcher = new CoronaRuntimeTaskDispatcher(this);
 		fBaseDir = "";
 		fIsCoronaKit = isCoronaKit;
-		fGLView = new com.ansca.corona.graphics.opengl.CoronaGLSurfaceView(context, this, isCoronaKit);
+		fGLView = new com.ansca.corona.graphics.opengl.CoronaGLSurfaceView(context, this, isCoronaKit, wantsDepthBuffer, wantsStencilBuffer);
 
 		// Initialize the native side of the Corona runtime.
 		// Note that this does not load and start the Corona project.
@@ -64,7 +64,7 @@ public class CoronaRuntime {
 	}
 	
 	void reset(android.content.Context context) {
-		fGLView = new com.ansca.corona.graphics.opengl.CoronaGLSurfaceView(context, this, true);
+		fGLView = new com.ansca.corona.graphics.opengl.CoronaGLSurfaceView(context, this, true, false, false);
 		fController.setGLView(fGLView);
 		fViewManager.setGLView(fGLView);
 	}
