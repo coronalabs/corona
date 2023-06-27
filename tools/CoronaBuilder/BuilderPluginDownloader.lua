@@ -80,14 +80,12 @@ local function getPluginDirectories(platform, build, pluginsToDownload, buildSet
 				lfs.mkdir(unpackLocation)
 				local ret = unpackPlugin(pluginArchivePath..'/data.tgz', unpackLocation)
 				if ret ~= 0 then
-					print(downloadURL)
-					print("ERROR: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
-					return
+					print("WARNING: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
+				else
+					table.insert(pluginDirectories, unpackLocation)
 				end
-				table.insert(pluginDirectories, unpackLocation)
 				--clean up archives
 				os.remove(pluginArchivePath..'/data.tgz')
-				print(lfs.rmdir(pluginArchivePath))
 	end
 
 	return pluginDirectories
