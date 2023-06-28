@@ -68,10 +68,6 @@ ShaderData::~ShaderData()
 	}
 
     Rtt_FREE( fExtraSpace );
-	for ( int i = 0; i < kNumData; i++ )
-	{
-		Rtt_DELETE( fUniformData[i] );
-	}
 }
 
 void
