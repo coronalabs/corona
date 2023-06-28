@@ -490,6 +490,7 @@
         <File Name="../../librtt/Core/Rtt_Assert.h"/>
         <File Name="../../librtt/Core/Rtt_Array.h"/>
         <File Name="../../librtt/Rtt_Archive.h"/>
+        <File Name="../../librtt/Rtt_Profiling.h"/>
         <File Name="../../librtt/Core/Rtt_Allocator.h"/>
         <File Name="../../librtt/Display/LuaReader.h"/>
         <File Name="../../external/LuaHashMap/LuaHashMap.h"/>
@@ -855,6 +856,7 @@
       <File Name="../../librtt/Rtt_CKWorkflow.cpp"/>
       <File Name="../../librtt/Rtt_CachedPath.cpp"/>
       <File Name="../../librtt/Rtt_Archive.cpp"/>
+      <File Name="../../librtt/Rtt_Profiling.cpp"/>
       <File Name="../../librtt/b2GLESDebugDraw.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="renderer">

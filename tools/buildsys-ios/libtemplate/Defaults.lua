@@ -30,7 +30,8 @@ local tableDuplicate = BuilderUtils.tableDuplicate
 -------------------------------------------------------------------------------
 
 -- Lowest version of iOS that Corona supports
-local MIN_VERSION_DEFAULT = 8.0
+local MIN_VERSION_DEFAULT = "8.0"
+local MIN_VERSION_NEW = "11.0"
 
 -- ============================================================================
 -- Defaults.tools
@@ -82,12 +83,17 @@ function M:setSdkType( sdkType, minVersion )
 	self.options.sdkType = sdkType -- update sdktype
 
 	minVersion = minVersion or self.options.minVersion
-	self.options.minVersion = minVersion
 
 	local sdkVersion = xcrun( sdkType, "--show-sdk-version" )
 	assert( sdkVersion, "ERROR: Could not find iPhone SDK Version" )
-	sdkVersion = tonumber(string.match(sdkVersion, '%d+'))
+	sdkVersion = tonumber(string.match(sdkVersion, '%d+%.?%d*'))
 	assert( sdkVersion, "ERROR: Cannot convert iPhone SDK Version:", sdkVersion )
+
+	if sdkVersion >= 16.4 and tonumber(minVersion) < tonumber(MIN_VERSION_NEW) then
+		minVersion = MIN_VERSION_NEW
+		print("Forcing minVersion to 11.0")
+	end
+	self.options.minVersion = minVersion
 
 	if tonumber(minVersion) >= 10 or sdkVersion >= 16 then
 		modernSlices()

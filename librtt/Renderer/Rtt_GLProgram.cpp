@@ -32,6 +32,8 @@
 
 #include <string>
 #include <vector>
+#include "Rtt_Profiling.h"
+
 
 // To reduce memory consumption and startup cost, defer the
 // creation of GL shaders and programs until they're needed.
@@ -142,6 +144,8 @@ GLProgram::GLProgram()
 void
 GLProgram::Create( CPUResource* resource )
 {
+	SUMMED_TIMING( glpc, "Program GPU Resource: Create" );
+
 	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
 	fResource = resource;
 	
@@ -167,6 +171,8 @@ GLProgram::Create( CPUResource* resource )
 void
 GLProgram::Update( CPUResource* resource )
 {
+	SUMMED_TIMING( glpu, "Program GPU Resource: Update" );
+
     Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
     if( fData[Program::kMaskCount0].fProgram ) Update( Program::kMaskCount0, fData[Program::kMaskCount0] );
     if( fData[Program::kMaskCount1].fProgram ) Update( Program::kMaskCount1, fData[Program::kMaskCount1] );

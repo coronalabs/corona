@@ -590,6 +590,8 @@
 		AA2C69FA29147C9D0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69F829147C4E0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
 		AA2C69FB29147C9D0093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69BB29147C4E0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
 		AA76CF15272CB55000CE3F89 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */; };
+		AA2C6AF6291C37690093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */; };
+		AAF349EB29EFC61C00076706 /* Rtt_Profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */; };
 		AAF34AD529F9DFB800076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */; };
 		AAF34AD629F9DFB900076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */; };
 		AAF34ADB29F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD929F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp */; };
@@ -2573,6 +2575,10 @@
 		AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = ../../librtt/Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
 		AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = ../../librtt/Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
 		AAA58168270D399C002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = ../../librtt/Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
+		AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = ../../librtt/Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
+		AA2C6AF5291C37690093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = ../../librtt/Corona/CoronaMemory.h; sourceTree = "<group>"; };
+		AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Profiling.cpp; path = ../../librtt/Rtt_Profiling.cpp; sourceTree = "<group>"; };
+		AAF349EA29EFC61C00076706 /* Rtt_Profiling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Profiling.h; path = ../../librtt/Rtt_Profiling.h; sourceTree = "<group>"; };
 		AAF34A9729F9DF9E00076706 /* Rtt_FormatExtensionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FormatExtensionList.h; path = ../../librtt/Renderer/Rtt_FormatExtensionList.h; sourceTree = "<group>"; };
 		AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FormatExtensionList.cpp; path = ../../librtt/Renderer/Rtt_FormatExtensionList.cpp; sourceTree = "<group>"; };
 		AAF34AD729F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceCaptureAdapter.h; path = ../../librtt/Display/Rtt_TextureResourceCaptureAdapter.h; sourceTree = "<group>"; };
@@ -3741,6 +3747,8 @@
 				03D1C53B1D70CBB400DB02EE /* Rtt_PreferenceCollection.h */,
 				03D1C53C1D70CBB400DB02EE /* Rtt_PreferenceValue.cpp */,
 				03D1C53D1D70CBB400DB02EE /* Rtt_PreferenceValue.h */,
+				AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */,
+				AAF349EA29EFC61C00076706 /* Rtt_Profiling.h */,
 				A4551F241BAA182D00FB3BDF /* Rtt_RenderingStream.cpp */,
 				A4551F251BAA182D00FB3BDF /* Rtt_RenderingStream.h */,
 				A4551F261BAA182D00FB3BDF /* Rtt_Resource.cpp */,
@@ -5878,6 +5886,7 @@
 				A4551F4C1BAA182D00FB3BDF /* Rtt_LuaLibGameNetwork.cpp in Sources */,
 				A4551DEE1BAA17CF00FB3BDF /* Rtt_EmitterObject.cpp in Sources */,
 				A4551F671BAA182D00FB3BDF /* Rtt_PlatformEventSound.cpp in Sources */,
+				AAF349EB29EFC61C00076706 /* Rtt_Profiling.cpp in Sources */,
 				A4384F521BAA1F49005750A3 /* b2GLESDebugDraw.cpp in Sources */,
 				A4551E001BAA17CF00FB3BDF /* Rtt_RectPath.cpp in Sources */,
 				A4551F621BAA182D00FB3BDF /* Rtt_PlatformAudioPlayer.cpp in Sources */,
@@ -6667,7 +6676,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=11.0)";
 			};
 			name = Debug;
 		};
@@ -6712,7 +6721,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=11.0)";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -6733,7 +6742,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Debug;
@@ -6754,7 +6762,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Release;
@@ -7091,7 +7098,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Debug;
@@ -7116,7 +7122,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Release;

@@ -169,6 +169,10 @@ public class NativeToJavaBridge {
 			catch ( Exception ex ) {
 				err.append("\n\tno Java class '").append(classPath).append("'");
 			}
+			catch ( Throwable ex ) {
+				ex.printStackTrace();
+				err.append("\n\terror loading class '").append(classPath).append("': ").append(ex);
+			}
 			if(result == 0) {
 				L.pushString(err.toString());
 				result = 1;

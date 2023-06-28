@@ -134,7 +134,7 @@ public class CoronaView extends FrameLayout {
 			fCoronaRuntime.reset(getContext());
 		} else {
 			// We didn't save a valid address, so we need a new CoronaRuntime
-			fCoronaRuntime = new CoronaRuntime(getContext(), true);
+			fCoronaRuntime = new CoronaRuntime(getContext(), true, false, false);
 		}
 		fInputHandler.setView(fCoronaRuntime.getViewManager().getContentView());
 		fInputHandler.setDispatcher(fCoronaRuntime.getTaskDispatcher());
@@ -193,7 +193,7 @@ public class CoronaView extends FrameLayout {
 			Looper.prepare();
 		}
 
-		fCoronaRuntime = new CoronaRuntime(getContext(), true);
+		fCoronaRuntime = new CoronaRuntime(getContext(), true, false, false);
 
 		if (!baseDir.endsWith("/")) {
 			baseDir = baseDir + "/";

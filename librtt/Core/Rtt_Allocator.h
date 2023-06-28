@@ -95,7 +95,7 @@ void operator delete[]( void* p ) throw();
 
 	#ifdef __cplusplus
 
-	#if defined(Rtt_WIN_ENV) && defined(Rtt_DEBUG)
+	#if defined(Rtt_WIN_ENV) && defined(Rtt_DEBUG) && defined(Rtt_CHECK_MEMORY)
 		#define Rtt_NEW( pUnused, T )			new ( _CLIENT_BLOCK, __FILE__, __LINE__) T
 	#else
 		#define Rtt_NEW( pUnused, T )			new T

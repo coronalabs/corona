@@ -34,6 +34,8 @@
 #include "Rtt_GPUStream.h"
 #include "Corona/CoronaGraphics.h"
 
+#include "Rtt_Profiling.h"
+
 #define ENABLE_DEBUG_PRINT	0
 
 #include <limits>
@@ -970,6 +972,8 @@ Renderer::Render()
 void
 Renderer::Swap()
 {
+	ENABLE_SUMMED_TIMING( true );
+
     // Create GPUResources
     Rtt_AbsoluteTime start = START_TIMING();
     for(S32 i = 0; i < fCreateQueue.Length(); ++i)
@@ -990,6 +994,8 @@ Renderer::Swap()
     }
     fUpdateQueue.Remove(0, fUpdateQueue.Length(), false);
     fStatistics.fResourceUpdateTime = STOP_TIMING(start);
+
+	ENABLE_SUMMED_TIMING( false );
 
     // Destroy GPUResources
     start = START_TIMING();

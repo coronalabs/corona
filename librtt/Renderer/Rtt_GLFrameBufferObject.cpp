@@ -19,6 +19,7 @@
 #endif
 
 #include <cstring>
+#include "Rtt_Profiling.h"
 
 // ----------------------------------------------------------------------------
 
@@ -42,6 +43,7 @@ GLFrameBufferObject::Create( CPUResource* resource )
 {
 	Rtt_ASSERT( CPUResource::kFrameBufferObject == resource->GetType() );
 //	FrameBufferObject* fbo = static_cast<FrameBufferObject*>( resource );
+	SUMMED_TIMING( glfc, "Framebuffer GPU Resource: Create" );
 
 	GLuint name;
 	glGenFramebuffers( 1, &name );
@@ -58,6 +60,8 @@ GLFrameBufferObject::Create( CPUResource* resource )
 void 
 GLFrameBufferObject::Update( CPUResource* resource )
 {
+	SUMMED_TIMING( glfu, "Framebuffer GPU Resource: Update" );
+
 	// Query the bound FBO so that it can be restored. It may (or
 	// may not) be worth passing this value in to avoid the query.
 	GLint currentFBO;
