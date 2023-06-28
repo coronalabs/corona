@@ -913,7 +913,21 @@ local function packageApp( options )
 			identity=options.signingIdentity,
 			platform="iphoneos"
 		}
-		local bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
+		local sdkVersion = captureCommandOutput("xcrun --sdk iphoneos --show-sdk-version")
+		if not sdkVersion then
+			return "Unable to get iOS SDK version"
+		end
+		sdkVersion = tonumber(string.match(sdkVersion, '%d+%.?%d*'))
+		if not sdkVersion then
+			return "Unable to parse SDK version"
+		end
+
+		local bundleScript
+		if sdkVersion >= 16.4 then
+			bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --destination "{app}/Frameworks" --strip-bitcode '
+		else
+			bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
+		end
 
 		if not options.signingIdentity then
 			bundleOptions.identity = "-"
@@ -946,6 +960,12 @@ local function packageApp( options )
 			errMsg = "ERROR: bundling Swift libraries required by plugins failed: "..tostring(errMsg)
 			return errMsg
 		end
+	end
+
+	--remove standard resources(Corona Resources Bundle) if users selects
+
+	if options.includeStandardResources == false then
+		runScript("rm -rf "..quoteString(makepath(appBundleFileUnquoted, "CoronaResources.bundle")))
 	end
 
 	-- bundle is now ready to be signed (don't sign if we don't have a signingIdentity, e.g. Xcode Simulator)
@@ -982,12 +1002,6 @@ local function packageApp( options )
 	end
 
 	runScript( "chmod 755 " .. appBundleFile )
-
-	--remove standard resources(Corona Resources Bundle) if users selects
-
-	if options.includeStandardResources == false then
-		runScript("rm -rf "..quoteString(makepath(appBundleFileUnquoted, "CoronaResources.bundle")))
-	end
 
 	-- If building with a distribution identity, create an IPA of the .app which can be used by Application Loader
 	local appBundleFileIPA = quoteString(makepath(options.dstDir, options.dstFile) .. ".ipa")

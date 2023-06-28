@@ -200,7 +200,7 @@ Rtt_VLogException(const char* format, va_list ap)
 			}
 
 			// Output the string to stdout and the Visual Studio debugger.
-#if defined(Rtt_NINTENDO_ENV)
+#if defined(Rtt_NXS_ENV)
 			fputs(stringPointer, stdout);
 #elif defined(Rtt_WIN_PHONE_ENV)
 			if (fLogHandler)

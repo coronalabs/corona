@@ -936,6 +936,9 @@
     <ClCompile Include="..\..\..\librtt\Corona\CoronaMemory.cpp">
       <Filter>librtt\Corona</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Rtt_Profiling.cpp">
+      <Filter>librtt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\external\ALmixer\luaal.h">
@@ -1882,6 +1885,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\librtt\Corona\CoronaMemory.h">
       <Filter>librtt\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Rtt_Profiling.h">
+      <Filter>librtt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

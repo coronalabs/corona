@@ -13,6 +13,10 @@
       <Configuration>Debug.Simulator</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="PreRelease|Win32">
+      <Configuration>PreRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release.App|Win32">
       <Configuration>Release.App</Configuration>
       <Platform>Win32</Platform>
@@ -166,6 +170,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">$(IntDir)Renderer\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">$(IntDir)Renderer\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GeometryPool.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GL.cpp" />
@@ -183,6 +188,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">$(IntDir)Renderer\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">$(IntDir)Renderer\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Program.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ProgramFactory.cpp" />
@@ -271,6 +277,7 @@
     <ClCompile Include="..\..\..\librtt\Rtt_Preference.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceCollection.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceValue.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Profiling.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Rendering.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RenderingStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Resource.cpp" />
@@ -587,6 +594,7 @@
     <ClInclude Include="..\..\..\librtt\Rtt_Preference.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceValue.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Profiling.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Rendering.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RenderingStream.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Resource.h" />
@@ -641,6 +649,7 @@
       <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">remdebug_engine</BaseFunctionName>
       <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">remdebug_engine</BaseFunctionName>
       <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">remdebug_engine</BaseFunctionName>
+      <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">remdebug_engine</BaseFunctionName>
     </LuaToCpp>
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaLibrary.lua" />
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaPrototype.lua" />
@@ -845,6 +854,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -875,6 +891,12 @@
     <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Release.Definitions.props" />
     <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
@@ -979,6 +1001,27 @@ if NOT EXIST %LIBRARY% (
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">

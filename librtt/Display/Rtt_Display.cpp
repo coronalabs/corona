@@ -28,6 +28,7 @@
 #include "Rtt_Lua.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_PlatformSurface.h"
+#include "Rtt_Profiling.h"
 #include "CoronaLua.h"
 
 #include "Renderer/Rtt_GLRenderer.h"
@@ -44,6 +45,7 @@
 #include "Rtt_Runtime.h"
 
 #define ENABLE_DEBUG_PRINT    0
+
 
 // ----------------------------------------------------------------------------
 
@@ -552,27 +554,49 @@ Display::Restart( int newWidth, int newHeight )
 void
 Display::Update()
 {
+    Profiling::EntryRAII up( GetAllocator(), "update" );
+
+    up.Add( "Display::Update Begin" );
+    
     Runtime& runtime = fOwner;
     lua_State *L = fOwner.VMContext().L();
     fSpritePlayer->Run( L, Rtt_AbsoluteToMilliseconds(runtime.GetElapsedTime()) );
 
+	up.Add( "Run sprite player" );
+
     GetScene().QueueUpdateOfUpdatables();
+
+	up.Add( "Queue updatables" );
 
     if ( fDelegate )
     {
         fDelegate->WillDispatchFrameEvent( * this );
     }
 
+	up.Add( "Prepare for frame event" );
+
     const FrameEvent& fe = FrameEvent::Constant();
     fe.Dispatch( L, runtime );
     
+    up.Add( "FrameEvent" );
+    
     const RenderEvent& re = RenderEvent::Constant();
     re.Dispatch( L, runtime );
+    
+    up.Add( "LateUpdate" );
+
+	Profiling::ResetSums();
+
+    up.Add( "Display::Update End" );
 }
 
 void
 Display::Render()
 {
+    Profiling::EntryRAII rp( GetAllocator(), "render" );
+
+    rp.Add( "Display::Render Begin" );
+
     {
         Rtt_AbsoluteTime elapsedTime = GetRuntime().GetElapsedTime();
 
@@ -586,7 +610,9 @@ Display::Render()
         //fDeltaTimeInSeconds = ( 1.0f / 30.0f );
     }
 
-    GetScene().Render( * fRenderer, * fTarget );
+	GetScene().Render( * fRenderer, * fTarget, rp.GetProfiling() );
+
+    rp.Add( "Display::Render End" );
 }
 
 void
@@ -814,11 +840,12 @@ Display::Capture( DisplayObject *object,
     }
 
     // The source position to capture from.
-    S32 x_in_pixels = 0;
-    S32 y_in_pixels = 0;
-    S32 w_in_pixels = ceilf(w_in_content_units);
-    S32 h_in_pixels = ceilf(h_in_content_units);
-    {
+    Rtt_Real x_in_pixels = 0;
+    Rtt_Real y_in_pixels = 0;
+    Rtt_Real w_in_pixels = w_in_content_units;
+    Rtt_Real h_in_pixels = h_in_content_units;
+    if(!optional_output_color){
+
         ContentToScreen( x_in_pixels,
                             y_in_pixels,
                             w_in_pixels,
@@ -829,7 +856,6 @@ Display::Capture( DisplayObject *object,
         x_in_pixels = 0;
         y_in_pixels = 0;
     }
-
 #    if defined( Rtt_OPENGLES )
         const Texture::Format kFormat = Texture::kRGBA;
 #    else
@@ -1528,7 +1554,13 @@ Display::ContentToScreen( S32& x, S32& y ) const
 {
     S32 w = 0;
     S32 h = 0;
-    ContentToScreen( x, y, w, h );
+    fStream->ContentToScreen( x, y, w, h );
+}
+
+void
+Display::ContentToScreen( Rtt_Real& x, Rtt_Real& y, Rtt_Real& w, Rtt_Real& h ) const
+{
+    fStream->ContentToScreen( x, y, w, h );
 }
 
 void
@@ -1564,7 +1596,6 @@ Display::UpdateContentScale(
 
     Rtt_Real scaleX = Rtt_REAL_1;
     Rtt_Real scaleY = Rtt_REAL_1;
-
     switch( scaleMode )
     {
         case kZoomEven:
