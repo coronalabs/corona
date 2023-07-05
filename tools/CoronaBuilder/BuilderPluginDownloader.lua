@@ -160,7 +160,7 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 		end
 
 		if plugin.frameworksOptional then
-			for _, lib in pairs(frameworksOptional) do
+			for _, lib in pairs(plugin.frameworksOptional) do
 				frameworksWeak[lib] = true
 				frameworkSearchPaths[plugin.path] = true
 			end
