@@ -203,6 +203,7 @@ PushArray( lua_State *L, U8 *data, int numValues )
 	{
 		float v = Rtt_RealToFloat( values[i] );
 		lua_pushnumber( L, v );
+		lua_rawseti( L, -2, i+1 );
 	}
 }
 
