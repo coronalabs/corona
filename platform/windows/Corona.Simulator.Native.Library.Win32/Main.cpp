@@ -672,19 +672,11 @@ int CoronaCommandBufferWriteNamedUniform(const CoronaCommandBuffer * commandBuff
 
 #pragma Corona Geometry API
 CORONA_API
-unsigned int CoronaGeometryCopyData(void * dst, const CoronaGeometryMappingLayout * dstLayout, const void * src, const CoronaGeometryMappingLayout * srcLayout)
+int CoronaGeometrySetComponentWriter (const CoronaRenderer * renderer, const char * name, CoronaGeometryComponentWriter writer, const void * context, int update)
 {
-    typedef unsigned int(*CoronaCallbackType)(void *, const CoronaGeometryMappingLayout *, const void *, const CoronaGeometryMappingLayout *);
+    typedef int(*CoronaCallbackType)(const CoronaRenderer *, const char *, CoronaGeometryComponentWriter, const void *, int);
     CoronaCallbackLoad();
-    return CoronaCallbackInvoke(dst, dstLayout, src, srcLayout);
-}
-
-CORONA_API
-void * CoronaGeometryGetMappingFromRenderData(const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout)
-{
-    typedef void *(*CoronaCallbackType)(const CoronaRenderData*, const char *, CoronaGeometryMappingLayout *);
-    CoronaCallbackLoad();
-    return CoronaCallbackInvoke(renderData, name, layout);
+    return CoronaCallbackInvoke(renderer, name, writer, context, update);
 }
 
 CORONA_API

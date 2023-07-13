@@ -23,6 +23,8 @@
 #include "Renderer/Rtt_Renderer.h"
 #include "Renderer/Rtt_Matrix_Renderer.h"
 
+#include "Renderer/Rtt_Geometry_Renderer.h"
+
 #include <string.h>
 
 #include "Renderer/Rtt_FormatExtensionList.h"
@@ -269,8 +271,13 @@ Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMo
 }
 
 void
-Shader::Draw( Renderer& renderer, const RenderData& objectData ) const
+Shader::Draw( Renderer& renderer, const RenderData& objectData, const GeometryWriter* writers, U32 n ) const
 {
+    if ( !renderer.CanAddGeometryWriters() ) // ignore during raw draws
+    {
+        renderer.SetGeometryWriters( writers, n );
+    }
+
     DrawState state( fResource->GetEffectCallbacks(), fIsDrawing );
 
     if (DoAnyBeforeDrawAndThenOriginal( state, renderer, objectData ))
@@ -369,6 +376,8 @@ Shader::DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & rend
         OBJECT_HANDLE_STORE( RenderData, renderData, &objectData );
 
         Rtt_ASSERT( allStored );
+
+        Renderer::GeometryWriterRAII gw( renderer );
         
         state.fParams->before( shader, fData->GetExtraSpace(), rendererObject, renderData );
     }
@@ -388,7 +397,9 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
         OBJECT_HANDLE_STORE( RenderData, renderData, &objectData );
 
         Rtt_ASSERT( allStored );
-        
+     
+        Renderer::GeometryWriterRAII gw( renderer );
+
         state.fParams->after( shader, fData->GetExtraSpace(), rendererObject, renderData );
     }
 }

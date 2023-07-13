@@ -410,29 +410,24 @@ typedef enum {
 } CoronaGeometryAttributeType;
 
 /**
- Structured form to allow reads / writes of geometry data, in particular specific vertex components.
+ Structured form to allow reads / writes of specific vertex components.
 */
 typedef struct CoronaGeometryMappingLayout {
     /**
-     Number of primitives (1, 3, or 4) that constitute the value.
+     Number of primitives (1 to 4) that constitute the value.
     */
     unsigned int count;
     
     /**
-     Offset in bytes to first value in mapped memory.
+     If geometry vertices are the source, the number of bytes from one source value to the next. Otherwise, 0.
     */
-    unsigned int offset;
-    
+    unsigned int inStride;
+
     /**
-     Size of memory region.
+     Number of bytes from one destination value to the next.
     */
-    unsigned int size;
-    
-    /**
-     Number of bytes from the offset of one value to the next.
-    */
-    unsigned int stride;
-    
+    unsigned int outStride;
+
     /**
      Primitive type of value.
     */
@@ -440,37 +435,50 @@ typedef struct CoronaGeometryMappingLayout {
 } CoronaGeometryMappingLayout;
 
 /**
- Copy the mapped part of a data source to the mapped part of a data target.
- The source and destination must each provide a size > 0 and agree in both count and type.
- The destination must provide a stride > 0. Its offset + count * attributeSize must not exceed the stride.
- The source may provide a stride = 0, in which case the first element in the data source is repeated. In
- that case, the offset + count * attributeSize must not exceed the size; otherwise the destination's
- constraint is imposed.
- If both strides are > 0, the number of copied elements is the minimum of the two `size / stride` results.
- Otherwise, the destination's result is used.
- @param dst Data whose components will be written.
- @param dstLayout Mapping of `dst`.
- @param src Data whose components will be read.
- @param srcLayout Mapping of `src`.
- @return If non-0, the copy was performed.
+ Operation performed when submitting geometry, used to assign or modify a specific component or attribute.
+ The first such value will be pointed at by `dest`, and `index` says which output vertex contains the value
+ (typically this will matter to user-provided contexts).
+ Starting from `dest`, the layout's `outStride` may be used to step from one vertex to the next, up to the
+ `n`-th instance.
+ A well-behaved "normal" writer is write-only: `dest` is undefined initially and must be valid afterward.
+ Update-style writers, on the other hand, are assumed to already contain valid data and thus may both read
+ and write.
+ In either case, a writer should restrict itself to the component or attribute it has claimed.
+ When a context is supplied with the writer, it will be available as that parameter.
+ Otherwise, if `context` is non-`NULL`, the input had associated geometry and it points to the corresponding
+ value in the `index`-th input vertex. Similar to `dest`, the layout's `outStride` may be used to iterate
+ over these values.
 */
-CORONA_API
-unsigned int CoronaGeometryCopyData( void * dst, const CoronaGeometryMappingLayout * dstLayout, const void * src, const CoronaGeometryMappingLayout * srcLayout ) CORONA_PUBLIC_SUFFIX;
+typedef void (*CoronaGeometryComponentWriter)( void * dest, const void * context, const CoronaGeometryMappingLayout * layout, unsigned int index, unsigned int n );
 
 /**
- Map part of a render data's geometry vertex stream for reading, writing, or copying.
- @param renderData Boxed render data.
+ Append a writer to the renderer's list.
+ When rendering, each "normal" writer is called, then any "update" ones (in order), to create the sequence of
+ vertices to be submitted. The list will always begin with some built-in behavior, e.g. a writer that copies
+ source vertices over directly.
+ Writers may be added within a before or after function belonging to a `CoronaShaderDrawParams`, and will remain
+ in effect until said function exits.
+ A custom writer might be added, say, to repurpose the "z" component for an effect, or supply "texCoord" from an
+ alternate data source.
+ In the case of "normal" writers, a new "position" writer will supercede any previous one, or "x" writers for
+ that matter; similarly for other combinations. If possible, the shadowed functions will not even be called.
+ Writers with side effects should be written with this in mind, or avoided altogether.
+ Adding a writer does not affect batching.
+ @param renderer Boxed renderer.
  @param name One of the following:
   "position", "texCoord", "color", "userData" (full attributes)
   "x", "y", "z" (position components)
   "u", "v", "q" (texCoord components)
   "r", "g", "b", "a" (color components)
   "ux", "uy", "uz", "uw" (userData components)
- @param layout On success, the layout corresponding to the named property.
- @return If non-NULL, the render data's geometry vertex stream, as mapped by the layout.
+  TODO?: vertex extensions NYI
+ @param writer Writer responsible for creating or updating the named vertex component or attribute.
+ @param context Supplied as `context` to writer, cf. `CoronaGeometryComponentWriter`. May be `NULL`.
+ @param update If non-0, this is an update-style writer, cf. `CoronaGeometryComponentWriter`.
+ @return If non-0, the writer was set.
 */
 CORONA_API
-void * CoronaGeometryGetMappingFromRenderData( const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout ) CORONA_PUBLIC_SUFFIX;
+int CoronaGeometrySetComponentWriter ( const CoronaRenderer * renderer, const char * name, CoronaGeometryComponentWriter writer, const void * context, int update ) CORONA_PUBLIC_SUFFIX;
 
 /**
  Primitive types that may be used by extended attributes; these extend the set used by Solar's vertices.
@@ -820,7 +828,7 @@ CORONA_API
 int CoronaShaderRawDraw( const CoronaShader * shader, const CoronaRenderData * renderData, const CoronaRenderer * renderer ) CORONA_PUBLIC_SUFFIX;
 
 /**
- Get the version that the shader is prepared to draw..
+ Get the version that the shader is prepared to draw.
  @param renderData Boxed render data.
  @param renderer Boxed renderer.
  @param version On success, the shader version.

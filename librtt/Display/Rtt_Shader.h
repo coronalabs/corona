@@ -39,6 +39,7 @@ class FrameBufferObject;
 class Display;
 class Paint;
 struct RenderData;
+struct GeometryWriter;
 class Renderer;
 class ShaderData;
 class ShaderResource;
@@ -70,7 +71,7 @@ class Shader
                 
         virtual void Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMod mod );
 
-        virtual void Draw( Renderer& renderer, const RenderData& objectData ) const;
+        virtual void Draw( Renderer& renderer, const RenderData& objectData, const GeometryWriter* writers = NULL, U32 n = 1 ) const;
         virtual void Log(std::string preprend, bool last);
         virtual void Log();
 
