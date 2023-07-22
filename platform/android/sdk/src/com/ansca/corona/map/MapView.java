@@ -9,6 +9,8 @@
 
 package com.ansca.corona.maps;
 
+import android.webkit.WebSettings;
+
 /**
  * View for displaying a map.
  * <p>
@@ -146,7 +148,7 @@ public class MapView extends android.widget.FrameLayout {
 
 		// Although CoronaEnviornment.getInternalWebCachesDirectory() is our class, we don't want to expose that which is why
 
-		settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)
+		settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		// we have to use reflection to access it
 		settings.setAllowFileAccess(true);
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
