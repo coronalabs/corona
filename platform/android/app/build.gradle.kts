@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Lint
+import com.android.build.api.dsl.LintOptions
 import com.android.ide.common.util.toPathString
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
@@ -189,14 +191,14 @@ if (configureCoronaPlugins == "YES") {
 //</editor-fold>
 
 android {
-    lintOptions {
+    fun Lint.() {
         isCheckReleaseBuilds = false
     }
-    compileSdkVersion(32)
+    compileSdk = 33
     defaultConfig {
         applicationId = coronaAppPackage
-        targetSdkVersion(32)
-        minSdkVersion(extra["minSdkVersion"] as Int)
+        targetSdk = 33
+        minSdk = (extra["minSdkVersion"] as Int)
         versionCode = coronaVersionCode
         versionName = coronaVersionName
         multiDexEnabled = true
