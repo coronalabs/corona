@@ -248,7 +248,6 @@ platform/webos
 
 .hg*
 _hg/
-*.p12
 *.cert
 /platform/windows/Build.Tools/CoronaLabsInc.pfx
 premake4.lua
