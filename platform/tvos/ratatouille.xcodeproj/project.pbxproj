@@ -4772,7 +4772,7 @@
 					};
 					A4AD17301BAA0D8F00BCF507 = {
 						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = BG2J43EA88;
+						DevelopmentTeam = A6QFRGXX8S;
 						ProvisioningStyle = Manual;
 					};
 					A4AD17521BAA14A600BCF507 = {
@@ -4805,7 +4805,7 @@
 						CreatedOnToolsVersion = 7.1;
 					};
 					F5C5E0D3251E112100217C19 = {
-						DevelopmentTeam = BG2J43EA88;
+						DevelopmentTeam = A6QFRGXX8S;
 						ProvisioningStyle = Manual;
 					};
 					F5C5E103251E114A00217C19 = {
@@ -6701,14 +6701,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scotthtech.coronaDev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "tvOS Corona Sim";
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
@@ -7053,18 +7056,21 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					Rtt_MetalANGLE,
 				);
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scotthtech.coronaDev;
 				PRODUCT_NAME = template;
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "tvOS Corona Sim";
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
 				USER_HEADER_SEARCH_PATHS = ../../librtt;

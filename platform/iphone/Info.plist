@@ -11,7 +11,7 @@
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>com.coronalabs.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -24,10 +24,42 @@
 	<string>@TEMPLATE_BUNDLE_VERSION@</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Set Apple Music description in build settings</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Set Bluetooth Peripheral description in build settings</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Set Calendars Peripheral description in build settings</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Set Camera Usage Description in build settings</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Set Contacts Usage Description in build settings</string>
+	<key>NSHomeKitUsageDescription</key>
+	<string>Set Home Kit Usage Description in build settings</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Set Location Always Usage Description in build settings</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Set Location Usage Description in build settings</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Set Location When In Use Usage description in build settings</string>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
 	<key>NSMainNibFile~ipad</key>
 	<string>MainWindow-iPad</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Set Microphone Recognition Usage description in build settings</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Set Motion Usage description in build settings</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Set Photo Library Add Usage description in build settings</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Set Photo Usage description in build settings</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Set Reminders Usage description in build settings</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Set Siri Usage description in build settings</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Set Speech Recognition Usage description in build settings</string>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIRequiresFullScreen</key>
@@ -36,37 +68,5 @@
 	<true/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleBlackTranslucent</string>
-	<key>NSAppleMusicUsageDescription</key>
- 	<string>Set Apple Music description in build settings</string>
-     <key>NSBluetoothPeripheralUsageDescription</key>
- 	<string>Set Bluetooth Peripheral description in build settings</string>
-     <key>NSCalendarsUsageDescription</key>
- 	<string>Set Calendars Peripheral description in build settings</string>
-     <key>NSCameraUsageDescription</key>
- 	<string>Set Camera Usage Description in build settings</string>
-     <key>NSContactsUsageDescription</key>
- 	<string>Set Contacts Usage Description in build settings</string>
-     <key>NSHomeKitUsageDescription</key>
- 	<string>Set Home Kit Usage Description in build settings</string>
-     <key>NSLocationAlwaysUsageDescription</key>
- 	<string>Set Location Always Usage Description in build settings</string>
-     <key>NSLocationUsageDescription</key>
- 	<string>Set Location Usage Description in build settings</string>
-     <key>NSLocationWhenInUseUsageDescription</key>
- 	<string>Set Location When In Use Usage description in build settings</string>
-     <key>NSMicrophoneUsageDescription</key>
- 	<string>Set Microphone Recognition Usage description in build settings</string>
-     <key>NSMotionUsageDescription</key>
- 	<string>Set Motion Usage description in build settings</string>
-     <key>NSPhotoLibraryUsageDescription</key>
- 	<string>Set Photo Usage description in build settings</string>
-     <key>NSRemindersUsageDescription</key>
- 	<string>Set Reminders Usage description in build settings</string>
-     <key>NSSiriUsageDescription</key>
- 	<string>Set Siri Usage description in build settings</string>
-     <key>NSSpeechRecognitionUsageDescription</key>
- 	<string>Set Speech Recognition Usage description in build settings</string>
- 	<key>NSPhotoLibraryAddUsageDescription</key>
- 	<string>Set Photo Library Add Usage description in build settings</string>
 </dict>
 </plist>
