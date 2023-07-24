@@ -4493,11 +4493,11 @@
 		A46935C3169D62DA00723568 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A6QFRGXX8S;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -4526,11 +4526,11 @@
 		A46935C4169D62DA00723568 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A6QFRGXX8S;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -5079,7 +5079,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				ENABLE_BITCODE = NO;
@@ -5148,7 +5149,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				ENABLE_BITCODE = NO;
@@ -5210,11 +5212,11 @@
 		F50E7EC024FA923B009F165B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A6QFRGXX8S;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5247,11 +5249,11 @@
 		F50E7EC124FA923B009F165B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A6QFRGXX8S;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (

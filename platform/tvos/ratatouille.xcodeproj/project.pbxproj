@@ -6700,11 +6700,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6723,11 +6723,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6899,7 +6899,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -6935,7 +6935,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -7060,11 +7060,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -7087,11 +7087,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -7118,7 +7118,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -7154,7 +7154,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = BG2J43EA88;
+				DEVELOPMENT_TEAM = A6QFRGXX8S;
 				"DEVELOPMENT_TEAM[sdk=appletvos*]" = A6QFRGXX8S;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
