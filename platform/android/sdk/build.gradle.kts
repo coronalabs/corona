@@ -4,15 +4,13 @@ plugins {
 
 android {
     ndkVersion = "18.1.5063045"
-    compileSdkVersion(32)
+    compileSdk = 33
 
     defaultConfig {
-        minSdkVersion(15)
-        targetSdkVersion(32)
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = 15
+        targetSdk = 33
+        version = 1
     }
-
     sourceSets["main"].manifest.srcFile(file("AndroidManifest-New.xml"))
     sourceSets["main"].java.srcDirs(file("src"), file("../../../external/JNLua/src/main"), file("../../../plugins/network/android/src"))
     sourceSets["main"].java.filter.exclude("**/script/**")
