@@ -191,6 +191,9 @@ if (configureCoronaPlugins == "YES") {
 //</editor-fold>
 
 android {
+    lintOptions {
+        isCheckReleaseBuilds = true
+    }
     compileSdk = 33
     defaultConfig {
         applicationId = coronaAppPackage
