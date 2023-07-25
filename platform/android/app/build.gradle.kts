@@ -67,7 +67,7 @@ fun checkCoronaNativeInstallation() {
     } else {
         val setupNativeApp = File("/Applications").listFiles { f ->
             f.isDirectory && f.name.startsWith("Corona")
-        }?.max()?.let {
+        }.maxOrNull()?.let {
             "${it.absolutePath}/Native/Setup Corona Native.app"
         } ?: "Native/Setup Corona Native.app"
         throw InvalidUserDataException("Corona Native was not set-up properly. Launch '$setupNativeApp'.")
@@ -191,9 +191,6 @@ if (configureCoronaPlugins == "YES") {
 //</editor-fold>
 
 android {
-    fun Lint.() {
-        isCheckReleaseBuilds = false
-    }
     compileSdk = 33
     defaultConfig {
         applicationId = coronaAppPackage
