@@ -472,25 +472,28 @@ jobs:
           name: Simulator-macOS
       - name: Notarize
         run: |
-          if [ -z "$APPLE_AUTH" ]
+          if [ -z "$APPLE_ISSUER" ]
           then
             echo 'Skipping because no authorization provided'
             exit 0
           fi
-          if [[ "$GITHUB_REF" == refs/tags/* ]]
-          then
-              : "${BUILD_NUMBER:=${GITHUB_REF#refs/tags/}}"
-          else
-              : "${BUILD_NUMBER:=$GITHUB_RUN_NUMBER}"
-          fi
-          xcrun notarytool store-credentials "solarKey" $APPLE_AUTH
-          for dmg in ./Simulator-macOS/*.dmg
-          do
-            xcrun notarytool submit "$dmg" --keychain-profile "solarKey" --wait
-          done
+          set +ex
+          APPLE_KEY_FILE="$(mktemp)"
+          echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
+          (
+            for dmg in ./Simulator-macOS/*.dmg
+            do
+              xcrun notarytool submit "$dmg" --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID"
+            done
+          )
+          RET=$?
+          rm -f "$APPLE_KEY_FILE"
+          exit $RET
         shell: bash
-        env:
-          APPLE_AUTH: ${{ secrets.AppleAuth }} # --apple-id <your apple id> --team-id <your teamid> --password <app specific password>
+        env: # get this at https://appstoreconnect.apple.com/access/api
+          APPLE_KEY: ${{ secrets.AppleKey }} ## full contents of the file
+          APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
+          APPLE_ISSUER: ${{ secrets.AppleIssuer }}
 
 
   check-notarization:
@@ -498,7 +501,7 @@ jobs:
     steps:
       - name: Check notarization credentials
         run: |
-          if [ -z "$APPLE_AUTH" ]
+          if [ -z "$APPLE_ISSUER" ]
           then
             echo 'Skipping because no authorization provided'
             exit 0
@@ -507,13 +510,24 @@ jobs:
           echo "::add-mask::$T"
           Z="cNgt1OO-"
           echo "::add-mask::$Z"
-          if ! eval xcrun altool $APPLE_AUTH  --list-apps  &> /dev/null
+          if ! (
+            set +ex
+            APPLE_KEY_FILE="$(mktemp)"
+            echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
+            xcrun notarytool history --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID"
+            RET=$?
+            rm -f "$APPLE_KEY_FILE"
+            exit $RET
+          ) &> /dev/null
           then
             curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$GITHUB_REPOSITORY'"}' https://maker.ifttt.com/trigger/NotarizationBroken/with/key/$Z$T
           fi
         shell: bash
         env:
-          APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
+          APPLE_KEY: ${{ secrets.AppleKey }}
+          APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
+          APPLE_ISSUER: ${{ secrets.AppleIssuer }}
+          
 
 
   Windows-Simulator:
