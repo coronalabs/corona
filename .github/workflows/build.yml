@@ -483,13 +483,14 @@ jobs:
           else
               : "${BUILD_NUMBER:=$GITHUB_RUN_NUMBER}"
           fi
+          xcrun notarytool store-credentials "solarKey" $APPLE_AUTH
           for dmg in ./Simulator-macOS/*.dmg
           do
-            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH${BUILD_NUMBER}.$(date +"%b%d")"  --file "$dmg"
+            xcrun notarytool submit "$dmg" --keychain-profile "solarKey" --wait
           done
         shell: bash
         env:
-          APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
+          APPLE_AUTH: ${{ secrets.AppleAuth }} # --apple-id <your apple id> --team-id <your teamid> --password <app specific password>
 
 
   check-notarization:
