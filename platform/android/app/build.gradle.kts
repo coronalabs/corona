@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.Lint
-import com.android.build.api.dsl.LintOptions
 import com.android.ide.common.util.toPathString
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
@@ -204,8 +202,8 @@ android {
         multiDexEnabled = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility  = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility  = JavaVersion.VERSION_11
     }
     coronaKeystore?.let { keystore ->
         signingConfigs {
