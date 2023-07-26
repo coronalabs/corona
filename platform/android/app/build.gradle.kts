@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.Lint
-import com.android.build.api.dsl.LintOptions
 import com.android.ide.common.util.toPathString
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
@@ -67,7 +65,7 @@ fun checkCoronaNativeInstallation() {
     } else {
         val setupNativeApp = File("/Applications").listFiles { f ->
             f.isDirectory && f.name.startsWith("Corona")
-        }?.max()?.let {
+        }.maxOrNull()?.let {
             "${it.absolutePath}/Native/Setup Corona Native.app"
         } ?: "Native/Setup Corona Native.app"
         throw InvalidUserDataException("Corona Native was not set-up properly. Launch '$setupNativeApp'.")
@@ -191,8 +189,8 @@ if (configureCoronaPlugins == "YES") {
 //</editor-fold>
 
 android {
-    fun Lint.() {
-        isCheckReleaseBuilds = false
+    lintOptions {
+        isCheckReleaseBuilds = true
     }
     compileSdk = 33
     defaultConfig {
@@ -204,8 +202,8 @@ android {
         multiDexEnabled = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility  = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility  = JavaVersion.VERSION_11
     }
     coronaKeystore?.let { keystore ->
         signingConfigs {
