@@ -483,7 +483,8 @@ jobs:
           (
             for dmg in ./Simulator-macOS/*.dmg
             do
-              xcrun notarytool submit "$dmg" --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID"
+              xcrun notarytool submit "$dmg" --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" --wait
+              xcrun stapler staple "$dmg"
             done
           )
           RET=$?
