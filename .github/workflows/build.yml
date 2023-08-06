@@ -489,12 +489,12 @@ jobs:
           echo "::add-mask::$Z"
           APPLE_KEY_FILE="$(mktemp)"
           echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
-          xcrun notarytool history --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" &> /dev/null
+          if ! xcrun notarytool history --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" &> /dev/null
           then
             curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$GITHUB_REPOSITORY'"}' https://maker.ifttt.com/trigger/NotarizationBroken/with/key/$Z$T
           fi
         shell: bash
-        env:
+        env: # get this at https://appstoreconnect.apple.com/access/api
           APPLE_KEY: ${{ secrets.AppleKey }}
           APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
           APPLE_ISSUER: ${{ secrets.AppleIssuer }}
