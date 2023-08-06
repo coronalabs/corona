@@ -456,7 +456,7 @@ jobs:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Notarize
         run: |
-          [ -z "$APPLE_ISSUER" ] || exit 0
+          [ -n "$APPLE_ISSUER" ] || exit 0
           APPLE_KEY_FILE="$(mktemp)"
           echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
           xcrun notarytool submit --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" --wait ./output/*.dmg
