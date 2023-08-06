@@ -6,7 +6,6 @@
 -- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
-local runScript
 
 local json = require('json')
 local lfs = require('lfs')
