@@ -7,8 +7,6 @@
         android:required="true" />
 
     <application
-        android:enableOnBackInvokedCallback="true"
-
         android:name="androidx.multidex.MultiDexApplication"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher">

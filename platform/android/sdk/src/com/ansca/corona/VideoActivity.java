@@ -176,7 +176,7 @@ public class VideoActivity extends android.app.Activity {
 		for (CoronaRuntime runtime : CoronaRuntimeProvider.getAllCoronaRuntimes()) {
 			// Dispatch a Lua completion event.
 			if (!runtime.wasDisposed()) {
-				runtime.getTasbackCallbackkDispatcher().send(new com.ansca.corona.events.VideoEndedTask(fVideoId));
+				runtime.getTaskDispatcher().send(new com.ansca.corona.events.VideoEndedTask(fVideoId));
 			}
 
 			// Resume all other media content belonging to the runtime.

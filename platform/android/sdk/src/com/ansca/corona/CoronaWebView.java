@@ -11,28 +11,12 @@ package com.ansca.corona;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
-import android.view.MotionEvent;
-import android.webkit.GeolocationPermissions;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.window.OnBackInvokedCallback;
-import android.window.OnBackInvokedDispatcher;
 
-import com.ansca.corona.events.DidFailLoadUrlTask;
-import com.ansca.corona.events.EventManager;
-import com.ansca.corona.events.RunnableEvent;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -102,18 +86,18 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		fBackKeySupported = true;
 		fAutoCloseEnabled = true;
 		fUrlRequestSourceType = UrlRequestSourceType.OTHER;
-		fReceivedErrorEvents = new HashMap<String, DidFailLoadUrlTask>();
+		fReceivedErrorEvents = new java.util.HashMap<String, com.ansca.corona.events.DidFailLoadUrlTask>();
 		
 		// Set up a web browser event listener.
 		setWebViewClient(new CoronaWebViewClient());
 		
 		// Set up a web chrome client for enabling JavaScript alerts and location/GPS tracking.
-		setWebChromeClient(new WebChromeClient() {
+		setWebChromeClient(new android.webkit.WebChromeClient() {
 			View mCustomView;
 
 			@Override
 			public void onGeolocationPermissionsShowPrompt(
-				String origin, GeolocationPermissions.Callback callback)
+				String origin, android.webkit.GeolocationPermissions.Callback callback)
 			{
 				if (callback != null) {
 					callback.invoke(origin, true, false);
@@ -128,20 +112,20 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 			*/
 			@Override
 			public boolean onShowFileChooser(WebView webView, 
-				ValueCallback<Uri[]> filePathCallback,
-				FileChooserParams fileChooserParams) {
+				android.webkit.ValueCallback<android.net.Uri[]> filePathCallback, 
+				android.webkit.WebChromeClient.FileChooserParams fileChooserParams) {
 
 				ApiLevel21.openFileUpload(filePathCallback);
 				return true;
 			}
 
 			@Override
-			public void onShowCustomView(View view, CustomViewCallback callback) {
+			public void onShowCustomView(View view, android.webkit.WebChromeClient.CustomViewCallback callback) {
 				// Kitkat(4.4) or above
-				if (Build.VERSION.SDK_INT >= 19) {
+				if (android.os.Build.VERSION.SDK_INT >= 19) {
 					CoronaActivity activity = CoronaEnvironment.getCoronaActivity();
 					if (activity != null) {
-						FrameLayout layout = activity.getOverlayView();
+						android.widget.FrameLayout layout = activity.getOverlayView();
 						ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 						layout.addView(view, params);
 						mCustomView = view;
@@ -167,7 +151,7 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 					CoronaActivity activity = CoronaEnvironment.getCoronaActivity();
 					if (activity != null) {
 						ViewManager viewManager = fCoronaRuntime.getViewManager();
-						FrameLayout layout = activity.getOverlayView();
+						android.widget.FrameLayout layout = activity.getOverlayView();
 						layout.removeView(mCustomView);
 					}
 				}
@@ -175,39 +159,39 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		});
 		
 		// Enable support for JavaScript, HTML5 DOM storage, Flash plug-in, touch zoom controls, etc.
-		WebSettings settings = getSettings();
+		android.webkit.WebSettings settings = getSettings();
 		settings.setJavaScriptEnabled(true);
 		settings.setSupportZoom(true);
 		settings.setBuiltInZoomControls(true);
 		settings.setLoadWithOverviewMode(true);
 		settings.setUseWideViewPort(true);
-		settings.setPluginState(WebSettings.PluginState.ON);
+		settings.setPluginState(android.webkit.WebSettings.PluginState.ON);
 		settings.setDomStorageEnabled(true);
-		if (Build.VERSION.SDK_INT >= 17) {
+		if (android.os.Build.VERSION.SDK_INT >= 17) {
 			settings.setMediaPlaybackRequiresUserGesture(false);
 		}
-		if (Build.VERSION.SDK_INT >= 11) {
+		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			try {
-				Method setEnableSmoothTransitionMethod;
-				setEnableSmoothTransitionMethod = WebSettings.class.getMethod(
+				java.lang.reflect.Method setEnableSmoothTransitionMethod;
+				setEnableSmoothTransitionMethod = android.webkit.WebSettings.class.getMethod(
 						"setEnableSmoothTransition", new Class[] { Boolean.TYPE });
 				setEnableSmoothTransitionMethod.invoke(settings, new Object[] { true });
 			}
 			catch (Exception ex) { ex.printStackTrace(); }
 		}
-		if (Build.VERSION.SDK_INT >= 21) {
+		if (android.os.Build.VERSION.SDK_INT >= 21) {
 			ApiLevel21.setAcceptThirdPartyCookies(this, true);
 			ApiLevel21.setMixedContentModeToAlwaysAllowFor(settings);
 		}
 		
 		// Set up web view to have the focus when touched.
 		// This allows the virtual keyboard to appear when the user taps on a text field.
-		setOnTouchListener(new OnTouchListener() {
+		setOnTouchListener(new android.view.View.OnTouchListener() {
 			@Override
-			public boolean onTouch(View view, MotionEvent event) {
+			public boolean onTouch(android.view.View view, android.view.MotionEvent event) {
 				switch (event.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-					case MotionEvent.ACTION_UP:
+					case android.view.MotionEvent.ACTION_DOWN:
+					case android.view.MotionEvent.ACTION_UP:
 						if (view.hasFocus() == false) {
 							view.requestFocus();
 						}
@@ -216,36 +200,7 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 				return false;
 			}
 		});
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			CoronaActivity activity = CoronaEnvironment.getCoronaActivity();
-			if (activity != null) {
-				backDispatcher = activity.getOnBackInvokedDispatcher();
-				backCallback = new OnBackInvokedCallback() {
-					@Override
-					public void onBackInvoked() {
-						goBack();
-					}
-				};
-			}
-		}
 	}
-
-	private void updateBackResponder() {
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-			backCallback = new OnBackInvokedCallback() {
-				@Override
-				public void onBackInvoked() {
-					goBack();
-				}
-			};
-			backDispatcher.registerOnBackInvokedCallback(1000, backCallback);
-
-		}
-	}
-
-	private OnBackInvokedCallback backCallback;
-	private OnBackInvokedDispatcher backDispatcher;
 
 	/**
 	 * Destroys the internal state of this web view.
@@ -260,10 +215,10 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		
 		if (fCoronaRuntime.wasNotDisposed()) {
 			// Notify the native side of Corona that this web view has been closed/destroyed.
-			EventManager eventManager = fCoronaRuntime.getController().getEventManager();
+			com.ansca.corona.events.EventManager eventManager = fCoronaRuntime.getController().getEventManager();
 			if (eventManager != null) {
 				final int id = getId();
-				eventManager.addEvent(new RunnableEvent(new Runnable() {
+				eventManager.addEvent(new com.ansca.corona.events.RunnableEvent(new Runnable() {
 					@Override
 					public void run() {
 						JavaToNativeShim.webViewClosed(fCoronaRuntime, id);
@@ -271,12 +226,7 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 				}));
 			}
 		}
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			if( backDispatcher != null)
-				backDispatcher.unregisterOnBackInvokedCallback(backInvoked);
-		}
-
+		
 		// Destroy this web view.
 		super.destroy();
 	}
