@@ -454,6 +454,18 @@ jobs:
         run: ./tools/GHAction/build_dmg.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Notarize
+        run: |
+          [ -n "$APPLE_ISSUER" ] || exit 0
+          APPLE_KEY_FILE="$(mktemp)"
+          echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
+          xcrun notarytool submit --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" --wait ./output/*.dmg
+          xcrun stapler staple ./output/*.dmg
+        shell: bash
+        env: # get this at https://appstoreconnect.apple.com/access/api
+          APPLE_KEY: ${{ secrets.AppleKey }} ## full contents of the file
+          APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
+          APPLE_ISSUER: ${{ secrets.AppleIssuer }}
       - name: Upload macOS Daily build artifact
         uses: actions/upload-artifact@v1
         with:
@@ -461,58 +473,28 @@ jobs:
           path: ./output
 
 
-  notarize:
-    needs:
-      - macOS-Simulator
-    runs-on: macos-13
-    steps:
-      - name: Get built simulator
-        uses: actions/download-artifact@v1
-        with:
-          name: Simulator-macOS
-      - name: Notarize
-        run: |
-          if [ -z "$APPLE_AUTH" ]
-          then
-            echo 'Skipping because no authorization provided'
-            exit 0
-          fi
-          if [[ "$GITHUB_REF" == refs/tags/* ]]
-          then
-              : "${BUILD_NUMBER:=${GITHUB_REF#refs/tags/}}"
-          else
-              : "${BUILD_NUMBER:=$GITHUB_RUN_NUMBER}"
-          fi
-          for dmg in ./Simulator-macOS/*.dmg
-          do
-            xcrun altool --notarize-app $APPLE_AUTH --primary-bundle-id "com.coronalabs.CoronaSimulator.GH${BUILD_NUMBER}.$(date +"%b%d")"  --file "$dmg"
-          done
-        shell: bash
-        env:
-          APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
-
-
   check-notarization:
     runs-on: macos-13
     steps:
       - name: Check notarization credentials
         run: |
-          if [ -z "$APPLE_AUTH" ]
-          then
-            echo 'Skipping because no authorization provided'
-            exit 0
-          fi
+          [ -n "$APPLE_ISSUER" ] || exit 0
           T="R7NmWb1brmEx65"
           echo "::add-mask::$T"
           Z="cNgt1OO-"
           echo "::add-mask::$Z"
-          if ! eval xcrun altool $APPLE_AUTH  --list-apps  &> /dev/null
+          APPLE_KEY_FILE="$(mktemp)"
+          echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
+          if ! xcrun notarytool history --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" &> /dev/null
           then
             curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$GITHUB_REPOSITORY'"}' https://maker.ifttt.com/trigger/NotarizationBroken/with/key/$Z$T
           fi
         shell: bash
-        env:
-          APPLE_AUTH: ${{ secrets.AppleAuth }} # --username apple@id.email --password secret-app-specific-pwd --asc-provider anscainc
+        env: # get this at https://appstoreconnect.apple.com/access/api
+          APPLE_KEY: ${{ secrets.AppleKey }}
+          APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
+          APPLE_ISSUER: ${{ secrets.AppleIssuer }}
+          
 
 
   Windows-Simulator:
@@ -808,7 +790,6 @@ jobs:
       - linux
       - CoronaCards-Android
       - CoronaCards-iOS
-      - notarize
       - release
       - source-code
     runs-on: ubuntu-20.04
