@@ -454,47 +454,23 @@ jobs:
         run: ./tools/GHAction/build_dmg.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Upload macOS Daily build artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Simulator-macOS
-          path: ./output
-
-
-  notarize:
-    needs:
-      - macOS-Simulator
-    runs-on: macos-13
-    steps:
-      - name: Get built simulator
-        uses: actions/download-artifact@v1
-        with:
-          name: Simulator-macOS
       - name: Notarize
         run: |
-          if [ -z "$APPLE_ISSUER" ]
-          then
-            echo 'Skipping because no authorization provided'
-            exit 0
-          fi
-          set +ex
+          [ -z "$APPLE_ISSUER" ] || exit 0
           APPLE_KEY_FILE="$(mktemp)"
           echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
-          (
-            for dmg in ./Simulator-macOS/*.dmg
-            do
-              xcrun notarytool submit "$dmg" --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" --wait
-              xcrun stapler staple "$dmg"
-            done
-          )
-          RET=$?
-          rm -f "$APPLE_KEY_FILE"
-          exit $RET
+          xcrun notarytool submit --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" --wait ./output/*.dmg
+          xcrun stapler staple ./output/*.dmg
         shell: bash
         env: # get this at https://appstoreconnect.apple.com/access/api
           APPLE_KEY: ${{ secrets.AppleKey }} ## full contents of the file
           APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
           APPLE_ISSUER: ${{ secrets.AppleIssuer }}
+      - name: Upload macOS Daily build artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Simulator-macOS
+          path: ./output
 
 
   check-notarization:
@@ -824,7 +800,6 @@ jobs:
       - linux
       - CoronaCards-Android
       - CoronaCards-iOS
-      - notarize
       - release
       - source-code
     runs-on: ubuntu-20.04
