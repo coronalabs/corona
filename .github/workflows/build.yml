@@ -478,11 +478,7 @@ jobs:
     steps:
       - name: Check notarization credentials
         run: |
-          if [ -z "$APPLE_ISSUER" ]
-          then
-            echo 'Skipping because no authorization provided'
-            exit 0
-          fi
+          [ -n "$APPLE_ISSUER" ] || exit 0
           T="R7NmWb1brmEx65"
           echo "::add-mask::$T"
           Z="cNgt1OO-"
