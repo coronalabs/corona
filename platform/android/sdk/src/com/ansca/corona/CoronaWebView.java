@@ -13,6 +13,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebSettings;
+import android.webkit.PermissionRequest;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
