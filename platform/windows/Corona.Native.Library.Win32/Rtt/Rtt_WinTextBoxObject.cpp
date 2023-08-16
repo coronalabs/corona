@@ -774,7 +774,7 @@ int WinTextBoxObject::OnGetSelection(lua_State *L)
 	{
 		int startIndex = 0;
 		int endIndex = 0;
-		displayObjectPointer->fTextBoxPointer->GetSelection(startIndex, endIndex);
+		displayObjectPointer->fTextBoxPointer->GetSelection(&startIndex, &endIndex);
 		
 		lua_pushnumber(L, startIndex);
 		lua_pushnumber(L, endIndex);
