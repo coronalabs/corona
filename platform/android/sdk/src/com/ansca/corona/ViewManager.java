@@ -481,6 +481,43 @@ public class ViewManager {
 		} );
 	}
 
+	public int[] getTextSelection(final int id) {
+	    final int[] result = new int[2];
+	    final Object lock = new Object();
+
+	    Runnable runnable = new Runnable() {
+	        @Override
+	        public void run() {
+	            CoronaEditText view = getDisplayObjectById(CoronaEditText.class, id);
+	            if (view != null) {
+	                result[0] = view.getSelectionStart();
+	                result[1] = view.getSelectionEnd();
+	            } else {
+	                result[0] = -1;
+	                result[1] = -1;
+	            }
+	            synchronized (lock) {
+	                lock.notify();
+	            }
+	        }
+	    };
+
+	    if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
+	        runnable.run();
+	    } else {
+	        synchronized (lock) {
+	            postOnUiThread(runnable);
+	            try {
+	                lock.wait();
+	            } catch (InterruptedException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+
+	    return result;
+	}
+
 	public void setTextViewColor( final int id, final int color )
 	{
 		postOnUiThread( new Runnable() {

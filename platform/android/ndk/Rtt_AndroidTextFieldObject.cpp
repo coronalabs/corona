@@ -125,6 +125,26 @@ AndroidTextFieldObject::setSelection( lua_State *L )
 	return 0;
 }
 
+int
+AndroidTextFieldObject::getSelection( lua_State *L )
+{
+    PlatformDisplayObject *o = (PlatformDisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+    if (&o->ProxyVTable() == &PlatformDisplayObject::GetTextFieldObjectProxyVTable())
+    {
+        NativeToJavaBridge *bridge = (NativeToJavaBridge*)lua_touserdata(L, lua_upvalueindex(1));
+
+        int startPosition, endPosition;
+        if (bridge->TextFieldGetSelection(((AndroidDisplayObject*)o)->GetId(), startPosition, endPosition))
+        {
+            lua_pushnumber(L, startPosition);
+            lua_pushnumber(L, endPosition);
+            return 2;
+        }
+    }
+
+    return 0;
+}
+
 // TODO: move these somewhere in librtt, so all platforms use same constants
 static const char kDefaultInputType[] = "default";
 static const char kUrlInputType[] = "url";
@@ -198,6 +218,11 @@ AndroidTextFieldObject::ValueForKey( lua_State *L, const char key[] ) const
 	{
 		lua_pushlightuserdata( L, fNativeToJavaBridge );
 		lua_pushcclosure( L, setSelection, 1 );
+	}
+	else if ( strcmp( "getSelection", key ) == 0 )
+	{
+		lua_pushlightuserdata( L, fNativeToJavaBridge );
+		lua_pushcclosure( L, getSelection, 1 );
 	}
 	else if ( strcmp( "align", key ) == 0 )
 	{

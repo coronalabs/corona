@@ -45,6 +45,7 @@ class AndroidTextFieldObject : public AndroidDisplayObject
 		static int setTextColor( lua_State *L );
 		static int setReturnKey( lua_State *L );
 		static int setSelection( lua_State *L );
+		static int getSelection( lua_State *L );
 
 	public:
 		// MLuaTableBridge

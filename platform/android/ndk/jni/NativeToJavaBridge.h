@@ -195,6 +195,7 @@ class NativeToJavaBridge
 		int TextFieldCreate( int id, int left, int top, int width, int height, int isSingleLine );
 		void TextFieldSetReturnKey( int id, const char * imeType );
 		void TextFieldSetSelection( int id, int startPosition, int endPosition );
+		bool TextFieldGetSelection(int id, int& startPosition, int& endPosition);
 		void TextFieldSetPlaceholder( int id, const char * placeholder );
 		void TextFieldSetColor( int id, int r, int g, int b, int a );
 		void TextFieldSetText( int id, const char * text );
