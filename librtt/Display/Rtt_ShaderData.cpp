@@ -19,6 +19,7 @@
 #include "Display/Rtt_ShaderResource.h"
 #include "Rtt_LuaAux.h"
 #include "Rtt_LuaUserdataProxy.h"
+#include "CoronaGraphics.h"
 
 #include <string.h>
 
@@ -61,11 +62,12 @@ ShaderData::~ShaderData()
 		fProxy->DetachUserdata();
 	}
 
-    Rtt_FREE( fExtraSpace );
 	for ( int i = 0; i < kNumData; i++ )
 	{
 		Rtt_DELETE( fUniformData[i] );
 	}
+
+    Rtt_FREE( fExtraSpace );
 }
 
 void

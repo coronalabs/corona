@@ -351,7 +351,13 @@ namespace Rtt
 
 			else
 			{
-				Expand(sizeof(T), size);
+				void* oldStorage = Expand(sizeof(T), size);
+			
+				Rtt_ASSERT( oldStorage );
+			
+				Copy(oldStorage, 0, fLength);
+					
+				Rtt_FREE(oldStorage);
 			}
 			
 			U32 oldLength = (U32)fLength;

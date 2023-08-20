@@ -146,6 +146,8 @@
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvas.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCapture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCaptureAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceExternal.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_VertexCache.cpp" />
@@ -163,6 +165,7 @@
     <ClCompile Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CommandBuffer.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CPUResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_FormatExtensionList.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_FrameBufferObject.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">$(IntDir)Renderer\</ObjectFileName>
@@ -453,6 +456,8 @@
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvas.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCapture.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCaptureAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceExternal.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_VertexCache.h" />
@@ -470,6 +475,7 @@
     <ClInclude Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CommandBuffer.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CPUResource.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_FormatExtensionList.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_FrameBufferObject.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GeometryPool.h" />
@@ -1013,6 +1019,8 @@ if NOT EXIST %LIBRARY% (
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1022,6 +1030,8 @@ if NOT EXIST %LIBRARY% (
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>shaderc_combined.lib;spirv-cross-core.lib;spirv-cross-glsl.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">

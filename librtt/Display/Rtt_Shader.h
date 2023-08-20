@@ -17,11 +17,11 @@
 
 #include <string>
 
-#include "Corona/CoronaGraphics.h"
-
 // ----------------------------------------------------------------------------
 
 struct lua_State;
+struct CoronaEffectCallbacks;
+struct CoronaShaderDrawParams;
 
 namespace Rtt
 {
@@ -111,7 +111,8 @@ class Shader
             ~DrawState();
 
         public:
-            CoronaShaderDrawParams params;
+            const CoronaShaderDrawParams* fParams;
+
         private:
             bool & fDrawing;
             bool fWasDrawing;

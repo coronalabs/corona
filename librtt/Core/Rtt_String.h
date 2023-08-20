@@ -128,6 +128,9 @@ class String
 				|| ('\0' == GetString()[0]) );
 		}
 
+		U32 GetHash32() const;
+		U64 GetHash64() const;
+
 		// Trim characters from either or both ends of the string
 		void Trim(const char *trimChars);
 		void LTrim(const char *trimChars);

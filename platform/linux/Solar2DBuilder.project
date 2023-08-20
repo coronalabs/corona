@@ -416,6 +416,8 @@
         <File Name="../../librtt/Display/Rtt_TextureResourceExternal.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceCanvasAdapter.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceCanvas.h"/>
+        <File Name="../../librtt/Display/Rtt_TextureResourceCaptureAdapter.h"/>
+        <File Name="../../librtt/Display/Rtt_TextureResourceCapture.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceBitmapAdapter.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceBitmap.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceAdapter.h"/>
@@ -1006,6 +1008,7 @@
       <VirtualDirectory Name="include">
         <File Name="../../librtt/Renderer/Rtt_CommandBuffer.h"/>
         <File Name="../../librtt/Renderer/Rtt_CPUResource.h"/>
+        <File Name="../../librtt/Renderer/Rtt_FormatExtensionList.h"/>
         <File Name="../../librtt/Renderer/Rtt_FrameBufferObject.h"/>
         <File Name="../../librtt/Renderer/Rtt_Geometry_Renderer.h"/>
         <File Name="../../librtt/Renderer/Rtt_GeometryPool.h"/>

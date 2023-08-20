@@ -715,7 +715,7 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 
 			else
 			{
-				CORONA_LOG_ERROR( "Failed to begin recording command buffer!" );
+				Rtt_TRACE_SIM(( "ERROR: Failed to begin recording command buffer!" ));
 
 				commandBuffer = VK_NULL_HANDLE;
 			}
@@ -1464,7 +1464,7 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 
 		else if (presentResult != VK_SUCCESS)
 		{
-			CORONA_LOG_ERROR( "Failed to present swap chain image!" );
+			Rtt_TRACE_SIM(( "ERROR: Failed to present swap chain image!" ));
 		}
 
 		fExecuteResult = presentResult;
@@ -1474,7 +1474,7 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 	{
 		if (usingSwapchainImage)
 		{
-			CORONA_LOG_ERROR( "Failed to submit draw command buffer!" );
+			Rtt_TRACE_SIM(( "ERROR: Failed to submit draw command buffer!" ));
 		}
 
 		fExecuteResult = submitResult;
@@ -1482,7 +1482,7 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 
 	if (endResult != VK_SUCCESS)
 	{
-		CORONA_LOG_ERROR( "Failed to record command buffer!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to record command buffer!" ));
 
 		fExecuteResult = endResult;
 	}
@@ -1525,7 +1525,7 @@ bool VulkanCommandBuffer::Wait( VulkanContext * context, FrameResources * frameR
 
 			else
 			{
-				CORONA_LOG_ERROR( "Failed to acquire swap chain image!" );
+				Rtt_TRACE_SIM(( "ERROR: Failed to acquire swap chain image!" ));
 			}
 		}
 
@@ -1665,7 +1665,7 @@ VkDescriptorSet VulkanCommandBuffer::AddTextureSet( const std::vector< VkDescrip
 
 	if (VK_ERROR_OUT_OF_POOL_MEMORY == result)
 	{
-		CORONA_LOG_ERROR( "Exhausted texture descriptors" );
+		Rtt_TRACE_SIM(( "ERROR: Exhausted texture descriptors" ));
 
 		return VK_NULL_HANDLE;
 	}
@@ -1733,7 +1733,7 @@ VkDescriptorSet VulkanCommandBuffer::AddTextureSet( const std::vector< VkDescrip
 		return set;
 	}
 
-	CORONA_LOG_ERROR( "Failed to allocate texture descriptor set!" );
+	Rtt_TRACE_SIM(( "ERROR: Failed to allocate texture descriptor set!" ));
 
 	return VK_NULL_HANDLE;
 }

@@ -13,7 +13,6 @@
 #include "Renderer/Rtt_VulkanContext.h"
 #include "Renderer/Rtt_VulkanTexture.h"
 #include "Core/Rtt_Assert.h"
-#include "CoronaLog.h"
 
 #include <algorithm>
 #include <cmath>
@@ -159,7 +158,7 @@ VulkanTexture::Create( CPUResource* resource )
         
         else
         {
-            CORONA_LOG_ERROR( "Failed to create texture sampler!" );
+            Rtt_TRACE_SIM(( "ERROR: Failed to create texture sampler!" ));
         }
     }
 }
@@ -448,7 +447,7 @@ VulkanTexture::CreateImage( VulkanContext * context, uint32_t width, uint32_t he
 
         if (foundMemoryType && vkAllocateMemory( ci.device, &allocInfo, ci.allocator, &imageData.fMemory ) != VK_SUCCESS)
         {
-            CORONA_LOG_ERROR( "Failed to allocate image memory!" );
+            Rtt_TRACE_SIM(( "ERROR: Failed to allocate image memory!" ));
         }
 
         if (imageData.fMemory != VK_NULL_HANDLE)
@@ -466,7 +465,7 @@ VulkanTexture::CreateImage( VulkanContext * context, uint32_t width, uint32_t he
 
     else
     {
-        CORONA_LOG_ERROR( "Failed to create image!" );
+        Rtt_TRACE_SIM(( "ERROR: Failed to create image!" ));
     }
 
     return imageData;
@@ -508,7 +507,7 @@ VulkanTexture::CreateImageView( VulkanContext * context, VkImage image, VkFormat
 
     else
     {
-        CORONA_LOG_ERROR( "Failed to create image view!" );
+        Rtt_TRACE_SIM(( "ERROR: Failed to create image view!" ));
 
         return VK_NULL_HANDLE;
     }

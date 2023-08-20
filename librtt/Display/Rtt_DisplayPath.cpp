@@ -14,10 +14,12 @@
 #include "Rtt_Matrix.h"
 #include "Display/Rtt_DisplayObject.h"
 #include "Display/Rtt_VertexCache.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Rtt_LuaUserdataProxy.h"
 
 #include "CoronaLua.h"
+#include "CoronaGraphics.h"
 #include "Rtt_LuaContext.h"
 
 #include <vector>
@@ -277,7 +279,7 @@ DisplayPath::ExtensionAdapter::SetValueForKey(
                         
                         for (auto iter = FormatExtensionList::InstancedGroups( extensionList ); !iter.IsDone(); iter.Advance())
                         {
-                            const Geometry::ExtensionGroup* group = iter.GetGroup();
+                            const FormatExtensionList::Group* group = iter.GetGroup();
                             U32 vertexCount = group->GetVertexCount( block->fCount, iter.GetAttribute() );
                             
                             block->fInstanceData[instanceGroupIndex]->PadToSize( vertexCount * sizeof(Geometry::Vertex), 0 );
@@ -297,7 +299,7 @@ DisplayPath::ExtensionAdapter::SetValueForKey(
                     CoronaLuaWarning( L, "Unable to assign instances without extension." );
                 }
                 
-                else if (!geometry->GetExtensionList()->instancedByID)
+                else if (!geometry->GetExtensionList()->IsInstancedByID())
                 {
                     CoronaLuaWarning( L, "Extension has no instance-rate members." );
                 }
@@ -388,7 +390,7 @@ DisplayPath::ExtensionAdapter::getAttributeDetails( lua_State *L )
 
         if (-1 != nameIndex)
         {
-            const Geometry::ExtensionAttribute& attribute = extensionList->attributes[nameIndex];
+            const FormatExtensionList::Attribute& attribute = extensionList->GetAttributes()[nameIndex];
             
             lua_createtable( L, 0, 3 + attribute.normalized );
 
@@ -474,8 +476,8 @@ DisplayPath::ExtensionAdapter::setAttributeValue( lua_State *L )
         if (-1 != nameIndex)
         {
             U32 groupIndex = extensionList->FindGroup( (U32)nameIndex );
-            const Geometry::ExtensionGroup& group = extensionList->groups[groupIndex];
-            const Geometry::ExtensionAttribute& attribute = extensionList->attributes[nameIndex];
+            const FormatExtensionList::Group& group = extensionList->GetGroups()[groupIndex];
+            const FormatExtensionList::Attribute& attribute = extensionList->GetAttributes()[nameIndex];
             U8 data[4 * 8] = {}; // 4 components, up to double-type
             
             for (U32 i = 0; i < attribute.components; ++i)

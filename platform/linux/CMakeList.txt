@@ -506,6 +506,8 @@ SET( SOLAR2D_SOURCES
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceBitmapAdapter.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCanvas.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCanvasAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCapture.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCaptureAdapter.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceExternal.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceExternalAdapter.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_VertexCache.cpp
@@ -698,6 +700,7 @@ SET( SOLAR2D_SOURCES
 
 		${CORONA_ROOT}/librtt/Renderer/Rtt_CommandBuffer.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_CPUResource.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_FormatExtensionList.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_FrameBufferObject.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_Geometry_Renderer.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_GeometryPool.cpp

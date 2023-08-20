@@ -251,6 +251,8 @@ OBJECTS := \
 	$(OBJDIR)/Rtt_TextureResourceBitmapAdapter.o \
 	$(OBJDIR)/Rtt_TextureResourceCanvas.o \
 	$(OBJDIR)/Rtt_TextureResourceCanvasAdapter.o \
+	$(OBJDIR)/Rtt_TextureResourceCapture.o \
+	$(OBJDIR)/Rtt_TextureResourceCaptureAdapter.o \
 	$(OBJDIR)/Rtt_TextureResourceExternal.o \
 	$(OBJDIR)/Rtt_TextureResourceExternalAdapter.o \
 	$(OBJDIR)/Rtt_VertexCache.o \
@@ -1189,6 +1191,14 @@ $(OBJDIR)/Rtt_TextureResourceCanvas.o: ../../../librtt/Display/Rtt_TextureResour
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/Rtt_TextureResourceCanvasAdapter.o: ../../../librtt/Display/Rtt_TextureResourceCanvasAdapter.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/Rtt_TextureResourceCapture.o: ../../../librtt/Display/Rtt_TextureResourceCapture.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/Rtt_TextureResourceCaptureAdapter.o: ../../../librtt/Display/Rtt_TextureResourceCaptureAdapter.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

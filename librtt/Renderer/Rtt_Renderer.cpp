@@ -11,6 +11,7 @@
 
 #include "Renderer/Rtt_CommandBuffer.h"
 #include "Renderer/Rtt_FrameBufferObject.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_GeometryPool.h"
 #include "Renderer/Rtt_GPUResource.h"
@@ -31,6 +32,7 @@
 #include "Display/Rtt_ShaderResource.h"
 
 #include "Rtt_GPUStream.h"
+#include "Corona/CoronaGraphics.h"
 
 #include "Rtt_Profiling.h"
 
@@ -99,6 +101,27 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+struct StateBlockInfo {
+    CoronaStateBlockDirty fChanged;
+    CoronaStateBlockDirty fRestore;
+    void * fData;
+    U32 fOffset;
+    U32 fSize;
+    bool fIgnoredByHash;
+};
+
+struct CustomGraphicsInfo
+{
+    CustomGraphicsInfo( Rtt_Allocator* allocator )
+    :   fCommands( allocator ),
+        fStateBlocks( allocator )
+    {
+    }
+
+    PtrArray< const CoronaCommand > fCommands;
+    PtrArray< StateBlockInfo > fStateBlocks;
+};
+
 // NOT USED: const U32 kElementsPerMat4 = 16;
 
 Renderer::Statistics::Statistics()
@@ -141,15 +164,14 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fTexelSize( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec4 ) ) ),
     fContentScale( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kVec2 ) ) ),
     fViewProjectionMatrix( Rtt_NEW( fAllocator, Uniform( fAllocator, Uniform::kMat4 ) ) ),
-    fPendingCommands( allocator ),
-    fCommandCount( 0U ),
-    fStateBlocks( allocator ),
+	fCaptureGroups( allocator ),
+	fCaptureRects( allocator ),
     fDefaultState( allocator ),
     fCurrentState( allocator ),
     fWorkingState( allocator ),
+    fCustomInfo( Rtt_NEW( fAllocator, CustomGraphicsInfo( fAllocator ) ) ),
+    fSyncedCount( 0U ),
     fMaybeDirty( false ),
-	fCaptureGroups( allocator ),
-	fCaptureRects( allocator ),
     fMaskCountIndex( 0 ),
     fMaskCount( allocator ),
     fCurrentProgramMaskCount( 0 ),
@@ -178,6 +200,8 @@ Renderer::~Renderer()
     Rtt_DELETE( fBackCommandBuffer );
     Rtt_DELETE( fFrontCommandBuffer );
     
+    Rtt_DELETE( fCustomInfo );
+
     Rtt_DELETE( fTotalTime );
     Rtt_DELETE( fDeltaTime );
     Rtt_DELETE( fTexelSize );
@@ -195,22 +219,6 @@ Renderer::Initialize()
 {
     fBackCommandBuffer->Initialize();
     fFrontCommandBuffer->Initialize();
-}
-
-static void
-CallOps( Rtt::Renderer * renderer, Rtt::Array< Renderer::CustomOp > & ops, Rtt::ObjectBoxList & list )
-{
-    OBJECT_BOX_STORE( Renderer, ref, renderer );
-
-    for (S32 i = 0; i < ops.Length(); ++i)
-    {
-        Renderer::CustomOp & op = ops[i];
-
-        if (op.fAction)
-        {
-            op.fAction( ref, op.fUserData );
-        }
-    }
 }
 
 void
@@ -939,7 +947,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
 			fOffsetCorrection = fVertexOffset;
 		}
 		
-        FormatExtensionList::ReconcileFormats( fBackCommandBuffer, programList, extensionList, fVertexOffset );
+        FormatExtensionList::ReconcileFormats( fAllocator, fBackCommandBuffer, programList, extensionList, fVertexOffset );
     }
     
     if (dirtyIndices.Length() > 0)
@@ -1001,12 +1009,14 @@ Renderer::Swap()
     fInstancingGeometryPool->Swap();
 
     // Add pending commands
-    for (int i = 0; i < fPendingCommands.Length(); ++i)
+    U16 length = (U16)fCustomInfo->fCommands.Length();
+
+    for (U16 i = fSyncedCount; i < length; ++i)
     {
-        fBackCommandBuffer->AddCommand( fPendingCommands[i] );
+        fBackCommandBuffer->AddCommand( fCustomInfo->fCommands[i] );
     }
 
-    fPendingCommands.Clear();
+    fSyncedCount = length;
 }
 
 void
@@ -1056,22 +1066,24 @@ Renderer::TallyTimeDependency( bool usesTime )
 U16
 Renderer::AddCustomCommand( const CoronaCommand & command )
 {
-    if (0xFFFF == fCommandCount)
+    if ( 0xFFFF == (U16)fCustomInfo->fCommands.Length() )
     {
         return 0U;
     }
 
-    fBackCommandBuffer->AddCommand( command );
+    const CoronaCommand* copy = Rtt_NEW( fAllocator, CoronaCommand( command ) );
 
-    fPendingCommands.Append( command );
+    fBackCommandBuffer->AddCommand( copy );
 
-    return ++fCommandCount;
+    fCustomInfo->fCommands.Append( copy );
+
+    return (U16)( fCustomInfo->fCommands.Length() );
 }
 
 bool
 Renderer::IssueCustomCommand( U16 id, const void * data, U32 size )
 {
-    if (id < fCommandCount)
+    if ( id < (U16)fCustomInfo->fCommands.Length() )
     {
         fBackCommandBuffer->IssueCommand( id, data, size );
 
@@ -1137,20 +1149,20 @@ Renderer::InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const R
 U16
 Renderer::AddStateBlock( const CoronaStateBlock & block )
 {
-    if (0xFFFF == fStateBlocks.Length())
+    if (0xFFFF == fCustomInfo->fStateBlocks.Length())
     {
         return 0U;
     }
     
-    S32 length = fStateBlocks.Length();
+    S32 length = fCustomInfo->fStateBlocks.Length();
     
     StateBlockInfo info = {};
     
     if (length > 0)
     {
-        const StateBlockInfo& lastInfo = fStateBlocks.ReadAccess()[length - 1];
+        const StateBlockInfo* lastInfo = fCustomInfo->fStateBlocks.ReadAccess()[length - 1];
         
-        info.fOffset = lastInfo.fOffset + lastInfo.fSize;
+        info.fOffset = lastInfo->fOffset + lastInfo->fSize;
     }
     
     info.fChanged = block.stateDirty;
@@ -1172,7 +1184,7 @@ Renderer::AddStateBlock( const CoronaStateBlock & block )
         memcpy( fWorkingState.WriteAccess() + info.fOffset, block.defaultContents, info.fSize );
     }
     
-    fStateBlocks.Append( info );
+    fCustomInfo->fStateBlocks.Append( Rtt_NEW( fAllocator, StateBlockInfo( info ) ) );
     
     return (U16)(length + 1);
 }
@@ -1180,12 +1192,12 @@ Renderer::AddStateBlock( const CoronaStateBlock & block )
 bool
 Renderer::GetStateBlockInfo( U16 id, U8 *& start, U32 & size, bool mightDirty )
 {
-    if (id < fStateBlocks.Length())
+    if (id < fCustomInfo->fStateBlocks.Length())
     {
-        const StateBlockInfo& info = fStateBlocks.ReadAccess()[id];
+        const StateBlockInfo* info = fCustomInfo->fStateBlocks.ReadAccess()[id];
 
-        start = fWorkingState.WriteAccess() + info.fOffset;
-        size = info.fSize;
+        start = fWorkingState.WriteAccess() + info->fOffset;
+        size = info->fSize;
 
         fMaybeDirty = mightDirty && size > 0;
         
@@ -1450,19 +1462,18 @@ Renderer::EnumerateDirtyBlocks( ArrayS32& dirtyIndices )
         
         Rtt_ASSERT( fCurrentState.Length() == fWorkingState.Length() );
 
-        const StateBlockInfo* info = fStateBlocks.WriteAccess();
         const U8* currentState = fCurrentState.ReadAccess();
         const U8* workingState = fWorkingState.ReadAccess();
         
-        for (S32 i = 0, iMax = fStateBlocks.Length(); i < iMax; ++i)
+        for (S32 i = 0, iMax = fCustomInfo->fStateBlocks.Length(); i < iMax; ++i)
         {
-            if (0 != memcmp( currentState + info[i].fOffset, workingState + info[i].fOffset, info[i].fSize ))
+            if (0 != memcmp( currentState + fCustomInfo->fStateBlocks[i]->fOffset, workingState + fCustomInfo->fStateBlocks[i]->fOffset, fCustomInfo->fStateBlocks[i]->fSize ))
             {
                 dirtyIndices.Append( i );
                 
-                if (info[i].fSize > largestDirtySize)
+                if (fCustomInfo->fStateBlocks[i]->fSize > largestDirtySize)
                 {
-                    largestDirtySize = info[i].fSize;
+                    largestDirtySize = fCustomInfo->fStateBlocks[i]->fSize;
                 }
             }
         }
@@ -1484,19 +1495,18 @@ Renderer::UpdateDirtyBlocks( const ArrayS32& dirtyIndices, U32 largestDirtySize 
     OBJECT_BOX_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
     OBJECT_BOX_STORE( Renderer, renderer, this );
     
-    const StateBlockInfo* blocks = fStateBlocks.ReadAccess();
     const U8* workingState = fWorkingState.ReadAccess();
     U8* currentState = fCurrentState.WriteAccess();
     
     for (S32 i = 0, iMax = dirtyIndices.Length(); i < iMax; ++i)
     {
-        const StateBlockInfo& info = blocks[dirtyIndices[i]];
+        const StateBlockInfo* info = fCustomInfo->fStateBlocks[dirtyIndices[i]];
         
-        memcpy( newContents.WriteAccess(), workingState + info.fOffset, info.fSize );
-        memcpy( oldContents.WriteAccess(), currentState + info.fOffset, info.fSize );
-        memcpy( currentState + info.fOffset, newContents.ReadAccess(), info.fSize );
+        memcpy( newContents.WriteAccess(), workingState + info->fOffset, info->fSize );
+        memcpy( oldContents.WriteAccess(), currentState + info->fOffset, info->fSize );
+        memcpy( currentState + info->fOffset, newContents.ReadAccess(), info->fSize );
         
-        info.fChanged( commandBuffer, renderer, newContents.ReadAccess(), oldContents.ReadAccess(), info.fSize, false, info.fData );
+        info->fChanged( commandBuffer, renderer, newContents.ReadAccess(), oldContents.ReadAccess(), info->fSize, false, info->fData );
     }
 }
     
@@ -1509,37 +1519,36 @@ Renderer::RestoreDefaultBlocks()
     OBJECT_BOX_STORE( Renderer, renderer, this );
  
     Array< U8 > newContents( fAllocator ), oldContents( fAllocator );
-    const StateBlockInfo* blocks = fStateBlocks.ReadAccess();
     const U8* defaultState = fDefaultState.ReadAccess();
     const U8* currentState = fCurrentState.ReadAccess();
     bool anyChanged = false;
     
-    for (S32 i = 0, iMax = fStateBlocks.Length(); i < iMax; ++i)
+    for (S32 i = 0, iMax = fCustomInfo->fStateBlocks.Length(); i < iMax; ++i)
     {
-        const StateBlockInfo& info = blocks[i];
+        const StateBlockInfo* info = fCustomInfo->fStateBlocks[i];
         
         // If the last objects "drawn" in the hierarchy never did an
         // Insert(), any trailing dirties remain uncommitted and the
         // corresponding handlers will not have been invoked. We use
         // the current state as the "old" contents to reflect this.
-        if (0 != memcmp( defaultState + info.fOffset, currentState + info.fOffset, info.fSize ))
+        if (0 != memcmp( defaultState + info->fOffset, currentState + info->fOffset, info->fSize ))
         {
             anyChanged = true;
             
-            oldContents.Reserve( info.fSize );
-            newContents.Reserve( info.fSize );
+            oldContents.Reserve( info->fSize );
+            newContents.Reserve( info->fSize );
             
-            memcpy( newContents.WriteAccess(), defaultState + info.fOffset, info.fSize );
-            memcpy( oldContents.WriteAccess(), currentState + info.fOffset, info.fSize );
+            memcpy( newContents.WriteAccess(), defaultState + info->fOffset, info->fSize );
+            memcpy( oldContents.WriteAccess(), currentState + info->fOffset, info->fSize );
             
-            CoronaStateBlockDirty stateDirty = info.fRestore;
+            CoronaStateBlockDirty stateDirty = info->fRestore;
             
             if (!stateDirty)
             {
-                stateDirty = info.fChanged;
+                stateDirty = info->fChanged;
             }
             
-            stateDirty( commandBuffer, renderer, newContents.ReadAccess(), oldContents.ReadAccess(), info.fSize, true, info.fData );
+            stateDirty( commandBuffer, renderer, newContents.ReadAccess(), oldContents.ReadAccess(), info->fSize, true, info->fData );
         }
         
         if (anyChanged)
@@ -1559,7 +1568,7 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
 
     for (auto iter = FormatExtensionList::InstancedGroups( programList ); !iter.IsDone(); iter.Advance())
     {
-        const Geometry::ExtensionGroup* group = iter.GetGroup();
+        const FormatExtensionList::Group* group = iter.GetGroup();
         
         verticesRequired += group->GetVertexCount( block->fCount, iter.GetAttribute() );
     }
@@ -1577,7 +1586,7 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
     
     for (auto iter = FormatExtensionList::InstancedGroups( programList ); !iter.IsDone(); iter.Advance())
     {
-        const Geometry::ExtensionGroup* programGroup = iter.GetGroup();
+        const FormatExtensionList::Group* programGroup = iter.GetGroup();
         
         // Find the geometry group corresponding to this program group. Merge
         // the corresponding instance data.
@@ -1587,8 +1596,8 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
 
         Rtt_ASSERT( -1 != geometryGroupIndex );
         
-        Geometry::ExtensionGroup geometryGroup = geometryList->groups[geometryGroupIndex];
-        U32 vertexCount = geometryGroup.GetVertexCount( block->fCount, &geometryList->attributes[geometryAttributeIndex] );
+        FormatExtensionList::Group geometryGroup = geometryList->GetGroups()[geometryGroupIndex];
+        U32 vertexCount = geometryGroup.GetVertexCount( block->fCount, geometryList->GetAttributes() + geometryAttributeIndex );
 
         if (geometryList->HasVertexRateData())
         {

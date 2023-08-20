@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __ratatouille__Rtt_TextureResourceCanvas__
-#define __ratatouille__Rtt_TextureResourceCanvas__
+#ifndef __ratatouille__Rtt_TextureResourceCapture__
+#define __ratatouille__Rtt_TextureResourceCapture__
 
 
 #include "Rtt_TextureResource.h"
@@ -16,42 +16,30 @@
 namespace Rtt {
 class FrameBufferObject;
 
-class TextureResourceCanvas : public TextureResource
+class TextureResourceCapture : public TextureResource
 {
 	public:
-		typedef TextureResourceCanvas Self;
+		typedef TextureResourceCapture Self;
 		
 	public:
 		static Self *Create(
 							TextureFactory& factory,
 							Real w, Real h,
-							int texW, int texH,
-							Texture::Format format);
+							int texW, int texH);
 		
-		virtual ~TextureResourceCanvas();
+		virtual ~TextureResourceCapture();
 		
 	protected:
-		TextureResourceCanvas(
+		TextureResourceCapture(
 							  TextureFactory &factory,
 							  Texture *texture,
 							  FrameBufferObject* fbo,
-							  GroupObject *cache,
-							  GroupObject *qeue,
 							  Real width,
 							  Real height,
 							  int texWidth,
 							  int texHeight);
 
 	public:
-			
-		void SetClearColor(Color c){ fClearColor = c; }
-		GroupObject* GetCacheGroup() const {return fGroupCache;}
-		GroupObject* GetQueueGroup() const {return fGroupQueue;}
-	
-		void Invalidate(bool cache, bool clear);
-		virtual void Render(Renderer & renderer) override;
-		virtual void ReleaseLuaReferences( lua_State *L ) override;
-
 		Real GetContentWidth() const {return fContentWidth;}
 		void SetContentWidth(Rtt_Real width) {fContentWidth=width;}
 
@@ -60,31 +48,24 @@ class TextureResourceCanvas : public TextureResource
 
 		int GetTexWidth() const {return fTexWidth;}
 		int GetTexHeight() const {return fTexHeight;}
-
-		Rtt_Real GetAnchorX() const {return fAnchorX;}
-		void SetAnchorX(Rtt_Real anchorX) {fAnchorX=anchorX;}
 	
-		Rtt_Real GetAnchorY() const {return fAnchorY;}
-		void SetAnchorY(Rtt_Real anchorY) {fAnchorY=anchorY;}
+	public:
+		FrameBufferObject* GetFBO() const { return fDstFBO; }
+	
+	public:
+		WeakPtr<TextureResource> & GetWeakResource() { return fWeakResource; }
+		void SetWeakResource( const SharedPtr<TextureResource> & resource ) { fWeakResource = resource; }
 	
 	protected:
-		void Render(Rtt::Renderer &renderer, GroupObject *group, bool clear);
-
-		bool fInvalidateCache, fInvalidateClear;
-		Color fClearColor;
-		
-		GroupObject *fGroupCache, *fGroupQueue;
 		FrameBufferObject *fDstFBO;
 		
 		int fTexWidth, fTexHeight;
 		Rtt_Real fContentWidth, fContentHeight;
-		Rtt_Real fAnchorX, fAnchorY;
 			
 	private:
-		void MoveQueueToCache();
 		virtual const MLuaUserdataAdapter& GetAdapter() const override;
-
+		WeakPtr<TextureResource> fWeakResource;
 };
 	
 }
-#endif /* defined(__ratatouille__Rtt_TextureResourceCanvas__) */
+#endif /* defined(__ratatouille__Rtt_TextureResourceCapture__) */

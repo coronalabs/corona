@@ -927,14 +927,6 @@ int CoronaObjectInvalidate(const CoronaDisplayObject* object)
 }
 
 CORONA_API
-int CoronaObjectSetHasDummyStageBounds(const CoronaDisplayObject* object, int hasBounds)
-{
-	typedef int(*CoronaCallbackType)(const CoronaDisplayObject*, int);
-	CoronaCallbackLoad();
-	return CoronaCallbackInvoke(object, hasBounds);
-}
-
-CORONA_API
 CoronaGroupObject* CoronaObjectGetParent(const CoronaDisplayObject* object)
 {
 	typedef CoronaGroupObject* (*CoronaCallbackType)(const CoronaDisplayObject*);

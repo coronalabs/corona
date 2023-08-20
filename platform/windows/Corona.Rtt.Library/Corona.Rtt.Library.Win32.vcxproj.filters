@@ -939,6 +939,15 @@
     <ClCompile Include="..\..\..\librtt\Rtt_Profiling.cpp">
       <Filter>librtt</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCapture.cpp">
+      <Filter>librtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCaptureAdapter.cpp">
+      <Filter>librtt\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_FormatExtensionList.cpp">
+      <Filter>librtt\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\external\ALmixer\luaal.h">
@@ -1888,6 +1897,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\librtt\Rtt_Profiling.h">
       <Filter>librtt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCapture.h">
+      <Filter>librtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCaptureAdapter.h">
+      <Filter>librtt\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_FormatExtensionList.h">
+      <Filter>librtt\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,3 +1,4 @@
+#pragma once
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
@@ -7,25 +8,25 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __ratatouille__Rtt_TextureResourceCanvasAdapter__
-#define __ratatouille__Rtt_TextureResourceCanvasAdapter__
+#ifndef __ratatouille__Rtt_TextureResourceCaptureAdapter__
+#define __ratatouille__Rtt_TextureResourceCaptureAdapter__
 
 #include "Rtt_TextureResourceAdapter.h"
 
 namespace Rtt
 {
 		
-class TextureResourceCanvasAdapter : public TextureResourceAdapter
+class TextureResourceCaptureAdapter : public TextureResourceAdapter
 {
 	public:
-		typedef TextureResourceCanvasAdapter Self;
+		typedef TextureResourceCaptureAdapter Self;
 		typedef TextureResourceAdapter Super;
 		
 	public:
-		static const TextureResourceCanvasAdapter& Constant();
+		static const TextureResourceCaptureAdapter& Constant();
 		
 	protected:
-		TextureResourceCanvasAdapter(){};
+		TextureResourceCaptureAdapter(){};
 		
 	public:
 		virtual int ValueForKey(
@@ -41,13 +42,11 @@ class TextureResourceCanvasAdapter : public TextureResourceAdapter
 		virtual StringHash *GetHash( lua_State *L ) const override;
 		
 	private:
-		static int setBackground( lua_State *L );
-		static int draw( lua_State *L );
-		static int invalidate( lua_State *L );
+		static int newCaptureEvent( lua_State *L );
 
 };
 
 } // namespace Rtt
 
 
-#endif /* defined(__ratatouille__Rtt_TextureResourceCanvasAdapter__) */
+#endif /* defined(__ratatouille__Rtt_TextureResourceCaptureAdapter__) */

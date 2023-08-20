@@ -22,11 +22,11 @@
 #include "Core/Rtt_Real.h"
 #include "Core/Rtt_Time.h"
 
-#include "Corona/CoronaGraphics.h"
-
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
+struct CoronaCommand;
+struct CoronaStateBlock;
 
 namespace Rtt
 {
@@ -39,6 +39,7 @@ class Uniform;
 class RenderingStream;
 class BufferBitmap;
 class ShaderData;
+struct CustomGraphicsInfo;
 struct TimeTransform;
 
 // ----------------------------------------------------------------------------
@@ -245,24 +246,9 @@ class Renderer
         // whether or not objects *on*screen need to be re-blitted
         void SetTimeDependencyCount( U32 newValue ) { fTimeDependencyCount = newValue; }
         U32 GetTimeDependencyCount() const { return fTimeDependencyCount; }
-
-        struct StateBlockInfo {
-            CoronaStateBlockDirty fChanged;
-            CoronaStateBlockDirty fRestore;
-            void * fData;
-            U32 fOffset;
-            U32 fSize;
-            bool fIgnoredByHash;
-        };
     
         U16 AddStateBlock( const CoronaStateBlock & block );
         bool GetStateBlockInfo( U16 id, U8 *& start, U32 & size, bool mightDirty );
-
-        struct CustomOp {
-            CoronaRendererOp fAction;
-            unsigned long fID;
-            void * fUserData;
-        };
 
         U16 AddCustomCommand( const CoronaCommand & command );
 
@@ -396,14 +382,12 @@ class Renderer
 		Array< CaptureGroup > fCaptureGroups;
 		Array< RectPair > fCaptureRects;
 
-        Array< CoronaCommand > fPendingCommands;
-
-        U16 fCommandCount;
-
-        Array< StateBlockInfo > fStateBlocks;
         Array< U8 > fDefaultState;
         Array< U8 > fCurrentState;
         Array< U8 > fWorkingState;
+        
+        CustomGraphicsInfo* fCustomInfo; // n.b. avoids some #includes
+        U16 fSyncedCount;
         bool fMaybeDirty;
 };
 

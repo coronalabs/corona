@@ -15,7 +15,6 @@
 #include "Display/Rtt_DisplayTypes.h"
 #include "Core/Rtt_Real.h" // TODO: Rtt_Real.h depends on Rtt_Types being included before it
 #include "Core/Rtt_SharedPtr.h"
-#include "Corona/CoronaGraphics.h"
 
 // ----------------------------------------------------------------------------
 
@@ -24,11 +23,10 @@ struct Rtt_Allocator;
 namespace Rtt
 {
 
-class CommandBuffer;
 class DisplayObject;
 class MLuaUserdataAdapter;
 class LuaUserdataProxy;
-struct FormatExtensionList;
+class FormatExtensionList;
 
 struct VertexAttributeSupport {
     U32 maxCount;
@@ -88,31 +86,6 @@ class Geometry : public CPUResource
 
         typedef U16 Index;
 
-        struct ExtensionAttribute {
-            size_t nameHash;
-            CoronaVertexExtensionAttributeType type;
-            U16 offset : 13;
-            U16 components : 2;
-            U16 normalized : 1;
-            
-            U32 GetSize() const;
-            bool IsFloat() const { return !!normalized || (CoronaVertexExtensionAttributeType)kAttributeType_Float == type; }
-        };
-    
-        struct ExtensionGroup {
-            U32 divisor;
-            U16 count;
-            U16 size;
-            
-            bool IsInstanceRate() const { return 0 != divisor; }
-            bool IsWindowed() const { return 0 == size; }
-            bool NeedsDivisor() const { return divisor > 1; }
-            U32 GetWindowAttributeCount( U32 valueCount ) const;
-            U32 GetValueCount( U32 instanceCount ) const;
-            size_t GetDataSize( U32 instanceCount, const ExtensionAttribute * firstAttribute ) const;
-            U32 GetVertexCount( U32 instanceCount, const ExtensionAttribute * firstAttribute ) const;
-        };
-    
         struct ExtensionBlock {
             ExtensionBlock( Rtt_Allocator* allocator );
             ExtensionBlock( ExtensionBlock & block );
@@ -223,79 +196,6 @@ class Geometry : public CPUResource
         U32 fVerticesUsed;
         U32 fIndicesUsed;
         ExtensionBlock* fExtension;
-};
-
-// this is outside of Geometry to allow forward declarations, e.g. in ShaderResource
-struct FormatExtensionList {
-    FormatExtensionList();
-    ~FormatExtensionList();
-    
-    class Iterator {
-    public:
-        enum GroupFilter { kAllGroups, kVertexRateGroups, kInstancedGroups };
-        enum IterationPolicy { kIterateGroups, kIterateAttributes };
-        
-        Iterator( const FormatExtensionList* list, GroupFilter filter, IterationPolicy policy );
-        
-    public:
-        void Advance();
-        bool IsDone() const;
-        U32 GetAttributeIndex() const;
-        U32 GetGroupIndex() const;
-        const Geometry::ExtensionAttribute* GetAttribute() const;
-        const Geometry::ExtensionGroup* GetGroup() const;
-        
-    private:
-        void AdvanceGroup();
-        void UpdateGroup();
-
-    private:
-        GroupFilter fFilter;
-        IterationPolicy fPolicy;
-        const FormatExtensionList * fList;
-        U32 fFirstInGroup;
-        U32 fOffsetInGroup;
-        U32 fGroupIndex;
-    };
-    
-    static Iterator AllGroups( const FormatExtensionList* list );
-    static Iterator AllAttributes( const FormatExtensionList* list );
-    static Iterator InstancedGroups( const FormatExtensionList* list );
-    
-    U32 ExtraVertexCount() const;
-    U32 InstanceGroupCount() const;
-	bool IsInstanced() const { return instancedByID || HasInstanceRateData(); }
-    bool HasInstanceRateData() const;
-    bool HasVertexRateData() const;
-    void SortNames() const;
-    S32 FindHash( size_t hash ) const;
-    S32 FindName( const char* name ) const;
-    U32 FindGroup( U32 attributeIndex ) const;
-    S32 FindCorrespondingInstanceGroup( const Geometry::ExtensionGroup* group, const Geometry::ExtensionAttribute* attribute, U32 * attributeIndex ) const;
-    
-    static size_t GetExtraVertexSize( const FormatExtensionList * list );
-    static size_t GetVertexSize( const FormatExtensionList * list );
-    static bool Compatible( const FormatExtensionList * shaderList, const FormatExtensionList * geometryList );
-    static bool Match( const FormatExtensionList * list1, const FormatExtensionList * list2 );
-    static void ReconcileFormats( CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset );
-    
-    void Build( const CoronaVertexExtension * extension );
-    
-    struct NamePair {
-        const char* str;
-        S32 index;
-        
-        bool operator<( const NamePair & other ) const { return index < other.index; }
-    };
-    
-    Geometry::ExtensionAttribute * attributes;
-    Geometry::ExtensionGroup * groups;
-    mutable NamePair* names; // allow reordering
-    U16 attributeCount;
-    U16 groupCount;
-	bool instancedByID;
-    bool ownsData;
-    mutable bool sorted;
 };
 
 // ----------------------------------------------------------------------------
