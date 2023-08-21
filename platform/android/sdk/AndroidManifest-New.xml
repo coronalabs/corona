@@ -7,6 +7,7 @@
         android:required="true" />
 
     <application
+        android:enableOnBackInvokedCallback="false"
         android:name="androidx.multidex.MultiDexApplication"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher">
@@ -68,6 +69,7 @@
 
         <!-- Handles local/scheduled notification events. -->
         <receiver android:name="com.ansca.corona.notifications.AlarmManagerBroadcastReceiver" />
+        <receiver android:name="com.ansca.corona.notifications.OnNotificationReceiverActivity" />
         <receiver android:name="com.ansca.corona.notifications.StatusBarBroadcastReceiver" />
     </application>
     <queries>
