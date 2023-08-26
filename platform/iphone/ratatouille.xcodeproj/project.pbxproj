@@ -20,6 +20,20 @@
 			name = CoronaCards.framework;
 			productName = CoronaCards.framework;
 		};
+		F576ADA32A99C97600B85312 /* CoronaCards-angle.framework */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = F576ADA82A99C97600B85312 /* Build configuration list for PBXAggregateTarget "CoronaCards-angle.framework" */;
+			buildPhases = (
+				F576ADA62A99C97600B85312 /* Build Universal Binary */,
+				F576ADA72A99C97600B85312 /* Copy to /Users/Shared/CoronaLabs/Frameworks */,
+			);
+			dependencies = (
+				F576ADAE2A99CAAF00B85312 /* PBXTargetDependency */,
+				F576ADAC2A99C9E000B85312 /* PBXTargetDependency */,
+			);
+			name = "CoronaCards-angle.framework";
+			productName = CoronaCards.framework;
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -355,8 +369,7 @@
 		F576AD922A99C73500B85312 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4F5C3A61845377200E5ED54 /* Images.xcassets */; };
 		F576AD932A99C73500B85312 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4F5C3D0184574E200E5ED54 /* InfoPlist.strings */; };
 		F576AD9C2A99C75700B85312 /* libCoronaCards-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F576AD3D2A99C5A000B85312 /* libCoronaCards-angle.a */; };
-		F576ADA02A99C79D00B85312 /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; };
-		F576ADA12A99C79D00B85312 /* MetalANGLE.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A7E24FA938200775C6E /* MetalANGLE.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F576ADB12A99CAF300B85312 /* libMetalANGLE_static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A8024FA938200775C6E /* libMetalANGLE_static.a */; };
 		F5A454721CA3554D0084583A /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */; };
 		F5A454731CA3554D0084583A /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */; };
 		F5A7520E1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
@@ -825,19 +838,33 @@
 			remoteGlobalIDString = F5261110250013F900671DFE;
 			remoteInfo = "tachyon-angle";
 		};
-		F576AD7E2A99C62200B85312 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 0A60525223464F51005CEA98;
-			remoteInfo = MetalANGLE;
-		};
 		F576AD9D2A99C75C00B85312 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = F576ACE52A99C5A000B85312;
 			remoteInfo = "CoronaCards-angle";
+		};
+		F576ADAB2A99C9E000B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F576ACE52A99C5A000B85312;
+			remoteInfo = "CoronaCards-angle";
+		};
+		F576ADAD2A99CAAF00B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A60525223464F51005CEA98;
+			remoteInfo = MetalANGLE;
+		};
+		F576ADAF2A99CAE700B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A936736244CCFDE00B3497E;
+			remoteInfo = MetalANGLE_static;
 		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1396,17 +1423,6 @@
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F576ADA22A99C79D00B85312 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				F576ADA12A99C79D00B85312 /* MetalANGLE.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F5C36AF524FA93A700775C6E /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1810,6 +1826,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F576ADB12A99CAF300B85312 /* libMetalANGLE_static.a in Frameworks */,
 				F576AD7D2A99C5D300B85312 /* libtachyon-angle.a in Frameworks */,
 				F576AD252A99C5A000B85312 /* libalmixer.a in Frameworks */,
 				F576AD262A99C5A000B85312 /* libbox2d.a in Frameworks */,
@@ -1824,7 +1841,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F576AD9C2A99C75700B85312 /* libCoronaCards-angle.a in Frameworks */,
-				F576ADA02A99C79D00B85312 /* MetalANGLE.framework in Frameworks */,
 				F576AD8E2A99C73500B85312 /* libobjc.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2974,7 +2990,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				F576AD7F2A99C62200B85312 /* PBXTargetDependency */,
+				F576ADB02A99CAE700B85312 /* PBXTargetDependency */,
 				F576AD7C2A99C5BF00B85312 /* PBXTargetDependency */,
 				F576ACE82A99C5A000B85312 /* PBXTargetDependency */,
 				F576ACEA2A99C5A000B85312 /* PBXTargetDependency */,
@@ -2997,7 +3013,6 @@
 				F576AD942A99C73500B85312 /* Script: Compile */,
 				F576AD952A99C73500B85312 /* Script: build.settings to Info.plist */,
 				F576AD962A99C73500B85312 /* Copy Corona Project Files */,
-				F576ADA22A99C79D00B85312 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -3159,6 +3174,7 @@
 				A482FA9F183D74950005831B /* CoronaCards */,
 				F576ACE52A99C5A000B85312 /* CoronaCards-angle */,
 				A482FADF183D7B860005831B /* CoronaCards.framework */,
+				F576ADA32A99C97600B85312 /* CoronaCards-angle.framework */,
 				A48E9B9A183EEC8600F67CB3 /* CoronaCardsTest */,
 				A48DA9C918580415009D1F93 /* CoronaCardsTest-Tabs */,
 				A40D2F711889151E00B4A354 /* CoronaCardsTest-Ad */,
@@ -3901,7 +3917,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"";
+			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A46935BD169D62DA00723568 /* Script: CopyResources and resource.corona-archive */ = {
@@ -4063,6 +4079,35 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "ditto -V \"$PROJECT_DIR\"/../test/assets2 \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\"";
+			showEnvVarsInLog = 0;
+		};
+		F576ADA62A99C97600B85312 /* Build Universal Binary */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Build Universal Binary";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export SF_TARGET_NAME=CoronaCards-angle\n\n\"$PROJECT_DIR\"/bin-xcode/build_framework.sh\n";
+		};
+		F576ADA72A99C97600B85312 /* Copy to /Users/Shared/CoronaLabs/Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy to /Users/Shared/CoronaLabs/Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -4594,15 +4639,25 @@
 			name = "tachyon-angle";
 			targetProxy = F576AD7B2A99C5BF00B85312 /* PBXContainerItemProxy */;
 		};
-		F576AD7F2A99C62200B85312 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MetalANGLE;
-			targetProxy = F576AD7E2A99C62200B85312 /* PBXContainerItemProxy */;
-		};
 		F576AD9E2A99C75C00B85312 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F576ACE52A99C5A000B85312 /* CoronaCards-angle */;
 			targetProxy = F576AD9D2A99C75C00B85312 /* PBXContainerItemProxy */;
+		};
+		F576ADAC2A99C9E000B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F576ACE52A99C5A000B85312 /* CoronaCards-angle */;
+			targetProxy = F576ADAB2A99C9E000B85312 /* PBXContainerItemProxy */;
+		};
+		F576ADAE2A99CAAF00B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE;
+			targetProxy = F576ADAD2A99CAAF00B85312 /* PBXContainerItemProxy */;
+		};
+		F576ADB02A99CAE700B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE_static;
+			targetProxy = F576ADAF2A99CAE700B85312 /* PBXContainerItemProxy */;
 		};
 		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5866,6 +5921,20 @@
 			};
 			name = Release;
 		};
+		F576ADA92A99C97600B85312 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F576ADAA2A99C97600B85312 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		F5C36C6424FAB49F00775C6E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6168,6 +6237,15 @@
 			buildConfigurations = (
 				F576AD982A99C73500B85312 /* Debug */,
 				F576AD992A99C73500B85312 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F576ADA82A99C97600B85312 /* Build configuration list for PBXAggregateTarget "CoronaCards-angle.framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F576ADA92A99C97600B85312 /* Debug */,
+				F576ADAA2A99C97600B85312 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
