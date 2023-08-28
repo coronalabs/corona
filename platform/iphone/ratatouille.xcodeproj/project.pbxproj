@@ -866,6 +866,13 @@
 			remoteGlobalIDString = 0A936736244CCFDE00B3497E;
 			remoteInfo = MetalANGLE_static;
 		};
+		F576ADB72A99CD8F00B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A60525223464F51005CEA98;
+			remoteInfo = MetalANGLE;
+		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
@@ -2990,6 +2997,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F576ADB82A99CD8F00B85312 /* PBXTargetDependency */,
 				F576ADB02A99CAE700B85312 /* PBXTargetDependency */,
 				F576AD7C2A99C5BF00B85312 /* PBXTargetDependency */,
 				F576ACE82A99C5A000B85312 /* PBXTargetDependency */,
@@ -4658,6 +4666,11 @@
 			isa = PBXTargetDependency;
 			name = MetalANGLE_static;
 			targetProxy = F576ADAF2A99CAE700B85312 /* PBXContainerItemProxy */;
+		};
+		F576ADB82A99CD8F00B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE;
+			targetProxy = F576ADB72A99CD8F00B85312 /* PBXContainerItemProxy */;
 		};
 		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
