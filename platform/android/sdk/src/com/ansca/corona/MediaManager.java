@@ -181,9 +181,12 @@ public class MediaManager {
 		}
 
 		if ( mp != null ) {
-			mp.setLooping(loop);
-
-			mp.start();
+			try {
+				mp.setLooping(loop);
+				mp.start();
+			} catch (Exception e) {
+				android.util.Log.e("Corona", "Error playing file", e);
+			}
 		} else {
 			Integer soundId = null;
 			if ( myIdToSoundPoolIdMap != null) {
@@ -211,7 +214,11 @@ public class MediaManager {
 		}
 
 		if ( mp != null ) {
-			mp.stop();
+			try {
+				mp.stop();
+			} catch (Exception e) {
+				android.util.Log.e("Corona", "Error while stopping player", e);
+			}
 		} else {
 			Integer soundId = null;
 			if ( myIdToSoundPoolIdMap != null) {
@@ -234,9 +241,8 @@ public class MediaManager {
 		if ( mp != null ) {
 			try {
 				mp.pause();
-			} catch ( IllegalStateException e ) {
-				// #541: App crashing on exit (Android)
-				// happens due to exception on pause presumably due to shutdown, so ignore and continue
+			} catch (Exception e) {
+				android.util.Log.e("Corona", "Error while stopping player", e);
 			}
 		} else {
 			Integer soundId = null;
@@ -260,9 +266,8 @@ public class MediaManager {
 		if ( mp != null ) {
 			try {
 				mp.start();
-			} catch ( IllegalStateException e ) {
-				// #541: App crashing on exit (Android)
-				// happens due to exception on resume if the sound has completed
+			} catch (Exception e) {
+				android.util.Log.e("Corona", "Error while stopping player", e);
 			}
 		} else {
 			Integer soundId = null;
