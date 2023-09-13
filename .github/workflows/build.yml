@@ -391,6 +391,34 @@ jobs:
           path: ./output
 
 
+  CoronaCards-iOS-angle:
+    needs: source-code
+    runs-on: macos-13
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v1
+        with:
+          name: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Corona Cards framework for iOS
+        working-directory: ./platform/iphone
+        run: |
+          xcodebuild -scheme CoronaCards-angle.framework -project ratatouille.xcodeproj -configuration Release -sdk iphoneos build -derivedDataPath "$(pwd)/build"
+          cd build/Build/Products/Release-iphoneos
+          rm -rf CoronaCards.framework
+          cp -R CoronaCards-angle.framework/CoronaCards-angle CoronaCards-angle.framework/CoronaCards
+          ln -s CoronaCards-angle.framework CoronaCards.framework
+          mkdir "${WORKSPACE}/output"
+          zip -r -y -o "${WORKSPACE}/output"/CoronaCards-angle.zip CoronaCards-angle.framework CoronaCards.framework
+      - name: Upload CoronaCards framework archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: CoronaCards-iOS-angle
+          path: ./output
+
   macOS-Simulator:
     needs:
       - source-code
@@ -563,6 +591,7 @@ jobs:
       - linux
       - CoronaCards-Android
       - CoronaCards-iOS
+      - CoronaCards-iOS-angle
       - native
     steps:
       - uses: actions/checkout@v3
@@ -594,6 +623,9 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: CoronaCards-iOS
+      - uses: actions/download-artifact@v1
+        with:
+          name: CoronaCards-iOS-angle
       - uses: actions/download-artifact@v1
         with:
           name: CoronaCards-Android
@@ -651,6 +683,15 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./CoronaCards-iOS/CoronaCards.framework.zip
           asset_name: CoronaCards-iOS-${{ env.YEAR }}.${{ env.BUILD }}.zip
+          asset_content_type: application/zip
+      - name: Upload Release Asset Corona Cards iOS Angle
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./CoronaCards-iOS-angle/CoronaCards-angle.zip
+          asset_name: CoronaCards-iOS-MetalANGLE-${{ env.YEAR }}.${{ env.BUILD }}.zip
           asset_content_type: application/zip
       - name: Upload Release Asset Corona Cards Android
         uses: actions/upload-release-asset@v1
