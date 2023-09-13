@@ -17,6 +17,7 @@
 
 #import <UIKit/UIAlertView.h>
 #import <UIKit/UIAlertController.h>
+#import <UIKit/UIAccessibility.h>
 #import <GameController/GameController.h>
 
 #include "Rtt_IPhonePlatformBase.h"
@@ -559,6 +560,27 @@ IPhonePlatformBase::PushSystemInfo( lua_State *L, const char *key ) const
 		lua_pushboolean(L, res);
 		pushedValues = 1;
 	}
+    else if ( Rtt_StringCompare( key, "reduceMotion" ) == 0 )
+    {
+        BOOL res = UIAccessibilityIsReduceMotionEnabled();
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
+    else if ( Rtt_StringCompare( key, "reduceTransparency" ) == 0 )
+    {
+        BOOL res = UIAccessibilityIsReduceTransparencyEnabled();
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
+    else if ( Rtt_StringCompare( key, "differentiateWithoutColor" ) == 0 )
+    {
+        BOOL res = NO;
+        if (@available(iOS 13.0, tvOS 13.0, *)) {
+            res = UIAccessibilityShouldDifferentiateWithoutColor();
+        }
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
 	else
 	{
 		// Attempt to fetch the requested system info from the base class.

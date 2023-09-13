@@ -2311,6 +2311,10 @@ public class NativeToJavaBridge {
 		runtime.getViewManager().setTextSelection( id, startPosition, endPosition );
 	}
 
+	protected static int[] callTextFieldGetSelection(CoronaRuntime runtime, int id) {
+	    return runtime.getViewManager().getTextSelection(id);
+	}
+
 	protected static void callTextFieldSetReturnKey( CoronaRuntime runtime, int id, String imeType ) 
 	{
 		runtime.getViewManager().setTextReturnKey( id, imeType );

@@ -466,6 +466,29 @@ IPhoneTextFieldObject::setSelection( lua_State *L )
 }
 
 int
+IPhoneTextFieldObject::getSelection(lua_State *L)
+{
+	PlatformDisplayObject *o = (PlatformDisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+	if (&o->ProxyVTable() == &PlatformDisplayObject::GetTextFieldObjectProxyVTable())
+	{
+		UIView *v = ((IPhoneTextFieldObject*)o)->GetView();
+		Rtt_UITextField *t = (Rtt_UITextField*)v;
+
+		UITextRange *selectedRange = t.selectedTextRange;
+	
+		NSInteger startPosition = [t offsetFromPosition:t.beginningOfDocument toPosition:selectedRange.start];
+		NSInteger endPosition = [t offsetFromPosition:t.beginningOfDocument toPosition:selectedRange.end];
+
+		lua_pushnumber(L, startPosition);
+		lua_pushnumber(L, endPosition);
+		
+		return 2;
+	}
+
+	return 0;
+}
+
+int
 IPhoneTextFieldObject::ValueForKey( lua_State *L, const char key[] ) const
 {
 	Rtt_ASSERT( key );
@@ -517,6 +540,10 @@ IPhoneTextFieldObject::ValueForKey( lua_State *L, const char key[] ) const
 	else if ( strcmp( "setSelection", key ) == 0 )
 	{
 		lua_pushcfunction( L, setSelection );
+	}
+	else if ( strcmp( "getSelection", key ) == 0 )
+	{
+		lua_pushcfunction( L, getSelection );
 	}
 	else if ( strcmp( "align", key ) == 0 )
 	{

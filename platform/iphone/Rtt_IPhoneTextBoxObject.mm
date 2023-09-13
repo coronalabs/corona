@@ -265,6 +265,26 @@ IPhoneTextBoxObject::setSelection( lua_State *L )
 	
 	return 0;
 }
+
+int
+IPhoneTextBoxObject::getSelection(lua_State *L)
+{
+	PlatformDisplayObject *o = (PlatformDisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+	if (&o->ProxyVTable() == &PlatformDisplayObject::GetTextBoxObjectProxyVTable())
+	{
+		UIView *v = ((IPhoneTextBoxObject*)o)->GetView();
+		Rtt_UITextView *t = (Rtt_UITextView*)v;
+
+		NSRange range = t.selectedRange;
+
+		lua_pushnumber(L, range.location);
+		lua_pushnumber(L, range.location + range.length);
+		
+		return 2;
+	}
+
+	return 0;
+}
 	
 int
 IPhoneTextBoxObject::ValueForKey( lua_State *L, const char key[] ) const
@@ -326,6 +346,10 @@ IPhoneTextBoxObject::ValueForKey( lua_State *L, const char key[] ) const
 	else if ( strcmp( "setSelection", key) == 0 )
 	{
 		lua_pushcfunction( L, setSelection );
+	}
+	else if ( strcmp( "getSelection", key) == 0 )
+	{
+		lua_pushcfunction( L, getSelection );
 	}
 	else if ( strcmp( "align", key ) == 0 )
 	{
