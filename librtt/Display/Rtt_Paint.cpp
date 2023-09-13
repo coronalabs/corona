@@ -213,9 +213,9 @@ namespace Rtt
 				ColorUnion vc;
 				vc.pixel = perVertexColors[i];
 
-				v.rs = vc.rgba.r;
-				v.gs = vc.rgba.g;
-				v.bs = vc.rgba.b;
+				v.rs = Scale2(vc.rgba.r, vc.rgba.a);
+				v.gs = Scale2(vc.rgba.g, vc.rgba.a);
+				v.bs = Scale2(vc.rgba.b, vc.rgba.a);
 				v.as = vc.rgba.a;
 
 				if (scaleColor)
