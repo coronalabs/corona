@@ -659,6 +659,11 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	return self;
 }
 
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app
+{
+	return NO;
+}
+
 - (void) checkOpenGLRequirements
 {
 	// Force the OpenGL context to be created now and make current and query OpenGL for extensions.
