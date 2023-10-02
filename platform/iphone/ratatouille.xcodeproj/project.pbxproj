@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -2969,8 +2969,8 @@
 				F50E7EB724FA923B009F165B /* Sources */,
 				F50E7EB924FA923B009F165B /* Frameworks */,
 				F50E7EBC24FA923B009F165B /* Script: CopyResources and resource.corona-archive */,
-				F50E7EBD24FA923B009F165B /* Script: build.settings to Info.plist */,
 				F5C36AF524FA93A700775C6E /* Embed Frameworks */,
+				F50E7EBD24FA923B009F165B /* Script: build.settings to Info.plist */,
 			);
 			buildRules = (
 				F50E7EBE24FA923B009F165B /* PBXBuildRule */,
@@ -3949,9 +3949,13 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/../test/assets2/build.settings",
+				$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/Info.plist,
 			);
 			name = "Script: build.settings to Info.plist";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/info.created",
+				$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/Info.plist,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4020,14 +4024,20 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
+			inputFileListPaths = (
+			);
 			inputPaths = (
+				"$(SRCROOT)/../test/assets2/build.settings",
+				$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/Info.plist,
 			);
 			name = "Script: build.settings to Info.plist";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/info.created",
+				$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/Info.plist,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "TOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUA=\"$TOOLCHAIN_DIR/lua\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
+			shellScript = "TOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUA=\"$TOOLCHAIN_DIR/lua\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n\ntouch \"$DERIVED_FILE_DIR/info.created\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F576AD392A99C5A000B85312 /* ShellScript */ = {
