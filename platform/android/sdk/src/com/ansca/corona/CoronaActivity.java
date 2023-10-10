@@ -536,7 +536,7 @@ public class CoronaActivity extends Activity {
 	/**
 	 * Determines if the Corona Activity needs to handle orientation settings manually.
 	 * This is an internal method that can only be called by Corona.
-	 * @return Returns a boolean indicating whether thie CoronaActivity should handle orientation settings itself.
+	 * @return Returns a boolean indicating whether the CoronaActivity should handle orientation settings itself.
 	 */
 	boolean needManualOrientationHandling() {
 		return myInitialOrientationSetting == android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE ||
@@ -1933,7 +1933,7 @@ public class CoronaActivity extends Activity {
 		// Store the given intent.
 		setIntent(intent);
 
-		// Raise an "applicationOpen" event to be recevied by the Corona runtime.
+		// Raise an "applicationOpen" event to be received by the Corona runtime.
 		EventManager eventManager = fCoronaRuntime.getController().getEventManager();
 		if (eventManager != null) {
 			eventManager.addEvent(new com.ansca.corona.events.RunnableEvent(new Runnable() {
@@ -3499,7 +3499,7 @@ public class CoronaActivity extends Activity {
 		}
 
 		/**
-		 * Called when the activity window layou has changed.
+		 * Called when the activity window layout has changed.
 		 * This can happen when it is resized or panned by the virtual keyboard, if enabled.
 		 */
 		@Override
