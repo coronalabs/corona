@@ -1960,7 +1960,7 @@ public class Controller {
 			String permissionName = android.Manifest.permission.READ_PHONE_STATE;
 			if (myContext.checkCallingOrSelfPermission(permissionName) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
 				TelephonyManager telephonyManager = (TelephonyManager)myContext.getSystemService(Context.TELEPHONY_SERVICE);
-				if ((telephonyManager != null) && (telephonyManager.getDeviceId() != null)) {
+				if (telephonyManager != null) {
 					stringId = telephonyManager.getDeviceId();
 				}
 			}
