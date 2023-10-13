@@ -381,6 +381,27 @@ MacTextBoxObject::setSelection( lua_State *L )
 }
 
 int
+MacTextBoxObject::getSelection(lua_State* L)
+{
+    PlatformDisplayObject *o = (PlatformDisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+    if (&o->ProxyVTable() == &PlatformDisplayObject::GetTextBoxObjectProxyVTable())
+    {
+        NSView *v = ((MacTextBoxObject*)o)->GetView();
+        NSScrollView *scrollview = (NSScrollView*)v;
+        Rtt_NSTextView *t = (Rtt_NSTextView*)[scrollview documentView];
+        NSRange range = t.selectedRange;
+        
+        lua_pushnumber(L, range.location);
+        lua_pushnumber(L, range.location + range.length);
+
+        return 2;
+    }
+    
+    return 0;
+}
+
+
+int
 MacTextBoxObject::ValueForKey( lua_State *L, const char key[] ) const
 {
 	Rtt_ASSERT( key );
@@ -443,6 +464,10 @@ MacTextBoxObject::ValueForKey( lua_State *L, const char key[] ) const
 	else if ( strcmp( "setSelection", key ) == 0 )
 	{
 		lua_pushcfunction( L, setSelection);
+	}
+	else if ( strcmp( "getSelection", key ) == 0 )
+	{
+		lua_pushcfunction( L, getSelection);
 	}
 	else if ( strcmp( "placeholder", key ) == 0 )
 	{

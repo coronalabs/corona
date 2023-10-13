@@ -65,7 +65,7 @@ fun checkCoronaNativeInstallation() {
     } else {
         val setupNativeApp = File("/Applications").listFiles { f ->
             f.isDirectory && f.name.startsWith("Corona")
-        }?.max()?.let {
+        }.maxOrNull()?.let {
             "${it.absolutePath}/Native/Setup Corona Native.app"
         } ?: "Native/Setup Corona Native.app"
         throw InvalidUserDataException("Corona Native was not set-up properly. Launch '$setupNativeApp'.")
@@ -190,20 +190,20 @@ if (configureCoronaPlugins == "YES") {
 
 android {
     lintOptions {
-        isCheckReleaseBuilds = false
+        isCheckReleaseBuilds = true
     }
-    compileSdkVersion(32)
+    compileSdk = 33
     defaultConfig {
         applicationId = coronaAppPackage
-        targetSdkVersion(32)
-        minSdkVersion(extra["minSdkVersion"] as Int)
+        targetSdk = 33
+        minSdk = (extra["minSdkVersion"] as Int)
         versionCode = coronaVersionCode
         versionName = coronaVersionName
         multiDexEnabled = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility  = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility  = JavaVersion.VERSION_11
     }
     coronaKeystore?.let { keystore ->
         signingConfigs {

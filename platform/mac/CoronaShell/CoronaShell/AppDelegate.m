@@ -41,6 +41,11 @@
 @synthesize suspendWhenMinimized = _suspendWhenMinimized;
 @synthesize lastSentWindowStateForeground;
 
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app
+{
+	return NO;
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 #ifdef USE_HOCKEYSDK

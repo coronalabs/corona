@@ -418,6 +418,26 @@ void TextBox::SetSelection(int startCharacterIndex, int endCharacterIndex)
 	}
 }
 
+bool TextBox::GetSelection(int *outStartCharacterIndex, int *outEndCharacterIndex) const
+{
+	auto windowHandle = GetWindowHandle();
+	if (windowHandle)
+	{
+		DWORD start, end;
+		::SendMessageW(windowHandle, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
+		if (outStartCharacterIndex)
+		{
+			*outStartCharacterIndex = (int)start;
+		}
+		if (outEndCharacterIndex)
+		{
+			*outEndCharacterIndex = (int)end;
+		}
+		return true;
+	}
+	return false;
+}
+
 void TextBox::SetTextColorToDefault()
 {
 	fIsUsingCustomTextColor = false;

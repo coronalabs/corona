@@ -7,6 +7,7 @@
         android:required="true" />
 
     <application
+        android:enableOnBackInvokedCallback="false"
         android:name="androidx.multidex.MultiDexApplication"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher">
@@ -37,6 +38,12 @@
             android:name="com.ansca.corona.purchasing.StoreActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity android:name="com.ansca.corona.notifications.OnNotificationReceiverActivity" 
+               android:noHistory="true"
+               android:excludeFromRecents="true"
+               android:taskAffinity=""
+               android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+               android:exported="true" />
 
         <provider android:name="com.ansca.corona.storage.FileContentProvider"
             android:authorities="${applicationId}.files"
@@ -75,7 +82,7 @@
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
         </intent>
-        
+
         <!--Needed for checking for Camera Intent in Android 11 -->
 	<intent>
 		<action android:name="android.media.action.IMAGE_CAPTURE" />
@@ -90,5 +97,3 @@
 	</intent>
     </queries>
 </manifest>
-
-

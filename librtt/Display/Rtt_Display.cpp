@@ -28,6 +28,7 @@
 #include "Rtt_Lua.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_PlatformSurface.h"
+#include "Rtt_Profiling.h"
 #include "CoronaLua.h"
 
 #include "Renderer/Rtt_GLRenderer.h"
@@ -526,29 +527,51 @@ Display::Restart( int newWidth, int newHeight )
 void
 Display::Update()
 {
-    Runtime& runtime = fOwner;
-    lua_State *L = fOwner.VMContext().L();
-    fSpritePlayer->Run( L, Rtt_AbsoluteToMilliseconds(runtime.GetElapsedTime()) );
+    Profiling::EntryRAII up( GetAllocator(), "update" );
 
-    GetScene().QueueUpdateOfUpdatables();
-
-    if ( fDelegate )
-    {
-        fDelegate->WillDispatchFrameEvent( * this );
-    }
-
-    const FrameEvent& fe = FrameEvent::Constant();
-    fe.Dispatch( L, runtime );
+    up.Add( "Display::Update Begin" );
     
-    const RenderEvent& re = RenderEvent::Constant();
-    re.Dispatch( L, runtime );
+	Runtime& runtime = fOwner;
+	lua_State *L = fOwner.VMContext().L();
+	fSpritePlayer->Run( L, Rtt_AbsoluteToMilliseconds(runtime.GetElapsedTime()) );
+
+	up.Add( "Run sprite player" );
+
+	GetScene().QueueUpdateOfUpdatables();
+
+	up.Add( "Queue updatables" );
+
+	if ( fDelegate )
+	{
+		fDelegate->WillDispatchFrameEvent( * this );
+	}
+
+	up.Add( "Prepare for frame event" );
+
+	const FrameEvent& fe = FrameEvent::Constant();
+	fe.Dispatch( L, runtime );
+	
+    up.Add( "FrameEvent" );
+    
+	const RenderEvent& re = RenderEvent::Constant();
+	re.Dispatch( L, runtime );
+    
+    up.Add( "LateUpdate" );
+
+	Profiling::ResetSums();
+
+    up.Add( "Display::Update End" );
 }
 
 void
 Display::Render()
 {
-    {
-        Rtt_AbsoluteTime elapsedTime = GetRuntime().GetElapsedTime();
+    Profiling::EntryRAII rp( GetAllocator(), "render" );
+
+    rp.Add( "Display::Render Begin" );
+
+	{
+		Rtt_AbsoluteTime elapsedTime = GetRuntime().GetElapsedTime();
 
         const Rtt::Real kMillisecondsPerSecond = 1000.0f;
         // NOT _USED: Rtt::Real totalTime = Rtt_AbsoluteToMilliseconds( elapsedTime ) / kMillisecondsPerSecond;
@@ -560,7 +583,9 @@ Display::Render()
         //fDeltaTimeInSeconds = ( 1.0f / 30.0f );
     }
 
-    GetScene().Render( * fRenderer, * fTarget );
+	GetScene().Render( * fRenderer, * fTarget, rp.GetProfiling() );
+
+    rp.Add( "Display::Render End" );
 }
 
 void
@@ -804,8 +829,6 @@ Display::Capture( DisplayObject *object,
         x_in_pixels = 0;
         y_in_pixels = 0;
     }
-
-    
 #    if defined( Rtt_OPENGLES )
         const Texture::Format kFormat = Texture::kRGBA;
 #    else

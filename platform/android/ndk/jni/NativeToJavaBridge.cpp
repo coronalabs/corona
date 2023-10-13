@@ -2370,6 +2370,35 @@ NativeToJavaBridge::TextFieldSetSelection( int id, int startPosition, int endPos
 	}
 }
 
+bool
+NativeToJavaBridge::TextFieldGetSelection(int id, int& startPosition, int& endPosition)
+{
+	NativeTrace trace("NativeToJavaBridge::TextFieldGetSelection");
+
+	jclassInstance bridge(GetJNIEnv(), kNativeToJavaBridge);
+	startPosition = -1;
+	endPosition = -1;
+
+	if (bridge.isValid()) {
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID(bridge.getClass(),
+			"callTextFieldGetSelection", "(Lcom/ansca/corona/CoronaRuntime;I)[I");
+
+		if (mid != NULL) {
+			jintArray result = (jintArray)bridge.getEnv()->CallStaticObjectMethod(bridge.getClass(), mid, fCoronaRuntime, id);
+			HandleJavaException();
+
+			if (result != NULL) {
+				jint* elements = bridge.getEnv()->GetIntArrayElements(result, 0);
+				startPosition = elements[0];
+				endPosition = elements[1];
+				bridge.getEnv()->ReleaseIntArrayElements(result, elements, 0);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void
 NativeToJavaBridge::TextFieldSetPlaceholder( int id, const char * placeholder )
 {

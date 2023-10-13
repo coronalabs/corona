@@ -21,6 +21,7 @@
 
 #ifdef NXS_LIB
   struct tm* nx_localtime(const time_t* timep);
+  time_t nx_time(time_t* tloc);
 #endif
 
 static int os_pushresult (lua_State *L, int i, const char *filename) {
@@ -232,7 +233,11 @@ static int os_date (lua_State *L) {
 static int os_time (lua_State *L) {
   time_t t;
   if (lua_isnoneornil(L, 1))  /* called without args? */
-    t = time(NULL);  /* get current time */
+#ifdef NXS_LIB
+  t = nx_time(NULL);  /* get current time */
+#else
+  t = time(NULL);  /* get current time */
+#endif
   else {
     struct tm ts;
     luaL_checktype(L, 1, LUA_TTABLE);

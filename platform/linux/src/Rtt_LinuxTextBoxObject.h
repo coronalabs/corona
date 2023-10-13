@@ -37,6 +37,7 @@ namespace Rtt
 		static int SetTextColor(lua_State *L);
 		static int SetReturnKey(lua_State *L);
 		static int SetSelection(lua_State *L);
+		static int GetSelection(lua_State *L);
 
 	private:
 
