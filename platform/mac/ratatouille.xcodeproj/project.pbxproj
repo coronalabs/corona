@@ -1645,10 +1645,10 @@
 		F57D17791BE2750800AABAC1 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D17781BE2750800AABAC1 /* GameController.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F57D177A1BE2752900AABAC1 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D17781BE2750800AABAC1 /* GameController.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F5800DF81AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5800DF61AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp */; };
-		F583ABE22ADAF54C002799CB /* network.dylib in Copy Frameworks and dylibs */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		F583ABE32ADAF557002799CB /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; };
 		F583ABE62ADAF569002799CB /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; };
 		F583ABE72ADAF578002799CB /* network.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F583AC1C2ADB1892002799CB /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; };
+		F583AC1D2ADB1892002799CB /* network.dylib in Copy Frameworks and dylibs */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F58CA276245651B2002191EA /* Rtt_HTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */; };
 		F58CA27824565212002191EA /* Rtt_HTTPClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27724565212002191EA /* Rtt_HTTPClient.mm */; };
 		F58CA27A24565579002191EA /* Rtt_HTTPClientCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */; };
@@ -2163,14 +2163,14 @@
 			remoteGlobalIDString = A49186401641DDB800A39286;
 			remoteInfo = network;
 		};
-		F583ABE02ADAF543002799CB /* PBXContainerItemProxy */ = {
+		F583ABE42ADAF55F002799CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A49186331641DDB800A39286;
 			remoteInfo = network;
 		};
-		F583ABE42ADAF55F002799CB /* PBXContainerItemProxy */ = {
+		F583AC1E2ADB18A2002799CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
 			proxyType = 1;
@@ -2220,8 +2220,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F583ABE22ADAF54C002799CB /* network.dylib in Copy Frameworks and dylibs */,
 				C279452E1B585BD60046B6E8 /* ads.dylib in Copy Frameworks and dylibs */,
+				F583AC1D2ADB1892002799CB /* network.dylib in Copy Frameworks and dylibs */,
 				C279452F1B585BD60046B6E8 /* analytics.dylib in Copy Frameworks and dylibs */,
 				C27945301B585BD60046B6E8 /* gameNetwork.dylib in Copy Frameworks and dylibs */,
 				C27945311B585BD60046B6E8 /* licensing.dylib in Copy Frameworks and dylibs */,
@@ -3522,7 +3522,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F583ABE32ADAF557002799CB /* network.dylib in Frameworks */,
+				F583AC1C2ADB1892002799CB /* network.dylib in Frameworks */,
 				F5FED0972512248E00AE2911 /* StoreKit.framework in Frameworks */,
 				C2C59B291E2812D6001DF51E /* CoreMedia.framework in Frameworks */,
 				C2C59B271E2812CE001DF51E /* AVFoundation.framework in Frameworks */,
@@ -6245,7 +6245,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				F583ABE12ADAF543002799CB /* PBXTargetDependency */,
+				F583AC1F2ADB18A2002799CB /* PBXTargetDependency */,
 				C226075C1B4B415D00172FB1 /* PBXTargetDependency */,
 				C2E993261A6B289D00E99F46 /* PBXTargetDependency */,
 				C2E9931C1A6B287500E99F46 /* PBXTargetDependency */,
@@ -8026,15 +8026,15 @@
 			name = CoronaLiveServer;
 			targetProxy = F533258D1D9DD3CC003613F7 /* PBXContainerItemProxy */;
 		};
-		F583ABE12ADAF543002799CB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = network;
-			targetProxy = F583ABE02ADAF543002799CB /* PBXContainerItemProxy */;
-		};
 		F583ABE52ADAF55F002799CB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = network;
 			targetProxy = F583ABE42ADAF55F002799CB /* PBXContainerItemProxy */;
+		};
+		F583AC1F2ADB18A2002799CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network;
+			targetProxy = F583AC1E2ADB18A2002799CB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
