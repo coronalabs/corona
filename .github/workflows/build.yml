@@ -834,7 +834,7 @@ jobs:
       - release
       - source-code
     runs-on: ubuntu-20.04
-    if: !cancelled() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
+    if: (!cancelled()) && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
     steps:
       - uses: technote-space/workflow-conclusion-action@v1
       - uses: actions/checkout@v3
