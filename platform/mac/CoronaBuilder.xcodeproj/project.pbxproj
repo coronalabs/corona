@@ -301,6 +301,20 @@
 			remoteGlobalIDString = C2D927251ACA098800B7F9AC;
 			remoteInfo = CoronaShell;
 		};
+		F5567DDA2ADC7847008CD550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5567DBC2ADC76CF008CD550 /* NetworkPlugin.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A49186401641DDB800A39286;
+			remoteInfo = network;
+		};
+		F5567DE72ADC784F008CD550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5567DBC2ADC76CF008CD550 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A49186331641DDB800A39286;
+			remoteInfo = network;
+		};
 		F5FBD1DC206961A9009A9D32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A4ED11ED14D350C400ECF49E /* lua.xcodeproj */;
@@ -994,6 +1008,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F5567DD42ADC7847008CD550 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F5567DDB2ADC7847008CD550 /* network.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1010,6 +1032,7 @@
 				A4ED11BE14D34A4900ECF49E /* PBXBuildRule */,
 			);
 			dependencies = (
+				F5567DE82ADC784F008CD550 /* PBXTargetDependency */,
 				F5FBD1DD206961A9009A9D32 /* PBXTargetDependency */,
 				C2342E501AC1D2220091FE20 /* PBXTargetDependency */,
 				A4ED120A14D350DA00ECF49E /* PBXTargetDependency */,
@@ -1053,6 +1076,10 @@
 				{
 					ProductGroup = A4ED11EE14D350C400ECF49E /* Products */;
 					ProjectRef = A4ED11ED14D350C400ECF49E /* lua.xcodeproj */;
+				},
+				{
+					ProductGroup = F5567DD42ADC7847008CD550 /* Products */;
+					ProjectRef = F5567DBC2ADC76CF008CD550 /* NetworkPlugin.xcodeproj */;
 				},
 				{
 					ProductGroup = C2F1BAFE1EF48F2F00D77BD7 /* Products */;
@@ -1198,6 +1225,13 @@
 			fileType = wrapper.framework;
 			path = CoronaCards.framework;
 			remoteRef = C2F1BB281EF48F3000D77BD7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5567DDB2ADC7847008CD550 /* network.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = network.dylib;
+			remoteRef = F5567DDA2ADC7847008CD550 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1346,6 +1380,11 @@
 			isa = PBXTargetDependency;
 			name = CoronaShell;
 			targetProxy = C2F1BB2A1EF48F7200D77BD7 /* PBXContainerItemProxy */;
+		};
+		F5567DE82ADC784F008CD550 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network;
+			targetProxy = F5567DE72ADC784F008CD550 /* PBXContainerItemProxy */;
 		};
 		F5FBD1DD206961A9009A9D32 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
