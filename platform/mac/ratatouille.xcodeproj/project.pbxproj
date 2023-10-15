@@ -2142,6 +2142,13 @@
 			remoteGlobalIDString = C24216D61CCACB6600D8E4BE;
 			remoteInfo = libluasocket;
 		};
+		F52F11D62ADC56FB00D992DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A49186331641DDB800A39286;
+			remoteInfo = network;
+		};
 		F533257D1D9DD2DF003613F7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F53325791D9DD2DE003613F7 /* CoronaLiveServer.xcodeproj */;
@@ -6087,6 +6094,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F52F11D72ADC56FB00D992DC /* PBXTargetDependency */,
 			);
 			name = liblua;
 			productName = liblua;
@@ -6245,7 +6253,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				F583AC1F2ADB18A2002799CB /* PBXTargetDependency */,
 				C226075C1B4B415D00172FB1 /* PBXTargetDependency */,
 				C2E993261A6B289D00E99F46 /* PBXTargetDependency */,
 				C2E9931C1A6B287500E99F46 /* PBXTargetDependency */,
@@ -6258,6 +6265,7 @@
 				C26E848B1A5DE255008950FB /* PBXTargetDependency */,
 				C2E993221A6B288100E99F46 /* PBXTargetDependency */,
 				C26E84851A5DE235008950FB /* PBXTargetDependency */,
+				F583AC1F2ADB18A2002799CB /* PBXTargetDependency */,
 			);
 			name = CoronaCards;
 			productName = CoronaCards;
@@ -8020,6 +8028,11 @@
 			isa = PBXTargetDependency;
 			name = libluasocket;
 			targetProxy = C2F9110E1CDBF9D9004A5564 /* PBXContainerItemProxy */;
+		};
+		F52F11D72ADC56FB00D992DC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network;
+			targetProxy = F52F11D62ADC56FB00D992DC /* PBXContainerItemProxy */;
 		};
 		F533258E1D9DD3CC003613F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
