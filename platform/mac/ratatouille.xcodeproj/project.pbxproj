@@ -1630,6 +1630,10 @@
 		F55407F61C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55407F31C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.cpp */; };
 		F55407F71C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F55407F41C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.h */; };
 		F55407F81C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F55407F41C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.h */; };
+		F5567D482ADC73BC008CD550 /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F5567D442ADC7394008CD550 /* network.dylib */; };
+		F5567D492ADC73BC008CD550 /* network.dylib in Copy Frameworks and dylibs */ = {isa = PBXBuildFile; fileRef = F5567D442ADC7394008CD550 /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F5567D4A2ADC73CB008CD550 /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F5567D442ADC7394008CD550 /* network.dylib */; };
+		F5567D4B2ADC73CB008CD550 /* network.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F5567D442ADC7394008CD550 /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F57469D7240291FA00CA5949 /* iostemplate in Resources */ = {isa = PBXBuildFile; fileRef = F57469D6240291FA00CA5949 /* iostemplate */; };
 		F57AE2051F051610000A4245 /* Rtt_AppleInAppStore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B6571463359A00EEDF75 /* Rtt_AppleInAppStore.mm */; };
 		F57AE2061F051610000A4245 /* Rtt_AppleInAppStoreApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B6591463359A00EEDF75 /* Rtt_AppleInAppStoreApple.mm */; };
@@ -1645,10 +1649,6 @@
 		F57D17791BE2750800AABAC1 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D17781BE2750800AABAC1 /* GameController.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F57D177A1BE2752900AABAC1 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D17781BE2750800AABAC1 /* GameController.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F5800DF81AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5800DF61AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp */; };
-		F583ABE62ADAF569002799CB /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; };
-		F583ABE72ADAF578002799CB /* network.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		F583AC1C2ADB1892002799CB /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; };
-		F583AC1D2ADB1892002799CB /* network.dylib in Copy Frameworks and dylibs */ = {isa = PBXBuildFile; fileRef = F583ABDF2ADAF4F2002799CB /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F58CA276245651B2002191EA /* Rtt_HTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */; };
 		F58CA27824565212002191EA /* Rtt_HTTPClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27724565212002191EA /* Rtt_HTTPClient.mm */; };
 		F58CA27A24565579002191EA /* Rtt_HTTPClientCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */; };
@@ -2156,21 +2156,21 @@
 			remoteGlobalIDString = F511E5D21D81DDCC0084406E;
 			remoteInfo = CoronaLiveServer;
 		};
-		F583ABDE2ADAF4F2002799CB /* PBXContainerItemProxy */ = {
+		F5567D432ADC7394008CD550 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = A49186401641DDB800A39286;
 			remoteInfo = network;
 		};
-		F583ABE42ADAF55F002799CB /* PBXContainerItemProxy */ = {
+		F5567D4C2ADC73E1008CD550 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A49186331641DDB800A39286;
 			remoteInfo = network;
 		};
-		F583AC1E2ADB18A2002799CB /* PBXContainerItemProxy */ = {
+		F5567D4E2ADC740E008CD550 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
 			proxyType = 1;
@@ -2187,6 +2187,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				0052EBF412B73ADD006ED5BC /* ALmixer.framework in Copy Frameworks */,
+				F5567D4B2ADC73CB008CD550 /* network.dylib in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2197,7 +2198,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				F583ABE72ADAF578002799CB /* network.dylib in CopyFiles */,
 				A4F12C2516D43685002BCCFB /* licensing.dylib in CopyFiles */,
 				A41AC1B916A75A9E00AD331A /* gameNetwork.dylib in CopyFiles */,
 				A4BCD6E61648D5EC00D8F41A /* ads.dylib in CopyFiles */,
@@ -2221,7 +2221,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				C279452E1B585BD60046B6E8 /* ads.dylib in Copy Frameworks and dylibs */,
-				F583AC1D2ADB1892002799CB /* network.dylib in Copy Frameworks and dylibs */,
+				F5567D492ADC73BC008CD550 /* network.dylib in Copy Frameworks and dylibs */,
 				C279452F1B585BD60046B6E8 /* analytics.dylib in Copy Frameworks and dylibs */,
 				C27945301B585BD60046B6E8 /* gameNetwork.dylib in Copy Frameworks and dylibs */,
 				C27945311B585BD60046B6E8 /* licensing.dylib in Copy Frameworks and dylibs */,
@@ -3367,7 +3367,7 @@
 		F57D17781BE2750800AABAC1 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		F5800DF61AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ImageSheetPaintAdapter.cpp; path = Display/Rtt_ImageSheetPaintAdapter.cpp; sourceTree = "<group>"; };
 		F5800DF71AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ImageSheetPaintAdapter.h; path = Display/Rtt_ImageSheetPaintAdapter.h; sourceTree = "<group>"; };
-		F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NetworkPlugin.xcodeproj; path = /Users/vlad/Projects/corona/plugins/network/mac/NetworkPlugin.xcodeproj; sourceTree = "<absolute>"; };
+		F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NetworkPlugin.xcodeproj; path = ../../plugins/network/mac/NetworkPlugin.xcodeproj; sourceTree = "<group>"; };
 		F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_HTTPClient.h; sourceTree = "<group>"; };
 		F58CA27724565212002191EA /* Rtt_HTTPClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_HTTPClient.mm; sourceTree = SOURCE_ROOT; };
 		F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_HTTPClientCommon.cpp; sourceTree = "<group>"; };
@@ -3471,8 +3471,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F583ABE62ADAF569002799CB /* network.dylib in Frameworks */,
 				C2C59B2C1E2812FF001DF51E /* CoreMedia.framework in Frameworks */,
+				F5567D4A2ADC73CB008CD550 /* network.dylib in Frameworks */,
 				C2C59B2A1E2812F9001DF51E /* AVFoundation.framework in Frameworks */,
 				C2C59B2B1E2812F9001DF51E /* AVKit.framework in Frameworks */,
 				C2F911111CDBFA19004A5564 /* libluasocket.a in Frameworks */,
@@ -3522,7 +3522,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F583AC1C2ADB1892002799CB /* network.dylib in Frameworks */,
+				F5567D482ADC73BC008CD550 /* network.dylib in Frameworks */,
 				F5FED0972512248E00AE2911 /* StoreKit.framework in Frameworks */,
 				C2C59B291E2812D6001DF51E /* CoreMedia.framework in Frameworks */,
 				C2C59B271E2812CE001DF51E /* AVFoundation.framework in Frameworks */,
@@ -5415,10 +5415,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F583ABD92ADAF4F2002799CB /* Products */ = {
+		F5567D3D2ADC7394008CD550 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F583ABDF2ADAF4F2002799CB /* network.dylib */,
+				F5567D442ADC7394008CD550 /* network.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -6151,7 +6151,7 @@
 				001F574112B6018500F52101 /* PBXBuildRule */,
 			);
 			dependencies = (
-				F583ABE52ADAF55F002799CB /* PBXTargetDependency */,
+				F5567D4D2ADC73E1008CD550 /* PBXTargetDependency */,
 				F533258E1D9DD3CC003613F7 /* PBXTargetDependency */,
 				C21995B01C18A2C000E88FD0 /* PBXTargetDependency */,
 				C2B5FEEE1B336C3D00DD49E6 /* PBXTargetDependency */,
@@ -6245,7 +6245,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				F583AC1F2ADB18A2002799CB /* PBXTargetDependency */,
+				F5567D4F2ADC740E008CD550 /* PBXTargetDependency */,
 				C226075C1B4B415D00172FB1 /* PBXTargetDependency */,
 				C2E993261A6B289D00E99F46 /* PBXTargetDependency */,
 				C2E9931C1A6B287500E99F46 /* PBXTargetDependency */,
@@ -6328,7 +6328,7 @@
 					ProjectRef = 0039BCEF132AF4570009B76B /* lua.xcodeproj */;
 				},
 				{
-					ProductGroup = F583ABD92ADAF4F2002799CB /* Products */;
+					ProductGroup = F5567D3D2ADC7394008CD550 /* Products */;
 					ProjectRef = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
 				},
 				{
@@ -6480,11 +6480,11 @@
 			remoteRef = F533257D1D9DD2DF003613F7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		F583ABDF2ADAF4F2002799CB /* network.dylib */ = {
+		F5567D442ADC7394008CD550 /* network.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
 			path = network.dylib;
-			remoteRef = F583ABDE2ADAF4F2002799CB /* PBXContainerItemProxy */;
+			remoteRef = F5567D432ADC7394008CD550 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -8026,15 +8026,15 @@
 			name = CoronaLiveServer;
 			targetProxy = F533258D1D9DD3CC003613F7 /* PBXContainerItemProxy */;
 		};
-		F583ABE52ADAF55F002799CB /* PBXTargetDependency */ = {
+		F5567D4D2ADC73E1008CD550 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = network;
-			targetProxy = F583ABE42ADAF55F002799CB /* PBXContainerItemProxy */;
+			targetProxy = F5567D4C2ADC73E1008CD550 /* PBXContainerItemProxy */;
 		};
-		F583AC1F2ADB18A2002799CB /* PBXTargetDependency */ = {
+		F5567D4F2ADC740E008CD550 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = network;
-			targetProxy = F583AC1E2ADB18A2002799CB /* PBXContainerItemProxy */;
+			targetProxy = F5567D4E2ADC740E008CD550 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
