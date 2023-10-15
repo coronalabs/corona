@@ -2142,13 +2142,6 @@
 			remoteGlobalIDString = C24216D61CCACB6600D8E4BE;
 			remoteInfo = libluasocket;
 		};
-		F52F11D62ADC56FB00D992DC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A49186331641DDB800A39286;
-			remoteInfo = network;
-		};
 		F533257D1D9DD2DF003613F7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F53325791D9DD2DE003613F7 /* CoronaLiveServer.xcodeproj */;
@@ -4485,6 +4478,7 @@
 				0039BCEF132AF4570009B76B /* lua.xcodeproj */,
 				C2A08C221950DF2A002B7532 /* lpeg.xcodeproj */,
 				A49186021641DCFD00A39286 /* plugins.xcodeproj */,
+				F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */,
 				A4B66AB1176A7A370077B2BF /* libtachyon.xcodeproj */,
 				00B7340012B6F6E70057F594 /* external */,
 				00B73A6A12B71B560057F594 /* librtt */,
@@ -4497,7 +4491,6 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				C2B5FEFA1B33705300DD49E6 /* libluafilesystem.a */,
-				F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */,
 			);
 			name = ratatouille;
 			sourceTree = "<group>";
@@ -6094,7 +6087,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				F52F11D72ADC56FB00D992DC /* PBXTargetDependency */,
 			);
 			name = liblua;
 			productName = liblua;
@@ -6253,6 +6245,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F583AC1F2ADB18A2002799CB /* PBXTargetDependency */,
 				C226075C1B4B415D00172FB1 /* PBXTargetDependency */,
 				C2E993261A6B289D00E99F46 /* PBXTargetDependency */,
 				C2E9931C1A6B287500E99F46 /* PBXTargetDependency */,
@@ -6265,7 +6258,6 @@
 				C26E848B1A5DE255008950FB /* PBXTargetDependency */,
 				C2E993221A6B288100E99F46 /* PBXTargetDependency */,
 				C26E84851A5DE235008950FB /* PBXTargetDependency */,
-				F583AC1F2ADB18A2002799CB /* PBXTargetDependency */,
 			);
 			name = CoronaCards;
 			productName = CoronaCards;
@@ -8028,11 +8020,6 @@
 			isa = PBXTargetDependency;
 			name = libluasocket;
 			targetProxy = C2F9110E1CDBF9D9004A5564 /* PBXContainerItemProxy */;
-		};
-		F52F11D72ADC56FB00D992DC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = network;
-			targetProxy = F52F11D62ADC56FB00D992DC /* PBXContainerItemProxy */;
 		};
 		F533258E1D9DD3CC003613F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
