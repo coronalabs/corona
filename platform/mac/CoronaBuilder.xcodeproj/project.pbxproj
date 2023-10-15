@@ -104,8 +104,6 @@
 		F53C329F2404E30900BC2BED /* CoronaBuilderPluginCollector.lua in Sources */ = {isa = PBXBuildFile; fileRef = F53C328E2404E2C000BC2BED /* CoronaBuilderPluginCollector.lua */; };
 		F547C7F61ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */; };
 		F547C7F71ED28BA600C4ED92 /* BuilderPluginDownloader.lua in Sources */ = {isa = PBXBuildFile; fileRef = F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */; };
-		F5567DAC2ADC76C2008CD550 /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F5567DAB2ADC76C2008CD550 /* network.dylib */; };
-		F5567DAD2ADC76C2008CD550 /* network.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F5567DAB2ADC76C2008CD550 /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F58CA29C245658C5002191EA /* Rtt_HTTPClientCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58CA28C245658C5002191EA /* Rtt_HTTPClientCommon.cpp */; };
 		F58CA29E245658E3002191EA /* Rtt_HTTPClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58CA29D245658E3002191EA /* Rtt_HTTPClient.mm */; };
 		F5BEA4B823FFE98200206A6A /* CoronaOfflineiOSPackager.lua in Sources */ = {isa = PBXBuildFile; fileRef = F5BEA4A723FFE97300206A6A /* CoronaOfflineiOSPackager.lua */; };
@@ -308,13 +306,6 @@
 			remoteGlobalIDString = A49186401641DDB800A39286;
 			remoteInfo = network;
 		};
-		F5567DE72ADC784F008CD550 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F5567DBC2ADC76CF008CD550 /* NetworkPlugin.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A49186331641DDB800A39286;
-			remoteInfo = network;
-		};
 		F5FBD1DC206961A9009A9D32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A4ED11ED14D350C400ECF49E /* lua.xcodeproj */;
@@ -331,7 +322,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F5567DAD2ADC76C2008CD550 /* network.dylib in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -559,7 +549,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5567DAC2ADC76C2008CD550 /* network.dylib in Frameworks */,
 				F5FBD1DB206961A4009A9D32 /* libluasocket.a in Frameworks */,
 				C21A81D61AAFC41800128F5E /* liblua-universal.a in Frameworks */,
 				A4A47E3D14D2302800B5111C /* IOKit.framework in Frameworks */,
@@ -1032,7 +1021,6 @@
 				A4ED11BE14D34A4900ECF49E /* PBXBuildRule */,
 			);
 			dependencies = (
-				F5567DE82ADC784F008CD550 /* PBXTargetDependency */,
 				F5FBD1DD206961A9009A9D32 /* PBXTargetDependency */,
 				C2342E501AC1D2220091FE20 /* PBXTargetDependency */,
 				A4ED120A14D350DA00ECF49E /* PBXTargetDependency */,
@@ -1380,11 +1368,6 @@
 			isa = PBXTargetDependency;
 			name = CoronaShell;
 			targetProxy = C2F1BB2A1EF48F7200D77BD7 /* PBXContainerItemProxy */;
-		};
-		F5567DE82ADC784F008CD550 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = network;
-			targetProxy = F5567DE72ADC784F008CD550 /* PBXContainerItemProxy */;
 		};
 		F5FBD1DD206961A9009A9D32 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
