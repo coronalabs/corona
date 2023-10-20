@@ -375,7 +375,7 @@ public class CoronaView extends FrameLayout {
 		 */
 		@Override
 		public void onWillLoadMain(CoronaRuntime runtime) {
-			// The following code the the equivlant of:
+			// The following code the the equivalent of:
 			// Runtime.addEventListener("coronaView", CoronaViewEventLuaObject)
 			// which will call CoronaViewEventLuaObject with any dispatched event which
 			// has a name property of "coronaView".

@@ -2881,7 +2881,7 @@ setTimeStep( lua_State *L )
 }
 
 // physics.setTimeScale( dt )
-// Sets time scale of physics sumulator. Default is 1
+// Sets time scale of physics simulator. Default is 1
 static int
 setTimeScale( lua_State *L )
 {
@@ -2899,7 +2899,7 @@ setTimeScale( lua_State *L )
 }
 
 // physics.getTimeScale( )
-// Returns time scale of physics sumulator.
+// Returns time scale of physics simulator.
 static int
 getTimeScale( lua_State *L )
 {
