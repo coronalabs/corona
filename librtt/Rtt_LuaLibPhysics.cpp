@@ -1299,14 +1299,14 @@ newJoint( lua_State *L )
 			Real px = luaL_torealphysics( L, 4, scale );
 			Real py = luaL_torealphysics( L, 5, scale );
 
-			Real qx = luaL_torealphysics( L, 6, scale );
-			Real qy = luaL_torealphysics( L, 7, scale );
+			Real axisX = luaL_toreal( L, 6 );
+			Real axisY = luaL_toreal( L, 7 );
 
-			// TODO
 			b2WheelJointDef jointDef;
 
 			b2Vec2 point( px, py );
-			b2Vec2 axis( qx, qy );
+			b2Vec2 axis( axisX, axisY );
+			axis.Normalize();
 
 			jointDef.Initialize( body1, body2, point, axis );
 
