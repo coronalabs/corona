@@ -16,12 +16,12 @@
 
 -- TODO: Move this out of global namespace
 local function getOrCreateTable( receiver, index )
-	local t = receiver[index]
+	local t, new = receiver[index] -- STEVE CHANGE
 	if nil == t then
-		t = {}
+		t, new = {}, true -- STEVE CHANGE
 		receiver[index] = t
 	end
-	return t
+	return t, new -- STEVE CHANGE
 end
 
 local Object = {}
@@ -73,15 +73,15 @@ EventDispatcher._indexForType = { ["table"]="_tableListeners", ["function"]="_fu
 
 function EventDispatcher:getOrCreateTable( eventName, listenerType )
 	local index = EventDispatcher._indexForType[ listenerType ]
-	local t = nil
+	local t, new = nil -- STEVE CHANGE
 	if index then
 		t = getOrCreateTable( self, index )
-		t = getOrCreateTable( t, eventName )
+		t, new = getOrCreateTable( t, eventName )
 	end
 	if nil == t then
         error("addEventListener: listener cannot be nil: "..tostring(index))
     end
-	return t
+	return t, new
 end
 
 -- Every instance of EventDispatcher has two tables of listeners stored in then
@@ -111,7 +111,18 @@ function EventDispatcher:addEventListener( eventName, listener )
     if not listener and self[eventName] then listener = self; end
 
 	-- get table for either function or table listeners
-	local t = self:getOrCreateTable( eventName, type( listener ) )
+	local listenerType = type( listener ) -- STEVE CHANGE
+	local t, new = self:getOrCreateTable( eventName, listenerType )--type( listener ) ) <- STEVE CHANGE
+-- STEVE CHANGE
+	if new then
+		local profileID = display._allocateProfile( listenerType, eventName )
+		if listenerType == "function" then
+			self._functionProfileID = profileID
+		else
+			self._tableProfileID = profileID
+		end
+	end
+-- /STEVE CHANGE
 	if t then
 		table.insert( t, listener )
 	end
@@ -186,7 +197,9 @@ function cloneArray( array )
 	return clone
 end
 
-local _pcall = pcall
+display._initProfiling() -- STEVE CHANGE
+
+--local _pcall = pcall <- STEVE CHANGE
 
 function EventDispatcher:dispatchEvent( event )
 	local result = false;
@@ -194,20 +207,23 @@ function EventDispatcher:dispatchEvent( event )
 
 	-- array of functions is self._functionListeners[eventName]
 	local functionDict = self._functionListeners
+	local functionProfileID = self._functionProfileID -- STEVE CHANGE
 	local functionArray = ( functionDict and functionDict[eventName] ) or nil
 	if ( functionArray ~= nil ) and ( #functionArray > 0 ) then
-		local profile = display._beginProfile( "functionListeners", eventName )
+		local profile = display._beginProfile( functionProfileID )-- "functionListeners", eventName ) <- STEVE CHANGE
 		local functionArrayClone = cloneArray( functionArray )
 		for index = 1, #functionArrayClone do
 			local func = functionArrayClone[ index ]
 			display._addProfileEntry( profile, func )
 			if self:hasEventListener( eventName, func ) then
 				-- Dispatch event to function listener.
-				local ok, handled = _pcall( func, event )
-				if not ok then
+				local handled = func( event )--ok, handled = _pcall( func, event ) <- STEVE CHANGE
+				-- STEVE CHANGE
+				--[[if not ok then
 					display._endProfile( profile )
 					error( handled )
-				end
+				end]]
+				-- /STEVE CHANGE
 				result = handled or result
 			end
 		end
@@ -216,9 +232,10 @@ function EventDispatcher:dispatchEvent( event )
 
 	-- array of table listeners is self._tableListeners[eventName]
 	local tableDict = self._tableListeners
+	local tableProfileID = self._tableProfileID -- STEVE CHANGE
 	local tableArray = ( tableDict and tableDict[eventName] ) or nil
 	if ( tableArray ~= nil ) and ( #tableArray > 0 ) then
-		local profile = display._beginProfile( "tableListeners", eventName )
+		local profile = display._beginProfile( tableProfileID )--"tableListeners", eventName ) <- STEVE CHANGE
 		local tableArrayClone = cloneArray( tableArray )
 		for index = 1, #tableArrayClone do
 			local obj = tableArrayClone[ index ]
@@ -228,11 +245,13 @@ function EventDispatcher:dispatchEvent( event )
 				local method = obj[eventName]
 				if ( type(method) == "function" ) then
 					-- Dispatch event to table listener.
-					local ok, handled = _pcall( method, obj, event )
-					if not ok then
+					local handled = method( obj, event )--ok, handled = _pcall( method, obj, event ) <- STEVE CHANGE
+					-- STEVE CHANGE
+					--[[if not ok then
 						display._endProfile( profile )
 						error( handled )
-					end
+					end]]
+					-- /STEVE CHANGE
 					result = handled or result
 				end
 			end

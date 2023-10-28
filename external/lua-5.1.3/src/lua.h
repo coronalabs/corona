@@ -60,6 +60,10 @@ typedef struct lua_State lua_State;
 typedef int (*lua_CFunction) (lua_State *L);
 
 
+// STEVE CHANGE
+typedef void (*lua_BookmarkFunction) (short mark, int push);
+// /STEVE CHANGE
+
 /*
 ** functions that read/write blocks when loading/dumping Lua chunks
 */
@@ -304,6 +308,13 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 /* hack */
 LUA_API void lua_setlevel	(lua_State *from, lua_State *to);
+
+
+// STEVE CHANGE
+LUA_API void lua_setbookmarkf (lua_State *L, lua_BookmarkFunction bookmarkf);
+
+LUA_API void lua_setlevelid (lua_State *L, int id);
+// /STEVE CHANGE
 
 
 /*

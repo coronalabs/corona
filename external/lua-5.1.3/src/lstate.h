@@ -86,6 +86,9 @@ typedef struct global_State {
   int gcpause;  /* size of pause between successive GCs */
   int gcstepmul;  /* GC `granularity' */
   lua_CFunction panic;  /* to be called in unprotected errors */
+// STEVE CHANGE
+  lua_BookmarkFunction bookmark;
+// /STEVE CHANGE
   TValue l_registry;
   struct lua_State *mainthread;
   UpVal uvhead;  /* head of double-linked list of all open upvalues */
@@ -113,6 +116,11 @@ struct lua_State {
   int size_ci;  /* size of array `base_ci' */
   unsigned short nCcalls;  /* number of nested C calls */
   unsigned short baseCcalls;  /* nested C calls when resuming coroutine */
+// STEVE CHANGE
+  int32_t *bookmarks; /* TODO */
+  int size_bookmarks; /* TODO */
+  unsigned short nBookmarks; /* TODO */
+// /STEVE CHANGE
   lu_byte hookmask;
   lu_byte allowhook;
   int basehookcount;

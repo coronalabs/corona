@@ -127,6 +127,37 @@ LUA_API void lua_setlevel (lua_State *from, lua_State *to) {
 }
 
 
+// STEVE CHANGE
+LUA_API void lua_setbookmarkf (lua_State *L, lua_BookmarkFunction bookmarkf) {
+  lua_lock(L);
+  G(L)->bookmark = bookmarkf;
+  lua_unlock(L);
+}
+
+LUA_API void lua_setlevelid (lua_State *L, int id) {
+  lua_lock(L);
+  api_check(L, G(L)->bookmark);
+  api_check(L, id >= 0 && id < LUA_MAXCCALLS);
+  if (id > 0) {
+    int inuse;
+    if (L->nBookmarks == L->size_bookmarks) {
+	  luaM_reallocvector(L, L->bookmarks, L->size_bookmarks, L->nBookmarks + 1, int32_t);
+	  L->size_bookmarks = L->nBookmarks + 1;
+    }
+    inuse = cast_int(L->ci - L->base_ci);
+    L->bookmarks[L->nBookmarks] = (inuse << 16) | id;
+    L->nBookmarks++;
+  }
+  else {
+    api_check(L, L->size_bookmarks);
+    api_check(L, L->nBookmarks);
+    L->nBookmarks--;
+  } 
+  lua_unlock(L);
+}
+// /STEVE CHANGE
+
+
 LUA_API lua_CFunction lua_atpanic (lua_State *L, lua_CFunction panicf) {
   lua_CFunction old;
   lua_lock(L);

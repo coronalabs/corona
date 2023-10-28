@@ -436,6 +436,7 @@ static int resume_error (lua_State *L, const char *msg) {
 
 
 LUA_API int lua_resume (lua_State *L, int nargs) {
+  int i; // <- STEVE CHANGE
   int status;
   lua_lock(L);
   if (L->status != LUA_YIELD && (L->status != 0 || L->ci != L->base_ci))
@@ -450,10 +451,18 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
     L->status = cast_byte(status);  /* mark thread as `dead' */
     luaD_seterrorobj(L, status, L->top);
     L->ci->top = L->top;
+// STEVE CHANGE
+    for (i = 0; i < L->nBookmarks; i++)
+      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0);
+// /STEVE CHANGE
   }
   else {
     lua_assert(L->nCcalls == L->baseCcalls);
     status = L->status;
+// STEVE CHANGE
+    for (i = 0; i < L->nBookmarks; i++)
+      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 1);
+// /STEVE CHANGE
   }
   --L->nCcalls;
   lua_unlock(L);
@@ -462,10 +471,15 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
 
 
 LUA_API int lua_yield (lua_State *L, int nresults) {
+  int i; // <- STEVE CHANGE
   luai_userstateyield(L, nresults);
   lua_lock(L);
   if (L->nCcalls > L->baseCcalls)
     luaG_runerror(L, "attempt to yield across metamethod/C-call boundary");
+// STEVE CHANGE
+  for (i = L->nBookmarks - 1; i >= 0; i--)
+    G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0);
+// /STEVE CHANGE
   L->base = L->top - nresults;  /* protect stack slots below */
   L->status = LUA_YIELD;
   lua_unlock(L);
@@ -483,6 +497,7 @@ int luaD_pcall (lua_State *L, Pfunc func, void *u,
   L->errfunc = ef;
   status = luaD_rawrunprotected(L, func, u);
   if (status != 0) {  /* an error occurred? */
+    int i, pos; // <- STEVE CHANGE
     StkId oldtop = restorestack(L, old_top);
     luaF_close(L, oldtop);  /* close eventual pending closures */
     luaD_seterrorobj(L, status, oldtop);
@@ -492,6 +507,17 @@ int luaD_pcall (lua_State *L, Pfunc func, void *u,
     L->savedpc = L->ci->savedpc;
     L->allowhook = old_allowhooks;
     restore_stack_limit(L);
+// STEVE CHANGE
+    pos = cast_int(L->ci - L->base_ci);
+    for (i = L->nBookmarks - 1; i >= 0; i--) {
+      if ((L->bookmarks[i] >> 16) <= pos)
+        break;
+	  else {
+        G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0);
+        L->nBookmarks--;
+	  }
+    }
+// /STEVE CHANGE
   }
   L->errfunc = old_errfunc;
   return status;
