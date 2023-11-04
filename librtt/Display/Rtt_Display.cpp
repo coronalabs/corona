@@ -527,7 +527,7 @@ Display::Restart( int newWidth, int newHeight )
 void
 Display::Update()
 {
-    Profiling::EntryRAII up( GetAllocator(), "update" );
+    PROFILING_BEGIN( GetAllocator(), up, "update" );
 
     up.Add( "Display::Update Begin" );
     
@@ -566,7 +566,7 @@ Display::Update()
 void
 Display::Render()
 {
-    Profiling::EntryRAII rp( GetAllocator(), "render" );
+    PROFILING_BEGIN( GetAllocator(), rp, "render" );
 
     rp.Add( "Display::Render Begin" );
 

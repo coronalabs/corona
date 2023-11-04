@@ -169,6 +169,15 @@ class DisplayLibrary
 		static int getStatistics( lua_State *L );
 		static int getSums( lua_State *L );
 		static int getTimings( lua_State *L );
+
+		static int _initProfiling( lua_State *L );
+		static int _allocateProfile( lua_State *L );
+	#ifdef Rtt_DEBUG
+		static int _getlevelcounts( lua_State *L );
+		static int _getlevelinfo( lua_State *L );
+		static int _getfirst( lua_State *L );
+		static int _getnameandbelow( lua_State *L );
+	#endif
 		static int _beginProfile( lua_State *L );
 		static int _addProfileEntry( lua_State *L );
 		static int _endProfile( lua_State *L );
@@ -240,6 +249,15 @@ DisplayLibrary::Open( lua_State *L )
 		{ "getStatistics", getStatistics },
 		{ "getSums", getSums },
 		{ "getTimings", getTimings },
+
+		{ "_initProfiling", _initProfiling },
+		{ "_allocateProfile", _allocateProfile },
+	#ifdef Rtt_DEBUG
+		{ "_getlevelcounts", _getlevelcounts },
+		{ "_getlevelinfo", _getlevelinfo },
+		{ "_getfirst", _getfirst },
+		{ "_getnameandbelow", _getnameandbelow },
+	#endif
 		{ "_beginProfile", _beginProfile },
 		{ "_addProfileEntry", _addProfileEntry },
 		{ "_endProfile", _endProfile },
@@ -2702,7 +2720,16 @@ DisplayLibrary::getTimings( lua_State *L )
 }
 
 int
-DisplayLibrary::_beginProfile( lua_State *L )
+DisplayLibrary::_initProfiling( lua_State *L )
+{
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	Profiling::Init( L, lib->GetDisplay().GetAllocator() );
+
+	return 0;
+}
+
+int
+DisplayLibrary::_allocateProfile( lua_State *L )
 {
 	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
 	if ( lua_isstring( L, 1 ) && lua_isstring( L, 2 ) )
@@ -2711,11 +2738,113 @@ DisplayLibrary::_beginProfile( lua_State *L )
 
 		snprintf( buf, sizeof( buf ) - 1, "%s:%s", lua_tostring( L, 2 ), lua_tostring( L, 1 ) );
 
-		Profiling* profiling = Profiling::Open( lib->GetDisplay().GetAllocator(), buf );
+		int profileID = Profiling::Create( lib->GetDisplay().GetAllocator(), buf );
+
+		lua_pushinteger( L, profileID + 1 );
+	}
+
+	else
+	{
+		lua_pushnil( L );
+	}
+
+	return 1;
+}
+
+#ifdef Rtt_DEBUG
+
+int DisplayLibrary::_getlevelcounts( lua_State *L )
+{
+	int ci, nbookmarks;
+
+	lua_getlevelcounts( L, &ci, &nbookmarks );
+	lua_pushinteger( L, ci - 1 ); // n.b. want caller's ci
+	lua_pushinteger( L, nbookmarks );
+
+	return 2;
+}
+
+int DisplayLibrary::_getlevelinfo( lua_State *L )
+{
+	int arg = 1;
+
+	if ( !lua_isnumber( L, arg ) )
+	{
+		arg++;
+	}
+
+	int index = lua_tointeger( L, arg ) - 1;
+	int ci, id = lua_getlevelid( L, index, &ci );
+
+	if ( id > 0 )
+	{
+		lua_pushinteger( L, id );
+		lua_pushinteger( L, ci );
+
+		return 2;
+	}
+
+	else
+	{
+		lua_pushnil( L );
+
+		return 1;
+	}
+}
+
+int
+DisplayLibrary::_getfirst( lua_State *L )
+{
+	Profiling *first = Profiling::GetFirst();
+
+	if ( first )
+	{
+		lua_pushlightuserdata( L, first );
+	}
+
+	else
+	{
+		lua_pushnil( L );
+	}
+
+	return 1;
+}
+
+int DisplayLibrary::_getnameandbelow( lua_State *L )
+{
+	Profiling* profiling = (Profiling*)lua_touserdata( L, 1 );
+
+	if ( profiling )
+	{
+		lua_pushstring( L, profiling->GetName() );
+		lua_pushlightuserdata( L, profiling->GetBelow() );
+
+		return 2;
+	}
+
+	else
+	{
+		lua_pushnil( L );
+
+		return 1;
+	}
+}
+
+#endif
+
+int
+DisplayLibrary::_beginProfile( lua_State *L )
+{
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	if ( lua_isnumber( L, 1 ) )
+	{
+		int id = lua_tointeger( L, 1 );
+		Profiling* profiling = Profiling::Open( id );
 
 		if ( profiling )
 		{
 			lua_pushlightuserdata( L, profiling );
+			lua_setlevelid( L, id );
 
 			return 1;
 		}
@@ -2766,6 +2895,8 @@ DisplayLibrary::_endProfile( lua_State *L )
 	if ( lua_islightuserdata( L, 1 ) )
 	{
 		Profiling::Close( lua_touserdata( L, 1 ) );
+
+		lua_setlevelid( L, 0 );
 	}
 
 	return 0;

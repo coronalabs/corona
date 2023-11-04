@@ -31,8 +31,7 @@ void Profiling::Entry::SetName( const char* name )
 }
 
 Profiling::Profiling( Rtt_Allocator* allocator, const char* name )
-:   fNext(NULL),
-    fBelow(NULL)
+:   fBelow( NULL )
 {
     fArray1 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
     fArray2 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
@@ -60,14 +59,14 @@ void Profiling::Commit()
         fBelow->AddEntry( fName, true );
     }
 
-    fTopList = fBelow;
+    sTopList = fBelow;
     fBelow = NULL;
 }
 
 void Profiling::Push()
 {
-    fBelow = fTopList;
-    fTopList = this;
+    fBelow = sTopList;
+    sTopList = this;
 }
 
 void Profiling::AddEntry( const char* name, bool isListName )
@@ -118,9 +117,14 @@ int Profiling::VisitEntries( lua_State* L ) const
     return 1;
 }
 
-Profiling* Profiling::Open( Rtt_Allocator* allocator, const char* name )
+Profiling* Profiling::Open( int id )
 {
-	Profiling* profiling = Profiling::GetOrCreate( allocator, name );
+    if ( id < 1 || id > sLists->Length() )
+    {
+        return NULL;
+    }
+
+	Profiling* profiling = sLists->WriteAccess()[id - 1];
 
     Rtt_ASSERT( profiling );
 
@@ -139,23 +143,28 @@ Profiling* Profiling::Open( Rtt_Allocator* allocator, const char* name )
 
 void Profiling::AddEntry( void* profiling, const char* name )
 {
-    if ( NULL != profiling && fTopList == profiling )
+    if ( NULL != profiling && sTopList == profiling )
     {
-        fTopList->AddEntry( name );
+        sTopList->AddEntry( name );
     }
 }
 
 void Profiling::Close( void* profiling )
 {
-    if ( NULL != profiling && fTopList == profiling )
+    if ( NULL != profiling && sTopList == profiling )
     {
-        fTopList->Commit();
+        sTopList->Commit();
     }
+}
+
+Profiling* Profiling::GetFirst()
+{
+    return sTopList;
 }
 
 bool Profiling::Find( const Profiling* profiling )
 {
-    for ( const Profiling* cur = fTopList; cur; cur = cur->fBelow )
+    for ( const Profiling* cur = sTopList; cur; cur = cur->fBelow )
     {
         if ( profiling == cur )
         {
@@ -166,64 +175,71 @@ bool Profiling::Find( const Profiling* profiling )
     return false;
 }
 
-int Profiling::DestroyAll( struct lua_State* L )
+void
+Profiling::Bookmark( short mark, int push )
 {
-    Profiling* cur = fFirstList;
+    Rtt_ASSERT( sLists );
 
-    while ( cur )
+    int id = (int)mark;
+
+    if ( push )
     {
-		Profiling* next = cur->fNext;
-
-        Rtt_DELETE( cur );
-
-        cur = next;
+        Profiling::Open( id );
     }
 
-    fFirstList = NULL;
-    fTopList = NULL;
+    else if ( id >= 1 && id <= sLists->Length() )
+    {
+        Profiling::Close( sLists->WriteAccess()[id - 1] );
+    }
+}
+
+void Profiling::Init( struct lua_State* L, Rtt_Allocator* allocator )
+{
+    lua_setbookmarkf( L, Bookmark );
+
+	sLists = Rtt_NEW( allocator, PtrArray<Profiling>( allocator ) );
+}
+
+int Profiling::DestroyAll( struct lua_State* L )
+{
+    Rtt_DELETE( sLists );
+
+    sLists = NULL;
+    sTopList = NULL;
+
+#ifdef Rtt_AUTHORING_SIMULATOR
+    sSimulatorRun++;
+#endif
 
     // n.b. leave sums list intact
 
     return 0;
 }
 
-Profiling* Profiling::GetOrCreate( Rtt_Allocator* allocator, const char* name )
+int Profiling::Create( Rtt_Allocator* allocator, const char* name )
 {
-	Profiling* profiling = Get( name );
+    Rtt_ASSERT( sLists );
 
-    if ( NULL == profiling )
+    Profiling* profiling = Rtt_NEW( allocator, Profiling( allocator, name ) );
+
+    if ( 0 != Rtt_StringCompare( name, profiling->fName ) )
     {
-        Entry::ShortName shorter;
-
-        Entry::SetShortName( shorter, name );
-
-        profiling = Get( shorter );
-
-        if ( NULL != profiling )
-        {
-            Rtt_Log( "Found profiling list %s, but with shorter name %s", name, shorter );
-
-            return profiling;
-        }
-
-        profiling = Rtt_NEW( allocator, Profiling( allocator, name ) );
-
-        if ( 0 != Rtt_StringCompare( name, profiling->fName ) )
-        {
-            Rtt_Log( "Profiling list created, but name %s shortened to %s", name, shorter );
-        }
-
-        profiling->fNext = fFirstList;
-        fFirstList = profiling;
+        Rtt_Log( "Profiling list created, but name %s shortened to %s", name, profiling->fName );
     }
 
-    return profiling;
+    sLists->Append( profiling );
+
+    return sLists->Length() - 1;
 }
 
 Profiling* Profiling::Get( const char* name )
 {
-    for ( Profiling* cur = fFirstList; cur; cur = cur->fNext )
+    Rtt_ASSERT( sLists );
+
+    for ( S32 i = 0, length = sLists->Length(); i < length; i++ )
     {
+        Profiling* cur = sLists->WriteAccess()[i];
+
         if ( 0 == Rtt_StringCompare( name, cur->fName ) )
         {
             return cur;
@@ -235,7 +251,7 @@ Profiling* Profiling::Get( const char* name )
 
 void Profiling::ResetSums()
 {
-    for ( Sum* sum = fFirstSum; sum; sum = sum->fNext )
+    for ( Sum* sum = sFirstSum; sum; sum = sum->fNext )
     {
         sum->Reset();
     }
@@ -247,7 +263,7 @@ int Profiling::VisitSums( lua_State* L)
     {
         int index = 1;
 
-        for ( const Sum* sum = fFirstSum; sum; sum = sum->fNext )
+        for ( const Sum* sum = sFirstSum; sum; sum = sum->fNext )
         {
             if ( 0 == sum->fTimingCount )
             {
@@ -275,13 +291,25 @@ int Profiling::VisitSums( lua_State* L)
     return 1;
 }
 
-Profiling* Profiling::fFirstList;
-Profiling* Profiling::fTopList;
-Profiling::Sum* Profiling::fFirstSum;
+PtrArray<Profiling>* Profiling::sLists;
+Profiling* Profiling::sTopList;
+Profiling::Sum* Profiling::sFirstSum;
 
-Profiling::EntryRAII::EntryRAII( Rtt_Allocator* allocator, const char* name )
+#ifdef Rtt_AUTHORING_SIMULATOR
+	int Profiling::sSimulatorRun;
+#endif
+
+Profiling::EntryRAII::EntryRAII( Rtt_Allocator* allocator, int& id, const char* name )
 {
-    fProfiling = Profiling::GetOrCreate( allocator, name );
+    Rtt_ASSERT( id < sLists->Length() );
+    Rtt_ASSERT( None == id || id >= 0 );
+
+    if ( None == id )
+    {
+        id = Profiling::Create( allocator, name );
+    }
+
+    fProfiling = sLists->WriteAccess()[id];
 
     Rtt_ASSERT( fProfiling );
 
@@ -312,8 +340,8 @@ Profiling::Sum::Sum( const char* name )
 {
     Entry::SetShortName( fName, name );
 
-    fNext = fFirstSum;
-    fFirstSum = this;
+    fNext = sFirstSum;
+    sFirstSum = this;
 }
 			
 void Profiling::Sum::AddTiming( U64 diff )

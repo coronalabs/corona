@@ -25,26 +25,43 @@ namespace Rtt
 
 class Profiling {
 	public:
+		enum { None = -1 };
+
 		Profiling( Rtt_Allocator* allocator, const char* name );
 		~Profiling();
 
 	public:
 		void Commit();
 		void Push();
+		const char* GetName() const { return fName; }
+		Profiling* GetBelow() const { return fBelow; }
 		void AddEntry( const char* name, bool isListName = false );
 		int VisitEntries( lua_State* L ) const;
 
-		static Profiling* Open( Rtt_Allocator* allocator, const char* name );
+	private:
+		static void Bookmark( short mark, int push );
+
+	public:
+		static Profiling* Open( int id );
 		static void AddEntry( void* profiling, const char* name );
 		static void Close( void* profiling );
 		static void ResetSums();
 		static int VisitSums( lua_State* L );
-	
+
+	public:
+		static Profiling* GetFirst();
+
 	public:
 		static bool Find( const Profiling* profiling );
+		static void Init( struct lua_State* L, Rtt_Allocator* allocator );
 		static int DestroyAll( struct lua_State* L );
-		static Profiling* GetOrCreate( Rtt_Allocator* allocator, const char* name );
+		static int Create( Rtt_Allocator* allocator, const char* name );
 		static Profiling* Get( const char* name );
+
+	public:
+		#ifdef Rtt_AUTHORING_SIMULATOR
+			static int GetSimulatorRun() { return sSimulatorRun; }
+		#endif
 
 	private:
 		struct Entry {
@@ -62,7 +79,7 @@ class Profiling {
 	public:
 		class EntryRAII {
 		public:
-			EntryRAII( Rtt_Allocator* allocator, const char* name );
+			EntryRAII( Rtt_Allocator* allocator, int& id, const char* name );
 			~EntryRAII();
 
 		public:
@@ -110,14 +127,17 @@ class Profiling {
 		};
 
 	private:
-		static Profiling* fFirstList;
-		static Profiling* fTopList;
-		static Sum* fFirstSum;
+		static PtrArray<Profiling>* sLists;
+		static Profiling* sTopList;
+		static Sum* sFirstSum;
+
+	#ifdef Rtt_AUTHORING_SIMULATOR
+		static int sSimulatorRun;
+	#endif
 
 		Array<Entry>* fArray1;
 		Array<Entry>* fArray2;
 		Entry::ShortName fName;
-		Profiling* fNext;
 		Profiling* fBelow;
 };
 
@@ -129,6 +149,20 @@ class Profiling {
 #else
 	#define SUMMED_TIMING( var, name )
 	#define ENABLE_SUMMED_TIMING( enable )
+#endif
+
+#ifdef Rtt_AUTHORING_SIMULATOR
+	// Invalidate static indices on each simulator launch:
+	#define PROFILING_BEGIN( allocator, var, name ) static int s_id_##var, s_id_##var##_run = Profiling::None;	\
+													if ( s_id_##var##_run != Profiling::GetSimulatorRun() )		\
+													{															\
+														s_id_##var = Profiling::None;							\
+														s_id_##var##_run = Profiling::GetSimulatorRun();		\
+													}															\
+													Profiling::EntryRAII var( allocator, s_id_##var, name )
+#else
+	// Otherwise, compute each index once up front:
+	#define PROFILING_BEGIN( allocator, var, name ) static int s_id_##var = Profiling::None; Profiling::EntryRAII var( allocator, s_id_##var, name )
 #endif
 
 // ----------------------------------------------------------------------------
