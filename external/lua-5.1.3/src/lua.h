@@ -314,6 +314,8 @@ LUA_API void lua_setlevel	(lua_State *from, lua_State *to);
 LUA_API void lua_setbookmarkf (lua_State *L, lua_BookmarkFunction bookmarkf);
 
 LUA_API void lua_setlevelid (lua_State *L, int id);
+LUA_API void lua_getlevelcounts (lua_State *L, int *ci, int *nbookmarks);
+LUA_API int lua_getlevelid (lua_State *L, int index, int *ci);
 // /STEVE CHANGE
 
 

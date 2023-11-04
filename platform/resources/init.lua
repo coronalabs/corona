@@ -115,12 +115,7 @@ function EventDispatcher:addEventListener( eventName, listener )
 	local t, new = self:getOrCreateTable( eventName, listenerType )--type( listener ) ) <- STEVE CHANGE
 -- STEVE CHANGE
 	if new then
-		local profileID = display._allocateProfile( listenerType, eventName )
-		if listenerType == "function" then
-			self._functionProfileID = profileID
-		else
-			self._tableProfileID = profileID
-		end
+		t._profileID = display._allocateProfile( listenerType, eventName ) -- n.b. ignored by ipairs()
 	end
 -- /STEVE CHANGE
 	if t then
@@ -207,10 +202,9 @@ function EventDispatcher:dispatchEvent( event )
 
 	-- array of functions is self._functionListeners[eventName]
 	local functionDict = self._functionListeners
-	local functionProfileID = self._functionProfileID -- STEVE CHANGE
 	local functionArray = ( functionDict and functionDict[eventName] ) or nil
 	if ( functionArray ~= nil ) and ( #functionArray > 0 ) then
-		local profile = display._beginProfile( functionProfileID )-- "functionListeners", eventName ) <- STEVE CHANGE
+		local profile = display._beginProfile( functionArray._profileID )-- "functionListeners", eventName ) <- STEVE CHANGE
 		local functionArrayClone = cloneArray( functionArray )
 		for index = 1, #functionArrayClone do
 			local func = functionArrayClone[ index ]
@@ -232,10 +226,9 @@ function EventDispatcher:dispatchEvent( event )
 
 	-- array of table listeners is self._tableListeners[eventName]
 	local tableDict = self._tableListeners
-	local tableProfileID = self._tableProfileID -- STEVE CHANGE
 	local tableArray = ( tableDict and tableDict[eventName] ) or nil
 	if ( tableArray ~= nil ) and ( #tableArray > 0 ) then
-		local profile = display._beginProfile( tableProfileID )--"tableListeners", eventName ) <- STEVE CHANGE
+		local profile = display._beginProfile( tableArray._profileID )--"tableListeners", eventName ) <- STEVE CHANGE
 		local tableArrayClone = cloneArray( tableArray )
 		for index = 1, #tableArrayClone do
 			local obj = tableArrayClone[ index ]

@@ -121,13 +121,13 @@ int Profiling::VisitEntries( lua_State* L ) const
 Profiling* Profiling::Open( int id/*Rtt_Allocator* allocator, const char* name*/ ) // <- STEVE CHANGE
 {
     // STEVE CHANGE
-    if ( id < 0 || id > sLists->Length() )
+    if ( id < 1 || id > sLists->Length() )
     {
         return NULL;
     }
     // /STEVE CHANGE
 
-	Profiling* profiling = sLists->WriteAccess()[id];//Profiling::GetOrCreate( allocator, name ); // <- STEVE CHANGE
+	Profiling* profiling = sLists->WriteAccess()[id - 1];//Profiling::GetOrCreate( allocator, name ); // <- STEVE CHANGE
 
     Rtt_ASSERT( profiling );
 
@@ -160,6 +160,13 @@ void Profiling::Close( void* profiling )
     }
 }
 
+// STEVE CHANGE
+Profiling* Profiling::GetFirst()
+{
+    return sTopList;
+}
+// /STEVE CHANGE
+
 bool Profiling::Find( const Profiling* profiling )
 {
     for ( const Profiling* cur = /*f*/sTopList; cur; cur = cur->fBelow ) // <- STEVE CHANGE
@@ -186,9 +193,9 @@ Profiling::Bookmark( short mark, int push )
         Profiling::Open( id );
     }
 
-    else
+    else if ( id >= 1 && id <= sLists->Length() )
     {
-        Profiling::Close( sLists->WriteAccess()[id] );
+        Profiling::Close( sLists->WriteAccess()[id - 1] );
     }
 }
 

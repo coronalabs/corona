@@ -446,6 +446,10 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
   luai_userstateresume(L, nargs);
   lua_assert(L->errfunc == 0);
   L->baseCcalls = ++L->nCcalls;
+// STEVE CHANGE
+    for (i = 0; i < L->nBookmarks; i++)
+      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 1);
+// /STEVE CHANGE
   status = luaD_rawrunprotected(L, resume, L->top - nargs);
   if (status != 0) {  /* error? */
     L->status = cast_byte(status);  /* mark thread as `dead' */
@@ -459,10 +463,6 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
   else {
     lua_assert(L->nCcalls == L->baseCcalls);
     status = L->status;
-// STEVE CHANGE
-    for (i = 0; i < L->nBookmarks; i++)
-      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 1);
-// /STEVE CHANGE
   }
   --L->nCcalls;
   lua_unlock(L);

@@ -527,7 +527,7 @@ Display::Restart( int newWidth, int newHeight )
 void
 Display::Update()
 {
-    PROFILING_BEGIN( GetAllocator(), up, "update" );//Profiling::EntryRAII up( GetAllocator(), "update" );
+    PROFILING_BEGIN( GetAllocator(), up, "update" );//Profiling::EntryRAII up( GetAllocator(), "update" ); <- STEVE CHANGE
 
     up.Add( "Display::Update Begin" );
     
@@ -566,7 +566,7 @@ Display::Update()
 void
 Display::Render()
 {
-    PROFILING_BEGIN( GetAllocator(), rp, "render" );//Profiling::EntryRAII rp( GetAllocator(), "render" );
+    PROFILING_BEGIN( GetAllocator(), rp, "render" );//Profiling::EntryRAII rp( GetAllocator(), "render" ); <- STEVE CHANGE
 
     rp.Add( "Display::Render Begin" );
 

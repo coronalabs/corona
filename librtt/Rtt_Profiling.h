@@ -33,6 +33,8 @@ class Profiling {
 	public:
 		void Commit();
 		void Push();
+		const char* GetName() const { return fName; } // <- STEVE CHANGE
+		Profiling* GetBelow() const { return fBelow; } // <- STEVE CHANGE
 		void AddEntry( const char* name, bool isListName = false );
 		int VisitEntries( lua_State* L ) const;
 // STEVE CHANGE
@@ -46,7 +48,10 @@ class Profiling {
 		static void Close( void* profiling );
 		static void ResetSums();
 		static int VisitSums( lua_State* L );
-
+// STEVE CHANGE
+	public:
+		static Profiling* GetFirst();
+// /STEVE CHANGE
 	public:
 		static bool Find( const Profiling* profiling );
 		static void Init( struct lua_State* L, Rtt_Allocator* allocator ); // <- STEVE CHANGE

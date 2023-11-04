@@ -155,6 +155,25 @@ LUA_API void lua_setlevelid (lua_State *L, int id) {
   } 
   lua_unlock(L);
 }
+
+LUA_API void lua_getlevelcounts (lua_State *L, int *ci, int *nbookmarks) {
+  if (lua_isthread(L, 1))
+    L = lua_tothread(L, 1);
+  *ci = cast_int(L->ci - L->base_ci);
+  *nbookmarks = L->nBookmarks;
+}
+
+LUA_API int lua_getlevelid (lua_State *L, int index, int *ci) {
+  if (lua_isthread(L, 1))
+    L = lua_tothread(L, 1);
+  if (index >= 0 && index < L->nBookmarks) {
+    if (ci)
+        *ci = L->bookmarks[index] >> 16;
+    return L->bookmarks[index] & 0xFFFF;
+  }
+  else
+      return -1;
+}
 // /STEVE CHANGE
 
 
