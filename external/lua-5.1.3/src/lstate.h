@@ -86,9 +86,7 @@ typedef struct global_State {
   int gcpause;  /* size of pause between successive GCs */
   int gcstepmul;  /* GC `granularity' */
   lua_CFunction panic;  /* to be called in unprotected errors */
-// STEVE CHANGE
-  lua_BookmarkFunction bookmark;
-// /STEVE CHANGE
+  lua_BookmarkFunction bookmark; /* Custom for Solar2D: called before coroutine resumes and after yields or errors of same, or on pcall error cleanup */
   TValue l_registry;
   struct lua_State *mainthread;
   UpVal uvhead;  /* head of double-linked list of all open upvalues */
@@ -116,11 +114,11 @@ struct lua_State {
   int size_ci;  /* size of array `base_ci' */
   unsigned short nCcalls;  /* number of nested C calls */
   unsigned short baseCcalls;  /* nested C calls when resuming coroutine */
-// STEVE CHANGE
-  int32_t *bookmarks; /* TODO */
-  int size_bookmarks; /* TODO */
-  unsigned short nBookmarks; /* TODO */
-// /STEVE CHANGE
+// Custom for Solar2D:
+  int32_t *bookmarks; /* array of call stack bookmarks */
+  int size_bookmarks; /* size of array `bookmarks' */
+  unsigned short nBookmarks; /* number of active bookmarks */
+// /Custom
   lu_byte hookmask;
   lu_byte allowhook;
   int basehookcount;

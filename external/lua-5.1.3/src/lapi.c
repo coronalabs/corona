@@ -127,7 +127,6 @@ LUA_API void lua_setlevel (lua_State *from, lua_State *to) {
 }
 
 
-// STEVE CHANGE
 LUA_API void lua_setbookmarkf (lua_State *L, lua_BookmarkFunction bookmarkf) {
   lua_lock(L);
   G(L)->bookmark = bookmarkf;
@@ -174,7 +173,6 @@ LUA_API int lua_getlevelid (lua_State *L, int index, int *ci) {
   else
       return -1;
 }
-// /STEVE CHANGE
 
 
 LUA_API lua_CFunction lua_atpanic (lua_State *L, lua_CFunction panicf) {

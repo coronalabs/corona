@@ -60,9 +60,8 @@ typedef struct lua_State lua_State;
 typedef int (*lua_CFunction) (lua_State *L);
 
 
-// STEVE CHANGE
-typedef void (*lua_BookmarkFunction) (short mark, int push);
-// /STEVE CHANGE
+typedef void (*lua_BookmarkFunction) (short mark, int push); // Custom for Solar2D
+
 
 /*
 ** functions that read/write blocks when loading/dumping Lua chunks
@@ -310,13 +309,13 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 LUA_API void lua_setlevel	(lua_State *from, lua_State *to);
 
 
-// STEVE CHANGE
+// Custom for Solar2D:
 LUA_API void lua_setbookmarkf (lua_State *L, lua_BookmarkFunction bookmarkf);
 
 LUA_API void lua_setlevelid (lua_State *L, int id);
 LUA_API void lua_getlevelcounts (lua_State *L, int *ci, int *nbookmarks);
 LUA_API int lua_getlevelid (lua_State *L, int index, int *ci);
-// /STEVE CHANGE
+// /Custom
 
 
 /*

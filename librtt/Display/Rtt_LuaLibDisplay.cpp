@@ -169,7 +169,7 @@ class DisplayLibrary
 		static int getStatistics( lua_State *L );
 		static int getSums( lua_State *L );
 		static int getTimings( lua_State *L );
-		// STEVE CHANGE
+
 		static int _initProfiling( lua_State *L );
 		static int _allocateProfile( lua_State *L );
 	#ifdef Rtt_DEBUG
@@ -178,7 +178,6 @@ class DisplayLibrary
 		static int _getfirst( lua_State *L );
 		static int _getnameandbelow( lua_State *L );
 	#endif
-		// /STEVE CHANGE
 		static int _beginProfile( lua_State *L );
 		static int _addProfileEntry( lua_State *L );
 		static int _endProfile( lua_State *L );
@@ -250,7 +249,7 @@ DisplayLibrary::Open( lua_State *L )
 		{ "getStatistics", getStatistics },
 		{ "getSums", getSums },
 		{ "getTimings", getTimings },
-		// STEVE CHANGE
+
 		{ "_initProfiling", _initProfiling },
 		{ "_allocateProfile", _allocateProfile },
 	#ifdef Rtt_DEBUG
@@ -259,7 +258,6 @@ DisplayLibrary::Open( lua_State *L )
 		{ "_getfirst", _getfirst },
 		{ "_getnameandbelow", _getnameandbelow },
 	#endif
-		// /STEVE CHANGE
 		{ "_beginProfile", _beginProfile },
 		{ "_addProfileEntry", _addProfileEntry },
 		{ "_endProfile", _endProfile },
@@ -2721,7 +2719,6 @@ DisplayLibrary::getTimings( lua_State *L )
 	return 1;
 }
 
-// STEVE CHANGE
 int
 DisplayLibrary::_initProfiling( lua_State *L )
 {
@@ -2834,28 +2831,11 @@ int DisplayLibrary::_getnameandbelow( lua_State *L )
 }
 
 #endif
-// /STEVE CHANGE
 
 int
 DisplayLibrary::_beginProfile( lua_State *L )
 {
 	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
-	// STEVE CHANGE
-	/*if ( lua_isstring( L, 1 ) && lua_isstring( L, 2 ) )
-	{
-		char buf[128];
-
-		snprintf( buf, sizeof( buf ) - 1, "%s:%s", lua_tostring( L, 2 ), lua_tostring( L, 1 ) );
-
-		Profiling* profiling = Profiling::Open( lib->GetDisplay().GetAllocator(), buf );
-
-		if ( profiling )
-		{
-			lua_pushlightuserdata( L, profiling );
-
-			return 1;
-		}
-	}*/
 	if ( lua_isnumber( L, 1 ) )
 	{
 		int id = lua_tointeger( L, 1 );
@@ -2869,7 +2849,7 @@ DisplayLibrary::_beginProfile( lua_State *L )
 			return 1;
 		}
 	}
-	// /STEVE CHANGE
+
 	lua_pushnil( L );
 
 	return 1;
@@ -2916,7 +2896,7 @@ DisplayLibrary::_endProfile( lua_State *L )
 	{
 		Profiling::Close( lua_touserdata( L, 1 ) );
 
-		lua_setlevelid( L, 0 ); // <- STEVE CHANGE
+		lua_setlevelid( L, 0 );
 	}
 
 	return 0;

@@ -25,7 +25,7 @@ namespace Rtt
 
 class Profiling {
 	public:
-		enum { None = -1 }; // <- STEVE CHANGE
+		enum { None = -1 };
 
 		Profiling( Rtt_Allocator* allocator, const char* name );
 		~Profiling();
@@ -33,39 +33,35 @@ class Profiling {
 	public:
 		void Commit();
 		void Push();
-		const char* GetName() const { return fName; } // <- STEVE CHANGE
-		Profiling* GetBelow() const { return fBelow; } // <- STEVE CHANGE
+		const char* GetName() const { return fName; }
+		Profiling* GetBelow() const { return fBelow; }
 		void AddEntry( const char* name, bool isListName = false );
 		int VisitEntries( lua_State* L ) const;
-// STEVE CHANGE
+
 	private:
 		static void Bookmark( short mark, int push );
 
 	public:
-// /STEVE CHANGE
-		static Profiling* Open( int id/*Rtt_Allocator* allocator, const char* name*/ ); // <- STEVE CHANGE
+		static Profiling* Open( int id );
 		static void AddEntry( void* profiling, const char* name );
 		static void Close( void* profiling );
 		static void ResetSums();
 		static int VisitSums( lua_State* L );
-// STEVE CHANGE
+
 	public:
 		static Profiling* GetFirst();
-// /STEVE CHANGE
+
 	public:
 		static bool Find( const Profiling* profiling );
-		static void Init( struct lua_State* L, Rtt_Allocator* allocator ); // <- STEVE CHANGE
+		static void Init( struct lua_State* L, Rtt_Allocator* allocator );
 		static int DestroyAll( struct lua_State* L );
-		static int Create( Rtt_Allocator* allocator, const char* name ); // <- STEVE CHANGE
-		//static Profiling* GetOrCreate( Rtt_Allocator* allocator, const char* name ); // <- STEVE CHANGE
+		static int Create( Rtt_Allocator* allocator, const char* name );
 		static Profiling* Get( const char* name );
 
 	public:
-		// STEVE CHANGE
 		#ifdef Rtt_AUTHORING_SIMULATOR
 			static int GetSimulatorRun() { return sSimulatorRun; }
 		#endif
-		// /STEVE CHANGE
 
 	private:
 		struct Entry {
@@ -83,7 +79,7 @@ class Profiling {
 	public:
 		class EntryRAII {
 		public:
-			EntryRAII( Rtt_Allocator* allocator, int& id, const char* name ); // <- STEVE CHANGE
+			EntryRAII( Rtt_Allocator* allocator, int& id, const char* name );
 			~EntryRAII();
 
 		public:
@@ -131,18 +127,17 @@ class Profiling {
 		};
 
 	private:
-		static PtrArray<Profiling>* sLists;//* fFirstList; <- STEVE CHANGE
-		static Profiling* /*f*/sTopList; // <- STEVE CHANGE
-		static Sum* /*f*/sFirstSum; // STEVE CHANGE
-// STEVE CHANGE
+		static PtrArray<Profiling>* sLists;
+		static Profiling* sTopList;
+		static Sum* sFirstSum;
+
 	#ifdef Rtt_AUTHORING_SIMULATOR
 		static int sSimulatorRun;
 	#endif
-// /STEVE CHANGE
+
 		Array<Entry>* fArray1;
 		Array<Entry>* fArray2;
 		Entry::ShortName fName;
-	//	Profiling* fNext; <- STEVE CHANGE
 		Profiling* fBelow;
 };
 
@@ -156,7 +151,6 @@ class Profiling {
 	#define ENABLE_SUMMED_TIMING( enable )
 #endif
 
-// STEVE CHANGE
 #ifdef Rtt_AUTHORING_SIMULATOR
 	// Invalidate static indices on each simulator launch:
 	#define PROFILING_BEGIN( allocator, var, name ) static int s_id_##var, s_id_##var##_run = Profiling::None;	\
@@ -170,7 +164,6 @@ class Profiling {
 	// Otherwise, compute each index once up front:
 	#define PROFILING_BEGIN( allocator, var, name ) static int s_id_##var = Profiling::None; Profiling::EntryRAII var( allocator, s_id_##var, name )
 #endif
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
