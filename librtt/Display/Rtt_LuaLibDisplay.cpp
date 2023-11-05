@@ -327,8 +327,6 @@ DisplayLibrary::Finalizer( lua_State *L )
 	Self *library = (Self *)CoronaLuaToUserdata( L, 1 );
 
 	delete library;
-
-	Profiling::DestroyAll( L );
 	
 	return 0;
 }

@@ -119,16 +119,6 @@ int Profiling::VisitEntries( lua_State* L ) const
     return 1;
 }
 
-// TODO REMOVE!
-int Profiling::DestroyAll( struct lua_State* L )
-{
-    int i = 0;
-
-    // n.b. leave sums list intact
-
-    return 0;
-}
-
 void Profiling::ResetSums()
 {
     for ( Sum* sum = sFirstSum; sum; sum = sum->fNext )

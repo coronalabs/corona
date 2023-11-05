@@ -44,9 +44,6 @@ class Profiling {
 		static void ResetSums();
 		static int VisitSums( lua_State* L );
 
-	public:
-		static int DestroyAll( lua_State* L ); // TODO REMOVE!
-
 	private:
 		struct Entry {
 			typedef char ShortName[64];
