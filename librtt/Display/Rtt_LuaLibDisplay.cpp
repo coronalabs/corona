@@ -2704,9 +2704,10 @@ DisplayLibrary::getSums ( lua_State* L )
 int
 DisplayLibrary::getTimings( lua_State *L )
 {
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
 	if ( lua_isstring( L, 2 ) )
 	{
-		Profiling* profiling = Profiling::Get( lua_tostring( L, 2 ) );
+		Profiling* profiling = lib->GetDisplay().GetProfilingState()->Get( lua_tostring( L, 2 ) );
 
 		if ( NULL != profiling )
 		{
@@ -2723,7 +2724,7 @@ int
 DisplayLibrary::_initProfiling( lua_State *L )
 {
 	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
-	Profiling::Init( L, lib->GetDisplay().GetAllocator() );
+	lua_setbookmarkf( L, ProfilingState::Bookmark, lib->GetDisplay().GetProfilingState() );
 
 	return 0;
 }
@@ -2738,7 +2739,7 @@ DisplayLibrary::_allocateProfile( lua_State *L )
 
 		snprintf( buf, sizeof( buf ) - 1, "%s:%s", lua_tostring( L, 2 ), lua_tostring( L, 1 ) );
 
-		int profileID = Profiling::Create( lib->GetDisplay().GetAllocator(), buf );
+		int profileID = lib->GetDisplay().GetProfilingState()->Create( buf );
 
 		lua_pushinteger( L, profileID + 1 );
 	}
@@ -2795,7 +2796,8 @@ int DisplayLibrary::_getlevelinfo( lua_State *L )
 int
 DisplayLibrary::_getfirst( lua_State *L )
 {
-	Profiling *first = Profiling::GetFirst();
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	Profiling *first = lib->GetDisplay().GetProfilingState()->GetTopOfList();
 
 	if ( first )
 	{
@@ -2839,7 +2841,7 @@ DisplayLibrary::_beginProfile( lua_State *L )
 	if ( lua_isnumber( L, 1 ) )
 	{
 		int id = lua_tointeger( L, 1 );
-		Profiling* profiling = Profiling::Open( id );
+		Profiling* profiling = lib->GetDisplay().GetProfilingState()->Open( id );
 
 		if ( profiling )
 		{
@@ -2858,6 +2860,7 @@ DisplayLibrary::_beginProfile( lua_State *L )
 int
 DisplayLibrary::_addProfileEntry( lua_State *L )
 {
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
 	if ( lua_islightuserdata( L, 1 ) )
 	{
 		const char* str;
@@ -2883,7 +2886,7 @@ DisplayLibrary::_addProfileEntry( lua_State *L )
 			str = buf;
 		}
 
-		Profiling::AddEntry( lua_touserdata( L, 1 ), str );
+		lib->GetDisplay().GetProfilingState()->AddEntry( lua_touserdata( L, 1 ), str );
 	}
 
 	return 0;
@@ -2892,9 +2895,10 @@ DisplayLibrary::_addProfileEntry( lua_State *L )
 int
 DisplayLibrary::_endProfile( lua_State *L )
 {
+	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
 	if ( lua_islightuserdata( L, 1 ) )
 	{
-		Profiling::Close( lua_touserdata( L, 1 ) );
+		lib->GetDisplay().GetProfilingState()->Close( lua_touserdata( L, 1 ) );
 
 		lua_setlevelid( L, 0 );
 	}
