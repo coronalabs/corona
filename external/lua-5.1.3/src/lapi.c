@@ -127,16 +127,17 @@ LUA_API void lua_setlevel (lua_State *from, lua_State *to) {
 }
 
 
-LUA_API void lua_setbookmarkf (lua_State *L, lua_BookmarkFunction bookmarkf) {
+LUA_API void lua_setbookmarkf (lua_State *L, lua_BookmarkFunction bookmarkf, void *ud) {
   lua_lock(L);
   G(L)->bookmark = bookmarkf;
+  G(L)->bookmarkud = ud;
   lua_unlock(L);
 }
 
 LUA_API void lua_setlevelid (lua_State *L, int id) {
   lua_lock(L);
   api_check(L, G(L)->bookmark);
-  api_check(L, id >= 0 && id < LUA_MAXCCALLS);
+  api_check(L, id >= 0 && id < 0xFFFF);
   if (id > 0) {
     int inuse;
     if (L->nBookmarks == L->size_bookmarks) {

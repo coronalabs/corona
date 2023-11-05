@@ -448,7 +448,7 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
   L->baseCcalls = ++L->nCcalls;
 // Custom for Solar2D:
     for (i = 0; i < L->nBookmarks; i++)
-      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 1);
+      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 1, G(L)->bookmarkud);
 // /Custom
   status = luaD_rawrunprotected(L, resume, L->top - nargs);
   if (status != 0) {  /* error? */
@@ -457,7 +457,7 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
     L->ci->top = L->top;
 // Custom for Solar2D:
     for (i = 0; i < L->nBookmarks; i++)
-      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0);
+      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0, G(L)->bookmarkud);
 // /Custom
   }
   else {
@@ -478,7 +478,7 @@ LUA_API int lua_yield (lua_State *L, int nresults) {
     luaG_runerror(L, "attempt to yield across metamethod/C-call boundary");
 // Custom for Solar2D:
   for (i = L->nBookmarks - 1; i >= 0; i--)
-    G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0);
+    G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0, G(L)->bookmarkud);
 // /Custom
   L->base = L->top - nresults;  /* protect stack slots below */
   L->status = LUA_YIELD;
@@ -513,7 +513,7 @@ int luaD_pcall (lua_State *L, Pfunc func, void *u,
       if ((L->bookmarks[i] >> 16) <= pos)
         break;
 	  else {
-        G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0);
+        G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0, G(L)->bookmarkud);
         L->nBookmarks--;
 	  }
     }

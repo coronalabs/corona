@@ -172,7 +172,10 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   setnilvalue(registry(L));
   luaZ_initbuffer(L, &g->buff);
   g->panic = NULL;
-  g->bookmark = NULL; // custom for Solar2D
+// Custom for Solar2D:
+  g->bookmark = NULL;
+  g->bookmarkud = NULL;
+// /Custom
   g->gcstate = GCSpause;
   g->rootgc = obj2gco(L);
   g->sweepstrgc = 0;

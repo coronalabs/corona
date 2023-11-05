@@ -86,7 +86,10 @@ typedef struct global_State {
   int gcpause;  /* size of pause between successive GCs */
   int gcstepmul;  /* GC `granularity' */
   lua_CFunction panic;  /* to be called in unprotected errors */
-  lua_BookmarkFunction bookmark; /* Custom for Solar2D: called before coroutine resumes and after yields or errors of same, or on pcall error cleanup */
+// Custom for Solar2D:
+  lua_BookmarkFunction bookmark; /* called before coroutine resumes and after yields or errors of same, or on pcall error cleanup */
+  void *bookmarkud; /* auxiliary data to `bookmark' */
+// /Custom
   TValue l_registry;
   struct lua_State *mainthread;
   UpVal uvhead;  /* head of double-linked list of all open upvalues */
