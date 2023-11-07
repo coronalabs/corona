@@ -554,6 +554,8 @@ display.remove = function( object )
 		local method = object.removeSelf
 		if "function" == type( method ) then
 			method( object ) -- same as object:removeSelf()
+			-- convenience property indicating that the object has been removed or will be removed by next frame
+			object._isRemoved = true
 		end
 	end
 end
