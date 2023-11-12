@@ -277,19 +277,27 @@ public class Controller {
 	}
 	
 	public synchronized void stop() {
-		stopTimer();
-		mySensorManager.pause();
-		if (myRuntimeState == RuntimeState.Starting || myRuntimeState == RuntimeState.Stopped) {
-			myRuntimeState = RuntimeState.Stopped;
-		} else {
- 			myRuntimeState = RuntimeState.Stopping;
- 		}
+		Handler handler = getHandler();
+		if(handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					stopTimer();
+					mySensorManager.pause();
+					if (myRuntimeState == RuntimeState.Starting || myRuntimeState == RuntimeState.Stopped) {
+						myRuntimeState = RuntimeState.Stopped;
+					} else {
+						myRuntimeState = RuntimeState.Stopping;
+					}
 
-		// If we don't do this then there won't be one last onDrawFrame call which means the runtime won't be stopped!
-		requestEventRender();
+					// If we don't do this then there won't be one last onDrawFrame call which means the runtime won't be stopped!
+					requestEventRender();
 
-		myMediaManager.pauseAll();
-		internalSetIdleTimer(true);
+					myMediaManager.pauseAll();
+					internalSetIdleTimer(true);
+				}
+			});
+		}
 	}
 	
 	public synchronized void destroy() {
