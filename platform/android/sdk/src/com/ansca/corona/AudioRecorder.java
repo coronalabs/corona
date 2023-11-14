@@ -205,7 +205,7 @@ public class AudioRecorder {
 	}
 
 	/**
-	 * Checks if this applicaction has permission to use the microphone.
+	 * Checks if this application has permission to use the microphone.
 	 * @return Returns true if this application has permission. Returns false if not.
 	 */
 	private static boolean hasPermission() {

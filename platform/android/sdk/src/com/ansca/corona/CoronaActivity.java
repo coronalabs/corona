@@ -1141,7 +1141,7 @@ public class CoronaActivity extends Activity {
 				|| mode == CoronaStatusBarSettings.LIGHT_TRANSPARENT
 				|| mode == CoronaStatusBarSettings.DARK_TRANSPARENT) {
 
-			// Unhides it if its hidden
+			// Unhidden it if its hidden
 			if (myStatusBarMode == CoronaStatusBarSettings.HIDDEN) {
 				getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 				getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
