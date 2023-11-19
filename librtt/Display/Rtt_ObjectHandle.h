@@ -66,19 +66,22 @@ GetParentType()
 }
 
 template< typename T >
+ObjectHandleDummy::TypeNode& GetTypeNode();
+
+template< typename T >
 struct TypedDummy : public ObjectHandleDummy {
     static TypeNode*
     GetType()
     {
-        if ( !sNode.IsInitialized() )
+        TypeNode& node = GetTypeNode< T >();
+
+        if ( !node.IsInitialized() )
         {
-           sNode.Init( GetParentType< T >() );
+           node.Init( GetParentType< T >() );
         }
 
-        return &sNode;
+        return &node;
     }
-
-    static TypeNode sNode;
 };
 
 class ObjectHandleScope {
@@ -178,8 +181,11 @@ GetDisplayObjectType();
 
 #define OBJECT_HANDLE_GET_TYPE( TYPE ) Rtt::TypedDummy< Rtt::TYPE >::GetType()
 
-#define AUX_OBJECT_HANDLE_DEFINE_TYPE( TYPE, DUMMY_TYPE )   struct Corona##TYPE : public Rtt::TypedDummy< DUMMY_TYPE > {}; \
-                                                            Rtt::ObjectHandleDummy::TypeNode Corona##TYPE::sNode( #TYPE )
+#define AUX_OBJECT_HANDLE_DEFINE_TYPE( TYPE, DUMMY_TYPE )   struct Corona##TYPE : public Rtt::TypedDummy< DUMMY_TYPE > {};                  \
+                                                            template<> Rtt::ObjectHandleDummy::TypeNode& Rtt::GetTypeNode< DUMMY_TYPE >() { \
+                                                                static Rtt::ObjectHandleDummy::TypeNode sNode( #TYPE );                     \
+                                                                return sNode;                                                               \
+                                                            }                                  
 
 #define OBJECT_HANDLE_DEFINE_TYPE( TYPE ) AUX_OBJECT_HANDLE_DEFINE_TYPE( TYPE, Rtt::TYPE )
 

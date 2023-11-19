@@ -1661,15 +1661,22 @@ LuaLineObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& object
         {
             const LineObject& line = static_cast< const LineObject& >( object );
             const OpenPath& path = line.GetPath();
-            Geometry::ExtensionBlock* block = path.GetStrokeGeometry()->EnsureExtension();
+            Geometry::ExtensionBlock* block = path.GetStrokeGeometry()->GetExtensionBlock();
                     
-            if (!block->fProxy)
+            if ( block )
             {
-                block->fProxy = LuaUserdataProxy::New( L, const_cast< LineObject* >( &line ) );
-                block->fProxy->SetAdapter( &ExtensionAdapterStrokeConstant() );
-            }
+                if (!block->fProxy)
+                {
+                    block->fProxy = LuaUserdataProxy::New( L, const_cast< LineObject* >( &line ) );
+                    block->fProxy->SetAdapter( &ExtensionAdapterStrokeConstant() );
+                }
             
-            block->fProxy->Push( L );
+                block->fProxy->Push( L );
+            }
+            else
+            {
+                lua_pushnil( L );
+            }
         }
         break;
     default:
@@ -2156,15 +2163,22 @@ LuaShapeObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& objec
             bool isFill = 12 == index;
             const ShapePath& path = static_cast< const ShapePath& >( o.GetPath() );
             Geometry* geometry = isFill ? path.GetFillGeometry() : path.GetStrokeGeometry();
-            Geometry::ExtensionBlock* block = geometry->EnsureExtension();
-                    
-            if (!block->fProxy)
+            Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
+                   
+            if ( block )
             {
-                block->fProxy = LuaUserdataProxy::New( L, const_cast< ShapeObject* >( &o ) );
-                block->fProxy->SetAdapter( isFill ? &ExtensionAdapterFillConstant() : &ExtensionAdapterStrokeConstant() );
-            }
+                if (!block->fProxy)
+                {
+                    block->fProxy = LuaUserdataProxy::New( L, const_cast< ShapeObject* >( &o ) );
+                    block->fProxy->SetAdapter( isFill ? &ExtensionAdapterFillConstant() : &ExtensionAdapterStrokeConstant() );
+                }
             
-            block->fProxy->Push( L );
+                block->fProxy->Push( L );
+            }
+            else
+            {
+                lua_pushnil( L );
+            }
         }
         break;
     default:
