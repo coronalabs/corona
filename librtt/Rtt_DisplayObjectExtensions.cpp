@@ -292,9 +292,11 @@ DisplayObjectExtensions::getWorldVector(lua_State* L)
 
 		lua_pushnumber(L, worldVector.x);
 		lua_pushnumber(L, worldVector.y);
+		
+		return 2;
 	}
 
-	return 2;
+	return 0;
 }
 
 int
@@ -315,9 +317,11 @@ DisplayObjectExtensions::getInertia(lua_State* L)
 		float32 inertia = fBody->GetInertia() * scale;
 
 		lua_pushnumber(L, inertia);
+		
+		return 1;
 	}
 
-	return 1;
+	return 0;
 }
 
 int
@@ -344,9 +348,11 @@ DisplayObjectExtensions::getLinearVelocityFromWorldPoint(lua_State* L)
 
 		lua_pushnumber(L, velocity.x);
 		lua_pushnumber(L, velocity.y);
+		
+		return 2;
 	}
 
-	return 2;
+	return 0;
 }
 
 int
@@ -373,9 +379,11 @@ DisplayObjectExtensions::getLinearVelocityFromLocalPoint(lua_State* L)
 
 		lua_pushnumber(L, velocity.x);
 		lua_pushnumber(L, velocity.y);
+		
+		return 2;
 	}
 
-	return 2;
+	return 0;
 }
 
 #endif // Rtt_PHYSICS
