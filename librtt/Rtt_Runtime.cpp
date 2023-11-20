@@ -1963,7 +1963,7 @@ Runtime::operator()()
 	const bool isSuspended = IsSuspended();
 	if( wasSuspended != isSuspended && isSuspended )
 	{
-		// This condition is writtein inverse for better undrerstanding
+		// This condition is written inverse for better understanding
 		// Sometimes (Splash Screen is shown) scheduled tasks can suspend Runtime
 		// In that case (suspension state is changed and it is suspended), skip Display update
 	}
