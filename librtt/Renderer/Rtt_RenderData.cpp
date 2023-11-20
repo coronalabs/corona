@@ -13,7 +13,7 @@
 #include "Renderer/Rtt_Geometry_Renderer.h"
 
 #include "Core/Rtt_Assert.h"
-#include "CoronaGraphics.h"
+#include "Corona/CoronaGraphics.h"
 
 // ----------------------------------------------------------------------------
 

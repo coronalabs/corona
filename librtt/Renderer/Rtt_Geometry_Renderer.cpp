@@ -18,7 +18,7 @@
 #include "Display/Rtt_DisplayTypes.h"
 #include "Renderer/Rtt_RenderTypes.h"
 
-#include "CoronaGraphics.h"
+#include "Corona/CoronaGraphics.h"
 
 #include <cstring>
 #include <stddef.h>

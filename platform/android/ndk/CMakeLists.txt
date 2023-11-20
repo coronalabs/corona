@@ -379,6 +379,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Display/Rtt_LineObject.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_LuaLibDisplay.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_LuaLibGraphics.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ObjectHandle.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_OpenPath.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_Paint.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_PaintAdapter.cpp

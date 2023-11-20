@@ -65,8 +65,10 @@ struct GeometryWriter {
     };
     typedef U16 MaskBits;
 
-    Rtt_STATIC_ASSERT( kExtra == kMain + 1 );
-    Rtt_STATIC_ASSERT( kIsUpdate == kAll + 1 );
+	// n.b. if we do these two conditions as a couple asserts in a row, Clang
+	// seems to treat the two conditions as being on the same line and breaks
+	// the macro
+    Rtt_STATIC_ASSERT( ( kExtra == kMain + 1 ) && ( kIsUpdate == kAll + 1 ) );
 
     static const GeometryWriter& CopyGeometryWriter();
 
