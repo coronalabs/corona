@@ -276,33 +276,33 @@ public class Controller {
 		internalSetIdleTimer(myIdleEnabled);
 	}
 	
-	public void stop() {
-		synchronized (this) {
-			stopTimer();
-			mySensorManager.pause();
-			if (myRuntimeState == RuntimeState.Starting || myRuntimeState == RuntimeState.Stopped) {
-				myRuntimeState = RuntimeState.Stopped;
-			} else {
-				myRuntimeState = RuntimeState.Stopping;
-			}
+	public synchronized void stop() {
 
-			myGLView.queueEvent(new Runnable() {
-				@Override
-				public void run() {
-					if (myRuntimeState != RuntimeState.Stopping) {
-						// pause event already picked up by updateRuntimeState
-						return;
-					}
-
-					// If we don't do this then there won't be one last onDrawFrame call which means the runtime won't be stopped!
-					// it's ok to call ApplicationListener's events
-					// from onDrawFrame because it's executing in GL thread
-					requestEventRender();
-				}
-			});
-			myMediaManager.pauseAll();
-			internalSetIdleTimer(true);
+		stopTimer();
+		mySensorManager.pause();
+		if (myRuntimeState == RuntimeState.Starting || myRuntimeState == RuntimeState.Stopped) {
+			myRuntimeState = RuntimeState.Stopped;
+		} else {
+			myRuntimeState = RuntimeState.Stopping;
 		}
+
+		myGLView.queueEvent(new Runnable() {
+			@Override
+			public void run() {
+				if (myRuntimeState != RuntimeState.Stopping) {
+					// pause event already picked up by updateRuntimeState
+					return;
+				}
+
+				// If we don't do this then there won't be one last onDrawFrame call which means the runtime won't be stopped!
+				// it's ok to call ApplicationListener's events
+				// from onDrawFrame because it's executing in GL thread
+				requestEventRender();
+			}
+		});
+		myMediaManager.pauseAll();
+		internalSetIdleTimer(true);
+
 		while (myRuntimeState == RuntimeState.Stopping) {
 			try {
 				// Android ANR time is 5 seconds, so wait up to 4 seconds before assuming
