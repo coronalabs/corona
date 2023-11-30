@@ -173,7 +173,7 @@ public class CoronaView extends FrameLayout {
 	}
 
 	/**
-	 * Initalizes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used. Uses the base "assets" directory as the base
+	 * Initializes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used. Uses the base "assets" directory as the base
 	 * Corona project directory.
 	 * <p>
 	 * <b>This must be the first function you call!</b>
@@ -183,10 +183,10 @@ public class CoronaView extends FrameLayout {
 	}
 
 	/**
-	 * Initalizes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used.
+	 * Initializes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used.
 	 * <p>
 	 * <b>This must be the first function you call!</b>
-	 * @param baseDir The directory of the Corona project relative to the "assests" directory.
+	 * @param baseDir The directory of the Corona project relative to the "assets" directory.
 	 */
 	public void init(String baseDir) {
 		if (Looper.myLooper() == null) {

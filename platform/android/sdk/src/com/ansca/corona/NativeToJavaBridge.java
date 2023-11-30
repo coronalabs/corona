@@ -146,7 +146,7 @@ public class NativeToJavaBridge {
 		StringBuilder err = new StringBuilder();
 		if (runtime != null) {
 			// Fetch the runtime's Lua state.
-			// TODO: We need to account for corountines.
+			// TODO: We need to account for coroutines.
 			LuaState L = runtime.getLuaState();
 			if ( null == L ) {
 				L = new com.naef.jnlua.LuaState(luaStateMemoryAddress);
