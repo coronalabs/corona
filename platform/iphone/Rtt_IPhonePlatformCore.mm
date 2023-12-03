@@ -146,7 +146,7 @@ IPhonePlatformCore::SaveBitmap( PlatformBitmap* bitmap, NSString* filePath, floa
 
 
 
-	CGBitmapInfo srcBitmapInfo = CGBitmapInfo(kCGBitmapByteOrderDefault);
+	CGBitmapInfo srcBitmapInfo = CGBitmapInfo(kCGImageAlphaNoneSkipLast);
 	CGBitmapInfo dstBitmapInfo = CGBitmapInfo(kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big);
     bool enablePngAlphaSave = false;
     NSString *lowercase = [filePath lowercaseString];
