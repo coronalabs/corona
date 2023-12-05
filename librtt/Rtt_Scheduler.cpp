@@ -11,7 +11,8 @@
 
 #include "Rtt_Scheduler.h"
 #include "Rtt_Runtime.h"
-#include <mutex> // <- STEVE CHANGE
+
+#include <mutex>
 
 // ----------------------------------------------------------------------------
 
@@ -26,16 +27,14 @@ Task::~Task()
 
 template class Rtt::Array<Rtt::Task *>;
 	
-// STEVE CHANGE
 static std::mutex sListMutex;
 static std::mutex sTaskMutex;
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
 Scheduler::Scheduler( Runtime& owner )
 :	fOwner( owner ),
-	fFirstPending( NULL ), // <- STEVE CHANGE
+	fFirstPending( NULL ),
 	fProcessing( false ),
 	fTasks( owner.GetAllocator() )
 {
@@ -43,7 +42,7 @@ Scheduler::Scheduler( Runtime& owner )
 
 Scheduler::~Scheduler()
 {
-	SyncPendingList(); // <- STEVE CHANGE
+	SyncPendingList();
 }
 
 #if 0
@@ -59,22 +58,20 @@ void
 Scheduler::Append( Task* e )
 {
 	//Rtt_ASSERT( fProcessing == false );		//**tjn removed
-	// STEVE CHANGE
-//	fTasks.Append( e );
+
 	std::lock_guard<std::mutex> lock( sListMutex );
 
 	e->setNext( fFirstPending );
 
 	fFirstPending = e;
-	// /STEVE CHANGE
 }
 
 void
 Scheduler::Delete(Task* e)
 {
-	SyncPendingList(); // <- STEVE CHANGE
+	SyncPendingList();
 
-	std::lock_guard<std::mutex> lock( sTaskMutex ); // <- STEVE CHANGE
+	std::lock_guard<std::mutex> lock( sTaskMutex );
 
 	int i = 0;
 	while (i < fTasks.Length())
@@ -96,9 +93,9 @@ Scheduler::Run()
 {
 	fProcessing = true;
 	
-	SyncPendingList(); // <- STEVE CHANGE
+	SyncPendingList();
 
-	std::lock_guard<std::mutex> lock( sTaskMutex ); // <- STEVE CHANGE
+	std::lock_guard<std::mutex> lock( sTaskMutex );
 
 	int i = 0;
 	while (i < fTasks.Length())
@@ -121,7 +118,6 @@ Scheduler::Run()
 	fProcessing = false;
 }
 
-// STEVE CHANGE
 Task*
 Scheduler::ExtractPendingList()
 {
@@ -149,7 +145,6 @@ Scheduler::SyncPendingList()
 		}
 	}
 }
-// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
