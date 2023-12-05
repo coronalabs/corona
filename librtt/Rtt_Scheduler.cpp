@@ -11,6 +11,7 @@
 
 #include "Rtt_Scheduler.h"
 #include "Rtt_Runtime.h"
+#include <mutex> // <- STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
@@ -25,10 +26,16 @@ Task::~Task()
 
 template class Rtt::Array<Rtt::Task *>;
 	
+// STEVE CHANGE
+static std::mutex sListMutex;
+static std::mutex sTaskMutex;
+// /STEVE CHANGE
+
 // ----------------------------------------------------------------------------
 
 Scheduler::Scheduler( Runtime& owner )
 :	fOwner( owner ),
+	fFirstPending( NULL ), // <- STEVE CHANGE
 	fProcessing( false ),
 	fTasks( owner.GetAllocator() )
 {
@@ -36,6 +43,7 @@ Scheduler::Scheduler( Runtime& owner )
 
 Scheduler::~Scheduler()
 {
+	SyncPendingList(); // <- STEVE CHANGE
 }
 
 #if 0
@@ -51,13 +59,23 @@ void
 Scheduler::Append( Task* e )
 {
 	//Rtt_ASSERT( fProcessing == false );		//**tjn removed
-	
-	fTasks.Append( e );
+	// STEVE CHANGE
+//	fTasks.Append( e );
+	std::lock_guard<std::mutex> lock( sListMutex );
+
+	e->setNext( fFirstPending );
+
+	fFirstPending = e;
+	// /STEVE CHANGE
 }
 
 void
 Scheduler::Delete(Task* e)
 {
+	SyncPendingList(); // <- STEVE CHANGE
+
+	std::lock_guard<std::mutex> lock( sTaskMutex ); // <- STEVE CHANGE
+
 	int i = 0;
 	while (i < fTasks.Length())
 	{
@@ -78,6 +96,10 @@ Scheduler::Run()
 {
 	fProcessing = true;
 	
+	SyncPendingList(); // <- STEVE CHANGE
+
+	std::lock_guard<std::mutex> lock( sTaskMutex ); // <- STEVE CHANGE
+
 	int i = 0;
 	while (i < fTasks.Length())
 	{
@@ -98,6 +120,36 @@ Scheduler::Run()
 
 	fProcessing = false;
 }
+
+// STEVE CHANGE
+Task*
+Scheduler::ExtractPendingList()
+{
+	std::lock_guard<std::mutex> lock( sListMutex );
+
+	Task* first = fFirstPending;
+
+	fFirstPending = NULL;
+
+	return first;
+}
+
+void
+Scheduler::SyncPendingList()
+{
+	Task* first = ExtractPendingList();
+
+	if ( NULL != first )
+	{
+		std::lock_guard<std::mutex> lock( sTaskMutex );
+
+		for ( Task* cur = first; cur; cur = cur->getNext() )
+		{
+			fTasks.Append( cur );
+		}
+	}
+}
+// /STEVE CHANGE
 
 // ----------------------------------------------------------------------------
 
