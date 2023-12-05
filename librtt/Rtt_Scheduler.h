@@ -25,7 +25,7 @@ class Scheduler;
 class Task
 {
 	public:
-		Task() : fKeepAlive(false) {}
+		Task() : fKeepAlive(false), fNext(NULL) {}
 		Task(bool keepAlive) : fKeepAlive(keepAlive) {}
 		virtual ~Task();
 
@@ -35,8 +35,12 @@ class Task
 		bool getKeepAlive() const { return fKeepAlive; }
 		void setKeepAlive(bool val) { fKeepAlive = val; }
 
+		Task* getNext() const { return fNext; }
+		void setNext( Task* next ) { fNext = next; }
+
 	private:
 		bool fKeepAlive;
+		Task* fNext;
 };
 
 class Scheduler
@@ -60,7 +64,12 @@ class Scheduler
 		Owner& GetOwner() { return fOwner; }
 
 	private:
+		Task* ExtractPendingList();
+		void SyncPendingList();
+
+	private:
 		Owner& fOwner;
+		Task* fFirstPending;
 		
 		PtrArray< Task > fTasks;
 		bool fProcessing;
