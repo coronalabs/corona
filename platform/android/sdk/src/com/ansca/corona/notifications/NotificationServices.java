@@ -442,7 +442,14 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					android.app.AlarmManager alarmManager;
 					String serviceName = android.content.Context.ALARM_SERVICE;
 					alarmManager = (android.app.AlarmManager)context.getSystemService(serviceName);
-					if (android.os.Build.VERSION.SDK_INT >= 23) {
+
+					if (android.os.Build.VERSION.SDK_INT >= 33 && !alarmManager.canScheduleExactAlarms()) {
+						alarmManager.set(
+								android.app.AlarmManager.RTC_WAKEUP,
+								scheduledSettings.getEndTime().getTime(),
+								pendingIntent);
+					}
+					else if (android.os.Build.VERSION.SDK_INT >= 23) {
 						NotificationServices.ApiLevel23.alarmManagerSetExactAndAllowWhileIdle(
 								alarmManager,
 								android.app.AlarmManager.RTC_WAKEUP,
