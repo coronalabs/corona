@@ -204,7 +204,8 @@ Display::Display( Runtime& owner )
     fShaderFactory( NULL ),
     fSpritePlayer( Rtt_NEW( owner.Allocator(), SpritePlayer( owner.Allocator() ) ) ),
     fTextureFactory( Rtt_NEW( owner.Allocator(), TextureFactory( * this ) ) ),
-    fScene( Rtt_NEW( & owner.GetAllocator(), Scene( owner.Allocator(), * this ) ) ),
+    fScene( Rtt_NEW( owner.GetAllocator(), Scene( owner.Allocator(), * this ) ) ),
+    fProfilingState( Rtt_NEW( owner.GetAllocator(), ProfilingState( owner.GetAllocator() ) ) ),
     fStream( Rtt_NEW( owner.GetAllocator(), GPUStream( owner.GetAllocator() ) ) ),
     fTarget( owner.Platform().CreateScreenSurface() ),
     fImageSuffix( LUA_REFNIL ),
@@ -234,6 +235,7 @@ Display::~Display()
     Rtt_DELETE( fTarget );
     Rtt_DELETE( fStream );
     Rtt_DELETE( fScene );
+    Rtt_DELETE( fProfilingState );
     Rtt_DELETE( fTextureFactory );
     Rtt_DELETE( fSpritePlayer );
     Rtt_DELETE( fShaderFactory );
@@ -527,7 +529,7 @@ Display::Restart( int newWidth, int newHeight )
 void
 Display::Update()
 {
-    Profiling::EntryRAII up( GetAllocator(), "update" );
+    PROFILING_BEGIN( *GetProfilingState(), up, "update" );
 
     up.Add( "Display::Update Begin" );
     
@@ -566,7 +568,7 @@ Display::Update()
 void
 Display::Render()
 {
-    Profiling::EntryRAII rp( GetAllocator(), "render" );
+    PROFILING_BEGIN( *GetProfilingState(), rp, "render" );
 
     rp.Add( "Display::Render Begin" );
 
