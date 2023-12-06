@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -18,6 +18,20 @@
 				A482FAE6183D7B940005831B /* PBXTargetDependency */,
 			);
 			name = CoronaCards.framework;
+			productName = CoronaCards.framework;
+		};
+		F576ADA32A99C97600B85312 /* CoronaCards-angle.framework */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = F576ADA82A99C97600B85312 /* Build configuration list for PBXAggregateTarget "CoronaCards-angle.framework" */;
+			buildPhases = (
+				F576ADA62A99C97600B85312 /* Build Universal Binary */,
+				F576ADA72A99C97600B85312 /* Copy to /Users/Shared/CoronaLabs/Frameworks */,
+			);
+			dependencies = (
+				F576ADAE2A99CAAF00B85312 /* PBXTargetDependency */,
+				F576ADAC2A99C9E000B85312 /* PBXTargetDependency */,
+			);
+			name = "CoronaCards-angle.framework";
 			productName = CoronaCards.framework;
 		};
 /* End PBXAggregateTarget section */
@@ -274,6 +288,88 @@
 		F564C3771BE430F900C241E6 /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36B1BE430F900C241E6 /* Rtt_AppleInputDeviceManager.mm */; };
 		F564C37E1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36F1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm */; };
 		F564C37F1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36F1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm */; };
+		F576ACF32A99C5A000B85312 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B49E284BEB6400EC8B14 /* Rtt_AppleKeyServices.mm */; };
+		F576ACF42A99C5A000B85312 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */; };
+		F576ACF52A99C5A000B85312 /* CoronaLuaObjC+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A4728FE61AE7F77B00BC088D /* CoronaLuaObjC+NSObject.m */; };
+		F576ACF62A99C5A000B85312 /* CoronaViewPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936B9169DED6500723568 /* CoronaViewPrivate.mm */; };
+		F576ACF72A99C5A000B85312 /* CoronaViewRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B2D5371842DBE1001311C9 /* CoronaViewRuntimeDelegate.mm */; };
+		F576ACF82A99C5A000B85312 /* Rtt_IPhonePlatformBase.mm in Sources */ = {isa = PBXBuildFile; fileRef = A482FAE9183D7F460005831B /* Rtt_IPhonePlatformBase.mm */; };
+		F576ACF92A99C5A000B85312 /* Rtt_IPhoneTextFieldObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E4169DED9200723568 /* Rtt_IPhoneTextFieldObject.mm */; };
+		F576ACFA2A99C5A000B85312 /* Rtt_IPhoneDisplayObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C8169DED9200723568 /* Rtt_IPhoneDisplayObject.mm */; };
+		F576ACFB2A99C5A000B85312 /* Rtt_AppleCrypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3112B073A000042A5E /* Rtt_AppleCrypto.cpp */; };
+		F576ACFC2A99C5A000B85312 /* Rtt_IPhonePlatformCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = A415ECAD1BD861A1003E7114 /* Rtt_IPhonePlatformCore.mm */; };
+		F576ACFD2A99C5A000B85312 /* Rtt_AppleAudioPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2712B073A000042A5E /* Rtt_AppleAudioPlayer.cpp */; };
+		F576ACFE2A99C5A000B85312 /* Rtt_AppleAudioRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2912B073A000042A5E /* Rtt_AppleAudioRecorder.mm */; };
+		F576ACFF2A99C5A000B85312 /* CoronaIOSLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = A48DA9781853094C009D1F93 /* CoronaIOSLoader.mm */; };
+		F576AD002A99C5A000B85312 /* Rtt_IPhoneFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936CC169DED9200723568 /* Rtt_IPhoneFont.mm */; };
+		F576AD012A99C5A000B85312 /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C3691BE430F900C241E6 /* Rtt_AppleInputDevice.mm */; };
+		F576AD022A99C5A000B85312 /* Rtt_AppleReachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00E867DB1366435F00AAFA26 /* Rtt_AppleReachability.mm */; };
+		F576AD032A99C5A000B85312 /* Rtt_IPhoneTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0720731117CD2C93004720D2 /* Rtt_IPhoneTimer.mm */; };
+		F576AD042A99C5A000B85312 /* Rtt_IPhoneGLVideoTexture.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AF6517D1848A000C432B /* Rtt_IPhoneGLVideoTexture.mm */; };
+		F576AD052A99C5A000B85312 /* Rtt_IPhoneTemplate-CoronaCards.mm in Sources */ = {isa = PBXBuildFile; fileRef = A41AC4DA184DE09400313BF9 /* Rtt_IPhoneTemplate-CoronaCards.mm */; };
+		F576AD062A99C5A000B85312 /* Rtt_TouchInhibitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = A48E9BFB183EFFC500F67CB3 /* Rtt_TouchInhibitor.mm */; };
+		F576AD072A99C5A000B85312 /* Rtt_AppleCallback.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2E12B073A000042A5E /* Rtt_AppleCallback.mm */; };
+		F576AD082A99C5A000B85312 /* Rtt_IPhoneRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A415ECA51BD86132003E7114 /* Rtt_IPhoneRuntimeDelegate.mm */; };
+		F576AD092A99C5A000B85312 /* AppleWeakProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4C3189A1A6EDD4400F186DF /* AppleWeakProxy.mm */; };
+		F576AD0A2A99C5A000B85312 /* Rtt_IPhoneTextBoxObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E2169DED9200723568 /* Rtt_IPhoneTextBoxObject.mm */; };
+		F576AD0B2A99C5A000B85312 /* Rtt_ApplePlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3B12B073A000042A5E /* Rtt_ApplePlatform.mm */; };
+		F576AD0C2A99C5A000B85312 /* Rtt_IPhoneVideoObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E6169DED9200723568 /* Rtt_IPhoneVideoObject.mm */; };
+		F576AD0D2A99C5A000B85312 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 0748724818C1C469004FB786 /* NSData+Base64.m */; };
+		F576AD0E2A99C5A000B85312 /* Rtt_AppleTextDelegateWrapperObjectHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 002078EF13B51A3C00D575C3 /* Rtt_AppleTextDelegateWrapperObjectHelper.m */; };
+		F576AD0F2A99C5A000B85312 /* Rtt_AppleBitmap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD2C12B073A000042A5E /* Rtt_AppleBitmap.mm */; };
+		F576AD102A99C5A000B85312 /* CoronaViewControllerPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A48E9BF5183EF42400F67CB3 /* CoronaViewControllerPrivate.mm */; };
+		F576AD112A99C5A000B85312 /* CoronaLuaObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4728FEF1AE8176F00BC088D /* CoronaLuaObjC.mm */; };
+		F576AD122A99C5A000B85312 /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */; };
+		F576AD132A99C5A000B85312 /* Rtt_IPhoneAudioSessionManagerImplementation.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C1169DED9200723568 /* Rtt_IPhoneAudioSessionManagerImplementation.mm */; };
+		F576AD142A99C5A000B85312 /* Rtt_AppleTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3D12B073A000042A5E /* Rtt_AppleTimer.mm */; };
+		F576AD152A99C5A000B85312 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36F1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm */; };
+		F576AD162A99C5A000B85312 /* Rtt_IPhoneAudioSessionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936BF169DED9200723568 /* Rtt_IPhoneAudioSessionManager.mm */; };
+		F576AD172A99C5A000B85312 /* Rtt_IPhoneScreenSurface.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936E0169DED9200723568 /* Rtt_IPhoneScreenSurface.mm */; };
+		F576AD182A99C5A000B85312 /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F564C36B1BE430F900C241E6 /* Rtt_AppleInputDeviceManager.mm */; };
+		F576AD192A99C5A000B85312 /* Rtt_IPhoneOrientation.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4B2D52418402BDE001311C9 /* Rtt_IPhoneOrientation.mm */; };
+		F576AD1A2A99C5A000B85312 /* Rtt_AppleTextAlignment.mm in Sources */ = {isa = PBXBuildFile; fileRef = 078DA955176FD1EE00A5193E /* Rtt_AppleTextAlignment.mm */; };
+		F576AD1B2A99C5A000B85312 /* Rtt_IPhoneText.mm in Sources */ = {isa = PBXBuildFile; fileRef = A47AB0EF1A72EEA2001D3FFA /* Rtt_IPhoneText.mm */; };
+		F576AD1C2A99C5A000B85312 /* Rtt_AppleEventSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000DCD3712B073A000042A5E /* Rtt_AppleEventSound.cpp */; };
+		F576AD1D2A99C5A000B85312 /* CoronaSystemResourceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4C318511A67B65100F186DF /* CoronaSystemResourceManager.mm */; };
+		F576AD1E2A99C5A000B85312 /* CoronaViewPluginContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = A40D2F5C1887699100B4A354 /* CoronaViewPluginContext.mm */; };
+		F576AD1F2A99C5A000B85312 /* Rtt_IPhoneDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = A46936C6169DED9200723568 /* Rtt_IPhoneDevice.mm */; };
+		F576AD202A99C5A000B85312 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F576AD212A99C5A000B85312 /* Rtt_DependencyUtilsApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 070F390B18CE1FD600BC2BEE /* Rtt_DependencyUtilsApple.mm */; };
+		F576AD222A99C5A000B85312 /* Rtt_DependencyLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 070F390818CE1FD600BC2BEE /* Rtt_DependencyLoader.cpp */; };
+		F576AD252A99C5A000B85312 /* libalmixer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435D164B1D5200CFE7B3 /* libalmixer.a */; };
+		F576AD262A99C5A000B85312 /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435B164B1D5200CFE7B3 /* libbox2d.a */; };
+		F576AD272A99C5A000B85312 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4355164B1D5200CFE7B3 /* liblua.a */; };
+		F576AD282A99C5A000B85312 /* librtt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4353164B1D5200CFE7B3 /* librtt.a */; };
+		F576AD292A99C5A000B85312 /* libNetworkPlugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5E8AB9728134BB7004295B4 /* libNetworkPlugin.a */; };
+		F576AD2B2A99C5A000B85312 /* CoronaCards.h in Copy Files */ = {isa = PBXBuildFile; fileRef = A482FAA5183D74950005831B /* CoronaCards.h */; };
+		F576AD2D2A99C5A000B85312 /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 0748724718C1C469004FB786 /* NSData+Base64.h */; };
+		F576AD2E2A99C5A000B85312 /* CoronaCards.h in Headers */ = {isa = PBXBuildFile; fileRef = A482FAA5183D74950005831B /* CoronaCards.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F576AD2F2A99C5A000B85312 /* AppleWeakProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C318991A6EDD4400F186DF /* AppleWeakProxy.h */; };
+		F576AD302A99C5A000B85312 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B49F284BEB6400EC8B14 /* Rtt_AppleKeyServices.h */; };
+		F576AD312A99C5A000B85312 /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A48DA9771853094C009D1F93 /* CoronaIOSLoader.h */; };
+		F576AD322A99C5A000B85312 /* Rtt_IPhoneOrientation.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B2D52318402BDE001311C9 /* Rtt_IPhoneOrientation.h */; };
+		F576AD332A99C5A000B85312 /* CoronaLuaObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = A4728FEE1AE8176F00BC088D /* CoronaLuaObjC.h */; };
+		F576AD342A99C5A000B85312 /* Rtt_AppleInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F564C3681BE430F900C241E6 /* Rtt_AppleInputDevice.h */; };
+		F576AD352A99C5A000B85312 /* CoronaView.h in Headers */ = {isa = PBXBuildFile; fileRef = A4586812183EE425004C260A /* CoronaView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F576AD362A99C5A000B85312 /* CoronaViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = A4586813183EE425004C260A /* CoronaViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F576AD372A99C5A000B85312 /* CoronaViewRuntimeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B2D5361842DBE1001311C9 /* CoronaViewRuntimeDelegate.h */; };
+		F576AD382A99C5A000B85312 /* CoronaLuaObjC+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A4728FE51AE7F77B00BC088D /* CoronaLuaObjC+NSObject.h */; };
+		F576AD7D2A99C5D300B85312 /* libtachyon-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F52611332500142B00671DFE /* libtachyon-angle.a */; };
+		F576AD802A99C6DB00B85312 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F576AD812A99C6DD00B85312 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F576AD822A99C6DE00B85312 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F576AD832A99C6DE00B85312 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F576AD882A99C73500B85312 /* AutoLinkModules.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0AE02373933C0066F6A6 /* AutoLinkModules.m */; };
+		F576AD892A99C73500B85312 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F5C3A4184536D900E5ED54 /* main.mm */; };
+		F576AD8A2A99C73500B85312 /* AppDelegateTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F5C39C184536A000E5ED54 /* AppDelegateTest.mm */; };
+		F576AD8B2A99C73500B85312 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4F5C39E184536A000E5ED54 /* ViewController.mm */; };
+		F576AD8E2A99C73500B85312 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 000DCED912B0824800042A5E /* libobjc.dylib */; };
+		F576AD902A99C73500B85312 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4F5C3B718456DBC00E5ED54 /* Main_iPad.storyboard */; };
+		F576AD912A99C73500B85312 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4F5C3B918456DBC00E5ED54 /* Main_iPhone.storyboard */; };
+		F576AD922A99C73500B85312 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4F5C3A61845377200E5ED54 /* Images.xcassets */; };
+		F576AD932A99C73500B85312 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4F5C3D0184574E200E5ED54 /* InfoPlist.strings */; };
+		F576AD9C2A99C75700B85312 /* libCoronaCards-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F576AD3D2A99C5A000B85312 /* libCoronaCards-angle.a */; };
+		F576ADB12A99CAF300B85312 /* libMetalANGLE_static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C36A8024FA938200775C6E /* libMetalANGLE_static.a */; };
 		F5A454721CA3554D0084583A /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */; };
 		F5A454731CA3554D0084583A /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */; };
 		F5A7520E1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */; };
@@ -699,6 +795,83 @@
 			proxyType = 1;
 			remoteGlobalIDString = F5261110250013F900671DFE;
 			remoteInfo = "tachyon-angle";
+		};
+		F576ACE92A99C5A000B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DCA7E12B05CE200042A5E;
+			remoteInfo = librtt;
+		};
+		F576ACEB2A99C5A000B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DC8D412B04E5400042A5E;
+			remoteInfo = liblua;
+		};
+		F576ACED2A99C5A000B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DC9BE12B05ACC00042A5E;
+			remoteInfo = libbox2d;
+		};
+		F576ACEF2A99C5A000B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A44D4348164B1D5200CFE7B3 /* libcorona.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 000DCC5012B05FF200042A5E;
+			remoteInfo = libalmixer;
+		};
+		F576ACF12A99C5A000B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5B0A6B42811F5B2007DE6F4 /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A4E253B5166D6FB300DCDC2C;
+			remoteInfo = NetworkPlugin;
+		};
+		F576AD7B2A99C5BF00B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4B93F9217596F60003466CC /* libtachyon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F5261110250013F900671DFE;
+			remoteInfo = "tachyon-angle";
+		};
+		F576AD9D2A99C75C00B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F576ACE52A99C5A000B85312;
+			remoteInfo = "CoronaCards-angle";
+		};
+		F576ADAB2A99C9E000B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F576ACE52A99C5A000B85312;
+			remoteInfo = "CoronaCards-angle";
+		};
+		F576ADAD2A99CAAF00B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A60525223464F51005CEA98;
+			remoteInfo = MetalANGLE;
+		};
+		F576ADAF2A99CAE700B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A936736244CCFDE00B3497E;
+			remoteInfo = MetalANGLE_static;
+		};
+		F576ADB72A99CD8F00B85312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C36A3E24FA938100775C6E /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A60525223464F51005CEA98;
+			remoteInfo = MetalANGLE;
 		};
 		F5C36A7D24FA938200775C6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1246,6 +1419,17 @@
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F576AD2A2A99C5A000B85312 /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				F576AD2B2A99C5A000B85312 /* CoronaCards.h in Copy Files */,
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5C36AF524FA93A700775C6E /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1509,6 +1693,9 @@
 		F564C36B1BE430F900C241E6 /* Rtt_AppleInputDeviceManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleInputDeviceManager.mm; sourceTree = "<group>"; };
 		F564C36E1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_AppleInputMFiDeviceListener.h; sourceTree = "<group>"; };
 		F564C36F1BE430F900C241E6 /* Rtt_AppleInputMFiDeviceListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleInputMFiDeviceListener.mm; sourceTree = "<group>"; };
+		F576AD3D2A99C5A000B85312 /* libCoronaCards-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libCoronaCards-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F576AD9A2A99C73500B85312 /* CoronaCardsTest-angle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CoronaCardsTest-angle.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F576AD9B2A99C73600B85312 /* CoronaCardsTest copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CoronaCardsTest copy-Info.plist"; path = "/Users/vlad/Projects/corona/platform/iphone/CoronaCardsTest copy-Info.plist"; sourceTree = "<absolute>"; };
 		F5A454711CA3554D0084583A /* Rtt_AppleFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_AppleFont.mm; sourceTree = "<group>"; };
 		F5A7520C1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = Corona/CoronaLuaObjCHelper.h; sourceTree = SOURCE_ROOT; };
 		F5A7520D1BFA3D3400CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = Corona/CoronaLuaObjCHelper.mm; sourceTree = SOURCE_ROOT; };
@@ -1639,6 +1826,29 @@
 				F5C36CDB24FAB5E500775C6E /* libplayer-angle.a in Frameworks */,
 				F50E7EBA24FA923B009F165B /* libobjc.dylib in Frameworks */,
 				F5C36AF324FA93A700775C6E /* MetalANGLE.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F576AD232A99C5A000B85312 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F576ADB12A99CAF300B85312 /* libMetalANGLE_static.a in Frameworks */,
+				F576AD7D2A99C5D300B85312 /* libtachyon-angle.a in Frameworks */,
+				F576AD252A99C5A000B85312 /* libalmixer.a in Frameworks */,
+				F576AD262A99C5A000B85312 /* libbox2d.a in Frameworks */,
+				F576AD272A99C5A000B85312 /* liblua.a in Frameworks */,
+				F576AD282A99C5A000B85312 /* librtt.a in Frameworks */,
+				F576AD292A99C5A000B85312 /* libNetworkPlugin.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F576AD8C2A99C73500B85312 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F576AD9C2A99C75700B85312 /* libCoronaCards-angle.a in Frameworks */,
+				F576AD8E2A99C73500B85312 /* libobjc.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1852,6 +2062,8 @@
 				F5C36C6824FAB49F00775C6E /* libplayer-core-angle.a */,
 				F5C36CBB24FAB4E900775C6E /* libplayer-angle.a */,
 				F5C36CD024FAB50800775C6E /* libtemplate-angle.a */,
+				F576AD3D2A99C5A000B85312 /* libCoronaCards-angle.a */,
+				F576AD9A2A99C73500B85312 /* CoronaCardsTest-angle.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1874,6 +2086,7 @@
 				A482FAA2183D74950005831B /* CoronaCards */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				F576AD9B2A99C73600B85312 /* CoronaCardsTest copy-Info.plist */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2440,6 +2653,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F576AD2C2A99C5A000B85312 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F576AD2D2A99C5A000B85312 /* NSData+Base64.h in Headers */,
+				F576AD2E2A99C5A000B85312 /* CoronaCards.h in Headers */,
+				F576AD2F2A99C5A000B85312 /* AppleWeakProxy.h in Headers */,
+				F576AD302A99C5A000B85312 /* Rtt_AppleKeyServices.h in Headers */,
+				F576AD312A99C5A000B85312 /* CoronaIOSLoader.h in Headers */,
+				F576AD322A99C5A000B85312 /* Rtt_IPhoneOrientation.h in Headers */,
+				F576AD332A99C5A000B85312 /* CoronaLuaObjC.h in Headers */,
+				F576AD342A99C5A000B85312 /* Rtt_AppleInputDevice.h in Headers */,
+				F576AD352A99C5A000B85312 /* CoronaView.h in Headers */,
+				F576AD362A99C5A000B85312 /* CoronaViewController.h in Headers */,
+				F576AD372A99C5A000B85312 /* CoronaViewRuntimeDelegate.h in Headers */,
+				F576AD382A99C5A000B85312 /* CoronaLuaObjC+NSObject.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5C36C4724FAB49F00775C6E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2737,8 +2969,8 @@
 				F50E7EB724FA923B009F165B /* Sources */,
 				F50E7EB924FA923B009F165B /* Frameworks */,
 				F50E7EBC24FA923B009F165B /* Script: CopyResources and resource.corona-archive */,
-				F50E7EBD24FA923B009F165B /* Script: build.settings to Info.plist */,
 				F5C36AF524FA93A700775C6E /* Embed Frameworks */,
+				F50E7EBD24FA923B009F165B /* Script: build.settings to Info.plist */,
 			);
 			buildRules = (
 				F50E7EBE24FA923B009F165B /* PBXBuildRule */,
@@ -2750,6 +2982,54 @@
 			name = "template-angle";
 			productName = ratatouille;
 			productReference = F50E7EC424FA923B009F165B /* template-angle.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F576ACE52A99C5A000B85312 /* CoronaCards-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F576AD3A2A99C5A000B85312 /* Build configuration list for PBXNativeTarget "CoronaCards-angle" */;
+			buildPhases = (
+				F576ACF22A99C5A000B85312 /* Sources */,
+				F576AD232A99C5A000B85312 /* Frameworks */,
+				F576AD2A2A99C5A000B85312 /* Copy Files */,
+				F576AD2C2A99C5A000B85312 /* Headers */,
+				F576AD392A99C5A000B85312 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F576ADB82A99CD8F00B85312 /* PBXTargetDependency */,
+				F576ADB02A99CAE700B85312 /* PBXTargetDependency */,
+				F576AD7C2A99C5BF00B85312 /* PBXTargetDependency */,
+				F576ACE82A99C5A000B85312 /* PBXTargetDependency */,
+				F576ACEA2A99C5A000B85312 /* PBXTargetDependency */,
+				F576ACEC2A99C5A000B85312 /* PBXTargetDependency */,
+				F576ACEE2A99C5A000B85312 /* PBXTargetDependency */,
+				F576ACF02A99C5A000B85312 /* PBXTargetDependency */,
+			);
+			name = "CoronaCards-angle";
+			productName = CoronaCards;
+			productReference = F576AD3D2A99C5A000B85312 /* libCoronaCards-angle.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		F576AD842A99C73500B85312 /* CoronaCardsTest-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F576AD972A99C73500B85312 /* Build configuration list for PBXNativeTarget "CoronaCardsTest-angle" */;
+			buildPhases = (
+				F576AD872A99C73500B85312 /* Sources */,
+				F576AD8C2A99C73500B85312 /* Frameworks */,
+				F576AD8F2A99C73500B85312 /* Resources */,
+				F576AD942A99C73500B85312 /* Script: Compile */,
+				F576AD952A99C73500B85312 /* Script: build.settings to Info.plist */,
+				F576AD962A99C73500B85312 /* Copy Corona Project Files */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F576AD9E2A99C75C00B85312 /* PBXTargetDependency */,
+			);
+			name = "CoronaCardsTest-angle";
+			productName = CoronaCardsTest;
+			productReference = F576AD9A2A99C73500B85312 /* CoronaCardsTest-angle.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F5C36BE724FAB49F00775C6E /* libplayer-core-angle */ = {
@@ -2900,11 +3180,14 @@
 				A4693558169D62DA00723568 /* template */,
 				F50E7EAC24FA923B009F165B /* template-angle */,
 				A482FA9F183D74950005831B /* CoronaCards */,
+				F576ACE52A99C5A000B85312 /* CoronaCards-angle */,
 				A482FADF183D7B860005831B /* CoronaCards.framework */,
+				F576ADA32A99C97600B85312 /* CoronaCards-angle.framework */,
 				A48E9B9A183EEC8600F67CB3 /* CoronaCardsTest */,
 				A48DA9C918580415009D1F93 /* CoronaCardsTest-Tabs */,
 				A40D2F711889151E00B4A354 /* CoronaCardsTest-Ad */,
 				A4EF76F41A352B43002D3BEF /* CoronaCardsTest-Swift */,
+				F576AD842A99C73500B85312 /* CoronaCardsTest-angle */,
 			);
 		};
 /* End PBXProject section */
@@ -3512,6 +3795,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F576AD8F2A99C73500B85312 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F576AD902A99C73500B85312 /* Main_iPad.storyboard in Resources */,
+				F576AD912A99C73500B85312 /* Main_iPhone.storyboard in Resources */,
+				F576AD922A99C73500B85312 /* Images.xcassets in Resources */,
+				F576AD932A99C73500B85312 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -3631,7 +3925,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"";
+			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A46935BD169D62DA00723568 /* Script: CopyResources and resource.corona-archive */ = {
@@ -3655,9 +3949,13 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/../test/assets2/build.settings",
+				$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/Info.plist,
 			);
 			name = "Script: build.settings to Info.plist";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/info.created",
+				$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/Info.plist,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -3726,6 +4024,56 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../test/assets2/build.settings",
+				$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/Info.plist,
+			);
+			name = "Script: build.settings to Info.plist";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/info.created",
+				$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/Info.plist,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUA=\"$TOOLCHAIN_DIR/lua\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n\ntouch \"$DERIVED_FILE_DIR/info.created\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F576AD392A99C5A000B85312 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$PROJECT_DIR\"/bin-xcode/prepare_framework.sh";
+			showEnvVarsInLog = 0;
+		};
+		F576AD942A99C73500B85312 /* Script: Compile */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Script: Compile";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "## \"$PROJECT_DIR\"/bin-xcode/compile_car.sh";
+			showEnvVarsInLog = 0;
+		};
+		F576AD952A99C73500B85312 /* Script: build.settings to Info.plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
 			inputPaths = (
 			);
 			name = "Script: build.settings to Info.plist";
@@ -3733,7 +4081,51 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "TOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\nLUA=\"$TOOLCHAIN_DIR/lua\"\n\nASSETS_DIR=\"$PROJECT_DIR\"/../test/assets\nif [ -d \"$PROJECT_DIR\"/../test/assets2 ]\nthen\n    ASSETS_DIR=\"$PROJECT_DIR\"/../test/assets2\nfi\n\necho Running \"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\nLUA_PATH=\"$PROJECT_DIR/../../platform/resources/?.lua\" export LUA_PATH\n\"$LUA\" \"$PROJECT_DIR\"/../../bin/mac/buildSettingsToPlist.lua $ASSETS_DIR \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
+			shellScript = "## \"$PROJECT_DIR\"/bin-xcode/convert_metadata.sh";
+			showEnvVarsInLog = 0;
+		};
+		F576AD962A99C73500B85312 /* Copy Corona Project Files */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Corona Project Files";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ditto -V \"$PROJECT_DIR\"/../test/assets2 \"$TARGET_BUILD_DIR\"/\"$UNLOCALIZED_RESOURCES_FOLDER_PATH\"";
+			showEnvVarsInLog = 0;
+		};
+		F576ADA62A99C97600B85312 /* Build Universal Binary */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Build Universal Binary";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export SF_TARGET_NAME=CoronaCards-angle\n\n\"$PROJECT_DIR\"/bin-xcode/build_framework.sh\n";
+		};
+		F576ADA72A99C97600B85312 /* Copy to /Users/Shared/CoronaLabs/Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy to /Users/Shared/CoronaLabs/Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -3743,6 +4135,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F576AD822A99C6DE00B85312 /* AutoLinkModules.m in Sources */,
 				A40D2F8A1889151F00B4A354 /* ViewControllerTest-Ad.mm in Sources */,
 				A40D2F811889151F00B4A354 /* AppDelegateTest-Ad.mm in Sources */,
 				A40D2F7D1889151F00B4A354 /* main.mm in Sources */,
@@ -3910,6 +4303,7 @@
 				A48DA9D918580416009D1F93 /* AppDelegateTest-Tabs.mm in Sources */,
 				A48DA9E218580416009D1F93 /* FirstViewController.m in Sources */,
 				A48DA9D518580416009D1F93 /* main.mm in Sources */,
+				F576AD812A99C6DD00B85312 /* AutoLinkModules.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3917,6 +4311,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F576AD802A99C6DB00B85312 /* AutoLinkModules.m in Sources */,
 				A4F5C3A5184536D900E5ED54 /* main.mm in Sources */,
 				A4F5C39F184536A000E5ED54 /* AppDelegateTest.mm in Sources */,
 				A4F5C3A0184536A000E5ED54 /* ViewController.mm in Sources */,
@@ -3927,6 +4322,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F576AD832A99C6DE00B85312 /* AutoLinkModules.m in Sources */,
 				A4EF771E1A352B44002D3BEF /* ViewController.swift in Sources */,
 				A4EF77211A352B44002D3BEF /* CPlusPlusLinkage.cpp in Sources */,
 				A4EF77111A352B44002D3BEF /* AppDelegate.swift in Sources */,
@@ -3946,6 +4342,72 @@
 			buildActionMask = 2147483647;
 			files = (
 				F50E7EB824FA923B009F165B /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F576ACF22A99C5A000B85312 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F576ACF32A99C5A000B85312 /* Rtt_AppleKeyServices.mm in Sources */,
+				F576ACF42A99C5A000B85312 /* CoronaLuaObjCHelper.mm in Sources */,
+				F576ACF52A99C5A000B85312 /* CoronaLuaObjC+NSObject.m in Sources */,
+				F576ACF62A99C5A000B85312 /* CoronaViewPrivate.mm in Sources */,
+				F576ACF72A99C5A000B85312 /* CoronaViewRuntimeDelegate.mm in Sources */,
+				F576ACF82A99C5A000B85312 /* Rtt_IPhonePlatformBase.mm in Sources */,
+				F576ACF92A99C5A000B85312 /* Rtt_IPhoneTextFieldObject.mm in Sources */,
+				F576ACFA2A99C5A000B85312 /* Rtt_IPhoneDisplayObject.mm in Sources */,
+				F576ACFB2A99C5A000B85312 /* Rtt_AppleCrypto.cpp in Sources */,
+				F576ACFC2A99C5A000B85312 /* Rtt_IPhonePlatformCore.mm in Sources */,
+				F576ACFD2A99C5A000B85312 /* Rtt_AppleAudioPlayer.cpp in Sources */,
+				F576ACFE2A99C5A000B85312 /* Rtt_AppleAudioRecorder.mm in Sources */,
+				F576ACFF2A99C5A000B85312 /* CoronaIOSLoader.mm in Sources */,
+				F576AD002A99C5A000B85312 /* Rtt_IPhoneFont.mm in Sources */,
+				F576AD012A99C5A000B85312 /* Rtt_AppleInputDevice.mm in Sources */,
+				F576AD022A99C5A000B85312 /* Rtt_AppleReachability.mm in Sources */,
+				F576AD032A99C5A000B85312 /* Rtt_IPhoneTimer.mm in Sources */,
+				F576AD042A99C5A000B85312 /* Rtt_IPhoneGLVideoTexture.mm in Sources */,
+				F576AD052A99C5A000B85312 /* Rtt_IPhoneTemplate-CoronaCards.mm in Sources */,
+				F576AD062A99C5A000B85312 /* Rtt_TouchInhibitor.mm in Sources */,
+				F576AD072A99C5A000B85312 /* Rtt_AppleCallback.mm in Sources */,
+				F576AD082A99C5A000B85312 /* Rtt_IPhoneRuntimeDelegate.mm in Sources */,
+				F576AD092A99C5A000B85312 /* AppleWeakProxy.mm in Sources */,
+				F576AD0A2A99C5A000B85312 /* Rtt_IPhoneTextBoxObject.mm in Sources */,
+				F576AD0B2A99C5A000B85312 /* Rtt_ApplePlatform.mm in Sources */,
+				F576AD0C2A99C5A000B85312 /* Rtt_IPhoneVideoObject.mm in Sources */,
+				F576AD0D2A99C5A000B85312 /* NSData+Base64.m in Sources */,
+				F576AD0E2A99C5A000B85312 /* Rtt_AppleTextDelegateWrapperObjectHelper.m in Sources */,
+				F576AD0F2A99C5A000B85312 /* Rtt_AppleBitmap.mm in Sources */,
+				F576AD102A99C5A000B85312 /* CoronaViewControllerPrivate.mm in Sources */,
+				F576AD112A99C5A000B85312 /* CoronaLuaObjC.mm in Sources */,
+				F576AD122A99C5A000B85312 /* Rtt_AppleFont.mm in Sources */,
+				F576AD132A99C5A000B85312 /* Rtt_IPhoneAudioSessionManagerImplementation.mm in Sources */,
+				F576AD142A99C5A000B85312 /* Rtt_AppleTimer.mm in Sources */,
+				F576AD152A99C5A000B85312 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */,
+				F576AD162A99C5A000B85312 /* Rtt_IPhoneAudioSessionManager.mm in Sources */,
+				F576AD172A99C5A000B85312 /* Rtt_IPhoneScreenSurface.mm in Sources */,
+				F576AD182A99C5A000B85312 /* Rtt_AppleInputDeviceManager.mm in Sources */,
+				F576AD192A99C5A000B85312 /* Rtt_IPhoneOrientation.mm in Sources */,
+				F576AD1A2A99C5A000B85312 /* Rtt_AppleTextAlignment.mm in Sources */,
+				F576AD1B2A99C5A000B85312 /* Rtt_IPhoneText.mm in Sources */,
+				F576AD1C2A99C5A000B85312 /* Rtt_AppleEventSound.cpp in Sources */,
+				F576AD1D2A99C5A000B85312 /* CoronaSystemResourceManager.mm in Sources */,
+				F576AD1E2A99C5A000B85312 /* CoronaViewPluginContext.mm in Sources */,
+				F576AD1F2A99C5A000B85312 /* Rtt_IPhoneDevice.mm in Sources */,
+				F576AD202A99C5A000B85312 /* AutoLinkModules.m in Sources */,
+				F576AD212A99C5A000B85312 /* Rtt_DependencyUtilsApple.mm in Sources */,
+				F576AD222A99C5A000B85312 /* Rtt_DependencyLoader.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F576AD872A99C73500B85312 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F576AD882A99C73500B85312 /* AutoLinkModules.m in Sources */,
+				F576AD892A99C73500B85312 /* main.mm in Sources */,
+				F576AD8A2A99C73500B85312 /* AppDelegateTest.mm in Sources */,
+				F576AD8B2A99C73500B85312 /* ViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4164,6 +4626,61 @@
 			isa = PBXTargetDependency;
 			name = "tachyon-angle";
 			targetProxy = F52611712500143100671DFE /* PBXContainerItemProxy */;
+		};
+		F576ACE82A99C5A000B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = librtt;
+			targetProxy = F576ACE92A99C5A000B85312 /* PBXContainerItemProxy */;
+		};
+		F576ACEA2A99C5A000B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = liblua;
+			targetProxy = F576ACEB2A99C5A000B85312 /* PBXContainerItemProxy */;
+		};
+		F576ACEC2A99C5A000B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libbox2d;
+			targetProxy = F576ACED2A99C5A000B85312 /* PBXContainerItemProxy */;
+		};
+		F576ACEE2A99C5A000B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libalmixer;
+			targetProxy = F576ACEF2A99C5A000B85312 /* PBXContainerItemProxy */;
+		};
+		F576ACF02A99C5A000B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NetworkPlugin;
+			targetProxy = F576ACF12A99C5A000B85312 /* PBXContainerItemProxy */;
+		};
+		F576AD7C2A99C5BF00B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "tachyon-angle";
+			targetProxy = F576AD7B2A99C5BF00B85312 /* PBXContainerItemProxy */;
+		};
+		F576AD9E2A99C75C00B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F576ACE52A99C5A000B85312 /* CoronaCards-angle */;
+			targetProxy = F576AD9D2A99C75C00B85312 /* PBXContainerItemProxy */;
+		};
+		F576ADAC2A99C9E000B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F576ACE52A99C5A000B85312 /* CoronaCards-angle */;
+			targetProxy = F576ADAB2A99C9E000B85312 /* PBXContainerItemProxy */;
+		};
+		F576ADAE2A99CAAF00B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE;
+			targetProxy = F576ADAD2A99CAAF00B85312 /* PBXContainerItemProxy */;
+		};
+		F576ADB02A99CAE700B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE_static;
+			targetProxy = F576ADAF2A99CAE700B85312 /* PBXContainerItemProxy */;
+		};
+		F576ADB82A99CD8F00B85312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE;
+			targetProxy = F576ADB72A99CD8F00B85312 /* PBXContainerItemProxy */;
 		};
 		F5C36BEA24FAB49F00775C6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4846,6 +5363,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -4855,6 +5373,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoronaCards/Test/CoronaCardsTest-Prefix.pch";
@@ -4883,6 +5402,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -4893,6 +5413,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoronaCards/Test/CoronaCardsTest-Prefix.pch";
@@ -5271,6 +5792,172 @@
 			};
 			name = Release;
 		};
+		F576AD3B2A99C5A000B85312 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DSTROOT = /tmp/CoronaCards.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CoronaCards/CoronaCards-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRIP_STYLE = debugging;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		F576AD3C2A99C5A000B85312 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/CoronaCards.dst;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CoronaCards/CoronaCards-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRIP_STYLE = debugging;
+				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F576AD982A99C73500B85312 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CoronaCards/Test/CoronaCardsTest-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/CoronaCards/Test/CoronaCardsTest-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST))",
+					"@executable_path/Frameworks",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				STRIP_STYLE = "non-global";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F576AD992A99C73500B85312 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CoronaCards/Test/CoronaCardsTest-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/CoronaCards/Test/CoronaCardsTest-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST))",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				STRIP_STYLE = "non-global";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		F576ADA92A99C97600B85312 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F576ADAA2A99C97600B85312 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		F5C36C6424FAB49F00775C6E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -5555,6 +6242,33 @@
 			buildConfigurations = (
 				F50E7EC024FA923B009F165B /* Debug */,
 				F50E7EC124FA923B009F165B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F576AD3A2A99C5A000B85312 /* Build configuration list for PBXNativeTarget "CoronaCards-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F576AD3B2A99C5A000B85312 /* Debug */,
+				F576AD3C2A99C5A000B85312 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F576AD972A99C73500B85312 /* Build configuration list for PBXNativeTarget "CoronaCardsTest-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F576AD982A99C73500B85312 /* Debug */,
+				F576AD992A99C73500B85312 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F576ADA82A99C97600B85312 /* Build configuration list for PBXAggregateTarget "CoronaCards-angle.framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F576ADA92A99C97600B85312 /* Debug */,
+				F576ADAA2A99C97600B85312 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

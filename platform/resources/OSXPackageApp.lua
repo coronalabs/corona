@@ -237,16 +237,18 @@ local function getCodesignScript( entitlements, path, appIdentity, codesign )
 	-- codesign doesn't like them
 	local removeXattrs = "/usr/bin/xattr -cr "..quoteString(path) .." && "
 
-	local entitlementsParam = ""
+	local entitlementsParam
 	if entitlements ~= nil and entitlements ~= "" then
-		entitlementsParam = " --entitlements ".. entitlements .." "
+		entitlementsParam = " --entitlements ".. entitlements .. " "
+	else
+		entitlementsParam = " --deep "
 	end
 	local verboseParam = ""
 	if debugBuildProcess and debugBuildProcess ~= 0 then
 		verboseParam = "-".. string.rep("v", debugBuildProcess) .." "
 	end
 
-	local cmd = removeXattrs .. codesign.." --options runtime --deep -f -s "..quoteString(appIdentity).." "..entitlementsParam..verboseParam..quotedpath
+	local cmd = removeXattrs .. codesign.." --options runtime -f -s "..quoteString(appIdentity).." "..entitlementsParam..verboseParam..quotedpath
 
 	return cmd
 end
@@ -268,7 +270,7 @@ local function getProductValidateScript( path, itunesConnectUsername, itunesConn
 	-- Apple tells us to use this buried utility to automate Application Loader tasks in
 	-- https://itunesconnect.apple.com/docs/UsingApplicationLoader.pdf
 	local altool = makepath(applicationLoader, "Contents/Frameworks/ITunesSoftwareService.framework/Support/altool")
-	
+
 	-- If the "cmd" generated below fails because it's the wrong path that's very hard to detect amongst all the XML parsing so we do it here
 	if lfs.attributes( altool ) == nil then
 		print("ERROR: cannot find 'altool' utility in "..altool)
@@ -591,8 +593,6 @@ table.indexOf = function( t, object )
 end
 
 function signAllPlugins(pluginsDir, signingIdentity, codesign)
-	local entitlements = ""
-
 	if lfs.attributes( pluginsDir ) == nil then
 		return "" -- no plugins dir
 	end
@@ -602,7 +602,7 @@ function signAllPlugins(pluginsDir, signingIdentity, codesign)
 		local pluginFile = makepath(pluginsDir, file)
 		if lfs.attributes( pluginFile ).mode ~= "directory" then
 
-			local result, errMsg = runScript( getCodesignScript( entitlements, pluginFile, signingIdentity, codesign ) )
+			local result, errMsg = runScript( getCodesignScript( nil, pluginFile, signingIdentity, codesign ) )
 
 			if result ~= 0 then
 				errMsg = "ERROR: plugin code signing for '"..pluginFile.."' failed: "..tostring(errMsg)
@@ -840,7 +840,7 @@ function OSXPostPackage( params )
 			local entitlements = entitlements_filename
 			local result, includeProvisioning = generateOSXEntitlements( entitlements_filename, settings, provisionFile )
 			if result ~= "" then
-				entitlements = ""
+				entitlements = nil
 			end
 
 			-- Copy provisioning profile if we need it
@@ -848,6 +848,10 @@ function OSXPostPackage( params )
 				runScript( "/bin/cp " .. quoteString(provisionFile) .. " " .. quoteString(makepath(appBundleFileUnquoted, "Contents/embedded.provisionprofile")) )
 			end
 
+			if entitlements ~= nil then
+				setStatus("Sign application plugins")
+			    runScript( getCodesignScript( nil, appBundleFileUnquoted, options.signingIdentity, options.xcodetoolhelper.codesign ) )
+			end
 			setStatus("Signing application with "..tostring(options.signingIdentityName))
 			local result, errMsg = runScript( getCodesignScript( entitlements, appBundleFileUnquoted, options.signingIdentity, options.xcodetoolhelper.codesign ) )
 			runScript( "/bin/rm -f " .. entitlements_filename )
@@ -966,6 +970,8 @@ function OSXPackageForAppStore( params )
 		return tostring(result)
 	end
 
+	setStatus("Sign application deep")
+	runScript( getCodesignScript( nil, appBundleFile, appSigningIdentity, codesign ) )
 	setStatus("Signing application with "..tostring(appSigningIdentityName))
 	local result, errMsg = runScript( getCodesignScript( entitlements_filename, appBundleFile, appSigningIdentity, codesign ) )
 
@@ -1070,9 +1076,8 @@ function OSXPackageForSelfDistribution( params )
 			return tostring(result)
 		end
 
-		local entitlements = "" -- quoteString( osxAppEntitlementsFile )
 		setStatus("Signing application with "..tostring(appSigningIdentityName))
-		local result, errMsg = runScript( getCodesignScript( entitlements, appBundleFile, appSigningIdentity, codesign ) )
+		local result, errMsg = runScript( getCodesignScript( nil, appBundleFile, appSigningIdentity, codesign ) )
 
 		if result ~= 0 then
 			errMsg = "ERROR: code signing failed: "..tostring(errMsg)

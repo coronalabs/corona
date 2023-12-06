@@ -146,7 +146,7 @@ public class NativeToJavaBridge {
 		StringBuilder err = new StringBuilder();
 		if (runtime != null) {
 			// Fetch the runtime's Lua state.
-			// TODO: We need to account for corountines.
+			// TODO: We need to account for coroutines.
 			LuaState L = runtime.getLuaState();
 			if ( null == L ) {
 				L = new com.naef.jnlua.LuaState(luaStateMemoryAddress);
@@ -2305,6 +2305,10 @@ public class NativeToJavaBridge {
 	protected static void callTextFieldSetSelection( CoronaRuntime runtime, int id, int startPosition, int endPosition)
 	{
 		runtime.getViewManager().setTextSelection( id, startPosition, endPosition );
+	}
+
+	protected static int[] callTextFieldGetSelection(CoronaRuntime runtime, int id) {
+	    return runtime.getViewManager().getTextSelection(id);
 	}
 
 	protected static void callTextFieldSetReturnKey( CoronaRuntime runtime, int id, String imeType ) 

@@ -341,7 +341,7 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		public void onSurfaceCreated(
 			javax.microedition.khronos.opengles.GL10 gl, javax.microedition.khronos.egl.EGLConfig config)
 		{
-			// Re-draw what was last renderered if the last surface has been replaced by a new surface.
+			// Re-draw what was last rendered if the last surface has been replaced by a new surface.
 			// This can happen when the end user leaves and returns back to the activity window.
 			if (!sFirstSurface) {
 				fView.setNeedsSwap();
@@ -364,7 +364,7 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		@Override
 		public void onSurfaceChanged(javax.microedition.khronos.opengles.GL10 gl, int width, int height) {
 			// Fetch the view's current orientation.
-			// Note: We need to keep a local coy of the view's orientation settings in case they suddenly
+			// Note: We need to keep a local copy of the view's orientation settings in case they suddenly
 			//       change on the main UI thread while executing the below resize() operation, which can
 			//       take a long time on the first call since it executes the "main.lua" on startup.
 			com.ansca.corona.WindowOrientation currentWindowOrientation = fView.fCurrentWindowOrientation;

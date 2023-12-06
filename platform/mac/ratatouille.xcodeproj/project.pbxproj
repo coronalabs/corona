@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -328,7 +328,6 @@
 		072020EE17C58DA100B6D424 /* kernel_filter_blurHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = 072020E617C58D8A00B6D424 /* kernel_filter_blurHorizontal_gl.lua */; };
 		072020EF17C58DA100B6D424 /* kernel_filter_blurVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = 072020E717C58D8A00B6D424 /* kernel_filter_blurVertical_gl.lua */; };
 		072020F017C58DA100B6D424 /* kernel_filter_levels_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = 072020E817C58D8A00B6D424 /* kernel_filter_levels_gl.lua */; };
-		0727BA8716E68FE800981C4B /* network.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0727BA8616E68FE800981C4B /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		0797EB4D181F0BED00FA57B5 /* Rtt_PlatformMediaProviderBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 0797EB4C181F0BED00FA57B5 /* Rtt_PlatformMediaProviderBase.h */; };
 		0797EB57181F0C0300FA57B5 /* Rtt_PlatformVideoProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0797EB55181F0C0300FA57B5 /* Rtt_PlatformVideoProvider.cpp */; };
 		0797EB5D181F0CC400FA57B5 /* Rtt_MacVideoProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0797EB5C181F0CC400FA57B5 /* Rtt_MacVideoProvider.mm */; };
@@ -1266,7 +1265,6 @@
 		C23D8DC71954EDA300D6555E /* widget_theme_android_holo_light@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = C23D8DC11954EDA300D6555E /* widget_theme_android_holo_light@4x.png */; };
 		C2427BFC1919481B0011CE7A /* CustomDevice.xib in Resources */ = {isa = PBXBuildFile; fileRef = C2427BFB1919481B0011CE7A /* CustomDevice.xib */; };
 		C244C0FF1A816AE1008DBA56 /* ALmixer.framework in Copy Frameworks and dylibs */ = {isa = PBXBuildFile; fileRef = 00B737BA12B707B40057F594 /* ALmixer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C244C1001A8183B1008DBA56 /* network.dylib in Copy Frameworks and dylibs */ = {isa = PBXBuildFile; fileRef = 0727BA8616E68FE800981C4B /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		C24ACF741B38D1250049599D /* OSXAppBuildController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C21732B01B1EAE3B00F79CB8 /* OSXAppBuildController.mm */; };
 		C24ACF7B1B38D1600049599D /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00B73CDC12B720C90057F594 /* AppDelegate.mm */; };
 		C24FA4FE18D14E80002039FB /* composer_scene.lua in Resources */ = {isa = PBXBuildFile; fileRef = C24FA4FD18D14E80002039FB /* composer_scene.lua */; };
@@ -1632,6 +1630,10 @@
 		F55407F61C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55407F31C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.cpp */; };
 		F55407F71C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F55407F41C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.h */; };
 		F55407F81C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F55407F41C74ECDE007F53C9 /* Rtt_TextureResourceExternalAdapter.h */; };
+		F5567D482ADC73BC008CD550 /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F5567D442ADC7394008CD550 /* network.dylib */; };
+		F5567D492ADC73BC008CD550 /* network.dylib in Copy Frameworks and dylibs */ = {isa = PBXBuildFile; fileRef = F5567D442ADC7394008CD550 /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F5567D4A2ADC73CB008CD550 /* network.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F5567D442ADC7394008CD550 /* network.dylib */; };
+		F5567D4B2ADC73CB008CD550 /* network.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F5567D442ADC7394008CD550 /* network.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F57469D7240291FA00CA5949 /* iostemplate in Resources */ = {isa = PBXBuildFile; fileRef = F57469D6240291FA00CA5949 /* iostemplate */; };
 		F57AE2051F051610000A4245 /* Rtt_AppleInAppStore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B6571463359A00EEDF75 /* Rtt_AppleInAppStore.mm */; };
 		F57AE2061F051610000A4245 /* Rtt_AppleInAppStoreApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0077B6591463359A00EEDF75 /* Rtt_AppleInAppStoreApple.mm */; };
@@ -2154,6 +2156,27 @@
 			remoteGlobalIDString = F511E5D21D81DDCC0084406E;
 			remoteInfo = CoronaLiveServer;
 		};
+		F5567D432ADC7394008CD550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A49186401641DDB800A39286;
+			remoteInfo = network;
+		};
+		F5567D4C2ADC73E1008CD550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A49186331641DDB800A39286;
+			remoteInfo = network;
+		};
+		F5567D4E2ADC740E008CD550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A49186331641DDB800A39286;
+			remoteInfo = network;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -2164,6 +2187,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				0052EBF412B73ADD006ED5BC /* ALmixer.framework in Copy Frameworks */,
+				F5567D4B2ADC73CB008CD550 /* network.dylib in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2176,7 +2200,6 @@
 			files = (
 				A4F12C2516D43685002BCCFB /* licensing.dylib in CopyFiles */,
 				A41AC1B916A75A9E00AD331A /* gameNetwork.dylib in CopyFiles */,
-				0727BA8716E68FE800981C4B /* network.dylib in CopyFiles */,
 				A4BCD6E61648D5EC00D8F41A /* ads.dylib in CopyFiles */,
 				A491868F1641FE2600A39286 /* analytics.dylib in CopyFiles */,
 			);
@@ -2198,11 +2221,11 @@
 			dstSubfolderSpec = 10;
 			files = (
 				C279452E1B585BD60046B6E8 /* ads.dylib in Copy Frameworks and dylibs */,
+				F5567D492ADC73BC008CD550 /* network.dylib in Copy Frameworks and dylibs */,
 				C279452F1B585BD60046B6E8 /* analytics.dylib in Copy Frameworks and dylibs */,
 				C27945301B585BD60046B6E8 /* gameNetwork.dylib in Copy Frameworks and dylibs */,
 				C27945311B585BD60046B6E8 /* licensing.dylib in Copy Frameworks and dylibs */,
 				C244C0FF1A816AE1008DBA56 /* ALmixer.framework in Copy Frameworks and dylibs */,
-				C244C1001A8183B1008DBA56 /* network.dylib in Copy Frameworks and dylibs */,
 			);
 			name = "Copy Frameworks and dylibs";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2720,7 +2743,6 @@
 		072020FE17C6884000B6D424 /* Rtt_LuaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_LuaData.h; sourceTree = "<group>"; };
 		0724699117D99D41000A1641 /* Rtt_CPUResourcePool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_CPUResourcePool.cpp; path = Display/Rtt_CPUResourcePool.cpp; sourceTree = "<group>"; };
 		0724699217D99D42000A1641 /* Rtt_CPUResourcePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_CPUResourcePool.h; path = Display/Rtt_CPUResourcePool.h; sourceTree = "<group>"; };
-		0727BA8616E68FE800981C4B /* network.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = network.dylib; path = "../../plugins/build-core/network/mac/network.dylib"; sourceTree = "<group>"; };
 		078BDB8E1811B0B600C17D9A /* Rtt_EmbossedTextObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_EmbossedTextObject.cpp; path = Display/Rtt_EmbossedTextObject.cpp; sourceTree = "<group>"; };
 		078BDB8F1811B0B600C17D9A /* Rtt_EmbossedTextObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_EmbossedTextObject.h; path = Display/Rtt_EmbossedTextObject.h; sourceTree = "<group>"; };
 		078DA949176FBE4900A5193E /* Rtt_AppleTextAlignment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AppleTextAlignment.h; path = ../apple/Rtt_AppleTextAlignment.h; sourceTree = "<group>"; };
@@ -3345,6 +3367,7 @@
 		F57D17781BE2750800AABAC1 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		F5800DF61AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ImageSheetPaintAdapter.cpp; path = Display/Rtt_ImageSheetPaintAdapter.cpp; sourceTree = "<group>"; };
 		F5800DF71AE0320D00D11339 /* Rtt_ImageSheetPaintAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ImageSheetPaintAdapter.h; path = Display/Rtt_ImageSheetPaintAdapter.h; sourceTree = "<group>"; };
+		F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NetworkPlugin.xcodeproj; path = ../../plugins/network/mac/NetworkPlugin.xcodeproj; sourceTree = "<group>"; };
 		F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_HTTPClient.h; sourceTree = "<group>"; };
 		F58CA27724565212002191EA /* Rtt_HTTPClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_HTTPClient.mm; sourceTree = SOURCE_ROOT; };
 		F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_HTTPClientCommon.cpp; sourceTree = "<group>"; };
@@ -3449,6 +3472,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C2C59B2C1E2812FF001DF51E /* CoreMedia.framework in Frameworks */,
+				F5567D4A2ADC73CB008CD550 /* network.dylib in Frameworks */,
 				C2C59B2A1E2812F9001DF51E /* AVFoundation.framework in Frameworks */,
 				C2C59B2B1E2812F9001DF51E /* AVKit.framework in Frameworks */,
 				C2F911111CDBFA19004A5564 /* libluasocket.a in Frameworks */,
@@ -3498,6 +3522,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5567D482ADC73BC008CD550 /* network.dylib in Frameworks */,
 				F5FED0972512248E00AE2911 /* StoreKit.framework in Frameworks */,
 				C2C59B291E2812D6001DF51E /* CoreMedia.framework in Frameworks */,
 				C2C59B271E2812CE001DF51E /* AVFoundation.framework in Frameworks */,
@@ -4453,6 +4478,7 @@
 				0039BCEF132AF4570009B76B /* lua.xcodeproj */,
 				C2A08C221950DF2A002B7532 /* lpeg.xcodeproj */,
 				A49186021641DCFD00A39286 /* plugins.xcodeproj */,
+				F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */,
 				A4B66AB1176A7A370077B2BF /* libtachyon.xcodeproj */,
 				00B7340012B6F6E70057F594 /* external */,
 				00B73A6A12B71B560057F594 /* librtt */,
@@ -4732,7 +4758,6 @@
 			children = (
 				A41AC1B516A75A7600AD331A /* gameNetwork.dylib */,
 				A4F12C2316D43662002BCCFB /* licensing.dylib */,
-				0727BA8616E68FE800981C4B /* network.dylib */,
 			);
 			name = plugins;
 			sourceTree = "<group>";
@@ -5386,6 +5411,14 @@
 			isa = PBXGroup;
 			children = (
 				F533257E1D9DD2DF003613F7 /* Corona Live Server.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F5567D3D2ADC7394008CD550 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F5567D442ADC7394008CD550 /* network.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -6118,6 +6151,7 @@
 				001F574112B6018500F52101 /* PBXBuildRule */,
 			);
 			dependencies = (
+				F5567D4D2ADC73E1008CD550 /* PBXTargetDependency */,
 				F533258E1D9DD3CC003613F7 /* PBXTargetDependency */,
 				C21995B01C18A2C000E88FD0 /* PBXTargetDependency */,
 				C2B5FEEE1B336C3D00DD49E6 /* PBXTargetDependency */,
@@ -6211,6 +6245,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F5567D4F2ADC740E008CD550 /* PBXTargetDependency */,
 				C226075C1B4B415D00172FB1 /* PBXTargetDependency */,
 				C2E993261A6B289D00E99F46 /* PBXTargetDependency */,
 				C2E9931C1A6B287500E99F46 /* PBXTargetDependency */,
@@ -6291,6 +6326,10 @@
 				{
 					ProductGroup = 0039BCF0132AF4570009B76B /* Products */;
 					ProjectRef = 0039BCEF132AF4570009B76B /* lua.xcodeproj */;
+				},
+				{
+					ProductGroup = F5567D3D2ADC7394008CD550 /* Products */;
+					ProjectRef = F583ABD82ADAF4F2002799CB /* NetworkPlugin.xcodeproj */;
 				},
 				{
 					ProductGroup = A49186031641DCFD00A39286 /* Products */;
@@ -6439,6 +6478,13 @@
 			fileType = wrapper.application;
 			path = "Corona Live Server.app";
 			remoteRef = F533257D1D9DD2DF003613F7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5567D442ADC7394008CD550 /* network.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = network.dylib;
+			remoteRef = F5567D432ADC7394008CD550 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -7979,6 +8025,16 @@
 			isa = PBXTargetDependency;
 			name = CoronaLiveServer;
 			targetProxy = F533258D1D9DD3CC003613F7 /* PBXContainerItemProxy */;
+		};
+		F5567D4D2ADC73E1008CD550 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network;
+			targetProxy = F5567D4C2ADC73E1008CD550 /* PBXContainerItemProxy */;
+		};
+		F5567D4F2ADC740E008CD550 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network;
+			targetProxy = F5567D4E2ADC740E008CD550 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

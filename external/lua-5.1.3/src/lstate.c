@@ -61,6 +61,7 @@ static void stack_init (lua_State *L1, lua_State *L) {
 static void freestack (lua_State *L, lua_State *L1) {
   luaM_freearray(L, L1->base_ci, L1->size_ci, CallInfo);
   luaM_freearray(L, L1->stack, L1->stacksize, TValue);
+  luaM_freearray(L, L1->bookmarks, L1->size_bookmarks, int32_t); // Custom for Solar2D
 }
 
 
@@ -94,6 +95,11 @@ static void preinit_state (lua_State *L, global_State *g) {
   L->openupval = NULL;
   L->size_ci = 0;
   L->nCcalls = L->baseCcalls = 0;
+// Custom for Solar2D:
+  L->bookmarks = NULL;
+  L->size_bookmarks = 0;
+  L->nBookmarks = 0;
+// /Custom
   L->status = 0;
   L->base_ci = L->ci = NULL;
   L->savedpc = NULL;
@@ -166,6 +172,10 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   setnilvalue(registry(L));
   luaZ_initbuffer(L, &g->buff);
   g->panic = NULL;
+// Custom for Solar2D:
+  g->bookmark = NULL;
+  g->bookmarkud = NULL;
+// /Custom
   g->gcstate = GCSpause;
   g->rootgc = obj2gco(L);
   g->sweepstrgc = 0;

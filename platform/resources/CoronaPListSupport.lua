@@ -606,7 +606,7 @@ function CoronaPListSupport.generateEntitlements( settings, platform, provisionP
 					t["com.apple.developer.icloud-container-identifiers"] = cloudKitContainers
 					t["com.apple.developer.icloud-container-environment"] = ppEnt["com.apple.developer.icloud-container-environment"]
 					-- Apple doesn't accept to app store with Development container env. even if it is in provisioning profile
-					if ppEnt["com.apple.developer.aps-environment"]=="production" or ppEnt["aps-environment"]=="production" then
+					if ppEnt["com.apple.developer.aps-environment"] or ppEnt["aps-environment"]=="production" then
 						t["com.apple.developer.icloud-container-environment"] = {"Production",}
 					end
 					iCloudEnabled = true
@@ -627,7 +627,15 @@ function CoronaPListSupport.generateEntitlements( settings, platform, provisionP
 	end
 
 	if platformSettings and platformSettings.entitlements then
-		ret = ret .. CoronaPListSupport.valueToPlistEntry(platformSettings.entitlements)
+		local pe = platformSettings.entitlements
+		if pe["com.apple.developer.icloud-container-identifiers"]
+		or pe["com.apple.developer.ubiquity-container-identifiers"]
+		or pe["com.apple.developer.ubiquity-kvstore-identifier"]
+		then
+			includeProvisioning = true
+		end
+
+		ret = ret .. CoronaPListSupport.valueToPlistEntry(pe)
 	end
 
 	return ret, includeProvisioning
