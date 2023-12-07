@@ -163,10 +163,6 @@ int Profiling::VisitSums( lua_State* L)
 
 Profiling::Sum* Profiling::sFirstSum;
 
-#ifdef Rtt_AUTHORING_SIMULATOR
-	int ProfilingState::sSimulatorRun;
-#endif
-
 Profiling::EntryRAII::EntryRAII( ProfilingState& state, int& id, const char* name )
 :   fState( state )
 {
@@ -282,9 +278,6 @@ ProfilingState::ProfilingState( Rtt_Allocator* allocator )
 :   fLists( allocator ),
     fTopList( NULL )
 {
-#ifdef Rtt_AUTHORING_SIMULATOR
-    sSimulatorRun++;
-#endif
 }
 
 bool ProfilingState::Find( const Profiling* profiling )

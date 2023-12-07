@@ -267,6 +267,10 @@ Runtime::~Runtime()
 #if defined(Rtt_AUTHORING_SIMULATOR)
 	FinalizeWorkingThreadWithEvent(this, nullptr);
 #endif
+
+	// Distinguish the next instantiation, on simulator relaunch or an app
+	// restart with static memory still intact.
+	sGenerationID++;
 }
 
 // ----------------------------------------------------------------------------
@@ -2023,6 +2027,8 @@ Runtime::WillDispatchFrameEvent( const Display& sender )
 {
 	fPhysicsWorld->StepWorld( GetElapsedMS() );
 }
+
+S32 Runtime::sGenerationID;
 
 // ----------------------------------------------------------------------------
 

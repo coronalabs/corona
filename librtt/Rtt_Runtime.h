@@ -355,6 +355,12 @@ class Runtime : public MCallback,
 		std::atomic<void*> m_fAsyncListener;
 #endif
 
+	public:
+		static S32 GetGenerationID() { return sGenerationID; }
+
+	public:
+		static S32 sGenerationID;
+
 	private:
 		String fBuildId;
 		Rtt_Allocator& fAllocator;

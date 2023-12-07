@@ -137,21 +137,12 @@ class ProfilingState {
 		static void Bookmark( short mark, int push, void* ud );
 
 	public:
-		#ifdef Rtt_AUTHORING_SIMULATOR
-			static int GetSimulatorRun() { return sSimulatorRun; }
-		#endif
-
-	public:
 		Profiling* GetTopOfList() const { return fTopList; }
 		void SetTopOfList( Profiling* profiling ) { fTopList = profiling; }
 
 	private:
 		PtrArray<Profiling> fLists;
 		Profiling* fTopList;
-
-	#ifdef Rtt_AUTHORING_SIMULATOR
-		static int sSimulatorRun;
-	#endif
 };
 
 #define PROFILE_SUMS 0 // include sums in profiling?
@@ -164,19 +155,14 @@ class ProfilingState {
 	#define ENABLE_SUMMED_TIMING( enable )
 #endif
 
-#ifdef Rtt_AUTHORING_SIMULATOR
-	// Invalidate static indices on each simulator launch:
-	#define PROFILING_BEGIN( state, var, name ) static int s_id_##var, s_id_##var##_run = Profiling::None;		\
-												if ( s_id_##var##_run != ProfilingState::GetSimulatorRun() )	\
-												{																\
-													s_id_##var = Profiling::None;								\
-													s_id_##var##_run = ProfilingState::GetSimulatorRun();		\
-												}																\
-												Profiling::EntryRAII var( state, s_id_##var, name )
-#else
-	// Otherwise, compute each index once up front:
-	#define PROFILING_BEGIN( state, var, name ) static int s_id_##var = Profiling::None; Profiling::EntryRAII var( state, s_id_##var, name )
-#endif
+// Invalidate static indices on each launch:
+#define PROFILING_BEGIN( state, runtime, var, name )	static int s_id_##var, s_id_##var##_run = -1;			\
+														if ( s_id_##var##_run != runtime.GetGenerationID() )	\
+														{														\
+															s_id_##var = Profiling::None;						\
+															s_id_##var##_run = runtime.GetGenerationID();		\
+														}														\
+														Profiling::EntryRAII var( state, s_id_##var, name )
 
 // ----------------------------------------------------------------------------
 
