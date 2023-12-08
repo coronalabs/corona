@@ -27,8 +27,6 @@ class ProfilingState;
 
 class Profiling {
 	public:
-		enum { None = -1 };
-
 		Profiling( Rtt_Allocator* allocator, const char* name );
 		~Profiling();
 
@@ -60,7 +58,7 @@ class Profiling {
 	public:
 		class EntryRAII {
 		public:
-			EntryRAII( ProfilingState& state, int& id, const char* name );
+			EntryRAII( ProfilingState& state, int id );
 			~EntryRAII();
 
 		public:
@@ -125,7 +123,6 @@ class ProfilingState {
 		bool Find( const Profiling* profiling );
 		int Create( const char* name );
 		Profiling* GetByID( int id );
-		Profiling* GetOrCreate( int& id, const char* name );
 		Profiling* Get( const char* name );
 		
 	public:
@@ -137,21 +134,18 @@ class ProfilingState {
 		static void Bookmark( short mark, int push, void* ud );
 
 	public:
-		#ifdef Rtt_AUTHORING_SIMULATOR
-			static int GetSimulatorRun() { return sSimulatorRun; }
-		#endif
-
-	public:
 		Profiling* GetTopOfList() const { return fTopList; }
 		void SetTopOfList( Profiling* profiling ) { fTopList = profiling; }
 
+	public:
+		int GetUpdateID() const { return fUpdateID; }
+		int GetRenderID() const { return fRenderID; }
+	
 	private:
 		PtrArray<Profiling> fLists;
 		Profiling* fTopList;
-
-	#ifdef Rtt_AUTHORING_SIMULATOR
-		static int sSimulatorRun;
-	#endif
+		int fUpdateID;
+		int fRenderID;
 };
 
 #define PROFILE_SUMS 0 // include sums in profiling?
@@ -164,19 +158,7 @@ class ProfilingState {
 	#define ENABLE_SUMMED_TIMING( enable )
 #endif
 
-#ifdef Rtt_AUTHORING_SIMULATOR
-	// Invalidate static indices on each simulator launch:
-	#define PROFILING_BEGIN( state, var, name ) static int s_id_##var, s_id_##var##_run = Profiling::None;		\
-												if ( s_id_##var##_run != ProfilingState::GetSimulatorRun() )	\
-												{																\
-													s_id_##var = Profiling::None;								\
-													s_id_##var##_run = ProfilingState::GetSimulatorRun();		\
-												}																\
-												Profiling::EntryRAII var( state, s_id_##var, name )
-#else
-	// Otherwise, compute each index once up front:
-	#define PROFILING_BEGIN( state, var, name ) static int s_id_##var = Profiling::None; Profiling::EntryRAII var( state, s_id_##var, name )
-#endif
+#define PROFILING_BEGIN( state, var, name ) Profiling::EntryRAII var( state, ( state ).Get##name##ID() )
 
 // ----------------------------------------------------------------------------
 

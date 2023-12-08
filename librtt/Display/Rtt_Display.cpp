@@ -529,7 +529,7 @@ Display::Restart( int newWidth, int newHeight )
 void
 Display::Update()
 {
-    PROFILING_BEGIN( *GetProfilingState(), up, "update" );
+    PROFILING_BEGIN( *GetProfilingState(), up, Update );
 
     up.Add( "Display::Update Begin" );
     
@@ -568,7 +568,7 @@ Display::Update()
 void
 Display::Render()
 {
-    PROFILING_BEGIN( *GetProfilingState(), rp, "render" );
+    PROFILING_BEGIN( *GetProfilingState(), rp, Render );
 
     rp.Add( "Display::Render Begin" );
 

@@ -163,14 +163,10 @@ int Profiling::VisitSums( lua_State* L)
 
 Profiling::Sum* Profiling::sFirstSum;
 
-#ifdef Rtt_AUTHORING_SIMULATOR
-	int ProfilingState::sSimulatorRun;
-#endif
-
-Profiling::EntryRAII::EntryRAII( ProfilingState& state, int& id, const char* name )
+Profiling::EntryRAII::EntryRAII( ProfilingState& state, int id )
 :   fState( state )
 {
-    fProfiling = state.GetOrCreate( id, name );
+    fProfiling = state.GetByID( id );
 
     Rtt_ASSERT( fProfiling );
 
@@ -282,9 +278,8 @@ ProfilingState::ProfilingState( Rtt_Allocator* allocator )
 :   fLists( allocator ),
     fTopList( NULL )
 {
-#ifdef Rtt_AUTHORING_SIMULATOR
-    sSimulatorRun++;
-#endif
+	fUpdateID = Create( "update" );
+	fRenderID = Create( "render" );
 }
 
 bool ProfilingState::Find( const Profiling* profiling )
@@ -325,16 +320,6 @@ Profiling* ProfilingState::GetByID( int id )
     {
         return NULL;
     }
-}
-
-Profiling* ProfilingState::GetOrCreate( int& id, const char* name )
-{
-    if ( Profiling::None == id )
-    {
-        id = Create( name );
-    }
-
-    return GetByID( id );
 }
 
 Profiling* ProfilingState::Get( const char* name )
