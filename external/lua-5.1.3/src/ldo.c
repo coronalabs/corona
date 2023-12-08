@@ -436,6 +436,7 @@ static int resume_error (lua_State *L, const char *msg) {
 
 
 LUA_API int lua_resume (lua_State *L, int nargs) {
+  int i;
   int status;
   lua_lock(L);
   if (L->status != LUA_YIELD && (L->status != 0 || L->ci != L->base_ci))
@@ -445,11 +446,19 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
   luai_userstateresume(L, nargs);
   lua_assert(L->errfunc == 0);
   L->baseCcalls = ++L->nCcalls;
+// Custom for Solar2D:
+    for (i = 0; i < L->nBookmarks; i++)
+      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 1, G(L)->bookmarkud);
+// /Custom
   status = luaD_rawrunprotected(L, resume, L->top - nargs);
   if (status != 0) {  /* error? */
     L->status = cast_byte(status);  /* mark thread as `dead' */
     luaD_seterrorobj(L, status, L->top);
     L->ci->top = L->top;
+// Custom for Solar2D:
+    for (i = 0; i < L->nBookmarks; i++)
+      G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0, G(L)->bookmarkud);
+// /Custom
   }
   else {
     lua_assert(L->nCcalls == L->baseCcalls);
@@ -462,10 +471,15 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
 
 
 LUA_API int lua_yield (lua_State *L, int nresults) {
+  int i;
   luai_userstateyield(L, nresults);
   lua_lock(L);
   if (L->nCcalls > L->baseCcalls)
     luaG_runerror(L, "attempt to yield across metamethod/C-call boundary");
+// Custom for Solar2D:
+  for (i = L->nBookmarks - 1; i >= 0; i--)
+    G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0, G(L)->bookmarkud);
+// /Custom
   L->base = L->top - nresults;  /* protect stack slots below */
   L->status = LUA_YIELD;
   lua_unlock(L);
@@ -483,6 +497,7 @@ int luaD_pcall (lua_State *L, Pfunc func, void *u,
   L->errfunc = ef;
   status = luaD_rawrunprotected(L, func, u);
   if (status != 0) {  /* an error occurred? */
+    int i, pos;
     StkId oldtop = restorestack(L, old_top);
     luaF_close(L, oldtop);  /* close eventual pending closures */
     luaD_seterrorobj(L, status, oldtop);
@@ -492,6 +507,17 @@ int luaD_pcall (lua_State *L, Pfunc func, void *u,
     L->savedpc = L->ci->savedpc;
     L->allowhook = old_allowhooks;
     restore_stack_limit(L);
+// Custom for Solar2D:
+    pos = cast_int(L->ci - L->base_ci);
+    for (i = L->nBookmarks - 1; i >= 0; i--) {
+      if ((L->bookmarks[i] >> 16) <= pos)
+        break;
+	  else {
+        G(L)->bookmark(L->bookmarks[i] & 0xFFFF, 0, G(L)->bookmarkud);
+        L->nBookmarks--;
+	  }
+    }
+// /Custom
   }
   L->errfunc = old_errfunc;
   return status;

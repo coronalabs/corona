@@ -299,6 +299,13 @@
 			remoteGlobalIDString = C2D927251ACA098800B7F9AC;
 			remoteInfo = CoronaShell;
 		};
+		F5567DDA2ADC7847008CD550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5567DBC2ADC76CF008CD550 /* NetworkPlugin.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A49186401641DDB800A39286;
+			remoteInfo = network;
+		};
 		F5FBD1DC206961A9009A9D32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A4ED11ED14D350C400ECF49E /* lua.xcodeproj */;
@@ -524,6 +531,8 @@
 		F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BuilderPluginDownloader.lua; path = ../../tools/CoronaBuilder/BuilderPluginDownloader.lua; sourceTree = "<group>"; };
 		F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_DownloadPluginsMain.cpp; path = ../../tools/CoronaBuilder/Rtt_DownloadPluginsMain.cpp; sourceTree = "<group>"; };
 		F547C7F51ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_DownloadPluginsMain.h; path = ../../tools/CoronaBuilder/Rtt_DownloadPluginsMain.h; sourceTree = "<group>"; };
+		F5567DAB2ADC76C2008CD550 /* network.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = network.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5567DBC2ADC76CF008CD550 /* NetworkPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NetworkPlugin.xcodeproj; path = ../../plugins/network/mac/NetworkPlugin.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F56569EE24565C320059F1A9 /* Rtt_HTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_HTTPClient.h; path = ../../librtt/Rtt_HTTPClient.h; sourceTree = "<group>"; };
 		F58CA28C245658C5002191EA /* Rtt_HTTPClientCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_HTTPClientCommon.cpp; path = ../../librtt/Rtt_HTTPClientCommon.cpp; sourceTree = "<group>"; };
 		F58CA29D245658E3002191EA /* Rtt_HTTPClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Rtt_HTTPClient.mm; sourceTree = "<group>"; };
@@ -849,6 +858,7 @@
 				C2F1BAFD1EF48F2F00D77BD7 /* ratatouille.xcodeproj */,
 				C2F1BAF71EF48EF500D77BD7 /* CoronaShell.xcodeproj */,
 				A4ED11ED14D350C400ECF49E /* lua.xcodeproj */,
+				F5567DBC2ADC76CF008CD550 /* NetworkPlugin.xcodeproj */,
 				A4BABCDC14CF4B7B00696484 /* external */,
 				A4BABC9614CF496700696484 /* librtt */,
 				A4DFE6D914CF438400C2A230 /* shared */,
@@ -878,6 +888,7 @@
 		A4FCD3EF14CF417C0004E91D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F5567DAB2ADC76C2008CD550 /* network.dylib */,
 				A4A47E3C14D2302800B5111C /* IOKit.framework */,
 				A4A47E2714D2284300B5111C /* SystemConfiguration.framework */,
 				A4A47E2014D227D000B5111C /* Security.framework */,
@@ -986,6 +997,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F5567DD42ADC7847008CD550 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F5567DDB2ADC7847008CD550 /* network.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1045,6 +1064,10 @@
 				{
 					ProductGroup = A4ED11EE14D350C400ECF49E /* Products */;
 					ProjectRef = A4ED11ED14D350C400ECF49E /* lua.xcodeproj */;
+				},
+				{
+					ProductGroup = F5567DD42ADC7847008CD550 /* Products */;
+					ProjectRef = F5567DBC2ADC76CF008CD550 /* NetworkPlugin.xcodeproj */;
 				},
 				{
 					ProductGroup = C2F1BAFE1EF48F2F00D77BD7 /* Products */;
@@ -1190,6 +1213,13 @@
 			fileType = wrapper.framework;
 			path = CoronaCards.framework;
 			remoteRef = C2F1BB281EF48F3000D77BD7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5567DDB2ADC7847008CD550 /* network.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = network.dylib;
+			remoteRef = F5567DDA2ADC7847008CD550 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
