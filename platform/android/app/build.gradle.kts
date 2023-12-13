@@ -725,7 +725,7 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         }
     }
 
-    logger.lifecycle("Collecting native libraries")
+    logger.lifecycle("Clean up libraries")
     run {
         delete(generatedPluginNativeLibsDir)
     }
