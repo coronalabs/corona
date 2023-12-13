@@ -200,6 +200,9 @@ android {
         versionCode = coronaVersionCode
         versionName = coronaVersionName
         multiDexEnabled = true
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86", "x86_64")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -725,29 +728,6 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
     logger.lifecycle("Collecting native libraries")
     run {
         delete(generatedPluginNativeLibsDir)
-        file(coronaPlugins).walk().maxDepth(1).forEach {
-            if (it == coronaPlugins) return@forEach
-            if (pluginDisabledNative.contains(it.name)) return@forEach
-
-            val hasJniLibs = !fileTree(it) {
-                include("**/jniLibs/**/*.so")
-            }.isEmpty
-            val armeabiV7Libs = fileTree(it) {
-                include("**/*.so")
-            }
-            val hasArm32Libs = !armeabiV7Libs.isEmpty
-            if (!hasJniLibs && hasArm32Libs) {
-                logger.error("WARNING: Plugin '$it' contain native library for armeabi-v7a but not for arm64.")
-                copy {
-                    from(armeabiV7Libs)
-                    into(generatedPluginNativeLibsDir)
-                    eachFile {
-                        path = "armeabi-v7a/$name"
-                    }
-                    includeEmptyDirs = false
-                }
-            }
-        }
     }
 
     logger.lifecycle("Collecting legacy jar libraries")
