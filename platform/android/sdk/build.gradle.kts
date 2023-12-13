@@ -10,6 +10,9 @@ android {
         minSdk = 15
         targetSdk = 33
         version = 1
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86", "x86_64")
+        }
     }
     sourceSets["main"].manifest.srcFile(file("AndroidManifest-New.xml"))
     sourceSets["main"].java.srcDirs(file("src"), file("../../../external/JNLua/src/main"), file("../../../plugins/network/android/src"))
