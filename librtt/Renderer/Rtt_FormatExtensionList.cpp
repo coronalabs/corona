@@ -562,9 +562,9 @@ FormatExtensionList::Build( Rtt_Allocator* allocator, const CoronaVertexExtensio
             group.size += attribute.GetSize();
             
             ++group.count;
-
+     
             String* str = Rtt_NEW( allocator, String( allocator, attributeData.name ) );
-
+            
             attribute.nameHash = str->GetHash32();
             
             attributes.Insert( attributeIndex, attribute );
@@ -615,7 +615,7 @@ FormatExtensionList::ReconcileFormats( Rtt_Allocator* allocator, CommandBuffer *
         attributes.Append( geometryAttribute );
         
         U32 groupIndex = geometryList->FindGroup( geometryAttributeIndex );
-
+        
         bool indexFound = false;
 
         for (S32 i = 0, length = groupIndices.Length(); i < length && !indexFound; i++)
@@ -637,7 +637,7 @@ FormatExtensionList::ReconcileFormats( Rtt_Allocator* allocator, CommandBuffer *
         
         ++groups[groupIndex].count;
     }
-
+    
     FormatExtensionList reconciledList = FormatExtensionList::FromArrays( groups, attributes );
     
     U32 geometryAttributeCount = geometryList ? geometryList->fAttributeCount : 0;

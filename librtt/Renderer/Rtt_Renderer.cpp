@@ -27,7 +27,7 @@
 #include "Core/Rtt_Math.h"
 #include "Core/Rtt_Types.h"
 #include "Renderer/Rtt_MCPUResourceObserver.h"
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
 
@@ -172,6 +172,9 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fCustomInfo( Rtt_NEW( fAllocator, CustomGraphicsInfo( fAllocator ) ) ),
     fSyncedCount( 0U ),
     fMaybeDirty( false ),
+    fGeometryWriters( allocator ),
+    fCurrentGeometryWriterList( NULL ),
+    fCanAddGeometryWriters( false ),
     fMaskCountIndex( 0 ),
     fMaskCount( allocator ),
     fCurrentProgramMaskCount( 0 ),
@@ -246,6 +249,8 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTi
     fMaskCount[0] = 0;
     fInsertionCount = 0;
     
+    SetGeometryWriters( NULL, 0 );
+
     fStatistics = Statistics();
     fStartTime = START_TIMING();
 
@@ -876,9 +881,9 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         
             if (effectCallbacks && effectCallbacks->shaderBind)
             {
-                ObjectBoxList list;
+                OBJECT_HANDLE_SCOPE();
                 
-                OBJECT_BOX_STORE( Renderer, renderer, this );
+                OBJECT_HANDLE_STORE( Renderer, renderer, this );
                 
                 effectCallbacks->shaderBind( renderer, shaderData->GetExtraSpace() );
 
@@ -1275,6 +1280,151 @@ Renderer::IssueCaptures( Texture * fill0 )
 }
 
 void
+Renderer::SetGeometryWriters( const GeometryWriter* list, U32 n )
+{
+    if ( 0 == n || list != fCurrentGeometryWriterList )
+    {
+        fGeometryWriters.Clear();
+
+        if ( NULL == list )
+        {
+            list = &GeometryWriter::CopyGeometryWriter();
+            n = 1;
+        }
+
+        GeometryWriter::MaskBits mask = 0;
+
+        for ( U32 i = 0; i < n; i++ )
+        {
+            GeometryWriter copy = list[i];
+
+            copy.fSaved = copy.fMask;
+
+            mask |= copy.fMask;
+
+            fGeometryWriters.Append( copy );
+        }
+
+        Rtt_ASSERT( GeometryWriter::kAll == mask );
+
+        fCurrentGeometryWriterList = list;
+    }
+}
+        
+bool
+Renderer::AddGeometryWriter( const GeometryWriter& writer, bool isUpdate )
+{
+    if ( !fCanAddGeometryWriters )
+    {
+        Rtt_TRACE_SIM(( "ERROR: geometry writers may only added within a Shader::Draw()'s before or after method" ));
+
+        return false;
+    }
+
+    S32 iMax = fGeometryWriters.Length(), insertPos = -1;
+
+    if ( !isUpdate )
+    {
+        for ( S32 i = 0; i < iMax; i++ )
+        {
+            // Has "update" writers? insert before them...
+            if ( fGeometryWriters[i].fSaved & GeometryWriter::kIsUpdate )
+            {
+                insertPos = i;
+
+                break;
+            }
+
+            // ...else indicate to existing writer that it might be partially overwritten;
+            // if this clears the mask entirely, the writer will be disabled.
+            fGeometryWriters[i].fMask &= ~writer.fMask; 
+        }
+    }
+
+    fGeometryWriters.Insert( insertPos, writer );
+
+    if ( isUpdate )
+    {
+        fGeometryWriters[iMax].fSaved |= GeometryWriter::kIsUpdate;
+    }
+
+    return true;
+}
+
+Renderer::GeometryWriterRAII::GeometryWriterRAII( Renderer& renderer )
+:   fRenderer( renderer )
+{
+    fRenderer.fCanAddGeometryWriters = true;
+}
+
+Renderer::GeometryWriterRAII::~GeometryWriterRAII()
+{
+    fRenderer.fCanAddGeometryWriters = false;
+
+    auto & writers = fRenderer.fGeometryWriters;
+
+    for ( S32 i = 0, iMax = writers.Length(); i < iMax; i++ )
+    {
+        // Restore any "established" writers...
+        if ( writers[i].fSaved & GeometryWriter::kAll )
+        {
+            writers[i].fMask = writers[i].fSaved;
+            writers[i].fSaved = 0;
+        }
+
+        // ...and lop off any "custom" ones.
+        else
+        {
+            writers.Remove( i, iMax - i, false );
+
+            break;
+        }
+    }
+}
+
+void
+Renderer::WriteGeometry( void* dstGeomComp, const void* srcGeom, U32 stride, U32 index, U32 count, GeometryWriter::MaskBits validBits )
+{
+    CoronaGeometryMappingLayout layout = {};
+    GeometryWriter::MaskBits mask = 0;
+
+    layout.outStride = stride;
+
+	for ( S32 i = 0, iMax = fGeometryWriters.Length(); i < iMax; i++ )
+	{
+        const GeometryWriter& cur = fGeometryWriters[i];
+
+        if ( 0 == ( validBits & cur.fMask ) )
+        {
+            continue;
+        }
+
+        mask |= cur.fMask;
+
+		const void* from = cur.fContext;
+
+        if ( NULL == from )
+        {
+            layout.inStride = stride; // n.b. currently always the case, cf. MergeVertexData() et al.
+
+            from = static_cast< const unsigned char* >( srcGeom ) + index * stride + cur.fOffset; // ditto
+        }
+
+        else
+        {
+            layout.inStride = 0;
+        }
+
+		layout.count = cur.fComponents;
+		layout.type = (CoronaGeometryAttributeType)cur.fType;
+
+		cur.fWriter( static_cast< unsigned char* >( dstGeomComp ) + cur.fOffset, from, &layout, index, count );
+	}
+
+    Rtt_ASSERT( mask );
+}
+
+void
 Renderer::QueueUpdate( CPUResource* resource )
 {
     fUpdateQueue.Append( resource );
@@ -1485,20 +1635,27 @@ Renderer::EnumerateDirtyBlocks( ArrayS32& dirtyIndices )
 void
 Renderer::UpdateDirtyBlocks( const ArrayS32& dirtyIndices, U32 largestDirtySize )
 {
+    S32 iMax = dirtyIndices.Length();
+
+    if ( 0 == iMax )
+    {
+        return;
+    }
+
     Array<U8> newContents( fAllocator ), oldContents( fAllocator );
     
     newContents.Reserve( largestDirtySize );
     oldContents.Reserve( largestDirtySize );
  
-    ObjectBoxList list;
+    OBJECT_HANDLE_SCOPE();
     
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
-    OBJECT_BOX_STORE( Renderer, renderer, this );
+    OBJECT_HANDLE_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
+    OBJECT_HANDLE_STORE( Renderer, renderer, this );
     
     const U8* workingState = fWorkingState.ReadAccess();
     U8* currentState = fCurrentState.WriteAccess();
     
-    for (S32 i = 0, iMax = dirtyIndices.Length(); i < iMax; ++i)
+    for (S32 i = 0; i < iMax; ++i)
     {
         const StateBlockInfo* info = fCustomInfo->fStateBlocks[dirtyIndices[i]];
         
@@ -1513,17 +1670,24 @@ Renderer::UpdateDirtyBlocks( const ArrayS32& dirtyIndices, U32 largestDirtySize 
 void
 Renderer::RestoreDefaultBlocks()
 {
-    ObjectBoxList list;
+    S32 iMax = fCustomInfo->fStateBlocks.Length();
+
+    if ( 0 == iMax )
+    {
+        return;
+    }
+
+    OBJECT_HANDLE_SCOPE();
     
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
-    OBJECT_BOX_STORE( Renderer, renderer, this );
+    OBJECT_HANDLE_STORE( CommandBuffer, commandBuffer, fBackCommandBuffer );
+    OBJECT_HANDLE_STORE( Renderer, renderer, this );
  
     Array< U8 > newContents( fAllocator ), oldContents( fAllocator );
     const U8* defaultState = fDefaultState.ReadAccess();
     const U8* currentState = fCurrentState.ReadAccess();
     bool anyChanged = false;
     
-    for (S32 i = 0, iMax = fCustomInfo->fStateBlocks.Length(); i < iMax; ++i)
+    for (S32 i = 0; i < iMax; ++i)
     {
         const StateBlockInfo* info = fCustomInfo->fStateBlocks[i];
         
@@ -1690,10 +1854,12 @@ Renderer::CopyVertexData( Geometry* geometry, Geometry::Vertex* destination, boo
                 CopyIndexedTrianglesAsLines( geometry, destination );
                 break;
             case Geometry::kLineLoop:
-                memcpy( fCurrentVertex, geometry->GetVertexData(), verticesUsed * vertexSize );
+                WriteGeometry( fCurrentVertex, geometry->GetVertexData(), vertexSize, 0, verticesUsed );
+                /* memcpy( fCurrentVertex, geometry->GetVertexData(), verticesUsed * vertexSize ); */
                 break;
             case Geometry::kLines:
-                memcpy( fCurrentVertex, geometry->GetVertexData(), verticesUsed * vertexSize );
+                WriteGeometry( fCurrentVertex, geometry->GetVertexData(), vertexSize, 0, verticesUsed );
+                /* memcpy( fCurrentVertex, geometry->GetVertexData(), verticesUsed * vertexSize ); */
                 break;
         }
     }
@@ -1703,20 +1869,29 @@ Renderer::CopyVertexData( Geometry* geometry, Geometry::Vertex* destination, boo
         {
             // Triangle strips are batched by adding degenerate triangles
             // at the beginning and end of each strip.
+            WriteGeometry( destination + 1, geometry->GetVertexData(), vertexSize, 0, verticesUsed );
+
+            memcpy( destination, destination + 1, vertexSize );
+
+            destination += verticesUsed;
+
+            memcpy( destination + 1, destination, vertexSize );
+        /*
             memcpy( destination++, geometry->GetVertexData(), vertexSize );
 
             memcpy( destination, geometry->GetVertexData(), verticesUsed * vertexSize );
             destination += verticesUsed;
 
             memcpy( destination++, geometry->GetVertexData() + verticesUsed - 1, vertexSize );
-
+         */
             fDegenerateVertexCount = 1;
         }
         else
         {
             // For data which does not exist on the GPU and is not batched,
             // we still double buffer it to be threadsafe.
-            memcpy( fCurrentVertex, geometry->GetVertexData(), verticesUsed * vertexSize );
+            WriteGeometry( fCurrentVertex, geometry->GetVertexData(), vertexSize, 0, verticesUsed );
+            /* memcpy( fCurrentVertex, geometry->GetVertexData(), verticesUsed * vertexSize ); */
         }
     }
 }
@@ -1727,19 +1902,26 @@ Renderer::CopyTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* desti
     const U32 count = geometry->GetVerticesUsed() - 2;
     const size_t vertexSize = sizeof( Geometry::Vertex );
     const Geometry::Vertex* data = geometry->GetVertexData();
-    
+
     for( U32 i = 0; i < count; ++i )
     {
         // Line 1
-        memcpy( destination, &data[i], 2 * vertexSize );
+        WriteGeometry( destination, data, vertexSize, i, 2 );
+
+        /* memcpy( destination, &data[i], 2 * vertexSize ); */
         destination += 2;
         
         // Line 2
+        WriteGeometry( destination++, data, vertexSize, i );
+        WriteGeometry( destination++, data, vertexSize, i + 1 );
+    /*
         memcpy( destination++, &data[i], vertexSize );
         memcpy( destination++, &data[i + 2], vertexSize );
+    */
     }
 
-    memcpy( destination, &data[count], 2 * vertexSize );
+    WriteGeometry( destination, data, vertexSize, count, 2 );
+    /* memcpy( destination, &data[count], 2 * vertexSize ); */
 }
 
 void
@@ -1752,16 +1934,28 @@ Renderer::CopyTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destinat
     for( U32 i = 1; i < count; ++i )
     {
         // Line 1
+        WriteGeometry( destination++, data, vertexSize, 0 );
+        WriteGeometry( destination++, data, vertexSize, i );
+    /*
         memcpy( destination++, &data[0], vertexSize );
         memcpy( destination++, &data[i], vertexSize );
+    */
         
         // Line 2
+        WriteGeometry( destination++, data, vertexSize, i );
+        WriteGeometry( destination++, data, vertexSize, i + 1 );
+    /*
         memcpy( destination++, &data[i], vertexSize );
         memcpy( destination++, &data[i + 1], vertexSize );
+    */
     }
-
+    
+    WriteGeometry( destination++, data, vertexSize, 0 );
+    WriteGeometry( destination, data, vertexSize, count );
+/*
     memcpy( destination++, &data[0], vertexSize );
     memcpy( destination, &data[count], vertexSize );
+*/
 }
 
 void
@@ -1776,16 +1970,28 @@ Renderer::CopyTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destinatio
         U32 index = i * 3;
 
         // Line 1
+        WriteGeometry( destination++, data, vertexSize, index );
+        WriteGeometry( destination++, data, vertexSize, index + 1 );
+    /*
         memcpy( destination++, &data[index], vertexSize );
         memcpy( destination++, &data[index + 1], vertexSize );
-        
+     */
+
         // Line 2
+        WriteGeometry( destination++, data, vertexSize, index + 1 );
+        WriteGeometry( destination++, data, vertexSize, index + 2 );
+    /*
         memcpy( destination++, &data[index + 1], vertexSize );
         memcpy( destination++, &data[index + 2], vertexSize );
+    */
 
         // Line 3
+        WriteGeometry( destination++, data, vertexSize, index + 2 );
+        WriteGeometry( destination++, data, vertexSize, index );
+    /*
         memcpy( destination++, &data[index + 2], vertexSize );
         memcpy( destination++, &data[index], vertexSize );
+    */
     }
 }
 
@@ -1802,16 +2008,28 @@ Renderer::CopyIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* des
         U32 index = i * 3;
         
         // Line 1
+        WriteGeometry( destination++, vertexData, vertexSize, indexData[index] );
+        WriteGeometry( destination++, vertexData, vertexSize, indexData[index + 1] );
+    /*
         memcpy( destination++, &vertexData[ indexData[index] ], vertexSize );
         memcpy( destination++, &vertexData[ indexData[index + 1] ], vertexSize );
+    */
                 
         // Line 2
+        WriteGeometry( destination++, vertexData, vertexSize, indexData[index + 1] );
+        WriteGeometry( destination++, vertexData, vertexSize, indexData[index + 2] );
+    /*
         memcpy( destination++, &vertexData[ indexData[index + 1] ], vertexSize );
         memcpy( destination++, &vertexData[ indexData[index + 2] ], vertexSize );
+    */
 
         // Line 3
+        WriteGeometry( destination++, vertexData, vertexSize, indexData[index + 2] );
+        WriteGeometry( destination++, vertexData, vertexSize, indexData[index] );
+    /*
         memcpy( destination++, &vertexData[ indexData[index + 2] ], vertexSize );
         memcpy( destination++, &vertexData[ indexData[index] ], vertexSize );
+    */
     }
 }
 
@@ -1836,20 +2054,24 @@ Renderer::GetVersionCode( bool addingMask ) const
     }
 }
 
-static void
-MergeVertexData( Geometry::Vertex** destination, const Geometry::Vertex* mainSrc, const Geometry::Vertex* extensionSrc, int index, int extraCount )
+void
+Renderer::MergeVertexData( Geometry::Vertex** destination, const Geometry::Vertex* mainSrc, const Geometry::Vertex* extensionSrc, int index, int extraCount )
 {
-    memcpy( *destination, &mainSrc[index], sizeof(Geometry::Vertex) );
+    WriteGeometry( *destination, mainSrc, sizeof(Geometry::Vertex), index );
+
+    /* memcpy( *destination, &mainSrc[index], sizeof(Geometry::Vertex) ); */
     
     ++*destination;
-    
-    memcpy( *destination, &extensionSrc[index * extraCount], sizeof(Geometry::Vertex) * extraCount );
+
+    WriteGeometry( *destination, extensionSrc, sizeof(Geometry::Vertex) * extraCount, index, 1, GeometryWriter::kExtra );
+
+    /* memcpy( *destination, &extensionSrc[index * extraCount], sizeof(Geometry::Vertex) * extraCount ); */
     
     *destination += extraCount;
 }
 
-static void
-MergeVertexDataRange( Geometry::Vertex** destination, Geometry* geometry, int count, int extraCount, int offset = 0 )
+void
+Renderer::MergeVertexDataRange( Geometry::Vertex** destination, Geometry* geometry, int count, int extraCount, int offset )
 {
     const Geometry::Vertex * mainSrc = geometry->GetVertexData(), * extensionSrc = geometry->GetExtendedVertexData();
     

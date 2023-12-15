@@ -14,7 +14,7 @@
 
 #include "Rtt_LuaContext.h"
 
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 #include "Display/Rtt_TextureResource.h"
 #include "Core/Rtt_SharedPtr.h"
 #include "Display/Rtt_TextureFactory.h"
@@ -99,6 +99,14 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 
 // ----------------------------------------------------------------------------
 
+OBJECT_HANDLE_DEFINE_TYPE( Renderer );
+OBJECT_HANDLE_DEFINE_TYPE( RenderData );
+OBJECT_HANDLE_DEFINE_TYPE( Shader );
+OBJECT_HANDLE_DEFINE_TYPE( ShaderData );
+OBJECT_HANDLE_DEFINE_TYPE( CommandBuffer );
+
+// ----------------------------------------------------------------------------
+
 static Rtt::Renderer &
 GetRenderer( lua_State * L )
 {
@@ -134,7 +142,7 @@ int CoronaRendererRegisterStateBlock( lua_State * L, const CoronaStateBlock * bl
 CORONA_API
 int CoronaRendererReadStateBlock( const CoronaRenderer * renderer, unsigned long blockID, void * data, unsigned int * size )
 {
-    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (rendererObject && blockID && size)
     {
@@ -163,7 +171,7 @@ int CoronaRendererReadStateBlock( const CoronaRenderer * renderer, unsigned long
 CORONA_API
 int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned long blockID, const void * data, unsigned int size )
 {
-    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (rendererObject && blockID)
     {
@@ -201,7 +209,7 @@ CommandCopyWriter( const CoronaCommandBuffer *, unsigned char * to, const void *
     
     else
     {
-        CoronaLog( "WARNING: Built-in command copy writer has no data source" );
+        Rtt_TRACE_SIM(( "WARNING: Built-in command copy writer has no data source" ));
     }
 }
 
@@ -235,7 +243,7 @@ int CoronaRendererRegisterCommand( lua_State * L, const CoronaCommand * command,
 CORONA_API
 int CoronaRendererIssueCommand( const CoronaRenderer * renderer, unsigned long commandID, void * data, unsigned int size )
 {
-    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (rendererObject && commandID && rendererObject->IssueCustomCommand( commandID - 1U, data, size ))
     {
@@ -250,7 +258,7 @@ int CoronaRendererIssueCommand( const CoronaRenderer * renderer, unsigned long c
 CORONA_API
 const unsigned char * CoronaCommandBufferGetBaseAddress( const CoronaCommandBuffer * commandBuffer )
 {
-    const Rtt::CommandBuffer * commandBufferObject = OBJECT_BOX_LOAD( CommandBuffer, commandBuffer );
+    const Rtt::CommandBuffer * commandBufferObject = OBJECT_HANDLE_LOAD( CommandBuffer, commandBuffer );
     
     if (commandBufferObject)
     {
@@ -263,7 +271,7 @@ const unsigned char * CoronaCommandBufferGetBaseAddress( const CoronaCommandBuff
 CORONA_API
 int CoronaCommandBufferWriteNamedUniform( const CoronaCommandBuffer * commandBuffer, const char * uniformName, const CoronaWriteUniformParams * params, unsigned int size )
 {
-    Rtt::CommandBuffer * commandBufferObject = OBJECT_BOX_LOAD( CommandBuffer, commandBuffer );
+    Rtt::CommandBuffer * commandBufferObject = OBJECT_HANDLE_LOAD( CommandBuffer, commandBuffer );
     
     if (commandBufferObject && params)
     {
@@ -290,100 +298,47 @@ int CoronaCommandBufferWriteNamedUniform( const CoronaCommandBuffer * commandBuf
 
 // ----------------------------------------------------------------------------
 
-CORONA_API
-unsigned int CoronaGeometryCopyData( void * dst, const CoronaGeometryMappingLayout * dstLayout, const void * src, const CoronaGeometryMappingLayout * srcLayout )
-{
-    if (!dst || !dstLayout || !src || !srcLayout)
-    {
-        return 0U;
-    }
-
-    if (!dstLayout->stride || dstLayout->count != srcLayout->count || dstLayout->type != srcLayout->type)
-    {
-        return 0U;
-    }
-
-    U32 valuesSize = 0U;
-
-    switch (dstLayout->type)
-    {
-    case kAttributeType_Byte:
-        valuesSize = 1U;
-        break;
-    case kAttributeType_Float:
-        valuesSize = 4U;
-        break;
-    default:
-        return 0U;
-    }
-
-    valuesSize *= dstLayout->count;
-
-    U32 srcDatumSize = srcLayout->stride ? srcLayout->stride : srcLayout->size;
-
-    if (dstLayout->offset + valuesSize > dstLayout->stride || srcLayout->offset + valuesSize > srcDatumSize)
-    {
-        return 0U;
-    }
-
-    U32 n = dstLayout->size / dstLayout->stride;
-
-    if (srcLayout->stride)
-    {
-        U32 n2 = srcLayout->size / srcLayout->stride;
-
-        if (n2 < n)
-        {
-            n = n2;
-        }
-    }
-    
-    const U8 * srcData = reinterpret_cast< const U8 * >( src ) + srcLayout->offset;
-    U8 * dstData = reinterpret_cast< U8 * >( dst ) + dstLayout->offset;
-
-    for (size_t i = 0U; i < n; ++i)
-    {
-        memcpy( dstData + i * dstLayout->stride, srcData + i * srcLayout->stride, valuesSize );
-    }
-
-    return n;
-}
-
-static bool GetLayout( const Rtt::Geometry * geometry, const char * name, CoronaGeometryMappingLayout * layout )
+static bool GetLayout( const char * name, Rtt::GeometryWriter * writer )
 {
     if (!name || !name[0])
     {
         return false;
     }
+        
+    U32 offset = 0U;
 
     if (name[1])
     {
         if (strcmp( name, "position" ) == 0)
         {
-            layout->count = 3U;
-            layout->offset = offsetof( Rtt::Geometry::Vertex, x );
-            layout->type = kAttributeType_Float;
+            writer->fComponents = 3U;
+            writer->fOffset = offsetof( Rtt::Geometry::Vertex, x );
+            writer->fType = kAttributeType_Float;
+            writer->fMask = Rtt::GeometryWriter::kPosition;
         }
 
         else if (strcmp( name, "texCoord" ) == 0)
         {
-            layout->count = 3U;
-            layout->offset = offsetof( Rtt::Geometry::Vertex, u );
-            layout->type = kAttributeType_Float;
+            writer->fComponents = 3U;
+            writer->fOffset = offsetof( Rtt::Geometry::Vertex, u );
+            writer->fType = kAttributeType_Float;
+            writer->fMask = Rtt::GeometryWriter::kTexcoord;
         }
 
         else if (strcmp( name, "color" ) == 0)
         {
-            layout->count = 4U;
-            layout->offset = offsetof( Rtt::Geometry::Vertex, rs );
-            layout->type = kAttributeType_Byte;
+            writer->fComponents = 4U;
+            writer->fOffset = offsetof( Rtt::Geometry::Vertex, rs );
+            writer->fType = kAttributeType_Byte;
+            writer->fMask = Rtt::GeometryWriter::kColor;
         }
 
         else if (strcmp( name, "userData" ) == 0)
         {
-            layout->count = 4U;
-            layout->offset = offsetof( Rtt::Geometry::Vertex, ux );
-            layout->type = kAttributeType_Float;
+            writer->fComponents = 4U;
+            writer->fOffset = offsetof( Rtt::Geometry::Vertex, ux );
+            writer->fType = kAttributeType_Float;
+            writer->fMask = Rtt::GeometryWriter::kUserdata;
         }
 
         else if ('u' == name[0] && name[1] && !name[2])
@@ -393,19 +348,23 @@ static bool GetLayout( const Rtt::Geometry * geometry, const char * name, Corona
             case 'x':
             case 'y':
             case 'z':
-                layout->offset = offsetof( Rtt::Geometry::Vertex, ux ) + (name[1] - 'x') * sizeof( float );
+                offset = name[1] - 'x';
+
+                writer->fOffset = offsetof( Rtt::Geometry::Vertex, ux ) + offset * sizeof( float );
+                writer->fMask = Rtt::GeometryWriter::kUX << offset;
 
                 break;
             case 'w':
-                layout->offset = offsetof( Rtt::Geometry::Vertex, uw );
+                writer->fOffset = offsetof( Rtt::Geometry::Vertex, uw );
+                writer->fMask = Rtt::GeometryWriter::kUW;
 
                 break;
             default:
                 return false;
             }
 
-            layout->count = 1U;
-            layout->type = kAttributeType_Float;
+            writer->fComponents = 1U;
+            writer->fType = kAttributeType_Float;
         }
 
         else
@@ -416,22 +375,26 @@ static bool GetLayout( const Rtt::Geometry * geometry, const char * name, Corona
 
     else
     {
-        U32 offset = 0U;
-
         switch (*name)
         {
         case 'x':
         case 'y':
         case 'z':
-            layout->type = kAttributeType_Float;
-            layout->offset = offsetof( Rtt::Geometry::Vertex, x ) + (*name - 'x') * sizeof( float );
+            offset = *name - 'x';
+
+            writer->fType = kAttributeType_Float;
+            writer->fOffset = offsetof( Rtt::Geometry::Vertex, x ) + offset * sizeof( float );
+            writer->fMask = Rtt::GeometryWriter::kX << offset;
 
             break;
         case 'u':
         case 'v':
         case 'q':
-            layout->type = kAttributeType_Float;
-            layout->offset = offsetof( Rtt::Geometry::Vertex, u ) + (*name != 'q' ? (*name - 'u') : 2U) * sizeof( float );
+            offset = *name != 'q' ? (*name - 'u') : 2U;
+
+            writer->fType = kAttributeType_Float;
+            writer->fOffset = offsetof( Rtt::Geometry::Vertex, u ) + offset * sizeof( float );
+            writer->fMask = Rtt::GeometryWriter::kU << offset;
 
             break;
         case 'a':
@@ -441,34 +404,40 @@ static bool GetLayout( const Rtt::Geometry * geometry, const char * name, Corona
         case 'g':
             ++offset; // ...again...
         case 'r':
-            layout->type = kAttributeType_Byte;
-            layout->offset = offsetof( Rtt::Geometry::Vertex, rs ) + offset;
+            writer->fType = kAttributeType_Byte;
+            writer->fOffset = offsetof( Rtt::Geometry::Vertex, rs ) + offset;
+            writer->fMask = Rtt::GeometryWriter::kRS << offset;
 
             break;
         default:
             return false;
         }
 
-        layout->count = 1U;
+        writer->fComponents = 1U;
     }
-
-    layout->stride = sizeof( Rtt::Geometry::Vertex );
-    layout->size = sizeof( Rtt::Geometry::Vertex ) * geometry->GetVerticesUsed();
 
     return true;
 }
 
 CORONA_API
-void * CoronaGeometryGetMappingFromRenderData( const CoronaRenderData * renderData, const char * name, CoronaGeometryMappingLayout * layout )
+int CoronaGeometrySetComponentWriter ( const CoronaRenderer * renderer, const char * name, CoronaGeometryComponentWriter writer, const void * context, int update )
 {
-    Rtt::RenderData * renderDataObject = OBJECT_BOX_LOAD( RenderData, renderData );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
-    if (renderDataObject && GetLayout( renderDataObject->fGeometry, name, layout ))
+    if (rendererObject)
     {
-        return renderDataObject->fGeometry->GetVertexData();
+        Rtt::GeometryWriter gw = {};
+        
+        gw.fContext = context;
+        gw.fWriter = writer;
+
+        if ( GetLayout( name, &gw ) && rendererObject->AddGeometryWriter( gw, update != 0 ) )
+        {
+            return 1;
+        }
     }
 
-    return NULL;
+    return 0;
 }
 
 CORONA_API
@@ -493,7 +462,7 @@ int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name )
 CORONA_API
 int CoronaShaderGetEffectDetail( const CoronaShader * shader, int index, CoronaEffectDetail * detail )
 {
-    const Rtt::Shader * shaderObject = OBJECT_BOX_LOAD( Shader, shader );
+    const Rtt::Shader * shaderObject = OBJECT_HANDLE_LOAD( Shader, shader );
 
     if (shaderObject)
     {
@@ -538,9 +507,9 @@ int CoronaShaderUnregisterShellTransform( lua_State * L, const char * name )
 CORONA_API
 int CoronaShaderRawDraw( const CoronaShader * shader, const CoronaRenderData * renderData, const CoronaRenderer * renderer )
 {
-    const Rtt::Shader * shaderObject = OBJECT_BOX_LOAD( Shader, shader );
-    const Rtt::RenderData * renderDataObject = OBJECT_BOX_LOAD( RenderData, renderData );
-    Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    const Rtt::Shader * shaderObject = OBJECT_HANDLE_LOAD( Shader, shader );
+    const Rtt::RenderData * renderDataObject = OBJECT_HANDLE_LOAD( RenderData, renderData );
+    Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (shaderObject && renderDataObject && rendererObject)
     {
@@ -555,8 +524,8 @@ int CoronaShaderRawDraw( const CoronaShader * shader, const CoronaRenderData * r
 CORONA_API
 int CoronaShaderGetVersion( const CoronaRenderData * renderData, const CoronaRenderer * renderer )
 {
-    const Rtt::RenderData * renderDataObject = OBJECT_BOX_LOAD( RenderData, renderData );
-    const Rtt::Renderer * rendererObject = OBJECT_BOX_LOAD( Renderer, renderer );
+    const Rtt::RenderData * renderDataObject = OBJECT_HANDLE_LOAD( RenderData, renderData );
+    const Rtt::Renderer * rendererObject = OBJECT_HANDLE_LOAD( Renderer, renderer );
 
     if (renderDataObject && rendererObject)
     {

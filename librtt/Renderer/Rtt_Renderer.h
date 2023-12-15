@@ -258,6 +258,21 @@ class Renderer
 		void InsertCaptureRect( FrameBufferObject * fbo, Texture * texture, const Rect & clipped, const Rect & unclipped );
 		void IssueCaptures( Texture * fill0 );
 
+    public:
+        void SetGeometryWriters( const GeometryWriter* list, U32 n = 1 );
+        bool AddGeometryWriter( const GeometryWriter& writer, bool isUpdate );
+        bool CanAddGeometryWriters() const { return fCanAddGeometryWriters; }
+
+        struct GeometryWriterRAII {
+            GeometryWriterRAII( Renderer& renderer );
+            ~GeometryWriterRAII();
+
+            Renderer& fRenderer;
+        };
+        
+    protected:
+	    void WriteGeometry ( void * dstGeomComp, const void* srcGeom, U32 stride, U32 index, U32 count = 1, GeometryWriter::MaskBits validBits = GeometryWriter::kMain );
+
     protected:
         // Destroys all queued GPU resources passed into the DestroyQueue() method.
         void DestroyQueuedGPUResources();
@@ -288,6 +303,9 @@ class Renderer
         void CopyTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destination );
         void CopyIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
         void CopyTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
+
+        void MergeVertexData( Geometry::Vertex** destination, const Geometry::Vertex* mainSrc, const Geometry::Vertex* extensionSrc, int index, int extraCount );
+        void MergeVertexDataRange( Geometry::Vertex** destination, Geometry* geometry, int count, int extraCount, int offset = 0 );
 
         void CopyExtendedVertexData( Geometry* geometry, Geometry::Vertex* destination, bool interior );
         void CopyExtendedTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* destination );
@@ -389,6 +407,10 @@ class Renderer
         CustomGraphicsInfo* fCustomInfo; // n.b. avoids some #includes
         U16 fSyncedCount;
         bool fMaybeDirty;
+
+        Array< GeometryWriter > fGeometryWriters;
+        const GeometryWriter* fCurrentGeometryWriterList; // to detect change in writer; assumed to be stable object, i.e. either NULL (default) or some static array
+        bool fCanAddGeometryWriters;
 };
 
 // ----------------------------------------------------------------------------

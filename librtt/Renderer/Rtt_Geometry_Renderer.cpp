@@ -18,6 +18,8 @@
 #include "Display/Rtt_DisplayTypes.h"
 #include "Renderer/Rtt_RenderTypes.h"
 
+#include "Corona/CoronaGraphics.h"
+
 #include <cstring>
 #include <stddef.h>
 #include <string.h>
@@ -28,6 +30,28 @@ namespace Rtt
 {
 
 // ----------------------------------------------------------------------------
+
+static void
+GeometryCopier( void* dst, const void* src, const CoronaGeometryMappingLayout* layout, U32, U32 n )
+{
+	memcpy( dst, src, n * sizeof(Geometry::Vertex) );
+}
+
+const GeometryWriter&
+GeometryWriter::CopyGeometryWriter()
+{
+    static GeometryWriter sCopyGeometry;
+
+    if ( NULL == sCopyGeometry.fWriter )
+    {
+        sCopyGeometry.fMask = kAll;
+        sCopyGeometry.fWriter = &GeometryCopier;
+
+        // other properties unused, cf. GeometryCopier()
+    }
+
+    return sCopyGeometry;
+}
 
 void Geometry::Vertex::Zero()
 {

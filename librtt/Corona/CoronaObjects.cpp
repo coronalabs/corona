@@ -18,7 +18,7 @@
 #include "Rtt_LuaProxyVTable.h"
 #include "Rtt_Runtime.h"
 
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 
 #include "Display/Rtt_ContainerObject.h"
 #include "Display/Rtt_Display.h"
@@ -38,150 +38,8 @@
 
 // ----------------------------------------------------------------------------
 
-namespace Rtt
-{
-
-// ----------------------------------------------------------------------------
-
-ObjectBoxList::ObjectBoxList()
-{
-}
-    
-ObjectBoxList::~ObjectBoxList()
-{
-    for (Box & box : fBoxes)
-    {
-        box.fObject = NULL;
-    }
-}
-
-const char *
-ObjectBoxList::StringForType (int type)
-{
-    switch (type)
-    {
-    case kRenderer:
-        return "Renderer";
-    case kRenderData:
-        return "RenderData";
-    case kShader:
-        return "Shader";
-    case kShaderData:
-        return "ShaderData";
-    case kDisplayObject:
-        return "DisplayObject";
-    case kGroupObject:
-        return "GroupObject";
-    case kCommandBuffer:
-        return "CommandBuffer";
-    default:
-        return "Unknown";
-    }
-}
-
-bool
-ObjectBoxList::CanGetObject( const Box * box, int type )
-{
-    return type == box->fType || (kGroupObject == box->fType && kDisplayObject == type); // see Add() method
-}
-
-ObjectBoxList *
-ObjectBoxList::GetList( const Box * box )
-{
-    void * list = const_cast< void * >( box->fList );
-    
-    return ( ObjectBoxList * )list;
-}
-
-bool
-ObjectBoxList::CheckObject( const Box * box, int type )
-{
-    bool ok = false;
-
-    if (NULL == box)
-    {
-        CORONA_LOG_ERROR( "NULL %s supplied", StringForType( type ) );
-    }
-
-    else if (NULL == box->fObject)
-    {
-        CORONA_LOG_ERROR( "%s object has been invalidated", StringForType( type ) );
-    }
-
-    else if (!CanGetObject( box, type ))
-    {
-        CORONA_LOG_ERROR( "Expected %s but have %s", StringForType( type ), StringForType( box->fType ) );
-    }
-    
-    else
-    {
-        ok = true;
-    }
-    
-    return ok;
-}
-
-void *
-ObjectBoxList::GetObject( const Box * box, int type )
-{
-    if (CheckObject( box, type ))
-    {
-        return box->fObject;
-    }
-    
-    else
-    {
-        return NULL;
-    }
-}
-
-ObjectBoxList::Box *
-ObjectBoxList::Add( const void * object, int type )
-{
-    if (kDisplayObject == type) // some objects need to be more specific...
-                                // this is complemented by CanGetObject()
-    {
-        void * nonConst = const_cast< void * >( object );
-        DisplayObject * displayObject = static_cast< DisplayObject * >( nonConst );
-        
-        if (NULL != displayObject->AsGroupObject()) // ...if so, promote it
-        {
-            type = kGroupObject;
-        }
-    }
-    
-    // TODO?: with certain types (so far, probably just display / group
-    // objects), in some extreme cases the list could become quite dense:
-    // if that ever becomes a problem, we might consider something like a
-    // bloom filter (https://en.wikipedia.org/wiki/Bloom_filter) or a
-    // Roaring bitmap (https://github.com/RoaringBitmap/CRoaring) paired
-    // with a map.
-    
-    for (Box & box : fBoxes) // already boxed?
-    {
-        Rtt_ASSERT( box.fList == this );
-        
-        if (box.fObject == object && box.fType == type)
-        {
-            return &box;
-        }
-    }
-    
-    // new entry
-    fBoxes.push_back( Box{} );
-    
-    Box & newBox = fBoxes.back();
-    
-    newBox.fList = this;
-    newBox.fObject = const_cast< void * >( object );
-    newBox.fType = type;
-    
-    return &newBox;
-}
-
-// ----------------------------------------------------------------------------
-
-} // namespace Rtt
+OBJECT_HANDLE_DEFINE_TYPE( DisplayObject );
+OBJECT_HANDLE_DEFINE_TYPE( GroupObject );
 
 // ----------------------------------------------------------------------------
 
@@ -199,7 +57,7 @@ union GenericParams {
     AFTER_HEADER_STRUCT( OnMessage );
 
     #undef AFTER_HEADER_OFFSET
-    #define AFTER_HEADER_OFFSET(NAME) offsetof( PARAMS( NAME ), ignoreOriginal )
+    #define AFTER_HEADER_OFFSET(NAME) offsetof( PARAMS( NAME ), before )
 
     AFTER_HEADER_STRUCT( Basic );
     AFTER_HEADER_STRUCT( GroupBasic );
@@ -255,7 +113,7 @@ ValuePrologue( lua_State * L, const Rtt::MLuaProxyable& o, const char key[], voi
 {
     if (params.before)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
         // on some platforms, passing &o works fine, others not,
         // owing to different virtual method implementations; so
@@ -263,7 +121,7 @@ ValuePrologue( lua_State * L, const Rtt::MLuaProxyable& o, const char key[], voi
         // in the next several functions too)
         const Rtt::DisplayObject& object = static_cast< const Rtt::DisplayObject& >( o );
         
-        OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, &object );
     
         params.before( storedObject, userData, L, key, result );
 
@@ -283,11 +141,11 @@ ValueEpilogue( lua_State * L, const Rtt::MLuaProxyable& o, const char key[], voi
 {
     if (params.after)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
     
         const Rtt::DisplayObject& object = static_cast< const Rtt::DisplayObject& >( o );
         
-        OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, &object );
 
         params.after( storedObject, userData, L, key, &result ); // n.b. `result` previous values still on stack
     }
@@ -302,11 +160,11 @@ SetValuePrologue( lua_State * L, Rtt::MLuaProxyable& o, const char key[], int va
 {
     if (params.before)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
         
         Rtt::DisplayObject& object = static_cast< Rtt::DisplayObject& >( o );
         
-        OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, &object );
 
         params.before( storedObject, userData, L, key, valueIndex, result );
 
@@ -326,11 +184,11 @@ SetValueEpilogue( lua_State * L, Rtt::MLuaProxyable& o, const char key[], int va
 {
     if (params.after)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
         Rtt::DisplayObject& object = static_cast< Rtt::DisplayObject& >( o );
         
-        OBJECT_BOX_STORE( DisplayObject, storedObject, &object );
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, &object );
 
         params.after( storedObject, userData, L, key, valueIndex, &result );
     }
@@ -685,6 +543,8 @@ using FPtr = void (*)();
 #define CORONA_OBJECTS_METHOD_BOOKEND(WHEN, ...)    \
     if (params.WHEN)                                \
     {                                               \
+        OBJECT_HANDLE_SUBSCOPE( params );           \
+        STORE_OBJECTS( params.separateScopes );     \
         params.WHEN( __VA_ARGS__ );                 \
     }
 
@@ -758,6 +618,8 @@ Copy3 (float * dst, const float * src)
 #define CORONA_OBJECTS_MATRIX_BOOKEND_METHOD(WHEN)  \
     if (params.WHEN)                                \
     {                                               \
+        OBJECT_HANDLE_SUBSCOPE( params );           \
+        STORE_OBJECTS( params.separateScopes );     \
         CORONA_OBJECTS_INIT_MATRIX( srcToDst );     \
                                                     \
         params.WHEN( FIRST_ARGS, matrix );          \
@@ -778,9 +640,9 @@ OnCreate( const void * object, void * userData, const unsigned char * stream )
 
     if (params.action)
     {
-        Rtt::ObjectBoxList list;
-        
-        OBJECT_BOX_STORE( DisplayObject, storedObject, object );
+        OBJECT_HANDLE_SCOPE();
+
+        OBJECT_HANDLE_STORE( DisplayObject, storedObject, object );
 
         params.action( storedObject, &userData );
     }
@@ -813,83 +675,116 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void AddedToParent( lua_State * L, Rtt::GroupObject * parent )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
-        OBJECT_BOX_STORE( GroupObject, parentStored, parent );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+        OBJECT_HANDLE_DECLARE( GroupObject, parentStored );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE ); \
+                                        OBJECT_HANDLE_STORE_LAZILY( GroupObject, parentStored, parent, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( AddedToParent, Parent );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, L, parentStored );
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( AddedToParent, L, parent );
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, L, parentStored );
+
+        #undef STORE_OBJECTS
     }
 
     virtual bool CanCull() const
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( CanCull, BooleanResult );
         CORONA_OBJECTS_METHOD_BEFORE_WITH_BOOLEAN_RESULT( FIRST_ARGS )
         CORONA_OBJECTS_METHOD_CORE_WITH_RESULT( CanCull )
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, &result )
+
+        #undef STORE_OBJECTS
 
         return result;
     }
 
     virtual bool CanHitTest() const
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( CanHitTest, BooleanResult );
         CORONA_OBJECTS_METHOD_BEFORE_WITH_BOOLEAN_RESULT( FIRST_ARGS )
         CORONA_OBJECTS_METHOD_CORE_WITH_RESULT( CanHitTest )
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, &result )
+
+        #undef STORE_OBJECTS
 
         return result;
     }
 
     virtual void DidMoveOffscreen()
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( DidMoveOffscreen, Basic );
         CORONA_OBJECTS_METHOD( DidMoveOffscreen )
+
+        #undef STORE_OBJECTS
     }
 
     virtual void DidUpdateTransform( Rtt::Matrix & srcToDst )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( DidUpdateTransform, Matrix );
         CORONA_OBJECTS_MATRIX_BOOKEND_METHOD( before )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( DidUpdateTransform, srcToDst )
         CORONA_OBJECTS_MATRIX_BOOKEND_METHOD( after )
+
+        #undef STORE_OBJECTS
     }
 
     virtual void Draw( Rtt::Renderer & renderer ) const
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
-        OBJECT_BOX_STORE( Renderer, rendererStored, &renderer );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+        OBJECT_HANDLE_DECLARE( Renderer, rendererStored );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE ); \
+                                        OBJECT_HANDLE_STORE_LAZILY( Renderer, rendererStored, &renderer, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS( Draw );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, rendererStored );
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( Draw, renderer );
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, rendererStored );
+
+        #undef STORE_OBJECTS
     }
 
     virtual void FinalizeSelf( lua_State * L )
     {
-        Rtt::ObjectBoxList list;
-
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS( OnFinalize );
 
         if (params.action)
         {
+            OBJECT_HANDLE_SCOPE();
+
+            OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
+
             params.action( FIRST_ARGS );
         }
 
@@ -900,121 +795,188 @@ struct CoronaObjectsInterface : public Base {
 
     virtual void GetSelfBounds( Rtt::Rect & rect ) const
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( GetSelfBounds, RectResult );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, &rect.xMin, &rect.yMin, &rect.xMax, &rect.yMax )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( GetSelfBounds, rect )
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, &rect.xMin, &rect.yMin, &rect.xMax, &rect.yMax )
+
+        #undef STORE_OBJECTS
     }
 
     virtual void GetSelfBoundsForAnchor( Rtt::Rect & rect ) const
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( GetSelfBoundsForAnchor, RectResult );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, &rect.xMin, &rect.yMin, &rect.xMax, &rect.yMax )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( GetSelfBoundsForAnchor, rect )
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, &rect.xMin, &rect.yMin, &rect.xMax, &rect.yMax )
+
+        #undef STORE_OBJECTS
     }
 
     virtual bool HitTest( Rtt::Real contentX, Rtt::Real contentY )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( HitTest, BooleanResultPoint );
         CORONA_OBJECTS_METHOD_BEFORE_WITH_BOOLEAN_RESULT( FIRST_ARGS, contentX, contentY )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS_AND_RESULT( HitTest, contentX, contentY )
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, contentX, contentY, &result )
+
+        #undef STORE_OBJECTS
 
         return result;
     }
 
     virtual void Prepare( const Rtt::Display & display )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( Prepare, Basic );
         CORONA_OBJECTS_METHOD_STRIP_ARGUMENT( Prepare, display )
+
+        #undef STORE_OBJECTS
     }
 
     virtual void RemovedFromParent( lua_State * L, Rtt::GroupObject * parent )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
+        
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+        OBJECT_HANDLE_DECLARE( GroupObject, parentStored );
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
-        OBJECT_BOX_STORE( GroupObject, parentStored, parent );
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE ); \
+                                        OBJECT_HANDLE_STORE_LAZILY( GroupObject, parentStored, parent, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( RemovedFromParent, Parent );
         CORONA_OBJECTS_METHOD_BOOKEND( before, FIRST_ARGS, L, parentStored );
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS( RemovedFromParent, L, parent );
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, L, parentStored );
+
+        #undef STORE_OBJECTS
     }
 
     virtual void Rotate( Rtt::Real deltaTheta )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS( Rotate );
         CORONA_OBJECTS_METHOD_WITH_ARGS( Rotate, deltaTheta )
+
+        #undef STORE_OBJECTS
     }
 
     virtual void Scale( Rtt::Real sx, Rtt::Real sy, bool isNewValue )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS( Scale );
         CORONA_OBJECTS_METHOD_WITH_ARGS( Scale, sx, sy, isNewValue )
+
+        #undef STORE_OBJECTS
     }
 
     virtual void SendMessage( const char * message, const void * payload, U32 size ) const
     {
-        Rtt::ObjectBoxList list;
-
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
         CORONA_OBJECTS_GET_PARAMS( OnMessage );
 
         if (params.action)
         {
-            params.action( FIRST_ARGS, message, payload, size );
+            if ( !params.preserveScope )
+            {
+                OBJECT_HANDLE_SCOPE();
+
+                OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
+
+                params.action( FIRST_ARGS, message, payload, size );
+            }
+
+            else
+            {
+                OBJECT_HANDLE_SCOPE_EXISTING();
+
+                OBJECT_HANDLE_STORE( DisplayObject, storedThis, this );
+
+                if ( allStored )
+                {
+                    params.action( FIRST_ARGS, message, payload, size );
+                }
+            }
         }
     }
 
     virtual void Translate( Rtt::Real deltaX, Rtt::Real deltaY )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS( Translate );
         CORONA_OBJECTS_METHOD_WITH_ARGS( Translate, deltaX, deltaY )
+
+        #undef STORE_OBJECTS
     }
 
     virtual bool UpdateTransform( const Rtt::Matrix & parentToDstSpace )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_INIT_MATRIX( parentToDstSpace );
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( UpdateTransform, BooleanResultMatrix );
         CORONA_OBJECTS_METHOD_BEFORE_WITH_BOOLEAN_RESULT( FIRST_ARGS, matrix )
         CORONA_OBJECTS_METHOD_CORE_WITH_ARGS_AND_RESULT( UpdateTransform, parentToDstSpace )
         CORONA_OBJECTS_METHOD_BOOKEND( after, FIRST_ARGS, matrix, &result )
 
+        #undef STORE_OBJECTS
+
         return result;
     }
 
     virtual void WillMoveOnscreen()
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
 
-        OBJECT_BOX_STORE( DisplayObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( DisplayObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( DisplayObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( WillMoveOnscreen, Basic );
         CORONA_OBJECTS_METHOD( WillMoveOnscreen )
+
+        #undef STORE_OBJECTS
     }
 
     virtual const Rtt::LuaProxyVTable& ProxyVTable() const { return ProxyVTableType::Constant(); }
@@ -1202,20 +1164,30 @@ protected:
 public:
     virtual void DidInsert( bool childParentChanged )
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( GroupObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( GroupObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( GroupObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS( DidInsert );
         CORONA_OBJECTS_METHOD_WITH_ARGS( DidInsert, childParentChanged )
+
+        #undef STORE_OBJECTS
     }
 
     virtual void DidRemove()
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( GroupObject, storedThis, this );
+        OBJECT_HANDLE_DECLARE( GroupObject, storedThis );
+
+        #define STORE_OBJECTS( FORCE )  OBJECT_HANDLE_STORE_LAZILY( GroupObject, storedThis, this, FORCE )
+
         CORONA_OBJECTS_GET_PARAMS_SPECIFIC( DidRemove, GroupBasic );
         CORONA_OBJECTS_METHOD( DidRemove )
+
+        #undef STORE_OBJECTS
     }
 };
 
@@ -1558,7 +1530,7 @@ int CoronaObjectsPushText( lua_State * L, void * userData, const CoronaObjectPar
 CORONA_API
 int CoronaObjectInvalidate( const CoronaDisplayObject * object )
 {
-    auto * displayObject = OBJECT_BOX_LOAD( DisplayObject, object );
+    auto * displayObject = OBJECT_HANDLE_LOAD( DisplayObject, object );
 
     if (displayObject)
     {
@@ -1573,39 +1545,50 @@ int CoronaObjectInvalidate( const CoronaDisplayObject * object )
 // ----------------------------------------------------------------------------
 
 CORONA_API
-CoronaGroupObject * CoronaObjectGetParent( const CoronaDisplayObject * object )
+const CoronaAny * CoronaObjectGetAvailableSlot()
 {
-    auto * displayObject = OBJECT_BOX_LOAD( DisplayObject, object );
-    
-    if (displayObject)
+    Rtt::ObjectHandleScope* scope = Rtt::ObjectHandleScope::Current();
+
+    if ( NULL == scope )
     {
-        Rtt::ObjectBoxList & list = *Rtt::ObjectBoxList::GetList( object );
-        
-        OBJECT_BOX_STORE( GroupObject, parent, displayObject->GetParent() );
-        
-        return parent;
+        return NULL;
     }
 
-    return NULL;
+    return reinterpret_cast< const CoronaAny * >( scope->GetFreeSlot() );
 }
 
 // ----------------------------------------------------------------------------
 
 CORONA_API
-CoronaDisplayObject * CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index )
+int CoronaObjectGetParent( const CoronaDisplayObject * object, const CoronaGroupObject * parent )
 {
-    auto * go = OBJECT_BOX_LOAD( GroupObject, groupObject );
+    OBJECT_HANDLE_SCOPE_EXISTING();
 
-    if (go && index >= 0 && index < go->NumChildren())
+    auto * displayObject = OBJECT_HANDLE_LOAD( DisplayObject, object );
+    
+    if (displayObject && parent)
     {
-        Rtt::ObjectBoxList & list = *Rtt::ObjectBoxList::GetList( groupObject );
-        
-        OBJECT_BOX_STORE( DisplayObject, child, &go->ChildAt( index ) );
-
-        return child;
+        return OBJECT_HANDLE_STORE_EXTERNAL( GroupObject, parent, displayObject->GetParent() );
     }
 
-    return NULL;
+    return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+CORONA_API
+int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, const CoronaDisplayObject * child )
+{
+    OBJECT_HANDLE_SCOPE_EXISTING();
+
+    auto * go = OBJECT_HANDLE_LOAD( GroupObject, groupObject );
+
+    if (go && child && index >= 0 && index < go->NumChildren())
+    {
+        return OBJECT_HANDLE_STORE_EXTERNAL( DisplayObject, child, &go->ChildAt( index ) );
+    }
+
+    return 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1613,7 +1596,7 @@ CoronaDisplayObject * CoronaGroupObjectGetChild( const CoronaGroupObject * group
 CORONA_API
 int CoronaGroupObjectGetNumChildren( const CoronaGroupObject * groupObject )
 {
-    auto * go = OBJECT_BOX_LOAD( GroupObject, groupObject );
+    auto * go = OBJECT_HANDLE_LOAD( GroupObject, groupObject );
 
     return go ? go->NumChildren() : 0;
 }
@@ -1623,7 +1606,7 @@ int CoronaGroupObjectGetNumChildren( const CoronaGroupObject * groupObject )
 CORONA_API
 int CoronaObjectSendMessage( const CoronaDisplayObject * object, const char * message, const void * payload, unsigned int size )
 {
-    auto * displayObject = OBJECT_BOX_LOAD( DisplayObject, object );
+    auto * displayObject = OBJECT_HANDLE_LOAD( DisplayObject, object );
 
     if (displayObject)
     {

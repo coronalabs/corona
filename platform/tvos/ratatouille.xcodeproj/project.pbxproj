@@ -592,6 +592,7 @@
 		AA76CF15272CB55000CE3F89 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */; };
 		AA2C6AF6291C37690093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */; };
 		AAF349EB29EFC61C00076706 /* Rtt_Profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */; };
+		AAD3E2452B0BECE2000A4D45 /* Rtt_ObjectHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */; };
 		AAF34AD529F9DFB800076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */; };
 		AAF34AD629F9DFB900076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */; };
 		AAF34ADB29F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD929F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp */; };
@@ -2574,7 +2575,8 @@
 		AA2ED7912708257E00CEE021 /* CoronaObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaObjects.h; path = ../../librtt/Corona/CoronaObjects.h; sourceTree = "<group>"; };
 		AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = ../../librtt/Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
 		AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = ../../librtt/Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
-		AAA58168270D399C002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = ../../librtt/Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
+		AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ObjectHandle.cpp; path = ../../librtt/Display/Rtt_ObjectHandle.cpp; sourceTree = "<group>"; };
+		AAD3E2442B0BECBB000A4D45 /* Rtt_ObjectHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectHandle.h; path = ../../librtt/Display/Rtt_ObjectHandle.h; sourceTree = "<group>"; };
 		AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = ../../librtt/Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
 		AA2C6AF5291C37690093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = ../../librtt/Corona/CoronaMemory.h; sourceTree = "<group>"; };
 		AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Profiling.cpp; path = ../../librtt/Rtt_Profiling.cpp; sourceTree = "<group>"; };
@@ -3023,7 +3025,8 @@
 				A4551D7B1BAA17CF00FB3BDF /* Rtt_MCPUResourceObserver.h */,
 				A4551D7C1BAA17CF00FB3BDF /* Rtt_MDisplayDelegate.h */,
 				A4551D7D1BAA17CF00FB3BDF /* Rtt_MDrawable.h */,
-				AAA58168270D399C002A51A7 /* Rtt_ObjectBoxList.h */,
+				AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */,
+				AAD3E2442B0BECBB000A4D45 /* Rtt_ObjectHandle.h */,
 				A4551D7E1BAA17CF00FB3BDF /* Rtt_OpenPath.cpp */,
 				A4551D7F1BAA17CF00FB3BDF /* Rtt_OpenPath.h */,
 				A4551D801BAA17CF00FB3BDF /* Rtt_Paint.cpp */,
@@ -6010,6 +6013,7 @@
 				A4551D401BAA17BE00FB3BDF /* Rtt_VersionTimestamp.c in Sources */,
 				A4551D2C1BAA17BE00FB3BDF /* Rtt_Array.cpp in Sources */,
 				A4551D361BAA17BE00FB3BDF /* Rtt_Math.c in Sources */,
+				AAD3E2452B0BECE2000A4D45 /* Rtt_ObjectHandle.cpp in Sources */,
 				A4551D3F1BAA17BE00FB3BDF /* Rtt_UseCount.cpp in Sources */,
 				A4551D321BAA17BE00FB3BDF /* Rtt_Fixed.c in Sources */,
 				A4551F3D1BAA182D00FB3BDF /* Rtt_DeviceOrientation.cpp in Sources */,

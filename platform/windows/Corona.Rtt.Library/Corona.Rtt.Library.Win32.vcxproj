@@ -96,6 +96,7 @@
     <ClCompile Include="..\..\..\librtt\Display\Rtt_LineObject.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_LuaLibDisplay.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_LuaLibGraphics.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ObjectHandle.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_OpenPath.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_Paint.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_PaintAdapter.cpp" />
@@ -324,6 +325,7 @@
     <ClInclude Include="..\..\..\external\LuaHashMap\LuaHashMap.h" />
     <ClInclude Include="..\..\..\external\smoothpolygon\SmoothPolygon.h" />
     <ClInclude Include="..\..\..\external\vulkan\utils\volk.h" />
+    <ClInclude Include="..\..\..\external\wyhash\wyhash.h" />
     <ClInclude Include="..\..\..\librtt\b2GLESDebugDraw.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Array.h" />
@@ -405,7 +407,7 @@
     <ClInclude Include="..\..\..\librtt\Display\Rtt_LuaLibGraphics.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_MDisplayDelegate.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_MDrawable.h" />
-    <ClInclude Include="..\..\..\librtt\Display\Rtt_ObjectBoxList.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ObjectHandle.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_OpenPath.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_Paint.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_PaintAdapter.h" />

@@ -220,6 +220,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 
     public:
         virtual GroupObject* AsGroupObject();
+		virtual const GroupObject* AsGroupObject() const;
 
     public:
         //! Local-space to Content-space.

@@ -23,10 +23,12 @@
 #include "Renderer/Rtt_Renderer.h"
 #include "Renderer/Rtt_Matrix_Renderer.h"
 
+#include "Renderer/Rtt_Geometry_Renderer.h"
+
 #include <string.h>
 
 #include "Renderer/Rtt_FormatExtensionList.h"
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 
 #include "CoronaGraphics.h"
 
@@ -257,21 +259,25 @@ Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMo
 
     if (callbacks && callbacks->prepare)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( Shader, shader, this );
-        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+        OBJECT_HANDLE_STORE( Shader, shader, this );
+        OBJECT_HANDLE_STORE( RenderData, renderData, &objectData );
 
-        if (shader && renderData)
-        {
-            callbacks->prepare( shader, fData->GetExtraSpace(), renderData, w, h, int( mod ) );
-        }
+        Rtt_ASSERT( allStored );
+
+        callbacks->prepare( shader, fData->GetExtraSpace(), renderData, w, h, int( mod ) );
     }
 }
 
 void
-Shader::Draw( Renderer& renderer, const RenderData& objectData ) const
+Shader::Draw( Renderer& renderer, const RenderData& objectData, const GeometryWriter* writers, U32 n ) const
 {
+    if ( !renderer.CanAddGeometryWriters() ) // ignore during raw draws
+    {
+        renderer.SetGeometryWriters( writers, n );
+    }
+
     DrawState state( fResource->GetEffectCallbacks(), fIsDrawing );
 
     if (DoAnyBeforeDrawAndThenOriginal( state, renderer, objectData ))
@@ -297,9 +303,9 @@ Shader::DetachProxy()
     
     if (effectCallbacks && effectCallbacks->shaderDetach)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( Shader, shader, this );
+        OBJECT_HANDLE_STORE( Shader, shader, this );
         
         effectCallbacks->shaderDetach( shader, GetData()->GetExtraSpace() );
     }
@@ -363,16 +369,17 @@ Shader::DoAnyBeforeDrawAndThenOriginal( const DrawState & state, Renderer & rend
 {
     if (state.fParams->before)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( Shader, shader, this );
-        OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
-        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+        OBJECT_HANDLE_STORE( Shader, shader, this );
+        OBJECT_HANDLE_STORE( Renderer, rendererObject, &renderer );
+        OBJECT_HANDLE_STORE( RenderData, renderData, &objectData );
 
-        if (shader && rendererObject && renderData)
-        {
-            state.fParams->before( shader, fData->GetExtraSpace(), rendererObject, renderData );
-        }
+        Rtt_ASSERT( allStored );
+
+        Renderer::GeometryWriterRAII gw( renderer );
+        
+        state.fParams->before( shader, fData->GetExtraSpace(), rendererObject, renderData );
     }
 
     return !state.fParams->ignoreOriginal;
@@ -383,16 +390,17 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
 {
     if (state.fParams->after)
     {
-        Rtt::ObjectBoxList list;
+        OBJECT_HANDLE_SCOPE();
         
-        OBJECT_BOX_STORE( Shader, shader, this );
-        OBJECT_BOX_STORE( Renderer, rendererObject, &renderer );
-        OBJECT_BOX_STORE( RenderData, renderData, &objectData );
+        OBJECT_HANDLE_STORE( Shader, shader, this );
+        OBJECT_HANDLE_STORE( Renderer, rendererObject, &renderer );
+        OBJECT_HANDLE_STORE( RenderData, renderData, &objectData );
 
-        if (shader && rendererObject && renderData)
-        {
-            state.fParams->after( shader, fData->GetExtraSpace(), rendererObject, renderData );
-        }
+        Rtt_ASSERT( allStored );
+     
+        Renderer::GeometryWriterRAII gw( renderer );
+
+        state.fParams->after( shader, fData->GetExtraSpace(), rendererObject, renderData );
     }
 }
 

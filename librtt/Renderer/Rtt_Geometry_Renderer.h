@@ -19,6 +19,7 @@
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
+struct CoronaGeometryMappingLayout;
 
 namespace Rtt
 {
@@ -34,6 +35,52 @@ struct VertexAttributeSupport {
     bool hasPerInstance;
     bool hasDivisors;
     const char * suffix;
+};
+
+struct GeometryWriter {
+    enum _MaskBits
+    {
+        kX = 1 << 0,
+        kY = 1 << 1,
+        kZ = 1 << 2,
+	    kPosition = kX | kY | kZ,
+        kU = 1 << 3,
+        kV = 1 << 4,
+        kQ = 1 << 5,
+	    kTexcoord = kU | kV | kQ,
+        kRS = 1 << 6,
+        kGS = 1 << 7,
+        kBS = 1 << 8,
+        kAS = 1 << 9,
+        kColor = kRS | kGS | kBS | kAS,
+        kUX = 1 << 10,
+        kUY = 1 << 11,
+        kUZ = 1 << 12,
+        kUW = 1 << 13,
+	    kUserdata = kUX | kUY | kUZ | kUW,
+	    kMain = kPosition | kTexcoord | kColor | kUserdata,
+	    kExtra = 1 << 14,
+	    kAll = kMain | kExtra,
+        kIsUpdate = 1 << 15
+    };
+    typedef U16 MaskBits;
+
+	// n.b. if we do these two conditions as a couple asserts in a row, Clang
+	// seems to treat the two conditions as being on the same line and breaks
+	// the macro
+    Rtt_STATIC_ASSERT( ( kExtra == kMain + 1 ) && ( kIsUpdate == kAll + 1 ) );
+
+    static const GeometryWriter& CopyGeometryWriter();
+
+	const void* fContext;
+	void (*fWriter)( void*, const void*, const CoronaGeometryMappingLayout*, U32, U32 );
+	MaskBits fMask;
+	MaskBits fSaved;
+
+	// relevant to user-supplied writers:
+	U16 fOffset;
+	U8 fComponents;
+	U8 fType;
 };
 
 // ----------------------------------------------------------------------------
