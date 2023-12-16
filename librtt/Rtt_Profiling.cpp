@@ -20,29 +20,23 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-void Profiling::Payload::SetString( const char* str, bool owns )
+void Profiling::Payload::SetString( const char* str )
 {
-    Rtt_ASSERT( !owns ); // TODO? no uses yet (and would need to make copies or keep a ref count, probably...)
-
-    Cleanup( str );
-
-    packed = FromString( str, owns );
+	fValue = str;
+	fType = kString;
 }
 
 void Profiling::Payload::SetPointer( const void* ptr, bool isTable )
 {
-    Cleanup( ptr );
-
-    packed = FromPointer( ptr, isTable );
+	fValue = ptr;
+	fType = isTable ? kTable : kFunction;
 }
 
 const char* Profiling::Payload::GetString() const
 {
-    Type type = GetTypePart();
-
-    if ( kString == type || kOwnedString == type )
+    if ( kString == fType )
     {
-        return static_cast<const char*>( GetPointerPart() );
+        return static_cast<const char*>( fValue );
     }
 
     else
@@ -53,60 +47,15 @@ const char* Profiling::Payload::GetString() const
 
 const void* Profiling::Payload::GetPointer() const
 {
-    Type type = GetTypePart();
-
-    if ( kTable == type || kFunction == type )
+    if ( kTable == fType || kFunction == fType )
     {
-        return GetPointerPart();
+        return fValue;
     }
 
     else
     {
         return NULL;
     }
-}
-
-bool Profiling::Payload::HasTablePointer() const
-{
-    return kTable == GetTypePart();
-}
-
-void Profiling::Payload::Cleanup( const void* newValue )
-{
-    if ( kOwnedString == GetTypePart() )
-    {
-        Rtt_ASSERT( GetPointerPart() != newValue );
-        Rtt_DELETE( GetPointerPart() );
-    }
-}
-
-static uintptr_t Combine( const void* ptr, Profiling::Payload::Type type )
-{
-    uintptr_t uv = reinterpret_cast<uintptr_t>( ptr );
-
-    Rtt_ASSERT( 0 == ( uv & type ) );
-
-    return uv | type;
-}
-
-uintptr_t Profiling::Payload::FromString( const char* str, bool owns )
-{
-    return Combine( str, owns ? kOwnedString : kString );
-}
-
-uintptr_t Profiling::Payload::FromPointer( const void* ptr, bool isTable )
-{
-    return Combine( ptr, isTable ? kTable : kFunction );
-}
-
-const void* Profiling::Payload::GetPointerPart() const
-{
-    return reinterpret_cast<const void*>( packed & ~Mask );
-}
-
-Profiling::Payload::Type Profiling::Payload::GetTypePart() const
-{
-    return (Type)( packed & Mask );
 }
 
 Profiling::Profiling( Rtt_Allocator* allocator, const char* name )

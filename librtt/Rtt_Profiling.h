@@ -13,8 +13,6 @@
 #include "Core/Rtt_Array.h"
 #include "Core/Rtt_Types.h"
 
-#include <type_traits>
-
 // ----------------------------------------------------------------------------
 
 struct lua_State;
@@ -38,8 +36,6 @@ class Profiling {
 				enum Type {
 					kString,
 
-					kOwnedString, // reserved for possible future use
-
 					// Listener functions
 					kTable,
 					kFunction,
@@ -47,50 +43,30 @@ class Profiling {
 					kNumTypes
 				};
 
-				static const size_t Align = std::alignment_of< const void* >::value;
-				static const uintptr_t Mask = Align - 1;
-
-				Rtt_STATIC_ASSERT( Align >= Type::kNumTypes );
-
 			public:
-				Payload()
-				:	packed( 0 )
+				Payload( const char* str = NULL )
 				{
-				}
-
-				Payload( const char* str, bool owns = false )
-				:	packed( FromString( str, owns ) )
-				{
+					SetString( str );
 				}
 
 				Payload( const void* ptr, bool isTable )
-				:	packed( FromPointer( ptr, isTable ) )
 				{
+					SetPointer( ptr, isTable );
 				}
 
-				~Payload() { SetString( NULL ); }
-
 			public:
-				void SetString( const char* str, bool owns = false );
+				void SetString( const char* str );
 				void SetPointer( const void* ptr, bool isTable );
 
 			public:
 				const char* GetString() const;
 				const void* GetPointer() const;
 
-				bool HasTablePointer() const;
+				bool HasTablePointer() const { return kTable == fType; }
 
 			private:
-				void Cleanup( const void* newValue );
-
-				static uintptr_t FromString( const char* str, bool owns );
-				static uintptr_t FromPointer( const void* ptr, bool isTable );
-
-				const void* GetPointerPart() const;
-				Type GetTypePart() const;
-
-			private:
-				uintptr_t packed;
+				const void* fValue;
+				Type fType;
 		};
 
 	public:
