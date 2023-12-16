@@ -585,7 +585,7 @@ Display::Render()
         //fDeltaTimeInSeconds = ( 1.0f / 30.0f );
     }
 
-	GetScene().Render( * fRenderer, * fTarget, rp.GetProfiling() );
+	GetScene().Render( * fRenderer, * fTarget, &rp );
 
     rp.Add( "Display::Render End" );
 }
