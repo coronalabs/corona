@@ -490,6 +490,8 @@ android.applicationVariants.all {
             }
             delete(metadataConfig)
             val toArchive = outputsList.filter { file(it).name != "config.lu" } + "config.lu"
+            // Make sure it's not appended to an old file
+            delete(compiledLuaArchive)
             mkdir(file(compiledLuaArchive).parent)
             exec {
                 workingDir = file(compiledDir)

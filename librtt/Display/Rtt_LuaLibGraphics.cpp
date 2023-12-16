@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -501,6 +502,14 @@ GraphicsLibrary::newOutline( lua_State *L )
 	b2Vec2Vector shape_outline_in_texels;
 
 	const unsigned char *raw_bitmap_buffer = static_cast< const unsigned char * >( platform_bitmap->GetBits( NULL ) );
+
+	if ( ! Rtt_VERIFY( raw_bitmap_buffer ) )
+	{
+		// This is NECESSARY because of the platform_bitmap->GetBits() above.
+		platform_bitmap->FreeBits();
+		Rtt_DELETE(paint);
+		return 0;
+	}
 
 	int alphaIndex;
 	PlatformBitmap::Format format = platform_bitmap->GetFormat();
