@@ -277,19 +277,46 @@ public class Controller {
 	}
 	
 	public synchronized void stop() {
+
 		stopTimer();
 		mySensorManager.pause();
 		if (myRuntimeState == RuntimeState.Starting || myRuntimeState == RuntimeState.Stopped) {
 			myRuntimeState = RuntimeState.Stopped;
 		} else {
- 			myRuntimeState = RuntimeState.Stopping;
- 		}
+			myRuntimeState = RuntimeState.Stopping;
+		}
 
-		// If we don't do this then there won't be one last onDrawFrame call which means the runtime won't be stopped!
-		requestEventRender();
+		myGLView.queueEvent(new Runnable() {
+			@Override
+			public void run() {
+				if (myRuntimeState != RuntimeState.Stopping) {
+					// pause event already picked up by updateRuntimeState
+					return;
+				}
 
+				// If we don't do this then there won't be one last onDrawFrame call which means the runtime won't be stopped!
+				// it's ok to call ApplicationListener's events
+				// from onDrawFrame because it's executing in GL thread
+				requestEventRender();
+			}
+		});
 		myMediaManager.pauseAll();
 		internalSetIdleTimer(true);
+
+		while (myRuntimeState == RuntimeState.Stopping) {
+			try {
+				// Android ANR time is 5 seconds, so wait up to 4 seconds before assuming
+				// deadlock and killing process.
+				this.wait(4000);
+				if (myRuntimeState == RuntimeState.Stopping) {
+					// pause will never go false if onDrawFrame is never called by the GLThread
+					// when entering this method, we MUST enforce continuous rendering
+					android.os.Process.killProcess(android.os.Process.myPid());
+				}
+			} catch (InterruptedException ignored) {
+				// Nothing to do here, intent can't be handled.
+			}
+		}
 	}
 	
 	public synchronized void destroy() {
@@ -310,28 +337,48 @@ public class Controller {
 		final Controller controller = runtime.getController();
 		EventManager eventManager = controller.getEventManager();
 		if ((controller != null) && (eventManager != null)) {
+
+			boolean localShouldStart = false;
+			boolean localShouldRender = false;
+			boolean localShouldStop = false;
+
 			synchronized (controller) {
-
-				// We do this so as a way to ensure that the runtime is started/stopped before any events happen.
-				// The renderer still might not be ready
 				if (RuntimeState.Starting == controller.myRuntimeState && render) {
-					JavaToNativeShim.resume(runtime);
-					controller.requestRender();
+					localShouldStart = true;
+					localShouldRender = true;
 					controller.myRuntimeState = RuntimeState.Running;
-				} 
-
-				if (render) {
-					// Send queued events to the native side of Corona.
-					eventManager.sendEvents();
-				}
-				
-				// We want to finish going through the events before we stop the runtime so its down here.
-				if (RuntimeState.Stopping == controller.myRuntimeState) {
-					JavaToNativeShim.pause(runtime);
+				}  else if (RuntimeState.Running == controller.myRuntimeState) {
+					localShouldRender = render;
+				} else if (RuntimeState.Stopping == controller.myRuntimeState) {
+					localShouldStop = true;
 					controller.myRuntimeState = RuntimeState.Stopped;
+					controller.notifyAll();
+				} else if (RuntimeState.Stopped == controller.myRuntimeState) {
+					// all local boolean are false
+				}
+			}
 
-					// Now we can pause the GLView on the UI thread if needed since we've 
-					// guarenteed that the Corona Runtime has stopped.
+			if (localShouldStart) {
+				Log.i("Corona", "JavaToNativeShim.resume(runtime)");
+				JavaToNativeShim.resume(runtime);
+				synchronized (controller) {
+					Log.i("Corona", "controller.requestRender()");
+					controller.requestRender();
+				}
+			}
+
+			if (render) {
+				// Send queued events to the native side of Corona.
+				eventManager.sendEvents();
+			}
+
+			if (localShouldStop) {
+				Log.i("Corona", "JavaToNativeShim.pause(runtime)");
+				JavaToNativeShim.pause(runtime);
+
+				synchronized (controller) {
+					// Now we can pause the GLView on the UI thread if needed since we've
+					// guaranteed that the Corona Runtime has stopped.
 					Handler handler = controller.getHandler();
 					handler.post (new Runnable() {
 						@Override
@@ -341,28 +388,28 @@ public class Controller {
 							// happening back to back, which is possible on Android 2.3.x devices.
 							if (RuntimeState.Stopped == controller.myRuntimeState) {
 								// Pause the OpenGL view's thread. This stops its rendering loop.
+								Log.i("Corona", "controller.getGLView().onPause()");
 								controller.getGLView().onPause();
 							}
 						}
 					});
 				}
+			}
 
-				// Render the next frame, but only if the Corona runtime is currently running.
-				// We must check the running state "after" sending the above events because a suspend/resume event
-				// will change the running state after the event has been dispatched.
-				if (RuntimeState.Running == controller.myRuntimeState && render) {
-					// If this is the 1st rendered frame, then remove the splash screen if shown.
-					if (controller.myHasRenderedFirstFrame == false) {
-						controller.myHasRenderedFirstFrame = true;
-						CoronaSplashScreenApiListener listener = controller.getCoronaSplashScreenApiListener();
-						if (listener != null) {
-							listener.hideSplashScreen();
-						}
+			// Render the next frame, but only if the Corona runtime is currently running.
+			// We must check the running state "after" sending the above events because a suspend/resume event
+			// will change the running state after the event has been dispatched.
+			if (localShouldRender) {
+				// If this is the 1st rendered frame, then remove the splash screen if shown.
+				if (controller.myHasRenderedFirstFrame == false) {
+					controller.myHasRenderedFirstFrame = true;
+					CoronaSplashScreenApiListener listener = controller.getCoronaSplashScreenApiListener();
+					if (listener != null) {
+						listener.hideSplashScreen();
 					}
-
-					// Render the frame.
-					JavaToNativeShim.render(runtime);
-				} 
+				}
+				// Render the frame.
+				JavaToNativeShim.render(runtime);
 			}
 		}
 	}
@@ -1960,7 +2007,7 @@ public class Controller {
 			String permissionName = android.Manifest.permission.READ_PHONE_STATE;
 			if (myContext.checkCallingOrSelfPermission(permissionName) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
 				TelephonyManager telephonyManager = (TelephonyManager)myContext.getSystemService(Context.TELEPHONY_SERVICE);
-				if ((telephonyManager != null) && (telephonyManager.getDeviceId() != null)) {
+				if (telephonyManager != null) {
 					stringId = telephonyManager.getDeviceId();
 				}
 			}

@@ -52,6 +52,7 @@ class String;
 class TextureFactory;
 class PlatformSurface;
 class RenderingStream;
+class ProfilingState;
 
 // ----------------------------------------------------------------------------
 
@@ -259,7 +260,8 @@ class Display
 		virtual ScaleMode GetScaleMode() const;
 
 		virtual void ContentToScreen( S32& x, S32& y ) const;
-		virtual void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
+        virtual void ContentToScreen( Rtt_Real& x, Rtt_Real& y, Rtt_Real& w, Rtt_Real& h ) const;
+        virtual void ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const;
 		virtual void ContentToPixels( S32& x, S32& y, S32& w, S32& h ) const;
 
 	public:
@@ -325,6 +327,9 @@ class Display
 		static size_t GetMaxVertexTextureUnits();
 
 	public:
+		ProfilingState* GetProfilingState() const { return fProfilingState; }
+
+	public:
 		Scene& GetScene() { return *fScene; }
 		const Scene& GetScene() const { return *fScene; }
 
@@ -379,6 +384,7 @@ class Display
 		SpritePlayer *fSpritePlayer;
 		TextureFactory *fTextureFactory;
 		Scene *fScene;
+		ProfilingState *fProfilingState;
 
 		// TODO: Refactor data structure portions out
 		// We temporarily use RenderingStream b/c it contains key data

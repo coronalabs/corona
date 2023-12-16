@@ -305,7 +305,7 @@ AndroidPlatform::FileExists( const char *filename ) const
 	else
 	{
 		// The given file name is likely a relative path to an asset file or a URL to a local file.
-		// Check for its existance via Android's APIs on the Java side.
+		// Check for its existence via Android's APIs on the Java side.
 		fileExists = fNativeToJavaBridge->GetRawAssetExists(filename);
 		if (!fileExists)
 		{

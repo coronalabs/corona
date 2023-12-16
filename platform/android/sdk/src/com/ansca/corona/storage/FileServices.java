@@ -44,6 +44,13 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	/** Provides fast access to file entries within an APK file, which is really a zip file. */
 	private static ZipResourceFile sApkZipEntryReader = null;
 
+	/**
+	 * For more efficient I/O throughput, BUFFER_SIZE at least 4KB is needed.
+	 * For copy size 1MB and above, 64KB is recommended.
+	 */
+	private final static int BUFFER_SIZE_NORMAL = 4096;			// 4KB
+	private final static int BUFFER_SIZE_LARGE_IO = 65536;		// 64KB
+	private final static int BUFFER_SIZE_THRESHOLD = 1048576;	// 1MB
 
 	/**
 	 * Creates an object that provides easy access to the file system and this application's
@@ -220,7 +227,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 		}
 
 		// If asset not found, then attempt to fetch it from the APK's "raw" resource directory.
-		if (zipEntry == null) {
+		if ((zipEntry == null) && (sApkZipEntryReader != null)) {
 			StringBuilder builder = new StringBuilder();
 			builder.append("res/raw/");
 			builder.append(createRawResourceNameForAsset(filePath));
@@ -234,7 +241,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 		}
 
 		// If asset not found, then attempt to fetch it from the APK's "drawable" resource directory.
-		if (zipEntry == null) {
+		if ((zipEntry == null) && (sApkZipEntryReader != null)) {
 			StringBuilder builder = new StringBuilder();
 			builder.append("res/drawable/");
 			builder.append(filePath);
@@ -417,7 +424,8 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 		// Attempt to load the expansion files.
 		sHasAccessedExpansionFileDirectory = false;
-		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)
+				|| android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED_READ_ONLY)) {
 			java.io.File expansionDirectory = getExpansionFileDirectory();
 			if ((expansionDirectory != null) && expansionDirectory.exists()) {
 				try { sPatchExpansionZipReader = new ZipResourceFile(getPatchExpansionFile()); }
@@ -958,7 +966,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 				if (outputStream != null) {
 					int byteCount = inputStream.available();
 					if (byteCount > 0) {
-						final int BUFFER_SIZE = 1024;
+						final int BUFFER_SIZE = byteCount > BUFFER_SIZE_THRESHOLD ? BUFFER_SIZE_LARGE_IO : BUFFER_SIZE_NORMAL;
 						byte[] byteBuffer = new byte[BUFFER_SIZE];
 						while (byteCount > 0) {
 							int bytesToCopy = BUFFER_SIZE;
@@ -1020,7 +1028,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 		try {
 			outputStream = new java.io.FileOutputStream(destinationFile);
 			if (outputStream != null) {
-				final int BUFFER_SIZE = 1024;
+				final int BUFFER_SIZE = inputStream.available() > BUFFER_SIZE_THRESHOLD ? BUFFER_SIZE_LARGE_IO : BUFFER_SIZE_NORMAL;
 				byte[] byteBuffer = new byte[BUFFER_SIZE];
 				while (true) {
 					int bytesToCopy = BUFFER_SIZE;
@@ -1112,13 +1120,15 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 		try {
 			inputStream = openFile(filePath);
 			if (inputStream != null) {
-				int byteCount = inputStream.available();
+				final int byteCount = inputStream.available();
 				if (byteCount > 0) {
 					bytes = new byte[byteCount];
+					final int BUFFER_SIZE = byteCount > BUFFER_SIZE_THRESHOLD ? BUFFER_SIZE_LARGE_IO : BUFFER_SIZE_NORMAL;
+
 					for (int bytesCopied = 0; bytesCopied < byteCount;) {
 						int bytesToRead = byteCount - bytesCopied;
-						if (bytesToRead > 1024) {
-							bytesToRead = 1024;
+						if (bytesToRead > BUFFER_SIZE) {
+							bytesToRead = BUFFER_SIZE;
 						}
 						int readBytes = inputStream.read(bytes, bytesCopied, bytesToRead);
 						bytesCopied += readBytes;

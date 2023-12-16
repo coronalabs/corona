@@ -65,7 +65,7 @@ fun checkCoronaNativeInstallation() {
     } else {
         val setupNativeApp = File("/Applications").listFiles { f ->
             f.isDirectory && f.name.startsWith("Corona")
-        }?.max()?.let {
+        }.maxOrNull()?.let {
             "${it.absolutePath}/Native/Setup Corona Native.app"
         } ?: "Native/Setup Corona Native.app"
         throw InvalidUserDataException("Corona Native was not set-up properly. Launch '$setupNativeApp'.")
@@ -190,20 +190,23 @@ if (configureCoronaPlugins == "YES") {
 
 android {
     lintOptions {
-        isCheckReleaseBuilds = false
+        isCheckReleaseBuilds = true
     }
-    compileSdkVersion(32)
+    compileSdk = 33
     defaultConfig {
         applicationId = coronaAppPackage
-        targetSdkVersion(32)
-        minSdkVersion(extra["minSdkVersion"] as Int)
+        targetSdk = 33
+        minSdk = (extra["minSdkVersion"] as Int)
         versionCode = coronaVersionCode
         versionName = coronaVersionName
         multiDexEnabled = true
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86", "x86_64")
+        }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility  = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility  = JavaVersion.VERSION_11
     }
     coronaKeystore?.let { keystore ->
         signingConfigs {
@@ -396,6 +399,8 @@ android.applicationVariants.all {
     val isRelease = (baseName == "release")
     val generatedAssetsDir = "$buildDir/generated/corona_assets/$baseName"
     val compiledLuaArchive = "$buildDir/intermediates/compiled_lua_archive/$baseName/resource.car"
+    // fix assets not been merge when lua file changed
+    val luaArchiveInMergedAssets = "$buildDir/intermediates/assets/$baseName/resource.car"
 
     val compileLuaTask = tasks.create("compileLua${baseName.capitalize()}") {
         description = "If required, compiles Lua and archives it into resource.car"
@@ -512,9 +517,9 @@ android.applicationVariants.all {
 
         doFirst {
             delete(generatedAssetsDir)
+            delete(luaArchiveInMergedAssets)
             mkdir(generatedAssetsDir)
-        }
-        doFirst {
+
             if (!file(coronaSrcDir).isDirectory) {
                 throw InvalidUserDataException("Unable to find Solar2D project (for example platform/test/assets2/main.lua)!")
             }
@@ -720,32 +725,9 @@ fun downloadAndProcessCoronaPlugins(reDownloadPlugins: Boolean = true) {
         }
     }
 
-    logger.lifecycle("Collecting native libraries")
+    logger.lifecycle("Clean up libraries")
     run {
         delete(generatedPluginNativeLibsDir)
-        file(coronaPlugins).walk().maxDepth(1).forEach {
-            if (it == coronaPlugins) return@forEach
-            if (pluginDisabledNative.contains(it.name)) return@forEach
-
-            val hasJniLibs = !fileTree(it) {
-                include("**/jniLibs/**/*.so")
-            }.isEmpty
-            val armeabiV7Libs = fileTree(it) {
-                include("**/*.so")
-            }
-            val hasArm32Libs = !armeabiV7Libs.isEmpty
-            if (!hasJniLibs && hasArm32Libs) {
-                logger.error("WARNING: Plugin '$it' contain native library for armeabi-v7a but not for arm64.")
-                copy {
-                    from(armeabiV7Libs)
-                    into(generatedPluginNativeLibsDir)
-                    eachFile {
-                        path = "armeabi-v7a/$name"
-                    }
-                    includeEmptyDirs = false
-                }
-            }
-        }
     }
 
     logger.lifecycle("Collecting legacy jar libraries")

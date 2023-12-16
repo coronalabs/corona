@@ -12,6 +12,8 @@
 #include "Rtt_Scheduler.h"
 #include "Rtt_Runtime.h"
 
+#include <mutex>
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -25,10 +27,14 @@ Task::~Task()
 
 template class Rtt::Array<Rtt::Task *>;
 	
+static std::mutex sListMutex;
+static std::mutex sTaskMutex;
+
 // ----------------------------------------------------------------------------
 
 Scheduler::Scheduler( Runtime& owner )
 :	fOwner( owner ),
+	fFirstPending( NULL ),
 	fProcessing( false ),
 	fTasks( owner.GetAllocator() )
 {
@@ -36,6 +42,7 @@ Scheduler::Scheduler( Runtime& owner )
 
 Scheduler::~Scheduler()
 {
+	SyncPendingList();
 }
 
 #if 0
@@ -51,13 +58,21 @@ void
 Scheduler::Append( Task* e )
 {
 	//Rtt_ASSERT( fProcessing == false );		//**tjn removed
-	
-	fTasks.Append( e );
+
+	std::lock_guard<std::mutex> lock( sListMutex );
+
+	e->setNext( fFirstPending );
+
+	fFirstPending = e;
 }
 
 void
 Scheduler::Delete(Task* e)
 {
+	SyncPendingList();
+
+	std::lock_guard<std::mutex> lock( sTaskMutex );
+
 	int i = 0;
 	while (i < fTasks.Length())
 	{
@@ -78,6 +93,10 @@ Scheduler::Run()
 {
 	fProcessing = true;
 	
+	SyncPendingList();
+
+	std::lock_guard<std::mutex> lock( sTaskMutex );
+
 	int i = 0;
 	while (i < fTasks.Length())
 	{
@@ -97,6 +116,34 @@ Scheduler::Run()
 	}
 
 	fProcessing = false;
+}
+
+Task*
+Scheduler::ExtractPendingList()
+{
+	std::lock_guard<std::mutex> lock( sListMutex );
+
+	Task* first = fFirstPending;
+
+	fFirstPending = NULL;
+
+	return first;
+}
+
+void
+Scheduler::SyncPendingList()
+{
+	Task* first = ExtractPendingList();
+
+	if ( NULL != first )
+	{
+		std::lock_guard<std::mutex> lock( sTaskMutex );
+
+		for ( Task* cur = first; cur; cur = cur->getNext() )
+		{
+			fTasks.Append( cur );
+		}
+	}
 }
 
 // ----------------------------------------------------------------------------

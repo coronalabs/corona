@@ -102,6 +102,10 @@ namespace Rtt
 		{
 			lua_pushcfunction(L, SetSelection);
 		}
+		else if (strcmp("getSelection", key) == 0)
+		{
+			lua_pushcfunction(L, GetSelection);
+		}
 		else if (strcmp("align", key) == 0)
 		{
 			char buf[16] = { 0 };
@@ -274,6 +278,12 @@ namespace Rtt
 	{
 		Rtt_LogException("LinuxTextBoxObject:SetSelection() is not implemented\n");
 		return 0;
+	}
+
+	int LinuxTextBoxObject::GetSelection(lua_State* L)
+	{
+	    Rtt_LogException("LinuxTextBoxObject:GetSelection() is not implemented\n");
+	    return 0;
 	}
 
 	void LinuxTextBoxObject::dispatch(const char* phase, int pos, ImWchar ch)

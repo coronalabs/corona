@@ -16,12 +16,12 @@
 
 -- TODO: Move this out of global namespace
 local function getOrCreateTable( receiver, index )
-	local t = receiver[index]
+	local t, new = receiver[index]
 	if nil == t then
-		t = {}
+		t, new = {}, true
 		receiver[index] = t
 	end
-	return t
+	return t, new
 end
 
 local Object = {}
@@ -73,15 +73,15 @@ EventDispatcher._indexForType = { ["table"]="_tableListeners", ["function"]="_fu
 
 function EventDispatcher:getOrCreateTable( eventName, listenerType )
 	local index = EventDispatcher._indexForType[ listenerType ]
-	local t = nil
+	local t, new = nil
 	if index then
 		t = getOrCreateTable( self, index )
-		t = getOrCreateTable( t, eventName )
+		t, new = getOrCreateTable( t, eventName )
 	end
 	if nil == t then
         error("addEventListener: listener cannot be nil: "..tostring(index))
     end
-	return t
+	return t, new
 end
 
 -- Every instance of EventDispatcher has two tables of listeners stored in then
@@ -111,7 +111,11 @@ function EventDispatcher:addEventListener( eventName, listener )
     if not listener and self[eventName] then listener = self; end
 
 	-- get table for either function or table listeners
-	local t = self:getOrCreateTable( eventName, type( listener ) )
+	local listenerType = type( listener )
+	local t, new = self:getOrCreateTable( eventName, listenerType )
+	if new then
+		t._profileID = display._allocateProfile( listenerType, eventName ) -- n.b. ignored by ipairs()
+	end
 	if t then
 		table.insert( t, listener )
 	end
@@ -186,6 +190,8 @@ function cloneArray( array )
 	return clone
 end
 
+display._initProfiling()
+
 function EventDispatcher:dispatchEvent( event )
 	local result = false;
 	local eventName = event.name
@@ -194,24 +200,29 @@ function EventDispatcher:dispatchEvent( event )
 	local functionDict = self._functionListeners
 	local functionArray = ( functionDict and functionDict[eventName] ) or nil
 	if ( functionArray ~= nil ) and ( #functionArray > 0 ) then
+		local profile = display._beginProfile( functionArray._profileID )
 		local functionArrayClone = cloneArray( functionArray )
 		for index = 1, #functionArrayClone do
 			local func = functionArrayClone[ index ]
+			display._addProfileEntry( profile, func )
 			if self:hasEventListener( eventName, func ) then
 				-- Dispatch event to function listener.
 				local handled = func( event )
 				result = handled or result
 			end
 		end
+		display._endProfile( profile )
 	end
 
 	-- array of table listeners is self._tableListeners[eventName]
 	local tableDict = self._tableListeners
 	local tableArray = ( tableDict and tableDict[eventName] ) or nil
 	if ( tableArray ~= nil ) and ( #tableArray > 0 ) then
+		local profile = display._beginProfile( tableArray._profileID )
 		local tableArrayClone = cloneArray( tableArray )
 		for index = 1, #tableArrayClone do
 			local obj = tableArrayClone[ index ]
+			display._addProfileEntry( profile, obj )
 			if self:hasEventListener( eventName, obj ) then
 				-- Fetch method stored as property of object.
 				local method = obj[eventName]
@@ -222,6 +233,7 @@ function EventDispatcher:dispatchEvent( event )
 				end
 			end
 		end
+		display._endProfile( profile )
 	end
 
 	return result

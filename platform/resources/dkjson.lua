@@ -319,7 +319,7 @@ encode2 = function (value, indent, level, buffer, buflen, tables, globalorder, s
         for i = 1, n do
           local k = order[i]
           local v = value[k]
-          if v then
+          if v ~= nil then
             used[k] = true
             buflen, msg = addpair (k, v, prev, indent, level, buffer, buflen, tables, globalorder, state)
             prev = true -- add a seperator before the next element

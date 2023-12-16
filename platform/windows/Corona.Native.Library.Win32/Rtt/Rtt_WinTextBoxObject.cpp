@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -237,6 +237,10 @@ int WinTextBoxObject::ValueForKey(lua_State *L, const char key[]) const
 	{
 		lua_pushcfunction(L, WinTextBoxObject::OnSetSelection);
 	}
+	else if (strcmp("getSelection", key) == 0)
+	{
+		lua_pushcfunction(L, WinTextBoxObject::OnGetSelection);
+	}
 	else if (strcmp("align", key) == 0)
 	{
 		auto alignmentPointer = fTextBoxPointer->GetAlignment();
@@ -314,7 +318,7 @@ int WinTextBoxObject::ValueForKey(lua_State *L, const char key[]) const
 			lua_pushstring(L, utf8Text);
 		}
 	}
-	else if (!strcmp("autocorrectionType", key) || !strcmp("spellCheckingType", key))
+	else if (!strcmp("autocorrectionType", key) || !strcmp("spellCheckingType", key) || !strcmp("clearButtonMode", key))
 	{
 		if (fIsSingleLine)
 		{
@@ -573,7 +577,7 @@ bool WinTextBoxObject::SetValueForKey(lua_State *L, const char key[], int valueI
 					fIsSingleLine ? "TextField" : "TextBox", key);
 		}
 	}
-	else if (!strcmp("autocorrectionType", key) || !strcmp("spellCheckingType", key))
+	else if (!strcmp("autocorrectionType", key) || !strcmp("spellCheckingType", key) || !strcmp("clearButtonMode", key))
 	{
 		if (fIsSingleLine)
 		{
@@ -759,6 +763,22 @@ int WinTextBoxObject::OnSetSelection(lua_State *L)
 			}
 			displayObjectPointer->fTextBoxPointer->SetSelection(startIndex, endIndex);
 		}
+	}
+	return 0;
+}
+
+int WinTextBoxObject::OnGetSelection(lua_State *L)
+{
+	auto displayObjectPointer = (WinTextBoxObject*)LuaProxy::GetProxyableObject(L, 1);
+	if (&displayObjectPointer->ProxyVTable() == &PlatformDisplayObject::GetTextFieldObjectProxyVTable())
+	{
+		int startIndex = 0;
+		int endIndex = 0;
+		displayObjectPointer->fTextBoxPointer->GetSelection(&startIndex, &endIndex);
+		
+		lua_pushnumber(L, startIndex);
+		lua_pushnumber(L, endIndex);
+		return 2;
 	}
 	return 0;
 }
