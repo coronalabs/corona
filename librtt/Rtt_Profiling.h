@@ -13,6 +13,8 @@
 #include "Core/Rtt_Array.h"
 #include "Core/Rtt_Types.h"
 
+#include <type_traits>
+
 // ----------------------------------------------------------------------------
 
 struct lua_State;
@@ -31,11 +33,72 @@ class Profiling {
 		~Profiling();
 
 	public:
+		class Payload {
+			public:
+				enum Type {
+					kString,
+
+					kOwnedString, // reserved for possible future use
+
+					// Listener functions
+					kTable,
+					kFunction,
+
+					kNumTypes
+				};
+
+				static const size_t Align = std::alignment_of< const void* >::value;
+				static const uintptr_t Mask = Align - 1;
+
+				Rtt_STATIC_ASSERT( Align >= Type::kNumTypes );
+
+			public:
+				Payload()
+				:	packed( 0 )
+				{
+				}
+
+				Payload( const char* str, bool owns = false )
+				:	packed( FromString( str, owns ) )
+				{
+				}
+
+				Payload( const void* ptr, bool isTable )
+				:	packed( FromPointer( ptr, isTable ) )
+				{
+				}
+
+				~Payload() { SetString( NULL ); }
+
+			public:
+				void SetString( const char* str, bool owns = false );
+				void SetPointer( const void* ptr, bool isTable );
+
+			public:
+				const char* GetString() const;
+				const void* GetPointer() const;
+
+				bool HasTablePointer() const;
+
+			private:
+				void Cleanup( const void* newValue );
+
+				static uintptr_t FromString( const char* str, bool owns );
+				static uintptr_t FromPointer( const void* ptr, bool isTable );
+
+				const void* GetPointerPart() const;
+				Type GetTypePart() const;
+
+			private:
+				uintptr_t packed;
+		};
+
+	public:
 		void Commit( ProfilingState& state );
 		void Push( ProfilingState& state );
-		const char* GetName() const { return fName; }
+		const char* GetName() const { return fName.GetString(); }
 		Profiling* GetBelow() const { return fBelow; }
-		void AddEntry( const char* name, bool isListName = false );
+		void AddEntry( const Payload& payload, bool isListName = false );
 		int VisitEntries( lua_State* L ) const;
 
 	public:
@@ -44,33 +107,13 @@ class Profiling {
 
 	private:
 		struct Entry {
-			typedef char ShortName[64];
-		
-			static void SetShortName( ShortName out, const char* name );
 			static U64 SublistTime() { return ~0ULL; }
 		
-			void SetName( const char* name );
-		
-			ShortName fName;
+			Payload fPayload;
 			U64 fTime;
 		};
 
-	public:
-		class EntryRAII {
-		public:
-			EntryRAII( ProfilingState& state, int id );
-			~EntryRAII();
-
-		public:
-			void Add( const char* name ) const;
-
-			Profiling* GetProfiling() const { return fProfiling; }
-
-		private:
-			ProfilingState& fState;
-			Profiling* fProfiling;
-		};
-	
+	public:	
 		class Sum {
 		public:
 			Sum( const char* name );
@@ -88,7 +131,7 @@ class Profiling {
 
 		private:
 			Sum* fNext;
-			Entry::ShortName fName;
+			Payload fName;
 			U64 fTotalTime;
 			U32 fTimingCount;
 			U32 fRefCount;
@@ -111,7 +154,7 @@ class Profiling {
 
 		Array<Entry>* fArray1;
 		Array<Entry>* fArray2;
-		Entry::ShortName fName;
+		Payload fName;
 		Profiling* fBelow;
 };
 
@@ -127,7 +170,7 @@ class ProfilingState {
 		
 	public:
 		Profiling* Open( int id );
-		void AddEntry( void* profiling, const char* name );
+		void AddEntry( void* profiling, const Profiling::Payload& payload );
 		void Close( void* profiling );
 
 	public:
@@ -148,17 +191,35 @@ class ProfilingState {
 		int fRenderID;
 };
 
+class ProfilingEntryRAII {
+	public:
+		ProfilingEntryRAII( ProfilingState& state, int id );
+		~ProfilingEntryRAII();
+
+	public:
+		void Add( const Profiling::Payload& payload ) const;
+
+		Profiling* GetProfiling() const { return fProfiling; }
+
+	private:
+		ProfilingState& fState;
+		Profiling* fProfiling;
+};
+
 #define PROFILE_SUMS 0 // include sums in profiling?
 
+// see https://stackoverflow.com/a/8075408 for ensuring string literals, and thus static lifetimes
+
 #if PROFILE_SUMS != 0
-	#define SUMMED_TIMING( var, name ) static Profiling::Sum s_##var( name ); Profiling::SumRAII var##_w( s_##var )
+	#define SUMMED_TIMING( var, name ) static Profiling::Sum s_##var( name "" ); Profiling::SumRAII var##_w( s_##var )
 	#define ENABLE_SUMMED_TIMING( enable ) Profiling::Sum::EnableSums( enable )
 #else
 	#define SUMMED_TIMING( var, name )
 	#define ENABLE_SUMMED_TIMING( enable )
 #endif
 
-#define PROFILING_BEGIN( state, var, name ) Profiling::EntryRAII var( state, ( state ).Get##name##ID() )
+#define PROFILING_BEGIN( state, var, name ) ProfilingEntryRAII var( state, ( state ).Get##name##ID() )
+#define PROFILING_ADD( var, name ) ( var ).Add( Profiling::Payload( name "" ) )
 
 // ----------------------------------------------------------------------------
 

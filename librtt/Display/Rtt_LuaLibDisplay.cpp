@@ -2731,13 +2731,9 @@ int
 DisplayLibrary::_allocateProfile( lua_State *L )
 {
 	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
-	if ( lua_isstring( L, 1 ) && lua_isstring( L, 2 ) )
+	if ( lua_isstring( L, 1 ) )
 	{
-		char buf[128];
-
-		snprintf( buf, sizeof( buf ) - 1, "%s:%s", lua_tostring( L, 2 ), lua_tostring( L, 1 ) );
-
-		int profileID = lib->GetDisplay().GetProfilingState()->Create( buf );
+		int profileID = lib->GetDisplay().GetProfilingState()->Create( lua_tostring( L, 1 ) );
 
 		lua_pushinteger( L, profileID + 1 );
 	}
@@ -2861,30 +2857,17 @@ DisplayLibrary::_addProfileEntry( lua_State *L )
 	Self* lib = (Self *)lua_touserdata( L, lua_upvalueindex( 1 ) );
 	if ( lua_islightuserdata( L, 1 ) )
 	{
-		const char* str;
-		char buf[128];
-		
-		switch ( lua_type( L, 2 ) )
+		int type = lua_type( L, 2 );
+
+		if ( LUA_TTABLE == type || LUA_TFUNCTION == type )
 		{
-		case LUA_TSTRING:
-			str = lua_tostring( L, 2 );
-			break;
-
-		case LUA_TNUMBER:
-			snprintf( buf, sizeof( buf ) - 1, "%g", lua_tonumber( L, 2 ) );
-			str = buf;
-			break;
-
-		case LUA_TBOOLEAN:
-			str = lua_toboolean( L, 2 ) ? "true" : "false";
-			break;
-
-		default:
-			snprintf( buf, sizeof( buf ) - 1, "%s:0x%p", luaL_typename( L, 2 ), lua_topointer( L, 2 ) );
-			str = buf;
+			lib->GetDisplay().GetProfilingState()->AddEntry( lua_touserdata( L, 1 ), Profiling::Payload( lua_topointer( L, 2 ), LUA_TTABLE == type ) );
 		}
 
-		lib->GetDisplay().GetProfilingState()->AddEntry( lua_touserdata( L, 1 ), str );
+		else
+		{
+			CoronaLuaError( L, "Profile entry expected to be function or table listener, got %s", lua_typename( L, type ) );
+		}
 	}
 
 	return 0;

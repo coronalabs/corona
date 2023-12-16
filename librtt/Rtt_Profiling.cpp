@@ -20,14 +20,93 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-void Profiling::Entry::SetShortName( ShortName out, const char* name )
+void Profiling::Payload::SetString( const char* str, bool owns )
 {
-    strncpy( out, name, sizeof( ShortName ) - 1 );
+    Rtt_ASSERT( !owns ); // TODO? no uses yet (and would need to make copies or keep a ref count, probably...)
+
+    Cleanup( str );
+
+    packed = FromString( str, owns );
 }
 
-void Profiling::Entry::SetName( const char* name )
+void Profiling::Payload::SetPointer( const void* ptr, bool isTable )
 {
-    SetShortName( fName, name );
+    Cleanup( ptr );
+
+    packed = FromPointer( ptr, isTable );
+}
+
+const char* Profiling::Payload::GetString() const
+{
+    Type type = GetTypePart();
+
+    if ( kString == type || kOwnedString == type )
+    {
+        return static_cast<const char*>( GetPointerPart() );
+    }
+
+    else
+    {
+        return NULL;
+    }
+}
+
+const void* Profiling::Payload::GetPointer() const
+{
+    Type type = GetTypePart();
+
+    if ( kTable == type || kFunction == type )
+    {
+        return GetPointerPart();
+    }
+
+    else
+    {
+        return NULL;
+    }
+}
+
+bool Profiling::Payload::HasTablePointer() const
+{
+    return kTable == GetTypePart();
+}
+
+void Profiling::Payload::Cleanup( const void* newValue )
+{
+    if ( kOwnedString == GetTypePart() )
+    {
+        Rtt_ASSERT( GetPointerPart() != newValue );
+        Rtt_DELETE( GetPointerPart() );
+    }
+}
+
+static uintptr_t Combine( const void* ptr, Profiling::Payload::Type type )
+{
+    uintptr_t uv = reinterpret_cast<uintptr_t>( ptr );
+
+    Rtt_ASSERT( 0 == ( uv & type ) );
+
+    return uv | type;
+}
+
+uintptr_t Profiling::Payload::FromString( const char* str, bool owns )
+{
+    return Combine( str, owns ? kOwnedString : kString );
+}
+
+uintptr_t Profiling::Payload::FromPointer( const void* ptr, bool isTable )
+{
+    return Combine( ptr, isTable ? kTable : kFunction );
+}
+
+const void* Profiling::Payload::GetPointerPart() const
+{
+    return reinterpret_cast<const void*>( packed & ~Mask );
+}
+
+Profiling::Payload::Type Profiling::Payload::GetTypePart() const
+{
+    return (Type)( packed & Mask );
 }
 
 Profiling::Profiling( Rtt_Allocator* allocator, const char* name )
@@ -36,7 +115,7 @@ Profiling::Profiling( Rtt_Allocator* allocator, const char* name )
     fArray1 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
     fArray2 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
 
-    Entry::SetShortName( fName, name );
+    fName.SetString( name );
 }
 
 Profiling::~Profiling()
@@ -56,7 +135,7 @@ void Profiling::Commit( ProfilingState& state )
 
     if ( fBelow )
     {
-        fBelow->AddEntry( fName, true );
+        fBelow->AddEntry( fName.GetString(), true );
     }
 
     state.SetTopOfList( fBelow );
@@ -71,12 +150,11 @@ void Profiling::Push( ProfilingState& state )
     state.SetTopOfList( this );
 }
 
-void Profiling::AddEntry( const char* name, bool isListName )
+void Profiling::AddEntry( const Payload& payload, bool isListName )
 {
     Entry entry;
 
-    entry.SetName( name );
-
+    entry.fPayload = payload;
     entry.fTime = !isListName ? Rtt_GetAbsoluteTime() : Entry::SublistTime();
 
     fArray1->Append( entry );
@@ -89,10 +167,49 @@ int Profiling::VisitEntries( lua_State* L ) const
         int index = 1;
         const Entry* entries = fArray2->ReadAccess();
         S32 length = fArray2->Length();
+        int curType = -1;
 
         for ( S32 i = 0; i < length; ++i, index += 2 )
         {
-            lua_pushstring( L, entries[i].fName );
+            const Payload& payload = entries[i].fPayload;
+            const void* ptr = payload.GetPointer();
+
+            if ( ptr )
+            {
+                int type = payload.HasTablePointer();
+
+                if ( curType != type )
+                {
+                    curType = type;
+
+                    if ( payload.HasTablePointer() )
+                    {
+                        lua_pushliteral( L, "@tableListeners" );
+                    }
+                    else
+                    {
+                        lua_pushliteral( L, "@functionListeners" );
+                    }
+
+                    lua_rawseti( L, 1, index );
+                    lua_pushboolean( L, 0 );
+                    lua_rawseti( L, 1, index + 1 );
+
+                    index += 2;
+                }
+
+                lua_pushlightuserdata( L, (void*)ptr );
+            }
+
+            else
+            {
+                const char* str = payload.GetString();
+
+                Rtt_ASSERT( str );
+
+                lua_pushstring( L, str );
+            }
+
             lua_rawseti( L, 1, index );
 
             if ( Entry::SublistTime() != entries[i].fTime )
@@ -108,7 +225,7 @@ int Profiling::VisitEntries( lua_State* L ) const
             lua_rawseti( L, 1, index + 1 );
         }
 
-        lua_pushinteger( L, length * 2 );
+        lua_pushinteger( L, index - 1 );
     }
 
     else
@@ -140,7 +257,7 @@ int Profiling::VisitSums( lua_State* L)
                 continue;
             }
 
-            lua_pushstring( L, sum->fName );
+            lua_pushstring( L, sum->fName.GetString()/*fName*/ );
             lua_rawseti( L, 1, index );
             lua_pushinteger( L, Rtt_AbsoluteToMicroseconds( sum->fTotalTime ) );
             lua_rawseti( L, 1, index + 1 );
@@ -163,39 +280,9 @@ int Profiling::VisitSums( lua_State* L)
 
 Profiling::Sum* Profiling::sFirstSum;
 
-Profiling::EntryRAII::EntryRAII( ProfilingState& state, int id )
-:   fState( state )
-{
-    fProfiling = state.GetByID( id );
-
-    Rtt_ASSERT( fProfiling );
-
-    if ( !state.Find( fProfiling ) )
-    {
-        fProfiling->Push( state );
-    }
-
-    else
-    {
-        Rtt_ASSERT_NOT_REACHED(); // possible, but indicates misuse
-    }
-}
-
-Profiling::EntryRAII::~EntryRAII()
-{
-    Rtt_ASSERT( fProfiling );
-
-    fProfiling->Commit( fState );
-}
-
-void Profiling::EntryRAII::Add( const char* name ) const
-{
-    fProfiling->AddEntry( name );
-}
-
 Profiling::Sum::Sum( const char* name )
 {
-    Entry::SetShortName( fName, name );
+    fName.SetString( name );
 
     fNext = sFirstSum;
     sFirstSum = this;
@@ -299,11 +386,6 @@ int ProfilingState::Create( const char* name )
 {
     Profiling* profiling = Rtt_NEW( fLists.Allocator(), Profiling( fLists.Allocator(), name ) );
 
-    if ( 0 != Rtt_StringCompare( name, profiling->GetName() ) )
-    {
-        Rtt_Log( "Profiling list created, but name %s shortened to %s", name, profiling->GetName() );
-    }
-
     fLists.Append( profiling );
 
     return fLists.Length() - 1;
@@ -328,7 +410,7 @@ Profiling* ProfilingState::Get( const char* name )
     {
         Profiling* cur = fLists[i];
 
-        if ( 0 == Rtt_StringCompare( name, cur->GetName() ) )
+        if ( 0 == Rtt_StringCompare( name, cur->GetName() ) && name )
         {
             return cur;
         }
@@ -359,11 +441,11 @@ Profiling* ProfilingState::Open( int id )
     }
 }
 
-void ProfilingState::AddEntry( void* profiling, const char* name )
+void ProfilingState::AddEntry( void* profiling, const Profiling::Payload& payload )
 {
     if ( NULL != profiling && fTopList == profiling )
     {
-        fTopList->AddEntry( name );
+        fTopList->AddEntry( payload );
     }
 }
 
@@ -397,6 +479,36 @@ void ProfilingState::Bookmark( short mark, int push, void* ud )
             state->Close( profiling );
         }
     }
+}
+
+ProfilingEntryRAII::ProfilingEntryRAII( ProfilingState& state, int id )
+:   fState( state )
+{
+    fProfiling = state.GetByID( id );
+
+    Rtt_ASSERT( fProfiling );
+
+    if ( !state.Find( fProfiling ) )
+    {
+        fProfiling->Push( state );
+    }
+
+    else
+    {
+        Rtt_ASSERT_NOT_REACHED(); // possible, but indicates misuse
+    }
+}
+
+ProfilingEntryRAII::~ProfilingEntryRAII()
+{
+    Rtt_ASSERT( fProfiling );
+
+    fProfiling->Commit( fState );
+}
+
+void ProfilingEntryRAII::Add( const Profiling::Payload& payload ) const
+{
+    fProfiling->AddEntry( payload );
 }
 
 // ----------------------------------------------------------------------------
