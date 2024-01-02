@@ -27,17 +27,54 @@ class ProfilingState;
 
 class Profiling {
 	public:
-		enum { None = -1 };
-
 		Profiling( Rtt_Allocator* allocator, const char* name );
 		~Profiling();
 
 	public:
+		class Payload {
+			public:
+				enum Type {
+					kString,
+
+					// Listener functions
+					kTable,
+					kFunction,
+
+					kNumTypes
+				};
+
+			public:
+				Payload( const char* str = NULL )
+				{
+					SetString( str );
+				}
+
+				Payload( const void* ptr, bool isTable )
+				{
+					SetPointer( ptr, isTable );
+				}
+
+			public:
+				void SetString( const char* str );
+				void SetPointer( const void* ptr, bool isTable );
+
+			public:
+				const char* GetString() const;
+				const void* GetPointer() const;
+
+				bool HasTablePointer() const { return kTable == fType; }
+
+			private:
+				const void* fValue;
+				Type fType;
+		};
+
+	public:
 		void Commit( ProfilingState& state );
 		void Push( ProfilingState& state );
-		const char* GetName() const { return fName; }
+		const char* GetName() const { return fName.GetString(); }
 		Profiling* GetBelow() const { return fBelow; }
-		void AddEntry( const char* name, bool isListName = false );
+		void AddEntry( const Payload& payload, bool isListName = false );
 		int VisitEntries( lua_State* L ) const;
 
 	public:
@@ -46,33 +83,13 @@ class Profiling {
 
 	private:
 		struct Entry {
-			typedef char ShortName[64];
-		
-			static void SetShortName( ShortName out, const char* name );
 			static U64 SublistTime() { return ~0ULL; }
 		
-			void SetName( const char* name );
-		
-			ShortName fName;
+			Payload fPayload;
 			U64 fTime;
 		};
 
-	public:
-		class EntryRAII {
-		public:
-			EntryRAII( ProfilingState& state, int& id, const char* name );
-			~EntryRAII();
-
-		public:
-			void Add( const char* name ) const;
-
-			Profiling* GetProfiling() const { return fProfiling; }
-
-		private:
-			ProfilingState& fState;
-			Profiling* fProfiling;
-		};
-	
+	public:	
 		class Sum {
 		public:
 			Sum( const char* name );
@@ -90,7 +107,7 @@ class Profiling {
 
 		private:
 			Sum* fNext;
-			Entry::ShortName fName;
+			Payload fName;
 			U64 fTotalTime;
 			U32 fTimingCount;
 			U32 fRefCount;
@@ -113,7 +130,7 @@ class Profiling {
 
 		Array<Entry>* fArray1;
 		Array<Entry>* fArray2;
-		Entry::ShortName fName;
+		Payload fName;
 		Profiling* fBelow;
 };
 
@@ -125,58 +142,60 @@ class ProfilingState {
 		bool Find( const Profiling* profiling );
 		int Create( const char* name );
 		Profiling* GetByID( int id );
-		Profiling* GetOrCreate( int& id, const char* name );
 		Profiling* Get( const char* name );
 		
 	public:
 		Profiling* Open( int id );
-		void AddEntry( void* profiling, const char* name );
+		void AddEntry( void* profiling, const Profiling::Payload& payload );
 		void Close( void* profiling );
 
 	public:
 		static void Bookmark( short mark, int push, void* ud );
 
 	public:
-		#ifdef Rtt_AUTHORING_SIMULATOR
-			static int GetSimulatorRun() { return sSimulatorRun; }
-		#endif
-
-	public:
 		Profiling* GetTopOfList() const { return fTopList; }
 		void SetTopOfList( Profiling* profiling ) { fTopList = profiling; }
 
+	public:
+		int GetUpdateID() const { return fUpdateID; }
+		int GetRenderID() const { return fRenderID; }
+	
 	private:
 		PtrArray<Profiling> fLists;
 		Profiling* fTopList;
+		int fUpdateID;
+		int fRenderID;
+};
 
-	#ifdef Rtt_AUTHORING_SIMULATOR
-		static int sSimulatorRun;
-	#endif
+class ProfilingEntryRAII {
+	public:
+		ProfilingEntryRAII( ProfilingState& state, int id );
+		~ProfilingEntryRAII();
+
+	public:
+		void Add( const Profiling::Payload& payload ) const;
+
+		Profiling* GetProfiling() const { return fProfiling; }
+
+	private:
+		ProfilingState& fState;
+		Profiling* fProfiling;
 };
 
 #define PROFILE_SUMS 0 // include sums in profiling?
 
+// see https://stackoverflow.com/a/8075408 for ensuring string literals, and thus static lifetimes
+
 #if PROFILE_SUMS != 0
-	#define SUMMED_TIMING( var, name ) static Profiling::Sum s_##var( name ); Profiling::SumRAII var##_w( s_##var )
+	#define SUMMED_TIMING( var, name ) static Profiling::Sum s_##var( name "" ); Profiling::SumRAII var##_w( s_##var )
 	#define ENABLE_SUMMED_TIMING( enable ) Profiling::Sum::EnableSums( enable )
 #else
 	#define SUMMED_TIMING( var, name )
 	#define ENABLE_SUMMED_TIMING( enable )
 #endif
 
-#ifdef Rtt_AUTHORING_SIMULATOR
-	// Invalidate static indices on each simulator launch:
-	#define PROFILING_BEGIN( state, var, name ) static int s_id_##var, s_id_##var##_run = Profiling::None;		\
-												if ( s_id_##var##_run != ProfilingState::GetSimulatorRun() )	\
-												{																\
-													s_id_##var = Profiling::None;								\
-													s_id_##var##_run = ProfilingState::GetSimulatorRun();		\
-												}																\
-												Profiling::EntryRAII var( state, s_id_##var, name )
-#else
-	// Otherwise, compute each index once up front:
-	#define PROFILING_BEGIN( state, var, name ) static int s_id_##var = Profiling::None; Profiling::EntryRAII var( state, s_id_##var, name )
-#endif
+#define PROFILING_BEGIN( state, var, name ) ProfilingEntryRAII var( state, ( state ).Get##name##ID() )
+#define PROFILING_ADD( var, name ) ( var ).Add( Profiling::Payload( name "" ) )
 
 // ----------------------------------------------------------------------------
 
