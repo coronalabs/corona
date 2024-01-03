@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -597,8 +598,8 @@ NativeToJavaBridge::GetRawAsset( const char * assetName, Rtt::Data<char> & data 
 						jbyteArrayResult bytesJ( bridge.getEnv(), (jbyteArray) jo );
 						data.Set( (const char *) bytesJ.getValues(), bytesJ.getLength() );
 						bytesJ.release();
-						result = true;
 						bridge.getEnv()->DeleteLocalRef(jo);
+						result = (data.Get() != nullptr);
 					}
 				}
 			}

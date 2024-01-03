@@ -191,10 +191,10 @@ Scene::Clear( Renderer& renderer )
 	renderer.Clear( c.rgba.r * inv255, c.rgba.g * inv255, c.rgba.b * inv255, c.rgba.a * inv255 );
 }
 
-#define ADD_ENTRY( what ) if ( profiling ) { profiling->AddEntry( what ); }
+#define ADD_ENTRY( what ) if ( profiling ) PROFILING_ADD( *profiling, what )
 
 void
-Scene::Render( Renderer& renderer, PlatformSurface& rTarget, Profiling* profiling )
+Scene::Render( Renderer& renderer, PlatformSurface& rTarget, ProfilingEntryRAII* profiling )
 {
 	Rtt_ASSERT( fCurrentStage );
 

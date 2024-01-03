@@ -1298,6 +1298,8 @@ Runtime::LoadApplication( const LoadParameters& parameters )
 		else
 		{
 			fOpenALPlayer = PlatformOpenALPlayer::RetainInstance();
+
+			fOpenALPlayer->AttachNotifier( Rtt_NEW( GetAllocator(), PlatformNotifier( VMContext().LuaState() ) ) );
 		}
 #endif
 		bool connectToDebugger = ( launchOptions & kConnectToDebugger );

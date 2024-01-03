@@ -20,14 +20,42 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-void Profiling::Entry::SetShortName( ShortName out, const char* name )
+void Profiling::Payload::SetString( const char* str )
 {
-    strncpy( out, name, sizeof( ShortName ) - 1 );
+	fValue = str;
+	fType = kString;
 }
 
-void Profiling::Entry::SetName( const char* name )
+void Profiling::Payload::SetPointer( const void* ptr, bool isTable )
 {
-    SetShortName( fName, name );
+	fValue = ptr;
+	fType = isTable ? kTable : kFunction;
+}
+
+const char* Profiling::Payload::GetString() const
+{
+    if ( kString == fType )
+    {
+        return static_cast<const char*>( fValue );
+    }
+
+    else
+    {
+        return NULL;
+    }
+}
+
+const void* Profiling::Payload::GetPointer() const
+{
+    if ( kTable == fType || kFunction == fType )
+    {
+        return fValue;
+    }
+
+    else
+    {
+        return NULL;
+    }
 }
 
 Profiling::Profiling( Rtt_Allocator* allocator, const char* name )
@@ -36,7 +64,7 @@ Profiling::Profiling( Rtt_Allocator* allocator, const char* name )
     fArray1 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
     fArray2 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
 
-    Entry::SetShortName( fName, name );
+    fName.SetString( name );
 }
 
 Profiling::~Profiling()
@@ -56,7 +84,7 @@ void Profiling::Commit( ProfilingState& state )
 
     if ( fBelow )
     {
-        fBelow->AddEntry( fName, true );
+        fBelow->AddEntry( fName.GetString(), true );
     }
 
     state.SetTopOfList( fBelow );
@@ -71,12 +99,11 @@ void Profiling::Push( ProfilingState& state )
     state.SetTopOfList( this );
 }
 
-void Profiling::AddEntry( const char* name, bool isListName )
+void Profiling::AddEntry( const Payload& payload, bool isListName )
 {
     Entry entry;
 
-    entry.SetName( name );
-
+    entry.fPayload = payload;
     entry.fTime = !isListName ? Rtt_GetAbsoluteTime() : Entry::SublistTime();
 
     fArray1->Append( entry );
@@ -89,10 +116,49 @@ int Profiling::VisitEntries( lua_State* L ) const
         int index = 1;
         const Entry* entries = fArray2->ReadAccess();
         S32 length = fArray2->Length();
+        int curType = -1;
 
         for ( S32 i = 0; i < length; ++i, index += 2 )
         {
-            lua_pushstring( L, entries[i].fName );
+            const Payload& payload = entries[i].fPayload;
+            const void* ptr = payload.GetPointer();
+
+            if ( ptr )
+            {
+                int type = payload.HasTablePointer();
+
+                if ( curType != type )
+                {
+                    curType = type;
+
+                    if ( payload.HasTablePointer() )
+                    {
+                        lua_pushliteral( L, "@tableListeners" );
+                    }
+                    else
+                    {
+                        lua_pushliteral( L, "@functionListeners" );
+                    }
+
+                    lua_rawseti( L, 1, index );
+                    lua_pushboolean( L, 0 );
+                    lua_rawseti( L, 1, index + 1 );
+
+                    index += 2;
+                }
+
+                lua_pushlightuserdata( L, (void*)ptr );
+            }
+
+            else
+            {
+                const char* str = payload.GetString();
+
+                Rtt_ASSERT( str );
+
+                lua_pushstring( L, str );
+            }
+
             lua_rawseti( L, 1, index );
 
             if ( Entry::SublistTime() != entries[i].fTime )
@@ -108,7 +174,7 @@ int Profiling::VisitEntries( lua_State* L ) const
             lua_rawseti( L, 1, index + 1 );
         }
 
-        lua_pushinteger( L, length * 2 );
+        lua_pushinteger( L, index - 1 );
     }
 
     else
@@ -140,7 +206,7 @@ int Profiling::VisitSums( lua_State* L)
                 continue;
             }
 
-            lua_pushstring( L, sum->fName );
+            lua_pushstring( L, sum->fName.GetString()/*fName*/ );
             lua_rawseti( L, 1, index );
             lua_pushinteger( L, Rtt_AbsoluteToMicroseconds( sum->fTotalTime ) );
             lua_rawseti( L, 1, index + 1 );
@@ -163,43 +229,9 @@ int Profiling::VisitSums( lua_State* L)
 
 Profiling::Sum* Profiling::sFirstSum;
 
-#ifdef Rtt_AUTHORING_SIMULATOR
-	int ProfilingState::sSimulatorRun;
-#endif
-
-Profiling::EntryRAII::EntryRAII( ProfilingState& state, int& id, const char* name )
-:   fState( state )
-{
-    fProfiling = state.GetOrCreate( id, name );
-
-    Rtt_ASSERT( fProfiling );
-
-    if ( !state.Find( fProfiling ) )
-    {
-        fProfiling->Push( state );
-    }
-
-    else
-    {
-        Rtt_ASSERT_NOT_REACHED(); // possible, but indicates misuse
-    }
-}
-
-Profiling::EntryRAII::~EntryRAII()
-{
-    Rtt_ASSERT( fProfiling );
-
-    fProfiling->Commit( fState );
-}
-
-void Profiling::EntryRAII::Add( const char* name ) const
-{
-    fProfiling->AddEntry( name );
-}
-
 Profiling::Sum::Sum( const char* name )
 {
-    Entry::SetShortName( fName, name );
+    fName.SetString( name );
 
     fNext = sFirstSum;
     sFirstSum = this;
@@ -282,9 +314,8 @@ ProfilingState::ProfilingState( Rtt_Allocator* allocator )
 :   fLists( allocator ),
     fTopList( NULL )
 {
-#ifdef Rtt_AUTHORING_SIMULATOR
-    sSimulatorRun++;
-#endif
+	fUpdateID = Create( "update" );
+	fRenderID = Create( "render" );
 }
 
 bool ProfilingState::Find( const Profiling* profiling )
@@ -304,11 +335,6 @@ int ProfilingState::Create( const char* name )
 {
     Profiling* profiling = Rtt_NEW( fLists.Allocator(), Profiling( fLists.Allocator(), name ) );
 
-    if ( 0 != Rtt_StringCompare( name, profiling->GetName() ) )
-    {
-        Rtt_Log( "Profiling list created, but name %s shortened to %s", name, profiling->GetName() );
-    }
-
     fLists.Append( profiling );
 
     return fLists.Length() - 1;
@@ -327,23 +353,13 @@ Profiling* ProfilingState::GetByID( int id )
     }
 }
 
-Profiling* ProfilingState::GetOrCreate( int& id, const char* name )
-{
-    if ( Profiling::None == id )
-    {
-        id = Create( name );
-    }
-
-    return GetByID( id );
-}
-
 Profiling* ProfilingState::Get( const char* name )
 {
     for ( S32 i = 0, length = fLists.Length(); i < length; i++ )
     {
         Profiling* cur = fLists[i];
 
-        if ( 0 == Rtt_StringCompare( name, cur->GetName() ) )
+        if ( 0 == Rtt_StringCompare( name, cur->GetName() ) && name )
         {
             return cur;
         }
@@ -374,11 +390,11 @@ Profiling* ProfilingState::Open( int id )
     }
 }
 
-void ProfilingState::AddEntry( void* profiling, const char* name )
+void ProfilingState::AddEntry( void* profiling, const Profiling::Payload& payload )
 {
     if ( NULL != profiling && fTopList == profiling )
     {
-        fTopList->AddEntry( name );
+        fTopList->AddEntry( payload );
     }
 }
 
@@ -412,6 +428,36 @@ void ProfilingState::Bookmark( short mark, int push, void* ud )
             state->Close( profiling );
         }
     }
+}
+
+ProfilingEntryRAII::ProfilingEntryRAII( ProfilingState& state, int id )
+:   fState( state )
+{
+    fProfiling = state.GetByID( id );
+
+    Rtt_ASSERT( fProfiling );
+
+    if ( !state.Find( fProfiling ) )
+    {
+        fProfiling->Push( state );
+    }
+
+    else
+    {
+        Rtt_ASSERT_NOT_REACHED(); // possible, but indicates misuse
+    }
+}
+
+ProfilingEntryRAII::~ProfilingEntryRAII()
+{
+    Rtt_ASSERT( fProfiling );
+
+    fProfiling->Commit( fState );
+}
+
+void ProfilingEntryRAII::Add( const Profiling::Payload& payload ) const
+{
+    fProfiling->AddEntry( payload );
 }
 
 // ----------------------------------------------------------------------------
