@@ -161,6 +161,7 @@ function M:updateFlags( minVersion )
 	self.options.flags = {
 		'-ObjC',
 		'-all_load',
+		'-ld_classic',
 		'-fobjc-link-runtime',
 		'-miphoneos-version-min=' .. minVersion,
 		'-std=c++11',
