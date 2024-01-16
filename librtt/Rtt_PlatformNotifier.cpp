@@ -63,6 +63,37 @@ PlatformNotifier::ScheduleDispatch( VirtualEvent *e )
 	}
 }
 
+void
+PlatformNotifier::ScheduleDispatch( VirtualEvent *e, int ref )
+{
+	if ( Rtt_VERIFY( e ) )
+	{
+		bool scheduled = false;
+		Rtt_ASSERT( LUA_NOREF != ref && LUA_REFNIL != ref );
+
+		lua_State *L = GetLuaState();
+		Rtt_ASSERT( L );
+		if ( L )
+		{
+			Runtime *runtime = LuaContext::GetRuntime( L );
+
+			PlatformNotifierTask *task = Rtt_NEW( runtime->Allocator(), PlatformNotifierTask( * this, e ) );
+
+			task->SetReference( ref );
+
+			runtime->GetScheduler().Append( task );
+
+			scheduled = true;
+		}
+
+		// In case of error, we need to delete the event
+		if ( ! Rtt_VERIFY( scheduled ) )
+		{
+			Rtt_DELETE( e );
+		}
+	}
+}
+
 bool
 PlatformNotifier::HasListener() const
 {
@@ -163,7 +194,8 @@ PlatformNotifier::RawSetListenerRef(int ref)
 PlatformNotifierTask::PlatformNotifierTask( PlatformNotifier& notifier, VirtualEvent *e )
 :	Super(),
 	fNotifier( notifier ),
-	fEvent( e )
+	fEvent( e ),
+	fLuaRef( LUA_NOREF )
 {
 	Rtt_ASSERT( e );
 }
@@ -176,7 +208,21 @@ PlatformNotifierTask::~PlatformNotifierTask()
 void 
 PlatformNotifierTask::operator()( Scheduler & sender )
 {
+	int oldRef = fNotifier.GetListenerRef();
+
+	if ( LUA_NOREF != fLuaRef )
+	{
+		fNotifier.RawSetListenerRef( fLuaRef );
+	}
+
 	fNotifier.CallListener( fEvent->Name(), *fEvent );
+
+	if ( LUA_NOREF != fLuaRef )
+	{
+		fNotifier.RawSetListenerRef( oldRef );
+
+		fLuaRef = LUA_NOREF;
+	}
 }
 	
 // ----------------------------------------------------------------------------
