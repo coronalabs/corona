@@ -1124,9 +1124,7 @@ PlatformOpenALPlayer::NotificationCallback( int which_channel, unsigned int al_s
 				// Bug 5724: In addition to setting all the callback properties, we pass the notifier in to transfer ownership. 
 				// We expect when the event is fired and deleted, it will also delete the notifier with it.
 				e->SetProperties( which_channel, al_source, almixer_data, finished_naturally );//notifier );
-				notifier->RawSetListenerRef( callback );
-				notifier->ScheduleDispatch( e );
-				notifier->RawSetListenerRef( LUA_NOREF );
+				notifier->ScheduleDispatch( e, callback );
 			}
 		}/*
 		else
