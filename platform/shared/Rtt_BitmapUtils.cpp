@@ -238,6 +238,8 @@ namespace bitmapUtil
 			format = Rtt::PlatformBitmap::Format::kRGBA;
 			return im;
 		}
+
+		return NULL;
 	}
 
 	//

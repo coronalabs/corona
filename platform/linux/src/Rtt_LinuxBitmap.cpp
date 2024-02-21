@@ -125,6 +125,10 @@ namespace Rtt
 			{
 				fFormat = kRGBA;
 			}
+			else
+			{
+				Rtt_LogException("Failed to load %s\n", path);
+			}
 		}
 		else if (ext == ".png")
 		{
