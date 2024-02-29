@@ -301,8 +301,13 @@ ShaderComposite::Prepare( RenderData& objectData, int w, int h, ShaderResource::
 
 // public: ShapeObject calls this to get final output
 void
-ShaderComposite::Draw( Renderer& renderer, const RenderData& objectData ) const
+ShaderComposite::Draw( Renderer& renderer, const RenderData& objectData, const GeometryWriter* writers, U32 n ) const
 {
+    if ( !renderer.CanAddGeometryWriters() ) // ignore during raw draws
+    {
+        renderer.SetGeometryWriters( writers, n );
+    }
+
     DrawState state( fResource->GetEffectCallbacks(), fIsDrawing );
 
     if (DoAnyBeforeDrawAndThenOriginal( state, renderer, objectData ))

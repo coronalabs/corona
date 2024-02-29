@@ -13,6 +13,10 @@
       <Configuration>Debug.Simulator</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="PreRelease|Win32">
+      <Configuration>PreRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release.App|Win32">
       <Configuration>Release.App</Configuration>
       <Platform>Win32</Platform>
@@ -92,6 +96,7 @@
     <ClCompile Include="..\..\..\librtt\Display\Rtt_LineObject.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_LuaLibDisplay.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_LuaLibGraphics.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_ObjectHandle.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_OpenPath.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_Paint.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_PaintAdapter.cpp" />
@@ -142,6 +147,8 @@
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvas.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCapture.cpp" />
+    <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceCaptureAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceExternal.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.cpp" />
     <ClCompile Include="..\..\..\librtt\Display\Rtt_VertexCache.cpp" />
@@ -159,6 +166,7 @@
     <ClCompile Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CommandBuffer.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_CPUResource.cpp" />
+    <ClCompile Include="..\..\..\librtt\Renderer\Rtt_FormatExtensionList.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_FrameBufferObject.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'">$(IntDir)Renderer\</ObjectFileName>
@@ -166,6 +174,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">$(IntDir)Renderer\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">$(IntDir)Renderer\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GeometryPool.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_GL.cpp" />
@@ -183,6 +192,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">$(IntDir)Renderer\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">$(IntDir)Renderer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">$(IntDir)Renderer\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_Program.cpp" />
     <ClCompile Include="..\..\..\librtt\Renderer\Rtt_ProgramFactory.cpp" />
@@ -271,6 +281,7 @@
     <ClCompile Include="..\..\..\librtt\Rtt_Preference.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceCollection.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceValue.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_Profiling.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Rendering.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_RenderingStream.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Resource.cpp" />
@@ -314,6 +325,7 @@
     <ClInclude Include="..\..\..\external\LuaHashMap\LuaHashMap.h" />
     <ClInclude Include="..\..\..\external\smoothpolygon\SmoothPolygon.h" />
     <ClInclude Include="..\..\..\external\vulkan\utils\volk.h" />
+    <ClInclude Include="..\..\..\external\wyhash\wyhash.h" />
     <ClInclude Include="..\..\..\librtt\b2GLESDebugDraw.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Array.h" />
@@ -395,7 +407,7 @@
     <ClInclude Include="..\..\..\librtt\Display\Rtt_LuaLibGraphics.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_MDisplayDelegate.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_MDrawable.h" />
-    <ClInclude Include="..\..\..\librtt\Display\Rtt_ObjectBoxList.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_ObjectHandle.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_OpenPath.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_Paint.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_PaintAdapter.h" />
@@ -446,6 +458,8 @@
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceBitmapAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvas.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCanvasAdapter.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCapture.h" />
+    <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceCaptureAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceExternal.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_TextureResourceExternalAdapter.h" />
     <ClInclude Include="..\..\..\librtt\Display\Rtt_VertexCache.h" />
@@ -463,6 +477,7 @@
     <ClInclude Include="..\..\..\librtt\Input\Rtt_ReadOnlyInputDeviceCollection.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CommandBuffer.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_CPUResource.h" />
+    <ClInclude Include="..\..\..\librtt\Renderer\Rtt_FormatExtensionList.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_FrameBufferObject.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_Geometry_Renderer.h" />
     <ClInclude Include="..\..\..\librtt\Renderer\Rtt_GeometryPool.h" />
@@ -587,6 +602,7 @@
     <ClInclude Include="..\..\..\librtt\Rtt_Preference.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceValue.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_Profiling.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Rendering.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_RenderingStream.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Resource.h" />
@@ -641,6 +657,7 @@
       <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Debug.CoronaBuilder|Win32'">remdebug_engine</BaseFunctionName>
       <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'">remdebug_engine</BaseFunctionName>
       <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">remdebug_engine</BaseFunctionName>
+      <BaseFunctionName Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">remdebug_engine</BaseFunctionName>
     </LuaToCpp>
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaLibrary.lua" />
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaPrototype.lua" />
@@ -845,6 +862,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.App|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -875,6 +899,12 @@
     <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release.Simulator|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Release.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
+    <Import Project="Corona.Rtt.Library.Win32.Internals.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Release.Definitions.props" />
     <Import Project="Corona.Rtt.Library.Simulator.Definitions.props" />
@@ -978,6 +1008,31 @@ if NOT EXIST %LIBRARY% (
       <AdditionalDependencies>shaderc_combined.lib;spirv-cross-core.lib;spirv-cross-glsl.lib</AdditionalDependencies>
     </Lib>
     <Lib>
+      <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\external\vulkan\Include;..\..\..\external\b2Separator-cpp;..\..\..\external\fft;..\..\..\external\LuaHashMap;..\..\..\external\smoothpolygon;..\..\..\plugins\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>shaderc_combined.lib;spirv-cross-core.lib;spirv-cross-glsl.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\external\vulkan\Lib32;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

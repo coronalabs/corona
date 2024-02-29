@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -270,6 +270,57 @@ StringForUITextSpellCheckingType( UITextSpellCheckingType value )
 
 // ----------------------------------------------------------------------------
 
+static const char kUITextClearButtonModeDefaultString[] = "UITextClearButtonModeNever";
+static const char kUITextClearButtonModeWhileEditingString[] = "UITextClearButtonModeWhileEditing";
+static const char kUITextClearButtonModeUnlessEditingString[] = "UITextClearButtonModeUnlessEditing";
+static const char kUITextClearButtonModeModeAlwaystring[] = "UITextClearButtonModeAlways";
+
+static UITextFieldViewMode
+UITextClearButtonModeForString( const char *value )
+{
+	UITextFieldViewMode result = UITextFieldViewModeNever;
+
+	if ( 0 == strcmp( value, kUITextClearButtonModeWhileEditingString ) )
+	{
+		result = UITextFieldViewModeWhileEditing;
+	}
+	else if ( 0 == strcmp( value, kUITextClearButtonModeUnlessEditingString ) )
+	{
+		result = UITextFieldViewModeUnlessEditing;
+	}
+	else if ( 0 == strcmp( value, kUITextClearButtonModeModeAlwaystring ) )
+	{
+		result = UITextFieldViewModeAlways;
+	}
+
+	return result;
+}
+
+static const char *
+StringForUITextClearButtonModeType( UITextFieldViewMode value )
+{
+	const char *result = kUITextClearButtonModeDefaultString;
+
+	switch( value )
+	{
+		case UITextFieldViewModeWhileEditing:
+			result = kUITextClearButtonModeWhileEditingString;
+			break;
+		case UITextFieldViewModeUnlessEditing:
+			result = kUITextClearButtonModeUnlessEditingString;
+			break;
+		case UITextFieldViewModeAlways:
+			result = kUITextClearButtonModeModeAlwaystring;
+			break;
+		default:
+			break;
+	}
+
+	return result;
+}
+
+// ----------------------------------------------------------------------------
+
 IPhoneTextFieldObject::IPhoneTextFieldObject( const Rect& bounds )
 :	Super( bounds ),
 	fIsFontSizeScaled( true )
@@ -347,7 +398,7 @@ IPhoneTextFieldObject::setTextColor( lua_State *L )
 
 	return 0;
 }
-    
+
 int
 IPhoneTextFieldObject::setReturnKey( lua_State *L )
 {
@@ -355,12 +406,12 @@ IPhoneTextFieldObject::setReturnKey( lua_State *L )
     if ( & o->ProxyVTable() == & PlatformDisplayObject::GetTextFieldObjectProxyVTable() )
     {
         const char* imeType = lua_tostring(L, -1);
-            
+
         UIView *v = ((IPhoneTextFieldObject*)o)->GetView();
         Rtt_UITextField *t = (Rtt_UITextField*)v;
         t.returnKeyType = IPhoneText::GetUIReturnKeyTypeFromIMEType(imeType);
     }
-        
+
     return 0;
 }
 
@@ -372,7 +423,7 @@ IPhoneTextFieldObject::setSelection( lua_State *L )
 	{
 		double startPosition = lua_tonumber(L, 2);
 		double endPosition = lua_tonumber(L, 3);
-		
+
 		UIView *v = ((IPhoneTextFieldObject*)o)->GetView();
 		Rtt_UITextField *t = (Rtt_UITextField*)v;
 
@@ -382,12 +433,12 @@ IPhoneTextFieldObject::setSelection( lua_State *L )
 			startPosition = maxLength;
 			endPosition = maxLength;
 		}
-		
+
 		if (endPosition > maxLength)
 		{
 			endPosition = maxLength;
 		}
-		
+
 		if (startPosition < 0)
 		{
 			startPosition = 0;
@@ -397,23 +448,46 @@ IPhoneTextFieldObject::setSelection( lua_State *L )
 		{
 			endPosition = 0;
 		}
-		
+
 		if (startPosition > endPosition)
 		{
 			startPosition = endPosition;
 		}
-		
+
 		UITextPosition *beginning = t.beginningOfDocument;
 		UITextPosition *start = [t positionFromPosition:beginning offset:startPosition];
 		UITextPosition *end = [t positionFromPosition:beginning offset:endPosition];
 		UITextRange *textRange = [t textRangeFromPosition:start toPosition:end];
-		
+
 		t.selectedTextRange = textRange;
 	}
-	
+
 	return 0;
 }
+
+int
+IPhoneTextFieldObject::getSelection(lua_State *L)
+{
+	PlatformDisplayObject *o = (PlatformDisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+	if (&o->ProxyVTable() == &PlatformDisplayObject::GetTextFieldObjectProxyVTable())
+	{
+		UIView *v = ((IPhoneTextFieldObject*)o)->GetView();
+		Rtt_UITextField *t = (Rtt_UITextField*)v;
+
+		UITextRange *selectedRange = t.selectedTextRange;
 	
+		NSInteger startPosition = [t offsetFromPosition:t.beginningOfDocument toPosition:selectedRange.start];
+		NSInteger endPosition = [t offsetFromPosition:t.beginningOfDocument toPosition:selectedRange.end];
+
+		lua_pushnumber(L, startPosition);
+		lua_pushnumber(L, endPosition);
+		
+		return 2;
+	}
+
+	return 0;
+}
+
 int
 IPhoneTextFieldObject::ValueForKey( lua_State *L, const char key[] ) const
 {
@@ -467,6 +541,10 @@ IPhoneTextFieldObject::ValueForKey( lua_State *L, const char key[] ) const
 	{
 		lua_pushcfunction( L, setSelection );
 	}
+	else if ( strcmp( "getSelection", key ) == 0 )
+	{
+		lua_pushcfunction( L, getSelection );
+	}
 	else if ( strcmp( "align", key ) == 0 )
 	{
 		lua_pushstring( L, AppleAlignment::StringForAlignment( t.textAlignment ) );
@@ -510,6 +588,11 @@ IPhoneTextFieldObject::ValueForKey( lua_State *L, const char key[] ) const
 	else if ( strcmp( "spellCheckingType", key ) == 0 )
 	{
 		const char *value = StringForUITextSpellCheckingType( t.spellCheckingType );
+		lua_pushstring( L, value );
+	}
+	else if ( strcmp( "clearButtonMode", key ) == 0 )
+	{
+		const char *value = StringForUITextClearButtonModeType( t.clearButtonMode );
 		lua_pushstring( L, value );
 	}
 	else if ( strcmp( "margin", key ) == 0 )
@@ -665,6 +748,13 @@ IPhoneTextFieldObject::SetValueForKey( lua_State *L, const char key[], int value
 		UITextSpellCheckingType newValue = UITextSpellCheckingTypeForString( value );
 		t.spellCheckingType = newValue;
 	}
+	else if ( strcmp( "clearButtonMode", key ) == 0 )
+	{
+		const char *value = lua_tostring( L, valueIndex );
+
+        UITextFieldViewMode newValue = UITextClearButtonModeForString( value );
+		t.clearButtonMode = newValue;
+	}
 	else
 	{
 		// Custom step for UITextField
@@ -673,7 +763,7 @@ IPhoneTextFieldObject::SetValueForKey( lua_State *L, const char key[], int value
 			BOOL hasBackground = (BOOL)lua_toboolean( L, valueIndex );
 			t.borderStyle = ( hasBackground ? UITextBorderStyleRoundedRect : UITextBorderStyleNone );
 		}
-	
+
 		result = Super::SetValueForKey( L, key, valueIndex );
 	}
 

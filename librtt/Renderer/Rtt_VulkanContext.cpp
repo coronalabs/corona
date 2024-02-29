@@ -13,7 +13,6 @@
 #include "Renderer/Rtt_VulkanTexture.h"
 #include "Renderer/Rtt_VulkanExports.h"
 #include "Core/Rtt_Assert.h"
-#include "CoronaLog.h"
 #include <shaderc/shaderc.h>
 #include <pthread.h>
 #include <algorithm>
@@ -229,7 +228,7 @@ VulkanContext::CreateBuffer( VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 				bufferData.fMemory = bufferMemory;
 
 			#if 0
-				CoronaLog( "Buffer Vulkan ID=%" PRIx64 ", Memory=%" PRIx64, buffer, bufferMemory );
+				Rtt_TRACE_SIM(( "Buffer Vulkan ID=%" PRIx64 ", Memory=%" PRIx64, buffer, bufferMemory ));
 			#endif
 
 				return true;
@@ -237,7 +236,7 @@ VulkanContext::CreateBuffer( VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 
 			else
 			{
-				CORONA_LOG_ERROR( "Failed to allocate buffer memory!" );
+				Rtt_TRACE_SIM(( "ERROR: Failed to allocate buffer memory!" ));
 			}
 		}
 
@@ -246,7 +245,7 @@ VulkanContext::CreateBuffer( VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 
 	else
 	{
-        CORONA_LOG_ERROR( "Failed to create buffer!" );
+        Rtt_TRACE_SIM(( "ERROR: Failed to create buffer!" ));
     }
 
 	return false;
@@ -269,7 +268,7 @@ VulkanContext::FindMemoryType( uint32_t typeFilter, VkMemoryPropertyFlags proper
         }
     }
 
-    CORONA_LOG_ERROR( "Failed to find suitable memory type!" );
+    Rtt_TRACE_SIM(( "ERROR: Failed to find suitable memory type!" ));
 
 	return false;
 }
@@ -396,7 +395,7 @@ VulkanContext::MakeCommandPool( uint32_t queueFamily, bool resetCommandBuffer )
 
 	else
 	{
-        CORONA_LOG_ERROR( "Failed to create command pool!" );
+        Rtt_TRACE_SIM(( "ERROR: Failed to create command pool!" ));
 
 		return VK_NULL_HANDLE;
     }
@@ -485,7 +484,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
 ) {
 	if (strcmp( pCallbackData->pMessageIdName, "VUID-VkViewport-height-01772" ) != 0) // seems spurious with VK_KHR_MAINTENANCE1_EXTENSION_NAME enabled...
 	{
-		CORONA_LOG_WARNING( "validation layer: %s", pCallbackData->pMessage );
+		Rtt_TRACE_SIM(( "WARNING: validation layer: %s", pCallbackData->pMessage ));
 	}
 
 //	VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT: Some event has happened that is unrelated to the specification or performance
@@ -567,7 +566,7 @@ MakeInstance( VkApplicationInfo * appInfo, const char * extension, const VkAlloc
 
 		else
 		{
-			CORONA_LOG_WARNING( "Unable to find layer %s", layerName );
+			Rtt_TRACE_SIM(( "WARNING: Unable to find layer %s", layerName ));
 		}
 	}
 
@@ -587,7 +586,7 @@ MakeInstance( VkApplicationInfo * appInfo, const char * extension, const VkAlloc
 
 	if (ok && vkCreateInstance( &createInfo, allocator, &instance ) != VK_SUCCESS)
 	{
-		CORONA_LOG_ERROR( "Failed to create instance!\n" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to create instance!\n" ));
 
 		ok = false;
 	}
@@ -598,7 +597,7 @@ MakeInstance( VkApplicationInfo * appInfo, const char * extension, const VkAlloc
 
 		if (!func || func( instance, &debugCreateInfo, allocator, debugMessenger ) != VK_SUCCESS)
 		{
-			CORONA_LOG_ERROR( "Failed to create debug messenger!\n" );
+			Rtt_TRACE_SIM(( "ERROR: Failed to create debug messenger!\n" ));
 
 			vkDestroyInstance( instance, allocator );
 
@@ -706,7 +705,7 @@ ChoosePhysicalDevice( VkInstance instance, VkSurfaceKHR surface )
 
 	if (0U == deviceCount)
 	{
-		CORONA_LOG_ERROR( "Failed to find GPUs with Vulkan support!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to find GPUs with Vulkan support!" ));
 
 		return std::make_tuple( VkPhysicalDevice( VK_NULL_HANDLE ), Queues(), VulkanContext::DeviceDetails{} );
 	}
@@ -852,7 +851,7 @@ MakeLogicalDevice( VkPhysicalDevice physicalDevice, const std::vector< uint32_t 
 
 	else
 	{
-		CORONA_LOG_ERROR( "Failed to create logical device!" );
+		Rtt_TRACE_SIM(( "ERROR: Failed to create logical device!" ));
 
 		return VK_NULL_HANDLE;
 	}

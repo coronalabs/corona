@@ -10,6 +10,7 @@
 #include "Renderer/Rtt_GLCommandBuffer.h"
 
 #include "Renderer/Rtt_FrameBufferObject.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_GL.h"
 #include "Renderer/Rtt_GLFrameBufferObject.h"
@@ -21,7 +22,7 @@
 #include "Renderer/Rtt_Uniform.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
-#include "Display/Rtt_ObjectBoxList.h"
+#include "Display/Rtt_ObjectHandle.h"
 #include "Core/Rtt_Config.h"
 #include "Core/Rtt_Allocator.h"
 #include "Core/Rtt_Assert.h"
@@ -29,6 +30,8 @@
 #include <cstdio>
 #include <string.h>
 #include "Core/Rtt_String.h"
+
+#include "Corona/CoronaGraphics.h"
 
 #define ENABLE_DEBUG_PRINT    0
 
@@ -88,7 +91,9 @@ namespace /*anonymous*/
     struct Mat3 { Rtt::Real data[9]; };
     struct Mat4 { Rtt::Real data[16]; };
 
-    // NOT USED: const Rtt::Real kNanosecondsToMilliseconds = 1.0f / 1000000.0f;
+#ifdef ENABLE_GPU_TIMER_QUERIES
+    const Rtt::Real kNanosecondsToMilliseconds = 1.0f / 1000000.0f;
+#endif
     const U32 kTimerQueryCount = 3;
     
     // The Uniform timestamp counter must be the same for both the
@@ -540,18 +545,18 @@ GLCommandBuffer::BindVertexFormat( FormatExtensionList* list, U16 fullCount, U16
     Write( fullCount );
     Write( vertexSize );
 	Write( offset );
-    Write<U16>( list->attributeCount );
+    Write<U16>( list->GetAttributeCount() );
     
-    for (U32 i = 0; i < list->attributeCount; ++i)
+    for (U32 i = 0; i < list->GetAttributeCount(); ++i)
     {
-        Write(list->attributes[i]);
+        Write(list->GetAttributes()[i]);
     }
         
-    Write<U16>( list->groupCount );
+    Write<U16>( list->GetGroupCount() );
 
-    for (U32 i = 0; i < list->groupCount; ++i)
+    for (U32 i = 0; i < list->GetGroupCount(); ++i)
     {
-        Write(list->groups[i]);
+        Write(list->GetGroups()[i]);
     }
 }
 
@@ -787,7 +792,7 @@ GLCommandBuffer::GetCachedParam( CommandBuffer::QueryableParams param )
 }
 
 void
-GLCommandBuffer::AddCommand( const CoronaCommand & command )
+GLCommandBuffer::AddCommand( const CoronaCommand* command )
 {
     fCustomCommands.Append( command );
 }
@@ -795,7 +800,7 @@ GLCommandBuffer::AddCommand( const CoronaCommand & command )
 void
 GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
 {
-    ObjectBoxList list;
+    OBJECT_HANDLE_SCOPE();
 
     Command custom = Command( kNumCommands + id );
 
@@ -804,9 +809,9 @@ GLCommandBuffer::IssueCommand( U16 id, const void * data, U32 size )
 
     U8 * buffer = Reserve( size );
 
-    OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    OBJECT_HANDLE_STORE( CommandBuffer, commandBuffer, this );
     
-    fCustomCommands[id].writer( commandBuffer, buffer, data, size );
+    fCustomCommands[id]->writer( commandBuffer, buffer, data, size );
 }
 
 static GLsizei
@@ -911,19 +916,19 @@ GLCommandBuffer::Execute( bool measureGPU )
     }
 #endif
 
-  ObjectBoxList list;
+    OBJECT_HANDLE_SCOPE();
 
-  OBJECT_BOX_STORE( CommandBuffer, commandBuffer, this );
+    OBJECT_HANDLE_STORE( CommandBuffer, commandBuffer, this );
 
-  GLProgram::ExtraUniforms extraUniforms;
+    GLExtraUniforms extraUniforms;
 
-  fExtraUniforms = &extraUniforms;
+    fExtraUniforms = &extraUniforms;
 
 	// Reset the offset pointer to the start of the buffer.
 	// This is safe to do here, as preparation work is done
 	// on another CommandBuffer while this one is executing.
 	fOffset = fBuffer;
-
+    
 	S32 windowHeight;
 	//GL_CHECK_ERROR();
 
@@ -1029,7 +1034,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                 GLProgram* program = Read<GLProgram*>();
                 program->Bind( fCurrentDrawVersion );
  
-                extraUniforms = program->GetExtraUniformsInfo( fCurrentDrawVersion );
+                program->GetExtraUniformsInfo( fCurrentDrawVersion, extraUniforms );
 
                 DEBUG_PRINT( "Bind Program: program=%p version=%i", program, fCurrentDrawVersion );
                 CHECK_ERROR_AND_BREAK;
@@ -1047,33 +1052,34 @@ GLCommandBuffer::Execute( bool measureGPU )
                 U16 fullCount = Read<U16>();
                 U16 vertexSize = Read<U16>();
 				U32 offset = Read<U32>();
-                FormatExtensionList list = {};
                 
                 // Reconstitute any attribute attached to the geometry.
-                list.attributeCount = Read<U16>();
+                U16 attributeCount = Read<U16>();
                 
-                std::vector< Geometry::ExtensionAttribute > attributes;
-                std::vector< Geometry::ExtensionGroup > groups;
+                Array< FormatExtensionList::Attribute > attributeArr( fAllocator );
+
+                std::vector< FormatExtensionList::Attribute > attributes;
+                std::vector< FormatExtensionList::Group > groups;
                 
-                for (U32 i = 0; i < list.attributeCount; ++i)
+                for (U32 i = 0; i < attributeCount; ++i)
                 {
-                    Geometry::ExtensionAttribute attribute = Read<Geometry::ExtensionAttribute>();
+                    FormatExtensionList::Attribute attribute = Read<FormatExtensionList::Attribute>();
                     
-                    attributes.push_back( attribute );
+                    attributeArr.Append( attribute );
                 }
                 
-                list.attributes = attributes.data();
+                U16 groupCount = Read<U16>();
                 
-                list.groupCount = Read<U16>();
+                Array< FormatExtensionList::Group > groupArr( fAllocator );
                 
-                for (U32 i = 0; i < list.groupCount; ++i)
+                for (U32 i = 0; i < groupCount; ++i)
                 {
-                    Geometry::ExtensionGroup group = Read<Geometry::ExtensionGroup>();
+                    FormatExtensionList::Group group = Read<FormatExtensionList::Group>();
                     
-                    groups.push_back( group );
+                    groupArr.Append( group );
                 }
-                
-                list.groups = groups.data();
+
+                FormatExtensionList list = FormatExtensionList::FromArrays( groupArr, attributeArr );
 
                 // Bring the enabled arrays into agreement.
                 if (!geometry->StoredOnGPU())
@@ -1083,7 +1089,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                         fullCount = currentAttributeCount;
                     }
                     
-                    currentAttributeCount = list.attributeCount;
+                    currentAttributeCount = list.GetAttributeCount();
                 }
                 
                 bool hasDivisors = GLGeometry::SupportsDivisors();
@@ -1100,7 +1106,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                     }
                 }
                 
-                for (U32 i = list.attributeCount; i < fullCount; ++i)
+                for (U32 i = list.GetAttributeCount(); i < fullCount; ++i)
                 {
                     glDisableVertexAttribArray( Geometry::FirstExtraAttribute() + i );
                 }
@@ -1355,7 +1361,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                 {
                     U32 size = Read< U32 >();
 
-                    fCustomCommands[id].reader( commandBuffer, fOffset, size );
+                    fCustomCommands[id]->reader( commandBuffer, fOffset, size );
 
                     fOffset += size;
                 }

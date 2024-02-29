@@ -62,10 +62,10 @@ class WinBitmap : public PlatformBitmap
 
 	protected:
 		Gdiplus::Bitmap *	fBitmap;
-		Gdiplus::BitmapData * fLockedBitmapData;
+		U32 fWidth;
+		U32 fHeight;
 
-		virtual void Lock();
-		virtual void Unlock();
+		virtual void Lock( Rtt_Allocator* context ) {}
 };
 
 class WinFileBitmap : public WinBitmap
@@ -103,11 +103,26 @@ class WinFileBitmap : public WinBitmap
 		virtual U32 UprightWidth() const;
 		virtual U32 UprightHeight() const;
 
+	protected:
+		virtual void Lock( Rtt_Allocator* context );
+
+	public:
+		struct FileView {
+			FileView();
+			
+			bool Map( HANDLE hFile );
+			void Close();
+
+			HANDLE fMapping;
+			void* fData;
+		};
+
 	private:
 		float fScale;
 		U8 fProperties;
 		S8 fOrientation;
 		S16 fAngle; // [0, +-90, +-180]
+		FileView fView; // n.b. takes ownership
 
 	protected:
 #ifdef Rtt_DEBUG
@@ -127,13 +142,8 @@ class WinFileGrayscaleBitmap : public WinFileBitmap
 		virtual PlatformBitmap::Format GetFormat() const;
 
 	protected:
-		virtual void Lock();
-		virtual void Unlock();
 		virtual U32 SourceWidth() const;
 		virtual U32 SourceHeight() const;
-
-		U32 fWidth;
-		U32 fHeight;
 };
 
 class WinTextBitmap : public PlatformBitmap
@@ -151,10 +161,6 @@ class WinTextBitmap : public PlatformBitmap
 		virtual void FreeBits() const;
 		virtual U32 Width() const;
 		virtual U32 Height() const;
-
-	protected:
-		virtual void Lock();
-		virtual void Unlock();
 
 	private:
 		mutable void *fData;

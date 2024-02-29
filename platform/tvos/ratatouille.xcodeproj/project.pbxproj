@@ -590,6 +590,13 @@
 		AA2C69FA29147C9D0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69F829147C4E0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
 		AA2C69FB29147C9D0093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69BB29147C4E0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
 		AA76CF15272CB55000CE3F89 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */; };
+		AA2C6AF6291C37690093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */; };
+		AAF349EB29EFC61C00076706 /* Rtt_Profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */; };
+		AAD3E2452B0BECE2000A4D45 /* Rtt_ObjectHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */; };
+		AAF34AD529F9DFB800076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */; };
+		AAF34AD629F9DFB900076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */; };
+		AAF34ADB29F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD929F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp */; };
+		AAF34ADC29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34ADA29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp */; };
 		C221F5611D4BE37F00F45E77 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */; };
 		C221F5621D4BE44400F45E77 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */; };
 		C231BDE41C0F810C00494B37 /* launchpad.lua in Sources */ = {isa = PBXBuildFile; fileRef = C231BDE21C0F80D200494B37 /* launchpad.lua */; };
@@ -2568,7 +2575,18 @@
 		AA2ED7912708257E00CEE021 /* CoronaObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaObjects.h; path = ../../librtt/Corona/CoronaObjects.h; sourceTree = "<group>"; };
 		AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = ../../librtt/Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
 		AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = ../../librtt/Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
-		AAA58168270D399C002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = ../../librtt/Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
+		AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ObjectHandle.cpp; path = ../../librtt/Display/Rtt_ObjectHandle.cpp; sourceTree = "<group>"; };
+		AAD3E2442B0BECBB000A4D45 /* Rtt_ObjectHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectHandle.h; path = ../../librtt/Display/Rtt_ObjectHandle.h; sourceTree = "<group>"; };
+		AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = ../../librtt/Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
+		AA2C6AF5291C37690093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = ../../librtt/Corona/CoronaMemory.h; sourceTree = "<group>"; };
+		AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Profiling.cpp; path = ../../librtt/Rtt_Profiling.cpp; sourceTree = "<group>"; };
+		AAF349EA29EFC61C00076706 /* Rtt_Profiling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Profiling.h; path = ../../librtt/Rtt_Profiling.h; sourceTree = "<group>"; };
+		AAF34A9729F9DF9E00076706 /* Rtt_FormatExtensionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FormatExtensionList.h; path = ../../librtt/Renderer/Rtt_FormatExtensionList.h; sourceTree = "<group>"; };
+		AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FormatExtensionList.cpp; path = ../../librtt/Renderer/Rtt_FormatExtensionList.cpp; sourceTree = "<group>"; };
+		AAF34AD729F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceCaptureAdapter.h; path = ../../librtt/Display/Rtt_TextureResourceCaptureAdapter.h; sourceTree = "<group>"; };
+		AAF34AD829F9DFDB00076706 /* Rtt_TextureResourceCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceCapture.h; path = ../../librtt/Display/Rtt_TextureResourceCapture.h; sourceTree = "<group>"; };
+		AAF34AD929F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceCapture.cpp; path = ../../librtt/Display/Rtt_TextureResourceCapture.cpp; sourceTree = "<group>"; };
+		AAF34ADA29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceCaptureAdapter.cpp; path = ../../librtt/Display/Rtt_TextureResourceCaptureAdapter.cpp; sourceTree = "<group>"; };
 		C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FileSystem.cpp; path = ../../librtt/Core/Rtt_FileSystem.cpp; sourceTree = "<group>"; };
 		C221F5601D4BE37F00F45E77 /* Rtt_FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FileSystem.h; path = ../../librtt/Core/Rtt_FileSystem.h; sourceTree = "<group>"; };
 		C231BDE21C0F80D200494B37 /* launchpad.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = launchpad.lua; path = ../resources/launchpad.lua; sourceTree = "<group>"; };
@@ -3007,7 +3025,8 @@
 				A4551D7B1BAA17CF00FB3BDF /* Rtt_MCPUResourceObserver.h */,
 				A4551D7C1BAA17CF00FB3BDF /* Rtt_MDisplayDelegate.h */,
 				A4551D7D1BAA17CF00FB3BDF /* Rtt_MDrawable.h */,
-				AAA58168270D399C002A51A7 /* Rtt_ObjectBoxList.h */,
+				AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */,
+				AAD3E2442B0BECBB000A4D45 /* Rtt_ObjectHandle.h */,
 				A4551D7E1BAA17CF00FB3BDF /* Rtt_OpenPath.cpp */,
 				A4551D7F1BAA17CF00FB3BDF /* Rtt_OpenPath.h */,
 				A4551D801BAA17CF00FB3BDF /* Rtt_Paint.cpp */,
@@ -3106,6 +3125,10 @@
 				A4551DD91BAA17CF00FB3BDF /* Rtt_TextureResourceCanvas.h */,
 				A4551DDA1BAA17CF00FB3BDF /* Rtt_TextureResourceCanvasAdapter.cpp */,
 				A4551DDB1BAA17CF00FB3BDF /* Rtt_TextureResourceCanvasAdapter.h */,
+				AAF34AD929F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp */,
+				AAF34AD829F9DFDB00076706 /* Rtt_TextureResourceCapture.h */,
+				AAF34ADA29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp */,
+				AAF34AD729F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.h */,
 				F50CA3C31C81114800746C98 /* Rtt_TextureResourceExternal.cpp */,
 				F50CA3C41C81114800746C98 /* Rtt_TextureResourceExternal.h */,
 				F50CA3C51C81114800746C98 /* Rtt_TextureResourceExternalAdapter.cpp */,
@@ -3727,6 +3750,8 @@
 				03D1C53B1D70CBB400DB02EE /* Rtt_PreferenceCollection.h */,
 				03D1C53C1D70CBB400DB02EE /* Rtt_PreferenceValue.cpp */,
 				03D1C53D1D70CBB400DB02EE /* Rtt_PreferenceValue.h */,
+				AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */,
+				AAF349EA29EFC61C00076706 /* Rtt_Profiling.h */,
 				A4551F241BAA182D00FB3BDF /* Rtt_RenderingStream.cpp */,
 				A4551F251BAA182D00FB3BDF /* Rtt_RenderingStream.h */,
 				A4551F261BAA182D00FB3BDF /* Rtt_Resource.cpp */,
@@ -4040,6 +4065,8 @@
 				A4D938121BAA271E00DF2214 /* Rtt_CommandBuffer.h */,
 				A4D938131BAA271E00DF2214 /* Rtt_CPUResource.cpp */,
 				A4D938141BAA271E00DF2214 /* Rtt_CPUResource.h */,
+				AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */,
+				AAF34A9729F9DF9E00076706 /* Rtt_FormatExtensionList.h */,
 				A4D938151BAA271E00DF2214 /* Rtt_FrameBufferObject.cpp */,
 				A4D938161BAA271E00DF2214 /* Rtt_FrameBufferObject.h */,
 				A4D938171BAA271E00DF2214 /* Rtt_Geometry_Renderer.cpp */,
@@ -5770,6 +5797,7 @@
 				A4DD47301BB2490700FD988E /* kernel_composite_glow_gl.lua in Sources */,
 				A4DD47311BB2490700FD988E /* kernel_composite_hardLight_gl.lua in Sources */,
 				A4DD47321BB2490700FD988E /* kernel_composite_hardMix_gl.lua in Sources */,
+				AAF34ADB29F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp in Sources */,
 				A4DD47331BB2490700FD988E /* kernel_composite_hue_gl.lua in Sources */,
 				A4DD47341BB2490700FD988E /* kernel_composite_lighten_gl.lua in Sources */,
 				A4DD47351BB2490700FD988E /* kernel_composite_linearLight_gl.lua in Sources */,
@@ -5861,6 +5889,7 @@
 				A4551F4C1BAA182D00FB3BDF /* Rtt_LuaLibGameNetwork.cpp in Sources */,
 				A4551DEE1BAA17CF00FB3BDF /* Rtt_EmitterObject.cpp in Sources */,
 				A4551F671BAA182D00FB3BDF /* Rtt_PlatformEventSound.cpp in Sources */,
+				AAF349EB29EFC61C00076706 /* Rtt_Profiling.cpp in Sources */,
 				A4384F521BAA1F49005750A3 /* b2GLESDebugDraw.cpp in Sources */,
 				A4551E001BAA17CF00FB3BDF /* Rtt_RectPath.cpp in Sources */,
 				A4551F621BAA182D00FB3BDF /* Rtt_PlatformAudioPlayer.cpp in Sources */,
@@ -5906,6 +5935,7 @@
 				A4551D331BAA17BE00FB3BDF /* Rtt_FixedBlockAllocator.cpp in Sources */,
 				A4551F581BAA182D00FB3BDF /* Rtt_LuaResourceOwner.cpp in Sources */,
 				A4551DDF1BAA17CF00FB3BDF /* Rtt_BitmapPaint.cpp in Sources */,
+				AAF34ADC29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp in Sources */,
 				A4551F481BAA182D00FB3BDF /* Rtt_LuaCoronaBaseLib.c in Sources */,
 				A4551E211BAA17CF00FB3BDF /* Rtt_TextObject.cpp in Sources */,
 				A4551F771BAA182D00FB3BDF /* Rtt_RenderingStream.cpp in Sources */,
@@ -5983,6 +6013,7 @@
 				A4551D401BAA17BE00FB3BDF /* Rtt_VersionTimestamp.c in Sources */,
 				A4551D2C1BAA17BE00FB3BDF /* Rtt_Array.cpp in Sources */,
 				A4551D361BAA17BE00FB3BDF /* Rtt_Math.c in Sources */,
+				AAD3E2452B0BECE2000A4D45 /* Rtt_ObjectHandle.cpp in Sources */,
 				A4551D3F1BAA17BE00FB3BDF /* Rtt_UseCount.cpp in Sources */,
 				A4551D321BAA17BE00FB3BDF /* Rtt_Fixed.c in Sources */,
 				A4551F3D1BAA182D00FB3BDF /* Rtt_DeviceOrientation.cpp in Sources */,
@@ -6159,6 +6190,7 @@
 				A4D938541BAA271F00DF2214 /* Rtt_RenderData.cpp in Sources */,
 				A4D9384F1BAA271F00DF2214 /* Rtt_GPUResource.cpp in Sources */,
 				A4D9384B1BAA271F00DF2214 /* Rtt_GLGeometry.cpp in Sources */,
+				AAF34AD529F9DFB800076706 /* Rtt_FormatExtensionList.cpp in Sources */,
 				A4D938471BAA271F00DF2214 /* Rtt_GeometryPool.cpp in Sources */,
 				A4D938431BAA271F00DF2214 /* Rtt_CommandBuffer.cpp in Sources */,
 				A4D938561BAA271F00DF2214 /* Rtt_RenderTypes.cpp in Sources */,
@@ -6299,6 +6331,7 @@
 				F5C5E1BB251E11DD00217C19 /* Rtt_RenderData.cpp in Sources */,
 				F5C5E1BC251E11DD00217C19 /* Rtt_GPUResource.cpp in Sources */,
 				F5C5E1BD251E11DD00217C19 /* Rtt_GLGeometry.cpp in Sources */,
+				AAF34AD629F9DFB900076706 /* Rtt_FormatExtensionList.cpp in Sources */,
 				F5C5E1BE251E11DD00217C19 /* Rtt_GeometryPool.cpp in Sources */,
 				F5C5E1BF251E11DD00217C19 /* Rtt_CommandBuffer.cpp in Sources */,
 				F5C5E1C0251E11DD00217C19 /* Rtt_RenderTypes.cpp in Sources */,
@@ -6647,7 +6680,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=11.0)";
 			};
 			name = Debug;
 		};
@@ -6692,7 +6725,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=11.0)";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -6713,7 +6746,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Debug;
@@ -6734,7 +6766,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Release;
@@ -7071,7 +7102,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Debug;
@@ -7096,7 +7126,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Release;

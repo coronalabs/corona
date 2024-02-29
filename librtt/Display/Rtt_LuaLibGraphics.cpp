@@ -33,6 +33,7 @@
 #include "Rtt_TextureFactory.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaLibNative.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
 
 
 #include <float.h>
@@ -769,7 +770,7 @@ GraphicsLibrary::defineVertexExtension( lua_State *L )
                 break;
             }
 
-            Geometry::ExtensionGroup dummyGroup = {};
+            FormatExtensionList::Group dummyGroup = {};
             
             dummyGroup.divisor = instancesToReplicate;
                         

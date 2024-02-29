@@ -12,12 +12,17 @@
 
 #include "Renderer/Rtt_GLGeometry.h"
 
+#include "Renderer/Rtt_FormatExtensionList.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_GL.h"
+
+#include "Corona/CoronaGraphics.h"
 
 #if defined( Rtt_EGL )
     #include <EGL/egl.h>
 #endif
+
+#include "Rtt_Profiling.h"
 
 #include <stdio.h>
 #include <stddef.h>
@@ -428,6 +433,8 @@ GLGeometry::Create( CPUResource* resource )
     bool shouldStoreOnGPU = geometry->GetStoredOnGPU();
     if ( shouldStoreOnGPU )
     {
+		SUMMED_TIMING( glgcs, "Geometry GPU Resource (stored on GPU): Create" );
+
         if ( isVertexArrayObjectSupported() )
         {
             createVertexArrayObject( geometry, fVAO, fVBO, fIBO );
@@ -465,6 +472,8 @@ GLGeometry::Create( CPUResource* resource )
 void
 GLGeometry::Update( CPUResource* resource )
 {
+	SUMMED_TIMING( glgu, "Geometry GPU Resource: Update" );
+
     Rtt_ASSERT( CPUResource::kGeometry == resource->GetType() );
     Geometry* geometry = static_cast<Geometry*>( resource );
 
@@ -474,7 +483,7 @@ GLGeometry::Update( CPUResource* resource )
     
     if (gainedExtension)
     {
-        Rtt_ASSERT( extensionList->groupCount > 0 );
+        Rtt_ASSERT( extensionList->GetGroupCount() > 0 );
         
         fInstancesAllocated = 0;
     }
@@ -744,7 +753,7 @@ GLGeometry::Bind()
 }
 
 static void
-BindExtensionAttribute( const Geometry::ExtensionAttribute& attribute, GLuint attributeIndex, size_t size, GLbyte* start, U32 offsetExtra )
+BindExtensionAttribute( const FormatExtensionList::Attribute& attribute, GLuint attributeIndex, size_t size, GLbyte* start, U32 offsetExtra )
 {
     GLenum type = GL_FLOAT;
     
@@ -779,8 +788,8 @@ GLGeometry::ResolveVertexFormat( const FormatExtensionList * list, U32 vertexSiz
     
     for ( auto iter = FormatExtensionList::AllGroups( list ); !iter.IsDone(); iter.Advance() )
     {
-        const Geometry::ExtensionGroup* group = iter.GetGroup();
-        const Geometry::ExtensionAttribute* first = iter.GetAttribute();
+        const FormatExtensionList::Group* group = iter.GetGroup();
+        const FormatExtensionList::Attribute* first = iter.GetAttribute();
         GLbyte* start = NULL;
         U32 offsetExtra = 0;
         size_t stride;

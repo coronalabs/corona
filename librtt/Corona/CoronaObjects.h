@@ -210,8 +210,8 @@ typedef struct CoronaObjectParamsHeader {
                                                                   \
     typedef struct CoronaObject##NAME##Params {     \
         CoronaObjectParamsHeader header;            \
-        unsigned short ignoreOriginal;              \
         CoronaObject##NAME##Bookend before, after;  \
+        int ignoreOriginal, separateScopes;         \
     } CoronaObject##NAME##Params
 
 /**
@@ -249,9 +249,9 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Basic, const CoronaDisplayObject * self, void *
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to parenting, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, lua_State * L, CoronaGroupObject * groupObject )`.
+ These are method params related to parenting, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const CoronaGroupObject * groupObject )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( Parent, const CoronaDisplayObject * self, void * userData, lua_State * L, CoronaGroupObject * groupObject );
+CORONA_OBJECTS_BOOKENDED_PARAMS( Parent, const CoronaDisplayObject * self, void * userData, lua_State * L, const CoronaGroupObject * groupObject );
 
 /**
  CoronaObjectMatrixParams
@@ -312,16 +312,16 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( Translate, const CoronaDisplayObject * self, vo
  
  Inherits from IgnorableMethodParams.
 
- These are method params related to insertions, whose functions have signature `method( const CoronaDisplayObject * self, void * userData, int childParentChanged )`.
+ These are method params related to insertions, whose functions have signature `method( CoronaGroupObject * self, void * userData, int childParentChanged )`.
 */
-CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, CoronaGroupObject * self, void * userData, int childParentChanged );
+CORONA_OBJECTS_BOOKENDED_PARAMS( DidInsert, const CoronaGroupObject * self, void * userData, int childParentChanged );
 
 /**
  CoronaGroupBasicParams
  
  Inherits from IgnorableMethodParams.
 
- This is for the most basic group method params, whose functions have signature `method( const CoronaGroupObject * self, void * userData )`.
+ This is for the most basic group method params, whose functions have signature `method( CoronaGroupObject * self, void * userData )`.
 */
 CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObject * self, void * userData );
 
@@ -330,10 +330,10 @@ CORONA_OBJECTS_BOOKENDED_PARAMS( GroupBasic, const CoronaGroupObject * self, voi
 #define CORONA_OBJECTS_EARLY_OUTABLE_BOOKENDED_PARAMS(NAME, ...)    \
     typedef void (*CoronaObject##NAME##Bookend) (__VA_ARGS__);      \
                                                                     \
-    typedef struct CoronaObject##NAME##Params {             \
-        CoronaObjectParamsHeader header;                    \
-        unsigned char ignoreOriginal, earlyOutIfNonZero;    \
-        CoronaObject##NAME##Bookend before, after;          \
+    typedef struct CoronaObject##NAME##Params {               \
+        CoronaObjectParamsHeader header;                      \
+        CoronaObject##NAME##Bookend before, after;            \
+        int ignoreOriginal, earlyOutIfNonZero, separateScopes;\
     } CoronaObject##NAME##Params
 
 /**
@@ -430,12 +430,12 @@ typedef void (*CoronaObjectSetValueBookend) ( const CoronaDisplayObject * self, 
  The `before` and `after` functions may be NULL, in which case the respective function is
  not called. Similarly, the stock behavior is skipped if `ignoreOriginal` is non-0.
  
- Its functions have signature  `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const char key[], int valueIndex, int * result )`.
+ Its functions have signature `method( const CoronaDisplayObject * self, void * userData, lua_State * L, const char key[], int valueIndex, int * result )`.
 */
 typedef struct CoronaObjectSetValueParams {
     CoronaObjectParamsHeader header;
-    unsigned char ignoreOriginal, disallowEarlyOut;
     CoronaObjectSetValueBookend before, after;
+    int ignoreOriginal, disallowEarlyOut, separateScopes;
 } CoronaObjectSetValueParams;
 
 // ----------------------------------------------------------------------------
@@ -478,8 +478,8 @@ typedef void (*CoronaObjectValueBookend) ( const CoronaDisplayObject * self, voi
 */
 typedef struct CoronaObjectValueParams {
     CoronaObjectParamsHeader header;
-    unsigned char ignoreOriginal, disallowEarlyOut : 1, earlyOutIfZero : 1;
     CoronaObjectValueBookend before, after;
+    int ignoreOriginal, disallowEarlyOut, earlyOutIfZero, separateScopes;
 } CoronaObjectValueParams;
 
 // ----------------------------------------------------------------------------
@@ -511,6 +511,7 @@ These method params belong to messages, with `action` having signature `method( 
 typedef struct CoronaObjectOnMessageParams {
     CoronaObjectParamsHeader header;
     void (*action)( const CoronaDisplayObject * self, void * userData, const char * message, const void * data, unsigned int size );
+    int preserveScope;
 } CoronaObjectOnMessageParams;
 
 /**
@@ -760,20 +761,30 @@ int CoronaObjectInvalidate( const CoronaDisplayObject * object ) CORONA_PUBLIC_S
 // ----------------------------------------------------------------------------
 
 /**
- @params object Boxed display object.
- @return Boxed parent, if `object` was valid (otherwise `NULL`). It remains valid while `object` does.
+ Get a slot in the current scope, to be used by certain functions to receive objects.
+ @return Handle to the slot, or NULL if all are in use.
 */
 CORONA_API
-CoronaGroupObject * CoronaObjectGetParent( const CoronaDisplayObject * object ) CORONA_PUBLIC_SUFFIX;
+const CoronaAny * CoronaObjectGetAvailableSlot( void ) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+ @param object Boxed display object.
+ @param parent Handle to receive the parent. (Obtained from `CoronaObjectGetAvailableSlot`.)
+ @return If non-0, the parent was retrieved.
+*/
+CORONA_API
+int CoronaObjectGetParent( const CoronaDisplayObject * object, const CoronaGroupObject* parent ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param groupObject Boxed group object.
  @param index Index of child belonging to `groupObject`, from 0 to `numChildren`.
- @return Boxed child, if `groupObject` and `index` were valid (otherwise `NULL`). It remains valid
-         while `groupObject` does.
+ @param child Handle to receive the child. (Obtained from `CoronaObjectGetAvailableSlot`.)
+ @return If non-0, the child was retrieved.
 */
 CORONA_API
-CoronaDisplayObject * CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index ) CORONA_PUBLIC_SUFFIX;
+int CoronaGroupObjectGetChild( const CoronaGroupObject * groupObject, int index, const CoronaDisplayObject* child ) CORONA_PUBLIC_SUFFIX;
 
 /**
  @param groupObject Boxed group object.

@@ -22,6 +22,7 @@
 
 #include "Display/Rtt_TextureResourceBitmap.h"
 #include "Display/Rtt_TextureResourceCanvas.h"
+#include "Display/Rtt_TextureResourceCapture.h"
 #include "Display/Rtt_TextureResourceExternal.h"
 
 #include "Rtt_FilePath.h"

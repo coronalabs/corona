@@ -16,6 +16,7 @@
 
 #include "Display/Rtt_Display.h"
 #include "CoronaLua.h"
+#include "CoronaGraphics.h"
 
 #include <string.h>
 

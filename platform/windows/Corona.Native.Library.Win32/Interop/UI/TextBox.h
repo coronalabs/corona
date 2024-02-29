@@ -268,6 +268,15 @@ class TextBox : public Control
 		/// </param>
 		void SetSelection(int startCharacterIndex, int endCharacterIndex);
 
+		/// <summary>Gets the text box's current selection start and end character indices.</summary>
+		/// <param name="outStartCharacterIndex">Pointer to an integer that will receive the start index of the selection.</param>
+		/// <param name="outEndCharacterIndex">Pointer to an integer that will receive the end index of the selection.</param>
+		/// <returns>
+		///  <para>Returns true if the indices were successfully fetched.</para>
+		///  <para>Returns false if failed to fetch the indices, in which case the output parameters won't be modified.</para>
+		/// </returns>
+		bool GetSelection(int *outStartCharacterIndex, int *outEndCharacterIndex) const;
+
 		/// <summary>Sets the control's text color to the system default.</summary>
 		void SetTextColorToDefault();
 

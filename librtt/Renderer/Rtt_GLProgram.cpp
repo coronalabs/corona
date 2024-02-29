@@ -11,13 +11,15 @@
 #include "Renderer/Rtt_GLGeometry.h"
 
 #include "Renderer/Rtt_CommandBuffer.h"
-#include "Renderer/Rtt_Geometry_Renderer.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
+//#include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Renderer/Rtt_Texture.h"
 #ifdef Rtt_USE_PRECOMPILED_SHADERS
     #include "Renderer/Rtt_ShaderBinary.h"
     #include "Renderer/Rtt_ShaderBinaryVersions.h"
 #endif
 #include "Core/Rtt_Assert.h"
+#include "Core/Rtt_Traits.h"
 #include <cstdio>
 #include <string.h> // memset.
 #ifdef Rtt_WIN_PHONE_ENV
@@ -26,9 +28,12 @@
 
 #include "Display/Rtt_ShaderResource.h"
 #include "Corona/CoronaLog.h"
+#include "Corona/CoronaGraphics.h"
 
 #include <string>
 #include <vector>
+#include "Rtt_Profiling.h"
+
 
 // To reduce memory consumption and startup cost, defer the
 // creation of GL shaders and programs until they're needed.
@@ -139,6 +144,8 @@ GLProgram::GLProgram()
 void
 GLProgram::Create( CPUResource* resource )
 {
+	SUMMED_TIMING( glpc, "Program GPU Resource: Create" );
+
 	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
 	fResource = resource;
 	
@@ -148,6 +155,8 @@ GLProgram::Create( CPUResource* resource )
 			Create( fData[i], i );
 		}
 	#endif
+
+    Rtt_STATIC_ASSERT( ( Traits::IsSame< decltype(fCleanupShellTransform),  CoronaShellTransformStateCleanup >::Value ) );
     
     Program* program = static_cast<Program*>( fResource );
     ShaderResource* shaderResource = program->GetShaderResource();
@@ -162,6 +171,8 @@ GLProgram::Create( CPUResource* resource )
 void
 GLProgram::Update( CPUResource* resource )
 {
+	SUMMED_TIMING( glpu, "Program GPU Resource: Update" );
+
     Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
     if( fData[Program::kMaskCount0].fProgram ) Update( Program::kMaskCount0, fData[Program::kMaskCount0] );
     if( fData[Program::kMaskCount1].fProgram ) Update( Program::kMaskCount1, fData[Program::kMaskCount1] );
@@ -297,9 +308,9 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
 {
     extensionList->SortNames();
     
-    for (int i = 0; i < extensionList->attributeCount; ++i)
+    for (int i = 0; i < extensionList->GetAttributeCount(); ++i)
     {
-        const Geometry::ExtensionAttribute& attribute = extensionList->attributes[i];
+        const FormatExtensionList::Attribute& attribute = extensionList->GetAttributes()[i];
         char buf[64], count[2] = {};
         
         if (attribute.components > 1)
@@ -309,7 +320,9 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
         
         const char * prim = "float", * vec = "vec";
 
-        if (IsDoubleType( attribute.type ))
+        CoronaVertexExtensionAttributeType type = (CoronaVertexExtensionAttributeType)attribute.type;
+
+        if (IsDoubleType( type ))
         {
             prim = "double";
             vec = "dvec";
@@ -321,16 +334,16 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
             vec = "ivec";
         }
             
-        sprintf( buf, "attribute %s%s a_%s;\n", *count ? vec : prim, count, extensionList->names[i].str );
+        sprintf( buf, "attribute %s%s a_%s;\n", *count ? vec : prim, count, extensionList->FindNameByAttribute( i ) );
         
         extensionAttributes += buf;
     }
     
     extensionAttributes += "\n";
     
-    for (int i = 0; i < extensionList->attributeCount; ++i)
+    for (int i = 0; i < extensionList->GetAttributeCount(); ++i)
     {
-        AppendMacroName( extensionList->names[i].str, extensionAttributes );
+        AppendMacroName( extensionList->FindNameByAttribute( i ), extensionAttributes );
     }
 }
 
@@ -529,15 +542,14 @@ GLProgram::Update( Program::Version version, VersionData& data )
     {
         GLuint first = Geometry::FirstExtraAttribute();
 
-        for (U32 i = 0; i < extensionList->attributeCount; ++i)
+        for (U32 i = 0; i < extensionList->GetAttributeCount(); ++i)
         {
-            const FormatExtensionList::NamePair& pair = extensionList->names[i];
-           
+            S32 index;
             char buf[BUFSIZ];
             
-            sprintf( buf, "a_%s", pair.str );
+            sprintf( buf, "a_%s", extensionList->FindNameByAttribute( i, &index ) );
             
-            glBindAttribLocation( data.fProgram, first + pair.index, buf );
+            glBindAttribLocation( data.fProgram, first + index, buf );
         }
 
         GL_CHECK_ERROR();
@@ -648,14 +660,14 @@ GLProgram::Reset( VersionData& data )
     data.fHeaderNumLines = 0;
 }
 
-GLProgram::ExtraUniforms::ExtraUniforms()
+GLExtraUniforms::GLExtraUniforms()
 :   fVersion( Program::kNumVersions ),
     fVersionData( NULL ),
     fCache( NULL )
 {
 }
 
-GLProgram::ExtraUniforms::ExtraUniforms( Program::Version version, const VersionData * versionData, GLProgramUniformsCache ** cache )
+GLExtraUniforms::GLExtraUniforms( Program::Version version, const GLProgram::VersionData * versionData, GLProgramUniformsCache ** cache )
 :   fVersion( version ),
     fVersionData( versionData ),
     fCache( cache )
@@ -663,7 +675,7 @@ GLProgram::ExtraUniforms::ExtraUniforms( Program::Version version, const Version
 }
 
 GLint
-GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
+GLExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
 {
     if (!fCache)
     {
@@ -699,7 +711,7 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
     }
 
     // Does the uniform even exist?
-    const VersionData & versionData = fVersionData[fVersion];
+    const GLProgram::VersionData & versionData = fVersionData[fVersion];
     GLint location = glGetUniformLocation( versionData.fProgram, reinterpret_cast< const GLchar * >( name ) );
 
     if (-1 == location)
@@ -731,13 +743,13 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
         
         glGetProgramiv( versionData.fProgram, GL_ACTIVE_UNIFORMS, &count );
         
-        GLchar nameBuf[kUniformNameBufferSize];
+        GLchar nameBuf[GLProgram::kUniformNameBufferSize];
         GLsizei length;
         GLint uniformIndex;
         
         for (uniformIndex = 0; uniformIndex < count; ++uniformIndex)
         {
-            glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
+            glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, GLProgram::kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
 
             const char * bracket = strchr( nameBuf, '[' );
             
@@ -805,12 +817,10 @@ GLProgram::ExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
     return location;
 }
 
-GLProgram::ExtraUniforms
-GLProgram::GetExtraUniformsInfo( Program::Version version )
+void
+GLProgram::GetExtraUniformsInfo( Program::Version version, GLExtraUniforms& extraUniforms )
 {
-    ExtraUniforms extraUniforms( version, fData, &fUniformsCache );
-    
-    return extraUniforms;
+    extraUniforms = GLExtraUniforms( version, fData, &fUniformsCache );
 }
 
 // ----------------------------------------------------------------------------

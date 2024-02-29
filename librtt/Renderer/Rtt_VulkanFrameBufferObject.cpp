@@ -15,7 +15,6 @@
 #include "Renderer/Rtt_FrameBufferObject.h"
 #include "Renderer/Rtt_Texture.h"
 #include "Core/Rtt_Assert.h"
-#include "CoronaLog.h"
 
 // ----------------------------------------------------------------------------
 
@@ -114,7 +113,7 @@ RenderPassBuilder::Build( VkDevice device, const VkAllocationCallbacks * allocat
 
 	else
 	{
-        CORONA_LOG_ERROR( "Failed to create render pass!" );
+        Rtt_TRACE_SIM(( "ERROR: Failed to create render pass!" ));
 		
 		return VK_NULL_HANDLE;
     }
@@ -407,7 +406,7 @@ VulkanFrameBufferObject::Update( CPUResource* resource )
 
 			else
 			{
-				CORONA_LOG_ERROR( "Failed to create framebuffer!" );
+				Rtt_TRACE_SIM(( "ERROR: Failed to create framebuffer!" ));
 
 				// TODO?
 			}

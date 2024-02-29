@@ -169,6 +169,10 @@ public class NativeToJavaBridge {
 			catch ( Exception ex ) {
 				err.append("\n\tno Java class '").append(classPath).append("'");
 			}
+			catch ( Throwable ex ) {
+				ex.printStackTrace();
+				err.append("\n\terror loading class '").append(classPath).append("': ").append(ex);
+			}
 			if(result == 0) {
 				L.pushString(err.toString());
 				result = 1;
@@ -2301,6 +2305,10 @@ public class NativeToJavaBridge {
 	protected static void callTextFieldSetSelection( CoronaRuntime runtime, int id, int startPosition, int endPosition)
 	{
 		runtime.getViewManager().setTextSelection( id, startPosition, endPosition );
+	}
+
+	protected static int[] callTextFieldGetSelection(CoronaRuntime runtime, int id) {
+	    return runtime.getViewManager().getTextSelection(id);
 	}
 
 	protected static void callTextFieldSetReturnKey( CoronaRuntime runtime, int id, String imeType ) 

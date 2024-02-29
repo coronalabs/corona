@@ -371,11 +371,69 @@ MacTextFieldObject::setTextColor( lua_State *L )
 	return 0;
 }
 
+// int
+// MacTextFieldObject::setSelection( lua_State *L )
+// {
+// 	Rtt_TRACE_SIM( ( "WARNING: setSelection is not supported by the simulator on TextField objects.\n" ) );
+// 	return 0;
+// }
+
 int
-MacTextFieldObject::setSelection( lua_State *L )
+MacTextFieldObject::setSelection( lua_State* L )
 {
-	Rtt_TRACE_SIM( ( "WARNING: setSelection is not supported by the simulator on TextField objects.\n" ) );
-	return 0;
+    PlatformDisplayObject *o = (PlatformDisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+    if (&o->ProxyVTable() == &PlatformDisplayObject::GetTextFieldObjectProxyVTable())
+    {
+        NSTextField *t = (NSTextField*)((MacTextFieldObject*)o)->GetView();
+        double startPosition = lua_tonumber(L, 2);
+        double endPosition = lua_tonumber(L, 3);
+
+        NSInteger maxLength = [[t stringValue] length];
+        if (startPosition > maxLength)
+        {
+            startPosition = maxLength;
+            endPosition = maxLength;
+        }
+        if (endPosition > maxLength)
+        {
+            endPosition = maxLength;
+        }
+        if (startPosition < 0)
+        {
+            startPosition = 0;
+        }
+        if (endPosition < 0)
+        {
+            endPosition = 0;
+        }
+        if (startPosition > endPosition)
+        {
+            startPosition = endPosition;
+        }
+
+        NSRange range;
+        range.location = startPosition;
+        range.length = endPosition - startPosition;
+        
+        [t.currentEditor setSelectedRange:range];
+    }
+    return 0;
+}
+
+int
+MacTextFieldObject::getSelection( lua_State* L )
+{
+    PlatformDisplayObject *o = (PlatformDisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+    if (&o->ProxyVTable() == &PlatformDisplayObject::GetTextFieldObjectProxyVTable())
+    {
+        NSTextField *t = (NSTextField*)((MacTextFieldObject*)o)->GetView();
+        NSRange range = [t.currentEditor selectedRange];
+        
+        lua_pushnumber(L, range.location);
+        lua_pushnumber(L, range.location + range.length);
+        return 2;
+    }
+    return 0;
 }
 	
 // TODO: move these somewhere in librtt, so all platforms use same constants
@@ -460,6 +518,10 @@ MacTextFieldObject::ValueForKey( lua_State *L, const char key[] ) const
 	else if ( strcmp( "setSelection", key ) == 0 )
 	{
 		lua_pushcfunction( L, setSelection);
+	}
+	else if ( strcmp( "getSelection", key ) == 0 )
+	{
+		lua_pushcfunction( L, getSelection);
 	}
 	else if ( strcmp( "inputType", key ) == 0 )
 	{

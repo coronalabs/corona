@@ -21,7 +21,7 @@
 #include "Display/Rtt_ShaderName.h"
 #include "Display/Rtt_ShaderResource.h"
 
-#include "Renderer/Rtt_Geometry_Renderer.h"
+#include "Renderer/Rtt_FormatExtensionList.h"
 #include "Renderer/Rtt_Program.h"
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
     #include "Renderer/Rtt_ShaderBinary.h"
@@ -1688,7 +1688,7 @@ ShaderFactory::RegisterVertexExtension( const char * name, const CoronaVertexExt
             
             new (sharedList) SharedExtensionListPtr( list );
             
-            list->Build( &extension );
+            list->Build( fAllocator, &extension );
             
             lua_pushlightuserdata( L, &sVertexExtensionCookie ); // ..., vertexExtensions, nil, sharedList, cookie
             lua_rawget( L, -4 ); // ..., vertexExtensions, nil, sharedList, sharedListMT

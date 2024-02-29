@@ -20,7 +20,6 @@
 	#include "Renderer/Rtt_ShaderBinaryVersions.h"
 #endif
 #include "Core/Rtt_Assert.h"
-#include "CoronaLog.h"
 
 #include <shaderc/shaderc.h>
 #include <algorithm>
@@ -261,7 +260,7 @@ VulkanProgram::CompileState::Report( const char * prefix )
 {
 	if (HasError())
 	{
-		CORONA_LOG_ERROR( "Failed to compile %s:\n\n%s", prefix, fError.c_str() );
+		Rtt_TRACE_SIM(( "ERROR: Failed to compile %s:\n\n%s", prefix, fError.c_str() ));
 	}
 }
 

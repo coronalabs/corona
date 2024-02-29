@@ -14,6 +14,7 @@
 #include "Rtt_LuaLibSystem.h"
 #include "Core/Rtt_AutoPtr.h"
 #include "Display/Rtt_Display.h"
+#include "Display/Rtt_DisplayDefaults.h"
 #include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderFactory.h"
@@ -31,6 +32,8 @@
 #include "Box2D/Box2D.h"
 #include "Rtt_LuaContainer.h"
 #include <algorithm>
+
+#include "Rtt_Profiling.h"
 
 // -----------------------------------------------------------------------------
 
@@ -333,16 +336,199 @@ inline void EmitterObject::TransformParticlePosition(const Matrix &spawnTimeTran
 	}
 }
 
+static void SetVertex( Geometry::Vertex& output, const Vertex2& v, const Vector4& color )
+{
+	output.SetPos( v.x, v.y );
+	Geometry::Vertex::SetColor( 1,
+								&output,
+								color.r,
+								color.g,
+								color.b,
+								color.a );
+}
+
+static void EmitRect( Geometry::Vertex *output_vertices, const Vertex2& topLeft, const Vertex2& topRight, const Vertex2& bottomLeft, const Vertex2& bottomRight, const Vector4& color )
+{
+	SetVertex( output_vertices[0], bottomLeft, color );
+	SetVertex( output_vertices[1], topRight, color );
+	SetVertex( output_vertices[2], topLeft, color );
+	SetVertex( output_vertices[3], bottomLeft, color );
+	SetVertex( output_vertices[4], bottomRight, color );
+	SetVertex( output_vertices[5], topRight, color );
+}
+
+static void Legacy( Geometry::Vertex *output_vertices, const Vertex2& base_position, float rotation, float halfSize, const Vector4& color )
+{
+	Vertex2 topLeft, topRight, bottomLeft, bottomRight;
+
+    // If a rotation has been defined for this particle then apply the rotation to the vertices that define
+    // the particle
+    if( rotation )
+	{
+        float x1 = -halfSize;
+        float y1 = -halfSize;
+        float x2 = halfSize;
+        float y2 = halfSize;
+        float x = base_position.x;
+        float y = base_position.y;
+        float r = Rtt_RealDegreesToRadians( rotation );
+        float cr = cosf( r );
+        float sr = sinf( r );
+        float ax = x1 * cr - y1 * sr + x;
+        float ay = x1 * sr + y1 * cr + y;
+        float bx = x2 * cr - y1 * sr + x;
+        float by = x2 * sr + y1 * cr + y;
+        float cx = x2 * cr - y2 * sr + x;
+        float cy = x2 * sr + y2 * cr + y;
+        float dx = x1 * cr - y2 * sr + x;
+        float dy = x1 * sr + y2 * cr + y;
+
+		bottomLeft = { dx, dy };
+		topRight = { bx, by };
+		topLeft = { ax, ay };
+		bottomRight = { cx, cy };
+    }
+	else
+	{
+        // Using the position of the particle, work out the four vertices for the quad that will hold the particle
+        // and load those into the quads array.
+
+		float xmin = ( base_position.x - halfSize );
+		float ymin = ( base_position.y - halfSize );
+		float xmax = ( base_position.x + halfSize );
+		float ymax = ( base_position.y + halfSize );
+
+		bottomLeft = { xmin, ymax };
+		topRight = { xmax, ymin };
+		topLeft = { xmin, ymin };
+		bottomRight = { xmax, ymax };
+	}
+
+	EmitRect( output_vertices, topLeft, topRight, bottomLeft, bottomRight, color );
+}
+
+static Vertex2
+MapPoint( const Vertex2& basePosition, const Vertex2& xDir, const Vertex2& yDir, float x, float y )
+{
+	Vertex2 output = basePosition;
+
+	output.x += xDir.x * x + yDir.x * y;
+	output.y += xDir.y * x + yDir.y * y;
+
+	return output;
+}
+
+static void
+RotatePoint( Vertex2& dir, float ca, float sa )
+{
+	Vertex2 tmp = dir;
+
+	dir.x = tmp.x * ca - tmp.y * sa;
+	dir.y = tmp.y * ca + tmp.x * sa;
+}
+
+static Vertex2
+DiffPoints( const Vertex2& a, const Vertex2& b )
+{
+	Vertex2 diff = { a.x - b.x, a.y - b.y };
+	return diff;
+}
+
+static void
+ScaleVertex( Vertex2& v, float scale )
+{
+	v.x *= scale;
+	v.y *= scale;
+}
+
+static Vertex2
+PerpFromXDir( const Vertex2& xDir ) // below, from right
+{
+	Vertex2 yDir = { -xDir.y, xDir.x };
+	return yDir;
+}
+
+static Vertex2
+PerpFromYDir( const Vertex2& yDir ) // right, from below
+{
+	Vertex2 xDir = { yDir.y, -yDir.x };
+	return xDir;
+}
+
+static void Rescale( Geometry::Vertex *output_vertices, EmitterObject::Mapping mapping, const Vertex2& base_position, const Vertex2& right, const Vertex2& below, float rotation, float halfSize, const Vector4& color )
+{
+	Vertex2 xDir = DiffPoints( right, base_position ), yDir = DiffPoints( below, base_position );
+	
+	switch ( mapping )
+	{
+	case EmitterObject::kMapping_Rescale:
+		break;
+	case EmitterObject::kMapping_RescaleX:
+		yDir = PerpFromXDir( xDir );
+		break;
+	case EmitterObject::kMapping_RescaleY:
+		xDir = PerpFromYDir( yDir );
+		break;
+	default:
+		{
+			Rtt_Real xLength = Rtt_RealSqrt( xDir.x * xDir.x + xDir.y * xDir.y );
+			Rtt_Real yLength = Rtt_RealSqrt( yDir.x * yDir.x + yDir.y * yDir.y );
+
+			if ( EmitterObject::kMapping_RescaleMean == mapping && !Rtt_RealIsZero( xLength ) && !Rtt_RealIsZero( yLength ) ) // if length of 0, fall back to max
+			{
+				Rtt_Real meanLength = Rtt_RealDiv2( xLength + yLength );
+
+				ScaleVertex( xDir, meanLength / xLength );
+				ScaleVertex( xDir, meanLength / yLength );
+			}
+			else
+			{
+				bool xIsShorter = xLength < yLength;
+				bool fromXDir = ( EmitterObject::kMapping_RescaleMin == mapping ) ? xIsShorter : !xIsShorter;
+
+				if ( fromXDir )
+				{
+					yDir = PerpFromXDir( xDir );
+				}
+				else
+				{
+					xDir = PerpFromYDir( yDir );
+				}
+			}
+		}
+	}
+
+    // If a rotation has been defined for this particle then apply the rotation to the vertices that define
+    // the particle
+
+	if ( rotation )
+	{
+		float r = Rtt_RealDegreesToRadians( rotation );
+        float cr = cosf( r );
+        float sr = sinf( r );
+
+		RotatePoint( xDir, cr, sr );
+		RotatePoint( yDir, cr, sr );
+	}
+
+	ScaleVertex( xDir, halfSize );
+	ScaleVertex( yDir, halfSize );
+
+	Vertex2 topLeft = MapPoint( base_position, xDir, yDir, -1.f, -1.f );
+	Vertex2 topRight = MapPoint( base_position, xDir, yDir, +1.f, -1.f );
+	Vertex2 bottomLeft = MapPoint( base_position, xDir, yDir, -1.f, +1.f );
+	Vertex2 bottomRight = MapPoint( base_position, xDir, yDir, +1.f, +1.f );
+
+	EmitRect( output_vertices, topLeft, topRight, bottomLeft, bottomRight, color );
+}
+
+// Rect: output_vertices, top_left, top_right, bottom_left, bottom_right, color
+// Legacy: base_position, rotation, halfSize, output_vertices, color
+
 void EmitterObjectParticle::UpdateVertices( EmitterObject *eo,
 											EmitterObjectParticle &particle,
 											Geometry::Vertex *output_vertices )
 {
-	Geometry::Vertex &output_vert0 = output_vertices[ 0 ];
-	Geometry::Vertex &output_vert1 = output_vertices[ 1 ];
-	Geometry::Vertex &output_vert2 = output_vertices[ 2 ];
-	Geometry::Vertex &output_vert3 = output_vertices[ 3 ];
-	Geometry::Vertex &output_vert4 = output_vertices[ 4 ];
-	Geometry::Vertex &output_vert5 = output_vertices[ 5 ];
 
     // As we are rendering the particles as quads, we need to define 6 vertices for each particle
 	// We assume that all particles have a square aspect ratio.
@@ -351,6 +537,8 @@ void EmitterObjectParticle::UpdateVertices( EmitterObject *eo,
 	//// Base position.
 	//
 	Vertex2 base_position = {fPosition.x, fPosition.y};
+	Vertex2 right = {base_position.x + 1, base_position.y};
+	Vertex2 below = {base_position.x, base_position.y + 1};
 
 	eo->TransformParticlePosition(fSpawnTimeTransform, base_position);
 
@@ -377,176 +565,26 @@ void EmitterObjectParticle::UpdateVertices( EmitterObject *eo,
 	//
 	////
 
-    // If a rotation has been defined for this particle then apply the rotation to the vertices that define
-    // the particle
-    if( fRotation )
+	EmitterObject::Mapping mapping = eo->GetMapping();
+
+	if ( EmitterObject::kMapping_Legacy != mapping )
 	{
-        float x1 = -halfSize;
-        float y1 = -halfSize;
-        float x2 = halfSize;
-        float y2 = halfSize;
-        float x = base_position.x;
-        float y = base_position.y;
-        float r = Rtt_RealDegreesToRadians( fRotation );
-        float cr = cosf( r );
-        float sr = sinf( r );
-        float ax = x1 * cr - y1 * sr + x;
-        float ay = x1 * sr + y1 * cr + y;
-        float bx = x2 * cr - y1 * sr + x;
-        float by = x2 * sr + y1 * cr + y;
-        float cx = x2 * cr - y2 * sr + x;
-        float cy = x2 * sr + y2 * cr + y;
-        float dx = x1 * cr - y2 * sr + x;
-        float dy = x1 * sr + y2 * cr + y;
-
-		// Bottom left.
+		if ( EmitterObject::kMapping_RescaleY != mapping )
 		{
-			output_vert0.SetPos( dx, dy );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert0,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
+			eo->TransformParticlePosition(fSpawnTimeTransform, right);
 		}
 
-		// Top right.
+		if ( EmitterObject::kMapping_RescaleX != mapping )
 		{
-			output_vert1.SetPos( bx, by );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert1,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
+			eo->TransformParticlePosition(fSpawnTimeTransform, below);
 		}
 
-		// Top left.
-		{
-			output_vert2.SetPos( ax, ay );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert2,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-
-		// Bottom left.
-		{
-			output_vert3.SetPos( dx, dy );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert3,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-
-		// Bottom right.
-		{
-			output_vert4.SetPos( cx, cy );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert4,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-
-		// Top right.
-		{
-			output_vert5.SetPos( bx, by );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert5,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-    }
+		Rescale( output_vertices, mapping, base_position, right, below, fRotation, halfSize, color );
+	}
 	else
 	{
-        // Using the position of the particle, work out the four vertices for the quad that will hold the particle
-        // and load those into the quads array.
-
-		float xmin = ( base_position.x - halfSize );
-		float ymin = ( base_position.y - halfSize );
-		float xmax = ( base_position.x + halfSize );
-		float ymax = ( base_position.y + halfSize );
-
-		// Bottom left.
-		{
-			output_vert0.SetPos( xmin,
-									ymax );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert0,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-
-		// Top right.
-		{
-			output_vert1.SetPos( xmax,
-									ymin );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert1,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-
-		// Top left.
-		{
-			output_vert2.SetPos( xmin,
-									ymin );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert2,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-
-		// Bottom left.
-		{
-			output_vert3.SetPos( xmin,
-									ymax );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert3,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-
-		// Bottom right.
-		{
-			output_vert4.SetPos( xmax,
-									ymax );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert4,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-
-		// Top right.
-		{
-			output_vert5.SetPos( xmax,
-									ymin );
-			Geometry::Vertex::SetColor( 1,
-										&output_vert5,
-										color.r,
-										color.g,
-										color.b,
-										color.a );
-		}
-    }
+		Legacy( output_vertices, base_position, fRotation, halfSize, color );
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -597,6 +635,7 @@ EmitterObject::EmitterObject()
 , fTextureFileName()
 , fParticles( NULL )
 , fParticleCount( 0 )
+, fMapping( kMapping_Legacy )
 , fState( kState_Playing )
 , fTextureResource()
 , fData()
@@ -728,7 +767,25 @@ bool EmitterObject::Initialize( lua_State *L, Display &display )
 	fEmitCounter = 0.0f;
 
 	fParticles = (EmitterObjectParticle *)Rtt_MALLOC( display.GetAllocator(),
-														sizeof( EmitterObjectParticle ) * (int)fMaxParticles );
+													sizeof( EmitterObjectParticle ) * (int)fMaxParticles );
+
+	// Get any mapping, else use the display default.
+	lua_getfield( L, index - 1, "emitterMapping" );
+
+	if ( lua_isstring( L, -1 ) )
+	{
+		fMapping = GetMappingForString( lua_tostring( L, -1 ), kMapping_Rescale );
+	}
+	else if ( lua_toboolean( L, -1 ) )
+	{
+		fMapping = kMapping_Rescale;
+	}
+	else
+	{
+		fMapping = (Mapping)display.GetDefaults().GetEmitterMapping();
+	}
+
+	lua_pop( L, 1 );
 
 	// Texture
 	{
@@ -929,6 +986,8 @@ void EmitterObject::Draw( Renderer& renderer ) const
 		return;
 	}
 
+	SUMMED_TIMING( ed, "Emitter: Draw" );
+
 #if defined(Rtt_EMSCRIPTEN_ENV)
 	if (fData.fGeometry->GetStoredOnGPU())
 	{
@@ -1013,6 +1072,8 @@ const LuaProxyVTable &EmitterObject::ProxyVTable() const
 
 void EmitterObject::Prepare( const Display &display )
 {
+	SUMMED_TIMING( ep, "Emitter: Prepare" );
+
 	Rtt_ASSERT( fParticles );
 
 	if( ! ShouldHitTest() )
@@ -1199,6 +1260,63 @@ void EmitterObject::Pause()
 }
 
 // -----------------------------------------------------------------------------
+
+const char* EmitterObject::GetStringForMapping( Mapping mapping )
+{
+	switch ( mapping )
+	{
+		kMapping_Rescale:
+			return "rescale";
+		kMapping_RescaleX:
+			return "rescaleX";
+		kMapping_RescaleY:
+			return "rescaleY";
+		kMapping_RescaleMin:
+			return "rescaleMin";
+		kMapping_RescaleMax:
+			return "rescaleMax";
+		kMapping_RescaleMean:
+			return "rescaleMean";
+		default:
+			return "legacy";
+	}
+}
+
+EmitterObject::Mapping EmitterObject::GetMappingForString( const char* string, Mapping def )
+{
+	if ( 0 == Rtt_StringCompare( string, "rescale" ) )
+	{
+		return kMapping_Rescale;
+	}
+	else if ( 0 == Rtt_StringCompare( string, "rescaleX" ) )
+	{
+		return kMapping_RescaleX;
+	}
+	else if ( 0 == Rtt_StringCompare( string, "rescaleY" ) )
+	{
+		return kMapping_RescaleY;
+	}
+	else if ( 0 == Rtt_StringCompare( string, "rescaleMin" ) )
+	{
+		return kMapping_RescaleMin;
+	}
+	else if ( 0 == Rtt_StringCompare( string, "rescaleMax" ) )
+	{
+		return kMapping_RescaleMax;
+	}
+	else if ( 0 == Rtt_StringCompare( string, "rescaleMean" ) )
+	{
+		return kMapping_RescaleMean;
+	}
+	else if ( 0 == Rtt_StringCompare( string, "legacy" ) )
+	{
+		return kMapping_Legacy;
+	}
+	else
+	{
+		return def;
+	}
+}
 
 const char *EmitterObject::GetStringForState( int state )
 {

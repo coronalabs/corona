@@ -14,7 +14,7 @@
 #include "Renderer/Rtt_VulkanGeometry.h"
 
 #include "Renderer/Rtt_Geometry_Renderer.h"
-#include "CoronaLog.h"
+#include "Core/Rtt_Assert.h"
 
 // ----------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ VulkanGeometry::Update( CPUResource* resource )
 
 		else
 		{
-			CORONA_LOG_ERROR( "Unable to update GPU geometry. Data is NULL" );
+			Rtt_TRACE_SIM(( "ERROR: Unable to update GPU geometry. Data is NULL" ));
 		}
 	}
 

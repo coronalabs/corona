@@ -15,20 +15,19 @@
 #include "Display/Rtt_DisplayTypes.h"
 #include "Core/Rtt_Real.h" // TODO: Rtt_Real.h depends on Rtt_Types being included before it
 #include "Core/Rtt_SharedPtr.h"
-#include "Corona/CoronaGraphics.h"
 
 // ----------------------------------------------------------------------------
 
 struct Rtt_Allocator;
+struct CoronaGeometryMappingLayout;
 
 namespace Rtt
 {
 
-class CommandBuffer;
 class DisplayObject;
 class MLuaUserdataAdapter;
 class LuaUserdataProxy;
-struct FormatExtensionList;
+class FormatExtensionList;
 
 struct VertexAttributeSupport {
     U32 maxCount;
@@ -36,6 +35,52 @@ struct VertexAttributeSupport {
     bool hasPerInstance;
     bool hasDivisors;
     const char * suffix;
+};
+
+struct GeometryWriter {
+    enum _MaskBits
+    {
+        kX = 1 << 0,
+        kY = 1 << 1,
+        kZ = 1 << 2,
+	    kPosition = kX | kY | kZ,
+        kU = 1 << 3,
+        kV = 1 << 4,
+        kQ = 1 << 5,
+	    kTexcoord = kU | kV | kQ,
+        kRS = 1 << 6,
+        kGS = 1 << 7,
+        kBS = 1 << 8,
+        kAS = 1 << 9,
+        kColor = kRS | kGS | kBS | kAS,
+        kUX = 1 << 10,
+        kUY = 1 << 11,
+        kUZ = 1 << 12,
+        kUW = 1 << 13,
+	    kUserdata = kUX | kUY | kUZ | kUW,
+	    kMain = kPosition | kTexcoord | kColor | kUserdata,
+	    kExtra = 1 << 14,
+	    kAll = kMain | kExtra,
+        kIsUpdate = 1 << 15
+    };
+    typedef U16 MaskBits;
+
+	// n.b. if we do these two conditions as a couple asserts in a row, Clang
+	// seems to treat the two conditions as being on the same line and breaks
+	// the macro
+    Rtt_STATIC_ASSERT( ( kExtra == kMain + 1 ) && ( kIsUpdate == kAll + 1 ) );
+
+    static const GeometryWriter& CopyGeometryWriter();
+
+	const void* fContext;
+	void (*fWriter)( void*, const void*, const CoronaGeometryMappingLayout*, U32, U32 );
+	MaskBits fMask;
+	MaskBits fSaved;
+
+	// relevant to user-supplied writers:
+	U16 fOffset;
+	U8 fComponents;
+	U8 fType;
 };
 
 // ----------------------------------------------------------------------------
@@ -88,31 +133,6 @@ class Geometry : public CPUResource
 
         typedef U16 Index;
 
-        struct ExtensionAttribute {
-            size_t nameHash;
-            CoronaVertexExtensionAttributeType type;
-            U16 offset : 13;
-            U16 components : 2;
-            U16 normalized : 1;
-            
-            U32 GetSize() const;
-            bool IsFloat() const { return !!normalized || (CoronaVertexExtensionAttributeType)kAttributeType_Float == type; }
-        };
-    
-        struct ExtensionGroup {
-            U32 divisor;
-            U16 count;
-            U16 size;
-            
-            bool IsInstanceRate() const { return 0 != divisor; }
-            bool IsWindowed() const { return 0 == size; }
-            bool NeedsDivisor() const { return divisor > 1; }
-            U32 GetWindowAttributeCount( U32 valueCount ) const;
-            U32 GetValueCount( U32 instanceCount ) const;
-            size_t GetDataSize( U32 instanceCount, const ExtensionAttribute * firstAttribute ) const;
-            U32 GetVertexCount( U32 instanceCount, const ExtensionAttribute * firstAttribute ) const;
-        };
-    
         struct ExtensionBlock {
             ExtensionBlock( Rtt_Allocator* allocator );
             ExtensionBlock( ExtensionBlock & block );
@@ -223,79 +243,6 @@ class Geometry : public CPUResource
         U32 fVerticesUsed;
         U32 fIndicesUsed;
         ExtensionBlock* fExtension;
-};
-
-// this is outside of Geometry to allow forward declarations, e.g. in ShaderResource
-struct FormatExtensionList {
-    FormatExtensionList();
-    ~FormatExtensionList();
-    
-    class Iterator {
-    public:
-        enum GroupFilter { kAllGroups, kVertexRateGroups, kInstancedGroups };
-        enum IterationPolicy { kIterateGroups, kIterateAttributes };
-        
-        Iterator( const FormatExtensionList* list, GroupFilter filter, IterationPolicy policy );
-        
-    public:
-        void Advance();
-        bool IsDone() const;
-        U32 GetAttributeIndex() const;
-        U32 GetGroupIndex() const;
-        const Geometry::ExtensionAttribute* GetAttribute() const;
-        const Geometry::ExtensionGroup* GetGroup() const;
-        
-    private:
-        void AdvanceGroup();
-        void UpdateGroup();
-
-    private:
-        GroupFilter fFilter;
-        IterationPolicy fPolicy;
-        const FormatExtensionList * fList;
-        U32 fFirstInGroup;
-        U32 fOffsetInGroup;
-        U32 fGroupIndex;
-    };
-    
-    static Iterator AllGroups( const FormatExtensionList* list );
-    static Iterator AllAttributes( const FormatExtensionList* list );
-    static Iterator InstancedGroups( const FormatExtensionList* list );
-    
-    U32 ExtraVertexCount() const;
-    U32 InstanceGroupCount() const;
-	bool IsInstanced() const { return instancedByID || HasInstanceRateData(); }
-    bool HasInstanceRateData() const;
-    bool HasVertexRateData() const;
-    void SortNames() const;
-    S32 FindHash( size_t hash ) const;
-    S32 FindName( const char* name ) const;
-    U32 FindGroup( U32 attributeIndex ) const;
-    S32 FindCorrespondingInstanceGroup( const Geometry::ExtensionGroup* group, const Geometry::ExtensionAttribute* attribute, U32 * attributeIndex ) const;
-    
-    static size_t GetExtraVertexSize( const FormatExtensionList * list );
-    static size_t GetVertexSize( const FormatExtensionList * list );
-    static bool Compatible( const FormatExtensionList * shaderList, const FormatExtensionList * geometryList );
-    static bool Match( const FormatExtensionList * list1, const FormatExtensionList * list2 );
-    static void ReconcileFormats( CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset );
-    
-    void Build( const CoronaVertexExtension * extension );
-    
-    struct NamePair {
-        const char* str;
-        S32 index;
-        
-        bool operator<( const NamePair & other ) const { return index < other.index; }
-    };
-    
-    Geometry::ExtensionAttribute * attributes;
-    Geometry::ExtensionGroup * groups;
-    mutable NamePair* names; // allow reordering
-    U16 attributeCount;
-    U16 groupCount;
-	bool instancedByID;
-    bool ownsData;
-    mutable bool sorted;
 };
 
 // ----------------------------------------------------------------------------

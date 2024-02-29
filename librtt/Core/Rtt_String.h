@@ -128,6 +128,15 @@ class String
 				|| ('\0' == GetString()[0]) );
 		}
 
+		// Lazily build a 32-bit hash of the string
+		// This is an alternative to wyhash, which wants the length and a secret,
+		// for quick-and-dirty needs; it operates on a character at a time versus
+		// the bulk steps wyhash can take
+		// It does not aim for perfect hashes; StringHash already exists for that
+		U32 GetHash32() const;
+		// Lazily build a 64-bit hash of the string
+		U64 GetHash64() const;
+
 		// Trim characters from either or both ends of the string
 		void Trim(const char *trimChars);
 		void LTrim(const char *trimChars);
