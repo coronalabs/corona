@@ -54,6 +54,10 @@ class DisplayObjectExtensions : public LuaProxyVTable
 		static int resetMassData( lua_State *L );
 		static int getMassWorldCenter( lua_State *L );
 		static int getMassLocalCenter( lua_State *L );
+		static int getWorldVector( lua_State *L);
+		static int getInertia( lua_State *L );
+		static int getLinearVelocityFromWorldPoint(lua_State *L);
+		static int getLinearVelocityFromLocalPoint(lua_State* L);
 
 #endif // Rtt_PHYSICS
 

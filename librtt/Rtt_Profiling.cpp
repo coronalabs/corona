@@ -20,24 +20,51 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-void Profiling::Entry::SetShortName( ShortName out, const char* name )
+void Profiling::Payload::SetString( const char* str )
 {
-    strncpy( out, name, sizeof( ShortName ) - 1 );
+	fValue = str;
+	fType = kString;
 }
 
-void Profiling::Entry::SetName( const char* name )
+void Profiling::Payload::SetPointer( const void* ptr, bool isTable )
 {
-    SetShortName( fName, name );
+	fValue = ptr;
+	fType = isTable ? kTable : kFunction;
+}
+
+const char* Profiling::Payload::GetString() const
+{
+    if ( kString == fType )
+    {
+        return static_cast<const char*>( fValue );
+    }
+
+    else
+    {
+        return NULL;
+    }
+}
+
+const void* Profiling::Payload::GetPointer() const
+{
+    if ( kTable == fType || kFunction == fType )
+    {
+        return fValue;
+    }
+
+    else
+    {
+        return NULL;
+    }
 }
 
 Profiling::Profiling( Rtt_Allocator* allocator, const char* name )
-:   fNext(NULL),
-    fBelow(NULL)
+:   fBelow( NULL )
 {
     fArray1 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
     fArray2 = Rtt_NEW( allocator, Array<Entry>( allocator ) );
 
-    Entry::SetShortName( fName, name );
+    fName.SetString( name );
 }
 
 Profiling::~Profiling()
@@ -46,7 +73,7 @@ Profiling::~Profiling()
     Rtt_DELETE( fArray2 );
 }
 
-void Profiling::Commit()
+void Profiling::Commit( ProfilingState& state )
 {
     Array<Entry> * temp = fArray2;
 
@@ -57,25 +84,26 @@ void Profiling::Commit()
 
     if ( fBelow )
     {
-        fBelow->AddEntry( fName, true );
+        fBelow->AddEntry( fName.GetString(), true );
     }
 
-    fTopList = fBelow;
+    state.SetTopOfList( fBelow );
+
     fBelow = NULL;
 }
 
-void Profiling::Push()
+void Profiling::Push( ProfilingState& state )
 {
-    fBelow = fTopList;
-    fTopList = this;
+    fBelow = state.GetTopOfList();
+    
+    state.SetTopOfList( this );
 }
 
-void Profiling::AddEntry( const char* name, bool isListName )
+void Profiling::AddEntry( const Payload& payload, bool isListName )
 {
     Entry entry;
 
-    entry.SetName( name );
-
+    entry.fPayload = payload;
     entry.fTime = !isListName ? Rtt_GetAbsoluteTime() : Entry::SublistTime();
 
     fArray1->Append( entry );
@@ -88,10 +116,49 @@ int Profiling::VisitEntries( lua_State* L ) const
         int index = 1;
         const Entry* entries = fArray2->ReadAccess();
         S32 length = fArray2->Length();
+        int curType = -1;
 
         for ( S32 i = 0; i < length; ++i, index += 2 )
         {
-            lua_pushstring( L, entries[i].fName );
+            const Payload& payload = entries[i].fPayload;
+            const void* ptr = payload.GetPointer();
+
+            if ( ptr )
+            {
+                int type = payload.HasTablePointer();
+
+                if ( curType != type )
+                {
+                    curType = type;
+
+                    if ( payload.HasTablePointer() )
+                    {
+                        lua_pushliteral( L, "@tableListeners" );
+                    }
+                    else
+                    {
+                        lua_pushliteral( L, "@functionListeners" );
+                    }
+
+                    lua_rawseti( L, 1, index );
+                    lua_pushboolean( L, 0 );
+                    lua_rawseti( L, 1, index + 1 );
+
+                    index += 2;
+                }
+
+                lua_pushlightuserdata( L, (void*)ptr );
+            }
+
+            else
+            {
+                const char* str = payload.GetString();
+
+                Rtt_ASSERT( str );
+
+                lua_pushstring( L, str );
+            }
+
             lua_rawseti( L, 1, index );
 
             if ( Entry::SublistTime() != entries[i].fTime )
@@ -107,7 +174,7 @@ int Profiling::VisitEntries( lua_State* L ) const
             lua_rawseti( L, 1, index + 1 );
         }
 
-        lua_pushinteger( L, length * 2 );
+        lua_pushinteger( L, index - 1 );
     }
 
     else
@@ -118,124 +185,9 @@ int Profiling::VisitEntries( lua_State* L ) const
     return 1;
 }
 
-Profiling* Profiling::Open( Rtt_Allocator* allocator, const char* name )
-{
-	Profiling* profiling = Profiling::GetOrCreate( allocator, name );
-
-    Rtt_ASSERT( profiling );
-
-    if ( !Profiling::Find( profiling ) )
-    {
-        profiling->Push();
-	
-	    return profiling;
-    }
-    
-    else
-    {
-        return NULL;
-    }
-}
-
-void Profiling::AddEntry( void* profiling, const char* name )
-{
-    if ( NULL != profiling && fTopList == profiling )
-    {
-        fTopList->AddEntry( name );
-    }
-}
-
-void Profiling::Close( void* profiling )
-{
-    if ( NULL != profiling && fTopList == profiling )
-    {
-        fTopList->Commit();
-    }
-}
-
-bool Profiling::Find( const Profiling* profiling )
-{
-    for ( const Profiling* cur = fTopList; cur; cur = cur->fBelow )
-    {
-        if ( profiling == cur )
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-int Profiling::DestroyAll( struct lua_State* L )
-{
-    Profiling* cur = fFirstList;
-
-    while ( cur )
-    {
-		Profiling* next = cur->fNext;
-
-        Rtt_DELETE( cur );
-
-        cur = next;
-    }
-
-    fFirstList = NULL;
-    fTopList = NULL;
-
-    // n.b. leave sums list intact
-
-    return 0;
-}
-
-Profiling* Profiling::GetOrCreate( Rtt_Allocator* allocator, const char* name )
-{
-	Profiling* profiling = Get( name );
-
-    if ( NULL == profiling )
-    {
-        Entry::ShortName shorter;
-
-        Entry::SetShortName( shorter, name );
-
-        profiling = Get( shorter );
-
-        if ( NULL != profiling )
-        {
-            Rtt_Log( "Found profiling list %s, but with shorter name %s", name, shorter );
-
-            return profiling;
-        }
-
-        profiling = Rtt_NEW( allocator, Profiling( allocator, name ) );
-
-        if ( 0 != Rtt_StringCompare( name, profiling->fName ) )
-        {
-            Rtt_Log( "Profiling list created, but name %s shortened to %s", name, shorter );
-        }
-
-        profiling->fNext = fFirstList;
-        fFirstList = profiling;
-    }
-
-    return profiling;
-}
-
-Profiling* Profiling::Get( const char* name )
-{
-    for ( Profiling* cur = fFirstList; cur; cur = cur->fNext )
-    {
-        if ( 0 == Rtt_StringCompare( name, cur->fName ) )
-        {
-            return cur;
-        }
-    }
-
-    return NULL;
-}
-
 void Profiling::ResetSums()
 {
-    for ( Sum* sum = fFirstSum; sum; sum = sum->fNext )
+    for ( Sum* sum = sFirstSum; sum; sum = sum->fNext )
     {
         sum->Reset();
     }
@@ -247,14 +199,14 @@ int Profiling::VisitSums( lua_State* L)
     {
         int index = 1;
 
-        for ( const Sum* sum = fFirstSum; sum; sum = sum->fNext )
+        for ( const Sum* sum = sFirstSum; sum; sum = sum->fNext )
         {
             if ( 0 == sum->fTimingCount )
             {
                 continue;
             }
 
-            lua_pushstring( L, sum->fName );
+            lua_pushstring( L, sum->fName.GetString()/*fName*/ );
             lua_rawseti( L, 1, index );
             lua_pushinteger( L, Rtt_AbsoluteToMicroseconds( sum->fTotalTime ) );
             lua_rawseti( L, 1, index + 1 );
@@ -275,45 +227,14 @@ int Profiling::VisitSums( lua_State* L)
     return 1;
 }
 
-Profiling* Profiling::fFirstList;
-Profiling* Profiling::fTopList;
-Profiling::Sum* Profiling::fFirstSum;
-
-Profiling::EntryRAII::EntryRAII( Rtt_Allocator* allocator, const char* name )
-{
-    fProfiling = Profiling::GetOrCreate( allocator, name );
-
-    Rtt_ASSERT( fProfiling );
-
-    if ( !Profiling::Find( fProfiling ) )
-    {
-        fProfiling->Push();
-    }
-
-    else
-    {
-        Rtt_ASSERT_NOT_REACHED(); // possible, but indicates misuse
-    }
-}
-
-Profiling::EntryRAII::~EntryRAII()
-{
-    Rtt_ASSERT( fProfiling );
-
-    fProfiling->Commit();
-}
-
-void Profiling::EntryRAII::Add( const char* name ) const
-{
-    fProfiling->AddEntry( name );
-}
+Profiling::Sum* Profiling::sFirstSum;
 
 Profiling::Sum::Sum( const char* name )
 {
-    Entry::SetShortName( fName, name );
+    fName.SetString( name );
 
-    fNext = fFirstSum;
-    fFirstSum = this;
+    fNext = sFirstSum;
+    sFirstSum = this;
 }
 			
 void Profiling::Sum::AddTiming( U64 diff )
@@ -387,6 +308,156 @@ Profiling::SumRAII::~SumRAII()
     {
         fSum.AddTiming( Rtt_GetAbsoluteTime() - fBegan );
     }
+}
+
+ProfilingState::ProfilingState( Rtt_Allocator* allocator )
+:   fLists( allocator ),
+    fTopList( NULL )
+{
+	fUpdateID = Create( "update" );
+	fRenderID = Create( "render" );
+}
+
+bool ProfilingState::Find( const Profiling* profiling )
+{
+    for ( const Profiling* cur = fTopList; cur; cur = cur->GetBelow() )
+    {
+        if ( profiling == cur )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+int ProfilingState::Create( const char* name )
+{
+    Profiling* profiling = Rtt_NEW( fLists.Allocator(), Profiling( fLists.Allocator(), name ) );
+
+    fLists.Append( profiling );
+
+    return fLists.Length() - 1;
+}
+
+Profiling* ProfilingState::GetByID( int id )
+{
+    if ( id >= 0 && id < fLists.Length() )
+    {
+        return fLists[id];
+    }
+
+    else
+    {
+        return NULL;
+    }
+}
+
+Profiling* ProfilingState::Get( const char* name )
+{
+    for ( S32 i = 0, length = fLists.Length(); i < length; i++ )
+    {
+        Profiling* cur = fLists[i];
+
+        if ( 0 == Rtt_StringCompare( name, cur->GetName() ) && name )
+        {
+            return cur;
+        }
+    }
+
+    return NULL;
+}
+
+Profiling* ProfilingState::Open( int id )
+{
+	Profiling* profiling = GetByID( id - 1 );
+
+    if ( NULL == profiling )
+    {
+        return NULL;
+    }
+
+    if ( !Find( profiling ) )
+    {
+        profiling->Push( *this );
+	
+	    return profiling;
+    }
+    
+    else
+    {
+        return NULL;
+    }
+}
+
+void ProfilingState::AddEntry( void* profiling, const Profiling::Payload& payload )
+{
+    if ( NULL != profiling && fTopList == profiling )
+    {
+        fTopList->AddEntry( payload );
+    }
+}
+
+void ProfilingState::Close( void* profiling )
+{
+    if ( NULL != profiling && fTopList == profiling )
+    {
+        fTopList->Commit( *this );
+    }
+}
+
+void ProfilingState::Bookmark( short mark, int push, void* ud )
+{
+    Rtt_ASSERT( ud );
+
+    ProfilingState* state = static_cast< ProfilingState* >( ud );
+
+    int id = (int)mark;
+
+    if ( push )
+    {
+        state->Open( id );
+    }
+
+    else
+    {
+        Profiling* profiling = state->GetByID( id - 1 );
+
+        if ( profiling )
+        {
+            state->Close( profiling );
+        }
+    }
+}
+
+ProfilingEntryRAII::ProfilingEntryRAII( ProfilingState& state, int id )
+:   fState( state )
+{
+    fProfiling = state.GetByID( id );
+
+    Rtt_ASSERT( fProfiling );
+
+    if ( !state.Find( fProfiling ) )
+    {
+        fProfiling->Push( state );
+    }
+
+    else
+    {
+        Rtt_ASSERT_NOT_REACHED(); // possible, but indicates misuse
+    }
+}
+
+ProfilingEntryRAII::~ProfilingEntryRAII()
+{
+    Rtt_ASSERT( fProfiling );
+
+    fProfiling->Commit( fState );
+}
+
+void ProfilingEntryRAII::Add( const Profiling::Payload& payload ) const
+{
+    fProfiling->AddEntry( payload );
 }
 
 // ----------------------------------------------------------------------------

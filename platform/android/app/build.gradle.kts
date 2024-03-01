@@ -396,6 +396,8 @@ android.applicationVariants.all {
     val isRelease = (baseName == "release")
     val generatedAssetsDir = "$buildDir/generated/corona_assets/$baseName"
     val compiledLuaArchive = "$buildDir/intermediates/compiled_lua_archive/$baseName/resource.car"
+    // fix assets not been merge when lua file changed
+    val luaArchiveInMergedAssets = "$buildDir/intermediates/assets/$baseName/resource.car"
 
     val compileLuaTask = tasks.create("compileLua${baseName.capitalize()}") {
         description = "If required, compiles Lua and archives it into resource.car"
@@ -485,6 +487,8 @@ android.applicationVariants.all {
             }
             delete(metadataConfig)
             val toArchive = outputsList.filter { file(it).name != "config.lu" } + "config.lu"
+            // Make sure it's not appended to an old file
+            delete(compiledLuaArchive)
             mkdir(file(compiledLuaArchive).parent)
             exec {
                 workingDir = file(compiledDir)
@@ -512,9 +516,9 @@ android.applicationVariants.all {
 
         doFirst {
             delete(generatedAssetsDir)
+            delete(luaArchiveInMergedAssets)
             mkdir(generatedAssetsDir)
-        }
-        doFirst {
+
             if (!file(coronaSrcDir).isDirectory) {
                 throw InvalidUserDataException("Unable to find Solar2D project (for example platform/test/assets2/main.lua)!")
             }

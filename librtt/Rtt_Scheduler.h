@@ -14,6 +14,8 @@
 
 #include "Core/Rtt_Array.h"
 
+#include <atomic>
+
 namespace Rtt
 {
 
@@ -25,7 +27,9 @@ class Scheduler;
 class Task
 {
 	public:
-		Task() : fKeepAlive(false) {}
+		typedef Task* NextType;
+
+		Task() : fKeepAlive(false), fNext(NULL) {}
 		Task(bool keepAlive) : fKeepAlive(keepAlive) {}
 		virtual ~Task();
 
@@ -35,8 +39,12 @@ class Task
 		bool getKeepAlive() const { return fKeepAlive; }
 		void setKeepAlive(bool val) { fKeepAlive = val; }
 
+		NextType& getNextRef() { return fNext; }
+		Task* getNext() const { return fNext; }
+
 	private:
 		bool fKeepAlive;
+		Task* fNext;
 };
 
 class Scheduler
@@ -60,7 +68,13 @@ class Scheduler
 		Owner& GetOwner() { return fOwner; }
 
 	private:
+		void SetHead( Task::NextType& oldValue, Task* newValue );
+		Task* ExtractPendingList();
+		void SyncPendingList();
+
+	private:
 		Owner& fOwner;
+		std::atomic< Task* > fFirstPending;
 		
 		PtrArray< Task > fTasks;
 		bool fProcessing;

@@ -38,6 +38,11 @@ static NSString __strong * LIVE_BUILD_CONFIG_NAME = @".CoronaLiveBuild";
 
 @implementation AppDelegate
 
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app
+{
+	return NO;
+}
+
 -(BOOL)addHTML5Project:(NSString*)project reportErrorToUser:(BOOL)guiError
 {
 	if(self.httpServerController == nil) {

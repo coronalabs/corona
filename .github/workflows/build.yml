@@ -18,7 +18,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_14.3.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -72,7 +72,7 @@ jobs:
         runner:
           - macos-13
         xcode:
-          - Xcode_14.3
+          - Xcode_15.2
         target:
           - template
           - template-angle
@@ -474,6 +474,8 @@ jobs:
         shell: bash
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.macos.tgz -o jre.macos.tgz
+      - name: required for appdmg
+        run: python3 -m pip install setuptools
       - name: install appdmg
         run: npm install -g appdmg
       - name: install imagemagick
@@ -522,7 +524,7 @@ jobs:
           APPLE_KEY: ${{ secrets.AppleKey }}
           APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
           APPLE_ISSUER: ${{ secrets.AppleIssuer }}
-          
+
 
 
   Windows-Simulator:
@@ -834,7 +836,7 @@ jobs:
       - release
       - source-code
     runs-on: ubuntu-20.04
-    if: always() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
+    if: (success() || failure()) && !cancelled() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
     steps:
       - uses: technote-space/workflow-conclusion-action@v1
       - uses: actions/checkout@v3
