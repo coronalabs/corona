@@ -27,6 +27,7 @@ class DisplayObject;
 Rtt_TRAIT_SPECIALIZE( IsBitCopyable, Vertex2, true )
 
 typedef PtrArray< DisplayObject >		PtrArrayDisplayObject;
+typedef Array< float >                  ArrayFloat;
 typedef Array< Vertex2 >				ArrayVertex2;
 typedef Array< S32 >					ArrayS32;
 typedef Array< U16 >                    ArrayIndex;

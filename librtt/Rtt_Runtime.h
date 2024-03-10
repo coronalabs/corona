@@ -328,6 +328,11 @@ class Runtime : public MCallback,
 		const PhysicsWorld& GetPhysicsWorld() const { return * fPhysicsWorld; }
 
 	public:
+		void SetBackend( const char * backend, void * backendState) { fBackend = backend; fBackendState = backendState; }
+
+		const char * GetBackend() const { return fBackend; }
+
+	public:
 		// MCallback
 		virtual void operator()();
 
@@ -369,6 +374,8 @@ class Runtime : public MCallback,
 		Scheduler* fScheduler;
 		Archive* fArchive;
 		PhysicsWorld *fPhysicsWorld;
+		const char * fBackend;
+		void * fBackendState;
 	
 #ifdef Rtt_USE_ALMIXER
 		PlatformOpenALPlayer* fOpenALPlayer;

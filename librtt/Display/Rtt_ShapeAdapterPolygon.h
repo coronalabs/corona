@@ -30,7 +30,7 @@ class ShapeAdapterPolygon : public ShapeAdapter
 		static const ShapeAdapterPolygon& Constant();
 
 		static bool InitializeContour(
-			lua_State *L, int index, TesselatorPolygon& tesselator );
+			lua_State *L, int index, TesselatorPolygon& tesselator, bool hasZ );
 
 	protected:
 		ShapeAdapterPolygon();

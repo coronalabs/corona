@@ -244,6 +244,13 @@ class ReadOnlyProjectSettings
 		const char* GetWindowTitleTextForLocaleWithoutFallback(const char* languageCode, const char* countryCode) const;
 
 		/**
+		 * Get a string describing the backend status.
+		 * @return
+		 * Returns one of "gl", "vulkanWanted", "vulkanRequired".
+		 */
+		const char * Backend() const;
+
+		/**
 		 * Gets the content width provided by the "config.lua" file.
 		 * @return
 		 * Returns the "config.lua" file's content width.

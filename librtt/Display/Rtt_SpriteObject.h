@@ -20,6 +20,8 @@
 
 // ----------------------------------------------------------------------------
 
+struct lua_State;
+
 namespace Rtt
 {
 
@@ -165,11 +167,13 @@ class SpriteObject : public RectObject
 
 	public:
 		static SpriteObject* Create(
+            lua_State * L,
 			Rtt_Allocator *pAllocator,
 			const AutoPtr< ImageSheet >& sheet,
-			SpritePlayer& player );
+			SpritePlayer& player,
+			Display& display );
 
-	protected:
+    public:
 		SpriteObject(
 			RectPath *path,
 			Rtt_Allocator *pAllocator,

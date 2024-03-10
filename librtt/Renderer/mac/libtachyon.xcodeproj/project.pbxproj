@@ -58,6 +58,8 @@
 		A4B66A96176A77730077B2BF /* Rtt_Uniform.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B66A6A176A77730077B2BF /* Rtt_Uniform.h */; };
 		A4DCC6F21774EE0E00C29C87 /* Rtt_GeometryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4DCC6F01774EE0E00C29C87 /* Rtt_GeometryPool.cpp */; };
 		A4DCC6F31774EE0E00C29C87 /* Rtt_GeometryPool.h in Headers */ = {isa = PBXBuildFile; fileRef = A4DCC6F11774EE0E00C29C87 /* Rtt_GeometryPool.h */; };
+		AAF34A7229F9CA6C00076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34A7029F9CA6C00076706 /* Rtt_FormatExtensionList.cpp */; };
+		AAF34A7329F9CA6C00076706 /* Rtt_FormatExtensionList.h in Headers */ = {isa = PBXBuildFile; fileRef = AAF34A7129F9CA6C00076706 /* Rtt_FormatExtensionList.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -113,6 +115,8 @@
 		A4B66A6A176A77730077B2BF /* Rtt_Uniform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Uniform.h; path = ../Rtt_Uniform.h; sourceTree = "<group>"; };
 		A4DCC6F01774EE0E00C29C87 /* Rtt_GeometryPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_GeometryPool.cpp; path = ../Rtt_GeometryPool.cpp; sourceTree = "<group>"; };
 		A4DCC6F11774EE0E00C29C87 /* Rtt_GeometryPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_GeometryPool.h; path = ../Rtt_GeometryPool.h; sourceTree = "<group>"; };
+		AAF34A7029F9CA6C00076706 /* Rtt_FormatExtensionList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FormatExtensionList.cpp; path = ../Rtt_FormatExtensionList.cpp; sourceTree = "<group>"; };
+		AAF34A7129F9CA6C00076706 /* Rtt_FormatExtensionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FormatExtensionList.h; path = ../Rtt_FormatExtensionList.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +154,8 @@
 				A4B66A40176A77730077B2BF /* Rtt_CommandBuffer.h */,
 				A4B66A41176A77730077B2BF /* Rtt_CPUResource.cpp */,
 				A4B66A42176A77730077B2BF /* Rtt_CPUResource.h */,
+				AAF34A7029F9CA6C00076706 /* Rtt_FormatExtensionList.cpp */,
+				AAF34A7129F9CA6C00076706 /* Rtt_FormatExtensionList.h */,
 				A4B66A43176A77730077B2BF /* Rtt_FrameBufferObject.cpp */,
 				A4B66A44176A77730077B2BF /* Rtt_FrameBufferObject.h */,
 				A4B66A45176A77730077B2BF /* Rtt_Geometry_Renderer.cpp */,
@@ -217,6 +223,7 @@
 				A4B66A7A176A77730077B2BF /* Rtt_GLGeometry.h in Headers */,
 				A4B66A7C176A77730077B2BF /* Rtt_GLProgram.h in Headers */,
 				A4B66A7E176A77730077B2BF /* Rtt_GLRenderer.h in Headers */,
+				AAF34A7329F9CA6C00076706 /* Rtt_FormatExtensionList.h in Headers */,
 				A4B66A80176A77730077B2BF /* Rtt_GLTexture.h in Headers */,
 				A4B66A82176A77730077B2BF /* Rtt_GPUResource.h in Headers */,
 				A4B66A84176A77730077B2BF /* Rtt_HighPrecisionTime.h in Headers */,
@@ -270,6 +277,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = A43287D1176A610100ACB6FF;
@@ -298,6 +306,7 @@
 				A4B66A7B176A77730077B2BF /* Rtt_GLProgram.cpp in Sources */,
 				A4B66A7D176A77730077B2BF /* Rtt_GLRenderer.cpp in Sources */,
 				A4B66A7F176A77730077B2BF /* Rtt_GLTexture.cpp in Sources */,
+				AAF34A7229F9CA6C00076706 /* Rtt_FormatExtensionList.cpp in Sources */,
 				A4B66A81176A77730077B2BF /* Rtt_GPUResource.cpp in Sources */,
 				A4B66A83176A77730077B2BF /* Rtt_HighPrecisionTime.cpp in Sources */,
 				A4B66A85176A77730077B2BF /* Rtt_Matrix_Renderer.cpp in Sources */,

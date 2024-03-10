@@ -293,7 +293,16 @@ RuntimeEnvironment::RuntimeEnvironment(const RuntimeEnvironment::CreationSetting
 		}
 
 		// Wrap the given control with our rendering surface adapter and set up event handlers.
-		fRenderSurfacePointer = new Interop::UI::RenderSurfaceControl(settings.RenderSurfaceHandle);
+		Interop::UI::RenderSurfaceControl::Params params;
+		const char * backend = fReadOnlyProjectSettings.Backend();
+		bool requireVulkan = strcmp(backend, "requireVulkan") == 0;
+
+		if (requireVulkan || strcmp(backend, "wantVulkan") == 0)
+		{
+			params.SetVulkanWanted(requireVulkan);
+		}
+
+		fRenderSurfacePointer = new Interop::UI::RenderSurfaceControl(settings.RenderSurfaceHandle, params);
 		fRenderSurfacePointer->SetRenderFrameHandler(&fRenderFrameEventHandler);
 		fRenderSurfacePointer->GetDestroyingEventHandlers().Add(&fDestroyingSurfaceEventHandler);
 		fRenderSurfacePointer->GetResizedEventHandlers().Add(&fSurfaceResizedEventHandler);
@@ -1357,6 +1366,11 @@ OperationResult RuntimeEnvironment::RunUsing(const RuntimeEnvironment::CreationS
 	fRuntimePointer->SetProperty(Rtt::Runtime::kIsLuaParserAvailable, true);
 	fRuntimePointer->SetProperty(Rtt::Runtime::kRenderAsync, true);
 	fRuntimePointer->SetProperty(Rtt::Runtime::kShouldVerifyLicense, true);
+
+	if (fRenderSurfacePointer->IsUsingVulkanBackend())
+	{
+		fRuntimePointer->SetBackend("vulkanBackend", fRenderSurfacePointer->GetBackendContext());
+	}
 
 	// Load and run the Corona project.
 	fRuntimeState = RuntimeState::kStarting;

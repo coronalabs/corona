@@ -1713,7 +1713,7 @@ HitEvent::Test( HitTestObject& hitParent, const Matrix& srcToDstSpace ) const
 		// Only add visible/hitTestable objects
 		// and in the multitouch case, do not have per object focus id set
 		// since we dispatch focused events outside of hit testing.
-		if ( child.ShouldHitTest() && ! child.GetFocusId() )
+		if ( child.ShouldHitTest() && ! child.GetFocusId() && ( !child.SkipsHitTest() && child.CanHitTest()) )
 		{
 			GroupObject* childAsGroup = child.AsGroupObject();
 			if ( ! childAsGroup )

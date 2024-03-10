@@ -278,6 +278,8 @@
         <File Name="../../librtt/Display/Rtt_TextureResourceExternal.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceCanvasAdapter.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceCanvas.h"/>
+        <File Name="../../librtt/Display/Rtt_TextureResourceCaptureAdapter.h"/>
+        <File Name="../../librtt/Display/Rtt_TextureResourceCapture.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceBitmapAdapter.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceBitmap.h"/>
         <File Name="../../librtt/Display/Rtt_TextureResourceAdapter.h"/>
@@ -383,6 +385,7 @@
         <File Name="../../librtt/Display/Rtt_PaintAdapter.h"/>
         <File Name="../../librtt/Display/Rtt_Paint.h"/>
         <File Name="../../librtt/Core/Rtt_OperationResult.h"/>
+        <File Name="../../librtt/Display/Rtt_ObjectHandle.h"/>
         <File Name="../../librtt/Display/Rtt_OpenPath.h"/>
         <File Name="../../librtt/Rtt_MUpdatable.h"/>
         <File Name="../../modules/simulator/Rtt_MSimulatorServices.h"/>
@@ -649,6 +652,8 @@
       <File Name="../../librtt/Display/Rtt_TextureResourceExternal.cpp"/>
       <File Name="../../librtt/Display/Rtt_TextureResourceCanvasAdapter.cpp"/>
       <File Name="../../librtt/Display/Rtt_TextureResourceCanvas.cpp"/>
+      <File Name="../../librtt/Display/Rtt_TextureResourceCaptureAdapter.h"/>
+      <File Name="../../librtt/Display/Rtt_TextureResourceCapture.h"/>
       <File Name="../../librtt/Display/Rtt_TextureResourceBitmapAdapter.cpp"/>
       <File Name="../../librtt/Display/Rtt_TextureResourceBitmap.cpp"/>
       <File Name="../../librtt/Display/Rtt_TextureResourceAdapter.cpp"/>
@@ -696,6 +701,7 @@
       <File Name="../../librtt/Display/Rtt_PlatformBitmap.cpp"/>
       <File Name="../../librtt/Display/Rtt_PaintAdapter.cpp"/>
       <File Name="../../librtt/Display/Rtt_Paint.cpp"/>
+      <File Name="../../librtt/Display/Rtt_ObjectHandle.cpp"/>
       <File Name="../../librtt/Display/Rtt_OpenPath.cpp"/>
       <File Name="../../librtt/Display/Rtt_LuaLibGraphics.cpp"/>
       <File Name="../../librtt/Display/Rtt_LuaLibDisplay.cpp"/>
@@ -856,6 +862,7 @@
       <VirtualDirectory Name="include">
         <File Name="../../librtt/Renderer/Rtt_CommandBuffer.h"/>
         <File Name="../../librtt/Renderer/Rtt_CPUResource.h"/>
+        <File Name="../../librtt/Renderer/Rtt_FormatExtensionList.h"/>
         <File Name="../../librtt/Renderer/Rtt_FrameBufferObject.h"/>
         <File Name="../../librtt/Renderer/Rtt_Geometry_Renderer.h"/>
         <File Name="../../librtt/Renderer/Rtt_GeometryPool.h"/>
@@ -908,6 +915,7 @@
       <File Name="../../librtt/Renderer/Rtt_GL.cpp"/>
       <File Name="../../librtt/Renderer/Rtt_Geometry_Renderer.cpp"/>
       <File Name="../../librtt/Renderer/Rtt_GeometryPool.cpp"/>
+      <File Name="../../librtt/Renderer/Rtt_FormatExtensionList.cpp"/>
       <File Name="../../librtt/Renderer/Rtt_FrameBufferObject.cpp"/>
       <File Name="../../librtt/Renderer/Rtt_CPUResource.cpp"/>
       <File Name="../../librtt/Renderer/Rtt_CommandBuffer.cpp"/>

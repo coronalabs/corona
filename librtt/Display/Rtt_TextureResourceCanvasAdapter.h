@@ -46,7 +46,7 @@ class TextureResourceCanvasAdapter : public TextureResourceAdapter
 		static int invalidate( lua_State *L );
 
 };
-	
+
 } // namespace Rtt
 
 

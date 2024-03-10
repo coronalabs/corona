@@ -28,6 +28,8 @@ CORONA_API void CoronaWin32LaunchSettingsGetMainWindowHandle(CoronaWin32LaunchSe
 CORONA_API void CoronaWin32LaunchSettingsSetMainWindowHandle(CoronaWin32LaunchSettingsRef settingsReference, HWND value);
 CORONA_API void CoronaWin32LaunchSettingsGetRenderSurfaceHandle(CoronaWin32LaunchSettingsRef settingsReference, HWND *valuePointer);
 CORONA_API void CoronaWin32LaunchSettingsSetRenderSurfaceHandle(CoronaWin32LaunchSettingsRef settingsReference, HWND value);
+CORONA_API void CoronaWin32LaunchSettingsGetTestSurfaceHandle(CoronaWin32LaunchSettingsRef settingsReference, HWND *valuePointer);
+CORONA_API void CoronaWin32LaunchSettingsSetTestSurfaceHandle(CoronaWin32LaunchSettingsRef settingsReference, HWND value);
 CORONA_API void CoronaWin32LaunchSettingsGetResourceDirectory(CoronaWin32LaunchSettingsRef settingsReference, const wchar_t **pathPointer);
 CORONA_API void CoronaWin32LaunchSettingsSetResourceDirectory(CoronaWin32LaunchSettingsRef settingsReference, const wchar_t *path);
 CORONA_API void CoronaWin32LaunchSettingsAddLaunchArgument(CoronaWin32LaunchSettingsRef settingsReference, const wchar_t *argument);
@@ -93,6 +95,18 @@ class LaunchSettings
 		void SetRenderSurfaceHandle(HWND value)
 		{
 			::CoronaWin32LaunchSettingsSetRenderSurfaceHandle(fSettingsReference, value);
+		}
+
+		HWND GetTestSurfaceHandle() const
+		{
+			HWND value = nullptr;
+			::CoronaWin32LaunchSettingsGetTestSurfaceHandle(fSettingsReference, &value);
+			return value;
+		}
+
+		void SetTestSurfaceHandle(HWND value)
+		{
+			::CoronaWin32LaunchSettingsSetTestSurfaceHandle(fSettingsReference, value);
 		}
 
 		const wchar_t* GetResourceDirectory() const

@@ -301,16 +301,27 @@ ShaderComposite::Prepare( RenderData& objectData, int w, int h, ShaderResource::
 
 // public: ShapeObject calls this to get final output
 void
-ShaderComposite::Draw( Renderer& renderer, const RenderData& objectData ) const
+ShaderComposite::Draw( Renderer& renderer, const RenderData& objectData, const GeometryWriter* writers, U32 n ) const
 {
-	// Create geometry for a quad (based on texture bounds of fFillTexture0/fFillTexture1)
-	Geometry& cache = GetGeometry();
+    if ( !renderer.CanAddGeometryWriters() ) // ignore during raw draws
+    {
+        renderer.SetGeometryWriters( writers, n );
+    }
 
-	RenderToTexture( renderer, cache );
-	
-	renderer.TallyTimeDependency( fResource->UsesTime() );
-	renderer.Insert( & objectData );
-	
+    DrawState state( fResource->GetEffectCallbacks(), fIsDrawing );
+
+    if (DoAnyBeforeDrawAndThenOriginal( state, renderer, objectData ))
+    {
+        // Create geometry for a quad (based on texture bounds of fFillTexture0/fFillTexture1)
+        Geometry& cache = GetGeometry();
+
+        RenderToTexture( renderer, cache );
+        
+        renderer.TallyTimeDependency( fResource->UsesTime() );
+        renderer.Insert( & objectData, GetData() );
+    }
+
+    DoAnyAfterDraw( state, renderer, objectData );
 }	
 
 void

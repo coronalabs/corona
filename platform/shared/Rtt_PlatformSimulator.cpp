@@ -155,7 +155,8 @@ PlatformSimulator::PlatformSimulator( PlatformFinalizer finalizer )
 	fSupportedOrientations( 0 ),
 	fLastSupportedOrientation( DeviceOrientation::kUpright ),
 	fLastDeviceWidth( -1 ),
-	fLastDeviceHeight( -1 )
+	fLastDeviceHeight( -1 ),
+	fIsTransparent(false)
 {
 }
 
@@ -614,6 +615,28 @@ PlatformSimulator::LoadBuildSettings( const MPlatform& platform )
 		}
 	}
 
+	const char kConfigLua[] = "config.lua";
+	
+	platform.PathForFile( kConfigLua, MPlatform::kResourceDir, MPlatform::kTestFileExists, filePath );
+
+	p = filePath.GetString();
+	if ( p != NULL ) // config.lua is optional
+	{
+		if ( 0 == luaL_loadfile( L, p )
+		  && 0 == lua_pcall( L, 0, 0, 0 ) )
+		{
+			lua_getglobal( L, "application" );
+			if ( lua_istable( L, -1 ) )
+			{
+				lua_getfield( L, -1, "isTransparent" );
+				
+				SetIsTransparent( lua_toboolean( L, -1 ) );
+			}
+			
+			lua_pop( L, 1 ); // pop application
+		}
+	}
+	
 	lua_close( L );
 }
 
