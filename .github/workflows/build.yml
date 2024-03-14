@@ -52,6 +52,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -91,6 +92,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -136,6 +138,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -181,6 +184,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -239,6 +243,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -269,14 +274,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Webtemplate
+          path: Webtemplate
       - name: Get Native
         uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Get processed code
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -312,14 +320,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Webtemplate
+          path: Webtemplate
       - name: Get Native
         uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Get processed code
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -350,6 +361,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Put native in place
         run: |
           tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
@@ -375,6 +387,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -401,6 +414,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -434,6 +448,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -443,18 +458,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Collected-ios-templates
+          path: Collected-ios-templates
       - name: Put collected iOS templates in place
         run: cp -Rv Collected-ios-templates/* platform/resources/
       - name: Get Webtemplate
         uses: actions/download-artifact@v4
         with:
           name: Webtemplate
+          path: Webtemplate
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip platform/resources/
       - name: Get Linux template
         uses: actions/download-artifact@v4
         with:
           name: Linux-Template
+          path: Linux-Template
       - name: Put webtemplate in place
         run: |
           cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
@@ -470,6 +488,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Put JRE in place
         shell: bash
         run: |
@@ -541,6 +560,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: |
           7z x SourceCode/corona.tgz
@@ -562,6 +582,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Webtemplate
+          path: Webtemplate
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip platform/resources/
         shell: bash
@@ -573,6 +594,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Linux-Template
+          path: Linux-Template
       - name: Put webtemplate in place
         run: |
           cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
@@ -581,6 +603,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Put native in place
         shell: cmd
         run: |
@@ -634,6 +657,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: Snap
+          path: Snap
       - name: Determine release
         run: |
           if ls Snap/*2100.9999* &> /dev/null
@@ -691,27 +715,35 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: Simulator-macOS
+          path: Simulator-macOS
       - uses: actions/download-artifact@v4
         with:
           name: Simulator-Windows
+          path: Simulator-Windows
       - uses: actions/download-artifact@v4
         with:
           name: CoronaCards-iOS
+          path: CoronaCards-iOS
       - uses: actions/download-artifact@v4
         with:
           name: CoronaCards-iOS-angle
+          path: CoronaCards-iOS-angle
       - uses: actions/download-artifact@v4
         with:
           name: CoronaCards-Android
+          path: CoronaCards-Android
       - uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - uses: actions/download-artifact@v4
         with:
           name: Flatpak
+          path: Flatpak
       - uses: actions/download-artifact@v4
         with:
           name: Snap
+          path: Snap
       - run: find Snap -name '*.snap' -execdir mv -v {} s2d.snap \; -quit
       - name: Create Release
         id: create_release
