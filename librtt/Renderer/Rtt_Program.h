@@ -76,7 +76,7 @@ class Program : public CPUResource
 		const char *GetHeaderSource() const { return fHeaderSource; }
 		void SetHeaderSource( const char *source );
 
-		ShaderResource *GetShaderResource() { return fResource; }
+		ShaderResource *GetShaderResource() const { return fResource; }
 		void SetShaderResource( ShaderResource *resource ) { fResource = resource; }
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
 		ShaderBinaryVersions* GetCompiledShaders() const { return fCompiledShaders; }
