@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -307,8 +308,7 @@ public class CoronaActivity extends Activity {
 		fController.setCoronaSystemApiListener(systemHandler);
 
 		// Attempt to load/reload this application's expansion files, if they exist.
-		com.ansca.corona.storage.FileServices fileServices = new com.ansca.corona.storage.FileServices(this);
-		fileServices.loadExpansionFiles();
+		com.ansca.corona.storage.FileServices.resetAccessedExpansionFileDirectory();
 
 		// Create and set up a store object used to manage in-app purchases.
 		myStore = new com.ansca.corona.purchasing.StoreProxy(fCoronaRuntime, fCoronaRuntime.getController());

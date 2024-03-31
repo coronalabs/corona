@@ -30,14 +30,14 @@ jobs:
     runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - run: ./tools/GHAction/daily_env.sh
       - name: Set daily build
         run: ./tools/GHAction/process_sources.sh
       - name: Upload Source bundle
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: SourceCode
           path: ./output
@@ -49,9 +49,10 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -60,7 +61,7 @@ jobs:
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Upload Corona Native
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Native
           path: ./output
@@ -88,9 +89,10 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -102,7 +104,7 @@ jobs:
       - name: Build templates JSON spec
         run: ./tools/GHAction/generate_xcode_jsons.py
       - name: Upload templates
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
@@ -133,9 +135,10 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -147,7 +150,7 @@ jobs:
       - name: Build templates JSON spec
         run: ./tools/GHAction/generate_xcode_jsons.py
       - name: Upload templates
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
@@ -178,9 +181,10 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -192,7 +196,7 @@ jobs:
       - name: Build templates JSON spec
         run: ./tools/GHAction/generate_xcode_jsons.py
       - name: Upload templates
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
@@ -206,8 +210,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v2
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
       - name: Collect templates together
         run: |
           mkdir -p output/iostemplate
@@ -218,7 +222,7 @@ jobs:
       - name: Generate template JSON
         run: find Templates-* -name '*_*-SDKs.json' -exec ./tools/GHAction/aggregate_xcode_jsons.py output {} \+
       - name: Upload templates
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Collected-ios-templates
           path: ./output
@@ -236,9 +240,10 @@ jobs:
           tar -xjf emsdk.tar.xz -C ~/
           xattr -r -d com.apple.quarantine ~/emsdk || true
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -252,7 +257,7 @@ jobs:
           mkdir -p output
           cp -v platform/emscripten/webtemplate.zip output
       - name: Upload webtemplate artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Webtemplate
           path: ./output
@@ -266,35 +271,38 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get Webtemplate
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Webtemplate
+          path: Webtemplate
       - name: Get Native
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
       - run: mkdir docs
       - name: Get Sample Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
       - name: Run build script
         run: platform/linux/gh_action.sh
       - name: Upload Linux-Template
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v4
         with:
           name: Linux-Template
           path: ./output/linuxtemplate_x64.tgz
       - name: Upload snap
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v4
         with:
           name: Snap
           path: ./output/*.snap
@@ -309,23 +317,26 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get Webtemplate
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Webtemplate
+          path: Webtemplate
       - name: Get Native
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
       - run: mkdir docs
       - name: Get Sample Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -334,7 +345,7 @@ jobs:
         continue-on-error: true
       - run: touch solar2d.flatpak
       - name: Upload flatpak
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v4
         with:
           name: Flatpak
           path: ./solar2d.flatpak
@@ -345,11 +356,12 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Get Native
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Put native in place
         run: |
           tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
@@ -360,7 +372,7 @@ jobs:
           mkdir -p output
           mv CoronaCardsAndroidAAR.zip output/
       - name: Upload Corona Cards Android AAR archive
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: CoronaCards-Android
           path: ./output
@@ -372,9 +384,10 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -386,7 +399,7 @@ jobs:
           mkdir "${WORKSPACE}/output"
           zip -r -y -o "${WORKSPACE}/output"/CoronaCards.framework.zip CoronaCards.framework
       - name: Upload CoronaCards framework archive
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: CoronaCards-iOS
           path: ./output
@@ -398,9 +411,10 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
@@ -415,7 +429,7 @@ jobs:
           mkdir "${WORKSPACE}/output"
           zip -r -y -o "${WORKSPACE}/output"/CoronaCards-angle.zip CoronaCards-angle.framework CoronaCards.framework
       - name: Upload CoronaCards framework archive
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: CoronaCards-iOS-angle
           path: ./output
@@ -431,45 +445,50 @@ jobs:
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
       - name: Check for macOS min supported version
         run: exit $( echo  $(cat platform/mac/AppDelegate.mm |  perl -ne 'print for /kosVersionCurrent = @"([0-9.]+)"/') ' < '  $(/usr/bin/xcrun --sdk macosx --show-sdk-version)  | bc )
       - name: Get collected templates
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Collected-ios-templates
+          path: Collected-ios-templates
       - name: Put collected iOS templates in place
         run: cp -Rv Collected-ios-templates/* platform/resources/
       - name: Get Webtemplate
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Webtemplate
+          path: Webtemplate
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip platform/resources/
       - name: Get Linux template
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Linux-Template
+          path: Linux-Template
       - name: Put webtemplate in place
         run: |
           cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
       - run: mkdir docs
       - name: Get Sample Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
       - name: Clean-up docs
         run: rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
       - name: Get Native
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Put JRE in place
         shell: bash
         run: |
@@ -480,6 +499,8 @@ jobs:
         run: npm install -g appdmg
       - name: install imagemagick
         run: brew install imagemagick gs || true
+      - name: freshen icu4c for node
+        run: brew upgrade icu4c || brew install icu4c
       - name: Build DMG
         run: ./tools/GHAction/build_dmg.sh
         env:
@@ -497,7 +518,7 @@ jobs:
           APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
           APPLE_ISSUER: ${{ secrets.AppleIssuer }}
       - name: Upload macOS Daily build artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Simulator-macOS
           path: ./output
@@ -536,9 +557,10 @@ jobs:
     runs-on: windows-2019
     steps:
       - name: Get processed code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: SourceCode
+          path: SourceCode
       - name: Unpack source code
         run: |
           7z x SourceCode/corona.tgz
@@ -547,7 +569,7 @@ jobs:
         shell: bash
       - run: mkdir -f docs
       - name: Get Sample Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
@@ -557,9 +579,10 @@ jobs:
       - name: Move docs outside the directory
         run: mv docs ../docs
       - name: Get Webtemplate
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Webtemplate
+          path: Webtemplate
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip platform/resources/
         shell: bash
@@ -568,17 +591,19 @@ jobs:
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/nxtemplate > platform/resources/nxtemplate
       - name: Get Linux template
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Linux-Template
+          path: Linux-Template
       - name: Put webtemplate in place
         run: |
           cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
         shell: bash
       - name: Get Corona Native
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: Native
+          path: Native
       - name: Put native in place
         shell: cmd
         run: |
@@ -617,7 +642,7 @@ jobs:
           cp -v ./platform/windows/Bin/Corona.SDK.Installer/Corona.msi output/Corona-$BUILD.msi
         shell: bash
       - name: Upload Widnows Corona artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Simulator-Windows
           path: ./output
@@ -629,9 +654,10 @@ jobs:
       - linux
       - release
     steps:
-      - uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v4
         with:
           name: Snap
+          path: Snap
       - name: Determine release
         run: |
           if ls Snap/*2100.9999* &> /dev/null
@@ -662,7 +688,7 @@ jobs:
       - CoronaCards-iOS-angle
       - native
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: ./tools/GHAction/daily_env.sh
       - name: Generate Change Log
         run: |
@@ -686,30 +712,38 @@ jobs:
           echo "$GIT_LOG" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
           echo "$GIT_LOG"
-      - uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v4
         with:
           name: Simulator-macOS
-      - uses: actions/download-artifact@v1
+          path: Simulator-macOS
+      - uses: actions/download-artifact@v4
         with:
           name: Simulator-Windows
-      - uses: actions/download-artifact@v1
+          path: Simulator-Windows
+      - uses: actions/download-artifact@v4
         with:
           name: CoronaCards-iOS
-      - uses: actions/download-artifact@v1
+          path: CoronaCards-iOS
+      - uses: actions/download-artifact@v4
         with:
           name: CoronaCards-iOS-angle
-      - uses: actions/download-artifact@v1
+          path: CoronaCards-iOS-angle
+      - uses: actions/download-artifact@v4
         with:
           name: CoronaCards-Android
-      - uses: actions/download-artifact@v1
+          path: CoronaCards-Android
+      - uses: actions/download-artifact@v4
         with:
           name: Native
-      - uses: actions/download-artifact@v1
+          path: Native
+      - uses: actions/download-artifact@v4
         with:
           name: Flatpak
-      - uses: actions/download-artifact@v1
+          path: Flatpak
+      - uses: actions/download-artifact@v4
         with:
           name: Snap
+          path: Snap
       - run: find Snap -name '*.snap' -execdir mv -v {} s2d.snap \; -quit
       - name: Create Release
         id: create_release
@@ -839,7 +873,7 @@ jobs:
     if: (success() || failure()) && !cancelled() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
     steps:
       - uses: technote-space/workflow-conclusion-action@v1
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: ./tools/GHAction/daily_env.sh
       - name: notify
         run: |
