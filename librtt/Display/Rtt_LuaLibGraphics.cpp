@@ -982,7 +982,14 @@ GraphicsLibrary::newOutline( lua_State *L )
         Runtime& runtime = display.GetRuntime();
 
         paint = BitmapPaint::NewBitmap( runtime, imageFileName, baseDir, PlatformBitmap::kIsNearestAvailablePixelDensity );
-
+      
+		    // eg. Image not found
+		    if ( ! Rtt_VERIFY( paint ) )
+		    {
+			    // Nothing to do.
+			    return 0;
+		    }
+      
         platform_bitmap = paint->GetBitmap();
 
         // Crop.
