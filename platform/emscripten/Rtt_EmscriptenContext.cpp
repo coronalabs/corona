@@ -75,7 +75,7 @@ namespace Rtt
 
 		if (now - s_tick > frameDuration)		// 60fps ==> 1000/60 = 16.66666 msec
 		{
-			s_tick = now - (delta % frameDuration);
+			s_tick = now - (delta % (U64)frameDuration);
 			context->TimerTick();
 		}
 	}
