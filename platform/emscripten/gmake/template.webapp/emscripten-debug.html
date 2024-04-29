@@ -183,7 +183,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             progressElement.max = null;
             progressElement.hidden = true;
           }
-          statusElement.innerHTML = text;
+          statusElement.innerHTML = text || "&nbsp;";
           statusElement.style.display = text?'inline-block':'none';
         },
         totalDependencies: 0,
