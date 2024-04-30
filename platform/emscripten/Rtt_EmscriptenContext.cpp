@@ -648,7 +648,7 @@ namespace Rtt
 	{
 #if defined(EMSCRIPTEN)
 		if(getFPS() == 60) {
-			emscripten_set_main_loop_arg(&CoronaAppContext::TimerTick, NULL, 0, 1);
+			emscripten_set_main_loop_arg((void)(&CoronaAppContext::TimerTick), NULL, 0, 1);
 		} else {
 			emscripten_set_main_loop_arg(&TimerTickShim, this, 0, 1); // Never returns
 		}
