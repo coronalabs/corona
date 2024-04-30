@@ -71,7 +71,6 @@ namespace Rtt
 		float frameDuration = 1.0f / (float) context->getFPS();
 
 		U64 now = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
-		U64 delta = now - s_tick;
 
 		if (now - s_tick > frameDuration)
 		{
