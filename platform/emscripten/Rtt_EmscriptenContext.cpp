@@ -647,7 +647,7 @@ namespace Rtt
 	void CoronaAppContext::Start()
 	{
 #if defined(EMSCRIPTEN)
-		if(getFPS() === 60) {
+		if(getFPS() == 60) {
 			emscripten_set_main_loop(&TimerTick, 0, 1);
 		} else {
 			emscripten_set_main_loop_arg(&TimerTickShim, this, 0, 1); // Never returns

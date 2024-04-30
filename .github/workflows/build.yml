@@ -9,11 +9,11 @@ on:
       buildNumber:
         description: 'Build Number'
         required: true
-        default: '9999'
+        default: '3707'
       buildYear:
         description: 'Build Year'
         required: true
-        default: '2100'
+        default: '2024'
 
 
 env:
