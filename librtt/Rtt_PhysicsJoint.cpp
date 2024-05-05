@@ -352,9 +352,13 @@ PhysicsJoint::getReactionForce( lua_State *L )
 	if ( baseJoint )
 	{
 		Runtime& runtime = * LuaContext::GetRuntime( L );
-		float32 inverseDeltaTime = (float)runtime.GetFPS();
-		Rtt_Real px = Rtt_FloatToReal( baseJoint->GetReactionForce( inverseDeltaTime ).x );
-		Rtt_Real py = Rtt_FloatToReal( baseJoint->GetReactionForce( inverseDeltaTime ).y );
+		float32 deltaTime = (float)runtime.GetFPS();
+		float32 inverseDeltaTime = 1 / deltaTime;
+
+		b2Vec2 reactionForce = baseJoint->GetReactionForce(inverseDeltaTime);
+
+		Rtt_Real px = Rtt_FloatToReal(reactionForce.x);
+		Rtt_Real py = Rtt_FloatToReal(reactionForce.y);
 		
 		lua_pushnumber( L, px );
 		lua_pushnumber( L, py );
