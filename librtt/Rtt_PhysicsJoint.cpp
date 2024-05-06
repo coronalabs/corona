@@ -1245,10 +1245,8 @@ PhysicsJoint::SetValueForKey( lua_State *L )
 			{
 				if ( lua_isnumber( L, 3 ) )
 				{
-					const PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
-					Real scale = physics.GetPixelsPerMeter();
-					Rtt_Real valueMeters = Rtt_RealDiv( luaL_toreal( L, 3 ), scale );
-					joint->SetMotorSpeed( Rtt_RealToFloat( valueMeters ) );
+					Rtt_Real valueRadians = Rtt_RealDegreesToRadians(luaL_toreal(L, 3));
+					joint->SetMotorSpeed(Rtt_RealToFloat(valueRadians));
 				}
 			}
 			else if ( 0 == strcmp( "motorTorque", key ) )
