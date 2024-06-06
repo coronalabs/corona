@@ -283,6 +283,8 @@ jobs:
     needs:
       - source-code
     runs-on: macos-13
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
