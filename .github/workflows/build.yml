@@ -18,7 +18,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -45,7 +45,7 @@ jobs:
 
   native:
     needs: source-code
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -70,9 +70,10 @@ jobs:
     strategy:
       matrix:
         runner:
-          - macos-13
+          - macos-14
         xcode:
           - Xcode_15.3
+          - Xcode_15.4
         target:
           - template
           - template-angle
@@ -423,7 +424,7 @@ jobs:
 
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -450,7 +451,7 @@ jobs:
 
   CoronaCards-iOS-angle:
     needs: source-code
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -484,7 +485,7 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -568,7 +569,7 @@ jobs:
 
 
   check-notarization:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Check notarization credentials
         run: |
