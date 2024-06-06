@@ -395,15 +395,52 @@ local function generateOSXEntitlements(filename, settings, provisionFile)
 	return "", includeProvisioning
 end
 
+-- xcprivacy
+local templateXcprivacy = [[
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+{{CUSTOM_XCPRIVACY}}
+</dict>
+</plist>
+]]
+local function generateXcprivacy( options )
+	local filename = options.tmpDir .. "/PrivacyInfo.xcprivacy"
+	local outFile = assert( io.open( filename, "wb" ) )
+
+	local data = templateXcprivacy
+
+	local generatedPrivacy = CoronaPListSupport.generateXcprivacy( options.settings, 'osx')
+	if(  generatedPrivacy and generatedPrivacy ~= "" ) then
+		data, numMatches = string.gsub( data, "{{CUSTOM_XCPRIVACY}}", generatedPrivacy )
+		assert( numMatches == 1 )
+	end
+
+	outFile:write(data)
+	assert( outFile:close() )
+
+	print( "Created XCPRIACY: " .. filename );
+
+	if debugBuildProcess and debugBuildProcess ~= 0 then
+		runScript("cat "..filename)
+	end
+end
+
 --
 -- generateFiles
 --
--- Create the Info.plist file
+-- Create the Info.plist and .xcprivacy file
 --
 -- returns an error message or nil on success
 --
 local function generateFiles( options )
 	local result = nil
+
+	result = generateXcprivacy( options )
+	if result then
+		return result
+	end
 
 	result = CoronaPListSupport.modifyPlist( options )
 	if result then
@@ -752,6 +789,11 @@ function OSXPostPackage( params )
 		runScript( "/bin/mv -v "..options.appBundleFile.."/Contents/MacOS/CoronaShell "..options.appBundleFile.."/Contents/MacOS/"..quoteString(options.dstFile) )
 
 		runScript( "/bin/mkdir -p "..options.appBundleFile.."/Contents/Resources/Corona/" )
+
+		--add xcprivacy file to the bundle
+		if options.settings.osx and options.settings.osx.xcprivacy then
+			runScript("cp -v " .. quoteString(options.tmpDir .. "/PrivacyInfo.xcprivacy") .. " " .. quoteString(makepath(appBundleFileUnquoted, "PrivacyInfo.xcprivacy")))
+		end
 
 		-- We get the signingIdentity as a cert fingerprint but we also need the plaintext name
 		if options.signingIdentity then
