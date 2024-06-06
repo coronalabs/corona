@@ -549,7 +549,7 @@ jobs:
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.macos.tgz -o jre.macos.tgz
       - name: required for appdmg
-        run: python3 -m pip install setuptools
+        run: brew install python-setuptools
       - name: install appdmg
         run: npm install -g appdmg
       - name: install imagemagick
