@@ -14,6 +14,11 @@ on:
         description: 'Build Year'
         required: true
         default: '2100'
+      onlyLatest:
+        description: "Build only latest version of Xcode templates"
+        type: 'boolean'
+        required: false
+        default: false
 
 
 env:
@@ -26,7 +31,6 @@ env:
 jobs:
   source-code:
     name: Check out and process source code
-    if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
     runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
@@ -111,6 +115,7 @@ jobs:
 
 
   Xcode-template-matrix-13:
+    if: ! github.event.inputs.onlyLatest
     strategy:
       matrix:
         runner:
@@ -153,6 +158,7 @@ jobs:
           path: ./output
 
   Xcode-template-matrix-12:
+    if: ! github.event.inputs.onlyLatest
     strategy:
       matrix:
         runner:
@@ -200,6 +206,7 @@ jobs:
 
 
   Xcode-template-matrix:
+    if: ! github.event.inputs.onlyLatest
     strategy:
       matrix:
         runner:
