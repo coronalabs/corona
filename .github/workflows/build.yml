@@ -494,6 +494,7 @@ jobs:
       - native
       - webtemplate
       - linux
+    if: (! failure() && ! cancelled())
     runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
