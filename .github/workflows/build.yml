@@ -259,6 +259,7 @@ jobs:
       - Xcode-template-matrix-13
       - Xcode-template-matrix-14
     runs-on: ubuntu-20.04
+    if: (! failure() && ! cancelled())
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v4
@@ -494,7 +495,6 @@ jobs:
       - native
       - webtemplate
       - linux
-    if: (! failure() && ! cancelled())
     runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
