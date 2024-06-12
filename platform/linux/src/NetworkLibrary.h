@@ -96,5 +96,5 @@ namespace Rtt
 		smart_ptr<NetworkRequestState> fRequestState;
 		NetworkLibrary* fNetworkLibrary;
 	};
-}
+// }
 #endif // _NetworkLibrary_H__
