@@ -1,0 +1,73 @@
+name: Linux Daily Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      buildNumber:
+        description: 'Build Number'
+        required: true
+        default: '9999'
+      buildYear:
+        description: 'Build Year'
+        required: true
+        default: '2100'
+
+
+env:
+  WORKSPACE: ${{ github.workspace }}
+  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+  BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
+  YEAR: ${{ github.event.inputs.buildYear }}
+
+
+jobs:
+  source-code:
+    name: Check out and process source code
+    if: "!contains(github.ref, 'refs/tags/') || github.repository == 'zero-meta/corona'"
+    runs-on: macos-12
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Set daily build
+        run: ./tools/GHAction/process_sources.sh
+      - name: Upload Source bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: SourceCode
+          path: ./output
+
+  linux:
+    needs:
+      - source-code
+    runs-on: ubuntu-20.04
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v4
+        with:
+          name: SourceCode
+          path: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - run: mkdir docs
+      - name: Get Sample Code
+        uses: actions/checkout@v4
+        with:
+          repository: coronalabs/samples-coronasdk
+          path: docs/SampleCode
+      - name: Run build script
+        run: platform/linux/gh_action.sh
+      - name: Upload Linux-Template
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux-Template
+          path: ./output/linuxtemplate_x64.tgz
+      - name: Upload snap
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snap
+          path: ./output/*.snap

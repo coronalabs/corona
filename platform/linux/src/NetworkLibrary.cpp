@@ -17,8 +17,6 @@
 #include "NetworkLibrary.h"
 #include "NetworkSupport.h"
 
-using namespace Rtt;
-
 int luaload_network(lua_State *L);
 
 // This corresponds to the name of the library, e.g. [Lua] require "plugin.library"
@@ -191,7 +189,7 @@ int NetworkLibrary::Open(lua_State *L)
 
 	// Leave "library" on top of stack
 	// Set library as upvalue for each library function
-	lua_CFunction factory = Corona::Lua::Open < luaload_network > ;
+	lua_CFunction factory = Corona::Lua::Open < Rtt::luaload_network > ;
 	return CoronaLibraryNewWithFactory(L, factory, kVTable, library);
 }
 
@@ -510,7 +508,7 @@ int NetworkLibrary::RemoveSystemEventListener(lua_State *L, int systemEventListe
 
 // ----------------------------------------------------------------------------
 
-// }// namespace Corona
+}// namespace Corona
 
 // ----------------------------------------------------------------------------
 
