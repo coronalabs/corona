@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -1580,7 +1581,7 @@ namespace Rtt
 		// To provide access to queries via dot-notation (like audio.freeChannels)
 		// I need a metatable on the main audio table.
 		// And that metatable needs to have the __index metamethod defined.
-		luaL_register(L, "metatable.audio", kVTable_m);
+		luaL_register(L, "metatable.audio2", kVTable_m);
 		lua_setmetatable(L, -2);
 
 		lua_pop(L, 1); // pop table
