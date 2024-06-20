@@ -200,6 +200,10 @@ class PlatformSimulator
 	protected:
 		void SetOrientationSupported( DeviceOrientation::Type orientation );
 
+	protected:
+		void SetIsTransparent( bool newValue ) { fIsTransparent = newValue; }
+		bool GetIsTransparent() const { return fIsTransparent; }
+	
 	public:
 		const PlatformPlayer* GetPlayer() const { return fPlayer; }
 		PlatformPlayer* GetPlayer() { return fPlayer; }
@@ -229,6 +233,7 @@ class PlatformSimulator
 		DeviceOrientation::Type fLastSupportedOrientation;
 		S32 fLastDeviceWidth;
 		S32 fLastDeviceHeight;
+		bool fIsTransparent;
 };
 
 // ----------------------------------------------------------------------------

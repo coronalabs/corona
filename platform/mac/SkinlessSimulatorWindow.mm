@@ -60,13 +60,16 @@
 				   title:(NSString*)title
 			 orientation:(Rtt::DeviceOrientation::Type)orientation
                    scale:(float)scale
+		   isTransparent:(BOOL)isTransparent
 {
 	// Need to make window size larger than the view rect (e.g. large enough to hold it with the titlebar).
 	// This is redudnant because the call to setOrientation does this again.
 	NSRect framerectforcontentrect = [NSWindow frameRectForContentRect:screenRect styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask];
 	
+	NSWindowStyleMask styleMask = isTransparent ? NSBorderlessWindowMask : NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
+	
 	self = [super initWithContentRect:framerectforcontentrect
-							styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask
+							styleMask:styleMask
 							  backing:NSBackingStoreBuffered
 							 	defer:NO];
 	if ( self )
@@ -80,7 +83,19 @@
 		[fScreenView setWantsBestResolutionOpenGLSurface:YES];
 		[fScreenView setZoomLevel:1.0];
 
-		[self setBackgroundColor:[NSColor blackColor]];
+		if (isTransparent)
+		{
+			NSOpenGLContext* context = [fScreenView openGLContext];
+			GLint opacity = 0;
+
+			[context setValues: &opacity forParameter: NSOpenGLCPSurfaceOpacity];
+
+			[self setBackgroundColor:[NSColor clearColor]];
+		}
+		else
+		{
+			[self setBackgroundColor:[NSColor blackColor]];
+		}
 
 		[self setTitle:title];
 		windowTitle = [title copy];

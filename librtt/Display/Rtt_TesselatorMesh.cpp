@@ -31,6 +31,7 @@ TesselatorMesh::TesselatorMesh( Rtt_Allocator *allocator, Geometry::PrimitiveTyp
 ,	fIsMeshValid( false )
 ,	fMeshType(meshType)
 ,   fVertexOffset(kVertexOrigin)
+,	fLowestIndex(0)
 ,	fStrokeCount( -1 )
 {
 }

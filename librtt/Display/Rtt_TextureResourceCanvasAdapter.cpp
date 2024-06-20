@@ -267,5 +267,4 @@ int TextureResourceCanvasAdapter::invalidate( lua_State *L )
 	return 0;
 }
 
-	
 } // namespace Rtt

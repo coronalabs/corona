@@ -11,6 +11,7 @@
 
 #include "Core\Rtt_Build.h"
 #include "Core\Rtt_Array.h"
+#include "Interop\ScopedComInitializer.h"
 #include "Interop\SimulatorRuntimeEnvironment.h"
 #include "Rtt_PlatformSimulator.h"
 #include "Rtt_TargetDevice.h"
@@ -177,6 +178,7 @@ class CSimulatorView : public CView
 		CCoronaControlContainer mCoronaContainerControl;
 		Interop::SimulatorRuntimeEnvironment* mRuntimeEnvironmentPointer;
 		Interop::SimulatorRuntimeEnvironment::LoadedEvent::MethodHandler<CSimulatorView> mRuntimeLoadedEventHandler;
+		Interop::ScopedComInitializer mScopedComInitializer;
 		Rtt::WinSimulatorServices mSimulatorServices;
 		CMessageDlg* mMessageDlgPointer;
 		CProgressWnd* mProgressDlgPointer;

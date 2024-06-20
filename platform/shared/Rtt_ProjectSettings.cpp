@@ -274,7 +274,7 @@ bool ProjectSettings::LoadFromDirectory(const char* directoryPath)
 				fIsWindowTitleShown = lua_toboolean(luaStatePointer, -1) ? true : false;
 			}
 			lua_pop(luaStatePointer, 1);
-
+			
 			// Fetch the window's title bar text.
 			lua_getfield(luaStatePointer, -1, "titleText");
 			if (lua_istable(luaStatePointer, -1))
@@ -339,6 +339,26 @@ bool ProjectSettings::LoadFromDirectory(const char* directoryPath)
 		ResetConfigLuaSettings();
 		fHasConfigLua = true;
 		wasConfigLuaFound = true;
+
+		// Fetch the project's transparency setting.
+		lua_getfield(luaStatePointer, -1, "isTransparent");
+		if (lua_type(luaStatePointer, -1) == LUA_TBOOLEAN)
+		{
+			fIsWindowTransparent = lua_toboolean(luaStatePointer, -1) ? true : false;
+		}
+		lua_pop(luaStatePointer, 1);
+		
+		lua_getfield(luaStatePointer, -1, "backend");
+		if (lua_isstring(luaStatePointer, -1))
+		{
+			const char * backend = lua_tostring(luaStatePointer, -1);
+
+			if (strcmp(backend, "wantVulkan") == 0 || strcmp(backend, "requireVulkan") == 0)
+			{
+				fBackend = backend;
+			}
+		}
+		lua_pop(luaStatePointer, 1);
 
 		// Fetch the project's content scaling settings.
 		lua_getfield(luaStatePointer, -1, "content");
@@ -490,8 +510,8 @@ void ProjectSettings::ResetBuildSettings()
 	fDefaultOrientation = Rtt::DeviceOrientation::kUnknown;
 	fOrientationsSupportedSet.clear();
 	fDefaultWindowModePointer = NULL;
-    fIsWindowResizable = false;
-    fSuspendWhenMinimized = false;
+	fIsWindowResizable = false;
+	fSuspendWhenMinimized = false;
 	fMinWindowViewWidth = 0;
 	fMinWindowViewHeight = 0;
 	fDefaultWindowViewWidth = 0;
@@ -501,6 +521,8 @@ void ProjectSettings::ResetBuildSettings()
 	fIsWindowMaximizeButtonEnabled = false;
 	fLocalizedWindowTitleTextMap.clear();
 	fIsWindowTitleShown = true;
+	fIsWindowTransparent = false;
+	fBackend = "gl";
 }
 
 void ProjectSettings::ResetConfigLuaSettings()
@@ -736,6 +758,16 @@ double ProjectSettings::GetImageSuffixScaleByIndex(int index) const
 bool ProjectSettings::IsWindowTitleShown() const
 {
 	return fIsWindowTitleShown;
+}
+
+bool ProjectSettings::IsWindowTransparent() const
+{
+	return fIsWindowTransparent;
+}
+
+const std::string & ProjectSettings::Backend() const
+{
+	return fBackend;
 }
 
 void ProjectSettings::OnLoadedFrom(lua_State* luaStatePointer)

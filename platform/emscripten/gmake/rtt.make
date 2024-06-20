@@ -171,6 +171,9 @@ OBJECTS := \
 	$(OBJDIR)/Rtt_WeakCount.o \
 	$(OBJDIR)/CoronaEvent.o \
 	$(OBJDIR)/CoronaLibrary.o \
+	$(OBJDIR)/CoronaGraphics.o \
+	$(OBJDIR)/CoronaMemory.o \
+	$(OBJDIR)/CoronaObjects.o \
 	$(OBJDIR)/CoronaLua.o \
 	$(OBJDIR)/CoronaMemory.o \
 	$(OBJDIR)/Rtt_BitmapMask.o \
@@ -200,6 +203,7 @@ OBJECTS := \
 	$(OBJDIR)/Rtt_LineObject.o \
 	$(OBJDIR)/Rtt_LuaLibDisplay.o \
 	$(OBJDIR)/Rtt_LuaLibGraphics.o \
+	$(OBJDIR)/Rtt_ObjectHandle.o \
 	$(OBJDIR)/Rtt_OpenPath.o \
 	$(OBJDIR)/Rtt_Paint.o \
 	$(OBJDIR)/Rtt_PaintAdapter.o \
@@ -248,6 +252,8 @@ OBJECTS := \
 	$(OBJDIR)/Rtt_TextureResourceBitmapAdapter.o \
 	$(OBJDIR)/Rtt_TextureResourceCanvas.o \
 	$(OBJDIR)/Rtt_TextureResourceCanvasAdapter.o \
+	$(OBJDIR)/Rtt_TextureResourceCapture.o \
+	$(OBJDIR)/Rtt_TextureResourceCaptureAdapter.o \
 	$(OBJDIR)/Rtt_TextureResourceExternal.o \
 	$(OBJDIR)/Rtt_TextureResourceExternalAdapter.o \
 	$(OBJDIR)/Rtt_VertexCache.o \
@@ -869,6 +875,18 @@ $(OBJDIR)/CoronaLibrary.o: ../../../librtt/Corona/CoronaLibrary.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
+$(OBJDIR)/CoronaGraphics.o: ../../../librtt/Corona/CoronaGraphics.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/CoronaMemory.o: ../../../librtt/Corona/CoronaMemory.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/CoronaObjects.o: ../../../librtt/Corona/CoronaObjects.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
 $(OBJDIR)/CoronaLua.o: ../../../librtt/Corona/CoronaLua.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
@@ -982,6 +1000,10 @@ $(OBJDIR)/Rtt_LuaLibDisplay.o: ../../../librtt/Display/Rtt_LuaLibDisplay.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/Rtt_LuaLibGraphics.o: ../../../librtt/Display/Rtt_LuaLibGraphics.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/Rtt_ObjectHandle.o: ../../../librtt/Display/Rtt_ObjectHandle.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
@@ -1174,6 +1196,14 @@ $(OBJDIR)/Rtt_TextureResourceCanvas.o: ../../../librtt/Display/Rtt_TextureResour
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/Rtt_TextureResourceCanvasAdapter.o: ../../../librtt/Display/Rtt_TextureResourceCanvasAdapter.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/Rtt_TextureResourceCapture.o: ../../../librtt/Display/Rtt_TextureResourceCapture.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/Rtt_TextureResourceCaptureAdapter.o: ../../../librtt/Display/Rtt_TextureResourceCaptureAdapter.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

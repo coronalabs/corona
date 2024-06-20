@@ -17,22 +17,25 @@
 #include <GL\gl.h>
 #include <GL\glu.h>
 
+#include "CoronaLog.h"
+#include "Renderer/Rtt_VulkanExports.h"
 
 namespace Interop { namespace UI {
 
 #pragma region Constructors/Destructors
-RenderSurfaceControl::RenderSurfaceControl(HWND windowHandle)
+RenderSurfaceControl::RenderSurfaceControl(HWND windowHandle, const Params & params)
 :	Control(windowHandle),
 	fReceivedMessageEventHandler(this, &RenderSurfaceControl::OnReceivedMessage),
 	fRenderFrameEventHandlerPointer(nullptr),
 	fMainDeviceContextHandle(nullptr),
-	fRenderingContextHandle(nullptr)
+	fRenderingContextHandle(nullptr),
+	fVulkanContext(nullptr)
 {
 	// Add event handlers.
 	GetReceivedMessageEventHandlers().Add(&fReceivedMessageEventHandler);
 
 	// Create an OpenGL context and bind it to the given control.
-	CreateContext();
+	CreateContext(params);
 }
 
 RenderSurfaceControl::~RenderSurfaceControl()
@@ -65,6 +68,11 @@ void RenderSurfaceControl::SetRenderFrameHandler(RenderSurfaceControl::RenderFra
 
 void RenderSurfaceControl::SelectRenderingContext()
 {
+	if (fVulkanContext)
+	{
+		return;
+	}
+
 	// Attempt to select this surface's rendering context.
 	BOOL wasSelected = FALSE;
 	if (fRenderingContextHandle)
@@ -109,6 +117,11 @@ void RenderSurfaceControl::SelectRenderingContext()
 
 void RenderSurfaceControl::SwapBuffers()
 {
+	if (fVulkanContext)
+	{
+		return;
+	}
+	
 	if (fMainDeviceContextHandle)
 	{
 		::SwapBuffers(fMainDeviceContextHandle);
@@ -139,9 +152,10 @@ void RenderSurfaceControl::OnRaisedDestroyingEvent()
 
 #pragma endregion
 
+static HMODULE GetLibraryModuleHandle();
 
 #pragma region Private Methods
-void RenderSurfaceControl::CreateContext()
+void RenderSurfaceControl::CreateContext(const Params & params)
 {
 	// Fetch this control's window handle.
 	auto windowHandle = GetWindowHandle();
@@ -153,95 +167,125 @@ void RenderSurfaceControl::CreateContext()
 	// Destroy the last OpenGL context that was created.
 	DestroyContext();
 
+	if (params.IsVulkanWanted())
+	{
+		Rtt::VulkanSurfaceParams surfaceParams;
+
+		surfaceParams.fInstance = GetLibraryModuleHandle();
+		surfaceParams.fWindowHandle = windowHandle;
+
+		if (!Rtt::VulkanExports::CreateVulkanContext( surfaceParams, &fVulkanContext ))
+		{
+			DestroyContext();
+
+			if (params.IsVulkanRequired())
+			{
+				throw std::exception( "Unable to instantiate Vulkan" );
+			}
+		}
+	}
+
 	// Query the video hardware for multisampling result.
 	auto multisampleTestResult = FetchMultisampleFormat();
 
-	// Fetch the control's device context.
-	fMainDeviceContextHandle = ::GetDC(windowHandle);
-	if (!fMainDeviceContextHandle)
+	if (fVulkanContext)
 	{
-		return;
+		fRendererVersion.SetString("OpenGL 4.6"); // TODO? pull in actual Vulkan state...
+		fRendererVersion.SetMajorNumber(4);
+		fRendererVersion.SetMinorNumber(6);
 	}
 
-	// Select a good pixel format.
-	PIXELFORMATDESCRIPTOR pixelFormatDescriptor {};
-	pixelFormatDescriptor.nSize = sizeof(pixelFormatDescriptor);
-	pixelFormatDescriptor.nVersion = 1;
-	pixelFormatDescriptor.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
-	pixelFormatDescriptor.cColorBits = 24;
-	pixelFormatDescriptor.cDepthBits = 16;
-	pixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
-	int pixelFormatIndex = ::ChoosePixelFormat(fMainDeviceContextHandle, &pixelFormatDescriptor);
-	if (0 == pixelFormatIndex)
+	else
 	{
-		DestroyContext();
-		return;
-	}
-
-	// Assign a pixel format to the device context.
-	if (multisampleTestResult.IsSupported)
-	{
-		pixelFormatIndex = multisampleTestResult.PixelFormatIndex;
-	}
-	BOOL wasFormatSet = ::SetPixelFormat(fMainDeviceContextHandle, pixelFormatIndex, &pixelFormatDescriptor);
-	if (!wasFormatSet)
-	{
-		DestroyContext();
-		return;
-	}
-
-	// Create and enable the OpenGL rendering context.
-	fRenderingContextHandle = ::wglCreateContext(fMainDeviceContextHandle);
-	if (!fRenderingContextHandle)
-	{
-		LPWSTR utf16Buffer;
-		auto errorCode = ::GetLastError();
-		::FormatMessageW(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-				nullptr, errorCode,
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-				(LPWSTR)&utf16Buffer, 0, nullptr);
-		if (utf16Buffer && utf16Buffer[0])
+		// Fetch the control's device context.
+		fMainDeviceContextHandle = ::GetDC(windowHandle);
+		if (!fMainDeviceContextHandle)
 		{
-			WinString stringConverter;
-			stringConverter.SetUTF16(utf16Buffer);
-			Rtt_LogException("Failed to create OpenGL rendering context. Reason:\r\n  %s\r\n", stringConverter.GetUTF8());
+			return;
 		}
-		else
+
+		// Select a good pixel format.
+		PIXELFORMATDESCRIPTOR pixelFormatDescriptor {};
+		pixelFormatDescriptor.nSize = sizeof(pixelFormatDescriptor);
+		pixelFormatDescriptor.nVersion = 1;
+		pixelFormatDescriptor.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+		pixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
+		pixelFormatDescriptor.cColorBits = 24;
+		pixelFormatDescriptor.cDepthBits = 16;
+		pixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
+		int pixelFormatIndex = ::ChoosePixelFormat(fMainDeviceContextHandle, &pixelFormatDescriptor);
+		if (0 == pixelFormatIndex)
 		{
-			Rtt_LogException("Failed to create OpenGL rendering context.\r\n");
+			DestroyContext();
+			return;
 		}
-		::LocalFree(utf16Buffer);
-	}
 
-	// Select the newly created OpenGL context.
-	::wglMakeCurrent(fMainDeviceContextHandle, fRenderingContextHandle);
-
-	// Load OpenGL extensions.
-	glewInit();
-
-	// Fetch the OpenGL driver's version.
-	const char* versionString = (const char*)glGetString(GL_VERSION);
-	fRendererVersion.SetString(versionString);
-	fRendererVersion.SetMajorNumber(0);
-	fRendererVersion.SetMinorNumber(0);
-	if (versionString && (versionString[0] != '\0'))
-	{
-		try
+		// Assign a pixel format to the device context.
+		if (multisampleTestResult.IsSupported)
 		{
-			int majorNumber = 0;
-			int minorNumber = 0;
-			sscanf_s(fRendererVersion.GetString(), "%d.%d", &majorNumber, &minorNumber);
-			fRendererVersion.SetMajorNumber(majorNumber);
-			fRendererVersion.SetMinorNumber(minorNumber);
+			pixelFormatIndex = multisampleTestResult.PixelFormatIndex;
 		}
-		catch (...) {}
+		BOOL wasFormatSet = ::SetPixelFormat(fMainDeviceContextHandle, pixelFormatIndex, &pixelFormatDescriptor);
+		if (!wasFormatSet)
+		{
+			DestroyContext();
+			return;
+		}
+
+		// Create and enable the OpenGL rendering context.
+		fRenderingContextHandle = ::wglCreateContext(fMainDeviceContextHandle);
+		if (!fRenderingContextHandle)
+		{
+			LPWSTR utf16Buffer;
+			auto errorCode = ::GetLastError();
+			::FormatMessageW(
+					FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+					nullptr, errorCode,
+					MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+					(LPWSTR)&utf16Buffer, 0, nullptr);
+			if (utf16Buffer && utf16Buffer[0])
+			{
+				WinString stringConverter;
+				stringConverter.SetUTF16(utf16Buffer);
+				Rtt_LogException("Failed to create OpenGL rendering context. Reason:\r\n  %s\r\n", stringConverter.GetUTF8());
+			}
+			else
+			{
+				Rtt_LogException("Failed to create OpenGL rendering context.\r\n");
+			}
+			::LocalFree(utf16Buffer);
+		}
+
+		// Select the newly created OpenGL context.
+		::wglMakeCurrent(fMainDeviceContextHandle, fRenderingContextHandle);
+
+		// Load OpenGL extensions.
+		glewInit();
+
+		// Fetch the OpenGL driver's version.
+		const char* versionString = (const char*)glGetString(GL_VERSION);
+		fRendererVersion.SetString(versionString);
+		fRendererVersion.SetMajorNumber(0);
+		fRendererVersion.SetMinorNumber(0);
+		if (versionString && (versionString[0] != '\0'))
+		{
+			try
+			{
+				int majorNumber = 0;
+				int minorNumber = 0;
+				sscanf_s(fRendererVersion.GetString(), "%d.%d", &majorNumber, &minorNumber);
+				fRendererVersion.SetMajorNumber(majorNumber);
+				fRendererVersion.SetMinorNumber(minorNumber);
+			}
+			catch (...) {}
+		}
 	}
 }
 
 void RenderSurfaceControl::DestroyContext()
 {
+	Rtt::VulkanExports::DestroyVulkanContext( fVulkanContext );
+
 	// Fetch this control's window handle.
 	auto windowHandle = GetWindowHandle();
 
@@ -249,9 +293,14 @@ void RenderSurfaceControl::DestroyContext()
 	::wglMakeCurrent(nullptr, nullptr);
 	if (fRenderingContextHandle)
 	{
+		Rtt_ASSERT(!fVulkanContext);
+
 		::wglDeleteContext(fRenderingContextHandle);
 		fRenderingContextHandle = nullptr;
 	}
+
+	fVulkanContext = nullptr;
+
 	if (fMainDeviceContextHandle)
 	{
 		if (windowHandle)
@@ -284,6 +333,15 @@ RenderSurfaceControl::FetchMultisampleFormatResult RenderSurfaceControl::FetchMu
 	// Initialize a result value to "not supported".
 	FetchMultisampleFormatResult result;
 	result.IsSupported = false;
+
+	if (fVulkanContext)
+	{
+		Rtt::VulkanExports::PopulateMultisampleDetails( fVulkanContext );
+
+		result.IsSupported = true;
+
+		return result;
+	}
 
 	// Fetch this control's window handle.
 	auto windowHandle = GetWindowHandle();
@@ -450,10 +508,15 @@ void RenderSurfaceControl::OnPaint()
 	}
 
 	// Render to the control.
-	if (fMainDeviceContextHandle && fRenderingContextHandle)
+	bool canDraw = (fMainDeviceContextHandle && fRenderingContextHandle) || fVulkanContext;
+
+	if (canDraw)
 	{
 		// Select this control's OpenGL context.
-		SelectRenderingContext();
+		if (!fVulkanContext)
+		{
+			SelectRenderingContext();
+		}
 
 		// If the owner of this surface has provided a RenderFrameHandler, then use it to draw the next frame.
 		// Otherwise, draw a black screen until a handler has been given to this surface.
@@ -544,6 +607,32 @@ int RenderSurfaceControl::Version::CompareTo(const RenderSurfaceControl::Version
 	int x = (this->fMajorNumber * 100) + this->fMinorNumber;
 	int y = (version.fMajorNumber * 100) + version.fMinorNumber;
 	return x - y;
+}
+
+#pragma endregion
+
+#pragma region Params Class
+
+RenderSurfaceControl::Params::Params()
+:	fWantVulkan( false ),
+	fRequireVulkan( false )
+{
+}
+
+void RenderSurfaceControl::Params::SetVulkanWanted(bool required)
+{
+	fWantVulkan = true;
+	fRequireVulkan = required;
+}
+			
+bool RenderSurfaceControl::Params::IsVulkanWanted() const
+{
+	return fWantVulkan;
+}
+			
+bool RenderSurfaceControl::Params::IsVulkanRequired() const
+{
+	return fRequireVulkan;
 }
 
 #pragma endregion

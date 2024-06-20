@@ -167,6 +167,8 @@ Runtime::Runtime(const MPlatform& platform, MCallback* viewCallback)
 	fScheduler(Rtt_NEW(&fAllocator, Scheduler(*this))),
 	fArchive(NULL),
 	fPhysicsWorld(Rtt_NEW(&fAllocator, PhysicsWorld(fAllocator))),
+	fBackend("glBackend"),
+	fBackendState(nullptr),
 #ifdef Rtt_USE_ALMIXER
 	fOpenALPlayer(NULL),
 #endif
@@ -1263,7 +1265,7 @@ Runtime::LoadApplication( const LoadParameters& parameters )
 		// but it should be safe to do.
 		RuntimeGuard guard( * this );
 
-		fDisplay->Initialize( L, configIndex, orientation );
+		fDisplay->Initialize( L, configIndex, orientation, fBackend, fBackendState );
 
 		if ( fDelegate )
 		{

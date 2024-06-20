@@ -110,9 +110,6 @@ struct CoronaMemoryCallbacks {
 	 The memory might also be readable, but this is at the interface provider's discretion.
 	 @param ws Workspace.
 	 @param context Used to provide call-specific input to the getter. May be `NULL`, and this must be valid or at least safe.
-	 An example of `context` might be as a "credential": while the memory might indeed be writeable, only some callers should be
-	 "trusted" with it (for instance, structured data); passing in a valid key indicates the caller has this trust.
-	 ^^^ TODO: not used...
 	 @return Writeable memory corresponding to `object`.
 	 `NULL` results are as per `getReadableBytes()`.
 	*/
@@ -198,7 +195,7 @@ struct CoronaMemoryInterfaceInfo {
 
 	/**
 	 Optional
-	 This is used to associate some user-defined data with the interface, provided through  `CoronaMemoryWorkspace`.
+	 This is used to associate some user-defined data with the interface, provided through `CoronaMemoryWorkspace`.
 	 If `dataSize` is 0, `data` will be `NULL` and `dataSize` 0.
 	 When `dataSize` > 0, the proxy will be created with `lua_newuserdata(L, dataSize`); its block address will be used as `data`
 	 and `dataSize` will supply the workspace member of the same name.
@@ -327,9 +324,9 @@ struct CoronaMemoryAcquireState {
 #define CORONA_MEMORY_GET_WITH_ARGS( STATE, NAME, ... ) CORONA_MEMORY_IFC_WITH_ARGS( STATE, get##NAME, __VA_ARGS__ )
 
 /**
- Indicates whether a callbacks exists. (N.B. it will still have a dummy method, if not.)
+ Indicates whether a callback exists. (N.B. it will still have a dummy method, if not.)
 */
-#define CORONA_MEMORY_HAS( STATE, NAME ) !!STATE.callbacks.NAME
+#define CORONA_MEMORY_HAS( STATE, NAME ) !!STATE.callbacks->NAME
 
 /**
  Pointer-based variants of the above.

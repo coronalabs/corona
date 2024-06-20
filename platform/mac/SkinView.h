@@ -31,6 +31,9 @@
 @property(nonatomic, retain) NSImage* nativeSkinImage;
 
 
+- (id)initWithFrame:(NSRect)frameRect
+	  isTransparent:(BOOL)isTransparent;
+
 - (NSSize) imageSize;
 
 - (NSImage*)image;

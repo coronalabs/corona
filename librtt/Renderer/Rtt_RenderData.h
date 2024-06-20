@@ -32,6 +32,7 @@ class Uniform;
 // to the Renderer each frame that it is to be drawn.
 struct RenderData
 {
+	
 	RenderData();
 	void Log( const char *msg = NULL ) const;
 
@@ -49,7 +50,6 @@ struct RenderData
 //	Real fMaxDepthRange;
 	BlendMode fBlendMode;
 	RenderTypes::BlendEquation fBlendEquation;
-
 };
 
 // ----------------------------------------------------------------------------
