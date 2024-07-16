@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -14,8 +14,10 @@
 
 #include "Corona/CoronaLua.h"
 #include "Corona/CoronaMacros.h"
+#include "Rtt_Event.h"
 #include "Rtt_LinuxContainer.h"
 #include "NetworkSupport.h"
+#include "Rtt_Scheduler.h"
 
 namespace Rtt
 {
@@ -29,7 +31,7 @@ namespace Rtt
 				fRequestState(requestState)
 			{
 			}
-			
+
 			virtual ~NetworkCompletionEvent()
 			{
 				delete fRequestState;
@@ -38,7 +40,7 @@ namespace Rtt
 			static const char kName[];
 			virtual const char* Name() const { return kName; };
 			virtual int Push( lua_State *L ) const;
-			
+
 			smart_ptr<NetworkRequestState> fRequestState;
 	};
 
@@ -79,20 +81,20 @@ namespace Rtt
 	class NetworkNotifierTask : public Task
 	{
 	public:
-		
+
 		NetworkNotifierTask(NetworkRequestParameters* requestParams, NetworkRequestState* requestState, NetworkLibrary* lib)
 			: Task(true)
-			, fRequestParams(requestParams) 
-			, fRequestState(requestState) 
+			, fRequestParams(requestParams)
+			, fRequestState(requestState)
 			, fNetworkLibrary(lib)
 		{
 		}
 
 		virtual void operator()( Scheduler & sender );
-			
+
 		smart_ptr<NetworkRequestParameters> fRequestParams;
 		smart_ptr<NetworkRequestState> fRequestState;
 		NetworkLibrary* fNetworkLibrary;
-	};	
-
+	};
+// }
 #endif // _NetworkLibrary_H__
