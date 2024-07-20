@@ -207,7 +207,6 @@ jobs:
 
   collect-ios-templates:
     needs:
-      - Xcode-template-matrix
       - Xcode-template-matrix-12
       - Xcode-template-matrix-13
       - Xcode-template-matrix-14
