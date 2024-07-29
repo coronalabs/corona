@@ -45,6 +45,8 @@ class TesselatorPolygon : public TesselatorShape
 		void Invalidate();
 
 		ArrayVertex2& GetContour() { return fContour; }
+    
+        void SetTriangulationArray( ArrayIndex * triangulationIndices ) { fTriangulationIndices = triangulationIndices; }
 
 	protected:
 		// Update the polygons
@@ -57,6 +59,7 @@ class TesselatorPolygon : public TesselatorShape
 		Vertex2 fCenter;
 		bool fIsFillValid;
 		bool fIsBadPolygon;
+        ArrayIndex * fTriangulationIndices;
 		mutable S32 fFillCount;
 };
 

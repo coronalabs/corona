@@ -40,6 +40,7 @@ class GroupObject : public DisplayObject
 	public:
 		// Super
 		virtual GroupObject* AsGroupObject();
+		virtual const GroupObject* AsGroupObject() const;
 
 	public:
 		// MDrawable

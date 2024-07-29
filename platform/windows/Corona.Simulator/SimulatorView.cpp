@@ -148,15 +148,14 @@ END_MESSAGE_MAP()
 #pragma region Constructor/Destructor
 /// Creates a new Corona Simulator CView.
 CSimulatorView::CSimulatorView()
-:	mSimulatorServices(*this),
+:	mScopedComInitializer(Interop::ScopedComInitializer::ApartmentType::kSingleThreaded),
+	mSimulatorServices(*this),
 	mMessageDlgPointer(nullptr),
 	mProgressDlgPointer(nullptr),
 	mDeviceConfig(*Rtt_AllocatorCreate()),
 	mRuntimeLoadedEventHandler(this, &CSimulatorView::OnRuntimeLoaded)
 {
 	CSimulatorApp *applicationPointer = (CSimulatorApp*)AfxGetApp();
-
-	CoInitialize(nullptr);
 
     mRotation = 0;  // current rotation
     mpSkinBitmap = nullptr;
@@ -1872,6 +1871,13 @@ void CSimulatorView::StopSimulation()
 	Interop::SimulatorRuntimeEnvironment::Destroy(mRuntimeEnvironmentPointer);
 	mRuntimeEnvironmentPointer = nullptr;
 
+	RECT bounds;
+
+	mCoronaContainerControl.GetWindowRect(&bounds);
+
+	mCoronaContainerControl.DestroyWindow();
+	mCoronaContainerControl.Create(nullptr, WS_CHILD | WS_VISIBLE, bounds, this);
+
 	// Hide the Corona control and show its black container without any text.
 	mCoronaContainerControl.SetWindowTextW(L"");
 	mCoronaContainerControl.GetCoronaControl().ShowWindow(SW_HIDE);
@@ -2307,6 +2313,13 @@ void CSimulatorView::RunCoronaProject(CString& projectPath)
 	// Load and run the application.
 	if (projectPath.GetLength() > 0)
 	{
+		RECT bounds;
+
+		mCoronaContainerControl.GetWindowRect(&bounds);
+
+		mCoronaContainerControl.DestroyWindow();
+		mCoronaContainerControl.Create(nullptr, WS_CHILD | WS_VISIBLE, bounds, this);
+
 		// Show the Corona control before creating the runtime. The Corona runtime will render to this control.
 		mCoronaContainerControl.GetCoronaControl().ShowWindow(SW_SHOW);
 		mCoronaContainerControl.GetCoronaControl().SetFocus();

@@ -275,6 +275,8 @@ PlatformOpenALPlayer::QuitOpenALPlayer()
 		return;
 	}
 	
+	PlatformAudioSessionManager::Destroy();
+
 	// When ALmixer_Quits, Halt is called on all channels and callbacks are still invoked for final cleanups.
 	// However, this is a problem for us because we have hooks into the Lua scripts.
 	// It is possible that the lua state is already destroyed in which case a callback into Lua will cause problems.

@@ -121,6 +121,11 @@ const char* ReadOnlyProjectSettings::GetWindowTitleTextForLocaleWithoutFallback(
 	return fSettings.GetWindowTitleTextForLocaleWithoutFallback(languageCode, countryCode);
 }
 
+const char * ReadOnlyProjectSettings::Backend() const
+{
+	return fSettings.Backend().c_str();
+}
+
 int ReadOnlyProjectSettings::GetContentWidth() const
 {
 	return fSettings.GetContentWidth();

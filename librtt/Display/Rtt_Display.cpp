@@ -32,6 +32,7 @@
 #include "CoronaLua.h"
 
 #include "Renderer/Rtt_GLRenderer.h"
+#include "Renderer/Rtt_VulkanExports.h"
 #include "Renderer/Rtt_FrameBufferObject.h"
 #include "Renderer/Rtt_Matrix_Renderer.h"
 #include "Renderer/Rtt_Program.h"
@@ -195,26 +196,28 @@ Display::ScaleModeFromString( const char *scaleName )
 // ----------------------------------------------------------------------------
 
 Display::Display( Runtime& owner )
-:    fOwner( owner ),
-    fDelegate( NULL ),
-    fDefaults( Rtt_NEW( owner.Allocator(), DisplayDefaults ) ),
-    fDeltaTimeInSeconds( 0.0f ),
-    fPreviousTime( owner.GetElapsedTime() ),
-    fRenderer( NULL ),
-    fShaderFactory( NULL ),
-    fSpritePlayer( Rtt_NEW( owner.Allocator(), SpritePlayer( owner.Allocator() ) ) ),
-    fTextureFactory( Rtt_NEW( owner.Allocator(), TextureFactory( * this ) ) ),
-    fScene( Rtt_NEW( owner.GetAllocator(), Scene( owner.Allocator(), * this ) ) ),
-    fProfilingState( Rtt_NEW( owner.GetAllocator(), ProfilingState( owner.GetAllocator() ) ) ),
-    fStream( Rtt_NEW( owner.GetAllocator(), GPUStream( owner.GetAllocator() ) ) ),
-    fTarget( owner.Platform().CreateScreenSurface() ),
-    fImageSuffix( LUA_REFNIL ),
-    fDrawMode( kDefaultDrawMode ),
-    fIsAntialiased( false ),
-    fIsCollecting( false ),
-    fIsRestricted( false ),
-    fAllowFeatureResult( false ), // When IsRestricted(), default to *not* allowing.
-    fShouldRestrictFeature( 0 )
+:	fOwner( owner ),
+	fDelegate( NULL ),
+	fDefaults( Rtt_NEW( owner.Allocator(), DisplayDefaults ) ),
+	fDeltaTimeInSeconds( 0.0f ),
+	fPreviousTime( owner.GetElapsedTime() ),
+	fRenderer( NULL ),
+	fShaderFactory( NULL ),
+	fSpritePlayer( Rtt_NEW( owner.Allocator(), SpritePlayer( owner.Allocator() ) ) ),
+	fTextureFactory( Rtt_NEW( owner.Allocator(), TextureFactory( * this ) ) ),
+	fScene( Rtt_NEW( & owner.GetAllocator(), Scene( owner.Allocator(), * this ) ) ),
+  fProfilingState( Rtt_NEW( owner.GetAllocator(), ProfilingState( owner.GetAllocator() ) ) ),
+	fStream( Rtt_NEW( owner.GetAllocator(), GPUStream( owner.GetAllocator() ) ) ),
+	fTarget( owner.Platform().CreateScreenSurface() ),
+	fImageSuffix( LUA_REFNIL ),
+  fObjectFactories( LUA_REFNIL ),
+  fFactoryFunc( NULL ),
+	fDrawMode( kDefaultDrawMode ),
+	fIsAntialiased( false ),
+	fIsCollecting( false ),
+	fIsRestricted( false ),
+	fAllowFeatureResult( false ), // When IsRestricted(), default to *not* allowing.
+	fShouldRestrictFeature( 0 )
 {
 }
 
@@ -223,11 +226,12 @@ Display::~Display()
     CameraPaint::Finalize();
     Paint::Finalize();
 
-    lua_State *L = GetL();
-    if ( L )
-    {
-        luaL_unref( L, LUA_REGISTRYINDEX, fImageSuffix );
-    }
+	lua_State *L = GetL();
+	if ( L )
+	{
+		luaL_unref( L, LUA_REGISTRYINDEX, fImageSuffix );
+        luaL_unref( L, LUA_REGISTRYINDEX, fObjectFactories );
+	}
 
     //Needs to be done before deletes, because it uses scene etc
     fTextureFactory->ReleaseByType( TextureResource::kTextureResource_Any );
@@ -243,22 +247,45 @@ Display::~Display()
     Rtt_DELETE( fDefaults );
 }
 
+static void
+InvalidateDisplay( void * display )
+{
+	static_cast< Display * >( display )->GetScene().Invalidate();
+}
+
 bool
-Display::Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orientation )
+Display::Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orientation, const char * backend, void * backendContext )
 {
     bool result = false;
 
-    // Only initialize once
-    if ( Rtt_VERIFY( ! fRenderer ) )
-    {
-        Rtt_Allocator *allocator = GetRuntime().GetAllocator();
-        fRenderer = Rtt_NEW( allocator, GLRenderer( allocator ) );
-        
-        fRenderer->Initialize();
-        
-        CPUResourcePool *resourcePoolObserver = Rtt_NEW(allocator,CPUResourcePool());
-        
-        fRenderer->SetCPUResourceObserver(resourcePoolObserver);
+	// Only initialize once
+	if ( Rtt_VERIFY( ! fRenderer ) )
+	{
+		Rtt_Allocator *allocator = GetRuntime().GetAllocator();
+
+#if defined( Rtt_WIN_ENV )
+		if (strcmp( backend, "glBackend" ) == 0)
+		{
+			fRenderer = Rtt_NEW( allocator, GLRenderer( allocator ) );
+		}
+
+		else if (strcmp( backend, "vulkanBackend" ) == 0)
+		{
+			fRenderer = VulkanExports::CreateVulkanRenderer( allocator, backendContext, &InvalidateDisplay, this );
+		}
+		else
+		{
+			Rtt_ASSERT_NOT_REACHED();
+		}
+#else
+		fRenderer = Rtt_NEW( allocator, GLRenderer( allocator ) );
+#endif
+
+		fRenderer->Initialize();
+		
+		CPUResourcePool *resourcePoolObserver = Rtt_NEW(allocator,CPUResourcePool());
+		
+		fRenderer->SetCPUResourceObserver(resourcePoolObserver);
 
         ProgramHeader programHeader;
 
@@ -280,8 +307,8 @@ Display::Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orie
 
         result = true;
 
-        fShaderFactory = Rtt_NEW( allocator, ShaderFactory( *this, programHeader ) );
-    }
+		fShaderFactory = Rtt_NEW( allocator, ShaderFactory( *this, programHeader, backend ) );
+	}
 
     return result;
 }
@@ -533,30 +560,30 @@ Display::Update()
 
     up.Add( "Display::Update Begin" );
     
-	Runtime& runtime = fOwner;
-	lua_State *L = fOwner.VMContext().L();
-	fSpritePlayer->Run( L, Rtt_AbsoluteToMilliseconds(runtime.GetElapsedTime()) );
+    Runtime& runtime = fOwner;
+    lua_State *L = fOwner.VMContext().L();
+    fSpritePlayer->Run( L, Rtt_AbsoluteToMilliseconds(runtime.GetElapsedTime()) );
 
 	up.Add( "Run sprite player" );
 
-	GetScene().QueueUpdateOfUpdatables();
+    GetScene().QueueUpdateOfUpdatables();
 
 	up.Add( "Queue updatables" );
 
-	if ( fDelegate )
-	{
-		fDelegate->WillDispatchFrameEvent( * this );
-	}
+    if ( fDelegate )
+    {
+        fDelegate->WillDispatchFrameEvent( * this );
+    }
 
 	up.Add( "Prepare for frame event" );
 
-	const FrameEvent& fe = FrameEvent::Constant();
-	fe.Dispatch( L, runtime );
-	
+    const FrameEvent& fe = FrameEvent::Constant();
+    fe.Dispatch( L, runtime );
+    
     up.Add( "FrameEvent" );
     
-	const RenderEvent& re = RenderEvent::Constant();
-	re.Dispatch( L, runtime );
+    const RenderEvent& re = RenderEvent::Constant();
+    re.Dispatch( L, runtime );
     
     up.Add( "LateUpdate" );
 
@@ -572,8 +599,8 @@ Display::Render()
 
     rp.Add( "Display::Render Begin" );
 
-	{
-		Rtt_AbsoluteTime elapsedTime = GetRuntime().GetElapsedTime();
+    {
+        Rtt_AbsoluteTime elapsedTime = GetRuntime().GetElapsedTime();
 
         const Rtt::Real kMillisecondsPerSecond = 1000.0f;
         // NOT _USED: Rtt::Real totalTime = Rtt_AbsoluteToMilliseconds( elapsedTime ) / kMillisecondsPerSecond;
@@ -722,7 +749,7 @@ Display::Capture( DisplayObject *object,
         }
     }
 
-    fRenderer->BeginFrame( 0.1f, 0.1f, GetSx(), GetSy() );
+	fRenderer->BeginFrame( 0.1f, 0.1f, GetDefaults().GetTimeTransform(), GetSx(), GetSy(), true );
 
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
@@ -822,9 +849,9 @@ Display::Capture( DisplayObject *object,
     if(!optional_output_color){
 
         ContentToScreen( x_in_pixels,
-                        y_in_pixels,
-                        w_in_pixels,
-                        h_in_pixels);
+                            y_in_pixels,
+                            w_in_pixels,
+                            h_in_pixels );
 
         // We ONLY want the w_in_pixels and h_in_pixels.
         // Using anything but 0 here breaks Android.
@@ -891,7 +918,15 @@ Display::Capture( DisplayObject *object,
     fRenderer->SetFrameBufferObject( fbo );
     fRenderer->PushMaskCount();
     fRenderer->SetViewport( 0, 0, texW, texH );
-    fRenderer->Clear( 0.0f, 0.0f, 0.0f, 0.0f );
+
+    Renderer::ExtraClearOptions extra;
+    
+    extra.clearDepth = GetDefaults().GetEnableDepthInScene();
+    extra.clearStencil = GetDefaults().GetEnableStencilInScene();
+    extra.depthClearValue = GetDefaults().GetSceneDepthClearValue();
+    extra.stencilClearValue = GetDefaults().GetSceneStencilClearValue();
+
+    fRenderer->Clear( 0.0f, 0.0f, 0.0f, 0.0f, &extra );
 
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
@@ -974,18 +1009,18 @@ Display::Capture( DisplayObject *object,
         // Create screen capture.
         BufferBitmap *bitmap = static_cast< BufferBitmap * >( tex->GetBitmap() );
 
-        // This function requires coordinates in pixels.
-        fStream->CaptureFrameBuffer( *bitmap,
-                                        x_in_pixels,
-                                        y_in_pixels,
-                                        w_in_pixels,
-                                        h_in_pixels );
+		// This function requires coordinates in pixels.
+		fRenderer->CaptureFrameBuffer( *fStream, *bitmap,
+										x_in_pixels,
+										y_in_pixels,
+										w_in_pixels,
+										h_in_pixels );
 
         if( output_file_will_be_png_format )
         {
             // This should ONLY be done for PNGs.
 #if !defined(Rtt_NXS_ENV)
-                bitmap->UndoPremultipliedAlpha();
+            bitmap->UndoPremultipliedAlpha();
 #endif
         }
 
@@ -1033,9 +1068,11 @@ Display::Capture( DisplayObject *object,
                 w_in_pixels,
                 h_in_pixels );
 
-#    endif // ENABLE_DEBUG_PRINT
+#	endif // ENABLE_DEBUG_PRINT
+		
+	fRenderer->EndCapture();
 
-    Rtt_DELETE( fbo );
+	Rtt_DELETE( fbo );
 
     // If object was just created this will draw it to main scene as well, not only to FBO
     scene.Invalidate();
@@ -1206,6 +1243,46 @@ Display::PushImageSuffixTable() const
         if ( L )
         {
             lua_rawgeti( L, LUA_REGISTRYINDEX, fImageSuffix );
+            wasPushed = true;
+        }
+    }
+    return wasPushed;
+}
+
+void
+Display::GatherObjectFactories( const luaL_Reg funcs[], void * library )
+{
+    lua_State *L = GetL();
+
+    if ( L && LUA_REFNIL == fObjectFactories )
+    {
+        lua_newtable( L );
+
+        for (int i = 0; funcs[i].func; ++i)
+        {
+            if (strncmp(funcs[i].name, "new", 3U) == 0)
+            {
+                lua_pushlightuserdata( L, library );
+                lua_pushnil( L );
+                lua_pushcclosure( L, funcs[i].func, 2 );
+                lua_setfield( L, -2, funcs[i].name );
+            }
+        }
+
+        fObjectFactories = luaL_ref( L, LUA_REGISTRYINDEX );
+    }
+}
+
+bool
+Display::PushObjectFactories() const
+{
+    bool wasPushed = false;
+    if (LUA_REFNIL != fObjectFactories)
+    {
+        lua_State *L = GetL();
+        if (L)
+        {
+            lua_rawgeti(L, LUA_REGISTRYINDEX, fObjectFactories);
             wasPushed = true;
         }
     }
@@ -1461,6 +1538,20 @@ Display::GetScaleMode() const
 }
 
 void
+Display::ContentToScreenUnrounded( float& x, float& y ) const
+{
+    float w = 0;
+    float h = 0;
+    ContentToScreenUnrounded( x, y, w, h );
+}
+
+void
+Display::ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const
+{
+    fStream->ContentToScreenUnrounded( x, y, w, h );
+}
+
+void
 Display::ContentToScreen( S32& x, S32& y ) const
 {
     S32 w = 0;
@@ -1475,7 +1566,7 @@ Display::ContentToScreen( Rtt_Real& x, Rtt_Real& y, Rtt_Real& w, Rtt_Real& h ) c
 }
 
 void
-Display::ContentToScreen(S32& x, S32& y, S32& w, S32& h ) const
+Display::ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const
 {
     fStream->ContentToScreen( x, y, w, h );
 }
@@ -1865,10 +1956,28 @@ Display::GetGpuSupportsHighPrecisionFragmentShaders()
     return Renderer::GetGpuSupportsHighPrecisionFragmentShaders();
 }
 
-size_t
+U32
+Display::GetMaxUniformVectorsCount()
+{
+    return Renderer::GetMaxUniformVectorsCount();
+}
+
+U32
 Display::GetMaxVertexTextureUnits()
 {
     return Renderer::GetMaxVertexTextureUnits();
+}
+
+bool
+Display::HasFramebufferBlit( bool * canScale ) const
+{
+    return fRenderer->HasFramebufferBlit( canScale );
+}
+
+void
+Display::GetVertexAttributes( VertexAttributeSupport & support ) const
+{
+    fRenderer->GetVertexAttributes( support );
 }
 
 void

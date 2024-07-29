@@ -70,6 +70,7 @@ endif
 OBJECTS := \
 	$(OBJDIR)/Rtt_CommandBuffer.o \
 	$(OBJDIR)/Rtt_CPUResource.o \
+	$(OBJDIR)/Rtt_FormatExtensionList.o \
 	$(OBJDIR)/Rtt_FrameBufferObject.o \
 	$(OBJDIR)/Rtt_Matrix_Renderer.o \
 	$(OBJDIR)/Rtt_GeometryPool.o \
@@ -157,6 +158,10 @@ $(OBJDIR)/Rtt_CommandBuffer.o: ../../../librtt/Renderer/Rtt_CommandBuffer.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/Rtt_CPUResource.o: ../../../librtt/Renderer/Rtt_CPUResource.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/Rtt_FormatExtensionList.o: ../../../librtt/Renderer/Rtt_FormatExtensionList.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

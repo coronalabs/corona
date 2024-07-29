@@ -51,6 +51,7 @@ typedef enum {
 - (double) settingsImageSuffixScaleByIndex:(int) index;
 - (BOOL) settingsSuspendWhenMinimized;
 - (BOOL) settingsIsWindowTitleShown;
+- (BOOL) settingsIsTransparent;
 
 - (id)sendEvent:(NSDictionary *)event;
 

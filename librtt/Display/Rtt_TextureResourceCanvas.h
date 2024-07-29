@@ -85,7 +85,6 @@ class TextureResourceCanvas : public TextureResource
 		virtual const MLuaUserdataAdapter& GetAdapter() const override;
 
 };
-
 	
 }
 #endif /* defined(__ratatouille__Rtt_TextureResourceCanvas__) */
