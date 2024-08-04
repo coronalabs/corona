@@ -22,7 +22,6 @@ then
 fi
 
 java -version
-javac -version
 echo $JAVA_HOME
 cd "${WORKSPACE}/subrepos/enterprise"
 
