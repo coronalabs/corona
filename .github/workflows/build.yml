@@ -61,7 +61,7 @@ jobs:
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
       - name: Build Native
-        run: JAVA_HOME="$JAVA_HOME_11_X64" ./tools/GHAction/build_native.sh
+        run: JAVA_HOME="${JAVA_HOME_17_X64:-$JAVA_HOME_17_arm64}" ./tools/GHAction/build_native.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Upload Corona Native

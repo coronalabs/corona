@@ -4,11 +4,10 @@ plugins {
 
 android {
     ndkVersion = "18.1.5063045"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 15
-        targetSdk = 33
         version = 1
     }
     sourceSets["main"].manifest.srcFile(file("AndroidManifest-New.xml"))
