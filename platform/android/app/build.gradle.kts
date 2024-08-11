@@ -793,7 +793,6 @@ tasks.register("processPluginsNoDownload") {
 //<editor-fold desc="Core Development helpers" defaultstate="collapsed">
 
 tasks.register<Zip>("exportCoronaAppTemplate") {
-    if (coronaBuiltFromSource) group = "Corona-dev"
     enabled = coronaBuiltFromSource
     destinationDirectory.set(file("$buildDirectory/outputs"))
     archiveFileName.set("android-template.zip")
