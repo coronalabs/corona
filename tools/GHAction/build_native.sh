@@ -21,7 +21,8 @@ then
     done
 fi
 
-
+java -version
+echo $JAVA_HOME
 cd "${WORKSPACE}/subrepos/enterprise"
 
 if ! ./build.sh
