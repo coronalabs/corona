@@ -133,7 +133,6 @@ jobs:
       - source-code
       - native
       - webtemplate
-      - linux
     runs-on: windows-latest
     steps:
       - name: Get processed code
