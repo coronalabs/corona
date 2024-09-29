@@ -23,7 +23,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_16.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -76,7 +76,7 @@ jobs:
         runner:
           - macos-14
         xcode:
-          - Xcode_15.3
+          - Xcode_16
           - Xcode_15.4
         target:
           - template
