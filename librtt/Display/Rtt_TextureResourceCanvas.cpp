@@ -64,9 +64,17 @@ TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factor
 
 	Texture *texture = Rtt_NEW( pAllocator,
 							   TextureVolatile( display.GetAllocator(), texWidth, texHeight, format, filter, wrap, wrap ) );
-	
+
+	/* TODO
+		fHasDepth = display.GetDefaults().GetAddDepthToResource();
+		fHasStencil = display.GetDefaults().GetAddStencilToResource();
+		fDepthClearValue = display.GetDefaults().GetAddedDepthClearValue();
+		fStencilClearValue = display.GetDefaults().GetAddedStencilClearValue();
+	 
+		TODO: add appropriate frame buffer resources...
+	 */	
 	FrameBufferObject * fbo = Rtt_NEW( pAllocator,
-									  FrameBufferObject( pAllocator, texture ) );
+									  FrameBufferObject( pAllocator, texture, nullptr ) );
 
 	GroupObject *cache = Rtt_NEW( pAllocator,
 								 GroupObject(display.GetAllocator(), display.GetStageOffscreen() ) );
@@ -187,11 +195,21 @@ void TextureResourceCanvas::Render(Rtt::Renderer &renderer, GroupObject *group, 
 		renderer.SetViewport( 0, 0, GetTexWidth(), GetTexHeight() );
 		if ( clear )
 		{
+			/* TODO
+				Renderer::ExtraClearOptions extra;
+				
+				extra.clearDepth = fHasDepth;
+				extra.clearStencil = fHasStencil;
+				extra.depthClearValue = fDepthClearValue;
+				extra.stencilClearValue = fStencilClearValue;
+			  */
 			ColorUnion color;
 			color.pixel = fClearColor;
 			const Real inv255 = 1.f / 255.f;
-			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255 );
+			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255/*, &extra */ );
 		}
+		
+		renderer.BeginDrawing();
 		
 		group->WillDraw( renderer );
 		group->Draw( renderer );

@@ -67,7 +67,7 @@ namespace Rtt
 	bool EmscriptenImageProvider::Supports(int source) const
 	{
 		// no ways to get webcam list synchronously, so just say 'true'
-		// ша webcam exists will be checked later in media.capturePhoto()
+		// пїЅпїЅ webcam exists will be checked later in media.capturePhoto()
 		return true;
 	}
 

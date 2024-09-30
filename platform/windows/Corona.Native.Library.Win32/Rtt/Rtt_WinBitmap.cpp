@@ -300,7 +300,7 @@ static U8* LoadMaskDataFromStream( Rtt_Allocator& allocator, IStream* pStream, U
 
 static Gdiplus::Bitmap* LoadBitmap( Rtt_Allocator& context, IStream* pStream, U32*, U32*, const char* )
 {
-	return Rtt_NEW( context, Gdiplus::Bitmap( pStream, FALSE ) );
+	return Rtt_NEW( context, Gdiplus::Bitmap( pStream, FALSE ) ); // TODO: doesn't play well with debug allocator? (guarded by Rtt_CHECK_MEMORY)
 }
 
 static HANDLE

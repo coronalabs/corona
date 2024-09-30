@@ -54,7 +54,7 @@ class ShaderComposite : public Shader
 		
 	public:
 		virtual void Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMod mod );
-		virtual void Draw( Renderer& renderer, const RenderData& objectData ) const;
+		virtual void Draw( Renderer& renderer, const RenderData& objectData, const GeometryWriter* writers = NULL, U32 n = 1 ) const;
 		
 	public:
 		virtual void PushProxy( lua_State *L ) const;

@@ -98,9 +98,12 @@ class Texture : public CPUResource
 	public:
 		void SetRetina( bool newValue ){ fIsRetina = newValue; }
 		bool IsRetina(){ return fIsRetina; }
+		void SetTarget( bool newValue ){ fIsTarget = newValue; }
+		bool IsTarget() const { return fIsTarget; }
 
 	private:
 		bool fIsRetina;
+		bool fIsTarget;
 };
 
 // ----------------------------------------------------------------------------

@@ -87,6 +87,9 @@ class ShaderData
 	public:
 		Uniform *GetUniform( DataIndex index ) const;
 		void DidUpdateUniform( DataIndex index );
+        void Invalidate();
+        void * GetExtraSpace() const { return fExtraSpace; }
+        U32 GetExtraCount() const { return fExtraCount; }
 
 	public:
 		WeakPtr< ShaderResource >& GetShaderResource() { return fShaderResource; }
@@ -102,6 +105,8 @@ class ShaderData
 		Real fVertexData[kNumData];
 		Uniform *fUniformData[kNumData];
 		WeakPtr< ShaderResource > fShaderResource;
+        void * fExtraSpace;
+        U32 fExtraCount;
 		const Shader *fOwner;
 		U8 fDirtyFlags;
 };

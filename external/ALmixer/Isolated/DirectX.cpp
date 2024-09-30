@@ -79,7 +79,8 @@ DEFINE_ENUM_FLAG_OPERATORS(SoundDecoder_SampleFlags)
 static std::recursive_mutex sMutex;
 
 /// <summary>Stores a set of each thread ID this module has initialized Microsoft COM on.</summary>
-static std::unordered_set<std::thread::id> sComInitializedThreadIdSet;
+static std::unordered_set<std::thread::id> sComInitializedThreadIdSet; // This is a false positive (several, rather) for memory leaks:
+																		// the report occurs before static deinitialization / DLL detach
 
 /// <summary>
 ///  <para>Set true if the DirectX Media Foundation's MFStartup() function was called.</para>

@@ -13,6 +13,7 @@
 #include "Renderer/Rtt_Geometry_Renderer.h"
 
 #include "Core/Rtt_Assert.h"
+#include "Corona/CoronaGraphics.h"
 
 // ----------------------------------------------------------------------------
 
@@ -37,7 +38,6 @@ RenderData::RenderData()
 	fBlendMode(),
 	fBlendEquation( RenderTypes::kAddEquation )
 {
-	
 }
 
 void
