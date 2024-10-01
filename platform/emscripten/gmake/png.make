@@ -25,7 +25,7 @@ ifeq ($(config),Debug)
   TARGETDIR  = obj/Debug
   TARGET     = $(TARGETDIR)/libpng.a
   DEFINES   += -DRtt_DEBUG -Dpng_USE_APICHECK
-  INCLUDES  += -I../../../external/libpng1243b01 -I../../../external/zlib123
+  INCLUDES  += -I../../../external/libpng -I../../../external/zlib123
   ALL_CPPFLAGS  += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS    += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -g
   ALL_CXXFLAGS  += $(CXXFLAGS) $(ALL_CFLAGS) -fno-exceptions -fno-rtti
@@ -49,7 +49,7 @@ ifeq ($(config),Release)
   TARGETDIR  = obj/Release
   TARGET     = $(TARGETDIR)/libpng.a
   DEFINES   += -DNDEBUG
-  INCLUDES  += -I../../../external/libpng1243b01 -I../../../external/zlib123
+  INCLUDES  += -I../../../external/libpng -I../../../external/zlib123
   ALL_CPPFLAGS  += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS    += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -O2
   ALL_CXXFLAGS  += $(CXXFLAGS) $(ALL_CFLAGS) -fno-exceptions -fno-rtti
@@ -70,7 +70,6 @@ endif
 OBJECTS := \
 	$(OBJDIR)/png.o \
 	$(OBJDIR)/pngerror.o \
-	$(OBJDIR)/pnggccrd.o \
 	$(OBJDIR)/pngget.o \
 	$(OBJDIR)/pngmem.o \
 	$(OBJDIR)/pngpread.o \
@@ -80,7 +79,6 @@ OBJECTS := \
     $(OBJDIR)/pngrutil.o \
     $(OBJDIR)/pngset.o \
     $(OBJDIR)/pngtrans.o \
-    $(OBJDIR)/pngvcrd.o \
     $(OBJDIR)/pngwio.o \
     $(OBJDIR)/pngwrite.o \
     $(OBJDIR)/pngwtran.o \
@@ -144,71 +142,63 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -MMD -MP $(DEFINES) $(INCLUDES) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
 endif
 
-$(OBJDIR)/png.o: ../../../external/libpng1243b01/png.c
+$(OBJDIR)/png.o: ../../../external/libpng/png.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngerror.o: ../../../external/libpng1243b01/pngerror.c
+$(OBJDIR)/pngerror.o: ../../../external/libpng/pngerror.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pnggccrd.o: ../../../external/libpng1243b01/pnggccrd.c
+$(OBJDIR)/pngget.o: ../../../external/libpng/pngget.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngget.o: ../../../external/libpng1243b01/pngget.c
+$(OBJDIR)/pngmem.o: ../../../external/libpng/pngmem.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngmem.o: ../../../external/libpng1243b01/pngmem.c
+$(OBJDIR)/pngpread.o: ../../../external/libpng/pngpread.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngpread.o: ../../../external/libpng1243b01/pngpread.c
+$(OBJDIR)/pngread.o: ../../../external/libpng/pngread.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngread.o: ../../../external/libpng1243b01/pngread.c
+$(OBJDIR)/pngrio.o: ../../../external/libpng/pngrio.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngrio.o: ../../../external/libpng1243b01/pngrio.c
+$(OBJDIR)/pngrtran.o: ../../../external/libpng/pngrtran.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngrtran.o: ../../../external/libpng1243b01/pngrtran.c
+$(OBJDIR)/pngrutil.o: ../../../external/libpng/pngrutil.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngrutil.o: ../../../external/libpng1243b01/pngrutil.c
+$(OBJDIR)/pngset.o: ../../../external/libpng/pngset.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngset.o: ../../../external/libpng1243b01/pngset.c
+$(OBJDIR)/pngtrans.o: ../../../external/libpng/pngtrans.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngtrans.o: ../../../external/libpng1243b01/pngtrans.c
+$(OBJDIR)/pngwio.o: ../../../external/libpng/pngwio.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngvcrd.o: ../../../external/libpng1243b01/pngvcrd.c
+$(OBJDIR)/pngwrite.o: ../../../external/libpng/pngwrite.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngwio.o: ../../../external/libpng1243b01/pngwio.c
+$(OBJDIR)/pngwtran.o: ../../../external/libpng/pngwtran.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/pngwrite.o: ../../../external/libpng1243b01/pngwrite.c
-	@echo $(notdir $<)
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
-
-$(OBJDIR)/pngwtran.o: ../../../external/libpng1243b01/pngwtran.c
-	@echo $(notdir $<)
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
-
-$(OBJDIR)/pngwutil.o: ../../../external/libpng1243b01/pngwutil.c	
+$(OBJDIR)/pngwutil.o: ../../../external/libpng/pngwutil.c	
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
