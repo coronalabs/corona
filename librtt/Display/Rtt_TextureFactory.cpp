@@ -277,7 +277,13 @@ TextureFactory::FindOrCreate(
 	if ( result.IsNull() )
 	{
 		PlatformBitmap *bitmap = CreateBitmap( filePath.GetString(), flags, isMask );
-		result = CreateAndAdd( key, bitmap, true, isRetina );
+
+		if ( bitmap )
+		{
+			result = CreateAndAdd( key, bitmap, true, isRetina );
+		} else {
+			Rtt_ASSERT( result.IsNull() );
+		}
 	}
 
 	return result;
