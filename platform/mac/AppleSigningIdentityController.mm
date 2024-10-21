@@ -640,8 +640,8 @@ static bool ShouldUseProvisionProfileForPlatform(
 	using namespace Rtt;
 
 	NSString *provisionDir; // Temporary variable to hold the current directory path
-	NSArray *allDirContents = @[]; // Array to hold contents from both paths
-	NSMenu *identitiesMenu = menu; 
+    NSMutableArray *allDirContents = [NSMutableArray array]; // Array to hold contents from both paths
+	NSMenu *identitiesMenu = menu;
 	Rtt_ASSERT(menu);
 	NSMenu *iOSTeamProvisioningProfilesSubMenu = [[NSMenu alloc] init];
 	NSMenu *disabledSubMenu = [[NSMenu alloc] init];
@@ -650,19 +650,28 @@ static bool ShouldUseProvisionProfileForPlatform(
 	NSFont *boldFont = [NSFont boldSystemFontOfSize:[NSFont labelFontSize]];
 	NSMutableArray *certIdentities = [NSMutableArray arrayWithCapacity:20];
 
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
 	// Get contents from both paths
-	NSFileManager *fileMgr = [NSFileManager defaultManager];
-	allDirContents = [allDirContents arrayByAddingObjectsFromArray:[fileMgr contentsOfDirectoryAtPath:fPath error:NULL]];
-	allDirContents = [allDirContents arrayByAddingObjectsFromArray:[fileMgr contentsOfDirectoryAtPath:fNewPath error:NULL]];
-
+    for (NSString *path in @[fPath, fNewPath]) {
+        NSArray *contents = [fileMgr contentsOfDirectoryAtPath:path error:NULL];
+        NSString *source = (path == fPath) ? @"old" : @"new";
+        for (NSString *item in contents) {
+            [allDirContents addObject:@{@"name": item, @"source": source}];
+        }
+    }
+    
 	// Process each file in the combined contents
-	for (NSString *filename in allDirContents)
-	{
-		if ([[filename pathExtension] isEqualToString:extension])
-		{
-			// Determine which directory the file belongs to for the full path
-			provisionDir = [filename hasPrefix:fPath] ? fPath : fNewPath; // Set provisionDir based on where the file was found
-			NSString *fullPath = [provisionDir stringByAppendingPathComponent:filename];
+    for (NSDictionary *fileInfo in allDirContents)
+    {
+        NSString *filename = fileInfo[@"name"];
+        
+        if ([[filename pathExtension] isEqualToString:extension])
+        {
+            // Determine the source of the file and assign the correct directory
+            NSString *provisionDir = [fileInfo[@"source"] isEqualToString:@"old"] ? fPath : fNewPath;
+
+            // You can now use provisionDir and filename to create the full path if needed
+            NSString *fullPath = [provisionDir stringByAppendingPathComponent:filename];
 			NSDictionary *provisionProfile = [AppleSigningIdentityController loadProvisioningProfile:fullPath];
         
 
