@@ -439,7 +439,7 @@ IPhonePlatform::OpenURL( const char* url ) const
 		NSURL* urlPlatform = [NSURL URLWithString:[NSString stringWithUTF8String:url]];
 		if ( [sharedApplication canOpenURL:urlPlatform] )
 		{
-			result = Rtt_VERIFY( true ); // We set to true due the fact we don't know if web link opened
+			result = true; // We set to true due the fact we don't know if web link opened
             [[UIApplication sharedApplication] openURL:urlPlatform options:@{} completionHandler:nil];
 		}
 	}
