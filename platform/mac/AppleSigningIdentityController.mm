@@ -653,10 +653,14 @@ static bool ShouldUseProvisionProfileForPlatform(
     NSFileManager *fileMgr = [NSFileManager defaultManager];
 	// Get contents from both paths
     for (NSString *path in @[fPath, fNewPath]) {
-        NSArray *contents = [fileMgr contentsOfDirectoryAtPath:path error:NULL];
-        NSString *source = (path == fPath) ? @"old" : @"new";
-        for (NSString *item in contents) {
-            [allDirContents addObject:@{@"name": item, @"source": source}];
+        if ([fileMgr fileExistsAtPath:path]) {
+            NSArray *contents = [fileMgr contentsOfDirectoryAtPath:path error:NULL];
+            NSString *source = (path == fPath) ? @"old" : @"new";
+            for (NSString *item in contents) {
+                [allDirContents addObject:@{@"name": item, @"source": source}];
+            }
+        } else {
+            // Do nothing for right now
         }
     }
     
