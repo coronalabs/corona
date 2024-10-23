@@ -68,10 +68,10 @@ namespace Rtt
 	void TimerTickShim(void *userdata)
 	{
 		CoronaAppContext *context = (CoronaAppContext*) userdata;
-		float frameDuration = 1000.0f / (float) context->getFPS();
+		float frameDuration = 1.0f / (float) context->getFPS();
 
 		U64 now = Rtt_AbsoluteToMilliseconds(Rtt_GetAbsoluteTime());
-		if (now - s_tick >= frameDuration)		// 60fps ==> 1000/60 = 16.66666 msec
+		if (now - s_tick > frameDuration)		// 60fps ==> 1000/60 = 16.66666 msec
 		{
 			s_tick = now;
 			context->TimerTick();
@@ -443,6 +443,11 @@ namespace Rtt
 		int w = 0;
 		int h = 0;
 		fRuntime->readSettings(&w, &h, &orientation, &title, &fMode);
+
+		// get JS window size
+		int jsWindowWidth = jsContextGetWindowWidth();
+		int jsWindowHeight = jsContextGetWindowHeight();
+
 		if (orientation == "landscapeRight")
 		{
 			fOrientation = DeviceOrientation::kSidewaysRight;	// bottom of device is to the right
@@ -509,12 +514,9 @@ namespace Rtt
 		jsContextInit(fWidth, fHeight, fOrientation);
 		if (fMode == "maximized" || fMode == "fullscreen")
 		{
-			// get JS window size
-			int jsWindowWidth = jsContextGetWindowWidth();
-			int jsWindowHeight = jsContextGetWindowHeight();
-
-			float scaleX = (float) jsWindowWidth / (float) fWidth;
-			float scaleY = (float) jsWindowHeight / (float) fHeight;
+			//Scale double
+			float scaleX = (float)(jsWindowWidth * 2) / (float)(fWidth);
+			float scaleY = (float)(jsWindowHeight * 2) / (float)(fHeight);
 			float scale = fmin(scaleX, scaleY);				// keep ratio
 			fWidth *= scale;
 			fHeight *= scale;
@@ -567,6 +569,8 @@ namespace Rtt
 		{
 			EM_ASM_INT({	window.dispatchEvent(new Event('resize')); });
 		}
+
+		emscripten_set_element_css_size("canvas", fWidth / 2, fHeight / 2);
 #endif
 
 		return true;
@@ -938,12 +942,19 @@ namespace Rtt
 //				if (fullScreen == false && (fMode == "maximized" || fMode == "fullscreen"))
 				if (fullScreen == false && fMode == "maximized")
 				{
-					float w = (float)event.window.data1;
-					float h = (float)event.window.data2;
+					int w = event.window.data1;
+					int h = event.window.data2;
+
+					//Fix error zoom
+					if (w == 0 || h == 0) 
+					{
+						w = jsContextGetWindowWidth();
+						h = jsContextGetWindowHeight();
+					}
 
 					// keep ratio
-					float scaleX = w / fWidth;
-					float scaleY = h / fHeight;
+					float scaleX = (w * 2) / (float)fWidth;
+					float scaleY = (h * 2) / (float)fHeight;
 
 					float scale = fmin(scaleX, scaleY);
 					if (stricmp(fRuntimeDelegate->fScaleMode.c_str(), "zoomStretch") == 0)
@@ -968,6 +979,17 @@ namespace Rtt
 					fRuntime->GetDisplay().Invalidate();
 
 					fRuntime->DispatchEvent(ResizeEvent());
+				
+#ifdef EMSCRIPTEN
+					
+					emscripten_set_element_css_size("canvas", w / 2, h / 2);			
+#endif
+				}
+				else 
+				{
+#ifdef EMSCRIPTEN
+					emscripten_set_element_css_size("canvas", fWidth / 2, fHeight / 2);
+#endif
 				}
 
 				// refresh native elements
