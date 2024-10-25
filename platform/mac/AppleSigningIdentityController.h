@@ -42,6 +42,7 @@ namespace Rtt
 {
 	@private
 		NSString *fPath;
+        NSString *fNewPath;
 }
 
 + (NSString*)defaultProvisionPath;
