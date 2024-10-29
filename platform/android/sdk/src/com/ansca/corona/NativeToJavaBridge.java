@@ -1283,7 +1283,7 @@ public class NativeToJavaBridge {
 		public boolean handleSaveMedia() {
 			// We only check for External storage permission if the user wants to add to the Photo library.
 			if (fAddToPhotoLibrary) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {  // Requires use to Media Store to Save on Android 13+
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {  // Requires use to Media Store to Save on Android 10+
 					ContentValues values = new ContentValues();
 					String fileName = fFilePathName.substring(fFilePathName.lastIndexOf('/') + 1);
 					values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
