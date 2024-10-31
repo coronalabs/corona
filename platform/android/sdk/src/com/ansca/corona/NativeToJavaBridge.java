@@ -23,14 +23,18 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.net.URL;
 import java.net.MalformedURLException;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -43,8 +47,10 @@ import android.graphics.Paint;
 import android.media.MediaScannerConnection;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.location.Location;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.DisplayCutout;
@@ -1096,20 +1102,10 @@ public class NativeToJavaBridge {
 		String applicationName = CoronaEnvironment.getApplicationName();
 
 		// Create a unique file name in the directory.
-		java.io.File uniqueFile = null;
-		try {
-			for (int index = 1; index <= 10000; index++) {
-				String fileName = applicationName + " Picture " + Integer.toString(index) + fileExtensionName;
-				java.io.File nextFile = new java.io.File(directory, fileName);
-				if (nextFile.exists() == false) {
-					uniqueFile = nextFile;
-					break;
-				}
-			}
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+		String currentTimeStamp = sdf.format(Calendar.getInstance().getTime());
+		String fileName = applicationName + " Picture " + currentTimeStamp + fileExtensionName;
+		java.io.File uniqueFile = new java.io.File(directory, fileName);
 		return uniqueFile;
 	}
 
@@ -1182,6 +1178,7 @@ public class NativeToJavaBridge {
 			}
 			filePathName = newFile.getPath();
 			addToPhotoLibrary = true;
+
 		}
 		
 		// Copy the pixel array into a bitmap object.
@@ -1199,7 +1196,6 @@ public class NativeToJavaBridge {
 		
 		SaveBitmapRequestPermissionsResultHandler resultHandler = new SaveBitmapRequestPermissionsResultHandler(
 			runtime, bitmap, quality, filePathName, addToPhotoLibrary);
-
 		return resultHandler.handleSaveMedia();
 	}
 
@@ -1287,7 +1283,36 @@ public class NativeToJavaBridge {
 		public boolean handleSaveMedia() {
 			// We only check for External storage permission if the user wants to add to the Photo library.
 			if (fAddToPhotoLibrary) {
-				return super.handleSaveMedia();
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {  // Requires use to Media Store to Save on Android 10+
+					ContentValues values = new ContentValues();
+					String fileName = fFilePathName.substring(fFilePathName.lastIndexOf('/') + 1);
+					values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+					if(fileName.contains(".png")){
+						values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+					}else{
+						values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+					}
+					values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+					values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+					try {
+						Uri uri = CoronaEnvironment.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+						if (uri != null) {
+							try (OutputStream out = CoronaEnvironment.getApplicationContext().getContentResolver().openOutputStream(uri)) {
+								fBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+							}
+							values.clear();
+							values.put(MediaStore.Images.Media.IS_PENDING, 0);
+							CoronaEnvironment.getApplicationContext().getContentResolver().update(uri, values, null, null);
+							return true;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else{
+					return super.handleSaveMedia();
+				}
 			}
 			return executeSaveMedia();
 		}
