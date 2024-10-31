@@ -76,6 +76,7 @@ jobs:
         runner:
           - macos-14
         xcode:
+          - Xcode_16.1
           - Xcode_16
           - Xcode_15.4
         target:
