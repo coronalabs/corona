@@ -65,8 +65,8 @@ ALmixerSoundCompletionEvent::ALmixerSoundCompletionEvent()
 	whichChannel( -1 ), // add 1 to convert from ALmixer starts arrays at 0 to Lua starts arrays at 1
 	alSource( 0 ),
 	almixerData( NULL ),
-	finishedNaturally( false ),
-	platformALmixerPlaybackFinishedCallback( NULL )
+	finishedNaturally( false )/*,
+	platformALmixerPlaybackFinishedCallback( NULL )*/
 {		
 }
 
@@ -74,27 +74,27 @@ ALmixerSoundCompletionEvent::ALmixerSoundCompletionEvent()
 // Our workaround is to take ownership of the platform notifier and delete when the event is destroyed.
 ALmixerSoundCompletionEvent::~ALmixerSoundCompletionEvent()
 {
-	Rtt_DELETE( platformALmixerPlaybackFinishedCallback );
+//	Rtt_DELETE( platformALmixerPlaybackFinishedCallback );
 }
 
-ALmixerSoundCompletionEvent::ALmixerSoundCompletionEvent(int which_channel, unsigned int al_source, ALmixer_Data* almixer_data, bool finished_naturally, PlatformALmixerPlaybackFinishedCallback* callback_notifier)
+ALmixerSoundCompletionEvent::ALmixerSoundCompletionEvent(int which_channel, unsigned int al_source, ALmixer_Data* almixer_data, bool finished_naturally )//, PlatformALmixerPlaybackFinishedCallback* callback_notifier)
 	:	
 	whichChannel( which_channel + 1 ), // add 1 to convert from ALmixer starts arrays at 0 to Lua starts arrays at 1
 	alSource( al_source ),
 	almixerData( almixer_data ),
-	finishedNaturally( finished_naturally ),
-	platformALmixerPlaybackFinishedCallback( callback_notifier )
+	finishedNaturally( finished_naturally )/*,
+	platformALmixerPlaybackFinishedCallback( callback_notifier )*/
 {
 
 }
 
-void ALmixerSoundCompletionEvent::SetProperties(int which_channel, unsigned int al_source, ALmixer_Data* almixer_data, bool finished_naturally, PlatformALmixerPlaybackFinishedCallback* callback_notifier)
+void ALmixerSoundCompletionEvent::SetProperties(int which_channel, unsigned int al_source, ALmixer_Data* almixer_data, bool finished_naturally )//, PlatformALmixerPlaybackFinishedCallback* callback_notifier)
 {
 	whichChannel = which_channel + 1; // add 1 to convert from ALmixer starts arrays at 0 to Lua starts arrays at 1
 	alSource = al_source;
 	almixerData = almixer_data;
 	finishedNaturally = finished_naturally;
-	platformALmixerPlaybackFinishedCallback = callback_notifier;
+//	platformALmixerPlaybackFinishedCallback = callback_notifier;
 }
 
 const char*
@@ -146,7 +146,8 @@ PlatformOpenALPlayer::PlatformOpenALPlayer()
 	mapOfLoadedFileNamesToData(NULL),
 	mapOfLoadedDataToFileNames(NULL),
 	mapOfLoadedDataToReferenceCountNumber(NULL),
-	useAudioSessionInitializationFailureToAbortEndInterruption(true) // iOS 4/5 need this on
+	useAudioSessionInitializationFailureToAbortEndInterruption(true), // iOS 4/5 need this on
+	notifier( NULL )
 {
 	// It's possible that InitializeOpenALPlayer() is never called 
 	// by the time RuntimeWillTerminate() is called in which case we have
@@ -167,23 +168,24 @@ static int sRefCount = 0;
 void
 PlatformOpenALPlayer::RuntimeWillTerminate( const Runtime& sender )
 {
-	lua_State *L = sender.VMContext().L();
+//	lua_State *L = sender.VMContext().L();
 
 	// Find all channels used by this Runtime instance
 	for ( unsigned int i = 0; i < kOpenALPlayerMaxNumberOfSources; i++ )
 	{
-		PlatformALmixerPlaybackFinishedCallback *callback = arrayOfChannelToLuaCallbacks[i];
-		if ( callback )
+		//PlatformALmixerPlaybackFinishedCallback *callback = arrayOfChannelToLuaCallbacks[i];
+		int callback = SwapChannelCallback( (int)i, LUA_NOREF );
+		if ( LUA_NOREF != callback )
 		{
-			lua_State *callbackL = callback->GetLuaState();
+		//	lua_State *callbackL = callback->GetLuaState();
 
 			// Channel is used by Runtime if the L states match
-			if ( callbackL == L )
+		//	if ( callbackL == L )
 			{
 				// Remove callback *before* calling StopChannel,
 				// b/c the latter triggers notification to the callback
-				arrayOfChannelToLuaCallbacks[i] = NULL;
-				Rtt_DELETE( callback );
+			//	arrayOfChannelToLuaCallbacks[i] = NULL;
+			//	Rtt_DELETE( callback );
 				
 				// Ensure audio does not continue to play for this Runtime.
 				StopChannel( i );
@@ -203,7 +205,9 @@ PlatformOpenALPlayer::InitializeCallbacks()
 {
 	for(unsigned int i=0; i<kOpenALPlayerMaxNumberOfSources; i++)
 	{
-		arrayOfChannelToLuaCallbacks[i] = NULL;
+		arrayOfChannelToLuaCallbacks[i] = LUA_NOREF;//NULL;
+
+		channelBusy[i].clear();
 	}
 }
 
@@ -285,13 +289,13 @@ PlatformOpenALPlayer::QuitOpenALPlayer()
 	// before the Lua state is destroyed because callbacks happen on a background thread. There is a potential
 	// race condition that will allow a sound to finish playing and trigger a callback while the similator is in
 	// relaunching transition.
-
+/*
 	for(unsigned int i=0; i<kOpenALPlayerMaxNumberOfSources; i++)
 	{
 		Rtt_DELETE( arrayOfChannelToLuaCallbacks[i] );
 		arrayOfChannelToLuaCallbacks[i] = NULL; // Set to NULL to try to avoid asynchronus issues on bad pointers.
 	}
-	
+*/
 	ALmixer_Quit();
 	
 	// ALmixer cleans up all the audio data so we can just free the map
@@ -303,6 +307,8 @@ PlatformOpenALPlayer::QuitOpenALPlayer()
 	mapOfLoadedDataToReferenceCountNumber = NULL;
 
 	isInitialized = false;
+
+	AttachNotifier( NULL );
 }
 
 PlatformOpenALPlayer *
@@ -366,6 +372,30 @@ PlatformOpenALPlayer::SetMaxSources( unsigned int max_sources )
 	// Instead, the assumption is ALmixer is not already init because the user specifies it in a config file.
 	// That means setting will have no effect until the next time ALmixer is reinitialized.
 //	s_maxSources = max_sources;
+}
+
+void
+PlatformOpenALPlayer::AttachNotifier( PlatformNotifier* pnotifier )
+{
+	if ( notifier != pnotifier )
+	{
+		Rtt_DELETE( notifier );
+	}
+
+	notifier = pnotifier;
+}
+
+void
+PlatformOpenALPlayer::SetChannelCallback( lua_State* L, int channel, int userCallback )
+{
+	Rtt_ASSERT( notifier );
+
+	if ( channel >= 0 )
+	{
+		userCallback = SwapChannelCallback( channel, userCallback );
+	}
+
+	lua_unref( L, userCallback );
 }
 
 ALmixer_Data* 
@@ -501,13 +531,13 @@ PlatformOpenALPlayer::ReserveChannels( int number_of_reserve_channels )
 }
 
 int 
-PlatformOpenALPlayer::PlayChannelTimed( int which_channel, ALmixer_Data* almixer_data, int number_of_loops, int number_of_milliseconds, PlatformALmixerPlaybackFinishedCallback *callback )
+PlatformOpenALPlayer::PlayChannelTimed( int which_channel, ALmixer_Data* almixer_data, int number_of_loops, int number_of_milliseconds )//, PlatformALmixerPlaybackFinishedCallback *callback )
 {
 	if( ! IsInitialized() )
 	{
 		InitializeOpenALPlayer();
 	}
-	int selected_channel = ALmixer_PlayChannelTimed(which_channel, almixer_data, number_of_loops, number_of_milliseconds);
+	int selected_channel = ALmixer_PlayChannelTimed(which_channel, almixer_data, number_of_loops, number_of_milliseconds);/*
 	if(selected_channel >= 0)
 	{
 		// Cleanup any old callback
@@ -522,7 +552,7 @@ PlatformOpenALPlayer::PlayChannelTimed( int which_channel, ALmixer_Data* almixer
 	else
 	{
 		Rtt_DELETE( callback );
-	}
+	}*/
 
 	return selected_channel;
 }
@@ -774,13 +804,14 @@ PlatformOpenALPlayer::ExpireChannel( int which_channel, int number_of_millisecon
 }
 
 int 
-PlatformOpenALPlayer::FadeInChannelTimed( int which_channel, ALmixer_Data* almixer_data, int number_of_loops, unsigned int fade_ticks, unsigned int expire_ticks, PlatformALmixerPlaybackFinishedCallback *callback )
+PlatformOpenALPlayer::FadeInChannelTimed( int which_channel, ALmixer_Data* almixer_data, int number_of_loops, unsigned int fade_ticks, unsigned int expire_ticks )//, PlatformALmixerPlaybackFinishedCallback *callback )
 {
 	if( ! IsInitialized() )
 	{
 		InitializeOpenALPlayer();
 	}
 	int selected_channel = ALmixer_FadeInChannelTimed(which_channel, almixer_data, number_of_loops, fade_ticks, expire_ticks);
+/*
 	if(selected_channel >= 0)
 	{
 		// Cleanup any old callback
@@ -795,7 +826,7 @@ PlatformOpenALPlayer::FadeInChannelTimed( int which_channel, ALmixer_Data* almix
 	else
 	{
 		Rtt_DELETE( callback );
-	}
+	}*/
 
 	return selected_channel;
 }
@@ -1074,14 +1105,15 @@ PlatformOpenALPlayer::NotificationCallback( int which_channel, unsigned int al_s
 	// Anybody that builds a partial resource management system on top of our resource system may need to understand this.
 	// If they use auto-channel-assignment in play, but use callbacks to record channel availability, their system may get out-of-sync and break.
 	// So any user that implements a resource management system should also directly manage channel assignment instead of relying on auto-assignment.
-	PlatformALmixerPlaybackFinishedCallback *notifier = arrayOfChannelToLuaCallbacks[which_channel];
+//	PlatformALmixerPlaybackFinishedCallback *notifier = arrayOfChannelToLuaCallbacks[which_channel];
+	int callback = SwapChannelCallback( which_channel, LUA_NOREF );
 
-	if ( notifier )
+	if ( LUA_NOREF != callback && LUA_REFNIL != callback )//notifier )
 	{
 		// There's always a notifier attached, but we only dispatch if a listener is attached
 		// NOTE: if we need to dispatch, we transfer ownership so that Lua-related data can
 		// be freed on the Lua thread.
-		if ( notifier->HasListener() )
+//		if ( notifier->HasListener() )
 		{
 			lua_State *L = notifier->GetLuaState();
 			Rtt_ASSERT( L );
@@ -1093,10 +1125,10 @@ PlatformOpenALPlayer::NotificationCallback( int which_channel, unsigned int al_s
 
 				// Bug 5724: In addition to setting all the callback properties, we pass the notifier in to transfer ownership. 
 				// We expect when the event is fired and deleted, it will also delete the notifier with it.
-				e->SetProperties( which_channel, al_source, almixer_data, finished_naturally, notifier );
-				notifier->ScheduleDispatch( e );
+				e->SetProperties( which_channel, al_source, almixer_data, finished_naturally );//notifier );
+				notifier->ScheduleDispatch( e, callback );
 			}
-		}
+		}/*
 		else
 		{
 			// No Lua data attached (e.g. listener), so it's okay to delete immediately.
@@ -1104,7 +1136,7 @@ PlatformOpenALPlayer::NotificationCallback( int which_channel, unsigned int al_s
 		}
 
 		// Channel is free, so NULL out callback reference.
-		arrayOfChannelToLuaCallbacks[which_channel] = NULL;
+		arrayOfChannelToLuaCallbacks[which_channel] = NULL;*/
 	}
 
 	// I would really like to remove the callback function from our list here, but it appears that it is not safe
@@ -1127,6 +1159,28 @@ PlatformOpenALPlayer::GetUseAudioSessionInitializationFailureToAbortEndInterrupt
 	return useAudioSessionInitializationFailureToAbortEndInterruption;
 }
 	
+int
+PlatformOpenALPlayer::SwapChannelCallback( int channel, int newRef )
+{
+	std::atomic_flag& flag = channelBusy[channel];
+
+	// see https://en.cppreference.com/w/cpp/atomic/atomic_flag (Aug 15, 2023)
+
+	while ( !flag.test_and_set( std::memory_order_acquire ) )
+		; // empty
+
+    std::atomic_thread_fence( std::memory_order_acquire );
+
+	int ref = arrayOfChannelToLuaCallbacks[channel];
+
+	arrayOfChannelToLuaCallbacks[channel] = newRef;
+
+    flag.clear( std::memory_order_release );
+
+	return ref;
+}
+
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

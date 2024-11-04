@@ -437,25 +437,31 @@ playChannelTimed( lua_State *L )
 		// Don't pop the function yet. Leave it on the stack so the implementation can easily access the function.
 	}
 	
-	int play_channel;
+	int play_channel, callback = LUA_REFNIL;
 	unsigned int play_source;
 	LuaContext *context = LuaContext::GetContext( L );
-	PlatformALmixerPlaybackFinishedCallback *callback = Rtt_NEW( LuaContext::GetAllocator( L ), PlatformALmixerPlaybackFinishedCallback( context->LuaState() ) );
+//	PlatformALmixerPlaybackFinishedCallback *callback = Rtt_NEW( LuaContext::GetAllocator( L ), PlatformALmixerPlaybackFinishedCallback( context->LuaState() ) );
 
 	if ( 0 != user_function_callback_index )
 	{
-		callback->SetListenerRef( user_function_callback_index );
+	//	callback->SetListenerRef( user_function_callback_index );
+		int t = lua_type( L, user_function_callback_index );
+		if ( LUA_TFUNCTION == t || LUA_TTABLE == t )
+		{
+			lua_pushvalue( L, user_function_callback_index );
+			callback = luaL_ref( L, LUA_REGISTRYINDEX );
+		}
 	}
 
 	if(fade_ticks > 0)
 	{
-		play_channel = openal_player->FadeInChannelTimed( which_channel, sound_data, number_of_loops, fade_ticks, expire_ticks, callback );
+		play_channel = openal_player->FadeInChannelTimed( which_channel, sound_data, number_of_loops, fade_ticks, expire_ticks );//, callback );
 	}
 	else
 	{
-		play_channel = openal_player->PlayChannelTimed( which_channel, sound_data, number_of_loops, expire_ticks, callback );
+		play_channel = openal_player->PlayChannelTimed( which_channel, sound_data, number_of_loops, expire_ticks );//, callback );
 	}
-	
+	openal_player->SetChannelCallback( L, play_channel, callback );
 
 	if(found_user_function_callback)
 	{

@@ -89,7 +89,7 @@ IPhoneVideoPlayer::Cleanup()
 	[[NSNotificationCenter defaultCenter] removeObserver:fMovieObserver];
 
 	[fMoviePlayerViewController dismissViewControllerAnimated:YES completion:nil];
-	[fMoviePlayerViewController release];
+	[fMoviePlayerViewController autorelease];
 	fMoviePlayerViewController = nil;
 	
 	// We set the kDoNotSuspend property in Rtt_LuaLibMedia before calling play.

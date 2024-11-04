@@ -1,7 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
+// For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -981,7 +982,14 @@ GraphicsLibrary::newOutline( lua_State *L )
         Runtime& runtime = display.GetRuntime();
 
         paint = BitmapPaint::NewBitmap( runtime, imageFileName, baseDir, PlatformBitmap::kIsNearestAvailablePixelDensity );
-
+      
+		    // eg. Image not found
+		    if ( ! Rtt_VERIFY( paint ) )
+		    {
+			    // Nothing to do.
+			    return 0;
+		    }
+      
         platform_bitmap = paint->GetBitmap();
 
         // Crop.
@@ -1056,12 +1064,21 @@ GraphicsLibrary::newOutline( lua_State *L )
 
     const unsigned char *raw_bitmap_buffer = static_cast< const unsigned char * >( platform_bitmap->GetBits( NULL ) );
 
-    int alphaIndex;
-    PlatformBitmap::Format format = platform_bitmap->GetFormat();
-    if ( ! PlatformBitmap::GetColorByteIndexesFor( format, & alphaIndex, NULL, NULL, NULL ) )
-    {
-        alphaIndex = 0;
-    }
+	if ( ! Rtt_VERIFY( raw_bitmap_buffer ) )
+	{
+		// This is NECESSARY because of the platform_bitmap->GetBits() above.
+		platform_bitmap->FreeBits();
+		Rtt_DELETE(paint);
+		return 0;
+	}
+
+	int alphaIndex;
+	PlatformBitmap::Format format = platform_bitmap->GetFormat();
+	if ( ! PlatformBitmap::GetColorByteIndexesFor( format, & alphaIndex, NULL, NULL, NULL ) )
+	{
+		alphaIndex = 0;
+	}
+
 #ifdef Rtt_ANDROID_ENV
     // TODO: AndroidBitmap::GetFormat() is returning the wrong format,
     // so we need to force this to the correct channel

@@ -32,6 +32,11 @@ static void NotificationCallback(CFNotificationCenterRef center, void *observer,
 
 @implementation AppDelegate
 
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app
+{
+	return NO;
+}
+
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(), (__bridge const void *)(self), NotificationCallback, CFSTR("CoronaConsole.clearConsole"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);

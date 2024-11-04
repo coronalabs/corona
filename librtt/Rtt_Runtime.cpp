@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -1210,8 +1211,11 @@ Runtime::LoadApplication( const LoadParameters& parameters )
 
 	// Use kSystemResourceDir b/c resource.car should always live inside the .app bundle
 	String filePath( GetAllocator() );
-	
-    fPlatform.PathForFile( basename, MPlatform::kSystemResourceDir, MPlatform::kDefaultPathFlags, filePath );
+#if defined( Rtt_ANDROID_ENV )
+    fPlatform.PathForFile( basename, MPlatform::kResourceDir, MPlatform::kDefaultPathFlags, filePath );
+#else
+	fPlatform.PathForFile( basename, MPlatform::kSystemResourceDir, MPlatform::kDefaultPathFlags, filePath );
+#endif
 
 	{
 		// Init VM
@@ -1300,6 +1304,8 @@ Runtime::LoadApplication( const LoadParameters& parameters )
 		else
 		{
 			fOpenALPlayer = PlatformOpenALPlayer::RetainInstance();
+
+			fOpenALPlayer->AttachNotifier( Rtt_NEW( GetAllocator(), PlatformNotifier( VMContext().LuaState() ) ) );
 		}
 #endif
 		bool connectToDebugger = ( launchOptions & kConnectToDebugger );
@@ -1965,7 +1971,7 @@ Runtime::operator()()
 	const bool isSuspended = IsSuspended();
 	if( wasSuspended != isSuspended && isSuspended )
 	{
-		// This condition is writtein inverse for better undrerstanding
+		// This condition is written inverse for better understanding
 		// Sometimes (Splash Screen is shown) scheduled tasks can suspend Runtime
 		// In that case (suspension state is changed and it is suspended), skip Display update
 	}

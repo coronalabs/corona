@@ -1,7 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
+// For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -3938,12 +3939,12 @@ LuaDisplayObjectProxyVTable::PushAndRemove( lua_State *L, GroupObject* parent, S
     {
         Rtt_ASSERT( parent );
 
-        // Offscreen objects (i.e. ones in the orphanage) do have a stage
-        StageObject *stage = parent->GetStage();
-        if ( stage )
-        {
-            Rtt_ASSERT( LuaContext::GetRuntime( L )->GetDisplay().HitTestOrphanage() != parent
-                        || LuaContext::GetRuntime( L )->GetDisplay().Orphanage() != parent );
+		// Offscreen objects (i.e. ones in the orphanage) do have a stage
+		StageObject *stage = parent->GetStage();
+		if ( stage )
+		{
+			Rtt_ASSERT( LuaContext::GetRuntime( L )->GetDisplay().HitTestOrphanage() != parent
+						&& LuaContext::GetRuntime( L )->GetDisplay().Orphanage() != parent );
 
 			SUMMED_TIMING( par1, "Object: PushAndRemove (release)" );
 

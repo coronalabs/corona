@@ -54,6 +54,7 @@ class String;
 class TextureFactory;
 class PlatformSurface;
 class RenderingStream;
+class ProfilingState;
 
 // ----------------------------------------------------------------------------
 
@@ -337,9 +338,12 @@ class Display
         bool HasFramebufferBlit( bool * canScale ) const;
         void GetVertexAttributes( VertexAttributeSupport & support ) const;
 
-    public:
-        Scene& GetScene() { return *fScene; }
-        const Scene& GetScene() const { return *fScene; }
+	  public:
+		    ProfilingState* GetProfilingState() const { return fProfilingState; }
+
+	  public:
+		    Scene& GetScene() { return *fScene; }
+		    const Scene& GetScene() const { return *fScene; }
 
         U8 GetDrawMode() const { return fDrawMode; }
         void SetDrawMode( U8 newValue ) { fDrawMode = newValue; }
@@ -396,6 +400,7 @@ class Display
         SpritePlayer *fSpritePlayer;
         TextureFactory *fTextureFactory;
         Scene *fScene;
+		    ProfilingState *fProfilingState;
 
 		// TODO: Refactor data structure portions out
 		// We temporarily use RenderingStream b/c it contains key data
