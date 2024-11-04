@@ -14,11 +14,16 @@ on:
         description: 'Build Year'
         required: true
         default: '2100'
+      onlyLatest:
+        description: "Only Latest Xcode"
+        type: 'boolean'
+        required: false
+        default: false
 
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_16.1.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -26,7 +31,6 @@ env:
 jobs:
   source-code:
     name: Check out and process source code
-    if: "!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona'"
     runs-on: macos-12
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
@@ -45,7 +49,7 @@ jobs:
 
   native:
     needs: source-code
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -57,7 +61,7 @@ jobs:
         run: tar -xzf SourceCode/corona.tgz
       - run: ./tools/GHAction/daily_env.sh
       - name: Build Native
-        run: JAVA_HOME="$JAVA_HOME_11_X64" ./tools/GHAction/build_native.sh
+        run: JAVA_HOME="${JAVA_HOME_17_X64:-$JAVA_HOME_17_arm64}" ./tools/GHAction/build_native.sh
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Upload Corona Native
@@ -66,8 +70,53 @@ jobs:
           name: Native
           path: ./output
 
+  Xcode-template-matrix-14:
+    strategy:
+      matrix:
+        runner:
+          - macos-14
+        xcode:
+          - Xcode_16.1
+          - Xcode_16
+          - Xcode_15.4
+        target:
+          - template
+          - template-angle
+        platform:
+          - iphone
+          - tvos
+    needs: source-code
+    runs-on: ${{ matrix.runner }}
+    env:
+      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
+      TEMPLATE_TARGET: ${{ matrix.target }}
+      TEMPLATE_PLATFORM: ${{ matrix.platform }}
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v4
+        with:
+          name: SourceCode
+          path: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build templates
+        working-directory: ./platform/${{ matrix.platform }}
+        run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Build templates JSON spec
+        run: ./tools/GHAction/generate_xcode_jsons.py
+      - name: Upload templates
+        uses: actions/upload-artifact@v4
+        with:
+          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
+          path: ./output
+
 
   Xcode-template-matrix-13:
+    if: (! github.event.inputs.onlyLatest)
     strategy:
       matrix:
         runner:
@@ -110,59 +159,14 @@ jobs:
           path: ./output
 
   Xcode-template-matrix-12:
+    if: (! github.event.inputs.onlyLatest)
     strategy:
       matrix:
         runner:
           - macos-12
         xcode:
-          - Xcode_13.4.1
-          - Xcode_14.2
-        target:
-          - template
-          - template-angle
-        platform:
-          - iphone
-          - tvos
-    needs: source-code
-    runs-on: ${{ matrix.runner }}
-    env:
-      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
-      TEMPLATE_TARGET: ${{ matrix.target }}
-      TEMPLATE_PLATFORM: ${{ matrix.platform }}
-      S2D_MIN_VER_IOS: "8.0"
-      S2D_MIN_VER_TVOS: "9.0"
-      S2D_MIN_VER_MACOS: "10.9"
-    steps:
-      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - name: Get processed code
-        uses: actions/download-artifact@v4
-        with:
-          name: SourceCode
-          path: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build templates
-        working-directory: ./platform/${{ matrix.platform }}
-        run: ./gh_build_templates.sh
-        env:
-          CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Build templates JSON spec
-        run: ./tools/GHAction/generate_xcode_jsons.py
-      - name: Upload templates
-        uses: actions/upload-artifact@v4
-        with:
-          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
-          path: ./output
-
-
-  Xcode-template-matrix:
-    strategy:
-      matrix:
-        runner:
-          - macos-11
-        xcode:
           - Xcode_13.2.1
+          - Xcode_14.2
         target:
           - template
           - template-angle
@@ -204,10 +208,11 @@ jobs:
 
   collect-ios-templates:
     needs:
-      - Xcode-template-matrix
       - Xcode-template-matrix-12
       - Xcode-template-matrix-13
+      - Xcode-template-matrix-14
     runs-on: ubuntu-20.04
+    if: (! failure() && ! cancelled())
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v4
@@ -232,6 +237,8 @@ jobs:
     needs:
       - source-code
     runs-on: macos-13
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
@@ -380,7 +387,7 @@ jobs:
 
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -407,7 +414,7 @@ jobs:
 
   CoronaCards-iOS-angle:
     needs: source-code
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -441,7 +448,8 @@ jobs:
       - native
       - webtemplate
       - linux
-    runs-on: macos-13
+    if: (! failure() && ! cancelled())
+    runs-on: macos-14
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -494,7 +502,7 @@ jobs:
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.macos.tgz -o jre.macos.tgz
       - name: required for appdmg
-        run: python3 -m pip install setuptools
+        run: brew install python-setuptools
       - name: install appdmg
         run: npm install -g appdmg
       - name: install imagemagick
@@ -525,7 +533,7 @@ jobs:
 
 
   check-notarization:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Check notarization credentials
         run: |

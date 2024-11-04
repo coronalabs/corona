@@ -262,7 +262,8 @@ IPhonePlatformBase::OpenURL( const char* url ) const
 		NSURL* urlPlatform = [NSURL URLWithString:[NSString stringWithUTF8String:url]];
 		if ( nil != urlPlatform)
 		{
-			result = [[UIApplication sharedApplication] openURL:urlPlatform];
+            result = [[UIApplication sharedApplication] canOpenURL:urlPlatform];// Use this to check if the URL can be opened
+            [[UIApplication sharedApplication] openURL:urlPlatform options:@{} completionHandler:nil];
 		}
 	}
 

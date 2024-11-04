@@ -228,13 +228,16 @@ public:
 	bool isDebug();
 	bool getHandleRedirects();
 	lua_State* getLuaState() const { return fL; };
+	FILE* getFileHandle() const { return fFileHandle; };
 	CURL* getCURL() const { return fCURL; };
 	CURLM* getMultiCURL() const { return fMultiCURL; };
 	void setCURL(CURLM* curlMulti, CURL* curl) { fCURL = curl; fMultiCURL = curlMulti; };
+	void setFileHandle(FILE* handle) { fFileHandle = handle; };
 	unsigned int getID() const { return fID; }
 	void cancel();
 
 	membuf fResponse;
+    UTF8String fResponseHeaders;
 
 private:
 
@@ -253,6 +256,7 @@ private:
 	bool			fIsValid;
 	bool			fHandleRedirects;
 	lua_State* fL;
+	FILE* fFileHandle;
 	CURL* fCURL;
 	CURLM* fMultiCURL;
 	unsigned int fID;

@@ -544,6 +544,15 @@ function CoronaPListSupport.captureCommandOutput( cmd, debugLevel )
 	return result
 end
 
+function CoronaPListSupport.generateXcprivacy( settings, platform )
+	local platformSettings = settings[platform]
+	local ret = ""
+	if platformSettings and platformSettings.xcprivacy then
+		ret = ret .. CoronaPListSupport.valueToPlistEntry(platformSettings.xcprivacy)
+	end
+
+	return ret
+end
 
 function CoronaPListSupport.generateEntitlements( settings, platform, provisionProfile )
 	local platformSettings = settings[platform]

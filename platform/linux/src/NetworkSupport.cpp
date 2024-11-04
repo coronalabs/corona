@@ -565,6 +565,7 @@ NetworkRequestParameters::NetworkRequestParameters( lua_State *luaState)
 	fRequestBodySize = 0;
 	fResponseFile = NULL;
 	fLuaCallback = NULL;
+    fFileHandle = NULL;
 	fCURL = NULL;
 	fMultiCURL = NULL;
 
@@ -1022,9 +1023,14 @@ void NetworkRequestParameters::cancel()
 		curl_easy_cleanup(fCURL);
 		curl_multi_cleanup(fMultiCURL);
 
+        if (fFileHandle != NULL) {
+            fclose(fFileHandle);
+        }
+
 		// to prevent multiple calls
 		fMultiCURL = NULL;
 		fCURL = NULL;
+        fFileHandle = NULL;
 	}
 }
 

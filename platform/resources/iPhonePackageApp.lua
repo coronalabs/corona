@@ -575,15 +575,53 @@ local function generateXcent( options )
 end
 
 
+-- xcprivacy
+local templateXcprivacy = [[
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+{{CUSTOM_XCPRIVACY}}
+</dict>
+</plist>
+]]
+local function generateXcprivacy( options )
+	local filename = options.tmpDir .. "/PrivacyInfo.xcprivacy"
+	local outFile = assert( io.open( filename, "wb" ) )
+
+	local data = templateXcprivacy
+
+	local generatedPrivacy = CoronaPListSupport.generateXcprivacy( options.settings, 'iphone')
+	if(  generatedPrivacy and generatedPrivacy ~= "" ) then
+		data, numMatches = string.gsub( data, "{{CUSTOM_XCPRIVACY}}", generatedPrivacy )
+		assert( numMatches == 1 )
+	end
+
+	outFile:write(data)
+	assert( outFile:close() )
+
+	print( "Created XCPRIACY: " .. filename );
+
+	if debugBuildProcess and debugBuildProcess ~= 0 then
+		runScript("cat "..filename)
+	end
+end
+
+
 --
 -- generateFiles
 --
--- Create the .xcent and Info.plist files
+-- Create the .xcent, .xcprivacy, and Info.plist files
 --
 -- returns an error message or nil on success
 --
 local function generateFiles( options )
 	local result = nil
+
+	result = generateXcprivacy( options )
+	if result then
+		return result
+	end
 
 	result = generateXcent( options )
 	if result then
@@ -963,10 +1001,15 @@ local function packageApp( options )
 	end
 
 	--remove standard resources(Corona Resources Bundle) if users selects
-
 	if options.includeStandardResources == false then
 		runScript("rm -rf "..quoteString(makepath(appBundleFileUnquoted, "CoronaResources.bundle")))
 	end
+	
+	--add xcprivacy file to the bundle
+	if options.settings.iphone and options.settings.iphone.xcprivacy then
+		runScript("cp -v " .. quoteString(options.tmpDir .. "/PrivacyInfo.xcprivacy") .. " " .. quoteString(makepath(appBundleFileUnquoted, "PrivacyInfo.xcprivacy")))
+	end
+	
 
 	-- bundle is now ready to be signed (don't sign if we don't have a signingIdentity, e.g. Xcode Simulator)
 	if options.signingIdentity then

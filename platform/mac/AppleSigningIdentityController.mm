@@ -412,6 +412,17 @@ FindSigningIdentity( NSDictionary *provisionDict, NSString **certFingerprint, NS
 	return provisionDir;
 }
 
++ (NSString*)newProvisionPath
+{
+	NSArray* paths = NSSearchPathForDirectoriesInDomains( NSLibraryDirectory, NSUserDomainMask, true );
+	NSString *provisionDir = [paths objectAtIndex:0];
+    provisionDir = [provisionDir stringByAppendingPathComponent:@"Developer/Xcode/UserData/Provisioning Profiles/"];
+	return provisionDir;
+}
+
+
+
+
 + (BOOL)hasProvisionedDevices:(NSString*)provisionFile
 {
     NSDictionary *provisionProfile = [AppleSigningIdentityController loadProvisioningProfile:provisionFile];
@@ -499,16 +510,18 @@ FindSigningIdentity( NSDictionary *provisionDict, NSString **certFingerprint, NS
 
 - (id)init
 {
-	return [self initWithProvisionPath:[[self class] defaultProvisionPath]];
+	return [self initWithProvisionPath:[[self class] defaultProvisionPath] newPath:[[self class] newProvisionPath]];
 }
 
-- (id)initWithProvisionPath:(NSString*)path
+- (id)initWithProvisionPath:(NSString*)path newPath:(NSString *)newPath
 {
 	self = [super init];
 	if ( self )
 	{
 		fPath = [path copy];
+		fNewPath = [newPath copy]; // This new path is for Xcode 16 and later
 	}
+	
     
 	return self;
 }
@@ -516,6 +529,7 @@ FindSigningIdentity( NSDictionary *provisionDict, NSString **certFingerprint, NS
 - (void)dealloc
 {
 	[fPath release];
+	[fNewPath release];
 	[super dealloc];
 }
 
@@ -625,25 +639,45 @@ static bool ShouldUseProvisionProfileForPlatform(
 {
 	using namespace Rtt;
 
-	NSFileManager* fileMgr = [NSFileManager defaultManager];
+	NSString *provisionDir; // Temporary variable to hold the current directory path
+    NSMutableArray *allDirContents = [NSMutableArray array]; // Array to hold contents from both paths
+	NSMenu *identitiesMenu = menu;
+	Rtt_ASSERT(menu);
+	NSMenu *iOSTeamProvisioningProfilesSubMenu = [[NSMenu alloc] init];
+	NSMenu *disabledSubMenu = [[NSMenu alloc] init];
+	NSString *extension = ExtensionForPlatform(platform);
+	NSFont *smallFont = [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSMiniControlSize]];
+	NSFont *boldFont = [NSFont boldSystemFontOfSize:[NSFont labelFontSize]];
+	NSMutableArray *certIdentities = [NSMutableArray arrayWithCapacity:20];
 
-	NSString* provisionDir = fPath;
-	NSArray* dirContents = [fileMgr contentsOfDirectoryAtPath:provisionDir error:NULL];
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+	// Get contents from both paths
+    for (NSString *path in @[fPath, fNewPath]) {
+        if ([fileMgr fileExistsAtPath:path]) {
+            NSArray *contents = [fileMgr contentsOfDirectoryAtPath:path error:NULL];
+            NSString *source = (path == fPath) ? @"old" : @"new";
+            for (NSString *item in contents) {
+                [allDirContents addObject:@{@"name": item, @"source": source}];
+            }
+        } else {
+            // Do nothing for right now
+        }
+    }
+    
+	// Process each file in the combined contents
+    for (NSDictionary *fileInfo in allDirContents)
+    {
+        NSString *filename = fileInfo[@"name"];
+        
+        if ([[filename pathExtension] isEqualToString:extension])
+        {
+            // Determine the source of the file and assign the correct directory
+            NSString *provisionDir = [fileInfo[@"source"] isEqualToString:@"old"] ? fPath : fNewPath;
 
-	NSMenu* identitiesMenu = menu; Rtt_ASSERT( menu );
-	NSMenu* iOSTeamProvisioningProfilesSubMenu = [[NSMenu alloc] init];
-	NSMenu* disabledSubMenu = [[NSMenu alloc] init];
-	NSString *extension = ExtensionForPlatform( platform );
-    NSFont *smallFont = [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSMiniControlSize]];
-    NSFont *boldFont = [NSFont boldSystemFontOfSize:[NSFont labelFontSize]];
-    NSMutableArray *certIdentities = [NSMutableArray arrayWithCapacity:20];
-
-	for ( NSString *filename in dirContents )
-	{
-		if ( [[filename pathExtension] isEqualToString:extension] )
-		{
-			NSString *fullPath = [provisionDir stringByAppendingPathComponent:filename];
+            // You can now use provisionDir and filename to create the full path if needed
+            NSString *fullPath = [provisionDir stringByAppendingPathComponent:filename];
 			NSDictionary *provisionProfile = [AppleSigningIdentityController loadProvisioningProfile:fullPath];
+        
 
 			if ( provisionProfile != nil )
 			{

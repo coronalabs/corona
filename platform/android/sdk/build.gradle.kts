@@ -2,13 +2,15 @@ plugins {
     id("com.android.library")
 }
 
+val buildDirectory = layout.buildDirectory.asFile.get()
+
 android {
+    namespace = "com.ansca.corona"
     ndkVersion = "18.1.5063045"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 15
-        targetSdk = 33
         version = 1
     }
     sourceSets["main"].manifest.srcFile(file("AndroidManifest-New.xml"))
@@ -23,27 +25,15 @@ android {
     }
     useLibrary("org.apache.http.legacy")
 
-    libraryVariants.all {
-        generateBuildConfigProvider!!.configure {
-            enabled = false
-        }
-    }
-    testOptions {
-        testVariants.all {
-            generateBuildConfigProvider!!.configure {
-                enabled = false
-            }
-        }
-    }
 }
 
 tasks.create<Copy>("updateWidgetResources") {
     group = "Corona"
-    val widgetResLocation = "$buildDir/generated/widgetResources"
+    val widgetResLocation = "$buildDirectory/generated/widgetResources"
     from("../../../subrepos/widget/")
     include("*.png")
     into("$widgetResLocation/raw")
-    rename { "corona_asset_$it".replace("@", "_").toLowerCase() }
+    rename { "corona_asset_$it".replace("@", "_").lowercase() }
     val task = this
     android.libraryVariants.all {
         registerGeneratedResFolders(files(widgetResLocation) {
@@ -52,12 +42,12 @@ tasks.create<Copy>("updateWidgetResources") {
     }
 }
 
-tasks.create<Copy>("generateNetworkHelper") {
-
+val networkHelperOutputDir = file("$buildDirectory/generated/source/networkJava")
+val networkHelper = tasks.register<Copy>("generateNetworkHelper") {
     from("../../../plugins/network/android/src/")
     include("**/LuaHelper.java.template")
-    val outputDir = file("$buildDir/generated/source/networkJava")
-    into(outputDir)
+
+    into(networkHelperOutputDir)
     rename { it.removeSuffix(".template") }
 
     val networkLua = file("../../../plugins/network/shared/network.lua")
@@ -69,9 +59,7 @@ tasks.create<Copy>("generateNetworkHelper") {
             .joinToString("\\n\" +\n\"","\"", "\";")
     this.inputs.file(networkLua)
     expand(mutableMapOf("luaCode" to luaCode))
-
-    val task = this
-    android.libraryVariants.all {
-        registerJavaGeneratingTask(task, outputDir)
-    }
+}
+android.libraryVariants.all {
+    registerJavaGeneratingTask(networkHelper, networkHelperOutputDir)
 }

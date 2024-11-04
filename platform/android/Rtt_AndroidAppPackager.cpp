@@ -257,11 +257,11 @@ AndroidAppPackager::Build( AppPackagerParams * params, const char * tmpDirBase )
 			gradleGo.append(" && cd template &&");
 			
 #if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
-			bool java11Installed = 0 == system("JAVA_VERSION=11 /usr/bin/java -version > /dev/null 2>/dev/null");
+			bool java11Installed = 0 == system("JAVA_VERSION=17 /usr/bin/java -version > /dev/null 2>/dev/null");
 			if(java11Installed) {
-				gradleGo.append(" ./setup.sh && JAVA_VERSION=11 ./gradlew");
+				gradleGo.append(" ./setup.sh && JAVA_VERSION=17 ./gradlew");
 			} else {
-				Rtt_TRACE_SIM(("WARNING: Java 11 does not seems to be available. If build fails, install Java 1.11."));
+				Rtt_TRACE_SIM(("WARNING: Java 17 does not seems to be available. If build fails, install Java 17"));
 				gradleGo.append(" ./setup.sh && ./gradlew");
 			}
 #else
