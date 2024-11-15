@@ -19,6 +19,8 @@
 #include "Corona/CoronaGraphics.h"
 #include <algorithm>
 
+#include <stdio.h>
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
