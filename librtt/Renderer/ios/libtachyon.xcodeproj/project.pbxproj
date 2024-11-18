@@ -32,6 +32,7 @@
 		A4B93F7317596600003466CC /* Rtt_TextureBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F5A17596600003466CC /* Rtt_TextureBitmap.cpp */; };
 		A4B93F7417596600003466CC /* Rtt_Uniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F5C17596600003466CC /* Rtt_Uniform.cpp */; };
 		A4D0AF6317D1843D000C432B /* Rtt_VideoTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AF6117D1843A000C432B /* Rtt_VideoTexture.cpp */; };
+		AAA3013B2CEAEC6800FF77DE /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34A8B29F9DF1600076706 /* Rtt_FormatExtensionList.cpp */; };
 		AAF34A8D29F9DF1600076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34A8B29F9DF1600076706 /* Rtt_FormatExtensionList.cpp */; };
 		F5261112250013F900671DFE /* Rtt_CommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3017596600003466CC /* Rtt_CommandBuffer.cpp */; };
 		F5261113250013F900671DFE /* Rtt_CPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B93F3217596600003466CC /* Rtt_CPUResource.cpp */; };
@@ -359,6 +360,7 @@
 				F526111A250013F900671DFE /* Rtt_GLProgram.cpp in Sources */,
 				F526111B250013F900671DFE /* Rtt_GLRenderer.cpp in Sources */,
 				F526111C250013F900671DFE /* Rtt_GLTexture.cpp in Sources */,
+				AAA3013B2CEAEC6800FF77DE /* Rtt_FormatExtensionList.cpp in Sources */,
 				F526111D250013F900671DFE /* Rtt_GPUResource.cpp in Sources */,
 				F526111E250013F900671DFE /* Rtt_HighPrecisionTime.cpp in Sources */,
 				F526111F250013F900671DFE /* Rtt_Matrix_Renderer.cpp in Sources */,
