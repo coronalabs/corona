@@ -41,9 +41,45 @@
 
 #import "CoronaLuaObjC+NSObject.h"
 
+#define JS(...)  [[NSString alloc] initWithCString:#__VA_ARGS__ encoding:NSUTF8StringEncoding]
+
 // ----------------------------------------------------------------------------
 
 static CGFloat kAnimationDuration = 0.3;
+
+NSString * const kCoronaEventPrefix = @"JS_";
+NSString * const kCorona4JS = @"corona";
+NSString * const kNativeBridgeCode = JS(
+	const NativeBridge = {
+		callNative: function(method, args) {
+			return new Promise((resolve, reject) => {
+				var eventName = "JS_" + method;
+				window.addEventListener(eventName, function(e) {
+					resolve(e.detail);
+				}, { once: true });
+				window.webkit.messageHandlers.corona.postMessage({
+					type: eventName,
+					data: JSON.stringify(args),
+					noResult: false
+				});
+			});
+		},
+		sendToLua: function(event, data) {
+			var eventName = "JS_" + event;
+			window.webkit.messageHandlers.corona.postMessage({
+				type: eventName,
+				data: JSON.stringify(data),
+				noResult: true
+			});
+		},
+		on: function(event, callback, options) {
+			var eventName = "JS_" + event;
+			window.addEventListener(eventName, function(e) {
+				callback(e.detail)
+			}, options);
+		}
+	};
+);
 
 //static void
 //RectToCGRect( const Rtt::Rect& bounds, CGRect * outRect )
@@ -68,7 +104,7 @@ static CGFloat kAnimationDuration = 0.3;
 
 // ----------------------------------------------------------------------------
 
-@interface Rtt_iOSWebViewContainer : UIView< WKNavigationDelegate >
+@interface Rtt_iOSWebViewContainer : UIView< WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler >
 {
 	Rtt::IPhoneWebViewObject *fOwner;
 	WKWebViewConfiguration *fWebViewConfiguration;
@@ -120,6 +156,7 @@ static CGFloat kAnimationDuration = 0.3;
 		[fWebViewConfiguration release];
 		fWebViewConfiguration = nil;
 		fWebView.navigationDelegate = self;
+		fWebView.UIDelegate = self;
 //		fWebView.scalesPageToFit = YES;
         
 		fActivityView = [[UIView alloc] initWithFrame:webViewRect];
@@ -154,6 +191,10 @@ static CGFloat kAnimationDuration = 0.3;
 	if ( self )
 	{
 		fWebViewConfiguration = [[WKWebViewConfiguration alloc] init];
+		WKUserContentController *userContentController = [[WKUserContentController alloc] init];
+		[userContentController addScriptMessageHandler:self name:kCorona4JS];
+		fWebViewConfiguration.userContentController = userContentController;
+
 		fOwner = nil;
 		fLoadingURL = nil;
 		fWebView = nil;
@@ -466,6 +507,14 @@ static EventTypeForNavigationType( WKNavigationType t )
 	decisionHandler(WKNavigationActionPolicyAllow); // Always load
 }
 
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
+{
+	if (!navigationAction.targetFrame.isMainFrame) {
+		[webView loadRequest:navigationAction.request];
+	}
+	return nil;
+}
+
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
 {
 	UIActivityIndicatorView *indicator = [[fActivityView subviews] objectAtIndex:0];
@@ -481,6 +530,8 @@ static EventTypeForNavigationType( WKNavigationType t )
 		isLoading = NO;
 
 		[self hideActivityViewIndicator];
+
+		[fWebView evaluateJavaScript:kNativeBridgeCode completionHandler:nil];
 
 		NSURL *url = webView.URL;
 		const char *urlString = [[url absoluteString] UTF8String];
@@ -519,6 +570,44 @@ static EventTypeForNavigationType( WKNavigationType t )
 	[UIView setAnimationDidStopSelector:@selector(didAppear:finished:context:)];
 	fActivityView.alpha = 0.0;
 	[UIView commitAnimations];
+}
+
+// Implement WKScriptMessageHandler protocol
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
+{
+	if ([message.name isEqualToString:kCorona4JS])
+	{
+		NSDictionary *messageBody = message.body;
+
+		using namespace Rtt;
+
+		const char* type = [messageBody[@"type"] UTF8String];
+		const char* data = [messageBody[@"data"] UTF8String];
+		bool noResult =  [messageBody[@"noResult"] boolValue];
+
+		CommonEvent e(type, data);
+
+		lua_State *L = fOwner->GetL();
+		int status = fOwner->DisplayObject::DispatchEventWithTarget( L, e, 1 );
+		if ( status == 0 && (! noResult ) )
+		{
+			int retValueIndex = lua_gettop( L );
+			const char* jsonContent = "{}";
+			if ( 0 == LuaContext::JsonEncode( L, retValueIndex ) )
+			{
+				jsonContent = lua_tostring( L, -1 );
+			}
+
+			NSString *jsCode = [NSString stringWithFormat:@"window.dispatchEvent(new CustomEvent('%s', { detail: %s }));", type, jsonContent];
+			[fWebView evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+				if ( error != nil ) {
+					NSLog(@"WKUserContentController error: %s, %@", type, error);
+				}
+			}];
+			lua_pop( L, 1 );
+		}
+		lua_pop( L, 1 );
+	}
 }
 
 @end
@@ -803,6 +892,86 @@ IPhoneWebViewObject::SetBackgroundColor( lua_State *L )
 */
 
 int
+IPhoneWebViewObject::InjectJS( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	IPhoneWebViewObject *o = (IPhoneWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)o->GetView();
+		const char *jsContent = lua_tostring( L, 2 );
+		NSString *jsCode = [NSString stringWithUTF8String:jsContent];
+		// Rtt_Log( "InjectJS: %s ", [jsCode UTF8String] );
+
+		[container.webView evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+			if ( error != nil ) {
+				NSLog(@"InjectJS error: %@", error);
+			}
+		}];
+	}
+
+	return 0;
+}
+
+int
+IPhoneWebViewObject::RegisterCallback( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	IPhoneWebViewObject *o = (IPhoneWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char *eventName = lua_tostring( L, 2 );
+		NSString *jsEventName = [NSString stringWithFormat:@"%@%s", kCoronaEventPrefix, eventName];
+		o->AddEventListener( L, 3, [jsEventName UTF8String] );
+	}
+
+	return 0;
+}
+
+int
+IPhoneWebViewObject::On( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	IPhoneWebViewObject *o = (IPhoneWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char *eventName = lua_tostring( L, 2 );
+		NSString *jsEventName = [NSString stringWithFormat:@"%@%s", kCoronaEventPrefix, eventName];
+		o->AddEventListener( L, 3, [jsEventName UTF8String] );
+	}
+
+	return 0;
+}
+
+int
+IPhoneWebViewObject::Send( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	IPhoneWebViewObject *o = (IPhoneWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char* eventName = lua_tostring( L, 2 );
+
+		Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)o->GetView();
+		const char* jsonContent = "{}";
+		if ( 0 == LuaContext::JsonEncode( L, 3 ) )
+		{
+			jsonContent = lua_tostring( L, -1 );
+		}
+
+		NSString *jsCode = [NSString stringWithFormat:@"window.dispatchEvent(new CustomEvent('%@%s', { detail: %s }));", kCoronaEventPrefix, eventName, jsonContent];
+		[container.webView evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+			if ( error != nil ) {
+				NSLog(@"Send '%s' error: %@", eventName, error);
+			}
+		}];
+		lua_pop( L, 1 );
+	}
+
+	return 0;
+}
+
+int
 IPhoneWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 {
 	Rtt_ASSERT( key );
@@ -817,6 +986,22 @@ IPhoneWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 	if ( strcmp( "request", key ) == 0 )
 	{
 		lua_pushcfunction( L, Request );
+	}
+	else if ( strcmp( "injectJS", key ) == 0 )
+	{
+		lua_pushcfunction( L, InjectJS );
+	}
+	else if ( strcmp( "registerCallback", key ) == 0 )
+	{
+		lua_pushcfunction( L, RegisterCallback );
+	}
+	else if ( strcmp( "on", key ) == 0 )
+	{
+		lua_pushcfunction( L, On );
+	}
+	else if ( strcmp( "send", key ) == 0 )
+	{
+		lua_pushcfunction( L, Send );
 	}
 	else if ( strcmp( "stop", key ) == 0 )
 	{

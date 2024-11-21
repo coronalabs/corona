@@ -2742,6 +2742,44 @@ UrlRequestEvent::Push( lua_State *L ) const
 
 // ----------------------------------------------------------------------------
 
+CommonEvent::CommonEvent( const char *fEventName, const char *fData )
+: 	fEventName( fEventName ),
+	fData( fData )
+{
+}
+
+const char*
+CommonEvent::Name() const
+{
+	return fEventName;
+}
+
+int
+CommonEvent::Push( lua_State *L ) const
+{
+	if ( Rtt_VERIFY( Super::Push( L ) ) )
+	{
+		if ( fData )
+		{
+			if ( 0 == LuaContext::JsonDecode( L, fData) )
+			{
+				Rtt_Log( "CommonEvent::Push fData=%s, type=%s", fData, luaL_typename( L, -1 ) );
+				lua_setfield( L, -2, "detail" );
+			}
+			else
+			{
+				lua_pop( L, 1 );
+				lua_pushstring( L, fData );
+				lua_setfield( L, -2, "detail" );
+			}
+		}
+	}
+
+	return 1;
+}
+
+// ----------------------------------------------------------------------------
+
 const char UserInputEvent::kName[] = "userInput";
 
 const char*

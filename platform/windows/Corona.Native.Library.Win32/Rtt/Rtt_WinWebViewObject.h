@@ -84,6 +84,10 @@ class WinWebViewObject : public WinDisplayObject
 		static int OnReload(lua_State *L);
 		static int OnResize(lua_State *L);
 		static int OnDeleteCookies(lua_State *L);
+		static int InjectJS(lua_State *L );
+		static int RegisterCallback(lua_State *L);
+		static int On(lua_State *L);
+		static int Send(lua_State *L);
 
 		#pragma endregion
 

@@ -13,15 +13,70 @@ import android.content.Context;
 import android.graphics.Color;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.JavascriptInterface;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /** View for displaying web pages. */
 public class CoronaWebView extends WebView  implements NativePropertyResponder {
+	private static final String CORONA_INTERFACE_NAME = "corona";
+
+	// JavaScript injection code
+	private static final String NATIVE_BRIDGE_CODE =
+		"const NativeBridge = {\n" +
+		"    callNative: function(method, args) {\n" +
+		"        return new Promise((resolve, reject) => {\n" +
+		"            var eventName = 'JS_' + method;\n" +
+		"            window.addEventListener(eventName, function(e) {\n" +
+		"                resolve(e.detail);\n" +
+		"            }, { once: true });\n" +
+		"            window.corona.postMessage(JSON.stringify({\n" +
+		"                type: eventName,\n" +
+		"                data: JSON.stringify(args),\n" +
+		"                noResult: false\n" +
+		"            }));\n" +
+		"        });\n" +
+		"    },\n" +
+		"    sendToLua: function(event, data) {\n" +
+		"       var eventName = 'JS_' + event;\n" +
+		"        window.corona.postMessage(JSON.stringify({\n" +
+		"            type: eventName,\n" +
+		"            data: JSON.stringify(data),\n" +
+		"            noResult: true\n" +
+		"        }));\n" +
+		"    },\n" +
+		"    on: function(event, callback, options) {\n" +
+		"        var eventName = 'JS_' + event;\n" +
+		"        window.addEventListener(eventName, function(e) {\n" +
+		"            callback(e.detail)\n" +
+		"        }, options);\n" +
+		"    }\n" +
+		"};\n";
+
+	// JavaScript interface class
+	private class WebViewJSInterface {
+		@JavascriptInterface
+		public void postMessage(String message) {
+			try {
+				JSONObject json = new JSONObject(message);
+				String type = json.getString("type");
+				String data = json.getString("data");
+				boolean noResult = json.optBoolean("noResult", false);
+
+				fCoronaRuntime.getTaskDispatcher().send(new com.ansca.corona.events.WebJSInterfaceCommonTask(getId(), type, data, noResult));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * Class providing URL request source type IDs matching Corona's C++ UrlRequestEvent::Type enum.
 	 * These types indicate where the URL request came from such as via a tapped link, reload, etc.
@@ -183,7 +238,9 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 			ApiLevel21.setAcceptThirdPartyCookies(this, true);
 			ApiLevel21.setMixedContentModeToAlwaysAllowFor(settings);
 		}
-		
+
+		addJavascriptInterface(new WebViewJSInterface(), CORONA_INTERFACE_NAME);
+
 		// Set up web view to have the focus when touched.
 		// This allows the virtual keyboard to appear when the user taps on a text field.
 		setOnTouchListener(new android.view.View.OnTouchListener() {
@@ -484,7 +541,11 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 			fIsLoading = false;
 
 			super.onPageFinished(view, url);
-			
+
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+				view.evaluateJavascript(NATIVE_BRIDGE_CODE, null);
+			}
+
 			if (fCoronaRuntime == null || !fCoronaRuntime.isRunning()) {
 				return;
 			}

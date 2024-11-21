@@ -1285,6 +1285,27 @@ class UrlRequestEvent : public VirtualEvent
 
 // ----------------------------------------------------------------------------
 
+// Common event
+class CommonEvent : public VirtualEvent
+{
+	public:
+		typedef VirtualEvent Super;
+		typedef CommonEvent Self;
+
+	public:
+		CommonEvent( const char *fEventName, const char *fData );
+
+	public:
+		virtual const char* Name() const;
+		virtual int Push( lua_State *L ) const;
+
+	private:
+		const char *fEventName;
+		const char *fData;
+};
+
+// ----------------------------------------------------------------------------
+
 // Local event
 class UserInputEvent : public VirtualEvent
 {

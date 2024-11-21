@@ -25,150 +25,195 @@
 #include "Rtt_Rendering.h"
 
 #import <WebKit/WebKit.h>
-#import <WebKit/WebPolicyDelegate.h>
+
+#define JS(...)  [[NSString alloc] initWithCString:#__VA_ARGS__ encoding:NSUTF8StringEncoding]
 
 // ----------------------------------------------------------------------------
+NSString * const kCoronaEventPrefix = @"JS_";
+NSString * const kCorona4JS = @"corona";
+NSString * const kNativeBridgeCode = JS(
+	const NativeBridge = {
+		callNative: function(method, args) {
+			return new Promise((resolve, reject) => {
+				var eventName = "JS_" + method;
+				window.addEventListener(eventName, function(e) {
+					resolve(e.detail);
+				}, { once: true });
+				window.webkit.messageHandlers.corona.postMessage({
+					type: eventName,
+					data: JSON.stringify(args),
+					noResult: false
+				});
+			});
+		},
+		sendToLua: function(event, data) {
+			var eventName = "JS_" + event;
+			window.webkit.messageHandlers.corona.postMessage({
+				type: eventName,
+				data: JSON.stringify(data),
+				noResult: true
+			});
+		},
+		on: function(event, callback, options) {
+			var eventName = "JS_" + event;
+			window.addEventListener(eventName, function(e) {
+				callback(e.detail)
+			}, options);
+		}
+	};
+);
 
-@interface Rtt_WebView ()
+@interface Rtt_WebView : WKWebView <WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler>
 
-- (id)initWithFrame:(NSRect)frameRect;
+@property(nonatomic, assign) Rtt::MacWebViewObject *owner;
 
-- (void)setDelegate:(id)delegate;
-
-- (void)loadRequest:(NSURLRequest*)request;
-
-- (void)loadHtmlString:(NSString*)htmlString baseURL:(NSURL*)baseUrl;
+- (id)initWithFrame:(CGRect)rect;
 
 @end
-
 
 @implementation Rtt_WebView
 
 @synthesize owner;
 
-- (id)initWithFrame:(NSRect)frameRect;
+- (id)initWithFrame:(CGRect)frameRect
 {
-	self = [super initWithFrame:frameRect frameName:nil groupName:nil];
-	if ( self )
+	WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+	configuration.preferences.javaScriptEnabled = YES;
+	configuration.preferences.javaScriptCanOpenWindowsAutomatically = YES;
+
+	// Add userContentController
+	WKUserContentController *userContentController = [[WKUserContentController alloc] init];
+	[userContentController addScriptMessageHandler:self name:kCorona4JS];
+	configuration.userContentController = userContentController;
+
+	self = [super initWithFrame:frameRect configuration:configuration];
+	if (self)
 	{
 		owner = NULL;
 		[self setWantsLayer:YES];
-		[self setUIDelegate:self];
-		[self setPolicyDelegate:self];
-		[self setFrameLoadDelegate:self];
+		[self setNavigationDelegate:self];
+		[self setUIDelegate:self]; // Set UIDelegate to handle new windows
 	}
-
 	return self;
 }
 
-// Overriding this delegate method and doing nothing prevents JavaScript from
-// modifying the size or position of the window containing the webview.  Such
-// behavior is usually disallowed by current web browsers so we ignore it too.
-// (note that "- (BOOL)webViewIsResizable:(WebView *)sender;" is not effective)
-- (void)webView:(WebView *)sender setFrame:(NSRect)frame
-{
-	// NSLog(@"WebView: setFrame: %@", NSStringFromRect(frame));
-
-	// do nothing
-}
-
-// Ignore window.close() from JavaScript because it exits the entire app but
-// notify the app if it's listening
-- (void)webViewClose:(WebView *)sender
-{
-	Rtt::UrlRequestEvent e( "window.close", Rtt::UrlRequestEvent::kOther );
-	owner->DispatchEventWithTarget( e );
-}
-
-- (void)setDelegate:(id)delegate
-{
-	[self setPolicyDelegate:delegate];
-	[self setFrameLoadDelegate:delegate];
-}
-- (void)loadHtmlString:(NSString*)htmlString baseURL:(NSURL*)baseUrl
-{
-	[[self mainFrame] loadHTMLString:htmlString baseURL:baseUrl];
-}
-- (void)loadRequest:(NSURLRequest*)request
-{
-	[[self mainFrame] loadRequest:request];
-}
-
-// WebView doesn't have UIWebview:
-//- (BOOL)webView:(WebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(WebViewNavigationType)navigationType
-// http://forums.macrumors.com/showthread.php?t=1077692
-// Maybe this will work?
-- (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
 	using namespace Rtt;
 
-	NSURL *url = [request URL];
-	
+	NSURL *url = navigationAction.request.URL;
+	BOOL shouldLoad = YES;
+
+	// Handle special protocols (like tel:, mailto:, etc.)
+	if (![url.scheme isEqualToString:@"http"] &&
+		![url.scheme isEqualToString:@"https"] &&
+		![url.scheme isEqualToString:@"file"] &&
+		![url.scheme isEqualToString:@"about"])
+	{
+		// For special protocols, use the system default handling method
+		if ([[NSWorkspace sharedWorkspace] openURL:url]) {
+			shouldLoad = NO;
+		}
+	}
+
 	UrlRequestEvent::Type urlRequestType = UrlRequestEvent::kUnknown;
-	if (WebNavigationTypeLinkClicked == [[actionInformation objectForKey:WebActionNavigationTypeKey] intValue])
-	{
-		urlRequestType = UrlRequestEvent::kLink;
-	}
-	else if (WebNavigationTypeFormSubmitted == [[actionInformation objectForKey:WebActionNavigationTypeKey] intValue])
-	{
-		urlRequestType = UrlRequestEvent::kForm;
-	}
-	else if (WebNavigationTypeBackForward == [[actionInformation objectForKey:WebActionNavigationTypeKey] intValue])
-	{
-		urlRequestType = UrlRequestEvent::kHistory;
-	}
-	else if (WebNavigationTypeReload == [[actionInformation objectForKey:WebActionNavigationTypeKey] intValue])
-	{
-		urlRequestType = UrlRequestEvent::kReload;
-	}
-	else if (WebNavigationTypeFormResubmitted == [[actionInformation objectForKey:WebActionNavigationTypeKey] intValue])
-	{
-		urlRequestType = UrlRequestEvent::kFormResubmitted;
-	}
-	else if (WebNavigationTypeOther == [[actionInformation objectForKey:WebActionNavigationTypeKey] intValue])
-	{
-		urlRequestType = UrlRequestEvent::kOther;
+	switch (navigationAction.navigationType) {
+		case WKNavigationTypeLinkActivated:
+			urlRequestType = UrlRequestEvent::kLink;
+			break;
+		case WKNavigationTypeFormSubmitted:
+			urlRequestType = UrlRequestEvent::kForm;
+			break;
+		case WKNavigationTypeBackForward:
+			urlRequestType = UrlRequestEvent::kHistory;
+			break;
+		case WKNavigationTypeReload:
+			urlRequestType = UrlRequestEvent::kReload;
+			break;
+		case WKNavigationTypeFormResubmitted:
+			urlRequestType = UrlRequestEvent::kFormResubmitted;
+			break;
+		case WKNavigationTypeOther:
+			urlRequestType = UrlRequestEvent::kOther;
+			break;
 	}
 
 	const char *urlString = [[url absoluteString] UTF8String];
-	UrlRequestEvent e( urlString, urlRequestType );
-	owner->DispatchEventWithTarget( e ); // if listener succeeds, result will be modified as appropriate
-	[listener use];
+	UrlRequestEvent e(urlString, urlRequestType);
+	owner->DispatchEventWithTarget(e);
+
+	// Determine whether to allow navigation based on shouldLoad
+	decisionHandler(shouldLoad ? WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel);
 }
 
-- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
+{
+	// If a link opens in a new window, open it in the current window instead
+	if (!navigationAction.targetFrame.isMainFrame) {
+		[webView loadRequest:navigationAction.request];
+	}
+	return nil;
+}
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
+{
+	[self evaluateJavaScript:kNativeBridgeCode completionHandler:nil];
+
+	using namespace Rtt;
+
+	const char *urlString = [webView.URL.absoluteString UTF8String];
+	UrlRequestEvent e(urlString, UrlRequestEvent::kLoaded);
+	owner->DispatchEventWithTarget(e);
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
 	using namespace Rtt;
 
-	//This is a javascript hack, not sure how else to get the url request
-	NSString *rawLocationString = [sender stringByEvaluatingJavaScriptFromString:@"location.href;"];
-		
-	const char *urlString = [rawLocationString UTF8String];
-	UrlRequestEvent e( urlString, UrlRequestEvent::kLoaded );
-	owner->DispatchEventWithTarget( e );
-		
+	const char *urlString = [error.userInfo[NSURLErrorFailingURLStringErrorKey] UTF8String];
+
+	UrlRequestEvent e(urlString, [[error localizedDescription] UTF8String], (S32)[error code]);
+	owner->DispatchEventWithTarget(e);
 }
 
-- (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error forFrame:(WebFrame *)frame
+// Implement WKScriptMessageHandler protocol
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
 {
-	using namespace Rtt;
+	if ([message.name isEqualToString:kCorona4JS])
+	{
+		NSDictionary *messageBody = message.body;
 
-	const char *urlString =
-		[[[error userInfo] valueForKey:NSURLErrorFailingURLStringErrorKey] UTF8String];
+		using namespace Rtt;
 
-	UrlRequestEvent e(
-		urlString, [[error localizedDescription] UTF8String], (S32) [error code] );
-	owner->DispatchEventWithTarget( e );
+		const char* type = [messageBody[@"type"] UTF8String];
+		const char* data = [messageBody[@"data"] UTF8String];
+		bool noResult =  [messageBody[@"noResult"] boolValue];
 
+		CommonEvent e(type, data);
+
+		lua_State *L = owner->GetL();
+		int status = owner->DisplayObject::DispatchEventWithTarget( L, e, 1 );
+		if ( status == 0 && (! noResult ) )
+		{
+			int retValueIndex = lua_gettop( L );
+			const char* jsonContent = "{}";
+			if ( 0 == LuaContext::JsonEncode( L, retValueIndex ) )
+			{
+				jsonContent = lua_tostring( L, -1 );
+			}
+
+			NSString *jsCode = [NSString stringWithFormat:@"window.dispatchEvent(new CustomEvent('%s', { detail: %s }));", type, jsonContent];
+			[self evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+				if ( error != nil ) {
+					NSLog(@"WKUserContentController error: %s, %@", type, error);
+				}
+			}];
+			lua_pop( L, 1 );
+		}
+		lua_pop( L, 1 );
+	}
 }
 
-// Implementing this UI delegate method with nothing in it, makes links with "target=_blank" load
-// in the same webview (because it is returned here) which is the behavior we want (it matches
-// iOS and Android)
-- (WebView*)webView:(WebView *)sender createWebViewWithRequest:(NSURLRequest *)request
-{
-	return sender;
-}
 
 @end
 
@@ -188,9 +233,11 @@ MacWebViewObject::~MacWebViewObject()
 {
 	// Nil out the delegate to prevent any notifications from being triggered on this dead object
 	Rtt_WebView *view = (Rtt_WebView*)GetView();
-	[view setDelegate:nil];
+	[view.configuration.userContentController removeScriptMessageHandlerForName:kCorona4JS];
+//    [view setDelegate:nil];
 	[view stopLoading:nil];
-	[view close];
+//    [view close];
+	view.owner = NULL;
 	view = NULL;
 }
 
@@ -202,7 +249,7 @@ MacWebViewObject::Initialize()
 	Rect screenBounds;
 	GetScreenBounds( screenBounds );
 
-	NSRect r = NSMakeRect( screenBounds.xMin, screenBounds.yMin, screenBounds.Width(), screenBounds.Height() );
+	CGRect r = CGRectMake( screenBounds.xMin, screenBounds.yMin, screenBounds.Width(), screenBounds.Height() );
 
 	Rtt_WebView *v = [[Rtt_WebView alloc] initWithFrame:r];
 //	t.borderStyle = UITextBorderStyleRoundedRect;
@@ -218,7 +265,7 @@ MacWebViewObject::Initialize()
 	Super::InitializeView( v );
 
 	[v release];
-	
+
 	return (v != nil);
 }
 
@@ -232,7 +279,7 @@ NSURL*
 MacWebViewObject::GetBaseURLFromLuaState(lua_State *L, int index)
 {
 	NSURL *result = nil;
-	
+
 	if ( lua_isstring( L, index ) )
 	{
 		NSString *str = [[NSString alloc] initWithUTF8String:lua_tostring( L, index )];
@@ -298,7 +345,7 @@ void
 MacWebViewObject::Load( NSString *htmlBody, NSURL *baseUrl )
 {
 	Rtt_WebView *container = (Rtt_WebView*)GetView();
-	[container loadHtmlString:htmlBody baseURL:baseUrl];
+	[container loadHTMLString:htmlBody baseURL:baseUrl];
 }
 
 void
@@ -309,7 +356,7 @@ MacWebViewObject::Request( NSString *urlString, NSURL *baseUrl )
 		: [[NSURL alloc] initWithString:urlString];
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:u];
 	[u release];
-	
+
 	[request setHTTPMethod:@"GET"];
 	/*
 	if ( NSOrderedSame == [fMethod caseInsensitiveCompare:@"POST"] )
@@ -362,7 +409,7 @@ MacWebViewObject::Back( lua_State *L )
 		Rtt_WebView *view = (Rtt_WebView*)o->GetView();
 		result = [view goBack];
 	}
-	
+
 	lua_pushboolean( L, result );
 
 	return 1;
@@ -406,7 +453,7 @@ MacWebViewObject::Reload( lua_State *L )
 		Rtt_WebView *view = (Rtt_WebView*)o->GetView();
 		[view reload:nil];
 	}
-	
+
 	return 0;
 
 }
@@ -414,14 +461,14 @@ MacWebViewObject::Reload( lua_State *L )
 int
 MacWebViewObject::DeleteCookies( lua_State *L )
 {
-	
+
 	// This isn't implemented because the cookies in the webview are tied to safari.
 	// If we delete it from here then they're deleted from safari as well.
-	
+
 	return 0;
-	
+
 }
-	
+
 /*
 int
 MacWebViewObject::SetBackgroundColor( lua_State *L )
@@ -454,12 +501,91 @@ MacWebViewObject::SetBackgroundColor( lua_State *L )
 */
 
 int
+MacWebViewObject::InjectJS( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	MacWebViewObject *o = (MacWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		Rtt_WebView *view = (Rtt_WebView*)o->GetView();
+		const char *jsContent = lua_tostring( L, 2 );
+		NSString *jsCode = [NSString stringWithExternalString:jsContent];
+
+		[view evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+			if ( error != nil ) {
+				NSLog(@"InjectJS error: %@", error);
+			}
+		}];
+	}
+
+	return 0;
+}
+
+int
+MacWebViewObject::RegisterCallback( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	MacWebViewObject *o = (MacWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char *eventName = lua_tostring( L, 2 );
+		NSString *jsEventName = [NSString stringWithFormat:@"%@%s", kCoronaEventPrefix, eventName];
+		o->AddEventListener( L, 3, [jsEventName UTF8String] );
+	}
+
+	return 0;
+}
+
+int
+MacWebViewObject::On( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	MacWebViewObject *o = (MacWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char *eventName = lua_tostring( L, 2 );
+		NSString *jsEventName = [NSString stringWithFormat:@"%@%s", kCoronaEventPrefix, eventName];
+		o->AddEventListener( L, 3, [jsEventName UTF8String] );
+	}
+
+	return 0;
+}
+
+int
+MacWebViewObject::Send( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	MacWebViewObject *o = (MacWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char* eventName = lua_tostring( L, 2 );
+
+		Rtt_WebView *view = (Rtt_WebView*)o->GetView();
+		const char* jsonContent = "{}";
+		if ( 0 == LuaContext::JsonEncode( L, 3 ) )
+		{
+			jsonContent = lua_tostring( L, -1 );
+		}
+
+		NSString *jsCode = [NSString stringWithFormat:@"window.dispatchEvent(new CustomEvent('%@%s', { detail: %s }));", kCoronaEventPrefix, eventName, jsonContent];
+		[view evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+			if ( error != nil ) {
+				NSLog(@"Send '%s' error: %@", eventName, error);
+			}
+		}];
+		lua_pop( L, 1 );
+	}
+
+	return 0;
+}
+
+int
 MacWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 {
 	Rtt_ASSERT( key );
 
 	int result = 1;
-	
+
 	/*
 	else if ( strcmp( "autoCancel", key ) == 0 )
 	{
@@ -469,6 +595,22 @@ MacWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 	if ( strcmp( "request", key ) == 0 )
 	{
 		lua_pushcfunction( L, Request );
+	}
+	else if ( strcmp( "injectJS", key ) == 0 )
+	{
+		lua_pushcfunction( L, InjectJS );
+	}
+	else if ( strcmp( "registerCallback", key ) == 0 )
+	{
+		lua_pushcfunction( L, RegisterCallback );
+	}
+	else if ( strcmp( "on", key ) == 0 )
+	{
+		lua_pushcfunction( L, On );
+	}
+	else if ( strcmp( "send", key ) == 0 )
+	{
+		lua_pushcfunction( L, Send );
 	}
 	else if ( strcmp( "stop", key ) == 0 )
 	{
@@ -511,7 +653,7 @@ MacWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 	else if ( strcmp( "hasBackground", key ) == 0 )
 	{
 		Rtt_WebView *view = (Rtt_WebView*)GetView();
-		lua_pushboolean( L, view.drawsBackground );
+		lua_pushboolean( L, false );
 	}
 	else if ( strcmp( "load", key ) == 0 )
 	{
@@ -535,7 +677,8 @@ MacWebViewObject::SetValueForKey( lua_State *L, const char key[], int valueIndex
 	if ( strcmp( "hasBackground", key ) == 0 )
 	{
 		Rtt_WebView *view = (Rtt_WebView*)GetView();
-		[view setDrawsBackground:lua_toboolean( L, valueIndex )];
+		bool hasBackground = lua_toboolean( L, valueIndex );
+		[view setValue:hasBackground ? @YES : @NO forKey:@"drawsBackground"];
 	}
 	else if ( strcmp( "bounces", key ) == 0 )
 	{

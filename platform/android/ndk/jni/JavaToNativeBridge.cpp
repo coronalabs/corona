@@ -1388,6 +1388,49 @@ JavaToNativeBridge::WebViewHistoryUpdated( JNIEnv * env, int id, jboolean canGoB
 }
 
 void
+JavaToNativeBridge::WebViewJSInterfaceCommonEvent( JNIEnv * env, int id, jstring type, jstring data, jboolean noResult )
+{
+	// Validate.
+	if (!fPlatform)
+	{
+		return;
+	}
+
+	// Fetch the display object by ID.
+	Rtt::AndroidWebViewObject *view = (Rtt::AndroidWebViewObject*)(fPlatform->GetNativeDisplayObjectById(id));
+	if (!view)
+	{
+		return;
+	}
+
+	jstringResult typeS(env, type);
+	jstringResult dataS(env, data);
+	Rtt::CommonEvent e(typeS.getUTF8(), dataS.getUTF8());
+
+	lua_State *L = view->GetL();
+	Rtt_Log( "WebViewJSInterfaceCommonEvent: type=%s, data=%s", typeS.getUTF8(), dataS.getUTF8() );
+	int status = view->Rtt::DisplayObject::DispatchEventWithTarget( L, e, 1 );
+	if ( status == 0 && (! noResult ) )
+	{
+		int retValueIndex = lua_gettop( L );
+		const char* jsonContent = "{}";
+		if ( 0 == Rtt::LuaContext::JsonEncode( L, retValueIndex ) )
+		{
+			jsonContent = lua_tostring( L, -1 );
+		}
+		Rtt::String s( "window.dispatchEvent(new CustomEvent('" );
+		s.Append( typeS.getUTF8() );
+		s.Append( "', {detail: " );
+		s.Append( jsonContent );
+		s.Append( "}));" );
+		view->InjectJSCode( s.GetString() );
+
+		lua_pop( L, 1 );
+	}
+	lua_pop( L, 1 );
+}
+
+void
 JavaToNativeBridge::WebViewClosed( JNIEnv * env, int id )
 {
 	// Validate.
