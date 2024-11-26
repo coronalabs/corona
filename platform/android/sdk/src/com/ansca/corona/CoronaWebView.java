@@ -30,7 +30,7 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 
 	// JavaScript injection code
 	private static final String NATIVE_BRIDGE_CODE =
-		"const NativeBridge = {\n" +
+		"window.NativeBridge = {\n" +
 		"    callNative: function(method, args) {\n" +
 		"        return new Promise((resolve, reject) => {\n" +
 		"            var eventName = 'JS_' + method;\n" +
@@ -58,6 +58,10 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		"            callback(e.detail)\n" +
 		"        }, options);\n" +
 		"    }\n" +
+		"};\n" +
+		"if (window.onNativeBridgeLoaded != undefined) {\n" +
+		"    window.onNativeBridgeLoaded();\n" +
+		"    delete window.onNativeBridgeLoaded;\n" +
 		"};\n";
 
 	// JavaScript interface class
@@ -149,6 +153,116 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		// Set up a web chrome client for enabling JavaScript alerts and location/GPS tracking.
 		setWebChromeClient(new android.webkit.WebChromeClient() {
 			View mCustomView;
+
+			// Handle JavaScript alert()
+			@Override
+			public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result) {
+				fCoronaRuntime.getController().createAlertDialogBuilder(view.getContext())
+					.setMessage(message)
+					.setPositiveButton(android.R.string.ok, new android.content.DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(android.content.DialogInterface dialog, int which) {
+							result.confirm();
+						}
+					})
+					.setCancelable(false)
+					.create()
+					.show();
+				return true;
+			}
+
+			// Handle JavaScript confirm()
+			@Override
+			public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
+				fCoronaRuntime.getController().createAlertDialogBuilder(view.getContext())
+					.setMessage(message)
+					.setPositiveButton(android.R.string.ok, new android.content.DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(android.content.DialogInterface dialog, int which) {
+							result.confirm();
+						}
+					})
+					.setNegativeButton(android.R.string.cancel, new android.content.DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(android.content.DialogInterface dialog, int which) {
+							result.cancel();
+						}
+					})
+					.setCancelable(false)
+					.create()
+					.show();
+				return true;
+			}
+
+			// Handle JavaScript prompt()
+			@Override
+			public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, final android.webkit.JsPromptResult result) {
+				final android.widget.EditText input = new android.widget.EditText(view.getContext());
+				input.setText(defaultValue);
+
+				// Set input field styling
+				int padding = (int) (16 * view.getContext().getResources().getDisplayMetrics().density);
+				input.setPadding(padding, padding/2, padding, padding/2);
+
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				    input.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0x88FFFFFF));  // Material Blue
+				}
+				input.setSingleLine(true);
+
+				fCoronaRuntime.getController().createAlertDialogBuilder(view.getContext())
+					.setMessage(message)
+					.setView(input)
+					.setPositiveButton(android.R.string.ok, new android.content.DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(android.content.DialogInterface dialog, int which) {
+							result.confirm(input.getText().toString());
+						}
+					})
+					.setNegativeButton(android.R.string.cancel, new android.content.DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(android.content.DialogInterface dialog, int which) {
+							result.cancel();
+						}
+					})
+					.setCancelable(false)
+					.create()
+					.show();
+
+				return true;
+			}
+
+			// Handle console.log()
+			@Override
+			public boolean onConsoleMessage(android.webkit.ConsoleMessage consoleMessage) {
+				String message = consoleMessage.message();
+				int lineNumber = consoleMessage.lineNumber();
+				String sourceId = consoleMessage.sourceId();
+				android.webkit.ConsoleMessage.MessageLevel level = consoleMessage.messageLevel();
+
+				String tag = "Corona";
+				String fullMessage = "[WebView_%S] " + String.format("(%s:%d) %s", sourceId, lineNumber, message);
+
+				// Log messages with appropriate log level
+				switch (level) {
+					case ERROR:
+						android.util.Log.e(tag, String.format(fullMessage, "ERROR"));
+						break;
+					case WARNING:
+						android.util.Log.w(tag, String.format(fullMessage, "WARNING"));
+						break;
+					case DEBUG:
+						android.util.Log.d(tag, String.format(fullMessage, "DEBUG"));
+						break;
+					case TIP:
+						android.util.Log.i(tag, String.format(fullMessage, "TIP"));
+						break;
+					case LOG:
+					default:
+						android.util.Log.i(tag, String.format(fullMessage, "LOG"));
+						break;
+				}
+				return true;
+			}
 
 			@Override
 			public void onGeolocationPermissionsShowPrompt(

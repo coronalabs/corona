@@ -50,7 +50,7 @@ static CGFloat kAnimationDuration = 0.3;
 NSString * const kCoronaEventPrefix = @"JS_";
 NSString * const kCorona4JS = @"corona";
 NSString * const kNativeBridgeCode = JS(
-	const NativeBridge = {
+	window.NativeBridge = {
 		callNative: function(method, args) {
 			return new Promise((resolve, reject) => {
 				var eventName = "JS_" + method;
@@ -79,6 +79,36 @@ NSString * const kNativeBridgeCode = JS(
 			}, options);
 		}
 	};
+	window.originalConsole = window.console;
+	window.console = {
+		log: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'log',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		},
+		warn: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'warn',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		},
+		error: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'error',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		}
+	};
+);
+NSString * const kOnLoadedJSCode = JS(
+	if (window.onNativeBridgeLoaded != undefined) {
+		window.onNativeBridgeLoaded();
+		delete window.onNativeBridgeLoaded;
+	}
 );
 
 //static void
@@ -148,8 +178,8 @@ NSString * const kNativeBridgeCode = JS(
 -(WKWebView*)webView
 {
 	if(fWebView == nil) {
-        // Propagate the w,h, but do not propagate the origin, as the parent already accounts for it.
-        CGRect rect = [super frame];
+		// Propagate the w,h, but do not propagate the origin, as the parent already accounts for it.
+		CGRect rect = [super frame];
 		CGRect webViewRect = rect;
 		webViewRect.origin = CGPointZero;
 		fWebView = [[WKWebView alloc] initWithFrame:webViewRect configuration:fWebViewConfiguration];
@@ -158,10 +188,10 @@ NSString * const kNativeBridgeCode = JS(
 		fWebView.navigationDelegate = self;
 		fWebView.UIDelegate = self;
 //		fWebView.scalesPageToFit = YES;
-        
+
 		fActivityView = [[UIView alloc] initWithFrame:webViewRect];
 		fActivityView.backgroundColor = [UIColor grayColor];
-		
+
 		UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 		[fActivityView addSubview:indicator];
 		[indicator release];
@@ -175,7 +205,7 @@ NSString * const kNativeBridgeCode = JS(
 		AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
 		UIViewController *viewController = delegate.viewController;
 		initialOrientation = viewController.interfaceOrientation;
-		
+
 		[self addSubview:fWebView];
 		[self addSubview:fActivityView];
 
@@ -192,7 +222,12 @@ NSString * const kNativeBridgeCode = JS(
 	{
 		fWebViewConfiguration = [[WKWebViewConfiguration alloc] init];
 		WKUserContentController *userContentController = [[WKUserContentController alloc] init];
+		WKUserScript *consoleScript = [[WKUserScript alloc] initWithSource:kNativeBridgeCode
+															injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+															forMainFrameOnly:YES];
+		[userContentController addUserScript:consoleScript];
 		[userContentController addScriptMessageHandler:self name:kCorona4JS];
+		[userContentController addScriptMessageHandler:self name:@"console"];
 		fWebViewConfiguration.userContentController = userContentController;
 
 		fOwner = nil;
@@ -202,8 +237,8 @@ NSString * const kNativeBridgeCode = JS(
 		isOpen = false;
 		keyboardShown = NO;
 		isLoading = NO;
-		        
-        [self addObservers];
+
+		[self addObservers];
 	}
 
 	return self;
@@ -226,7 +261,7 @@ NSString * const kNativeBridgeCode = JS(
 -(void) setFrame:(CGRect)frame
 {
 	[super setFrame:frame];
-	
+
 	frame.origin = CGPointZero;
 	[fWebView setFrame:frame];
 	[fActivityView setFrame:frame];
@@ -265,15 +300,15 @@ NSString * const kNativeBridgeCode = JS(
 	{
 		[self.webView stopLoading];
 	}
-	
+
 	fLoadingURL = nil;
-	
+
 	if(htmlString)
 	{
 		isLoading = true;
 		[self.webView loadHTMLString:htmlString baseURL:baseUrl];
 	}
-	
+
 }
 - (void)loadRequest:(NSURLRequest*)request baseURL:(NSURL*)baseUrl
 {
@@ -282,39 +317,39 @@ NSString * const kNativeBridgeCode = JS(
 		[self.webView stopLoading];
 	}
 
-    
-    bool loadImmediately = false;
-    
-    if (fLoadingURL)
-    {
-        if (request)
-        {
-            if (request.URL)
-            {
-                NSString *urlString1 = [fLoadingURL absoluteString];
-                NSString *urlString2 = [request.URL absoluteString];
-                
-                //If the url requests are the same, then load like normal since this
-                //generates a callback and will create a dispatch event (i.e. page reload)
-                if( [urlString1 caseInsensitiveCompare:urlString2] != NSOrderedSame )
-                {
-                    //If the requests are the same up to the hash tag then do an immediate load
-                    //since we never get a callback for this load and therefore never removed
-                    //the grey activity window
-                    NSString *subString1 = [[urlString1 componentsSeparatedByString:@"#"] objectAtIndex:0];
-                    NSString *subString2 = [[urlString2 componentsSeparatedByString:@"#"] objectAtIndex:0];
-                    
-                    //Only the hash fragments differ
-                    if( [subString1 caseInsensitiveCompare:subString2] == NSOrderedSame )
-                    {
-                        loadImmediately = true;
-                    }
-                }
-            }
-        }
-    }
 
-    
+	bool loadImmediately = false;
+
+	if (fLoadingURL)
+	{
+		if (request)
+		{
+			if (request.URL)
+			{
+				NSString *urlString1 = [fLoadingURL absoluteString];
+				NSString *urlString2 = [request.URL absoluteString];
+
+				//If the url requests are the same, then load like normal since this
+				//generates a callback and will create a dispatch event (i.e. page reload)
+				if( [urlString1 caseInsensitiveCompare:urlString2] != NSOrderedSame )
+				{
+					//If the requests are the same up to the hash tag then do an immediate load
+					//since we never get a callback for this load and therefore never removed
+					//the grey activity window
+					NSString *subString1 = [[urlString1 componentsSeparatedByString:@"#"] objectAtIndex:0];
+					NSString *subString2 = [[urlString2 componentsSeparatedByString:@"#"] objectAtIndex:0];
+
+					//Only the hash fragments differ
+					if( [subString1 caseInsensitiveCompare:subString2] == NSOrderedSame )
+					{
+						loadImmediately = true;
+					}
+				}
+			}
+		}
+	}
+
+
 	[fLoadingURL release];
 	fLoadingURL = [request.URL retain];
 	if([fLoadingURL isFileURL] && baseUrl && [self.webView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
@@ -323,23 +358,23 @@ NSString * const kNativeBridgeCode = JS(
 		[self.webView loadRequest:request];
 	}
 
-    if (false == loadImmediately)
-    {
-        if ( ! isLoading )
-        {
-            fActivityView.alpha = 0.0;
-            [UIView beginAnimations:nil context:nil];
-            [UIView setAnimationDuration:kAnimationDuration];
-            [UIView setAnimationDelegate:self];
-            [UIView setAnimationDidStopSelector:@selector(didAppear:finished:context:)];
-            fActivityView.alpha = 1.0;
-            [UIView commitAnimations];
-            
-            [self addObservers];
-        }
-        isLoading = YES;
-    }
-	
+	if (false == loadImmediately)
+	{
+		if ( ! isLoading )
+		{
+			fActivityView.alpha = 0.0;
+			[UIView beginAnimations:nil context:nil];
+			[UIView setAnimationDuration:kAnimationDuration];
+			[UIView setAnimationDelegate:self];
+			[UIView setAnimationDidStopSelector:@selector(didAppear:finished:context:)];
+			fActivityView.alpha = 1.0;
+			[UIView commitAnimations];
+
+			[self addObservers];
+		}
+		isLoading = YES;
+	}
+
 }
 
 - (void)stopLoading
@@ -434,18 +469,18 @@ NSString * const kNativeBridgeCode = JS(
 	if ( [self.webView isFirstResponder] )
 	{
 		NSDictionary* info = [aNotification userInfo];
-	 
+
 		// Get the size of the keyboard.
 		NSValue* aValue = [info objectForKey:UIKeyboardBoundsUserInfoKey];
 		CGSize keyboardSize = [aValue CGRectValue].size;
-	 
+
 		WKWebView *view = self.webView;
 
 		// Reset the height of the scroll view to its original value
 		CGRect viewFrame = [view frame];
 		viewFrame.size.height += keyboardSize.height;
 		view.frame = viewFrame;
-	 
+
 		keyboardShown = NO;
 	}
 }
@@ -490,20 +525,20 @@ static EventTypeForNavigationType( WKNavigationType t )
 	NSURL *url = navigationAction.request.URL;
 
 	const char *urlString = [[url absoluteString] UTF8String];
-	
+
 	Rtt::UrlRequestEvent::Type navType = EventTypeForNavigationType( navigationAction.navigationType );
-	
+
 	UrlRequestEvent e( urlString, navType );
-	
+
 	fOwner->DispatchEventWithTarget( e );
-	
+
 	if (navType == UrlRequestEvent::kLink ||
 		navType == UrlRequestEvent::kHistory ||
 		navType == UrlRequestEvent::kReload )
 	{
 		isLoading = true;
 	}
-	
+
 	decisionHandler(WKNavigationActionPolicyAllow); // Always load
 }
 
@@ -531,7 +566,7 @@ static EventTypeForNavigationType( WKNavigationType t )
 
 		[self hideActivityViewIndicator];
 
-		[fWebView evaluateJavaScript:kNativeBridgeCode completionHandler:nil];
+		[fWebView evaluateJavaScript:kOnLoadedJSCode completionHandler:nil];
 
 		NSURL *url = webView.URL;
 		const char *urlString = [[url absoluteString] UTF8String];
@@ -560,7 +595,7 @@ static EventTypeForNavigationType( WKNavigationType t )
 {
 	UIActivityIndicatorView *indicator = [[fActivityView subviews] objectAtIndex:0];
 	[indicator stopAnimating];
-	
+
 	self.webView.hidden = NO;
 	self.webView.alpha = 1.0;
 	fActivityView.alpha = 1.0;
@@ -608,6 +643,99 @@ static EventTypeForNavigationType( WKNavigationType t )
 		}
 		lua_pop( L, 1 );
 	}
+	else if ([message.name isEqualToString:@"console"])
+	{
+		NSDictionary *logData = message.body;
+		NSString *type = logData[@"type"];
+		NSString *logMessage = logData[@"message"];
+
+		if ([type isEqualToString:@"error"]) {
+			NSLog(@"[WebView_ERROR] %@", logMessage);
+		} else if ([type isEqualToString:@"warn"]) {
+			NSLog(@"[WebView_WARNING] %@", logMessage);
+		} else if ([type isEqualToString:@"info"]) {
+			NSLog(@"[WebView_INFO] %@", logMessage);
+		} else if ([type isEqualToString:@"debug"]) {
+			NSLog(@"[WebView_DEBUG] %@", logMessage);
+		} else {
+			NSLog(@"[WebView_LOG] %@", logMessage);
+		}
+	}
+}
+
+// Handle JavaScript alert()
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler
+{
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+																 message:message
+														  preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+													  style:UIAlertActionStyleDefault
+													handler:^(UIAlertAction *action) {
+		completionHandler();
+	}];
+	[alert addAction:okAction];
+
+	id<CoronaRuntime> runtime = (id<CoronaRuntime>)Rtt::Lua::GetContext( fOwner->GetL() );
+	[runtime.appViewController presentViewController:alert animated:YES completion:nil];
+}
+
+// Handle JavaScript confirm()
+- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler
+{
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+													message:message
+													preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+													  style:UIAlertActionStyleDefault
+													handler:^(UIAlertAction *action) {
+		completionHandler(YES);
+	}];
+
+	UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+														 style:UIAlertActionStyleCancel
+													   handler:^(UIAlertAction *action) {
+		completionHandler(NO);
+	}];
+
+	[alert addAction:cancelAction];
+	[alert addAction:okAction];
+
+	id<CoronaRuntime> runtime = (id<CoronaRuntime>)Rtt::Lua::GetContext( fOwner->GetL() );
+	[runtime.appViewController presentViewController:alert animated:YES completion:nil];
+}
+
+// Handle JavaScript prompt()
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler
+{
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+																 message:prompt
+														  preferredStyle:UIAlertControllerStyleAlert];
+
+	[alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+		textField.text = defaultText;
+	}];
+
+	UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+													  style:UIAlertActionStyleDefault
+													handler:^(UIAlertAction *action) {
+		NSString *input = alert.textFields.firstObject.text;
+		completionHandler(input);
+	}];
+
+	UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+														 style:UIAlertActionStyleCancel
+													   handler:^(UIAlertAction *action) {
+		completionHandler(nil);
+	}];
+
+	[alert addAction:cancelAction];
+	[alert addAction:okAction];
+
+	id<CoronaRuntime> runtime = (id<CoronaRuntime>)Rtt::Lua::GetContext( fOwner->GetL() );
+	[runtime.appViewController presentViewController:alert animated:YES completion:nil];
 }
 
 @end

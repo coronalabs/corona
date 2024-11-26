@@ -1408,7 +1408,6 @@ JavaToNativeBridge::WebViewJSInterfaceCommonEvent( JNIEnv * env, int id, jstring
 	Rtt::CommonEvent e(typeS.getUTF8(), dataS.getUTF8());
 
 	lua_State *L = view->GetL();
-	Rtt_Log( "WebViewJSInterfaceCommonEvent: type=%s, data=%s", typeS.getUTF8(), dataS.getUTF8() );
 	int status = view->Rtt::DisplayObject::DispatchEventWithTarget( L, e, 1 );
 	if ( status == 0 && (! noResult ) )
 	{

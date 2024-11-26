@@ -32,7 +32,7 @@
 NSString * const kCoronaEventPrefix = @"JS_";
 NSString * const kCorona4JS = @"corona";
 NSString * const kNativeBridgeCode = JS(
-	const NativeBridge = {
+	window.NativeBridge = {
 		callNative: function(method, args) {
 			return new Promise((resolve, reject) => {
 				var eventName = "JS_" + method;
@@ -61,6 +61,37 @@ NSString * const kNativeBridgeCode = JS(
 			}, options);
 		}
 	};
+
+	window.originalConsole = window.console;
+	window.console = {
+		log: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'log',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		},
+		warn: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'warn',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		},
+		error: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'error',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		}
+	};
+);
+NSString * const kOnLoadedJSCode = JS(
+	if (window.onNativeBridgeLoaded != undefined) {
+		window.onNativeBridgeLoaded();
+		delete window.onNativeBridgeLoaded;
+	}
 );
 
 @interface Rtt_WebView : WKWebView <WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler>
@@ -83,7 +114,13 @@ NSString * const kNativeBridgeCode = JS(
 
 	// Add userContentController
 	WKUserContentController *userContentController = [[WKUserContentController alloc] init];
+	WKUserScript *consoleScript = [[WKUserScript alloc] initWithSource:kNativeBridgeCode
+														injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+														forMainFrameOnly:YES];
+	[userContentController addUserScript:consoleScript];
 	[userContentController addScriptMessageHandler:self name:kCorona4JS];
+	[userContentController addScriptMessageHandler:self name:@"console"];
+
 	configuration.userContentController = userContentController;
 
 	self = [super initWithFrame:frameRect configuration:configuration];
@@ -92,7 +129,7 @@ NSString * const kNativeBridgeCode = JS(
 		owner = NULL;
 		[self setWantsLayer:YES];
 		[self setNavigationDelegate:self];
-		[self setUIDelegate:self]; // Set UIDelegate to handle new windows
+		[self setUIDelegate:self];
 	}
 	return self;
 }
@@ -157,7 +194,7 @@ NSString * const kNativeBridgeCode = JS(
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
-	[self evaluateJavaScript:kNativeBridgeCode completionHandler:nil];
+	[self evaluateJavaScript:kOnLoadedJSCode completionHandler:nil];
 
 	using namespace Rtt;
 
@@ -212,8 +249,70 @@ NSString * const kNativeBridgeCode = JS(
 		}
 		lua_pop( L, 1 );
 	}
+	else if ([message.name isEqualToString:@"console"])
+	{
+		NSDictionary *logData = message.body;
+		NSString *type = logData[@"type"];
+		NSString *logMessage = logData[@"message"];
+
+		if ([type isEqualToString:@"error"]) {
+			NSLog(@"[WebView_ERROR] %@", logMessage);
+		} else if ([type isEqualToString:@"warn"]) {
+			NSLog(@"[WebView_WARNING] %@", logMessage);
+		} else if ([type isEqualToString:@"info"]) {
+			NSLog(@"[WebView_INFO] %@", logMessage);
+		} else if ([type isEqualToString:@"debug"]) {
+			NSLog(@"[WebView_DEBUG] %@", logMessage);
+		} else {
+			NSLog(@"[WebView_LOG] %@", logMessage);
+		}
+	}
 }
 
+// Handle JavaScript alert()
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler
+{
+	NSAlert *alert = [[NSAlert alloc] init];
+	[alert setMessageText:message];
+	// Use system default "OK" button
+	[[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)] setKeyEquivalent:@"\r"];
+	[alert runModal];
+	completionHandler();
+}
+
+// Handle JavaScript confirm()
+- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler
+{
+	NSAlert *alert = [[NSAlert alloc] init];
+	[alert setMessageText:message];
+	// Use system default "OK" and "Cancel" buttons
+	[[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)] setKeyEquivalent:@"\r"];
+	[[alert addButtonWithTitle:NSLocalizedString(@"Cancel", nil)] setKeyEquivalent:@"\033"];
+
+	NSModalResponse response = [alert runModal];
+	completionHandler(response == NSAlertFirstButtonReturn);
+}
+
+// Handle JavaScript prompt()
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler
+{
+	NSAlert *alert = [[NSAlert alloc] init];
+	[alert setMessageText:prompt];
+	// Use system default "OK" and "Cancel" buttons
+	[[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)] setKeyEquivalent:@"\r"];
+	[[alert addButtonWithTitle:NSLocalizedString(@"Cancel", nil)] setKeyEquivalent:@"\033"];
+
+	NSTextField *input = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+	[input setStringValue:defaultText];
+	[alert setAccessoryView:input];
+
+	NSModalResponse response = [alert runModal];
+	if (response == NSAlertFirstButtonReturn) {
+		completionHandler([input stringValue]);
+	} else {
+		completionHandler(nil);
+	}
+}
 
 @end
 
@@ -234,6 +333,7 @@ MacWebViewObject::~MacWebViewObject()
 	// Nil out the delegate to prevent any notifications from being triggered on this dead object
 	Rtt_WebView *view = (Rtt_WebView*)GetView();
 	[view.configuration.userContentController removeScriptMessageHandlerForName:kCorona4JS];
+	[view.configuration.userContentController removeScriptMessageHandlerForName:@"console"];
 //    [view setDelegate:nil];
 	[view stopLoading:nil];
 //    [view close];

@@ -2763,7 +2763,6 @@ CommonEvent::Push( lua_State *L ) const
 		{
 			if ( 0 == LuaContext::JsonDecode( L, fData) )
 			{
-				Rtt_Log( "CommonEvent::Push fData=%s, type=%s", fData, luaL_typename( L, -1 ) );
 				lua_setfield( L, -2, "detail" );
 			}
 			else
