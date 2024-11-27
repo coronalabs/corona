@@ -59,9 +59,9 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		"        }, options);\n" +
 		"    }\n" +
 		"};\n" +
-		"if (window.onNativeBridgeLoaded != undefined) {\n" +
-		"    window.onNativeBridgeLoaded();\n" +
-		"    delete window.onNativeBridgeLoaded;\n" +
+		"if (window.onNativeBridgeReady != undefined) {\n" +
+		"    window.onNativeBridgeReady();\n" +
+		"    delete window.onNativeBridgeReady;\n" +
 		"};\n";
 
 	// JavaScript interface class

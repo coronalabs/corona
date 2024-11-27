@@ -105,9 +105,9 @@ NSString * const kNativeBridgeCode = JS(
 	};
 );
 NSString * const kOnLoadedJSCode = JS(
-	if (window.onNativeBridgeLoaded != undefined) {
-		window.onNativeBridgeLoaded();
-		delete window.onNativeBridgeLoaded;
+	if (window.onNativeBridgeReady != undefined) {
+		window.onNativeBridgeReady();
+		delete window.onNativeBridgeReady;
 	}
 );
 
