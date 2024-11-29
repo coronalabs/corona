@@ -35,6 +35,7 @@ import java.net.MalformedURLException;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.ContentResolver;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -1133,19 +1134,81 @@ public class NativeToJavaBridge {
 		com.ansca.corona.storage.FileServices fileServices;
 		fileServices = new com.ansca.corona.storage.FileServices(CoronaEnvironment.getApplicationContext());
 
-		// Generate a unique file name in the default pictures directory.
-		String fileExtensionName = fileServices.getExtensionFrom(filePathName);
-		java.io.File destinationFile = createUniqueFileNameInPicturesDirectory(fileExtensionName);
-		if (destinationFile == null) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			// For Android 10+ use MediaStore
+			ContentValues values = new ContentValues();
+
+			String fileExtensionName = fileServices.getExtensionFrom(filePathName);
+			String applicationName = CoronaEnvironment.getApplicationName();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+			String currentTimeStamp = sdf.format(Calendar.getInstance().getTime());
+			String fileName = applicationName + " Picture " + currentTimeStamp + "." + fileExtensionName;
+
+			values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+			values.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(fileExtensionName));
+			values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+			values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+			ContentResolver resolver = CoronaEnvironment.getApplicationContext().getContentResolver();
+			Uri collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+
+			try {
+				Uri uri = resolver.insert(collection, values);
+				if (uri != null) {
+					// Copy file content to uri
+					try (OutputStream out = resolver.openOutputStream(uri);
+						 InputStream in = fileServices.openFile(filePathName)) {
+
+						byte[] buffer = new byte[8192];
+						int bytesRead;
+						while ((bytesRead = in.read(buffer)) != -1) {
+							out.write(buffer, 0, bytesRead);
+						}
+					}
+
+					// Mark as not pending
+					values.clear();
+					values.put(MediaStore.Images.Media.IS_PENDING, 0);
+					resolver.update(uri, values, null, null);
+					return true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
 			return false;
+		} else {
+			// For older Android versions use the original implementation
+			String fileExtensionName = fileServices.getExtensionFrom(filePathName);
+			java.io.File destinationFile = createUniqueFileNameInPicturesDirectory(fileExtensionName);
+			if (destinationFile == null) {
+				return false;
+			}
+			String destinationFilePathName = destinationFile.getPath();
+
+			SaveImageToPhotoLibraryRequestPermissionsResultHandler resultHandler
+				= new SaveImageToPhotoLibraryRequestPermissionsResultHandler(
+					runtime, fileServices, filePathName, destinationFilePathName);
+
+			return resultHandler.handleSaveMedia();
 		}
-		String destinationFilePathName = destinationFile.getPath();
+	}
 
-		SaveImageToPhotoLibraryRequestPermissionsResultHandler resultHandler 
-			= new SaveImageToPhotoLibraryRequestPermissionsResultHandler(
-				runtime, fileServices, filePathName, destinationFilePathName);
-
-		return resultHandler.handleSaveMedia();		
+	// Helper method to determine MIME type
+	private static String getMimeType(String extension) {
+		switch (extension) {
+			case "png":
+				return "image/png";
+			case "jpg":
+			case "jpeg":
+				return "image/jpeg";
+			case "gif":
+				return "image/gif";
+			case "webp":
+				return "image/webp";
+			default:
+				return "image/jpeg";
+		}
 	}
 
 	/**
