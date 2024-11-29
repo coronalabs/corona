@@ -204,14 +204,22 @@ public class CoronaActivity extends Activity {
 		myInitialIntent = getIntent();
 
 		// Fetch this activity's meta-data from the manifest.
-		boolean isKeyboardAppPanningEnabled = false;
+		boolean isKeyboardAppPanningEnabled = false, wantsDepthBuffer = false, wantsStencilBuffer = false;
 		try {
+			android.content.pm.ApplicationInfo applicationInfo;
+			applicationInfo = getPackageManager().getApplicationInfo(
+					getPackageName(), android.content.pm.PackageManager.GET_META_DATA);
+			if (applicationInfo != null && applicationInfo.metaData != null) {
+				wantsDepthBuffer = applicationInfo.metaData.getBoolean( "wantsDepthBuffer" );
+				wantsStencilBuffer = applicationInfo.metaData.getBoolean( "wantsStencilBuffer" );
+			}
 			android.content.pm.ActivityInfo activityInfo;
 			activityInfo = getPackageManager().getActivityInfo(
 					getComponentName(), android.content.pm.PackageManager.GET_META_DATA);
 			if ((activityInfo != null) && (activityInfo.metaData != null)) {
 				isKeyboardAppPanningEnabled =
 						activityInfo.metaData.getBoolean("coronaWindowMovesWhenKeyboardAppears");
+
 			}
 		}
 		catch (Exception ex) {
@@ -250,7 +258,7 @@ public class CoronaActivity extends Activity {
 		CoronaEnvironment.setCoronaActivity(this);
 
 		// Create our CoronaRuntime, which also initializes the native side of the CoronaRuntime.
-		fCoronaRuntime = new CoronaRuntime(this, false);
+		fCoronaRuntime = new CoronaRuntime(this, false, wantsDepthBuffer, wantsStencilBuffer);
 
 		// Set initialSystemUiVisibility before splashScreen comes up
 		try {

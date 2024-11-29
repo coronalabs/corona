@@ -32,6 +32,17 @@ namespace
 		HWND RenderSurfaceHandle;
 
 		/// <summary>
+		///  <para>Handle to an invisible dummy window (just a duplicate of RenderSurfaceHandle).</para>
+		///  <para>
+		///   It is used only in non-simulator runs, when doing the first OpenGL capabilities test,
+		///   and then immediately discarded. The test seems to leave a certain "GL-ness" on the
+		///   window that other backends might not be able to use. We therefore do the test with
+		///   this window and leave the original intact for the not-yet-decided backend.
+		///  </para>
+		/// </summary>
+		HWND TestSurfaceHandle;
+
+		/// <summary>
 		///  <para>
 		///   Set true to set up Corona to connect to a debugger upon launch, such as with the
 		///   "Corona Debugger" or the Sublime "Corona Editor".
@@ -60,6 +71,7 @@ namespace
 		CoronaLaunchSettings()
 		:	MainWindowHandle(nullptr),
 			RenderSurfaceHandle(nullptr),
+			TestSurfaceHandle(nullptr),
 			IsDebuggerEnabled(false)
 		{}
 
@@ -144,7 +156,14 @@ namespace
 		Terminate();
 
 		// Verify that the system video hardware and OpenGL driver meets Corona's min requirements.
-		auto validationResult = Interop::RuntimeEnvironment::ValidateRenderSurface(settings.RenderSurfaceHandle);
+		HWND renderSurfaceHandle = settings.RenderSurfaceHandle;
+
+		if (settings.TestSurfaceHandle)
+		{
+			renderSurfaceHandle = settings.TestSurfaceHandle;
+		}
+
+		auto validationResult = Interop::RuntimeEnvironment::ValidateRenderSurface(renderSurfaceHandle);
 		if (false == validationResult.CanRender)
 		{
 			const char kMessageFormat[] =
@@ -292,6 +311,28 @@ CORONA_API void CoronaWin32LaunchSettingsSetRenderSurfaceHandle(
 	}
 }
 
+CORONA_API void CoronaWin32LaunchSettingsGetTestSurfaceHandle(
+	CoronaWin32LaunchSettingsRef settingsReference, HWND *valuePointer)
+{
+	// Validate arguments.
+	if (!settingsReference || !valuePointer)
+	{
+		return;
+	}
+
+	// Fetch the requested setting.
+	*valuePointer = ((CoronaLaunchSettings*)settingsReference)->TestSurfaceHandle;
+}
+
+CORONA_API void CoronaWin32LaunchSettingsSetTestSurfaceHandle(
+	CoronaWin32LaunchSettingsRef settingsReference, HWND value)
+{
+	if (settingsReference)
+	{
+		((CoronaLaunchSettings*)settingsReference)->TestSurfaceHandle = value;
+	}
+}
+
 CORONA_API void CoronaWin32LaunchSettingsGetResourceDirectory(
 	CoronaWin32LaunchSettingsRef settingsReference, const wchar_t **pathPointer)
 {
@@ -415,6 +456,11 @@ CORONA_API int CoronaWin32RuntimeRun(
 	auto runtimeControllerPointer = (CoronaRuntimeController*)runtimeReference;
 	auto launchSettingsPointer = (CoronaLaunchSettings*)settingsReference;
 	auto result = runtimeControllerPointer->RunUsing(*launchSettingsPointer);
+
+	if (launchSettingsPointer->TestSurfaceHandle)
+	{
+		DestroyWindow(launchSettingsPointer->TestSurfaceHandle);
+	}
 
 	// Check if we've failed to start the Corona runtime.
 	if (result.HasFailed())

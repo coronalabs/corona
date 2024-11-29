@@ -732,10 +732,19 @@
 		AA2C69B729147BC40093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69B529147B3B0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
 		AA2C69B829147BC40093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69B629147B3B0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
 		AA2C69B929147BC40093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69B429147B3A0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
+		AA2ED7D72708264E00CEE021 /* CoronaObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2ED7D42708264E00CEE021 /* CoronaObjects.h */; };
+		AA2ED7D82708264E00CEE021 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2ED7D52708264E00CEE021 /* CoronaObjects.cpp */; };
+		AA2ED7D92708264E00CEE021 /* CoronaPublicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2ED7D62708264E00CEE021 /* CoronaPublicTypes.h */; };
 		AA2C6AB6291C37320093B0BE /* CoronaMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2C6AB4291C37320093B0BE /* CoronaMemory.h */; };
 		AA2C6AB7291C37320093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AB5291C37320093B0BE /* CoronaMemory.cpp */; };
 		AAF349AB29EFC53300076706 /* Rtt_Profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF349A929EFC53300076706 /* Rtt_Profiling.cpp */; };
 		AAF349AC29EFC53300076706 /* Rtt_Profiling.h in Headers */ = {isa = PBXBuildFile; fileRef = AAF349AA29EFC53300076706 /* Rtt_Profiling.h */; };
+		AAD3E2052B0BEC3A000A4D45 /* Rtt_ObjectHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD3E2032B0BEC3A000A4D45 /* Rtt_ObjectHandle.h */; };
+		AAD3E2062B0BEC3A000A4D45 /* Rtt_ObjectHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD3E2042B0BEC3A000A4D45 /* Rtt_ObjectHandle.cpp */; };
+		AAF34A9229F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = AAF34A8E29F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.h */; };
+		AAF34A9329F9DF3600076706 /* Rtt_TextureResourceCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34A8F29F9DF3600076706 /* Rtt_TextureResourceCapture.cpp */; };
+		AAF34A9429F9DF3600076706 /* Rtt_TextureResourceCapture.h in Headers */ = {isa = PBXBuildFile; fileRef = AAF34A9029F9DF3600076706 /* Rtt_TextureResourceCapture.h */; };
+		AAF34A9529F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34A9129F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.cpp */; };
 		C20EF66F1C0E832B00DF0532 /* launchpad.lua in Sources */ = {isa = PBXBuildFile; fileRef = C20EF66E1C0E824000DF0532 /* launchpad.lua */; };
 		C22711D518D1646A005AE714 /* composer_scene.lua in Sources */ = {isa = PBXBuildFile; fileRef = C24FA4FC18D14D50002039FB /* composer_scene.lua */; };
 		C26B11D218775CC300C3F259 /* composer.lua in Sources */ = {isa = PBXBuildFile; fileRef = C26B11D118775A9E00C3F259 /* composer.lua */; };
@@ -797,6 +806,8 @@
 		F587878C1C80ADCA0033F1D4 /* Rtt_TextureResourceExternalAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F58787881C80ADCA0033F1D4 /* Rtt_TextureResourceExternalAdapter.h */; };
 		F5A0C2271ADF3ECE00CA5FF8 /* Rtt_ImageSheetPaintAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5A0C2251ADF3ECE00CA5FF8 /* Rtt_ImageSheetPaintAdapter.cpp */; };
 		F5A0C2281ADF3ECE00CA5FF8 /* Rtt_ImageSheetPaintAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A0C2261ADF3ECE00CA5FF8 /* Rtt_ImageSheetPaintAdapter.h */; };
+		F5DE5BE7298109CA00BE463F /* CoronaMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DE5BE5298109CA00BE463F /* CoronaMacros.h */; };
+		F5DE5BE8298109CA00BE463F /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5DE5BE6298109CA00BE463F /* CoronaMemory.cpp */; };
 		F5EEB6DC1B74027F00D34C41 /* Rtt_TextureResourceAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5EEB6D21B74027E00D34C41 /* Rtt_TextureResourceAdapter.cpp */; };
 		F5EEB6DD1B74027F00D34C41 /* Rtt_TextureResourceAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F5EEB6D31B74027F00D34C41 /* Rtt_TextureResourceAdapter.h */; };
 		F5EEB6DE1B74027F00D34C41 /* Rtt_TextureResourceBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5EEB6D41B74027F00D34C41 /* Rtt_TextureResourceBitmap.cpp */; };
@@ -1654,10 +1665,19 @@
 		AA2C69B429147B3A0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearVertical_gl.lua; path = Display/Shader/kernel_filter_blurLinearVertical_gl.lua; sourceTree = "<group>"; };
 		AA2C69B529147B3B0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurGaussianLinear_gl.lua; path = Display/Shader/kernel_filter_blurGaussianLinear_gl.lua; sourceTree = "<group>"; };
 		AA2C69B629147B3B0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearHorizontal_gl.lua; path = Display/Shader/kernel_filter_blurLinearHorizontal_gl.lua; sourceTree = "<group>"; };
+		AA2ED7D42708264E00CEE021 /* CoronaObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaObjects.h; path = Corona/CoronaObjects.h; sourceTree = "<group>"; };
+		AA2ED7D52708264E00CEE021 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
+		AA2ED7D62708264E00CEE021 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
+		AAD3E2042B0BEC3A000A4D45 /* Rtt_ObjectHandle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ObjectHandle.cpp; path = Display/Rtt_ObjectHandle.cpp; sourceTree = "<group>"; };
+		AAA5812A270D393F002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
 		AA2C6AB4291C37320093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = Corona/CoronaMemory.h; sourceTree = "<group>"; };
 		AA2C6AB5291C37320093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
 		AAF349A929EFC53300076706 /* Rtt_Profiling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_Profiling.cpp; sourceTree = "<group>"; };
 		AAF349AA29EFC53300076706 /* Rtt_Profiling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rtt_Profiling.h; sourceTree = "<group>"; };
+		AAF34A8E29F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceCaptureAdapter.h; path = Display/Rtt_TextureResourceCaptureAdapter.h; sourceTree = "<group>"; };
+		AAF34A8F29F9DF3600076706 /* Rtt_TextureResourceCapture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceCapture.cpp; path = Display/Rtt_TextureResourceCapture.cpp; sourceTree = "<group>"; };
+		AAF34A9029F9DF3600076706 /* Rtt_TextureResourceCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceCapture.h; path = Display/Rtt_TextureResourceCapture.h; sourceTree = "<group>"; };
+		AAF34A9129F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceCaptureAdapter.cpp; path = Display/Rtt_TextureResourceCaptureAdapter.cpp; sourceTree = "<group>"; };
 		C20EF66E1C0E824000DF0532 /* launchpad.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = launchpad.lua; path = ../platform/resources/launchpad.lua; sourceTree = "<group>"; };
 		C23D8DEA1954F27D00D6555E /* widget_theme_android_holo_dark_sheet.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = widget_theme_android_holo_dark_sheet.lua; path = ../subrepos/widget/widget_theme_android_holo_dark_sheet.lua; sourceTree = "<group>"; };
 		C23D8DED1954F27D00D6555E /* widget_theme_android_holo_dark.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = widget_theme_android_holo_dark.lua; path = ../subrepos/widget/widget_theme_android_holo_dark.lua; sourceTree = "<group>"; };
@@ -1683,6 +1703,8 @@
 		F58787881C80ADCA0033F1D4 /* Rtt_TextureResourceExternalAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceExternalAdapter.h; path = Display/Rtt_TextureResourceExternalAdapter.h; sourceTree = "<group>"; };
 		F5A0C2251ADF3ECE00CA5FF8 /* Rtt_ImageSheetPaintAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ImageSheetPaintAdapter.cpp; path = Display/Rtt_ImageSheetPaintAdapter.cpp; sourceTree = "<group>"; };
 		F5A0C2261ADF3ECE00CA5FF8 /* Rtt_ImageSheetPaintAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ImageSheetPaintAdapter.h; path = Display/Rtt_ImageSheetPaintAdapter.h; sourceTree = "<group>"; };
+		F5DE5BE5298109CA00BE463F /* CoronaMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMacros.h; path = Corona/CoronaMacros.h; sourceTree = "<group>"; };
+		F5DE5BE6298109CA00BE463F /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
 		F5EEB6D21B74027E00D34C41 /* Rtt_TextureResourceAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceAdapter.cpp; path = Display/Rtt_TextureResourceAdapter.cpp; sourceTree = "<group>"; };
 		F5EEB6D31B74027F00D34C41 /* Rtt_TextureResourceAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceAdapter.h; path = Display/Rtt_TextureResourceAdapter.h; sourceTree = "<group>"; };
 		F5EEB6D41B74027F00D34C41 /* Rtt_TextureResourceBitmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceBitmap.cpp; path = Display/Rtt_TextureResourceBitmap.cpp; sourceTree = "<group>"; };
@@ -2691,6 +2713,8 @@
 				0724699817DA43BA000A1641 /* Rtt_MCPUResourceObserver.h */,
 				A474286617694EB000C63853 /* Rtt_MDisplayDelegate.h */,
 				A474286717694EB000C63853 /* Rtt_MDrawable.h */,
+				AAD3E2042B0BEC3A000A4D45 /* Rtt_ObjectHandle.cpp */,
+				AAD3E2032B0BEC3A000A4D45 /* Rtt_ObjectHandle.h */,
 				A474286817694EB000C63853 /* Rtt_OpenPath.cpp */,
 				A474286917694EB000C63853 /* Rtt_OpenPath.h */,
 				A474286A17694EB000C63853 /* Rtt_Paint.cpp */,
@@ -2789,6 +2813,10 @@
 				F5EEB6D91B74027F00D34C41 /* Rtt_TextureResourceCanvas.h */,
 				F5EEB6DA1B74027F00D34C41 /* Rtt_TextureResourceCanvasAdapter.cpp */,
 				F5EEB6DB1B74027F00D34C41 /* Rtt_TextureResourceCanvasAdapter.h */,
+				AAF34A8F29F9DF3600076706 /* Rtt_TextureResourceCapture.cpp */,
+				AAF34A9029F9DF3600076706 /* Rtt_TextureResourceCapture.h */,
+				AAF34A9129F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.cpp */,
+				AAF34A8E29F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.h */,
 				F58787851C80ADCA0033F1D4 /* Rtt_TextureResourceExternal.cpp */,
 				F58787861C80ADCA0033F1D4 /* Rtt_TextureResourceExternal.h */,
 				F58787871C80ADCA0033F1D4 /* Rtt_TextureResourceExternalAdapter.cpp */,
@@ -2954,8 +2982,11 @@
 		A49BEF31151A9FBA004F2BBE /* Corona */ = {
 			isa = PBXGroup;
 			children = (
+				AA2ED7D62708264E00CEE021 /* CoronaPublicTypes.h */,
 				F58787811C80AD590033F1D4 /* CoronaGraphics.cpp */,
 				F58787821C80AD590033F1D4 /* CoronaGraphics.h */,
+				F5DE5BE5298109CA00BE463F /* CoronaMacros.h */,
+				F5DE5BE6298109CA00BE463F /* CoronaMemory.cpp */,
 				A49186ED16421CF900A39286 /* CoronaAssert.c */,
 				A49186EE16421CF900A39286 /* CoronaAssert.h */,
 				A49186EF16421CF900A39286 /* CoronaEvent.cpp */,
@@ -2968,10 +2999,10 @@
 				A49BEF33151A9FC5004F2BBE /* CoronaLua.cpp */,
 				A49BEF34151A9FC5004F2BBE /* CoronaLua.h */,
 				A49186F616421CF900A39286 /* CoronaMacros.h */,
-				AA2C6AB5291C37320093B0BE /* CoronaMemory.cpp */,
-				AA2C6AB4291C37320093B0BE /* CoronaMemory.h */,
-				A49186F716421CF900A39286 /* CoronaPrototype.lua */,
+				AA2ED7D52708264E00CEE021 /* CoronaObjects.cpp */,
+				AA2ED7D42708264E00CEE021 /* CoronaObjects.h */,
 				A49186F816421CF900A39286 /* CoronaProvider.lua */,
+				A49186F716421CF900A39286 /* CoronaPrototype.lua */,
 				A40C523916F847CD00AE2ECF /* CoronaVersion.c */,
 				A40C523A16F847CD00AE2ECF /* CoronaVersion.h */,
 			);
@@ -3095,11 +3126,14 @@
 				000DCB7612B05F3E00042A5E /* Rtt_Array.h in Headers */,
 				000DCB7812B05F3E00042A5E /* Rtt_Assert.h in Headers */,
 				000DCB7912B05F3E00042A5E /* Rtt_AutoPtr.h in Headers */,
+				F5DE5BE7298109CA00BE463F /* CoronaMacros.h in Headers */,
 				000DCB7B12B05F3E00042A5E /* Rtt_AutoResource.h in Headers */,
 				000DCB7C12B05F3E00042A5E /* Rtt_Build.h in Headers */,
 				000DCB7D12B05F3E00042A5E /* Rtt_Config.h in Headers */,
 				000DCB7E12B05F3E00042A5E /* Rtt_Data.h in Headers */,
+				AAD3E2052B0BEC3A000A4D45 /* Rtt_ObjectHandle.h in Headers */,
 				000DCB7F12B05F3E00042A5E /* Rtt_Finalizer.h in Headers */,
+				AAF34A9429F9DF3600076706 /* Rtt_TextureResourceCapture.h in Headers */,
 				000DCB8112B05F3E00042A5E /* Rtt_Fixed.h in Headers */,
 				000DCB8312B05F3E00042A5E /* Rtt_FixedBlockAllocator.h in Headers */,
 				000DCB8612B05F3E00042A5E /* Rtt_Geometry.h in Headers */,
@@ -3235,7 +3269,6 @@
 				A47428BA17694EB000C63853 /* Rtt_ImageSheetPaint.h in Headers */,
 				A47428BC17694EB000C63853 /* Rtt_ImageSheetUserdata.h in Headers */,
 				A47428BE17694EB000C63853 /* Rtt_LineObject.h in Headers */,
-				AA2C6AB6291C37320093B0BE /* CoronaMemory.h in Headers */,
 				A47428C017694EB000C63853 /* Rtt_LuaLibDisplay.h in Headers */,
 				A47428C217694EB000C63853 /* Rtt_LuaLibGraphics.h in Headers */,
 				A47428C317694EB000C63853 /* Rtt_MDisplayDelegate.h in Headers */,
@@ -3270,11 +3303,14 @@
 				A47428F017694EB000C63853 /* Rtt_TesselatorRoundedRect.h in Headers */,
 				A47428F217694EB000C63853 /* Rtt_TesselatorShape.h in Headers */,
 				A47428F417694EB000C63853 /* Rtt_TextObject.h in Headers */,
+				AA2ED7D72708264E00CEE021 /* CoronaObjects.h in Headers */,
+				AAF34A9229F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.h in Headers */,
 				A47428F617694EB000C63853 /* Rtt_VertexCache.h in Headers */,
 				A474292B17694FFC00C63853 /* Rtt_PhysicsWorld.h in Headers */,
 				A474292F176959FE00C63853 /* Rtt_FilePath.h in Headers */,
 				A474293317695A0700C63853 /* Rtt_HitTestObject.h in Headers */,
 				A4B66ADD176E65540077B2BF /* Rtt_GradientPaint.h in Headers */,
+				AA2ED7D92708264E00CEE021 /* CoronaPublicTypes.h in Headers */,
 				A47503411774DB5A0064ABA0 /* Rtt_LuaUserdataProxy.h in Headers */,
 				F5EEB6E11B74027F00D34C41 /* Rtt_TextureResourceBitmapAdapter.h in Headers */,
 				A47503451774DB770064ABA0 /* Rtt_PaintAdapter.h in Headers */,
@@ -3654,6 +3690,7 @@
 				C2C2194B1954F8DC00981B66 /* widget_theme_android_holo_light.lua in Sources */,
 				508D56B4195B8AA500556891 /* kernel_filter_step_gl.lua in Sources */,
 				508D56B5195B8AA500556891 /* kernel_filter_water_gl.lua in Sources */,
+				AAD3E2062B0BEC3A000A4D45 /* Rtt_ObjectHandle.cpp in Sources */,
 				0790F87418B6DFE800D0E6B1 /* loader_ccdata.lua in Sources */,
 				C22711D518D1646A005AE714 /* composer_scene.lua in Sources */,
 				C26B11D218775CC300C3F259 /* composer.lua in Sources */,
@@ -3727,6 +3764,7 @@
 				50FE9BE517A2FEE5002762DD /* kernel_filter_sharpenLuminance_gl.lua in Sources */,
 				07912E3A17A1C86A001ABDE0 /* kernel_filter_hue_gl.lua in Sources */,
 				07912E3B17A1C86A001ABDE0 /* kernel_filter_iris_gl.lua in Sources */,
+				AA2ED7D82708264E00CEE021 /* CoronaObjects.cpp in Sources */,
 				07912E3C17A1C86A001ABDE0 /* kernel_generator_linearGradient_gl.lua in Sources */,
 				5009C125186239780075E34C /* b2Separator.cpp in Sources */,
 				07912E3D17A1C86A001ABDE0 /* kernel_generator_random_gl.lua in Sources */,
@@ -3809,7 +3847,6 @@
 				000DCBD912B05F3E00042A5E /* Rtt_LuaLibNative.cpp in Sources */,
 				000DCBDB12B05F3E00042A5E /* Rtt_LuaLibOpenAL.cpp in Sources */,
 				000DCBDF12B05F3E00042A5E /* Rtt_LuaLibPhysics.cpp in Sources */,
-				AA2C6AB7291C37320093B0BE /* CoronaMemory.cpp in Sources */,
 				000DCBE512B05F3E00042A5E /* Rtt_LuaLibSQLite.cpp in Sources */,
 				000DCBE712B05F3E00042A5E /* Rtt_LuaLibSystem.cpp in Sources */,
 				000DCBE912B05F3E00042A5E /* Rtt_LuaProxy.cpp in Sources */,
@@ -3850,6 +3887,7 @@
 				000DCEFD12B082F300042A5E /* luaal.c in Sources */,
 				000DCFFC12B084DA00042A5E /* lsqlite3.c in Sources */,
 				0044F0E112CA9D74006EB396 /* Rtt_PlatformInAppStore.cpp in Sources */,
+				F5DE5BE8298109CA00BE463F /* CoronaMemory.cpp in Sources */,
 				0044F1DA12CAB806006EB396 /* Rtt_LuaLibInAppStore.cpp in Sources */,
 				A49EC13C1BD76DA10093F529 /* Rtt_KeyName.cpp in Sources */,
 				00E867D6136625DB00AAFA26 /* Reachability.m in Sources */,
@@ -3861,6 +3899,7 @@
 				A43FE9D014F2DD1B0042FA41 /* Rtt_ArrayTuple.cpp in Sources */,
 				AAF349AB29EFC53300076706 /* Rtt_Profiling.cpp in Sources */,
 				F5EEB6E41B74027F00D34C41 /* Rtt_TextureResourceCanvasAdapter.cpp in Sources */,
+				AAF34A9329F9DF3600076706 /* Rtt_TextureResourceCapture.cpp in Sources */,
 				A43FE9D214F2DD1B0042FA41 /* Rtt_ArrayTupleStruct.cpp in Sources */,
 				A43FE95514E25D440042FA41 /* Rtt_LuaAux.cpp in Sources */,
 				A49BEF35151A9FC5004F2BBE /* CoronaLua.cpp in Sources */,
@@ -3892,6 +3931,7 @@
 				A47428A817694EB000C63853 /* Rtt_Display.cpp in Sources */,
 				A47428AA17694EB000C63853 /* Rtt_DisplayDefaults.cpp in Sources */,
 				A47428AC17694EB000C63853 /* Rtt_DisplayObject.cpp in Sources */,
+				AAF34A9529F9DF3600076706 /* Rtt_TextureResourceCaptureAdapter.cpp in Sources */,
 				A47428AE17694EB000C63853 /* Rtt_DisplayPath.cpp in Sources */,
 				A47428B117694EB000C63853 /* Rtt_DisplayV2.cpp in Sources */,
 				A47428B317694EB000C63853 /* Rtt_GroupObject.cpp in Sources */,
@@ -4091,6 +4131,7 @@
 					../../external/smoothpolygon,
 					/System/Library/Frameworks/OpenAL.framework/Headers,
 					../../external/luasocket/src,
+					../../librtt/Corona/,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
@@ -4155,6 +4196,7 @@
 					../../external/smoothpolygon,
 					/System/Library/Frameworks/OpenAL.framework/Headers,
 					../../external/luasocket/src,
+					../../librtt/Corona/,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
@@ -4444,6 +4486,7 @@
 					../../external/smoothpolygon,
 					/System/Library/Frameworks/OpenAL.framework/Headers,
 					../../external/luasocket/src,
+					../../librtt/Corona/,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
@@ -4509,6 +4552,7 @@
 					../../external/smoothpolygon,
 					/System/Library/Frameworks/OpenAL.framework/Headers,
 					../../external/luasocket/src,
+					../../librtt/Corona/,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";

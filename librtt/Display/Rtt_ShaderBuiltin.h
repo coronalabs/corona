@@ -121,7 +121,7 @@ class ShaderBuiltin
 		static bool Exists( ShaderTypes::Category category, const char *name );
 
 	public:
-		static bool PushDefaultShell( lua_State *L );
+		static bool PushDefaultShell( lua_State *L, const char * backend );
 		static bool PushDefaultKernel( lua_State *L );
 	
 		static const char *KeyForCategory( ShaderTypes::Category category );

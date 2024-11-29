@@ -14,11 +14,6 @@ on:
         description: 'Build Year'
         required: true
         default: '2100'
-      onlyLatest:
-        description: "Only Latest Xcode"
-        type: 'boolean'
-        required: false
-        default: false
 
 
 env:
@@ -31,7 +26,7 @@ env:
 jobs:
   source-code:
     name: Check out and process source code
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v4
@@ -116,7 +111,6 @@ jobs:
 
 
   Xcode-template-matrix-13:
-    if: (! github.event.inputs.onlyLatest)
     strategy:
       matrix:
         runner:
@@ -158,57 +152,9 @@ jobs:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
-  Xcode-template-matrix-12:
-    if: (! github.event.inputs.onlyLatest)
-    strategy:
-      matrix:
-        runner:
-          - macos-12
-        xcode:
-          - Xcode_13.2.1
-          - Xcode_14.2
-        target:
-          - template
-          - template-angle
-        platform:
-          - iphone
-          - tvos
-    needs: source-code
-    runs-on: ${{ matrix.runner }}
-    env:
-      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
-      TEMPLATE_TARGET: ${{ matrix.target }}
-      TEMPLATE_PLATFORM: ${{ matrix.platform }}
-      S2D_MIN_VER_IOS: "8.0"
-      S2D_MIN_VER_TVOS: "9.0"
-      S2D_MIN_VER_MACOS: "10.9"
-    steps:
-      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - name: Get processed code
-        uses: actions/download-artifact@v4
-        with:
-          name: SourceCode
-          path: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build templates
-        working-directory: ./platform/${{ matrix.platform }}
-        run: ./gh_build_templates.sh
-        env:
-          CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Build templates JSON spec
-        run: ./tools/GHAction/generate_xcode_jsons.py
-      - name: Upload templates
-        uses: actions/upload-artifact@v4
-        with:
-          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
-          path: ./output
-
 
   collect-ios-templates:
     needs:
-      - Xcode-template-matrix-12
       - Xcode-template-matrix-13
       - Xcode-template-matrix-14
     runs-on: ubuntu-20.04

@@ -18,6 +18,9 @@
 #include "Renderer/Rtt_Uniform.h"
 #include "Rtt_LuaContext.h"
 
+#include "Corona/CoronaLua.h"
+#include "CoronaGraphics.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -71,6 +74,31 @@ ShaderDataAdapter::ValueForKey(
 	int index = shaderResource->GetDataIndex( key );
 	if ( index >= 0 )
 	{
+        if (index >= ShaderData::kNumData)
+        {
+            const CoronaEffectCallbacks * callbacks = shaderResource->GetEffectCallbacks();
+
+            if (callbacks && callbacks->getData)
+            {
+                int hadError = 0, top = lua_gettop( L );
+
+                result = callbacks->getData( L, index - ShaderData::kNumData, object->GetExtraSpace(), &hadError ); // ...[, object / err]
+
+                if (hadError)
+                {
+                    bool isString = result && lua_isstring( L, -1 );
+
+                    CoronaLuaWarning( L, "Error in 'getData()'%s%s", isString ? ": " : "", isString ? lua_tostring( L, -1 ) : "" );
+
+                    lua_settop( L, top ); // ...
+
+                    result = 0;
+                }
+
+                return result;
+            }
+        }
+
 		ShaderData::DataIndex dataIndex = (ShaderData::DataIndex)index;
 		if ( usesUniforms )
 		{
@@ -109,6 +137,36 @@ ShaderDataAdapter::SetValueForKey(
 	int index = (ShaderData::DataIndex)shaderResource->GetDataIndex( key );
 	if ( index >= 0 )
 	{
+        if (index >= ShaderData::kNumData)
+        {
+            const CoronaEffectCallbacks * callbacks = shaderResource->GetEffectCallbacks();
+
+            if (callbacks && callbacks->setData)
+            {
+                int hadError = 0, shouldInvalidate = 1, top = lua_gettop( L );
+
+                result = callbacks->setData( L, index - ShaderData::kNumData, valueIndex, object->GetExtraSpace(), &shouldInvalidate, &hadError ); // ...[, err]
+
+                if (hadError)
+                {
+                    bool isString = result && lua_isstring( L, -1 );
+
+                    CoronaLuaWarning( L, "Error in 'setData()'%s%s", isString ? ": " : "", isString ? lua_tostring( L, -1 ) : "" );
+
+                    lua_settop( L, top ); // ...
+
+                    result = false;
+                }
+                
+                else if (shouldInvalidate)
+                {
+                    object->Invalidate();
+                }
+
+                return result;
+            }
+        }
+
 		ShaderData::DataIndex dataIndex = (ShaderData::DataIndex)index;
 		if ( usesUniforms )
 		{

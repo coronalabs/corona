@@ -221,6 +221,7 @@ static size_t Internal_GetMaxTextureSize()
 @synthesize nativeSkinImage;
 
 - (id)initWithFrame:(NSRect)frameRect
+	  isTransparent:(BOOL)isTransparent
 {
 	self = [super initWithFrame:frameRect];
 	if ( self )
@@ -245,7 +246,12 @@ static size_t Internal_GetMaxTextureSize()
 		[[self layer] setBackgroundColor:[[NSColor clearColor] CoronaCGColor]];
 		[[self layerView] setOpaque:NO];
 		[[self layer] setOpaque:NO];
-		
+
+		if (isTransparent)
+		{
+			[[self layer] setOpacity:0.125];
+		}
+	
 		[[self layer] addSublayer:[self layerView]];
 	}
 

@@ -92,6 +92,30 @@ class RenderSurfaceControl : public Control
 
 		#pragma endregion
 
+		#pragma region Params Class
+		/// <summary>
+		///  Construction parameters for the control, originating from user settings.
+		/// </summary>
+		class Params {
+		public:
+			Params();
+
+			/// <summary>Set Vulkan as the preferred rendering backend.</summary>
+			/// <param name="required">If true, we must use Vulkan, else fail; otherwise, we can fall back to OpenGL.</param>
+			void SetVulkanWanted(bool required);
+			
+			/// <summary>Get the Vulkan-related preferred backend status.</summary>
+			/// <returns>Returns true if Vulkan is the preferred backend, false otherwise.</returns>
+			bool IsVulkanWanted() const;
+			
+			/// <summary>Get the Vulkan-related backend necessity status.</summary>
+			/// <returns>Returns true if Vulkan must be the backend; if optional or not even requested, false.</returns>
+			bool IsVulkanRequired() const;
+
+		private:
+			bool fWantVulkan;
+			bool fRequireVulkan;
+		};
 
 		#pragma region Constructors/Destructors
 		/// <summary>Creates a new render surface which wraps the given window handle.</summary>
@@ -99,7 +123,7 @@ class RenderSurfaceControl : public Control
 		///  <para>Handle to a Windows control to render to.</para>
 		///  <para>Can be null, but then this render surface object will do nothing.</para>
 		/// </param>
-		RenderSurfaceControl(HWND windowHandle);
+		RenderSurfaceControl(HWND windowHandle, const Params & params = Params());
 
 		/// <summary>Destroys this object.</summary>
 		virtual ~RenderSurfaceControl();
@@ -159,6 +183,9 @@ class RenderSurfaceControl : public Control
 		/// </remarks>
 		void RequestRender();
 
+		bool IsUsingVulkanBackend() const { return !!fVulkanContext; }
+		void * GetBackendContext() const { return IsUsingVulkanBackend() ? fVulkanContext : nullptr; }
+
 		#pragma endregion
 
 	protected:
@@ -210,7 +237,7 @@ class RenderSurfaceControl : public Control
 		///  <para>Creates a new rendering context for the currently referenced control.</para>
 		///  <para>Will destroy the last context if still active.</para>
 		/// </summary>
-		void CreateContext();
+		void CreateContext(const Params & params);
 
 		/// <summary>Destroys the last created rendering context.</summary>
 		void DestroyContext();
@@ -244,6 +271,9 @@ class RenderSurfaceControl : public Control
 
 		/// <summary>Stores the major/minor version number of the OpenGL driver that is rendering to this surface.</summary>
 		RenderSurfaceControl::Version fRendererVersion;
+
+		/// <summary>Vulkan analogue to the GL context, when chosen as the backend.</summary>
+		void * fVulkanContext;
 
 		#pragma endregion
 };

@@ -48,7 +48,7 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 	 * Creates a new OpenGL surface used to render Corona's content.
 	 * @param context Reference to the context. Cannot be null.
 	 */
-	public CoronaGLSurfaceView(android.content.Context context, com.ansca.corona.CoronaRuntime runtime, boolean isCoronaKit) {
+	public CoronaGLSurfaceView(android.content.Context context, com.ansca.corona.CoronaRuntime runtime, boolean isCoronaKit, boolean wantsDepthBuffer, boolean wantsStencilBuffer) {
 		super(context);
 
 		// Validate.
@@ -138,7 +138,15 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		// Note: The alpha channel must be disabled for the "surface" to work-around an OpenGL driver bug on Kindle Fire
 		//       and Nook Tablet where all alpha blended polygons, including the GL clear color, will be blended with black.
 		//       Alpha blending of content will still work because of the 32-bit color PixelFormat set down below.
-		setEGLConfigChooser(8, 8, 8, 8, 0, 0);
+		if (wantsStencilBuffer)
+		{
+			wantsDepthBuffer = true;
+		}
+
+		int depthSize = wantsDepthBuffer ? 16 : 0;
+		int stencilSize = wantsStencilBuffer ? 8 : 0;
+
+		setEGLConfigChooser(8, 8, 8, 8, depthSize, stencilSize);
 
 		// Attach the renderer to the surface.
 		fRenderer = new CoronaRenderer(this, runtime, isCoronaKit);

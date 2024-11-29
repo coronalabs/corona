@@ -260,6 +260,8 @@ premake4.lua
 librtt/Renderer/ios/build
 librtt/Renderer/mac/build
 
+#large file
+external/vulkan/Lib32/shaderc_combinedd.lib
 
 #legacy entries
 /plugins/viewer

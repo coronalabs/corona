@@ -172,9 +172,10 @@ SnapshotObject::Initialize( lua_State *L, Display& display, Real contentW, Real 
 	Rtt_ASSERT( GetStage() );
 	
 	// Calculate pixel dimensions for texture
+	S32 unused = 0;
 	S32 pixelW = Rtt_RealToInt( contentW );
 	S32 pixelH = Rtt_RealToInt( contentH );
-	display.ContentToScreen( pixelW, pixelH );
+	display.ContentToScreen( unused, unused, pixelW, pixelH );
 
 	TextureFactory& factory = display.GetTextureFactory();
 
@@ -207,7 +208,19 @@ SnapshotObject::Initialize( lua_State *L, Display& display, Real contentW, Real 
 
 	if (!fFrameBufferObject)
 	{
-		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture() ) );
+		FrameBufferObject::ExtraOptions opts = {};
+		/* TODO
+			fHasDepth = display.GetDefaults().GetAddDepthToResource();
+			fHasStencil = display.GetDefaults().GetAddStencilToResource();
+			fDepthClearValue = display.GetDefaults().GetAddedDepthClearValue();
+			fStencilClearValue = display.GetDefaults().GetAddedStencilClearValue();
+		 
+			TODO:
+				if (opts.depthBits) add appropriate frame buffer resources...
+				if (opts.stencilBits) ditto
+		 */
+
+		fFrameBufferObject = Rtt_NEW( display.GetAllocator(), FrameBufferObject( display.GetAllocator(), & resource->GetTexture(), &opts ) ); // n.b. mustClear = false
 	}
 }
 
@@ -343,12 +356,21 @@ SnapshotObject::RenderToFBO(
 		renderer.SetViewport( 0, 0, texW, texH );
 		if ( clearColor )
 		{
+			/* TODO
+				Renderer::ExtraClearOptions extra;
+				
+				extra.clearDepth = fHasDepth;
+				extra.clearStencil = fHasStencil;
+				extra.depthClearValue = fDepthClearValue;
+				extra.stencilClearValue = fStencilClearValue;
+			  */
 			ColorUnion color;
 			color.pixel = * clearColor;
 			const Real inv255 = 1.f / 255.f;
-			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255 );
+			renderer.Clear( color.rgba.r * inv255, color.rgba.g * inv255, color.rgba.b * inv255, color.rgba.a * inv255/*, &extra */ );
 		}
-
+		
+		renderer.BeginDrawing();
 		object.Draw( renderer );
 	}
 	renderer.PopMaskCount();
@@ -378,7 +400,7 @@ SnapshotObject::Draw( Renderer& renderer ) const
 	SUMMED_TIMING( sd, "Snapshot: Draw" );
 
 	if ( ShouldRenderGroup() )
-	{		
+	{
 		SUMMED_TIMING( srg, "Snapshot: Render Group" );
 
 		DrawGroup( renderer, GetGroup(), & fClearColor );
