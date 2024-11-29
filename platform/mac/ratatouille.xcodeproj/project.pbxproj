@@ -689,15 +689,13 @@
 		AA2C69A92914777C0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A0291476D90093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
 		AA2C69AA2914777C0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A7291476D90093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
 		AA2C69AB2914777C0093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A8291476D90093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
+		AAA301372CEAEC2400FF77DE /* Rtt_ObjectHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA3012F2CEAEC2400FF77DE /* Rtt_ObjectHandle.h */; };
+		AAA301382CEAEC2400FF77DE /* Rtt_ObjectHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA3012F2CEAEC2400FF77DE /* Rtt_ObjectHandle.h */; };
+		AAA301392CEAEC2400FF77DE /* Rtt_ObjectHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAA301362CEAEC2400FF77DE /* Rtt_ObjectHandle.cpp */; };
+		AAA3013A2CEAEC2400FF77DE /* Rtt_ObjectHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAA301362CEAEC2400FF77DE /* Rtt_ObjectHandle.cpp */; };
 		AAA5811D270D38A6002A51A7 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAA58114270D38A5002A51A7 /* CoronaObjects.cpp */; };
 		AAA5811F270D38A6002A51A7 /* CoronaObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA5811B270D38A5002A51A7 /* CoronaObjects.h */; };
 		AAA58121270D38A6002A51A7 /* CoronaPublicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA5811C270D38A6002A51A7 /* CoronaPublicTypes.h */; };
-		AAA58124270D38C9002A51A7 /* Rtt_ObjectBoxList.h in Headers */ = {isa = PBXBuildFile; fileRef = AAA58123270D38C9002A51A7 /* Rtt_ObjectBoxList.h */; };
-		AA2C69AC291478430093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A0291476D90093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
-		AA2C69AD291478430093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A7291476D90093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
-		AA2C69AE291478430093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69A8291476D90093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
-		AA2C6AAB291C35A90093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */; };
-		AA2C6AAD291C35A90093B0BE /* CoronaMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */; };
 		AAF348FD29DF9BA800076706 /* Rtt_Profiling.h in Headers */ = {isa = PBXBuildFile; fileRef = AAF348FC29DF9BA800076706 /* Rtt_Profiling.h */; };
 		AAF348FE29DF9BA800076706 /* Rtt_Profiling.h in Headers */ = {isa = PBXBuildFile; fileRef = AAF348FC29DF9BA800076706 /* Rtt_Profiling.h */; };
 		AAF3490029DF9BDD00076706 /* Rtt_Profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF348FF29DF9BDD00076706 /* Rtt_Profiling.cpp */; };
@@ -3250,12 +3248,11 @@
 		AA2C69A0291476D90093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurGaussianLinear_gl.lua; path = Display/Shader/kernel_filter_blurGaussianLinear_gl.lua; sourceTree = "<group>"; };
 		AA2C69A7291476D90093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearHorizontal_gl.lua; path = Display/Shader/kernel_filter_blurLinearHorizontal_gl.lua; sourceTree = "<group>"; };
 		AA2C69A8291476D90093B0BE /* kernel_filter_blurLinearVertical_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearVertical_gl.lua; path = Display/Shader/kernel_filter_blurLinearVertical_gl.lua; sourceTree = "<group>"; };
+		AAA3012F2CEAEC2400FF77DE /* Rtt_ObjectHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectHandle.h; path = Display/Rtt_ObjectHandle.h; sourceTree = "<group>"; };
+		AAA301362CEAEC2400FF77DE /* Rtt_ObjectHandle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ObjectHandle.cpp; path = Display/Rtt_ObjectHandle.cpp; sourceTree = "<group>"; };
 		AAA58114270D38A5002A51A7 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
 		AAA5811B270D38A5002A51A7 /* CoronaObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaObjects.h; path = Corona/CoronaObjects.h; sourceTree = "<group>"; };
 		AAA5811C270D38A6002A51A7 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
-		AAA58123270D38C9002A51A7 /* Rtt_ObjectBoxList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectBoxList.h; path = Display/Rtt_ObjectBoxList.h; sourceTree = "<group>"; };
-		AA2C6AA3291C35A90093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
-		AA2C6AAA291C35A90093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = Corona/CoronaMemory.h; sourceTree = "<group>"; };
 		AAF348FC29DF9BA800076706 /* Rtt_Profiling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rtt_Profiling.h; sourceTree = "<group>"; };
 		AAF348FF29DF9BDD00076706 /* Rtt_Profiling.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Rtt_Profiling.cpp; sourceTree = "<group>"; };
 		AAF34A7429F9CAA800076706 /* Rtt_TextureResourceCaptureAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceCaptureAdapter.cpp; path = Display/Rtt_TextureResourceCaptureAdapter.cpp; sourceTree = "<group>"; };
@@ -4854,8 +4851,8 @@
 				A432880C176A621100ACB6FF /* Rtt_LuaLibGraphics.h */,
 				A432880D176A621100ACB6FF /* Rtt_MDisplayDelegate.h */,
 				A432880E176A621100ACB6FF /* Rtt_MDrawable.h */,
-				AAD3E1F82B09C2E9000A4D45 /* Rtt_ObjectHandle.cpp */,
-				AAD3E1F92B09C2E9000A4D45 /* Rtt_ObjectHandle.h */,
+				AAA301362CEAEC2400FF77DE /* Rtt_ObjectHandle.cpp */,
+				AAA3012F2CEAEC2400FF77DE /* Rtt_ObjectHandle.h */,
 				A432880F176A621100ACB6FF /* Rtt_OpenPath.cpp */,
 				A4328810176A621100ACB6FF /* Rtt_OpenPath.h */,
 				A4328811176A621100ACB6FF /* Rtt_Paint.cpp */,
@@ -5536,6 +5533,7 @@
 				C2DA96631B46460F00DAF684 /* Rtt_DisplayPath.h in Headers */,
 				03D1C5621D70CCCD00DB02EE /* Rtt_OperationResult.h in Headers */,
 				C2DA96101B46460F00DAF684 /* Rtt_DisplayTypes.h in Headers */,
+				AAA301372CEAEC2400FF77DE /* Rtt_ObjectHandle.h in Headers */,
 				C2DA96241B46460F00DAF684 /* Rtt_DisplayV2.h in Headers */,
 				C2DA96781B46460F00DAF684 /* Rtt_EmitterObject.h in Headers */,
 				C2DA96281B46460F00DAF684 /* Rtt_Event.h in Headers */,
@@ -5573,7 +5571,6 @@
 				C2DA96371B46460F00DAF684 /* Rtt_LuaLibDisplay.h in Headers */,
 				000CE79B12B73EE300D9B6A4 /* Rtt_LuaLibFacebook.h in Headers */,
 				F5C40DC31CB68788004F7789 /* Rtt_TesselatorMesh.h in Headers */,
-				AAD3E1FC2B09C2E9000A4D45 /* Rtt_ObjectHandle.h in Headers */,
 				000CE79D12B73EE300D9B6A4 /* Rtt_LuaLibFlurry.h in Headers */,
 				C2DA96131B46460F00DAF684 /* Rtt_LuaLibGameNetwork.h in Headers */,
 				C2DA96321B46460F00DAF684 /* Rtt_LuaLibGraphics.h in Headers */,
@@ -5922,6 +5919,7 @@
 				C229E0231B32221B00D87A7C /* Rtt_LuaLibFacebook.h in Headers */,
 				F5C40DC51CB68789004F7789 /* Rtt_TesselatorMesh.h in Headers */,
 				C229E0241B32221B00D87A7C /* Rtt_LuaLibFlurry.h in Headers */,
+				AAA301382CEAEC2400FF77DE /* Rtt_ObjectHandle.h in Headers */,
 				C229E0251B32221B00D87A7C /* Rtt_LuaLibGameNetwork.h in Headers */,
 				C229E0261B32221B00D87A7C /* Rtt_LuaLibGraphics.h in Headers */,
 				C229E0271B32221B00D87A7C /* Rtt_LuaLibInAppStore.h in Headers */,
@@ -6056,7 +6054,6 @@
 				C229E0A31B32221B00D87A7C /* Rtt_WeakPtr.h in Headers */,
 				C229E0A41B32221B00D87A7C /* SmoothPolygon.h in Headers */,
 				C229E0A61B32221B00D87A7C /* b2GLESDebugDraw.h in Headers */,
-				AAD3E1FD2B09C2E9000A4D45 /* Rtt_ObjectHandle.h in Headers */,
 				C229E0A71B32221B00D87A7C /* b2Separator.h in Headers */,
 				C229E0A81B32221B00D87A7C /* lua_hash_map.hpp in Headers */,
 				C229E0A91B32221B00D87A7C /* luaal.h in Headers */,
@@ -6953,7 +6950,6 @@
 				A4E6329516712E4E00F37549 /* Rtt_LuaLibGameNetwork.cpp in Sources */,
 				A432886A176A621200ACB6FF /* Rtt_LuaLibGraphics.cpp in Sources */,
 				00572B8B12D2B9BB00FB6A11 /* Rtt_LuaLibInAppStore.cpp in Sources */,
-				AAD3E1FA2B09C2E9000A4D45 /* Rtt_ObjectHandle.cpp in Sources */,
 				000CE79E12B73EE300D9B6A4 /* Rtt_LuaLibMedia.cpp in Sources */,
 				000CE7A012B73EE300D9B6A4 /* Rtt_LuaLibNative.cpp in Sources */,
 				000CE7A212B73EE300D9B6A4 /* Rtt_LuaLibOpenAL.cpp in Sources */,
@@ -7174,6 +7170,7 @@
 				5087FFC117C731D60072BC7D /* kernel_generator_sunbeams_gl.lua in Sources */,
 				000CE8B812B73F7500D9B6A4 /* lsqlite3.c in Sources */,
 				00B73C2912B71C320057F594 /* luaal.c in Sources */,
+				AAA301392CEAEC2400FF77DE /* Rtt_ObjectHandle.cpp in Sources */,
 				C26D8DA51951053F008DE65C /* re.lua in Sources */,
 				AAF34A8029F9CAA800076706 /* Rtt_TextureResourceCapture.cpp in Sources */,
 				C208322D1AA54ADD005D2680 /* remdebug_engine.lua in Sources */,
@@ -7748,12 +7745,12 @@
 				C229E1B41B32221B00D87A7C /* kernel_filter_invert_gl.lua in Sources */,
 				C229E1B51B32221B00D87A7C /* kernel_filter_iris_gl.lua in Sources */,
 				C229E1B61B32221B00D87A7C /* kernel_filter_levels_gl.lua in Sources */,
-				AAD3E1FB2B09C2E9000A4D45 /* Rtt_ObjectHandle.cpp in Sources */,
 				C229E1B71B32221B00D87A7C /* kernel_filter_linearWipe_gl.lua in Sources */,
 				C229E1B81B32221B00D87A7C /* kernel_filter_median_gl.lua in Sources */,
 				C229E1B91B32221B00D87A7C /* kernel_filter_monotone_gl.lua in Sources */,
 				C229E1BA1B32221B00D87A7C /* kernel_filter_opTile_gl.lua in Sources */,
 				C229E1BB1B32221B00D87A7C /* kernel_filter_pixelate_gl.lua in Sources */,
+				AAA3013A2CEAEC2400FF77DE /* Rtt_ObjectHandle.cpp in Sources */,
 				C229E1BC1B32221B00D87A7C /* kernel_filter_polkaDots_gl.lua in Sources */,
 				C229E1BD1B32221B00D87A7C /* kernel_filter_posterize_gl.lua in Sources */,
 				C229E1BE1B32221B00D87A7C /* kernel_filter_radialWipe_gl.lua in Sources */,
