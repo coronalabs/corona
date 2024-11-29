@@ -14,11 +14,6 @@ on:
         description: 'Build Year'
         required: true
         default: '2100'
-      onlyLatest:
-        description: "Only Latest Xcode"
-        type: 'boolean'
-        required: false
-        default: false
 
 
 env:
@@ -116,7 +111,6 @@ jobs:
 
 
   Xcode-template-matrix-13:
-    if: (! github.event.inputs.onlyLatest)
     strategy:
       matrix:
         runner:
