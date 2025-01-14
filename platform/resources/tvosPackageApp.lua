@@ -971,34 +971,6 @@ local function generateXcent( options )
 end
 
 
---
--- generateFiles
---
--- Create the .xcent and Info.plist files
---
--- returns an error message or nil on success
---
-local function generateFiles( options )
-	local result = nil
-
-	result = generateXcprivacy( options )
-	if result then
-		return result
-	end
-
-	result = generateXcent( options )
-	if result then
-		return result
-	end
-
-	result = CoronaPListSupport.modifyPlist( options )
-	if result then
-		return result
-	end
-
-	return result
-end
-
 -- xcprivacy
 local templateXcprivacy = [[
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1029,6 +1001,35 @@ local function generateXcprivacy( options )
 	if debugBuildProcess and debugBuildProcess ~= 0 then
 		runScript("cat "..filename)
 	end
+end
+
+
+--
+-- generateFiles
+--
+-- Create the .xcent and Info.plist files
+--
+-- returns an error message or nil on success
+--
+local function generateFiles( options )
+	local result = nil
+
+	result = generateXcprivacy( options )
+	if result then
+		return result
+	end
+
+	result = generateXcent( options )
+	if result then
+		return result
+	end
+
+	result = CoronaPListSupport.modifyPlist( options )
+	if result then
+		return result
+	end
+
+	return result
 end
 
 -- True for Ad Hoc or Store builds
