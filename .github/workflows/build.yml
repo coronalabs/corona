@@ -44,7 +44,7 @@ jobs:
 
   native:
     needs: source-code
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -65,11 +65,11 @@ jobs:
           name: Native
           path: ./output
 
-  Xcode-template-matrix-14:
+  Xcode-template-matrix-15:
     strategy:
       matrix:
         runner:
-          - macos-14
+          - macos-15
         xcode:
           - Xcode_16.2
           - Xcode_16
@@ -156,7 +156,7 @@ jobs:
   collect-ios-templates:
     needs:
       - Xcode-template-matrix-13
-      - Xcode-template-matrix-14
+      - Xcode-template-matrix-15
     runs-on: ubuntu-20.04
     if: (! failure() && ! cancelled())
     steps:
