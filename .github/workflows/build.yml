@@ -460,12 +460,19 @@ jobs:
         env:
           CERT_PASSWORD: ${{ secrets.CertPassword }}
       - name: Notarize
+        id: notarize
         run: |
           [ -n "$APPLE_ISSUER" ] || exit 0
-          APPLE_KEY_FILE="$(mktemp)"
-          echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
-          xcrun notarytool submit --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" --wait ./output/*.dmg
-          xcrun stapler staple ./output/*.dmg
+          if ! (
+            set -ex
+            APPLE_KEY_FILE="$(mktemp)"
+            echo "$APPLE_KEY" > "$APPLE_KEY_FILE"
+            xcrun notarytool submit --key "$APPLE_KEY_FILE" --issuer "$APPLE_ISSUER" --key-id "$APPLE_KEY_ID" --wait ./output/*.dmg
+            xcrun stapler staple ./output/*.dmg
+          )
+          then
+            echo "NOTARIZATION_FAILED=true" >> "$GITHUB_OUTPUT"
+          fi
         shell: bash
         env: # get this at https://appstoreconnect.apple.com/access/api
           APPLE_KEY: ${{ secrets.AppleKey }} ## full contents of the file
@@ -476,6 +483,11 @@ jobs:
         with:
           name: Simulator-macOS
           path: ./output
+      - name: Check if notarization failed
+        if: ${{ steps.notarize.outputs.NOTARIZATION_FAILED == 'true' }}
+        run: |
+          echo "Notarization failed"
+          exit 1
 
 
   check-notarization:
