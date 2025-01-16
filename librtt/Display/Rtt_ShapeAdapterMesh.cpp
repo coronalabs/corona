@@ -393,32 +393,32 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 	}
 	lua_pop( L, 1);
 
-    { // center the mesh
-        Rect r;
-        numVertices = mesh.Length();
-        for (U32 i = 0; i < numVertices; i++)
-        {
-            r.Union(mesh[i]);
-        }
+	{ // center the mesh
+		Rect r;
+		numVertices = mesh.Length();
+		for (U32 i = 0; i < numVertices; i++)
+		{
+			r.Union(mesh[i]);
+		}
 
-        Vertex2 vertexOffset = {0, 0};
+		Vertex2 vertexOffset = {0, 0};
 
-        if (!r.IsEmpty())
-        {
-            r.GetCenter(vertexOffset);
+		if (!r.IsEmpty())
+		{
+			r.GetCenter(vertexOffset);
+		
+			for (U32 i = 0; i < numVertices; i++)
+			{
+				mesh[i].x -= vertexOffset.x;
+				mesh[i].y -= vertexOffset.y;
+		    	}
+		}
 
-            for (U32 i = 0; i < numVertices; i++)
-            {
-                mesh[i].x -= vertexOffset.x;
-                mesh[i].y -= vertexOffset.y;
-            }
-        }
-
-        tesselator.SetVertexOffset(vertexOffset);
-    }
+		tesselator.SetVertexOffset(vertexOffset);
+    	}
 
 
-    ArrayVertex2& UVs = tesselator.GetUV();
+	ArrayVertex2& UVs = tesselator.GetUV();
 	U32 numUVs;
 	lua_getfield( L, index, "uvs" );
 	const unsigned char* fromUVs = GetBuffer(L, sizeof(Vertex2), baseVertex, numUVs, stride);
