@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +21,6 @@
 #if USE_JNI
 #include "Rtt_JavaHost.h"
 #endif
-#include "Rtt_WebServicesSession.h"
 #include "afxcmn.h"
 #include "Interop\Ipc\Process.h"
 #include <memory>
@@ -73,6 +56,7 @@
 #define REGISTRY_RELAUNCHSIM _T("RelaunchSimulatorWhenProjectModified")
 #define REGISTRY_SHOWWEBBUILD _T("ShowWebBuild")
 #define REGISTRY_SHOWLINUXBUILD _T("ShowLinuxBuild")
+#define REGISTRY_SHOWNXSBUILD _T("ShowSwitchBuild")
 #define REGISTRY_SHOWWIN32BUILD _T("ShowWin32Build")
 #define REGISTRY_CUSTOM_DEVICE_NAME		_T("CustomDeviceName")
 #define REGISTRY_CUSTOM_DEVICE_WIDTH	_T("CustomDeviceWidth")
@@ -96,6 +80,7 @@
 #define REGISTRY_RELAUNCHSIM_DEFAULT RELAUNCH_SIM_ASK // ask every time
 #define REGISTRY_SHOWWEBBUILD_DEFAULT 0
 #define REGISTRY_SHOWLINUXBUILD_DEFAULT 0
+#define REGISTRY_SHOWNXSBUILD_DEFAULT 0
 #define REGISTRY_DEBUG_MONETIZATION_PLUGIN_DEFAULT 0
 #define REGISTRY_DM_FIRST_RUN_COMPLETE_DEFAULT 0
 
@@ -141,6 +126,7 @@ public:
 	void SetRelaunchSimStyle(int relaunchSimStyle);
 	int GetRelaunchSimStyle();
 	bool ShouldShowWebBuildDlg();
+	bool ShouldShowNXBuildDlg();
 	bool ShouldShowLinuxBuildDlg();
 	int IsStopBuildRequested() { return m_isStopBuildRequested; }
 	void SetStopBuildRequested(int stopBuildRequested)  { m_isStopBuildRequested = stopBuildRequested; }
@@ -158,8 +144,6 @@ public:
 	static bool InitJavaPaths();
 	static bool CheckJarPath( CString jarPath );
 	std::shared_ptr<Interop::Ipc::Process> GetOutputViewerProcessPointer() { return m_outputViewerProcessPointer; }
-	void SetCurrentWebServicesSession(Rtt::WebServicesSession *session) { m_pWebServicesSession = session; }
-	Rtt::WebServicesSession *GetCurrentWebServicesSession() { return m_pWebServicesSession; }
 
 protected:
 	BOOL AuthorizeInstance();
@@ -182,7 +166,6 @@ protected:
 #endif
 	std::shared_ptr<Interop::Ipc::Process> m_outputViewerProcessPointer;
 	BOOL m_isStopBuildRequested;
-	Rtt::WebServicesSession *m_pWebServicesSession;
 };
 
 extern CSimulatorApp theApp;

@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
 // For overview and more information on licensing please refer to README.md
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -40,10 +24,7 @@ const TargetAndroidAppStore TargetAndroidAppStore::kGoogle("google", "Google Pla
 const TargetAndroidAppStore TargetAndroidAppStore::kAmazon("amazon", "Amazon", TargetDevice::kKindlePlatform);
 
 /// Android build targeting the Ouya app store.
-const TargetAndroidAppStore TargetAndroidAppStore::kOuya("ouya", "Ouya", TargetDevice::kAndroidPlatform);
-
-/// Android build targeting the GameStick app store.
-const TargetAndroidAppStore TargetAndroidAppStore::kGameStick("gameStick", "GameStick", TargetDevice::kAndroidPlatform);
+const TargetAndroidAppStore TargetAndroidAppStore::kSamsung("samsung", "Samsung", TargetDevice::kAndroidPlatform);
 
 
 /// Android app store collection type.
@@ -74,7 +55,7 @@ static bool OnCompareCollectionItems(
 	{
 		return false;
 	}
-	
+
 	// Always put app store target "None" at the end of the collection.
 	if (&TargetAndroidAppStore::kNone == itemPointer1)
 	{
@@ -101,7 +82,7 @@ TargetAndroidAppStore::TargetAndroidAppStore(
 	fStoreStringId.Set(storeStringId);
 	fStoreName.Set(storeName);
 	fPlatform = platform;
-	
+
 	// Add this app store to the collection.
 	GetCollection().push_back(this);
 	GetCollection().sort(OnCompareCollectionItems);
@@ -157,7 +138,7 @@ TargetAndroidAppStore* TargetAndroidAppStore::GetByIndex(int index)
 	{
 		return NULL;
 	}
-	
+
 	// Fetch the indexed store.
 	TargetAndroidAppStoreList &collection = GetCollection();
 	for (iter = collection.begin(); iter != collection.end(); iter++)
@@ -187,7 +168,7 @@ TargetAndroidAppStore* TargetAndroidAppStore::GetByStringId(const char *stringId
 	{
 		return NULL;
 	}
-	
+
 	// Fetch the store by ID.
 	TargetAndroidAppStoreList &collection = GetCollection();
 	for (iter = collection.begin(); iter != collection.end(); iter++)
@@ -203,7 +184,7 @@ TargetAndroidAppStore* TargetAndroidAppStore::GetByStringId(const char *stringId
 			}
 		}
 	}
-	
+
 	// Failed to find a store matching the given string ID.
 	return NULL;
 }

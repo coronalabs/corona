@@ -6,6 +6,7 @@
 //
 
 #import <GameController/GCController.h>
+#import <GameController/GCEventViewController.h>
 
 @class CoronaView;
 @class CoronaViewController;

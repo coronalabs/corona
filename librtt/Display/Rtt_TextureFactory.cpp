@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +22,7 @@
 
 #include "Display/Rtt_TextureResourceBitmap.h"
 #include "Display/Rtt_TextureResourceCanvas.h"
+#include "Display/Rtt_TextureResourceCapture.h"
 #include "Display/Rtt_TextureResourceExternal.h"
 
 #include "Rtt_FilePath.h"
@@ -415,7 +400,7 @@ TextureFactory::SetVideoSource( VideoSource source )
 static BufferBitmap *
 NewContainerMaskBitmap( Rtt_Allocator *pAllocator )
 {
-#if defined(Rtt_NINTENDO_ENV) || defined(Rtt_LINUX_ENV)
+#if defined(Rtt_LINUX_ENV)
 	const size_t kLength = 8;
 	const size_t kBorder = 2;
 	const PlatformBitmap::Format kFormat = PlatformBitmap::kRGBA;
@@ -557,7 +542,7 @@ TextureFactory::WillRemoveTexture( const TextureResource& resource )
 SharedPtr< TextureResource >
 TextureFactory::FindOrCreateCanvas(const std::string &cacheKey,
 								Real width, Real height,
-								int pixelWidth, int pixelHeight )
+								int pixelWidth, int pixelHeight, bool isMask )
 
 {
 	SharedPtr< TextureResource > result = Find(cacheKey);
@@ -566,7 +551,7 @@ TextureFactory::FindOrCreateCanvas(const std::string &cacheKey,
 		return result;
 	}
 	
-	TextureResourceCanvas *resource = TextureResourceCanvas::Create( * this, width, height, pixelWidth, pixelHeight );
+	TextureResourceCanvas *resource = TextureResourceCanvas::Create( * this, width, height, pixelWidth, pixelHeight, isMask ? Texture::kLuminance : Texture::kRGBA );
 	result = SharedPtr< TextureResource >( resource );
 	
 	fCache[cacheKey] = CacheEntry( result );
@@ -576,7 +561,29 @@ TextureFactory::FindOrCreateCanvas(const std::string &cacheKey,
 	return result;
 }
 
+SharedPtr< TextureResource >
+TextureFactory::FindOrCreateCapture(
+		const std::string &cacheKey,
+		Real w, Real h,
+		int pixelW, int pixelH )
+{
+	SharedPtr< TextureResource > result = Find(cacheKey);
+	if (result.NotNull())
+	{
+		return result;
+	}
 	
+	TextureResourceCapture *resource = TextureResourceCapture::Create( * this, w, h, pixelW, pixelH );
+	result = SharedPtr< TextureResource >( resource );
+	
+	resource->SetWeakResource( result );
+	
+	fCache[cacheKey] = CacheEntry( result );
+	result->SetCacheKey(cacheKey);
+	
+	
+	return result;	
+}
 	
 SharedPtr< TextureResource >
 TextureFactory::FindOrCreateExternal(const std::string &cacheKey,
@@ -590,7 +597,9 @@ TextureFactory::FindOrCreateExternal(const std::string &cacheKey,
 		return fOwnedTextures[cacheKey];
 	}
 	
-	TextureResource *resource = TextureResourceExternal::Create( *this, callbacks, context, true );
+	bool isRetina = GetDisplay().GetDefaults().IsExternalTextureRetina();
+
+	TextureResource *resource = TextureResourceExternal::Create( *this, callbacks, context, isRetina );
 	SharedPtr< TextureResource > result = SharedPtr< TextureResource >( resource );
 	
 	fCache[cacheKey] = CacheEntry( result );

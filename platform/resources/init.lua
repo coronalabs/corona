@@ -1,25 +1,9 @@
 ------------------------------------------------------------------------------
 --
--- Copyright (C) 2018 Corona Labs Inc.
--- Contact: support@coronalabs.com
---
 -- This file is part of the Corona game engine.
---
--- Commercial License Usage
--- Licensees holding valid commercial Corona licenses may use this file in
--- accordance with the commercial license agreement between you and 
--- Corona Labs Inc. For licensing terms and conditions please contact
--- support@coronalabs.com or visit https://coronalabs.com/com-license
---
--- GNU General Public License Usage
--- Alternatively, this file may be used under the terms of the GNU General
--- Public license version 3. The license is as published by the Free Software
--- Foundation and appearing in the file LICENSE.GPL3 included in the packaging
--- of this file. Please review the following information to ensure the GNU 
--- General Public License requirements will
--- be met: https://www.gnu.org/licenses/gpl-3.0.html
---
--- For overview and more information on licensing please refer to README.md
+-- For overview and more information on licensing please refer to README.md 
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
 
@@ -127,7 +111,8 @@ function EventDispatcher:addEventListener( eventName, listener )
     if not listener and self[eventName] then listener = self; end
 
 	-- get table for either function or table listeners
-	local t = self:getOrCreateTable( eventName, type( listener ) )
+	local listenerType = type( listener )
+	local t = self:getOrCreateTable( eventName, listenerType )
 	if t then
 		table.insert( t, listener )
 	end
@@ -202,32 +187,61 @@ function cloneArray( array )
 	return clone
 end
 
+display._initProfiling()
+
+local profiles, augmentedNameStash = {}, {}
+local _type = type
+
+local function lookupProfile( name )
+	local id = profiles[name]
+
+	if not id and _type( name ) == "string" then
+		local aug = name .. " (event)"
+
+		id = display._allocateProfile( aug )
+		profiles[name] = id
+		augmentedNameStash[#augmentedNameStash + 1] = aug -- prevent collection
+	end
+
+	return display._beginProfile( id )
+end
+
 function EventDispatcher:dispatchEvent( event )
 	local result = false;
 	local eventName = event.name
+	local profile
 
 	-- array of functions is self._functionListeners[eventName]
 	local functionDict = self._functionListeners
 	local functionArray = ( functionDict and functionDict[eventName] ) or nil
 	if ( functionArray ~= nil ) and ( #functionArray > 0 ) then
+	--	local profile = display._beginProfile( functionArray._profileID )
+		profile = lookupProfile( eventName )
+
 		local functionArrayClone = cloneArray( functionArray )
 		for index = 1, #functionArrayClone do
 			local func = functionArrayClone[ index ]
+			display._addProfileEntry( profile, func )
 			if self:hasEventListener( eventName, func ) then
 				-- Dispatch event to function listener.
 				local handled = func( event )
 				result = handled or result
 			end
 		end
+	--	display._endProfile( profile )
 	end
 
 	-- array of table listeners is self._tableListeners[eventName]
 	local tableDict = self._tableListeners
 	local tableArray = ( tableDict and tableDict[eventName] ) or nil
 	if ( tableArray ~= nil ) and ( #tableArray > 0 ) then
+	--	local profile = display._beginProfile( tableArray._profileID )
+		profile = profile or lookupProfile( eventName )
+
 		local tableArrayClone = cloneArray( tableArray )
 		for index = 1, #tableArrayClone do
 			local obj = tableArrayClone[ index ]
+			display._addProfileEntry( profile, obj )
 			if self:hasEventListener( eventName, obj ) then
 				-- Fetch method stored as property of object.
 				local method = obj[eventName]
@@ -238,7 +252,10 @@ function EventDispatcher:dispatchEvent( event )
 				end
 			end
 		end
+	--	display._endProfile( profile )
 	end
+	
+	display._endProfile( profile )
 
 	return result
 end
@@ -413,6 +430,25 @@ end
 
 Runtime.Object = PublicObject
 
+-------------------------------------------------------------------------------
+-- Per-frame logic
+-------------------------------------------------------------------------------
+
+local _frame_id, _frame_start_time
+
+local function onEnterFrameEvent( event )
+	_frame_id, _frame_start_time = event.frame, event.time
+end
+
+Runtime:addEventListener( "enterFrame", onEnterFrameEvent )
+
+function Runtime.getFrameID( )
+	return _frame_id + 1
+end
+
+function Runtime.getFrameStartTime( )
+	return _frame_start_time
+end
 
 -------------------------------------------------------------------------------
 -- DisplayObject

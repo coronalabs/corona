@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -43,8 +27,8 @@ class Rtt::MacSimulatorServices
 #include "Rtt_LuaFrameworks.h"
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_FileSystem.h"
+#include "Rtt_DeviceBuildData.h"
 
 #include "XcodeToolHelper.h"
 
@@ -53,8 +37,12 @@ class Rtt::MacSimulatorServices
 
 #include <dirent.h>
 #include <sys/stat.h>
+#include "Rtt_HTTPClient.h"
 
 Rtt_EXPORT int luaopen_lfs (lua_State *L);
+Rtt_EXPORT int luaopen_socket_core (lua_State *L);
+Rtt_EXPORT int luaopen_mime_core(lua_State *L);
+
 
 // ----------------------------------------------------------------------------
 
@@ -71,6 +59,7 @@ namespace Rtt
 // following function which loads the bytecodes via luaL_loadbuffer.
     int luaload_tvosPackageApp(lua_State* L);
     int luaload_CoronaPListSupport(lua_State* L);
+	int luaload_CoronaOfflineiOSPackager(lua_State* L);
 
 // ----------------------------------------------------------------------------
 
@@ -110,11 +99,8 @@ TVOSAppPackager::TVOSAppPackager( const MPlatformServices& services, MacSimulato
 #endif
 
 	Lua::RegisterModuleLoader( L, "CoronaPListSupport", Lua::Open< luaload_CoronaPListSupport > );
-	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
-	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
-	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
-	Lua::RegisterModuleLoader( L, "lfs", luaopen_lfs );
-    
+	HTTPClient::registerFetcherModuleLoaders(L);
+
 	Lua::DoBuffer( fVM, & luaload_tvosPackageApp, NULL);
 }
 
@@ -123,9 +109,9 @@ TVOSAppPackager::~TVOSAppPackager()
 }
 
 int
-TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, const char* tmpDirBase )
+TVOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 {
-	int result = WebServicesSession::kBuildError;
+	int result = PlatformAppPackager::kBuildError;
 	const TVOSAppPackagerParams * macParams = (const TVOSAppPackagerParams *) params;
 	time_t startTime = time(NULL);
 
@@ -149,15 +135,127 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 			char* outputFile = (char*)malloc( outputFileLen );
 			sprintf( outputFile, "%s" LUA_DIRSEP "%s", tmpDir, kOutputName );
 
-            if (fSimulatorServices != NULL)
-            {
-                fSimulatorServices->SetBuildMessage("Communicating with build server");
-            }
-
-            // Send params/input.zip via web api
-			result = session.BeginBuild( params, inputFile, outputFile );
-			if ( WebServicesSession::kNoError == result )
+			if(true)
 			{
+				if (fSimulatorServices != NULL)
+				{
+					fSimulatorServices->SetBuildMessage("Collecting plugins");
+				}
+
+				lua_State *L = fVM;
+
+				Lua::DoBuffer( L, & luaload_CoronaOfflineiOSPackager, NULL);
+				lua_getglobal(L, "CreateOfflinePackage");
+				lua_newtable( L );
+				
+				lua_pushstring(L, tmpDir);
+				lua_setfield(L, -2, "tmpDir");
+				
+				lua_pushstring(L, outputFile);
+				lua_setfield(L, -2, "outputFile");
+				
+				lua_pushstring(L, inputFile);
+				lua_setfield(L, -2, "inputFile");
+				
+				const char *platform, *modernPlatform, *pluginPlatform;
+				bool isAppleTV = false;
+				switch (params->GetTargetDevice()) {
+					case TargetDevice::kIPhone:
+					case TargetDevice::kIPad:
+					case TargetDevice::kIOSUniversal:
+						platform = "iphoneos";
+						modernPlatform = "ios";
+						pluginPlatform = "iphone";
+						break;
+					case TargetDevice::kAppleTV:
+						platform = "appletvos";
+						modernPlatform = "tvos";
+						pluginPlatform = "appletvos";
+						isAppleTV = true;
+						break;
+					case TargetDevice::kIPhoneXCodeSimulator:
+					case TargetDevice::kIPadXCodeSimulator:
+					case TargetDevice::kIOSUniversalXCodeSimulator:
+						platform = "iphonesimulator";
+						modernPlatform = "ios-sim";
+						pluginPlatform = "iphone-sim";
+						break;
+					case TargetDevice::kTVOSXCodeSimulator:
+						platform = "appletvsimulator";
+						modernPlatform = "tvos-sim";
+						pluginPlatform = "appletvsimulator";
+						isAppleTV = true;
+						break;
+					default:
+						Rtt_ASSERT(0);
+						platform = "iphoneos";
+					break;
+				}
+				
+				lua_pushstring(L, platform);
+				lua_setfield(L, -2, "platform");
+				lua_pushstring(L, modernPlatform);
+				lua_setfield(L, -2, "modernPlatform");
+				lua_pushstring(L, pluginPlatform);
+				lua_setfield(L, -2, "pluginPlatform");
+				lua_pushboolean(L, isAppleTV);
+				lua_setfield(L, -2, "isAppleTV");
+				
+				lua_pushstring(L, Rtt_MACRO_TO_STRING( Rtt_BUILD_REVISION ) );
+				lua_setfield(L, -2, "build");
+				
+				char templateZip[255];
+				setlocale(LC_NUMERIC, "en_US");
+				snprintf(templateZip, 255, "%s_%.1f%s.tar.bz", platform, params->GetTargetVersion()/10000.0f, params->GetCustomTemplate());
+				lua_pushstring(L, templateZip);
+				lua_setfield(L, -2, "template");
+				
+				Rtt::String resourceDir;
+				fServices.Platform().PathForFile(NULL, MPlatform::kSystemResourceDir, 0, resourceDir);
+				lua_pushstring(L, resourceDir.GetString());
+				lua_setfield(L, -2, "resourceDir");
+
+				lua_pushstring(L, params->GetAppPackage());
+				lua_setfield(L, -2, "appPackage");
+				
+				lua_pushstring(L, params->GetCoronaUser());
+				lua_setfield(L, -2, "user");
+
+				
+				DeviceBuildData & buildData = params->GetDeviceBuildData(fServices.Platform(), fServices);
+				Rtt::String json;
+				buildData.GetJSON(json);
+				lua_pushstring(L, json.GetString());
+				lua_setfield(L, -2, "buildData");
+				
+				String escapedAppName;
+                PlatformAppPackager::EscapeFileName( params->GetAppName(), escapedAppName );
+                lua_pushstring(L, escapedAppName.GetString());
+                lua_setfield(L, -2, "appName");
+
+				
+				if ( Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
+				{
+					result = PlatformAppPackager::kNoError;
+					if ( lua_isstring( L, -1 ) )
+					{
+						Rtt_TRACE_SIM( ( "BUILD ERROR: %s\n", lua_tostring( L, -1 ) ) );
+						params->SetBuildMessage( lua_tostring( L, -1 ) );
+						result = PlatformAppPackager::kBuildError;
+					}
+				}
+				else
+				{
+					result = PlatformAppPackager::kLocalPackagingError;
+				}
+				lua_pop( L, 1 );
+			}
+			if ( PlatformAppPackager::kNoError == result )
+			{
+				if (fSimulatorServices != NULL)
+				{
+					fSimulatorServices->SetBuildMessage("Packaging app");
+				}
 				lua_State *L = fVM;
 				lua_getglobal( L, "tvosPostPackage" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
 
@@ -215,7 +313,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
                         NSString* copypng = [XcodeToolHelper pathForCopyPngUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
                         NSString* codesign = [XcodeToolHelper pathForCodesignUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
                         NSString* codesign_allocate = [XcodeToolHelper pathForCodesignAllocateUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
-						NSString *codesign_framework = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"codesign-framework.sh"];
+						NSString *codesign_framework = [XcodeToolHelper pathForCodesignFramework];
 						
                         lua_pushstring( L, [sdkRoot UTF8String] );
                         lua_setfield( L, -2, "sdkRoot" );
@@ -244,13 +342,13 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 				if ( ! Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
 				{
 					// The packaging script failed to compile
-					result = WebServicesSession::kLocalPackagingError;
+					result = PlatformAppPackager::kLocalPackagingError;
 				}
 				else
 				{
 					if ( lua_isstring( L, -1 ) )
 					{
-						result = WebServicesSession::kLocalPackagingError;
+						result = PlatformAppPackager::kLocalPackagingError;
 						Rtt_TRACE_SIM( ( "BUILD ERROR: %s\n", lua_tostring( L, -1 ) ) );
                         params->SetBuildMessage( lua_tostring( L, -1 ) );
 					}
@@ -275,7 +373,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
                 if (params->GetBuildMessage() == NULL)
                 {
                     // If we don't already have a more precise error, use the XMLRPC layer's error message
-                    params->SetBuildMessage( session.ErrorMessage() );
+                    params->SetBuildMessage( "Unknown Error" );
                 }
             }
 
@@ -291,7 +389,7 @@ TVOSAppPackager::Build( AppPackagerParams * params, WebServicesSession& session,
 exit_gracefully:
     
     // Indicate status in the console
-	if (WebServicesSession::kNoError == result)
+	if (PlatformAppPackager::kNoError == result)
 	{
 		Rtt_LogException("tvOS build succeeded in %ld seconds", (time(NULL) - startTime));
 	}
@@ -306,7 +404,7 @@ exit_gracefully:
 int
 TVOSAppPackager::SendToAppStore( TVOSAppPackagerParams *params, const char *itunesConnectUsername, const char *itunesConnectPassword )
 {
-    int result = WebServicesSession::kNoError;
+    int result = PlatformAppPackager::kNoError;
     lua_State *L = fVM;
     lua_getglobal( L, "TVOSSendToAppStore" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
 
@@ -375,13 +473,13 @@ TVOSAppPackager::SendToAppStore( TVOSAppPackagerParams *params, const char *itun
     if ( ! Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
     {
         // The packaging script failed
-        result = WebServicesSession::kLocalPackagingError;
+        result = PlatformAppPackager::kLocalPackagingError;
     }
     else
     {
         if ( lua_isstring( L, -1 ) )
         {
-            result = WebServicesSession::kLocalPackagingError;
+            result = PlatformAppPackager::kLocalPackagingError;
             Rtt_TRACE_SIM( ( "PACKAGING %s\n", lua_tostring( L, -1 ) ) );
             params->SetBuildMessage( lua_tostring( L, -1 ) );
         }

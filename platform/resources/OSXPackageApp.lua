@@ -1,25 +1,9 @@
 ------------------------------------------------------------------------------
 --
--- Copyright (C) 2018 Corona Labs Inc.
--- Contact: support@coronalabs.com
---
 -- This file is part of the Corona game engine.
---
--- Commercial License Usage
--- Licensees holding valid commercial Corona licenses may use this file in
--- accordance with the commercial license agreement between you and 
--- Corona Labs Inc. For licensing terms and conditions please contact
--- support@coronalabs.com or visit https://coronalabs.com/com-license
---
--- GNU General Public License Usage
--- Alternatively, this file may be used under the terms of the GNU General
--- Public license version 3. The license is as published by the Free Software
--- Foundation and appearing in the file LICENSE.GPL3 included in the packaging
--- of this file. Please review the following information to ensure the GNU 
--- General Public License requirements will
--- be met: https://www.gnu.org/licenses/gpl-3.0.html
---
--- For overview and more information on licensing please refer to README.md
+-- For overview and more information on licensing please refer to README.md 
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
 
@@ -253,16 +237,18 @@ local function getCodesignScript( entitlements, path, appIdentity, codesign )
 	-- codesign doesn't like them
 	local removeXattrs = "/usr/bin/xattr -cr "..quoteString(path) .." && "
 
-	local entitlementsParam = ""
+	local entitlementsParam
 	if entitlements ~= nil and entitlements ~= "" then
-		entitlementsParam = " --entitlements ".. entitlements .." "
+		entitlementsParam = " --entitlements ".. entitlements .. " "
+	else
+		entitlementsParam = " --deep "
 	end
 	local verboseParam = ""
 	if debugBuildProcess and debugBuildProcess ~= 0 then
 		verboseParam = "-".. string.rep("v", debugBuildProcess) .." "
 	end
 
-	local cmd = removeXattrs .. codesign.." --deep -f -s "..quoteString(appIdentity).." "..entitlementsParam..verboseParam..quotedpath
+	local cmd = removeXattrs .. codesign.." --options runtime -f -s "..quoteString(appIdentity).." "..entitlementsParam..verboseParam..quotedpath
 
 	return cmd
 end
@@ -284,7 +270,7 @@ local function getProductValidateScript( path, itunesConnectUsername, itunesConn
 	-- Apple tells us to use this buried utility to automate Application Loader tasks in
 	-- https://itunesconnect.apple.com/docs/UsingApplicationLoader.pdf
 	local altool = makepath(applicationLoader, "Contents/Frameworks/ITunesSoftwareService.framework/Support/altool")
-	
+
 	-- If the "cmd" generated below fails because it's the wrong path that's very hard to detect amongst all the XML parsing so we do it here
 	if lfs.attributes( altool ) == nil then
 		print("ERROR: cannot find 'altool' utility in "..altool)
@@ -409,15 +395,52 @@ local function generateOSXEntitlements(filename, settings, provisionFile)
 	return "", includeProvisioning
 end
 
+-- xcprivacy
+local templateXcprivacy = [[
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+{{CUSTOM_XCPRIVACY}}
+</dict>
+</plist>
+]]
+local function generateXcprivacy( options )
+	local filename = options.tmpDir .. "/PrivacyInfo.xcprivacy"
+	local outFile = assert( io.open( filename, "wb" ) )
+
+	local data = templateXcprivacy
+
+	local generatedPrivacy = CoronaPListSupport.generateXcprivacy( options.settings, 'osx')
+	if(  generatedPrivacy and generatedPrivacy ~= "" ) then
+		data, numMatches = string.gsub( data, "{{CUSTOM_XCPRIVACY}}", generatedPrivacy )
+		assert( numMatches == 1 )
+	end
+
+	outFile:write(data)
+	assert( outFile:close() )
+
+	print( "Created XCPRIACY: " .. filename );
+
+	if debugBuildProcess and debugBuildProcess ~= 0 then
+		runScript("cat "..filename)
+	end
+end
+
 --
 -- generateFiles
 --
--- Create the Info.plist file
+-- Create the Info.plist and .xcprivacy file
 --
 -- returns an error message or nil on success
 --
 local function generateFiles( options )
 	local result = nil
+
+	result = generateXcprivacy( options )
+	if result then
+		return result
+	end
 
 	result = CoronaPListSupport.modifyPlist( options )
 	if result then
@@ -436,7 +459,7 @@ local function isBuildForAppStoreDistribution( options )
 	end
 
 	-- FIXME: Should handle App Store vs. Ad-hoc
-	local retval = string.match( options.signingIdentityName, "3rd Party Mac Developer" )
+	local retval = string.match( options.signingIdentityName, "3rd Party Mac Developer" ) or string.match( options.signingIdentityName, "Apple Distribution" )
 	if retval then
 		return true
 	else
@@ -607,8 +630,6 @@ table.indexOf = function( t, object )
 end
 
 function signAllPlugins(pluginsDir, signingIdentity, codesign)
-	local entitlements = ""
-
 	if lfs.attributes( pluginsDir ) == nil then
 		return "" -- no plugins dir
 	end
@@ -618,7 +639,7 @@ function signAllPlugins(pluginsDir, signingIdentity, codesign)
 		local pluginFile = makepath(pluginsDir, file)
 		if lfs.attributes( pluginFile ).mode ~= "directory" then
 
-			local result, errMsg = runScript( getCodesignScript( entitlements, pluginFile, signingIdentity, codesign ) )
+			local result, errMsg = runScript( getCodesignScript( nil, pluginFile, signingIdentity, codesign ) )
 
 			if result ~= 0 then
 				errMsg = "ERROR: plugin code signing for '"..pluginFile.."' failed: "..tostring(errMsg)
@@ -741,11 +762,15 @@ function OSXPostPackage( params )
 
 		setStatus("Unpacking template")
 		-- extract template into dstDir
-		local result, errMsg = runScript( "/usr/bin/unzip -q -o "..quoteString( options.osxAppTemplate ).." -d "..options.appBundleFile )
+		local result, errMsg = runScript( "/usr/bin/ditto -x -k "..quoteString( options.osxAppTemplate ).." "..options.appBundleFile )
+		runScript("find " .. options.appBundleFile .. " -name _CodeSignature -exec rm -vr {} +")
 
 		if result ~= 0 then
 			return "ERROR: unzipping template failed: "..tostring(errMsg)
 		end
+
+		-- cleanup signature from the template
+		runScript( "cd ".. options.appBundleFile .. " ; /usr/bin/codesign --remove-signature --deep . " )
 
 		-- If "bundleResourcesDirectory" is set, copy the contents of that directory to the
 		-- application's Resource directory
@@ -764,6 +789,11 @@ function OSXPostPackage( params )
 		runScript( "/bin/mv -v "..options.appBundleFile.."/Contents/MacOS/CoronaShell "..options.appBundleFile.."/Contents/MacOS/"..quoteString(options.dstFile) )
 
 		runScript( "/bin/mkdir -p "..options.appBundleFile.."/Contents/Resources/Corona/" )
+
+		--add xcprivacy file to the bundle
+		if options.settings.osx and options.settings.osx.xcprivacy then
+			runScript("cp -v " .. quoteString(options.tmpDir .. "/PrivacyInfo.xcprivacy") .. " " .. quoteString(makepath(appBundleFileUnquoted, "PrivacyInfo.xcprivacy")))
+		end
 
 		-- We get the signingIdentity as a cert fingerprint but we also need the plaintext name
 		if options.signingIdentity then
@@ -848,16 +878,31 @@ function OSXPostPackage( params )
 
 		-- bundle is now ready to be signed
 		if options.signingIdentity then
-			local entitlements = ""
+			local entitlements_filename = os.tmpname() .. "_entitlements.xcent"
+			local entitlements = entitlements_filename
+			local result, includeProvisioning = generateOSXEntitlements( entitlements_filename, settings, provisionFile )
+			if result ~= "" then
+				entitlements = nil
+			end
+
+			-- Copy provisioning profile if we need it
+			if includeProvisioning then
+				runScript( "/bin/cp " .. quoteString(provisionFile) .. " " .. quoteString(makepath(appBundleFileUnquoted, "Contents/embedded.provisionprofile")) )
+			end
+
+			if entitlements ~= nil then
+				setStatus("Sign application plugins")
+			    runScript( getCodesignScript( nil, appBundleFileUnquoted, options.signingIdentity, options.xcodetoolhelper.codesign ) )
+			end
 			setStatus("Signing application with "..tostring(options.signingIdentityName))
 			local result, errMsg = runScript( getCodesignScript( entitlements, appBundleFileUnquoted, options.signingIdentity, options.xcodetoolhelper.codesign ) )
+			runScript( "/bin/rm -f " .. entitlements_filename )
 
 			if result ~= 0 then
 				errMsg = "ERROR: code signing failed: "..tostring(errMsg)
 				runScript( "/bin/ls -Rl '"..appBundleFileUnquoted.."'")
 				return errMsg
 			end
-
 		end
 
 		-- Sometimes macOS gets confused about whether the apps we build are opennable, this
@@ -967,6 +1012,8 @@ function OSXPackageForAppStore( params )
 		return tostring(result)
 	end
 
+	setStatus("Sign application deep")
+	runScript( getCodesignScript( nil, appBundleFile, appSigningIdentity, codesign ) )
 	setStatus("Signing application with "..tostring(appSigningIdentityName))
 	local result, errMsg = runScript( getCodesignScript( entitlements_filename, appBundleFile, appSigningIdentity, codesign ) )
 
@@ -1071,9 +1118,8 @@ function OSXPackageForSelfDistribution( params )
 			return tostring(result)
 		end
 
-		local entitlements = "" -- quoteString( osxAppEntitlementsFile )
 		setStatus("Signing application with "..tostring(appSigningIdentityName))
-		local result, errMsg = runScript( getCodesignScript( entitlements, appBundleFile, appSigningIdentity, codesign ) )
+		local result, errMsg = runScript( getCodesignScript( nil, appBundleFile, appSigningIdentity, codesign ) )
 
 		if result ~= 0 then
 			errMsg = "ERROR: code signing failed: "..tostring(errMsg)

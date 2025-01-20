@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -81,13 +65,7 @@ AppPackagerFactory::CreatePackagerParamsAndroid(
 			lua_checkstack( L, 5 );
 			int top = lua_gettop( L );
 
-			const char *resourcePath = NULL;
-
-#if defined(Rtt_MAC_ENV)
-			resourcePath = GetResourceDirectoryOSX();
-#elif defined(Rtt_WIN_ENV)
-			resourcePath = GetResourceDirectoryWin();
-#endif
+			const char *resourcePath = GetResourceDirectory();
 
 			// Default to Debug.keystore
 			String keystorePathStr;
@@ -128,8 +106,11 @@ AppPackagerFactory::CreatePackagerParamsAndroid(
 
 			}
 
+			int androidVersionCode = 1;
 			lua_getfield( L, index, "androidVersionCode" );
-			int androidVersionCode = (int) lua_tointeger( L, -1 );
+			if(lua_isnumber(L, -1)) {
+				androidVersionCode = (int) lua_tointeger( L, -1 );
+			}
 
 			lua_getfield( L, index, "androidAppPackage" );
 			const char *origAndroidAppPackage = lua_tostring( L, -1 );
@@ -154,12 +135,12 @@ AppPackagerFactory::CreatePackagerParamsAndroid(
 				}
 
 				String scriptPathStr;
-#if defined(Rtt_WIN_ENV)
-				scriptPathStr.Set(GetResourceDirectoryWin());
-#elif defined(Rtt_MAC_ENV)
-				scriptPathStr.Set(GetResourceDirectoryOSX());
-#endif
+				scriptPathStr.Set(GetResourceDirectory());
+#if defined(Rtt_MAC_ENV)
+				scriptPathStr.Append("/AndroidValidation.lu");
+#elif defined(Rtt_WIN_ENV)
 				scriptPathStr.Append("/AndroidValidation.lua");
+#endif
 				lua_State* L1 = Rtt_AndroidSupportTools_NewLuaState( scriptPathStr.GetString() );
 				if (L1 == NULL)
 				{

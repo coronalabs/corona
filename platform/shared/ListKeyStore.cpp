@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
 // For overview and more information on licensing please refer to README.md
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +24,7 @@
 #include "jniUtils.h"
 #endif
 
+#ifndef Rtt_LINUX_ENV
 const char *ReplaceString(const char *c_subject, const char * c_search, const char * c_replace)
 {
 	std::string subject = c_subject;
@@ -60,11 +45,12 @@ void ReplaceString(std::string& subject, const std::string& search, const std::s
 		pos += replace.length();
 	}
 }
+#endif
 
 ListKeyStore::ListKeyStore() : myAliases( NULL ), myCount( 0 )
 {
 #if USE_JNI
-#if !defined(Rtt_MAC_ENV)
+#if !defined(Rtt_MAC_ENV) && !defined(Rtt_LINUX_ENV)
 	Rtt::JavaHost::Initialize();
 #endif
 #endif
@@ -72,8 +58,10 @@ ListKeyStore::ListKeyStore() : myAliases( NULL ), myCount( 0 )
 
 ListKeyStore::~ListKeyStore()
 {
-	if ( myAliases != NULL ) {
-		for ( int i = 0; i < myCount; i++ ) {
+	if ( myAliases != NULL )
+	{
+		for ( int i = 0; i < myCount; i++ )
+		{
 			delete myAliases[i];
 		}
 		delete myAliases;
@@ -85,7 +73,7 @@ ListKeyStore::EscapeArgument(std::string arg)
 {
 	std::string result = arg;
 
-#if Rtt_MAC_ENV
+#if defined(Rtt_MAC_ENV ) || defined(Rtt_LINUX_ENV)
 
 	// On macOS escape shell special characters in the strings by replacing single quotes with "'\''" and
 	// then enclosing in single quotes
@@ -116,7 +104,7 @@ ListKeyStore::IsValidKeyStore( const char * keyStore, const char * password )
 	std::string keystoreStr = EscapeArgument(keyStore);
 	std::string passwordStr = EscapeArgument(password);
 
-#if Rtt_MAC_ENV
+#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
 
 	const char kCmdFormat[] = "JAVA_TOOL_OPTIONS='-Duser.language=en' /usr/bin/keytool -list -keystore %s -storepass %s -rfc";
 
@@ -148,26 +136,29 @@ ListKeyStore::IsValidKeyStore( const char * keyStore, const char * password )
 	if ( !Rtt::JavaHost::GetEnv() )
 		return KeyStoreStatusBad5;
 
-	if ( Rtt::JavaHost::GetEnv() != NULL ) {
+	if ( Rtt::JavaHost::GetEnv() != NULL )
+	{
 		static const char *		kListKeyStore = "com/ansca/util/ListKeyStore";
-		
+
 		jclass clazz = Rtt::JavaHost::GetEnv()->FindClass( kListKeyStore );
-		
-		if ( clazz != NULL ) {
-			jmethodID mid = Rtt::JavaHost::GetEnv()->GetStaticMethodID( clazz, 
-														 "isKeyStoreValid", 
-														 "(Ljava/lang/String;Ljava/lang/String;)I" );
-			
-			if ( mid != NULL ) {
+
+		if ( clazz != NULL )
+		{
+			jmethodID mid = Rtt::JavaHost::GetEnv()->GetStaticMethodID( clazz,
+			                "isKeyStoreValid",
+			                "(Ljava/lang/String;Ljava/lang/String;)I" );
+
+			if ( mid != NULL )
+			{
 				jstringParam keyStoreJ( Rtt::JavaHost::GetEnv(), keyStore );
 				jstringParam passwordJ( Rtt::JavaHost::GetEnv(), password );
-				
+
 				if ( keyStoreJ.isValid() && passwordJ.isValid() )
 				{
 					jint jresult;
-					
+
 					jresult = Rtt::JavaHost::GetEnv()->CallStaticIntMethod( clazz, mid, keyStoreJ.getValue(), passwordJ.getValue() );
-					
+
 					return jresult;
 				}
 			}
@@ -184,7 +175,7 @@ ListKeyStore::GetAliasList( const char * keyStore, const char * password )
 	std::string keystoreStr = EscapeArgument(keyStore);
 	std::string passwordStr = EscapeArgument(password);
 
-#if Rtt_MAC_ENV
+#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
 
 	const char kCmdFormat[] = "JAVA_TOOL_OPTIONS='-Duser.language=en' /usr/bin/keytool -list -keystore %s -storepass %s -rfc | sed -n 's/^Alias name: //p'";
 
@@ -203,7 +194,7 @@ ListKeyStore::GetAliasList( const char * keyStore, const char * password )
 
 	while (fgets(buf, BUFSIZ, keytoolResult) != NULL)
 	{
-		buf[strlen(buf)-1] = 0; // zap trailing newline
+		buf[strlen(buf) - 1] = 0; // zap trailing newline
 		std::string bufStr(buf);
 		results.push_back(bufStr);
 	}
@@ -241,7 +232,7 @@ ListKeyStore::GetAliasList( const char * keyStore, const char * password )
 	std::string delimiter = "\r\n";
 	while ((pos = output.find(delimiter, pos)) != std::string::npos)
 	{
-		token = output.substr(lastPos, pos-lastPos);
+		token = output.substr(lastPos, pos - lastPos);
 		pos += delimiter.length();
 		lastPos = pos;
 
@@ -271,19 +262,22 @@ ListKeyStore::GetAliasList( const char * keyStore, const char * password )
 
 	if ( !Rtt::JavaHost::GetEnv() )
 		return result;
-	
-	if ( Rtt::JavaHost::GetEnv() != NULL ) {
+
+	if ( Rtt::JavaHost::GetEnv() != NULL )
+	{
 
 		static const char *		kListKeyStore = "com/ansca/util/ListKeyStore";
 
 		jclass clazz = Rtt::JavaHost::GetEnv()->FindClass( kListKeyStore );
 
-		if ( clazz != NULL ) {
-			jmethodID mid = Rtt::JavaHost::GetEnv()->GetStaticMethodID( clazz, 
-				"listAliases", 
-				"(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;" );
-			
-			if ( mid != NULL ) {
+		if ( clazz != NULL )
+		{
+			jmethodID mid = Rtt::JavaHost::GetEnv()->GetStaticMethodID( clazz,
+			                "listAliases",
+			                "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;" );
+
+			if ( mid != NULL )
+			{
 				jstringParam keyStoreJ( Rtt::JavaHost::GetEnv(), keyStore );
 				jstringParam passwordJ( Rtt::JavaHost::GetEnv(), password );
 
@@ -293,28 +287,32 @@ ListKeyStore::GetAliasList( const char * keyStore, const char * password )
 
 					resultArray = Rtt::JavaHost::GetEnv()->CallStaticObjectMethod( clazz, mid, keyStoreJ.getValue(), passwordJ.getValue() );
 
-					if ( resultArray != NULL ) {
+					if ( resultArray != NULL )
+					{
 						jsize arraySize = Rtt::JavaHost::GetEnv()->GetArrayLength((jobjectArray) resultArray);
 
 						InitAliasList( arraySize );
 
-						for ( int i = 0; i < arraySize; i++ ) {
+						for ( int i = 0; i < arraySize; i++ )
+						{
 							jstring stringElement = (jstring) Rtt::JavaHost::GetEnv()->GetObjectArrayElement( (jobjectArray) resultArray, i );
 
 							const char * utf = Rtt::JavaHost::GetEnv()->GetStringUTFChars( stringElement, NULL );
 							SetAlias( i, utf );
 							Rtt::JavaHost::GetEnv()->ReleaseStringUTFChars( stringElement, utf );
 						}
-						
+
 						Rtt::JavaHost::GetEnv()->DeleteLocalRef(resultArray);
 
 						result = true;
 					}
 				}
 			}
-		} else {
+		}
+		else
+		{
 			JniException e( Rtt::JavaHost::GetEnv() );
-			
+
 			if ( e.CheckException() )
 			{
 				msg = e.getUTF8();
@@ -353,7 +351,7 @@ ListKeyStore::AreKeyStoreAndAliasPasswordsValid( const char *keyStore, const cha
 
 	Rtt_Log("Testing credentials for '%s': ", keyStore);
 
-#if Rtt_MAC_ENV
+#if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
 
 	const char kCmdFormat[] = "JAVA_TOOL_OPTIONS='-Duser.language=en' /usr/bin/jarsigner -tsa http://timestamp.digicert.com -keystore %s -storepass %s -keypass %s %s %s; exit $?";
 
@@ -380,7 +378,7 @@ ListKeyStore::AreKeyStoreAndAliasPasswordsValid( const char *keyStore, const cha
 	Rtt_Log(output.c_str());
 
 	return (result.GetExitCode() == 0);
-	
+
 #endif
-	
+
 }

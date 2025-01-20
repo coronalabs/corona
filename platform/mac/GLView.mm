@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +55,7 @@
 #include "Renderer/Rtt_Renderer.h"
 #include "Rtt_RenderingStream.h"
 
-#include "Rtt_MacKeyServices.h"
+#include "Rtt_AppleKeyServices.h"
 
 // So we can build with Xcode 8.0
 #ifndef NSAppKitVersionNumber10_12
@@ -261,7 +245,7 @@ NSOpenGLPixelFormatAttribute attributes1 [] = {
 		fRuntime = NULL;
 		fDelegate = nil;
 		[self initCommon];
-        fCursorRects = [[NSMutableArray alloc] initWithCapacity:10];
+        fCursorRects = [[NSMutableArray alloc] initWithCapacity:18];
 
 		sendAllMouseEvents = YES;
         inFullScreenTransition = NO;
@@ -374,6 +358,8 @@ NSOpenGLPixelFormatAttribute attributes1 [] = {
 
 	[[self openGLContext] makeCurrentContext];
 
+    
+    
 	// This should be called by the layer, not NSTimer!!!
 	// That's b/c the OGL context is valid and ready for new OGL commands
 	if ( isReady && fRuntime != NULL && fRuntime->IsProperty(Rtt::Runtime::kIsApplicationLoaded))
@@ -844,7 +830,9 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 	[self resizeNativeDisplayObjects];
 
 	// Update rectangle used for mouseMoved: events
-	[self removeTrackingRect:trackingRectTag];
+	if(trackingRectTag) {
+		[self removeTrackingRect:trackingRectTag];
+	}
 	trackingRectTag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
 
 	if (! isSimulatorView && sizeChanged && self.isReady && self.runtime != NULL )
@@ -1015,63 +1003,64 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 // keyDown and keyUp do not trigger modifier key events (shift, control, etc.)
 - (void)flagsChanged:(NSEvent *)event
 {
-    unsigned long mask = [MacKeyServices getModifierMaskForKey:[event keyCode]];
+    unsigned long mask = [AppleKeyServices getModifierMaskForKey:[event keyCode]];
 
-    // The mask contains a few bits set. All must be set to consider the key down.
-    if ( ( [event modifierFlags] & mask ) == mask )
+    // After certain actions, like using the screenshot tool, MacOS apparently triggers the "a" key event. Can't imagine anyone would like this event.
+    if ( [event keyCode] != kVK_ANSI_A )
     {
-        [self keyDown:event];
-    }
-    else
-    {
-        [self keyUp:event];
+        // The mask contains a few bits set. All must be set to consider the key down.
+        if ( ( [event modifierFlags] & mask ) == mask)
+        {
+            [self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kDown];
+        }
+        else
+        {
+            [self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kUp];
+        }
     }
 }
 
 - (void)keyDown:(NSEvent *)event
 {
-	using namespace Rtt;
-
-	NSUInteger modifierFlags = [event modifierFlags];
-	unsigned short keyCode = [event keyCode];
-	NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
-
-	KeyEvent e(
-		NULL,
-		KeyEvent::kDown,
-		[keyName UTF8String],
-		keyCode,
-		(modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
-        (modifierFlags & NSAlternateKeyMask),
-        (modifierFlags & NSControlKeyMask),
-        (modifierFlags & NSCommandKeyMask) );
-	[self dispatchEvent: ( & e )];
+	[self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kDown];
+	const char* characters = [[event characters] UTF8String];
+	if (strlen(characters) > 1 || isprint(characters[0])) {
+		Rtt::CharacterEvent e(NULL, characters);
+		[self dispatchEvent: ( & e )];
+	}
 }
 
 - (void)keyUp:(NSEvent *)event
 {
-	using namespace Rtt;
+	[self dispatchKeyEvent:event withPhase:Rtt::KeyEvent::kUp];
+}
 
+- (void)dispatchKeyEvent:(NSEvent *)event withPhase:(Rtt::KeyEvent::Phase)phase
+{
+	using namespace Rtt;
+	
 	NSUInteger modifierFlags = [event modifierFlags];
 	unsigned short keyCode = [event keyCode];
-	NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
-
+	NSString *keyName = [AppleKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
+	
 	KeyEvent e(
-		NULL,
-		KeyEvent::kUp,
-		[keyName UTF8String],
-		[event keyCode],
-		(modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
-        (modifierFlags & NSAlternateKeyMask),
-        (modifierFlags & NSControlKeyMask),
-		(modifierFlags & NSCommandKeyMask) );
+			   NULL,
+			   phase,
+			   [keyName UTF8String],
+			   keyCode,
+			   (modifierFlags & NSShiftKeyMask) || (modifierFlags & NSAlphaShiftKeyMask),
+			   (modifierFlags & NSAlternateKeyMask),
+			   (modifierFlags & NSControlKeyMask),
+			   (modifierFlags & NSCommandKeyMask) );
 	[self dispatchEvent: ( & e )];
 }
 
 - (void)viewDidMoveToWindow
 {
 	// We may have called addTrackingRect: in a setFrame: call before we get here
-	[self removeTrackingRect:trackingRectTag];
+	if(trackingRectTag) {
+		[self removeTrackingRect:trackingRectTag];
+	}
 
 	// Limit mouse events to the view's bounds
 	NSRect r = [self bounds];
@@ -1171,7 +1160,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
     // NSDEBUG(@"GLView:setCursor: %@", NSStringFromRect(bounds));
 
     NSCursor *cursor = [NSCursor currentSystemCursor];
-    
+
     if (strcasecmp(cursorName, "arrow") == 0)
     {
         cursor = [NSCursor arrowCursor];
@@ -1184,6 +1173,10 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
     {
         cursor = [NSCursor openHandCursor];
     }
+	else if (strcasecmp(cursorName, "pointingHand") == 0)
+    {
+        cursor = [NSCursor pointingHandCursor];
+    }
     else if (strcasecmp(cursorName, "crosshair") == 0)
     {
         cursor = [NSCursor crosshairCursor];
@@ -1192,30 +1185,72 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
     {
         cursor = [NSCursor operationNotAllowedCursor];
     }
-    else if (strcasecmp(cursorName, "pointingHand") == 0)
+	else if (strcasecmp(cursorName, "beam") == 0)
     {
-        cursor = [NSCursor pointingHandCursor];
+        cursor = [NSCursor IBeamCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeRight") == 0)
+    {
+        cursor = [NSCursor resizeRightCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeLeft") == 0)
+    {
+        cursor = [NSCursor resizeLeftCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeLeftRight") == 0)
+    {
+        cursor = [NSCursor resizeLeftRightCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeUp") == 0)
+    {
+        cursor = [NSCursor resizeUpCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeDown") == 0)
+    {
+        cursor = [NSCursor resizeDownCursor];
+    }
+	else if (strcasecmp(cursorName, "resizeUpDown") == 0)
+    {
+        cursor = [NSCursor resizeUpDownCursor];
+    }
+	else if (strcasecmp(cursorName, "disappearingItem") == 0)
+    {
+        cursor = [NSCursor disappearingItemCursor];
+    }
+	else if (strcasecmp(cursorName, "beamHorizontal") == 0)
+    {
+        cursor = [NSCursor IBeamCursorForVerticalLayout];
+    }
+	else if (strcasecmp(cursorName, "dragLink") == 0)
+    {
+        cursor = [NSCursor dragLinkCursor];
+    }
+	else if (strcasecmp(cursorName, "dragCopy") == 0)
+    {
+        cursor = [NSCursor dragCopyCursor];
+    }
+	else if (strcasecmp(cursorName, "contextMenu") == 0)
+    {
+        cursor = [NSCursor contextualMenuCursor];
     }
     else
     {
-        // Remove any rect with these bounds
-        int currIdx = 0;
-        for (CursorRect *cr in fCursorRects)
-        {
-            if (NSEqualRects(cr.rect, bounds))
-            {
-                [fCursorRects removeObjectAtIndex:currIdx];
-                [self.window invalidateCursorRectsForView:self];
-                break;
-            }
-            ++currIdx;
-        }
-        
-        return;
-    }
+		// Remove any rect with these bounds
+		int currIdx = 0;
+		for (CursorRect *cr in fCursorRects)
+		{
+			if (NSEqualRects(cr.rect, bounds))
+			{
+				[fCursorRects removeObjectAtIndex:currIdx];
+				[self.window invalidateCursorRectsForView:self];
+				break;
+			}
+			++currIdx;
+		}
+		return;
+	}
 
     [fCursorRects addObject:[[[CursorRect alloc] initWithRect:bounds cursor:cursor] autorelease]];
-    
 	[self.window invalidateCursorRectsForView:self];
 }
 
@@ -1266,7 +1301,7 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 }
 
 // Fix the view layering when the app is hidden or minaturized
-// Fixes bug http://bugs.anscamobile.com/default.asp?44953
+// Fixes bug http://bugs.coronalabs.com/default.asp?44953
 - (void) restoreWindowProperties
 {
 	NSArray* subviews = [self subviews];

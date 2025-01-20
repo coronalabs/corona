@@ -342,7 +342,6 @@
     <JCompile Include="src\com\ansca\corona\purchasing\StoreTransactionResultSettings.java" />
     <JCompile Include="src\com\ansca\corona\purchasing\StoreTransactionState.java" />
     <JCompile Include="src\com\ansca\corona\SmsSettings.java" />
-    <JCompile Include="src\com\ansca\corona\SplashScreenBeacon.java" />
     <JCompile Include="src\com\ansca\corona\storage\AssetFileLocationInfo.java" />
     <JCompile Include="src\com\ansca\corona\storage\FileContentProvider.java" />
     <JCompile Include="src\com\ansca\corona\storage\FileServices.java" />

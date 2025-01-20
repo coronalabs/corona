@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -30,6 +14,8 @@
 #include "Renderer/Rtt_GL.h"
 #include "Renderer/Rtt_Texture.h"
 #include "Core/Rtt_Assert.h"
+
+#include "Rtt_Profiling.h"
 
 // ----------------------------------------------------------------------------
 
@@ -52,7 +38,11 @@ namespace /*anonymous*/
 		switch( format )
 		{
 			case Texture::kAlpha:		internalFormat = GL_ALPHA;		sourceFormat = GL_ALPHA;		sourceType = GL_UNSIGNED_BYTE; break;
+#if defined( Rtt_MetalANGLE)
+			case Texture::kLuminance:   internalFormat = GL_RED_EXT;	sourceFormat = GL_RED_EXT;	    sourceType = GL_UNSIGNED_BYTE; break;
+#else
 			case Texture::kLuminance:	internalFormat = GL_LUMINANCE;	sourceFormat = GL_LUMINANCE;	sourceType = GL_UNSIGNED_BYTE; break;
+#endif
 			case Texture::kRGB:			internalFormat = GL_RGB;		sourceFormat = GL_RGB;			sourceType = GL_UNSIGNED_BYTE; break;
 			case Texture::kRGBA:		internalFormat = GL_RGBA;		sourceFormat = GL_RGBA;			sourceType = GL_UNSIGNED_BYTE; break;
 #if defined( Rtt_WIN_PHONE_ENV )
@@ -67,7 +57,9 @@ namespace /*anonymous*/
 			// case Texture::kBGRA:		internalFormat = GL_RGBA;		sourceFormat = GL_RGBA;			sourceType = GL_UNSIGNED_BYTE; break;
 			// case Texture::kABGR:		internalFormat = GL_RGBA;		sourceFormat = GL_RGBA;			sourceType = GL_UNSIGNED_BYTE; break;
 #endif
-
+#ifdef Rtt_NXS_ENV
+			case Texture::kLuminanceAlpha:		internalFormat = GL_LUMINANCE_ALPHA;	sourceFormat = GL_LUMINANCE_ALPHA;		sourceType = GL_UNSIGNED_BYTE; break;
+#endif
 			default: Rtt_ASSERT_NOT_REACHED();
 		}
 	}
@@ -110,6 +102,8 @@ GLTexture::Create( CPUResource* resource )
 {
 	Rtt_ASSERT( CPUResource::kTexture == resource->GetType() || CPUResource::kVideoTexture == resource->GetType() );
 	Texture* texture = static_cast<Texture*>( resource );
+
+	SUMMED_TIMING( gltc, "Texture GPU Resource: Create" );
 
 	GLuint name = 0;
 	glGenTextures( 1, &name );
@@ -166,6 +160,8 @@ GLTexture::Update( CPUResource* resource )
 {
 	Rtt_ASSERT( CPUResource::kTexture == resource->GetType() );
 	Texture* texture = static_cast<Texture*>( resource );
+
+	SUMMED_TIMING( gltu, "Texture GPU Resource: Update" );
 
 	const U8* data = texture->GetData();		
 	if( data )

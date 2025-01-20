@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -36,16 +20,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#if defined(Rtt_NINTENDO_ENV )
-	#include <io.h>
-	#include <share.h>
-	#include <windows.h>
-	#include <direct.h>
-	#include <map>
-	#include <memory>
-	std::map< void*, std::shared_ptr<nnFile> > sOpenFiles;
-
-#elif defined( Rtt_WIN_ENV )
+#if defined( Rtt_WIN_ENV )
 	#include <io.h>
 	#include <share.h>
 	#include <windows.h>
@@ -83,7 +58,7 @@
 // Private Functions
 // ----------------------------------------------------------------------------
 
-#if defined( Rtt_WIN_ENV ) || defined(Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV )
 
 #ifdef Rtt_WIN_DESKTOP_ENV
 	// Stores a collection of Win32 related memory mapped file info so that it can be unmapped later.
@@ -166,15 +141,6 @@ Rtt_EXPORT FILE* Rtt_FileOpen(const char *filePath, const char *mode)
 	errno_t errorCode = _wfopen_s(&fileHandle, utf16Filename, utf16Mode);
 	DestroyUtf16String(utf16Filename);
 	DestroyUtf16String(utf16Mode);
-#elif defined(Rtt_NINTENDO_ENV)
-	nnFile* nnf = new nnFile(filePath, mode);
-	std::shared_ptr<nnFile> f(nnf);
-	if (f->isOpen())
-	{
-		sOpenFiles[nnf] = f;
-		return (FILE*) nnf;
-	}
-	return NULL;
 #else
 	fileHandle = fopen(filePath, mode);
 #endif // Rtt_WIN_ENV
@@ -184,204 +150,64 @@ Rtt_EXPORT FILE* Rtt_FileOpen(const char *filePath, const char *mode)
 
 Rtt_EXPORT int Rtt_FileFlush(FILE* fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	// TODO
-	return 0;
-#else
 	return fflush(fileHandle);
-#endif
 }
 
 Rtt_EXPORT size_t Rtt_FileRead(void* ptr, size_t size, size_t count, FILE* fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		nnFile& f = *it->second;
-		f.load();
-
-		int bytesToRead = size * count;
-		if (bytesToRead > 0)
-		{
-			int bytesInFile = f.fSize - f.fPos;
-			int n = bytesToRead;
-			if (bytesToRead > bytesInFile)
-			{
-				count = int(bytesInFile / size);
-				n = size * count;
-			}
-
-			memcpy(ptr, f.fData + f.fPos, n);
-//			printf("read %s: pos=%ld size=%lld bytesToRead=%d bytesInFile=%d, n=%d\n", f.fPath.c_str(), f.fPos, f.fSize, bytesToRead, bytesInFile, n);
-			f.fPos += n;
-			return count;
-		}
-		// If either size or count is zero, the function returns zero and both the stream state and the content pointed by ptr remain unchanged.
-		return 0;
-	}
-	return -1;
-#else
 	return fread(ptr, size, count, fileHandle);
-#endif
 }
 
 Rtt_EXPORT int Rtt_FileEof(FILE* fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		nnFile& f = *it->second;
-		f.load();
-
-		return f.fPos < f.fSize ? 0 : 1;
-	}
-	return -1;
-#else
 	return feof(fileHandle);
-#endif
 }
 
 Rtt_EXPORT int Rtt_FileClose(FILE *fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		const nnFile& f = *it->second;
-//		printf("close %s\n", f.fPath.c_str());
-		sOpenFiles.erase(it);
-	}
-	return 0;
-#else
 	return fclose(fileHandle);
-#endif
 }
 
 Rtt_EXPORT int Rtt_FileError(FILE *fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	return 0; // todo
-#else
 	return ferror(fileHandle);
-#endif
 }
 
 Rtt_EXPORT int Rtt_FileGetC(FILE *fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		return it->second->getc();
-	}
-	return -1;
-#else
 	return getc(fileHandle);
-#endif
 }
 
 Rtt_EXPORT int Rtt_FileUngetC(int c, FILE *fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		return it->second->nnungetc(c);
-	}
-	return -1;
-#else
 	return ungetc(c, fileHandle);
-#endif
 }
 
 Rtt_EXPORT void Rtt_FileClearerr(FILE *fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		nnFile& f = *it->second;
-	}
-#else
 	clearerr(fileHandle);
-#endif
 }
 
 Rtt_EXPORT long int Rtt_FileTell(FILE *fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		nnFile& f = *it->second;
-		f.load();
-
-		return f.fPos;
-	}
-	return -1;
-#else
 	return ftell(fileHandle);
-#endif
 }
 
 Rtt_EXPORT int Rtt_FileSeek(FILE *fileHandle, long int offset, int origin)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		nnFile& f = *it->second;
-		f.load();
-
-		switch (origin)
-		{
-		case 0:	// SEEK_SET
-			f.fPos = offset;
-			break;
-		case 1:	// SEEK_CUR
-			f.fPos = f.fPos + offset;
-			break;
-		case 2:	// SEEK_END
-			f.fPos = f.fSize + offset;
-			break;
-		}
-
-		if (f.fPos<0)
-		{
-			f.fPos = 0;
-		}
-//		printf("seek %s: newpos=%ld size=%lld offset=%ld origin=%d\n", f.fPath.c_str(), f.fPos, f.fSize, offset, origin);
-		return 0;
-	}
-	return -1;
-#else
 	return fseek(fileHandle, offset, origin);
-#endif
 }
 
 Rtt_EXPORT void Rtt_FileRewind(FILE *fileHandle)
 {
-#if defined(Rtt_NINTENDO_ENV)
-	auto it = sOpenFiles.find(fileHandle);
-	if (it != sOpenFiles.end())
-	{
-		nnFile& f = *it->second;
-		f.load();
-
-		f.fPos = 0;
-	}
-#else
 	rewind(fileHandle);
-#endif
 }
 
 Rtt_EXPORT int Rtt_FileDescriptorOpen(const char *filePath, int oflags, int pmode)
 {
 	int fileDescriptor = -1;
 
-#ifdef Rtt_WIN_ENV
+#if defined(Rtt_WIN_ENV)
 	wchar_t *utf16Filename = CreateUtf16StringFrom(filePath);
 	errno_t errorCode = _wsopen_s(&fileDescriptor, utf16Filename, oflags, SH_DENYWR, pmode);
 	DestroyUtf16String(utf16Filename);
@@ -394,7 +220,7 @@ Rtt_EXPORT int Rtt_FileDescriptorOpen(const char *filePath, int oflags, int pmod
 
 Rtt_EXPORT void Rtt_FileDescriptorClose(int fileDescriptor)
 {
-#ifdef Rtt_WIN_ENV
+#if defined(Rtt_WIN_ENV)
 	_close(fileDescriptor);
 #else
 	close(fileDescriptor);
@@ -422,7 +248,7 @@ Rtt_EXPORT int Rtt_FileIsHidden(const char *filePath)
 
 Rtt_EXPORT int Rtt_FileStatus(const char *filePath, struct stat *buffer)
 {
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV )
 	wchar_t *utf16FilePath = CreateUtf16StringFrom(filePath);
 	int result = _wstat(utf16FilePath, (struct _stat*)buffer);
 	DestroyUtf16String(utf16FilePath);
@@ -587,6 +413,77 @@ Rtt_EXPORT int Rtt_FileExistsWithSameCase(const char *filePath, const char *root
 	return result;
 }
 
+// file wrapper for NX, it's needs to flush data
+#if defined(Rtt_NXS_ENV)
+
+nnFile::nnFile(const char* path, const char* mode)
+	: fHandle({})
+	, fPos(0)
+{
+	nn::Result result;
+	int m;
+	if (mode[0] == 'w')
+	{
+		result = nn::fs::DeleteFile(path);
+		result = nn::fs::CreateFile(path, 0);
+		m = nn::fs::OpenMode::OpenMode_Write | nn::fs::OpenMode::OpenMode_AllowAppend;
+	}
+	else if (mode[0] == 'r')
+		m = nn::fs::OpenMode::OpenMode_Read;
+	else
+		// todo
+		Rtt_ASSERT_NOT_REACHED();
+
+	result = nn::fs::OpenFile(&fHandle, path, m);
+	if (result.IsFailure())
+	{
+		int err = result.GetDescription();
+		Rtt_Log("Failed to open %s, err=%d\n", path, err);
+	}
+}
+
+nnFile::~nnFile()
+{
+	close();
+}
+
+bool nnFile::isOpen() const
+{
+	return fHandle.handle != NULL;
+}
+
+int nnFile::write(void* data, int size)
+{
+	nn::Result result;
+	
+	// Specify this flag to flush immediately after writing
+	nn::fs::WriteOption wo = nn::fs::WriteOption::MakeValue(nn::fs::WriteOptionFlag_Flush);
+
+	result = nn::fs::WriteFile(fHandle, fPos, data, size, wo);
+	if (result.IsFailure())
+	{
+		int err = result.GetDescription();
+		Rtt_Log("Write failed, err=%d\n", err);
+		return -1;
+	}
+
+	nn::fs::FlushFile(fHandle);
+	fPos += size;
+	return size;
+}
+
+void nnFile::close()
+{
+	if (isOpen())
+	{
+		nn::fs::FlushFile(fHandle);
+		nn::fs::CloseFile(fHandle);
+		fHandle = {};
+	}
+}
+
+#endif
+
 #ifndef Rtt_WIN_PHONE_ENV
 Rtt_EXPORT void* Rtt_FileMemoryMap(int fileDescriptor, size_t byteOffset, size_t byteCount, int canWrite)
 {
@@ -614,8 +511,8 @@ Rtt_EXPORT void* Rtt_FileMemoryMap(int fileDescriptor, size_t byteOffset, size_t
 				}
 			}
 		}
-#elif defined( Rtt_NINTENDO_ENV )
-		Rtt_LogException("Rtt_FileMemoryMap: TODO\n");
+#elif defined(Rtt_NXS_ENV)
+		return NULL;
 #else
 		int accessFlags = PROT_READ;
 		if (canWrite)
@@ -645,8 +542,6 @@ Rtt_EXPORT void Rtt_FileMemoryUnmap(const void *memoryMapPointer, size_t byteCou
 			::CloseHandle((*iter).second);
 			sWindowsMemoryMappedInfoCollection.erase(iter);
 		}
-#elif defined( Rtt_NINTENDO_ENV )
-		Rtt_LogException("Rtt_FileMemoryUnmap: TODO\n");
 #else
 		munmap((void*)memoryMapPointer, byteCount);
 #endif // Rtt_WIN_DESKTOP_ENV
@@ -659,8 +554,6 @@ Rtt_EXPORT void Rtt_FileMemoryFlush(const void *memoryMapPointer, size_t byteCou
 	{
 #if defined( Rtt_WIN_DESKTOP_ENV )
 		FlushViewOfFile(memoryMapPointer, byteCount);
-#elif defined( Rtt_NINTENDO_ENV )
-		Rtt_LogException("Rtt_FileMemoryFlush: TODO\n");
 #else
 		msync((void *)memoryMapPointer, byteCount, MS_SYNC);
 #endif // Rtt_WIN_DESKTOP_ENV
@@ -793,9 +686,6 @@ Rtt_EXPORT int Rtt_IsDirectory(const char *dirPath)
 {
 	bool result = false;
 
-#if defined( Rtt_NINTENDO_ENV )
-	Rtt_LogException("Rtt_IsDirectory: TODO\n");
-#else
 	#ifdef Rtt_WIN_ENV
 		wchar_t *path = CreateUtf16StringFrom(dirPath);
 		result = ::PathIsDirectoryW(path) ? true : false;
@@ -809,7 +699,7 @@ Rtt_EXPORT int Rtt_IsDirectory(const char *dirPath)
 			result = true;
 		}
 	#endif
-#endif
+
 	return result;
 }
 
@@ -832,7 +722,8 @@ Rtt_EXPORT int Rtt_DeleteDirectory(const char *dirPath)
 		{
 			result = Rtt_DeleteDirectory(path);
 
-			result = rmdir(path) == 0;
+			// hmmmm.. Why is the 'path' deleting twice ?
+			// result = rmdir(path) == 0;
 		}
 		else
 		{
@@ -855,10 +746,7 @@ Rtt_EXPORT int Rtt_DeleteDirectory(const char *dirPath)
 std::vector<std::string> Rtt_ListFiles(const char *directoryName)
 {
 	std::vector<std::string> result;
-#if defined(Rtt_NINTENDO_ENV )
-	Rtt_ASSERT(0 && "TODO");
-	return result;
-#elif defined( Rtt_WIN_ENV )
+#if defined( Rtt_WIN_ENV )
 	wchar_t *path = CreateUtf16StringFrom(directoryName);
 	std::wstring search_path = std::wstring(path) + L"/*.*";
 	WIN32_FIND_DATA fd;
@@ -964,7 +852,7 @@ void ReplaceString(std::string& subject, const std::string& search, const std::s
 
 Rtt_EXPORT char *Rtt_MakeTempDirectory(char *tmpDirTemplate)
 {
-#if defined(Rtt_WIN_ENV) || defined(Rtt_NINTENDO_ENV )
+#if defined(Rtt_WIN_ENV)
 
 	static char utf8FileName[MAX_PATH];
 	
@@ -1001,8 +889,6 @@ Rtt_EXPORT char *Rtt_MakeTempDirectory(char *tmpDirTemplate)
 	{
 		return NULL;
 	}
-
-
 #else
 	return mkdtemp(tmpDirTemplate);
 #endif
@@ -1021,224 +907,12 @@ Rtt_EXPORT const char *Rtt_GetSystemTempDirectory()
 #endif
 }
 
-#if defined(Rtt_NINTENDO_ENV )
 
-nnFile::nnFile(const char *path, const char *mode)
-	: fPos(0)
-	, fData(NULL)
-	, fSize(0)
+
+extern "C" size_t nFileTmpfile(void* ptr, size_t size, size_t count, FILE* fileHandle)
 {
-	fHandle.handle = NULL;
-	nn::Result result;
-
-	// '//' ==> '/'
-	fPath = path;
-	while (true)
-	{
-		size_t pos = fPath.find("//");
-		if (pos != std::string::npos)
-		{
-			fPath.replace(pos, 2, "/");
-			continue;
-		}
-		pos = fPath.find("\\");
-		if (pos != std::string::npos)
-		{
-			fPath.replace(pos, 1, "/");
-			continue;
-		}
-		pos = fPath.find("./");
-		if (pos != std::string::npos)
-		{
-			// todo
-			// for now ignore paths like to "./network.so" ?
-			return;
-		}
-		break;
-	}
-
-	if (mode[0] == 'r')
-	{
-		result = nn::fs::OpenFile(&fHandle, fPath.c_str(), nn::fs::OpenMode_Read);
-		if (result.IsSuccess())
-		{
-//			result = nn::fs::GetFileSize(&fSize, fHandle);
-//			fData = (uint8_t*)malloc(fSize);
-//			result = nn::fs::ReadFile(fHandle, 0, fData, fSize);
-			//printf("open %s: mode=%s, size=%lld\n", fPath.c_str(), mode, fSize);
-		}
-		else
-		{
-		//	Rtt_LogException("Failed to open %s\n", fPath.c_str());
-		}
-	}
-	else if (mode[0] == 'w')
-	{
-		Rtt_ASSERT(0 && "TODO test OpenMode_Write");
-		nn::fs::OpenFile(&fHandle, fPath.c_str(), nn::fs::OpenMode_Write);
-	}
-	else if (mode[0] == 'a')
-	{
-		Rtt_ASSERT(0 && "TODO test OpenMode_AllowAppend");
-		nn::fs::OpenFile(&fHandle, fPath.c_str(), nn::fs::OpenMode_AllowAppend);
-	}
-	else
-	{
-		Rtt_ASSERT(0 && "Failed to open nnFile, invalid mode");
-	}
-}
-
-nnFile::~nnFile()
-{
-	nn::fs::CloseFile(fHandle);
-	free(fData);
-}
-
-bool nnFile::load()
-{
-	if (fData == NULL)
-	{
-		nn::Result result;
-		result = nn::fs::GetFileSize(&fSize, fHandle);
-		fData = (uint8_t*)malloc(fSize);
-		result = nn::fs::ReadFile(fHandle, 0, fData, fSize);
-		return result.IsSuccess();
-	}
-	return true;
-}
-
-bool nnFile::isOpen() const
-{
-	return fHandle.handle != NULL;
-}
-
-int nnFile::getc()
-{
-	load();
-	if (fPos < fSize)
-	{
-		fPos++;
-		return fData[fPos - 1];
-	}
+	Rtt_ASSERT(0 && "TODO");
 	return -1;
 }
-
-int nnFile::nnungetc(int c)
-{
-	load();
-	if (fPos > 0)
-	{
-		fPos--;
-		fData[fPos] = c;
-	}
-	return -1;
-}
-
-extern "C"
-{
-	size_t nFileRead(void* ptr, size_t size, size_t count, FILE* fileHandle)
-	{
-		return Rtt_FileRead(ptr, size, count, fileHandle);
-	}
-
-	size_t nFileWrite(void* ptr, size_t size, size_t count, FILE* fileHandle)
-	{
-		Rtt_ASSERT(0 && "TODO");
-		return -1;
-	}
-
-	size_t nFileReopen(void* ptr, size_t size, size_t count, FILE* fileHandle)
-	{
-		Rtt_ASSERT(0 && "TODO");
-		return -1;
-	}
-
-	size_t nFileFputS(void* ptr, size_t size, size_t count, FILE* fileHandle)
-	{
-		Rtt_ASSERT(0 && "TODO");
-		return -1;
-	}
-
-	size_t nFileTmpfile(void* ptr, size_t size, size_t count, FILE* fileHandle)
-	{
-		Rtt_ASSERT(0 && "TODO");
-		return -1;
-	}
-
-	size_t nFileFgetS(void* ptr, size_t size, size_t count, FILE* fileHandle)
-	{
-		Rtt_ASSERT(0 && "TODO");
-		return -1;
-	}
-
-	size_t nFileFlush(FILE* fileHandle)
-	{
-		return Rtt_FileFlush(fileHandle);
-	}
-
-	size_t nFileRemove(void* ptr, size_t size, size_t count, FILE* fileHandle)
-	{
-		Rtt_ASSERT(0 && "TODO");
-		return -1;
-	}
-
-	size_t nFileRename(void* ptr, size_t size, size_t count, FILE* fileHandle)
-	{
-		Rtt_ASSERT(0 && "TODO");
-		return -1;
-	}
-
-	void nFileRewind(FILE *fileHandle)
-	{
-		Rtt_FileRewind(fileHandle);
-	}
-
-	long int nFileTell(FILE *fileHandle)
-	{
-		return Rtt_FileTell(fileHandle);
-	}
-
-	int nFileSeek(FILE *fileHandle, long int offset, int origin)
-	{
-		return Rtt_FileSeek(fileHandle, offset, origin);
-	}
-
-	FILE* nFileOpen(const char *filePath, const char *mode)
-	{
-		return Rtt_FileOpen(filePath, mode);
-	}
-
-	int nFileClose(FILE *fileHandle)
-	{
-		return Rtt_FileClose(fileHandle);
-	}
-
-	int nFileError(FILE *fileHandle)
-	{
-		return Rtt_FileError(fileHandle);
-	}
-
-	int nFileGetC(FILE *fileHandle)
-	{
-		return Rtt_FileGetC(fileHandle);
-	}
-
-	int nFileUngetC(int c, FILE *fileHandle)
-	{
-		return Rtt_FileUngetC(c, fileHandle);
-	}
-
-	int nFileEof(FILE* fileHandle)
-	{
-		return Rtt_FileEof(fileHandle);
-	}
-
-	void nFileClearerr(FILE* fileHandle)
-	{
-		Rtt_FileClearerr(fileHandle);
-	}
-}
-
-#endif
 
 #endif // ! Rtt_WIN_PHONE_ENV

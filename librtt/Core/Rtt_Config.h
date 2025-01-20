@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -52,8 +36,8 @@
 #elif Rtt_ANDROID_ENV
 	#define Rtt_USE_OPENSLES
 	#define Rtt_USE_ALMIXER
-#elif Rtt_NINTENDO_ENV
-	#define Rtt_USE_ALMIXER
+#elif Rtt_NXS_ENV
+	//#define Rtt_USE_ALMIXER
 #elif Rtt_LINUX_ENV
 	#define Rtt_USE_ALMIXER
 #else
@@ -75,6 +59,11 @@
 
 // By default, assume little endian
 #define Rtt_LITTLE_ENDIAN	1
+
+#if defined( Rtt_NXS_ENV )
+#	undef Rtt_LITTLE_ENDIAN
+#	define Rtt_BIG_ENDIAN	1
+#endif
 
 // Apple (Mac + iPhone)
 // ----------------------------------------------------------------------------
@@ -352,53 +341,42 @@
 	#define Rtt_VPRINTF_SUPPORTED
 	#define Rtt_NETWORK
 
+	// disabled in order to reduce app size
+	// #define Rtt_SQLITE
+
 	#if EMSCRIPTEN
 		#define Rtt_OPENGLES
 		#define Rtt_EGL
-
 		#define Rtt_BROWSER_ENV
 	#else
 		#define Rtt_OPENGL_EXT_APPLE
 		#define Rtt_LUA_C_MODULE_DYLIB
 	#endif
-
-	//#define Rtt_SQLITE
-
 #endif
 
 //
-// Nintendo 
+// NxS 
 //
+#if defined( Rtt_NXS_ENV )
 
-#if defined( Rtt_NINTENDO_ENV )
-
-//#define USE_STATIC_MIXER
+#define Rtt_OPENGL_CLIENT_SIDE_ARRAYS 1
 #define Rtt_USE_GLOBAL_VARIABLES
 #define Rtt_VPRINTF_SUPPORTED
 #define Rtt_USE_LIMITS
 #define Rtt_ALLOCATOR_SYSTEM
 #define Rtt_LUA_LFS
+#define Rtt_NETWORK
+#define Rtt_SQLITE
 
 #include <sys/stat.h>
+#include "Rtt_NX_Allocator.h"
 #include "Rtt_FileSystem.h"
-
-// stdio
-//#define stat Rtt_FileStatus
-#define lstat Rtt_FileStatus
-#define fopen Rtt_FileOpen
-#define fread Rtt_FileRead
-#define feof Rtt_FileEof
-#define fclose Rtt_FileClose
-#define ferror Rtt_FileError
-#define getc Rtt_FileGetC
-#define ungetc Rtt_FileUngetC
-#define clearerr Rtt_FileClearerr
-#define fseek Rtt_FileSeek
-#define ftell Rtt_FileTell
-#define rewind Rtt_FileRewind
 
 #endif
 
+//
+// Linux
+//
 #if defined( Rtt_LINUX_ENV )
 	#define GL_GLEXT_PROTOTYPES
 	#define Rtt_USE_GLOBAL_VARIABLES

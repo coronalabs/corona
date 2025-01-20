@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -150,6 +134,12 @@ static const Rtt_Real kUnitCircleScaleFactor[] =
 #endif
 };
 
+U32
+Tesselator::CountForDepth( int depth )
+{
+	return (1U << depth) - 1U; // 2^depth - 1
+}
+
 // Subdivide circular sector --- assumes unit circle centered at (0,0)
 // http://mathworld.wolfram.com/CircularSector.html
 //
@@ -201,6 +191,12 @@ Tesselator::SubdivideCircleSector(
 
 	vertices.Append( p2 );
 	vertices.Append( kOrigin );
+}
+
+static U32
+SubdivideCircleSectorCount( int maxDepth )
+{
+	return 4U * Tesselator::CountForDepth( maxDepth );
 }
 
 static void
@@ -260,6 +256,14 @@ Tesselator::SubdivideCircleArc( ArrayVertex2& vertices, const Vertex2& p1, const
 		}
 		*/
 	}
+}
+
+static U32
+SubdivideCircleArcCount( int maxDepth, bool appendDuplicate )
+{
+	U32 perArcCount = appendDuplicate ? 2U : 1U;
+
+	return (Tesselator::CountForDepth( maxDepth ) + 1U) * perArcCount;
 }
 
 /// Gets the log2 of the given value.
@@ -407,6 +411,39 @@ Tesselator::AppendCircleArc( ArrayVertex2& vertices, Real radius, U32 options )
 	}
 }
 
+U32
+Tesselator::AppendCircleCount( Real radius, U32 options ) const
+{
+	U32 maxDepth = DepthForRadius( radius );
+
+	return 4U * SubdivideCircleSectorCount( maxDepth ) + 2U;
+}
+
+U32
+Tesselator::AppendCircleQuadrantsCount( Real radius, U32 options ) const
+{
+	U32 maxDepth = DepthForRadius( radius );
+
+	return 4U * SubdivideCircleSectorCount( maxDepth ) + 8U;
+}
+
+U32
+Tesselator::AppendCircleArcCount( Real radius, U32 options ) const
+{
+	bool appendDuplicate = ( !! ( options & kAppendDuplicate ) );
+	bool appendEndPoints = ( !! ( options & kAppendArcEndPoints ) );
+
+	U32 maxDepth = DepthForRadius( radius ), perArcCount = appendDuplicate ? 2U : 1U;
+	U32 count = SubdivideCircleArcCount( maxDepth, appendDuplicate );
+
+	if (appendEndPoints)
+	{
+		count += perArcCount;
+	}
+
+	return 4U * count + perArcCount;
+}
+
 void
 Tesselator::AppendRect( ArrayVertex2& vertices, Real halfW, Real halfH )
 {
@@ -516,6 +553,18 @@ Tesselator::AppendStrokeTextureEndCap( ArrayVertex2& vertices, int numVertices )
 	}
 	vertices.Append( innerEnd );
 	vertices.Append( outerEnd );
+}
+
+U32
+Tesselator::AppendCircleStrokeCount( Real radius, bool appendEndPoints ) const
+{
+	U32 options = kNoScale | kAppendDuplicate;
+	if ( appendEndPoints )
+	{
+		options |= kAppendArcEndPoints;
+	}
+
+	return AppendCircleArcCount( radius, options );
 }
 
 // ----------------------------------------------------------------------------

@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -339,9 +323,57 @@ IPhoneDevice::GetUniqueIdentifier( IdentifierType t ) const
 }
 	
 void
-IPhoneDevice::Vibrate() const
+IPhoneDevice::Vibrate(const char * hapticType, const char* hapticStyle) const
 {
-	AudioServicesPlaySystemSound( kSystemSoundID_Vibrate );
+    NSString * type = nil;
+    if(hapticType){
+       type = [[NSString alloc] initWithUTF8String:hapticType];
+    }
+    NSString * style = nil;
+    if(hapticStyle){
+       style = [[NSString alloc] initWithUTF8String:hapticStyle];
+    }
+   if([type isEqualToString:@"impact"]){
+       UIImpactFeedbackStyle feedbackStyle = UIImpactFeedbackStyleMedium; // default
+         if (style != nil) {
+           if ([style isEqualToString:@"light"]) {
+               feedbackStyle = UIImpactFeedbackStyleLight;
+           } else if ([style isEqualToString:@"heavy"]) {
+               feedbackStyle = UIImpactFeedbackStyleHeavy;
+           } else if ([style isEqualToString:@"rigid"]) {
+               if (@available(iOS 13.0, *)) {
+                feedbackStyle = UIImpactFeedbackStyleRigid;
+               }//else we use medium
+           } else if ([style isEqualToString:@"soft"]) {
+               if (@available(iOS 13.0, *)) {
+                   feedbackStyle = UIImpactFeedbackStyleSoft;
+               }//else we use medium
+           }
+         }
+       UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:feedbackStyle];
+       [feedback prepare];
+       [feedback impactOccurred];
+       feedback = nil;
+   }else if([type isEqualToString:@"selection"]){
+       UISelectionFeedbackGenerator *generator = [UISelectionFeedbackGenerator new];
+       [generator selectionChanged];
+   }else if([type isEqualToString:@"notification"]){
+       UINotificationFeedbackType feedbackType = UINotificationFeedbackTypeSuccess; // default
+       if (style != nil) {
+           if ([style isEqualToString:@"warning"]) {
+             feedbackType = UINotificationFeedbackTypeWarning;
+           } else if ([style isEqualToString:@"error"]) {
+             feedbackType = UINotificationFeedbackTypeError;
+           }
+       }
+       UINotificationFeedbackGenerator *feedback = [UINotificationFeedbackGenerator new];
+       [feedback prepare];
+       [feedback notificationOccurred:feedbackType];
+       feedback = nil;
+   }else{
+       if(type != nil){Rtt_Log("WARNING: invalid hapticType");} //just in case user misspells or puts a wrong type
+       AudioServicesPlaySystemSound( kSystemSoundID_Vibrate );
+   }
 }
 
 bool
@@ -361,9 +393,13 @@ IPhoneDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kLocationEvent:
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
-		case MPlatformDevice::kKeyEvent:
 		case MPlatformDevice::kInputDeviceStatusEvent:
 			hasEventSource = true;
+			break;
+		case MPlatformDevice::kKeyEvent:
+			if (@available(iOS 13.4, *)) { //Key Events only work on iOS 13.4 >=
+				hasEventSource = true;
+			}
 			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();

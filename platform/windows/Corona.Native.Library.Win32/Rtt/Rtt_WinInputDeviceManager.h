@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -47,15 +31,15 @@ namespace Rtt
 namespace Rtt
 {
 
-/// <summary>
-///  Manages Windows input devices such as a mouse or keyboard and dispatches their input events
-///  to the Corona runtime's Lua state.
-/// </summary>
-class WinInputDeviceManager : public PlatformInputDeviceManager
-{
-	Rtt_CLASS_NO_COPIES(WinInputDeviceManager)
+	/// <summary>
+	///  Manages Windows input devices such as a mouse or keyboard and dispatches their input events
+	///  to the Corona runtime's Lua state.
+	/// </summary>
+	class WinInputDeviceManager : public PlatformInputDeviceManager
+	{
+		Rtt_CLASS_NO_COPIES(WinInputDeviceManager)
 
-	public:
+		public:
 		#pragma region Public CursorStyle Enum
 		/// <summary>
 		///  <para>Indicates the type of mouse cursor to be used such as kDefaultArrow, kPointingHand, etc.</para>
@@ -63,13 +47,20 @@ class WinInputDeviceManager : public PlatformInputDeviceManager
 		/// </summary>
 		enum class CursorStyle : WORD
 		{
+			kAppStarting = (WORD)IDC_APPSTARTING,
 			kDefaultArrow = (WORD)IDC_ARROW,
-			kHelp = (WORD)IDC_HELP,
-			kPointingHand = (WORD)IDC_HAND,
-			kIBeam = (WORD)IDC_IBEAM,
 			kCrosshair = (WORD)IDC_CROSS,
+			kPointingHand = (WORD)IDC_HAND,
+			kHelp = (WORD)IDC_HELP,
+			kIBeam = (WORD)IDC_IBEAM,
 			kSlashedCircle = (WORD)IDC_NO,
-			kMove = (WORD)IDC_SIZEALL
+			kMove = (WORD)IDC_SIZEALL,
+			kSizeNorthEastSouthWest = (WORD)IDC_SIZENESW,
+			kSizeNorthSouth = (WORD)IDC_SIZENS,
+			kSizeNorthWestSouthEast = (WORD)IDC_SIZENWSE,
+			kSizeWestEast = (WORD)IDC_SIZEWE,
+			kUpArrow = (WORD)IDC_UPARROW,
+			kHourGlass = (WORD)IDC_WAIT,
 		};
 
 		#pragma endregion
@@ -139,7 +130,7 @@ class WinInputDeviceManager : public PlatformInputDeviceManager
 
 		#pragma endregion
 
-	protected:
+		protected:
 		#pragma region Protected Methods
 		/// <summary>Called when this device manager needs a new input device object to be created.</summary>
 		/// <param name="descriptor">Unique descriptor used to identify the new input device.</param>
@@ -152,7 +143,7 @@ class WinInputDeviceManager : public PlatformInputDeviceManager
 
 		#pragma endregion
 
-	private:
+		private:
 		#pragma region Private Constants
 		enum
 		{
@@ -215,7 +206,7 @@ class WinInputDeviceManager : public PlatformInputDeviceManager
 		/// <param name="sender">The InputDeviceMonitor instance that raised this event.</param>
 		/// <param name="arguments">Provides information about the newly discovered input device.</param>
 		void OnDiscoveredDevice(
-				Interop::Input::InputDeviceMonitor& sender, Interop::Input::InputDeviceInterfaceEventArgs& arguments);
+			Interop::Input::InputDeviceMonitor& sender, Interop::Input::InputDeviceInterfaceEventArgs& arguments);
 
 		/// <summary>Called when the rendering surface has received a Windows message.</summary>
 		/// <param name="sender">Reference to the window/control that received the Windows message.</param>
@@ -239,9 +230,9 @@ class WinInputDeviceManager : public PlatformInputDeviceManager
 		/// </param>
 		/// <param name="mouseButtonFlags">The WParam data provided by the Windows mouse message.</param>
 		void OnReceivedMouseEvent(
-				Rtt::MouseEvent::MouseEventType eventType, POINT& point,
-				float scrollWheelDeltaX, float scrollWheelDeltaY, WPARAM mouseButtonFlags);
-		
+			Rtt::MouseEvent::MouseEventType eventType, POINT& point,
+			float scrollWheelDeltaX, float scrollWheelDeltaY, WPARAM mouseButtonFlags);
+
 		/// <summary>
 		///  <para>To be called when a mouse/touch event has been received.</para>
 		///  <para>Dispatches the given data as a Corona "touch" event to Lua.</para>
@@ -255,7 +246,7 @@ class WinInputDeviceManager : public PlatformInputDeviceManager
 		/// </param>
 		/// <param name="phase">The touch phase such as kBegan, kMoved, or kEnded.</param>
 		void OnReceivedTouchEvent(
-				uint32_t touchIndex, POINT currentPosition, POINT startPosition, Rtt::TouchEvent::Phase phase);
+			uint32_t touchIndex, POINT currentPosition, POINT startPosition, Rtt::TouchEvent::Phase phase);
 
 		/// <summary>
 		///  <para>Extract the mouse x/y coordinate from the given Windows message LPARAM.</para>
@@ -362,6 +353,6 @@ class WinInputDeviceManager : public PlatformInputDeviceManager
 		CursorStyle fCursorStyle;
 
 		#pragma endregion
-};
+	};
 
 }	// namespace Rtt

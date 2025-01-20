@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -69,6 +53,37 @@ PlatformNotifier::ScheduleDispatch( VirtualEvent *e )
 
 				scheduled = true;
 			}
+		}
+
+		// In case of error, we need to delete the event
+		if ( ! Rtt_VERIFY( scheduled ) )
+		{
+			Rtt_DELETE( e );
+		}
+	}
+}
+
+void
+PlatformNotifier::ScheduleDispatch( VirtualEvent *e, int ref )
+{
+	if ( Rtt_VERIFY( e ) )
+	{
+		bool scheduled = false;
+		Rtt_ASSERT( LUA_NOREF != ref && LUA_REFNIL != ref );
+
+		lua_State *L = GetLuaState();
+		Rtt_ASSERT( L );
+		if ( L )
+		{
+			Runtime *runtime = LuaContext::GetRuntime( L );
+
+			PlatformNotifierTask *task = Rtt_NEW( runtime->Allocator(), PlatformNotifierTask( * this, e ) );
+
+			task->SetReference( ref );
+
+			runtime->GetScheduler().Append( task );
+
+			scheduled = true;
 		}
 
 		// In case of error, we need to delete the event
@@ -179,7 +194,8 @@ PlatformNotifier::RawSetListenerRef(int ref)
 PlatformNotifierTask::PlatformNotifierTask( PlatformNotifier& notifier, VirtualEvent *e )
 :	Super(),
 	fNotifier( notifier ),
-	fEvent( e )
+	fEvent( e ),
+	fLuaRef( LUA_NOREF )
 {
 	Rtt_ASSERT( e );
 }
@@ -192,7 +208,21 @@ PlatformNotifierTask::~PlatformNotifierTask()
 void 
 PlatformNotifierTask::operator()( Scheduler & sender )
 {
+	int oldRef = fNotifier.GetListenerRef();
+
+	if ( LUA_NOREF != fLuaRef )
+	{
+		fNotifier.RawSetListenerRef( fLuaRef );
+	}
+
 	fNotifier.CallListener( fEvent->Name(), *fEvent );
+
+	if ( LUA_NOREF != fLuaRef )
+	{
+		fNotifier.RawSetListenerRef( oldRef );
+
+		fLuaRef = LUA_NOREF;
+	}
 }
 	
 // ----------------------------------------------------------------------------

@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +29,9 @@ static const char kFilterBlurString[] = "blur";
 static const char kFilterBlurGaussianString[] = "blurGaussian";
 static const char kFilterBlurHorizontalString[] = "blurHorizontal";
 static const char kFilterBlurVerticalString[] = "blurVertical";
+static const char kFilterBlurGaussianLinearString[] = "blurGaussianLinear";
+static const char kFilterBlurLinearHorizontalString[] = "blurLinearHorizontal";
+static const char kFilterBlurLinearVerticalString[] = "blurLinearVertical";
 static const char kFilterBrightnessString[] = "brightness";
 static const char kFilterBulgeString[] = "bulge";
 static const char kFilterChromaKeyString[] = "chromaKey";
@@ -134,6 +121,15 @@ ShaderBuiltin::StringForFilter( Filter filter )
 			break;
 		case kFilterBlurVertical:
 			result = kFilterBlurVerticalString;
+			break;
+		case kFilterBlurGaussianLinear:
+			result = kFilterBlurGaussianLinearString;
+			break;
+		case kFilterBlurLinearHorizontal:
+			result = kFilterBlurLinearHorizontalString;
+			break;
+		case kFilterBlurLinearVertical:
+			result = kFilterBlurLinearVerticalString;
 			break;
 		case kFilterBrightness:
 			result = kFilterBrightnessString;
@@ -421,11 +417,23 @@ ShaderBuiltin::Exists( ShaderTypes::Category category, const char *name )
 // Default
 int luaload_shell_default_gl(lua_State* L);
 int luaload_kernel_default_gl(lua_State* L);
+int luaload_shell_default_vulkan(lua_State * L);
 
 bool
-ShaderBuiltin::PushDefaultShell( lua_State *L )
+ShaderBuiltin::PushDefaultShell( lua_State *L, const char * backend )
 {
+#if defined( Rtt_WIN_ENV )
+	if (strcmp( backend, "vulkanBackend" ) == 0)
+	{
+		lua_pushcfunction( L, Corona::Lua::Open< luaload_shell_default_vulkan > );
+	}
+	else
+	{
+		lua_pushcfunction( L, Corona::Lua::Open< luaload_shell_default_gl > );
+	}
+#else
 	lua_pushcfunction( L, Corona::Lua::Open< luaload_shell_default_gl > );
+#endif
 
 	return ( !! Rtt_VERIFY( 0 == Corona::Lua::DoCall( L, 0, 1 ) ) );
 }
@@ -477,6 +485,9 @@ int luaload_kernel_filter_blur_gl( lua_State *L );
 int luaload_kernel_filter_blurGaussian_gl( lua_State *L );
 int luaload_kernel_filter_blurHorizontal_gl( lua_State *L );
 int luaload_kernel_filter_blurVertical_gl( lua_State *L );
+int luaload_kernel_filter_blurGaussianLinear_gl( lua_State *L );
+int luaload_kernel_filter_blurLinearHorizontal_gl( lua_State *L );
+int luaload_kernel_filter_blurLinearVertical_gl( lua_State *L );
 int luaload_kernel_filter_brightness_gl( lua_State *L );
 int luaload_kernel_filter_bulge_gl( lua_State *L );
 int luaload_kernel_filter_chromaKey_gl( lua_State *L );
@@ -528,6 +539,9 @@ static const luaL_Reg kBuiltInFilterFuncs[] =
 	{ kFilterBlurGaussianString, 				Corona::Lua::Open< luaload_kernel_filter_blurGaussian_gl > },
 	{ kFilterBlurHorizontalString, 				Corona::Lua::Open< luaload_kernel_filter_blurHorizontal_gl > },
 	{ kFilterBlurVerticalString, 				Corona::Lua::Open< luaload_kernel_filter_blurVertical_gl > },
+	{ kFilterBlurGaussianLinearString, 			Corona::Lua::Open< luaload_kernel_filter_blurGaussianLinear_gl > },
+	{ kFilterBlurLinearHorizontalString, 		Corona::Lua::Open< luaload_kernel_filter_blurLinearHorizontal_gl > },
+	{ kFilterBlurLinearVerticalString, 			Corona::Lua::Open< luaload_kernel_filter_blurLinearVertical_gl > },
 	{ kFilterBrightnessString, 					Corona::Lua::Open< luaload_kernel_filter_brightness_gl > },
 	{ kFilterBulgeString, 						Corona::Lua::Open< luaload_kernel_filter_bulge_gl > },
 	{ kFilterChromaKeyString, 					Corona::Lua::Open< luaload_kernel_filter_chromaKey_gl > },
@@ -601,6 +615,7 @@ static const char kCompositeSoftLightString[] = "softLight";
 static const char kCompositeSubtractString[] = "subtract";
 static const char kCompositeVividLightString[] = "vividLight";
 static const char kCompositeYUV420fString[] = "yuv420f";
+static const char kCompositeYUV420VString[] = "yuv420v";
 /*
 			kCompositeColor,
 			kCompositeGlow,
@@ -639,7 +654,8 @@ int luaload_kernel_composite_screen_gl( lua_State *L );
 int luaload_kernel_composite_softLight_gl( lua_State *L );
 int luaload_kernel_composite_subtract_gl( lua_State *L );
 int luaload_kernel_composite_vividLight_gl( lua_State *L );
-int luaload_kernel_composite_yuv420f_gl( lua_State *L );
+int luaload_kernel_composite_yuv420f_gl(lua_State* L);
+int luaload_kernel_composite_yuv420v_gl(lua_State* L);
 
 static const luaL_Reg kBuiltInCompositeFuncs[] =
 {
@@ -672,6 +688,9 @@ static const luaL_Reg kBuiltInCompositeFuncs[] =
 	{ kCompositeSubtractString,						Corona::Lua::Open< luaload_kernel_composite_subtract_gl > },
 	{ kCompositeVividLightString,					Corona::Lua::Open< luaload_kernel_composite_vividLight_gl > },
 	{ kCompositeYUV420fString,						Corona::Lua::Open< luaload_kernel_composite_yuv420f_gl > },
+#if defined( Rtt_NXS_ENV )
+	{ kCompositeYUV420VString,						Corona::Lua::Open< luaload_kernel_composite_yuv420v_gl > },
+#endif
 
 	{ NULL, NULL }
 };

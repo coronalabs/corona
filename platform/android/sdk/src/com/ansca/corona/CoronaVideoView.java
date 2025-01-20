@@ -1,30 +1,17 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 package com.ansca.corona;
 
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * View used to play videos.
@@ -44,7 +31,7 @@ public class CoronaVideoView extends android.widget.VideoView {
 	 * <p>
 	 * Instances of this class are created by Corona's native.newVideo() Lua function.
 	 */
-	public static class CenteredLayout extends android.widget.FrameLayout {
+	public static class CenteredLayout extends android.widget.FrameLayout implements com.ansca.corona.NativePropertyResponder {
 		/** The video view that is centered within this layout. */
 		private CoronaVideoView fVideoView;
 
@@ -105,6 +92,19 @@ public class CoronaVideoView extends android.widget.VideoView {
 			// The video view needs this ID to dispatch Corona Lua events. Pass it through.
 			fVideoView.setId(id);
 		}
+
+		@Override
+		public List<Object> getNativePropertyResponder() {
+			List<Object> out = new LinkedList<Object>();
+			out.add(fVideoView);
+			out.add(this);
+			return out;
+		}
+
+		@Override
+		public Runnable getCustomPropertyAction(String key, boolean booleanValue, String stringValue, int integerValue, double doubleValue) {
+			return null;
+		}
 	}
 
 
@@ -116,6 +116,13 @@ public class CoronaVideoView extends android.widget.VideoView {
 
 	/** Previous normalized volume value (ranging 0 and 1.0) that was applied before mute() was called. */
 	private float fPrevVolume;
+
+	/** If set to true, error would be handled internally */
+	private boolean fIgnoreErrors;
+
+	public void IgnoreErrors(boolean ignore) {
+		fIgnoreErrors = ignore;
+	}
 
 	/** Set true to enable tapping the view to pause/resume the video. */
 	private boolean fTouchTogglesPlay;
@@ -169,6 +176,7 @@ public class CoronaVideoView extends android.widget.VideoView {
 		fTouchTogglesPlay = false;
 		fExternalOnPreparedListener = null;
 		fExternalOnCompletionListener = null;
+		fIgnoreErrors = false;
 		fTaskDispatcher = null;
 		fProxyServer = null;
 		if (runtime != null) {
@@ -198,8 +206,7 @@ public class CoronaVideoView extends android.widget.VideoView {
 			}
 		});
 
-		// Set up a listener to be invoked when we've reached the end of the video.
-		super.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {
+		android.media.MediaPlayer.OnCompletionListener completedListener = new android.media.MediaPlayer.OnCompletionListener() {
 			@Override
 			public void onCompletion(android.media.MediaPlayer mediaPlayer) {
 				// Dispatch a Corona Lua event, if configured.
@@ -211,6 +218,23 @@ public class CoronaVideoView extends android.widget.VideoView {
 				if (fExternalOnCompletionListener != null) {
 					fExternalOnCompletionListener.onCompletion(mediaPlayer);
 				}
+			}
+		};
+
+		// Set up a listener to be invoked when we've reached the end of the video.
+		super.setOnCompletionListener(completedListener);
+
+		super.setOnErrorListener(new android.media.MediaPlayer.OnErrorListener() {
+			@Override
+			public boolean onError(android.media.MediaPlayer mediaPlayer, int what, int extra) {
+				if (fTaskDispatcher != null) {
+					fTaskDispatcher.send(new VideoViewFailedTask(getId()));
+				}
+				// Dispatch manual events, since listener would be ignored
+				if(fIgnoreErrors) {
+					completedListener.onCompletion(mediaPlayer);
+				}
+				return fIgnoreErrors;
 			}
 		});
 	}
@@ -306,16 +330,17 @@ public class CoronaVideoView extends android.widget.VideoView {
 
 		// Set up the view to play the video referenced by the given URL.
 		String uriString = uri.toString();
-		if (android.webkit.URLUtil.isHttpUrl(uriString) || android.webkit.URLUtil.isHttpsUrl(uriString)) {
-			// We were given an "http:" or "https:" URL.
+		if (android.webkit.URLUtil.isHttpUrl(uriString)) {
+			// We were given an "http:" URL.
 			// Set up our own internal HTTP proxy to the given URL.
 			// We will give the Google VideoView the proxy's localhost URL later, once it's ready.
 			// Note: This proxy works-around an issue where Google's implementation will display "Can't play the video" when
 			//       seeking a streaming video from a server that does not support HTTP range requests without an upper bound.
 			//       The proxy applies an upper bound to range requests, providing the HTTP 206 response Google is looking for.
 			fProxyServer = new ProxyServer(this, uri);
-		}
-		else {
+		} else {
+			// Https urls seems to not need a ProxyServer anymore for HTTPs, looks Google fixed this issue?
+
 			// Do not use a proxy for all other URLs such as "file:" and "content:".
 			// Load the video as-is via Google's VideoView APIs.
 			setVideoURI(uri);
@@ -502,6 +527,19 @@ public class CoronaVideoView extends android.widget.VideoView {
 		@Override
 		public void executeUsing(CoronaRuntime runtime) {
 			com.ansca.corona.JavaToNativeShim.videoViewEnded(runtime, fId);
+		}
+	}
+
+	private static class VideoViewFailedTask implements CoronaRuntimeTask {
+		private int fId;
+
+		public VideoViewFailedTask(int id) {
+			fId = id;
+		}
+
+		@Override
+		public void executeUsing(CoronaRuntime runtime) {
+			com.ansca.corona.JavaToNativeShim.videoViewFailed(runtime, fId);
 		}
 	}
 

@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -134,7 +118,7 @@ void TextEditorSupport_LaunchTextEditorWithFile(NSString* file_name, NSInteger l
 				[[NSWorkspace sharedWorkspace] openFile:file_name];
 			}
 		}
-		else if([base_app_name isEqualToString:@"Sublime Text 2.app"] || [base_app_name isEqualToString:@"Sublime Text.app"])
+		else if([base_app_name isEqualToString:@"Sublime Text 2.app"] || [base_app_name isEqualToString:@"Sublime Text.app"] || [base_app_name isEqualToString:@"Sublime Text 3.app"] )
 		{
 			// From http://www.sublimetext.com/docs/2/osx_command_line.html
             
@@ -193,7 +177,10 @@ void TextEditorSupport_LaunchTextEditorWithFile(NSString* file_name, NSInteger l
 				NSString* dirname = getDirNameWithMainLua(file_name);
 				NSString* execPath = [NSString stringWithFormat:@"%@/Contents/Resources/app/bin/code", app_path];
 
-				NSMutableArray* args = [NSMutableArray arrayWithObject:@"--wait"];
+				NSMutableArray* args = [[[NSMutableArray alloc] init] autorelease];
+				
+				[args addObject:@"-r"];
+				
 				if ([dirname length] > 0)
 				{
 					[args addObject:@"--add"];
@@ -213,7 +200,6 @@ void TextEditorSupport_LaunchTextEditorWithFile(NSString* file_name, NSInteger l
 				[task setLaunchPath:execPath];
 				[task setArguments:args];
 				[task launch];
-				[task performSelector:@selector(terminate) withObject:nil afterDelay:3.0];
 			}
 			@catch(NSException* the_exception)
 			{

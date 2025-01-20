@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +18,6 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformDevice.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
 #	include "Core/Rtt_FileSystem.h"
 #	include "stdafx.h"
@@ -133,8 +116,11 @@ AppPackagerParams::AppPackagerParams( const char* appName,
 	fIdentity.Set(identity);
 	fProvisionFile.Set(provisionFile); 
 	fSrcDir.Set(srcDir); 
+	fDstDir.RTrim(LUA_DIRSEP);
 	fDstDir.Set(dstDir);
+	fDstDir.RTrim(LUA_DIRSEP);
 	fSdkRoot.Set(sdkRoot); 
+	fSdkRoot.RTrim(LUA_DIRSEP);
 	fCustomBuildId.Set( customBuildId );
 	if ( productId )
 	{
@@ -350,9 +336,9 @@ PlatformAppPackager::rmdir( const char *sDir )
 }
 
 int
-PlatformAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, const char* tmpDirBase )
+PlatformAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 {
-	return WebServicesSession::kBuildError;
+	return PlatformAppPackager::kBuildError;
 }
 
 bool
@@ -1353,6 +1339,8 @@ PlatformAppPackager::UnzipPlugins( AppPackagerParams *params, Runtime *runtime, 
 	int luaTableIndex = lua_gettop( luaStatePointer );
 	lua_pushstring( luaStatePointer, destinationDirectoryPath );
 	lua_setfield( luaStatePointer, luaTableIndex, "destinationPath" );
+	lua_pushstring( luaStatePointer,  TargetDevice::TagForPlatform(params->GetTargetPlatform()) );
+	lua_setfield( luaStatePointer, -2, "platform" );
 	Lua::DispatchRuntimeEvent( luaStatePointer, 1 );
 
 	// Determine if the runtime unzipped the plugins successfully.

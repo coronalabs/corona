@@ -4,7 +4,6 @@
           android:versionCode="@USER_VERSION_CODE@"
           android:versionName="@USER_VERSION_NAME@"
           android:installLocation="@USER_INSTALL_LOCATION@"
-          android:networkSecurityConfig="@xml/network_security_config"
           >
 	<!--
 	 Set the minimum and target Android API levels here to inform the app store what OS versions this app supports.
@@ -31,7 +30,9 @@
 	             @USER_LARGE_HEAP@
 	             @USER_IS_GAME@
 	             android:hardwareAccelerated="true"
-	             android:name="android.support.multidex.MultiDexApplication">
+	             android:name="androidx.multidex.MultiDexApplication"
+	             android:networkSecurityConfig="@xml/network_security_config"
+	             >
 
 		@USER_TARGETED_APP_STORE@
 
@@ -40,6 +41,8 @@
 		@USER_USES_GOOGLE_PLAY_GAMES@
 		
 		@USER_USES_FACEBOOK@
+
+		<uses-library android:name="org.apache.http.legacy" android:required="false" />
 
 		<!-- The main Corona activity that runs the Corona project. -->
 		<activity android:name="com.ansca.corona.CoronaActivity"
@@ -50,6 +53,7 @@
 				  @USER_CORONA_ACTIVITY_ATTRIBUTES@
 		          android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 			@USER_CORONA_WINDOW_MOVES_WHEN_KEYBOARD_APPEARS@
+			@USER_INITIAL_SYSTEM_UI_VISIBILITY@
 			@USER_REQUESTED_DEFAULT_ORIENTATION@
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />

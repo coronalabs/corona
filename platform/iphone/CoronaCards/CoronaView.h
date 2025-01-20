@@ -1,17 +1,26 @@
-// ----------------------------------------------------------------------------
-// 
-// CoronaView.h
-// Copyright (c) 2013 Corona Labs Inc. All rights reserved.
-// 
-// ----------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+//
+// This file is part of the Corona game engine.
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
+//
+//////////////////////////////////////////////////////////////////////////////
 
+#ifdef Rtt_MetalANGLE
+#import <MetalANGLE/MGLKit.h>
+#else
 #import <GLKit/GLKit.h>
+#endif
 
 @protocol CoronaViewDelegate;
 
 // ----------------------------------------------------------------------------
-
+#ifdef Rtt_MetalANGLE
+@interface CoronaView : MGLKView
+#else
 @interface CoronaView : GLKView
+#endif
 
 @property (nonatomic, assign) id <CoronaViewDelegate> coronaViewDelegate;
 

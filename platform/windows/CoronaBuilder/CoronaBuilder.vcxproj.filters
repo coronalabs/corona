@@ -31,16 +31,7 @@
     <ClInclude Include="..\..\shared\Rtt_AndroidSupportTools.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_Authorization.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_AuthorizationTicket.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_DeviceBuildData.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_MAuthorizationDelegate.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_MPlatformServices.h">
@@ -49,16 +40,10 @@
     <ClInclude Include="..\..\shared\Rtt_PlatformAppPackager.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_PlatformConnection.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_TargetAndroidAppStore.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Rtt_TargetDevice.h">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Rtt_WebServicesSession.h">
       <Filter>%28root%29\platform\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\librtt\Rtt_JavaHost.h">
@@ -67,7 +52,7 @@
     <ClInclude Include="..\..\..\external\winutil\BtnST.h">
       <Filter>%28root%29\external\winutil</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\external\winutil\DirDialog.h">
+    <ClInclude Include="..\..\..\external\winutil\BrowseDirDialog.h">
       <Filter>%28root%29\external\winutil</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\external\winutil\dirent.h">
@@ -105,14 +90,13 @@
     <LuaToCpp Include="..\..\resources\webPackageApp.lua" />
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua" />
     <LuaToCpp Include="..\..\..\tools\CoronaBuilder\BuilderPluginDownloader.lua" />
-    <LuaToCpp Include="..\..\..\tools\CoronaBuilder\_CoronaSetup_android.lua" />
     <LuaToCpp Include="..\..\resources\linuxPackageApp.lua" />
+    <LuaToCpp Include="..\..\resources\CoronaBuilderPluginCollector.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerFactory.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_BuildParams.cpp" />
-    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_ConsoleAuthorizationDelegate.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilder.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="..\..\shared\ListKeyStore.cpp">
@@ -136,25 +120,13 @@
     <ClCompile Include="..\..\shared\Rtt_AndroidSupportTools.c">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\Rtt_Authorization.cpp">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\Rtt_AuthorizationTicket.cpp">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_DeviceBuildData.cpp">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_PlatformAppPackager.cpp">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\Rtt_PlatformConnection.cpp">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_TargetDevice.cpp">
-      <Filter>%28root%29\platform\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\Rtt_WebServicesSession.cpp">
       <Filter>%28root%29\platform\shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_TargetAndroidAppStore.cpp">
@@ -166,7 +138,7 @@
     <ClCompile Include="..\..\..\external\winutil\BtnST.cpp">
       <Filter>%28root%29\external\winutil</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\winutil\DirDialog.cpp">
+    <ClCompile Include="..\..\..\external\winutil\BrowseDirDialog.cpp">
       <Filter>%28root%29\external\winutil</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\external\rcedit\Project\src\rescle.cc">
@@ -199,16 +171,10 @@
     <ClCompile Include="..\..\..\external\sundown\Project\sundown\html.c">
       <Filter>%28root%29\external\sundown</Filter>
     </ClCompile>
-    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinConnection.cpp" />
-    <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinDictionaryWrapper.cpp" />
     <ClCompile Include="..\..\..\tools\car\Rtt_Car.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Archive.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_FileSystem.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_String.cpp" />
-    <ClCompile Include="..\..\..\external\rsa\prime.cpp" />
-    <ClCompile Include="..\..\..\external\rsa\rsa.cpp" />
-    <ClCompile Include="..\..\..\external\rsa\vlong.cpp" />
-    <ClCompile Include="..\..\..\external\rsa\vlong_io.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_ResourceHandle.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Allocator.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_RefCount.cpp" />
@@ -225,11 +191,12 @@
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Math.c" />
     <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\WinFile.cpp" />
-    <ClCompile Include="..\..\..\tools\app_sign\Rtt_AppSign.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerAndroidFactory.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerHTML5Factory.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.cpp" />
+    <ClCompile Include="..\..\..\librtt\Rtt_HTTPClientCommon.cpp" />
+    <ClCompile Include="..\Corona.Rtt.Library\Rtt_HTTPClientWindows.cpp" />
     <ClCompile Include="..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.cpp">
       <Filter>Rtt</Filter>
     </ClCompile>
@@ -284,9 +251,6 @@
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Assert.c">
       <Filter>%28root%29\librtt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\librtt\Core\Rtt_MD4.c" />
-    <ClCompile Include="..\..\..\librtt\Core\Rtt_MessageDigest.cpp" />
-    <ClCompile Include="..\..\..\librtt\Rtt_Message.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_OperationResult.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_PreferenceValue.cpp" />
     <ClCompile Include="..\..\..\librtt\Rtt_Preference.cpp" />
@@ -294,7 +258,6 @@
     <ClCompile Include="..\..\..\librtt\Core\Rtt_UseCount.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_WeakCount.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_SharedCount.cpp" />
-    <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilderSplashControl.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunResult.cpp">
@@ -317,7 +280,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerFactory.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_BuildParams.h" />
-    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_ConsoleAuthorizationDelegate.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilder.h" />
     <Filter Include="%28root%29">
       <UniqueIdentifier>{7fbc2e32-fbde-43fa-84d1-74fd12385fd0}</UniqueIdentifier>
@@ -366,16 +328,10 @@
     </Filter>
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinConnection.h" />
-    <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinDictionaryWrapper.h" />
     <ClInclude Include="..\..\..\tools\car\Rtt_Car.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_Archive.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_FileSystem.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_String.h" />
-    <ClInclude Include="..\..\..\external\rsa\prime.hpp" />
-    <ClInclude Include="..\..\..\external\rsa\rsa.hpp" />
-    <ClInclude Include="..\..\..\external\rsa\vlong.hpp" />
-    <ClInclude Include="..\..\..\external\rsa\vlong_io.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_ResourceHandle.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_RefCount.h" />
@@ -392,9 +348,9 @@
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Math.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\WinString.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\WinFile.h" />
-    <ClInclude Include="..\..\..\tools\app_sign\Rtt_AppSign.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.h" />
+    <ClInclude Include="..\..\..\librtt\Rtt_HTTPClient.h" />
     <ClInclude Include="..\..\..\librtt\Input\Rtt_PlatformInputDeviceManager.h">
       <Filter>Rtt</Filter>
     </ClInclude>
@@ -451,9 +407,6 @@
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Assert.h">
       <Filter>%28root%29\librtt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\librtt\Core\Rtt_MD4.h" />
-    <ClInclude Include="..\..\..\librtt\Core\Rtt_MessageDigest.h" />
-    <ClInclude Include="..\..\..\librtt\Rtt_Message.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_OperationResult.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_ValueResult.h" />
     <ClInclude Include="..\..\..\librtt\Rtt_PreferenceCollection.h" />
@@ -466,7 +419,6 @@
     <ClInclude Include="..\..\..\librtt\Core\Rtt_WeakCount.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_WeakPtr.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_SharedCount.h" />
-    <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_CoronaBuilderSplashControl.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_DownloadPluginsMain.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_LuaLibBuilder.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\Interop\Ipc\CommandLineRunResult.h">

@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-		Copyright (c) 2015 Corona Labs Inc. All rights reserved.
+		//////////////////////////////////////////////////////////////////////////////
+		//
+		// This file is part of the Corona game engine.
+		// For overview and more information on licensing please refer to README.md 
+		// Home page: https://github.com/coronalabs/corona
+		// Contact: support@coronalabs.com
+		//
+		//////////////////////////////////////////////////////////////////////////////
+
 		Summary:		Custom install window UI based on Microsoft's WiX UI (copyright below).
 -->
 <!--

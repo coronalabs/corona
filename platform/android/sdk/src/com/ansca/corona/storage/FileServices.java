@@ -1,25 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
-//
-// This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +30,10 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	/** Set to true if this application has attempted to load expansion files. */
 	private static boolean sHasAccessedExpansionFileDirectory = false;
 
+	public static void resetAccessedExpansionFileDirectory() {
+		sHasAccessedExpansionFileDirectory = false;
+	}
+
 	/** Stores the path to the "patch" expansion file for fast access. */
 	private static java.io.File sPatchExpansionFile = null;
 
@@ -60,6 +49,13 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	/** Provides fast access to file entries within an APK file, which is really a zip file. */
 	private static ZipResourceFile sApkZipEntryReader = null;
 
+	/**
+	 * For more efficient I/O throughput, BUFFER_SIZE at least 4KB is needed.
+	 * For copy size 1MB and above, 64KB is recommended.
+	 */
+	private final static int BUFFER_SIZE_NORMAL = 4096;			// 4KB
+	private final static int BUFFER_SIZE_LARGE_IO = 65536;		// 64KB
+	private final static int BUFFER_SIZE_THRESHOLD = 1048576;	// 1MB
 
 	/**
 	 * Creates an object that provides easy access to the file system and this application's
@@ -86,7 +82,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 	/**
 	 * Determines if the given path\file name is an asset file inside of the APK or expansion file.
-	 * @param fileName The path and file name to check if it is an asset file. Cannot be null or empty.
+	 * @param filePath The path and file name to check if it is an asset file. Cannot be null or empty.
 	 * @return Returns true if the given file is inside of the APK or expansion file.
 	 *         <p>
 	 *         Returns false if the given file is an external file, null, or an empty string.
@@ -114,7 +110,21 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	 *         Returns false if the file could not be found.
 	 */
 	public boolean doesAssetFileExist(String filePath) {
-		return (getAssetFileLocation(filePath) != null);
+		if (getAssetFileLocation(filePath) != null) {
+			return true;
+		}
+		android.content.res.AssetManager assetManager = getApplicationContext().getAssets();
+		java.io.InputStream is = null;
+		try {
+			is = assetManager.open(filePath, android.content.res.AssetManager.ACCESS_BUFFER);
+		} catch (Throwable ignore){};
+		if(is != null) {
+			try {
+				is.close();
+			} catch (Throwable ignore) {}
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -171,7 +181,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	 * that the asset is not compressed. This is particularly usefull if the asset needs to be
 	 * accessed from native C/C++ code or from a 3rd party library that does not support Android's
 	 * AssetManager class.
-	 * @param filePath Relative path to the assset file.
+	 * @param filePath Relative path to the asset file.
 	 * @return Returns information about where the given asset is located.
 	 *         <p>
 	 *         Returns null if the asset could not be found or if given an invalid argument.
@@ -222,7 +232,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 		}
 
 		// If asset not found, then attempt to fetch it from the APK's "raw" resource directory.
-		if (zipEntry == null) {
+		if ((zipEntry == null) && (sApkZipEntryReader != null)) {
 			StringBuilder builder = new StringBuilder();
 			builder.append("res/raw/");
 			builder.append(createRawResourceNameForAsset(filePath));
@@ -236,7 +246,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 		}
 
 		// If asset not found, then attempt to fetch it from the APK's "drawable" resource directory.
-		if (zipEntry == null) {
+		if ((zipEntry == null) && (sApkZipEntryReader != null)) {
 			StringBuilder builder = new StringBuilder();
 			builder.append("res/drawable/");
 			builder.append(filePath);
@@ -419,7 +429,8 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 		// Attempt to load the expansion files.
 		sHasAccessedExpansionFileDirectory = false;
-		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)
+				|| android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED_READ_ONLY)) {
 			java.io.File expansionDirectory = getExpansionFileDirectory();
 			if ((expansionDirectory != null) && expansionDirectory.exists()) {
 				try { sPatchExpansionZipReader = new ZipResourceFile(getPatchExpansionFile()); }
@@ -495,7 +506,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 	/**
 	 * Safely opens an input stream to the given file without exceptions.
-	 * @param filePath The file to be opened.
+	 * @param file The file to be opened.
 	 * @return Returns an input stream to the given file.
 	 *         <p>
 	 *         Returns null if unable to find or access the given file.
@@ -619,6 +630,16 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 									0, android.content.res.AssetFileDescriptor.UNKNOWN_LENGTH);
 						}
 						catch (Exception ex) { }
+						try {
+							// extract file it if was not extracted yet
+							if(descriptor == null && extractAssetFile(filePath) != null) {
+								java.io.File file = getCoronaResourcesFile(filePath);
+								descriptor = new android.content.res.AssetFileDescriptor(
+										android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY),
+										0, android.content.res.AssetFileDescriptor.UNKNOWN_LENGTH);
+							}
+						}
+						catch (Exception ignore) {}
 						if (descriptor == null) {
 							// Attempt to access the file in the APK's "raw" resource directory.
 							try {
@@ -733,6 +754,8 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	 * The file will be extracted to a hidden folder under the application's directory.
 	 * <p>
 	 * If the given file has already been extracted, then this method WILL attempt to extract it again
+	 * <p>
+	 * When a file copy fails, it is retried internally once.
 	 * @param assetFile The asset file within the APK's assets directory or expansion files.
 	 * @param overwrite Whether the file should be overwrite whats already extracted, if anything.  True to overwrite.
 	 * @return Returns an absolute path to where the asset file was copied to.
@@ -763,7 +786,9 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 
 		// Extract the asset file and copy it to an external directory.
 		boolean wasCopied = copyFile(assetFile, destinationFile);
-		if (wasCopied == false) {
+		// There is a 0.3% chance of the file fails to be copied (AssetInputStream#read() returns -1 early),
+		// we need a reliable extracted, so try again here.
+		if (!wasCopied && !copyFile(assetFile, destinationFile)) {
 			return null;
 		}
 
@@ -927,6 +952,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 	public boolean copyFile(java.io.File sourceFile, java.io.File destinationFile) {
 		java.io.InputStream inputStream = null;
 		java.io.FileOutputStream outputStream = null;
+		java.io.File tmpFile = null;
 		boolean hasSucceeded = false;
 		
 		// Validate arguments.
@@ -946,23 +972,33 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 			if (inputStream != null) {
 				// Create the destination directory tree, if it does not already exist.  Only create it if its actually a resource file.
 				destinationFile.getParentFile().mkdirs();
-				outputStream = new java.io.FileOutputStream(destinationFile);
+
+				// Writes and renames temporary files to prevent incomplete copies.
+				tmpFile = java.io.File.createTempFile("copy-" + destinationFile.getName() + "-", null, destinationFile.getParentFile());
+				outputStream = new java.io.FileOutputStream(tmpFile);
 				if (outputStream != null) {
-					int byteCount = inputStream.available();
+					// openFile() returns AssetInputStream, ZipFileEntryInputStream, and so on,
+					// overrides available() to use ZipEntry to provide length.
+					final int byteCount = inputStream.available();
+
+					// Used for comparison to check if AssetInputStream#read() returns -1 early.
+					int readTotal = 0;
+
 					if (byteCount > 0) {
-						final int BUFFER_SIZE = 1024;
-						byte[] byteBuffer = new byte[BUFFER_SIZE];
-						while (byteCount > 0) {
-							int bytesToCopy = BUFFER_SIZE;
-							if (bytesToCopy > byteCount) {
-								bytesToCopy = byteCount;
-							}
-							bytesToCopy = inputStream.read(byteBuffer, 0, bytesToCopy);
-							outputStream.write(byteBuffer, 0, bytesToCopy);
-							byteCount -= bytesToCopy;
+						// 64KB has better throughput but is *suspected* to increase the probability
+						// of AssetInputStream#read() returns -1 early. Use general page size 4KB.
+						byte[] byteBuffer = new byte[BUFFER_SIZE_NORMAL];
+						int readCount;
+						while ((readCount = inputStream.read(byteBuffer)) != -1) {
+							outputStream.write(byteBuffer, 0, readCount);
+							readTotal += readCount;
 						}
+						// We need the file to be available immediately.
+						// The flush method inherited from OutputStream MAY do nothing, but sync does!
+						outputStream.flush();
+						outputStream.getFD().sync();
 					}
-					hasSucceeded = true;
+					hasSucceeded = (byteCount == readTotal);
 				}
 			}
 		}
@@ -979,8 +1015,14 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 				try { outputStream.close(); }
 				catch (Exception ex) { }
 			}
-			if (!hasSucceeded) {
-				destinationFile.delete();
+			if (tmpFile != null) {
+				if (hasSucceeded) {
+					hasSucceeded = false;
+					// Success if and only if it is successfully copied and renamed.
+					try { hasSucceeded = tmpFile.renameTo(destinationFile); }
+					catch (Exception ex) { }
+				}
+				if (!hasSucceeded) tmpFile.delete();
 			}
 		}
 		return hasSucceeded;
@@ -1012,7 +1054,7 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 		try {
 			outputStream = new java.io.FileOutputStream(destinationFile);
 			if (outputStream != null) {
-				final int BUFFER_SIZE = 1024;
+				final int BUFFER_SIZE = inputStream.available() > BUFFER_SIZE_THRESHOLD ? BUFFER_SIZE_LARGE_IO : BUFFER_SIZE_NORMAL;
 				byte[] byteBuffer = new byte[BUFFER_SIZE];
 				while (true) {
 					int bytesToCopy = BUFFER_SIZE;
@@ -1104,13 +1146,15 @@ public class FileServices extends com.ansca.corona.ApplicationContextProvider {
 		try {
 			inputStream = openFile(filePath);
 			if (inputStream != null) {
-				int byteCount = inputStream.available();
+				final int byteCount = inputStream.available();
 				if (byteCount > 0) {
 					bytes = new byte[byteCount];
+					final int BUFFER_SIZE = byteCount > BUFFER_SIZE_THRESHOLD ? BUFFER_SIZE_LARGE_IO : BUFFER_SIZE_NORMAL;
+
 					for (int bytesCopied = 0; bytesCopied < byteCount;) {
 						int bytesToRead = byteCount - bytesCopied;
-						if (bytesToRead > 1024) {
-							bytesToRead = 1024;
+						if (bytesToRead > BUFFER_SIZE) {
+							bytesToRead = BUFFER_SIZE;
 						}
 						int readBytes = inputStream.read(bytes, bytesCopied, bytesToRead);
 						bytesCopied += readBytes;

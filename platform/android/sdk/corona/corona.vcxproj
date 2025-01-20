@@ -145,7 +145,6 @@
     <ClCompile Include="..\..\..\..\librtt\Rtt_StrokeTesselatorStream.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_TesselatorStream.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_Transform.cpp" />
-    <ClCompile Include="..\..\..\..\librtt\Rtt_Verifier.cpp" />
     <ClCompile Include="..\..\..\..\plugins\shared\CoronaLuaLibraryShared.cpp" />
     <ClCompile Include="..\..\..\shared\Rtt_PlatformConnection.cpp" />
     <ClCompile Include="..\..\..\..\external\b2Separator-cpp\b2Separator.cpp" />
@@ -276,10 +275,6 @@
     <ClCompile Include="..\..\..\..\external\luasocket\src\udp.c" />
     <ClCompile Include="..\..\..\..\external\luasocket\src\unix.c" />
     <ClCompile Include="..\..\..\..\external\luasocket\src\usocket.c" />
-    <ClCompile Include="..\..\..\..\external\rsa\prime.cpp" />
-    <ClCompile Include="..\..\..\..\external\rsa\rsa.cpp" />
-    <ClCompile Include="..\..\..\..\external\rsa\vlong.cpp" />
-    <ClCompile Include="..\..\..\..\external\rsa\vlong_io.cpp" />
     <ClCompile Include="..\..\..\..\librtt\b2GLESDebugDraw.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Allocator.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Array.cpp" />
@@ -292,8 +287,6 @@
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_FixedBlockAllocator.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_FixedMath.c" />
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_Math.c" />
-    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_MD4.c" />
-    <ClCompile Include="..\..\..\..\librtt\Core\Rtt_MessageDigest.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_OperationResult.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_RefCount.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Core\Rtt_ResourceHandle.cpp" />
@@ -460,7 +453,6 @@
     <ClCompile Include="..\..\..\..\librtt\Rtt_LuaTableIterator.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_LuaUserdataProxy.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_Matrix.cpp" />
-    <ClCompile Include="..\..\..\..\librtt\Rtt_Message.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_ParticleSystemObject.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_PhysicsContact.cpp" />
     <ClCompile Include="..\..\..\..\librtt\Rtt_PhysicsContactListener.cpp" />
@@ -725,10 +717,6 @@
     <ClInclude Include="..\..\..\..\external\luasocket\src\udp.h" />
     <ClInclude Include="..\..\..\..\external\luasocket\src\unix.h" />
     <ClInclude Include="..\..\..\..\external\luasocket\src\usocket.h" />
-    <ClInclude Include="..\..\..\..\external\rsa\prime.hpp" />
-    <ClInclude Include="..\..\..\..\external\rsa\rsa.hpp" />
-    <ClInclude Include="..\..\..\..\external\rsa\vlong.hpp" />
-    <ClInclude Include="..\..\..\..\external\rsa\vlong_io.h" />
     <ClInclude Include="..\..\..\..\librtt\b2GLESDebugDraw.h" />
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Allocator.h" />
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Array.h" />
@@ -749,8 +737,6 @@
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Macros.h" />
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Math.h" />
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Matrix.h" />
-    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_MD4.h" />
-    <ClInclude Include="..\..\..\..\librtt\Core\Rtt_MessageDigest.h" />
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_New.h" />
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_OperationResult.h" />
     <ClInclude Include="..\..\..\..\librtt\Core\Rtt_Real.h" />
@@ -957,7 +943,6 @@
     <ClInclude Include="..\..\..\..\librtt\Rtt_MCallback.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_MCriticalSection.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_MCrypto.h" />
-    <ClInclude Include="..\..\..\..\librtt\Rtt_Message.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_MIterable.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_MKeyValueIterable.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_MLuaProxyable.h" />
@@ -1013,8 +998,6 @@
     <ClInclude Include="..\..\..\..\librtt\Rtt_SurfaceInfo.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_TesselatorStream.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_Transform.h" />
-    <ClInclude Include="..\..\..\..\librtt\Rtt_Verifier.h" />
-    <ClInclude Include="..\..\..\..\librtt\Rtt_VerifierData.h" />
     <ClInclude Include="..\..\..\..\librtt\Rtt_WorkFlowConstants.h" />
     <ClInclude Include="..\..\..\..\plugins\shared\CoronaLuaLibraryMetadata.h" />
     <ClInclude Include="..\..\..\..\plugins\shared\CoronaLuaLibraryShared.h" />

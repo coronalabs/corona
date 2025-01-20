@@ -1,27 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
+// This file is part of the Corona game engine.
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
-// This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
-//
 //////////////////////////////////////////////////////////////////////////////
+
 
 #include "Core/Rtt_Build.h"
 
@@ -454,11 +439,30 @@ RenderingStream::ScreenHeight() const
 	Rtt_Real originOffset = GetYOriginOffset();
 	Rtt_Real margins = Rtt_RealMul(Rtt_IntToReal(2), originOffset);
 	S32 result = Rtt_RealToInt(Rtt_RealDiv(Rtt_IntToReal(ContentHeight()) + margins, GetSy()) + Rtt_REAL_HALF);
-
 	// TODO: Does this account for Alignment? Let's assert for now:
 	Rtt_ASSERT( DeviceHeight() == result );
 
 	return result;
+}
+
+void
+RenderingStream::ContentToScreenUnrounded( float& x, float& y ) const
+{
+	float w = 0;
+	float h = 0;
+	ContentToScreenUnrounded(x, y, w, h);
+}
+
+void
+RenderingStream::ContentToScreenUnrounded( float& x, float& y, float& w, float& h ) const
+{
+	Rtt_Real xScreen = GetSx();
+	x = Rtt_RealDiv(GetXOriginOffset() + x, xScreen);
+	w = Rtt_RealDiv(w, xScreen);
+
+	Rtt_Real yScreen = GetSy();
+	y = Rtt_RealDiv(GetYOriginOffset() + y, yScreen);
+	h = Rtt_RealDiv(h, yScreen);
 }
 
 // Converts the given content coordinates to pixel coordinates.
@@ -481,6 +485,20 @@ RenderingStream::ContentToScreen( S32& x, S32& y, S32& w, S32& h ) const
 	Rtt_Real yScreen = GetSy();
 	y = Rtt_RealToInt(Rtt_RealDiv(GetYOriginOffset() + Rtt_IntToReal(y), yScreen) + Rtt_REAL_HALF);
 	h = Rtt_RealToInt(Rtt_RealDiv(Rtt_IntToReal(h), yScreen) + Rtt_REAL_HALF);
+
+}
+
+void
+RenderingStream::ContentToScreen( Rtt_Real& x, Rtt_Real& y, Rtt_Real& w, Rtt_Real& h ) const
+{
+	Rtt_Real xScreen = GetSx();
+	x = Rtt_RealToInt(Rtt_RealDiv(GetXOriginOffset() + Rtt_IntToReal(x), xScreen));
+	w = Rtt_RealToInt(Rtt_RealDiv(Rtt_RealToFloat(w), xScreen));
+
+	Rtt_Real yScreen = GetSy();
+	y = Rtt_RealToInt(Rtt_RealDiv(GetYOriginOffset() + Rtt_IntToReal(y), yScreen));
+	h = Rtt_RealToInt(Rtt_RealDiv(Rtt_RealToFloat(h), yScreen));
+
 }
 
 void

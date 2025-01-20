@@ -73,10 +73,41 @@
 		<copy file="${TEMP_DIR}/excludesfile.properties" tofile="${TEMP_DIR}/output/assets/_corona_live_build_exclude.txt" />
 	</target>
 
+
+	<condition property="corona.native.android" value="${BUNDLE_DIR}/../Native/Corona/android">
+		<available file="${BUNDLE_DIR}/../Native/Corona/android" />
+	</condition>
+	<condition property="corona.native.android" value="${BUNDLE_DIR}/../../../Native/Corona/android">
+		<available file="${BUNDLE_DIR}/../../../Native/Corona/android" />
+	</condition>
+	<condition property="corona.native.android" value="${BUNDLE_DIR}/../../../../../android">
+		<available file="${BUNDLE_DIR}/../../../../../android" />
+	</condition>
+	<condition property="corona.native.android" value="${user.home}/Library/Application Support/Corona/Native/Corona/android">
+		<available file="${user.home}/Library/Application Support/Corona/Native/Corona/android" />
+	</condition>	
+	<condition property="corona.native.android" value="${BUNDLE_DIR}/Native/Corona/android">
+		<available file="${BUNDLE_DIR}/Native/Corona/android" />
+	</condition>
+	<target name="check-gradle-bundle">
+		<available file="${corona.native.android}/resource/android-template.zip" property="gradle.bundle.exists"/>
+	</target>
+	<target name="setup-gradle-builds" depends="check-gradle-bundle">
+		<sequential>
+			<delete dir="${TEMP_DIR}/template"/>
+			<unzip src="${corona.native.android}/resource/android-template.zip" dest="${TEMP_DIR}" />
+			<chmod file="${TEMP_DIR}/template/gradlew" perm="a+x" />
+			<chmod file="${TEMP_DIR}/template/setup.sh" perm="a+x" />
+			<copy todir="${TEMP_DIR}/template/app/libs">
+				<fileset dir="${corona.native.android}/lib/gradle/"/>
+			</copy>
+		</sequential>
+	</target>
+
 	<!-- Creates an "input.zip" file to be sent to the build server, requesting it to send us an APK template. -->
-	<target name="build-input-zip" depends="generate-live-build-manifest">
+	<target name="build-input-zip" depends="generate-live-build-manifest,setup-gradle-builds">
 		<property name="USER_ZIP" value="${TEMP_DIR}/input.zip"/>
-		<zip destfile="${USER_ZIP}" basedir="${TEMP_DIR}" encoding="UTF8" />
+		<zip destfile="${USER_ZIP}" basedir="${TEMP_DIR}" encoding="UTF8" excludes="resource.car" />
 	</target>
 
 	<!-- Extracts all files from the pre-built APK template to a temporary directory. -->

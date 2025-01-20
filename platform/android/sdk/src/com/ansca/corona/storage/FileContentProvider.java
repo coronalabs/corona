@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -46,6 +30,23 @@ package com.ansca.corona.storage;
  * You should never create an instance of this class yourself.
  */
 public class FileContentProvider extends android.content.ContentProvider {
+
+	private void CheckForPathTraversal(android.net.Uri uri) {
+		if(uri == null) {
+			throw new IllegalArgumentException();
+		}
+		try {
+			java.net.URI uriConverter = java.net.URI.create(uri.toString()).normalize();
+			uri = android.net.Uri.parse(uriConverter.toString());
+		}
+		catch (Exception ignore) {
+			throw new IllegalArgumentException();
+		}
+		if(uri.getPath().contains("../")) {
+			throw new IllegalArgumentException();
+		}
+	}
+
 	/**
 	 * Called on application startup if registered in the "AndroidManifest.xml" file. Initializes this object.
 	 * @return Returns true if the provider was successfully loaded. Returns false if not.
@@ -66,12 +67,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 	public android.os.ParcelFileDescriptor openFile(android.net.Uri uri, String mode)
 		throws java.io.FileNotFoundException
 	{
-		// Validate.
-		if (uri == null)
-		{
-			throw new IllegalArgumentException();
-		}
-
+		CheckForPathTraversal(uri);
 		// Retrieve the requested file and pass the file reference to the calling client/application via a parcel.
 		java.io.File dataDir = new java.io.File( getContext().getApplicationInfo().dataDir );
 		java.io.File file = new java.io.File(dataDir, uri.getPath());
@@ -93,8 +89,24 @@ public class FileContentProvider extends android.content.ContentProvider {
 			android.util.Log.e("Corona", "Error while getting file path for " + uri.toString());
 			throw new IllegalArgumentException();
 		}
-
-		return android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
+		int nMode = 0;
+		boolean createDir = false;
+		switch (mode) {
+			case "w":
+				nMode = android.os.ParcelFileDescriptor.MODE_WRITE_ONLY | android.os.ParcelFileDescriptor.MODE_CREATE | android.os.ParcelFileDescriptor.MODE_TRUNCATE;
+				createDir = true;
+				break;
+			case "rw":
+				nMode = android.os.ParcelFileDescriptor.MODE_READ_WRITE | android.os.ParcelFileDescriptor.MODE_CREATE ;
+				createDir = true;
+				break;
+			default:
+				nMode = android.os.ParcelFileDescriptor.MODE_READ_ONLY;
+				break;
+		}
+		if ( createDir )
+			file.getParentFile().mkdirs();
+		return android.os.ParcelFileDescriptor.open(file, nMode);
 	}
 	
 	/**
@@ -110,13 +122,8 @@ public class FileContentProvider extends android.content.ContentProvider {
 	public android.content.res.AssetFileDescriptor openAssetFile(android.net.Uri uri, String mode)
 		throws java.io.FileNotFoundException
 	{
+		CheckForPathTraversal(uri);
 		android.content.res.AssetFileDescriptor descriptor = null;
-		
-		// Validate.
-		if (uri == null)
-		{
-			throw new IllegalArgumentException();
-		}
 
 		// Resolve relative path symbols such as "." and "..".
 		// We must do this because apk/zip entry lookups must use absolute paths.
@@ -143,7 +150,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 			}
 			else
 			{
-				assetsPath = "android_asset/";
+ 				assetsPath = "android_asset/";
 				index = filePath.indexOf(assetsPath);
 				if ((index >= 0) && ((index + assetsPath.length()) < filePath.length()))
 				{
@@ -201,7 +208,8 @@ public class FileContentProvider extends android.content.ContentProvider {
 	 * @param selection An optional restriction to apply to rows when deleting.
 	 * @return Returns the number of rows affected.
 	 */
-	@Override
+
+
 	public int delete(android.net.Uri uri, String selection, String[] selectionArgs) {
 		throw new UnsupportedOperationException("Not supported by this provider");
 	}
@@ -215,6 +223,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 	 */
 	@Override
 	public String getType(android.net.Uri uri) {
+		CheckForPathTraversal(uri);
 		FileServices fileServices = new FileServices(getContext());
 		return fileServices.getMimeTypeFrom(uri);
 	}
@@ -248,10 +257,7 @@ public class FileContentProvider extends android.content.ContentProvider {
 	public android.database.Cursor query(
 		android.net.Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
 	{
-		// Validate.
-		if (uri == null) {
-			return null;
-		}
+		CheckForPathTraversal(uri);
 
 		// Resolve relative path symbols such as "." and "..".
 		// We must do this because apk/zip entry lookups must use absolute paths.

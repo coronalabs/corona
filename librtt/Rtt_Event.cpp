@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -159,7 +143,45 @@ FrameEvent::Push( lua_State *L ) const
 {
 	if ( Rtt_VERIFY( Super::Push( L ) ) )
 	{
-		lua_pushnumber( L, LuaContext::GetRuntime( L )->GetElapsedMS() );
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		lua_pushnumber( L, runtime->GetFrame() );
+		lua_setfield( L, -2, "frame" );
+		lua_pushnumber( L, runtime->GetElapsedMS() );
+		lua_setfield( L, -2, "time" );
+	}
+
+	return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+const RenderEvent&
+RenderEvent::Constant()
+{
+	static const RenderEvent kEvent;
+	return kEvent;
+}
+
+RenderEvent::RenderEvent()
+{
+}
+
+const char*
+RenderEvent::Name() const
+{
+	static const char kName[] = "lateUpdate";
+	return kName;
+}
+
+int
+RenderEvent::Push( lua_State *L ) const
+{
+	if ( Rtt_VERIFY( Super::Push( L ) ) )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		lua_pushnumber( L, runtime->GetFrame() );
+		lua_setfield( L, -2, "frame" );
+		lua_pushnumber( L, runtime->GetElapsedMS() );
 		lua_setfield( L, -2, "time" );
 	}
 
@@ -359,6 +381,30 @@ ResizeEvent::Push( lua_State *L ) const
 {
 	return Super::Push( L );
 }
+
+// ----------------------------------------------------------------------------
+
+/// Creates a new event indicating that the main was activated or deactivated
+WindowStateEvent::WindowStateEvent(bool foreground) : fForeground(foreground)
+{
+}
+
+const char*
+WindowStateEvent::Name() const
+{
+	static const char kName[] = "windowState";
+	return kName;
+}
+
+int
+WindowStateEvent::Push( lua_State *L ) const
+{
+	Super::Push( L );
+	lua_pushstring( L, fForeground?"foreground":"background");
+	lua_setfield( L, -2, kPhaseKey );
+	return 1;
+}
+
 
 // ----------------------------------------------------------------------------
 
@@ -1396,6 +1442,50 @@ KeyEvent::Dispatch( lua_State *L, Runtime& ) const
 
 // ----------------------------------------------------------------------------
 
+CharacterEvent::CharacterEvent(PlatformInputDevice *device, const char *character)
+:	fDevice( device ),
+fCharacter( character )
+{
+}
+
+const char*
+CharacterEvent::Name() const
+{
+	static const char kName[] = "character";
+	return kName;
+}
+
+int
+CharacterEvent::Push( lua_State *L ) const
+{
+	if ( Rtt_VERIFY( Super::Push( L ) ) )
+	{
+		if (fDevice)
+		{
+			fDevice->PushTo( L );
+			lua_setfield( L, -2, "device" );
+		}
+		
+		lua_pushstring( L, fCharacter );
+		lua_setfield( L, -2, "character" );
+	}
+	
+	return 1;
+}
+
+void
+CharacterEvent::Dispatch( lua_State *L, Runtime& ) const
+{
+	// Invoke Lua code: "Runtime:dispatchEvent( eventKey )"
+	int nargs = PrepareDispatch( L );
+	LuaContext::DoCall( L, nargs, 1 );
+	
+	fResult = lua_toboolean( L, -1 ); // fetch result
+	lua_pop( L, 1 ); // pop result off stack
+}
+
+// ----------------------------------------------------------------------------
+
 AxisEvent::AxisEvent(PlatformInputDevice *devicePointer, PlatformInputAxis *axisPointer, Rtt_Real rawValue)
 :	fDevicePointer( devicePointer ),
 	fAxisPointer( axisPointer ),
@@ -1623,7 +1713,7 @@ HitEvent::Test( HitTestObject& hitParent, const Matrix& srcToDstSpace ) const
 		// Only add visible/hitTestable objects
 		// and in the multitouch case, do not have per object focus id set
 		// since we dispatch focused events outside of hit testing.
-		if ( child.ShouldHitTest() && ! child.GetFocusId() )
+		if ( child.ShouldHitTest() && ! child.GetFocusId() && ( !child.SkipsHitTest() && child.CanHitTest()) )
 		{
 			GroupObject* childAsGroup = child.AsGroupObject();
 			if ( ! childAsGroup )
@@ -1954,7 +2044,9 @@ TouchEvent::TouchEvent()
 	fYStartScreen( Rtt_REAL_0 ),
 	fXStartContent( Rtt_REAL_0 ),
 	fYStartContent( Rtt_REAL_0 ),
-	fPressure( kPressureInvalid )
+	fPressure( kPressureInvalid ),
+	fDeltaX( Rtt_REAL_0 ),
+	fDeltaY( Rtt_REAL_0 )
 {
 }
 
@@ -1966,7 +2058,9 @@ TouchEvent::TouchEvent( Real x, Real y, Real xStartScreen, Real yStartScreen, Ph
 	fYStartScreen( yStartScreen ),
 	fXStartContent( xStartScreen ),
 	fYStartContent( yStartScreen ),
-	fPressure( pressure )
+	fPressure( pressure ),
+	fDeltaX( x - xStartScreen ),
+	fDeltaY( y - yStartScreen )
 {
 }
 
@@ -1986,6 +2080,8 @@ TouchEvent::Push( lua_State *L ) const
 		const char kXStartKey[] = "xStart";
 		const char kYStartKey[] = "yStart";
 		const char kPressureKey[] = "pressure";
+		const char kXDeltaKey[] = "xDelta";
+		const char kYDeltaKey[] = "yDelta";
 
 		lua_pushstring( L, StringForPhase( (Phase)fPhase ) );
 		lua_setfield( L, -2, kPhaseKey );
@@ -1994,6 +2090,10 @@ TouchEvent::Push( lua_State *L ) const
 		lua_setfield( L, -2, kXStartKey );
 		lua_pushnumber( L, Rtt_RealToFloat( fYStartContent ) );
 		lua_setfield( L, -2, kYStartKey );
+		lua_pushinteger( L, Rtt_RealToInt( fDeltaX) );
+		lua_setfield( L, -2, kXDeltaKey );
+		lua_pushinteger( L, Rtt_RealToInt( fDeltaY ));
+		lua_setfield( L, -2, kYDeltaKey );
 		
 		if ( fPressure >= kPressureThreshold )
 		{
@@ -2957,6 +3057,7 @@ VideoEvent::StringForPhase( Phase type )
 	const char* result = NULL;
 	static const char kReadyString[] = "ready";
 	static const char kEndedString[] = "ended";
+	static const char kFailedString[] = "failed";
 
 	switch( type )
 	{
@@ -2965,6 +3066,9 @@ VideoEvent::StringForPhase( Phase type )
 			break;
 		case kEnded:
 			result = kEndedString;
+			break;
+		case kFailed:
+			result = kFailedString;
 			break;
 		default:
 			break;

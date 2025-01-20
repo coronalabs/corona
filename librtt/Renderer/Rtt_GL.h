@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +25,12 @@
 	#elif defined( Rtt_POWERVR_ENV )
 		#include <GLES/egl.h>
 		#include <GLES/gl.h>
-	#else
+	#elif defined(Rtt_NXS_ENV)
+		#include <GLES2/gl2.h>
+		#include <GLES2/gl2ext.h>
+		#include <GLES2/gl2ext_nv.h>
+		#include <GLES2/gl2platform.h>
+#else
 		#error TODO: Add path to gl.h header
 	#endif
 #elif defined(Rtt_LINUX_ENV)
@@ -51,9 +40,11 @@
 		#include <GL/gl.h>
 		#include <GL/glext.h>
 	#endif
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV )
 	#define WIN32_LEAN_AND_MEAN
 	#include <GL/glew.h>
+#elif defined(Rtt_NXS_ENV)
+	#include "../../platform/switch/Solar2D/Rtt_NX_GL.h"
 #else
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
@@ -127,7 +118,7 @@ void GLLogError( const char* message, const char* file, int line );
     
 // Enable GPU timer queries on supported platforms
 #if defined( Rtt_WIN_ENV )
-    //#define ENABLE_GPU_TIMER_QUERIES
+    #define ENABLE_GPU_TIMER_QUERIES
 #endif
     
 // ----------------------------------------------------------------------------

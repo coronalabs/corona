@@ -255,6 +255,8 @@ void ReadALConfig(void)
 
 void FreeALConfig(void)
 {
+    // N.B. these give us false positives for memory leaks: the report
+    // occurs before the DLLMain() that calls this function.
     size_t i;
 
     for(i = 0;i < cfgCount;i++)

@@ -68,39 +68,73 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\Simulator.ico"
+
 IDI_ANIMATION           ICON                    "res\\exampleAnimationTime.ico"
+
 IDI_BUTTONS             ICON                    "res\\exampleButtonEvents.ico"
+
 IDI_GPS                 ICON                    "res\\exampleGPS.ico"
+
 IDI_MOVIECLIP           ICON                    "res\\exampleMovieClip.ico"
+
 IDI_POLYLINES           ICON                    "res\\examplePolyLines.ico"
+
 IDI_BRIDGE              ICON                    "res\\exampleBridge.ico"
+
 IDI_CHAINS              ICON                    "res\\exampleChains.ico"
+
 IDI_EGGBREAKER          ICON                    "res\\exampleEggBreaker.ico"
+
 IDI_JUNGLESCENE         ICON                    "res\\exampleJungleScene.ico"
+
 IDI_SIMPLEPOOL          ICON                    "res\\exampleSimplePool.ico"
+
 IDI_FACEBOOK            ICON                    "res\\exampleFacebook.ico"
+
 IDI_OPEN_FEINT          ICON                    "res\\exampleOpenFeint.ico"
+
 IDI_MULTITOUCH          ICON                    "res\\exampleMultitouch.ico"
+
 IDI_ALERT               ICON                    "res\\exampleAlert.ico"
+
 IDI_CAMERA              ICON                    "res\\exampleCamera.ico"
+
 IDI_TEXT_INPUT          ICON                    "res\\exampleNativeInput.ico"
+
 IDI_FISHIES             ICON                    "res\\exampleFishies.ico"
+
 IDI_COMPASS             ICON                    "res\\exampleCompass.ico"
+
 IDI_AUDIO               ICON                    "res\\exampleAudio.ico"
+
 IDI_FRUIT               ICON                    "res\\exampleFruit.ico"
+
 IDI_MULTIPUCK           ICON                    "res\\exampleMultipuck.ico"
+
 IDI_CRATE               ICON                    "res\\exampleCrate.ico"
+
 IDI_BALLOON             ICON                    "res\\exampleBalloon.ico"
+
 IDI_PLATFORM            ICON                    "res\\examplePlatform.ico"
+
 IDI_CAN                 ICON                    "res\\exampleCan.ico"
+
 IDI_INTERNET            ICON                    "res\\exampleInternet.ico"
+
 IDI_SPOTLIGHT           ICON                    "res\\exampleSpotlight.ico"
+
 IDI_GLOBE               ICON                    "res\\exampleGlobe.ico"
+
 IDI_ACTIVITY_INDICATOR  ICON                    "res\\exampleActivityIndicator.ico"
+
 IDI_MICROPHONE          ICON                    "res\\exampleMicrophone.ico"
+
 IDI_INNERACTIVE         ICON                    "res\\exampleInneractive.ico"
+
 IDI_TWITTER             ICON                    "res\\exampleTwitter.ico"
+
 IDI_MAIL                ICON                    "res\\exampleMail.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -117,9 +151,10 @@ BEGIN
         POPUP "&Build"
         BEGIN
             MENUITEM "&Android...\tCtrl+B",         ID_BUILD_FOR_ANDROID
-            MENUITEM "&HTML5 (beta)...\tCtrl+Alt+B",       ID_BUILD_FOR_WEB
+            MENUITEM "&HTML5...\tCtrl+Alt+B", ID_BUILD_FOR_WEB
             MENUITEM "&Windows...\tCtrl+Shift+B",   ID_BUILD_FOR_WIN32
-            MENUITEM "&Linux (beta)...\tCtrl+Shift+Alt+B",   ID_BUILD_FOR_LINUX
+            MENUITEM "&Linux...\tCtrl+Shift+Alt+B", ID_BUILD_FOR_LINUX
+            MENUITEM "&NX Switch...\tShift+Alt+B", ID_BUILD_FOR_NXS
         END
         MENUITEM "Open in &Editor\tCtrl+Shift+O", ID_FILE_OPENINEDITOR
         MENUITEM "Show Project &Files",         ID_FILE_SHOW_PROJECT_FILES
@@ -201,14 +236,16 @@ END
 IDR_MAINFRAME ACCELERATORS
 BEGIN
     "B",            ID_BUILD_FOR_ANDROID,   VIRTKEY, CONTROL, NOINVERT
-    "B",            ID_BUILD_FOR_WIN32,     VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, ALT, CONTROL, NOINVERT
     "B",            ID_BUILD_FOR_LINUX,     VIRTKEY, SHIFT, CONTROL, ALT, NOINVERT
+    "B",            ID_BUILD_FOR_NXS,  VIRTKEY, SHIFT, ALT, NOINVERT
+    "B",            ID_BUILD_FOR_WEB,       VIRTKEY, CONTROL, ALT, NOINVERT
+    "B",            ID_BUILD_FOR_WIN32,     VIRTKEY, SHIFT, CONTROL, NOINVERT
     "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPENINEDITOR,   VIRTKEY, SHIFT, CONTROL, NOINVERT
     "R",            ID_FILE_RELAUNCH,       VIRTKEY, CONTROL, NOINVERT
+    VK_LEFT,        ID_VIEW_NAVIGATE_BACK,  VIRTKEY, ALT, NOINVERT
     VK_LEFT,        ID_VIEW_ROTATELEFT,     VIRTKEY, CONTROL, NOINVERT
     VK_RIGHT,       ID_VIEW_ROTATERIGHT,    VIRTKEY, CONTROL, NOINVERT
     VK_UP,          ID_VIEW_SHAKE,          VIRTKEY, CONTROL, NOINVERT
@@ -218,7 +255,6 @@ BEGIN
     VK_OEM_PLUS,    ID_WINDOW_ZOOMIN,       VIRTKEY, CONTROL, NOINVERT
     VK_OEM_MINUS,   ID_WINDOW_ZOOMOUT,      VIRTKEY, CONTROL, NOINVERT
     VK_SUBTRACT,    ID_WINDOW_ZOOMOUT,      VIRTKEY, CONTROL, NOINVERT
-    VK_LEFT,        ID_VIEW_NAVIGATE_BACK,  VIRTKEY, ALT, NOINVERT
 END
 
 
@@ -229,14 +265,14 @@ END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 221, 85
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About Corona Simulator"
+CAPTION "About Solar2D Simulator"
 FONT 9, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,20,20
-    LTEXT           "Corona Simulator",IDC_STATIC,39,14,149,8,SS_NOPREFIX
+    LTEXT           "Solar2D Simulator",IDC_STATIC,39,14,149,8,SS_NOPREFIX
     LTEXT           "<Copyright>",IDC_COPYRIGHT,39,39,175,16
     DEFPUSHBUTTON   "OK",IDOK,164,64,50,14,WS_GROUP
-    CONTROL         "<a href=""https://coronalabs.com"">https://coronalabs.com</a>",IDC_LINK_ANSCAMOBILE,
+    CONTROL         "<a href=""https://solar2d.com"">https://solar2d.com</a>",IDC_LINK_ANSCAMOBILE,
                     "SysLink",WS_TABSTOP,39,52,132,10
     LTEXT           "<Version>",IDC_ABOUT_VERSION,39,26,160,8
 END
@@ -290,7 +326,7 @@ END
 IDD_LOGIN DIALOGEX 0, 0, 307, 87
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_CONTEXTHELP
-CAPTION "Corona Developer Login"
+CAPTION "Solar2D Developer Login"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     RTEXT           "Email:",IDC_STATIC,6,24,42,10
@@ -308,14 +344,14 @@ END
 
 IDD_LICENSE DIALOGEX 0, 0, 302, 183
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Corona License Agreement"
+CAPTION "Solar2D License Agreement"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Agree",IDOK,187,162,50,14
     PUSHBUTTON      "Disagree",IDCANCEL,245,162,50,14
     ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "Corona License Agreement",IDC_STATIC,95,13,107,10
-    LTEXT           "To use this software you must agree to the terms of the Corona license agreement.  Click Agree to continue or click Disagree to quit.",IDC_STATIC,7,30,288,18
+    LTEXT           "Solar2D License Agreement",IDC_STATIC,95,13,107,10
+    LTEXT           "To use this software you must agree to the terms of the Solar2D license agreement.  Click Agree to continue or click Disagree to quit.",IDC_STATIC,7,30,288,18
     CONTROL         "",IDC_LICENSE,"RichEdit20W",WS_BORDER | WS_VSCROLL | 0x804,7,51,288,107
 END
 
@@ -330,7 +366,7 @@ END
 
 IDD_MESSAGE DIALOGEX 0, 0, 253, 71
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Corona Simulator"
+CAPTION "Solar2D Simulator"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,166,50,80,14
@@ -340,40 +376,34 @@ BEGIN
     PUSHBUTTON      "Alt",ID_MSG_BUTTON2,75,50,80,14
 END
 
-IDD_PREFERENCES DIALOGEX 0, 0, 272, 168
+IDD_PREFERENCES DIALOGEX 0, 0, 273, 127
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_CONTEXTHELP
-CAPTION "Corona Simulator Preferences"
+CAPTION "Solar2D Simulator Preferences"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "Cancel",IDCANCEL,215,146,50,14
-    LTEXT           "User Account:",IDC_STATIC,7,9,47,8,0,WS_EX_RIGHT
-    LTEXT           "Static",IDC_USER_ACCOUNT,66,9,188,8
-    LTEXT           "To use this product on another computer, you must deauthorize this computer.",IDC_STATIC,7,20,136,17
-    PUSHBUTTON      "Deauthorize and Quit",IDC_DEAUTHORIZE,157,21,102,14
-    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,7,40,258,2,WS_EX_CLIENTEDGE | WS_EX_STATICEDGE
-    CONTROL         "Don't show the Welcome screen",IDC_NOWELCOME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,47,252,10
-    CONTROL         "Show Runtime Errors",IDC_SHOW_RUNTIME_ERRORS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,62,252,10
+    PUSHBUTTON      "Cancel",IDCANCEL,216,106,50,14
+    CONTROL         "Don't show the Welcome screen",IDC_NOWELCOME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,252,10
+    CONTROL         "Show Runtime Errors",IDC_SHOW_RUNTIME_ERRORS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,22,252,10
     CONTROL         "Automatically open last project",IDC_AUTO_OPEN_LAST_PROJECT,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,77,252,10
-    LTEXT           "Relaunch Simulator when project is modified?",IDC_STATIC,7,92,251,8
-    CONTROL         "Always",IDC_SIM_RELAUNCH_ALWAYS,"Button",BS_AUTORADIOBUTTON,17,103,79,10
-    CONTROL         "Never",IDC_SIM_RELAUNCH_NEVER,"Button",BS_AUTORADIOBUTTON,17,117,79,10
-    CONTROL         "Ask Every Time",IDC_SIM_RELAUNCH_ASK,"Button",BS_AUTORADIOBUTTON,17,131,79,10
-    DEFPUSHBUTTON   "OK",IDOK,158,146,50,14
-    LTEXT           "User Account:",IDC_STATIC,7,9,47,8,0,WS_EX_RIGHT
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,37,252,10
+    LTEXT           "Relaunch Simulator when project is modified?",IDC_STATIC,7,52,251,8
+    CONTROL         "Always",IDC_SIM_RELAUNCH_ALWAYS,"Button",BS_AUTORADIOBUTTON,17,63,79,10
+    CONTROL         "Never",IDC_SIM_RELAUNCH_NEVER,"Button",BS_AUTORADIOBUTTON,17,77,79,10
+    CONTROL         "Ask Every Time",IDC_SIM_RELAUNCH_ASK,"Button",BS_AUTORADIOBUTTON,17,91,79,10
+    DEFPUSHBUTTON   "OK",IDOK,158,106,50,14
 END
 
 IDD_DEVPASSWORD DIALOGEX 0, 0, 200, 109
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Corona Developer Password"
+CAPTION "Solar2D Developer Password"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_LOGIN_PASSWORD,55,67,138,15,ES_PASSWORD | ES_AUTOHSCROLL
     DEFPUSHBUTTON   "Login",IDOK,85,88,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,143,88,50,14
     ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20,SS_REALSIZEIMAGE
-    LTEXT           "Corona Developer Password",IDC_STATIC,42,12,98,10
+    LTEXT           "Solar2D Developer Password",IDC_STATIC,42,12,98,10
     LTEXT           "Please enter your password to continue.",IDC_STATIC,43,25,150,10
     RTEXT           "Email:",IDC_STATIC,12,51,39,10
     LTEXT           "Email.",IDC_LOGIN_EMAIL,55,51,138,10
@@ -386,7 +416,7 @@ CAPTION "Build Progress"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,140,7,151,10
-    LTEXT           "Communicating with build server...",IDC_STATUS_MESSAGE,7,7,130,10,SS_ENDELLIPSIS
+    LTEXT           "Starting build process...",IDC_STATUS_MESSAGE,7,7,130,10,SS_ENDELLIPSIS
     PUSHBUTTON      "Stop",IDC_STOP_BUILD,293,5,35,14
 END
 
@@ -437,20 +467,20 @@ END
 
 IDD_RELAUNCH_PREF DIALOGEX 0, 0, 245, 86
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Corona Simulator"
+CAPTION "Solar2D Simulator"
 FONT 8, "Microsoft Sans Serif", 400, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "Relaunch Simulator",IDOK,101,65,72,14
     PUSHBUTTON      "Ignore",IDCANCEL,188,65,50,14
     CONTROL         "Remember my preference",IDC_REMEMBER_PREF,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,49,46,99,10
-    LTEXT           "Corona project has been modified",IDC_STATIC,49,7,109,11
+    LTEXT           "Solar2D project has been modified",IDC_STATIC,49,7,109,11
     LTEXT           "Would you like to relaunch the Simulator?",IDC_STATIC,49,26,132,8
     ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20,SS_REALSIZEIMAGE
 END
 
 IDD_BUILD_WEB DIALOGEX 0, 0, 313, 150
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "HTML5 Build Setup (beta)"
+CAPTION "HTML5 Build Setup"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "Application Name :",IDC_STATIC,6,11,78,10,0,WS_EX_RIGHT
@@ -462,15 +492,17 @@ BEGIN
     LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
     EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
-    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
-    CONTROL         "Create FB Instant archive", IDC_CREATE_FB_INSTANT_ARCHIVE, "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,100,181,10
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    CONTROL         "Create FB Instant archive",IDC_CREATE_FB_INSTANT_ARCHIVE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,100,181,10
     DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
 END
 
 IDD_BUILD_LINUX DIALOGEX 0, 0, 313, 150
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "LINUX Build Setup (beta)"
+CAPTION "LINUX Build Setup"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "Application Name :",IDC_STATIC,6,11,78,10,0,WS_EX_RIGHT
@@ -482,7 +514,28 @@ BEGIN
     LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
     EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
-    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
+    DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
+END
+
+IDD_BUILD_NXS DIALOGEX 0, 0, 370, 150
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "NX Switch App Build Setup"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Application Name :",IDC_STATIC,6,11,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_APPNAME,90,11,250,14,ES_AUTOHSCROLL
+    LTEXT           ".nmeta file :",IDC_STATIC,6,29,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_NMETA_PATH,90,29,250,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Project Path :",IDC_STATIC,6,47,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_PROJECTPATH,90,47,250,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Save to Folder :",IDC_STATIC,6,69,78,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_BUILD_SAVETO,90,65,156,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUILD_BROWSE_SAVETO,252,65,54,14
+    CONTROL         "Include Standard Resources",IDC_INCLUDE_STANDART_RESOURCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,85,181,10
     DEFPUSHBUTTON   "OK",IDOK,205,125,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,256,125,50,14
 END
@@ -562,13 +615,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Corona Labs Inc."
-            VALUE "FileDescription", "Corona Simulator"
+            VALUE "CompanyName", "Solar2D"
+            VALUE "FileDescription", "Solar2D Simulator"
             VALUE "FileVersion", "1.0.0.1"
-            VALUE "InternalName", "Corona Simulator"
-            VALUE "LegalCopyright", "Copyright © 2009-2018 Corona Labs Inc."
-            VALUE "OriginalFilename", "Corona Simulator"
-            VALUE "ProductName", "Corona Simulator"
+            VALUE "InternalName", "Solar2D Simulator"
+            VALUE "LegalCopyright", "Copyright Â© 2020-2021 Solar2D"
+            VALUE "OriginalFilename", "Solar2D Simulator"
+            VALUE "ProductName", "Solar2D Simulator"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END
@@ -646,9 +699,9 @@ BEGIN
     IDD_PREFERENCES, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 265
+        RIGHTMARGIN, 266
         TOPMARGIN, 7
-        BOTTOMMARGIN, 161
+        BOTTOMMARGIN, 120
     END
 
     IDD_DEVPASSWORD, DIALOG
@@ -699,7 +752,15 @@ BEGIN
         BOTTOMMARGIN, 109
     END
 
-		IDD_BUILD_LINUX, DIALOG
+    IDD_BUILD_LINUX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 306
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 109
+    END
+
+    IDD_BUILD_NXS, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 306
@@ -736,12 +797,23 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_PREFERENCES AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Corona Simulator"
+    IDR_MAINFRAME           "Solar2D Simulator"
     IDS_BUILDWEBUPSELL      "Your subscription restricts %s builds to Trial mode.  Upgrade your subscription to remove restrictions."
     IDS_INVALID_WEB_APP_VERSION_NUMBER 
                             "Your version code is invalid.\r\n\r\n It must be a single number and may not contain dots. This version number cannot be less than 1."
@@ -760,7 +832,7 @@ BEGIN
     IDS_LOGGED_IN_AS        "You are currently logged in as: "
     IDS_SUSPENDED           "Suspended"
     IDS_OPENGL21_VERSION_WARNING 
-                            "WARNING: This machine does not meet the Corona Simulator's minimum supported video hardware requirements for premium Graphics 2.0 features.\n\nMinimum OpenGL version required:  %s\nYour machine's OpenGL version:  %s"
+                            "WARNING: This machine does not meet the Solar2D Simulator's minimum supported video hardware requirements for premium Graphics 2.0 features.\n\nMinimum OpenGL version required:  %s\nYour machine's OpenGL version:  %s"
     IDS_MONETIZATION_WARNING 
                             "Important!\n\nDisabling ad serving will limit your revenue potential. We encourage you to enable monetization to control which players see ads and IAP offers with the advanced segmentation tools in your free Fuse Powered dashboard.\n\nAre you sure you want to disable monetization?"
     IDS_ENABLE_MONETIZATION "Enable Monetization"
@@ -772,7 +844,7 @@ BEGIN
                             "The given version string is invalid. It may only contain numbers and periods. It also must be formatted as follows:\n\n      <Major>.<Minor>.<Build>.<SpecialBuild>\n\nYou do not have to provide all 4 parts of the version string. Any version number components not provided will be set to zero on the built EXE. "
     IDS_BUILD_VERSION_STRING_NOT_PROVIDED "You must provide a version string."
     IDS_CANNOT_BUILD_WITHOUT_PLUGINS 
-                            "You cannot do a build until all of the plugins referenced in your Corona project's ""build.settings"" file have been successfully acquired.\n\n%sThis can happen for the following reasons:\n- The plugin is not supported on Windows.\n- The plugin name was mistyped or does not exist.\n- Corona failed to download the plugin. (Internet connection issue.)\n\nIf the plugin is not supported on Windows (the most likely case), then you'll need to use the ""supportedPlatforms"" setting in your ""build.settings"" file to indicate which platforms the plugin will be included in."
+                            "You cannot do a build until all of the plugins referenced in your Solar2D project's ""build.settings"" file have been successfully acquired.\n\n%sThis can happen for the following reasons:\n- The plugin is not supported on Windows.\n- The plugin name was mistyped or does not exist. (Please check plugins directory at https://plugins.solar2d.com)\n- Solar2D failed to download the plugin. (Internet connection issue.)\n\nIf the plugin is not supported on Windows (the most likely case), then you'll need to use the ""supportedPlatforms"" setting in your ""build.settings"" file to indicate which platforms the plugin will be included in."
 END
 
 STRINGTABLE
@@ -781,6 +853,9 @@ BEGIN
     IDS_CREATE_LIVE_BUILD_WARNING 
                             "You must have the Debug keystore selected to create a Live Build.\n\nDo you want to select it now?"
     IDS_OPEN_URL_HTML       "Open in Browser"
+    IDS_ANDROID_BUILD       "Building Android App"
+    IDS_ANDROID_SDK_LICENSE """You are about to build an Android app for the first time with this build system.\nIt uses the Android SDK and you must read and accept its license agreement in order to proceed.\nNote, the first time it will download about 250Mb which can take several minutes.\nPress 'Yes' to accept, 'No' to decline or 'Help' to read the license agreement."""
+    IDS_BUILD_NMETA_NAME_NOT_PROVIDED "You must provide path to .nmeta file."
 END
 
 STRINGTABLE
@@ -788,19 +863,19 @@ BEGIN
     IDS_OPENFORBUILD_s      "Device Builds for %s are only available on Mac OS X.  Please choose a Droid device from the Window - View As... menu."
     IDS_OPENMAINLUA         "Select a main.lua"
     IDS_ONLYMAINLUA         "Only main.lua can be opened"
-    IDS_EXPIRE              "This version of the Corona Simulator has expired. Please visit https://coronalabs.com."
+    IDS_EXPIRE              "This version of the Solar2D Simulator has expired. Please visit https://solar2d.com."
     IDS_HARDWARE_SUSPEND    "Suspend\tCtrl+down arrow"
     IDS_HARDWARE_RESUME     "Resume\tCtrl+down arrow"
     IDS_VALID_PACKAGE       "Valid package names can have one or more letters, numbers or underscores separated by a dot, for example 'com.acme_co.games3'.  There must be at least two strings separated by dots, and each string can't start with a number.  Java language reserved words (for, interface, etc.) are not permitted.  See http://download.oracle.com/javase/tutorial/java/package/namingpkgs.html."
     IDS_INVALID_KEYSTORE_s  "The password for the Key Store located at %s was not valid, or the Key Store was not valid."
     IDS_CHOOSEFOLLOWING     "(Choose from the following)"
-    IDS_LOGINSUCCESSFUL     "Congratulations!  The Corona is now ready for use on this computer."
+    IDS_LOGINSUCCESSFUL     "Congratulations!  The Solar2D is now ready for use on this computer."
     IDS_LOGINFAILED         "Incorrect email and/or password."
 END
 
 STRINGTABLE
 BEGIN
-    AFX_IDS_APP_TITLE       "Corona Simulator"
+    AFX_IDS_APP_TITLE       "Solar2D Simulator"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
 
@@ -907,8 +982,8 @@ BEGIN
     IDS_PLATFORMMISMATCH    "You purchased a product for a different platform. You can click Purchase for an additional license for this computer."
     IDS_APIKEYINVALID       "This version is no longer supported. Please click Download to obtain a supported version of this product."
     IDS_TOKENEXPIRED        "Your computer's clock has the incorrect date and/or time. Please update with the correct time and try again."
-    IDS_PWDNOTSAVED         "Login succeeded, but we were unable to store your Corona password. You may have to login again in the future."
-    IDS_AGREEMENTCHANGED    "The Corona Connect terms and conditions have changed. Click OK to read and agree to the new terms."
+    IDS_PWDNOTSAVED         "Login succeeded, but we were unable to store your Solar2D password. You may have to login again in the future."
+    IDS_AGREEMENTCHANGED    "The Solar2D Connect terms and conditions have changed. Click OK to read and agree to the new terms."
     IDS_LOGINERROR          "Could not verify account information."
     IDS_DEAUTHORIZED        "Application successfully deauthorized."
     IDS_DEAUTHERROR         "Could not deauthorize application.  Please try again."
@@ -923,9 +998,9 @@ BEGIN
     IDS_BUILD_FAILED        "Build failed.  Check the console window for errors."
     IDS_CONSOLE_FREE        "Could not free console."
     IDS_DIR_s_NOTFOUND_INSTALL 
-                            "Corona Simulator cannot find the directory %s.\nPlease re-run the installer."
+                            "Solar2D Simulator cannot find the directory %s.\nPlease re-run the installer."
     IDS_FILE_s_NOTFOUND_INSTALL 
-                            "Corona Simulator cannot find the file %s.\nPlease re-run the installer."
+                            "Solar2D Simulator cannot find the file %s.\nPlease re-run the installer."
     IDS_INVALID_ALIAS       "The password for the alias was not valid, or the Java JDK was not found."
     IDS_QUIT                "Quit"
     IDS_CONTINUE            "Continue"
@@ -948,10 +1023,10 @@ BEGIN
     IDS_CONNECTINGTOSERVER  "Communicating with server..."
     IDS_CONSOLE_CREATE      "Failed to create console."
     IDS_NO_INTERNET         "Could not connect to server. Please check your Internet connection."
-    IDS_UNKNOWNERROR        "An unexpected account configuration error occurred.  Please contact Corona Labs customer service at support@coronalabs.com"
+    IDS_UNKNOWNERROR        "An unexpected account configuration error occurred.  Please visit Solar2D forums to find a solution at https://forums.solar2d.com"
     IDS_STILLTRIAL          "Our records show you have not purchased the product yet. The account status is currently set to a starter account."
-    IDS_THANKSPURCHASE      "Thank you for your purchase! The purchased version of Corona is now ready for use on this computer."
-    IDS_SET_JAVAHOME_s      "Jarsigner.exe not found.  To enable Builds:\n(1) Set the JAVA_HOME environment variable to '%s' (without the quotes)\n(2) Add ';%%JAVA_HOME%%\\bin' (without the quotes) to the end of your PATH environment variable.\n(3) Exit and relaunch Corona Simulator\n\nClick Yes to open the System Properties dialog to edit your environment variables.  (This message will close.)"
+    IDS_THANKSPURCHASE      "Thank you for your purchase! The purchased version of Solar2D is now ready for use on this computer."
+    IDS_SET_JAVAHOME_s      "Jarsigner.exe not found.  To enable Builds:\n(1) Set the JAVA_HOME environment variable to '%s' (without the quotes)\n(2) Add ';%%JAVA_HOME%%\\bin' (without the quotes) to the end of your PATH environment variable.\n(3) Exit and relaunch Solar2D Simulator\n\nClick Yes to open the System Properties dialog to edit your environment variables.  (This message will close.)"
     IDS_ASSOCLUA            "Please associate .lua files with an editor in Control Panel File Associations, then try again.  Click Yes to open the Control Panel File Associations applet."
     IDS_OPENPROJECTINEDITOR "Open Project in Editor"
     IDS_TRIALBUILDSONLY     "Trial Builds Only"
@@ -964,7 +1039,7 @@ BEGIN
     IDS_ANDROIDBUILD        "Build for Android"
     IDS_KEYSTORE_ATLEASTONE "Please choose a keystore with at least one valid key alias."
     IDS_OPENGL_VERSION_WARNING 
-                            "This machine does not meet the Corona Simulator's minimum video hardware requirements.\n\nMinimum OpenGL version required:  %s\nYour machine's OpenGL version:  %s"
+                            "This machine does not meet the Solar2D Simulator's minimum video hardware requirements.\n\nMinimum OpenGL version required:  %s\nYour machine's OpenGL version:  %s"
     IDS_WARNING             "Warning"
     IDS_UNKNOWN             "Unknown"
 END
@@ -978,29 +1053,29 @@ BEGIN
     IDS_COULDNOTLOAD_s_ERR_d "Could not load %s, error %ld"
     IDS_FUNCTION_s_IN_s     "Could not find %s in %s."
     IDS_APPCORRUPTED        "This application has been corrupted.  Please download and reinstall."
-    IDS_CLICKBUYNOW         "Your trial evaluation has expired. To continue using, please click Buy Now to purchase the Corona."
+    IDS_CLICKBUYNOW         "Your trial evaluation has expired. To continue using, please click Buy Now to purchase the Solar2D."
     IDS_BUYNOW              "Upgrade Now"
     IDS_VERIFY_PURCHASE     "Verify Purchase"
-    IDS_SUBSCRIPTION_EXPIRED "Corona Subscription Expired"
+    IDS_SUBSCRIPTION_EXPIRED "Solar2D Subscription Expired"
     IDS_NEEDTORENEW         "You cannot use the latest updates without an active subscription.  To qualify for the latest updates, you need to renew your subscription."
     IDS_ALREADYRENEWED      "Already Renewed"
-    IDS_TRIAL_EXPIRED       "Corona Trial Expired"
+    IDS_TRIAL_EXPIRED       "Solar2D Trial Expired"
     IDS_OPEN_NOTE           "Choose a project to run in the simulator and build for devices."
 END
 
 STRINGTABLE
 BEGIN
-    IDS_STARTED_NOTE        "A tutorial to quickly get started with Corona."
+    IDS_STARTED_NOTE        "A tutorial to quickly get started with Solar2D."
     IDS_PROGRAMMING_NOTE    "Create a project, build a project, and more."
-    IDS_CORONAGETRIAL       "Corona Game Edition Trial"
+    IDS_CORONAGETRIAL       "Solar2D Game Edition Trial"
     IDS_UPGRADE             "Upgrade"
     IDS_ALREADYUPGRADED     "Already Upgraded"
-    IDS_SUBSCRIBERGETRIAL   "As a Corona subscriber, we'd like to invite you to take Corona Game Edition for a limited test drive.  Please click Upgrade or Already Upgraded."
-    IDS_SUBSCRIBERGERENEW   "Your Corona subscription is about to expire. Please click Upgrade to extend your trial to Corona Game Edition, or Already Upgraded if you already did."
+    IDS_SUBSCRIBERGETRIAL   "As a Solar2D subscriber, we'd like to invite you to take Solar2D Game Edition for a limited test drive.  Please click Upgrade or Already Upgraded."
+    IDS_SUBSCRIBERGERENEW   "Your Solar2D subscription is about to expire. Please click Upgrade to extend your trial to Solar2D Game Edition, or Already Upgraded if you already did."
     IDS_CONTINUETRIAL       "Continue"
-    IDS_CORONATRIAL         "Corona Trial"
-    IDS_TRIALTHANKS_d       "Thanks for downloading Corona.  You have been using the trial for %d day(s).  Click Buy Now to share your app with the world.  If you already bought, click Already Purchased."
-    IDS_TRIALFUN_d          "We hope you’re having a blast with Corona! Upgrade to Pro and build apps with features like analytics and in-app purchases. Take your apps to the next level."
+    IDS_CORONATRIAL         "Solar2D Trial"
+    IDS_TRIALTHANKS_d       "Thanks for downloading Solar2D.  You have been using the trial for %d day(s).  Click Buy Now to share your app with the world.  If you already bought, click Already Purchased."
+    IDS_TRIALFUN_d          "We hope youÂ’re having a blast with Solar2D! Upgrade to Pro and build apps with features like analytics and in-app purchases. Take your apps to the next level."
     IDS_BRIDGE_NOTE         "Joints and damping"
     IDS_CHAINS_NOTE         "Joints chained together"
     IDS_EGGBREAKER_NOTE     "Collisions"
@@ -1013,9 +1088,9 @@ BEGIN
     IDS_APP_NEEDS_REAUTHORIZATION 
                             "This application needs to be reauthorized. Please make sure that you have an active Internet connection and then click ""OK"" to continue."
     IDS_SUBSCRIPTION_EXPIRED_FOR_BUILD 
-                            "Your subscription to the Corona Developer Program has expired. You must renew to continue building for devices."
+                            "Your subscription to the Solar2D Developer Program has expired. You must renew to continue building for devices."
     IDS_BUILD_VERSION_MISMATCH_ERROR 
-                            "Failed to build with the server because the installed Corona is too old. Please download the newest Corona and try again."
+                            "Failed to build because the installed Solar2D version is too old. Please download the newest Solar2D build at https://github.com/coronalabs/corona/releases and try again."
     IDS_BUILD_ERROR_FORMAT_MESSAGE "[Build Error #%d]\r\n%s"
     IDS_BUILD_APP_NAME_NOT_PROVIDED "You must provide an application name."
     IDS_BUILD_VERSION_NUMBER_NOT_PROVIDED 
@@ -1044,16 +1119,16 @@ END
 STRINGTABLE
 BEGIN
     IDS_DAILY_BUILD_AVAILABLE_TO_SUBSCRIBERS_ONLY 
-                            "Daily Builds are only available to active Pro (or above) subscribers.\nSubscribe now to get access to the latest and greatest of Corona!"
+                            "All builds are available at https://github.com/coronalabs/corona/releases"
     IDS_TITLE_UPGRADE_CORONA "Upgrade Today!"
     IDS_DEVICE_NOT_AVAILABLE_TO_TRIAL_USERS 
                             "The %s device is not available for Trial developers. Buy a subscription to get access to full functionality."
     IDS_DEVICE_NOT_AVAILABLE_TO_X_SUBSCRIBERS 
                             "The %s device is not available for %s subscribers. Upgrade your subscription to get access to full functionality."
-    IDS_TITLE_BUY_CORONA    "Corona"
+    IDS_TITLE_BUY_CORONA    "Solar2D"
     IDS_TRIAL_BUILD_COUNTDOWN 
                             "Upgrade to skip the queue. Your build begins in %d seconds..."
-    IDS_TITLE_SIMULATOR_OUTPUT "Corona Simulator Console"
+    IDS_TITLE_SIMULATOR_OUTPUT "Solar2D Simulator Console"
     IDS_ANDROID             "Android"
     IDS_AMAZON_SLASH_KINDLE "Amazon/Kindle"
     IDS_SCREEN_SIZE_PHONE   "Phone Preset"
@@ -1072,12 +1147,12 @@ END
 STRINGTABLE
 BEGIN
     IDS_PROJECT_PATH_ALREADY_TAKEN 
-                            "The project path that you have selected already contains a Corona project. Please choose another location."
+                            "The project path that you have selected already contains a Solar2D project. Please choose another location."
     IDS_PROJECT_FILES_CREATION_FAILED "Failed to create project files."
     IDS_PROJECT_APPLICATION_NAME_INVALID 
                             "The application name is invalid. It cannot include the following characters:\n     %s"
     IDS_SELECT_ROOT_PROJECT_FOLDER_DESCRIPTION 
-                            "Select the root folder that your Corona project folder will be created under."
+                            "Select the root folder that your Solar2D project folder will be created under."
     IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION 
                             "Select where you want to output the built application to."
     IDS_BUILD_VERSION_NAME_NOT_PROVIDED 
@@ -1086,14 +1161,14 @@ BEGIN
     IDS_MUST_SELECT_SAMPLE_PROJECT 
                             "Please select a sample project from the list."
     IDS_UNABLE_TO_FIND_SAMPLE_PROJECTS_DIRECTORY 
-                            "Unable to find the Corona's sample projects directory."
+                            "Unable to find the Solar2D's sample projects directory."
     IDS_NOOK                "Nook"
     IDS_SIMULATOR_FILES     "Simulator Files"
     IDS_BUILD_SETTINGS_FILE_ERROR 
                             "There is an error in your ""build.settings"" file. Please see the console output for more details."
     IDS_BUILD_TARGET_APP_STORE_NOT_SELECTED 
                             "You must select an app store to build for."
-    IDS_SUBSCRIPTION_EXPIRING "Corona Subscription Expiring Soon"
+    IDS_SUBSCRIPTION_EXPIRING "Solar2D Subscription Expiring Soon"
     IDS_RENEW_NOW           "Renew Now"
     IDS_REMIND_ME_LATER     "Remind me Later"
 END

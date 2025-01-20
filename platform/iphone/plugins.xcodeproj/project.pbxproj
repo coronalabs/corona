@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,18 +16,15 @@
 		A47B5C6515FAA980001D60AB /* CoronaLuaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A47B5C6115FAA980001D60AB /* CoronaLuaLibrary.h */; };
 		A47B5C6615FAA980001D60AB /* CoronaLuaLibraryMetadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A47B5C6215FAA980001D60AB /* CoronaLuaLibraryMetadata.cpp */; };
 		A47B5C6715FAA980001D60AB /* CoronaLuaLibraryMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = A47B5C6315FAA980001D60AB /* CoronaLuaLibraryMetadata.h */; };
-		A481B87015DDA6CC009FFE54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4FDBF2D15DC232600E5001C /* Foundation.framework */; };
 		A481B88015DDA6E6009FFE54 /* CoronaAdsLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A481B87E15DDA6E6009FFE54 /* CoronaAdsLibrary.cpp */; };
 		A481B88C15DDC5F8009FFE54 /* libads.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A481B86F15DDA6CC009FFE54 /* libads.a */; };
 		A484DB7A15EF470600BDE27A /* ads.lua in Sources */ = {isa = PBXBuildFile; fileRef = A484DB6D15EF37DE00BDE27A /* ads.lua */; };
-		A484DB8115EF595500BDE27A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4FDBF2D15DC232600E5001C /* Foundation.framework */; };
 		A484DB9215EF59BC00BDE27A /* CoronaAnalyticsLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A484DB9015EF59BC00BDE27A /* CoronaAnalyticsLibrary.cpp */; };
 		A484DB9315EF59DF00BDE27A /* analytics.lua in Sources */ = {isa = PBXBuildFile; fileRef = A484DB8E15EF59BC00BDE27A /* analytics.lua */; };
 		A484DB9415EF59DF00BDE27A /* CoronaProvider.analytics.lua in Sources */ = {isa = PBXBuildFile; fileRef = A484DB8F15EF59BC00BDE27A /* CoronaProvider.analytics.lua */; };
 		A484DB9715EF5B3E00BDE27A /* libanalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A484DB8015EF595500BDE27A /* libanalytics.a */; };
 		A491870B1642201900A39286 /* CoronaIOSLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = A49187091642201900A39286 /* CoronaIOSLoader.h */; };
 		A491870C1642201900A39286 /* CoronaIOSLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = A491870A1642201900A39286 /* CoronaIOSLoader.mm */; };
-		A4FDBF2E15DC232600E5001C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4FDBF2D15DC232600E5001C /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -36,22 +33,28 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
 			);
-			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"";
+			runOncePerArchitecture = 0;
+			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n";
 		};
 		A484DB8C15EF597E00BDE27A /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$TARGET_TEMP_DIR/$(INPUT_FILE_BASE).c",
 			);
-			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"";
+			runOncePerArchitecture = 0;
+			script = "# Location of toolchain\nTOOLCHAIN_DIR=\"$PROJECT_DIR/../../bin/mac\"\n\necho \"Using lua from $TOOLCHAIN_DIR ...\"\n\necho $TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n$TOOLCHAIN_DIR/lua2c.sh \"$INPUT_FILE_PATH\" \"$TARGET_TEMP_DIR\" \"$CONFIGURATION\" \"$TOOLCHAIN_DIR\"\n";
 		};
 /* End PBXBuildRule section */
 
@@ -105,14 +108,10 @@
 		A484DB8F15EF59BC00BDE27A /* CoronaProvider.analytics.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaProvider.analytics.lua; path = ../../plugins/analytics/shared/CoronaProvider.analytics.lua; sourceTree = "<group>"; };
 		A484DB9015EF59BC00BDE27A /* CoronaAnalyticsLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaAnalyticsLibrary.cpp; path = ../../plugins/analytics/shared/CoronaAnalyticsLibrary.cpp; sourceTree = "<group>"; };
 		A484DB9115EF59BC00BDE27A /* CoronaAnalyticsLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaAnalyticsLibrary.h; path = ../../plugins/analytics/shared/CoronaAnalyticsLibrary.h; sourceTree = "<group>"; };
-		A48DA985185803C4009D1F93 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		A48DA987185803C4009D1F93 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		A48DA9A8185803C4009D1F93 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A49187091642201900A39286 /* CoronaIOSLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaIOSLoader.h; path = ../../plugins/ios/CoronaIOSLoader.h; sourceTree = "<group>"; };
 		A491870A1642201900A39286 /* CoronaIOSLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaIOSLoader.mm; path = ../../plugins/ios/CoronaIOSLoader.mm; sourceTree = "<group>"; };
 		A4D876B715DEDC6B0067B06E /* CoronaEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoronaEvent.h; path = ../../librtt/Corona/CoronaEvent.h; sourceTree = "<group>"; };
 		A4FDBF2A15DC232600E5001C /* libplugins.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libplugins.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		A4FDBF2D15DC232600E5001C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A4FDBF5315DC23E700E5001C /* CoronaAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaAssert.h; path = ../../librtt/Corona/CoronaAssert.h; sourceTree = "<group>"; };
 		A4FDBF5415DC23E700E5001C /* CoronaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLibrary.h; path = ../../librtt/Corona/CoronaLibrary.h; sourceTree = "<group>"; };
 		A4FDBF5515DC23E700E5001C /* CoronaLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLog.h; path = ../../librtt/Corona/CoronaLog.h; sourceTree = "<group>"; };
@@ -125,7 +124,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A481B87015DDA6CC009FFE54 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,7 +131,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A484DB8115EF595500BDE27A /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,7 +140,6 @@
 			files = (
 				A481B88C15DDC5F8009FFE54 /* libads.a in Frameworks */,
 				A484DB9715EF5B3E00BDE27A /* libanalytics.a in Frameworks */,
-				A4FDBF2E15DC232600E5001C /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,10 +227,6 @@
 		A4FDBF2C15DC232600E5001C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A4FDBF2D15DC232600E5001C /* Foundation.framework */,
-				A48DA985185803C4009D1F93 /* CoreGraphics.framework */,
-				A48DA987185803C4009D1F93 /* UIKit.framework */,
-				A48DA9A8185803C4009D1F93 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -358,6 +350,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);

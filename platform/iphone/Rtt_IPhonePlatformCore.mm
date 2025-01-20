@@ -1,33 +1,15 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
 // For overview and more information on licensing please refer to README.md
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Core/Rtt_Build.h"
 
 #include "Core/Rtt_String.h"
-
-#import <GLKit/GLKViewController.h>
 
 #include "Rtt_IPhonePlatformCore.h"
 #include "Rtt_IPhoneTimer.h"
@@ -105,10 +87,10 @@ IPhonePlatformCore::GetTopStatusBarHeightPixels() const
 			result = [UIApplication sharedApplication].statusBarFrame.size.width * scale_factor;
 		}
 	}
-	
+
     return result;
 }
-    
+
 int
 IPhonePlatformCore::GetBottomStatusBarHeightPixels() const
 {
@@ -123,7 +105,7 @@ IPhonePlatformCore::SaveImageToPhotoLibrary(const char* filePath) const
     {
         UIImageWriteToSavedPhotosAlbum( image, nil, nil, nil );
     }
-    
+
     return true;
 }
 
@@ -164,15 +146,16 @@ IPhonePlatformCore::SaveBitmap( PlatformBitmap* bitmap, NSString* filePath, floa
 
 
 
-	CGBitmapInfo srcBitmapInfo = CGBitmapInfo(kCGBitmapByteOrderDefault);
+	CGBitmapInfo srcBitmapInfo = CGBitmapInfo(kCGImageAlphaNoneSkipLast);
 	CGBitmapInfo dstBitmapInfo = CGBitmapInfo(kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big);
     bool enablePngAlphaSave = false;
     NSString *lowercase = [filePath lowercaseString];
-    if ( [lowercase hasSuffix:@"png"] )
+    if ( [lowercase hasSuffix:@"png"] ||  filePath == NULL)
     {
         enablePngAlphaSave = true;
 		srcBitmapInfo = CGBitmapInfo(kCGBitmapByteOrderDefault | kCGImageAlphaLast);
         dstBitmapInfo = kCGImageAlphaPremultipliedLast;
+        
 
     }
 
@@ -181,17 +164,17 @@ IPhonePlatformCore::SaveBitmap( PlatformBitmap* bitmap, NSString* filePath, floa
 	CGImageRef imageRef = CGImageCreate(w, h, 8, 32, w*bytesPerPixel,
                                         colorspace, srcBitmapInfo, dataProvider,
                                         NULL, true, kCGRenderingIntentDefault);
-    
+
 
 	Rtt_ASSERT( w == CGImageGetWidth( imageRef ) );
 	Rtt_ASSERT( h == CGImageGetHeight( imageRef ) );
-    
-    
+
+
 	//void* pixels = calloc( bytesPerRow, h );
 	CGContextRef context = CGBitmapContextCreate(NULL, wDst, hDst, 8, wDst*bytesPerPixel, colorspace, dstBitmapInfo);
 
-	// On iPhone, when the image is sideways, we have to rotate the bits b/c when 
-	// we read them in using glReadPixels, the window buffer is physically oriented 
+	// On iPhone, when the image is sideways, we have to rotate the bits b/c when
+	// we read them in using glReadPixels, the window buffer is physically oriented
 	// as upright, so glReadPixels returns them assuming the buffer is physically
 	// oriented upright, rather than sideways.
 	if ( isSideways )
@@ -223,7 +206,14 @@ IPhonePlatformCore::SaveBitmap( PlatformBitmap* bitmap, NSString* filePath, floa
 
 	if ( ! filePath )
 	{
-		UIImageWriteToSavedPhotosAlbum( image, nil, nil, nil );
+        if(enablePngAlphaSave){
+            NSData* imageData =  UIImagePNGRepresentation(image); // get png representation
+            UIImage* pngImage = [UIImage imageWithData:imageData];
+            UIImageWriteToSavedPhotosAlbum( pngImage , nil, nil, nil );
+        }else{
+            UIImageWriteToSavedPhotosAlbum( image, nil, nil, nil );
+        }
+		
 	}
 	else
 	{
@@ -236,7 +226,7 @@ IPhonePlatformCore::SaveBitmap( PlatformBitmap* bitmap, NSString* filePath, floa
 		{
             imageData = UIImageJPEGRepresentation( image, jpegQuality );
 		}
-        
+
         [imageData writeToFile:filePath atomically:YES];
 	}
 
@@ -297,7 +287,7 @@ IPhonePlatformCore::PushSystemInfo( lua_State *L, const char *key ) const
 	if ( Rtt_StringCompare( key, "iosAdvertisingTrackingEnabled" ) == 0 )
 	{
 		bool result = YES;
-		
+
 		if (NSClassFromString(@"ASIdentifierManager") && ![[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled])
 		{
 			result = NO;
@@ -329,7 +319,7 @@ IPhonePlatformCore::RegisterUserNotificationSettings(int type) const
 	Rtt_ASSERT( Rtt_UIUserNotificationTypeAlert == UIUserNotificationTypeAlert );
 #endif
 #endif
-	
+
 	// These functions were added in iOS 8 and have to be called or notifications won't work correctly.  Even though this part if just for setting notifications, we're asking for the other permissions because
 	// once you call this function once it won't ask again when you call it again with new permissions.  In the alert dialog thats shown, it doesn't specify which permissions are asked for
 	// anyways.
@@ -340,7 +330,7 @@ IPhonePlatformCore::RegisterUserNotificationSettings(int type) const
 		[[UIApplication sharedApplication] registerUserNotificationSettings:settings];
 	}
 }
-	
+
 void
 IPhonePlatformCore::RegisterUserNotificationSettings() const
 {
@@ -353,7 +343,7 @@ IsNativeKeySupported( NSString *key )
 {
 	NSNumber *value = [NSNumber numberWithBool:YES];
 	NSDictionary *keys = [NSDictionary dictionaryWithObjectsAndKeys:
-		value, @"applicationIconBadgeNumber", 
+		value, @"applicationIconBadgeNumber",
 		value, @"applicationSupportsShakeToEdit",
 		value, @"networkActivityIndicatorVisible",
 		nil];
@@ -457,4 +447,3 @@ IPhonePlatformCore::PushNativeProperty( lua_State *L, const char *key ) const
 } // namespace Rtt
 
 // ----------------------------------------------------------------------------
-

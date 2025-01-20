@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -43,6 +27,7 @@
 #include "Display/Rtt_ImageFrame.h"
 #include "Display/Rtt_ImageSheet.h"
 #include "Rtt_LuaUserdataProxy.h"
+#include "Rtt_Profiling.h"
 
 // ----------------------------------------------------------------------------
 
@@ -76,6 +61,8 @@ ShapeObject::UpdateTransform( const Matrix& parentToDstSpace )
 {
 	bool shouldUpdate = Super::UpdateTransform( parentToDstSpace );
 
+	SUMMED_TIMING( sut, "ShapeObject: post-Super::UpdateTransform" );
+
 	if ( shouldUpdate )
 	{
 		fPath->Invalidate( ClosedPath::kFill | ClosedPath::kStroke );
@@ -88,6 +75,8 @@ void
 ShapeObject::Prepare( const Display& display )
 {
 	Super::Prepare( display );
+
+	SUMMED_TIMING( sp, "ShapeObject: post-Super::Prepare" );
 
 	if ( ShouldPrepare() )
 	{
@@ -173,6 +162,8 @@ ShapeObject::Draw( Renderer& renderer ) const
 	{
 		Rtt_ASSERT( fPath );
 
+		SUMMED_TIMING( sd, "ShapeObject: Draw" );
+
 		fPath->UpdateResources( renderer );
 
 		if ( fPath->IsFillVisible() )
@@ -192,6 +183,32 @@ void
 ShapeObject::GetSelfBounds( Rect& rect ) const
 {
 	fPath->GetSelfBounds( rect );
+}
+
+bool
+ShapeObject::GetTrimmedFrameOffset( Real & deltaX, Real & deltaY, bool force ) const
+{
+	const Paint *paint = GetPath().GetFill();
+	if ( paint && paint->IsType( Paint::kImageSheet ) )
+	{
+		const ImageSheetPaint *bitmap = (const ImageSheetPaint *)paint;
+		const AutoPtr< ImageSheet >& sheet = bitmap->GetSheet();
+		if ( AutoPtr< ImageSheet >::Null() != sheet && (force || sheet->CorrectsTrimOffsets()) )
+		{
+			int index = bitmap->GetFrame(); Rtt_ASSERT( index >= 0 );
+			const ImageFrame *frame = sheet->GetFrame( index );
+
+			if ( frame->IsTrimmed() )
+			{
+				deltaX = frame->GetOffsetX();
+				deltaY = frame->GetOffsetY();
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 bool
@@ -223,26 +240,12 @@ ShapeObject::HitTest( Real contentX, Real contentY )
 void
 ShapeObject::DidUpdateTransform( Matrix& srcToDst )
 {
-	// For trimmed fills, we need to ensure the appropriate offsets
-	// are applied prior to the original incoming transform
-	const Paint *paint = GetPath().GetFill();
-	if ( paint && paint->IsType( Paint::kImageSheet ) )
+	Real dx, dy;
+	if (GetTrimmedFrameOffset( dx, dy, true ))
 	{
-		const ImageSheetPaint *bitmap = (const ImageSheetPaint *)paint;
-		const AutoPtr< ImageSheet >& sheet = bitmap->GetSheet();
-		if ( AutoPtr< ImageSheet >::Null() != sheet )
-		{
-			int index = bitmap->GetFrame(); Rtt_ASSERT( index >= 0 );
-			const ImageFrame *frame = sheet->GetFrame( index );
-
-			if ( frame->IsTrimmed() )
-			{
-				// Apply offset translation before xform
-				Matrix t;
-				t.Translate( frame->GetOffsetX(), frame->GetOffsetY() );
-				srcToDst.Concat( t );
-			}
-		}
+		Matrix t;
+		t.Translate( dx, dy );
+		srcToDst.Concat( t );
 	}
 }
 

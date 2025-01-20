@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -39,6 +23,7 @@
 #include "Display/Rtt_ShapeObject.h"
 #include "Display/Rtt_ShapePath.h"
 #include "Display/Rtt_TesselatorPolygon.h"
+#include "Display/Rtt_DisplayDefaults.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Rtt_DisplayObjectExtensions.h"
 #include "Rtt_Event.h"
@@ -2187,6 +2172,25 @@ add_b2Body_to_DisplayObject( lua_State *L,
 		center_in_pixels.SetZero();
 	}
 
+	// Trimming is not per se connected to adjusting the group's center; for
+	// backward compatibility purposes, though, we probably don't want to just
+	// blindly apply this fix. It was identified along with some sprite trimming
+	// issues, thus the check for that default, but something like "correctGroupBody"
+	// might be more appropriate if we wanted fine-grained control.
+	DisplayDefaults & defaults = LuaContext::GetRuntime( L )->GetDisplay().GetDefaults();
+	bool isTrimCorrected = defaults.IsImageSheetFrameTrimCorrected();
+	
+	if ( isTrimCorrected && display_object->AsGroupObject() )
+	{
+		Rect bounds;
+		display_object->GetSelfBounds( bounds );
+
+		Vertex2 center;
+		bounds.GetCenter( center );
+		center_in_pixels.x += center.x;
+		center_in_pixels.y += center.y;
+	}
+	
 	b2World *world = physics.GetWorld();
 	b2Body *body = CreateBody( physics, display_object );
 
@@ -2723,7 +2727,7 @@ setTimeStep( lua_State *L )
 }
 
 // physics.setTimeScale( dt )
-// Sets time scale of physics sumulator. Default is 1
+// Sets time scale of physics simulator. Default is 1
 static int
 setTimeScale( lua_State *L )
 {
@@ -2741,7 +2745,7 @@ setTimeScale( lua_State *L )
 }
 
 // physics.getTimeScale( )
-// Returns time scale of physics sumulator.
+// Returns time scale of physics simulator.
 static int
 getTimeScale( lua_State *L )
 {

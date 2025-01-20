@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -284,6 +268,124 @@ DisplayObjectExtensions::resetMassData( lua_State *L )
 	return 0;
 }
 
+int
+DisplayObjectExtensions::getWorldVector(lua_State* L)
+{
+	DisplayObject* o = (DisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+
+	Rtt_WARN_SIM_PROXY_TYPE(L, 1, DisplayObject);
+
+	if (o)
+	{
+		const PhysicsWorld& physics = LuaContext::GetRuntime(L)->GetPhysicsWorld();
+		Real scale = physics.GetPixelsPerMeter();
+
+		Self* extensions = o->GetExtensions();
+		b2Body* fBody = extensions->GetBody();
+
+		Real lx = Rtt_RealDiv(lua_tonumber(L, 2), scale);
+		Real ly = Rtt_RealDiv(lua_tonumber(L, 3), scale);
+
+		b2Vec2 localVector = b2Vec2(Rtt_RealToFloat(lx), Rtt_RealToFloat(ly));
+
+		b2Vec2 worldVector = fBody->GetWorldVector(localVector);
+
+		lua_pushnumber(L, worldVector.x);
+		lua_pushnumber(L, worldVector.y);
+		
+		return 2;
+	}
+
+	return 0;
+}
+
+int
+DisplayObjectExtensions::getInertia(lua_State* L)
+{
+	DisplayObject* o = (DisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+
+	Rtt_WARN_SIM_PROXY_TYPE(L, 1, DisplayObject);
+
+	if (o)
+	{
+		const PhysicsWorld& physics = LuaContext::GetRuntime(L)->GetPhysicsWorld();
+		Real scale = physics.GetPixelsPerMeter();
+
+		Self* extensions = o->GetExtensions();
+		b2Body* fBody = extensions->GetBody();
+	
+		float32 inertia = fBody->GetInertia() * scale;
+
+		lua_pushnumber(L, inertia);
+		
+		return 1;
+	}
+
+	return 0;
+}
+
+int
+DisplayObjectExtensions::getLinearVelocityFromWorldPoint(lua_State* L)
+{
+	DisplayObject* o = (DisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+
+	Rtt_WARN_SIM_PROXY_TYPE(L, 1, DisplayObject);
+
+	if (o)
+	{
+		const PhysicsWorld& physics = LuaContext::GetRuntime(L)->GetPhysicsWorld();
+		Real scale = physics.GetPixelsPerMeter();
+
+		Self* extensions = o->GetExtensions();
+		b2Body* fBody = extensions->GetBody();
+
+		Real wx = Rtt_RealDiv(lua_tonumber(L, 2), scale);
+		Real wy = Rtt_RealDiv(lua_tonumber(L, 3), scale);
+
+		b2Vec2 worldPoint = b2Vec2(Rtt_RealToFloat(wx), Rtt_RealToFloat(wy));
+
+		b2Vec2 velocity = fBody->GetLinearVelocityFromWorldPoint(worldPoint);
+
+		lua_pushnumber(L, velocity.x);
+		lua_pushnumber(L, velocity.y);
+		
+		return 2;
+	}
+
+	return 0;
+}
+
+int
+DisplayObjectExtensions::getLinearVelocityFromLocalPoint(lua_State* L)
+{
+	DisplayObject* o = (DisplayObject*)LuaProxy::GetProxyableObject(L, 1);
+
+	Rtt_WARN_SIM_PROXY_TYPE(L, 1, DisplayObject);
+
+	if (o)
+	{
+		const PhysicsWorld& physics = LuaContext::GetRuntime(L)->GetPhysicsWorld();
+		Real scale = physics.GetPixelsPerMeter();
+
+		Self* extensions = o->GetExtensions();
+		b2Body* fBody = extensions->GetBody();
+
+		Real wx = Rtt_RealDiv(lua_tonumber(L, 2), scale);
+		Real ly = Rtt_RealDiv(lua_tonumber(L, 3), scale);
+
+		b2Vec2 localPoint = b2Vec2(Rtt_RealToFloat(wx), Rtt_RealToFloat(ly));
+
+		b2Vec2 velocity = fBody->GetLinearVelocityFromLocalPoint(localPoint);
+
+		lua_pushnumber(L, velocity.x);
+		lua_pushnumber(L, velocity.y);
+		
+		return 2;
+	}
+
+	return 0;
+}
+
 #endif // Rtt_PHYSICS
 
 
@@ -305,30 +407,34 @@ DisplayObjectExtensions::ValueForKey( lua_State *L, const MLuaProxyable& object,
 
 		static const char * keys[] =
 		{
-			"isAwake",					// 0
-			"isBodyActive",				// 1
-			"isBullet",					// 2
-			"isSleepingAllowed",		// 3
-			"isFixedRotation",			// 4
-			"angularVelocity",			// 5
-			"linearDamping",			// 6
-			"angularDamping",			// 7
-			"bodyType",					// 8
-			"setLinearVelocity",		// 9
-			"getLinearVelocity",		// 10
-			"applyForce",				// 11
-			"applyTorque",				// 12
-			"applyLinearImpulse",		// 13
-			"applyAngularImpulse",		// 14
-			"resetMassData",			// 15
-			"isSensor",					// 16
-			"mass",						// 17
-			"gravityScale",				// 18
-			"getMassWorldCenter",		// 19
-			"getMassLocalCenter",		// 20
+			"isAwake",							// 0
+			"isBodyActive",						// 1
+			"isBullet",							// 2
+			"isSleepingAllowed",				// 3
+			"isFixedRotation",					// 4
+			"angularVelocity",					// 5
+			"linearDamping",					// 6
+			"angularDamping",					// 7
+			"bodyType",							// 8
+			"setLinearVelocity",				// 9
+			"getLinearVelocity",				// 10
+			"applyForce",						// 11
+			"applyTorque",						// 12
+			"applyLinearImpulse",				// 13
+			"applyAngularImpulse",				// 14
+			"resetMassData",					// 15
+			"isSensor",							// 16
+			"mass",								// 17
+			"gravityScale",						// 18
+			"getMassWorldCenter",				// 19
+			"getMassLocalCenter",				// 20
+			"getWorldVector",					// 21
+			"getInertia",						// 22
+			"getLinearVelocityFromWorldPoint",	// 23
+			"getLinearVelocityFromLocalPoint",  // 24
 		};
 		static const int numKeys = sizeof( keys ) / sizeof( const char * );
-		static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 21, 24, 11, __FILE__, __LINE__ );
+		static StringHash sHash( *LuaContext::GetAllocator( L ), keys, numKeys, 25, 19, 14, __FILE__, __LINE__ );
 		StringHash *hash = &sHash;
 
 		int index = hash->Lookup( key );
@@ -449,6 +555,26 @@ DisplayObjectExtensions::ValueForKey( lua_State *L, const MLuaProxyable& object,
 		case 20:
 			{
 				lua_pushcfunction( L, Self::getMassLocalCenter );
+			}
+			break;
+		case 21:
+			{
+				lua_pushcfunction(L, Self::getWorldVector );
+			}
+			break;
+		case 22:
+			{
+				lua_pushcfunction(L, Self::getInertia);
+			}
+			break;
+		case 23:
+			{
+				lua_pushcfunction(L, Self::getLinearVelocityFromWorldPoint);
+			}
+			break;
+		case 24:
+			{
+				lua_pushcfunction(L, Self::getLinearVelocityFromLocalPoint);
 			}
 			break;
 		default:

@@ -97,7 +97,7 @@ ALmixer_RWops* ALmixer_RWFromFile(const char* file_name, const char* file_mode)
 /*		ALmixer_SetError("ALmixer_RWFromFile: No file or mode specified"); */
         return NULL;
     }
-#if defined(NINTENDO_LIB)
+#if defined(NXS_LIB)
 		file_pointer = fopen(file_name, file_mode);
 #elif defined(_WIN32) || defined(WINAPI_FAMILY)
 	{

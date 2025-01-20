@@ -7,6 +7,16 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.directory</string>
+				<string>com.apple.bundle</string>
+				<string>com.apple.resolvable</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>fold</string>

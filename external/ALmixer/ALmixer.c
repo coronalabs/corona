@@ -7636,6 +7636,13 @@ void ALmixer_BeginInterruption()
 	s_interruptionContext = alcGetCurrentContext();
 	if(NULL != s_interruptionContext)
 	{
+        #if defined(__ANDROID__) && !defined(ALMIXER_USE_APPORTABLE_OPENAL_EXTENSIONS)
+            ALCdevice * dev = alcGetContextsDevice(s_interruptionContext);
+            if(NULL != dev)
+            {
+                alcDevicePauseSOFT(dev);
+            }
+        #endif
 		/* iOS alcSuspendContext is a no-op */
 		alcSuspendContext(s_interruptionContext);
 		alcMakeContextCurrent(NULL);
@@ -7670,6 +7677,13 @@ void ALmixer_EndInterruption()
 	{
 		alcMakeContextCurrent(s_interruptionContext);
 		alcProcessContext(s_interruptionContext);
+        #if defined(__ANDROID__) && !defined(ALMIXER_USE_APPORTABLE_OPENAL_EXTENSIONS)
+            ALCdevice * dev = alcGetContextsDevice(s_interruptionContext);
+            if(NULL != dev)
+            {
+                alcDeviceResumeSOFT(dev);
+            }
+        #endif
 		s_interruptionContext = NULL;
 	}
 

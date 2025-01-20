@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -107,19 +91,21 @@ AppPackagerFactory::CreatePackagerParamsApple(
 				}
 			}
 
-			if ( ! certificatePath )
+			if ( ! certificatePath  && (targetDevice == TargetDevice::kIOSUniversal ||
+										targetDevice == TargetDevice::kIPhone ||
+										targetDevice == TargetDevice::kIPad ))
 			{
 				fprintf( stderr, "ERROR: Missing 'certificatePath' in build params\n" );
 				return NULL;
 			}
 
-			NSString *provisionFile = [NSString stringWithUTF8String:certificatePath];
+			NSString *provisionFile = certificatePath?[NSString stringWithUTF8String:certificatePath]:nil;
 
-			bool isDistributionBuild = [AppleSigningIdentityController hasProvisionedDevices:provisionFile];
+			bool isDistributionBuild = certificatePath?[AppleSigningIdentityController hasProvisionedDevices:provisionFile]:NO;
 
 			IOSAppPackager packager( fServices );
 
-			const char *appBundleId = packager.GetBundleId( certificatePath, appName );
+			const char *appBundleId = certificatePath?packager.GetBundleId( certificatePath, appName ):"com.solar2d.xcodesim";
 
 			if ( ! customBuildId )
 			{
@@ -128,7 +114,7 @@ AppPackagerFactory::CreatePackagerParamsApple(
 			}
 
 			NSString *commonName = nil;
-			NSString *identity = [AppleSigningIdentityController signingIdentity:provisionFile commonName:&commonName];
+			NSString *identity = certificatePath?[AppleSigningIdentityController signingIdentity:provisionFile commonName:&commonName]:nil;
 
 			result = new IOSAppPackagerParams(
 											  appName,
@@ -232,11 +218,25 @@ AppPackagerFactory::CreatePackagerParamsApple(
 			Rtt_ASSERT_NOT_REACHED();
 			break;
 	}
-
+	
 	if ( ! result )
 	{
 		fprintf( stderr, "ERROR: Unsupported platform: %s\n", TargetDevice::StringForPlatform( targetPlatform ) );
 	}
+	
+	lua_getfield(L, index, "customTemplate" );
+	if(lua_type(L, -1) == LUA_TSTRING)
+	{
+		result->SetCustomTemplate(lua_tostring(L, -1));
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "includeStandardResources");
+	if(lua_type(L, -1) == LUA_TBOOLEAN)
+	{
+		result->SetIncludeStandardResources(lua_toboolean(L, -1));
+	}
+	lua_pop(L, 1);
 
 	return result;
 }
@@ -251,7 +251,7 @@ AppPackagerFactory::CreatePackagerParamsApple(
 const char *
 AppPackagerFactory::GetResourceDirectoryOSX() const
 {
-	return [[[NSBundle mainBundle] resourcePath] UTF8String];
+	return [[XcodeToolHelper pathForResources] UTF8String];
 }
 #endif
 

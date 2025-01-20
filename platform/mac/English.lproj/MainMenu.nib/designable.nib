@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment version="1050" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -352,7 +352,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="619"/>
-                            <menuItem title="Welcome to Corona" keyEquivalent="1" id="618">
+                            <menuItem title="Welcome to Solar2D" keyEquivalent="1" id="618">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>
                                     <action selector="presentWelcomeWindow:" target="207" id="vQb-ER-CGk"/>
@@ -400,6 +400,7 @@
                     </menu>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="-133" y="113"/>
         </menu>
         <customObject id="207" userLabel="AppDelegate" customClass="AppDelegate"/>
         <userDefaultsController representsSharedInstance="YES" id="215" userLabel="Shared User Defaults Controller"/>

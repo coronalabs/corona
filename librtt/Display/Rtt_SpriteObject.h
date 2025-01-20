@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -35,6 +19,8 @@
 #include "Core/Rtt_String.h"
 
 // ----------------------------------------------------------------------------
+
+struct lua_State;
 
 namespace Rtt
 {
@@ -71,6 +57,7 @@ class SpriteObjectSequence
 			Rtt_Allocator *allocator,
 			const char *name,
 			Real time,
+			Real *timeArray,
 			FrameIndex start,
 			FrameIndex numFrames,
 			int loopCount,
@@ -81,6 +68,7 @@ class SpriteObjectSequence
 			Rtt_Allocator *allocator,
 			const char *name,
 			Real time,
+			Real *timeArray,
 			FrameIndex *frames,
 			FrameIndex numFrames,
 			int loopCount,
@@ -105,13 +93,14 @@ class SpriteObjectSequence
 	public:
 		const char* GetName() const { return fName.GetString(); }
 		Real GetTime() const { return fTime; }
+		Real *GetTimeArray() const { return fTimeArray; }
 		Real GetTimePerFrame() const { return fTimePerFrame; }
-		Real GetEffectiveTime() const;
 
 	public:
 		// Returns index in sheet of first frame
 		FrameIndex GetStartFrame() const;
 		FrameIndex GetLastFrame() const;
+		int GetTimeForFrame( int frameIndex ) const;
 
 	protected:
 		FrameIndex GetFrame( int i ) const;
@@ -144,6 +133,7 @@ class SpriteObjectSequence
 		AutoPtr< ImageSheet > fSheet;
 		String fName;
 		Real fTime;				// Length of sequence in ms
+		Real *fTimeArray;
 		Real fTimePerFrame;
 		FrameIndex fNumFrames;	// Raw number of frames
 		FrameIndex fStart;		// Sequence is defined by consecutive frames in the sheet
@@ -177,11 +167,13 @@ class SpriteObject : public RectObject
 
 	public:
 		static SpriteObject* Create(
+            lua_State * L,
 			Rtt_Allocator *pAllocator,
 			const AutoPtr< ImageSheet >& sheet,
-			SpritePlayer& player );
+			SpritePlayer& player,
+			Display& display );
 
-	protected:
+    public:
 		SpriteObject(
 			RectPath *path,
 			Rtt_Allocator *pAllocator,
@@ -202,6 +194,8 @@ class SpriteObject : public RectObject
 		virtual void Prepare( const Display& display );
 //		virtual void Translate( Real dx, Real dy );
 //		virtual void Draw( Renderer& renderer ) const;
+		virtual void GetSelfBoundsForAnchor( Rect& rect ) const;
+		virtual bool GetTrimmedFrameOffsetForAnchor( Real& deltaX, Real& deltaY ) const;
 
 	public:
 		virtual const LuaProxyVTable& ProxyVTable() const;
@@ -209,7 +203,9 @@ class SpriteObject : public RectObject
 	public:
 		const AutoPtr< ImageSheet >& GetDefaultSheet() const;
 		const AutoPtr< ImageSheet >& GetCurrentSheet() const;
-
+		void ResetTimeArrayIteratorCache(SpriteObjectSequence *sequence);
+		int GetFrameIndexForDeltaTime( Real dt, SpriteObjectSequence *sequence, int effectiveNumFrames );
+	
 	protected:
 		void SetBitmapFrame( int frameIndex );
 
@@ -225,17 +221,20 @@ class SpriteObject : public RectObject
 		void SetFrame( int index );
 
 	public:
+		void UseFrameForAnchors( int index );
+	
+	public:
 		// Read-only properties
 		int GetFrame() const;
 		int GetNumFrames() const;
 
 	public:
 		Real GetTimeScale() const { return fTimeScale; }
-		void SetTimeScale( Real newValue ) { fTimeScale = newValue; }
+		void SetTimeScale( Real newValue );
 
 	protected:
-		bool IsProperty( PropertyMask mask ) const { return ( !! ( mask & fProperties ) ); } 
-		void SetProperty( PropertyMask mask, bool value ); 
+		bool IsProperty( PropertyMask mask ) const { return ( !! ( mask & fProperties ) ); }
+		void SetProperty( PropertyMask mask, bool value );
 
 	public:
 		bool IsPlaying() const;
@@ -256,9 +255,14 @@ class SpriteObject : public RectObject
 		SpritePlayer& fPlayer;
 		Real fTimeScale;
 		int fCurrentSequence; // index into fSequences of current sequence
-		int fSequenceIndex; // which frame in sheet are we currently showing
+		int fCurrentFrame; // which frame in sheet are we currently showing
+		const ImageFrame *fFrameForAnchors;
 		U64 fStartTime;
 		U64 fPlayTime; // when paused, stores amount of time played
+		U64 fTimeScaleIncrement; // Stores the extra amount of time it need to be added for a given timeScale
+		int fTimeArrayCachedFrame; // stores iterator state for SpriteObjectSequence::GetFrameIndexForDeltaTime()
+		Real fTimeArrayCachedNextFrameTime; // stores iterator state for SpriteObjectSequence::GetFrameIndexForDeltaTime()
+	
 		Properties fProperties;
 };
 

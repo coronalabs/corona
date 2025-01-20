@@ -1,0 +1,13 @@
+{
+  "title": "Corona YYYY",
+  "icon": "dmg.icns",
+  "background": "bgp.png",
+  "window": {
+  	"width": 620,
+  	"height": 370
+  },
+  "contents": [
+    { "x": 475, "y": 125, "type": "link", "path": "/Applications" },
+    { "x": 155, "y": 125, "type": "file", "path": "XXXXXXXX" }
+  ]
+}

@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -43,7 +27,6 @@ class Rtt::MacSimulatorServices
 #include "Rtt_LuaFrameworks.h"
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_Runtime.h"
 
 #include "XcodeToolHelper.h"
@@ -117,10 +100,16 @@ OSXAppPackager::~OSXAppPackager()
 {
 }
 
-int
-OSXAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, const char* tmpDirBase )
+const char*
+OSXAppPackager::GetAppTemplatePath()
 {
-	int result = WebServicesSession::kNoError;
+	return [[[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String];
+}
+
+int
+OSXAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
+{
+	int result = PlatformAppPackager::kNoError;
 	OSXAppPackagerParams * osxParams = (OSXAppPackagerParams *) params;
 	time_t startTime = time(NULL);
 
@@ -148,7 +137,7 @@ OSXAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, 
 		String outputDir;
 		outputDir.Set(tmpDir);
 
-		if ((result = PrepackagePlugins(osxParams, tmpPluginsDir, outputDir)) != WebServicesSession::kNoError)
+		if ((result = PrepackagePlugins(osxParams, tmpPluginsDir, outputDir)) != PlatformAppPackager::kNoError)
 		{
 			return result;
 		}
@@ -196,7 +185,7 @@ OSXAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, 
                 lua_pushstring( L, TargetDevice::StringForPlatform( osxParams->GetTargetPlatform() ) );
                 lua_setfield( L, -2, "targetPlatform" );
                 
-                lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String] );
+                lua_pushstring( L, GetAppTemplatePath() );
                 lua_setfield( L, -2, "osxAppTemplate" );
                 
 				lua_pushstring( L, Rtt_STRING_BUILD );
@@ -221,13 +210,13 @@ OSXAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, 
             if ( ! Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
             {
                 // The packaging script failed
-                result = WebServicesSession::kLocalPackagingError;
+                result = PlatformAppPackager::kLocalPackagingError;
             }
             else
             {
                 if ( lua_isstring( L, -1 ) )
                 {
-                    result = WebServicesSession::kLocalPackagingError;
+                    result = PlatformAppPackager::kLocalPackagingError;
                     Rtt_TRACE_SIM( ( "BUILD %s\n", lua_tostring( L, -1 ) ) );
                     osxParams->SetBuildMessage( lua_tostring( L, -1 ) );
                 }
@@ -236,7 +225,7 @@ OSXAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, 
         }
         else
         {
-            result = WebServicesSession::kLocalPackagingError;
+            result = PlatformAppPackager::kLocalPackagingError;
         }
 
 		// Clean up intermediate files
@@ -246,7 +235,7 @@ OSXAppPackager::Build( AppPackagerParams * params, WebServicesSession& session, 
 	}
 
     // Indicate status in the console
-	if (WebServicesSession::kNoError == result)
+	if (PlatformAppPackager::kNoError == result)
 	{
 		Rtt_LogException("macOS build succeeded in %ld seconds", (time(NULL) - startTime));
 	}
@@ -305,7 +294,7 @@ OSXAppPackager::Prepackage( AppPackagerParams * params, const char* tmpDir )
 int
 OSXAppPackager::PrepackagePlugins(OSXAppPackagerParams *params, String& pluginsDir, String&outputDir)
 {
-	int result = WebServicesSession::kNoError;
+	int result = PlatformAppPackager::kNoError;
 
 #if !defined( Rtt_NO_GUI )
 	// We don't currently support plugins for CoronaBuilder macOS desktop builds
@@ -321,7 +310,7 @@ OSXAppPackager::PrepackagePlugins(OSXAppPackagerParams *params, String& pluginsD
 		bool wasUnzipped = UnzipPlugins(params, runtime, pluginsDir.GetString());
 		if (!wasUnzipped)
 		{
-			return WebServicesSession::kLocalPackagingError;
+			return PlatformAppPackager::kLocalPackagingError;
 		}
 
 		// Compile the Lua plugins to the intermediate directory.
@@ -343,7 +332,7 @@ OSXAppPackager::PrepackagePlugins(OSXAppPackagerParams *params, String& pluginsD
 				params->SetBuildMessage(pluginParamsSettings.GetBuildMessage());
 			}
 			
-			return WebServicesSession::kBuildError;
+			return PlatformAppPackager::kBuildError;
 		}
 	}
 #endif
@@ -354,7 +343,7 @@ OSXAppPackager::PrepackagePlugins(OSXAppPackagerParams *params, String& pluginsD
 int
 OSXAppPackager::PackageForAppStore( OSXAppPackagerParams *osxParams, bool sendToAppStore, const char *itunesConnectUsername, const char *itunesConnectPassword )
 {
-	int result = WebServicesSession::kNoError;
+	int result = PlatformAppPackager::kNoError;
 	lua_State *L = fVM;
 	lua_getglobal( L, "OSXPackageForAppStore" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
 
@@ -396,7 +385,7 @@ OSXAppPackager::PackageForAppStore( OSXAppPackagerParams *osxParams, bool sendTo
 		lua_pushstring( L, Rtt_STRING_BUILD );
 		lua_setfield( L, -2, "corona_build_id" );
 
-		lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXApp.xcent"] UTF8String] );
+		lua_pushstring( L, [[[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"OSXApp.xcent"] UTF8String] );
 		lua_setfield( L, -2, "osxAppEntitlements" );
 
 		lua_pushboolean( L, sendToAppStore );
@@ -438,13 +427,13 @@ OSXAppPackager::PackageForAppStore( OSXAppPackagerParams *osxParams, bool sendTo
 	if ( ! Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
 	{
 		// The packaging script failed
-		result = WebServicesSession::kLocalPackagingError;
+		result = PlatformAppPackager::kLocalPackagingError;
 	}
 	else
 	{
 		if ( lua_isstring( L, -1 ) )
 		{
-			result = WebServicesSession::kLocalPackagingError;
+			result = PlatformAppPackager::kLocalPackagingError;
 			Rtt_TRACE_SIM( ( "PACKAGING %s\n", lua_tostring( L, -1 ) ) );
 			osxParams->SetBuildMessage( lua_tostring( L, -1 ) );
 		}
@@ -457,7 +446,7 @@ OSXAppPackager::PackageForAppStore( OSXAppPackagerParams *osxParams, bool sendTo
 int
 OSXAppPackager::PackageForSelfDistribution( OSXAppPackagerParams *osxParams, bool createDMG )
 {
-	int result = WebServicesSession::kNoError;
+	int result = PlatformAppPackager::kNoError;
 	lua_State *L = fVM;
 	lua_getglobal( L, "OSXPackageForSelfDistribution" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
 
@@ -493,7 +482,7 @@ OSXAppPackager::PackageForSelfDistribution( OSXAppPackagerParams *osxParams, boo
 		lua_pushstring( L, TargetDevice::StringForPlatform( osxParams->GetTargetPlatform() ) );
 		lua_setfield( L, -2, "targetPlatform" );
 
-		lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String] );
+		lua_pushstring( L, GetAppTemplatePath() );
 		lua_setfield( L, -2, "osxAppTemplate" );
 
 		lua_pushstring( L, Rtt_STRING_BUILD );
@@ -521,13 +510,13 @@ OSXAppPackager::PackageForSelfDistribution( OSXAppPackagerParams *osxParams, boo
 	if ( ! Rtt_VERIFY( 0 == Lua::DoCall( L, 1, 1 ) ) )
 	{
 		// The packaging script failed
-		result = WebServicesSession::kLocalPackagingError;
+		result = PlatformAppPackager::kLocalPackagingError;
 	}
 	else
 	{
 		if ( lua_isstring( L, -1 ) )
 		{
-			result = WebServicesSession::kLocalPackagingError;
+			result = PlatformAppPackager::kLocalPackagingError;
 			Rtt_TRACE_SIM( ( "PACKAGING %s\n", lua_tostring( L, -1 ) ) );
 			osxParams->SetBuildMessage( lua_tostring( L, -1 ) );
 		}

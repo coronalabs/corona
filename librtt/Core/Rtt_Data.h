@@ -1,25 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
-//
-// This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -29,8 +14,14 @@
 #include "Core/Rtt_Allocator.h"
 #include "Core/Rtt_New.h"
 #include "Core/Rtt_Types.h"
+#include "Core/Rtt_Assert.h"
 
 #include <string.h>
+
+#if defined(Rtt_NXS_ENV)
+#define Rtt_FREE( p )						free( (p) )
+#define Rtt_MALLOC( null, size )	malloc( (size) )
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -97,15 +88,13 @@ Data< T >::SetLength( size_t length )
 	{
 		if ( fOwnsStorage )
 			Rtt_FREE( (void *) fStorage );
-		else
-			fOwnsStorage = true;
+
+		// We own this anyway
+		fOwnsStorage = true;
+		fStorage = NULL;
+		fLength = 0;
 		
-		if ( length == 0 )
-		{
-			fStorage = NULL;
-			fLength = 0;
-		}
-		else
+		if ( length != 0 )
 		{
 			fStorage = (T *) Rtt_MALLOC( fAllocator, length * sizeof( T ) );
 
@@ -121,7 +110,8 @@ void
 Data< T >::Set( const T * p, size_t length )
 {
 	SetLength( length );
-	memcpy( (void *) fStorage, p, length * sizeof( T ) );
+	if ( fStorage )
+		memcpy( (void *) fStorage, p, length * sizeof( T ) );
 }
 
 template < typename T >

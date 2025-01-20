@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -208,7 +192,7 @@ Rtt_VLogException(const char *format, va_list ap)
 			}
 
 			// Output the string to stdout and the Visual Studio debugger.
-#if defined(Rtt_NINTENDO_ENV) || defined( Rtt_LINUX_ENV )
+#if defined(Rtt_NXS_ENV) || defined( Rtt_LINUX_ENV )
 			fputs(stringPointer, stdout);
 #elif defined(Rtt_WIN_PHONE_ENV)
 			if (fLogHandler)
@@ -261,7 +245,7 @@ Rtt_VLogException(const char *format, va_list ap)
 int
 Rtt_Log( const char *format, ... )
 {
-	int result;
+	int result = 0;
 
 	if (Rtt_LogIsEnabled())
 	{
@@ -282,6 +266,14 @@ Rtt_Log( const char *format, ... )
 #if defined( Rtt_MAC_ENV ) || defined( Rtt_IPHONE_ENV ) || defined( Rtt_TVOS_ENV )
 	#define Rtt_TRAP_WITH_SIGNAL	1
 	#include <signal.h>
+    #include <errno.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <assert.h>
+    #include <stdbool.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <sys/sysctl.h>
 #if 0 // see stacktrace code below
 	#include <execinfo.h>
 	#include <stdio.h>
@@ -291,11 +283,18 @@ Rtt_Log( const char *format, ... )
 	#define Rtt_Log printf
 #endif
 
+
 static void
 Rtt_UserBreak( )
 {
     #if defined( Rtt_TRAP_WITH_SIGNAL )
-        raise( SIGINT );
+        
+        #if defined( Rtt_MAC_ENV )
+            //Commenting out this out to simplify things because it does not add any value for Macs and actually crashes on Apple Silicon Machines
+            //raise( SIGINT );
+        #else
+            raise( SIGINT );
+        #endif
     #elif defined( Rtt_WIN_ENV )
 		__debugbreak();
 	#elif defined( __ARMCC_VERSION )

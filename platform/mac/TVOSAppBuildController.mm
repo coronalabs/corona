@@ -1,33 +1,14 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Core/Rtt_Build.h"
 
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_MacConsolePlatform.h"
 #include "Rtt_Assert.h"
 #include "Rtt_MacPlatform.h"
@@ -48,7 +29,7 @@
 using namespace Rtt;
 
 static NSString *kMacAppStoreXcodeURL = @"macappstore://itunes.apple.com/us/app/xcode/id497799835";
-static NSString *kDailyBuildsURL = @"https://developer.coronalabs.com/downloads/daily-builds/";
+static NSString *kDailyBuildsURL = @"https://github.com/coronalabs/corona/releases";
 static NSString *kValueNotSet = @"not set";
 //static NSString *kValueYes = @"YES";
 //static NSString *kValueNo = @"NO";
@@ -89,9 +70,9 @@ static NSString *kValueNone = @"None";
 
 @implementation TVOSAppBuildController
 
-- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath authorizer:(const Rtt::Authorization *)authorizer;
+- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath;
 {
-	self = [super initWithWindowNibName:nibFile projectPath:projPath authorizer:authorizer];
+	self = [super initWithWindowNibName:nibFile projectPath:projPath];
 
 	if ( self )
 	{
@@ -157,7 +138,19 @@ static NSString *kValueNone = @"None";
 			for (NSString *os in sortedOSKeys)
 			{
 				NSMenuItem *newTitle = [[NSMenuItem alloc] init];
-				[newTitle setTitle:os];
+				NSString *prettyOsName = os;
+				NSRange prefixRange = [prettyOsName rangeOfString:@"com.apple.CoreSimulator.SimRuntime."];
+				if(prefixRange.location == 0)
+				{
+					prettyOsName = [prettyOsName stringByReplacingCharactersInRange:prefixRange withString:@""];
+					NSRange firstDash = [prettyOsName rangeOfString:@"-"];
+					if(firstDash.location != NSNotFound)
+					{
+						prettyOsName = [prettyOsName stringByReplacingCharactersInRange:firstDash withString:@" "];
+					}
+					prettyOsName = [prettyOsName stringByReplacingOccurrencesOfString:@"-" withString:@"."];
+				}
+				[newTitle setTitle:prettyOsName];
 				[newTitle setEnabled:NO];
 				[[availableSimulatorsPopup menu] addItem:newTitle];
 
@@ -166,7 +159,7 @@ static NSString *kValueNone = @"None";
 
 				for (NSString *device in sortedDeviceKeys)
 				{
-					TVOSSimulatorMenuItem *newItem = [[TVOSSimulatorMenuItem alloc] initWithFullTitle:[NSString stringWithFormat:@"%@ / %@", device, os]
+					TVOSSimulatorMenuItem *newItem = [[TVOSSimulatorMenuItem alloc] initWithFullTitle:[NSString stringWithFormat:@"%@ / %@", device, prettyOsName]
 																								title:[NSString stringWithFormat:@"      %@", device]];
 
 					[newItem setEnabled:YES];
@@ -225,7 +218,7 @@ static NSString *kValueNone = @"None";
 		}
 	}
 
-	[self populateTargetSDK:[self window] showBeta:[appDelegate isDailyBuild]];
+	[self populateTargetSDK:[self window] showBeta:true];
 }
 
 - (void) didSelectSimulator:(NSMenuItem *)menuItem
@@ -323,7 +316,7 @@ static NSString *kValueNone = @"None";
 		identity = [currentProvisioningProfileItem.fingerprint UTF8String];
 		provisionFile = [currentProvisioningProfileItem.provisionPath UTF8String];
 
-		if ( [[currentProvisioningProfileItem title] contains:kiPhoneDistributionIdentityTag] )
+		if ( [[currentProvisioningProfileItem title] contains:kiPhoneDistributionIdentityTag] || [[currentProvisioningProfileItem title] contains:kAppleDistributionIdentityTag] )
 		{
 			// Here, we mean distribution build, as in store build,
 			// so a store build is anything that does NOT have provisioned devices
@@ -341,31 +334,6 @@ static NSString *kValueNone = @"None";
 
     MacConsolePlatform platform;
     MacPlatformServices *services = new MacPlatformServices( platform );
-    WebServicesSession *session = new WebServicesSession( *services );
-    __block NSString *message = nil;
-    __block BOOL loginSuccessful = NO;
-
-    [self setProgressBarLabel:@"Authorizing build…"];
-
-    // Login to the authorization server
-    void (^login)() = ^()
-    {
-        loginSuccessful = [self loginSession:session services:services ticket:[appDelegate ticket] message:&message];
-        [message retain];  // ObjC - it is OK to call stuff on nil :)
-    };
-
-    [self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:NO withBlock:login];
-
-    [message autorelease];
-
-    if (! loginSuccessful)
-    {
-		[self logEvent:@"build-bungled" key:@"reason" value:@"cannot-login"];
-
-        [self showError:@"Cannot Login To Build Server" message:message helpURL:nil parentWindow:[self window]];
-
-        return;
-    }
 
     const char* name = [self.appName UTF8String];
     const char* versionname = NULL;
@@ -474,6 +442,10 @@ static NSString *kValueNone = @"None";
 
     params->SetStripDebug( isStripDebug );
 	params->SetLiveBuild(isLiveBuild);
+	if(currentSDK.customTemplate)
+	{
+		params->SetCustomTemplate([currentSDK.customTemplate UTF8String]);
+	}
 
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 /*
@@ -495,7 +467,7 @@ static NSString *kValueNone = @"None";
     [self setProgressBarLabel:@"Building for tvOS…"];
 
     // Do the actual build
-    __block size_t code = WebServicesSession::kNoError;
+    __block size_t code = PlatformAppPackager::kNoError;
 
 	[self logEvent:@"build"];
 
@@ -505,7 +477,7 @@ static NSString *kValueNone = @"None";
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         NSString* tmpDirBase = NSTemporaryDirectory();
-        code = packager->Build( params, *session, [tmpDirBase UTF8String] );
+        code = packager->Build( params, [tmpDirBase UTF8String] );
     };
 
     [self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:YES withBlock:performBuild];
@@ -517,7 +489,7 @@ static NSString *kValueNone = @"None";
 		Rtt_Log("WARNING: Build stopped by request");
 		[self showMessage:@"Build Stopped" message:@"Build stopped by request" helpURL:nil parentWindow:[self window]];
 	}
-	else if (code == WebServicesSession::kNoError)
+	else if (code == PlatformAppPackager::kNoError)
     {
 	[self logEvent:@"build-succeeded"];
 
@@ -657,7 +629,7 @@ static NSString *kValueNone = @"None";
 	{
 		[self startTailDeviceSyslog:[XcodeToolHelper pathForXcodeSimulatorDeviceSyslogUtility] appBundlePath:appBundlePath deviceID:tvosSimulatorUDID];
 
-		NSString *message = [NSString stringWithFormat:@"*%@* has been launched in the Xcode tvOS Simulator\n\nThe Xcode tvOS Simulator's syslog will appear in the Corona Console until this message is closed", self.appName];
+		NSString *message = [NSString stringWithFormat:@"*%@* has been launched in the Xcode tvOS Simulator\n\nThe Xcode tvOS Simulator's syslog will appear in the Console until this message is closed", self.appName];
 
 		[self showMessage:@"Xcode tvOS Simulator Running" message:message helpURL:nil parentWindow:[self window]];
 
@@ -706,7 +678,7 @@ static NSString *kValueNone = @"None";
             {
 				[self logEvent:@"build-bungled" key:@"reason" value:@"not-distribution-provisioning-profile"];
 
-                [self showError:@"Cannot Send To App Store" message:@"Only apps built with distribution profiles can be sent to the App Store.\n\nChoose a provisioning profile signed with an \"iPhone Distribution\" certificate and note that the provisioning profile used should not specify any devices (i.e. is not \"ad hoc\")." helpURL:@"https://docs.coronalabs.com/guide/distribution/iOSBuild/index.html#build-process" parentWindow:[self window]];
+                [self showError:@"Cannot Send To App Store" message:@"Only apps built with distribution profiles can be sent to the App Store.\n\nChoose a provisioning profile signed with an \"iPhone Distribution\" or \"Apple Distribution\" certificate and note that the provisioning profile used should not specify any devices (i.e. is not \"ad hoc\")." helpURL:@"https://docs.coronalabs.com/guide/distribution/iOSBuild/index.html#build-process" parentWindow:[self window]];
 
                 result = NO;
             }
@@ -780,7 +752,7 @@ static NSString *kValueNone = @"None";
 	using namespace Rtt;
 
 	IdentityMenuItem* item = currentProvisioningProfileItem; Rtt_ASSERT( item != [fSigningIdentities itemAtIndex:0] );
-	BOOL result = ( [[item title] contains:kiPhoneDistributionIdentityTag] );
+	BOOL result = ( [[item title] contains:kiPhoneDistributionIdentityTag]  || [[item title] contains:kAppleDistributionIdentityTag] );
 
 	if ( result )
 	{
@@ -801,7 +773,7 @@ static NSString *kValueNone = @"None";
 	IdentityMenuItem* item = currentProvisioningProfileItem; Rtt_ASSERT( item != [fSigningIdentities itemAtIndex:0] );
 
 	// A developer build does NOT have iPhone Distribution in the prefix
-	BOOL result = ! ( [[item title] contains:kiPhoneDistributionIdentityTag] );
+	BOOL result = ! ( [[item title] contains:kiPhoneDistributionIdentityTag] || [[item title] contains:kAppleDistributionIdentityTag]);
 	return result;
 }
 
@@ -819,7 +791,7 @@ static NSString *kValueNone = @"None";
 		NSString *dailyBuildBtn = @"Daily Builds";
 		NSString *title = nil;
 		NSString *msg = nil;
-		NSString *helpURL = @"https://coronalabs.com/links/simulator/xcode-required";
+		NSString *helpURL = @"https://docs.coronalabs.com/guide/start/systemReqs/index.html#macos";
 		NSArray *buttons = @[ installXcodeBtn,dailyBuildBtn,  @"Cancel Build" ];
 
 		if ( sdkRoot == nil || [sdkRoot isEqualToString:@""] )
@@ -829,7 +801,7 @@ static NSString *kValueNone = @"None";
 			// No Xcode found
 			title = @"Xcode Required";
 
-			msg = [NSString stringWithFormat:@"The Xcode tvOS SDK could not be found. Please install Xcode (or use `xcode-select` to choose an existing installation).\n\nXcode is required by Corona and needs to be installed to build tvOS applications.\n\nPress the *%@* button to go to the App Store and get Xcode.  When it is installed, build for tvOS again.\n", installXcodeBtn];
+			msg = [NSString stringWithFormat:@"The Xcode tvOS SDK could not be found. Please install Xcode (or use `xcode-select` to choose an existing installation).\n\nXcode is required by Solar2D and needs to be installed to build tvOS applications.\n\nPress the *%@* button to go to the App Store and get Xcode.  When it is installed, build for tvOS again.\n", installXcodeBtn];
 
 			// fAnalytics->Log("bad-tvos-sdk", "not-found");
 		}
@@ -840,7 +812,7 @@ static NSString *kValueNone = @"None";
 			// xcode-select gave us a path, but a component could not be found.
 			title = @"Xcode Compatibility Problem";
 
-			msg = [NSString stringWithFormat:@"Corona can't find the following components in the\nXcode %g tvOS SDK located at *%@*:\n\n%@\n\nPlease update Corona to the latest [Daily Build](%@) (it might also be necessary to re-install Xcode)",
+			msg = [NSString stringWithFormat:@"Solar2D can't find the following components in the\nXcode %g tvOS SDK located at *%@*:\n\n%@\n\nPlease update Solar2D to the latest [Daily Build](%@) (it might also be necessary to re-install Xcode)",
 						 [XcodeToolHelper getXcodeVersion], sdkRoot, error_string, kDailyBuildsURL];
 
 			// fAnalytics->Log("bad-tvos-sdk", "incomplete");
@@ -1012,7 +984,7 @@ static NSString *kValueNone = @"None";
         NSAlert* alert = [[[NSAlert alloc] init] autorelease];
         [alert addButtonWithTitle:@"OK"];
 
-        NSString *message = [NSString stringWithFormat:@"We were unable to parse the list of supported tvOS SDKs.  Check the console for more information.\n\nYou should re-install Corona."];
+        NSString *message = [NSString stringWithFormat:@"We were unable to parse the list of supported tvOS SDKs.  Check the console for more information.\n\nYou should re-install Solar2D."];
 
         [alert setMessageText:@"Internal Error"];
         [alert setInformativeText:message];
@@ -1072,10 +1044,10 @@ static NSString *kValueNone = @"None";
 	{
 		NSString *errorMsg = @"*ideviceinstaller* does not appear to be installed on this computer\n\n"
 		"To enable device installation:\n\n"
-		"1. install Homebrew: [http://brew.sh](http://brew.sh) (_if not already installed_)\n"
+		"1. install Homebrew: [https://brew.sh/](https://brew.sh/) (_if not already installed_)\n"
 		"2. run the Terminal command:\n\n"
 		"\t`brew install ideviceinstaller`\n\n"
-		"[More info](http://www.libimobiledevice.org/)";
+		"[More info](https://libimobiledevice.org/)";
 
 		[self showError:@"Device Installation Utility Not Found" message:errorMsg helpURL:nil parentWindow:[self window]];
 	}
@@ -1093,7 +1065,7 @@ static NSString *kValueNone = @"None";
 
 		[self startTailDeviceSyslog:[XcodeToolHelper pathForIOSDeviceSyslogUtility] appBundlePath:appBundlePath deviceID:@"Apple TVOS"];
 
-		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the tvOS device and is ready to run\n\nThe device's syslog will appear in the Corona Console until this message is closed (you'll need to *launch* the app on the device before anything appears in the syslog)", self.appName];
+		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the tvOS device and is ready to run\n\nThe device's syslog will appear in the Console until this message is closed (you'll need to *launch* the app on the device before anything appears in the syslog)", self.appName];
 
 		[self showMessage:@"App Installation Complete" message:message helpURL:nil parentWindow:[self window]];
 
@@ -1109,7 +1081,7 @@ static NSString *kValueNone = @"None";
 {
      [self setProgressBarLabel:@"Sending app to App Store…"];
 
-    __block size_t code = WebServicesSession::kNoError;
+    __block size_t code = PlatformAppPackager::kNoError;
 
 #ifdef USE_APPLICATION_LOADER
 	// All this does is make calls to Application Loader so unless we're using that, it can skipped
@@ -1121,7 +1093,7 @@ static NSString *kValueNone = @"None";
     [self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:NO withBlock:sendToAppStoreBlock];
 #endif // USE_APPLICATION_LOADER
 
-    if (code != WebServicesSession::kNoError)
+    if (code != PlatformAppPackager::kNoError)
     {
 		NSString *buildMsg = nil;
         NSString *title = nil;
@@ -1159,10 +1131,18 @@ static NSString *kValueNone = @"None";
 						 description:[NSString stringWithFormat:@"Upload of \"%@\" to the App Store is complete", self.appName]
 							iconData:nil];
 #else
-		NSString *message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store using [Application Loader](launch-bundle:com.apple.itunes.connect.ApplicationLoader).\n\nPress *Choose* on the *Application Loader* window to load\n*%@* into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".ipa"]];
+		NSString *message;
+		if([[NSWorkspace sharedWorkspace] URLForApplicationToOpenURL:[NSURL URLWithString:@"transporter://"]])
+		{
+			message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store using the [Transporter](launch-bundle:com.apple.TransporterApp|macappstore://itunes.apple.com/app/id1450874784) app.\n\nPress *Add App* on the *Transporter* window to load `%@` into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".ipa"]];
+		}
+		else
+		{
+			message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store. Install and run the [Transporter](launch-bundle:com.apple.TransporterApp|macappstore://itunes.apple.com/app/id1450874784) app.\n\nAfter signing into *Transporter* app, press *Add App* on its window to load `%@` into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".ipa"]];
+		}
 
 		// Open Application Loader
-		[[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:@"com.apple.itunes.connect.ApplicationLoader"
+		[[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:@"com.apple.TransporterApp"
 															 options:NSWorkspaceLaunchDefault
 									  additionalEventParamDescriptor:nil
 													launchIdentifier:nil];

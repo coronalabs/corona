@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -46,6 +30,7 @@
 @property (nonatomic, readwrite, copy) CoronaView *coronaView;
 @property (nonatomic, readwrite, copy) NSString *appPath;
 @property (nonatomic, readwrite, assign) BOOL suspendWhenMinimized;
+@property (nonatomic, readwrite, assign) BOOL lastSentWindowStateForeground;
 @end
 
 
@@ -54,6 +39,12 @@
 @synthesize appPath = _appPath;
 @synthesize coronaView = _coronaView;
 @synthesize suspendWhenMinimized = _suspendWhenMinimized;
+@synthesize lastSentWindowStateForeground;
+
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app
+{
+	return NO;
+}
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -71,6 +62,17 @@
     }
 }
 
+- (void)sentWindowForegroundEvent:(BOOL)foreground
+{
+	if(foreground!=self.lastSentWindowStateForeground) {
+		self.lastSentWindowStateForeground = foreground;
+		NSDictionary *event = @{ @"name" : @"windowState",
+						 @"phase" : foreground?@"foreground":@"background" };
+
+		[_coronaView sendEvent:event];
+	}
+}
+
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
 	if (! [_coronaView settingsIsWindowResizable])
@@ -83,6 +85,14 @@
 -(void)didPrepareOpenGLContext:(id)sender
 {
 	fGLView = sender;
+
+	if ([_coronaView settingsIsTransparent])
+	{
+		NSOpenGLContext* context = [fGLView openGLContext];
+		GLint opacity = 0;
+
+		[context setValues: &opacity forParameter: NSOpenGLCPSurfaceOpacity];
+	}
 }
 - (id) layerHostView
 {
@@ -91,6 +101,8 @@
 
 - (void)awakeFromNib
 {
+	self.lastSentWindowStateForeground = true;
+	
 	[super awakeFromNib];
     
  	[_window setDelegate:self];
@@ -151,9 +163,6 @@
 		[launchArgs setValue:[argv objectsAtIndexes:indices] forKey:@"args"];
 	}
 
-	// Make the default window background black which helps in full screen
-	[_window setBackgroundColor:NSColor.blackColor];
-
 	// Start the Corona app
 	[_coronaView setCoronaViewDelegate:self];
 	[_coronaView runWithPath:_appPath parameters:launchArgs];
@@ -168,6 +177,17 @@
 		  forEventClass:kInternetEventClass
 		     andEventID:kAEGetURL];
 
+	// Make the default window background black which helps in full screen
+	if (![_coronaView settingsIsTransparent])
+	{
+		[_window setBackgroundColor:NSColor.blackColor];
+	}
+	
+	else
+	{
+		[_window setBackgroundColor:NSColor.clearColor];
+	}
+	
     _suspendWhenMinimized = [_coronaView settingsSuspendWhenMinimized];
     
     // Make the window full screen capable (this is always done because the
@@ -318,27 +338,35 @@
 {
 	NSUInteger windowStyleMask = [_window styleMask];
 
-	if ([_coronaView settingsIsWindowResizable])
+	if (![_coronaView settingsIsTransparent])
 	{
-		// Make the window resizable
-		windowStyleMask |= NSResizableWindowMask;
-	}
+		if ([_coronaView settingsIsWindowResizable])
+		{
+			// Make the window resizable
+			windowStyleMask |= NSResizableWindowMask;
+		}
 
-	if ([_coronaView settingsIsWindowCloseButtonEnabled])
-	{
-		// Make the window closeable
-		windowStyleMask |= NSClosableWindowMask;
-	}
+		if ([_coronaView settingsIsWindowCloseButtonEnabled])
+		{
+			// Make the window closeable
+			windowStyleMask |= NSClosableWindowMask;
+		}
 
-	if ([_coronaView settingsIsWindowMinimizeButtonEnabled])
-	{
-		// Make the window minimizable
-		windowStyleMask |= NSMiniaturizableWindowMask;
-	}
+		if ([_coronaView settingsIsWindowMinimizeButtonEnabled])
+		{
+			// Make the window minimizable
+			windowStyleMask |= NSMiniaturizableWindowMask;
+		}
 
-	if (! [_coronaView settingsIsWindowTitleShown])
+		if (! [_coronaView settingsIsWindowTitleShown])
+		{
+			windowStyleMask |= NSFullSizeContentViewWindowMask;
+		}
+	}
+	
+	else
 	{
-		windowStyleMask |= NSFullSizeContentViewWindowMask;
+		windowStyleMask = NSBorderlessWindowMask;
 	}
 
 	// This triggers a window resize
@@ -516,6 +544,14 @@
 	//NSDEBUG(@"windowWillEnterFullScreen: %@ %@", NSStringFromRect([_window frame]), NSStringFromRect([[_window screen] frame]) );
 }
 
+- (void)windowDidEnterFullScreen:(NSNotification *)notification
+{
+	if ([_coronaView settingsDefaultWindowMode] == kFullscreen)
+	{
+		[self setWindowStyles];
+	}
+}
+
 - (void)windowWillExitFullScreen:(NSNotification *)notification
 {
 	//NSDEBUG(@"windowWillExitFullScreen: %@ (inLiveResize %s)", notification, ([_window inLiveResize] ? "YES" : "NO"));
@@ -536,6 +572,17 @@
 {
 	NSLog(@"notifyRuntimeError: %@", mesg);
 }
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+	[self sentWindowForegroundEvent:false];
+}
+
+- (void) applicationDidBecomeActive:(NSNotification *)notification
+{
+	[self sentWindowForegroundEvent:true];
+}
+
 
 - (void) performPause:(id) sender
 {
@@ -563,6 +610,8 @@
 
 - (void) windowDidMiniaturize:(NSNotification *)notification
 {
+	[self sentWindowForegroundEvent:false];
+
     if (_suspendWhenMinimized)
     {
         [_coronaView suspend];
@@ -571,6 +620,8 @@
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
+	[self sentWindowForegroundEvent:true];
+
     if (_suspendWhenMinimized)
     {
         [_coronaView resume];

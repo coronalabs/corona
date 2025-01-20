@@ -76,46 +76,59 @@ mkdir -p "${UNIVERSAL_OUTPUTFOLDER}"
 unset TOOLCHAINS
 
 # STEP 1. Build Device and Simulator versions
-xcodebuild -project ${PROJECT_FILE_PATH} -target "${TARGET_XCODE}" -configuration ${CONFIGURATION} -sdk $SDK_DEVICE ONLY_ACTIVE_ARCH=NO BUILD_DIR="${OUTPUT_DIR}" BUILD_ROOT="${OUTPUT_DIR}" OBJROOT="${OUTPUT_DIR}/DependentBuilds" build
-xcodebuild -project ${PROJECT_FILE_PATH} -target "${TARGET_XCODE}" -configuration ${CONFIGURATION} -sdk $SDK_SIMULATOR ONLY_ACTIVE_ARCH=NO BUILD_DIR="${OUTPUT_DIR}" BUILD_ROOT="${OUTPUT_DIR}" OBJROOT="${OUTPUT_DIR}/DependentBuilds" build
+xcodebuild -project "${PROJECT_FILE_PATH}" -target "${TARGET_XCODE}" -configuration ${CONFIGURATION} -sdk $SDK_DEVICE ONLY_ACTIVE_ARCH=NO BUILD_DIR="${OUTPUT_DIR}" BUILD_ROOT="${OUTPUT_DIR}" OBJROOT="${OUTPUT_DIR}/DependentBuilds" build
+xcodebuild -project "${PROJECT_FILE_PATH}" -target "${TARGET_XCODE}" -configuration ${CONFIGURATION} -sdk $SDK_SIMULATOR ONLY_ACTIVE_ARCH=NO BUILD_DIR="${OUTPUT_DIR}" BUILD_ROOT="${OUTPUT_DIR}" OBJROOT="${OUTPUT_DIR}/DependentBuilds" build
 
 # STEP 2. Copy the framework structure (from $SDK_DEVICE build) to the universal folder
-cp -R "${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework" "${UNIVERSAL_OUTPUTFOLDER}/"
+# cp -R "${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework" "${UNIVERSAL_OUTPUTFOLDER}/"
 
-# dSYM on release builds
-if [ "${CONFIGURATION}" == "Release" ]
-then
-	cp -R "${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework.dSYM" "${UNIVERSAL_OUTPUTFOLDER}/"
-fi
-
-
-# STEP 3. Copy Swift modules from $SDK_SIMULATOR build (if it exists) to the copied framework directory
-SIMULATOR_SWIFT_MODULES_DIR="${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework/Modules/${TARGET_XCODE}.swiftmodule/."
-if [ -d "${SIMULATOR_SWIFT_MODULES_DIR}" ]; then
-cp -R "${SIMULATOR_SWIFT_MODULES_DIR}" "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.framework/Modules/${TARGET_XCODE}.swiftmodule"
-fi
+# # dSYM on release builds
+# if [ "${CONFIGURATION}" == "Release" ]
+# then
+# 	cp -R "${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework.dSYM" "${UNIVERSAL_OUTPUTFOLDER}/"
+# fi
 
 
-# STEP 4. Create universal binary file using lipo and place the combined executable in the copied framework directory
-lipo -create -output "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.framework/${TARGET_XCODE}" \
-	"${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework/${TARGET_XCODE}" \
-	"${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework/${TARGET_XCODE}"
+# # STEP 3. Copy Swift modules from $SDK_SIMULATOR build (if it exists) to the copied framework directory
+# SIMULATOR_SWIFT_MODULES_DIR="${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework/Modules/${TARGET_XCODE}.swiftmodule/."
+# if [ -d "${SIMULATOR_SWIFT_MODULES_DIR}" ]; then
+# cp -R "${SIMULATOR_SWIFT_MODULES_DIR}" "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.framework/Modules/${TARGET_XCODE}.swiftmodule"
+# fi
 
-# dSYM on release builds
-if [ "${CONFIGURATION}" == "Release" ]
-then
-	lipo -create -output "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.framework.dSYM/Contents/Resources/DWARF/${TARGET_XCODE}" \
-		"${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework.dSYM/Contents/Resources/DWARF/${TARGET_XCODE}" \
-		"${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework.dSYM/Contents/Resources/DWARF/${TARGET_XCODE}"
-fi
+
+# # STEP 4. Create universal binary file using lipo and place the combined executable in the copied framework directory
+# lipo -create -output "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.framework/${TARGET_XCODE}" \
+# 	"${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework/${TARGET_XCODE}" \
+# 	"${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework/${TARGET_XCODE}"
+
+# # dSYM on release builds
+# if [ "${CONFIGURATION}" == "Release" ]
+# then
+# 	lipo -create -output "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.framework.dSYM/Contents/Resources/DWARF/${TARGET_XCODE}" \
+# 		"${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework.dSYM/Contents/Resources/DWARF/${TARGET_XCODE}" \
+# 		"${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework.dSYM/Contents/Resources/DWARF/${TARGET_XCODE}"
+# fi
 
 
 # STEP 5. Convenience step to copy the framework to the project's directory
 # cp -R "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.framework" "${OUTPUT_DIR}"
 
 
-# STEP 6. Convenience step to open the project's directory in Finder
+# STEP 6. Make xcframework
+DSYM_PATH="${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework.dSYM"
+if [ -d "$DSYM_PATH" ]
+then
+	DSYM_COMMAND=(-debug-symbols "$DSYM_PATH")
+fi
+rm -rf "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.xcframework"
+xcodebuild -create-xcframework -framework "${OUTPUT_DIR}/${CONFIGURATION}-$SDK_SIMULATOR/${TARGET_XCODE}.framework" \
+							   -framework "${OUTPUT_DIR}/${CONFIGURATION}-$SDK_DEVICE/${TARGET_XCODE}.framework" \
+							   "${DSYM_COMMAND[@]}" \
+							   -output "${UNIVERSAL_OUTPUTFOLDER}/${TARGET_XCODE}.xcframework"
+
+
+# STEP 7. Convenience step to open the project's directory in Finder
 if [ -z "${SUPPRESS_GUI}" ]
 then
-	open "${OUTPUT_DIR}"
+	open "${UNIVERSAL_OUTPUTFOLDER}"
 fi

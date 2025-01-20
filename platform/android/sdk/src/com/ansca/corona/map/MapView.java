@@ -1,29 +1,15 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
 // For overview and more information on licensing please refer to README.md
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 package com.ansca.corona.maps;
+
+import android.webkit.WebSettings;
 
 /**
  * View for displaying a map.
@@ -91,7 +77,7 @@ public class MapView extends android.widget.FrameLayout {
 	 */
 	public MapView(android.content.Context context, com.ansca.corona.CoronaRuntime runtime, com.ansca.corona.Controller controller) {
 		super(context);
-		
+
 		// Throw an exception if this application does not have the following permission.
 		context.enforceCallingOrSelfPermission(android.Manifest.permission.INTERNET, null);
 
@@ -102,7 +88,7 @@ public class MapView extends android.widget.FrameLayout {
 		fIdCounter = new java.util.concurrent.atomic.AtomicInteger(1);
 
 		fMarkerTable = new java.util.Hashtable<Integer, MapMarker>();
-		
+
 		// Initialize member variables.
 		fOperationQueue = new java.util.LinkedList<Runnable>();
 		fIsMapLoaded = false;
@@ -161,10 +147,10 @@ public class MapView extends android.widget.FrameLayout {
 		settings.setDomStorageEnabled(true);
 
 		// Although CoronaEnviornment.getInternalWebCachesDirectory() is our class, we don't want to expose that which is why
+
+		settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		// we have to use reflection to access it
-		settings.setAppCachePath(getInternalCacheDirectory(context, "getInternalWebCachesDirectory").getAbsolutePath());
 		settings.setAllowFileAccess(true);
-		settings.setAppCacheEnabled(true);
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			try {
 				java.lang.reflect.Method setEnableSmoothTransitionMethod;
@@ -174,10 +160,10 @@ public class MapView extends android.widget.FrameLayout {
 			}
 			catch (Exception ex) { ex.printStackTrace(); }
 		}
-		
+
 		// Set up a web view event listener.
 		fWebView.setWebViewClient(new WebViewEventHandler());
-		
+
 		// Set up a UI listener for handling current location tracking request.
 		fWebView.setWebChromeClient(new android.webkit.WebChromeClient() {
 			@Override
@@ -591,12 +577,7 @@ public class MapView extends android.widget.FrameLayout {
 	 * <p>
 	 * Setting both arguments "title" and "subtitle" to null or empty string will prevent an annotation
 	 * from being displayed on the marker.
-	 * @param latitude The latitude position to place the marker at.
-	 * @param longitude The longitude position to place the marker at.
-	 * @param title The title text to put on the marker's annotation.
-	 *              Set to null or empty string to not add a title to the annotation.
-	 * @param subtitle The description text to put below the title in the marker's annotation.
-	 *                 Set to null or empty string to not add a description to the annotation.
+	 * @param mapMarker contains description of the map marker
 	 */
 	public void addMarker(final MapMarker mapMarker) {
 		fOperationQueue.add(new Runnable() {
@@ -604,7 +585,7 @@ public class MapView extends android.widget.FrameLayout {
 			public void run() {
 				StringBuilder builder = new StringBuilder(64);
 				builder.append("javascript:addMarker(");
-					
+
 				builder.append(Integer.toString(mapMarker.getMarkerId()));
 
 				builder.append(",");
@@ -642,7 +623,7 @@ public class MapView extends android.widget.FrameLayout {
 				else {
 					builder.append("null");
 				}
-				
+
 				builder.append(")");
 				fWebView.loadUrl(builder.toString());
 			}
@@ -675,7 +656,7 @@ public class MapView extends android.widget.FrameLayout {
 		}
 		requestExecuteQueuedOperations();
 		MapMarker marker = fMarkerTable.get(markerId);
-		
+
 		if (marker != null) {
 			marker.deleteRef(fCoronaRuntime);
 			fMarkerTable.remove(markerId);
@@ -989,7 +970,7 @@ public class MapView extends android.widget.FrameLayout {
 				if (marker != null) {
 					fCoronaRuntime.getTaskDispatcher().send(new MapMarkerTask(marker));
 				}
-			}			
+			}
 		}
 
 		@android.webkit.JavascriptInterface
@@ -1019,11 +1000,11 @@ public class MapView extends android.widget.FrameLayout {
 			if ((url != null) && (url.toLowerCase().contains("maps.google.com/maps?") == false)) {
 				fController.openUrl(url);
 			}
-			
+
 			// Return true to inform the MapView's web view to not load the given URL.
 			return true;
 		}
-		
+
 		/**
 		 * Called when a web page is about to be loaded.
 		 * @param view Reference to the WebView that the page is loading in.
@@ -1034,7 +1015,7 @@ public class MapView extends android.widget.FrameLayout {
 		public void onPageStarted(android.webkit.WebView view, String url, android.graphics.Bitmap favicon) {
 			super.onPageStarted(view, url, favicon);
 		}
-		
+
 		/**
 		 * Called when the web page has finished loading.
 		 * @param view Reference to the WebView that has finished loading the page.

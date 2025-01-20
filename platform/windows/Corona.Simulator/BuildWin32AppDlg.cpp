@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,10 +16,9 @@
 #include "Interop\SimulatorRuntimeEnvironment.h"
 #include "CoronaInterface.h"
 #include "CoronaProject.h"
-#include "DirDialog.h"
+#include "BrowseDirDialog.h"
 #include "MessageDlg.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_Win32AppPackager.h"
 #include "Rtt_Win32AppPackagerParams.h"
 #include "Rtt_WinPlatform.h"
@@ -150,16 +133,9 @@ void CBuildWin32AppDlg::OnBrowseSaveto()
 		directoryPath.ReleaseBuffer();
 	}
 
-	// Display the directory selection dialog.
-	CDirDialog selectDirectoryDialog;
-	selectDirectoryDialog.m_strSelDir = directoryPath;
-	selectDirectoryDialog.m_strTitle.LoadString(IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION);
-	auto result = selectDirectoryDialog.DoBrowse();
-
 	// Update the "Save to Folder" field if a selection was made.
-	if (IDOK == result)
+	if (CBrowseDirDialog::Browse(directoryPath, IDS_SELECT_BUILD_OUTPUT_FOLDER_DESCRIPTION))
 	{
-		directoryPath = selectDirectoryDialog.m_strPath;
 		SetDlgItemText(IDC_BUILD_SAVETO, directoryPath);
 	}
 }
@@ -407,13 +383,8 @@ void CBuildWin32AppDlg::OnOK()
 		return;
 	}
 
-	// Display a nag window if the user is not authorized to build for the selected app store.
-	// In this case, the build system will create a trial version of the app instead.
-	appAllowFullBuild(Rtt::TargetDevice::kWin32Platform);
-
 	// Create the packager used to build the app.
 	auto platformServicesPointer = GetWinProperties()->GetServices();
-	Rtt::WebServicesSession webSession(*platformServicesPointer);
 	Rtt::Win32AppPackager packager(*platformServicesPointer);
 
 	// Read and validate the project's "build.settings" file.
@@ -498,11 +469,11 @@ void CBuildWin32AppDlg::OnOK()
 
 	// Build the Win32 desktop application.
 	BeginWaitCursor();
-	int buildResultCode = packager.Build(&params, webSession, tempDirectoryPath.GetUTF8());
+	int buildResultCode = packager.Build(&params, tempDirectoryPath.GetUTF8());
 	EndWaitCursor();
 
 	// Display an error message if the build failed.
-	if (buildResultCode != Rtt::WebServicesSession::kNoError)
+	if (buildResultCode != 0)
 	{
 		// Display the error message reported by the build system.
 		CStringW title;

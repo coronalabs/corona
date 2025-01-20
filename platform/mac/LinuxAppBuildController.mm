@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -34,10 +18,6 @@
 #import "Rtt_LinuxAppPackager.h"
 #import "Rtt_MacPlatform.h"
 
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
-
 #import "Rtt_MacConsolePlatform.h"
 #import "TextEditorSupport.h"
 
@@ -49,9 +29,9 @@ using namespace Rtt;
 
 @implementation LinuxAppBuildController
 
-- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath authorizer:(const Rtt::Authorization *)authorizer;
+- (id)initWithWindowNibName:(NSString*)nibFile projectPath:(NSString *)projPath;
 {
-	self = [super initWithWindowNibName:nibFile projectPath:projPath authorizer:authorizer];
+	self = [super initWithWindowNibName:nibFile projectPath:projPath];
 
 	if ( self )
 	{
@@ -162,28 +142,6 @@ using namespace Rtt;
 
 - (void)alertDidEnd:(NSAlert *)alert returnCode:(int)returnCode contextInfo:(void  *)contextInfo
 {
-//	if ( NSAlertThirdButtonReturn == returnCode )
-//	{
-//		NSString *dstApp = [self appPackagePath];
-//		NSString* appuploadertool = [sdkRoot stringByAppendingPathComponent:@"/Applications/Utilities/Application Loader.app"];
-//
-//
-//		NSFileManager* filemanager = [NSFileManager defaultManager];
-//
-//		NSString* zipfile = nil;
-//
-//		if( [filemanager fileExistsAtPath:dstApp] )
-//		{
-//			zipfile = [[dstApp stringByDeletingPathExtension] stringByAppendingPathExtension:@"zip"];
-//
-//			if( ! [filemanager fileExistsAtPath:zipfile] )
-//			{
-//				zipfile = nil;
-//			}
-//		}
-//		[[NSWorkspace sharedWorkspace] openFile:zipfile withApplication:appuploadertool];
-//	}
-
 	[super alertDidEnd:alert returnCode:returnCode contextInfo:contextInfo];
 }
 
@@ -207,7 +165,6 @@ using namespace Rtt;
 {
 	MacConsolePlatform platform;
 	MacPlatformServices *services = new MacPlatformServices( platform );
-	WebServicesSession *session = new WebServicesSession( *services );
 	
 	if ( ! [self verifyBuildTools:sender] )
 	{
@@ -227,25 +184,6 @@ using namespace Rtt;
 	
 	[self setProgressBarLabel:@"Building for LINUX…"];
 
-	__block NSString *message = nil;
-	__block BOOL loginSuccessful = NO;
-	
-
-	// Login to the authorization server
-	void (^login)() = ^()
-	{
-		loginSuccessful = [self loginSession:session services:services ticket:[appDelegate ticket] message:&message];
-	};
-	
-	[self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:NO withBlock:login];
-	
-	if (! loginSuccessful)
-	{
-		[self logEvent:@"build-bungled" key:@"reason" value:@"cannot-login"];
-		[self showError:@"Cannot Login To Build Server" message:message helpURL:nil parentWindow:[self window]];
-		return;
-	}
-	
 	const char* name = [self.appName UTF8String];
 	const char* versionname = NULL;
 	
@@ -295,15 +233,14 @@ using namespace Rtt;
 		return;
 	}
 
-	const Rtt::AuthorizationTicket *ticket = [appDelegate ticket];
-	NSString *username = [NSString stringWithExternalString:ticket->GetUsername()];
+	NSString *username = @"anonymous@corona";
 	const char* identity = [username UTF8String];
 	
 	bool useStandartResources = (fUseStandartResources.state == NSOnState);
 	
 	int targetVersion = Rtt::TargetDevice::kLinux;
 	const char * customBuildId = packager->GetCustomBuildId();
-	LinuxAppPackagerParams * params = new LinuxAppPackagerParams(name, versionname, identity, NULL, srcDir, dstDir,	NULL, TargetDevice::kLinuxPlatform, targetVersion, TargetDevice::kLinux, customBuildId, NULL, "bundleId", true, NULL, useStandartResources );
+	LinuxAppPackagerParams * params = new LinuxAppPackagerParams(name, versionname, identity, NULL, srcDir, dstDir,	NULL, TargetDevice::kLinuxPlatform, targetVersion, TargetDevice::kLinux, customBuildId, NULL, "bundleId", true, NULL, useStandartResources, false, false );
 	
 	NSString *kBuildSettings = @"build.settings";
 	params->SetBuildSettingsPath( [[self.projectPath stringByAppendingPathComponent:kBuildSettings] UTF8String]);
@@ -313,13 +250,13 @@ using namespace Rtt;
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	// Do the actual build
-	__block size_t code = WebServicesSession::kNoError;
+	__block size_t code = PlatformAppPackager::kNoError;
 	
 
 	void (^performBuild)() = ^()
 	{
 		NSString* tmpDirBase = NSTemporaryDirectory();
-		code = packager->Build( params, *session, [tmpDirBase UTF8String] );
+		code = packager->Build( params, [tmpDirBase UTF8String] );
 	};
 	
 	[self runLengthyOperationForWindow:[self window] delayProgressWindowBy:0 allowStop:YES withBlock:performBuild];
@@ -331,29 +268,19 @@ using namespace Rtt;
 		Rtt_Log("WARNING: Build stopped by request");
 		[self showMessage:@"Build Stopped" message:@"Build stopped by request" helpURL:nil parentWindow:[self window]];
 	}
-	else if (code == WebServicesSession::kNoError)
+	else if (code == PlatformAppPackager::kNoError)
 	{
 		[self logEvent:@"build-succeeded"];
 		
 		[appDelegate notifyWithTitle:@"Corona Simulator"
 										 description:[NSString stringWithFormat:@"LINUX build of \"%@\" complete", self.appName]
 												iconData:nil];
-		
-		NSRunningApplication *app = [[NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.coronalabs.CoronaLiveServer"] firstObject];
-		if(!app) {
-			NSString *liveServerPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Corona Live Server.app"];
-			app = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:[NSURL fileURLWithPath:liveServerPath] options:(NSWorkspaceLaunchAndHide|NSWorkspaceLaunchWithoutActivation) configuration:@{} error:nil];
-		}
-		NSString *dstHtmlPath = [self.dstPath stringByAppendingPathComponent:self.appName];
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			if(!app.finishedLaunching) {
-				while (![[[NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.coronalabs.CoronaLiveServer"] firstObject] isFinishedLaunching]) {
-					[NSThread sleepForTimeInterval:0.01];
-				}
-			}
+												
+		NSString *message = [NSString stringWithFormat:@"Showing built LINUX app *%@* in Finder", self.appName];
 
-			[[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"linuxProjectBuilt" object:nil userInfo:@{@"root":dstHtmlPath} deliverImmediately:YES];
-		});
+		[self showMessage:@"Build Complete" message:message helpURL:nil parentWindow:[self window]];
+		
+		[[NSWorkspace sharedWorkspace] selectFile:[self appBundleFile] inFileViewerRootedAtPath:@""];
 
 		// Do nothing
 		[self logEvent:@"build-post-action" key:@"post-action" value:@"do-nothing"];

@@ -1,9 +1,11 @@
-// ----------------------------------------------------------------------------
-// 
-// CoronaView.h
-// Copyright (c) 2013 Corona Labs Inc. All rights reserved.
-// 
-// ----------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+//
+// This file is part of the Corona game engine.
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #import <GLKit/GLKit.h>
 #import <CoreLocation/CoreLocation.h>
@@ -49,6 +51,7 @@ typedef enum {
 - (double) settingsImageSuffixScaleByIndex:(int) index;
 - (BOOL) settingsSuspendWhenMinimized;
 - (BOOL) settingsIsWindowTitleShown;
+- (BOOL) settingsIsTransparent;
 
 - (id)sendEvent:(NSDictionary *)event;
 

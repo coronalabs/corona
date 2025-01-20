@@ -16,12 +16,9 @@
 /* The size of `ssize_t', as computed by sizeof. */
 #define SIZEOF_SSIZE_T 4
 
-#ifdef NINTENDO_LIB
+#ifdef NXS_LIB
 	#include <sys/types.h>
 	#include <stdint.h>
-	#define ssize_t __int64
-	#define strncasecmp _strnicmp
-	#define strcasecmp _stricmp
 #endif
 
 #ifdef LINUX_LIB

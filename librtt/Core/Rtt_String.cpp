@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -55,7 +39,7 @@ Rtt_StringCompareNoCase( const char * s1, const char * s2 )
 			return -1;
 		return 1;
 	}
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV )
 	return _stricmp( s1, s2 );
 #else
 	return strcasecmp( s1, s2 );
@@ -223,6 +207,37 @@ String::Append(const char *str)
 
 	Rtt_FREE(fBuffer);
 	fBuffer = result;
+}
+
+template<typename T, T kPrime, T kOffsetBasis>
+T
+GetHash( const char* buffer )
+{
+	// https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
+    T hash = kOffsetBasis;
+
+	if ( NULL != buffer ) // if absent, interpret as empty string
+	{
+		for ( int i = 0; buffer[i]; i++)
+		{
+			hash *= kPrime;
+			hash ^= buffer[i];
+		}
+	}
+
+    return hash;
+}
+
+U32
+String::GetHash32() const
+{
+	return GetHash<U32, 0x01000193, 0x811C9DC5>( GetString() );
+}
+
+U64
+String::GetHash64() const
+{
+	return GetHash<U64, 0x00000100000001B3, 0xCBF29CE484222325>( GetString() );
 }
 
 void

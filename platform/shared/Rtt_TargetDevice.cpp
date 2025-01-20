@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -62,7 +46,7 @@ static StaticTargetDeviceFinalizer sTargetDeviceFinalizer;
 
 
 #if defined( Rtt_WIN_ENV )
-const char *kDefaultSkinName = "Samsung Galaxy S5";
+const char *kDefaultSkinName = "Samsung Galaxy S21";
 #else
 const char *kDefaultSkinName = "iPhone 5";
 #endif
@@ -245,6 +229,7 @@ static const char kWin32PlatformString[] = "Win32";
 static const char kOSXPlatformString[] = "OSX";
 static const char kWinPhoneSilverlightPlatformString[] = "WinPhoneSilverlight";
 static const char kTVOSPlatformString[] = "tvOS";
+static const char kSwitchPlatformString[] = "NxS Switch";
 
 const char*
 TargetDevice::StringForPlatform( TargetDevice::Platform platform )
@@ -354,6 +339,7 @@ static const char kOSXPlatformTag1[] = "osx";
 static const char kOSXPlatformTag2[] = "macos";
 static const char kWinPhoneSilverlightPlatformTag[] = "winphonesilverlight";
 static const char kTVOSPlatformTag[] = "tvos";
+static const char kNXSPlatformTag[] = "nx64";
 
 const char*
 TargetDevice::TagForPlatform( TargetDevice::Platform platform )
@@ -392,6 +378,8 @@ TargetDevice::TagForPlatform( TargetDevice::Platform platform )
 		case kTVOSPlatform:
 			result = kTVOSPlatformTag;
 			break;
+		case kNxSPlatform:
+			result = kNXSPlatformTag;
 		default:
 			Rtt_ASSERT_NOT_IMPLEMENTED();
 			break;
@@ -447,6 +435,10 @@ TargetDevice::PlatformForTag( const char *str )
 		else if ( 0 == Rtt_StringCompareNoCase( str, kTVOSPlatformTag ) )
 		{
 			result = kTVOSPlatform;
+		}
+		else if (0 == Rtt_StringCompareNoCase(str, kNXSPlatformTag))
+		{
+			result = kNxSPlatform;
 		}
 	}
 
@@ -693,6 +685,10 @@ TargetDevice::PlatformForDeviceType( const char *typeName )
 		else if (substringSearchCallback(typeName, "winphone"))
 		{
 			platformType = kWinPhoneSilverlightPlatform;
+		}
+		else if (substringSearchCallback(typeName, "nx64"))
+		{
+			platformType = kNxSPlatform;
 		}
 	}
 

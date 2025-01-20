@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -237,6 +221,7 @@ int APIENTRY wWinMain(
 	// This child control will be automatically sized to fit the main window's client area via WM_SIZE messages above.
 	// Note: Rendering to a child control forces Windows to render OpenGL in non-exclusive fullscreen mode when
 	//       displaying the window as a maximized borderless window, which allows us to display native Win32 UI.
+	HWND testSurfaceHandle = NULL;
 	{
 		RECT clientBounds{};
 		::GetClientRect(sMainWindowHandle, &clientBounds);
@@ -250,6 +235,11 @@ int APIENTRY wWinMain(
 		windowClassSettings.hbrBackground = (HBRUSH)::GetStockObject(BLACK_BRUSH);
 		windowClassSettings.lpszClassName = L"CoronaLabs.Corona.RenderSurface";
 		auto atom = ::RegisterClassExW(&windowClassSettings);
+		testSurfaceHandle = ::CreateWindowW(
+				windowClassSettings.lpszClassName, nullptr, controlStyles, 0, 0,
+				clientBounds.right - clientBounds.left, clientBounds.bottom - clientBounds.top,
+				sMainWindowHandle, nullptr, instanceHandle, nullptr);
+		ShowWindow(testSurfaceHandle, SW_HIDE);
 		sRenderSurfaceWindowHandle = ::CreateWindowW(
 				windowClassSettings.lpszClassName, nullptr, controlStyles, 0, 0,
 				clientBounds.right - clientBounds.left, clientBounds.bottom - clientBounds.top,
@@ -267,6 +257,7 @@ int APIENTRY wWinMain(
 	Corona::Win32::LaunchSettings& settings = coronaRuntime.GetLaunchSettings();
 	settings.SetMainWindowHandle(sMainWindowHandle);
 	settings.SetRenderSurfaceHandle(sRenderSurfaceWindowHandle);
+	settings.SetTestSurfaceHandle(testSurfaceHandle);
 
 	// Fetch the command line arguments (if any) and copy them to Corona's launch settings.
 	bool hasCommandLineArguments = false;

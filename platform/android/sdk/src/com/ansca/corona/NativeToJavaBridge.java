@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -39,14 +23,19 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.net.URL;
 import java.net.MalformedURLException;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.ContentResolver;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -59,10 +48,13 @@ import android.graphics.Paint;
 import android.media.MediaScannerConnection;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.location.Location;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
+import android.view.DisplayCutout;
 
 import dalvik.system.DexClassLoader;
 
@@ -87,171 +79,7 @@ import org.json.JSONObject;
 import com.naef.jnlua.JavaFunction;
 import com.naef.jnlua.LuaState;
 
-/**
- * This is the class that handles callbacks from C++
- * 
- * javap -classpath bin5 -protected com.ansca.corona.NativeToJavaBridge -s
 
-Compiled from "NativeToJavaBridge.java"
-public class com.ansca.corona.NativeToJavaBridge extends java.lang.Object{
-public com.ansca.corona.CoronaActivity getActivity();
-  Signature: ()Lcom/ansca/corona/CoronaActivity;
-protected static void callRequestExitApplication();
-  Signature: ()V
-protected static void ping();
-  Signature: ()V
-protected static boolean callGetRawAssetExists(java.lang.String);
-  Signature: (Ljava/lang/String;)Z
-protected static java.lang.String callExternalizeResource(java.lang.String);
-  Signature: (Ljava/lang/String;)Ljava/lang/String;
-protected static boolean callSaveBitmap(int[], int, int, int, java.lang.String);
-  Signature: ([IIIILjava/lang/String;)Z
-protected static byte[] callGetText(java.lang.String, java.lang.String, float, int, int, java.lang.String);
-  Signature: (Ljava/lang/String;Ljava/lang/String;F)[B
-protected static java.lang.String[] callGetFonts();
-  Signature: ()[Ljava/lang/String;
-protected static int callGetLastGraphicWidth();
-  Signature: ()I
-protected static int callGetLastGraphicHeight();
-  Signature: ()I
-protected static void callSetTimer(int);
-  Signature: (I)V
-protected static void callCancelTimer();
-  Signature: ()V
-protected static void callLoadSound(int, java.lang.String);
-  Signature: (ILjava/lang/String;)V
-protected static void callLoadEventSound(int, java.lang.String);
-  Signature: (ILjava/lang/String;)V
-protected static void callPlaySound(int, java.lang.String, boolean);
-  Signature: (ILjava/lang/String;Z)V
-protected static void callStopSound(int);
-  Signature: (I)V
-protected static void callPauseSound(int);
-  Signature: (I)V
-protected static void callResumeSound(int);
-  Signature: (I)V
-protected static void callHttpPost(java.lang.String, java.lang.String, java.lang.String);
-  Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-protected static void callPlayVideo(int, java.lang.String);
-  Signature: (ILjava/lang/String;)V
-protected static boolean callOpenUrl(java.lang.String);
-  Signature: (Ljava/lang/String;)Z
-protected static void callShowNativeAlert(java.lang.String, java.lang.String, java.lang.String[]);
-  Signature: (Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
-protected static void callCancelNativeAlert(int);
-  Signature: (I)V
-protected static void callShowTrialAlert();
-  Signature: ()V
-protected static void callDisplayUpdate();
-  Signature: ()V
-protected static void callSetAccelerometerInterval(int);
-  Signature: (I)V
-protected static void callSetGyroscopeInterval(int);
-  Signature: (I)V
-protected static boolean callHasAccelerometer();
-  Signature: ()Z
-protected static boolean callHasGyroscope();
-  Signature: ()Z
-protected static boolean callHasMagnetometer();
-  Signature: ()Z
-protected static void callSetEventNotification(int, boolean);
-  Signature: (IZ)V
-protected static java.lang.String callGetModel();
-  Signature: ()Ljava/lang/String;
-protected static java.lang.String callGetName();
-  Signature: ()Ljava/lang/String;
-protected static java.lang.String callGetUniqueIdentifier(int);
-  Signature: (I)Ljava/lang/String;
-protected static java.lang.String callGetPlatformVersion();
-  Signature: ()Ljava/lang/String;
-protected static java.lang.String callGetProductName();
-  Signature: ()Ljava/lang/String;
-protected static java.lang.String callGetPreference(int);
-  Signature: (I)Ljava/lang/String;
-protected static void callVibrate();
-  Signature: ()V
-protected static void callSetLocationAccuracy(double);
-  Signature: (D)V
-protected static void callSetLocationThreshold(double);
-  Signature: (D)V
-protected static float callGetVolume(int);
-  Signature: (I)F
-protected static void callSetVolume(int, float);
-  Signature: (IF)V
-protected static int callTextFieldCreate(int, int, int, int, int, boolean);
-  Signature: (IIIIIZ)I
-protected static void callTextFieldSetColor(int, int, int, int, int);
-  Signature: (IIIII)V
-protected static void callTextFieldSetText(int, java.lang.String);
-  Signature: (ILjava/lang/String;)V
-protected static void callTextFieldSetSize(int, float);
-  Signature: (IF)V
-protected static void callTextFieldSetFont(int, java.lang.String, float);
-  Signature: (ILjava/lang/String;F)V
-protected static void callTextFieldSetAlign(int, java.lang.String);
-  Signature: (ILjava/lang/String;)V
-protected static void callTextFieldSetSecure(int, boolean);
-  Signature: (IZ)V
-protected static void callTextFieldSetInputType(int, java.lang.String);
-  Signature: (ILjava/lang/String;)V
-protected static int[] callTextFieldGetColor(int);
-  Signature: (I)[I
-protected static java.lang.String callTextFieldGetText(int);
-  Signature: (I)Ljava/lang/String;
-protected static float callTextFieldGetSize(int);
-  Signature: (I)F
-protected static java.lang.String callTextFieldGetFont(int);
-  Signature: (I)Ljava/lang/String;
-protected static java.lang.String callTextFieldGetAlign(int);
-  Signature: (I)Ljava/lang/String;
-protected static boolean callTextFieldGetSecure(int);
-  Signature: (I)Z
-protected static java.lang.String callTextFieldGetInputType(int);
-  Signature: (I)Ljava/lang/String;
-protected static void callDisplayObjectSetVisible(int, boolean);
-  Signature: (IZ)V
-protected static void callDisplayObjectUpdateScreenBounds(int, int, int, int, int);
-  Signature: (IIIII)V
-protected static void callDisplayObjectSetAlpha(int, float);
-  Signature: (IF)V
-protected static void callDisplayObjectSetBackground(int, boolean);
-  Signature: (IZ)V
-protected static boolean callDisplayObjectGetVisible(int);
-  Signature: (I)Z
-protected static float callDisplayObjectGetAlpha(int);
-  Signature: (I)F
-protected static boolean callDisplayObjectGetBackground(int);
-  Signature: (I)Z
-protected static void callDisplayObjectSetFocus(int, boolean);
-  Signature: (IZ)V
-protected static void callRecordStart(java.lang.String, int);
-  Signature: (Ljava/lang/String;I)V
-protected static void callRecordStop(int);
-  Signature: (I)V
-protected static java.nio.ByteBuffer callRecordGetBytes(int);
-  Signature: (I)Ljava/nio/ByteBuffer;
-protected static int callRecordGetCurrentByteCount(int);
-  Signature: (I)I
-protected static void callRecordReleaseCurrentBuffer(int);
-  Signature: (I)V
-protected static void callWebViewCreate(int, int, int, int, int, boolean);
-  Signature: (IIIIIZ)V
-protected static void callWebViewRequestLoadUrl(int, java.lang.String);
-  Signature: (ILjava/lang/String;)V
-protected static int callCryptoGetDigestLength(java.lang.String);
-  Signature: (Ljava/lang/String;)I
-protected static byte[] callCryptoCalculateDigest(java.lang.String, byte[]);
-  Signature: (Ljava/lang/String;[B)[B
-protected static byte[] callCryptoCalculateHMAC(java.lang.String, byte[], byte[]);
-  Signature: (Ljava/lang/String;[B[B)[B
-protected static void callFlurryInit(java.lang.String);
-  Signature: (Ljava/lang/String;)V
-protected static void callFlurryEvent(java.lang.String);
-  Signature: (Ljava/lang/String;)V
-}
-
- * @author Eric
- */
 public class NativeToJavaBridge {
 	
 	private android.content.Context myContext;
@@ -322,10 +150,10 @@ public class NativeToJavaBridge {
 		CoronaRuntime runtime, long luaStateMemoryAddress, String libName, String className )
 	{
 		int result = 0;
-
+		StringBuilder err = new StringBuilder();
 		if (runtime != null) {
 			// Fetch the runtime's Lua state.
-			// TODO: We need to account for corountines.
+			// TODO: We need to account for coroutines.
 			LuaState L = runtime.getLuaState();
 			if ( null == L ) {
 				L = new com.naef.jnlua.LuaState(luaStateMemoryAddress);
@@ -346,20 +174,17 @@ public class NativeToJavaBridge {
 				if ( verbose ) { Log.v( "Corona", "Loading via reflection: " + classPath ); }
 			}
 			catch ( Exception ex ) {
-				// Only emit warning if the plugin is NOT the Google Play Services base library
-				// or the Enterprise splash screen enforcement module
-				if ( ! classPath.toLowerCase().contains( "shared.google.play.services.base" ) &&
-					 ! classPath.contains( "_CoronaSetup.LuaLoader" ) &&
-					 ! classPath.contains( "_Corona_Build_Number.LuaLoader" ) )
-				{
-					Log.i( "Corona", "WARNING: Could not load class '" + classPath + "'" );
-					if ( verbose ) {
-						ex.printStackTrace();
-					}
-				}
+				err.append("\n\tno Java class '").append(classPath).append("'");
+			}
+			catch ( Throwable ex ) {
+				ex.printStackTrace();
+				err.append("\n\terror loading class '").append(classPath).append("': ").append(ex);
+			}
+			if(result == 0) {
+				L.pushString(err.toString());
+				result = 1;
 			}
 		}
-
 		return result;
 	}
 
@@ -1157,6 +982,19 @@ public class NativeToJavaBridge {
 					}
 					// canRecycleBitmap = false;
 				}
+				if (result == null) {
+					int w = Math.max(drawable.getIntrinsicWidth(), 1);
+					int h = Math.max(drawable.getIntrinsicHeight(), 1);
+					if (loadImageInfoOnly) {
+						result = new LoadBitmapResult(w, h, 1.0f, 0);
+					} else {
+						final Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+						final Canvas canvas = new Canvas(bmp);
+						drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+						drawable.draw(canvas);
+						result = new LoadBitmapResult(bmp, 1.0f, 0);
+					}
+				}
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
@@ -1265,20 +1103,10 @@ public class NativeToJavaBridge {
 		String applicationName = CoronaEnvironment.getApplicationName();
 
 		// Create a unique file name in the directory.
-		java.io.File uniqueFile = null;
-		try {
-			for (int index = 1; index <= 10000; index++) {
-				String fileName = applicationName + " Picture " + Integer.toString(index) + fileExtensionName;
-				java.io.File nextFile = new java.io.File(directory, fileName);
-				if (nextFile.exists() == false) {
-					uniqueFile = nextFile;
-					break;
-				}
-			}
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+		String currentTimeStamp = sdf.format(Calendar.getInstance().getTime());
+		String fileName = applicationName + " Picture " + currentTimeStamp + fileExtensionName;
+		java.io.File uniqueFile = new java.io.File(directory, fileName);
 		return uniqueFile;
 	}
 
@@ -1306,19 +1134,81 @@ public class NativeToJavaBridge {
 		com.ansca.corona.storage.FileServices fileServices;
 		fileServices = new com.ansca.corona.storage.FileServices(CoronaEnvironment.getApplicationContext());
 
-		// Generate a unique file name in the default pictures directory.
-		String fileExtensionName = fileServices.getExtensionFrom(filePathName);
-		java.io.File destinationFile = createUniqueFileNameInPicturesDirectory(fileExtensionName);
-		if (destinationFile == null) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			// For Android 10+ use MediaStore
+			ContentValues values = new ContentValues();
+
+			String fileExtensionName = fileServices.getExtensionFrom(filePathName);
+			String applicationName = CoronaEnvironment.getApplicationName();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+			String currentTimeStamp = sdf.format(Calendar.getInstance().getTime());
+			String fileName = applicationName + " Picture " + currentTimeStamp + "." + fileExtensionName;
+
+			values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+			values.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(fileExtensionName));
+			values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+			values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+			ContentResolver resolver = CoronaEnvironment.getApplicationContext().getContentResolver();
+			Uri collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+
+			try {
+				Uri uri = resolver.insert(collection, values);
+				if (uri != null) {
+					// Copy file content to uri
+					try (OutputStream out = resolver.openOutputStream(uri);
+						 InputStream in = fileServices.openFile(filePathName)) {
+
+						byte[] buffer = new byte[8192];
+						int bytesRead;
+						while ((bytesRead = in.read(buffer)) != -1) {
+							out.write(buffer, 0, bytesRead);
+						}
+					}
+
+					// Mark as not pending
+					values.clear();
+					values.put(MediaStore.Images.Media.IS_PENDING, 0);
+					resolver.update(uri, values, null, null);
+					return true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
 			return false;
+		} else {
+			// For older Android versions use the original implementation
+			String fileExtensionName = fileServices.getExtensionFrom(filePathName);
+			java.io.File destinationFile = createUniqueFileNameInPicturesDirectory(fileExtensionName);
+			if (destinationFile == null) {
+				return false;
+			}
+			String destinationFilePathName = destinationFile.getPath();
+
+			SaveImageToPhotoLibraryRequestPermissionsResultHandler resultHandler
+				= new SaveImageToPhotoLibraryRequestPermissionsResultHandler(
+					runtime, fileServices, filePathName, destinationFilePathName);
+
+			return resultHandler.handleSaveMedia();
 		}
-		String destinationFilePathName = destinationFile.getPath();
+	}
 
-		SaveImageToPhotoLibraryRequestPermissionsResultHandler resultHandler 
-			= new SaveImageToPhotoLibraryRequestPermissionsResultHandler(
-				runtime, fileServices, filePathName, destinationFilePathName);
-
-		return resultHandler.handleSaveMedia();		
+	// Helper method to determine MIME type
+	private static String getMimeType(String extension) {
+		switch (extension) {
+			case "png":
+				return "image/png";
+			case "jpg":
+			case "jpeg":
+				return "image/jpeg";
+			case "gif":
+				return "image/gif";
+			case "webp":
+				return "image/webp";
+			default:
+				return "image/jpeg";
+		}
 	}
 
 	/**
@@ -1351,6 +1241,7 @@ public class NativeToJavaBridge {
 			}
 			filePathName = newFile.getPath();
 			addToPhotoLibrary = true;
+
 		}
 		
 		// Copy the pixel array into a bitmap object.
@@ -1368,7 +1259,6 @@ public class NativeToJavaBridge {
 		
 		SaveBitmapRequestPermissionsResultHandler resultHandler = new SaveBitmapRequestPermissionsResultHandler(
 			runtime, bitmap, quality, filePathName, addToPhotoLibrary);
-
 		return resultHandler.handleSaveMedia();
 	}
 
@@ -1456,7 +1346,36 @@ public class NativeToJavaBridge {
 		public boolean handleSaveMedia() {
 			// We only check for External storage permission if the user wants to add to the Photo library.
 			if (fAddToPhotoLibrary) {
-				return super.handleSaveMedia();
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {  // Requires use to Media Store to Save on Android 10+
+					ContentValues values = new ContentValues();
+					String fileName = fFilePathName.substring(fFilePathName.lastIndexOf('/') + 1);
+					values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+					if(fileName.contains(".png")){
+						values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+					}else{
+						values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+					}
+					values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+					values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+					try {
+						Uri uri = CoronaEnvironment.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+						if (uri != null) {
+							try (OutputStream out = CoronaEnvironment.getApplicationContext().getContentResolver().openOutputStream(uri)) {
+								fBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+							}
+							values.clear();
+							values.put(MediaStore.Images.Media.IS_PENDING, 0);
+							CoronaEnvironment.getApplicationContext().getContentResolver().update(uri, values, null, null);
+							return true;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else{
+					return super.handleSaveMedia();
+				}
 			}
 			return executeSaveMedia();
 		}
@@ -1632,42 +1551,37 @@ public class NativeToJavaBridge {
 		runtime.getController().cancelTimer();
 	}
 
-	protected static void callLoadSound( CoronaRuntime runtime, int id, String soundName )
+	protected static void callLoadSound( CoronaRuntime runtime, long id, String soundName )
 	{
 		runtime.getController().getEventManager().loadSound( id, soundName );
 	}
 
-	protected static void callLoadEventSound( CoronaRuntime runtime, int id, String soundName )
+	protected static void callLoadEventSound( CoronaRuntime runtime, long id, String soundName )
 	{
 		runtime.getController().getEventManager().loadEventSound(id, soundName);
 	}
 
-	protected static void callPlaySound( CoronaRuntime runtime, int id, String soundName, boolean loop )
+	protected static void callPlaySound( CoronaRuntime runtime, long id, String soundName, boolean loop )
 	{
 		runtime.getController().getEventManager().playSound(id, soundName, loop);
 	}
 
-	protected static void callStopSound( int id, CoronaRuntime runtime )
+	protected static void callStopSound( long id, CoronaRuntime runtime )
 	{
 		runtime.getController().getEventManager().stopSound( id);
 	}
 
-	protected static void callPauseSound( int id, CoronaRuntime runtime )
+	protected static void callPauseSound( long id, CoronaRuntime runtime )
 	{
 		runtime.getController().getEventManager().pauseSound( id);
 	}
 
-	protected static void callResumeSound( int id, CoronaRuntime runtime )
+	protected static void callResumeSound( long id, CoronaRuntime runtime )
 	{
 		runtime.getController().getEventManager().resumeSound(id);
 	}
 
-	protected static void callHttpPost( CoronaRuntime runtime, String url, String key, String value )
-	{
-		runtime.getController().httpPost( url, key, value );
-	}
-
-	protected static void callPlayVideo( CoronaRuntime runtime, int id, String url, boolean mediaControlsEnabled )
+	protected static void callPlayVideo( CoronaRuntime runtime, long id, String url, boolean mediaControlsEnabled )
 	{
 		runtime.getController().getMediaManager().playVideo( id, url, mediaControlsEnabled );
 	}
@@ -1732,6 +1646,7 @@ public class NativeToJavaBridge {
 			CoronaStatusBarApiListener listener = runtime.getController().getCoronaStatusBarApiListener();
 			CoronaStatusBarSettings statusBarMode = listener.getStatusBarMode();
 			boolean hasNavigationBar = listener.HasSoftwareKeys();
+
 			if (listener != null) {
 				if (listener.IsAndroidTV()) {
 					int contentHeight = JavaToNativeShim.getContentHeightInPixels(runtime);
@@ -1740,21 +1655,35 @@ public class NativeToJavaBridge {
 					result[ 1 ] = result[ 2 ] = (float)Math.floor(contentWidth * 0.05f);
 				}
 				else {
-					result[ 0 ] = (statusBarMode != CoronaStatusBarSettings.HIDDEN) ? listener.getStatusBarHeight() : 0;
-					if (hasNavigationBar && runtime.getController().getSystemUiVisibility().contains("immersive"))
-					{
-						result[ 1 ] = result[ 2 ] = result[ 3 ] = 0;
-					} else {
-						int navBarIndex = 4;
-						if ((statusBarMode == CoronaStatusBarSettings.LIGHT_TRANSPARENT || 
-							 statusBarMode == CoronaStatusBarSettings.DARK_TRANSPARENT) && hasNavigationBar){
-								WindowOrientation currentOrientation = WindowOrientation.fromCurrentWindowUsing(runtime.getController().getContext());
-								navBarIndex = (currentOrientation == WindowOrientation.PORTRAIT_UPRIGHT) ? 3 : 2;
-						}
-						for (int i = 1; i < 4; i++) {
-							result[ i ] = (i == navBarIndex) ? listener.getNavigationBarHeight() : 0;
+					DisplayCutout cutout = CoronaEnvironment.getCoronaActivity().getDisplayCutout();
+					if ((android.os.Build.VERSION.SDK_INT >= 26) && (cutout != null)){
+
+						result[0] = cutout.getSafeInsetTop();
+						result[1] = cutout.getSafeInsetLeft();
+						result[2] = cutout.getSafeInsetRight();
+						//Android InsetBottom does not always return correct navbar height
+						if(hasNavigationBar && cutout.getSafeInsetBottom() == 0 && !runtime.getController().getSystemUiVisibility().contains("immersive")){
+							result[3] = listener.getNavigationBarHeight();
+						}else{
+							result[3] = cutout.getSafeInsetBottom();
 						}
 					}
+					else {
+                        result[0] = (statusBarMode != CoronaStatusBarSettings.HIDDEN) ? listener.getStatusBarHeight() : 0;
+                        if (hasNavigationBar && runtime.getController().getSystemUiVisibility().contains("immersive")) {
+                            result[1] = result[2] = result[3] = 0;
+                        } else {
+                            int navBarIndex = 4;
+                            if ((statusBarMode == CoronaStatusBarSettings.LIGHT_TRANSPARENT ||
+                                    statusBarMode == CoronaStatusBarSettings.DARK_TRANSPARENT) && hasNavigationBar) {
+                                WindowOrientation currentOrientation = WindowOrientation.fromCurrentWindowUsing(runtime.getController().getContext());
+                                navBarIndex = (currentOrientation == WindowOrientation.PORTRAIT_UPRIGHT) ? 3 : 2;
+                            }
+                            for (int i = 1; i < 4; i++) {
+                                result[i] = (i == navBarIndex) ? listener.getNavigationBarHeight() : 0;
+                            }
+                        }
+                    }
 				}
 			}
 			else { 
@@ -2215,6 +2144,15 @@ public class NativeToJavaBridge {
 			luaState.pushString(languageCode);
 			valuesPushed = 1;
 		}
+		else if (key.equals("darkMode")) {
+			int currentNightMode = context.getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+			luaState.pushBoolean(currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES);
+			valuesPushed = 1;
+		}
+		else if (key.equals("hasSoftwareKeys")) {
+			luaState.pushBoolean(CoronaEnvironment.getCoronaActivity().HasSoftwareKeys());
+			valuesPushed = 1;
+		}
 
 		// Push nil if failed to fetch the requested value.
 		if (valuesPushed <= 0) {
@@ -2420,9 +2358,9 @@ public class NativeToJavaBridge {
 		return null;
 	}
 
-	protected static void callVibrate(CoronaRuntime runtime)
+	protected static void callVibrate(CoronaRuntime runtime, String hapticType, String hapticStyle)
 	{
-		runtime.getController().vibrate();
+		runtime.getController().vibrate(hapticType, hapticStyle);
 	}
 
 	protected static void callSetLocationAccuracy( double meters, CoronaRuntime runtime )
@@ -2435,12 +2373,12 @@ public class NativeToJavaBridge {
 		runtime.getController().setLocationThreshold(meters);
 	}
 
-	protected static float callGetVolume( CoronaRuntime runtime, int id )
+	protected static float callGetVolume( CoronaRuntime runtime, long id )
 	{
 		return runtime.getController().getMediaManager().getVolume( id );
 	}
 	
-	protected static void callSetVolume( CoronaRuntime runtime, int id, float v )
+	protected static void callSetVolume( CoronaRuntime runtime, long id, float v )
 	{
 		runtime.getController().getMediaManager().setVolume( id, v );
 	}
@@ -2455,6 +2393,10 @@ public class NativeToJavaBridge {
 	protected static void callTextFieldSetSelection( CoronaRuntime runtime, int id, int startPosition, int endPosition)
 	{
 		runtime.getViewManager().setTextSelection( id, startPosition, endPosition );
+	}
+
+	protected static int[] callTextFieldGetSelection(CoronaRuntime runtime, int id) {
+	    return runtime.getViewManager().getTextSelection(id);
 	}
 
 	protected static void callTextFieldSetReturnKey( CoronaRuntime runtime, int id, String imeType ) 
@@ -2612,18 +2554,23 @@ public class NativeToJavaBridge {
 	{
 		runtime.getViewManager().setTextViewFocus(id, focus);
 	}
-	
-	protected static boolean callRecordStart( CoronaRuntime runtime, String file, int id )
+
+	protected static boolean callDisplayObjectSetNativeProperty( CoronaRuntime runtime, int id, String key, long luaStateMemoryAddress, int index )
+	{
+		return runtime.getViewManager().setNativeProperty(id, key, luaStateMemoryAddress, index);
+	}
+
+	protected static boolean callRecordStart( CoronaRuntime runtime, String file, long id )
 	{
 		return runtime.getController().getMediaManager().getAudioRecorder( id ).startRecording( file );
 	}
 	
-	protected static void callRecordStop( int id, CoronaRuntime runtime )
+	protected static void callRecordStop( long id, CoronaRuntime runtime )
 	{
 		runtime.getController().getMediaManager().getAudioRecorder( id ).stopRecording();
 	}
 	
-	protected static ByteBuffer callRecordGetBytes( CoronaRuntime runtime, int id )
+	protected static ByteBuffer callRecordGetBytes( CoronaRuntime runtime, long id )
 	{
 		AudioByteBufferHolder buffer = runtime.getController().getMediaManager().getAudioRecorder( id ).getNextBuffer();
 		if ( buffer != null ) {
@@ -2634,7 +2581,7 @@ public class NativeToJavaBridge {
 		return null;
 	}
 	
-	protected static int callRecordGetCurrentByteCount( CoronaRuntime runtime, int id )
+	protected static int callRecordGetCurrentByteCount( CoronaRuntime runtime, long id )
 	{
 		AudioByteBufferHolder buffer = runtime.getController().getMediaManager().getAudioRecorder( id ).getCurrentBuffer();
 		if ( buffer != null )
@@ -2642,7 +2589,7 @@ public class NativeToJavaBridge {
 		return 0;
 	}
 	
-	protected static void callRecordReleaseCurrentBuffer( int id, CoronaRuntime runtime )
+	protected static void callRecordReleaseCurrentBuffer( long id, CoronaRuntime runtime )
 	{
 		runtime.getController().getMediaManager().getAudioRecorder( id ).releaseCurrentBuffer();
 	}
@@ -3341,6 +3288,11 @@ public class NativeToJavaBridge {
 			systemUIVisibility = "unknown";
 		}
 		return systemUIVisibility;
+	}
+	protected static void callSetNavigationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
+		if (runtime != null) {
+			CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+		}
 	}
 
 	/**

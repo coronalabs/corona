@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -108,6 +92,30 @@ class RenderSurfaceControl : public Control
 
 		#pragma endregion
 
+		#pragma region Params Class
+		/// <summary>
+		///  Construction parameters for the control, originating from user settings.
+		/// </summary>
+		class Params {
+		public:
+			Params();
+
+			/// <summary>Set Vulkan as the preferred rendering backend.</summary>
+			/// <param name="required">If true, we must use Vulkan, else fail; otherwise, we can fall back to OpenGL.</param>
+			void SetVulkanWanted(bool required);
+			
+			/// <summary>Get the Vulkan-related preferred backend status.</summary>
+			/// <returns>Returns true if Vulkan is the preferred backend, false otherwise.</returns>
+			bool IsVulkanWanted() const;
+			
+			/// <summary>Get the Vulkan-related backend necessity status.</summary>
+			/// <returns>Returns true if Vulkan must be the backend; if optional or not even requested, false.</returns>
+			bool IsVulkanRequired() const;
+
+		private:
+			bool fWantVulkan;
+			bool fRequireVulkan;
+		};
 
 		#pragma region Constructors/Destructors
 		/// <summary>Creates a new render surface which wraps the given window handle.</summary>
@@ -115,7 +123,7 @@ class RenderSurfaceControl : public Control
 		///  <para>Handle to a Windows control to render to.</para>
 		///  <para>Can be null, but then this render surface object will do nothing.</para>
 		/// </param>
-		RenderSurfaceControl(HWND windowHandle);
+		RenderSurfaceControl(HWND windowHandle, const Params & params = Params());
 
 		/// <summary>Destroys this object.</summary>
 		virtual ~RenderSurfaceControl();
@@ -175,6 +183,9 @@ class RenderSurfaceControl : public Control
 		/// </remarks>
 		void RequestRender();
 
+		bool IsUsingVulkanBackend() const { return !!fVulkanContext; }
+		void * GetBackendContext() const { return IsUsingVulkanBackend() ? fVulkanContext : nullptr; }
+
 		#pragma endregion
 
 	protected:
@@ -226,7 +237,7 @@ class RenderSurfaceControl : public Control
 		///  <para>Creates a new rendering context for the currently referenced control.</para>
 		///  <para>Will destroy the last context if still active.</para>
 		/// </summary>
-		void CreateContext();
+		void CreateContext(const Params & params);
 
 		/// <summary>Destroys the last created rendering context.</summary>
 		void DestroyContext();
@@ -255,20 +266,14 @@ class RenderSurfaceControl : public Control
 		/// <summary>Handle to the control's main device context that OpenGL will render to.</summary>
 		HDC fMainDeviceContextHandle;
 
-		/// <summary>
-		///  <para>
-		///   Handle to the Win32 BeginPaint() device context, which is assigned when a paint message has been received.
-		///  </para>
-		///  <para>Set null if the control is not in the middle of a paint request.</para>
-		///  <para>This device context should be favored over "fMainDeviceContextHandle" for painting if available.</para>
-		/// </summary>
-		HDC fPaintDeviceContextHandle;
-
 		/// <summary>Handle to OpenGL's rendering context.</summary>
 		HGLRC fRenderingContextHandle;
 
 		/// <summary>Stores the major/minor version number of the OpenGL driver that is rendering to this surface.</summary>
 		RenderSurfaceControl::Version fRendererVersion;
+
+		/// <summary>Vulkan analogue to the GL context, when chosen as the backend.</summary>
+		void * fVulkanContext;
 
 		#pragma endregion
 };

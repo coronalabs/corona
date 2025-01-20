@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -283,6 +267,15 @@ class TextBox : public Control
 		///  <para>Set to -1 to set the selection to the end of the string in the text box.</para>
 		/// </param>
 		void SetSelection(int startCharacterIndex, int endCharacterIndex);
+
+		/// <summary>Gets the text box's current selection start and end character indices.</summary>
+		/// <param name="outStartCharacterIndex">Pointer to an integer that will receive the start index of the selection.</param>
+		/// <param name="outEndCharacterIndex">Pointer to an integer that will receive the end index of the selection.</param>
+		/// <returns>
+		///  <para>Returns true if the indices were successfully fetched.</para>
+		///  <para>Returns false if failed to fetch the indices, in which case the output parameters won't be modified.</para>
+		/// </returns>
+		bool GetSelection(int *outStartCharacterIndex, int *outEndCharacterIndex) const;
 
 		/// <summary>Sets the control's text color to the system default.</summary>
 		void SetTextColorToDefault();

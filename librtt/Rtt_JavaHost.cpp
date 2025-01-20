@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +25,12 @@
 #include "shellapi.h"  // ShellExecute()
 #include "WinString.h"
 #include "Resource.h"  // error string ids
+#ifdef Rtt_NO_GUI
+#include "Rtt_WinConsolePlatform.h"
+#else
+#include "Interop/ApplicationServices.h"
+#endif
+
 #elif Rtt_MAC_ENV
 #include <dlfcn.h>
 #endif // Rtt_WIN_ENV
@@ -395,6 +385,27 @@ static bool CopyJavaDevelopmentKitRegistryKeyPathTo(WinString* pPath)
 	return false;
 }
 
+LPCTSTR GetApplicationPath()
+{
+#ifdef Rtt_NO_GUI
+	static std::wstring ret = WinConsolePlatform::GetDirectoryPath();
+	return ret.c_str();
+#else
+	return Interop::ApplicationServices::GetDirectoryPath();
+#endif
+}
+
+bool CheckDirExists(LPCTSTR dirName)
+{
+	WIN32_FIND_DATA  data;
+	HANDLE handle = FindFirstFile(dirName, &data);
+	if (handle != INVALID_HANDLE_VALUE)
+	{
+		FindClose(handle);
+		return (0 != (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY));
+	}
+	return false;
+}
 
 // Fetches the Java Development Kit's JavaHome in registry.
 const char *JavaHost::GetJdkPath()
@@ -403,6 +414,32 @@ const char *JavaHost::GetJdkPath()
 
     if( s_sJdkJavaHome[0] == '\0' )
 	{
+		// try to find bunled JRE
+		TCHAR buffer[MAX_PATH] = _T("");
+		WinString rootPath;
+		GetFullPathName(_T("jre"), MAX_PATH, buffer, NULL);
+		if (buffer[0] && CheckDirExists(buffer)) {
+			rootPath.SetTCHAR(buffer);
+			strcpy_s(s_sJdkJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJdkJavaHome;
+		}
+
+		rootPath.SetUTF16(GetApplicationPath());
+		rootPath.Append("\\jre");
+		if (CheckDirExists(rootPath.GetUTF16())) {
+			strcpy_s(s_sJdkJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJdkJavaHome;
+		}
+
+		rootPath.SetUTF16(GetApplicationPath());
+		rootPath.Append("\\..\\..\\..\\..\\jre");
+		GetFullPathName(rootPath.GetTCHAR(), MAX_PATH, buffer, NULL);
+		if (CheckDirExists(rootPath.GetUTF16())) {
+			rootPath.SetTCHAR(buffer);
+			strcpy_s(s_sJdkJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJdkJavaHome;
+		}
+
         WinString sRegistryKeyPath;
 		WinString sValue;
 		if (CopyJavaDevelopmentKitRegistryKeyPathTo(&sRegistryKeyPath))
@@ -423,6 +460,32 @@ const char *JavaHost::GetJrePath()
 
     if( s_sJreJavaHome[0] == '\0' )
 	{
+		// try to find bunled JRE
+		TCHAR buffer[MAX_PATH] = _T("");
+		WinString rootPath;
+		GetFullPathName(_T("jre\\jre"), MAX_PATH, buffer, NULL);
+		if (buffer[0] && CheckDirExists(buffer)) {
+			rootPath.SetTCHAR(buffer);
+			strcpy_s(s_sJreJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJreJavaHome;
+		}
+
+		rootPath.SetUTF16(GetApplicationPath());
+		rootPath.Append("\\jre\\jre");
+		if (CheckDirExists(rootPath.GetUTF16())) {
+			strcpy_s(s_sJreJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJreJavaHome;
+		}
+
+		rootPath.SetUTF16(GetApplicationPath());
+		rootPath.Append("\\..\\..\\..\\..\\jre\\jre");
+		GetFullPathName(rootPath.GetTCHAR(), MAX_PATH, buffer, NULL);
+		if (CheckDirExists(rootPath.GetUTF16())) {
+			rootPath.SetTCHAR(buffer);
+			strcpy_s(s_sJreJavaHome, MAX_PATH, rootPath.GetUTF8());
+			return s_sJreJavaHome;
+		}
+
         WinString sRegistryKeyPath;
 		WinString sValue;
 		if (CopyJavaRuntimeRegistryKeyPathTo(&sRegistryKeyPath))

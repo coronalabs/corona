@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +17,6 @@
 #include "Interop\UI\TaskDialog.h"
 #include "Interop\MDeviceSimulatorServices.h"
 #include "Interop\SimulatorRuntimeEnvironment.h"
-#include "Rtt_AuthorizationTicket.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaFile.h"
 #include "Rtt_MPlatform.h"
@@ -43,8 +26,6 @@
 #include "Rtt_RenderingStream.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "Rtt_WinAuthorizationDelegate.h"
-#include "Rtt_Authorization.h"
 #include "Rtt_WinPlatform.h"
 #include "Rtt_WinSimulatorServices.h"
 #include "Simulator.h"
@@ -55,6 +36,7 @@
 #include "BuildAndroidDlg.h"
 #include "BuildWebDlg.h"
 #include "BuildLinuxDlg.h"
+#include "BuildNxSDlg.h"
 #include "BuildWin32AppDlg.h"
 #include "NewProjectDlg.h"
 #include "SelectSampleProjectDlg.h"
@@ -127,6 +109,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_COMMAND(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnBuildForAndroid)
 	ON_COMMAND(ID_BUILD_FOR_WEB, &CSimulatorView::OnBuildForWeb)
 	ON_COMMAND(ID_BUILD_FOR_LINUX, &CSimulatorView::OnBuildForLinux)
+	ON_COMMAND(ID_BUILD_FOR_NXS, &CSimulatorView::OnBuildForNxS)
 	ON_COMMAND(ID_BUILD_FOR_WIN32, &CSimulatorView::OnBuildForWin32)
 	ON_COMMAND(ID_FILE_OPENINEDITOR, &CSimulatorView::OnFileOpenInEditor)
 	ON_COMMAND(ID_FILE_RELAUNCH, &CSimulatorView::OnFileRelaunch)
@@ -144,6 +127,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_WEB, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_LINUX, &CSimulatorView::OnUpdateBuildMenuItem)
+	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_NXS, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_WIN32, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENINEDITOR, &CSimulatorView::OnUpdateFileOpenInEditor)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SHOW_PROJECT_FILES, &CSimulatorView::OnUpdateShowProjectFiles)
@@ -164,15 +148,14 @@ END_MESSAGE_MAP()
 #pragma region Constructor/Destructor
 /// Creates a new Corona Simulator CView.
 CSimulatorView::CSimulatorView()
-:	mSimulatorServices(*this),
+:	mScopedComInitializer(Interop::ScopedComInitializer::ApartmentType::kSingleThreaded),
+	mSimulatorServices(*this),
 	mMessageDlgPointer(nullptr),
 	mProgressDlgPointer(nullptr),
 	mDeviceConfig(*Rtt_AllocatorCreate()),
 	mRuntimeLoadedEventHandler(this, &CSimulatorView::OnRuntimeLoaded)
 {
 	CSimulatorApp *applicationPointer = (CSimulatorApp*)AfxGetApp();
-
-	CoInitialize(nullptr);
 
     mRotation = 0;  // current rotation
     mpSkinBitmap = nullptr;
@@ -867,35 +850,6 @@ void CSimulatorView::OnBuildForAndroid()
 		SuspendResumeSimulationWithOverlay(true, false);
 	}
 
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
-	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "android";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
-	}
-
 	// Display the build window.
 	CBuildAndroidDlg dlg;
 	dlg.SetProject( GetDocument()->GetProject() );
@@ -917,35 +871,6 @@ void CSimulatorView::OnBuildForWeb()
 	{
 		buildSuspendedSimulator = true;
 		SuspendResumeSimulationWithOverlay(true, false);
-	}
-
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
-	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "web";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
 	}
 
 	// Display the build window.
@@ -971,38 +896,37 @@ void CSimulatorView::OnBuildForLinux()
 		SuspendResumeSimulationWithOverlay(true, false);
 	}
 
-	// Force a login if we are not already logged in
-	Rtt::Authorization *pAuth = GetWinProperties()->GetAuth();
-	const Rtt::AuthorizationTicket *pTicket = GetWinProperties()->GetTicket();
-	int previousUid = pTicket->GetUid();
-	if (!pAuth->Initialize(true))
-	{
-		// They cancelled their attempt to login so they can't build
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "linux";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in
-	pTicket = GetWinProperties()->GetTicket();
-	if (pTicket != NULL && pTicket->IsPlaceholder())
-	{
-		// They aren't really logged in so they can't build
-		return;
-	}
-	if (pTicket->GetUid() != previousUid)
-	{
-		// Let analytics know that the UID has changed
-		GetWinProperties()->GetAnalytics()->BeginSession( pTicket->GetUid() );
-	}
-
 	// Display the build window.
 	CBuildLinuxDlg dlg;
 	dlg.SetProject( GetDocument()->GetProject() );
+	dlg.DoModal();
+	if (buildSuspendedSimulator)
+	{
+		// Toggle suspend
+		SuspendResumeSimulationWithOverlay(true, false);
+	}
+}
+
+/// <summary>Opens a dialog to build the currently selected project as an NxS Switch app.</summary>
+void CSimulatorView::OnBuildForNxS()
+{
+	CSimulatorApp* applicationPointer = (CSimulatorApp*)AfxGetApp();
+	if (!applicationPointer->ShouldShowNXBuildDlg())
+	{
+		return;
+	}
+	// If app is running, suspend it during the build
+	bool buildSuspendedSimulator = false;
+	bool isSuspended = IsSimulationSuspended();
+	if (false == isSuspended)
+	{
+		buildSuspendedSimulator = true;
+		SuspendResumeSimulationWithOverlay(true, false);
+	}
+
+	// Display the build window.
+	CBuildNxSDlg dlg;
+	dlg.SetProject(GetDocument()->GetProject());
 	dlg.DoModal();
 	if (buildSuspendedSimulator)
 	{
@@ -1039,40 +963,6 @@ void CSimulatorView::OnBuildForWin32()
 	{
 		wasAppRunning = true;
 		SuspendResumeSimulationWithOverlay(true, false);
-	}
-
-	// Force a login if we are not already logged in.
-	int previousUid = 0;
-	auto authorizationPointer = GetWinProperties()->GetAuth();
-	auto ticketPointer = GetWinProperties()->GetTicket();
-	if (ticketPointer)
-	{
-		previousUid = ticketPointer->GetUid();
-	}
-	bool isLoggedIn = authorizationPointer->Initialize(true);
-	if (!isLoggedIn)
-	{
-		// They cancelled their attempt to login, meaning that they can't build.
-		static std::map<std::string, std::string> keyValues;
-		keyValues["target"] = "win32";
-		keyValues["reason"] = "enter-password-failed";
-
-		GetWinProperties()->GetAnalytics()->Log("build-bungled", keyValues);
-
-		return;
-	}
-
-	// Refresh the ticket in case we logged in.
-	ticketPointer = GetWinProperties()->GetTicket();
-	if (ticketPointer && ticketPointer->IsPlaceholder())
-	{
-		// They aren't really logged in. So, they can't build.
-		return;
-	}
-	if (ticketPointer && (ticketPointer->GetUid() != previousUid))
-	{
-		// Let analytics know that the UID has changed.
-		GetWinProperties()->GetAnalytics()->BeginSession(ticketPointer->GetUid());
 	}
 
 	// Display the build window.
@@ -1126,6 +1016,7 @@ void CSimulatorView::OnFileOpenInEditor()
 						ASSOCF_INIT_DEFAULTTOSTAR, ASSOCSTR_EXECUTABLE, _T(".lua"),
 						NULL, fileAssociation.GetBuffer(MAX_PATH_LENGTH), &fileAssociationLength);
 		fileAssociation.ReleaseBuffer();
+		CString fullAssociationPath(fileAssociation);
 		if (S_OK == result)
 		{
 			index = fileAssociation.ReverseFind(_T('\\'));
@@ -1161,7 +1052,23 @@ void CSimulatorView::OnFileOpenInEditor()
 		// If Windows doesn't have a valid file association, then open it with Notepad.
 		if (hasValidFileAssociation)
 		{
-			::ShellExecute(nullptr, _T("open"), GetDocument()->GetPath(), nullptr, nullptr, SW_SHOWNORMAL);
+			if (fileAssociation == _T("sublime_text.exe") || fileAssociation == _T("Code.exe")) {
+				CString fullPath(GetDocument()->GetPath());
+				index = fullPath.ReverseFind(_T('\\'));
+				if (index > 0)
+				{
+					CString dirPath(fullPath);
+					dirPath.Delete(index, dirPath.GetLength() - index);
+					fullPath.Insert(0, _T('"'));
+					fullPath.Append(_T("\" --add \""));
+					fullPath.Append(dirPath);
+					fullPath.Append(_T("\""));
+				}
+				::ShellExecute(nullptr, nullptr, fullAssociationPath, fullPath, nullptr, SW_SHOWNORMAL);
+			}
+			else {
+				::ShellExecute(nullptr, _T("open"), GetDocument()->GetPath(), nullptr, nullptr, SW_SHOWNORMAL);
+			}
 			WinString appName;
 			appName.SetTCHAR(fileAssociation);
 			GetWinProperties()->GetAnalytics()->Log( "open-in-editor", "editor", appName.GetUTF8() );
@@ -1569,16 +1476,10 @@ void CSimulatorView::OnUpdateWindowViewAs( CCmdUI *pCmdUI )
 				bool uhOh = true;
 			}
 
-			// Only "Pro" users get to define custom devices, for business purposes, the ability to
-			// use Daily Builds equates to "Pro and above"
-			const Rtt::AuthorizationTicket *ticket = GetWinProperties()->GetTicket();
-			if ( ticket && ticket->IsDailyBuildAllowed() )
-			{
-				// Separator
-				pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION|MFT_SEPARATOR, 0, _T("-"));
-				++viewAsItemCount;
-				pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION, ID_VIEWAS_CUSTOMDEVICE, _T("Custom Device..."));
-			}
+			// Separator
+			pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION|MFT_SEPARATOR, 0, _T("-"));
+			++viewAsItemCount;
+			pViewAsMenu->InsertMenu(viewAsItemCount, MF_BYPOSITION, ID_VIEWAS_CUSTOMDEVICE, _T("Custom Device..."));
 		}
 	}
 
@@ -1969,6 +1870,13 @@ void CSimulatorView::StopSimulation()
 	// Terminate the Corona runtime.
 	Interop::SimulatorRuntimeEnvironment::Destroy(mRuntimeEnvironmentPointer);
 	mRuntimeEnvironmentPointer = nullptr;
+
+	RECT bounds;
+
+	mCoronaContainerControl.GetWindowRect(&bounds);
+
+	mCoronaContainerControl.DestroyWindow();
+	mCoronaContainerControl.Create(nullptr, WS_CHILD | WS_VISIBLE, bounds, this);
 
 	// Hide the Corona control and show its black container without any text.
 	mCoronaContainerControl.SetWindowTextW(L"");
@@ -2405,6 +2313,13 @@ void CSimulatorView::RunCoronaProject(CString& projectPath)
 	// Load and run the application.
 	if (projectPath.GetLength() > 0)
 	{
+		RECT bounds;
+
+		mCoronaContainerControl.GetWindowRect(&bounds);
+
+		mCoronaContainerControl.DestroyWindow();
+		mCoronaContainerControl.Create(nullptr, WS_CHILD | WS_VISIBLE, bounds, this);
+
 		// Show the Corona control before creating the runtime. The Corona runtime will render to this control.
 		mCoronaContainerControl.GetCoronaControl().ShowWindow(SW_SHOW);
 		mCoronaContainerControl.GetCoronaControl().SetFocus();
@@ -2766,8 +2681,11 @@ void CSimulatorView::RemoveUnauthorizedMenuItemsFrom(CMenu* menuPointer)
 			bool shouldRemove = false;
 			switch (menuItemId)
 			{
+				case ID_BUILD_FOR_NXS:
+					shouldRemove = ! applicationPointer->ShouldShowNXBuildDlg();
+					break;
 				case ID_BUILD_FOR_LINUX:
-					shouldRemove = (applicationPointer->ShouldShowLinuxBuildDlg() == false);
+					shouldRemove = ! applicationPointer->ShouldShowLinuxBuildDlg();
 					break;
 			}
 			if (shouldRemove)

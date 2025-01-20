@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # mks3upload
 #
@@ -85,3 +85,12 @@ if [ -d $AS2BACKUP ]
 then
 	mv $AS2BACKUP $ASSETS2 
 fi
+
+for IOS_VER in template/iphone/*
+do
+	IOS_VER=$(basename "${IOS_VER}")
+
+	cp "2100.9999_template_iphone_${IOS_VER}_basic.tar.bz" "../resources/iostemplate/iphoneos_${IOS_VER}.tar.bz"
+	cp "2100.9999_template_iphone-sim_${IOS_VER}_basic.tar.bz" "../resources/iostemplate/iphonesimulator_${IOS_VER}.tar.bz"
+
+done

@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -51,11 +35,7 @@
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_RenderingStream.h"
 
-#include "Rtt_AppleConnection.h"
-#include "Rtt_Authorization.h" // used for string contants for preferences
-
 //#include "Rtt_AppleDictionaryWrapper.h"
-#include "Rtt_AppleConnection.h"
 #include "Rtt_MacSimulator.h"
 #include "Rtt_MacExitCallback.h"
 #import "AppDelegate.h"
@@ -69,6 +49,7 @@
 #import <AppKit/NSFontManager.h>
 #import <AppKit/NSOpenGL.h>
 #import <AppKit/NSWindow.h>
+#import <AppKit/NSWorkspace.h>
 #import <Foundation/NSString.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <netinet/in.h>
@@ -1233,7 +1214,11 @@ MacPlatform::PushSystemInfo( lua_State *L, const char *key ) const
 	{
 		// Fetch the application's name.
 		const char *applicationName = "";
+#if Rtt_AUTHORING_SIMULATOR
 		NSString *value = [GetResourceDirectory() lastPathComponent];
+#else
+		NSString *value = (NSString*)[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+#endif
 		if (value)
 		{
 			applicationName = [value UTF8String];
@@ -1247,6 +1232,33 @@ MacPlatform::PushSystemInfo( lua_State *L, const char *key ) const
 		lua_pushstring(L, "");
 		pushedValues = 1;
 	}
+	else if ( Rtt_StringCompare( key, "darkMode" ) == 0 )
+	{
+		BOOL res = NO;
+		if (@available(macOS 10.14, *)) {
+			res = [fView.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua;
+		}
+		lua_pushboolean(L, res);
+		pushedValues = 1;
+	}
+    else if ( Rtt_StringCompare( key, "reduceMotion" ) == 0 )
+    {
+        BOOL res = [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
+    else if ( Rtt_StringCompare( key, "reduceTransparency" ) == 0 )
+    {
+        BOOL res = [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceTransparency];
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
+    else if ( Rtt_StringCompare( key, "differentiateWithoutColor" ) == 0 )
+    {
+        BOOL res = [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldDifferentiateWithoutColor];
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
 	else
 	{
 		// Attempt to fetch the requested system info from the base class.
@@ -1845,6 +1857,36 @@ MacPlatform::SetNativeProperty(lua_State *L, const char *key, int valueIndex) co
             [window setTitle:[NSString stringWithExternalString:lua_tostring(L, valueIndex)]];
         }
     }
+    else if (Rtt_StringCompare(key, "windowSize") == 0)
+    {
+#ifdef Rtt_AUTHORING_SIMULATOR
+
+		Rtt_Log("Note: native.setProperty(\"windowSize\", mode) does not work in the Simulator");
+#else
+		if (window != nil && (lua_type(L, valueIndex) == LUA_TTABLE))
+		{
+			NSRect frame = [window frame];
+			NSSize size = frame.size;
+			
+			lua_getfield( L, -1, "width");
+			if (lua_type( L, -1 ) == LUA_TNUMBER) 
+			{
+			    size.width = lua_tointeger( L, -1 );
+			}
+			lua_pop( L, 1 );
+			
+			lua_getfield( L, -1, "height");
+			if (lua_type( L, -1 ) == LUA_TNUMBER) 
+			{
+			    size.height = lua_tointeger( L, -1 );
+			}
+			lua_pop( L, 1 );
+			
+			[fView setFrameSize:NSMakeSize(size.width, size.height)];
+			[window setContentSize:(NSSize)size];
+		}
+#endif
+	}
     else if (Rtt_StringCompare(key, "windowMode") == 0)
     {
 #ifdef Rtt_AUTHORING_SIMULATOR
@@ -1938,9 +1980,38 @@ MacPlatform::SetNativeProperty(lua_State *L, const char *key, int valueIndex) co
 			CoronaLuaWarning(L, "native.setProperty(\"mouseCursorVisible\", mode) expected a boolean parameter but got a %s", lua_typename(L, lua_type(L, valueIndex)));
 		}
 	}
+	else if (Rtt_StringCompare(key, "mouseCursor") == 0)
+	{
+		if (lua_type(L, valueIndex) == LUA_TSTRING)
+		{
+			auto requestedStyle = lua_tostring(L, valueIndex);
+			NSRect cursorRect = NSMakeRect(0, 0, fView.frame.size.width, fView.frame.size.height);
+			const char* validStyles[] = {
+				"arrow", "closedHand", "openHand", "pointingHand", "crosshair",
+				"notAllowed", "beam", "resizeRight", "resizeLeft",
+				"resizeLeftRight", "resizeUp", "resizeDown", "resizeUpDown",
+				"disappearingItem", "beamHorizontal", "dragLink", "dragCopy", "contextMenu",
+				NULL
+			};
+
+			for (unsigned long i = 0; i < sizeof(validStyles) / sizeof(const char*); i++)
+			{
+				if (Rtt_StringCompare(requestedStyle, validStyles[i]) == 0)
+				{
+					[fView setCursor:requestedStyle forRect:cursorRect];
+					break;
+				}
+			}
+		}
+		else
+		{
+			CoronaLuaWarning(L, "native.setProperty(\"mouseCursor\", cursor) expected a string parameter but got a %s", lua_typename(L, lua_type(L, valueIndex)));
+		}
+	}
 	else if (Rtt_StringCompare(key, "preferredScreenEdgesDeferringSystemGestures")==0 ||
 			 Rtt_StringCompare(key, "prefersHomeIndicatorAutoHidden")==0 ||
 			 Rtt_StringCompare(key, "androidSystemUiVisibility")==0 ||
+			 Rtt_StringCompare(key, "navigationBarColor")==0 ||
 			 Rtt_StringCompare(key, "applicationIconBadgeNumber")==0 ||
 			 Rtt_StringCompare(key, "applicationSupportsShakeToEdit")==0 ||
 			 Rtt_StringCompare(key, "networkActivityIndicatorVisible")==0 ||
@@ -2181,12 +2252,6 @@ const MPlatform&
 MacPlatformServices::Platform() const
 {
 	return fPlatform;
-}
-
-PlatformConnection*
-MacPlatformServices::CreateConnection( const char* url ) const
-{
-	return Rtt_NEW( & fPlatform.GetAllocator(), AppleConnection( * this, url ) );
 }
 
 #define Rtt_CORONA_DOMAIN "com.coronalabs.Corona_Simulator"

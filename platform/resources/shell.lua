@@ -1,25 +1,9 @@
 ------------------------------------------------------------------------------
 --
--- Copyright (C) 2018 Corona Labs Inc.
--- Contact: support@coronalabs.com
---
 -- This file is part of the Corona game engine.
---
--- Commercial License Usage
--- Licensees holding valid commercial Corona licenses may use this file in
--- accordance with the commercial license agreement between you and 
--- Corona Labs Inc. For licensing terms and conditions please contact
--- support@coronalabs.com or visit https://coronalabs.com/com-license
---
--- GNU General Public License Usage
--- Alternatively, this file may be used under the terms of the GNU General
--- Public license version 3. The license is as published by the Free Software
--- Foundation and appearing in the file LICENSE.GPL3 included in the packaging
--- of this file. Please review the following information to ensure the GNU 
--- General Public License requirements will
--- be met: https://www.gnu.org/licenses/gpl-3.0.html
---
 -- For overview and more information on licensing please refer to README.md
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
 
@@ -36,6 +20,8 @@
 -- luacheck: globals transition
 -- luacheck: globals easing
 -- luacheck: globals Runtime
+-- luacheck: globals graphics
+-- luacheck: globals loadstring
 
 local params = ...
 
@@ -57,8 +43,6 @@ local statusBarNames = {
 
 if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 	-- Status bar
-
-	local isGraphicsV1 = ( 1 == display.getDefault( "graphicsCompatibility" ) )
 
 	appOrientation = system.orientation
 	local isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
@@ -114,7 +98,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 			local screenDressingFilename = statusBarFiles.screenDressing
 
 			if screenDressingFilename then
-				local w, h = display.pixelWidth, display.pixelHeight
+				-- local w, h = display.pixelWidth, display.pixelHeight
 				local cx, cy = display.contentScaleX, display.contentScaleY
 				if not appOrientation then
 					appOrientation = system.orientation
@@ -290,13 +274,11 @@ Runtime:addEventListener( "resize", _on_resize )
 
 local PluginSync =
 {
-	contextForUrl = {},
 	queue = {},
-
+	now = os.time(),
 	-- This is the catalog of plugin manifest.
 	clientCatalogFilename = 'catalog.json',
-	clientCatalog = { Version = 2 },
-	serverCatalog = { Version = 2 },
+	clientCatalog = { Version = 3 },
 
 	-- It's not mandatory to declare this here. We're doing it for the sake
 	-- of making it clear that we're going to populate these values later.
@@ -304,7 +286,6 @@ local PluginSync =
 
 }
 
-local lfs = require("lfs")
 local json = require("json")
 
 -- luacheck: push
@@ -314,26 +295,6 @@ function PluginSync:debugPrint(...)
 	-- print("PluginSync: ", ...)
 end
 -- luacheck: pop
-
-function PluginSync:catalog_should_be_refreshed()
-	-- The catalog should be refreshed if the "catalog.json" file is over 10 minutes old.
-	local age_in_seconds =
-				os.difftime(os.time(), lfs.attributes( self.CatalogFilenamePath ).modification )
-	local maximum_age_in_seconds = ( 10 * 60 )
-	if ( age_in_seconds >= maximum_age_in_seconds ) then
-		return true
-	end
-
-	-- The catalog should be refreshed if the file was download by a previous Corona version.
-	-- This handles the case where the user has just installed a new version of the Corona Simulator.
-	local catalogBuildNumber = self.clientCatalog.CoronaBuild
-	if ( catalogBuildNumber ~= system.getInfo("build") ) then
-		return true
-	end
-
-	-- We do not need to update the catalog file.
-	return false
-end
 
 function PluginSync:LoadCatalog()
 	local f = io.open( self.CatalogFilenamePath )
@@ -363,6 +324,11 @@ function PluginSync:LoadCatalog()
 		return
 	end
 
+	local catalogBuildNumber = catalog.CoronaBuild
+	if catalogBuildNumber ~= system.getInfo("build") then
+		return
+	end
+
 	self.clientCatalog = catalog
 end
 
@@ -383,7 +349,6 @@ function PluginSync:UpdateClientCatalog()
 	if f then
 		f:write( content )
 		f:close()
-		self:debugPrint( self.clientCatalogFilename .. " has been updated." )
 	else
 		local message = "Error updating Corona's plugin catalog."
 		if ( type( ioErrorMessage ) == "string" ) and ( string.len( ioErrorMessage ) > 0 ) then
@@ -393,64 +358,68 @@ function PluginSync:UpdateClientCatalog()
 	end
 end
 
-local function file_exists(name)
-	local f=io.open(name,"r")
-	if f~=nil then
-		io.close(f)
-		return true
-	else
-		return false
-	end
-end
 
-function PluginSync:buildListOfManifestsToDownload( required_plugin )
+function PluginSync:addPluginToQueueIfRequired( required_plugin )
 
 	local pluginName = required_plugin.pluginName
 	local publisherId = required_plugin.publisherId
-
-	-- This is key serves as the subpath into plugins.coronasphere.com
-	-- For example: http://plugins.coronasphere.com/com.coronalabs/plugin.openudid/manifest.json
-	local key = publisherId .. '/' .. pluginName
+	local key = tostring(publisherId) .. '/' .. pluginName
 	required_plugin.clientCatalogKey = key
 
 	-- Find reasons to queue the plugin for download.
 	local should_queue = false
+	local maxAge = (system.getPreference("simulator", "SimPluginCacheMaxAge","number") or 24) * 3600
 
 	local manifest = self.clientCatalog[ key ]
-
-	-- Queue because the manifest does not have the key.
 	should_queue = should_queue or ( not manifest )
-
-	-- Queue because the catalog needs to be refreshed
-	should_queue = should_queue or PluginSync:catalog_should_be_refreshed()
-
-	if manifest and
-		( manifest ~= "" ) then
-
-		-- An empty string ("") manifest means that the plugin has been
-		-- marked to avoid redownloading needlessly. This happens when
-		-- the manifest of the plugin has been downloaded previously and
-		-- it didn't contain support for the current simulator platform.
-
-		local full_file_path = system.pathForFile( manifest.filename,
-													system.PluginsDirectory )
-
-		-- Queue because the key/value is present in the manifest,
-		-- but the downloaded plugin does not exist.
-		should_queue = should_queue or not file_exists( full_file_path )
-
+	if type(manifest) == 'table' and type(manifest.lastUpdate) == 'number'  then
+		local age = os.difftime(self.now, manifest.lastUpdate)
+		-- update plugins every 24 hours or so
+		should_queue = should_queue or ( age > maxAge and maxAge > 0)
+	else
+		should_queue = true
 	end
 
 	if should_queue then
 		-- Queue for download.
-		table.insert( self.queue, key )
-	else
-		self:debugPrint( "Skipped download of: " .. key )
+		table.insert( self.queue, required_plugin )
 	end
 
 end
 
-function PluginSync:downloadQueuedManifests( onComplete )
+local function collectPlugins(localQueue, extractLocation, platform, continueOnError, asyncOnComplete)
+	local plugins = {}
+	for i=1,#localQueue do
+		local pluginInfo = localQueue[i]
+		plugins[pluginInfo.pluginName] = {}
+		if pluginInfo.json then
+			plugins[pluginInfo.pluginName] = json.decode(pluginInfo.json)
+		end
+		plugins[pluginInfo.pluginName].publisherId = pluginInfo.publisherId
+		if continueOnError and asyncOnComplete then
+			if type(plugins[pluginInfo.pluginName].supportedPlatforms) == 'table' then
+				if not plugins[pluginInfo.pluginName].supportedPlatforms[platform] then
+					if plugins[pluginInfo.pluginName].supportedPlatforms[platform] ~= false then
+						plugins[pluginInfo.pluginName].supportedPlatforms[platform] = true
+					end
+				end
+			end
+		end
+	end
+	local _, sim_build_number = string.match( system.getInfo( "build" ), '(%d+)%.(%d+)' )
+
+	local collectorParams = {
+		pluginPlatform = platform,
+		plugins = plugins,
+		destinationDirectory = system.pathForFile("", system.PluginsDirectory),
+		build = sim_build_number,
+		extractLocation = extractLocation,
+		continueOnError = continueOnError,
+	}
+	return params.shellPluginCollector(json.encode(collectorParams), asyncOnComplete)
+end
+
+function PluginSync:downloadQueuedPlugins( onComplete )
 
 	-- Only download if there have been keys added
 	if #self.queue == 0 then
@@ -458,134 +427,27 @@ function PluginSync:downloadQueuedManifests( onComplete )
 		return
 	end
 
-	local http = require("socket.http")
-	if http.request( "http://plugins.coronasphere.com" ) == nil then
-
-		-- No internet access.
-		local warnNoInternetTime = system.getPreference("simulator", "pluginSyncWarnNoInternetTime", "number") or os.time()
-
-		if os.time() >= warnNoInternetTime then
-
-			local function listener( event )
-				if "clicked" == event.action then
-					if 2 == event.index then
-						-- Suspend warnings for 3 hours
-						local preference = { pluginSyncWarnNoInternetTime = (os.time() + (3 * 60 * 60)), }
-						system.setPreferences("simulator", preference)
-					end
-
-					-- 'Continue anyway', meaning launch the project without
-					-- downloading plugins
-					onComplete()
-				end
-			end
-
-			system.deletePreference("simulator", "pluginSyncWarnNoInternetTime")
-
-			-- Handle error case (no internet, or coronasphere is down)
-			native.showAlert(
-				"Plugin Warning",
-				"This project may not behave properly. This project requires certain plugins that need to be downloaded from the Internet, but a connection could not be established.",
-				{ "Continue Anyway", "Continue and Don't Show Again" },
-				listener )
-		else
-			-- If we've been asked not to warn about no internet then the default action is
-			-- 'Continue anyway', meaning launch the project without downloading plugins
-			print("WARNING: PluginSync: no internet to download/check plugins; continuing anyway")
-			onComplete()
-		end
-	else
-
-		-- We have internet access.
-		--
-		-- Download plugins and defer launching project.
-		--
-		-- The application won't function properly without plugins,
-		-- and the Simulator is already phoning home multiple times
-		-- by this point, so it's unnecessary to query the user to
-		-- proceed.
-		self:downloadManifest( onComplete )
-
-	end
-
-end
-
-function PluginSync:downloadManifest( onComplete )
-
 	native.setActivityIndicator( true )
 
-	self.requests = {}
 	self.onComplete = onComplete
 
-	for i=1,#self.queue do
-		-- Store a mapping between the key used in the clientCatalog
-		-- and the url which we'll need in the networkRequest listener
-		local key = self.queue[i]
-		local url = 'http://plugins.coronasphere.com/' .. key .. '/manifest.json'
-		-- Cache buster
-		url = url .. '?ts='..tostring(os.time())
-
-		self.contextForUrl[url] =
-		{
-			key=key,
-		}
-
-		-- make request to get the manifest for the plugin.
-		-- later on, we'll have to download the actual plugin file itself.
-
-		self:debugPrint("PluginSync: downloading manifest: " .. url)
-
-		-- Download to memory.
-		network.request( url,
-							"GET",
-							self ) -- "self" is who will receive the networkRequest() event.
-
-		-- and record the url request
-		table.insert( self.requests, url )
-	end
-end
-
-function PluginSync:allDownloadsCompleted()
-	native.setActivityIndicator( false )
-	self.onComplete()
-end
-
--- luacheck: push
--- luacheck: ignore 212 -- Unused argument.
-function PluginSync:unzip( zipPath, dstDir )
-	local wasSuccessful = false
-	if system.getInfo( "platformName" ) == "Win" then
-		-- Fetch the path to the unzip tool included with the Corona Simulator.
-		local unzipToolPath = system.pathForFile( "..\\7za.exe", system.SystemResourceDirectory )
-		if nil == unzipToolPath then
-			print( "PluginSync: Failed to find unzip tool needed to extract plugins." )
-			return false
+	collectPlugins(self.queue, system.pathForFile("", system.PluginsDirectory), self.platform, true, function(result)
+		local updateTime = self.now
+		if type(result.result) == 'string' then
+			updateTime = nil
+			local res = result.result:gsub('%[(.-)%]%((https?://.-)%)', '%1 (%2)')
+			print("WARNING: there was an issue while downloading simulator plugin placeholders:\n" .. res)
 		end
-
-		-- Remove the trailing backslash.
-		if string.ends( dstDir, '\\' ) then
-			-- Remove last char (-2 means 2nd from end)
-			dstDir = string.sub( dstDir, 1, -2 )
+		for i=1,#self.queue do
+			local key = self.queue[i].clientCatalogKey
+			self.clientCatalog[ key ] = { lastUpdate = updateTime }
 		end
+		self:UpdateClientCatalog()
 
-		-- Use a hidden/secret Corona Win32 API to run the unzip command line tool invisibly in the background.
-		-- We need to do this because Win32 console apps spawn console windows upon execution.
-		local executionSettings =
-		{
-			commandLine = '"' .. unzipToolPath .. '" x -y "' .. zipPath .. '" -o"' ..dstDir .. '"',
-			isVisible = false,
-		}
-		wasSuccessful = system.request( "executeUntilExit", executionSettings )
-	else
-		local status = os.execute( 'unzip -o "' .. zipPath .. '" -d "' ..dstDir .. '"' )
-		if ( 0 == status ) then
-			wasSuccessful = true
-		end
-	end
-
-	return wasSuccessful
+		native.setActivityIndicator( false )
+		self.onComplete()
+	end)
 end
--- luacheck: pop
 
 local function onInternalRequestUnzipPlugins( event )
 	-- Verify that a destination path was provided.
@@ -598,342 +460,28 @@ local function onInternalRequestUnzipPlugins( event )
 	if #params.plugins <= 0 then
 		return true
 	end
-
-	-- Do not continue if we haven't finished download plugins yet.
-	if PluginSync.requests and ( #PluginSync.requests > 0 ) then
-		return "Cannot continue until the system finishes downloading plugins."
+	local result = collectPlugins(params.plugins, destinationPath, event.platform or params.platform, false, nil)
+	if result == nil then
+		return true
+	else
+		return result
 	end
-
-	-- Unzip all plugins belonging to this app to the given destination directory.
-	-- Note: Skip over plugins not in the "build.settings" supported list.
-	for pluginIndex = 1, #params.plugins do
-		if params.plugins[ pluginIndex ].isSupportedOnThisPlatform then
-			local pluginKey = params.plugins[ pluginIndex ].clientCatalogKey
-			local pluginEntry = PluginSync.clientCatalog[ pluginKey ]
-			if type( pluginEntry ) == "table" then
-				local zipFileName = pluginEntry.filename
-				if type( zipFileName ) == "string" then
-					local zipFilePath = system.pathForFile( zipFileName, system.PluginsDirectory )
-					local unzipResult = PluginSync:unzip( zipFilePath, destinationPath )
-					if unzipResult == false then
-						return "Failed to unzip plugin: " .. zipFileName
-					end
-				end
-			else
-				-- detailed info for the console
-				print("RequestUnzipPlugins: failed to download plugin: ", json.prettify(params.plugins[ pluginIndex ]))
-
-				return "Unable to download plugin. Make sure that the plugin is available for this platform and that your machine has Internet access.\n\n"..
-						"Plugin: "..tostring(params.plugins[ pluginIndex ].pluginName)
-			end
-		end
-	end
-	return true
 end
 Runtime:addEventListener( "_internalRequestUnzipPlugins", onInternalRequestUnzipPlugins )
 
 local function onInternalQueryAreAllPluginsAvailable( _ )
-	-- Return true now if this app does not require any plugins.
-	if #params.plugins <= 0 then
-		return true
-	end
-
-	-- Check if all plugins in the queue have been downloaded.
-	-- Note: Skip over plugins not in the "build.settings" supported list.
-	local hasDownloadedAllPlugins = true
-	local missingPluginNames = ""
-	for pluginIndex = 1, #params.plugins do
-		if params.plugins[ pluginIndex ].isSupportedOnThisPlatform then
-			-- Fetch the next plugin in the entry table that this app depends on and make sure its zip file exists.
-			local pluginKey = params.plugins[ pluginIndex ].clientCatalogKey
-			local wasPluginDownloaded = false
-			local pluginEntry = PluginSync.clientCatalog[ pluginKey ]
-			if type( pluginEntry ) == "table" then
-				local zipFileName = pluginEntry.filename
-				if type( zipFileName ) == "string" then
-					local testFileExistence = true
-					local zipFilePath = system.pathForFile( zipFileName, system.PluginsDirectory, testFileExistence )
-					if (type( zipFilePath ) == "string") and (string.len( zipFilePath ) > 0) then
-						wasPluginDownloaded = true
-					end
-				end
-			end
-
-			-- If the plugin is missing, then flag it as an error and add it to the missing plugins string.
-			if ( wasPluginDownloaded == false ) then
-				hasDownloadedAllPlugins = false
-				if ( string.len( missingPluginNames ) > 0 ) then
-					missingPluginNames = missingPluginNames .. "\n"
-				end
-				missingPluginNames = missingPluginNames .. pluginKey
-			end
-		end
-	end
-
-	-- If we've failed to find at least 1 plugin this app depends on, then return a string
-	-- listing all of the plugins not found as a newline separated list.
-	if ( hasDownloadedAllPlugins == false ) then
-		return missingPluginNames
-	end
-
-	-- All plugin zip files this app depends on have been found.
 	return true
 end
 Runtime:addEventListener( "_internalQueryAreAllPluginsAvailable", onInternalQueryAreAllPluginsAvailable )
 
-function PluginSync:handleManifestDownload( event, context )
-
-	self:debugPrint( "Manifest download response: " .. event.response )
-	local serverCatalog = json.decode( event.response )
-
-	if ( event.status == 404 ) or
-		( not serverCatalog ) then
-
-		-- No manifest available. Remove the plugin from the clientCatalog.
-		self.clientCatalog[ context.key ] = nil
-		self:UpdateClientCatalog()
-
-		print( "PluginSync: failed to download plugin: " .. event.url )
-		native.showAlert(
-				"Plugin Download Error",
-				"The following plugin could not be downloaded:\n    " .. context.key .. "\n\nIf you are sure you are requiring the correct plugin name, then please contact support.",
-				{ "OK" } )
-
-	else
-
-		-- Find the plugin file.
-		local manifest_found = self:findPluginToDownloadFromServerCatalog( context.key, serverCatalog )
-
-		-- luacheck: push
-		-- luacheck: ignore 542 -- An empty if branch.
-
-		if manifest_found then
-			self:downloadPlugin( context.key, manifest_found )
-		else
-			-- Nothing to do. Errors are reported in findPluginToDownloadFromServerCatalog() above.
-		end
-
-		-- luacheck: pop
-
-	end
-end
-
-function PluginSync:handlePluginDownload( event, context )
-
-	-- If it is a .zip file, uncompress it
-	local fileTable = event.response
-
-	if type( fileTable ) == "table" then
-		local filename = fileTable.filename
-		local baseDir = fileTable.baseDirectory
-		if "string" == type( filename ) and baseDir then
-			local zipPath = system.pathForFile( filename, baseDir )
-			local dstPath = system.pathForFile( "", system.PluginsDirectory )
-
-			if not self:unzip( zipPath, dstPath ) then
-
-				-- Unzipping failed.
-				self.clientCatalog[ context.key ] = nil
-				self:UpdateClientCatalog()
-
-				native.showAlert(
-					"Plugin Error",
-					"The following plugin appears to be corrupted:\n    " .. tostring( context.key ),
-					{ "OK" } )
-			end
-		end
-	end
-end
-
--- NOTE: This is used as the listener for both the manifest.json and the plugin files.
-function PluginSync:networkRequest( event )
-
-	if event.isError then
-		-- NOTE: we do not bother handling errors
-		-- in requests to keep things simple
-		if (type(event.response) == "string") and (string.len(event.response) > 0) then
-			native.showAlert(
-				"Plugin Download Error",
-				"The following network error occurred while downloading a plugin.\n\n" .. tostring(event.response),
-				{ "OK" } )
-		else
-			native.showAlert(
-				"Plugin Download Error",
-				"A network error occurred while downloading a plugin. Please check that you have access to the Internet and try again.",
-				{ "OK" } )
-		end
-	else
-		local context = self.contextForUrl[event.url]
-		if context then
-			-- If there's a context, then this was a download of the
-			-- manifest.json file (as opposed to the download of the plugin file)
-			PluginSync:handleManifestDownload( event, context )
-		else
-			-- This is a download of the actual plugin file
-			PluginSync:handlePluginDownload( event, context )
-		end
-	end
-
-	local requests = self.requests
-	for i=1,#requests do
-		if event.url == requests[i] then
-			table.remove( requests, i )
-
-			-- A flaw in this system is that we add to the clientCatalog
-			-- before we know the result of the download. We generally assume
-			-- that the existence of an entry in the clientCatalog means
-			-- that a specific version of a plugin is available. This isn't
-			-- the case if we don't get a chance to remove the entry in the
-			-- clientCatalog uppon failure.
-			--
-			-- A solution is to track the downloads (see self.requests), then
-			-- add entires into the clientCatalog uppon successful
-			-- completion of a transfer (here).
-		end
-	end
-
-	if #requests <= 0 then
-		self:allDownloadsCompleted()
-	end
-
-end
-
-function PluginSync:findPluginToDownloadFromServerCatalog( key, serverCatalog )
-
-	if not serverCatalog then
-		-- Nothing to do.
-		return
-	end
-
-	if not serverCatalog.platforms then
-		-- Nothing to do.
-		-- This ISN'T an error. It's normal for some plugins
-		-- NOT to be available for certain platforms.
-		--
-		self:debugPrint( "Marking this plugin so we don't try to download it again: " .. key )
-		self.clientCatalog[ key ] = ""
-		self:UpdateClientCatalog()
-		return
-	end
-
-	local versions = serverCatalog.platforms[ self.platform ]
-	if not versions then
-		-- Nothing to do.
-		-- This ISN'T an error. It's normal for some plugins
-		-- NOT to be available for certain platforms.
-		--
-		self:debugPrint( "Marking this plugin so we don't try to download it again: " .. key )
-		self.clientCatalog[ key ] = ""
-		self:UpdateClientCatalog()
-		return
-	end
-
-	-- We're assuming the build number will only grow year-to-year.
-	-- ie: The build number ISN'T reset at the begining of a new year.
-	-- In which case we can ignore the year, and only take the build
-	-- number into account.
-
-	-- Metadata for build of this simulator
-	local _, sim_build_number = string.match( system.getInfo( "build" ),
-																	'(%d+)%.(%d+)' )
-	sim_build_number = tonumber( sim_build_number )
-	if not sim_build_number then
-		-- Nothing to do.
-		return
-	end
-
-	-- Actual build we will use to index into the manifest for the download url
-	local chosen_build_number = 0
-
-	-- find appropriate version of plugin for this build of the simulator
-	local manifest_found
-
-	-- For all the plugin versions available, find the closest
-	-- current_build_number to sim_build_number, without going over.
-	for current_daily_build_string,
-		current_daily_build_manifest in pairs( versions ) do
-
-		local _, current_build_number = string.match( current_daily_build_string,
-														'(%d+)%.(%d+)' )
-		current_build_number = tonumber( current_build_number )
-
-		if current_build_number then
-			if ( current_build_number > chosen_build_number ) and
-				( current_build_number <= sim_build_number ) then
-				chosen_build_number = current_build_number
-				manifest_found = current_daily_build_manifest
-			end
-		end
-	end
-
-	local manifestMessage
-
-	-- On older builds, manifest_found.removed is nil which is false.
-	-- On newer builds (2015.2541 and newer), this property can be explicitly
-	-- set to designate that a plugin was removed, in which case we force
-	-- manifest_found to be nil.
-	--
-	if "table" == type(manifest_found) and manifest_found.removed then
-		manifestMessage = manifest_found.message
-		manifest_found = nil
-	end
-
-	-- Compare md5 values in case the plugin we already have has been updated.
-	if manifest_found then
-		if self.clientCatalog[ key ] then
-			local full_file_path = system.pathForFile( manifest_found.filename, system.PluginsDirectory )
-
-			if ( file_exists( full_file_path ) and ( manifest_found.md5 == self.clientCatalog[ key ].md5 ) ) then
-				-- The file still exists and the md5 values HAVEN'T changed. Nothing to do.
-				self:debugPrint( "plugin " .. key .. " DOESN'T need to be updated for platform " .. self.platform .. " Already build number: " .. chosen_build_number )
-				return
-			else
-				print( "PluginSync: plugin " .. key .. " needs to be updated for platform " .. self.platform .. " to build number: " .. chosen_build_number )
-			end
-		end
-	else
-		local errorTitle = "Plugin Version Error"
-		local errorMsg = "The following plugin is not available for this version of the Simulator (" .. system.getInfo( "build" ) .. ")\n    " .. key
-
-		native.showAlert( errorTitle, errorMsg, { "OK" } )
-
-		-- Print error message to console
-		print( errorTitle .. ": " .. errorMsg )
-		if ( manifestMessage ) then
-			print( "   ", manifestMessage )
-		end
-	end
-
-	return manifest_found
-end
-
-function PluginSync:downloadPlugin( key, manifest )
-
-	print("PluginSync: downloading plugin: " .. manifest.url)
-
-	-- Cache buster
-	local url = manifest.url .. '?ts='..tostring(os.time())
-
-	-- Download to a file.
-	network.download( url,
-						"GET",
-						self, -- "self" is who will receive the networkRequest() event.
-						manifest.filename,
-						system.PluginsDirectory )
-
-	-- and record the url request
-	table.insert( self.requests, url )
-
-	-- Add the manifest to the clientCatalog.
-	self.clientCatalog[ key ] = manifest
-	self:UpdateClientCatalog()
-end
-
---------------------------------------------------------------------------------
-
 local function loadMain( onComplete )
 
 	PluginSync:initialize( params.platform )
+	if not params.shellPluginCollector then
+		-- No way to download.
+		onComplete( )
+		return
+	end
 
 	local required_plugins = params.plugins
 	if ( not required_plugins ) or
@@ -945,16 +493,16 @@ local function loadMain( onComplete )
 
 	-- Find what needs to be downloaded.
 	for i=1,#required_plugins do
-		PluginSync:buildListOfManifestsToDownload( required_plugins[i] )
+		PluginSync:addPluginToQueueIfRequired( required_plugins[i] )
 	end
 
-	-- Download.
-	PluginSync:downloadQueuedManifests( onComplete )
 	if #PluginSync.queue == 0 then
 		-- Nothing to download.
 		onComplete( )
+	else
+		-- Download.
+		PluginSync:downloadQueuedPlugins( onComplete )
 	end
-
 end
 
 --

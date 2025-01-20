@@ -1,29 +1,15 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Core/Rtt_Build.h"
+
+#include <sys/sysctl.h>
 
 #import "OSXAppBuildController.h"
 
@@ -31,9 +17,6 @@
 #import "ValidationSupportMacUI.h"
 #import "ValidationToolOutputViewController.h"
 
-#include "Rtt_Authorization.h"
-#include "Rtt_AuthorizationTicket.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_MacConsolePlatform.h"
 #include "Rtt_Assert.h"
 #include "Rtt_MacPlatform.h"
@@ -58,10 +41,9 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 @implementation OSXAppBuildController
 
 - (id)initWithWindowNibName:(NSString*)nibFile
-                projectPath:(NSString *)projPath
-                 authorizer:(const Authorization *)authorizer;
+                projectPath:(NSString *)projPath;
 {
-	self = [super initWithWindowNibName:nibFile projectPath:projPath authorizer:authorizer];
+	self = [super initWithWindowNibName:nibFile projectPath:projPath];
 
 	if ( self )
 	{
@@ -171,19 +153,50 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 {
     IdentityMenuItem* item = currentProvisioningProfileItem; Rtt_ASSERT( item != [fSigningIdentities itemAtIndex:0] );
 
-    return ( [[item title] contains:k3rdPartyMacDeveloperIdentityTag] );
+    return ( ([[item title] contains:k3rdPartyMacDeveloperIdentityTag] || [[item title] contains:kAppleDistributionIdentityTag] )
+			|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"]);
 }
 
 - (BOOL)isSelfDistributionBuild
 {
     IdentityMenuItem* item = currentProvisioningProfileItem; Rtt_ASSERT( item != [fSigningIdentities itemAtIndex:0] );
 
-    return ( [[item title] contains:kDeveloperIDIdentityTag] );
+    return ( [[item title] contains:kDeveloperIDIdentityTag]
+			|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"]);
 }
 
 - (BOOL)isDeveloperBuild
 {
-    return (! [self isStoreBuild] && ! [self isSelfDistributionBuild]);
+	return ((! [self isStoreBuild] && ! [self isSelfDistributionBuild])
+			|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"]);
+}
+
+- (void)checkAndWarnARM //Apple Silicon(Arm) computers require signing to test locally
+{
+    //Check for ARM
+    cpu_type_t type;
+    size_t size = sizeof(type);
+    sysctlbyname("hw.cputype", &type, &size, NULL, 0);
+    cpu_type_t typeWithABIInfoRemoved = type & ~CPU_ARCH_MASK;
+    IdentityMenuItem* item = currentProvisioningProfileItem;
+    
+    if (typeWithABIInfoRemoved == CPU_TYPE_ARM  && ![[NSUserDefaults standardUserDefaults] boolForKey:@"macOSARMSignWarn"] && item == [fSigningIdentities itemAtIndex:1])
+    {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"WARNING: Signing Required to run App"];
+        [alert setInformativeText:@"Apple requires Apple Silicon(ARM) based Apps to be signed in order run on Apple Silicon(M1) based Macs"];
+        
+        [alert addButtonWithTitle:@"Ok"];
+        [alert setShowsSuppressionButton:YES];
+        [alert runModal];
+        
+        if(alert.suppressionButton.state == 1){
+            [[NSUserDefaults standardUserDefaults] setObject:@(YES) forKey:@"macOSARMSignWarn"];
+        }
+        
+        
+    }
+    
 }
 
 - (void)willShowAlert:(NSAlert*)alert
@@ -307,6 +320,10 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 	{
 		return;
 	}
+    
+    if( [self isDeveloperBuild] ){
+        [self checkAndWarnARM];
+    }
 
 	NSWindow *buildWindow = [self window];
 
@@ -322,13 +339,10 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 	}
 
 	// We don't login to build macOS apps so we output this here
-	const char* usr = [appDelegate ticket]->GetUsername();
-
-	Rtt_Log("Building %s app for %s with %s", [self.platformTitle UTF8String], usr, Rtt_STRING_BUILD);
+	Rtt_Log("Building %s app with %s", [self.platformTitle UTF8String], Rtt_STRING_BUILD);
 	
 	MacConsolePlatform platform; // TODO: Use fConsolePlatform
 	MacPlatformServices services( platform );
-	WebServicesSession session( services );
 
 	const char* name = [self.appName UTF8String];
 	const char* versionname = NULL;
@@ -447,34 +461,18 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 	params->SetStripDebug( isStripDebug );
 	params->SetRuntime([appDelegate runtime]);
 
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-	// Manual enabling of inclusion of Fuse plugins
-	BOOL includeFusePlugins  = NO;
-	NSString *includeFusePluginsStr = [[NSUserDefaults standardUserDefaults] stringForKey:@"debugMonetizationPlugin"];
-
-	if (includeFusePluginsStr != nil)
-	{
-		includeFusePlugins = [includeFusePluginsStr boolValue];
-	}
-
-	// params->SetIncludeFusePlugins( includeFusePlugins );
-
-	// params->SetUsesMonetization( ([fEnableMonetization state] == NSOnState) );
-#endif // AUTO_INCLUDE_MONETIZATION_PLUGIN
-
 	// Some IDEs will terminate us quite abruptly so make sure we're on disk before starting a long operation
 	[[NSUserDefaults standardUserDefaults] synchronize];
 
 	// Do the actual build
-
 	[self logEvent:@"build"];
 
 	NSString* tmpDirBase = NSTemporaryDirectory();
-	size_t code = osxPackager->Build( params, session, [tmpDirBase UTF8String] );
+	size_t code = osxPackager->Build( params, [tmpDirBase UTF8String] );
 
 	[self endProgressSheetBanner:[self window]];
 
-	if (code == WebServicesSession::kNoError)
+	if (code == PlatformAppPackager::kNoError)
 	{
 		[self logEvent:@"build-succeeded"];
 
@@ -538,21 +536,13 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
         // Display the error
         if (params->GetBuildMessage() != NULL)
         {
-            msg = @"Build Failed\n\n";
-            msg = [msg stringByAppendingString:[NSString stringWithExternalString:params->GetBuildMessage()]];
-            msg = [msg stringByAppendingString:@"\n\n"];
+            msg = [NSString stringWithExternalString:params->GetBuildMessage()];
         }
         else
         {
-            msg = @"Unexpected build error.\n\n";
-            msg = [msg stringByAppendingString:[NSString stringWithFormat:@"Error code: %ld\n\n", code]];
+            msg = [NSString stringWithFormat:@"Unexpected build error.\n\nError code: %ld", code];
         }
-        
-        details = [[NSDictionary alloc] initWithObjectsAndKeys:msg, NSLocalizedDescriptionKey, nil];
-        error = [[NSError alloc] initWithDomain:@"CoronaSimulator" code:101 userInfo:details];
-        [NSApp presentError:error modalForWindow:[self window] delegate:self didPresentSelector:@selector(didPresentErrorWithRecovery:contextInfo:) contextInfo:(void*)code];
-        [error release];
-        [details release];        
+        [self showError:@"Build Failed" message:msg helpURL:nil parentWindow:[self window]];
     }
 
     [self saveBuildPreferences];
@@ -659,7 +649,8 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 
         for (NSString *certName in sortedKeys)
         {
-            if ([certName hasPrefix:k3rdPartyMacDeveloperIdentityTag])
+            if ([certName hasPrefix:k3rdPartyMacDeveloperIdentityTag]
+				|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"])
             {
                 NSMenuItem *newItem = [[NSMenuItem alloc] init];
                 [newItem setTitle:certName];
@@ -672,7 +663,8 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
                 }
             }
 
-            if ([certName hasPrefix:k3rdPartyMacDeveloperIdentityTag])
+            if ([certName hasPrefix:k3rdPartyMacDeveloperIdentityTag]
+				|| [[NSUserDefaults standardUserDefaults] boolForKey:@"macOSIgnoreCertType"])
             {
                 NSMenuItem *newItem = [[NSMenuItem alloc] init];
                 [newItem setTitle:certName];
@@ -810,7 +802,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 
 	[self endProgressSheetBanner:[self window]];
 
-	if (code != WebServicesSession::kNoError)
+	if (code != PlatformAppPackager::kNoError)
 	{
 		NSString *buildMsg = nil;
 		NSString *title = nil;
@@ -844,10 +836,18 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 #ifdef USE_APPLICATION_LOADER
 		NSString *message = [NSString stringWithFormat:@"*%@* has been sent to the Mac App Store", self.appName];
 #else
-		NSString *message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store using [Application Loader](launch-bundle:com.apple.itunes.connect.ApplicationLoader).\n\nPress *Choose* on the *Application Loader* window to load\n*%@* into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".pkg"]];
+		NSString *message;
+		if([[NSWorkspace sharedWorkspace] URLForApplicationToOpenURL:[NSURL URLWithString:@"transporter://"]])
+		{
+			message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store using the [Transporter](launch-bundle:com.apple.TransporterApp|macappstore://itunes.apple.com/app/id1450874784) app.\n\nPress *Add App* on the *Transporter* window to load `%@` into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".pkg"]];
+		}
+		else
+		{
+			message = [NSString stringWithFormat:@"*%@* is ready to be sent to the App Store. Install and run the [Transporter](launch-bundle:com.apple.TransporterApp|macappstore://itunes.apple.com/app/id1450874784) app.\n\nAfter signing into *Transporter* app, press *Add App* on its window to load `%@` into it", self.appName, [[self appBundleFile] stringByReplacingOccurrencesOfString:@".app" withString:@".pkg"]];
+		}
 
 		// Open Application Loader
-		[[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:@"com.apple.itunes.connect.ApplicationLoader"
+		[[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:@"com.apple.TransporterApp"
 															 options:NSWorkspaceLaunchDefault
 									  additionalEventParamDescriptor:nil
 													launchIdentifier:nil];
@@ -885,7 +885,7 @@ static NSString *kDeveloperIDIdentityTag = @"Developer ID ";
 
 	[self endProgressSheetBanner:[self window]];
 
-	if (code != WebServicesSession::kNoError)
+	if (code != PlatformAppPackager::kNoError)
 	{
         NSString *buildMsg = nil;
 

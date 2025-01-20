@@ -1,15 +1,14 @@
-// ----------------------------------------------------------------------------
-// 
-// stdafx.h
-// Copyright (c) 2015 Corona Labs Inc. All rights reserved.
+//////////////////////////////////////////////////////////////////////////////
 //
+// This file is part of the Corona game engine.
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
+//
+//////////////////////////////////////////////////////////////////////////////
+
 // This is a pre-compiled header which must be included in all source files
 // in this library.
-// 
-// Reviewers:
-// 		Joshua Quick
-//
-// ----------------------------------------------------------------------------
 
 #pragma once
 

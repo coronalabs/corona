@@ -1,25 +1,9 @@
 ------------------------------------------------------------------------------
 --
--- Copyright (C) 2018 Corona Labs Inc.
--- Contact: support@coronalabs.com
---
 -- This file is part of the Corona game engine.
---
--- Commercial License Usage
--- Licensees holding valid commercial Corona licenses may use this file in
--- accordance with the commercial license agreement between you and 
--- Corona Labs Inc. For licensing terms and conditions please contact
--- support@coronalabs.com or visit https://coronalabs.com/com-license
---
--- GNU General Public License Usage
--- Alternatively, this file may be used under the terms of the GNU General
--- Public license version 3. The license is as published by the Free Software
--- Foundation and appearing in the file LICENSE.GPL3 included in the packaging
--- of this file. Please review the following information to ensure the GNU 
--- General Public License requirements will
--- be met: https://www.gnu.org/licenses/gpl-3.0.html
---
 -- For overview and more information on licensing please refer to README.md
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
 
@@ -36,7 +20,7 @@ local simAvail, simulator = pcall(require, "simulator")
 local CoronaPListSupport = require("CoronaPListSupport")
 local captureCommandOutput = CoronaPListSupport.captureCommandOutput
 
-local coronaLiveBuildAppDir = "_corona_live_build_app" -- "PackageApp" -- 
+local coronaLiveBuildAppDir = "_corona_live_build_app" -- "PackageApp" --
 local coronaLiveBuildManifest = "_corona_live_build_manifest.txt"
 local coronaLiveBuildExclude = "_corona_live_build_exclude.txt"
 
@@ -96,13 +80,13 @@ local function isAlpha( val )
 	if val >= "A" and val <= "Z" then
 		return true
 	end
-	
+
 	if val >= "a" and val <= "z" then
 		return true
 	end
-	
+
 	return false	-- not Alpha
-	
+
 end
 
 --------------------------------------------------------------------------------
@@ -118,9 +102,9 @@ local function isNumber( val )
 	if val >= "0" and val <= "9" then
 		return true
 	end
-	
+
 	return false	-- not number
-	
+
 end
 
 --------------------------------------------------------------------------------
@@ -135,17 +119,17 @@ end
 local function isDotDash( val, allowDots )
 
 	local char2 = "-"		-- default is to not test for dot
-	
+
 	if allowDots then
 		char2 = "."		-- test for dot
 	end
-	
+
 	if val == "-" or val == char2 then
 		return true
 	end
-	
+
 	return false	-- not dot or dash
-	
+
 end
 
 --------------------------------------------------------------------------------
@@ -165,12 +149,12 @@ end
 local function sanitizeBundleString( bundleStr, allowDots )
 
 	local newBundleStr	= ""	-- new string
-	
+
 	local val
-	
+
 	for i = 1, string.len( bundleStr ) do
 		val = string.sub( bundleStr, i, i )
-		
+
 		if isAlpha( val ) then
 			newBundleStr = newBundleStr .. val
 		elseif isNumber( val ) then
@@ -180,9 +164,9 @@ local function sanitizeBundleString( bundleStr, allowDots )
 		else
 			newBundleStr = newBundleStr .. "-"
 		end
-		
+
 	end -- do
-	
+
 	return newBundleStr
 
 end
@@ -397,7 +381,7 @@ local function getProductValidateScript( path, itunesConnectUsername, itunesConn
 	-- Apple tells us to use this buried utility to automate Application Loader tasks in
 	-- https://itunesconnect.apple.com/docs/UsingApplicationLoader.pdf
 	local altool = makepath(applicationLoader, "Contents/Frameworks/ITunesSoftwareService.framework/Support/altool")
-	
+
 	-- If the "cmd" generated below fails because it's the wrong path that's very hard to detect amongst all the XML parsing so we do it here
 	if lfs.attributes( altool ) == nil then
 		print("ERROR: cannot find 'altool' utility in "..altool)
@@ -417,7 +401,7 @@ local function getProductUploadScript( path, itunesConnectUsername, itunesConnec
 	-- Apple tells us to use this buried utility to automate Application Loader tasks in
 	-- https://itunesconnect.apple.com/docs/UsingApplicationLoader.pdf
 	local altool = makepath(applicationLoader, "Contents/Frameworks/ITunesSoftwareService.framework/Support/altool")
-	
+
 	-- Removing the "!DOCTYPE" line from the XML stops xpath trying to access the DTD
 	-- The xpath command parses the XML output looking for an error message
 	-- The final sed command adds a newline to the last line of output which xpath omits
@@ -504,7 +488,7 @@ local function generateXcent( options )
 	if debugBuildProcess and debugBuildProcess ~= 0 then
 		print("get_task_allow_setting: ".. tostring(get_task_allow_setting))
 	end
-	
+
 	if get_task_allow_setting ~= "" then
 		-- set the value appropriately
 		if nil ~= string.find( get_task_allow_setting, "1", 1, true ) then
@@ -591,15 +575,53 @@ local function generateXcent( options )
 end
 
 
+-- xcprivacy
+local templateXcprivacy = [[
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+{{CUSTOM_XCPRIVACY}}
+</dict>
+</plist>
+]]
+local function generateXcprivacy( options )
+	local filename = options.tmpDir .. "/PrivacyInfo.xcprivacy"
+	local outFile = assert( io.open( filename, "wb" ) )
+
+	local data = templateXcprivacy
+
+	local generatedPrivacy = CoronaPListSupport.generateXcprivacy( options.settings, 'iphone')
+	if(  generatedPrivacy and generatedPrivacy ~= "" ) then
+		data, numMatches = string.gsub( data, "{{CUSTOM_XCPRIVACY}}", generatedPrivacy )
+		assert( numMatches == 1 )
+	end
+
+	outFile:write(data)
+	assert( outFile:close() )
+
+	print( "Created XCPRIACY: " .. filename );
+
+	if debugBuildProcess and debugBuildProcess ~= 0 then
+		runScript("cat "..filename)
+	end
+end
+
+
 --
 -- generateFiles
 --
--- Create the .xcent and Info.plist files
+-- Create the .xcent, .xcprivacy, and Info.plist files
 --
 -- returns an error message or nil on success
 --
 local function generateFiles( options )
 	local result = nil
+
+	result = generateXcprivacy( options )
+	if result then
+		return result
+	end
 
 	result = generateXcent( options )
 	if result then
@@ -620,7 +642,7 @@ local function isBuildForDistribution( options )
 		return false
 	end
 
-	local retval = string.match( options.signingIdentityName, "iPhone Distribution" )
+	local retval = string.match( options.signingIdentityName, "iPhone Distribution" ) or string.match( options.signingIdentityName, "Apple Distribution" )
 	if retval then
 		return true
 	else
@@ -631,12 +653,12 @@ end
 -- helper function to figure out if building for App Store distribution
 -- returns true or false
 local function isBuildForAppStoreDistribution( options )
-	
+
 	if not options.signingIdentityName then
 		return false
 	end
 
-	local retval = string.match( options.signingIdentityName, "iPhone Distribution" )
+	local retval = string.match( options.signingIdentityName, "iPhone Distribution" ) or string.match( options.signingIdentityName, "Apple Distribution" )
 	if retval then
 		-- Adhoc profiles have a 'ProvisionedDevices' section, pure distribution profiles do not
 		local hasProvisionedDevices = captureCommandOutput("security cms -D -i '".. options.mobileProvision .."' | fgrep -c 'ProvisionedDevices'")
@@ -648,6 +670,148 @@ local function isBuildForAppStoreDistribution( options )
 	else
 		return false
 	end
+end
+
+-- this function moves files from main bundle to target OnDemandResources directory
+local function generateOdrFileStructure(bundleDir, destDir, odr, appBundleId)
+	local err = nil
+	if type(odr) ~= "table" then
+		return " 'onDemandResources' should be array of tables with tag and resource fields."
+	end
+
+	for i = 1,#odr do
+		local tag, resource = odr[i].tag, odr[i].resource
+		if type(tag)=="string" and type(resource)=="string" then
+			local tagBundle = appBundleId .. "." .. tag
+			local script = 'SRC_DIR='..quoteString(bundleDir) ..'\n'
+			script = script ..'DST_DIR='..quoteString(destDir) .. '\n'
+			script = script .. 'BNDL_DIR="$DST_DIR/' .. tagBundle .. '.assetpack"\n'
+			script = script .. 'BNDL_REL_SRC="' .. resource .. '"\n'
+			script = script .. [==[
+BSF="$(dirname "$BNDL_REL_SRC")"
+/bin/mkdir -p "$BNDL_DIR/$BSF"
+/bin/mv "$SRC_DIR"/"$BNDL_REL_SRC" "$BNDL_DIR/$BSF/"
+]==]
+			local result, errMsg = runScript( script )
+			if result ~= 0 then
+				return "error running script " .. tostring(errMsg)
+			end
+
+		else
+			return " invalid On-Demand Resources Entry: " .. json.encode(odr[i]) .. "; 'onDemandResources' should be array of tables with tag and resource fields."
+		end
+  end
+  return nil
+end
+
+-- generates plists for ODR resources. One describing each bundle and some in app bundle to aggregate them
+local function generateOdrPlists (bundleDir, odrDir, odr, appBundleId)
+
+	odrDir = odrDir .. "/"
+
+  local tagPacks = {}
+  local packResources = {}
+	-- still to figure out how to create self hosted ODR. Uncomment related lines to generate AssetPackManifestTemplate.plist
+  -- local resources = {}
+
+  -- first generate individual bundles Info.plist
+  local c = 1
+	for i = 1,#odr do
+		local tag, resource = odr[i].tag, odr[i].resource
+    local assetBundleDir = odrDir .. appBundleId .. "." .. tag .. '.assetpack'
+    local plistPath = assetBundleDir .. '/Info.plist'
+    local packBundleId = string.format(appBundleId .. ".asset-pack-%013d", c)
+    c = c+1
+
+    tagPacks[tag] = {NSAssetPacks={packBundleId}}
+    packResources[packBundleId] = {resource}
+    -- resources[#resources+1] = {
+    --   URL="http://127.0.0.1" .. assetBundleDir,
+    --   uncompressedSize=tonumber(captureCommandOutput('find "'.. assetBundleDir .. '" -type f -exec ls -l {} \\; | awk \'{sum += $5} END {print sum}\'')) or 0,
+    --   primaryContentHash={
+    --     hash=captureCommandOutput('stat -f"%Sm" -t "%F %T.000" "' .. assetBundleDir .. '"' ),
+    --     strategy="modtime"
+    --   },
+    --   bundleKey=packBundleId,
+    --   isStreamable=true,
+    -- }
+
+    local f = io.open(plistPath, "w")
+		if not f then
+			return "unable to create ODR file " .. plistPath
+		end
+		local resultBundle = {CFBundleIdentifier=packBundleId,Tags={tag}}
+		if odr[i].type == "prefetch" then
+			resultBundle.Priority = 0.5
+		elseif odr[i].type == "install" then
+			resultBundle.Priority = 1
+		end
+    f:write(json.encode(resultBundle))
+    f:close()
+    local result, errMsg = runScript( '/usr/bin/plutil -convert binary1 '..quoteString(plistPath) )
+		if result ~= 0 then
+			return "plutil error: " .. errMsg
+		end
+  end
+
+  -- now aggregate them into OnDemandResources.plist
+  local plistPath = bundleDir .. "/OnDemandResources.plist"
+  local f = io.open(plistPath, "w")
+	if not f then
+		return "unable to create ODR file " .. plistPath
+	end
+  f:write(json.encode( {NSBundleResourceRequestTags=tagPacks, NSBundleResourceRequestAssetPacks=packResources} ))
+  f:close()
+	local result, errMsg = runScript( '/usr/bin/plutil -convert binary1 '..quoteString(plistPath) )
+	if result ~= 0 then
+		return "plutil error: " .. errMsg
+	end
+
+
+  -- -- AssetPackManifestTemplate.plist for self hosted ODRs
+  -- local plistPath = bundleDir .. "/AssetPackManifestTemplate.plist"
+  -- local f = io.open(plistPath, "w")
+	-- if not f then
+	-- 	return "Error while creating ODR file: " .. plistPath
+	-- end
+  -- f:write(json.encode( {resources=resources} ))
+  -- f:close()
+	-- local result, errMsg = runScript( 'plutil -convert binary1 '..quoteString(plistPath) )
+	-- if result ~= 0 then
+	-- 	return errMsg
+	-- end
+
+end
+
+-- this will generate script for signing each bundle individually
+local function generateOdrCodesign(destDir, odr, appBundleId, identity, developerBase)
+
+	local codesign_allocate = xcodetoolhelper['codesign_allocate']
+	local codesign = xcodetoolhelper['codesign']
+
+	-- quote for spaces
+	codesign_allocate = quoteString(codesign_allocate)
+	codesign = quoteString(codesign)
+	developerBase = quoteString(developerBase)
+
+	local devbase_shell = "export DEVELOPER_BASE="..developerBase.."\n"
+	local export_path = [==[
+export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVELOPER_BASE/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+]==]
+
+	local allocate_script = 'export CODESIGN_ALLOCATE=' .. codesign_allocate .. '\n\n'
+
+	for i = 1,#odr do
+		local script = devbase_shell .. export_path .. allocate_script
+		local tag, resource = odr[i].tag, odr[i].resource
+		local quotedpath = quoteString(makepath(destDir,appBundleId .. "." .. tag .. ".assetpack"))
+		script = script .. codesign .. " --verbose -f -s "..quoteString(identity).." "..quotedpath .. "\n"
+		local result, errMsg = runScript( script )
+		if result ~= 0 then
+			return " codesigning error for  " .. tostring(resource) .. ": "..tostring(errMsg)
+		end
+	end
+  return nil
 end
 
 --
@@ -747,6 +911,33 @@ local function packageApp( options )
 	local iPhoneSDKRoot = options.sdkRoot or "/Applications/Xcode.app/Contents/Developer"
 	local builtForAppStore = isBuildForAppStoreDistribution( options )
 
+	-- package on demand resources
+	local odrOutputDir = nil
+	if options.settings and options.settings.iphone and options.settings.iphone.onDemandResources and isBuildForAppStoreDistribution( options ) then
+		setStatus("Generating On-Demand Resource bundles")
+		local odrData = options.settings.iphone.onDemandResources
+
+		-- step 1: move resources into appropriate folders
+		odrOutputDir = captureCommandOutput('mktemp -d -t CLtmpXXXXXX_ODR') .. "/OnDemandResources"
+		local errMsg = generateOdrFileStructure(appBundleFileUnquoted, odrOutputDir, odrData, options.bundleid)
+		if errMsg then
+			return "ERROR: error while copying On-Demand Resources: " .. tostring(errMsg)
+		end
+
+		-- step 2: generate necessary Plists
+		errMsg = generateOdrPlists(appBundleFileUnquoted, odrOutputDir, odrData, options.bundleid)
+		if errMsg then
+			return "ERROR: error while generating On-Demand Resources medatada: "..errMsg
+		end
+
+		-- step 3: codesign ODRs
+		errMsg = generateOdrCodesign(odrOutputDir, odrData, options.bundleid, options.signingIdentity, iPhoneSDKRoot )
+		if errMsg then
+			return "ERROR: codesignig On-Demand Resources: "..errMsg
+		end
+	end
+
+
 	-- bundle swift libraries if required
 	local bundleSwiftSupportDir
 	local bundleSwiftSupportParentDir
@@ -755,13 +946,27 @@ local function packageApp( options )
 
 		local bundleOptions = {
 			exe=options.bundleexecutable,
-			sdkBase=quoteString(iPhoneSDKRoot),
-			app=appBundleFile,
+			sdkBase=iPhoneSDKRoot,
+			app=appBundleFileUnquoted,
 			identity=options.signingIdentity,
 			platform="iphoneos"
 		}
-		local bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --sign {identity} --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain --toolchain "{sdkBase}/Toolchains/Swift_2.3.xctoolchain" --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
-		
+		local sdkVersion = captureCommandOutput("xcrun --sdk iphoneos --show-sdk-version")
+		if not sdkVersion then
+			return "Unable to get iOS SDK version"
+		end
+		sdkVersion = tonumber(string.match(sdkVersion, '%d+%.?%d*'))
+		if not sdkVersion then
+			return "Unable to parse SDK version"
+		end
+
+		local bundleScript
+		if sdkVersion >= 16.4 then
+			bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --destination "{app}/Frameworks" --strip-bitcode '
+		else
+			bundleScript = '$(xcrun -f swift-stdlib-tool) --copy --verbose --scan-executable "{app}/{exe}" --scan-folder "{app}/Frameworks" --platform {platform} --toolchain "{sdkBase}/Toolchains/XcodeDefault.xctoolchain" --destination "{app}/Frameworks" --strip-bitcode '
+		end
+
 		if not options.signingIdentity then
 			bundleOptions.identity = "-"
 			bundleOptions.platform = "iphonesimulator"
@@ -783,6 +988,7 @@ local function packageApp( options )
 			-- just embed swift
 			bundleScript = bundleScript .. '--resource-destination "{app}" --resource-library libswiftRemoteMirror.dylib '
 		end
+		bundleScript = bundleScript .. ' && find "{app}/Frameworks" -iname "libSwift*.dylib" -exec $(xcrun -f lipo) {} -remove arm64e -output {} \\;'
 
 		bundleScript = bundleScript:gsub("({([^}]+)})",
 		function(whole,i) return bundleOptions[i] or whole end)
@@ -794,10 +1000,21 @@ local function packageApp( options )
 		end
 	end
 
+	--remove standard resources(Corona Resources Bundle) if users selects
+	if options.includeStandardResources == false then
+		runScript("rm -rf "..quoteString(makepath(appBundleFileUnquoted, "CoronaResources.bundle")))
+	end
+	
+	--add xcprivacy file to the bundle
+	if options.settings.iphone and options.settings.iphone.xcprivacy then
+		runScript("cp -v " .. quoteString(options.tmpDir .. "/PrivacyInfo.xcprivacy") .. " " .. quoteString(makepath(appBundleFileUnquoted, "PrivacyInfo.xcprivacy")))
+	end
+	
+
 	-- bundle is now ready to be signed (don't sign if we don't have a signingIdentity, e.g. Xcode Simulator)
 	if options.signingIdentity then
 		-- codesign embedded frameworks before signing the .app
-		local result, errMsg = runScript( getCodesignFrameworkScript( appBundleFileUnquoted, options.signingIdentity, iPhoneSDKRoot ) )		
+		local result, errMsg = runScript( getCodesignFrameworkScript( appBundleFileUnquoted, options.signingIdentity, iPhoneSDKRoot ) )
 		if result ~= 0 then
 			errMsg = "ERROR: code signing embedded frameworks failed: "..tostring(errMsg)
 			return errMsg
@@ -853,6 +1070,11 @@ local function packageApp( options )
 			-- note we move the app to the "Payload" directory to preserve permissions and for speed which means the .app doesn't exist anymore
 			runScript( "mv " .. quoteString(makepath(options.dstDir, options.dstFile..".app")) .." ".. quoteString(makepath(ipaTmpDir, "Payload")) )
 
+			--move odr resources to "Payload" folder
+			if odrOutputDir then
+				runScript( "mv " .. quoteString(makepath(odrOutputDir)) .." ".. quoteString(makepath(ipaTmpDir, "Payload")) )
+			end
+
 			if bundleSwiftSupportDir then
 				runScript( "mv " .. bundleSwiftSupportDir .." ".. quoteString(ipaTmpDir) )
 			end
@@ -860,7 +1082,7 @@ local function packageApp( options )
 			runScript( "cd " .. quoteString(ipaTmpDir) .. "; zip --symlinks -r " .. appBundleFileIPA .. " *" )
 
 			runScript( "rm -r " .. quoteString(ipaTmpDir) )
-			
+
 			if bundleSwiftSupportParentDir then
 				runScript( "rm -r " .. quoteString(bundleSwiftSupportParentDir) )
 			end
@@ -973,7 +1195,7 @@ function getBundleId( mobileProvision, bundledisplayname, dstFile )
 			return options.bundleid
 		end
 	end
-	
+
 	return nil
 end
 
@@ -993,7 +1215,7 @@ function buildExe( options )
 	-- Otherwise we assume there is an exe already available.
 	if builderCtor then
 		-- Temporarily modify Lua require path
-		local pathOld = package.path
+		local pathOld = package.path or ""
 		package.path = libtemplateDir .. '/?.lua;' .. pathOld
 
 		-- Instantiate Builder
@@ -1161,6 +1383,7 @@ function iPhonePostPackage( params )
 	local targetDevice = params.targetDevice
 	local targetPlatform = params.targetPlatform
 	local liveBuild = params.liveBuild
+	local includeStandardResources = params.includeStandardResources
 	local verbose = ( debugBuildProcess and debugBuildProcess > 1 )
 	local osPlatform = params.osPlatform
 	local err = nil
@@ -1183,6 +1406,7 @@ function iPhonePostPackage( params )
 		osPlatform=osPlatform,
 		sdkType=params.sdkType,
 		liveBuild=liveBuild,
+		includeStandardResources=includeStandardResources,
 	}
 
 	local customSettingsFile = srcAssets .. "/build.settings"
@@ -1272,7 +1496,7 @@ function iPhonePostPackage( params )
 			-- runScript( "cp "..tmpDir.."/output.zip /tmp/" )
 		end
 
-		setStatus("Unpacking build from server")
+		setStatus("Unpacking build with plugins")
 
 		-- The file 'Default-568h@2x.png' is a special case: if there is one in the project,
 		-- don't overwrite it with the one from the template
@@ -1437,4 +1661,3 @@ function IOSSendToAppStore( params )
 
 	return nil
 end
-

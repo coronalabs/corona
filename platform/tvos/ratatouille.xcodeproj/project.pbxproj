@@ -49,8 +49,6 @@
 		A4551D341BAA17BE00FB3BDF /* Rtt_FixedMath.c in Sources */ = {isa = PBXBuildFile; fileRef = A4551D061BAA17BE00FB3BDF /* Rtt_FixedMath.c */; };
 		A4551D351BAA17BE00FB3BDF /* Rtt_Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551D071BAA17BE00FB3BDF /* Rtt_Geometry.cpp */; };
 		A4551D361BAA17BE00FB3BDF /* Rtt_Math.c in Sources */ = {isa = PBXBuildFile; fileRef = A4551D0B1BAA17BE00FB3BDF /* Rtt_Math.c */; };
-		A4551D371BAA17BE00FB3BDF /* Rtt_MD4.c in Sources */ = {isa = PBXBuildFile; fileRef = A4551D0D1BAA17BE00FB3BDF /* Rtt_MD4.c */; };
-		A4551D381BAA17BE00FB3BDF /* Rtt_MessageDigest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551D0F1BAA17BE00FB3BDF /* Rtt_MessageDigest.cpp */; };
 		A4551D391BAA17BE00FB3BDF /* Rtt_RefCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551D131BAA17BE00FB3BDF /* Rtt_RefCount.cpp */; };
 		A4551D3A1BAA17BE00FB3BDF /* Rtt_ResourceHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551D151BAA17BE00FB3BDF /* Rtt_ResourceHandle.cpp */; };
 		A4551D3B1BAA17BE00FB3BDF /* Rtt_SharedCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551D171BAA17BE00FB3BDF /* Rtt_SharedCount.cpp */; };
@@ -175,7 +173,6 @@
 		A4551F591BAA182D00FB3BDF /* Rtt_LuaTableIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551EDB1BAA182D00FB3BDF /* Rtt_LuaTableIterator.cpp */; };
 		A4551F5A1BAA182D00FB3BDF /* Rtt_LuaUserdataProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551EDD1BAA182D00FB3BDF /* Rtt_LuaUserdataProxy.cpp */; };
 		A4551F5B1BAA182D00FB3BDF /* Rtt_Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551EDF1BAA182D00FB3BDF /* Rtt_Matrix.cpp */; };
-		A4551F5C1BAA182D00FB3BDF /* Rtt_Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551EE31BAA182D00FB3BDF /* Rtt_Message.cpp */; };
 		A4551F5D1BAA182D00FB3BDF /* Rtt_ParticleSystemObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551EEE1BAA182D00FB3BDF /* Rtt_ParticleSystemObject.cpp */; };
 		A4551F5E1BAA182D00FB3BDF /* Rtt_PhysicsContact.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551EF01BAA182D00FB3BDF /* Rtt_PhysicsContact.cpp */; };
 		A4551F5F1BAA182D00FB3BDF /* Rtt_PhysicsContactListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551EF21BAA182D00FB3BDF /* Rtt_PhysicsContactListener.cpp */; };
@@ -209,7 +206,6 @@
 		A4551F7C1BAA182D00FB3BDF /* Rtt_StrokeTesselatorStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F2E1BAA182D00FB3BDF /* Rtt_StrokeTesselatorStream.cpp */; };
 		A4551F7D1BAA182D00FB3BDF /* Rtt_TesselatorStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F311BAA182D00FB3BDF /* Rtt_TesselatorStream.cpp */; };
 		A4551F7E1BAA182D00FB3BDF /* Rtt_Transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F331BAA182D00FB3BDF /* Rtt_Transform.cpp */; };
-		A4551F801BAA182D00FB3BDF /* Rtt_Verifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F371BAA182D00FB3BDF /* Rtt_Verifier.cpp */; };
 		A45520091BAA1B7300FB3BDF /* b2BroadPhase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F911BAA1B7300FB3BDF /* b2BroadPhase.cpp */; };
 		A455200A1BAA1B7300FB3BDF /* b2CollideCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F931BAA1B7300FB3BDF /* b2CollideCircle.cpp */; };
 		A455200B1BAA1B7300FB3BDF /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4551F941BAA1B7300FB3BDF /* b2CollideEdge.cpp */; };
@@ -375,10 +371,6 @@
 		A4D937E51BAA243D00DF2214 /* LuaHashMap.c in Sources */ = {isa = PBXBuildFile; fileRef = A4D937E31BAA243D00DF2214 /* LuaHashMap.c */; };
 		A4D937E91BAA246500DF2214 /* SmoothPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D937E71BAA246500DF2214 /* SmoothPolygon.cpp */; };
 		A4D937ED1BAA248000DF2214 /* b2Separator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D937EB1BAA248000DF2214 /* b2Separator.cpp */; };
-		A4D937F71BAA25E600DF2214 /* prime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D937EF1BAA25E600DF2214 /* prime.cpp */; };
-		A4D937F81BAA25E600DF2214 /* rsa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D937F11BAA25E600DF2214 /* rsa.cpp */; };
-		A4D937F91BAA25E600DF2214 /* vlong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D937F31BAA25E600DF2214 /* vlong.cpp */; };
-		A4D937FA1BAA25E600DF2214 /* vlong_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D937F51BAA25E600DF2214 /* vlong_io.cpp */; };
 		A4D937FE1BAA261A00DF2214 /* luaal.c in Sources */ = {isa = PBXBuildFile; fileRef = A4D937FC1BAA261A00DF2214 /* luaal.c */; };
 		A4D938431BAA271F00DF2214 /* Rtt_CommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938111BAA271E00DF2214 /* Rtt_CommandBuffer.cpp */; };
 		A4D938441BAA271F00DF2214 /* Rtt_CPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938131BAA271E00DF2214 /* Rtt_CPUResource.cpp */; };
@@ -594,6 +586,17 @@
 		A4E0762C1BD2C440003A733A /* Corona_plugin_library.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A4E0761F1BD2C413003A733A /* Corona_plugin_library.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A4E0762F1BD2C463003A733A /* PluginLibrary.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4E076071BD1D01F003A733A /* PluginLibrary.mm */; };
 		A4E076341BD2C515003A733A /* CoronaCards.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4E075911BD1BC09003A733A /* CoronaCards.framework */; };
+		AA2C69F929147C9D0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69F729147C4E0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */; };
+		AA2C69FA29147C9D0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69F829147C4E0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */; };
+		AA2C69FB29147C9D0093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */ = {isa = PBXBuildFile; fileRef = AA2C69BB29147C4E0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */; };
+		AA76CF15272CB55000CE3F89 /* CoronaObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */; };
+		AA2C6AF6291C37690093B0BE /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */; };
+		AAF349EB29EFC61C00076706 /* Rtt_Profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */; };
+		AAD3E2452B0BECE2000A4D45 /* Rtt_ObjectHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */; };
+		AAF34AD529F9DFB800076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */; };
+		AAF34AD629F9DFB900076706 /* Rtt_FormatExtensionList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */; };
+		AAF34ADB29F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34AD929F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp */; };
+		AAF34ADC29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF34ADA29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp */; };
 		C221F5611D4BE37F00F45E77 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */; };
 		C221F5621D4BE44400F45E77 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */; };
 		C231BDE41C0F810C00494B37 /* launchpad.lua in Sources */ = {isa = PBXBuildFile; fileRef = C231BDE21C0F80D200494B37 /* launchpad.lua */; };
@@ -619,6 +622,8 @@
 		F517B79F1C6CEC520042F592 /* NSString+Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = C2756C281C5722A500BE3194 /* NSString+Extensions.h */; };
 		F517B7A01C6CEC580042F592 /* NSString+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C2756C291C5722A500BE3194 /* NSString+Extensions.m */; };
 		F51D55BA1C814021000CE085 /* CoronaGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = F50CA3CC1C8111A300746C98 /* CoronaGraphics.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F51DCB1A257925FD00B75CA0 /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51DCADE257925FD00B75CA0 /* TVServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		F528CB13263312E800EEF385 /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51DCADE257925FD00B75CA0 /* TVServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F54D1E2E1CA36191000B280E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F54D1E2D1CA36191000B280E /* Rtt_AppleFont.mm */; };
 		F574F5FB1CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F574F5F71CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp */; };
 		F574F5FC1CE60D8300FF04F1 /* Rtt_TesselatorMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F574F5F91CE60D8300FF04F1 /* Rtt_TesselatorMesh.cpp */; };
@@ -626,8 +631,158 @@
 		F58011C11BE295070061E021 /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B41BE294F40061E021 /* Rtt_AppleInputDevice.mm */; };
 		F58011C21BE295070061E021 /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B61BE294F40061E021 /* Rtt_AppleInputDeviceManager.mm */; };
 		F58011C31BE295070061E021 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B81BE294F40061E021 /* Rtt_AppleInputMFiDeviceListener.mm */; };
+		F592971F255548860048AF8C /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F59296E3255548860048AF8C /* AVKit.framework */; };
+		F5A539B7256412940020CD1B /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F59296E3255548860048AF8C /* AVKit.framework */; };
 		F5A752361BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A752351BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm */; };
 		F5A752371BFA41C600CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752341BFA41BF00CCDB94 /* CoronaLuaObjCHelper.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5B4469B255543BD000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */; };
+		F5B446AB255543BE000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */; };
+		F5C5E0D7251E112100217C19 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD17351BAA0D8F00BCF507 /* main.mm */; };
+		F5C5E0D8251E112100217C19 /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = C2F9117A1CDC4C31004A5564 /* compat.c */; };
+		F5C5E0D9251E112100217C19 /* Rtt_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */; };
+		F5C5E0DD251E112100217C19 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4AD17471BAA0D8F00BCF507 /* Assets.xcassets */; };
+		F5C5E0DE251E112100217C19 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A46DA3D51BBA1DAD009C3CDF /* Main.storyboard */; };
+		F5C5E0E1251E112100217C19 /* CoronaCards.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A4E075911BD1BC09003A733A /* CoronaCards.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F5C5E10D251E114A00217C19 /* CoronaMainViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4E075D91BD1C78E003A733A /* CoronaMainViewController.mm */; };
+		F5C5E10E251E114A00217C19 /* CoronaApplicationMain.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4E075A01BD1BC5D003A733A /* CoronaApplicationMain.mm */; };
+		F5C5E10F251E114A00217C19 /* CoronaBeacon.mm in Sources */ = {isa = PBXBuildFile; fileRef = C29CAC221E20832800CD05FC /* CoronaBeacon.mm */; };
+		F5C5E110251E114A00217C19 /* CoronaMainAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4E075D71BD1C78E003A733A /* CoronaMainAppDelegate.mm */; };
+		F5C5E111251E114A00217C19 /* NSString+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C2756C291C5722A500BE3194 /* NSString+Extensions.m */; };
+		F5C5E113251E114A00217C19 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47021BB2476F00FD988E /* AudioToolbox.framework */; };
+		F5C5E114251E114A00217C19 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47031BB2476F00FD988E /* AVFoundation.framework */; };
+		F5C5E115251E114A00217C19 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47041BB2476F00FD988E /* CoreGraphics.framework */; };
+		F5C5E116251E114A00217C19 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47241BB247AB00FD988E /* CoreLocation.framework */; };
+		F5C5E117251E114A00217C19 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A44496B11BC5FF5E0019DA20 /* CoreMedia.framework */; };
+		F5C5E118251E114A00217C19 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A40A90521BD984AD001D2038 /* CoreText.framework */; };
+		F5C5E119251E114A00217C19 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47051BB2476F00FD988E /* CoreVideo.framework */; };
+		F5C5E11A251E114A00217C19 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47061BB2476F00FD988E /* Foundation.framework */; };
+		F5C5E11B251E114A00217C19 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A46DA3B31BBA1A1D009C3CDF /* GameController.framework */; };
+		F5C5E11D251E114A00217C19 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47081BB2476F00FD988E /* ImageIO.framework */; };
+		F5C5E11E251E114A00217C19 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47091BB2476F00FD988E /* MobileCoreServices.framework */; };
+		F5C5E11F251E114A00217C19 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD470A1BB2476F00FD988E /* OpenAL.framework */; };
+		F5C5E121251E114A00217C19 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD470C1BB2476F00FD988E /* QuartzCore.framework */; };
+		F5C5E122251E114A00217C19 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD470D1BB2476F00FD988E /* Security.framework */; };
+		F5C5E123251E114A00217C19 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD470E1BB2476F00FD988E /* StoreKit.framework */; };
+		F5C5E124251E114A00217C19 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD470F1BB2476F00FD988E /* SystemConfiguration.framework */; };
+		F5C5E125251E114A00217C19 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47101BB2476F00FD988E /* UIKit.framework */; };
+		F5C5E126251E114A00217C19 /* libobjc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47201BB2478400FD988E /* libobjc.tbd */; };
+		F5C5E127251E114A00217C19 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DD47211BB2478400FD988E /* libsqlite3.tbd */; };
+		F5C5E128251E114A00217C19 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4AD31151BAB8852006A0C97 /* libluasocket.a */; };
+		F5C5E12B251E114A00217C19 /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E0759F1BD1BC5D003A733A /* CoronaApplicationMain.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F5C5E12C251E114A00217C19 /* CoronaMainAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E075D61BD1C78E003A733A /* CoronaMainAppDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F5C5E12D251E114A00217C19 /* CoronaMainViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E075D81BD1C78E003A733A /* CoronaMainViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F5C5E12E251E114A00217C19 /* CoronaCards.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E075931BD1BC09003A733A /* CoronaCards.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F5C5E12F251E114A00217C19 /* CoronaLuaIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD31661BAB9E18006A0C97 /* CoronaLuaIOS.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E130251E114A00217C19 /* CoronaNativeObjectAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD31681BAB9E19006A0C97 /* CoronaNativeObjectAdapter.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E131251E114A00217C19 /* CoronaAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = A4551E851BAA180C00FB3BDF /* CoronaAssert.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E132251E114A00217C19 /* CoronaEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = A4551E871BAA180C00FB3BDF /* CoronaEvent.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E133251E114A00217C19 /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4124B7C1BB2070F001421F5 /* CoronaDelegate.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E134251E114A00217C19 /* CoronaGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = F50CA3CC1C8111A300746C98 /* CoronaGraphics.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E135251E114A00217C19 /* CoronaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = A4551E891BAA180C00FB3BDF /* CoronaLibrary.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E136251E114A00217C19 /* CoronaLog.h in Headers */ = {isa = PBXBuildFile; fileRef = A4551E8C1BAA180C00FB3BDF /* CoronaLog.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E137251E114A00217C19 /* CoronaLua.h in Headers */ = {isa = PBXBuildFile; fileRef = A4551E8E1BAA180C00FB3BDF /* CoronaLua.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E138251E114A00217C19 /* CoronaMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = A4551E8F1BAA180C00FB3BDF /* CoronaMacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E139251E114A00217C19 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752341BFA41BF00CCDB94 /* CoronaLuaObjCHelper.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E13A251E114A00217C19 /* CoronaRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD316A1BAB9E19006A0C97 /* CoronaRuntime.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E13B251E114A00217C19 /* CoronaVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = A4551E931BAA180C00FB3BDF /* CoronaVersion.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E13C251E114A00217C19 /* lauxlib.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD175F1BAA14EA00BCF507 /* lauxlib.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E13D251E114A00217C19 /* CoronaBeacon.h in Headers */ = {isa = PBXBuildFile; fileRef = C29CAC231E20832800CD05FC /* CoronaBeacon.h */; };
+		F5C5E13E251E114A00217C19 /* lua.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD17881BAA14EA00BCF507 /* lua.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E13F251E114A00217C19 /* NSString+Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = C2756C281C5722A500BE3194 /* NSString+Extensions.h */; };
+		F5C5E140251E114A00217C19 /* luaconf.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD178A1BAA14EA00BCF507 /* luaconf.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E141251E114A00217C19 /* lualib.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD178B1BAA14EA00BCF507 /* lualib.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F5C5E143251E114A00217C19 /* widget_theme_ios7@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = A44496B31BC83E1B0019DA20 /* widget_theme_ios7@4x.png */; };
+		F5C5E144251E114A00217C19 /* widget_theme_ios7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A44496B51BC83E1B0019DA20 /* widget_theme_ios7@2x.png */; };
+		F5C5E145251E114A00217C19 /* widget_theme_ios7.png in Resources */ = {isa = PBXBuildFile; fileRef = A44496B41BC83E1B0019DA20 /* widget_theme_ios7.png */; };
+		F5C5E166251E115D00217C19 /* Rtt_AppleData.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30691BAA2B80006A0C97 /* Rtt_AppleData.mm */; };
+		F5C5E167251E115D00217C19 /* CoronaSystemResourceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD31631BAB9934006A0C97 /* CoronaSystemResourceManager.mm */; };
+		F5C5E168251E115D00217C19 /* CoronaLuaObjC+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30571BAA2B80006A0C97 /* CoronaLuaObjC+NSObject.m */; };
+		F5C5E169251E115D00217C19 /* Rtt_IPhoneRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4DD48251BB2764900FD988E /* Rtt_IPhoneRuntimeDelegate.mm */; };
+		F5C5E16A251E115D00217C19 /* CoronaViewRuntimeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30AC1BAA377C006A0C97 /* CoronaViewRuntimeDelegate.mm */; };
+		F5C5E16B251E115D00217C19 /* Rtt_KeyName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A465E1A31BCF02A200C8D51B /* Rtt_KeyName.cpp */; };
+		F5C5E16C251E115D00217C19 /* Rtt_AppleInputDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B61BE294F40061E021 /* Rtt_AppleInputDeviceManager.mm */; };
+		F5C5E16D251E115D00217C19 /* Rtt_IPhoneTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30D21BAA377C006A0C97 /* Rtt_IPhoneTimer.mm */; };
+		F5C5E16E251E115D00217C19 /* Rtt_IPhoneText.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30CC1BAA377C006A0C97 /* Rtt_IPhoneText.mm */; };
+		F5C5E16F251E115D00217C19 /* Rtt_IPhoneFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30B81BAA377C006A0C97 /* Rtt_IPhoneFont.mm */; };
+		F5C5E170251E115D00217C19 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30721BAA2B80006A0C97 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm */; };
+		F5C5E171251E115D00217C19 /* Rtt_AppleInAppStore.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD306E1BAA2B80006A0C97 /* Rtt_AppleInAppStore.mm */; };
+		F5C5E172251E115D00217C19 /* Rtt_IPhoneScreenSurface.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30CA1BAA377C006A0C97 /* Rtt_IPhoneScreenSurface.mm */; };
+		F5C5E173251E115D00217C19 /* Rtt_RuntimeDelegatePlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30981BAA3656006A0C97 /* Rtt_RuntimeDelegatePlayer.cpp */; };
+		F5C5E174251E115D00217C19 /* Rtt_TVOSDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD31001BAA38B0006A0C97 /* Rtt_TVOSDevice.mm */; };
+		F5C5E175251E115D00217C19 /* CoronaViewPluginContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30AA1BAA377C006A0C97 /* CoronaViewPluginContext.mm */; };
+		F5C5E176251E115D00217C19 /* Rtt_IPhoneDisplayObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30B61BAA377C006A0C97 /* Rtt_IPhoneDisplayObject.mm */; };
+		F5C5E177251E115D00217C19 /* Rtt_IPhoneAudioSessionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30AF1BAA377C006A0C97 /* Rtt_IPhoneAudioSessionManager.mm */; };
+		F5C5E178251E115D00217C19 /* CoronaNativeObjectAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD31691BAB9E19006A0C97 /* CoronaNativeObjectAdapter.mm */; };
+		F5C5E179251E115D00217C19 /* Rtt_AppleInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B41BE294F40061E021 /* Rtt_AppleInputDevice.mm */; };
+		F5C5E17A251E115D00217C19 /* Rtt_ApplePlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30741BAA2B80006A0C97 /* Rtt_ApplePlatform.mm */; };
+		F5C5E17B251E115D00217C19 /* Rtt_AppleInAppStoreApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30701BAA2B80006A0C97 /* Rtt_AppleInAppStoreApple.mm */; };
+		F5C5E17C251E115D00217C19 /* CoronaViewPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30A61BAA377C006A0C97 /* CoronaViewPrivate.mm */; };
+		F5C5E17D251E115D00217C19 /* Rtt_IPhoneTextBoxObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30CE1BAA377C006A0C97 /* Rtt_IPhoneTextBoxObject.mm */; };
+		F5C5E17E251E115D00217C19 /* Rtt_IPhoneNativeObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30C21BAA377C006A0C97 /* Rtt_IPhoneNativeObject.mm */; };
+		F5C5E17F251E115D00217C19 /* Rtt_IPhonePlatformBase.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30C81BAA377C006A0C97 /* Rtt_IPhonePlatformBase.mm */; };
+		F5C5E180251E115D00217C19 /* Rtt_AppleCallback.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30651BAA2B80006A0C97 /* Rtt_AppleCallback.mm */; };
+		F5C5E181251E115D00217C19 /* Rtt_IPhoneVideoObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30D41BAA377C006A0C97 /* Rtt_IPhoneVideoObject.mm */; };
+		F5C5E182251E115D00217C19 /* Rtt_AppleAudioPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4AD305E1BAA2B80006A0C97 /* Rtt_AppleAudioPlayer.cpp */; };
+		F5C5E183251E115D00217C19 /* Rtt_TouchInhibitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30DE1BAA377C006A0C97 /* Rtt_TouchInhibitor.mm */; };
+		F5C5E184251E115D00217C19 /* Rtt_AppleEventSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4AD306A1BAA2B80006A0C97 /* Rtt_AppleEventSound.cpp */; };
+		F5C5E185251E115D00217C19 /* Rtt_AppleTextAlignment.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD305D1BAA2B80006A0C97 /* Rtt_AppleTextAlignment.mm */; };
+		F5C5E186251E115D00217C19 /* Rtt_AppleTextDelegateWrapperObjectHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30781BAA2B80006A0C97 /* Rtt_AppleTextDelegateWrapperObjectHelper.m */; };
+		F5C5E187251E115D00217C19 /* Rtt_AppleAudioRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30601BAA2B80006A0C97 /* Rtt_AppleAudioRecorder.mm */; };
+		F5C5E188251E115D00217C19 /* Rtt_AppleReachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30761BAA2B80006A0C97 /* Rtt_AppleReachability.mm */; };
+		F5C5E189251E115D00217C19 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58011B81BE294F40061E021 /* Rtt_AppleInputMFiDeviceListener.mm */; };
+		F5C5E18A251E115D00217C19 /* Rtt_AppleBitmap.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30631BAA2B80006A0C97 /* Rtt_AppleBitmap.mm */; };
+		F5C5E18B251E115D00217C19 /* Rtt_IPhoneAudioSessionManagerImplementation.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30B11BAA377C006A0C97 /* Rtt_IPhoneAudioSessionManagerImplementation.mm */; };
+		F5C5E18C251E115D00217C19 /* Rtt_IPhoneTextFieldObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30D01BAA377C006A0C97 /* Rtt_IPhoneTextFieldObject.mm */; };
+		F5C5E18D251E115D00217C19 /* CoronaLuaIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD31671BAB9E19006A0C97 /* CoronaLuaIOS.mm */; };
+		F5C5E18E251E115D00217C19 /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F54D1E2D1CA36191000B280E /* Rtt_AppleFont.mm */; };
+		F5C5E18F251E115D00217C19 /* Rtt_TVOSPlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD31021BAA38B0006A0C97 /* Rtt_TVOSPlatform.mm */; };
+		F5C5E190251E115D00217C19 /* Rtt_AppleTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD307A1BAA2B80006A0C97 /* Rtt_AppleTimer.mm */; };
+		F5C5E191251E115D00217C19 /* CoronaViewControllerPrivate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30A81BAA377C006A0C97 /* CoronaViewControllerPrivate.mm */; };
+		F5C5E192251E115D00217C19 /* Rtt_AppleCrypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30661BAA2B80006A0C97 /* Rtt_AppleCrypto.cpp */; };
+		F5C5E193251E115D00217C19 /* CoronaIOSLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD31701BABA538006A0C97 /* CoronaIOSLoader.mm */; };
+		F5C5E194251E115D00217C19 /* CoronaLuaObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30551BAA2B80006A0C97 /* CoronaLuaObjC.mm */; };
+		F5C5E195251E115D00217C19 /* CoronaAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30A41BAA377C006A0C97 /* CoronaAppDelegate.mm */; };
+		F5C5E196251E115D00217C19 /* AppleWeakProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = A4AD30531BAA2B80006A0C97 /* AppleWeakProxy.mm */; };
+		F5C5E198251E115D00217C19 /* libalmixer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4384F751BAA20E0005750A3 /* libalmixer.a */; };
+		F5C5E199251E115D00217C19 /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4551F861BAA1B5500FB3BDF /* libbox2d.a */; };
+		F5C5E19A251E115D00217C19 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4AD17531BAA14A600BCF507 /* liblua.a */; };
+		F5C5E19B251E115D00217C19 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4AD31151BAB8852006A0C97 /* libluasocket.a */; };
+		F5C5E19D251E115D00217C19 /* librtt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4AD17B51BAA14FE00BCF507 /* librtt.a */; };
+		F5C5E1B3251E11DD00217C19 /* Rtt_ProgramFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938311BAA271E00DF2214 /* Rtt_ProgramFactory.cpp */; };
+		F5C5E1B4251E11DD00217C19 /* Rtt_GL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9381B1BAA271E00DF2214 /* Rtt_GL.cpp */; };
+		F5C5E1B5251E11DD00217C19 /* Rtt_CPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938131BAA271E00DF2214 /* Rtt_CPUResource.cpp */; };
+		F5C5E1B6251E11DD00217C19 /* Rtt_GLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938251BAA271E00DF2214 /* Rtt_GLRenderer.cpp */; };
+		F5C5E1B7251E11DD00217C19 /* Rtt_Uniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9383F1BAA271E00DF2214 /* Rtt_Uniform.cpp */; };
+		F5C5E1B8251E11DD00217C19 /* Rtt_Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9382F1BAA271E00DF2214 /* Rtt_Program.cpp */; };
+		F5C5E1B9251E11DD00217C19 /* Rtt_GLTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938271BAA271E00DF2214 /* Rtt_GLTexture.cpp */; };
+		F5C5E1BA251E11DD00217C19 /* Rtt_Geometry_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938171BAA271E00DF2214 /* Rtt_Geometry_Renderer.cpp */; };
+		F5C5E1BB251E11DD00217C19 /* Rtt_RenderData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938331BAA271E00DF2214 /* Rtt_RenderData.cpp */; };
+		F5C5E1BC251E11DD00217C19 /* Rtt_GPUResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938291BAA271E00DF2214 /* Rtt_GPUResource.cpp */; };
+		F5C5E1BD251E11DD00217C19 /* Rtt_GLGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938211BAA271E00DF2214 /* Rtt_GLGeometry.cpp */; };
+		F5C5E1BE251E11DD00217C19 /* Rtt_GeometryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938191BAA271E00DF2214 /* Rtt_GeometryPool.cpp */; };
+		F5C5E1BF251E11DD00217C19 /* Rtt_CommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938111BAA271E00DF2214 /* Rtt_CommandBuffer.cpp */; };
+		F5C5E1C0251E11DD00217C19 /* Rtt_RenderTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938371BAA271E00DF2214 /* Rtt_RenderTypes.cpp */; };
+		F5C5E1C1251E11DD00217C19 /* Rtt_GLCommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9381D1BAA271E00DF2214 /* Rtt_GLCommandBuffer.cpp */; };
+		F5C5E1C2251E11DD00217C19 /* Rtt_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938351BAA271E00DF2214 /* Rtt_Renderer.cpp */; };
+		F5C5E1C3251E11DD00217C19 /* Rtt_HighPrecisionTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9382B1BAA271E00DF2214 /* Rtt_HighPrecisionTime.cpp */; };
+		F5C5E1C4251E11DD00217C19 /* Rtt_GLProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938231BAA271E00DF2214 /* Rtt_GLProgram.cpp */; };
+		F5C5E1C5251E11DD00217C19 /* Rtt_TextureVolatile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9383D1BAA271E00DF2214 /* Rtt_TextureVolatile.cpp */; };
+		F5C5E1C6251E11DD00217C19 /* Rtt_Matrix_Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9382D1BAA271E00DF2214 /* Rtt_Matrix_Renderer.cpp */; };
+		F5C5E1C7251E11DD00217C19 /* Rtt_FrameBufferObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938151BAA271E00DF2214 /* Rtt_FrameBufferObject.cpp */; };
+		F5C5E1C8251E11DD00217C19 /* Rtt_Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938391BAA271E00DF2214 /* Rtt_Texture.cpp */; };
+		F5C5E1C9251E11DD00217C19 /* Rtt_TextureBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9383B1BAA271E00DF2214 /* Rtt_TextureBitmap.cpp */; };
+		F5C5E1CA251E11DD00217C19 /* Rtt_VideoTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D938411BAA271E00DF2214 /* Rtt_VideoTexture.cpp */; };
+		F5C5E1CB251E11DD00217C19 /* Rtt_GLFrameBufferObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4D9381F1BAA271E00DF2214 /* Rtt_GLFrameBufferObject.cpp */; };
+		F5C5E1F2251E126800217C19 /* CoronaCards.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C5E149251E114A00217C19 /* CoronaCards.framework */; };
+		F5C5E1F5251E128700217C19 /* libplayer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C5E1A2251E115D00217C19 /* libplayer-angle.a */; };
+		F5C5E1F8251E12B200217C19 /* librenderer-angle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C5E1D1251E11DD00217C19 /* librenderer-angle.a */; };
+		F5C5E345251E13E400217C19 /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C5E27C251E139A00217C19 /* MetalANGLE.framework */; };
+		F5C5E355251E140E00217C19 /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C5E27C251E139A00217C19 /* MetalANGLE.framework */; };
+		F5C5E3C9251E237800217C19 /* MetalANGLE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C5E27C251E139A00217C19 /* MetalANGLE.framework */; };
+		F5C5E3CA251E237800217C19 /* MetalANGLE.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F5C5E27C251E139A00217C19 /* MetalANGLE.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F5DE5C2729810AC700BE463F /* CoronaMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DE5BEA29810AC600BE463F /* CoronaMemory.h */; };
+		F5DE5C2A29810AD800BE463F /* CoronaMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5DE5C2629810AC600BE463F /* CoronaMemory.cpp */; };
+		F5DE5C2B29810AE500BE463F /* CoronaMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DE5BEA29810AC600BE463F /* CoronaMemory.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -636,33 +791,39 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).c",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).c",
 			);
-			script = "export TOOLCHAIN_DIR=\"${PROJECT_DIR}/../../bin/mac\"\n\n${PROJECT_DIR}/../../bin/xcode/build_rule_lua-plugin.sh";
+			script = "export TOOLCHAIN_DIR=\"${PROJECT_DIR}/../../bin/mac\"\n\n${PROJECT_DIR}/../../bin/xcode/build_rule_lua-plugin.sh\n";
 		};
 		A4DD47271BB2481A00FD988E /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh";
+			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh\n";
 		};
 		C2F9118D1CDC4D15004A5564 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.lua";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cpp",
+				"$(TARGET_TEMP_DIR)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).cpp",
 			);
-			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh -m luasocket";
+			script = "${PROJECT_DIR}/../../bin/xcode/build_rule_lua.sh -m luasocket\n";
 		};
 /* End PBXBuildRule section */
 
@@ -772,6 +933,510 @@
 			remoteGlobalIDString = A4AD31141BAB8852006A0C97;
 			remoteInfo = libluasocket;
 		};
+		F5C5E105251E114A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4AD31141BAB8852006A0C97;
+			remoteInfo = libluasocket;
+		};
+		F5C5E107251E114A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A461DF011BE8A72500C9F31B;
+			remoteInfo = libluafilesystem;
+		};
+		F5C5E109251E114A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A453AB7B1BEA85BE0094828B;
+			remoteInfo = libnetwork;
+		};
+		F5C5E15A251E115D00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4384F741BAA20E0005750A3;
+			remoteInfo = libalmixer;
+		};
+		F5C5E15C251E115D00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4551F851BAA1B5500FB3BDF;
+			remoteInfo = libbox2d;
+		};
+		F5C5E15E251E115D00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4AD17521BAA14A600BCF507;
+			remoteInfo = liblua;
+		};
+		F5C5E160251E115D00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4AD31141BAB8852006A0C97;
+			remoteInfo = libluasocket;
+		};
+		F5C5E164251E115D00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4AD17B41BAA14FE00BCF507;
+			remoteInfo = librtt;
+		};
+		F5C5E1F0251E125A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C5E103251E114A00217C19;
+			remoteInfo = "CoronaCards-angle";
+		};
+		F5C5E1F3251E127A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C5E158251E115D00217C19;
+			remoteInfo = "libplayer-angle";
+		};
+		F5C5E1F6251E12AD00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4AD17291BAA0D8F00BCF507 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5C5E1B1251E11DD00217C19;
+			remoteInfo = "librenderer-angle";
+		};
+		F5C5E24B251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A60525323464F51005CEA98;
+			remoteInfo = MetalANGLE;
+		};
+		F5C5E24D251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A93697A244CCFDE00B3497E;
+			remoteInfo = MetalANGLE_static;
+		};
+		F5C5E24F251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936F22244CEFA800B3497E;
+			remoteInfo = angle_base;
+		};
+		F5C5E251251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A6055C123465399005CEA98;
+			remoteInfo = angle_metal_backend;
+		};
+		F5C5E253251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A9A6AAA23911BBB006A152A;
+			remoteInfo = angle_gl_backend;
+		};
+		F5C5E255251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A60602A23466F1C005CEA98;
+			remoteInfo = angle_image_util;
+		};
+		F5C5E257251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9AA2346F0FA00E0B98C;
+			remoteInfo = glslang;
+		};
+		F5C5E259251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9B72346F10600E0B98C;
+			remoteInfo = "spirv-cross";
+		};
+		F5C5E25B251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2F9C42346F30C00E0B98C;
+			remoteInfo = jsoncpp;
+		};
+		F5C5E25D251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFF0234734AD00E0B98C;
+			remoteInfo = angle_util;
+		};
+		F5C5E25F251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2003F23473BDD00E0B98C;
+			remoteInfo = angle_common;
+		};
+		F5C5E261251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E493234867E9007CA616;
+			remoteInfo = sample_util;
+		};
+		F5C5E263251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F9BD24065C0C005BA9A8;
+			remoteInfo = MetalANGLE_mac;
+		};
+		F5C5E265251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936BC4244CD98B00B3497E;
+			remoteInfo = MetalANGLE_static_mac;
+		};
+		F5C5E267251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A93703D244CF03700B3497E;
+			remoteInfo = angle_base_mac;
+		};
+		F5C5E269251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F77724065B06005BA9A8;
+			remoteInfo = angle_metal_backend_mac;
+		};
+		F5C5E26B251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F75824065AF8005BA9A8;
+			remoteInfo = angle_gl_backend_mac;
+		};
+		F5C5E26D251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F72B24065ADE005BA9A8;
+			remoteInfo = angle_image_util_mac;
+		};
+		F5C5E26F251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F71F24065ACE005BA9A8;
+			remoteInfo = glslang_mac;
+		};
+		F5C5E271251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6ED24065AC0005BA9A8;
+			remoteInfo = "spirv-cross_mac";
+		};
+		F5C5E273251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6DC24065AB5005BA9A8;
+			remoteInfo = jsoncpp_mac;
+		};
+		F5C5E275251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6D124065AA6005BA9A8;
+			remoteInfo = angle_util_mac;
+		};
+		F5C5E277251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90F6BC24065A95005BA9A8;
+			remoteInfo = angle_common_mac;
+		};
+		F5C5E279251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FA0124065F4B005BA9A8;
+			remoteInfo = sample_util_mac;
+		};
+		F5C5E27B251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF9599A244C7CD700F59740;
+			remoteInfo = MetalANGLE_tvos;
+		};
+		F5C5E27D251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A936E0A244CD9AA00B3497E;
+			remoteInfo = MetalANGLE_static_tvos;
+		};
+		F5C5E27F251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A937154244CF04900B3497E;
+			remoteInfo = angle_base_tvos;
+		};
+		F5C5E281251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95755244C7CC300F59740;
+			remoteInfo = angle_metal_backend_tvos;
+		};
+		F5C5E283251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95731244C7CB200F59740;
+			remoteInfo = angle_gl_backend_tvos;
+		};
+		F5C5E285251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956C6244C7C5100F59740;
+			remoteInfo = "spirv-cross_tvos";
+		};
+		F5C5E287251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956F8244C7C8700F59740;
+			remoteInfo = glslang_tvos;
+		};
+		F5C5E289251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF95704244C7C9300F59740;
+			remoteInfo = angle_image_util_tvos;
+		};
+		F5C5E28B251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF956B5244C7BF300F59740;
+			remoteInfo = jsoncpp_tvos;
+		};
+		F5C5E28D251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A03A9C7244C84EE00E5E114;
+			remoteInfo = angle_util_tvos;
+		};
+		F5C5E28F251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A03A9E5244C850000E5E114;
+			remoteInfo = angle_common_tvos;
+		};
+		F5C5E291251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF959B3244C7D5800F59740;
+			remoteInfo = sample_util_tvos;
+		};
+		F5C5E293251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFAB2347260000E0B98C;
+			remoteInfo = MetalANGLE_ios_13.0;
+		};
+		F5C5E295251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2FFD0234727A400E0B98C;
+			remoteInfo = angle_metal_backend_ios_13.0;
+		};
+		F5C5E297251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AA2011A2347465000E0B98C;
+			remoteInfo = hello_triangle;
+		};
+		F5C5E299251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E46623485DC7007CA616;
+			remoteInfo = multi_texture;
+		};
+		F5C5E29B251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4B62348700D007CA616;
+			remoteInfo = particle_system;
+		};
+		F5C5E29D251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4DB234871B2007CA616;
+			remoteInfo = simple_texture_2d;
+		};
+		F5C5E29F251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E4FE23487239007CA616;
+			remoteInfo = simple_texture_cubemap;
+		};
+		F5C5E2A1251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E52023487284007CA616;
+			remoteInfo = simple_vertex_shader;
+		};
+		F5C5E2A3251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E541234872BA007CA616;
+			remoteInfo = texture_wrap;
+		};
+		F5C5E2A5251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E5682348749C007CA616;
+			remoteInfo = mip_map_2d;
+		};
+		F5C5E2A7251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A97E589234874E2007CA616;
+			remoteInfo = stencil_operations;
+		};
+		F5C5E2A9251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0ABF407C235340FE0051488C;
+			remoteInfo = tri_fan_microbench;
+		};
+		F5C5E2AB251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB4F2406D93C005BA9A8;
+			remoteInfo = hello_triangle_mac;
+		};
+		F5C5E2AD251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB742406DB53005BA9A8;
+			remoteInfo = multi_texture_mac;
+		};
+		F5C5E2AF251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB822406DB66005BA9A8;
+			remoteInfo = particle_system_mac;
+		};
+		F5C5E2B1251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB902406DB72005BA9A8;
+			remoteInfo = simple_texture_2d_mac;
+		};
+		F5C5E2B3251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FB9E2406DB80005BA9A8;
+			remoteInfo = simple_texture_cubemap_mac;
+		};
+		F5C5E2B5251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBAC2406DB8C005BA9A8;
+			remoteInfo = simple_vertex_shader_mac;
+		};
+		F5C5E2B7251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBBA2406DB99005BA9A8;
+			remoteInfo = texture_wrap_mac;
+		};
+		F5C5E2B9251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBC82406DBA9005BA9A8;
+			remoteInfo = mip_map_2d_mac;
+		};
+		F5C5E2BB251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBD62406DBB9005BA9A8;
+			remoteInfo = stencil_operations_mac;
+		};
+		F5C5E2BD251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A90FBE42406DBC8005BA9A8;
+			remoteInfo = tri_fan_microbench_mac;
+		};
+		F5C5E2BF251E139A00217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0AF959EB244C7EE900F59740;
+			remoteInfo = simple_vertex_shader_tvos;
+		};
+		F5C5E2F8251E13C700217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0AF95756244C7CD700F59740;
+			remoteInfo = MetalANGLE_tvos;
+		};
+		F5C5E365251E143000217C19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0AF95756244C7CD700F59740;
+			remoteInfo = MetalANGLE_tvos;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -879,6 +1544,36 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5C5E0E0251E112100217C19 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F5C5E3CA251E237800217C19 /* MetalANGLE.framework in Embed Frameworks */,
+				F5C5E0E1251E112100217C19 /* CoronaCards.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E19E251E115D00217C19 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E1CD251E11DD00217C19 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -949,10 +1644,6 @@
 		A4551D0A1BAA17BE00FB3BDF /* Rtt_Macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Macros.h; path = ../../librtt/Core/Rtt_Macros.h; sourceTree = "<group>"; };
 		A4551D0B1BAA17BE00FB3BDF /* Rtt_Math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_Math.c; path = ../../librtt/Core/Rtt_Math.c; sourceTree = "<group>"; };
 		A4551D0C1BAA17BE00FB3BDF /* Rtt_Math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Math.h; path = ../../librtt/Core/Rtt_Math.h; sourceTree = "<group>"; };
-		A4551D0D1BAA17BE00FB3BDF /* Rtt_MD4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Rtt_MD4.c; path = ../../librtt/Core/Rtt_MD4.c; sourceTree = "<group>"; };
-		A4551D0E1BAA17BE00FB3BDF /* Rtt_MD4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MD4.h; path = ../../librtt/Core/Rtt_MD4.h; sourceTree = "<group>"; };
-		A4551D0F1BAA17BE00FB3BDF /* Rtt_MessageDigest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_MessageDigest.cpp; path = ../../librtt/Core/Rtt_MessageDigest.cpp; sourceTree = "<group>"; };
-		A4551D101BAA17BE00FB3BDF /* Rtt_MessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MessageDigest.h; path = ../../librtt/Core/Rtt_MessageDigest.h; sourceTree = "<group>"; };
 		A4551D111BAA17BE00FB3BDF /* Rtt_New.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_New.h; path = ../../librtt/Core/Rtt_New.h; sourceTree = "<group>"; };
 		A4551D121BAA17BE00FB3BDF /* Rtt_Real.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Real.h; path = ../../librtt/Core/Rtt_Real.h; sourceTree = "<group>"; };
 		A4551D131BAA17BE00FB3BDF /* Rtt_RefCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_RefCount.cpp; path = ../../librtt/Core/Rtt_RefCount.cpp; sourceTree = "<group>"; };
@@ -1311,8 +2002,6 @@
 		A4551EE01BAA182D00FB3BDF /* Rtt_Matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Matrix.h; path = ../../librtt/Rtt_Matrix.h; sourceTree = "<group>"; };
 		A4551EE11BAA182D00FB3BDF /* Rtt_MCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MCallback.h; path = ../../librtt/Rtt_MCallback.h; sourceTree = "<group>"; };
 		A4551EE21BAA182D00FB3BDF /* Rtt_MCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MCrypto.h; path = ../../librtt/Rtt_MCrypto.h; sourceTree = "<group>"; };
-		A4551EE31BAA182D00FB3BDF /* Rtt_Message.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Message.cpp; path = ../../librtt/Rtt_Message.cpp; sourceTree = "<group>"; };
-		A4551EE41BAA182D00FB3BDF /* Rtt_Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Message.h; path = ../../librtt/Rtt_Message.h; sourceTree = "<group>"; };
 		A4551EE51BAA182D00FB3BDF /* Rtt_MIterable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MIterable.h; path = ../../librtt/Rtt_MIterable.h; sourceTree = "<group>"; };
 		A4551EE61BAA182D00FB3BDF /* Rtt_MKeyValueIterable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MKeyValueIterable.h; path = ../../librtt/Rtt_MKeyValueIterable.h; sourceTree = "<group>"; };
 		A4551EE71BAA182D00FB3BDF /* Rtt_MLuaProxyable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_MLuaProxyable.h; path = ../../librtt/Rtt_MLuaProxyable.h; sourceTree = "<group>"; };
@@ -1391,9 +2080,6 @@
 		A4551F321BAA182D00FB3BDF /* Rtt_TesselatorStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TesselatorStream.h; path = ../../librtt/Rtt_TesselatorStream.h; sourceTree = "<group>"; };
 		A4551F331BAA182D00FB3BDF /* Rtt_Transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Transform.cpp; path = ../../librtt/Rtt_Transform.cpp; sourceTree = "<group>"; };
 		A4551F341BAA182D00FB3BDF /* Rtt_Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Transform.h; path = ../../librtt/Rtt_Transform.h; sourceTree = "<group>"; };
-		A4551F371BAA182D00FB3BDF /* Rtt_Verifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Verifier.cpp; path = ../../librtt/Rtt_Verifier.cpp; sourceTree = "<group>"; };
-		A4551F381BAA182D00FB3BDF /* Rtt_Verifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Verifier.h; path = ../../librtt/Rtt_Verifier.h; sourceTree = "<group>"; };
-		A4551F391BAA182D00FB3BDF /* Rtt_VerifierData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_VerifierData.h; path = ../../librtt/Rtt_VerifierData.h; sourceTree = "<group>"; };
 		A4551F861BAA1B5500FB3BDF /* libbox2d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libbox2d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4551F911BAA1B7300FB3BDF /* b2BroadPhase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2BroadPhase.cpp; sourceTree = "<group>"; };
 		A4551F921BAA1B7300FB3BDF /* b2BroadPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2BroadPhase.h; sourceTree = "<group>"; };
@@ -1736,14 +2422,6 @@
 		A4D937E81BAA246500DF2214 /* SmoothPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SmoothPolygon.h; path = ../../external/smoothpolygon/SmoothPolygon.h; sourceTree = "<group>"; };
 		A4D937EB1BAA248000DF2214 /* b2Separator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = b2Separator.cpp; path = "../../external/b2Separator-cpp/b2Separator.cpp"; sourceTree = "<group>"; };
 		A4D937EC1BAA248000DF2214 /* b2Separator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = b2Separator.h; path = "../../external/b2Separator-cpp/b2Separator.h"; sourceTree = "<group>"; };
-		A4D937EF1BAA25E600DF2214 /* prime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = prime.cpp; path = ../../external/rsa/prime.cpp; sourceTree = "<group>"; };
-		A4D937F01BAA25E600DF2214 /* prime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = prime.hpp; path = ../../external/rsa/prime.hpp; sourceTree = "<group>"; };
-		A4D937F11BAA25E600DF2214 /* rsa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rsa.cpp; path = ../../external/rsa/rsa.cpp; sourceTree = "<group>"; };
-		A4D937F21BAA25E600DF2214 /* rsa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = rsa.hpp; path = ../../external/rsa/rsa.hpp; sourceTree = "<group>"; };
-		A4D937F31BAA25E600DF2214 /* vlong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vlong.cpp; path = ../../external/rsa/vlong.cpp; sourceTree = "<group>"; };
-		A4D937F41BAA25E600DF2214 /* vlong.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = vlong.hpp; path = ../../external/rsa/vlong.hpp; sourceTree = "<group>"; };
-		A4D937F51BAA25E600DF2214 /* vlong_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vlong_io.cpp; path = ../../external/rsa/vlong_io.cpp; sourceTree = "<group>"; };
-		A4D937F61BAA25E600DF2214 /* vlong_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vlong_io.h; path = ../../external/rsa/vlong_io.h; sourceTree = "<group>"; };
 		A4D937FC1BAA261A00DF2214 /* luaal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = luaal.c; path = ../../external/ALmixer/luaal.c; sourceTree = "<group>"; };
 		A4D937FD1BAA261A00DF2214 /* luaal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = luaal.h; path = ../../external/ALmixer/luaal.h; sourceTree = "<group>"; };
 		A4D938051BAA26EF00DF2214 /* librenderer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librenderer.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1891,6 +2569,24 @@
 		A4E0761F1BD2C413003A733A /* Corona_plugin_library.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Corona_plugin_library.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4E076211BD2C413003A733A /* Corona_plugin_library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Corona_plugin_library.h; sourceTree = "<group>"; };
 		A4E076231BD2C413003A733A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA2C69BB29147C4E0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearVertical_gl.lua; path = ../../librtt/Display/Shader/kernel_filter_blurLinearVertical_gl.lua; sourceTree = "<group>"; };
+		AA2C69F729147C4E0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurGaussianLinear_gl.lua; path = ../../librtt/Display/Shader/kernel_filter_blurGaussianLinear_gl.lua; sourceTree = "<group>"; };
+		AA2C69F829147C4E0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = kernel_filter_blurLinearHorizontal_gl.lua; path = ../../librtt/Display/Shader/kernel_filter_blurLinearHorizontal_gl.lua; sourceTree = "<group>"; };
+		AA2ED7912708257E00CEE021 /* CoronaObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaObjects.h; path = ../../librtt/Corona/CoronaObjects.h; sourceTree = "<group>"; };
+		AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaPublicTypes.h; path = ../../librtt/Corona/CoronaPublicTypes.h; sourceTree = "<group>"; };
+		AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaObjects.cpp; path = ../../librtt/Corona/CoronaObjects.cpp; sourceTree = "<group>"; };
+		AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ObjectHandle.cpp; path = ../../librtt/Display/Rtt_ObjectHandle.cpp; sourceTree = "<group>"; };
+		AAD3E2442B0BECBB000A4D45 /* Rtt_ObjectHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rtt_ObjectHandle.h; path = ../../librtt/Display/Rtt_ObjectHandle.h; sourceTree = "<group>"; };
+		AA2C6AB9291C37690093B0BE /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = ../../librtt/Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
+		AA2C6AF5291C37690093B0BE /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = ../../librtt/Corona/CoronaMemory.h; sourceTree = "<group>"; };
+		AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_Profiling.cpp; path = ../../librtt/Rtt_Profiling.cpp; sourceTree = "<group>"; };
+		AAF349EA29EFC61C00076706 /* Rtt_Profiling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_Profiling.h; path = ../../librtt/Rtt_Profiling.h; sourceTree = "<group>"; };
+		AAF34A9729F9DF9E00076706 /* Rtt_FormatExtensionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FormatExtensionList.h; path = ../../librtt/Renderer/Rtt_FormatExtensionList.h; sourceTree = "<group>"; };
+		AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FormatExtensionList.cpp; path = ../../librtt/Renderer/Rtt_FormatExtensionList.cpp; sourceTree = "<group>"; };
+		AAF34AD729F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceCaptureAdapter.h; path = ../../librtt/Display/Rtt_TextureResourceCaptureAdapter.h; sourceTree = "<group>"; };
+		AAF34AD829F9DFDB00076706 /* Rtt_TextureResourceCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceCapture.h; path = ../../librtt/Display/Rtt_TextureResourceCapture.h; sourceTree = "<group>"; };
+		AAF34AD929F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceCapture.cpp; path = ../../librtt/Display/Rtt_TextureResourceCapture.cpp; sourceTree = "<group>"; };
+		AAF34ADA29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_TextureResourceCaptureAdapter.cpp; path = ../../librtt/Display/Rtt_TextureResourceCaptureAdapter.cpp; sourceTree = "<group>"; };
 		C221F55F1D4BE37F00F45E77 /* Rtt_FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_FileSystem.cpp; path = ../../librtt/Core/Rtt_FileSystem.cpp; sourceTree = "<group>"; };
 		C221F5601D4BE37F00F45E77 /* Rtt_FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_FileSystem.h; path = ../../librtt/Core/Rtt_FileSystem.h; sourceTree = "<group>"; };
 		C231BDE21C0F80D200494B37 /* launchpad.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = launchpad.lua; path = ../resources/launchpad.lua; sourceTree = "<group>"; };
@@ -1908,6 +2604,7 @@
 		F50CA3C61C81114800746C98 /* Rtt_TextureResourceExternalAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_TextureResourceExternalAdapter.h; path = ../../librtt/Display/Rtt_TextureResourceExternalAdapter.h; sourceTree = "<group>"; };
 		F50CA3CB1C8111A300746C98 /* CoronaGraphics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaGraphics.cpp; path = ../../librtt/Corona/CoronaGraphics.cpp; sourceTree = "<group>"; };
 		F50CA3CC1C8111A300746C98 /* CoronaGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaGraphics.h; path = ../../librtt/Corona/CoronaGraphics.h; sourceTree = "<group>"; };
+		F51DCADE257925FD00B75CA0 /* TVServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVServices.framework; path = System/Library/Frameworks/TVServices.framework; sourceTree = SDKROOT; };
 		F54D1E2D1CA36191000B280E /* Rtt_AppleFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleFont.mm; path = ../apple/Rtt_AppleFont.mm; sourceTree = "<group>"; };
 		F574F5F71CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_ShapeAdapterMesh.cpp; path = ../../librtt/Display/Rtt_ShapeAdapterMesh.cpp; sourceTree = "<group>"; };
 		F574F5F81CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_ShapeAdapterMesh.h; path = ../../librtt/Display/Rtt_ShapeAdapterMesh.h; sourceTree = "<group>"; };
@@ -1919,8 +2616,18 @@
 		F58011B61BE294F40061E021 /* Rtt_AppleInputDeviceManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleInputDeviceManager.mm; path = ../apple/Rtt_AppleInputDeviceManager.mm; sourceTree = "<group>"; };
 		F58011B71BE294F40061E021 /* Rtt_AppleInputMFiDeviceListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AppleInputMFiDeviceListener.h; path = ../apple/Rtt_AppleInputMFiDeviceListener.h; sourceTree = "<group>"; };
 		F58011B81BE294F40061E021 /* Rtt_AppleInputMFiDeviceListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleInputMFiDeviceListener.mm; path = ../apple/Rtt_AppleInputMFiDeviceListener.mm; sourceTree = "<group>"; };
+		F59296E3255548860048AF8C /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		F5A752341BFA41BF00CCDB94 /* CoronaLuaObjCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaLuaObjCHelper.h; path = ../iphone/Corona/CoronaLuaObjCHelper.h; sourceTree = "<group>"; };
 		F5A752351BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoronaLuaObjCHelper.mm; path = ../iphone/Corona/CoronaLuaObjCHelper.mm; sourceTree = "<group>"; };
+		F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_IPhoneVideoPlayer.mm; path = ../iphone/Rtt_IPhoneVideoPlayer.mm; sourceTree = "<group>"; };
+		F5B4467A255543A9000BC8A0 /* Rtt_IPhoneVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_IPhoneVideoPlayer.h; path = ../iphone/Rtt_IPhoneVideoPlayer.h; sourceTree = "<group>"; };
+		F5C5E0E9251E112100217C19 /* template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = template.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5C5E149251E114A00217C19 /* CoronaCards.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoronaCards.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5C5E1A2251E115D00217C19 /* libplayer-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libplayer-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5C5E1D1251E11DD00217C19 /* librenderer-angle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "librenderer-angle.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLES.xcodeproj; path = ../../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj; sourceTree = "<group>"; };
+		F5DE5BEA29810AC600BE463F /* CoronaMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoronaMemory.h; path = ../../librtt/Corona/CoronaMemory.h; sourceTree = "<group>"; };
+		F5DE5C2629810AC600BE463F /* CoronaMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoronaMemory.cpp; path = ../../librtt/Corona/CoronaMemory.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1956,6 +2663,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F528CB13263312E800EEF385 /* TVServices.framework in Frameworks */,
 				A4E076171BD1D183003A733A /* CoronaCards.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2005,6 +2713,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F592971F255548860048AF8C /* AVKit.framework in Frameworks */,
 				A4E075A71BD1C296003A733A /* AudioToolbox.framework in Frameworks */,
 				A4E075A81BD1C296003A733A /* AVFoundation.framework in Frameworks */,
 				A4E075A91BD1C296003A733A /* CoreGraphics.framework in Frameworks */,
@@ -2044,6 +2753,67 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4E076341BD2C515003A733A /* CoronaCards.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E0DA251E112100217C19 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F51DCB1A257925FD00B75CA0 /* TVServices.framework in Frameworks */,
+				F5C5E3C9251E237800217C19 /* MetalANGLE.framework in Frameworks */,
+				F5C5E1F2251E126800217C19 /* CoronaCards.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E112251E114A00217C19 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A539B7256412940020CD1B /* AVKit.framework in Frameworks */,
+				F5C5E345251E13E400217C19 /* MetalANGLE.framework in Frameworks */,
+				F5C5E1F5251E128700217C19 /* libplayer-angle.a in Frameworks */,
+				F5C5E113251E114A00217C19 /* AudioToolbox.framework in Frameworks */,
+				F5C5E114251E114A00217C19 /* AVFoundation.framework in Frameworks */,
+				F5C5E115251E114A00217C19 /* CoreGraphics.framework in Frameworks */,
+				F5C5E116251E114A00217C19 /* CoreLocation.framework in Frameworks */,
+				F5C5E117251E114A00217C19 /* CoreMedia.framework in Frameworks */,
+				F5C5E118251E114A00217C19 /* CoreText.framework in Frameworks */,
+				F5C5E119251E114A00217C19 /* CoreVideo.framework in Frameworks */,
+				F5C5E11A251E114A00217C19 /* Foundation.framework in Frameworks */,
+				F5C5E11B251E114A00217C19 /* GameController.framework in Frameworks */,
+				F5C5E11D251E114A00217C19 /* ImageIO.framework in Frameworks */,
+				F5C5E11E251E114A00217C19 /* MobileCoreServices.framework in Frameworks */,
+				F5C5E11F251E114A00217C19 /* OpenAL.framework in Frameworks */,
+				F5C5E121251E114A00217C19 /* QuartzCore.framework in Frameworks */,
+				F5C5E122251E114A00217C19 /* Security.framework in Frameworks */,
+				F5C5E123251E114A00217C19 /* StoreKit.framework in Frameworks */,
+				F5C5E124251E114A00217C19 /* SystemConfiguration.framework in Frameworks */,
+				F5C5E125251E114A00217C19 /* UIKit.framework in Frameworks */,
+				F5C5E126251E114A00217C19 /* libobjc.tbd in Frameworks */,
+				F5C5E127251E114A00217C19 /* libsqlite3.tbd in Frameworks */,
+				F5C5E128251E114A00217C19 /* libluasocket.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E197251E115D00217C19 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C5E355251E140E00217C19 /* MetalANGLE.framework in Frameworks */,
+				F5C5E1F8251E12B200217C19 /* librenderer-angle.a in Frameworks */,
+				F5C5E198251E115D00217C19 /* libalmixer.a in Frameworks */,
+				F5C5E199251E115D00217C19 /* libbox2d.a in Frameworks */,
+				F5C5E19A251E115D00217C19 /* liblua.a in Frameworks */,
+				F5C5E19B251E115D00217C19 /* libluasocket.a in Frameworks */,
+				F5C5E19D251E115D00217C19 /* librtt.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E1CC251E11DD00217C19 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2157,10 +2927,6 @@
 				A4551D0A1BAA17BE00FB3BDF /* Rtt_Macros.h */,
 				A4551D0B1BAA17BE00FB3BDF /* Rtt_Math.c */,
 				A4551D0C1BAA17BE00FB3BDF /* Rtt_Math.h */,
-				A4551D0D1BAA17BE00FB3BDF /* Rtt_MD4.c */,
-				A4551D0E1BAA17BE00FB3BDF /* Rtt_MD4.h */,
-				A4551D0F1BAA17BE00FB3BDF /* Rtt_MessageDigest.cpp */,
-				A4551D101BAA17BE00FB3BDF /* Rtt_MessageDigest.h */,
 				A4551D111BAA17BE00FB3BDF /* Rtt_New.h */,
 				03D1C5301D70CB1500DB02EE /* Rtt_OperationResult.cpp */,
 				03D1C5311D70CB1500DB02EE /* Rtt_OperationResult.h */,
@@ -2259,6 +3025,8 @@
 				A4551D7B1BAA17CF00FB3BDF /* Rtt_MCPUResourceObserver.h */,
 				A4551D7C1BAA17CF00FB3BDF /* Rtt_MDisplayDelegate.h */,
 				A4551D7D1BAA17CF00FB3BDF /* Rtt_MDrawable.h */,
+				AAD3E2432B0BECBB000A4D45 /* Rtt_ObjectHandle.cpp */,
+				AAD3E2442B0BECBB000A4D45 /* Rtt_ObjectHandle.h */,
 				A4551D7E1BAA17CF00FB3BDF /* Rtt_OpenPath.cpp */,
 				A4551D7F1BAA17CF00FB3BDF /* Rtt_OpenPath.h */,
 				A4551D801BAA17CF00FB3BDF /* Rtt_Paint.cpp */,
@@ -2357,6 +3125,10 @@
 				A4551DD91BAA17CF00FB3BDF /* Rtt_TextureResourceCanvas.h */,
 				A4551DDA1BAA17CF00FB3BDF /* Rtt_TextureResourceCanvasAdapter.cpp */,
 				A4551DDB1BAA17CF00FB3BDF /* Rtt_TextureResourceCanvasAdapter.h */,
+				AAF34AD929F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp */,
+				AAF34AD829F9DFDB00076706 /* Rtt_TextureResourceCapture.h */,
+				AAF34ADA29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp */,
+				AAF34AD729F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.h */,
 				F50CA3C31C81114800746C98 /* Rtt_TextureResourceExternal.cpp */,
 				F50CA3C41C81114800746C98 /* Rtt_TextureResourceExternal.h */,
 				F50CA3C51C81114800746C98 /* Rtt_TextureResourceExternalAdapter.cpp */,
@@ -2405,6 +3177,9 @@
 				A4551E4B1BAA17E600FB3BDF /* kernel_filter_blurGaussian_gl.lua */,
 				A4551E4C1BAA17E600FB3BDF /* kernel_filter_blurHorizontal_gl.lua */,
 				A4551E4D1BAA17E600FB3BDF /* kernel_filter_blurVertical_gl.lua */,
+				AA2C69F729147C4E0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua */,
+				AA2C69F829147C4E0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua */,
+				AA2C69BB29147C4E0093B0BE /* kernel_filter_blurLinearVertical_gl.lua */,
 				A4551E4E1BAA17E600FB3BDF /* kernel_filter_brightness_gl.lua */,
 				A4551E4F1BAA17E600FB3BDF /* kernel_filter_bulge_gl.lua */,
 				A4551E501BAA17E600FB3BDF /* kernel_filter_chromaKey_gl.lua */,
@@ -2471,6 +3246,8 @@
 				A4551E871BAA180C00FB3BDF /* CoronaEvent.h */,
 				F50CA3CB1C8111A300746C98 /* CoronaGraphics.cpp */,
 				F50CA3CC1C8111A300746C98 /* CoronaGraphics.h */,
+				F5DE5C2629810AC600BE463F /* CoronaMemory.cpp */,
+				F5DE5BEA29810AC600BE463F /* CoronaMemory.h */,
 				A4551E881BAA180C00FB3BDF /* CoronaLibrary.cpp */,
 				A4551E891BAA180C00FB3BDF /* CoronaLibrary.h */,
 				A4551E8A1BAA180C00FB3BDF /* CoronaLibrary.lua */,
@@ -2481,8 +3258,11 @@
 				F5A752341BFA41BF00CCDB94 /* CoronaLuaObjCHelper.h */,
 				F5A752351BFA41BF00CCDB94 /* CoronaLuaObjCHelper.mm */,
 				A4551E8F1BAA180C00FB3BDF /* CoronaMacros.h */,
+				AA2ED7CE2708257E00CEE021 /* CoronaObjects.cpp */,
+				AA2ED7912708257E00CEE021 /* CoronaObjects.h */,
 				A4551E901BAA180C00FB3BDF /* CoronaPrototype.lua */,
 				A4551E911BAA180C00FB3BDF /* CoronaProvider.lua */,
+				AA2ED7CD2708257E00CEE021 /* CoronaPublicTypes.h */,
 				A4551E921BAA180C00FB3BDF /* CoronaVersion.c */,
 				A4551E931BAA180C00FB3BDF /* CoronaVersion.h */,
 			);
@@ -2499,7 +3279,6 @@
 				A4D937FB1BAA260B00DF2214 /* luaal */,
 				A4D937E11BAA243400DF2214 /* LuaHashMap */,
 				A4384F581BAA1F61005750A3 /* Reachability */,
-				A4D937EE1BAA25D800DF2214 /* rsa */,
 				A4D937E61BAA245200DF2214 /* SmoothPolygon */,
 			);
 			name = external;
@@ -2706,6 +3485,7 @@
 		A4AD17281BAA0D8F00BCF507 = {
 			isa = PBXGroup;
 			children = (
+				F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */,
 				A44496B91BC83E210019DA20 /* CoronaResources */,
 				A4DD46EB1BB2265400FD988E /* template */,
 				A4AD30511BAA2B69006A0C97 /* libplayer */,
@@ -2736,6 +3516,10 @@
 				A4E0761F1BD2C413003A733A /* Corona_plugin_library.framework */,
 				A461DF021BE8A72500C9F31B /* libluafilesystem.a */,
 				A453AB7C1BEA85BE0094828B /* libnetwork.a */,
+				F5C5E0E9251E112100217C19 /* template.app */,
+				F5C5E149251E114A00217C19 /* CoronaCards.framework */,
+				F5C5E1A2251E115D00217C19 /* libplayer-angle.a */,
+				F5C5E1D1251E11DD00217C19 /* librenderer-angle.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2899,8 +3683,6 @@
 				A4551EE01BAA182D00FB3BDF /* Rtt_Matrix.h */,
 				A4551EE11BAA182D00FB3BDF /* Rtt_MCallback.h */,
 				A4551EE21BAA182D00FB3BDF /* Rtt_MCrypto.h */,
-				A4551EE31BAA182D00FB3BDF /* Rtt_Message.cpp */,
-				A4551EE41BAA182D00FB3BDF /* Rtt_Message.h */,
 				A4551EE51BAA182D00FB3BDF /* Rtt_MIterable.h */,
 				A4551EE61BAA182D00FB3BDF /* Rtt_MKeyValueIterable.h */,
 				A4551EE71BAA182D00FB3BDF /* Rtt_MLuaProxyable.h */,
@@ -2968,6 +3750,8 @@
 				03D1C53B1D70CBB400DB02EE /* Rtt_PreferenceCollection.h */,
 				03D1C53C1D70CBB400DB02EE /* Rtt_PreferenceValue.cpp */,
 				03D1C53D1D70CBB400DB02EE /* Rtt_PreferenceValue.h */,
+				AAF349AE29EFC61C00076706 /* Rtt_Profiling.cpp */,
+				AAF349EA29EFC61C00076706 /* Rtt_Profiling.h */,
 				A4551F241BAA182D00FB3BDF /* Rtt_RenderingStream.cpp */,
 				A4551F251BAA182D00FB3BDF /* Rtt_RenderingStream.h */,
 				A4551F261BAA182D00FB3BDF /* Rtt_Resource.cpp */,
@@ -2985,9 +3769,6 @@
 				A4551F321BAA182D00FB3BDF /* Rtt_TesselatorStream.h */,
 				A4551F331BAA182D00FB3BDF /* Rtt_Transform.cpp */,
 				A4551F341BAA182D00FB3BDF /* Rtt_Transform.h */,
-				A4551F371BAA182D00FB3BDF /* Rtt_Verifier.cpp */,
-				A4551F381BAA182D00FB3BDF /* Rtt_Verifier.h */,
-				A4551F391BAA182D00FB3BDF /* Rtt_VerifierData.h */,
 			);
 			name = librtt;
 			sourceTree = "<group>";
@@ -3104,6 +3885,8 @@
 				A4AD30D21BAA377C006A0C97 /* Rtt_IPhoneTimer.mm */,
 				A4AD30D31BAA377C006A0C97 /* Rtt_IPhoneVideoObject.h */,
 				A4AD30D41BAA377C006A0C97 /* Rtt_IPhoneVideoObject.mm */,
+				F5B4467A255543A9000BC8A0 /* Rtt_IPhoneVideoPlayer.h */,
+				F5B4463E255543A8000BC8A0 /* Rtt_IPhoneVideoPlayer.mm */,
 				A4AD30DD1BAA377C006A0C97 /* Rtt_TouchInhibitor.h */,
 				A4AD30DE1BAA377C006A0C97 /* Rtt_TouchInhibitor.mm */,
 			);
@@ -3266,21 +4049,6 @@
 			name = b2Separator;
 			sourceTree = "<group>";
 		};
-		A4D937EE1BAA25D800DF2214 /* rsa */ = {
-			isa = PBXGroup;
-			children = (
-				A4D937EF1BAA25E600DF2214 /* prime.cpp */,
-				A4D937F01BAA25E600DF2214 /* prime.hpp */,
-				A4D937F11BAA25E600DF2214 /* rsa.cpp */,
-				A4D937F21BAA25E600DF2214 /* rsa.hpp */,
-				A4D937F31BAA25E600DF2214 /* vlong.cpp */,
-				A4D937F41BAA25E600DF2214 /* vlong.hpp */,
-				A4D937F51BAA25E600DF2214 /* vlong_io.cpp */,
-				A4D937F61BAA25E600DF2214 /* vlong_io.h */,
-			);
-			name = rsa;
-			sourceTree = "<group>";
-		};
 		A4D937FB1BAA260B00DF2214 /* luaal */ = {
 			isa = PBXGroup;
 			children = (
@@ -3297,6 +4065,8 @@
 				A4D938121BAA271E00DF2214 /* Rtt_CommandBuffer.h */,
 				A4D938131BAA271E00DF2214 /* Rtt_CPUResource.cpp */,
 				A4D938141BAA271E00DF2214 /* Rtt_CPUResource.h */,
+				AAF34AD329F9DF9E00076706 /* Rtt_FormatExtensionList.cpp */,
+				AAF34A9729F9DF9E00076706 /* Rtt_FormatExtensionList.h */,
 				A4D938151BAA271E00DF2214 /* Rtt_FrameBufferObject.cpp */,
 				A4D938161BAA271E00DF2214 /* Rtt_FrameBufferObject.h */,
 				A4D938171BAA271E00DF2214 /* Rtt_Geometry_Renderer.cpp */,
@@ -3361,6 +4131,8 @@
 		A4DD47261BB247C100FD988E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F51DCADE257925FD00B75CA0 /* TVServices.framework */,
+				F59296E3255548860048AF8C /* AVKit.framework */,
 				A40A90521BD984AD001D2038 /* CoreText.framework */,
 				A44496B11BC5FF5E0019DA20 /* CoreMedia.framework */,
 				A46DA3B31BBA1A1D009C3CDF /* GameController.framework */,
@@ -3526,6 +4298,72 @@
 			path = Corona_plugin_library;
 			sourceTree = "<group>";
 		};
+		F5C5E20D251E139A00217C19 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F5C5E24C251E139A00217C19 /* MetalANGLE.framework */,
+				F5C5E24E251E139A00217C19 /* libMetalANGLE_static.a */,
+				F5C5E250251E139A00217C19 /* libangle_base.a */,
+				F5C5E252251E139A00217C19 /* libangle_metal_backend.a */,
+				F5C5E254251E139A00217C19 /* libangle_gl_backend.a */,
+				F5C5E256251E139A00217C19 /* libangle_image_util.a */,
+				F5C5E258251E139A00217C19 /* libglslang.a */,
+				F5C5E25A251E139A00217C19 /* libspirv-cross.a */,
+				F5C5E25C251E139A00217C19 /* libjsoncpp.a */,
+				F5C5E25E251E139A00217C19 /* libangle_util.a */,
+				F5C5E260251E139A00217C19 /* libangle_common.a */,
+				F5C5E262251E139A00217C19 /* sample_util.framework */,
+				F5C5E264251E139A00217C19 /* MetalANGLE.framework */,
+				F5C5E266251E139A00217C19 /* libMetalANGLE_static_mac.a */,
+				F5C5E268251E139A00217C19 /* libangle_base_mac.a */,
+				F5C5E26A251E139A00217C19 /* libangle_metal_backend_mac.a */,
+				F5C5E26C251E139A00217C19 /* libangle_gl_backend_mac.a */,
+				F5C5E26E251E139A00217C19 /* libangle_image_util_mac.a */,
+				F5C5E270251E139A00217C19 /* libglslang_mac.a */,
+				F5C5E272251E139A00217C19 /* libspirv-cross_mac.a */,
+				F5C5E274251E139A00217C19 /* libjsoncpp_mac.a */,
+				F5C5E276251E139A00217C19 /* libangle_util_mac.a */,
+				F5C5E278251E139A00217C19 /* libangle_common_mac.a */,
+				F5C5E27A251E139A00217C19 /* sample_util_mac.framework */,
+				F5C5E27C251E139A00217C19 /* MetalANGLE.framework */,
+				F5C5E27E251E139A00217C19 /* libMetalANGLE_static_tvos.a */,
+				F5C5E280251E139A00217C19 /* libangle_base_tvos.a */,
+				F5C5E282251E139A00217C19 /* libangle_metal_backend_tvos.a */,
+				F5C5E284251E139A00217C19 /* libangle_gl_backend_tvos.a */,
+				F5C5E286251E139A00217C19 /* libspirv-cross_tvos.a */,
+				F5C5E288251E139A00217C19 /* libglslang_tvos.a */,
+				F5C5E28A251E139A00217C19 /* libangle_image_util_tvos.a */,
+				F5C5E28C251E139A00217C19 /* libjsoncpp_tvos.a */,
+				F5C5E28E251E139A00217C19 /* libangle_util_tvos.a */,
+				F5C5E290251E139A00217C19 /* libangle_common_tvos.a */,
+				F5C5E292251E139A00217C19 /* sample_util_tvos.framework */,
+				F5C5E294251E139A00217C19 /* MetalANGLE_ios_13.0.framework */,
+				F5C5E296251E139A00217C19 /* libangle_metal_backend_ios_13.0.a */,
+				F5C5E298251E139A00217C19 /* hello_triangle.app */,
+				F5C5E29A251E139A00217C19 /* multi_texture.app */,
+				F5C5E29C251E139A00217C19 /* particle_system.app */,
+				F5C5E29E251E139A00217C19 /* simple_texture_2d.app */,
+				F5C5E2A0251E139A00217C19 /* simple_texture_cubemap.app */,
+				F5C5E2A2251E139A00217C19 /* simple_vertex_shader.app */,
+				F5C5E2A4251E139A00217C19 /* texture_wrap.app */,
+				F5C5E2A6251E139A00217C19 /* mip_map_2d.app */,
+				F5C5E2A8251E139A00217C19 /* stencil_operations.app */,
+				F5C5E2AA251E139A00217C19 /* tri_fan_microbench.app */,
+				F5C5E2AC251E139A00217C19 /* hello_triangle_mac.app */,
+				F5C5E2AE251E139A00217C19 /* multi_texture_mac.app */,
+				F5C5E2B0251E139A00217C19 /* particle_system_mac.app */,
+				F5C5E2B2251E139A00217C19 /* simple_texture_2d_mac.app */,
+				F5C5E2B4251E139A00217C19 /* simple_texture_cubemap_mac.app */,
+				F5C5E2B6251E139A00217C19 /* simple_vertex_shader_mac.app */,
+				F5C5E2B8251E139A00217C19 /* texture_wrap_mac.app */,
+				F5C5E2BA251E139A00217C19 /* mip_map_2d_mac.app */,
+				F5C5E2BC251E139A00217C19 /* stencil_operations_mac.app */,
+				F5C5E2BE251E139A00217C19 /* tri_fan_microbench_mac.app */,
+				F5C5E2C0251E139A00217C19 /* simple_vertex_shader_tvos.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3556,6 +4394,7 @@
 				F517B79F1C6CEC520042F592 /* NSString+Extensions.h in Headers */,
 				A49EC1B01BD77D8D0093F529 /* luaconf.h in Headers */,
 				A49EC1B11BD77D8D0093F529 /* lualib.h in Headers */,
+				F5DE5C2729810AC700BE463F /* CoronaMemory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3563,6 +4402,37 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E12A251E114A00217C19 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C5E12B251E114A00217C19 /* CoronaApplicationMain.h in Headers */,
+				F5C5E12C251E114A00217C19 /* CoronaMainAppDelegate.h in Headers */,
+				F5C5E12D251E114A00217C19 /* CoronaMainViewController.h in Headers */,
+				F5C5E12E251E114A00217C19 /* CoronaCards.h in Headers */,
+				F5C5E12F251E114A00217C19 /* CoronaLuaIOS.h in Headers */,
+				F5C5E130251E114A00217C19 /* CoronaNativeObjectAdapter.h in Headers */,
+				F5C5E131251E114A00217C19 /* CoronaAssert.h in Headers */,
+				F5C5E132251E114A00217C19 /* CoronaEvent.h in Headers */,
+				F5C5E133251E114A00217C19 /* CoronaDelegate.h in Headers */,
+				F5C5E134251E114A00217C19 /* CoronaGraphics.h in Headers */,
+				F5C5E135251E114A00217C19 /* CoronaLibrary.h in Headers */,
+				F5C5E136251E114A00217C19 /* CoronaLog.h in Headers */,
+				F5C5E137251E114A00217C19 /* CoronaLua.h in Headers */,
+				F5C5E138251E114A00217C19 /* CoronaMacros.h in Headers */,
+				F5C5E139251E114A00217C19 /* CoronaLuaObjCHelper.h in Headers */,
+				F5C5E13A251E114A00217C19 /* CoronaRuntime.h in Headers */,
+				F5C5E13B251E114A00217C19 /* CoronaVersion.h in Headers */,
+				F5C5E13C251E114A00217C19 /* lauxlib.h in Headers */,
+				F5C5E13D251E114A00217C19 /* CoronaBeacon.h in Headers */,
+				F5C5E13E251E114A00217C19 /* lua.h in Headers */,
+				F5C5E13F251E114A00217C19 /* NSString+Extensions.h in Headers */,
+				F5C5E140251E114A00217C19 /* luaconf.h in Headers */,
+				F5C5E141251E114A00217C19 /* lualib.h in Headers */,
+				F5DE5C2B29810AE500BE463F /* CoronaMemory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3821,6 +4691,94 @@
 			productReference = A4E0761F1BD2C413003A733A /* Corona_plugin_library.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		F5C5E0D3251E112100217C19 /* template-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C5E0E6251E112100217C19 /* Build configuration list for PBXNativeTarget "template-angle" */;
+			buildPhases = (
+				F5C5E0D6251E112100217C19 /* Sources */,
+				F5C5E0DA251E112100217C19 /* Frameworks */,
+				F5C5E0DC251E112100217C19 /* Resources */,
+				F5C5E0DF251E112100217C19 /* Script: touch CoronaCards.framework */,
+				F5C5E0E0251E112100217C19 /* Embed Frameworks */,
+				F5C5E0E2251E112100217C19 /* Script: CopyResources and resource.corona-archive */,
+				F5C5E0E3251E112100217C19 /* Script: app_sign */,
+				F5C5E0E4251E112100217C19 /* Script: build.settings to Info.plist */,
+				F5C5E0E5251E112100217C19 /* Script: codesign embedded framework */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5C5E1F1251E125A00217C19 /* PBXTargetDependency */,
+			);
+			name = "template-angle";
+			productName = ratatouille;
+			productReference = F5C5E0E9251E112100217C19 /* template.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F5C5E103251E114A00217C19 /* CoronaCards-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C5E146251E114A00217C19 /* Build configuration list for PBXNativeTarget "CoronaCards-angle" */;
+			buildPhases = (
+				F5C5E10C251E114A00217C19 /* Sources */,
+				F5C5E112251E114A00217C19 /* Frameworks */,
+				F5C5E12A251E114A00217C19 /* Headers */,
+				F5C5E142251E114A00217C19 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5C5E2F9251E13C700217C19 /* PBXTargetDependency */,
+				F5C5E1F4251E127A00217C19 /* PBXTargetDependency */,
+				F5C5E104251E114A00217C19 /* PBXTargetDependency */,
+				F5C5E106251E114A00217C19 /* PBXTargetDependency */,
+				F5C5E108251E114A00217C19 /* PBXTargetDependency */,
+			);
+			name = "CoronaCards-angle";
+			productName = CoronaCards;
+			productReference = F5C5E149251E114A00217C19 /* CoronaCards.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		F5C5E158251E115D00217C19 /* libplayer-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C5E19F251E115D00217C19 /* Build configuration list for PBXNativeTarget "libplayer-angle" */;
+			buildPhases = (
+				F5C5E165251E115D00217C19 /* Sources */,
+				F5C5E197251E115D00217C19 /* Frameworks */,
+				F5C5E19E251E115D00217C19 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5C5E366251E143000217C19 /* PBXTargetDependency */,
+				F5C5E1F7251E12AD00217C19 /* PBXTargetDependency */,
+				F5C5E159251E115D00217C19 /* PBXTargetDependency */,
+				F5C5E15B251E115D00217C19 /* PBXTargetDependency */,
+				F5C5E15D251E115D00217C19 /* PBXTargetDependency */,
+				F5C5E15F251E115D00217C19 /* PBXTargetDependency */,
+				F5C5E163251E115D00217C19 /* PBXTargetDependency */,
+			);
+			name = "libplayer-angle";
+			productName = libplayer;
+			productReference = F5C5E1A2251E115D00217C19 /* libplayer-angle.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		F5C5E1B1251E11DD00217C19 /* librenderer-angle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5C5E1CE251E11DD00217C19 /* Build configuration list for PBXNativeTarget "librenderer-angle" */;
+			buildPhases = (
+				F5C5E1B2251E11DD00217C19 /* Sources */,
+				F5C5E1CC251E11DD00217C19 /* Frameworks */,
+				F5C5E1CD251E11DD00217C19 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "librenderer-angle";
+			productName = librenderer;
+			productReference = F5C5E1D1251E11DD00217C19 /* librenderer-angle.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -3845,6 +4803,7 @@
 					A4AD17301BAA0D8F00BCF507 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = BG2J43EA88;
+						ProvisioningStyle = Manual;
 					};
 					A4AD17521BAA14A600BCF507 = {
 						CreatedOnToolsVersion = 7.1;
@@ -3864,6 +4823,7 @@
 					A4E075901BD1BC09003A733A = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = BG2J43EA88;
+						ProvisioningStyle = Manual;
 					};
 					A4E075BE1BD1C3E0003A733A = {
 						CreatedOnToolsVersion = 7.1;
@@ -3874,6 +4834,14 @@
 					A4E076351BD2C5A2003A733A = {
 						CreatedOnToolsVersion = 7.1;
 					};
+					F5C5E0D3251E112100217C19 = {
+						DevelopmentTeam = BG2J43EA88;
+						ProvisioningStyle = Manual;
+					};
+					F5C5E103251E114A00217C19 = {
+						DevelopmentTeam = BG2J43EA88;
+						ProvisioningStyle = Manual;
+					};
 				};
 			};
 			buildConfigurationList = A4AD172C1BAA0D8F00BCF507 /* Build configuration list for PBXProject "ratatouille" */;
@@ -3881,12 +4849,19 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
 			mainGroup = A4AD17281BAA0D8F00BCF507;
 			productRefGroup = A4AD17321BAA0D8F00BCF507 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F5C5E20D251E139A00217C19 /* Products */;
+					ProjectRef = F5C5E20C251E139A00217C19 /* OpenGLES.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				A4AD17301BAA0D8F00BCF507 /* template */,
@@ -3903,9 +4878,429 @@
 				A4AD17B41BAA14FE00BCF507 /* librtt */,
 				A4E075BE1BD1C3E0003A733A /* TestApp-Enterprise */,
 				A4E0761E1BD2C413003A733A /* Corona_plugin_library */,
+				F5C5E0D3251E112100217C19 /* template-angle */,
+				F5C5E103251E114A00217C19 /* CoronaCards-angle */,
+				F5C5E158251E115D00217C19 /* libplayer-angle */,
+				F5C5E1B1251E11DD00217C19 /* librenderer-angle */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F5C5E24C251E139A00217C19 /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = F5C5E24B251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E24E251E139A00217C19 /* libMetalANGLE_static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static.a;
+			remoteRef = F5C5E24D251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E250251E139A00217C19 /* libangle_base.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base.a;
+			remoteRef = F5C5E24F251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E252251E139A00217C19 /* libangle_metal_backend.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend.a;
+			remoteRef = F5C5E251251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E254251E139A00217C19 /* libangle_gl_backend.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend.a;
+			remoteRef = F5C5E253251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E256251E139A00217C19 /* libangle_image_util.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util.a;
+			remoteRef = F5C5E255251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E258251E139A00217C19 /* libglslang.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang.a;
+			remoteRef = F5C5E257251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E25A251E139A00217C19 /* libspirv-cross.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross.a";
+			remoteRef = F5C5E259251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E25C251E139A00217C19 /* libjsoncpp.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp.a;
+			remoteRef = F5C5E25B251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E25E251E139A00217C19 /* libangle_util.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util.a;
+			remoteRef = F5C5E25D251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E260251E139A00217C19 /* libangle_common.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common.a;
+			remoteRef = F5C5E25F251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E262251E139A00217C19 /* sample_util.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util.framework;
+			remoteRef = F5C5E261251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E264251E139A00217C19 /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = F5C5E263251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E266251E139A00217C19 /* libMetalANGLE_static_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static_mac.a;
+			remoteRef = F5C5E265251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E268251E139A00217C19 /* libangle_base_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base_mac.a;
+			remoteRef = F5C5E267251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E26A251E139A00217C19 /* libangle_metal_backend_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_mac.a;
+			remoteRef = F5C5E269251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E26C251E139A00217C19 /* libangle_gl_backend_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend_mac.a;
+			remoteRef = F5C5E26B251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E26E251E139A00217C19 /* libangle_image_util_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util_mac.a;
+			remoteRef = F5C5E26D251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E270251E139A00217C19 /* libglslang_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang_mac.a;
+			remoteRef = F5C5E26F251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E272251E139A00217C19 /* libspirv-cross_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross_mac.a";
+			remoteRef = F5C5E271251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E274251E139A00217C19 /* libjsoncpp_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp_mac.a;
+			remoteRef = F5C5E273251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E276251E139A00217C19 /* libangle_util_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util_mac.a;
+			remoteRef = F5C5E275251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E278251E139A00217C19 /* libangle_common_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common_mac.a;
+			remoteRef = F5C5E277251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E27A251E139A00217C19 /* sample_util_mac.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util_mac.framework;
+			remoteRef = F5C5E279251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E27C251E139A00217C19 /* MetalANGLE.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE.framework;
+			remoteRef = F5C5E27B251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E27E251E139A00217C19 /* libMetalANGLE_static_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMetalANGLE_static_tvos.a;
+			remoteRef = F5C5E27D251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E280251E139A00217C19 /* libangle_base_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_base_tvos.a;
+			remoteRef = F5C5E27F251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E282251E139A00217C19 /* libangle_metal_backend_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_tvos.a;
+			remoteRef = F5C5E281251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E284251E139A00217C19 /* libangle_gl_backend_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_gl_backend_tvos.a;
+			remoteRef = F5C5E283251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E286251E139A00217C19 /* libspirv-cross_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libspirv-cross_tvos.a";
+			remoteRef = F5C5E285251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E288251E139A00217C19 /* libglslang_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglslang_tvos.a;
+			remoteRef = F5C5E287251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E28A251E139A00217C19 /* libangle_image_util_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_image_util_tvos.a;
+			remoteRef = F5C5E289251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E28C251E139A00217C19 /* libjsoncpp_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsoncpp_tvos.a;
+			remoteRef = F5C5E28B251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E28E251E139A00217C19 /* libangle_util_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_util_tvos.a;
+			remoteRef = F5C5E28D251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E290251E139A00217C19 /* libangle_common_tvos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_common_tvos.a;
+			remoteRef = F5C5E28F251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E292251E139A00217C19 /* sample_util_tvos.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = sample_util_tvos.framework;
+			remoteRef = F5C5E291251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E294251E139A00217C19 /* MetalANGLE_ios_13.0.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MetalANGLE_ios_13.0.framework;
+			remoteRef = F5C5E293251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E296251E139A00217C19 /* libangle_metal_backend_ios_13.0.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libangle_metal_backend_ios_13.0.a;
+			remoteRef = F5C5E295251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E298251E139A00217C19 /* hello_triangle.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = hello_triangle.app;
+			remoteRef = F5C5E297251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E29A251E139A00217C19 /* multi_texture.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = multi_texture.app;
+			remoteRef = F5C5E299251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E29C251E139A00217C19 /* particle_system.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = particle_system.app;
+			remoteRef = F5C5E29B251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E29E251E139A00217C19 /* simple_texture_2d.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_2d.app;
+			remoteRef = F5C5E29D251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2A0251E139A00217C19 /* simple_texture_cubemap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_cubemap.app;
+			remoteRef = F5C5E29F251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2A2251E139A00217C19 /* simple_vertex_shader.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader.app;
+			remoteRef = F5C5E2A1251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2A4251E139A00217C19 /* texture_wrap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = texture_wrap.app;
+			remoteRef = F5C5E2A3251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2A6251E139A00217C19 /* mip_map_2d.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mip_map_2d.app;
+			remoteRef = F5C5E2A5251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2A8251E139A00217C19 /* stencil_operations.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = stencil_operations.app;
+			remoteRef = F5C5E2A7251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2AA251E139A00217C19 /* tri_fan_microbench.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = tri_fan_microbench.app;
+			remoteRef = F5C5E2A9251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2AC251E139A00217C19 /* hello_triangle_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = hello_triangle_mac.app;
+			remoteRef = F5C5E2AB251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2AE251E139A00217C19 /* multi_texture_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = multi_texture_mac.app;
+			remoteRef = F5C5E2AD251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2B0251E139A00217C19 /* particle_system_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = particle_system_mac.app;
+			remoteRef = F5C5E2AF251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2B2251E139A00217C19 /* simple_texture_2d_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_2d_mac.app;
+			remoteRef = F5C5E2B1251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2B4251E139A00217C19 /* simple_texture_cubemap_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_texture_cubemap_mac.app;
+			remoteRef = F5C5E2B3251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2B6251E139A00217C19 /* simple_vertex_shader_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader_mac.app;
+			remoteRef = F5C5E2B5251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2B8251E139A00217C19 /* texture_wrap_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = texture_wrap_mac.app;
+			remoteRef = F5C5E2B7251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2BA251E139A00217C19 /* mip_map_2d_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mip_map_2d_mac.app;
+			remoteRef = F5C5E2B9251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2BC251E139A00217C19 /* stencil_operations_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = stencil_operations_mac.app;
+			remoteRef = F5C5E2BB251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2BE251E139A00217C19 /* tri_fan_microbench_mac.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = tri_fan_microbench_mac.app;
+			remoteRef = F5C5E2BD251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F5C5E2C0251E139A00217C19 /* simple_vertex_shader_tvos.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = simple_vertex_shader_tvos.app;
+			remoteRef = F5C5E2BF251E139A00217C19 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A4AD172F1BAA0D8F00BCF507 /* Resources */ = {
@@ -3940,6 +5335,25 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E0DC251E112100217C19 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C5E0DD251E112100217C19 /* Assets.xcassets in Resources */,
+				F5C5E0DE251E112100217C19 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E142251E114A00217C19 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C5E143251E114A00217C19 /* widget_theme_ios7@4x.png in Resources */,
+				F5C5E144251E114A00217C19 /* widget_theme_ios7@2x.png in Resources */,
+				F5C5E145251E114A00217C19 /* widget_theme_ios7.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4108,7 +5522,82 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"$PROJECT_DIR\"/../../bin/xcode/universal-framework.sh \"appletv\"";
+			shellScript = "\"$PROJECT_DIR\"/../../bin/xcode/universal-framework.sh \"appletv\"\n";
+		};
+		F5C5E0DF251E112100217C19 /* Script: touch CoronaCards.framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Script: touch CoronaCards.framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Ensures that next attempt to build actually rebuilds the executable so it can be (re)app_sign(ed)\necho \"Updating modification time of ${BUILT_PRODUCTS_DIR}/CoronaCards.framework to trigger relink of $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\necho \"We need to do this b/c app_sign can only sign an unsigned executable.\"\ntouch \"${BUILT_PRODUCTS_DIR}\"/CoronaCards.framework\n";
+			showEnvVarsInLog = 0;
+		};
+		F5C5E0E2251E112100217C19 /* Script: CopyResources and resource.corona-archive */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Script: CopyResources and resource.corona-archive";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "${PROJECT_DIR}/../../bin/xcode/build_resource_car.sh";
+			showEnvVarsInLog = 0;
+		};
+		F5C5E0E3251E112100217C19 /* Script: app_sign */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Script: app_sign";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# bitcode ruins signing. remove this line when possible\nexit 0\n\n\nBINARY_PATH=${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/CoronaCards.framework/CoronaCards\n\nif [[ \"${PLATFORM_NAME}\" =~ .*simulator.* ]]\nthen\n    export SUPPRESS_APP_SIGN=1\nfi\n\n${PROJECT_DIR}/../../bin/xcode/app_sign.sh \"${BINARY_PATH}\"";
+			showEnvVarsInLog = 0;
+		};
+		F5C5E0E4251E112100217C19 /* Script: build.settings to Info.plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Script: build.settings to Info.plist";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PROJECT_DIR}/../../bin/xcode/update_plist.sh";
+			showEnvVarsInLog = 0;
+		};
+		F5C5E0E5251E112100217C19 /* Script: codesign embedded framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Script: codesign embedded framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PROJECT_DIR}/../../bin/xcode/codesign-framework.sh \"$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/CoronaCards.framework\"";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -4308,6 +5797,7 @@
 				A4DD47301BB2490700FD988E /* kernel_composite_glow_gl.lua in Sources */,
 				A4DD47311BB2490700FD988E /* kernel_composite_hardLight_gl.lua in Sources */,
 				A4DD47321BB2490700FD988E /* kernel_composite_hardMix_gl.lua in Sources */,
+				AAF34ADB29F9DFDB00076706 /* Rtt_TextureResourceCapture.cpp in Sources */,
 				A4DD47331BB2490700FD988E /* kernel_composite_hue_gl.lua in Sources */,
 				A4DD47341BB2490700FD988E /* kernel_composite_lighten_gl.lua in Sources */,
 				A4DD47351BB2490700FD988E /* kernel_composite_linearLight_gl.lua in Sources */,
@@ -4334,9 +5824,13 @@
 				A4DD47481BB2490800FD988E /* kernel_filter_blurGaussian_gl.lua in Sources */,
 				A4DD47491BB2490800FD988E /* kernel_filter_blurHorizontal_gl.lua in Sources */,
 				A4DD474A1BB2490800FD988E /* kernel_filter_blurVertical_gl.lua in Sources */,
+				AA2C69FB29147C9D0093B0BE /* kernel_filter_blurLinearVertical_gl.lua in Sources */,
+				AA2C69FA29147C9D0093B0BE /* kernel_filter_blurLinearHorizontal_gl.lua in Sources */,
+				AA2C69F929147C9D0093B0BE /* kernel_filter_blurGaussianLinear_gl.lua in Sources */,
 				A4DD474B1BB2490800FD988E /* kernel_filter_brightness_gl.lua in Sources */,
 				A4DD474C1BB2490800FD988E /* kernel_filter_bulge_gl.lua in Sources */,
 				03D1C5401D70CBC500DB02EE /* Rtt_PreferenceValue.cpp in Sources */,
+				F5DE5C2A29810AD800BE463F /* CoronaMemory.cpp in Sources */,
 				A4DD474D1BB2490800FD988E /* kernel_filter_chromaKey_gl.lua in Sources */,
 				A4DD474E1BB2490800FD988E /* kernel_filter_color_gl.lua in Sources */,
 				F574F5FB1CE60D8300FF04F1 /* Rtt_ShapeAdapterMesh.cpp in Sources */,
@@ -4395,9 +5889,8 @@
 				A4551F4C1BAA182D00FB3BDF /* Rtt_LuaLibGameNetwork.cpp in Sources */,
 				A4551DEE1BAA17CF00FB3BDF /* Rtt_EmitterObject.cpp in Sources */,
 				A4551F671BAA182D00FB3BDF /* Rtt_PlatformEventSound.cpp in Sources */,
+				AAF349EB29EFC61C00076706 /* Rtt_Profiling.cpp in Sources */,
 				A4384F521BAA1F49005750A3 /* b2GLESDebugDraw.cpp in Sources */,
-				A4D937F91BAA25E600DF2214 /* vlong.cpp in Sources */,
-				A4D937FA1BAA25E600DF2214 /* vlong_io.cpp in Sources */,
 				A4551E001BAA17CF00FB3BDF /* Rtt_RectPath.cpp in Sources */,
 				A4551F621BAA182D00FB3BDF /* Rtt_PlatformAudioPlayer.cpp in Sources */,
 				A4551DFC1BAA17CF00FB3BDF /* Rtt_PaintAdapter.cpp in Sources */,
@@ -4442,6 +5935,7 @@
 				A4551D331BAA17BE00FB3BDF /* Rtt_FixedBlockAllocator.cpp in Sources */,
 				A4551F581BAA182D00FB3BDF /* Rtt_LuaResourceOwner.cpp in Sources */,
 				A4551DDF1BAA17CF00FB3BDF /* Rtt_BitmapPaint.cpp in Sources */,
+				AAF34ADC29F9DFDB00076706 /* Rtt_TextureResourceCaptureAdapter.cpp in Sources */,
 				A4551F481BAA182D00FB3BDF /* Rtt_LuaCoronaBaseLib.c in Sources */,
 				A4551E211BAA17CF00FB3BDF /* Rtt_TextObject.cpp in Sources */,
 				A4551F771BAA182D00FB3BDF /* Rtt_RenderingStream.cpp in Sources */,
@@ -4463,7 +5957,6 @@
 				A4D937ED1BAA248000DF2214 /* b2Separator.cpp in Sources */,
 				A4551E031BAA17CF00FB3BDF /* Rtt_ShaderBuiltin.cpp in Sources */,
 				A4DD48061BB260B200FD988E /* Rtt_PlatformInputDevice.cpp in Sources */,
-				A4D937F71BAA25E600DF2214 /* prime.cpp in Sources */,
 				A4551F561BAA182D00FB3BDF /* Rtt_LuaProxyVTable.cpp in Sources */,
 				A4551D2E1BAA17BE00FB3BDF /* Rtt_ArrayTupleStruct.cpp in Sources */,
 				A4551F4D1BAA182D00FB3BDF /* Rtt_LuaLibInAppStore.cpp in Sources */,
@@ -4494,7 +5987,6 @@
 				A4551F6B1BAA182D00FB3BDF /* Rtt_PlatformInAppStore.cpp in Sources */,
 				A4551D301BAA17BE00FB3BDF /* Rtt_Assert.m in Sources */,
 				A4551F5A1BAA182D00FB3BDF /* Rtt_LuaUserdataProxy.cpp in Sources */,
-				A4551D371BAA17BE00FB3BDF /* Rtt_MD4.c in Sources */,
 				A4551F3A1BAA182D00FB3BDF /* Rtt_Archive.cpp in Sources */,
 				A4551E041BAA17CF00FB3BDF /* Rtt_ShaderComposite.cpp in Sources */,
 				A4551E091BAA17CF00FB3BDF /* Rtt_ShaderInput.cpp in Sources */,
@@ -4509,7 +6001,6 @@
 				A4551F3E1BAA182D00FB3BDF /* Rtt_DisplayObjectExtensions.cpp in Sources */,
 				A4551F7E1BAA182D00FB3BDF /* Rtt_Transform.cpp in Sources */,
 				A4551F551BAA182D00FB3BDF /* Rtt_LuaProxy.cpp in Sources */,
-				A4551D381BAA17BE00FB3BDF /* Rtt_MessageDigest.cpp in Sources */,
 				A4384F531BAA1F49005750A3 /* Reachability.m in Sources */,
 				A4551DF81BAA17CF00FB3BDF /* Rtt_LuaLibDisplay.cpp in Sources */,
 				A4551E1C1BAA17CF00FB3BDF /* Rtt_TesselatorLine.cpp in Sources */,
@@ -4522,6 +6013,7 @@
 				A4551D401BAA17BE00FB3BDF /* Rtt_VersionTimestamp.c in Sources */,
 				A4551D2C1BAA17BE00FB3BDF /* Rtt_Array.cpp in Sources */,
 				A4551D361BAA17BE00FB3BDF /* Rtt_Math.c in Sources */,
+				AAD3E2452B0BECE2000A4D45 /* Rtt_ObjectHandle.cpp in Sources */,
 				A4551D3F1BAA17BE00FB3BDF /* Rtt_UseCount.cpp in Sources */,
 				A4551D321BAA17BE00FB3BDF /* Rtt_Fixed.c in Sources */,
 				A4551F3D1BAA182D00FB3BDF /* Rtt_DeviceOrientation.cpp in Sources */,
@@ -4553,7 +6045,6 @@
 				A4DD48081BB260B200FD988E /* Rtt_ReadOnlyInputDeviceCollection.cpp in Sources */,
 				A4551F451BAA182D00FB3BDF /* Rtt_LuaAux.cpp in Sources */,
 				A4551E181BAA17CF00FB3BDF /* Rtt_SpriteSourceFrame.cpp in Sources */,
-				A4D937F81BAA25E600DF2214 /* rsa.cpp in Sources */,
 				A4D937FE1BAA261A00DF2214 /* luaal.c in Sources */,
 				A4551DFA1BAA17CF00FB3BDF /* Rtt_OpenPath.cpp in Sources */,
 				A4551DF51BAA17CF00FB3BDF /* Rtt_ImageSheetPaintAdapter.cpp in Sources */,
@@ -4562,15 +6053,14 @@
 				A4551DE51BAA17CF00FB3BDF /* Rtt_CompositePaint.cpp in Sources */,
 				A4551D2D1BAA17BE00FB3BDF /* Rtt_ArrayTuple.cpp in Sources */,
 				A4551F741BAA182D00FB3BDF /* Rtt_PlatformVideoPlayer.cpp in Sources */,
-				A4551F801BAA182D00FB3BDF /* Rtt_Verifier.cpp in Sources */,
 				A4551DED1BAA17CF00FB3BDF /* Rtt_EmbossedTextObject.cpp in Sources */,
 				A4551E0E1BAA17CF00FB3BDF /* Rtt_ShapeAdapter.cpp in Sources */,
 				A4551F511BAA182D00FB3BDF /* Rtt_LuaLibPhysics.cpp in Sources */,
 				A4551E1F1BAA17CF00FB3BDF /* Rtt_TesselatorRoundedRect.cpp in Sources */,
 				A4551F5D1BAA182D00FB3BDF /* Rtt_ParticleSystemObject.cpp in Sources */,
 				A4551DFE1BAA17CF00FB3BDF /* Rtt_PlatformBitmapTexture.cpp in Sources */,
+				AA76CF15272CB55000CE3F89 /* CoronaObjects.cpp in Sources */,
 				A4551E261BAA17CF00FB3BDF /* Rtt_TextureResourceBitmapAdapter.cpp in Sources */,
-				A4551F5C1BAA182D00FB3BDF /* Rtt_Message.cpp in Sources */,
 				A4DD47FF1BB260B200FD988E /* Rtt_InputAxisType.cpp in Sources */,
 				A4551E201BAA17CF00FB3BDF /* Rtt_TesselatorShape.cpp in Sources */,
 				A4551F6F1BAA182D00FB3BDF /* Rtt_PlatformNotifier.cpp in Sources */,
@@ -4618,6 +6108,7 @@
 				A4AD30E41BAA377C006A0C97 /* CoronaViewPluginContext.mm in Sources */,
 				A4AD30E91BAA377C006A0C97 /* Rtt_IPhoneDisplayObject.mm in Sources */,
 				A4AD30E61BAA377C006A0C97 /* Rtt_IPhoneAudioSessionManager.mm in Sources */,
+				F5B4469B255543BD000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */,
 				A4AD316C1BAB9E19006A0C97 /* CoronaNativeObjectAdapter.mm in Sources */,
 				F58011C11BE295070061E021 /* Rtt_AppleInputDevice.mm in Sources */,
 				A4AD308D1BAA2B80006A0C97 /* Rtt_ApplePlatform.mm in Sources */,
@@ -4699,6 +6190,7 @@
 				A4D938541BAA271F00DF2214 /* Rtt_RenderData.cpp in Sources */,
 				A4D9384F1BAA271F00DF2214 /* Rtt_GPUResource.cpp in Sources */,
 				A4D9384B1BAA271F00DF2214 /* Rtt_GLGeometry.cpp in Sources */,
+				AAF34AD529F9DFB800076706 /* Rtt_FormatExtensionList.cpp in Sources */,
 				A4D938471BAA271F00DF2214 /* Rtt_GeometryPool.cpp in Sources */,
 				A4D938431BAA271F00DF2214 /* Rtt_CommandBuffer.cpp in Sources */,
 				A4D938561BAA271F00DF2214 /* Rtt_RenderTypes.cpp in Sources */,
@@ -4742,6 +6234,118 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4E0762F1BD2C463003A733A /* PluginLibrary.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E0D6251E112100217C19 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C5E0D7251E112100217C19 /* main.mm in Sources */,
+				F5C5E0D8251E112100217C19 /* compat.c in Sources */,
+				F5C5E0D9251E112100217C19 /* Rtt_FileSystem.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E10C251E114A00217C19 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C5E10D251E114A00217C19 /* CoronaMainViewController.mm in Sources */,
+				F5C5E10E251E114A00217C19 /* CoronaApplicationMain.mm in Sources */,
+				F5C5E10F251E114A00217C19 /* CoronaBeacon.mm in Sources */,
+				F5C5E110251E114A00217C19 /* CoronaMainAppDelegate.mm in Sources */,
+				F5C5E111251E114A00217C19 /* NSString+Extensions.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E165251E115D00217C19 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C5E166251E115D00217C19 /* Rtt_AppleData.mm in Sources */,
+				F5C5E167251E115D00217C19 /* CoronaSystemResourceManager.mm in Sources */,
+				F5C5E168251E115D00217C19 /* CoronaLuaObjC+NSObject.m in Sources */,
+				F5C5E169251E115D00217C19 /* Rtt_IPhoneRuntimeDelegate.mm in Sources */,
+				F5C5E16A251E115D00217C19 /* CoronaViewRuntimeDelegate.mm in Sources */,
+				F5C5E16B251E115D00217C19 /* Rtt_KeyName.cpp in Sources */,
+				F5C5E16C251E115D00217C19 /* Rtt_AppleInputDeviceManager.mm in Sources */,
+				F5C5E16D251E115D00217C19 /* Rtt_IPhoneTimer.mm in Sources */,
+				F5C5E16E251E115D00217C19 /* Rtt_IPhoneText.mm in Sources */,
+				F5C5E16F251E115D00217C19 /* Rtt_IPhoneFont.mm in Sources */,
+				F5C5E170251E115D00217C19 /* Rtt_AppleInAppStoreAppleTransactionObjectWrapper.mm in Sources */,
+				F5C5E171251E115D00217C19 /* Rtt_AppleInAppStore.mm in Sources */,
+				F5C5E172251E115D00217C19 /* Rtt_IPhoneScreenSurface.mm in Sources */,
+				F5C5E173251E115D00217C19 /* Rtt_RuntimeDelegatePlayer.cpp in Sources */,
+				F5C5E174251E115D00217C19 /* Rtt_TVOSDevice.mm in Sources */,
+				F5C5E175251E115D00217C19 /* CoronaViewPluginContext.mm in Sources */,
+				F5C5E176251E115D00217C19 /* Rtt_IPhoneDisplayObject.mm in Sources */,
+				F5C5E177251E115D00217C19 /* Rtt_IPhoneAudioSessionManager.mm in Sources */,
+				F5B446AB255543BE000BC8A0 /* Rtt_IPhoneVideoPlayer.mm in Sources */,
+				F5C5E178251E115D00217C19 /* CoronaNativeObjectAdapter.mm in Sources */,
+				F5C5E179251E115D00217C19 /* Rtt_AppleInputDevice.mm in Sources */,
+				F5C5E17A251E115D00217C19 /* Rtt_ApplePlatform.mm in Sources */,
+				F5C5E17B251E115D00217C19 /* Rtt_AppleInAppStoreApple.mm in Sources */,
+				F5C5E17C251E115D00217C19 /* CoronaViewPrivate.mm in Sources */,
+				F5C5E17D251E115D00217C19 /* Rtt_IPhoneTextBoxObject.mm in Sources */,
+				F5C5E17E251E115D00217C19 /* Rtt_IPhoneNativeObject.mm in Sources */,
+				F5C5E17F251E115D00217C19 /* Rtt_IPhonePlatformBase.mm in Sources */,
+				F5C5E180251E115D00217C19 /* Rtt_AppleCallback.mm in Sources */,
+				F5C5E181251E115D00217C19 /* Rtt_IPhoneVideoObject.mm in Sources */,
+				F5C5E182251E115D00217C19 /* Rtt_AppleAudioPlayer.cpp in Sources */,
+				F5C5E183251E115D00217C19 /* Rtt_TouchInhibitor.mm in Sources */,
+				F5C5E184251E115D00217C19 /* Rtt_AppleEventSound.cpp in Sources */,
+				F5C5E185251E115D00217C19 /* Rtt_AppleTextAlignment.mm in Sources */,
+				F5C5E186251E115D00217C19 /* Rtt_AppleTextDelegateWrapperObjectHelper.m in Sources */,
+				F5C5E187251E115D00217C19 /* Rtt_AppleAudioRecorder.mm in Sources */,
+				F5C5E188251E115D00217C19 /* Rtt_AppleReachability.mm in Sources */,
+				F5C5E189251E115D00217C19 /* Rtt_AppleInputMFiDeviceListener.mm in Sources */,
+				F5C5E18A251E115D00217C19 /* Rtt_AppleBitmap.mm in Sources */,
+				F5C5E18B251E115D00217C19 /* Rtt_IPhoneAudioSessionManagerImplementation.mm in Sources */,
+				F5C5E18C251E115D00217C19 /* Rtt_IPhoneTextFieldObject.mm in Sources */,
+				F5C5E18D251E115D00217C19 /* CoronaLuaIOS.mm in Sources */,
+				F5C5E18E251E115D00217C19 /* Rtt_AppleFont.mm in Sources */,
+				F5C5E18F251E115D00217C19 /* Rtt_TVOSPlatform.mm in Sources */,
+				F5C5E190251E115D00217C19 /* Rtt_AppleTimer.mm in Sources */,
+				F5C5E191251E115D00217C19 /* CoronaViewControllerPrivate.mm in Sources */,
+				F5C5E192251E115D00217C19 /* Rtt_AppleCrypto.cpp in Sources */,
+				F5C5E193251E115D00217C19 /* CoronaIOSLoader.mm in Sources */,
+				F5C5E194251E115D00217C19 /* CoronaLuaObjC.mm in Sources */,
+				F5C5E195251E115D00217C19 /* CoronaAppDelegate.mm in Sources */,
+				F5C5E196251E115D00217C19 /* AppleWeakProxy.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5C5E1B2251E11DD00217C19 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C5E1B3251E11DD00217C19 /* Rtt_ProgramFactory.cpp in Sources */,
+				F5C5E1B4251E11DD00217C19 /* Rtt_GL.cpp in Sources */,
+				F5C5E1B5251E11DD00217C19 /* Rtt_CPUResource.cpp in Sources */,
+				F5C5E1B6251E11DD00217C19 /* Rtt_GLRenderer.cpp in Sources */,
+				F5C5E1B7251E11DD00217C19 /* Rtt_Uniform.cpp in Sources */,
+				F5C5E1B8251E11DD00217C19 /* Rtt_Program.cpp in Sources */,
+				F5C5E1B9251E11DD00217C19 /* Rtt_GLTexture.cpp in Sources */,
+				F5C5E1BA251E11DD00217C19 /* Rtt_Geometry_Renderer.cpp in Sources */,
+				F5C5E1BB251E11DD00217C19 /* Rtt_RenderData.cpp in Sources */,
+				F5C5E1BC251E11DD00217C19 /* Rtt_GPUResource.cpp in Sources */,
+				F5C5E1BD251E11DD00217C19 /* Rtt_GLGeometry.cpp in Sources */,
+				AAF34AD629F9DFB900076706 /* Rtt_FormatExtensionList.cpp in Sources */,
+				F5C5E1BE251E11DD00217C19 /* Rtt_GeometryPool.cpp in Sources */,
+				F5C5E1BF251E11DD00217C19 /* Rtt_CommandBuffer.cpp in Sources */,
+				F5C5E1C0251E11DD00217C19 /* Rtt_RenderTypes.cpp in Sources */,
+				F5C5E1C1251E11DD00217C19 /* Rtt_GLCommandBuffer.cpp in Sources */,
+				F5C5E1C2251E11DD00217C19 /* Rtt_Renderer.cpp in Sources */,
+				F5C5E1C3251E11DD00217C19 /* Rtt_HighPrecisionTime.cpp in Sources */,
+				F5C5E1C4251E11DD00217C19 /* Rtt_GLProgram.cpp in Sources */,
+				F5C5E1C5251E11DD00217C19 /* Rtt_TextureVolatile.cpp in Sources */,
+				F5C5E1C6251E11DD00217C19 /* Rtt_Matrix_Renderer.cpp in Sources */,
+				F5C5E1C7251E11DD00217C19 /* Rtt_FrameBufferObject.cpp in Sources */,
+				F5C5E1C8251E11DD00217C19 /* Rtt_Texture.cpp in Sources */,
+				F5C5E1C9251E11DD00217C19 /* Rtt_TextureBitmap.cpp in Sources */,
+				F5C5E1CA251E11DD00217C19 /* Rtt_VideoTexture.cpp in Sources */,
+				F5C5E1CB251E11DD00217C19 /* Rtt_GLFrameBufferObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4822,6 +6426,71 @@
 			isa = PBXTargetDependency;
 			target = A4AD31141BAB8852006A0C97 /* libluasocket */;
 			targetProxy = C2F9118F1CDC4DD1004A5564 /* PBXContainerItemProxy */;
+		};
+		F5C5E104251E114A00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4AD31141BAB8852006A0C97 /* libluasocket */;
+			targetProxy = F5C5E105251E114A00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E106251E114A00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A461DF011BE8A72500C9F31B /* libluafilesystem */;
+			targetProxy = F5C5E107251E114A00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E108251E114A00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A453AB7B1BEA85BE0094828B /* libnetwork */;
+			targetProxy = F5C5E109251E114A00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E159251E115D00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4384F741BAA20E0005750A3 /* libalmixer */;
+			targetProxy = F5C5E15A251E115D00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E15B251E115D00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4551F851BAA1B5500FB3BDF /* libbox2d */;
+			targetProxy = F5C5E15C251E115D00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E15D251E115D00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4AD17521BAA14A600BCF507 /* liblua */;
+			targetProxy = F5C5E15E251E115D00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E15F251E115D00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4AD31141BAB8852006A0C97 /* libluasocket */;
+			targetProxy = F5C5E160251E115D00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E163251E115D00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4AD17B41BAA14FE00BCF507 /* librtt */;
+			targetProxy = F5C5E164251E115D00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E1F1251E125A00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C5E103251E114A00217C19 /* CoronaCards-angle */;
+			targetProxy = F5C5E1F0251E125A00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E1F4251E127A00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C5E158251E115D00217C19 /* libplayer-angle */;
+			targetProxy = F5C5E1F3251E127A00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E1F7251E12AD00217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5C5E1B1251E11DD00217C19 /* librenderer-angle */;
+			targetProxy = F5C5E1F6251E12AD00217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E2F9251E13C700217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE_tvos;
+			targetProxy = F5C5E2F8251E13C700217C19 /* PBXContainerItemProxy */;
+		};
+		F5C5E366251E143000217C19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MetalANGLE_tvos;
+			targetProxy = F5C5E365251E143000217C19 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4985,6 +6654,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -5010,7 +6680,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=11.0)";
 			};
 			name = Debug;
 		};
@@ -5035,6 +6705,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -5054,7 +6725,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=11.0)";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -5064,14 +6735,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Debug;
@@ -5081,14 +6755,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				INFOPLIST_FILE = template/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = tvos;
 				SKIP_INSTALL = NO;
 				STRIP_STYLE = "non-global";
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Release;
@@ -5246,9 +6923,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5267,6 +6947,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaCards;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external/lua-5.1.3/src";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -5278,8 +6959,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = BG2J43EA88;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5294,6 +6978,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaCards;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external/lua-5.1.3/src";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -5394,6 +7079,191 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		F5C5E0E7251E112100217C19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				INFOPLIST_FILE = template/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
+				PRODUCT_NAME = template;
+				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				SKIP_INSTALL = NO;
+				STRIP_STYLE = "non-global";
+				USER_HEADER_SEARCH_PATHS = ../../librtt;
+			};
+			name = Debug;
+		};
+		F5C5E0E8251E112100217C19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				INFOPLIST_FILE = template/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.template;
+				PRODUCT_NAME = template;
+				PROVISIONING_PROFILE_SPECIFIER = tvos;
+				SKIP_INSTALL = NO;
+				STRIP_STYLE = "non-global";
+				USER_HEADER_SEARCH_PATHS = ../../librtt;
+			};
+			name = Release;
+		};
+		F5C5E147251E114A00217C19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				INFOPLIST_FILE = CoronaCards/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libnetwork.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libluafilesystem.a",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaCards;
+				PRODUCT_NAME = CoronaCards;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external/lua-5.1.3/src";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		F5C5E148251E114A00217C19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = BG2J43EA88;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				INFOPLIST_FILE = CoronaCards/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libnetwork.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libluafilesystem.a",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.coronalabs.CoronaCards;
+				PRODUCT_NAME = CoronaCards;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external/lua-5.1.3/src";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		F5C5E1A0251E115D00217C19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				EXECUTABLE_PREFIX = "";
+				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = ../../librtt;
+			};
+			name = Debug;
+		};
+		F5C5E1A1251E115D00217C19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = "";
+				GCC_PREFIX_HEADER = LibPlayerPrefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = ../../librtt;
+			};
+			name = Release;
+		};
+		F5C5E1CF251E11DD00217C19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				EXECUTABLE_PREFIX = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = ../../librtt;
+			};
+			name = Debug;
+		};
+		F5C5E1D0251E11DD00217C19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				EXECUTABLE_PREFIX = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					Rtt_MetalANGLE,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = ../../librtt;
 			};
 			name = Release;
 		};
@@ -5531,6 +7401,42 @@
 			buildConfigurations = (
 				A4E076371BD2C5A3003A733A /* Debug */,
 				A4E076381BD2C5A3003A733A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C5E0E6251E112100217C19 /* Build configuration list for PBXNativeTarget "template-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C5E0E7251E112100217C19 /* Debug */,
+				F5C5E0E8251E112100217C19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C5E146251E114A00217C19 /* Build configuration list for PBXNativeTarget "CoronaCards-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C5E147251E114A00217C19 /* Debug */,
+				F5C5E148251E114A00217C19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C5E19F251E115D00217C19 /* Build configuration list for PBXNativeTarget "libplayer-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C5E1A0251E115D00217C19 /* Debug */,
+				F5C5E1A1251E115D00217C19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5C5E1CE251E11DD00217C19 /* Build configuration list for PBXNativeTarget "librenderer-angle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5C5E1CF251E11DD00217C19 /* Debug */,
+				F5C5E1D0251E11DD00217C19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

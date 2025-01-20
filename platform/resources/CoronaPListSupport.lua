@@ -1,25 +1,9 @@
 ------------------------------------------------------------------------------
 --
--- Copyright (C) 2018 Corona Labs Inc.
--- Contact: support@coronalabs.com
---
 -- This file is part of the Corona game engine.
---
--- Commercial License Usage
--- Licensees holding valid commercial Corona licenses may use this file in
--- accordance with the commercial license agreement between you and 
--- Corona Labs Inc. For licensing terms and conditions please contact
--- support@coronalabs.com or visit https://coronalabs.com/com-license
---
--- GNU General Public License Usage
--- Alternatively, this file may be used under the terms of the GNU General
--- Public license version 3. The license is as published by the Free Software
--- Foundation and appearing in the file LICENSE.GPL3 included in the packaging
--- of this file. Please review the following information to ensure the GNU 
--- General Public License requirements will
--- be met: https://www.gnu.org/licenses/gpl-3.0.html
---
 -- For overview and more information on licensing please refer to README.md
+-- Home page: https://github.com/coronalabs/corona
+-- Contact: support@coronalabs.com
 --
 ------------------------------------------------------------------------------
 
@@ -99,7 +83,7 @@ local function getDelegates(tmpDir)
 	if attributes == "directory" then
 		pluginManifests = findPlugins(pluginsDir)
 	end
-	
+
 	local delegatesSet = {}
 	local delegates = {}
 	-- Put the delegate classes into a set first to remove dups
@@ -111,7 +95,7 @@ local function getDelegates(tmpDir)
 			end
 		end
 	end
-	
+
 	-- Reformat the table because this is the way that the json->plist stuff expects it
 	for k, v in pairs(delegatesSet) do
 		if debugBuildProcess and debugBuildProcess ~= 0 then
@@ -123,6 +107,24 @@ local function getDelegates(tmpDir)
 	return delegates
 end
 
+local function inArray(array, item)
+    for key, value in pairs(array) do
+        if value == item then return key end
+    end
+    return nil
+end
+local function addLiveBuildsPlist(buildSettingsPlist, options)
+	if options.liveBuild then
+		buildSettingsPlist = buildSettingsPlist or {}
+		buildSettingsPlist.NSLocalNetworkUsageDescription = buildSettingsPlist.NSLocalNetworkUsageDescription or "Solar2D Live Builds are using local network to synchronize the project."
+		buildSettingsPlist.NSBonjourServices = buildSettingsPlist.NSBonjourServices or {}
+		if not inArray(buildSettingsPlist.NSBonjourServices, "_corona_live._tcp.") then
+			buildSettingsPlist.NSBonjourServices[#buildSettingsPlist.NSBonjourServices + 1] = "_corona_live._tcp."
+		end
+	end
+	return buildSettingsPlist
+end
+
 function CoronaPListSupport.modifyPlist( options )
 	local delegates
 
@@ -130,7 +132,7 @@ function CoronaPListSupport.modifyPlist( options )
 	if options.tmpDir then
 		delegates = getDelegates(options.tmpDir)
 	end
-	
+
 	if debugBuildProcess and debugBuildProcess ~= 0 then
 		print("CoronaPListSupport.modifyPlist: options: "..json.prettify(options))
 	end
@@ -169,7 +171,7 @@ function CoronaPListSupport.modifyPlist( options )
 	else
 		error("failed to open modifyPlist input file '"..tmpJSONFile.."': "..errorMsg)
 	end
-    
+
     os.remove(tmpJSONFile)
 
 	-- infoPlist now contains a Lua table representing the Info.plist
@@ -213,7 +215,8 @@ function CoronaPListSupport.modifyPlist( options )
 			-- Apple treats this the build number so, if it hasn't been specified in the build.settings, we
 			-- set it to the current date and time which is unique for the app and human readable
 			bundleVersionSource = (infoPlist.CFBundleVersion == "@BUNDLE_VERSION@") and "set by Simulator" or "set by Info.plist"
-			infoPlist.CFBundleVersion = os.date("%Y.%m.%d%H%M")
+			local datedata = os.date( "!*t")
+			infoPlist.CFBundleVersion = datedata.year .. '.' .. datedata.month.."." .. datedata.day .. os.date("!%H%M")
 		end
 
 		local version = options.bundleversion or "1.0.0"
@@ -227,7 +230,7 @@ function CoronaPListSupport.modifyPlist( options )
 		if infoPlist.UIDeviceFamily == nil or options.targetDevice ~= nil then
 			-- iOS case
 			-- The behavior here needs to work for both Xcode Enterprise builds and server Simulator builds
-			
+
 			-- If the user specified iPhone or iPad only, modify the plist to not do Universal
 			local isolatedTargetDevice = options.targetDevice
 
@@ -331,6 +334,7 @@ function CoronaPListSupport.modifyPlist( options )
 
 			-- add'l custom plist settings specific to iPhone
 			local buildSettingsPlist = settings.iphone and settings.iphone.plist
+			buildSettingsPlist = addLiveBuildsPlist(buildSettingsPlist, options)
 
 			if buildSettingsPlist then
 				--print("Adding custom plist settings: ".. json.encode(buildSettingsPlist))
@@ -391,6 +395,7 @@ function CoronaPListSupport.modifyPlist( options )
 
 			-- add'l custom plist settings specific to tvOS
 			local buildSettingsPlist = settings.tvos and settings.tvos.plist
+			buildSettingsPlist = addLiveBuildsPlist(buildSettingsPlist, options)
 
 			if buildSettingsPlist then
 				if buildSettingsPlist.CFBundleShortVersionString then
@@ -539,6 +544,15 @@ function CoronaPListSupport.captureCommandOutput( cmd, debugLevel )
 	return result
 end
 
+function CoronaPListSupport.generateXcprivacy( settings, platform )
+	local platformSettings = settings[platform]
+	local ret = ""
+	if platformSettings and platformSettings.xcprivacy then
+		ret = ret .. CoronaPListSupport.valueToPlistEntry(platformSettings.xcprivacy)
+	end
+
+	return ret
+end
 
 function CoronaPListSupport.generateEntitlements( settings, platform, provisionProfile )
 	local platformSettings = settings[platform]
@@ -561,7 +575,7 @@ function CoronaPListSupport.generateEntitlements( settings, platform, provisionP
 				end
 			end
 			if ppEnt and appId then
-				local t = {}
+				local t = { ["com.apple.application-identifier"] = platform == 'osx' and appId or nil }
 				local kvsContainer = ppEnt["com.apple.developer.ubiquity-kvstore-identifier"]
 				if kvsContainer then
 					if "table" == type(platformSettings.iCloud) and platformSettings.iCloud["kvstore-identifier"] then
@@ -572,7 +586,7 @@ function CoronaPListSupport.generateEntitlements( settings, platform, provisionP
 						-- this code tries to separate App Id from team ID
 						local kvsId = string.sub(appId, string.find(appId,"%.")+1 )
 						kvsContainer = string.gsub(kvsContainer, "*", kvsId)
-					end					
+					end
 					t["com.apple.developer.ubiquity-kvstore-identifier"] = kvsContainer
 					print("Using iCloud KVStore identifier: " .. kvsContainer)
 					iCloudEnabled = true
@@ -601,7 +615,7 @@ function CoronaPListSupport.generateEntitlements( settings, platform, provisionP
 					t["com.apple.developer.icloud-container-identifiers"] = cloudKitContainers
 					t["com.apple.developer.icloud-container-environment"] = ppEnt["com.apple.developer.icloud-container-environment"]
 					-- Apple doesn't accept to app store with Development container env. even if it is in provisioning profile
-					if ppEnt["com.apple.developer.aps-environment"]=="production" or ppEnt["aps-environment"]=="production" then
+					if ppEnt["com.apple.developer.aps-environment"] or ppEnt["aps-environment"]=="production" then
 						t["com.apple.developer.icloud-container-environment"] = {"Production",}
 					end
 					iCloudEnabled = true
@@ -620,13 +634,21 @@ function CoronaPListSupport.generateEntitlements( settings, platform, provisionP
 			print("ERROR: setting." .. platform .. ".iCloud is enabled, but provisioning profile does not have iCloud entitlements." )
 		end
 	end
-	
+
 	if platformSettings and platformSettings.entitlements then
-		ret = ret .. CoronaPListSupport.valueToPlistEntry(platformSettings.entitlements)
+		local pe = platformSettings.entitlements
+		if pe["com.apple.developer.icloud-container-identifiers"]
+		or pe["com.apple.developer.ubiquity-container-identifiers"]
+		or pe["com.apple.developer.ubiquity-kvstore-identifier"]
+		then
+			includeProvisioning = true
+		end
+
+		ret = ret .. CoronaPListSupport.valueToPlistEntry(pe)
 	end
 
 	return ret, includeProvisioning
-	
+
 end
 
 -- compiles xcassets thing into the icons and lanuch images
@@ -655,6 +677,19 @@ function CoronaPListSupport.compileXcassets(options, tmpDir, srcAssets, xcassetP
 		actoolCMD = actoolCMD .. ' --output-format human-readable-text --warnings'
 		if debugBuildProcess > 0 then
 			actoolCMD = actoolCMD .. ' --notices'
+		end
+		--Sticker Packaging (Note App Template still needs to updates to include extention)
+		if(settingsEntry.stickerPackIdentifierPrefix)then
+			actoolCMD = actoolCMD .. ' --include-sticker-content --stickers-icon-role host-app --sticker-pack-identifier-prefix '..settingsEntry.stickerPackIdentifierPrefix
+		end
+		if(settingsEntry.localizedStickerPackFile)then
+			actoolCMD = actoolCMD .. ' --sticker-pack-strings-file ' .. settingsEntry.localizedStickerPackFile
+		end
+		--Set Alternate Icons
+		if(settingsEntry.alternateIcons)then
+			for i=1,#settingsEntry.alternateIcons do
+					actoolCMD = actoolCMD .. ' --alternate-app-icon '..settingsEntry.alternateIcons[i]
+			end
 		end
 		actoolCMD = actoolCMD .. ' --export-dependency-info ' .. quoteString(tmpDir .. '/assetcatalog_dependencies')
 		actoolCMD = actoolCMD .. ' --output-partial-info-plist ' .. quoteString(iconPlistFile)

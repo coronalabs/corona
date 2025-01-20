@@ -32,12 +32,6 @@
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Math.c">
       <Filter>librtt\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\librtt\Core\Rtt_MD4.c">
-      <Filter>librtt\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\librtt\Core\Rtt_MessageDigest.cpp">
-      <Filter>librtt\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\librtt\Core\Rtt_RefCount.cpp">
       <Filter>librtt\Core</Filter>
     </ClCompile>
@@ -563,9 +557,6 @@
     <ClCompile Include="..\..\..\librtt\Rtt_Matrix.cpp">
       <Filter>librtt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\librtt\Rtt_Message.cpp">
-      <Filter>librtt</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\librtt\Rtt_PhysicsContact.cpp">
       <Filter>librtt</Filter>
     </ClCompile>
@@ -653,6 +644,12 @@
     <ClCompile Include="..\..\..\librtt\Rtt_Runtime.cpp">
       <Filter>librtt</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\librtt\Rtt_HTTPClientCommon.cpp">
+      <Filter>librtt</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtt_HTTPClientWindows.cpp">
+      <Filter>librtt</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\librtt\Rtt_RuntimeDelegate.cpp">
       <Filter>librtt</Filter>
     </ClCompile>
@@ -722,18 +719,6 @@
     <ClCompile Include="..\..\..\external\hmac\hmac_sha2.c">
       <Filter>external\hmac</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\rsa\vlong_io.cpp">
-      <Filter>external\rsa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\external\rsa\prime.cpp">
-      <Filter>external\rsa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\external\rsa\rsa.cpp">
-      <Filter>external\rsa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\external\rsa\vlong.cpp">
-      <Filter>external\rsa</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\Rtt_DependencyUtilsWin.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_OperationResult.cpp">
       <Filter>librtt\Core</Filter>
@@ -797,12 +782,6 @@
       <Filter>librtt\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Math.h">
-      <Filter>librtt\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\librtt\Core\Rtt_MD4.h">
-      <Filter>librtt\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\librtt\Core\Rtt_MessageDigest.h">
       <Filter>librtt\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\librtt\Core\Rtt_New.h">
@@ -1387,9 +1366,6 @@
     <ClInclude Include="..\..\..\librtt\Rtt_MCrypto.h">
       <Filter>librtt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\librtt\Rtt_Message.h">
-      <Filter>librtt</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\librtt\Rtt_MIterable.h">
       <Filter>librtt</Filter>
     </ClInclude>
@@ -1504,6 +1480,9 @@
     <ClInclude Include="..\..\..\librtt\Rtt_Runtime.h">
       <Filter>librtt</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\librtt\Rtt_HTTPClient.h">
+      <Filter>librtt</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\librtt\Rtt_RuntimeDelegate.h">
       <Filter>librtt</Filter>
     </ClInclude>
@@ -1587,18 +1566,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\external\hmac\hmac_sha2.h">
       <Filter>external\hmac</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\external\rsa\vlong_io.h">
-      <Filter>external\rsa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\external\rsa\prime.hpp">
-      <Filter>external\rsa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\external\rsa\rsa.hpp">
-      <Filter>external\rsa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\external\rsa\vlong.hpp">
-      <Filter>external\rsa</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\librtt\Core\Rtt_ValueResult.h">
       <Filter>librtt\Core</Filter>
@@ -2076,6 +2043,9 @@
       <Filter>platform\resources</Filter>
     </LuaToCpp>
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaProvider.lua">
+      <Filter>librtt\Corona</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\resources\CoronaBuilderPluginCollector.lua" >
       <Filter>librtt\Corona</Filter>
     </LuaToCpp>
     <LuaToCpp Include="..\..\..\librtt\Corona\CoronaLibrary.lua">

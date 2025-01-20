@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -321,7 +305,7 @@ AndroidPlatform::FileExists( const char *filename ) const
 	else
 	{
 		// The given file name is likely a relative path to an asset file or a URL to a local file.
-		// Check for its existance via Android's APIs on the Java side.
+		// Check for its existence via Android's APIs on the Java side.
 		fileExists = fNativeToJavaBridge->GetRawAssetExists(filename);
 		if (!fileExists)
 		{
@@ -534,33 +518,7 @@ AndroidPlatform::PathForFile( const char * filename, const char * baseDir, Strin
 		result.Set( baseDir );
 	}
 }
-	
-void 
-AndroidPlatform::HttpPost( const char* url, const char* key, const char* value ) const
-{
-	fNativeToJavaBridge->HttpPost( url, key, value );
-}
 
-bool
-AndroidPlatform::HttpDownload( const char* url, Rtt::String &result, String& errorMesg, const std::map<std::string, std::string>& headers ) const
-{
-	result.Set("");
-	errorMesg.Set("");
-
-	Rtt_ASSERT_NOT_IMPLEMENTED();
-	
-	return false;
-}
-
-bool
-AndroidPlatform::HttpDownloadFile( const char* url, const char *filename, String& errorMesg, const std::map<std::string, std::string>& headers ) const
-{
-	errorMesg.Set("");
-
-	Rtt_ASSERT_NOT_IMPLEMENTED();
-
-	return false;
-}
 FontMetricsMap 
 AndroidPlatform::GetFontMetrics( const PlatformFont& font ) const
 {
@@ -1039,7 +997,7 @@ AndroidPlatform::CancelNotification( void *notificationId ) const
 	}
 	else
 	{
-		fNativeToJavaBridge->NotificationCancel((int)notificationId);
+		fNativeToJavaBridge->NotificationCancel((uintptr_t)notificationId);
 	}
 }
 
@@ -1090,6 +1048,36 @@ AndroidPlatform::SetNativeProperty( lua_State *L, const char *key, int valueInde
 		{
 			const char *visibility = lua_tostring(L, valueIndex);
 			fNativeToJavaBridge->SetSystemUiVisibility(visibility);
+		}
+	}
+	else if (Rtt_StringCompare(key, "navigationBarColor") == 0)
+	{
+		if (lua_type(L, valueIndex) == LUA_TTABLE)
+		{
+			//red
+			lua_rawgeti(L, valueIndex, 1);
+			double red = 0;
+			if(lua_isnumber(L, -1)){
+					red = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+
+			//green
+			lua_rawgeti(L, valueIndex, 2);
+			double green = 0;
+			if(lua_isnumber(L, -1)){
+					green = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+			//blue
+			lua_rawgeti(L, valueIndex, 3);
+			double blue = 0;
+			if(lua_isnumber(L, -1)){
+					blue = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+
+			fNativeToJavaBridge->SetNavigationBarColor(red, green, blue);
 		}
 	}
 	else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)

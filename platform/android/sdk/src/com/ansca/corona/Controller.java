@@ -1,48 +1,27 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 package com.ansca.corona;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Locale;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
+import java.util.Objects;
 
 import android.app.AlertDialog;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -52,9 +31,12 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
@@ -295,19 +277,46 @@ public class Controller {
 	}
 	
 	public synchronized void stop() {
+
 		stopTimer();
 		mySensorManager.pause();
 		if (myRuntimeState == RuntimeState.Starting || myRuntimeState == RuntimeState.Stopped) {
 			myRuntimeState = RuntimeState.Stopped;
 		} else {
- 			myRuntimeState = RuntimeState.Stopping;
- 		}
+			myRuntimeState = RuntimeState.Stopping;
+		}
 
-		// If we don't do this then there won't be one last onDrawFrame call which means the runtime won't be stopped!
-		requestEventRender();
+		myGLView.queueEvent(new Runnable() {
+			@Override
+			public void run() {
+				if (myRuntimeState != RuntimeState.Stopping) {
+					// pause event already picked up by updateRuntimeState
+					return;
+				}
 
+				// If we don't do this then there won't be one last onDrawFrame call which means the runtime won't be stopped!
+				// it's ok to call ApplicationListener's events
+				// from onDrawFrame because it's executing in GL thread
+				requestEventRender();
+			}
+		});
 		myMediaManager.pauseAll();
 		internalSetIdleTimer(true);
+
+		while (myRuntimeState == RuntimeState.Stopping) {
+			try {
+				// Android ANR time is 5 seconds, so wait up to 4 seconds before assuming
+				// deadlock and killing process.
+				this.wait(4000);
+				if (myRuntimeState == RuntimeState.Stopping) {
+					// pause will never go false if onDrawFrame is never called by the GLThread
+					// when entering this method, we MUST enforce continuous rendering
+					android.os.Process.killProcess(android.os.Process.myPid());
+				}
+			} catch (InterruptedException ignored) {
+				// Nothing to do here, intent can't be handled.
+			}
+		}
 	}
 	
 	public synchronized void destroy() {
@@ -328,28 +337,48 @@ public class Controller {
 		final Controller controller = runtime.getController();
 		EventManager eventManager = controller.getEventManager();
 		if ((controller != null) && (eventManager != null)) {
+
+			boolean localShouldStart = false;
+			boolean localShouldRender = false;
+			boolean localShouldStop = false;
+
 			synchronized (controller) {
-
-				// We do this so as a way to ensure that the runtime is started/stopped before any events happen.
-				// The renderer still might not be ready
 				if (RuntimeState.Starting == controller.myRuntimeState && render) {
-					JavaToNativeShim.resume(runtime);
-					controller.requestRender();
+					localShouldStart = true;
+					localShouldRender = true;
 					controller.myRuntimeState = RuntimeState.Running;
-				} 
-
-				if (render) {
-					// Send queued events to the native side of Corona.
-					eventManager.sendEvents();
-				}
-				
-				// We want to finish going through the events before we stop the runtime so its down here.
-				if (RuntimeState.Stopping == controller.myRuntimeState) {
-					JavaToNativeShim.pause(runtime);
+				}  else if (RuntimeState.Running == controller.myRuntimeState) {
+					localShouldRender = render;
+				} else if (RuntimeState.Stopping == controller.myRuntimeState) {
+					localShouldStop = true;
 					controller.myRuntimeState = RuntimeState.Stopped;
+					controller.notifyAll();
+				} else if (RuntimeState.Stopped == controller.myRuntimeState) {
+					// all local boolean are false
+				}
+			}
 
-					// Now we can pause the GLView on the UI thread if needed since we've 
-					// guarenteed that the Corona Runtime has stopped.
+			if (localShouldStart) {
+				Log.i("Corona", "JavaToNativeShim.resume(runtime)");
+				JavaToNativeShim.resume(runtime);
+				synchronized (controller) {
+					Log.i("Corona", "controller.requestRender()");
+					controller.requestRender();
+				}
+			}
+
+			if (render) {
+				// Send queued events to the native side of Corona.
+				eventManager.sendEvents();
+			}
+
+			if (localShouldStop) {
+				Log.i("Corona", "JavaToNativeShim.pause(runtime)");
+				JavaToNativeShim.pause(runtime);
+
+				synchronized (controller) {
+					// Now we can pause the GLView on the UI thread if needed since we've
+					// guaranteed that the Corona Runtime has stopped.
 					Handler handler = controller.getHandler();
 					handler.post (new Runnable() {
 						@Override
@@ -359,28 +388,28 @@ public class Controller {
 							// happening back to back, which is possible on Android 2.3.x devices.
 							if (RuntimeState.Stopped == controller.myRuntimeState) {
 								// Pause the OpenGL view's thread. This stops its rendering loop.
+								Log.i("Corona", "controller.getGLView().onPause()");
 								controller.getGLView().onPause();
 							}
 						}
 					});
 				}
+			}
 
-				// Render the next frame, but only if the Corona runtime is currently running.
-				// We must check the running state "after" sending the above events because a suspend/resume event
-				// will change the running state after the event has been dispatched.
-				if (RuntimeState.Running == controller.myRuntimeState && render) {
-					// If this is the 1st rendered frame, then remove the splash screen if shown.
-					if (controller.myHasRenderedFirstFrame == false) {
-						controller.myHasRenderedFirstFrame = true;
-						CoronaSplashScreenApiListener listener = controller.getCoronaSplashScreenApiListener();
-						if (listener != null) {
-							listener.hideSplashScreen();
-						}
+			// Render the next frame, but only if the Corona runtime is currently running.
+			// We must check the running state "after" sending the above events because a suspend/resume event
+			// will change the running state after the event has been dispatched.
+			if (localShouldRender) {
+				// If this is the 1st rendered frame, then remove the splash screen if shown.
+				if (controller.myHasRenderedFirstFrame == false) {
+					controller.myHasRenderedFirstFrame = true;
+					CoronaSplashScreenApiListener listener = controller.getCoronaSplashScreenApiListener();
+					if (listener != null) {
+						listener.hideSplashScreen();
 					}
-
-					// Render the frame.
-					JavaToNativeShim.render(runtime);
-				} 
+				}
+				// Render the frame.
+				JavaToNativeShim.render(runtime);
 			}
 		}
 	}
@@ -486,34 +515,6 @@ public class Controller {
 		if (myGLView != null) {
 			myGLView.setNeedsSwap();
 		}
-    }
-    
-    public void httpPost( String url, String key, String value ) {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpContext localContext = new BasicHttpContext();
-
-        HttpPost httpPost = new HttpPost( url );
-
-    	httpPost.setHeader( "Content-Type", "application/x-www-form-urlencoded" );
-
-    	StringEntity entity;
-		try {
-			entity = new StringEntity( key + "=" + value, "UTF-8" );
-
-	    	httpPost.setEntity( entity );
-
-	    	HttpResponse response = httpClient.execute( httpPost, localContext );
-
-//    		if ( response != null ) {
-//        		String result = response.getStatusLine().toString();
-//       	}
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-    	} catch ( ClientProtocolException e ) {
-    		e.printStackTrace();
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	} 
     }
 
 	/**
@@ -792,13 +793,11 @@ public class Controller {
 		// Attempt to execute the given URL.
 		boolean hasSucceeded = false;
 		try {
-			if (canShowActivityFor(intent)) {
-				context.startActivity(intent);
-				hasSucceeded = true;
-			}
+			context.startActivity(intent);
+			hasSucceeded = true;
 		}
-		catch (Exception ex) {
-			ex.printStackTrace();
+		catch (Exception ignore) {
+			// Nothing to do here, intent can't be handled.
 		}
 		return hasSucceeded;
 	}
@@ -899,7 +898,28 @@ public class Controller {
 		
 		// Save the given image to file.
 		try {
-			java.io.FileOutputStream stream = new java.io.FileOutputStream(filePathName);
+			//Work around for Android 10 to save to Photo Folder
+			java.io.FileOutputStream stream = null;
+			if(filePathName.contains("/storage/emulated/0/Pictures/") && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q){
+				final String name = filePathName.replace("/storage/emulated/0/Pictures/", "");
+				ContentResolver resolver = myContext.getContentResolver();
+				ContentValues contentValues = new ContentValues();
+				contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+				if(name.toLowerCase().endsWith(".png")){
+					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
+				}else {
+					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+				}
+				contentValues.put(Images.Media.DATE_ADDED, System.currentTimeMillis());
+				contentValues.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
+				contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
+				Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+				stream = (FileOutputStream) resolver.openOutputStream(Objects.requireNonNull(imageUri));
+			}else{
+				stream = new java.io.FileOutputStream(filePathName);
+
+			}
+
 			result = bitmap.compress(format, quality, stream);
 			stream.flush();
 			stream.close();
@@ -1900,15 +1920,70 @@ public class Controller {
 	public void setEventNotification( int eventType, boolean enable ) {
 		mySensorManager.setEventNotification(eventType, enable);
 	}
-
-	public void vibrate() {
+	
+	public void vibrate(String hapticType, String hapticStyle) {
 		Context context = myContext;
 		if (context == null) {
 			return;
 		}
 
 		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-		v.vibrate( 100 );
+		String type = "";
+		if(hapticType != null){
+			type = hapticType;
+		}
+		String style = "";
+		if(hapticStyle != null){
+			style = hapticStyle;
+		}
+		long[] timings = new long[]{};
+		int[] amplitudes= new int[]{};
+		long[] oldPattern= new long[]{};
+		if(type.equals("impact")){
+			if(style.equals("light")){
+				timings = new long[]{0, 50};
+				amplitudes = new int[]{0, 110};
+				oldPattern = new long[]{0, 20};
+			}
+			else if(style.equals("heavy")){
+				timings = new long[]{0, 60};
+				amplitudes = new int[]{0, 255};
+				oldPattern = new long[]{0, 61};
+			}
+			else{//medium
+				timings = new long[]{0, 43};
+				amplitudes = new int[]{0, 180};
+				oldPattern = new long[]{0, 43};
+			}
+		}else if(type.equals("selection")){
+			timings = new long[]{0, 100};
+			amplitudes = new int[]{0, 100};
+			oldPattern = new long[]{0, 70};
+		}else if(type.equals("notification")){
+			if(style.equals("warning")) {
+				timings = new long[]{0, 30, 40, 30, 50, 60};
+				amplitudes = new int[]{255, 255, 255, 255, 255, 255};
+				oldPattern = new long[]{0, 30, 40, 30, 50, 60};
+			}else if(style.equals("error")){
+				timings = new long[]{0, 27, 45, 50};
+				amplitudes = new int[]{0, 120, 0, 250};
+				oldPattern = new long[]{0, 27, 45, 50};
+			}else{//success
+				timings = new long[]{0, 35, 65, 21};
+				amplitudes = new int[]{0, 250, 0, 180};
+				oldPattern = new long[]{0, 35, 65, 21};
+			}
+		}else{
+			if(!type.isEmpty()){ Log.i("Corona", "WARNING: invalid hapticType");} //just in case user misspells or puts a wrong type
+			v.vibrate( 100 );
+		}
+		if(timings.length != 0 && amplitudes.length != 0 && oldPattern.length != 0) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				v.vibrate(VibrationEffect.createWaveform(timings, amplitudes, -1));
+			}else{
+				v.vibrate(oldPattern, -1);
+			}
+		}
 	}
 
 	public String getManufacturerName() {
@@ -1932,7 +2007,7 @@ public class Controller {
 			String permissionName = android.Manifest.permission.READ_PHONE_STATE;
 			if (myContext.checkCallingOrSelfPermission(permissionName) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
 				TelephonyManager telephonyManager = (TelephonyManager)myContext.getSystemService(Context.TELEPHONY_SERVICE);
-				if ((telephonyManager != null) && (telephonyManager.getDeviceId() != null)) {
+				if (telephonyManager != null) {
 					stringId = telephonyManager.getDeviceId();
 				}
 			}
@@ -2028,7 +2103,8 @@ public class Controller {
 						// 0x00001000 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY lets touch events pass to the corona app
 						// 0x00000002 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION hides any on screen navigation buttons
 						// 0x00000004 View.SYSTEM_UI_FLAG_FULLSCREEN hides the status bar
-						vis = 0x00001000 | 0x00000002 | 0x00000004;
+						// 0x00000200 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION avoids resize event
+						vis = 0x00001000 | 0x00000002 | 0x00000004 | 0x00000200;
 				} else if (visibility.equals("immersive") && (
 					(android.os.Build.VERSION.SDK_INT >= 19) ||
 					(android.os.Build.MANUFACTURER.equals("Amazon") && android.os.Build.VERSION.SDK_INT >= 14))) {
@@ -2037,7 +2113,8 @@ public class Controller {
 						// 0x00000800 View.SYSTEM_UI_FLAG_IMMERSIVE lets touch events pass to the corona app
 						// 0x00000002 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION hides any on screen navigation buttons
 						// 0x00000004 View.SYSTEM_UI_FLAG_FULLSCREEN hides the status bar
-						vis = 0x00000800 | 0x00000002 | 0x00000004;
+						// 0x00000200 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION avoids resize event
+						vis = 0x00000800 | 0x00000002 | 0x00000004 | 0x00000200;
 				} else if (visibility.equals("lowProfile")) {
 					// On API Level 14 and above: View.SYSTEM_UI_FLAG_LOW_PROFILE dims any on screen buttons if they exists
 					// For API Level 11 - 13: View.STATUS_BAR_HIDDEN has the same effect
@@ -2053,6 +2130,19 @@ public class Controller {
 						vis |= ApiLevel11.getSystemUiVisibility(glView) & android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
 					}
 					ApiLevel11.setSystemUiVisibility(glView, vis);
+
+					final int finalVis = vis;
+					glView.setOnSystemUiVisibilityChangeListener(new android.view.View.OnSystemUiVisibilityChangeListener() {
+
+						@Override
+						public void onSystemUiVisibilityChange(int visibilityInt)
+						{
+							if((finalVis & android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) != 0)
+							{
+								ApiLevel11.setSystemUiVisibility(glView, finalVis);
+							}
+						}
+					});
 				}
 			}
 		});

@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -50,7 +34,7 @@ ShapeAdapterPolygon::Constant()
 
 bool
 ShapeAdapterPolygon::InitializeContour(
-	lua_State *L, int index, TesselatorPolygon& tesselator )
+	lua_State *L, int index, TesselatorPolygon& tesselator, bool hasZ )
 {
 	bool result = false;
 
@@ -63,14 +47,16 @@ ShapeAdapterPolygon::InitializeContour(
 		// This is used to find the center of the body.
 		Rect bounds;
 
-		int numVertices = (int) lua_objlen( L, index ) >> 1;
+        int componentCount = hasZ ? 3 : 2;
+        int numVertices = (int) lua_objlen( L, index ) / componentCount;
+        
 		for ( int i = 0; i < numVertices; i++ )
 		{
 			// Lua is one-based, so the first element must be at index 1.
-			lua_rawgeti( L, index, ( ( i * 2 ) + 1 ) );
+            lua_rawgeti( L, index, ( ( i * componentCount ) + 1 ) );
 
 			// Lua is one-based, so the second element must be at index 2.
-			lua_rawgeti( L, index, ( ( i * 2 ) + 2 ) );
+            lua_rawgeti( L, index, ( ( i * componentCount ) + 2 ) );
 
 			Vertex2 v = { luaL_toreal( L, -2 ),
 							luaL_toreal( L, -1 ) };

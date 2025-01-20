@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -33,6 +17,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIDevice.h>
 #import <UIKit/UIScreen.h>
+#include "Rtt_MetalAngleTypes.h"
 
 // ----------------------------------------------------------------------------
 
@@ -40,12 +25,16 @@
 {
 	Rtt::IPhoneGLVideoTexture *_owner;
     AVCaptureSession *_session;
+#ifdef Rtt_MetalANGLE
+	CVMetalTextureCacheRef _videoTextureCache;
+#else
     CVOpenGLESTextureCacheRef _videoTextureCache;    
+#endif
 
     NSString *_sessionPreset;
     size_t _textureWidth;
     size_t _textureHeight;
-    EAGLContext *_context;
+    Rtt_EAGLContext *_context;
 
 	CGFloat _screenWidth;
 	CGFloat _screenHeight;
@@ -142,10 +131,14 @@
 
 
 	Rtt_ASSERT( nil == _context );
-	_context = [EAGLContext currentContext];
+	_context = [Rtt_EAGLContext currentContext];
 
+#ifdef Rtt_MetalANGLE
+	CVReturn err = 0;
+#else
 	// Create CVOpenGLESTextureCacheRef for optimal CVImageBufferRef to GLES texture conversion.
 	CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
+#endif
 
 	if (err)
 	{
@@ -221,7 +214,10 @@
 
 	[self cleanUpTextures];
 
-	CFRelease(_videoTextureCache);
+	if(_videoTextureCache)
+	{
+		CFRelease(_videoTextureCache);
+	}
 	
 	_context = nil;
 }
@@ -235,14 +231,17 @@
 	}
 
 	// Periodic texture cache flush every frame
+#ifdef Rtt_MetalANGLE
+#else
 	CVOpenGLESTextureCacheFlush(_videoTextureCache, 0);
+#endif
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput 
 		didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer 
 		fromConnection:(AVCaptureConnection *)connection
 {
-	Rtt_ASSERT( [EAGLContext currentContext] == _context );
+	Rtt_ASSERT( [Rtt_EAGLContext currentContext] == _context );
 
 	[self cleanUpTextures];
 	
@@ -251,12 +250,6 @@
 
 	_width = CVPixelBufferGetWidth(_pixelBuffer);
 	_height = CVPixelBufferGetHeight(_pixelBuffer);
-
-	if (!_videoTextureCache)
-	{
-		NSLog(@"No video texture cache");
-		return;
-	}
 }
 
 - (void)bufferToTexture
@@ -264,8 +257,11 @@
 	if (_pixelBuffer)
 	{
 		CVPixelBufferLockBaseAddress(_pixelBuffer, 0);
-		
+#ifdef Rtt_MetalANGLE
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, (GLsizei)_width, (GLsizei)_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(_pixelBuffer));
+#else
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)_width, (GLsizei)_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(_pixelBuffer));
+#endif
 		
 		CVPixelBufferUnlockBaseAddress(_pixelBuffer, 0);
 	}

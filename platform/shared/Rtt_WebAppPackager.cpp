@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,51 +16,39 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformDevice.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_WebServicesSession.h"
 #include "Rtt_LuaLibSocket.h"
 #include "Rtt_Archive.h"
 #include "Rtt_FileSystem.h"
+#include "Rtt_HTTPClient.h"
 
 #include <string.h>
 #include <time.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
-#if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
+#if defined(Rtt_WIN_ENV)
 #include "Interop/Ipc/CommandLine.h"
 #endif
 
-Rtt_EXPORT int luaopen_lfs (lua_State *L);
-
-extern "C" {
-	int luaopen_socket_core(lua_State *L);
-	int luaopen_mime_core(lua_State *L);
-#ifdef Rtt_LINUX_ENV
-	int luaopen_socket_core(lua_State *L);
-	int CoronaPluginLuaLoad_ftp(lua_State *L);
-	int CoronaPluginLuaLoad_socket(lua_State *L);
-	int CoronaPluginLuaLoad_headers(lua_State *L);
-	int CoronaPluginLuaLoad_http(lua_State *L);
-	int CoronaPluginLuaLoad_mbox(lua_State *L);
-	int CoronaPluginLuaLoad_smtp(lua_State *L);
-	int CoronaPluginLuaLoad_tp(lua_State *L);
-	int CoronaPluginLuaLoad_url(lua_State *L);
-	int CoronaPluginLuaLoad_mime(lua_State *L);
-	int CoronaPluginLuaLoad_ltn12(lua_State *L);
-#endif
+extern "C"
+{
+	int luaopen_lfs(lua_State* L);
+	int luaopen_socket_core(lua_State* L);
+	int luaopen_mime_core(lua_State* L);
 }
 
 namespace Rtt
 {
-#ifndef Rtt_LINUX_ENV
-	extern int luaload_luasocket_socket(lua_State *L);
-	extern int luaload_luasocket_ftp(lua_State *L);
-	extern int luaload_luasocket_headers(lua_State *L);
-	extern int luaload_luasocket_http(lua_State *L);
-	extern int luaload_luasocket_url(lua_State *L);
-	extern int luaload_luasocket_mime(lua_State *L);
-	extern int luaload_luasocket_ltn12(lua_State *L);
-#endif
+	int luaload_luasocket_socket(lua_State* L);
+	int luaload_luasocket_ftp(lua_State* L);
+	int luaload_luasocket_headers(lua_State* L);
+	int luaload_luasocket_http(lua_State* L);
+	int luaload_luasocket_mbox(lua_State* L);
+	int luaload_luasocket_smtp(lua_State* L);
+	int luaload_luasocket_tp(lua_State* L);
+	int luaload_luasocket_url(lua_State* L);
+	int luaload_luasocket_mime(lua_State* L);
+	int luaload_luasocket_ltn12(lua_State* L);
 
 	bool CompileScriptsInDirectory( lua_State *L, AppPackagerParams& params, const char *dstDir, const char *srcDir );
 	bool FetchDirectoryTreeFilePaths( const char* directoryPath, std::vector<std::string>& filePathCollection );
@@ -86,44 +58,54 @@ namespace Rtt
 		int n = lua_gettop(L);  /* number of arguments */
 		int i;
 		lua_getglobal(L, "tostring");
-		for (i=1; i<=n; i++) {
+		for (i = 1; i <= n; i++) 
+		{
 			const char *s;
 			lua_pushvalue(L, -1);  /* function to be called */
 			lua_pushvalue(L, i);   /* value to print */
 			lua_call(L, 1, 1);
 			s = lua_tostring(L, -1);  /* get result */
 			if (s == NULL)
-				return luaL_error(L, LUA_QL("tostring") " must return a string to "
-														 LUA_QL("print"));
-			if (i>1) printf("\t");
-			printf("%s", s);
+				return luaL_error(L, LUA_QL("tostring") " must return a string to " LUA_QL("print"));
+
+			if (i > 1)
+				Rtt_Log("\t");
+
+			Rtt_Log("%s\n", s);
 			lua_pop(L, 1);  /* pop result */
 		}
-		printf("\n");
 		return 0;
 	}
 
 	// it's used only for Windows
 	int processExecute(lua_State *L)
 	{
+		int results = 1;
 		int ret = 0;
+		std::string output;
+
 		const char* cmdBuf = luaL_checkstring(L, 1);
+		bool capture_stdout = false;
+		if (lua_isboolean(L, 2))
+		{
+			capture_stdout = lua_toboolean(L, 2);
+			results++;
+		}
 
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
-		Interop::Ipc::CommandLine::SetOutputCaptureEnabled(false);
+		Interop::Ipc::CommandLine::SetOutputCaptureEnabled(capture_stdout);
 		Interop::Ipc::CommandLineRunResult result = Interop::Ipc::CommandLine::RunShellCommandUntilExit(cmdBuf);
-		if (result.HasFailed())
-		{
-			std::string output = result.GetOutput();
-			Rtt_Log(output.c_str());
-			ret = result.GetExitCode();
-		}
-#elif defined(Rtt_LINUX_ENV)
-		int result = system(cmdBuf);
+		ret = result.HasFailed() ? result.GetExitCode() : 0;
+		output = result.GetOutput();
+#elif defined(Rtt_LINUX_ENV) || defined(Rtt_MAC_ENV_ENV)
+		ret = system(cmdBuf);
 #endif
 
 		lua_pushinteger(L, ret);
-		return 1;
+		if (capture_stdout)
+			lua_pushstring(L, output.c_str());
+
+		return results;
 	}
 
 	int CompileScriptsAndMakeCAR(lua_State *L)
@@ -139,6 +121,7 @@ namespace Rtt
 
 		// Package build settings parameters.
 		Rtt::AppPackagerParams params(p->GetAppName(), p->GetVersion(), p->GetIdentity(), NULL, srcDir, dstDir, NULL, p->GetTargetPlatform(), NULL,	0, 0, NULL, NULL, NULL, true);
+		params.SetStripDebug(p->IsStripDebug());
 
 		bool rc = CompileScriptsInDirectory(L, params, dstDir, srcDir);
 		if (rc)
@@ -205,22 +188,6 @@ WebAppPackager::WebAppPackager( const MPlatformServices& services )
 :	Super( services, TargetDevice::kWebPlatform )
 {
 	lua_State *L = fVM;
-
-#ifdef Rtt_LINUX_ENV
-	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
-	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
-	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
-	Lua::RegisterModuleLoader( L, "lfs", luaopen_lfs );
-	Lua::RegisterModuleLoader( L, "socket.core", luaopen_socket_core );
-	Lua::RegisterModuleLoader( L, "socket", Lua::Open< CoronaPluginLuaLoad_socket > );
-	Lua::RegisterModuleLoader( L, "socket.ftp", Lua::Open< CoronaPluginLuaLoad_ftp > );
-	Lua::RegisterModuleLoader( L, "socket.headers", Lua::Open< CoronaPluginLuaLoad_headers > );
-	Lua::RegisterModuleLoader( L, "socket.http", Lua::Open< CoronaPluginLuaLoad_http > );
-	Lua::RegisterModuleLoader( L, "socket.url", Lua::Open< CoronaPluginLuaLoad_url > );
-	Lua::RegisterModuleLoader( L, "mime.core", luaopen_mime_core );
-	Lua::RegisterModuleLoader( L, "mime", Lua::Open< CoronaPluginLuaLoad_mime > );
-	Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 > );
-#else
 	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
 	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
 	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
@@ -234,7 +201,6 @@ WebAppPackager::WebAppPackager( const MPlatformServices& services )
 	Lua::RegisterModuleLoader( L, "mime.core", luaopen_mime_core );
 	Lua::RegisterModuleLoader( L, "mime", Lua::Open< luaload_luasocket_mime > );
 	Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< luaload_luasocket_ltn12 > );
-#endif
 
 	Lua::DoBuffer( fVM, & luaload_webPackageApp, NULL );
 }
@@ -243,7 +209,7 @@ WebAppPackager::~WebAppPackager()
 {
 }
 
-int WebAppPackager::Build(AppPackagerParams* params, WebServicesSession& session, const char* tmpDirBase)
+int WebAppPackager::Build(AppPackagerParams* params, const char* tmpDirBase)
 {
 	// needs to disable -fno-rtti
 	//const WebAppPackagerParams *webParams = dynamic_cast<WebAppPackagerParams*>(params);
@@ -288,7 +254,7 @@ int WebAppPackager::Build(AppPackagerParams* params, WebServicesSession& session
 
 		Rtt_TRACE_SIM(("%s", tmpString.GetString()));
 		params->SetBuildMessage(tmpString.GetString());
-		return WebServicesSession::kLocalPackagingError;
+		return PlatformAppPackager::kLocalPackagingError;
 	}
 
 	lua_State *L = fVM;
@@ -357,19 +323,21 @@ int WebAppPackager::Build(AppPackagerParams* params, WebServicesSession& session
 	lua_setglobal(L, "myprint");
 	lua_pushcfunction(L, Rtt::CompileScriptsAndMakeCAR);
 	lua_setglobal(L, "compileScriptsAndMakeCAR");
+	
+	HTTPClient::registerFetcherModuleLoaders(L);
 
-	int result = WebServicesSession::kNoError;
+	int result = PlatformAppPackager::kNoError;
 
 	// call webPostPackage( params )
 	if (!Rtt_VERIFY(0 == Lua::DoCall(L, 1, 1)))
 	{
-		result = WebServicesSession::kLocalPackagingError;
+		result = PlatformAppPackager::kLocalPackagingError;
 	}
 	else
 	{
 		if (lua_isstring(L, -1))
 		{
-			result = WebServicesSession::kLocalPackagingError;
+			result = PlatformAppPackager::kLocalPackagingError;
 			const char* msg = lua_tostring(L, -1);
 			Rtt_Log("%s\n", msg);
 		}

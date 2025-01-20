@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -40,11 +24,12 @@ Task::~Task()
 }
 
 template class Rtt::Array<Rtt::Task *>;
-	
+
 // ----------------------------------------------------------------------------
 
 Scheduler::Scheduler( Runtime& owner )
 :	fOwner( owner ),
+	fFirstPending( NULL ),
 	fProcessing( false ),
 	fTasks( owner.GetAllocator() )
 {
@@ -52,6 +37,7 @@ Scheduler::Scheduler( Runtime& owner )
 
 Scheduler::~Scheduler()
 {
+	SyncPendingList(); // cf. note (also assumes other notifying threads have been shut down)
 }
 
 #if 0
@@ -67,8 +53,47 @@ void
 Scheduler::Append( Task* e )
 {
 	//Rtt_ASSERT( fProcessing == false );		//**tjn removed
-	
-	fTasks.Append( e );
+
+	SetHead( e->getNextRef(), e );
+}
+
+void
+Scheduler::Delete(Task* e)
+{
+	// N.B. this is still not thread-safe
+	// However, Delete() never actually seems to be called anywhere, so that point, and what follows, is a bit academic
+		// On a Windows testing, `Delete()` can be removed and everything compiles fine
+		// A search for `->Delete()` and `.Delete()` in the top-level directory, i.e. including other platforms, turns up no results
+	// Anyhow, assuming we did want a thread-safe version, it might go like so:
+		// Keep a second singly-linked list of `DeletedTask()`
+			// uses same atomic CAS
+			// just a non-owning box over `Task`, with link to next
+		// if non-empty, extract in `Run()` after sync (expected list head == NULL)
+			// for each
+				// search in tasks
+					// remove if found
+				// advance to next task and delete box (or do list afterward in one go, cf. note below about destructor)
+			// fine if missing, e.g. if a `Run()` already removed it
+			// for same reason multiple `Delete()`s safe
+		// Clean up deleted list in destructor
+		// Caveat, due to the timing:
+			// the deleted task might fire, if a `Run()` is already in progress (task must be robust against this possibility)
+			// conversely, a `Run()` in progress might not see an incoming delete
+			// will either eventually resolve, or be handled by the destructor
+
+	int i = 0;
+	while (i < fTasks.Length())
+	{
+		Task* t = fTasks[i];
+		if (t == e)
+		{
+			// "pop event"
+			fTasks.Remove(i, 1, false);
+			Rtt_DELETE(t);
+		}
+		else
+			i++;
+	}
 }
 
 void
@@ -76,6 +101,10 @@ Scheduler::Run()
 {
 	fProcessing = true;
 	
+	SyncPendingList(); // cf. note
+
+	// TODO? cf. commentary in `Delete()`
+
 	int i = 0;
 	while (i < fTasks.Length())
 	{
@@ -95,6 +124,56 @@ Scheduler::Run()
 	}
 
 	fProcessing = false;
+}
+
+void
+Scheduler::SetHead( Task::NextType& oldValue, Task* newValue )
+{
+	// see https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange#Example (Dec 7. 2023)
+
+	oldValue = fFirstPending.load( std::memory_order_relaxed );
+ 
+    while ( !fFirstPending.compare_exchange_weak( oldValue, newValue,
+                                        std::memory_order_release,
+                                        std::memory_order_relaxed ) )
+		; // empty
+}
+
+Task*
+Scheduler::ExtractPendingList()
+{
+	Task* first = NULL;
+	
+	SetHead( first, NULL );
+
+	return first;
+}
+
+void
+Scheduler::SyncPendingList()
+{
+	// N.B. assumed to be in main thread
+	Task* first = ExtractPendingList();
+
+	S32 currentLength = fTasks.Length();
+
+	for ( Task* cur = first; cur; cur = cur->getNext() )
+	{
+		fTasks.Append( cur );
+	}
+
+	S32 newLength = fTasks.Length();
+
+	// now reverse the new part, since pending list was a stack
+	Task** tasks = fTasks.WriteAccess();
+
+	for ( S32 i = currentLength, j = newLength - 1; i < j; i++, j-- )
+	{
+		Task* temp = tasks[j];
+
+		tasks[j] = tasks[i];
+		tasks[i] = temp;
+	}
 }
 
 // ----------------------------------------------------------------------------

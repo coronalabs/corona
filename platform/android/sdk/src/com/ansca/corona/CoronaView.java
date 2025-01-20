@@ -1,25 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -150,7 +134,7 @@ public class CoronaView extends FrameLayout {
 			fCoronaRuntime.reset(getContext());
 		} else {
 			// We didn't save a valid address, so we need a new CoronaRuntime
-			fCoronaRuntime = new CoronaRuntime(getContext(), true);
+			fCoronaRuntime = new CoronaRuntime(getContext(), true, false, false);
 		}
 		fInputHandler.setView(fCoronaRuntime.getViewManager().getContentView());
 		fInputHandler.setDispatcher(fCoronaRuntime.getTaskDispatcher());
@@ -189,7 +173,7 @@ public class CoronaView extends FrameLayout {
 	}
 
 	/**
-	 * Initalizes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used. Uses the base "assets" directory as the base
+	 * Initializes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used. Uses the base "assets" directory as the base
 	 * Corona project directory.
 	 * <p>
 	 * <b>This must be the first function you call!</b>
@@ -199,17 +183,17 @@ public class CoronaView extends FrameLayout {
 	}
 
 	/**
-	 * Initalizes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used.
+	 * Initializes the {@link com.ansca.corona.CoronaView CoronaView} so that it can be used.
 	 * <p>
 	 * <b>This must be the first function you call!</b>
-	 * @param baseDir The directory of the Corona project relative to the "assests" directory.
+	 * @param baseDir The directory of the Corona project relative to the "assets" directory.
 	 */
 	public void init(String baseDir) {
 		if (Looper.myLooper() == null) {
 			Looper.prepare();
 		}
 
-		fCoronaRuntime = new CoronaRuntime(getContext(), true);
+		fCoronaRuntime = new CoronaRuntime(getContext(), true, false, false);
 
 		if (!baseDir.endsWith("/")) {
 			baseDir = baseDir + "/";
@@ -391,7 +375,7 @@ public class CoronaView extends FrameLayout {
 		 */
 		@Override
 		public void onWillLoadMain(CoronaRuntime runtime) {
-			// The following code the the equivlant of:
+			// The following code the the equivalent of:
 			// Runtime.addEventListener("coronaView", CoronaViewEventLuaObject)
 			// which will call CoronaViewEventLuaObject with any dispatched event which
 			// has a name property of "coronaView".

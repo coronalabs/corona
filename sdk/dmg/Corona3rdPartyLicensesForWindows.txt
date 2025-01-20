@@ -1009,10 +1009,6 @@ This is a copy of the current LICENSE file inside the CVS repository.
 
 
 ====================================================================
-DirDialog.h, .cpp (Sample code on public forum.  License to reuse. http://www.codeguru.com/cpp/w-d/dislog/dialogforselectingfolders/article.php/c1865/  http://www.codeguru.com/submission-guidelines.php#permission)
-
-
-====================================================================
 Sundown License
 https://github.com/vmg/sundown
 

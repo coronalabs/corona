@@ -1,32 +1,15 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Core/Rtt_Build.h"
 
 #import <QuartzCore/QuartzCore.h>
-#import <OpenGLES/EAGLDrawable.h>
 #import <CoreLocation/CoreLocation.h>
 
 #import "CoronaViewPrivate.h"
@@ -55,8 +38,10 @@
 #include "Rtt_DeviceOrientation.h"
 #include "Rtt_MPlatformDevice.h"
 #include "Rtt_Runtime.h"
+#import <objc/runtime.h>
 
 #if defined( Rtt_IPHONE_ENV )
+	#include "Rtt_AppleKeyServices.h"
 	#include "Rtt_IPhonePlatformCore.h"
 	#include "Rtt_IPhoneOrientation.h"
 	#include "Rtt_IPhoneTemplate.h"
@@ -75,6 +60,7 @@
 #import "Rtt_IPhoneTextFieldObject.h"
 
 #include "Rtt_KeyName.h"
+#include "Rtt_MetalAngleTypes.h"
 
 // ----------------------------------------------------------------------------
 
@@ -106,6 +92,7 @@ CreatePlatform( CoronaView *view )
 	return nullptr;
 #endif
 }
+
 
 // UITouch (CoronaViewExtensions)
 // ----------------------------------------------------------------------------
@@ -342,7 +329,6 @@ CoronaViewListenerAdapter( lua_State *L )
 	fShouldInvalidate = false;
 	fLoadOrientation = Rtt::DeviceOrientation::kUpright;
 	fParams = nil;
-	[self setForceTouchSupport:NO];
 
 	// TextField/TextBox
 	{
@@ -375,7 +361,7 @@ CoronaViewListenerAdapter( lua_State *L )
 	_gyroscopeObserver = (id< CoronaGyroscopeObserver >)_observerProxy;
 }
 
-- (id)initWithFrame:(CGRect)rect context:(EAGLContext *)context
+- (id)initWithFrame:(CGRect)rect context:(Rtt_EAGLContext *)context
 {
 	if ( (self = [super initWithFrame:rect context:context]) )
 	{
@@ -385,15 +371,17 @@ CoronaViewListenerAdapter( lua_State *L )
 	return self;
 }
 
+#ifndef Rtt_MetalANGLE
 - (id)initWithFrame:(CGRect)rect
 {
-	if ( (self = [self initWithFrame:rect context:nil]) )
-	{		
+	if ( self || (self = [self initWithFrame:rect context:nil]) )
+	{
 		[self initCommon];
 	}
 
 	return self;
 }
+#endif
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -474,10 +462,10 @@ CoronaViewListenerAdapter( lua_State *L )
 	}
 }
 
-- (GLKViewController *)viewController
+- (Rtt_GLKViewController *)viewController
 {
 	Rtt_ASSERT( [self.delegate isKindOfClass:[UIViewController class]] );
-	return (GLKViewController *)self.delegate;
+	return (Rtt_GLKViewController *)self.delegate;
 }
 
 - (void)willBeginRunLoop:(NSDictionary *)params
@@ -553,7 +541,6 @@ CoronaViewListenerAdapter( lua_State *L )
 	if(!fMFiInputListener) {
 		AppleInputDeviceManager& inputDeviceManager = (AppleInputDeviceManager&)_runtime->Platform().GetDevice().GetInputDeviceManager();
 		fMFiInputListener = [[AppleInputMFiDeviceListener alloc] initWithRuntime:_runtime andDeviceManager:&inputDeviceManager];
-		[fMFiInputListener start];
 	}
 
 	// Check if already launched
@@ -570,7 +557,7 @@ CoronaViewListenerAdapter( lua_State *L )
 		// * LoadApplication()
 		// * BeginRunLoop()
 		// go to to the right place
-		[EAGLContext setCurrentContext:self.context];
+		[Rtt_EAGLContext setCurrentContext:self.context];
 		[self bindDrawable];
 
 		fLoadOrientation = orientation;
@@ -619,11 +606,12 @@ CoronaViewListenerAdapter( lua_State *L )
 	NSInteger result =_runtime->LoadApplication( loadParameters );
 	if ( result == (NSInteger)Runtime::kSuccess )
 	{
+		[fMFiInputListener start];
 		[self willBeginRunLoop:fParams];
 
 		_runtime->BeginRunLoop();
 		
-		//Forcing immediate blit (outside GlkViewController which normally drives the display update)
+		//Forcing immediate blit (outside MGLKViewController which normally drives the display update)
 		[self display];
 	}
 
@@ -640,6 +628,29 @@ CoronaViewListenerAdapter( lua_State *L )
 	}
 }
 #endif
+
++(Rtt::Real)getTouchForce:(UITouch*)touch {
+	static bool initialized = false;
+	static bool supports3DTouch = false;
+	if(!initialized) {
+		initialized = true;
+		Method m = class_getInstanceMethod([touch class], @selector(force));
+		if(m) {
+			char type[10]={0};
+			method_getReturnType(m, type, sizeof(type));
+			supports3DTouch = (strncmp(type, "d", sizeof(type)) == 0);
+		}
+	}
+	
+	Rtt::Real force = Rtt::TouchEvent::kPressureInvalid;
+	if (supports3DTouch) {
+		force = [touch force];
+		if(force == 0 && [touch type] != UITouchTypePencil) {
+			force = Rtt::TouchEvent::kPressureInvalid;
+		}
+	}
+	return force;
+}
 
 - (BOOL)simulateCommand:(NSDictionary *)args
 {
@@ -758,14 +769,14 @@ CoronaViewListenerAdapter( lua_State *L )
 - (void)terminate
 {
 	//Grab the view's context
-	EAGLContext *context = self.context;
+	Rtt_EAGLContext *context = self.context;
 	
 	//Grab the active openGL context
-	EAGLContext *openGlContext = [EAGLContext currentContext];
+	Rtt_EAGLContext *openGlContext = [Rtt_EAGLContext currentContext];
 	
 	if ( openGlContext != context)
 	{
-		[EAGLContext setCurrentContext:context];
+		[Rtt_EAGLContext setCurrentContext:context];
 	}
 	
 	[self removeApplicationObserver];
@@ -795,7 +806,7 @@ CoronaViewListenerAdapter( lua_State *L )
 	_gyroscopeObserver = nil;
 	
 	//Restore the context
-	[EAGLContext setCurrentContext:openGlContext];
+	[Rtt_EAGLContext setCurrentContext:openGlContext];
 }
 
 - (id)sendEvent:(NSDictionary *)event
@@ -833,9 +844,6 @@ CoronaViewListenerAdapter( lua_State *L )
 {
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-#ifdef Rtt_ORIENTATION
-	[[NSNotificationCenter defaultCenter] addObserver:self.orientationObserver selector:@selector(didOrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-#endif
 }
 
 - (void)removeApplicationObserver
@@ -956,8 +964,7 @@ InitializeEvents( CoronaView *view, Rtt::TouchEvent *touchEvents, NSSet *touches
 		{
 			eventPhase = UITouchPhaseToTouchEventPhase( t.phase );
 		}
-		
-		Rtt::Real pressure = [view getForceTouchSupport] ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+        Rtt::Real pressure = [CoronaView getTouchForce:touch];
 
 		// Initialize TouchEvent (use placement new to call c-tor)
 		TouchEvent *event = & ( touchEvents[i] );
@@ -1048,7 +1055,7 @@ PrintTouches( NSSet *touches, const char *header )
 		CGPoint currentTouchPosition = { [touch locationInView:nil].x - [self center].x, [touch locationInView:nil].y - [self center].y };
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kBegan );
 #else
-		Rtt::Real pressure = [self getForceTouchSupport] ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+		Rtt::Real pressure = [CoronaView getTouchForce:touch];
 		Rtt::TouchEvent t( fStartTouchPosition.x, fStartTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kBegan, pressure );
 #endif
 		t.SetId( touch );
@@ -1073,7 +1080,12 @@ PrintTouches( NSSet *touches, const char *header )
 	if ( fInhibitCount > 0 ) { return; }
 
 	UITouch *touch = touches.anyObject;
-	CGPoint currentTouchPosition;
+#ifdef Rtt_TVOS_ENV
+	CGPoint currentTouchPosition = { [touch locationInView:self].x - [self center].x, [touch locationInView:self].y - [self center].y };
+#else
+	CGPoint currentTouchPosition = [touch locationInCoronaView:self];
+#endif
+
 
 #ifdef Rtt_MULTITOUCH
 	if ( self.multipleTouchEnabled )
@@ -1084,11 +1096,9 @@ PrintTouches( NSSet *touches, const char *header )
 #endif
 	{
 #ifdef Rtt_TVOS_ENV
-		currentTouchPosition = { [touch locationInView:self].x - [self center].x, [touch locationInView:self].y - [self center].y };
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kMoved );
 #else
-		currentTouchPosition = [touch locationInCoronaView:self];
-		Rtt::Real pressure = [self getForceTouchSupport] ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+		Rtt::Real pressure = [CoronaView getTouchForce:touch];
 		Rtt::TouchEvent t( currentTouchPosition.x, currentTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kMoved, pressure );
 #endif
 		t.SetId( touch );
@@ -1127,7 +1137,7 @@ PrintTouches( NSSet *touches, const char *header )
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kEnded, [touch tapCount] );
 #else
 		CGPoint currentTouchPosition = [touch locationInCoronaView:self];
-		Rtt::Real pressure = [self getForceTouchSupport] ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+		Rtt::Real pressure = [CoronaView getTouchForce:touch];
 		Rtt::TouchEvent t( currentTouchPosition.x, currentTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kEnded, pressure );
 #endif
 		t.SetId( touch );
@@ -1186,7 +1196,7 @@ PrintTouches( NSSet *touches, const char *header )
 		Rtt::RelativeTouchEvent t( currentTouchPosition.x, currentTouchPosition.y, Rtt::TouchEvent::kCancelled );
 #else
 		CGPoint currentTouchPosition = [touch locationInCoronaView:self];
-		Rtt::Real pressure = [self getForceTouchSupport] ? [touch force] : Rtt::TouchEvent::kPressureInvalid;
+		Rtt::Real pressure = [CoronaView getTouchForce:touch];
 		Rtt::TouchEvent t( currentTouchPosition.x, currentTouchPosition.y, fStartTouchPosition.x, fStartTouchPosition.y, Rtt::TouchEvent::kCancelled, pressure );
 #endif
 		t.SetId( touch );
@@ -1227,6 +1237,59 @@ PrintTouches( NSSet *touches, const char *header )
 #endif // Rtt_CORE_MOTION
 }
 
+#if defined( Rtt_IPHONE_ENV ) //Keyboard events only test on iOS
+- (void)pressesBegan:(NSSet<UIPress *> *)presses
+           withEvent:(UIPressesEvent *)event{
+    [super pressesBegan:presses withEvent:event];
+    for(UIPress* press : presses) {
+        if (@available(iOS 13.4, *)) {
+            if(press.key){
+                [self dispatchKeyEvent:[presses allObjects].firstObject.key withPhase:Rtt::KeyEvent::kDown];
+                const char* characters = [[presses allObjects].firstObject.key.characters UTF8String];
+                if (strlen(characters) > 1 || isprint(characters[0])) {
+                    Rtt::CharacterEvent e(NULL, characters);
+                    [self dispatchEvent: ( & e )];
+                }
+            }
+        }
+    }
+    
+    
+}
+- (void)pressesEnded:(NSSet<UIPress *> *)presses
+           withEvent:(UIPressesEvent *)event{
+    [super pressesEnded:presses withEvent:event];
+    for(UIPress* press : presses) {
+        if (@available(iOS 13.4, *)) {
+            if(press.key){
+                [self dispatchKeyEvent:press.key withPhase:Rtt::KeyEvent::kUp];
+            }
+            
+        }
+    }
+    
+}
+
+- (void)dispatchKeyEvent:(UIKey *)event withPhase:(Rtt::KeyEvent::Phase)phase
+    API_AVAILABLE(ios(13.4)){
+    using namespace Rtt;
+    
+    NSUInteger modifierFlags = [event modifierFlags];
+    unsigned short keyCode = [event keyCode];
+    NSString *keyName = [AppleKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
+    
+    KeyEvent e(
+               NULL,
+               phase,
+               [keyName UTF8String],
+               keyCode,
+               (modifierFlags & UIKeyModifierShift) || (modifierFlags & UIKeyModifierAlphaShift),
+               (modifierFlags & UIKeyModifierAlternate),
+               (modifierFlags & UIKeyModifierControl),
+               (modifierFlags & UIKeyModifierCommand) );
+    [self dispatchEvent: ( & e )];
+}
+#endif
 - (void)drawView
 {
 	[self pollAndDispatchMotionEvents];
@@ -1279,7 +1342,7 @@ PrintTouches( NSSet *touches, const char *header )
 {
 
 	// Flush
-	Rtt_ASSERT( context == [EAGLContext currentContext] );
+	Rtt_ASSERT( context == [Rtt_EAGLContext currentContext] );
 
 	// This is a check to make sure the correct render buffer is bound.
 	// Normally, this wouldn't ever happen, but there's a check here in
@@ -1318,7 +1381,7 @@ PrintTouches( NSSet *touches, const char *header )
 
 	const UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
 
-	if ( orientation != UIDeviceOrientationUnknown )
+	if ( orientation != UIDeviceOrientationUnknown && _runtime)
 	{
 		Runtime *runtime = self.runtime;
 		const MPlatform& platform = runtime->Platform();
@@ -1355,15 +1418,6 @@ PrintTouches( NSSet *touches, const char *header )
 // but before any lua code is executed).
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
 	[super traitCollectionDidChange:previousTraitCollection];
-	
-	UITraitCollection * currentTraits = [self traitCollection];
-	
-	// Certain selectors only available in iOS 9.0+.
-	if ( [[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0 )
-	{
-		// Update pressure touch support.
-		[self setForceTouchSupport:[currentTraits forceTouchCapability] == UIForceTouchCapabilityAvailable];
-	}
 }
 
 #ifdef Rtt_CORE_LOCATION

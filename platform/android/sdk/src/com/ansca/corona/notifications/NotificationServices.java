@@ -1,30 +1,16 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2018 Corona Labs Inc.
-// Contact: support@coronalabs.com
-//
 // This file is part of the Corona game engine.
-//
-// Commercial License Usage
-// Licensees holding valid commercial Corona licenses may use this file in
-// accordance with the commercial license agreement between you and 
-// Corona Labs Inc. For licensing terms and conditions please contact
-// support@coronalabs.com or visit https://coronalabs.com/com-license
-//
-// GNU General Public License Usage
-// Alternatively, this file may be used under the terms of the GNU General
-// Public license version 3. The license is as published by the Free Software
-// Foundation and appearing in the file LICENSE.GPL3 included in the packaging
-// of this file. Please review the following information to ensure the GNU 
-// General Public License requirements will
-// be met: https://www.gnu.org/licenses/gpl-3.0.html
-//
-// For overview and more information on licensing please refer to README.md
+// For overview and more information on licensing please refer to README.md 
+// Home page: https://github.com/coronalabs/corona
+// Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
 package com.ansca.corona.notifications;
 
+
+import android.content.pm.ApplicationInfo;
 
 /**
  * Provides thread safe methods for posting and managing notifications.
@@ -45,7 +31,6 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 	 * Used to uniquely identify notifications when posting them so that they will not
 	 * conflict with 3rd party library status bar notifications.
 	 */
-	private static final String DEFAULT_STATUS_BAR_TAG = "corona";
 	private static final String DEFAULT_CHANNEL_ID = "com.coronalabs.defaultChannel";
 
 
@@ -58,7 +43,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 
 	/** Stores all notification configurations that have been set up in Corona. */
 	private static NotificationSettingsCollection<NotificationSettings> sNotificationCollection =
-								new NotificationSettingsCollection<NotificationSettings>();
+			new NotificationSettingsCollection<NotificationSettings>();
 
 	/**
 	 * Stores a collection of reserved unique notification IDs.
@@ -392,12 +377,12 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 				sNotificationCollection.add(settings.clone());
 			}
 			else if ((originalSettings instanceof ScheduledNotificationSettings) &&
-			         (settings instanceof ScheduledNotificationSettings)) {
+					(settings instanceof ScheduledNotificationSettings)) {
 				// Notification ID exists. Copy the given settings to the existing settings.
 				((ScheduledNotificationSettings)originalSettings).copyFrom((ScheduledNotificationSettings)settings);
 			}
 			else if ((originalSettings instanceof StatusBarNotificationSettings) &&
-			         (settings instanceof StatusBarNotificationSettings)) {
+					(settings instanceof StatusBarNotificationSettings)) {
 				// Notification ID exists. Copy the given settings to the existing settings.
 				((StatusBarNotificationSettings)originalSettings).copyFrom((StatusBarNotificationSettings)settings);
 			}
@@ -412,7 +397,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 			// Raise an event if we're posting a status bar notification and the Corona runtime is running.
 			if ((settings instanceof StatusBarNotificationSettings)) {
 				StatusBarNotificationSettings statusBarSettings = (StatusBarNotificationSettings)settings;
-				
+
 				for (com.ansca.corona.CoronaRuntime runtime : com.ansca.corona.CoronaRuntimeProvider.getAllCoronaRuntimes()) {
 					if (runtime.isRunning()) {
 						runtime.getTaskDispatcher().send(new com.ansca.corona.events.NotificationReceivedTask("active", statusBarSettings));
@@ -450,13 +435,21 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					// Set up a pending intent that uniquely identifies the notification by ID and to tell
 					// the alarm manager to send the notification to the AlarmManagerBroadcastReceiver class.
 					android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
-							context, 0, AlarmManagerBroadcastReceiver.createIntentFrom(context, scheduledSettings), 0);
+							context, 0, AlarmManagerBroadcastReceiver.createIntentFrom(context, scheduledSettings), android.app.PendingIntent.FLAG_IMMUTABLE);
+
 
 					// Schedule the notification using the Android alarm manager.
 					android.app.AlarmManager alarmManager;
 					String serviceName = android.content.Context.ALARM_SERVICE;
 					alarmManager = (android.app.AlarmManager)context.getSystemService(serviceName);
-					if (android.os.Build.VERSION.SDK_INT >= 23) {
+
+					if (android.os.Build.VERSION.SDK_INT >= 33 && !alarmManager.canScheduleExactAlarms()) {
+						alarmManager.set(
+								android.app.AlarmManager.RTC_WAKEUP,
+								scheduledSettings.getEndTime().getTime(),
+								pendingIntent);
+					}
+					else if (android.os.Build.VERSION.SDK_INT >= 23) {
 						NotificationServices.ApiLevel23.alarmManagerSetExactAndAllowWhileIdle(
 								alarmManager,
 								android.app.AlarmManager.RTC_WAKEUP,
@@ -499,7 +492,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					android.app.NotificationManager notificationManager;
 					String serviceName = android.content.Context.NOTIFICATION_SERVICE;
 					notificationManager = (android.app.NotificationManager)context.getSystemService(serviceName);
-					notificationManager.notify(DEFAULT_STATUS_BAR_TAG, statusBarSettings.getId(), notification);
+					notificationManager.notify(statusBarSettings.getId(), notification);
 				}
 			}
 			catch (Exception ex) {
@@ -578,7 +571,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					alarmManager = (android.app.AlarmManager)context.getSystemService(serviceName);
 					ScheduledNotificationSettings scheduledSettings = (ScheduledNotificationSettings)settings;
 					android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
-							context, 0, AlarmManagerBroadcastReceiver.createIntentFrom(context, scheduledSettings), 0);
+							context, 0, AlarmManagerBroadcastReceiver.createIntentFrom(context, scheduledSettings), android.app.PendingIntent.FLAG_IMMUTABLE);
 					alarmManager.cancel(pendingIntent);
 				}
 				else if (settings instanceof StatusBarNotificationSettings) {
@@ -586,7 +579,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 					android.app.NotificationManager notificationManager;
 					String serviceName = android.content.Context.NOTIFICATION_SERVICE;
 					notificationManager = (android.app.NotificationManager)context.getSystemService(serviceName);
-					notificationManager.cancel(DEFAULT_STATUS_BAR_TAG, settings.getId());
+					notificationManager.cancel(settings.getId());
 				}
 			}
 			catch (Exception ex) {
@@ -614,7 +607,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 			// Get the path to the XML file to read notification settings from.
 			java.io.File filePath = new java.io.File(getApplicationContext().getCacheDir(), ".system");
 			filePath = new java.io.File(filePath, "NotificationSettings.xml");
-			
+
 			// Do not continue if the XML file does not exist.
 			// This means that there are no active notifications for this class to manage.
 			if (filePath.exists() == false) {
@@ -726,7 +719,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 							}
 						}
 						else if ((xmlReader.getEventType() == org.xmlpull.v1.XmlPullParser.END_TAG) &&
-						         "statusBar".equals(xmlReader.getName())) {
+								"statusBar".equals(xmlReader.getName())) {
 							break;
 						}
 					}
@@ -741,7 +734,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Saves the given notification settings to be loaded later.
 	 * <p>
@@ -886,7 +879,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 		 *         Returns null if given a null "context" or "settings" object.
 		 */
 		public static Integer getIconResourceId(
-			android.content.Context context, StatusBarNotificationSettings settings)
+				android.content.Context context, StatusBarNotificationSettings settings)
 		{
 			// Validate.
 			if ((context == null) || (settings == null)) {
@@ -917,7 +910,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 		 *         Returns null if given a null "context" or "settings" object.
 		 */
 		public static android.app.Notification createNotificationFrom(
-			android.content.Context context, StatusBarNotificationSettings settings)
+				android.content.Context context, StatusBarNotificationSettings settings)
 		{
 			Integer iconResourceId = ApiLevel1.getIconResourceId(context, settings);
 			if (iconResourceId == null) {
@@ -938,10 +931,10 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 				// 	context, settings.getContentTitle(),
 				// 	settings.getContentText(),
 				// 	android.app.PendingIntent.getBroadcast(context, 0, intent, 0));
-				java.lang.reflect.Method setLatestEventInfoMethod = notification.getClass().getMethod("setLatestEventInfo", 
-					android.content.Context.class, CharSequence.class, CharSequence.class, android.app.PendingIntent.class);
-				setLatestEventInfoMethod.invoke(notification, context, settings.getContentTitle(), 
-					settings.getContentText(), android.app.PendingIntent.getBroadcast(context, 0, intent, 0));
+				java.lang.reflect.Method setLatestEventInfoMethod = notification.getClass().getMethod("setLatestEventInfo",
+						android.content.Context.class, CharSequence.class, CharSequence.class, android.app.PendingIntent.class);
+				setLatestEventInfoMethod.invoke(notification, context, settings.getContentTitle(),
+						settings.getContentText(), android.app.PendingIntent.getBroadcast(context, 0, intent, 0));
 			} catch (Exception e) {
 				// TODO: Print some warning to the developer telling them to use the ApiLevel16 class if they get here.
 				return null;
@@ -992,7 +985,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 		 *         Returns null if given a null "context" or "settings" object.
 		 */
 		public static android.app.Notification.Builder createNotificationBuilderFrom(
-			android.content.Context context, StatusBarNotificationSettings settings)
+				android.content.Context context, StatusBarNotificationSettings settings)
 		{
 
 			Integer iconResourceId = ApiLevel1.getIconResourceId(context, settings);
@@ -1020,12 +1013,12 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 
 			// Set an intent to be invoked when the notification has been tapped.
 			android.content.Intent intent;
-			intent = StatusBarBroadcastReceiver.createContentIntentFrom(context, settings);
-			builder.setContentIntent(android.app.PendingIntent.getBroadcast(context, 0, intent, 0));
+			intent = OnNotificationReceiverActivity.createContentIntentFrom(context, settings);
+			builder.setContentIntent(android.app.PendingIntent.getActivity(context, 0, intent, android.app.PendingIntent.FLAG_IMMUTABLE));
 
 			// Set an intent to be invoked when the notification has been cleared/removed.
 			intent = StatusBarBroadcastReceiver.createDeleteIntentFrom(context, settings);
-			builder.setDeleteIntent(android.app.PendingIntent.getBroadcast(context, 0, intent, 0));
+			builder.setDeleteIntent(android.app.PendingIntent.getActivity(context, 0, intent, android.app.PendingIntent.FLAG_IMMUTABLE));
 
 			// Return the notification builder object.
 			return builder;
@@ -1042,7 +1035,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 		 *         Returns null if given a null "context" or "settings" object.
 		 */
 		public static android.app.Notification createNotificationFrom(
-			android.content.Context context, StatusBarNotificationSettings settings)
+				android.content.Context context, StatusBarNotificationSettings settings)
 		{
 			// Set up a notification builder.
 			android.app.Notification.Builder builder = ApiLevel11.createNotificationBuilderFrom(context, settings);
@@ -1078,7 +1071,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 		 *         Returns null if given a null "context" or "settings" object.
 		 */
 		public static android.app.Notification createNotificationFrom(
-			android.content.Context context, StatusBarNotificationSettings settings)
+				android.content.Context context, StatusBarNotificationSettings settings)
 		{
 			// Set up a notification builder.
 			android.app.Notification.Builder builder = ApiLevel11.createNotificationBuilderFrom(context, settings);
@@ -1087,14 +1080,23 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 				String serviceName = android.content.Context.NOTIFICATION_SERVICE;
 				android.app.NotificationManager notificationManager;
 				notificationManager = (android.app.NotificationManager)context.getSystemService(serviceName);
+				android.app.NotificationChannel mChannel;
+				ApplicationInfo applicationInfo = context.getApplicationInfo();
+				int stringId = applicationInfo.labelRes;
+				String applicationName = stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+
 				try {
-					if (notificationManager.getNotificationChannel(DEFAULT_CHANNEL_ID) == null)
+					mChannel = notificationManager.getNotificationChannel(DEFAULT_CHANNEL_ID);
+					if (mChannel == null)
 						throw new Exception();
 				} catch (Exception e) {
-					android.app.NotificationChannel mChannel = new android.app.NotificationChannel(DEFAULT_CHANNEL_ID, DEFAULT_STATUS_BAR_TAG, android.app.NotificationManager.IMPORTANCE_DEFAULT);
+					mChannel = new android.app.NotificationChannel(DEFAULT_CHANNEL_ID, applicationName, android.app.NotificationManager.IMPORTANCE_DEFAULT);
 					mChannel.setDescription("Default notification channel");
 					mChannel.enableLights(true);
 					notificationManager.createNotificationChannel(mChannel);
+				}
+				if(!applicationName.equals(mChannel.getName())) {
+					mChannel.setName(applicationName);
 				}
 				builder.setChannelId(DEFAULT_CHANNEL_ID);
 			}
@@ -1126,8 +1128,8 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 		 * @param pendingIntent The intent to be invoked when the alarm triggers.
 		 */
 		public static void alarmManagerSetExact(
-			android.app.AlarmManager alarmManager,
-			int type, long triggerAtMilliseconds, android.app.PendingIntent pendingIntent)
+				android.app.AlarmManager alarmManager,
+				int type, long triggerAtMilliseconds, android.app.PendingIntent pendingIntent)
 		{
 			if (alarmManager != null) {
 				alarmManager.setExact(type, triggerAtMilliseconds, pendingIntent);
@@ -1154,8 +1156,8 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 		 * @param pendingIntent The intent to be invoked when the alarm triggers.
 		 */
 		public static void alarmManagerSetExactAndAllowWhileIdle(
-			android.app.AlarmManager alarmManager,
-			int type, long triggerAtMilliseconds, android.app.PendingIntent pendingIntent)
+				android.app.AlarmManager alarmManager,
+				int type, long triggerAtMilliseconds, android.app.PendingIntent pendingIntent)
 		{
 			if (alarmManager != null) {
 				alarmManager.setExactAndAllowWhileIdle(type, triggerAtMilliseconds, pendingIntent);
