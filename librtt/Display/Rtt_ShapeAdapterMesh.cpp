@@ -1029,4 +1029,3 @@ int ShapeAdapterMesh::getLowestIndex( lua_State *L )
 } // namespace Rtt
 
 // ----------------------------------------------------------------------------
-
