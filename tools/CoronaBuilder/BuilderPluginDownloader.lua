@@ -154,9 +154,11 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 			end
 		end
 
-		for _, lib in pairs(plugin.frameworks) do
-			frameworks[lib] = true
-			frameworkSearchPaths[plugin.path] = true
+		if(plugin.frameworks)then
+			for _, lib in pairs(plugin.frameworks) do
+				frameworks[lib] = true
+				frameworkSearchPaths[plugin.path] = true
+			end
 		end
 
 		if(plugin.frameworksOptional)then
