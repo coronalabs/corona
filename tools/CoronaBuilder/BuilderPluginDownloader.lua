@@ -75,17 +75,18 @@ local function getPluginDirectories(platform, build, pluginsToDownload, buildSet
 
 	for _, pd in pairs(pluginsToDownload) do
 		local plugin, developer = unpack( pd )
-				local pluginArchivePath = pluginsDest .. plugin
-				local unpackLocation = pluginsDest .. developer .. '_' .. plugin
-				lfs.mkdir(unpackLocation)
-				local ret = unpackPlugin(pluginArchivePath..'/data.tgz', unpackLocation)
-				if ret ~= 0 then
-					print("WARNING: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
-				else
-					table.insert(pluginDirectories, unpackLocation)
-				end
-				--clean up archives
-				os.remove(pluginArchivePath..'/data.tgz')
+		local pluginArchivePath = pluginsDest .. plugin
+		local unpackLocation = pluginsDest .. developer .. '_' .. plugin
+		lfs.mkdir(unpackLocation)
+		local ret = unpackPlugin(pluginArchivePath..'/data.tgz', unpackLocation)
+		if ret ~= 0 then
+			print("WARNING: unable to unpack plugin " .. plugin .. ' (' .. developer .. ').')
+		else
+			table.insert(pluginDirectories, unpackLocation)
+		end
+		--clean up archives and older folder
+		os.remove(pluginArchivePath..'/data.tgz')
+		lfs.rmdir(pluginArchivePath)
 	end
 
 	return pluginDirectories
@@ -95,7 +96,7 @@ end
 
 
 
-local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forceLoad, buildSettingsPlugins )
+local function AppleDownloadPlugins( sdk, platform, build, pluginsToDownload, forceLoad, buildSettingsPlugins )
 	-- download plugins and unpack them
 	local pluginDirectories = getPluginDirectories(platform, build, pluginsToDownload, buildSettingsPlugins )
 	if not pluginDirectories then
@@ -109,6 +110,34 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 	-- local detect Lua plugins and Native plugins
 
 	for _, pluginDir in pairs(pluginDirectories) do
+
+		-- we need to copy .framework files to the resources directory for tvOS
+		if platform == 'appletvos' or platform == 'appletvsimulator' then
+			local resourcesDir = pluginDir .. '/resources'
+			local frameworkDir = resourcesDir .. '/Frameworks'
+		
+			-- Ensure directories exist before copying
+			local function ensureDirectoryExists(path)
+				if lfs.attributes(path, "mode") ~= "directory" then
+					lfs.mkdir(path)
+				end
+			end
+		
+			-- Create the necessary directories
+			ensureDirectoryExists(resourcesDir)
+			ensureDirectoryExists(frameworkDir)
+		
+			-- Copy all .framework files
+			if lfs.attributes(pluginDir, "mode") == "directory" then
+				for file in lfs.dir(pluginDir) do
+					if file:match("%.framework$") then
+						local src = pluginDir .. '/' .. file
+						local dst = frameworkDir .. '/' .. file
+						os.execute('cp -r ' .. quoteString(src) .. ' ' .. quoteString(dst))
+					end
+				end
+			end
+		end
 		local metadataChunk = loadfile( pluginDir .. '/metadata.lua' )
 		if metadataChunk then
 			local metadata = metadataChunk()
@@ -145,12 +174,14 @@ local function iOSDownloadPlugins( sdk, platform, build, pluginsToDownload, forc
 	for _, plugin in pairs(nativePlugins) do
 
 		-- Add plugin's static lib
-		for _, lib in pairs(plugin.staticLibs) do
-			if forceLoad then
-				staticLibs[' -force_load ' .. quoteString(plugin.path .. '/lib' .. lib .. '.a')] = true
-			else
-				staticLibs[' -l' .. lib] = true
-				searchPaths[plugin.path] = true
+		if(plugin.staticLibs)then
+			for _, lib in pairs(plugin.staticLibs) do
+				if forceLoad then
+					staticLibs[' -force_load ' .. quoteString(plugin.path .. '/lib' .. lib .. '.a')] = true
+				else
+					staticLibs[' -l' .. lib] = true
+					searchPaths[plugin.path] = true
+				end
 			end
 		end
 
@@ -356,18 +387,21 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	end
 
 	local build = buildYear .. '.' .. buildRevision
-	if platform == 'ios' then
+	if platform == 'ios' or platform == 'tvos' then
 
-		-- config for native plugins
-		local simConfig =  iOSDownloadPlugins('iphoneos', 'iphone', build, pluginsToDownload, forceLoad, settings.plugins )
-		if not simConfig then
-			return 1
-		end
-		local devConfig = iOSDownloadPlugins('iphonesimulator', 'iphone-sim', build, pluginsToDownload, forceLoad, settings.plugins )
-		if not devConfig then
-			return 1
-		end
-
+		local platformConfigs = {
+			tvos = { sim = { 'appletvos', 'appletvos' }, dev = { 'appletvsimulator', 'appletvsimulator' } },
+			default = { sim = { 'iphoneos', 'iphone' }, dev = { 'iphonesimulator', 'iphone-sim' } }
+		}
+		
+		local config = platformConfigs[platform] or platformConfigs.default
+		
+		local simConfig = AppleDownloadPlugins(config.sim[1], config.sim[2], build, pluginsToDownload, forceLoad, settings.plugins)
+		if not simConfig then return 1 end
+		
+		local devConfig = AppleDownloadPlugins(config.dev[1], config.dev[2], build, pluginsToDownload, forceLoad, settings.plugins)
+		if not devConfig then return 1 end
+		
 
 		local xcconfig = args[4]
 		if not xcconfig then
@@ -403,7 +437,6 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			config:write(simConfig)
 		end
 		config:close()
-
 	else
 		print("ERROR: unsupported platform '".. platform .."'.")
 		return 1
