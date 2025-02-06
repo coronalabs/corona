@@ -302,7 +302,9 @@ public class Controller {
 		});
 		myMediaManager.pauseAll();
 		internalSetIdleTimer(true);
-
+		if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // Android 14 does not allow for gl render
+			updateRuntimeState(this.myRuntime, true);
+		}
 		while (myRuntimeState == RuntimeState.Stopping) {
 			try {
 				// Android ANR time is 5 seconds, so wait up to 4 seconds before assuming
