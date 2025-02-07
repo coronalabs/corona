@@ -422,11 +422,20 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 
 ]])
 
-		if forceLoad then
-			config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load "$(CORONA_ROOT)/Corona/ios/lib/libplayer.a" \n')
+		if( platform == 'tvos') then
+			if forceLoad then			
+				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load \n')
+			else
+				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load \n')
+			end
 		else
-			config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load -lplayer\n')
+			if forceLoad then			
+				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load "$(CORONA_ROOT)/Corona/ios/lib/libplayer.a" \n')
+			else
+				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load -lplayer\n')
+			end
 		end
+		
 
 		if #devConfig > 0 then
 			config:write('// device entries\n')
