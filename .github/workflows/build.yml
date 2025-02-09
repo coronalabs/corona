@@ -3,25 +3,23 @@ name: Daily Build
 on:
   push:
     tags:
-      - '*'
+      - "*"
   workflow_dispatch:
     inputs:
       buildNumber:
-        description: 'Build Number'
+        description: "Build Number"
         required: true
-        default: '9999'
+        default: "9999"
       buildYear:
-        description: 'Build Year'
+        description: "Build Year"
         required: true
-        default: '2100'
-
+        default: "2100"
 
 env:
   WORKSPACE: ${{ github.workspace }}
   DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
-
 
 jobs:
   source-code:
@@ -40,7 +38,6 @@ jobs:
         with:
           name: SourceCode
           path: ./output
-
 
   native:
     needs: source-code
@@ -109,7 +106,6 @@ jobs:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
-
   Xcode-template-matrix-13:
     strategy:
       matrix:
@@ -152,7 +148,6 @@ jobs:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
-
   collect-ios-templates:
     needs:
       - Xcode-template-matrix-13
@@ -177,7 +172,6 @@ jobs:
         with:
           name: Collected-ios-templates
           path: ./output
-
 
   webtemplate:
     needs:
@@ -260,7 +254,6 @@ jobs:
           name: Snap
           path: ./output/*.snap
 
-
   linux-flatpak:
     needs:
       - source-code
@@ -303,7 +296,6 @@ jobs:
           name: Flatpak
           path: ./solar2d.flatpak
 
-
   CoronaCards-Android:
     needs: native
     runs-on: ubuntu-20.04
@@ -330,7 +322,6 @@ jobs:
           name: CoronaCards-Android
           path: ./output
 
-
   CoronaCards-iOS:
     needs: source-code
     runs-on: macos-14
@@ -356,7 +347,6 @@ jobs:
         with:
           name: CoronaCards-iOS
           path: ./output
-
 
   CoronaCards-iOS-angle:
     needs: source-code
@@ -489,7 +479,6 @@ jobs:
           echo "Notarization failed"
           exit 1
 
-
   check-notarization:
     runs-on: macos-14
     steps:
@@ -511,8 +500,6 @@ jobs:
           APPLE_KEY: ${{ secrets.AppleKey }}
           APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
           APPLE_ISSUER: ${{ secrets.AppleIssuer }}
-
-
 
   Windows-Simulator:
     needs:
@@ -592,6 +579,12 @@ jobs:
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/redist.win32.7z -o redist.win32.7z
           7z x redist.win32.7z -o"platform/windows/Bin/redist" -y
+      - name: Install Codesigning Tools
+        shell: cmd
+        run: |
+          choco install dotnet-8.0-runtime --no-progress
+          nuget install Microsoft.Windows.SDK.BuildTools -Version 10.0.22621.3233 -x
+          nuget install Microsoft.Trusted.Signing.Client -Version 1.0.53 -x
       - name: Build Corona Simulator
         shell: cmd
         run: |
@@ -601,7 +594,9 @@ jobs:
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
           devenv "Corona.SDK.sln" /rebuild "Release|x86"
         env:
-          WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       - name: Copy Simulator
         run: |
           mkdir output
@@ -612,7 +607,6 @@ jobs:
         with:
           name: Simulator-Windows
           path: ./output
-
 
   publish-snap:
     runs-on: ubuntu-20.04
@@ -640,7 +634,6 @@ jobs:
           store_login: ${{ secrets.SNAP_STORE_LOGIN }}
           snap: ./Snap/s2d.snap
           release: ${{ env.SNAP_RELEASE }}
-
 
   release:
     if: startsWith(github.ref, 'refs/tags')
@@ -707,7 +700,6 @@ jobs:
           files: artifacts/*
           name: Solar2D ${{ env.YEAR }}.${{ env.BUILD }}
           generate_release_notes: true
-
 
   notify-chats:
     if: startsWith(github.ref, 'refs/tags')
