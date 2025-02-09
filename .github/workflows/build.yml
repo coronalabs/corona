@@ -592,6 +592,12 @@ jobs:
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/redist.win32.7z -o redist.win32.7z
           7z x redist.win32.7z -o"platform/windows/Bin/redist" -y
+      - name: Install Codesigning Tools:
+        shell: cmd
+        run: |
+          choco install dotnet-8.0-runtime --no-progress
+          nuget install Microsoft.Windows.SDK.BuildTools -Version 10.0.22621.3233 -x
+          nuget install Microsoft.Trusted.Signing.Client -Version 1.0.53 -x
       - name: Build Corona Simulator
         shell: cmd
         run: |
@@ -601,7 +607,9 @@ jobs:
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
           devenv "Corona.SDK.sln" /rebuild "Release|x86"
         env:
-          WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       - name: Copy Simulator
         run: |
           mkdir output
