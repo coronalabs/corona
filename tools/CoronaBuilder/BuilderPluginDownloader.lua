@@ -390,8 +390,8 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 	if platform == 'ios' or platform == 'tvos' then
 
 		local platformConfigs = {
-			tvos = { sim = { 'appletvos', 'appletvos' }, dev = { 'appletvsimulator', 'appletvsimulator' } },
-			default = { sim = { 'iphoneos', 'iphone' }, dev = { 'iphonesimulator', 'iphone-sim' } }
+			tvos = { dev = { 'appletvos', 'appletvos' }, sim = { 'appletvsimulator', 'appletvsimulator' } },
+			default = { dev = { 'iphoneos', 'iphone' }, sim = { 'iphonesimulator', 'iphone-sim' } }
 		}
 		
 		local config = platformConfigs[platform] or platformConfigs.default
