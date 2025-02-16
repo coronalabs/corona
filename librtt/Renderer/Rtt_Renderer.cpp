@@ -632,6 +632,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         fCachedVertexOffset = fVertexOffset;
         fCachedVertexCount = fVertexCount;
         fCachedVertexExtra = fVertexExtra;
+        fOffsetCorrection = 0;
         fVertexExtra = 0;
         fVertexOffset = 0;
         fVertexCount = geometry->GetVerticesUsed();
