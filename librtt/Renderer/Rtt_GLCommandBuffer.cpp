@@ -1405,7 +1405,8 @@ T
 GLCommandBuffer::Read()
 {
     Rtt_ASSERT( fOffset < fBuffer + fBytesAllocated );
-    T result = reinterpret_cast<T*>( fOffset )[0];
+    T result;
+    memcpy( &result, fOffset, sizeof( T ) );
     fOffset += sizeof( T );
     return result;
 }
