@@ -4,8 +4,8 @@ import com.beust.klaxon.JsonArray
 
 buildscript {
     repositories {
+        mavenCentral()
         google()
-        jcenter()
     }
     dependencies {
         classpath("com.beust:klaxon:5.5")
