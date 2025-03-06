@@ -319,6 +319,35 @@ local function getLiveBuildCopyIconScript(src, dest, options)
 end
 
 --------------------------------------------------------------------------------
+local function getCodesignScript( entitlements, path, identity, developerBase )
+
+	codesign_allocate = xcodetoolhelper['codesign_allocate']
+	codesign = xcodetoolhelper['codesign']
+
+    -- Remove any extended macOS attributes from files in the bundle because
+    -- codesign doesn't like them
+    local removeXattrs = "/usr/bin/xattr -cr "..quoteString(path) .." && "
+
+	-- quote for spaces
+	codesign_allocate = quoteString(codesign_allocate)
+	codesign = quoteString(codesign)
+	developerBase = quoteString(developerBase)
+
+	local devbase_shell = "DEVELOPER_BASE="..developerBase.."\n"
+	local export_path = [==[
+export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVELOPER_BASE/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+]==]
+
+	local script = 'export CODESIGN_ALLOCATE=' .. codesign_allocate .. '\n'
+
+	local quotedpath = quoteString( path )
+	local cmd = removeXattrs .. codesign .. " --verbose -f -s "..quoteString(identity).." --entitlements "..entitlements.." "..quotedpath
+
+	-- print("getCodesignScript: codesign: ".. codesign)
+	-- print("getCodesignScript: codesign_allocate: ".. codesign_allocate)
+	-- print("getCodesignScript: ".. devbase_shell .. export_path .. script .. cmd)
+	return devbase_shell .. export_path .. script .. cmd
+end
 
 local function getCodesignAPPXScriptAndPackage(path, identity, entitlements, developerBase, bundleId, isBuildForDistribution)
 
