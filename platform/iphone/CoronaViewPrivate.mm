@@ -11,6 +11,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
+#import <GameController/GameController.h>
 
 #import "CoronaViewPrivate.h"
 #import "CoronaViewRuntimeDelegate.h"
@@ -1255,7 +1256,8 @@ PrintTouches( NSSet *touches, const char *header )
                     Rtt::CharacterEvent e(NULL, characters);
                     [self dispatchEvent: ( & e )];
                 }
-            }else if (press.type){
+            }else if (press.type && [GCController controllers].count == 0){
+                // If controller is not connected we are using back up (mostly used for simulator controller)
                 [self dispatchTypeEvent:[presses allObjects].firstObject.type withPhase:Rtt::KeyEvent::kDown];
             }
         }
@@ -1270,8 +1272,9 @@ PrintTouches( NSSet *touches, const char *header )
         if (@available(iOS 13.4, tvOS 13.4, *)) {
             if(press.key){
                 [self dispatchKeyEvent:press.key withPhase:Rtt::KeyEvent::kUp];
-            }else if (press.type){
-                [self dispatchTypeEvent:[presses allObjects].firstObject.type withPhase:Rtt::KeyEvent::kDown];
+            }else if (press.type && [GCController controllers].count == 0){
+                // If controller is not connected we are using back up (mostly used for simulator controller)
+                [self dispatchTypeEvent:[presses allObjects].firstObject.type withPhase:Rtt::KeyEvent::kUp];
             }
             
         }
