@@ -939,8 +939,8 @@ namespace Rtt
 #endif
 				//SDL_Log("Window %d resized to %dx%d", event.window.windowID, event.window.data1, event.window.data2);
 				// resize only for 'maximized' to fill fit browers's window
-//				if (fullScreen == false && (fMode == "maximized" || fMode == "fullscreen"))
-				if (fullScreen == false && fMode == "maximized")
+				if (fullScreen == false && (fMode == "maximized" || fMode == "fullscreen"))
+//				if (fullScreen == false && fMode == "maximized")
 				{
 					int w = event.window.data1;
 					int h = event.window.data2;
@@ -957,14 +957,10 @@ namespace Rtt
 					float scaleY = (h * 2) / (float)fHeight;
 
 					float scale = fmin(scaleX, scaleY);
-					if (stricmp(fRuntimeDelegate->fScaleMode.c_str(), "zoomStretch") == 0)
+					if ((stricmp(fRuntimeDelegate->fScaleMode.c_str(), "zoomStretch") == 0) || (stricmp(fRuntimeDelegate->fScaleMode.c_str(), "zoomEven") == 0))
 					{
 						w = fWidth * scaleX;
 						h = fHeight * scaleY;
-					}
-					else
-					if (stricmp(fRuntimeDelegate->fScaleMode.c_str(), "zoomEven") == 0)
-					{
 					}
 					else
 					{
