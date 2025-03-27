@@ -11,6 +11,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
+#import <GameController/GameController.h>
 
 #import "CoronaViewPrivate.h"
 #import "CoronaViewRuntimeDelegate.h"
@@ -40,12 +41,15 @@
 #include "Rtt_Runtime.h"
 #import <objc/runtime.h>
 
+
+#include "Rtt_AppleKeyServices.h"
+
 #if defined( Rtt_IPHONE_ENV )
-	#include "Rtt_AppleKeyServices.h"
 	#include "Rtt_IPhonePlatformCore.h"
 	#include "Rtt_IPhoneOrientation.h"
 	#include "Rtt_IPhoneTemplate.h"
 #endif
+
 
 #include "Rtt_Event.h"
 #include "Rtt_GPU.h"
@@ -1237,19 +1241,24 @@ PrintTouches( NSSet *touches, const char *header )
 #endif // Rtt_CORE_MOTION
 }
 
-#if defined( Rtt_IPHONE_ENV ) //Keyboard events only test on iOS
+
 - (void)pressesBegan:(NSSet<UIPress *> *)presses
            withEvent:(UIPressesEvent *)event{
     [super pressesBegan:presses withEvent:event];
+    
     for(UIPress* press : presses) {
-        if (@available(iOS 13.4, *)) {
+        if (@available(iOS 13.4, tvOS 13.4, *)) {
             if(press.key){
                 [self dispatchKeyEvent:[presses allObjects].firstObject.key withPhase:Rtt::KeyEvent::kDown];
                 const char* characters = [[presses allObjects].firstObject.key.characters UTF8String];
+                
                 if (strlen(characters) > 1 || isprint(characters[0])) {
                     Rtt::CharacterEvent e(NULL, characters);
                     [self dispatchEvent: ( & e )];
                 }
+            }else if (press.type && [GCController controllers].count == 0){
+                // If controller is not connected we are using back up (mostly used for simulator controller)
+                [self dispatchTypeEvent:[presses allObjects].firstObject.type withPhase:Rtt::KeyEvent::kDown];
             }
         }
     }
@@ -1260,9 +1269,12 @@ PrintTouches( NSSet *touches, const char *header )
            withEvent:(UIPressesEvent *)event{
     [super pressesEnded:presses withEvent:event];
     for(UIPress* press : presses) {
-        if (@available(iOS 13.4, *)) {
+        if (@available(iOS 13.4, tvOS 13.4, *)) {
             if(press.key){
                 [self dispatchKeyEvent:press.key withPhase:Rtt::KeyEvent::kUp];
+            }else if (press.type && [GCController controllers].count == 0){
+                // If controller is not connected we are using back up (mostly used for simulator controller)
+                [self dispatchTypeEvent:[presses allObjects].firstObject.type withPhase:Rtt::KeyEvent::kUp];
             }
             
         }
@@ -1271,9 +1283,8 @@ PrintTouches( NSSet *touches, const char *header )
 }
 
 - (void)dispatchKeyEvent:(UIKey *)event withPhase:(Rtt::KeyEvent::Phase)phase
-    API_AVAILABLE(ios(13.4)){
+    API_AVAILABLE(ios(13.4), tvos(13.4)) {
     using namespace Rtt;
-    
     NSUInteger modifierFlags = [event modifierFlags];
     unsigned short keyCode = [event keyCode];
     NSString *keyName = [AppleKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
@@ -1289,7 +1300,39 @@ PrintTouches( NSSet *touches, const char *header )
                (modifierFlags & UIKeyModifierCommand) );
     [self dispatchEvent: ( & e )];
 }
-#endif
+
+- (void)dispatchTypeEvent:(UIPressType)pressType withPhase:(Rtt::KeyEvent::Phase)phase
+    API_AVAILABLE(ios(13.4), tvos(13.4)) {
+    using namespace Rtt;
+    NSString *keyName = @"";
+    //There are only a few pressType supported
+    if(pressType == UIPressTypePlayPause){
+        keyName = [NSString stringWithUTF8String:Rtt::KeyName::kButtonX];
+    }else if (pressType == UIPressTypeSelect){
+        keyName = [NSString stringWithUTF8String:Rtt::KeyName::kButtonA];
+    }else if (pressType == UIPressTypeMenu){
+        keyName = [NSString stringWithUTF8String:Rtt::KeyName::kMenu];
+    }else if (pressType == UIPressTypeUpArrow){
+        keyName = [NSString stringWithUTF8String:Rtt::KeyName::kUp];
+    }else if (pressType == UIPressTypeDownArrow){
+        keyName = [NSString stringWithUTF8String:Rtt::KeyName::kDown];
+    }else if (pressType == UIPressTypeLeftArrow){
+        keyName = [NSString stringWithUTF8String:Rtt::KeyName::kLeft];
+    }else if (pressType == UIPressTypeRightArrow){
+        keyName = [NSString stringWithUTF8String:Rtt::KeyName::kRight];
+    }
+    KeyEvent e(
+               NULL,
+               phase,
+               [keyName UTF8String],
+               0,
+               false,
+               false,
+               false,
+               false );
+    [self dispatchEvent: ( & e )];
+}
+
 - (void)drawView
 {
 	[self pollAndDispatchMotionEvents];
