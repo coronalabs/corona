@@ -111,33 +111,42 @@ local function AppleDownloadPlugins( sdk, platform, build, pluginsToDownload, fo
 
 	for _, pluginDir in pairs(pluginDirectories) do
 
-		-- we need to copy .framework files to the resources directory for tvOS
+		-- We need to copy .framework files to the resources directory for tvOS
 		if platform == 'appletvos' or platform == 'appletvsimulator' then
 			local resourcesDir = pluginDir .. '/resources'
 			local frameworkDir = resourcesDir .. '/Frameworks'
-		
+
 			-- Ensure directories exist before copying
 			local function ensureDirectoryExists(path)
 				if lfs.attributes(path, "mode") ~= "directory" then
 					lfs.mkdir(path)
 				end
 			end
-		
+
 			-- Create the necessary directories
 			ensureDirectoryExists(resourcesDir)
 			ensureDirectoryExists(frameworkDir)
-		
+
 			-- Copy all .framework files
 			if lfs.attributes(pluginDir, "mode") == "directory" then
 				for file in lfs.dir(pluginDir) do
 					if file:match("%.framework$") then
 						local src = pluginDir .. '/' .. file
 						local dst = frameworkDir .. '/' .. file
+
+						-- Check if the destination framework already exists
+						if lfs.attributes(dst, "mode") == "directory" then
+							-- Remove the existing framework to prevent nesting
+							os.execute('rm -rf ' .. quoteString(dst))
+						end
+
+						-- Copy the new framework
 						os.execute('cp -r ' .. quoteString(src) .. ' ' .. quoteString(dst))
 					end
 				end
 			end
 		end
+
 		local metadataChunk = loadfile( pluginDir .. '/metadata.lua' )
 		if metadataChunk then
 			local metadata = metadataChunk()

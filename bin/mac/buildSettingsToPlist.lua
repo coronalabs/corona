@@ -16,7 +16,7 @@ local json = require "json"
 
 local srcAssets = arg[1]
 local appBundleFile = arg[2]
-local deviceType = arg[3] or "iphone"
+local deviceType = arg[3] or "iOS"
 
 local function osExecute(...)
 	print("osExecute: ".. ...)
@@ -44,7 +44,7 @@ local options = {
 	signingIdentity = signingIdentity,
 	sdkRoot = sdkRoot,
 	targetDevice = targetDevice,
-	targetPlatform = "iOS",
+	targetPlatform = deviceType,
 	verbose = verbose,
 	corona_build_id = corona_build_id,
 }
