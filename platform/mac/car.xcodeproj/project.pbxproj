@@ -213,7 +213,9 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = A6QFRGXX8S;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /;
 				PRODUCT_NAME = car;
