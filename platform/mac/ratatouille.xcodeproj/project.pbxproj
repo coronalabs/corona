@@ -6101,7 +6101,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00B733F612B6F6BB0057F594 /* Build configuration list for PBXNativeTarget "librtt" */;
 			buildPhases = (
-				DBFB1E982D9DC6B60028F89F /* Override ENV */,
 				00B733EF12B6F6740057F594 /* Headers */,
 				00B733F012B6F6740057F594 /* Sources */,
 				00B733F112B6F6740057F594 /* Frameworks */,
@@ -6257,7 +6256,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C229E2031B32221B00D87A7C /* Build configuration list for PBXNativeTarget "librtt-simulator" */;
 			buildPhases = (
-				DBFB1EB22D9DCC220028F89F /* Override ENV */,
 				C229DFDE1B32221B00D87A7C /* Headers */,
 				C229E0AF1B32221B00D87A7C /* Sources */,
 				C229E2001B32221B00D87A7C /* Frameworks */,
@@ -6774,7 +6772,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# FIXME: There must be a better way of doing this\n\n# Copy CoronaCards.framework to a place the CoronaShell build will find it\n\nif [ \"$CONFIGURATION\" == \"Release\" ]\nthen\n    rm -rf \"$TARGET_BUILD_DIR\"/../../CoronaShell/build/Release/CoronaCards.framework\n    mkdir -p \"$TARGET_BUILD_DIR\"/../../CoronaShell/build/Release/\n    cp -av \"$TARGET_BUILD_DIR\"/CoronaCards.framework \"$TARGET_BUILD_DIR\"/../../CoronaShell/build/Release/\nfi\n";
+			shellScript = "# FIXME: There must be a better way of doing this\n\n# Copy CoronaCards.framework to a place the CoronaShell build will find it\n\nif [ \"$CONFIGURATION\" == \"Release\" ]\nthen\n    rm -rf \"$TARGET_BUILD_DIR\"/../../CoronaShell/build/Release/CoronaCards.framework\n    mkdir -p \"$TARGET_BUILD_DIR\"/../../CoronaShell/build/Release/\n    cp -av \"$TARGET_BUILD_DIR\"/CoronaCards.framework \"$TARGET_BUILD_DIR\"/../../CoronaShell/build/Release/\nfi";
 		};
 		C2B5FEF11B336C9000DD49E6 /* Run Script (build OSXAppTemplate.zip) */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -8519,13 +8517,11 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = A6QFRGXX8S;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8858,13 +8854,11 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = A6QFRGXX8S;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8919,13 +8913,11 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = A6QFRGXX8S;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
