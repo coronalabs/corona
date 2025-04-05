@@ -6101,6 +6101,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00B733F612B6F6BB0057F594 /* Build configuration list for PBXNativeTarget "librtt" */;
 			buildPhases = (
+				DBFB1F172D9DD1BA0028F89F /* Override ENV */,
 				00B733EF12B6F6740057F594 /* Headers */,
 				00B733F012B6F6740057F594 /* Sources */,
 				00B733F112B6F6740057F594 /* Frameworks */,
@@ -6174,6 +6175,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "rttplayer" */;
 			buildPhases = (
+				DBFB1F1F2D9DD2270028F89F /* Override ENV */,
 				8D1107290486CEB800E47090 /* Resources */,
 				C2427BBA191865E20011CE7A /* CopyFiles */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -6256,6 +6258,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C229E2031B32221B00D87A7C /* Build configuration list for PBXNativeTarget "librtt-simulator" */;
 			buildPhases = (
+				DBFB1F1E2D9DD1CC0028F89F /* Override ENV */,
 				C229DFDE1B32221B00D87A7C /* Headers */,
 				C229E0AF1B32221B00D87A7C /* Sources */,
 				C229E2001B32221B00D87A7C /* Frameworks */,
@@ -6818,6 +6821,64 @@
 			shellPath = /bin/bash;
 			shellScript = "set -x\nmkdir -p \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/Skins\"\n# Copy all Skins .lua files and the associated .png files, excluding dot files and\n# deleting any that no longer exist in the source directory\nrsync -av --delete --include='*.lua' --include='*.png' --include='*.template' --exclude='.*' --exclude='*' \"$SRCROOT/../resources/Skins/\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/Skins/\"\n";
 			showEnvVarsInLog = 0;
+		};
+		DBFB1F172D9DD1BA0028F89F /* Override ENV */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Override ENV";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export CURRENT_ARCH=\"${ARCHS}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DBFB1F1E2D9DD1CC0028F89F /* Override ENV */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Override ENV";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export CURRENT_ARCH=\"${ARCHS}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DBFB1F1F2D9DD2270028F89F /* Override ENV */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Override ENV";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export CURRENT_ARCH=\"${ARCHS}\"\n";
 		};
 		F5608E22257AB801000612C1 /* Run Script (copy JRE if exists) */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -8477,11 +8538,13 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = A6QFRGXX8S;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8814,11 +8877,13 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = A6QFRGXX8S;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8873,11 +8938,13 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = CoronaSimulator.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = BG2J43EA88;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = A6QFRGXX8S;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
