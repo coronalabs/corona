@@ -349,10 +349,12 @@ export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVE
 	return devbase_shell .. export_path .. script .. cmd
 end
 
-local function getCodesignAPPXScriptAndPackage(path, identity, entitlements, developerBase, bundleId, isBuildForDistribution)
+local function getCodesignAPPXScriptAndPackage(path, identity, entitlements, developerBase, bundleId, isBuildForDistribution, tempDir)
 
     local codesign_allocate = xcodetoolhelper['codesign_allocate']
     local codesign = xcodetoolhelper['codesign']
+
+	local tempEntitlements = entitlements
 
     -- Remove extended attributes that may interfere with codesign
     local appxPath = path:gsub('["\']', "") .. "/PlugIns"
@@ -370,6 +372,23 @@ export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVE
 ]==]
 
     local script = 'export CODESIGN_ALLOCATE=' .. codesign_allocate .. '\n'
+
+
+	local templateAppxXcent = [[
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+	<plist version="1.0">
+	<dict>
+		<key>application-identifier</key>
+		<string>{{APPLICATION_IDENTIFIER}}</string>
+		<key>keychain-access-groups</key>
+		<array>
+			<string>{{APPLICATION_IDENTIFIER}}</string>
+		</array>
+	{{CUSTOM_ENTITLEMENTS}}
+	</dict>
+	</plist>
+]]
 
     -- Start command with attribute cleanup
     local cmd = removeXattrs 
@@ -394,13 +413,71 @@ export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVE
                 -- Run the command to update CFBundleIdentifier
                 runScript(setBundleIdCmd)
 
+				local appxFiles = path:gsub('["\']', "") .. "/iOSAppxFiles/" .. bundleIdOutput .. "/"
+				
                 -- Determine which mobile provision profile to use based on `isBuildForDistribution`
-                local mobileProvisionPath = path:gsub('["\']', "") .. "/iOSAppxFiles/" .. bundleIdOutput .. "/"
                 local selectedProvision = isBuildForDistribution and 
-                                          (mobileProvisionPath .. "embedded.mobileprovision") or 
-                                          (lfs.attributes(mobileProvisionPath .. "embedded_dev.mobileprovision", "mode") == "file" and 
-                                          mobileProvisionPath .. "embedded_dev.mobileprovision" or 
-                                          mobileProvisionPath .. "embedded.mobileprovision")
+                                          (appxFiles .. "embedded.mobileprovision") or 
+                                          (lfs.attributes(appxFiles .. "embedded_dev.mobileprovision", "mode") == "file" and 
+                                          appxFiles .. "embedded_dev.mobileprovision" or 
+                                          appxFiles .. "embedded.mobileprovision")
+
+
+				-- Copy and resources and plist files to the .appex bundle
+				if lfs.attributes(appxFiles, "mode") == "directory" then
+
+					local customSettingsFile = appxFiles .. "/config.lua"
+					local config = {}
+					if ( fileExists( customSettingsFile ) ) then
+						local customSettings, msg = loadfile( customSettingsFile )
+						if ( customSettings ) then
+							local status, msg = pcall( customSettings )
+							if status then
+								print( "Using additional config from: " .. customSettingsFile )
+								config = configAppx or {}
+							end
+						end
+					end
+					-- Set plist
+					if(config.plist) then
+						if ( fileExists( infoPlist ) ) then
+							local status, msg = CoronaPListSupport.modifyPlist( config.plist, infoPlist )
+							if not status then
+								print( "Error modifying Info.plist: " .. msg )
+							end
+						end
+					end
+
+					-- Get entitlements
+					if(config.entitlements) then
+						local entitlementsFile = tempDir .. "/" .. bundleIdOutput .. "/entitlements.xcent"
+						local numMatches = 0
+						local data = templateAppxXcent
+
+						data, numMatches = string.gsub( data, "{{APPLICATION_IDENTIFIER}}", bundleId.."." .. bundleIdOutput )
+						assert( numMatches == 2 )
+
+						local generatedEntitlements = CoronaPListSupport.generateEntitlements(config, 'entitlements', selectedProvision)
+						data, numMatches = string.gsub( data, "{{CUSTOM_ENTITLEMENTS}}", generatedEntitlements )
+						assert( numMatches == 1 )
+
+						local outFile = assert( io.open( entitlementsFile, "wb" ) )
+						
+						outFile:write(data)
+						assert( outFile:close() )
+						tempEntitlements = entitlementsFile
+					end
+
+					-- Copy resources
+					local resourcesAppx = appxFiles .. "/resources"
+					if ( lfs.attributes( resourceAppx, "mode" ) == "directory" ) then
+						--copy files to resources folder in the .appex bundle, if resources does not exist, create it
+						local copyResourcesCmd = "mkdir -p " .. quoteString(appexPath .. "/resources") .. " && " ..
+												  "rsync -r --delete-excluded --exclude='**/.*' --delete --prune-empty-dirs --links --copy-unsafe-links --hard-links --perms --chmod='Da+rx,Fa+r' " ..
+												  quoteString(resourcesAppx) .. "/ " .. quoteString(appexPath .. "/resources") .. "/"
+						runScript( copyResourcesCmd )
+					end
+				end
 
                 if not lfs.attributes(selectedProvision, "mode") then
                     print("Warning: Cannot find mobile provision profile for " .. bundleIdOutput ..
@@ -409,12 +486,12 @@ export PATH="$DEVELOPER_BASE/Platforms/iPhoneOS.platform/Developer/usr/bin:$DEVE
                     -- Copy the mobile provision profile to the .appex bundle and delete the old one
                     local copyMobileProvisionCmd = "cp " .. quoteString(selectedProvision) .. " " ..
                                                    quoteString(appexPath .. "/embedded.mobileprovision") ..
-                                                   " && rm -rf " .. quoteString(mobileProvisionPath)
+                                                   " && rm -rf " .. quoteString(appxFiles)
                     runScript(copyMobileProvisionCmd)
 
                     -- Append signing command for .appex
                     cmd = cmd .. " && " .. codesign .. " --verbose -f -s " .. quoteString(identity) .. 
-                          " --entitlements " .. entitlements .. " " .. quoteString(appexPath)
+                          " --entitlements " .. tempEntitlements .. " " .. quoteString(appexPath)
                 end
             end
         end    
@@ -1121,7 +1198,7 @@ local function packageApp( options )
 		-- codesign embedded appx (iOS Extension Files)
 		if(checkAppHasAPPX(options.appBundleFile)) then
 			
-			local result, errMsg = runScript( getCodesignAPPXScriptAndPackage( options.appBundleFile:gsub('["\']', ""), options.signingIdentity, entitlements, iPhoneSDKRoot, options.bundleid, builtForAppStore ) )
+			local result, errMsg = runScript( getCodesignAPPXScriptAndPackage( options.appBundleFile:gsub('["\']', ""), options.signingIdentity, entitlements, iPhoneSDKRoot, options.bundleid, builtForAppStore, options.tmpDir ) )
 			if result ~= 0 then
 				errMsg = "ERROR: code signing embedded appx failed: "..tostring(errMsg)
 				return errMsg

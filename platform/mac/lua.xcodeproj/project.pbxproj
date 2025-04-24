@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -893,6 +893,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C24216D81CCACB6600D8E4BE /* Build configuration list for PBXNativeTarget "libluasocket" */;
 			buildPhases = (
+				DBFB1F302D9DD27F0028F89F /* Override ENV */,
 				C24216D31CCACB6600D8E4BE /* Sources */,
 				C24216D41CCACB6600D8E4BE /* Frameworks */,
 				C24216D51CCACB6600D8E4BE /* Headers */,
@@ -946,6 +947,29 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DBFB1F302D9DD27F0028F89F /* Override ENV */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Override ENV";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export CURRENT_ARCH=\"${ARCHS}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		004CEC2B1339724E006ACF35 /* Sources */ = {
