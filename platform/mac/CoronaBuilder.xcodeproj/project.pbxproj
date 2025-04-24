@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -1012,6 +1012,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A4FCD40A14CF417D0004E91D /* Build configuration list for PBXNativeTarget "CoronaBuilder" */;
 			buildPhases = (
+				DBFB1F202D9DD23C0028F89F /* Override ENV */,
 				A4FCD3E814CF417C0004E91D /* Sources */,
 				A4FCD3E914CF417C0004E91D /* Frameworks */,
 				A4FCD3EA14CF417C0004E91D /* Resources */,
@@ -1234,6 +1235,29 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DBFB1F202D9DD23C0028F89F /* Override ENV */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Override ENV";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export CURRENT_ARCH=\"${ARCHS}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A4FCD3E814CF417C0004E91D /* Sources */ = {
@@ -1507,12 +1531,19 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "../../tools/CoronaBuilder/CoronaBuilder-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.coronalabs.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external/lua-5.1.3/src ../../platform/apple";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					"../../external/lua-5.1.3/src",
+					../../platform/apple,
+				);
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1540,11 +1571,18 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "../../tools/CoronaBuilder/CoronaBuilder-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.coronalabs.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				USER_HEADER_SEARCH_PATHS = "../../librtt ../../external/lua-5.1.3/src ../../platform/apple";
+				USER_HEADER_SEARCH_PATHS = (
+					../../librtt,
+					"../../external/lua-5.1.3/src",
+					../../platform/apple,
+				);
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

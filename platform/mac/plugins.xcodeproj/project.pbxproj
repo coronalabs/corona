@@ -405,6 +405,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A47B5B7115F9BA95001D60AB /* Build configuration list for PBXNativeTarget "ads" */;
 			buildPhases = (
+				DBFB1F312D9DD9520028F89F /* Override ENV */,
 				A47B5B6415F9BA95001D60AB /* Sources */,
 				A47B5B6515F9BA95001D60AB /* Frameworks */,
 				A47B5B6615F9BA95001D60AB /* Headers */,
@@ -444,6 +445,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A491863D1641DDB800A39286 /* Build configuration list for PBXNativeTarget "analytics" */;
 			buildPhases = (
+				DBFB1F392D9DD9650028F89F /* Override ENV */,
 				A49186341641DDB800A39286 /* Sources */,
 				A49186381641DDB800A39286 /* Frameworks */,
 				A491863A1641DDB800A39286 /* Headers */,
@@ -545,6 +547,49 @@
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DBFB1F312D9DD9520028F89F /* Override ENV */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Override ENV";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export CURRENT_ARCH=\"${ARCHS}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DBFB1F392D9DD9650028F89F /* Override ENV */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Override ENV";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export CURRENT_ARCH=\"${ARCHS}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A44308A9164C733E00B9117B /* Sources */ = {
