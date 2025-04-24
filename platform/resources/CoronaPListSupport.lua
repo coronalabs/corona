@@ -152,7 +152,7 @@ function CoronaPListSupport.modifyPlist( options )
 	end
 
     print("Creating Info.plist...")
-
+	print(options.appBundleFile)
 	-- Convert the Info.plist to JSON and read it in
 	os.execute( "plutil -convert json -o '"..tmpJSONFile.."' "..infoPlistFile)
 
@@ -425,7 +425,9 @@ function CoronaPListSupport.modifyPlist( options )
 		if settings then
 			-- add'l custom plist settings specific to OS X
 			local buildSettingsPlist = settings.osx and settings.osx.plist
-
+			if(settings.macos) then 
+				buildSettingsPlist = settings.macos.plist
+			end
 			if buildSettingsPlist then
 				--print("Adding custom plist settings: ".. json.encode(buildSettingsPlist))
 				--print("buildSettingsPlist: "..json.encode(buildSettingsPlist))
