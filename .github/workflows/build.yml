@@ -110,7 +110,7 @@ jobs:
   collect-ios-templates:
     needs:
       - Xcode-template-matrix-15
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: (! failure() && ! cancelled())
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
@@ -172,7 +172,7 @@ jobs:
       - source-code
       - native
       - webtemplate
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get Webtemplate
@@ -217,7 +217,7 @@ jobs:
       - source-code
       - native
       - webtemplate
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get Webtemplate
@@ -256,7 +256,7 @@ jobs:
 
   CoronaCards-Android:
     needs: native
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v4
@@ -567,7 +567,7 @@ jobs:
           path: ./output
 
   publish-snap:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs:
       - linux
       - release
@@ -597,7 +597,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags')
     permissions:
       contents: write
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs:
       - Windows-Simulator
       - macOS-Simulator
@@ -661,7 +661,7 @@ jobs:
 
   notify-chats:
     if: startsWith(github.ref, 'refs/tags')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs:
       - release
     steps:
@@ -710,7 +710,7 @@ jobs:
       - CoronaCards-iOS
       - release
       - source-code
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: (success() || failure()) && !cancelled() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
     steps:
       - uses: technote-space/workflow-conclusion-action@v1
