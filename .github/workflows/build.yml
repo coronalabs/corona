@@ -282,7 +282,7 @@ jobs:
 
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -308,7 +308,7 @@ jobs:
 
   CoronaCards-iOS-angle:
     needs: source-code
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -343,7 +343,7 @@ jobs:
       - webtemplate
       - linux
     if: (! failure() && ! cancelled())
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -438,7 +438,7 @@ jobs:
           exit 1
 
   check-notarization:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Check notarization credentials
         run: |
