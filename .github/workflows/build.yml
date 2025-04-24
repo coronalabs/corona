@@ -168,6 +168,7 @@ jobs:
           path: ./output
 
   linux:
+    if: false
     needs:
       - source-code
       - native
@@ -341,7 +342,7 @@ jobs:
       - collect-ios-templates
       - native
       - webtemplate
-      - linux
+      # - linux
     if: (! failure() && ! cancelled())
     runs-on: macos-15
     steps:
@@ -464,7 +465,7 @@ jobs:
       - source-code
       - native
       - webtemplate
-      - linux
+      # - linux
     runs-on: windows-2019
     steps:
       - name: Get processed code
@@ -601,7 +602,7 @@ jobs:
     needs:
       - Windows-Simulator
       - macOS-Simulator
-      - linux
+      # - linux
       - CoronaCards-Android
       - CoronaCards-iOS
       - CoronaCards-iOS-angle
@@ -638,6 +639,7 @@ jobs:
           name: Flatpak
           path: Flatpak
       - uses: actions/download-artifact@v4
+        if: false
         with:
           name: Snap
           path: Snap
@@ -651,7 +653,7 @@ jobs:
           mv CoronaCards-iOS-angle/CoronaCards-angle.zip artifacts/CoronaCards-iOS-MetalANGLE-${{ env.YEAR }}.${{ env.BUILD }}.zip
           mv CoronaCards-Android/CoronaCardsAndroidAAR.zip artifacts/CoronaCards-Android-${{ env.YEAR }}.${{ env.BUILD }}.zip
           mv Native/AndroidDebugSymbols.zip artifacts/AndroidDebugSymbols-${{ env.YEAR }}.${{ env.BUILD }}.zip
-          find Snap -name '*.snap' -execdir mv -v {} artifacts/Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.snap \; -quit
+          # find Snap -name '*.snap' -execdir mv -v {} artifacts/Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.snap \; -quit
       - name: Create Release
         uses: softprops/action-gh-release@v2.1.0
         with:
@@ -705,7 +707,7 @@ jobs:
     needs:
       - Windows-Simulator
       - macOS-Simulator
-      - linux
+      # - linux
       - CoronaCards-Android
       - CoronaCards-iOS
       - release
