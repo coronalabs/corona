@@ -17,7 +17,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_16.3.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -68,9 +68,9 @@ jobs:
         runner:
           - macos-15
         xcode:
+          - Xcode_16.3
           - Xcode_16.2
           - Xcode_16
-          - Xcode_15.4
         target:
           - template
           - template-angle
@@ -106,51 +106,9 @@ jobs:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
-  Xcode-template-matrix-13:
-    strategy:
-      matrix:
-        runner:
-          - macos-13
-        xcode:
-          - Xcode_15.2
-        target:
-          - template
-          - template-angle
-        platform:
-          - iphone
-          - tvos
-    needs: source-code
-    runs-on: ${{ matrix.runner }}
-    env:
-      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
-      TEMPLATE_TARGET: ${{ matrix.target }}
-      TEMPLATE_PLATFORM: ${{ matrix.platform }}
-    steps:
-      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - name: Get processed code
-        uses: actions/download-artifact@v4
-        with:
-          name: SourceCode
-          path: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build templates
-        working-directory: ./platform/${{ matrix.platform }}
-        run: ./gh_build_templates.sh
-        env:
-          CERT_PASSWORD: ${{ secrets.CertPassword }}
-      - name: Build templates JSON spec
-        run: ./tools/GHAction/generate_xcode_jsons.py
-      - name: Upload templates
-        uses: actions/upload-artifact@v4
-        with:
-          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
-          path: ./output
 
   collect-ios-templates:
     needs:
-      - Xcode-template-matrix-13
       - Xcode-template-matrix-15
     runs-on: ubuntu-20.04
     if: (! failure() && ! cancelled())
@@ -176,9 +134,9 @@ jobs:
   webtemplate:
     needs:
       - source-code
-    runs-on: macos-13
+    runs-on: macos-15
     env:
-      DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_16.3.app/Contents/Developer
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
