@@ -372,11 +372,13 @@ jobs:
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip platform/resources/
       - name: Get Linux template
+        if: false
         uses: actions/download-artifact@v4
         with:
           name: Linux-Template
           path: Linux-Template
-      - name: Put webtemplate in place
+      - name: Put linux in place
+        if: false
         run: |
           cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
       - run: mkdir docs
@@ -503,11 +505,13 @@ jobs:
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/nxtemplate > platform/resources/nxtemplate
       - name: Get Linux template
+        if: false
         uses: actions/download-artifact@v4
         with:
           name: Linux-Template
           path: Linux-Template
-      - name: Put webtemplate in place
+      - name: Put linux template in place
+        if: false
         run: |
           cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
         shell: bash
