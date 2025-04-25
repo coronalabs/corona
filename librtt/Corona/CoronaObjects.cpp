@@ -446,7 +446,7 @@ BuildMethodStream( lua_State * L, const CoronaObjectParamsHeader * head )
 }
 
 static bool
-GetStream( lua_State * L, const CoronaObjectsParams * params )
+GetStream( lua_State * L, const CoronaObjectParams * params )
 {
     bool hasStream = false;
 
