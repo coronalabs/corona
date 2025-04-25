@@ -7,7 +7,7 @@ title: Solar2D
 #website: https://solar2d.com/
 license: MIT
 icon: snap/gui/solar2d.svg
-base: core20
+base: core24
 version: '2100.9999'
 summary: Solar2D Game Engine
 description: Solar2D is a Lua based game engine with focus on ease of iterations and usage
