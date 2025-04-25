@@ -531,7 +531,8 @@ jobs:
           mv CoronaEnterprise Native
           del /q /f Native\.*
           del /q /f Native\Icon?
-          del /q /f /s Native\Corona\tvos\frameworks\CoronaCards.framework
+          del /q /f /s Native\Corona\tvos\frameworks
+          del /q /f /s Native\Corona\mac\frameworks
       - name: Put JRE in place
         shell: bash
         run: |
