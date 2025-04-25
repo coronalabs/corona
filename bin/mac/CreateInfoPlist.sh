@@ -20,6 +20,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 
+
 BIN_DIR=$(dirname "$0")
 ASSETS_DIR="$PROJECT_DIR"/../Corona
 
