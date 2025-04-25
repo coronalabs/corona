@@ -219,6 +219,10 @@ GLTexture::Update( CPUResource* resource )
 		getFormatTokens( texture->GetFormat(), internalFormat, format, type );
 
 		glBindTexture( GL_TEXTURE_2D, GetName() );
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, CalculateOptimalAlignment(w, internalFormat));
+		GL_CHECK_ERROR();
+
 		if (internalFormat == fCachedFormat && w == fCachedWidth && h == fCachedHeight )
 		{
 			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, w, h, format, type, data );
