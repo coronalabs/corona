@@ -206,7 +206,7 @@ typedef void (*CoronaStateBlockDirty)( const CoronaCommandBuffer * commandBuffer
 /**
  This structure describes a state block.
 */
-struct CoronaStateBlock {
+typedef struct CoronaStateBlock {
     /**
      Required
      Size of block, in bytes.
@@ -242,7 +242,7 @@ struct CoronaStateBlock {
      TODO: used e.g. in Vulkan
     */
     int dontHash;
-};
+} CoronaStateBlock;
 
 /**
  Permanently register a state block.

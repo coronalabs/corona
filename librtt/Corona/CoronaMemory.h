@@ -26,7 +26,7 @@ extern "C" {
  In a few cases, described below, these will have an initial value.
  Otherwise, the value is to be user-provided.
 */
-union CoronaMemoryWorkVar {
+typedef union CoronaMemoryWorkVar {
 	/**
 	 Pointer value, e.g. from a `lua_touserdata()`. Does not take ownership.
 	*/
@@ -56,12 +56,12 @@ union CoronaMemoryWorkVar {
 	 Signed integer value.
 	*/
 	int i;
-};
+} CoronaMemoryWorkVar;
 
 /**
  This structure contains the working state of an acquired interface.
 */
-struct CoronaMemoryWorkspace {
+typedef struct CoronaMemoryWorkspace {
 	/**
 	 Scratch memory available to callbacks. This should be enough for most needs.
 	 A few of these will be pre-populated by `CoronaMemoryAcquireInterface()` and `CoronaMemoryPushLookupEncoding()`,
@@ -83,14 +83,14 @@ struct CoronaMemoryWorkspace {
 	 The interface's data size, as described in `CoronaMemoryInterfaceInfo`.
 	*/
 	size_t dataSize;
-};
+} CoronaMemoryWorkspace;
 
 /**
  This structure contains all the callbacks that together make up a memory type interface.
  Many callbacks are optional and may be left `NULL`.
  The C API does not call any of these directly.
 */
-struct CoronaMemoryCallbacks {
+typedef struct CoronaMemoryCallbacks {
 	// An interface may provide both `getReadableBytes()` and `getWriteableBytes()`; it MUST provide at least one of them.
 
 	/**
@@ -173,12 +173,12 @@ struct CoronaMemoryCallbacks {
 	 @return If non-0, `index` < stride count and `stride` must be populated.
 	*/
 	int ( *getStride )( CoronaMemoryWorkspace *ws, unsigned int index, size_t *stride );
-};
+} CoronaMemoryCallbacks;
 
 /**
  This structure provides the information needed to create an interface.
 */
-struct CoronaMemoryInterfaceInfo {
+typedef struct CoronaMemoryInterfaceInfo {
 	/**
 	 Required
 	 The callbacks to register with the interface.
@@ -204,21 +204,19 @@ struct CoronaMemoryInterfaceInfo {
 	 this will be 0).
 	*/
 	int dataSize;
-};
-
-struct CoronaMemoryAcquireState; // forward reference
+} CoronaMemoryInterfaceInfo;
 
 /**
  Memory operations built atop the user-provided callbacks, provided when the interface has been acquired.
  Always-fail / no-op stubs will be provided for absent callbacks.
 */
-struct CoronaMemoryInterface {
+typedef struct CoronaMemoryInterface {
 	// The following details are found in version 0+:
 
 	/**
 	 Passthrough wrapper to `getReadableBytes()`, if available, else returns `NULL`.
 	*/
-	const void* ( *getReadableBytes )( CoronaMemoryAcquireState *state );
+	const void* ( *getReadableBytes )( struct CoronaMemoryAcquireState *state );
 
 	/**
 	 If `getReadableBytes()` is absent, returns `NULL`.
@@ -226,19 +224,19 @@ struct CoronaMemoryInterface {
 	 Failing that, it will call `resize()`, if present, in read mode.
 	 If the resize was successful, gets the bytes; else returns `NULL`.
 	*/
-	const void* ( *getReadableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
+	const void* ( *getReadableBytesOfSize )( struct CoronaMemoryAcquireState *state, size_t n );
 
 	/**
 	 If `getReadableBytes()` is absent, does nothing.
 	 Otherwise, gets the bytes and writes them to `output`, up to a maximum of `outputSize` bytes. If fewer than
 	 `outputSize` bytes were available and `ignoreExtra` is 0, the leftover bytes will be set to 0.
 	*/
-	void ( *copyBytesTo )( CoronaMemoryAcquireState *state, void* output, size_t outputSize, int ignoreExtra );
+	void ( *copyBytesTo )( struct CoronaMemoryAcquireState *state, void* output, size_t outputSize, int ignoreExtra );
 
 	/**
 	 Passthrough wrapper to `getWriteableBytes()`, if available, else returns `NULL`.
 	*/
-	void* ( *getWriteableBytes )( CoronaMemoryAcquireState *state );
+	void* ( *getWriteableBytes )( struct CoronaMemoryAcquireState *state );
 
 	/**
 	 If `getWriteableBytes()` is absent, returns `NULL`.
@@ -246,39 +244,39 @@ struct CoronaMemoryInterface {
 	 Failing that, it will call `resize()`, if present, in write mode.
 	 If the resize was successful, gets the bytes; else returns `NULL`.	 
 	*/
-	void* ( *getWriteableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
+	void* ( *getWriteableBytesOfSize )( struct CoronaMemoryAcquireState *state, size_t n );
 
 	/**
 	 Passthrough wrapper to `resize()`, if available, else returns 0.
 	*/
-	int ( *resize )( CoronaMemoryAcquireState *state, size_t size, int writeable );
+	int ( *resize )( struct CoronaMemoryAcquireState *state, size_t size, int writeable );
 
 	/**
 	 Passthrough wrapper to `getByteCount()`. (As a dummy, returns 0.)
 	*/
-	size_t ( *getByteCount )( CoronaMemoryAcquireState *state );
+	size_t ( *getByteCount )( struct CoronaMemoryAcquireState *state );
 
 	/**
 	 Passthrough wrapper to `getAlignment()`, if available, else returns 0.
 	*/
-	size_t ( *getAlignment )( CoronaMemoryAcquireState *state );
+	size_t ( *getAlignment )( struct CoronaMemoryAcquireState *state );
 
 	/**
 	  Passthrough wrapper to `getSize()`, if available, else returns 0.
 	*/
-	int ( *getSize )( CoronaMemoryAcquireState *state, unsigned int index, size_t *size );
+	int ( *getSize )( struct CoronaMemoryAcquireState *state, unsigned int index, size_t *size );
 
 	/**
 	 Passthrough wrapper to `getStride()`, if available, else returns 0.
 	*/
-	int ( *getStride )( CoronaMemoryAcquireState *state, unsigned int index, size_t *stride );
-};
+	int ( *getStride )( struct CoronaMemoryAcquireState *state, unsigned int index, size_t *stride );
+} CoronaMemoryInterface;
 
 /**
 	This structure maintains some details needed by the memory interface after an acquisition, as well
 	as the workspace provided for the underlying methods.
 */
-struct CoronaMemoryAcquireState {
+typedef struct CoronaMemoryAcquireState {
 	/**
 	 This is the "proper" way to use the interface's callbacks, rather than directly invoking them.
 	 An example raw call, given an instance `state`: `state.methods.resize(&state, newSize, 0)`.
@@ -307,7 +305,7 @@ struct CoronaMemoryAcquireState {
 	 against different feature levels. The version must therefore be consulted to provide a suitable  `interface`.
 	*/
 	int version;
-};
+} CoronaMemoryAcquireState;
 
 /**
  Helpers to use interface callbacks, given a method name and `CoronaMemoryAcquireState` object.
