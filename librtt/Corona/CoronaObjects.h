@@ -536,7 +536,7 @@ typedef struct CoronaObjectParams {
      If non-0, the method parameter chain is represented by `ref`; else `head`.
     */
     int useRef;
-} CoronaObjectsParams;
+} CoronaObjectParams;
 
 // ----------------------------------------------------------------------------
 

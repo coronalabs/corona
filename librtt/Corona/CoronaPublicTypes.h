@@ -11,7 +11,7 @@
 #ifndef _CoronaPublicTypes_H__
 #define _CoronaPublicTypes_H__
 
-#define CORONA_DECLARE_PUBLIC_TYPE( TYPE ) struct Corona##TYPE
+#define CORONA_DECLARE_PUBLIC_TYPE( TYPE ) typedef struct Corona##TYPE Corona##TYPE
 
 CORONA_DECLARE_PUBLIC_TYPE( Any );
 CORONA_DECLARE_PUBLIC_TYPE( Renderer );
