@@ -16,8 +16,6 @@
 
 // ----------------------------------------------------------------------------
 
-@class Rtt_NSWebView;
-
 namespace Rtt
 {
 
@@ -50,6 +48,10 @@ class MacWebViewObject : public MacDisplayObject
 		static int Reload( lua_State *L );
 		static int Resize( lua_State *L );
 		static int DeleteCookies( lua_State *L );
+		static int InjectJS( lua_State *L );
+		static int RegisterCallback( lua_State *L );
+		static int On( lua_State *L );
+		static int Send( lua_State *L );
 		// static int SetBackgroundColor( lua_State *L );
 
 	public:
@@ -78,23 +80,20 @@ class MacWebViewObject : public MacDisplayObject
 // These WebKit protocols are not explicitly declared until 10.11 SDK, so
 // declare dummy protocols to keep the build working on earlier SDKs.
 
-#if __MAC_OS_X_VERSION_MAX_ALLOWED < 101100
-@protocol WebUIDelegate
-@end
-@protocol WebFrameLoadDelegate
-@end
-@protocol WebPolicyDelegate
-@end
-#endif
+// #if __MAC_OS_X_VERSION_MAX_ALLOWED < 101100
+// @protocol WebUIDelegate
+// @end
+// @protocol WebFrameLoadDelegate
+// @end
+// @protocol WebPolicyDelegate
+// @end
+// #endif
 
-@interface Rtt_WebView : WebView <WebUIDelegate, WebPolicyDelegate, WebFrameLoadDelegate>
-{
-	Rtt::MacWebViewObject *owner;
-}
+// @interface Rtt_WebView : WKWebView <WKUIDelegate, WKNavigationDelegate>
 
-@property(nonatomic, assign) Rtt::MacWebViewObject *owner;
+// @property(nonatomic, assign) Rtt::MacWebViewObject *owner;
 
-@end
+// @end
 
 // ----------------------------------------------------------------------------
 
