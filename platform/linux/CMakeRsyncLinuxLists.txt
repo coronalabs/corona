@@ -16,7 +16,7 @@
 + platform/android/***
 + platform/resources/***
 + platform/shared/***
-+ platform/lpng1256/***
++ platform/libpng/***
 
 + external/
 + external/ALmixer/***
@@ -24,7 +24,7 @@
 + external/lpeg/***
 + external/luasocket/***
 + external/LuaHashMap/***
-+ external/lpng1256/***
++ external/libpng/***
 + external/luafilesystem/***
 + external/sqlite3/***
 + external/lsqlite3-7/***

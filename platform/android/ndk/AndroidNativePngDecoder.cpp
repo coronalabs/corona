@@ -81,14 +81,15 @@ static void PngWarningCallback(png_structp pngReaderPointer, png_const_charp mes
 /// @param bytesToRead The number of bytes that the PNG reader is requesting.
 static void PngInputRequestCallback(png_structp pngReaderPointer, png_bytep byteBuffer, png_size_t bytesToRead)
 {
+    png_voidp io_ptr = nullptr;
 	// Validate.
-	if (!pngReaderPointer || !(pngReaderPointer->io_ptr) || !byteBuffer || (bytesToRead <= 0))
+	if (!pngReaderPointer || !(io_ptr = png_get_io_ptr(pngReaderPointer)) || !byteBuffer || (bytesToRead <= 0))
 	{
 		return;
 	}
 
 	// Fetch the file stream reader.
-	AndroidBinaryReader *fileReaderPointer = (AndroidBinaryReader*)(pngReaderPointer->io_ptr);
+	AndroidBinaryReader *fileReaderPointer = (AndroidBinaryReader*)(io_ptr);
 
 	// Read the next batch of bytes from the file to the PNG decoder.
 	AndroidBinaryReadResult result = fileReaderPointer->StreamTo((U8*)byteBuffer, (U32)bytesToRead);
@@ -277,7 +278,12 @@ AndroidOperationResult AndroidNativePngDecoder::OnDecodeFrom(AndroidBinaryReader
 	}
 	else if ((colorChannelBitCount < 8) && (PNG_COLOR_TYPE_GRAY == colorType))
 	{
-		png_set_gray_1_2_4_to_8(pngReaderPointer);
+        // The function
+        //      png_set_gray_1_2_4_to_8()
+        //  which also expands tRNS to alpha was replaced with
+        //      png_set_expand_gray_1_2_4_to_8()
+        //  which does not. It has been deprecated since libpng-1.0.18 and 1.2.9.
+        png_set_expand_gray_1_2_4_to_8(pngReaderPointer);
 	}
 	colorChannelBitCount = 8;
 

@@ -25,7 +25,7 @@ ifeq ($(config),Debug)
   TARGETDIR  = obj/Debug
   TARGET     = $(TARGETDIR)/libratatouille.a
   DEFINES   += -DRtt_DEBUG -DLUA_USE_APICHECK -DRtt_EMSCRIPTEN_ENV
-  INCLUDES  += -I../../../librtt -I../../../librtt/Core -I../../../external/lua-5.1.3/src -I.. -I../../../external/libpng1243b01 -I../../../external/zlib123 -I../../../external/libjpeg -I../../shared
+  INCLUDES  += -I../../../librtt -I../../../librtt/Core -I../../../external/lua-5.1.3/src -I.. -I../../../external/libpng -I../../../external/zlib123 -I../../../external/libjpeg -I../../shared
   ALL_CPPFLAGS  += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS    += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -g
   ALL_CXXFLAGS  += $(CXXFLAGS) $(ALL_CFLAGS) -fno-exceptions -fno-rtti
@@ -49,7 +49,7 @@ ifeq ($(config),Release)
   TARGETDIR  = obj/Release
   TARGET     = $(TARGETDIR)/libratatouille.a
   DEFINES   += -DNDEBUG -DRtt_EMSCRIPTEN_ENV
-  INCLUDES  += -I../../../librtt -I../../../librtt/Core -I../../../external/lua-5.1.3/src -I.. -I../../../external/libpng1243b01 -I../../../external/zlib123 -I../../../external/libjpeg -I../../shared
+  INCLUDES  += -I../../../librtt -I../../../librtt/Core -I../../../external/lua-5.1.3/src -I.. -I../../../external/libpng -I../../../external/zlib123 -I../../../external/libjpeg -I../../shared
   ALL_CPPFLAGS  += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS    += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -O2
   ALL_CXXFLAGS  += $(CXXFLAGS) $(ALL_CFLAGS) -fno-exceptions -fno-rtti
