@@ -111,6 +111,7 @@ static const unsigned char* IssueWarning( lua_State *L, const unsigned char* buf
 static const unsigned char* GetBuffer( lua_State *L, size_t valueSize, size_t element, U32 &n, size_t &stride, const U32* outputLength = NULL )
 {
 	size_t len;
+    stride = 0;
 
 	const unsigned char* buffer = AuxGetBuffer( L, valueSize, len, n );
 
@@ -362,7 +363,7 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 			Vertex2 v = GetValueFromStream<Vertex2>( fromVertices, stride );
 			mesh.Append( v );
 		}
-	}
+    }
 
 	else if (lua_istable( L, -1 )) 
 	{
@@ -389,12 +390,15 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 			}
 			lua_pop( L, 2 );
 		}
+	}
+	lua_pop( L, 1);
 
+	{ // center the mesh
 		Rect r;
 		numVertices = mesh.Length();
-		for ( U32 i = 0; i < numVertices; i++ )
+		for (U32 i = 0; i < numVertices; i++)
 		{
-			r.Union( mesh[i] );
+			r.Union(mesh[i]);
 		}
 
 		Vertex2 vertexOffset = {0, 0};
@@ -402,20 +406,18 @@ ShapeAdapterMesh::InitializeMesh(lua_State *L, int index, TesselatorMesh& tessel
 		if (!r.IsEmpty())
 		{
 			r.GetCenter(vertexOffset);
-
-			for ( U32 i = 0; i < numVertices; i++ )
+		
+			for (U32 i = 0; i < numVertices; i++)
 			{
 				mesh[i].x -= vertexOffset.x;
 				mesh[i].y -= vertexOffset.y;
-			}
+		    	}
 		}
 
 		tesselator.SetVertexOffset(vertexOffset);
+    	}
 
-	}
-	lua_pop( L, 1);
-	
-	
+
 	ArrayVertex2& UVs = tesselator.GetUV();
 	U32 numUVs;
 	lua_getfield( L, index, "uvs" );
@@ -971,6 +973,12 @@ int ShapeAdapterMesh::update(lua_State *L)
 		{
 			path->Invalidate(pathInvalidated);
 			path->GetObserver()->Invalidate(observerInvalidated);
+
+			if (fromVertices)
+			{
+				tesselator->Invalidate();
+				tesselator->Update();
+			}
 		}
 	}
 
@@ -1027,4 +1035,3 @@ int ShapeAdapterMesh::getLowestIndex( lua_State *L )
 } // namespace Rtt
 
 // ----------------------------------------------------------------------------
-
