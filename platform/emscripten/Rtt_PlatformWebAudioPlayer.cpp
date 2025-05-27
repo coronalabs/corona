@@ -38,9 +38,9 @@ namespace Rtt
 extern "C"
 {
 	// Java ==> C callback
-	void EMSCRIPTEN_KEEPALIVE jsOnSoundEnded(int channel, PlatformSDLmixerPlaybackFinishedCallback *notifier)
+	void EMSCRIPTEN_KEEPALIVE jsOnSoundEnded(int channel, PlatformSDLmixerPlaybackFinishedCallback *notifier, bool finished_naturally)
 	{
-		sdlAudio.NotificationCallback(channel, notifier);
+		sdlAudio.NotificationCallback(channel, notifier, finished_naturally);
 	}
 
 	// JS API
@@ -435,7 +435,7 @@ extern "C"
 		return jsAudioGetMasterVolume();
 	}
 
-	void PlatformWebAudioPlayer::NotificationCallback(int which_channel, PlatformSDLmixerPlaybackFinishedCallback *notifier)
+	void PlatformWebAudioPlayer::NotificationCallback(int which_channel, PlatformSDLmixerPlaybackFinishedCallback *notifier, bool finished_naturally)
 	{
 		if (notifier)
 		{
@@ -453,7 +453,7 @@ extern "C"
 
 					// Bug 5724: In addition to setting all the callback properties, we pass the notifier in to transfer ownership.
 					// We expect when the event is fired and deleted, it will also delete the notifier with it.
-					e->SetProperties(which_channel, 0, 0, 0, notifier);
+					e->SetProperties(which_channel, 0, 0, finished_naturally ? 1 : 0, notifier);
 					notifier->ScheduleDispatch(e);
 				}
 			}
