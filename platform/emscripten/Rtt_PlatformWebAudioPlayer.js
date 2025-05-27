@@ -80,11 +80,12 @@ var audioLibrary =
 
 			this.fSource.onended = function () {
 				var ch = this.parent;
-				//console.log('channel finished', ch);
+				console.log('channel finished', ch);
+				console.log(ch.fLuaCallback);
 
 				ch.fStartedAt = 0;
 				if (ch.fLoops == 0) {
-					_jsOnSoundEnded(ch.fChannel, ch.fLuaCallback);
+					_jsOnSoundEnded(ch.fChannel, ch.fLuaCallback, true);
 
 					// free channel
 					ch.clear();

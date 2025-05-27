@@ -152,7 +152,7 @@ namespace Rtt
 		void BeginInterruption();
 		void EndInterruption();
 		bool IsInInterruption() const;
-		void NotificationCallback(int which_channel, PlatformSDLmixerPlaybackFinishedCallback *notifier);
+		void NotificationCallback(int which_channel, PlatformSDLmixerPlaybackFinishedCallback *notifier, bool finished_naturally);
 		void RuntimeWillTerminate(const Runtime& sender);
 		
 		void setProperty(int ch, const char* key, float val);
