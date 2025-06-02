@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(almixer)
-
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
 add_definitions(
 	-DSOUND_SUPPORTS_WAV
 	-DSOUND_SUPPORTS_OGG

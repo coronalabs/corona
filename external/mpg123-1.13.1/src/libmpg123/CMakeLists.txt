@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(mpg123)
-
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
 add_definitions(
 	-DMPG123_NO_CONFIGURE
 	-DHAVE_STDLIB_H
