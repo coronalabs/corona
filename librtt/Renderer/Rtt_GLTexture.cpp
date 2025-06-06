@@ -97,6 +97,49 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+GLint CalculateOptimalAlignment(U32 width, GLenum format) 
+{
+    int bytesPerPixel = 4;
+    
+    switch(format) {
+        case GL_ALPHA:
+#if defined( Rtt_MetalANGLE)
+        case GL_RED_EXT:
+#else
+		case GL_LUMINANCE:
+#endif
+            bytesPerPixel = 1;
+            break;
+            
+        case GL_RGB:
+            bytesPerPixel = 3;
+            break;
+            
+        case GL_RGBA:
+        case GL_BGRA_EXT:
+        case GL_ABGR_EXT:
+            bytesPerPixel = 4;
+            break;
+            
+#ifdef Rtt_NXS_ENV
+        case GL_LUMINANCE_ALPHA:
+            bytesPerPixel = 2;
+            break;
+#endif
+		default: // Default
+			bytesPerPixel = 4;
+			break;
+    }
+
+    const U32 rowBytes = width * bytesPerPixel;
+   
+    if(rowBytes % 8 == 0) return 8;
+    if(rowBytes % 4 == 0) return 4;
+    if(rowBytes % 2 == 0) return 2;
+    
+    return 1; // No alignment
+}
+
 void 
 GLTexture::Create( CPUResource* resource )
 {
@@ -135,10 +178,12 @@ GLTexture::Create( CPUResource* resource )
 	const U32 h = texture->GetHeight();
 	const U8* data = texture->GetData();
 	{
-#if defined( Rtt_EMSCRIPTEN_ENV )
-		glPixelStorei( GL_UNPACK_ALIGNMENT, texture->GetByteAlignment() );
+//#if defined( Rtt_EMSCRIPTEN_ENV )
+//		glPixelStorei( GL_UNPACK_ALIGNMENT, texture->GetByteAlignment() );
+//		GL_CHECK_ERROR();
+//#endif
+		glPixelStorei(GL_UNPACK_ALIGNMENT, CalculateOptimalAlignment(w, internalFormat));
 		GL_CHECK_ERROR();
-#endif
 
 		// It is valid to pass a NULL pointer, so allocation is done either way
 		glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, data );
@@ -174,6 +219,10 @@ GLTexture::Update( CPUResource* resource )
 		getFormatTokens( texture->GetFormat(), internalFormat, format, type );
 
 		glBindTexture( GL_TEXTURE_2D, GetName() );
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, CalculateOptimalAlignment(w, internalFormat));
+		GL_CHECK_ERROR();
+
 		if (internalFormat == fCachedFormat && w == fCachedWidth && h == fCachedHeight )
 		{
 			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, w, h, format, type, data );
