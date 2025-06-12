@@ -160,6 +160,7 @@ platform/windows/**/Debug.Simulator/*
 platform/windows/**/Release.App/*
 platform/windows/**/Release.Simulator/*
 platform/windows/**/Debug/
+platform/windows/**/PreRelease/
 platform/windows/**/Release/
 
 # Android
@@ -259,6 +260,8 @@ premake4.lua
 librtt/Renderer/ios/build
 librtt/Renderer/mac/build
 
+#large file
+external/vulkan/Lib32/shaderc_combinedd.lib
 
 #legacy entries
 /plugins/viewer

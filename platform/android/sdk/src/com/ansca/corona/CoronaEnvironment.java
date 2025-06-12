@@ -405,7 +405,7 @@ public final class CoronaEnvironment {
 	}
 	
 	/**
-	 * Called by the C++ side of Corona when a Lua error occurrs.
+	 * Called by the C++ side of Corona when a Lua error occurs.
 	 * Should only be invoked if JavaToNativeShim.useDefaultLuaErrorHandler() has been called,
 	 * which sets up the core code to use a custom error handler implemented on the Java side.
 	 * <p>

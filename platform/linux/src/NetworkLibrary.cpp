@@ -71,6 +71,9 @@ void NetworkNotifierTask::operator()( Scheduler & sender )
 				fRequestState->setError(message);
 			}
 
+			// Set responseHeaders
+			fRequestState->setResponseHeaders(fRequestParams->fResponseHeaders.c_str());
+
 			CoronaFileSpec *responseFile = fRequestParams->getResponseFile();
 			if (responseFile != NULL)
 			{
@@ -85,6 +88,8 @@ void NetworkNotifierTask::operator()( Scheduler & sender )
 					{
 						fwrite(fRequestParams->fResponse.data(), 1, fRequestParams->fResponse.size(), f);
 						fclose(f);
+						fRequestState->setBytesEstimated(fRequestParams->fResponse.size());
+						fRequestState->setBytesTransferred(fRequestParams->fResponse.size());
 					}
 				}
 			}
@@ -93,6 +98,8 @@ void NetworkNotifierTask::operator()( Scheduler & sender )
 				fRequestState->fResponseBody.bodyType = TYPE_BYTES;
 				const uint8_t* buf = (const uint8_t*) fRequestParams->fResponse.data();
 				fRequestState->fResponseBody.bodyBytes = new ByteVector(buf, buf + fRequestParams->fResponse.size());
+				fRequestState->setBytesEstimated(fRequestParams->fResponse.size());
+				fRequestState->setBytesTransferred(fRequestParams->fResponse.size());
 			}
 
 			fRequestState->setStatus(status);
@@ -221,6 +228,15 @@ int	NetworkLibrary::request(lua_State *L)
 	return thiz->sendRequest(L);
 }
 
+size_t curlHeaderCallback(char *buffer, size_t size, size_t nitems, void *userdata) {
+	size_t totalSize = size * nitems;
+
+	UTF8String *headers = static_cast<UTF8String *>(userdata);
+	headers->append(buffer, totalSize);
+
+	return totalSize;
+}
+
 int	NetworkLibrary::sendRequest(lua_State *L)
 {
 	smart_ptr<NetworkRequestParameters> requestParams = new NetworkRequestParameters(L);
@@ -233,10 +249,11 @@ int	NetworkLibrary::sendRequest(lua_State *L)
 		curl_multi_add_handle(curlMulti, curl);
 
 		requestParams->setCURL(curlMulti, curl);
-		const std::string& method = requestParams->getRequestMethod();
+		// const std::string& method = requestParams->getRequestMethod();
 
 		CURLcode rc;
 		const Body* body = requestParams->getRequestBody();
+		std::string fileSize = "";
 		switch (body->bodyType)
 		{
 			case TYPE_STRING:
@@ -249,11 +266,30 @@ int	NetworkLibrary::sendRequest(lua_State *L)
 			}
 			case TYPE_BYTES:
 			{
-				Rtt_ASSERT(body->bodyString);
+				Rtt_ASSERT(body->bodyBytes);
 				unsigned char* buf = &body->bodyBytes->operator[](0);
 				long buflen = body->bodyBytes->size();
 				rc = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, buf);
 				rc = curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, buflen);
+				break;
+			}
+			case TYPE_FILE:
+			{
+				Rtt_ASSERT(body->bodyFile);
+				FILE *uploadFile = fopen(body->bodyFile->getFullPath().c_str(), "rb");
+				if (uploadFile == NULL) {
+					break;
+				}
+				// Record the file handle, to be cleaned up together with curl.
+				requestParams->setFileHandle(uploadFile);
+				rc = curl_easy_setopt(curl, CURLOPT_READDATA, uploadFile);
+				// Get and set the file size.
+				long size = fseek(uploadFile, 0, SEEK_END) ? -1 : ftell(uploadFile);
+				fseek(uploadFile, 0, SEEK_SET);
+				rc = curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
+				fileSize = "Content-Length: " + std::to_string(size);
+				// Set the POST request.
+				rc = curl_easy_setopt(curl, CURLOPT_POST, 1L);
 				break;
 			}
 			case TYPE_NONE:
@@ -276,7 +312,16 @@ int	NetworkLibrary::sendRequest(lua_State *L)
 				UTF8String requestHeaders = key + ": " + value;
 				headers = curl_slist_append(headers, requestHeaders.c_str());
 			}
+			// Set the size of the file to be uploaded.
+			if (!fileSize.empty()) {
+				curl_slist_append(headers, fileSize.c_str());
+			}
 			rc = curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+		} else {
+			// Set the size of the file to be uploaded.
+			if (!fileSize.empty()) {
+				rc = curl_easy_setopt(curl, CURLOPT_HTTPHEADER, curl_slist_append(NULL, fileSize.c_str()));
+			}
 		}
 
 		rc = curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -286,9 +331,14 @@ int	NetworkLibrary::sendRequest(lua_State *L)
 
 		rc = curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 
+		// Set the callback function for response headers.
+		rc = curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, curlHeaderCallback);
+		rc = curl_easy_setopt(curl, CURLOPT_HEADERDATA, &requestParams->fResponseHeaders);
+
 		rc = curl_easy_setopt(curl, CURLOPT_WRITEDATA, &requestParams->fResponse);
 		rc = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteData);
 		rc = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+		rc = curl_easy_setopt(curl, CURLOPT_TIMEOUT, requestParams->getTimeout());
 
 		long status = 0;
 		smart_ptr<NetworkRequestState> requestState = new NetworkRequestState();
@@ -458,7 +508,7 @@ int NetworkLibrary::RemoveSystemEventListener(lua_State *L, int systemEventListe
 
 // ----------------------------------------------------------------------------
 
-} // namespace Corona
+}// namespace Corona
 
 // ----------------------------------------------------------------------------
 

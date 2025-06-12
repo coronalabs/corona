@@ -20,6 +20,8 @@
 #include "Rtt_PlatformNotifier.h"
 #include "Rtt_Event.h"
 
+#include <atomic>
+
 // ----------------------------------------------------------------------------
 
 struct lua_State;
@@ -30,6 +32,7 @@ namespace Rtt
 {
 
 class PlatformALmixerPlaybackFinishedCallback;
+class PlatformNotifier;
 
 // Local event
 class ALmixerSoundCompletionEvent : public VirtualEvent
@@ -47,8 +50,8 @@ class ALmixerSoundCompletionEvent : public VirtualEvent
 			int which_channel,
 			unsigned int al_source,
 			ALmixer_Data* almixer_data,
-			bool finished_naturally,
-			PlatformALmixerPlaybackFinishedCallback* callback_notifier
+			bool finished_naturally/*,
+			PlatformALmixerPlaybackFinishedCallback* callback_notifier*/
 		);
 	
 		virtual ~ALmixerSoundCompletionEvent();
@@ -58,8 +61,8 @@ class ALmixerSoundCompletionEvent : public VirtualEvent
 			int which_channel,
 			unsigned int al_source,
 			ALmixer_Data* almixer_data,
-			bool finished_naturally,
-			PlatformALmixerPlaybackFinishedCallback* callback_notifier
+			bool finished_naturally/*,
+			PlatformALmixerPlaybackFinishedCallback* callback_notifier*/
 		);	
 	public:
 		static const char kName[];
@@ -72,7 +75,7 @@ class ALmixerSoundCompletionEvent : public VirtualEvent
 		unsigned int alSource;
 		ALmixer_Data* almixerData;
 		bool finishedNaturally;
-		PlatformALmixerPlaybackFinishedCallback* platformALmixerPlaybackFinishedCallback;
+		//PlatformALmixerPlaybackFinishedCallback* platformALmixerPlaybackFinishedCallback;
 };
 
 
@@ -120,11 +123,16 @@ class PlatformOpenALPlayer
 		void QuitOpenALPlayer();
 
 	public:
+		void AttachNotifier( PlatformNotifier* pnotifier );
+
+		void SetChannelCallback( lua_State* L, int channel, int userCallback );
+
+	public:
 		virtual ALmixer_Data* LoadAll( const char* file_path );
 		virtual ALmixer_Data* LoadStream( const char* file_path,  unsigned int buffer_size, unsigned int max_queue_buffers, unsigned int number_of_startup_buffers, unsigned int number_of_buffers_to_queue_per_update_pass );
 		virtual void FreeData( ALmixer_Data* almixer_data );
 
-		virtual int PlayChannelTimed( int channel, ALmixer_Data* almixer_data, int loops, int ticks, PlatformALmixerPlaybackFinishedCallback *callback );
+		virtual int PlayChannelTimed( int channel, ALmixer_Data* almixer_data, int loops, int ticks );//, PlatformALmixerPlaybackFinishedCallback *callback );
 		virtual int PauseChannel( int channel );
 		virtual int ResumeChannel( int channel );
 		virtual int StopChannel( int channel );
@@ -156,7 +164,7 @@ class PlatformOpenALPlayer
 
 		virtual int ExpireChannel( int which_channel, int number_of_milliseconds );
 
-		virtual int FadeInChannelTimed( int which_channel, ALmixer_Data* almixer_data, int number_of_loops, unsigned int fade_ticks, unsigned int expire_ticks, PlatformALmixerPlaybackFinishedCallback *callback );
+		virtual int FadeInChannelTimed( int which_channel, ALmixer_Data* almixer_data, int number_of_loops, unsigned int fade_ticks, unsigned int expire_ticks );//, PlatformALmixerPlaybackFinishedCallback *callback );
 		virtual int FadeOutChannel( int which_channel, unsigned int fade_ticks );
 		virtual int FadeChannel( int which_channel, unsigned int fade_ticks, float to_volume );
 		virtual bool SetVolumeChannel( int which_channel, float new_volume );
@@ -193,7 +201,7 @@ class PlatformOpenALPlayer
 		friend class PlatformOpenALPlayerCallListenerTask;
 		
 		static const unsigned int kOpenALPlayerMaxNumberOfSources = 32;
-		PlatformALmixerPlaybackFinishedCallback* arrayOfChannelToLuaCallbacks[kOpenALPlayerMaxNumberOfSources];
+		int/*PlatformALmixerPlaybackFinishedCallback* */arrayOfChannelToLuaCallbacks[kOpenALPlayerMaxNumberOfSources];
 		//const ResourceHandle<lua_State>& resourceHandle;
 		bool isInitialized;
 		bool isSuspended;
@@ -225,7 +233,13 @@ class PlatformOpenALPlayer
 		virtual bool GetUseAudioSessionInitializationFailureToAbortEndInterruption() const;
 	
 	protected:
+		int SwapChannelCallback( int channel, int newRef );
+
+	protected:
 		bool useAudioSessionInitializationFailureToAbortEndInterruption;
+
+		PlatformNotifier* notifier;
+		std::atomic_flag channelBusy[kOpenALPlayerMaxNumberOfSources];
 
 };
 

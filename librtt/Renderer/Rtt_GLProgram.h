@@ -21,6 +21,9 @@
 namespace Rtt
 {
 
+struct GLProgramUniformsCache;
+class GLExtraUniforms;
+
 // ----------------------------------------------------------------------------
 
 class GLProgram : public GPUResource
@@ -77,8 +80,31 @@ class GLProgram : public GPUResource
 		void UpdateShaderSource( Program* program, Program::Version version, VersionData& data );
 		void Reset( VersionData& data );
 
+        enum { kUniformNameBufferSize = 64 };
+        
+        void GetExtraUniformsInfo( Program::Version version, GLExtraUniforms& extraUniforms );
+    
 		VersionData fData[Program::kNumVersions];
 		CPUResource* fResource;
+    
+        void (*fCleanupShellTransform)(void *); // compare CoronaGraphics.h
+        GLProgramUniformsCache * fUniformsCache;
+    
+        friend class GLCommandBuffer;
+		friend class GLExtraUniforms;
+};
+
+class GLExtraUniforms {
+	public:
+		GLExtraUniforms();
+		GLExtraUniforms( Program::Version version, const GLProgram::VersionData * versionData, GLProgramUniformsCache ** cache );
+            
+		GLint Find( const char * name, GLint & size, GLenum & type );
+	private:
+		GLProgramUniformsCache ** fCache;
+		const GLProgram::VersionData * fVersionData;
+		Program::Version fVersion;
+            
 };
 
 // ----------------------------------------------------------------------------

@@ -9,10 +9,11 @@
 
 package com.ansca.corona;
 
+import android.os.Build;
 import android.util.Log;
 import android.content.Intent;
 
-/** The interface has all the funcations that are activity specific and aren't implemented by default. */
+/** The interface has all the functions that are activity specific and aren't implemented by default. */
 public class CoronaSystemApiHandler implements com.ansca.corona.listeners.CoronaSystemApiListener {
 	private CoronaActivity fActivity;
 	private static final boolean DEBUG = true;
@@ -109,6 +110,21 @@ public class CoronaSystemApiHandler implements com.ansca.corona.listeners.Corona
 			else
 			{
 				return false;
+			}
+		}
+		else if (actionName.equals("reportFullyDrawn"))
+		{
+			// Report to the system that app is now fully drawn, for diagnostic and optimization purposes.
+			// API introduced in KITKAT but has permission issue, so raise to LOLLIPOP, see https://github.com/flutter/flutter/issues/46172.
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				fActivity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (fActivity != null) {
+							fActivity.reportFullyDrawn();
+						}
+					}
+				});
 			}
 		}
 		else {

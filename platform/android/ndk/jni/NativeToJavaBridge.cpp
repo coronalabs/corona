@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -597,8 +598,8 @@ NativeToJavaBridge::GetRawAsset( const char * assetName, Rtt::Data<char> & data 
 						jbyteArrayResult bytesJ( bridge.getEnv(), (jbyteArray) jo );
 						data.Set( (const char *) bytesJ.getValues(), bytesJ.getLength() );
 						bytesJ.release();
-						result = true;
 						bridge.getEnv()->DeleteLocalRef(jo);
+						result = (data.Get() != nullptr);
 					}
 				}
 			}
@@ -2368,6 +2369,35 @@ NativeToJavaBridge::TextFieldSetSelection( int id, int startPosition, int endPos
 			HandleJavaException();
 		}
 	}
+}
+
+bool
+NativeToJavaBridge::TextFieldGetSelection(int id, int& startPosition, int& endPosition)
+{
+	NativeTrace trace("NativeToJavaBridge::TextFieldGetSelection");
+
+	jclassInstance bridge(GetJNIEnv(), kNativeToJavaBridge);
+	startPosition = -1;
+	endPosition = -1;
+
+	if (bridge.isValid()) {
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID(bridge.getClass(),
+			"callTextFieldGetSelection", "(Lcom/ansca/corona/CoronaRuntime;I)[I");
+
+		if (mid != NULL) {
+			jintArray result = (jintArray)bridge.getEnv()->CallStaticObjectMethod(bridge.getClass(), mid, fCoronaRuntime, id);
+			HandleJavaException();
+
+			if (result != NULL) {
+				jint* elements = bridge.getEnv()->GetIntArrayElements(result, 0);
+				startPosition = elements[0];
+				endPosition = elements[1];
+				bridge.getEnv()->ReleaseIntArrayElements(result, elements, 0);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void

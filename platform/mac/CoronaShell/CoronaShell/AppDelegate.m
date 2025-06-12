@@ -41,6 +41,11 @@
 @synthesize suspendWhenMinimized = _suspendWhenMinimized;
 @synthesize lastSentWindowStateForeground;
 
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app
+{
+	return NO;
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 #ifdef USE_HOCKEYSDK
@@ -80,6 +85,14 @@
 -(void)didPrepareOpenGLContext:(id)sender
 {
 	fGLView = sender;
+
+	if ([_coronaView settingsIsTransparent])
+	{
+		NSOpenGLContext* context = [fGLView openGLContext];
+		GLint opacity = 0;
+
+		[context setValues: &opacity forParameter: NSOpenGLCPSurfaceOpacity];
+	}
 }
 - (id) layerHostView
 {
@@ -150,9 +163,6 @@
 		[launchArgs setValue:[argv objectsAtIndexes:indices] forKey:@"args"];
 	}
 
-	// Make the default window background black which helps in full screen
-	[_window setBackgroundColor:NSColor.blackColor];
-
 	// Start the Corona app
 	[_coronaView setCoronaViewDelegate:self];
 	[_coronaView runWithPath:_appPath parameters:launchArgs];
@@ -167,6 +177,17 @@
 		  forEventClass:kInternetEventClass
 		     andEventID:kAEGetURL];
 
+	// Make the default window background black which helps in full screen
+	if (![_coronaView settingsIsTransparent])
+	{
+		[_window setBackgroundColor:NSColor.blackColor];
+	}
+	
+	else
+	{
+		[_window setBackgroundColor:NSColor.clearColor];
+	}
+	
     _suspendWhenMinimized = [_coronaView settingsSuspendWhenMinimized];
     
     // Make the window full screen capable (this is always done because the
@@ -317,27 +338,35 @@
 {
 	NSUInteger windowStyleMask = [_window styleMask];
 
-	if ([_coronaView settingsIsWindowResizable])
+	if (![_coronaView settingsIsTransparent])
 	{
-		// Make the window resizable
-		windowStyleMask |= NSResizableWindowMask;
-	}
+		if ([_coronaView settingsIsWindowResizable])
+		{
+			// Make the window resizable
+			windowStyleMask |= NSResizableWindowMask;
+		}
 
-	if ([_coronaView settingsIsWindowCloseButtonEnabled])
-	{
-		// Make the window closeable
-		windowStyleMask |= NSClosableWindowMask;
-	}
+		if ([_coronaView settingsIsWindowCloseButtonEnabled])
+		{
+			// Make the window closeable
+			windowStyleMask |= NSClosableWindowMask;
+		}
 
-	if ([_coronaView settingsIsWindowMinimizeButtonEnabled])
-	{
-		// Make the window minimizable
-		windowStyleMask |= NSMiniaturizableWindowMask;
-	}
+		if ([_coronaView settingsIsWindowMinimizeButtonEnabled])
+		{
+			// Make the window minimizable
+			windowStyleMask |= NSMiniaturizableWindowMask;
+		}
 
-	if (! [_coronaView settingsIsWindowTitleShown])
+		if (! [_coronaView settingsIsWindowTitleShown])
+		{
+			windowStyleMask |= NSFullSizeContentViewWindowMask;
+		}
+	}
+	
+	else
 	{
-		windowStyleMask |= NSFullSizeContentViewWindowMask;
+		windowStyleMask = NSBorderlessWindowMask;
 	}
 
 	// This triggers a window resize

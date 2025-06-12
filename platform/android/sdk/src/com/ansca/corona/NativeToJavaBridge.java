@@ -23,14 +23,19 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.net.URL;
 import java.net.MalformedURLException;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.ContentResolver;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -43,8 +48,10 @@ import android.graphics.Paint;
 import android.media.MediaScannerConnection;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.location.Location;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.DisplayCutout;
@@ -146,7 +153,7 @@ public class NativeToJavaBridge {
 		StringBuilder err = new StringBuilder();
 		if (runtime != null) {
 			// Fetch the runtime's Lua state.
-			// TODO: We need to account for corountines.
+			// TODO: We need to account for coroutines.
 			LuaState L = runtime.getLuaState();
 			if ( null == L ) {
 				L = new com.naef.jnlua.LuaState(luaStateMemoryAddress);
@@ -168,6 +175,10 @@ public class NativeToJavaBridge {
 			}
 			catch ( Exception ex ) {
 				err.append("\n\tno Java class '").append(classPath).append("'");
+			}
+			catch ( Throwable ex ) {
+				ex.printStackTrace();
+				err.append("\n\terror loading class '").append(classPath).append("': ").append(ex);
 			}
 			if(result == 0) {
 				L.pushString(err.toString());
@@ -1092,20 +1103,10 @@ public class NativeToJavaBridge {
 		String applicationName = CoronaEnvironment.getApplicationName();
 
 		// Create a unique file name in the directory.
-		java.io.File uniqueFile = null;
-		try {
-			for (int index = 1; index <= 10000; index++) {
-				String fileName = applicationName + " Picture " + Integer.toString(index) + fileExtensionName;
-				java.io.File nextFile = new java.io.File(directory, fileName);
-				if (nextFile.exists() == false) {
-					uniqueFile = nextFile;
-					break;
-				}
-			}
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+		String currentTimeStamp = sdf.format(Calendar.getInstance().getTime());
+		String fileName = applicationName + " Picture " + currentTimeStamp + fileExtensionName;
+		java.io.File uniqueFile = new java.io.File(directory, fileName);
 		return uniqueFile;
 	}
 
@@ -1133,19 +1134,81 @@ public class NativeToJavaBridge {
 		com.ansca.corona.storage.FileServices fileServices;
 		fileServices = new com.ansca.corona.storage.FileServices(CoronaEnvironment.getApplicationContext());
 
-		// Generate a unique file name in the default pictures directory.
-		String fileExtensionName = fileServices.getExtensionFrom(filePathName);
-		java.io.File destinationFile = createUniqueFileNameInPicturesDirectory(fileExtensionName);
-		if (destinationFile == null) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			// For Android 10+ use MediaStore
+			ContentValues values = new ContentValues();
+
+			String fileExtensionName = fileServices.getExtensionFrom(filePathName);
+			String applicationName = CoronaEnvironment.getApplicationName();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+			String currentTimeStamp = sdf.format(Calendar.getInstance().getTime());
+			String fileName = applicationName + " Picture " + currentTimeStamp + "." + fileExtensionName;
+
+			values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+			values.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(fileExtensionName));
+			values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+			values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+			ContentResolver resolver = CoronaEnvironment.getApplicationContext().getContentResolver();
+			Uri collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+
+			try {
+				Uri uri = resolver.insert(collection, values);
+				if (uri != null) {
+					// Copy file content to uri
+					try (OutputStream out = resolver.openOutputStream(uri);
+						 InputStream in = fileServices.openFile(filePathName)) {
+
+						byte[] buffer = new byte[8192];
+						int bytesRead;
+						while ((bytesRead = in.read(buffer)) != -1) {
+							out.write(buffer, 0, bytesRead);
+						}
+					}
+
+					// Mark as not pending
+					values.clear();
+					values.put(MediaStore.Images.Media.IS_PENDING, 0);
+					resolver.update(uri, values, null, null);
+					return true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
 			return false;
+		} else {
+			// For older Android versions use the original implementation
+			String fileExtensionName = fileServices.getExtensionFrom(filePathName);
+			java.io.File destinationFile = createUniqueFileNameInPicturesDirectory(fileExtensionName);
+			if (destinationFile == null) {
+				return false;
+			}
+			String destinationFilePathName = destinationFile.getPath();
+
+			SaveImageToPhotoLibraryRequestPermissionsResultHandler resultHandler
+				= new SaveImageToPhotoLibraryRequestPermissionsResultHandler(
+					runtime, fileServices, filePathName, destinationFilePathName);
+
+			return resultHandler.handleSaveMedia();
 		}
-		String destinationFilePathName = destinationFile.getPath();
+	}
 
-		SaveImageToPhotoLibraryRequestPermissionsResultHandler resultHandler 
-			= new SaveImageToPhotoLibraryRequestPermissionsResultHandler(
-				runtime, fileServices, filePathName, destinationFilePathName);
-
-		return resultHandler.handleSaveMedia();		
+	// Helper method to determine MIME type
+	private static String getMimeType(String extension) {
+		switch (extension) {
+			case "png":
+				return "image/png";
+			case "jpg":
+			case "jpeg":
+				return "image/jpeg";
+			case "gif":
+				return "image/gif";
+			case "webp":
+				return "image/webp";
+			default:
+				return "image/jpeg";
+		}
 	}
 
 	/**
@@ -1178,6 +1241,7 @@ public class NativeToJavaBridge {
 			}
 			filePathName = newFile.getPath();
 			addToPhotoLibrary = true;
+
 		}
 		
 		// Copy the pixel array into a bitmap object.
@@ -1195,7 +1259,6 @@ public class NativeToJavaBridge {
 		
 		SaveBitmapRequestPermissionsResultHandler resultHandler = new SaveBitmapRequestPermissionsResultHandler(
 			runtime, bitmap, quality, filePathName, addToPhotoLibrary);
-
 		return resultHandler.handleSaveMedia();
 	}
 
@@ -1283,7 +1346,36 @@ public class NativeToJavaBridge {
 		public boolean handleSaveMedia() {
 			// We only check for External storage permission if the user wants to add to the Photo library.
 			if (fAddToPhotoLibrary) {
-				return super.handleSaveMedia();
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {  // Requires use to Media Store to Save on Android 10+
+					ContentValues values = new ContentValues();
+					String fileName = fFilePathName.substring(fFilePathName.lastIndexOf('/') + 1);
+					values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+					if(fileName.contains(".png")){
+						values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+					}else{
+						values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+					}
+					values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+					values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+					try {
+						Uri uri = CoronaEnvironment.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+						if (uri != null) {
+							try (OutputStream out = CoronaEnvironment.getApplicationContext().getContentResolver().openOutputStream(uri)) {
+								fBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+							}
+							values.clear();
+							values.put(MediaStore.Images.Media.IS_PENDING, 0);
+							CoronaEnvironment.getApplicationContext().getContentResolver().update(uri, values, null, null);
+							return true;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else{
+					return super.handleSaveMedia();
+				}
 			}
 			return executeSaveMedia();
 		}
@@ -2057,6 +2149,10 @@ public class NativeToJavaBridge {
 			luaState.pushBoolean(currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES);
 			valuesPushed = 1;
 		}
+		else if (key.equals("hasSoftwareKeys")) {
+			luaState.pushBoolean(CoronaEnvironment.getCoronaActivity().HasSoftwareKeys());
+			valuesPushed = 1;
+		}
 
 		// Push nil if failed to fetch the requested value.
 		if (valuesPushed <= 0) {
@@ -2297,6 +2393,10 @@ public class NativeToJavaBridge {
 	protected static void callTextFieldSetSelection( CoronaRuntime runtime, int id, int startPosition, int endPosition)
 	{
 		runtime.getViewManager().setTextSelection( id, startPosition, endPosition );
+	}
+
+	protected static int[] callTextFieldGetSelection(CoronaRuntime runtime, int id) {
+	    return runtime.getViewManager().getTextSelection(id);
 	}
 
 	protected static void callTextFieldSetReturnKey( CoronaRuntime runtime, int id, String imeType ) 

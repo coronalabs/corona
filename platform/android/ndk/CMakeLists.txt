@@ -4,6 +4,7 @@ set(COMMON_COMPILER_FLAGS "-Wno-deprecated -O3 -fstrict-aliasing -fvisibility=hi
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILER_FLAGS} -std=c++14")
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${COMMON_COMPILER_FLAGS}")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
 
 add_definitions(
 	-DALMIXER_COMPILE_WITHOUT_SDL
@@ -33,7 +34,6 @@ include_directories (
 	${CORONA_ROOT}/platform/android/ndk
 	${CORONA_ROOT}/platform/shared
 	${CORONA_ROOT}/external/Box2D
-    ${CORONA_ROOT}/external/libjpeg
     ${CORONA_ROOT}/external/b2Separator-cpp
     ${CORONA_ROOT}/external/smoothpolygon
     ${ANDROID_NDK_ROOT}/sources/android/cpufeatures
@@ -350,6 +350,8 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Corona/CoronaLua.cpp
 		${CORONA_ROOT}/librtt/Corona/CoronaVersion.c
 		${CORONA_ROOT}/librtt/Corona/CoronaGraphics.cpp
+		${CORONA_ROOT}/librtt/Corona/CoronaMemory.cpp
+		${CORONA_ROOT}/librtt/Corona/CoronaObjects.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_BitmapMask.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_BitmapPaint.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_BitmapPaintAdapter.cpp
@@ -378,6 +380,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Display/Rtt_LineObject.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_LuaLibDisplay.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_LuaLibGraphics.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_ObjectHandle.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_OpenPath.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_Paint.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_PaintAdapter.cpp
@@ -427,6 +430,8 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceBitmapAdapter.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCanvas.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCanvasAdapter.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCapture.cpp
+		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceCaptureAdapter.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceExternal.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_TextureResourceExternalAdapter.cpp
 		${CORONA_ROOT}/librtt/Display/Rtt_VertexCache.cpp
@@ -507,6 +512,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Rtt_Preference.cpp
 		${CORONA_ROOT}/librtt/Rtt_PreferenceCollection.cpp
 		${CORONA_ROOT}/librtt/Rtt_PreferenceValue.cpp
+		${CORONA_ROOT}/librtt/Rtt_Profiling.cpp
 		${CORONA_ROOT}/librtt/Rtt_RenderingStream.cpp
 		${CORONA_ROOT}/librtt/Rtt_Resource.cpp
 		${CORONA_ROOT}/librtt/Rtt_Runtime.cpp
@@ -617,6 +623,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/librtt/Renderer/Rtt_GL.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_GLCommandBuffer.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_GLFrameBufferObject.cpp
+		${CORONA_ROOT}/librtt/Renderer/Rtt_FormatExtensionList.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_GLGeometry.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_GLProgram.cpp
 		${CORONA_ROOT}/librtt/Renderer/Rtt_GLRenderer.cpp
@@ -723,53 +730,6 @@ add_library( corona SHARED
 
 		${CORONA_ROOT}/external/b2Separator-cpp/b2Separator.cpp
 		${CORONA_ROOT}/external/smoothpolygon/SmoothPolygon.cpp
-
-		${CORONA_ROOT}/external/libjpeg/jcapimin.c
-		${CORONA_ROOT}/external/libjpeg/jcapistd.c
-		${CORONA_ROOT}/external/libjpeg/jccoefct.c
-		${CORONA_ROOT}/external/libjpeg/jccolor.c
-		${CORONA_ROOT}/external/libjpeg/jcdctmgr.c
-		${CORONA_ROOT}/external/libjpeg/jchuff.c
-		${CORONA_ROOT}/external/libjpeg/jcinit.c
-		${CORONA_ROOT}/external/libjpeg/jcmainct.c
-		${CORONA_ROOT}/external/libjpeg/jcmarker.c
-		${CORONA_ROOT}/external/libjpeg/jcmaster.c
-		${CORONA_ROOT}/external/libjpeg/jcomapi.c
-		${CORONA_ROOT}/external/libjpeg/jcparam.c
-		${CORONA_ROOT}/external/libjpeg/jcphuff.c
-		${CORONA_ROOT}/external/libjpeg/jcprepct.c
-		${CORONA_ROOT}/external/libjpeg/jcsample.c
-		${CORONA_ROOT}/external/libjpeg/jctrans.c
-		${CORONA_ROOT}/external/libjpeg/jdapimin.c
-		${CORONA_ROOT}/external/libjpeg/jdapistd.c
-		${CORONA_ROOT}/external/libjpeg/jdatadst.c
-		${CORONA_ROOT}/external/libjpeg/jdatasrc.c
-		${CORONA_ROOT}/external/libjpeg/jdcoefct.c
-		${CORONA_ROOT}/external/libjpeg/jdcolor.c
-		${CORONA_ROOT}/external/libjpeg/jddctmgr.c
-		${CORONA_ROOT}/external/libjpeg/jdhuff.c
-		${CORONA_ROOT}/external/libjpeg/jdinput.c
-		${CORONA_ROOT}/external/libjpeg/jdmainct.c
-		${CORONA_ROOT}/external/libjpeg/jdmarker.c
-		${CORONA_ROOT}/external/libjpeg/jdmaster.c
-		${CORONA_ROOT}/external/libjpeg/jdmerge.c
-		${CORONA_ROOT}/external/libjpeg/jdphuff.c
-		${CORONA_ROOT}/external/libjpeg/jdpostct.c
-		${CORONA_ROOT}/external/libjpeg/jdsample.c
-		${CORONA_ROOT}/external/libjpeg/jdtrans.c
-		${CORONA_ROOT}/external/libjpeg/jerror.c
-		${CORONA_ROOT}/external/libjpeg/jfdctflt.c
-		${CORONA_ROOT}/external/libjpeg/jfdctfst.c
-		${CORONA_ROOT}/external/libjpeg/jfdctint.c
-		${CORONA_ROOT}/external/libjpeg/jidctflt.c
-		${CORONA_ROOT}/external/libjpeg/jidctred.c
-		${CORONA_ROOT}/external/libjpeg/jquant1.c
-		${CORONA_ROOT}/external/libjpeg/jquant2.c
-		${CORONA_ROOT}/external/libjpeg/jutils.c
-		${CORONA_ROOT}/external/libjpeg/jmemmgr.c
-		${CORONA_ROOT}/external/libjpeg/jmem-android.c
-		${CORONA_ROOT}/external/libjpeg/jidctint.c
-		${CORONA_ROOT}/external/libjpeg/jidctfst.c
 )
 
 target_link_libraries ( corona lua jnlua5.1 mpg123 OpenAL almixer cpufeatures GLESv2 EGL jnigraphics dl log z OpenSLES )

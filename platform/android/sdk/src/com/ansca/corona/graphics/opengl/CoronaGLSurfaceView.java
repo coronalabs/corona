@@ -48,7 +48,7 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 	 * Creates a new OpenGL surface used to render Corona's content.
 	 * @param context Reference to the context. Cannot be null.
 	 */
-	public CoronaGLSurfaceView(android.content.Context context, com.ansca.corona.CoronaRuntime runtime, boolean isCoronaKit) {
+	public CoronaGLSurfaceView(android.content.Context context, com.ansca.corona.CoronaRuntime runtime, boolean isCoronaKit, boolean wantsDepthBuffer, boolean wantsStencilBuffer) {
 		super(context);
 
 		// Validate.
@@ -138,7 +138,15 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		// Note: The alpha channel must be disabled for the "surface" to work-around an OpenGL driver bug on Kindle Fire
 		//       and Nook Tablet where all alpha blended polygons, including the GL clear color, will be blended with black.
 		//       Alpha blending of content will still work because of the 32-bit color PixelFormat set down below.
-		setEGLConfigChooser(8, 8, 8, 8, 0, 0);
+		if (wantsStencilBuffer)
+		{
+			wantsDepthBuffer = true;
+		}
+
+		int depthSize = wantsDepthBuffer ? 16 : 0;
+		int stencilSize = wantsStencilBuffer ? 8 : 0;
+
+		setEGLConfigChooser(8, 8, 8, 8, depthSize, stencilSize);
 
 		// Attach the renderer to the surface.
 		fRenderer = new CoronaRenderer(this, runtime, isCoronaKit);
@@ -341,7 +349,7 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		public void onSurfaceCreated(
 			javax.microedition.khronos.opengles.GL10 gl, javax.microedition.khronos.egl.EGLConfig config)
 		{
-			// Re-draw what was last renderered if the last surface has been replaced by a new surface.
+			// Re-draw what was last rendered if the last surface has been replaced by a new surface.
 			// This can happen when the end user leaves and returns back to the activity window.
 			if (!sFirstSurface) {
 				fView.setNeedsSwap();
@@ -364,7 +372,7 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		@Override
 		public void onSurfaceChanged(javax.microedition.khronos.opengles.GL10 gl, int width, int height) {
 			// Fetch the view's current orientation.
-			// Note: We need to keep a local coy of the view's orientation settings in case they suddenly
+			// Note: We need to keep a local copy of the view's orientation settings in case they suddenly
 			//       change on the main UI thread while executing the below resize() operation, which can
 			//       take a long time on the first call since it executes the "main.lua" on startup.
 			com.ansca.corona.WindowOrientation currentWindowOrientation = fView.fCurrentWindowOrientation;

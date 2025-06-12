@@ -114,6 +114,10 @@ class WinTextBoxObject : public WinDisplayObject
 		/// <param name="L">Pointer to the Lua state that invoked this function.</param>
 		static int OnSetSelection(lua_State *L);
 
+		/// <summary>Called by the Lua getSelection() function.</summary>
+		/// <param name="L">Pointer to the Lua state that invoked this function.</param>
+		static int OnGetSelection(lua_State *L);
+
 		/// <summary>Called by the Lua resizeFontToFitHeight() function.</summary>
 		/// <param name="L">Pointer to the Lua state that invoked this function.</param>
 		static int OnResizeFontToFitHeight(lua_State *L);

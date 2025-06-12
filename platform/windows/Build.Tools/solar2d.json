@@ -1,0 +1,5 @@
+{
+  "Endpoint": "https://eus.codesigning.azure.net",
+  "CodeSigningAccountName": "Solar2D",
+  "CertificateProfileName": "Solar2D"
+}

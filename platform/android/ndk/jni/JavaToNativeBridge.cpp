@@ -471,7 +471,15 @@ JavaToNativeBridge::CopyBitmap(
 	{
 		imagePointer->SetPixelFormatToRGBA();
 	}
+
+	// Create the target image buffer.
 	imagePointer->CreateImageByteBuffer();
+	char *targetByteBufferPointer = (char*)imagePointer->GetImageByteBuffer();
+	if (!targetByteBufferPointer)
+	{
+		Rtt_LogException("Failed to copy Java bitmap due to buffer not created.");
+		return false;
+	}
 
 	// Fetch a pointer to the Java bitmap's byte buffer.
 	char *sourceByteBufferPointer = NULL;
@@ -483,7 +491,6 @@ JavaToNativeBridge::CopyBitmap(
 	}
 
 	// Copy the Java bitmap's pixels to the C/C++ bitmap buffer.
-	char *targetByteBufferPointer = (char*)imagePointer->GetImageByteBuffer();
 	if ((rowPaddingInBytes <= 0) &&
 	    ((convertToGrayscale && (ANDROID_BITMAP_FORMAT_A_8 == bitmapInfo.format)) ||
 	     (!convertToGrayscale && (ANDROID_BITMAP_FORMAT_RGBA_8888 == bitmapInfo.format))))

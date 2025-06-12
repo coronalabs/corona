@@ -8,6 +8,7 @@ get_filename_component(CORONA_ROOT "${CMAKE_SOURCE_DIR}/../../.." ABSOLUTE)
 
 set(Lua2CppOutputDir "${CMAKE_CURRENT_BINARY_DIR}/generated_src")
 set(LuaIncludePath "${CORONA_ROOT}/external/lua-5.1.3/src")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
 
 include(AndroidNdkModules)
 android_ndk_import_module_cpufeatures()

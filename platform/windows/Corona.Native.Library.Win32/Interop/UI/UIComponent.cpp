@@ -169,7 +169,7 @@ void UIComponent::OnSetWindowHandle(HWND windowHandle)
 					// Restore the window's orignal WndProc callback.
 					if (dataPointer->PreviousCallback)
 					{
-						::SetWindowLongPtr(fWindowHandle, GWLP_WNDPROC, (LONG)dataPointer->PreviousCallback);
+						::SetWindowLongPtr(fWindowHandle, GWLP_WNDPROC, (LONG_PTR)dataPointer->PreviousCallback);
 					}
 
 					// Delete the window handle from the map.
@@ -206,7 +206,7 @@ void UIComponent::OnSetWindowHandle(HWND windowHandle)
 			dataPointer = new HandleComponentData();
 			dataPointer->Collection.Add(this);
 			dataPointer->PreviousCallback =
-					(WNDPROC)::SetWindowLongPtr(fWindowHandle, GWLP_WNDPROC, (LONG)OnProcessMessage);
+					(WNDPROC)::SetWindowLongPtr(fWindowHandle, GWLP_WNDPROC, (LONG_PTR)OnProcessMessage);
 			sHandleComponentMapping.insert(HandleComponentMapPair(fWindowHandle, dataPointer));
 		}
 	}

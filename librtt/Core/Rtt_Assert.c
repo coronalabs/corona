@@ -284,19 +284,14 @@ Rtt_Log( const char *format, ... )
 #endif
 
 
-
 static void
 Rtt_UserBreak( )
 {
     #if defined( Rtt_TRAP_WITH_SIGNAL )
-        /*
-         Check for if being debugged before breaking for Mac
-         To pevent crash on Arm(M1) Macs
-        */
+        
         #if defined( Rtt_MAC_ENV )
-            #ifdef Rtt_DEBUG
-                raise( SIGINT );
-            #endif
+            //Commenting out this out to simplify things because it does not add any value for Macs and actually crashes on Apple Silicon Machines
+            //raise( SIGINT );
         #else
             raise( SIGINT );
         #endif

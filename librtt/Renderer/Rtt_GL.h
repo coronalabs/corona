@@ -118,7 +118,7 @@ void GLLogError( const char* message, const char* file, int line );
     
 // Enable GPU timer queries on supported platforms
 #if defined( Rtt_WIN_ENV )
-    //#define ENABLE_GPU_TIMER_QUERIES
+    #define ENABLE_GPU_TIMER_QUERIES
 #endif
     
 // ----------------------------------------------------------------------------

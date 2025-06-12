@@ -25,6 +25,7 @@ namespace Rtt
 
 class Display;
 class PlatformSurface;
+class ProfilingEntryRAII;
 class Runtime;
 class MUpdatable;
 
@@ -75,7 +76,7 @@ class Scene
 		bool IsValid() const;
 		void Invalidate();
 		void Clear( Renderer& renderer );
-		void Render( Renderer& renderer, PlatformSurface& rTarget );
+		void Render( Renderer& renderer, PlatformSurface& rTarget, ProfilingEntryRAII* profiling = NULL );
 		void Render( Renderer& renderer, PlatformSurface& rTarget, DisplayObject& object );
 
 	public:

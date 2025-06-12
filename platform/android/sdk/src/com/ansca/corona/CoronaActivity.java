@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -203,14 +204,22 @@ public class CoronaActivity extends Activity {
 		myInitialIntent = getIntent();
 
 		// Fetch this activity's meta-data from the manifest.
-		boolean isKeyboardAppPanningEnabled = false;
+		boolean isKeyboardAppPanningEnabled = false, wantsDepthBuffer = false, wantsStencilBuffer = false;
 		try {
+			android.content.pm.ApplicationInfo applicationInfo;
+			applicationInfo = getPackageManager().getApplicationInfo(
+					getPackageName(), android.content.pm.PackageManager.GET_META_DATA);
+			if (applicationInfo != null && applicationInfo.metaData != null) {
+				wantsDepthBuffer = applicationInfo.metaData.getBoolean( "wantsDepthBuffer" );
+				wantsStencilBuffer = applicationInfo.metaData.getBoolean( "wantsStencilBuffer" );
+			}
 			android.content.pm.ActivityInfo activityInfo;
 			activityInfo = getPackageManager().getActivityInfo(
 					getComponentName(), android.content.pm.PackageManager.GET_META_DATA);
 			if ((activityInfo != null) && (activityInfo.metaData != null)) {
 				isKeyboardAppPanningEnabled =
 						activityInfo.metaData.getBoolean("coronaWindowMovesWhenKeyboardAppears");
+
 			}
 		}
 		catch (Exception ex) {
@@ -249,7 +258,7 @@ public class CoronaActivity extends Activity {
 		CoronaEnvironment.setCoronaActivity(this);
 
 		// Create our CoronaRuntime, which also initializes the native side of the CoronaRuntime.
-		fCoronaRuntime = new CoronaRuntime(this, false);
+		fCoronaRuntime = new CoronaRuntime(this, false, wantsDepthBuffer, wantsStencilBuffer);
 
 		// Set initialSystemUiVisibility before splashScreen comes up
 		try {
@@ -299,8 +308,7 @@ public class CoronaActivity extends Activity {
 		fController.setCoronaSystemApiListener(systemHandler);
 
 		// Attempt to load/reload this application's expansion files, if they exist.
-		com.ansca.corona.storage.FileServices fileServices = new com.ansca.corona.storage.FileServices(this);
-		fileServices.loadExpansionFiles();
+		com.ansca.corona.storage.FileServices.resetAccessedExpansionFileDirectory();
 
 		// Create and set up a store object used to manage in-app purchases.
 		myStore = new com.ansca.corona.purchasing.StoreProxy(fCoronaRuntime, fCoronaRuntime.getController());
@@ -536,7 +544,7 @@ public class CoronaActivity extends Activity {
 	/**
 	 * Determines if the Corona Activity needs to handle orientation settings manually.
 	 * This is an internal method that can only be called by Corona.
-	 * @return Returns a boolean indicating whether thie CoronaActivity should handle orientation settings itself.
+	 * @return Returns a boolean indicating whether the CoronaActivity should handle orientation settings itself.
 	 */
 	boolean needManualOrientationHandling() {
 		return myInitialOrientationSetting == android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE ||
@@ -1141,7 +1149,7 @@ public class CoronaActivity extends Activity {
 				|| mode == CoronaStatusBarSettings.LIGHT_TRANSPARENT
 				|| mode == CoronaStatusBarSettings.DARK_TRANSPARENT) {
 
-			// Unhides it if its hidden
+			// Unhidden it if its hidden
 			if (myStatusBarMode == CoronaStatusBarSettings.HIDDEN) {
 				getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 				getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -1933,7 +1941,7 @@ public class CoronaActivity extends Activity {
 		// Store the given intent.
 		setIntent(intent);
 
-		// Raise an "applicationOpen" event to be recevied by the Corona runtime.
+		// Raise an "applicationOpen" event to be received by the Corona runtime.
 		EventManager eventManager = fCoronaRuntime.getController().getEventManager();
 		if (eventManager != null) {
 			eventManager.addEvent(new com.ansca.corona.events.RunnableEvent(new Runnable() {
@@ -2095,105 +2103,98 @@ public class CoronaActivity extends Activity {
 		// whether the splash screen is in the app bundle appears to be to query the APK contents
 		android.content.Context context = CoronaEnvironment.getApplicationContext();
 		android.content.res.Resources resources = context.getResources();
-		com.ansca.corona.storage.FileServices fileServices;
-		fileServices = new com.ansca.corona.storage.FileServices(context);
-		boolean splashExists = fileServices.doesResourceFileExist("drawable/_corona_splash_screen.png")
-				|| fileServices.doesResourceFileExist("drawable/_corona_splash_screen.jpg");
 
-		// Log.v("Corona", "showCoronaSplashScreen: splashExists: " + splashExists);
-		if ( splashExists )
+		final ViewManager viewManager = fCoronaRuntime.getViewManager();
+		// 0 is not a valid resource ID; no need for rechecking.
+		int splash_drawable_id = 0;
+
+		try {
+			// Fetch the specified resource's unique integer ID by its name.
+			splash_drawable_id = resources.getIdentifier("_corona_splash_screen" , "drawable", context.getPackageName());
+		}
+		catch (Exception ex) {
+			Log.v("Corona", "showCoronaSplashScreen load EXCEPTION: " + ex);
+		}
+
+		// Log.v("Corona", "showCoronaSplashScreen: splash_drawable_id: " + splash_drawable_id);
+		if ( splash_drawable_id != 0 )
 		{
-			final ViewManager viewManager = fCoronaRuntime.getViewManager();
-			int splash_drawable_id = 0;
-
 			try {
-				// Fetch the specified resource's unique integer ID by its name.
-				splash_drawable_id = resources.getIdentifier("_corona_splash_screen" , "drawable", context.getPackageName());
-			}
-			catch (Exception ex) {
-				Log.v("Corona", "showCoronaSplashScreen load EXCEPTION: " + ex);
-			}
+				// LinearLayout
+				fSplashView = new LinearLayout(this);
+				fSplashView.setOrientation(LinearLayout.VERTICAL);
+				fSplashView.setBackgroundColor(0xFF000000);
 
-			// Log.v("Corona", "showCoronaSplashScreen: splash_drawable_id: " + splash_drawable_id);
-			if ( splash_drawable_id != 0 )
-			{
-				try {
-					// LinearLayout
-					fSplashView = new LinearLayout(this);
-					fSplashView.setOrientation(LinearLayout.VERTICAL);
-					fSplashView.setBackgroundColor(0xFF000000);
+				// ImageView
+				ImageView imageView = new ImageView(this);
+				imageView.setScaleType(ImageView.ScaleType.CENTER);
 
-					// ImageView
-					ImageView imageView = new ImageView(this);
-					imageView.setScaleType(ImageView.ScaleType.CENTER);
+				// Resize the bitmap
+				android.view.Display display =
+						((android.view.WindowManager)getSystemService(android.content.Context.WINDOW_SERVICE)).getDefaultDisplay();
+				Bitmap d = BitmapFactory.decodeResource(resources, splash_drawable_id);
 
-					// Resize the bitmap
-					android.view.Display display =
-							((android.view.WindowManager)getSystemService(android.content.Context.WINDOW_SERVICE)).getDefaultDisplay();
-					Bitmap d = BitmapFactory.decodeResource(resources, splash_drawable_id);
+				if (display.getWidth() >= d.getWidth() && display.getHeight() >= d.getHeight())
+				{
+					// Screen is bigger that the splash screen, we don't scale up so just display it
+					// Log.v("Corona", "showCoronaSplashScreen: not scaling: screen: "+ display.getWidth() +"x"+ display.getHeight() + "; original: "+ d.getWidth() +"x"+ d.getHeight());
 
-					if (display.getWidth() >= d.getWidth() && display.getHeight() >= d.getHeight())
+					imageView.setImageBitmap(d);
+				}
+				else
+				{
+					// Scaling the image ourselves avoids issues with "Bitmap too large to be uploaded into a texture" errors
+
+					double widthRatio = ((double)display.getWidth() / d.getWidth());
+					double heightRatio = ((double)display.getHeight() / d.getHeight());
+					int nw = 0;
+					int nh = 0;
+
+					// Scale by height or width, whichever is greater
+					if (heightRatio > widthRatio)
 					{
-						// Screen is bigger that the splash screen, we don't scale up so just display it
-						// Log.v("Corona", "showCoronaSplashScreen: not scaling: screen: "+ display.getWidth() +"x"+ display.getHeight() + "; original: "+ d.getWidth() +"x"+ d.getHeight());
-
-						imageView.setImageBitmap(d);
+						nw = (int) ((double)d.getWidth() * widthRatio);
+						nh = (int) ((double)d.getHeight() * widthRatio);
 					}
 					else
 					{
-						// Scaling the image ourselves avoids issues with "Bitmap too large to be uploaded into a texture" errors
-
-						double widthRatio = ((double)display.getWidth() / d.getWidth());
-						double heightRatio = ((double)display.getHeight() / d.getHeight());
-						int nw = 0;
-						int nh = 0;
-
-						// Scale by height or width, whichever is greater
-						if (heightRatio > widthRatio)
-						{
-							nw = (int) ((double)d.getWidth() * widthRatio);
-							nh = (int) ((double)d.getHeight() * widthRatio);
-						}
-						else
-						{
-							nw = (int) ((double)d.getWidth() * heightRatio);
-							nh = (int) ((double)d.getHeight() * heightRatio);
-						}
-
-						Bitmap scaled = Bitmap.createScaledBitmap(d, nw, nh, true);
-
-						// Log.v("Corona", "showCoronaSplashScreen: scaling: screen: "+ display.getWidth() +"x"+ display.getHeight() + "; original: "+ d.getWidth() +"x"+ d.getHeight()+ "; scaled: "+ scaled.getWidth() +"x"+ scaled.getHeight());
-						// Log.v("Corona", "showCoronaSplashScreen: new: "+ nw +"x"+ nh +"; ratio: "+ widthRatio + "x" + heightRatio);
-
-						imageView.setImageBitmap(scaled);
-
-						// On Android 2.3.3 we can help low memory devices by forcing the source bitmap to be recycled
-						// but only if Bitmap.createScaledBitmap() didn't return the same image
-						// if (android.os.Build.VERSION.SDK_INT <= 10)
-						// {
-						// 	if (scaled.getWidth() != d.getWidth() || scaled.getHeight() != d.getHeight())
-						// 	{
-						// 		// We got a different bitmap back after scaling, it's safe to recycle the old one
-						// 		d.recycle();
-						// 	}
-						// }
+						nw = (int) ((double)d.getWidth() * heightRatio);
+						nh = (int) ((double)d.getHeight() * heightRatio);
 					}
 
-					FrameLayout.LayoutParams layoutParams;
-					layoutParams = new FrameLayout.LayoutParams(
-							FrameLayout.LayoutParams.FILL_PARENT,
-							FrameLayout.LayoutParams.FILL_PARENT,
-							android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.CENTER_VERTICAL);
+					Bitmap scaled = Bitmap.createScaledBitmap(d, nw, nh, true);
 
-					imageView.setLayoutParams(layoutParams);
+					// Log.v("Corona", "showCoronaSplashScreen: scaling: screen: "+ display.getWidth() +"x"+ display.getHeight() + "; original: "+ d.getWidth() +"x"+ d.getHeight()+ "; scaled: "+ scaled.getWidth() +"x"+ scaled.getHeight());
+					// Log.v("Corona", "showCoronaSplashScreen: new: "+ nw +"x"+ nh +"; ratio: "+ widthRatio + "x" + heightRatio);
 
-					fSplashView.addView(imageView);
-					// Make visible
-					viewManager.getContentView().addView(fSplashView, layoutParams);
+					imageView.setImageBitmap(scaled);
+
+					// On Android 2.3.3 we can help low memory devices by forcing the source bitmap to be recycled
+					// but only if Bitmap.createScaledBitmap() didn't return the same image
+					// if (android.os.Build.VERSION.SDK_INT <= 10)
+					// {
+					// 	if (scaled.getWidth() != d.getWidth() || scaled.getHeight() != d.getHeight())
+					// 	{
+					// 		// We got a different bitmap back after scaling, it's safe to recycle the old one
+					// 		d.recycle();
+					// 	}
+					// }
 				}
-				catch (Exception ex) {
-					Log.v("Corona", "showCoronaSplashScreen display EXCEPTION: " + ex);
-				}
+
+				FrameLayout.LayoutParams layoutParams;
+				layoutParams = new FrameLayout.LayoutParams(
+						FrameLayout.LayoutParams.FILL_PARENT,
+						FrameLayout.LayoutParams.FILL_PARENT,
+						android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.CENTER_VERTICAL);
+
+				imageView.setLayoutParams(layoutParams);
+
+				fSplashView.addView(imageView);
+				// Make visible
+				viewManager.getContentView().addView(fSplashView, layoutParams);
+			}
+			catch (Exception ex) {
+				Log.v("Corona", "showCoronaSplashScreen display EXCEPTION: " + ex);
 			}
 		}
 	}
@@ -3499,7 +3500,7 @@ public class CoronaActivity extends Activity {
 		}
 
 		/**
-		 * Called when the activity window layou has changed.
+		 * Called when the activity window layout has changed.
 		 * This can happen when it is resized or panned by the virtual keyboard, if enabled.
 		 */
 		@Override
@@ -3804,6 +3805,28 @@ public class CoronaActivity extends Activity {
 				}
 			}
 			catch (Exception ex) {}
+		}
+	}
+
+	@Override
+	public void onTrimMemory(int level) {
+		super.onTrimMemory(level);
+		if( level == android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
+			|| level == android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+		{
+			if (fCoronaRuntime != null) {
+				com.ansca.corona.events.EventManager eventManager = fCoronaRuntime.getController().getEventManager();
+				if (eventManager != null) {
+					eventManager.addEvent(new com.ansca.corona.events.RunnableEvent(new java.lang.Runnable() {
+						@Override
+						public void run() {
+							if (fCoronaRuntime.getController() != null) {
+								JavaToNativeShim.memoryWarningEvent(fCoronaRuntime);
+							}
+						}
+					}));
+				}
+			}
 		}
 	}
 }
