@@ -363,8 +363,10 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
     char highp_support[] = "#define FRAGMENT_SHADER_SUPPORTS_HIGHP 0\n";
     highp_support[ sizeof( highp_support ) - 3 ] = ( CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders() ? '1' : '0' );
 
-    //! \TODO Make the definition of "TEX_COORD_Z" conditional.
-    char texCoordZBuffer[] = "";//#define TEX_COORD_Z 1\n";
+    ShaderResource * shaderResource = program->GetShaderResource();
+    
+    char wantUnitRegionBuffer[] = "#define WANT_UNIT_REGION 0\n";
+	wantUnitRegionBuffer[ sizeof( wantUnitRegionBuffer ) - 3] = ( shaderResource->GetUnitRegionPolicy() != ShaderResource::kNone ? '1' : '0' );
 
     const char *program_header_source = program->GetHeaderSource();
     const char *header = ( program_header_source ? program_header_source : "" );
@@ -374,7 +376,7 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
     shader_source[0] = header;
     shader_source[1] = highp_support;
     shader_source[2] = maskBuffer;
-    shader_source[3] = texCoordZBuffer;
+    shader_source[3] = wantUnitRegionBuffer;
 
     if ( program->IsCompilerVerbose() )
     {
@@ -383,10 +385,9 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
         data.fHeaderNumLines = CountLines( shader_source, numSegments );
     }
     
-    ShaderResource * shaderResource = program->GetShaderResource();
     const CoronaShellTransform * shellTransform = shaderResource->GetShellTransform();
     CoronaShellTransformParams params = {};
-    const char * hints[] = { "header", "highpSupport", "mask", "texCoordZ", NULL };
+    const char * hints[] = { "header", "highpSupport", "mask", "wantUnitRegion", NULL };
     void * shellTransformKey = &fCleanupShellTransform; // n.b. done to make cleanup robust
 
     std::vector< CoronaEffectDetail > details;

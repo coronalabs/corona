@@ -225,6 +225,9 @@ DisplayObject::DidChangePaint( RenderData& data )
     data.fUserUniform1 = NULL;
     data.fUserUniform2 = NULL;
     data.fUserUniform3 = NULL;
+    
+	data.fFromImageSheet = false;
+	data.fWantsUnitRegion = false;
 }
 
 // ----------------------------------------------------------------------------

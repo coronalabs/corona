@@ -259,7 +259,7 @@ class Renderer
 		void IssueCaptures( Texture * fill0 );
 
     public:
-        void SetGeometryWriters( const GeometryWriter* list, U32 n = 1 );
+        void SetGeometryWriters( const GeometryWriter* list, U32 n = 1, bool wantUnitRegion = false, bool hasDistortion = false );
         bool AddGeometryWriter( const GeometryWriter& writer, bool isUpdate );
         bool CanAddGeometryWriters() const { return fCanAddGeometryWriters; }
 
@@ -269,6 +269,10 @@ class Renderer
 
             Renderer& fRenderer;
         };
+        
+	public:
+		bool GetOptInToUnitRegionEncoding() const { return fOptInToUnitRegionEncoding; }
+		void SetOptInToUnitRegionEncoding( bool newValue ) { fOptInToUnitRegionEncoding = newValue; }
         
     protected:
 	    void WriteGeometry ( void * dstGeomComp, const void* srcGeom, U32 stride, U32 index, U32 count = 1, GeometryWriter::MaskBits validBits = GeometryWriter::kMain );
@@ -411,6 +415,7 @@ class Renderer
         Array< GeometryWriter > fGeometryWriters;
         const GeometryWriter* fCurrentGeometryWriterList; // to detect change in writer; assumed to be stable object, i.e. either NULL (default) or some static array
         bool fCanAddGeometryWriters;
+        bool fOptInToUnitRegionEncoding;
 };
 
 // ----------------------------------------------------------------------------

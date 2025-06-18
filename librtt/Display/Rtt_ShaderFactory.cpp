@@ -768,6 +768,22 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
         BindTimeTransform( L, shaderIndex, resource );
     }
 
+	lua_getfield( L, shaderIndex, "wantUnitRegion" );
+	
+	bool forBuiltins = LUA_TSTRING == lua_type( L, -1 ) && Rtt_StringCompare( lua_tostring( L, -1 ), "builtin" ) == 0;
+	
+	if (forBuiltins)
+	{
+		resource->SetUnitRegionPolicy( ShaderResource::kOptIn );
+	}
+	
+	else if ( LUA_TBOOLEAN == lua_type( L, -1 ) && lua_toboolean( L, -1 ) )
+	{
+		resource->SetUnitRegionPolicy( ShaderResource::kAlways );
+	}
+	
+	lua_pop( L, 1 );
+
     bool has_vertex_data = BindVertexDataMap( L, shaderIndex, resource );
     if( has_vertex_data )
     {
