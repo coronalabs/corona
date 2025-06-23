@@ -2152,6 +2152,75 @@ InitializeFixtureUsing_Shape( lua_State *L,
 }
 
 static bool
+InitializeFixtureUsing_Circle(lua_State* L,
+	int lua_arg_index,
+	int& fixtureIndex,
+	b2Vec2& center_in_pixels,
+	DisplayObject* display_object,
+	b2Body* body,
+	float meter_per_pixels_scale)
+{
+	lua_getfield(L, lua_arg_index, "circle");
+	if (lua_istable(L, -1))
+	{
+		DEBUG_PRINT("%s\n", __FUNCTION__);
+
+		Real pixels_per_meter_scale = (1.0f / meter_per_pixels_scale);
+
+		lua_getfield(L, -1, "radius");
+		Real radius = Rtt_FloatToReal(lua_tonumber(L, -1));
+		lua_pop(L, 1);
+
+		bool hasCenter = true;
+
+		lua_getfield(L, -1, "x");
+		hasCenter &= (lua_type(L, -1) == LUA_TNUMBER);
+		Real x = luaL_torealphysics(L, -1, pixels_per_meter_scale);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "y");
+		hasCenter &= (lua_type(L, -1) == LUA_TNUMBER);
+		Real y = luaL_torealphysics(L, -1, pixels_per_meter_scale);
+		lua_pop(L, 1);
+
+		b2FixtureDef fixtureDef;
+
+		b2CircleShape circleDef;
+		circleDef.m_radius = Rtt_REAL_16TH; // default to 1/16th of a meter
+
+		if (hasCenter) {
+			center_in_pixels.Set(x, y);
+		}
+
+		radius *= meter_per_pixels_scale; // Convert to meters.
+
+		if (radius < Rtt_REAL_0)
+		{
+			radius = Rtt_REAL_16TH;
+		}
+
+		circleDef.m_radius = Rtt_RealToFloat(radius);
+		center_in_pixels.Set(x, y);
+		circleDef.m_p = (center_in_pixels);
+
+		InitializeFixtureFromLua(L,
+			fixtureDef,
+			&circleDef,
+			lua_arg_index);
+
+		_FixtureCreator(body,
+			&fixtureDef,
+			fixtureIndex);
+
+		lua_pop(L, 1);
+		return true;
+	}
+
+	lua_pop(L, 1);
+	return false;
+}
+
+static bool
 add_b2Body_to_DisplayObject( lua_State *L,
 								DisplayObject *display_object,
 								int numArgs )
@@ -2274,7 +2343,15 @@ add_b2Body_to_DisplayObject( lua_State *L,
 		{
 			// Initialize the first type encountered.
 			// The order of these calls is IMPORTANT.
-			( InitializeFixtureUsing_Shape( L,
+			(
+				InitializeFixtureUsing_Circle(L,
+											lua_arg_index,
+											fixtureIndex,
+											center_in_pixels,
+											display_object,
+											body,
+											meter_per_pixels_scale) ||
+				InitializeFixtureUsing_Shape( L,
 											lua_arg_index,
 											fixtureIndex,
 											center_in_pixels,
