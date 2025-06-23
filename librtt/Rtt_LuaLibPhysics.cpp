@@ -2435,10 +2435,13 @@ add_b2Body_to_DisplayObject( lua_State *L,
 //					- halfWidth (required)
 //					- halfHeight (required)
 //					- x, y, angle (optional)
+//				+ circle: table:
+//					- radius (required)
+//					- x, y (optional)
 //				+ radius: number > 0
 // Note:
 //	* If no shape definition is supplied then the shape defaults to DisplayObject's bounding box.
-//	* If supplied, then the precedence order is: 'shape', 'box', 'radius'
+//	* If supplied, then the precedence order is: 'circle', 'shape', 'box', 'radius'
 //
 static int
 addBody( lua_State *L )
