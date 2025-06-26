@@ -37,6 +37,11 @@
 #define SIM_SHAKE_REPS			7
 #define SIM_SHAKE_PERIOD		80	// msec
 
+// After Build Types
+#define AB_DO_NOTHING			"0"	
+#define AB_SHOW_IN_FILES		"1"
+#define AB_COPY_TO_DEVICE		"2"	
+
 // Define all registry items here
 #define REGISTRY_SECTION _T("Preferences")
 #define REGISTRY_WORKINGDIR _T("WorkingDir")
