@@ -337,6 +337,7 @@ namespace Rtt
 		{
 			const SkinProperties* skin = (const SkinProperties*)e.user.data1;
 			OnViewAsChanged(skin);
+			PushEvent(sdl::onCloseDialog);
 			break;
 		}
 
@@ -407,12 +408,19 @@ namespace Rtt
 
 			int w = skin->screenWidth;
 			int h = skin->screenHeight;
+			
+			if (orientation == DeviceOrientation::kSidewaysRight || orientation == DeviceOrientation::kSidewaysLeft)
+			{
+				std::swap(w, h);
+			}
+			
 			while (w > screen.w || h > screen.h)
 			{
 				w /= skinScaleFactor;
 				h /= skinScaleFactor;
 			}
 			fContext->SetSize(w, h);
+			fContext->RestartRenderer();
 		}
 	}
 
