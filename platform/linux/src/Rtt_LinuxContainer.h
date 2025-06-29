@@ -22,6 +22,7 @@
 #include <ctype.h>
 #include <math.h>
 #include <string>
+#include <cstdint>
 
 // A smart (strong) pointer asserts that the pointed-to object will
 // not go away as long as the strong pointer is valid.  "Owners" of an
