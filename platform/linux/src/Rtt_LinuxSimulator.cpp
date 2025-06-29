@@ -337,6 +337,7 @@ namespace Rtt
 		{
 			const SkinProperties* skin = (const SkinProperties*)e.user.data1;
 			OnViewAsChanged(skin);
+			PushEvent(sdl::onCloseDialog);
 			break;
 		}
 
