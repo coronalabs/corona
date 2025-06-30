@@ -1307,6 +1307,11 @@ newJoint( lua_State *L )
 
 			b2Vec2 point( px, py );
 			b2Vec2 axis( qx, qy );
+			
+			if(!lua_isnil(L, 8) && lua_isboolean(L, 8) && lua_toboolean(L, 8))
+			{ // normalize Axis
+				axis.Normalize();
+			}
 
 			jointDef.Initialize( body1, body2, point, axis );
 
