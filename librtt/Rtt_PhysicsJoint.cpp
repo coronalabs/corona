@@ -1247,7 +1247,7 @@ PhysicsJoint::SetValueForKey( lua_State *L )
 				{
 					const PhysicsWorld& physics = LuaContext::GetRuntime( L )->GetPhysicsWorld();
 					Real scale = physics.GetPixelsPerMeter();
-					Rtt_Real valueMeters = Rtt_RealDiv( Rtt_FloatToReal( lua_toboolean( L, 3 ) ), scale );	
+					Rtt_Real valueMeters = Rtt_RealDiv( Rtt_FloatToReal( lua_tonumber( L, 3 ) ), scale );	
 					joint->SetMotorSpeed( Rtt_RealToFloat( valueMeters ) );
 				}
 			}
