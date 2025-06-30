@@ -628,7 +628,7 @@ var platformLibrary =
 	jsContextUnlockAudio: function () {
 		// create empty buffer and play it
 		if (audioCtx.state != 'running') {
-			var buffer = audioCtx.createBuffer(1, 1, 22050);
+			var buffer = audioCtx.createBuffer(1, 1, 44100);
 			var source = audioCtx.createBufferSource();
 			source.buffer = buffer;
 			source.connect(audioCtx.destination);
