@@ -511,13 +511,13 @@ namespace Rtt
 			//Rtt_LogException("Unsupported orientation: '%s'", orientation.c_str());
 		}
 
-		jsContextInit((int)fWidth, (int)fHeight, fOrientation);
+
 		#if defined(EMSCRIPTEN)
 		
 			devicePixelRatio = emscripten_get_device_pixel_ratio();
 
 		#endif
-
+		jsContextInit((int)(fWidth * devicePixelRatio), (int)(fHeight * devicePixelRatio), fOrientation);
 		//Scale double
 		float scaleX = (float)(((float)jsWindowWidth * devicePixelRatio) / fWidth);
 		float scaleY = (float)(((float)jsWindowHeight * devicePixelRatio) / fHeight);
