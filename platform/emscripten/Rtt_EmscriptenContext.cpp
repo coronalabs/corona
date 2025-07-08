@@ -570,12 +570,7 @@ namespace Rtt
 
 		// hack
 #ifdef EMSCRIPTEN
-		if ((stricmp(fRuntimeDelegate->fScaleMode.c_str(), "zoomStretch") == 0) || (stricmp(fRuntimeDelegate->fScaleMode.c_str(), "zoomEven") == 0))
-		{
-			EM_ASM_INT({	window.dispatchEvent(new Event('resize')); });
-		}
-
-		emscripten_set_element_css_size("canvas", (int)(scaledWidth / devicePixelRatio), (int)(scaledHeight / devicePixelRatio));
+		EM_ASM_INT({	window.dispatchEvent(new Event('resize')); });
 #endif
 
 		return true;
@@ -998,6 +993,12 @@ namespace Rtt
 						}
 						else if (stricmp(fRuntimeDelegate->fScaleMode.c_str(), "zoomStretch") == 0)
 						{
+							w = fWidth * scaleX;
+							h = fHeight * scaleY;
+						}
+						else if (stricmp(fRuntimeDelegate->fScaleMode.c_str(), "letterBox") == 0)
+						{
+							//Scale to fullscreen
 							w = fWidth * scaleX;
 							h = fHeight * scaleY;
 						}

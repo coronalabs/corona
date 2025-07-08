@@ -320,7 +320,16 @@ settings =
 		preferenceStorage = "",
 		singleInstance = true,
 	},
-
+	web =
+	{
+		defaultMode = "",
+		defaultViewWidth = 1,
+		defaultViewHeight = 1,
+		titleText =
+		{
+			default = "",
+		},
+	},
 	window =
 	{
 		defaultMode = "",
