@@ -1001,6 +1001,12 @@ namespace Rtt
 							w = fWidth * scaleX;
 							h = fHeight * scaleY;
 						}
+						else if (stricmp(fRuntimeDelegate->fScaleMode.c_str(), "letterBox") == 0)
+						{
+							//Scale to fullscreen
+							w = fWidth * scaleX;
+							h = fHeight * scaleY;
+						}
 						else
 						{
 							w = fWidth * scale;
