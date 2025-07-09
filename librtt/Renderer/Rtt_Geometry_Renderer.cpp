@@ -53,6 +53,127 @@ GeometryWriter::CopyGeometryWriter()
     return sCopyGeometry;
 }
 
+static float GetFloat( const void* bytes )
+{
+	return *static_cast< const float* >( bytes );
+}
+
+static float GetFloatMappedTo0( const void* bytes )
+{
+	float f = GetFloat( bytes );
+
+	return f > 0.f ? -f : 0.f;
+}
+
+static float GetFloatMappedTo1( const void* bytes )
+{
+	float f = GetFloat( bytes );
+
+	return f < 1.f ? 2. - f : 1.f;
+}
+
+static void CopyFloat( void* dst, const float f )
+{
+	memcpy( dst, &f, sizeof(float) );
+}
+
+void
+GeometryWriter::UnitRegionEncode( void* dst, const void* src, const CoronaGeometryMappingLayout* layout, U32, U32 n )
+{
+	Rtt_ASSERT( 4 == n ); // specialization for image sheet rects
+
+	unsigned char * bytes = static_cast<unsigned char *>( dst );
+
+	// Bottom-left
+	float leftX = GetFloatMappedTo0( bytes );
+	float bottomY = GetFloatMappedTo0( bytes + sizeof(float) );
+
+	CopyFloat( bytes, leftX );
+	CopyFloat( bytes + sizeof(float), bottomY );
+
+	bytes += layout->outStride;
+	
+	// Upper-left
+	float topY = GetFloatMappedTo1( bytes + sizeof(float) );
+
+	CopyFloat( bytes, leftX );
+	CopyFloat( bytes + sizeof(float), topY );
+	
+	bytes += layout->outStride;
+	
+	// Bottom-right
+	float rightX = GetFloatMappedTo1( bytes );
+	
+	CopyFloat( bytes, rightX );
+	CopyFloat( bytes + sizeof(float), bottomY );
+	
+	bytes += layout->outStride;
+
+	// Upper-right
+	CopyFloat( bytes, rightX );
+	CopyFloat( bytes + sizeof(float), topY );
+}
+
+static float MapDistortedFloatTo0( float f, float z )
+{
+/*
+	float raw = f / z, encoded = -raw;
+
+	return encoded * z;
+*/
+	return -f;
+}
+
+static float MapDistortedFloatTo1( float f, float z )
+{
+/*
+	float raw = f / z, encoded = 2.f - raw;
+
+	return encoded * z;
+*/
+	return 2.f * z - f;
+}
+
+static void GetFloatTriple( unsigned char* bytes, float xyz[] )
+{
+	memcpy( xyz, bytes, 3 * sizeof(float) );
+}
+
+void
+GeometryWriter::UnitRegionEncodeWithDistortion( void* dst, const void* src, const CoronaGeometryMappingLayout* layout, U32, U32 n )
+{
+	Rtt_ASSERT( 4 == n ); // specialization for image sheet rects
+
+	unsigned char * bytes = static_cast<unsigned char *>( dst );
+	float xyz[3];
+
+	// Bottom-left
+	GetFloatTriple( bytes, xyz );
+	CopyFloat( bytes, MapDistortedFloatTo0( xyz[0], xyz[2] ) );
+	CopyFloat( bytes + sizeof(float), MapDistortedFloatTo0( xyz[1], xyz[2] ) );
+	
+	bytes += layout->outStride;
+	
+	// Upper-left
+	GetFloatTriple( bytes, xyz );
+	CopyFloat( bytes, MapDistortedFloatTo0( xyz[0], xyz[2] ) );
+	CopyFloat( bytes + sizeof(float), MapDistortedFloatTo1( xyz[1], xyz[2] ) );
+
+	bytes += layout->outStride;
+
+	// Bottom-right
+	GetFloatTriple( bytes, xyz );
+	CopyFloat( bytes, MapDistortedFloatTo1( xyz[0], xyz[2] ) );
+	CopyFloat( bytes + sizeof(float), MapDistortedFloatTo0( xyz[1], xyz[2] ) );
+	
+	bytes += layout->outStride;
+	
+	// Upper-right
+	GetFloatTriple( bytes, xyz );
+	CopyFloat( bytes, MapDistortedFloatTo1( xyz[0], xyz[2] ) );
+	CopyFloat( bytes + sizeof(float), MapDistortedFloatTo1( xyz[1], xyz[2] ) );
+}
+
 void Geometry::Vertex::Zero()
 {
     memset(this, 0, sizeof(*this));

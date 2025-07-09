@@ -16,6 +16,8 @@
 #include "Display/Rtt_Shader.h"
 #include "Renderer/Rtt_Program.h"
 
+#include "Display/Rtt_CompositePaint.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -79,12 +81,37 @@ ClosedPath::SetSelfBounds( Real width, Real height )
 	return false;
 }
 
+static bool
+ComesFromImageSheet( const Paint* paint )
+{
+	if ( paint->IsType( Paint::kImageSheet ) )
+	{
+		return true;
+	}
+	
+	if ( !paint->IsType( Paint::kMultitexture ) )
+	{
+		return false;
+	}
+	
+	const CompositePaint* composite = static_cast< const CompositePaint* >( paint );
+	
+	if ( composite->GetPaint0() && composite->GetPaint0()->IsType( Paint::kImageSheet ) )
+	{
+		return true;
+	}
+	 
+	return false;
+}
+
 void
 ClosedPath::UpdatePaint( RenderData& data )
 {
 	if ( HasFill() )
 	{
 		fFill->UpdatePaint( data );
+
+		data.fFromImageSheet = ComesFromImageSheet( fFill );
 	}
 
 	if ( HasStroke() && fStrokeData )
