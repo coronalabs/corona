@@ -179,6 +179,9 @@
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJointV2.h">
       <Filter>Dynamics\Joints</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJointV2.h">
+      <Filter>Dynamics\Joints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Collision">
@@ -370,6 +373,9 @@
       <Filter>Rope</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJointV2.cpp">
+      <Filter>Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJointV2.cpp">
       <Filter>Dynamics\Joints</Filter>
     </ClCompile>
   </ItemGroup>

@@ -717,6 +717,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2MotorJoint.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2MouseJoint.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2PrismaticJointV2.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2PulleyJoint.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2RopeJoint.cpp
