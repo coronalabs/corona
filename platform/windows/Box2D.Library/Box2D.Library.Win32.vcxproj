@@ -62,7 +62,6 @@
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.h" />
-    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJointV2.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.h" />
@@ -121,7 +120,6 @@
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp" />
-    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJointV2.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.cpp" />
