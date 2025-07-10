@@ -103,6 +103,7 @@ ShouldGetLocalAnchor( b2JointType jointType )
 		case e_distanceJoint:
 		case e_revoluteJoint:
 		case e_prismaticJoint:
+		case e_prismaticJointV2:
 		case e_frictionJoint:
 		case e_wheelJoint:
 		case e_wheelJointV2:
@@ -150,6 +151,9 @@ GetLocalAnchorACallback( b2JointType jointType )
 		case e_prismaticJoint:
 			result = & GetLocalAnchorA< b2PrismaticJoint >;
 			break;
+		case e_prismaticJointV2:
+			result = &GetLocalAnchorA< b2PrismaticJointV2 >;
+			break;
 		case e_frictionJoint:
 			result = & GetLocalAnchorA< b2FrictionJoint >;
 			break;
@@ -188,6 +192,9 @@ GetLocalAnchorBCallback( b2JointType jointType )
 			break;
 		case e_prismaticJoint:
 			result = & GetLocalAnchorB< b2PrismaticJoint >;
+			break;
+		case e_prismaticJointV2:
+			result = &GetLocalAnchorB< b2PrismaticJointV2 >;
 			break;
 		case e_frictionJoint:
 			result = & GetLocalAnchorB< b2FrictionJoint >;
@@ -285,6 +292,7 @@ ShouldGetLocalAxis( b2JointType jointType )
 	switch ( jointType )
 	{
 		case e_prismaticJoint:
+		case e_prismaticJointV2:
 		case e_wheelJoint:
 		case e_wheelJointV2:
 			result = true;
@@ -317,8 +325,12 @@ GetLocalAxisACallback( b2JointType jointType )
 		case e_prismaticJoint:
 			result = & GetLocalAxisA< b2PrismaticJoint >;
 			break;
+		case e_prismaticJointV2:
+			result = &GetLocalAxisA< b2PrismaticJointV2 >;
+			break;
 		case e_wheelJoint:
 			result = & GetLocalAxisA< b2WheelJoint >;
+			break;
 		case e_wheelJointV2:
 			result = &GetLocalAxisA< b2WheelJointV2 >;
 			break;
@@ -440,7 +452,12 @@ PhysicsJoint::setLimits( lua_State *L )
 			b2WheelJointV2* joint = (b2WheelJointV2*)baseJoint;
 			joint->SetLimits(Rtt_RealToFloat(lowerLimit), Rtt_RealToFloat(upperLimit));
 		}
-		else
+		else if (baseJoint->GetType() == e_prismaticJointV2)
+		{
+			b2PrismaticJointV2* joint = (b2PrismaticJointV2*)baseJoint;
+			joint->SetLimits(Rtt_RealToFloat(lowerLimit), Rtt_RealToFloat(upperLimit));
+		}
+		else if (baseJoint->GetType() == e_prismaticJoint)
 		{
 			b2PrismaticJoint* joint = (b2PrismaticJoint*)baseJoint;
 			joint->SetLimits(Rtt_RealToFloat(lowerLimit), Rtt_RealToFloat(upperLimit));
@@ -470,9 +487,16 @@ PhysicsJoint::getLimits( lua_State *L )
 			lowerLimit = Rtt_RealMul(Rtt_FloatToReal(joint->GetLowerLimit()), scale);
 			upperLimit = Rtt_RealMul(Rtt_FloatToReal(joint->GetUpperLimit()), scale);
 		}
-		else
+		else if (baseJoint->GetType() == e_prismaticJoint)
 		{
 			b2PrismaticJoint* joint = (b2PrismaticJoint*)baseJoint; // assumption: this cast is OK for both cases (otherwise check type)
+
+			lowerLimit = Rtt_RealMul(Rtt_FloatToReal(joint->GetLowerLimit()), scale);
+			upperLimit = Rtt_RealMul(Rtt_FloatToReal(joint->GetUpperLimit()), scale);
+		}
+		else if (baseJoint->GetType() == e_prismaticJointV2)
+		{
+			b2PrismaticJointV2* joint = (b2PrismaticJointV2*)baseJoint; // assumption: this cast is OK for both cases (otherwise check type)
 
 			lowerLimit = Rtt_RealMul(Rtt_FloatToReal(joint->GetLowerLimit()), scale);
 			upperLimit = Rtt_RealMul(Rtt_FloatToReal(joint->GetUpperLimit()), scale);
@@ -838,6 +862,76 @@ PhysicsJoint::ValueForKey( lua_State *L )
 				else if ( strcmp( "getLimits", key ) == 0 )
 				{
 					lua_pushcfunction( L, Self::getLimits );
+				}
+				else
+				{
+					result = 0;
+				}
+			}
+			else if (jointType == e_prismaticJointV2)
+			{
+				//////////////////////////////////////////////////////////////////////////////
+				// This is exposed as a "piston" joint in Corona (aka "prismaticV2" in Box2D terms)
+
+				b2PrismaticJointV2* joint = (b2PrismaticJointV2*)baseJoint;
+
+				if (0 == strcmp("isMotorEnabled", key))
+				{
+					lua_pushboolean(L, joint->IsMotorEnabled());
+				}
+				else if (0 == strcmp("motorSpeed", key))
+				{
+					const PhysicsWorld& physics = LuaContext::GetRuntime(L)->GetPhysicsWorld();
+					Real scale = physics.GetPixelsPerMeter();
+					Rtt_Real valuePixels = Rtt_RealMul(Rtt_FloatToReal(joint->GetMotorSpeed()), scale);
+					lua_pushnumber(L, valuePixels);
+				}
+				else if (0 == strcmp("motorForce", key)) // read-only
+				{
+					Runtime& runtime = *LuaContext::GetRuntime(L);
+					float32 inverseDeltaTime = (float)runtime.GetFPS();
+
+					lua_pushnumber(L, joint->GetMotorForce(inverseDeltaTime));
+				}
+				else if (0 == strcmp("maxMotorForce", key))
+				{
+					lua_pushnumber(L, joint->GetMaxMotorForce());
+				}
+				else if (strcmp("getLocalAxisA", key) == 0)
+				{
+					lua_pushlightuserdata(L, (void*)GetLocalAxisACallback(e_prismaticJoint));
+					lua_pushcclosure(L, Self::getLocalAxis, 1);
+				}
+				else if (0 == strcmp("referenceAngle", key))  // read-only
+				{
+					Rtt_Real valueDegrees = Rtt_RealRadiansToDegrees(Rtt_FloatToReal(joint->GetReferenceAngle()));
+					lua_pushnumber(L, valueDegrees);
+				}
+				else if (0 == strcmp("jointTranslation", key))  // read-only
+				{
+					const PhysicsWorld& physics = LuaContext::GetRuntime(L)->GetPhysicsWorld();
+					Real scale = physics.GetPixelsPerMeter();
+					Rtt_Real valuePixels = Rtt_RealMul(Rtt_FloatToReal(joint->GetJointTranslation()), scale);
+					lua_pushnumber(L, valuePixels);
+				}
+				else if (0 == strcmp("jointSpeed", key))  // read-only
+				{
+					const PhysicsWorld& physics = LuaContext::GetRuntime(L)->GetPhysicsWorld();
+					Real scale = physics.GetPixelsPerMeter();
+					Rtt_Real valuePixels = Rtt_RealMul(Rtt_FloatToReal(joint->GetJointSpeed()), scale);
+					lua_pushnumber(L, valuePixels);
+				}
+				else if (0 == strcmp("isLimitEnabled", key))
+				{
+					lua_pushboolean(L, joint->IsLimitEnabled());
+				}
+				else if (strcmp("setLimits", key) == 0)
+				{
+					lua_pushcfunction(L, Self::setLimits);
+				}
+				else if (strcmp("getLimits", key) == 0)
+				{
+					lua_pushcfunction(L, Self::getLimits);
 				}
 				else
 				{
@@ -1312,6 +1406,59 @@ PhysicsJoint::SetValueForKey( lua_State *L )
 				// No-op for read-only property
 			}
 		
+		}
+
+		else if (jointType == e_prismaticJointV2)
+		{
+			//////////////////////////////////////////////////////////////////////////////
+			// This is exposed as a "piston" joint in Corona (aka "prismatic" in Box2D terms)
+
+			b2PrismaticJointV2* joint = (b2PrismaticJointV2*)baseJoint;
+
+			if (0 == strcmp("isMotorEnabled", key))
+			{
+				if (lua_isboolean(L, 3))
+				{
+					joint->EnableMotor(lua_toboolean(L, 3));
+				}
+			}
+			else if (0 == strcmp("motorSpeed", key))
+			{
+				if (lua_isnumber(L, 3))
+				{
+					const PhysicsWorld& physics = LuaContext::GetRuntime(L)->GetPhysicsWorld();
+					Real scale = physics.GetPixelsPerMeter();
+					Real valueMeters = Rtt_RealDiv(luaL_toreal(L, 3), scale);
+					joint->SetMotorSpeed(Rtt_RealToFloat(valueMeters));
+				}
+			}
+			else if (0 == strcmp("motorForce", key))
+			{
+				// No-op for read-only property
+			}
+			else if (0 == strcmp("maxMotorForce", key))
+			{
+				if (lua_isnumber(L, 3))
+				{
+					joint->SetMaxMotorForce(lua_tonumber(L, 3));
+				}
+			}
+			else if (0 == strcmp("isLimitEnabled", key))
+			{
+				if (lua_isboolean(L, 3))
+				{
+					joint->EnableLimit(lua_toboolean(L, 3));
+				}
+			}
+			else if (0 == strcmp("jointTranslation", key))
+			{
+				// No-op for read-only property
+			}
+			else if (0 == strcmp("jointSpeed", key))
+			{
+				// No-op for read-only property
+			}
+
 		}
 		
 		else if ( jointType == e_frictionJoint ) 
