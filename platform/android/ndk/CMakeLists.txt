@@ -722,6 +722,7 @@ add_library( corona SHARED
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2RopeJoint.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2WeldJoint.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2WheelJoint.cpp
+		${CORONA_ROOT}/external/Box2D/Box2D/Dynamics/Joints/b2WheelJointV2.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Particle/b2Particle.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Particle/b2ParticleAssembly.cpp
 		${CORONA_ROOT}/external/Box2D/Box2D/Particle/b2ParticleGroup.cpp
