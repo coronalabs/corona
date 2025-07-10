@@ -110,6 +110,7 @@ OBJECTS := \
 	$(OBJDIR)/b2MotorJoint.o \
 	$(OBJDIR)/b2MouseJoint.o \
 	$(OBJDIR)/b2PrismaticJoint.o \
+	$(OBJDIR)/b2PrismaticJointV2.o \
 	$(OBJDIR)/b2PulleyJoint.o \
 	$(OBJDIR)/b2RevoluteJoint.o \
 	$(OBJDIR)/b2RopeJoint.o \
@@ -346,6 +347,10 @@ $(OBJDIR)/b2MouseJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2MouseJ
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/b2PrismaticJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/b2PrismaticJointV2.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2PrismaticJointV2.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
