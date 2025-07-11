@@ -1752,6 +1752,12 @@ InitializeFixtureUsing_Outline( lua_State *L,
 								b2Body *body,
 								float meter_per_pixels_scale )
 {
+
+	lua_getfield(L, lua_arg_index, "needHull");
+	bool needHull = (lua_isboolean(L, -1) &&
+		lua_toboolean(L, -1));
+	lua_pop(L, 1);
+
 	lua_getfield( L, lua_arg_index, "outline" );
 	if( lua_istable( L, -1 ) )
 	{
@@ -1870,7 +1876,7 @@ InitializeFixtureUsing_Outline( lua_State *L,
 													_FixtureCreator,
 													vertexList,
 													translate,
-													scale );
+													scale, needHull);
 		if( ! ok )
 		{
 			DEBUG_PRINT( "SeparateAndCreateFixtures() failed to add any fixtures." );

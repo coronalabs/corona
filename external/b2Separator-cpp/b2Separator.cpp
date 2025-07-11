@@ -36,7 +36,9 @@ bool b2Separator::SeparateAndCreateFixtures( b2Body *body,
 												FixtureCreator_t fixture_creator,
 												b2Vec2Vector &vertices_vec,
 												b2Vec2 &translate,
-												b2Vec2 &scale )
+												b2Vec2 &scale,
+                                                bool needHull
+                                            )
 {
 	bool vertices_added = false;
 
@@ -97,7 +99,7 @@ bool b2Separator::SeparateAndCreateFixtures( b2Body *body,
 				DEBUG_PRINT( "*** Fixture %03d : Vertex %03d : x, y: %f, %f\n", i, j, v.x, v.y );
 	        }
 
-	        bool ok = polyShape.Set( &( vertices[ 0 ] ), (int)m );
+	        bool ok = polyShape.Set( &( vertices[ 0 ] ), (int)m, needHull);
 			if( ! ok )
 			{
 				// Set() failed. Skip this polygon.
