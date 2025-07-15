@@ -10,6 +10,8 @@
 package com.ansca.corona.purchasing;
 
 
+import android.content.res.Configuration;
+
 /**
  * Activity used to display the Nook app store.
  * <p>
@@ -60,7 +62,12 @@ public class StoreActivity extends android.app.Activity {
 		if (android.os.Build.VERSION.SDK_INT >= 9) {
 			orientation = 7;		// android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
 		}
-		setRequestedOrientation(orientation);
+
+
+		if (android.os.Build.VERSION.SDK_INT <= 34) {
+			setRequestedOrientation(orientation);
+		}
+
 
 		// Display this activity full screen if requested to do so via the intent's extras.
 		boolean isFullScreen = getIntent().getBooleanExtra(EXTRA_FULL_SCREEN, false);

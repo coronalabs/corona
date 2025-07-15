@@ -790,7 +790,7 @@ for settingName, settingValue in pairs(coronaActivityFlags) do
 end
 -- set default (attributes can't appear multiple times)
 if string.find(stringBuffer, "resizeableActivity") == nil then
-	stringBuffer = stringBuffer .. 'android:resizeableActivity="false"\n'
+	stringBuffer = stringBuffer .. 'android:resizeableActivity="true"\n'
 end
 
 manifestKeys.USER_CORONA_ACTIVITY_ATTRIBUTES = stringBuffer

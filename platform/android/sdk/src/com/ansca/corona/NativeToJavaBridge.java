@@ -44,6 +44,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Insets;
 import android.graphics.Paint;
 import android.media.MediaScannerConnection;
 import android.media.AudioManager;
@@ -55,6 +56,9 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.DisplayCutout;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
 
 import dalvik.system.DexClassLoader;
 
@@ -3291,7 +3295,29 @@ public class NativeToJavaBridge {
 	}
 	protected static void callSetNavigationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
 		if (runtime != null) {
-			CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+			Activity activity = CoronaEnvironment.getCoronaActivity();
+			if (activity == null) return;
+			int color = Color.rgb(
+					(int)(255 * red),
+					(int)(255 * green),
+					(int)(255 * blue)
+			);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) { // Android 15+
+				Window window = activity.getWindow();
+				View decorView = window.getDecorView();
+
+				decorView.setOnApplyWindowInsetsListener((view, insets) -> {
+					Insets statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars());
+					view.setBackgroundColor(color);
+					view.setPadding(0, statusBarInsets.top, 0, 0);
+					return insets;
+				});
+
+				window.setNavigationBarColor(color);
+			} else {
+				CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+			}
 		}
 	}
 
