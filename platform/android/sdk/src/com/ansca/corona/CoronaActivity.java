@@ -18,9 +18,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Insets;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.WindowInsets;
 import android.view.animation.AlphaAnimation;
 import android.view.Window;
 import android.view.WindowManager;
@@ -1254,10 +1256,17 @@ public class CoronaActivity extends Activity {
 	/**
 	 * Returns true if device HAS software navigation bar or false if it hasn't
 	 */
-	public boolean HasSoftwareKeys()
-	{
+	public boolean HasSoftwareKeys() {
 		boolean hasSoftwareKeys = true;
-		if (android.os.Build.VERSION.SDK_INT>=android.os.Build.VERSION_CODES.JELLY_BEAN_MR1){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			WindowInsets insets = getWindowManager()
+					.getCurrentWindowMetrics()
+					.getWindowInsets();
+
+			// Check if navigation bar insets exist
+			Insets navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars());
+			hasSoftwareKeys = navBarInsets.bottom > 0 || navBarInsets.right > 0;
+		}else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1){
 			android.view.Display display = getWindowManager().getDefaultDisplay();
 
 			android.util.DisplayMetrics realDisplayMetrics = new android.util.DisplayMetrics();
