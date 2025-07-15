@@ -71,6 +71,9 @@ struct GeometryWriter {
     Rtt_STATIC_ASSERT( ( kExtra == kMain + 1 ) && ( kIsUpdate == kAll + 1 ) );
 
     static const GeometryWriter& CopyGeometryWriter();
+    
+    static void UnitRegionEncode( void* dst, const void* src, const CoronaGeometryMappingLayout* layout, U32, U32 n );
+    static void UnitRegionEncodeWithDistortion( void* dst, const void* src, const CoronaGeometryMappingLayout* layout, U32, U32 n );
 
 	const void* fContext;
 	void (*fWriter)( void*, const void*, const CoronaGeometryMappingLayout*, U32, U32 );
