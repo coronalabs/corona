@@ -1281,12 +1281,12 @@ Renderer::IssueCaptures( Texture * fill0 )
 }
 
 void
-Renderer::SetGeometryWriters( const GeometryWriter* list, U32 n )
+Renderer::SetGeometryWriters( const GeometryWriter* list, U32 n, bool wantUnitRegion, bool hasDistortion )
 {
     if ( 0 == n || list != fCurrentGeometryWriterList )
     {
         fGeometryWriters.Clear();
-
+ 
         if ( NULL == list )
         {
             list = &GeometryWriter::CopyGeometryWriter();
@@ -1307,6 +1307,27 @@ Renderer::SetGeometryWriters( const GeometryWriter* list, U32 n )
         }
 
         Rtt_ASSERT( GeometryWriter::kAll == mask );
+
+		if (wantUnitRegion)
+		{
+			GeometryWriter encode = {};
+			
+			encode.fOffset = offsetof(Geometry::Vertex, u);
+			
+			if (hasDistortion)
+			{
+				encode.fWriter = GeometryWriter::UnitRegionEncodeWithDistortion;
+			}
+			
+			else
+			{
+				encode.fWriter = GeometryWriter::UnitRegionEncode;
+			}
+			
+			encode.fMask = GeometryWriter::kTexcoord;
+			
+			fGeometryWriters.Append( encode );
+		}
 
         fCurrentGeometryWriterList = list;
     }
