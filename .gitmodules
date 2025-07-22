@@ -82,3 +82,6 @@
 	path = external/MetalANGLE
 	url = https://github.com/coronalabs/metalangle.git
 	branch = Solar2D-Changes-Reverted
+[submodule "external/libpng"]
+	path = external/libpng
+	url = https://github.com/clang-clang-clang/libpng
