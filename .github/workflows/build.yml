@@ -107,7 +107,6 @@ jobs:
           name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
           path: ./output
 
-
   collect-ios-templates:
     needs:
       - Xcode-template-matrix-15
@@ -552,27 +551,23 @@ jobs:
           nuget install Microsoft.Trusted.Signing.Client -Version 1.0.53 -x
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
-
       - name: Setup Developer Command Prompt
         shell: cmd
-            run: |
-                for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
-                    call "%%i\VC\Auxiliary\Build\vcvars32.bat"
-                )
+        run: |
+          for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
+            call "%%i\VC\Auxiliary\Build\vcvars32.bat"
+          )
       - name: Build Corona Simulator
         shell: cmd
         run: |
-            cd platform\windows
-            call UpdateFileVersions.bat %BUILD_NUMBER%
-
-            rem Setup VS environment
-            for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
-                call "%%i\VC\Auxiliary\Build\vcvars32.bat"
-            )
-
-            rem Build using msbuild (no devenv needed)
-            msbuild "Corona.SDK.sln" /t:Rebuild /p:Configuration=Release /p:Platform=x86
-
+          cd platform\windows
+          call UpdateFileVersions.bat %BUILD_NUMBER%
+          rem Setup VS environment
+          for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
+            call "%%i\VC\Auxiliary\Build\vcvars32.bat"
+          )
+          rem Build using msbuild (no devenv needed)
+          msbuild "Corona.SDK.sln" /t:Rebuild /p:Configuration=Release /p:Platform=x86
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -750,17 +745,17 @@ jobs:
           TEXT="Run: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
           if [[ "$GITHUB_REF" == refs/tags/* ]] && [[ "$WORKFLOW_CONCLUSION" == "success" ]]
           then
-          TEXT="$TEXT
-          Release: https://github.com/${{github.repository}}/releases/tag/$BUILD_NUMBER"
-          GIT_LOG=$(git log --format='* %s (%h)' --ancestry-path $(git describe --tags --abbrev=0 $GITHUB_REF^)..$(git describe --tags --abbrev=0 $GITHUB_REF)) || true
-          if [ -n "$GIT_LOG" ]
-          then
-          TEXT="$TEXT
+            TEXT="$TEXT
+            Release: https://github.com/${{github.repository}}/releases/tag/$BUILD_NUMBER"
+            GIT_LOG=$(git log --format='* %s (%h)' --ancestry-path $(git describe --tags --abbrev=0 $GITHUB_REF^)..$(git describe --tags --abbrev=0 $GITHUB_REF)) || true
+            if [ -n "$GIT_LOG" ]
+            then
+              TEXT="$TEXT
 
-          Git log since previous release:
-          $GIT_LOG
-          "
+              Git log since previous release:
+              $GIT_LOG
+              "
+            fi
           fi
-          fi
-          TEXT="${TEXT//$'\n'/<br>}"
+          TEXT="${TEXT//\n'/<br>}"
           curl -X POST -H "Content-Type: application/json" -d '{"value1":"'"$YEAR.$BUILD_NUMBER"' '"$WORKFLOW_CONCLUSION"'","value2":"'"$TEXT"'"}' https://maker.ifttt.com/trigger/Solar2DBuild/with/key/$Z$T
