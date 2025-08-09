@@ -468,6 +468,7 @@ jobs:
       - source-code
       - native
       - webtemplate
+      # - linux
     runs-on: windows-2022
     steps:
       - name: Get processed code
@@ -475,51 +476,51 @@ jobs:
         with:
           name: SourceCode
           path: SourceCode
-
       - name: Unpack source code
         run: |
           7z x -snld SourceCode/corona.tgz
           7z x -snld corona.tar
-
       - run: ./tools/GHAction/daily_env.sh
         shell: bash
-
       - run: mkdir -f docs
-
       - name: Get Sample Code
         uses: actions/checkout@v4
         with:
           repository: coronalabs/samples-coronasdk
           path: docs/SampleCode
-
       - name: Clean-up docs
         run: rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
         shell: bash
-
       - name: Move docs outside the directory
         run: mv docs ../docs
-
       - name: Get Webtemplate
         uses: actions/download-artifact@v4
         with:
           name: Webtemplate
           path: Webtemplate
-
       - name: Put webtemplate in place
         run: cp -v Webtemplate/webtemplate.zip platform/resources/
         shell: bash
-
       - name: Get NX Template
         shell: bash
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/nxtemplate > platform/resources/nxtemplate
-
+      - name: Get Linux template
+        if: false
+        uses: actions/download-artifact@v4
+        with:
+          name: Linux-Template
+          path: Linux-Template
+      - name: Put linux template in place
+        if: false
+        run: |
+          cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
+        shell: bash
       - name: Get Corona Native
         uses: actions/download-artifact@v4
         with:
           name: Native
           path: Native
-
       - name: Put native in place
         shell: cmd
         run: |
@@ -533,58 +534,44 @@ jobs:
           del /q /f Native\Icon?
           del /q /f /s Native\Corona\tvos\frameworks
           del /q /f /s Native\Corona\mac\frameworks
-
       - name: Put JRE in place
         shell: bash
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.win32.7z -o jre.win32.7z
           7z x jre.win32.7z -o"platform/windows/Bin" -y
-
       - name: Put redistributables in place
         shell: bash
         run: |
           curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/redist.win32.7z -o redist.win32.7z
           7z x redist.win32.7z -o"platform/windows/Bin/redist" -y
-
-      - name: Install Codesigning Tools & Windows SDK
+      - name: Install Codesigning Tools
         shell: cmd
         run: |
           choco install dotnet-8.0-runtime --no-progress
-          choco install windows-sdk-10-version-2004-all --no-progress
+          nuget install Microsoft.Windows.SDK.BuildTools -Version 10.0.22621.3233 -x
           nuget install Microsoft.Trusted.Signing.Client -Version 1.0.53 -x
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
       - name: Build Corona Simulator
         shell: cmd
         run: |
           cd platform\windows
           call UpdateFileVersions.bat %BUILD_NUMBER%
-
-          rem Dynamically load Visual Studio dev environment
-          for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
-              call "%%i\VC\Auxiliary\Build\vcvars32.bat"
-          )
-
-          msbuild "Corona.SDK.sln" /t:Rebuild /p:Configuration=Release /p:Platform=x86
+          call Build.Tools\VSVars.bat
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+          devenv "Corona.SDK.sln" /rebuild "Release|x86"
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-
       - name: Copy Simulator
         run: |
           mkdir output
           cp -v ./platform/windows/Bin/Corona.SDK.Installer/Corona.msi output/Corona-$BUILD.msi
         shell: bash
-
-      - name: Upload Windows Corona artifact
+      - name: Upload Widnows Corona artifact
         uses: actions/upload-artifact@v4
         with:
           name: Simulator-Windows
           path: ./output
-
 
   publish-snap:
     runs-on: ubuntu-latest
