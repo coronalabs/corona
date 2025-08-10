@@ -477,8 +477,8 @@ jobs:
           path: SourceCode
       - name: Unpack source code
         run: |
-          7z x -snld SourceCode/corona.tgz 2>nul || echo "Extraction completed with warnings"
-          7z x -snld corona.tar 2>nul || echo "Extraction completed with warnings"
+          7z x -snld SourceCode/corona.tgz || (echo "Extraction completed with warnings" && exit 1)
+          7z x -snld SourceCode/corona.tar || (echo "Extraction completed with warnings" && exit 1)
       - run: ./tools/GHAction/daily_env.sh
         shell: bash
       - run: mkdir -f docs
