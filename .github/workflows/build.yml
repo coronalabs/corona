@@ -469,7 +469,7 @@ jobs:
       - native
       - webtemplate
       # - linux
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v4
@@ -478,8 +478,8 @@ jobs:
           path: SourceCode
       - name: Unpack source code
         run: |
-          7z x SourceCode/corona.tgz
-          7z x corona.tar
+          7z x -snld SourceCode/corona.tgz
+          7z x -snld corona.tar
       - run: ./tools/GHAction/daily_env.sh
         shell: bash
       - run: mkdir -f docs
