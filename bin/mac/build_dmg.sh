@@ -74,7 +74,7 @@ then
 	fi
 fi
 
-set -x 
+set -x
 
 if [[ -e "$TMPPATH" ]]
 then
@@ -122,6 +122,9 @@ fi
 
 mkdir -p "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Android"
 cp -v -X "$SRCROOT"/platform/android/resources/debug.keystore "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/Android/"
+
+mkdir -p "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/iOS"
+ditto -v -X "$SRCROOT"/platform/iphone/Images.xcassets "$TMPPATH/${PRODUCT_DIR}/${RESOURCE_DIR}/iOS/Images.xcassets"
 
 if [ "$ENTERPRISE" != "" ]
 then
@@ -282,9 +285,9 @@ fi
 rm -rf "$TMPPATH"		# Remove tmp folder
 
 # Convert tmp dmg into read-only dmg and add license
-hdiutil unflatten "$DSTBASE/$DMG_FILE"
-"$TOOLSPATH/AddLicense" "$DSTBASE/$DMG_FILE" English "$SRCROOT/sdk/dmg/Corona_License.rtf"
-hdiutil flatten "$DSTBASE/$DMG_FILE"
+# hdiutil unflatten "$DSTBASE/$DMG_FILE"
+# "$TOOLSPATH/AddLicense" "$DSTBASE/$DMG_FILE" English "$SRCROOT/sdk/dmg/Corona_License.rtf"
+# hdiutil flatten "$DSTBASE/$DMG_FILE"
 
 codesign --timestamp --deep --force --options runtime --strict --sign "Developer ID Application: Corona Labs Inc" "$DSTBASE/$DMG_FILE"
 mkdir -p "$SRCROOT/output"

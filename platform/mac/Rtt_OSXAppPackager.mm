@@ -100,6 +100,12 @@ OSXAppPackager::~OSXAppPackager()
 {
 }
 
+const char*
+OSXAppPackager::GetAppTemplatePath()
+{
+	return [[[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String];
+}
+
 int
 OSXAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 {
@@ -179,7 +185,7 @@ OSXAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
                 lua_pushstring( L, TargetDevice::StringForPlatform( osxParams->GetTargetPlatform() ) );
                 lua_setfield( L, -2, "targetPlatform" );
                 
-                lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String] );
+                lua_pushstring( L, GetAppTemplatePath() );
                 lua_setfield( L, -2, "osxAppTemplate" );
                 
 				lua_pushstring( L, Rtt_STRING_BUILD );
@@ -379,7 +385,7 @@ OSXAppPackager::PackageForAppStore( OSXAppPackagerParams *osxParams, bool sendTo
 		lua_pushstring( L, Rtt_STRING_BUILD );
 		lua_setfield( L, -2, "corona_build_id" );
 
-		lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXApp.xcent"] UTF8String] );
+		lua_pushstring( L, [[[XcodeToolHelper pathForResources] stringByAppendingPathComponent:@"OSXApp.xcent"] UTF8String] );
 		lua_setfield( L, -2, "osxAppEntitlements" );
 
 		lua_pushboolean( L, sendToAppStore );
@@ -476,7 +482,7 @@ OSXAppPackager::PackageForSelfDistribution( OSXAppPackagerParams *osxParams, boo
 		lua_pushstring( L, TargetDevice::StringForPlatform( osxParams->GetTargetPlatform() ) );
 		lua_setfield( L, -2, "targetPlatform" );
 
-		lua_pushstring( L, [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"OSXAppTemplate.zip"] UTF8String] );
+		lua_pushstring( L, GetAppTemplatePath() );
 		lua_setfield( L, -2, "osxAppTemplate" );
 
 		lua_pushstring( L, Rtt_STRING_BUILD );

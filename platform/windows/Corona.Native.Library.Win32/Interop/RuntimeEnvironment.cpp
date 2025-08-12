@@ -93,6 +93,7 @@ RuntimeEnvironment::RuntimeEnvironment(const RuntimeEnvironment::CreationSetting
 	fGdiPlusToken(0),
 	fFontServices(*this),
 	fDebuggerSemaphoreHandle(nullptr),
+	fLastActivatedSent(true),
 	fSingleWindowInstanceSemaphoreHandle(nullptr)
 {
 	// Do not continue if the given render surface handle (if provided) is already being used by another runtime.
@@ -292,7 +293,16 @@ RuntimeEnvironment::RuntimeEnvironment(const RuntimeEnvironment::CreationSetting
 		}
 
 		// Wrap the given control with our rendering surface adapter and set up event handlers.
-		fRenderSurfacePointer = new Interop::UI::RenderSurfaceControl(settings.RenderSurfaceHandle);
+		Interop::UI::RenderSurfaceControl::Params params;
+		const char * backend = fReadOnlyProjectSettings.Backend();
+		bool requireVulkan = strcmp(backend, "requireVulkan") == 0;
+
+		if (requireVulkan || strcmp(backend, "wantVulkan") == 0)
+		{
+			params.SetVulkanWanted(requireVulkan);
+		}
+
+		fRenderSurfacePointer = new Interop::UI::RenderSurfaceControl(settings.RenderSurfaceHandle, params);
 		fRenderSurfacePointer->SetRenderFrameHandler(&fRenderFrameEventHandler);
 		fRenderSurfacePointer->GetDestroyingEventHandlers().Add(&fDestroyingSurfaceEventHandler);
 		fRenderSurfacePointer->GetResizedEventHandlers().Add(&fSurfaceResizedEventHandler);
@@ -1357,6 +1367,11 @@ OperationResult RuntimeEnvironment::RunUsing(const RuntimeEnvironment::CreationS
 	fRuntimePointer->SetProperty(Rtt::Runtime::kRenderAsync, true);
 	fRuntimePointer->SetProperty(Rtt::Runtime::kShouldVerifyLicense, true);
 
+	if (fRenderSurfacePointer->IsUsingVulkanBackend())
+	{
+		fRuntimePointer->SetBackend("vulkanBackend", fRenderSurfacePointer->GetBackendContext());
+	}
+
 	// Load and run the Corona project.
 	fRuntimeState = RuntimeState::kStarting;
 	fLastOrientation = fProjectSettings.GetDefaultOrientation();
@@ -1697,6 +1712,20 @@ void RuntimeEnvironment::OnMainWindowReceivedMessage(UI::UIComponent &sender, UI
 {
 	switch (arguments.GetMessageId())
 	{
+		case WM_ACTIVATE:
+		{
+			if (fRuntimePointer)
+			{
+				bool foreground = LOWORD(arguments.GetWParam()) > 0;
+				if (fLastActivatedSent != foreground)
+				{
+					fLastActivatedSent = foreground;
+					Rtt::WindowStateEvent event(foreground);
+					fRuntimePointer->DispatchEvent(event);
+				}
+			}
+			break;
+		}
 		case WM_SIZING:
 		{
 			// Make sure the window is not made smaller than the configured min width/height, if provided.

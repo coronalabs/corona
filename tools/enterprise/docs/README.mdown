@@ -82,9 +82,9 @@ This sample contains the following files that are relevant to you:
 * `ExtendingLua/corona` This is where your Corona project files reside, including Lua files (e.g. `main.lua`) and other assets files (e.g. images, sounds, etc.).
 
 
-### Sample Walkthough
+### Sample Walkthrough
 
-The `ExtendingLua` sample project shows you how to set up the `AndroidManifest.xml` and `project.properties` files.  See the sample project's `CoronaApplication.java` file on how to set up a listener to the `CoronaRuntime`, detect when it has been loaded, and how to extend its Lua API. The `onLoaded()` method is where you extend the Lua API and register Lua functions. Lua functions are implemented in Java by implementing the `com.naef.jnlua.NamedJavaFunction` interface. See all source files ending with `*LuaFunction.java` for examples on how to use a LuaState object in Java to retreive function arguments, return values, and to call other Lua functions.
+The `ExtendingLua` sample project shows you how to set up the `AndroidManifest.xml` and `project.properties` files.  See the sample project's `CoronaApplication.java` file on how to set up a listener to the `CoronaRuntime`, detect when it has been loaded, and how to extend its Lua API. The `onLoaded()` method is where you extend the Lua API and register Lua functions. Lua functions are implemented in Java by implementing the `com.naef.jnlua.NamedJavaFunction` interface. See all source files ending with `*LuaFunction.java` for examples on how to use a LuaState object in Java to retrieve function arguments, return values, and to call other Lua functions.
 
 The Corona project's Lua files and asset files reside in the Android project's `corona` directory.
 

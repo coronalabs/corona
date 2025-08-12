@@ -101,7 +101,7 @@ public class SystemMonitor {
 	 * Forces this object to check the status of the system now and sends events to Corona Lua listeners.
 	 */
 	public void update() {
-		isLowOnMemory();
+//		isLowOnMemory();
 	}
 	
 	/**
@@ -139,9 +139,14 @@ public class SystemMonitor {
 	public boolean isScreenLocked() {
 		android.app.KeyguardManager keyguardManager;
 		keyguardManager = (android.app.KeyguardManager)fContext.getSystemService(android.content.Context.KEYGUARD_SERVICE);
-		return keyguardManager.inKeyguardRestrictedInputMode();
+		//Use new/updated method if supported
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+     return keyguardManager.isDeviceLocked();
+	 }else{
+		 return keyguardManager.inKeyguardRestrictedInputMode();
+	 }
+
 	}
-	
 	/**
 	 * Determines if the screen is currently unlocked and allows user interaction.
 	 * @return Returns true if screen is unlocked. Returns false if screen is locked or powered off.

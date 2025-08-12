@@ -29,7 +29,7 @@ Rtt_VersionTimestamp(void)
 	t.tm_mon = Rtt_BUILD_MONTH - 1; // months are 0-based (jan = 0)
 	t.tm_year = Rtt_BUILD_YEAR - 1900;
 	t.tm_isdst = 0;
-#if !defined( Rtt_WIN_ENV ) && !defined( Rtt_POWERVR_ENV ) && !defined( Rtt_NINTENDO_ENV )
+#if !defined( Rtt_WIN_ENV ) && !defined( Rtt_POWERVR_ENV ) && !defined( Rtt_NXS_ENV )
 	t.tm_gmtoff = 0;
 	t.tm_zone = NULL;
 #endif
@@ -40,7 +40,7 @@ Rtt_VersionTimestamp(void)
 	return mktime( & t );
 #elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV )
 	return Win_mktimeUTC(&t);
-#elif defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_NXS_ENV )
 	return mktime(&t);
 #else
 	return timegm( & t );

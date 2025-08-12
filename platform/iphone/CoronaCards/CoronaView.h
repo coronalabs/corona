@@ -7,13 +7,20 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef Rtt_MetalANGLE
+#import <MetalANGLE/MGLKit.h>
+#else
 #import <GLKit/GLKit.h>
+#endif
 
 @protocol CoronaViewDelegate;
 
 // ----------------------------------------------------------------------------
-
+#ifdef Rtt_MetalANGLE
+@interface CoronaView : MGLKView
+#else
 @interface CoronaView : GLKView
+#endif
 
 @property (nonatomic, assign) id <CoronaViewDelegate> coronaViewDelegate;
 

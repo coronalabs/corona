@@ -64,6 +64,7 @@ namespace Rtt
 		static const char* sMFiProfileExtendedGamepad;
 		static const char* sMFiProfileGamepad;
 		static const char* sMFiProfileMicroGamepad;
+		static const char* sMFiProfileDirectionalGamepad;
 		
 		bool MatchConfiguration(GCController* other);
 		bool MatchVendorName(NSString* vendor);

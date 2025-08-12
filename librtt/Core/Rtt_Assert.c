@@ -192,7 +192,7 @@ Rtt_VLogException(const char *format, va_list ap)
 			}
 
 			// Output the string to stdout and the Visual Studio debugger.
-#if defined(Rtt_NINTENDO_ENV) || defined( Rtt_LINUX_ENV )
+#if defined(Rtt_NXS_ENV) || defined( Rtt_LINUX_ENV )
 			fputs(stringPointer, stdout);
 #elif defined(Rtt_WIN_PHONE_ENV)
 			if (fLogHandler)
@@ -245,7 +245,7 @@ Rtt_VLogException(const char *format, va_list ap)
 int
 Rtt_Log( const char *format, ... )
 {
-	int result;
+	int result = 0;
 
 	if (Rtt_LogIsEnabled())
 	{
@@ -266,6 +266,14 @@ Rtt_Log( const char *format, ... )
 #if defined( Rtt_MAC_ENV ) || defined( Rtt_IPHONE_ENV ) || defined( Rtt_TVOS_ENV )
 	#define Rtt_TRAP_WITH_SIGNAL	1
 	#include <signal.h>
+    #include <errno.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <assert.h>
+    #include <stdbool.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <sys/sysctl.h>
 #if 0 // see stacktrace code below
 	#include <execinfo.h>
 	#include <stdio.h>
@@ -275,11 +283,18 @@ Rtt_Log( const char *format, ... )
 	#define Rtt_Log printf
 #endif
 
+
 static void
 Rtt_UserBreak( )
 {
     #if defined( Rtt_TRAP_WITH_SIGNAL )
-        raise( SIGINT );
+        
+        #if defined( Rtt_MAC_ENV )
+            //Commenting out this out to simplify things because it does not add any value for Macs and actually crashes on Apple Silicon Machines
+            //raise( SIGINT );
+        #else
+            raise( SIGINT );
+        #endif
     #elif defined( Rtt_WIN_ENV )
 		__debugbreak();
 	#elif defined( __ARMCC_VERSION )

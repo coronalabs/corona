@@ -193,6 +193,8 @@ PlatformBitmap::BytesPerPixel( Format format )
 	{
 		case kMask:
 			return 1;
+		case kLUMINANCE_ALPHA:
+			return 2;
 		case kRGB:
 			return 3;
 		case kRGBA:

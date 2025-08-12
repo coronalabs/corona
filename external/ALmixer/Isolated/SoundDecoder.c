@@ -42,6 +42,10 @@ static const SoundDecoder_DecoderInfo** s_availableDecoders = NULL;
 	#ifdef SOUND_SUPPORTS_MPG123
 		extern const Sound_DecoderFunctions __Sound_DecoderFunctions_MPG123;
 	#endif
+	#ifdef SOUND_SUPPORTS_OPUS
+		extern const Sound_DecoderFunctions __Sound_DecoderFunctions_OPUS;
+	#endif
+
 #endif
 
 /* Note: Make sure to compile only Vorbis xor Tremor, not both. */
@@ -61,7 +65,7 @@ static SoundElement s_linkedDecoders[] =
 		{ 0, &__Sound_DecoderFunctions_CoreAudio },
 #else /* All other platforms. */
 #	if ( (defined(_WIN32) && !defined(WINAPI_FAMILY)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)) && !defined(Rtt_ANDROID_ENV) )
-	#if (!defined(NINTENDO_LIB))
+	#if (!defined(NXS_LIB))
 		{ 0, &__Sound_DecoderFunctions_DirectX },
 	#endif
 #	endif
@@ -70,6 +74,9 @@ static SoundElement s_linkedDecoders[] =
 	#endif
 	#ifdef SOUND_SUPPORTS_MPG123
 		{ 0, &__Sound_DecoderFunctions_MPG123 },
+	#endif
+	#ifdef SOUND_SUPPORTS_OPUS
+		{ 0, &__Sound_DecoderFunctions_OPUS },
 	#endif
 #endif
 /* Note: Make sure to link only Vorbis xor Tremor, not both. */		

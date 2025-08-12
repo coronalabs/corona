@@ -25,6 +25,7 @@
 			outputFiles = (
 				"$(TARGET_TEMP_DIR)/$(INPUT_FILE_BASE).c",
 			);
+			runOncePerArchitecture = 0;
 			script = "LUA_EXE_DIR=\"$SRCROOT/../../bin/mac\"\nif [ ! -e \"$LUA_EXE_DIR/lua\" ]\nthen\n  exit 1\nfi\n\necho Building: $SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $LUA_EXE_DIR\n\n$SRCROOT/../../bin/mac/lua2c.sh $INPUT_FILE_PATH $TARGET_TEMP_DIR $CONFIGURATION $LUA_EXE_DIR\n";
 		};
 /* End PBXBuildRule section */
@@ -342,7 +343,7 @@
 					"$(SRCROOT)/../lua-5.1.3/src",
 					"$(SRCROOT)/../../librtt/Corona",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_MACOS:default=10.13)";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -383,7 +384,7 @@
 					"$(SRCROOT)/../lua-5.1.3/src",
 					"$(SRCROOT)/../../librtt/Corona",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_MACOS:default=10.13)";
 				SDKROOT = macosx;
 			};
 			name = Release;

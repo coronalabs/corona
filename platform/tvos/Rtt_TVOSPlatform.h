@@ -43,12 +43,15 @@ class TVOSPlatform : public IPhonePlatformBase
 
 	public:
 		virtual PlatformStoreProvider* GetStoreProvider( const ResourceHandle<lua_State>& handle ) const;
+		virtual PlatformVideoPlayer* GetVideoPlayer( const ResourceHandle<lua_State> & handle ) const;
 
 		virtual void SetActivityIndicator( bool visible ) const;
 
 		virtual bool CanShowPopup( const char *name ) const;
 		virtual bool ShowPopup( lua_State *L, const char *name, int optionsIndex ) const;
 		virtual bool HidePopup( const char *name ) const;
+		virtual bool SaveBitmap( PlatformBitmap* bitmap, const char* filePath, float jpegQuality ) const override;
+
 
 		virtual void SetTapDelay( Rtt_Real delay ) const;
 		virtual Rtt_Real GetTapDelay() const;
@@ -58,7 +61,7 @@ class TVOSPlatform : public IPhonePlatformBase
 
 	private:
 		TVOSDevice fDevice;
-//		mutable IPhoneVideoPlayer *fVideoPlayer;
+		mutable IPhoneVideoPlayer *fVideoPlayer;
 		mutable AppleStoreProvider *fInAppStoreProvider;
 		UIView *fActivityView;
 		id fPopupControllerDelegate;

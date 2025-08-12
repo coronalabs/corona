@@ -39,6 +39,9 @@ class TesselatorMesh : public TesselatorShape
 		virtual void GetSelfBounds( Rect& rect ) override;
 		virtual Geometry::PrimitiveType GetFillPrimitive() const override;
 
+		virtual U32 FillVertexCount() const override;
+		virtual U32 StrokeVertexCount() const override;
+
 	public:
 		// Call when the contour has changed
 		void Invalidate();
@@ -49,6 +52,9 @@ class TesselatorMesh : public TesselatorShape
 
 		const Vertex2 & GetVertexOffset() const { return fVertexOffset; } ;
 		void SetVertexOffset(const Vertex2 & offset) { fVertexOffset = offset; } ;
+
+		const U16 GetLowestIndex() const { return fLowestIndex; }
+		void SetLowestIndex(const U16 index) { fLowestIndex = index; }
 
 	public:
 		// Update the polygons
@@ -62,7 +68,9 @@ class TesselatorMesh : public TesselatorShape
 
 		Vertex2 fVertexOffset;
 		Rect fSelfBounds;
+		U16 fLowestIndex;
 		bool fIsMeshValid;
+		mutable S32 fStrokeCount;
 };
 
 // ----------------------------------------------------------------------------

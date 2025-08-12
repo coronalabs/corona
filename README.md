@@ -1,15 +1,13 @@
 # Solar2D Game Engine
 Download the latest build from the [Releases](https://github.com/coronalabs/corona/releases) page and join the community on [Discord](https://discord.gg/Abf5V9G) and the [forums](https://forums.solar2d.com/).
 
-For Linux, we suggest using the actively developed fork [Solar2DTux](https://github.com/DannyGlover/Solar2DTux).
-
 ## Rebranded Corona SDK
 > Simple to learn and use, completely free and open source 2D game engine.
 
 ![Solar2D Logo](logo.png)
 
 ## Easy-to-learn & powerful
-Solar2D is a cross-platform framework ideal for rapidly creating apps and games for mobile devices, TV, desktop systems and HTML5. That means you can create your project once and publish it to multiple types of devices, including Apple iPhone and iPad, Android phones and tablets, Amazon Fire, Mac Desktop, Windows Desktop, Linux, HTML5 and even connected TVs such as Apple TV, Fire TV, and Android TV.
+Solar2D is a cross-platform framework which is ideal for rapidly creating apps and games for mobile devices, TV, desktop systems and HTML5. That means you can create your project once and publish it to multiple devices, including Apple iPhone and iPad, Android phones and tablets, Amazon Fire, Mac Desktop, Windows Desktop, Linux, HTML5 and even connected TVs such as Apple TV, Amazon Fire TV, and Android TV.
 
 ## Benefits of usage Solar2D
 * Free for everybody – Enterprise features for every developer.
@@ -25,10 +23,10 @@ Solar2D is a cross-platform framework ideal for rapidly creating apps and games 
 ## Feature highlights
 
 ### Simulator and Live Builds
-Solar2D speeds up the development process. Update your code, save the changes, and instantly see the results in our instant-update Simulator. When you're ready to test on real devices, build and deploy your app just once and then see code/assets update automatically, all over your local network. It's like magic.
+Solar2D speeds up the development process - update your code, save the changes, and instantly see the results in our instant-update Simulator. When you're ready to test on real devices, build and deploy your app just once and then see code/assets, update automatically, all over your local network. Just like magic.
 
 ### Lua-based
-Lua is an open source scripting language designed to be lightweight, fast, yet also powerful. Lua is currently the leading scripting language in games and has been utilized in Roblox, The Elder Scrolls Online, Don't Starve, World of Warcraft ™, Angry Birds ™, Civilization ™, and [many other popular franchises.](https://en.wikipedia.org/wiki/Category:Lua-scripted_video_games)
+Lua is an open source scripting language designed to be lightweight, fast, yet also powerful. Lua is currently the leading scripting language in games and has been utilized in Roblox, The Elder Scrolls Online, Don't Starve, World of Warcraft ™, Angry Birds ™, Civilization ™, and [many other popular franchises.](https://en.wikipedia.org/wiki/Category:Lua_(programming_language)-scripted_video_games)
 
 ### Use with your favorite text editor
 You can use Sublime Text([Editor](https://github.com/coronalabs/CoronaSDK-SublimeText#installation-instructions)), Atom([autocomplete-corona](https://atom.io/packages/autocomplete-corona)), Visual Studio Code([Solar2d-companion](https://marketplace.visualstudio.com/items?itemName=M4adan.solar2d-companion)), ZeroBrane Studio and many others.
@@ -47,7 +45,7 @@ The easiest and recommended way to get started with Solar2D is to download binar
 
 
 ### API documentation and guides
-Exhaustive Solar2D API documentation, as well as getting started and more advanced guides are available on [docs.coronalabs.com](http://docs.coronalabs.com).
+Exhaustive Solar2D API documentation, as well as getting started and more advanced guides are available on [docs.coronalabs.com](https://docs.coronalabs.com).
 
 ## Source Code and licensing
 Solar2D is licensed under [MIT](LICENSE) open source license.

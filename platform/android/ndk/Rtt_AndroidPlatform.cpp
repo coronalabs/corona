@@ -305,7 +305,7 @@ AndroidPlatform::FileExists( const char *filename ) const
 	else
 	{
 		// The given file name is likely a relative path to an asset file or a URL to a local file.
-		// Check for its existance via Android's APIs on the Java side.
+		// Check for its existence via Android's APIs on the Java side.
 		fileExists = fNativeToJavaBridge->GetRawAssetExists(filename);
 		if (!fileExists)
 		{
@@ -1048,6 +1048,36 @@ AndroidPlatform::SetNativeProperty( lua_State *L, const char *key, int valueInde
 		{
 			const char *visibility = lua_tostring(L, valueIndex);
 			fNativeToJavaBridge->SetSystemUiVisibility(visibility);
+		}
+	}
+	else if (Rtt_StringCompare(key, "navigationBarColor") == 0)
+	{
+		if (lua_type(L, valueIndex) == LUA_TTABLE)
+		{
+			//red
+			lua_rawgeti(L, valueIndex, 1);
+			double red = 0;
+			if(lua_isnumber(L, -1)){
+					red = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+
+			//green
+			lua_rawgeti(L, valueIndex, 2);
+			double green = 0;
+			if(lua_isnumber(L, -1)){
+					green = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+			//blue
+			lua_rawgeti(L, valueIndex, 3);
+			double blue = 0;
+			if(lua_isnumber(L, -1)){
+					blue = lua_tonumber(L, -1);
+			}
+			lua_pop(L,1);
+
+			fNativeToJavaBridge->SetNavigationBarColor(red, green, blue);
 		}
 	}
 	else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)

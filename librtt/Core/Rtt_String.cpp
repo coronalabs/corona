@@ -39,7 +39,7 @@ Rtt_StringCompareNoCase( const char * s1, const char * s2 )
 			return -1;
 		return 1;
 	}
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV )
 	return _stricmp( s1, s2 );
 #else
 	return strcasecmp( s1, s2 );
@@ -207,6 +207,37 @@ String::Append(const char *str)
 
 	Rtt_FREE(fBuffer);
 	fBuffer = result;
+}
+
+template<typename T, T kPrime, T kOffsetBasis>
+T
+GetHash( const char* buffer )
+{
+	// https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
+    T hash = kOffsetBasis;
+
+	if ( NULL != buffer ) // if absent, interpret as empty string
+	{
+		for ( int i = 0; buffer[i]; i++)
+		{
+			hash *= kPrime;
+			hash ^= buffer[i];
+		}
+	}
+
+    return hash;
+}
+
+U32
+String::GetHash32() const
+{
+	return GetHash<U32, 0x01000193, 0x811C9DC5>( GetString() );
+}
+
+U64
+String::GetHash64() const
+{
+	return GetHash<U64, 0x00000100000001B3, 0xCBF29CE484222325>( GetString() );
 }
 
 void

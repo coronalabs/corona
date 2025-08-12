@@ -138,7 +138,7 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 			{
 				if (fSimulatorServices != NULL)
 				{
-					fSimulatorServices->SetBuildMessage("Collecting plugins locally");
+					fSimulatorServices->SetBuildMessage("Collecting plugins");
 				}
 
 				lua_State *L = fVM;
@@ -204,7 +204,8 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 				lua_setfield(L, -2, "build");
 				
 				char templateZip[255];
-				snprintf(templateZip, 255, "%s_%.1f.tar.bz", platform, params->GetTargetVersion()/10000.0f);
+				setlocale(LC_NUMERIC, "en_US");
+				snprintf(templateZip, 255, "%s_%.1f%s.tar.bz", platform, params->GetTargetVersion()/10000.0f, params->GetCustomTemplate());
 				lua_pushstring(L, templateZip);
 				lua_setfield(L, -2, "template");
 				
@@ -249,6 +250,10 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
 			}
 			if ( PlatformAppPackager::kNoError == result )
 			{
+				if (fSimulatorServices != NULL)
+				{
+					fSimulatorServices->SetBuildMessage("Packaging app");
+				}
 				lua_State *L = fVM;
 				lua_getglobal( L, "iPhonePostPackage" ); Rtt_ASSERT( lua_isfunction( L, -1 ) );
 
@@ -292,6 +297,8 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
                     
 					lua_pushboolean( L, macParams->IsLiveBuild() );
 					lua_setfield( L, -2, "liveBuild" );
+                    lua_pushboolean( L, macParams->IncludeStandardResources() );
+					lua_setfield( L, -2, "includeStandardResources" );
 
 					// By default, assumes ARM architecture, so we need to override
 					// when building for Xcode simulator
@@ -309,7 +316,7 @@ IOSAppPackager::Build( AppPackagerParams * params, const char* tmpDirBase )
                         NSString* copypng = [XcodeToolHelper pathForCopyPngUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
                         NSString* codesign = [XcodeToolHelper pathForCodesignUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
                         NSString* codesign_allocate = [XcodeToolHelper pathForCodesignAllocateUsingDeveloperBase:sdkRoot printWarning:debugBuildProcess];
-						NSString *codesign_framework = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"codesign-framework.sh"];
+						NSString *codesign_framework = [XcodeToolHelper pathForCodesignFramework];
 
                         lua_pushstring( L, [sdkRoot UTF8String] );
                         lua_setfield( L, -2, "sdkroot" );

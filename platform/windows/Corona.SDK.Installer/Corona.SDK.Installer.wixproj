@@ -73,6 +73,8 @@ copy "$(TargetPath)" "$(SolutionDir)Bin\$(ProjectName)"</PostBuildEvent>
 
    mkdir "$(SolutionDir)Bin\Corona"
    move /y "$(SolutionDir)Bin\Native" "$(SolutionDir)Bin\Corona\"
+   move /y "$(SolutionDir)Bin\jre" "$(SolutionDir)Bin\Corona\"
+   move /y "$(SolutionDir)Bin\redist"\* "$(SolutionDir)Bin\Corona\"
 
    REM Compile all Corona related projects to the target directory.
    "$(DevEnvDir)devenv" "$(SolutionDir)Corona.Shell.sln" /rebuild "Release|Win32"

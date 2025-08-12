@@ -36,6 +36,7 @@
 #include "BuildAndroidDlg.h"
 #include "BuildWebDlg.h"
 #include "BuildLinuxDlg.h"
+#include "BuildNxSDlg.h"
 #include "BuildWin32AppDlg.h"
 #include "NewProjectDlg.h"
 #include "SelectSampleProjectDlg.h"
@@ -108,6 +109,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_COMMAND(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnBuildForAndroid)
 	ON_COMMAND(ID_BUILD_FOR_WEB, &CSimulatorView::OnBuildForWeb)
 	ON_COMMAND(ID_BUILD_FOR_LINUX, &CSimulatorView::OnBuildForLinux)
+	ON_COMMAND(ID_BUILD_FOR_NXS, &CSimulatorView::OnBuildForNxS)
 	ON_COMMAND(ID_BUILD_FOR_WIN32, &CSimulatorView::OnBuildForWin32)
 	ON_COMMAND(ID_FILE_OPENINEDITOR, &CSimulatorView::OnFileOpenInEditor)
 	ON_COMMAND(ID_FILE_RELAUNCH, &CSimulatorView::OnFileRelaunch)
@@ -125,6 +127,7 @@ BEGIN_MESSAGE_MAP(CSimulatorView, CView)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_ANDROID, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_WEB, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_LINUX, &CSimulatorView::OnUpdateBuildMenuItem)
+	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_NXS, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_BUILD_FOR_WIN32, &CSimulatorView::OnUpdateBuildMenuItem)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENINEDITOR, &CSimulatorView::OnUpdateFileOpenInEditor)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SHOW_PROJECT_FILES, &CSimulatorView::OnUpdateShowProjectFiles)
@@ -145,15 +148,14 @@ END_MESSAGE_MAP()
 #pragma region Constructor/Destructor
 /// Creates a new Corona Simulator CView.
 CSimulatorView::CSimulatorView()
-:	mSimulatorServices(*this),
+:	mScopedComInitializer(Interop::ScopedComInitializer::ApartmentType::kSingleThreaded),
+	mSimulatorServices(*this),
 	mMessageDlgPointer(nullptr),
 	mProgressDlgPointer(nullptr),
 	mDeviceConfig(*Rtt_AllocatorCreate()),
 	mRuntimeLoadedEventHandler(this, &CSimulatorView::OnRuntimeLoaded)
 {
 	CSimulatorApp *applicationPointer = (CSimulatorApp*)AfxGetApp();
-
-	CoInitialize(nullptr);
 
     mRotation = 0;  // current rotation
     mpSkinBitmap = nullptr;
@@ -897,6 +899,34 @@ void CSimulatorView::OnBuildForLinux()
 	// Display the build window.
 	CBuildLinuxDlg dlg;
 	dlg.SetProject( GetDocument()->GetProject() );
+	dlg.DoModal();
+	if (buildSuspendedSimulator)
+	{
+		// Toggle suspend
+		SuspendResumeSimulationWithOverlay(true, false);
+	}
+}
+
+/// <summary>Opens a dialog to build the currently selected project as an NxS Switch app.</summary>
+void CSimulatorView::OnBuildForNxS()
+{
+	CSimulatorApp* applicationPointer = (CSimulatorApp*)AfxGetApp();
+	if (!applicationPointer->ShouldShowNXBuildDlg())
+	{
+		return;
+	}
+	// If app is running, suspend it during the build
+	bool buildSuspendedSimulator = false;
+	bool isSuspended = IsSimulationSuspended();
+	if (false == isSuspended)
+	{
+		buildSuspendedSimulator = true;
+		SuspendResumeSimulationWithOverlay(true, false);
+	}
+
+	// Display the build window.
+	CBuildNxSDlg dlg;
+	dlg.SetProject(GetDocument()->GetProject());
 	dlg.DoModal();
 	if (buildSuspendedSimulator)
 	{
@@ -1841,6 +1871,13 @@ void CSimulatorView::StopSimulation()
 	Interop::SimulatorRuntimeEnvironment::Destroy(mRuntimeEnvironmentPointer);
 	mRuntimeEnvironmentPointer = nullptr;
 
+	RECT bounds;
+
+	mCoronaContainerControl.GetWindowRect(&bounds);
+
+	mCoronaContainerControl.DestroyWindow();
+	mCoronaContainerControl.Create(nullptr, WS_CHILD | WS_VISIBLE, bounds, this);
+
 	// Hide the Corona control and show its black container without any text.
 	mCoronaContainerControl.SetWindowTextW(L"");
 	mCoronaContainerControl.GetCoronaControl().ShowWindow(SW_HIDE);
@@ -2276,6 +2313,13 @@ void CSimulatorView::RunCoronaProject(CString& projectPath)
 	// Load and run the application.
 	if (projectPath.GetLength() > 0)
 	{
+		RECT bounds;
+
+		mCoronaContainerControl.GetWindowRect(&bounds);
+
+		mCoronaContainerControl.DestroyWindow();
+		mCoronaContainerControl.Create(nullptr, WS_CHILD | WS_VISIBLE, bounds, this);
+
 		// Show the Corona control before creating the runtime. The Corona runtime will render to this control.
 		mCoronaContainerControl.GetCoronaControl().ShowWindow(SW_SHOW);
 		mCoronaContainerControl.GetCoronaControl().SetFocus();
@@ -2637,8 +2681,11 @@ void CSimulatorView::RemoveUnauthorizedMenuItemsFrom(CMenu* menuPointer)
 			bool shouldRemove = false;
 			switch (menuItemId)
 			{
+				case ID_BUILD_FOR_NXS:
+					shouldRemove = ! applicationPointer->ShouldShowNXBuildDlg();
+					break;
 				case ID_BUILD_FOR_LINUX:
-					shouldRemove = (applicationPointer->ShouldShowLinuxBuildDlg() == false);
+					shouldRemove = ! applicationPointer->ShouldShowLinuxBuildDlg();
 					break;
 			}
 			if (shouldRemove)

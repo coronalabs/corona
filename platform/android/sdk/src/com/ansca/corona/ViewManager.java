@@ -9,15 +9,6 @@
 
 package com.ansca.corona;
 
-import com.ansca.corona.maps.MapView;
-import com.ansca.corona.maps.MapType;
-import com.ansca.corona.permissions.PermissionsServices;
-import com.ansca.corona.permissions.PermissionsSettings;
-import com.ansca.corona.permissions.PermissionState;
-
-import java.io.File;
-import java.util.HashMap;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -28,13 +19,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.widget.AbsoluteLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.view.MotionEvent;
-import android.view.inputmethod.EditorInfo;
+
+import com.ansca.corona.maps.MapType;
+import com.ansca.corona.maps.MapView;
+import com.ansca.corona.permissions.PermissionState;
+import com.ansca.corona.permissions.PermissionsServices;
+import com.ansca.corona.permissions.PermissionsSettings;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ViewManager {
 	private java.util.ArrayList<android.view.View> myDisplayObjects;
@@ -483,6 +481,43 @@ public class ViewManager {
 		} );
 	}
 
+	public int[] getTextSelection(final int id) {
+	    final int[] result = new int[2];
+	    final Object lock = new Object();
+
+	    Runnable runnable = new Runnable() {
+	        @Override
+	        public void run() {
+	            CoronaEditText view = getDisplayObjectById(CoronaEditText.class, id);
+	            if (view != null) {
+	                result[0] = view.getSelectionStart();
+	                result[1] = view.getSelectionEnd();
+	            } else {
+	                result[0] = -1;
+	                result[1] = -1;
+	            }
+	            synchronized (lock) {
+	                lock.notify();
+	            }
+	        }
+	    };
+
+	    if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
+	        runnable.run();
+	    } else {
+	        synchronized (lock) {
+	            postOnUiThread(runnable);
+	            try {
+	                lock.wait();
+	            } catch (InterruptedException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+
+	    return result;
+	}
+
 	public void setTextViewColor( final int id, final int color )
 	{
 		postOnUiThread( new Runnable() {
@@ -711,7 +746,143 @@ public class ViewManager {
 			}
 		});
 	}
-	
+
+	private static <T> java.lang.Runnable GetTypedViewMethod(final Object view, final String method, final T param) {
+		try {
+			final java.lang.reflect.Method m = view.getClass().getMethod(method, param.getClass());
+			return new java.lang.Runnable() {
+				@Override
+				public void run() {
+					try {
+						m.invoke(view, param);
+					} catch (Throwable ignore) {
+						ignore.printStackTrace();
+					}
+				}
+			};
+		} catch (Throwable ignore) { }
+		try {
+			Class<?> primitiveType = (Class<?>)param.getClass().getField("TYPE").get(null);
+			final java.lang.reflect.Method m = view.getClass().getMethod(method, primitiveType);
+			return new java.lang.Runnable() {
+				@Override
+				public void run() {
+					try {
+						m.invoke(view, param);
+					} catch (Throwable ignore) {
+						ignore.printStackTrace();
+					}
+				}
+			};
+		} catch (Throwable ignore) { }
+
+		return null;
+	}
+
+	public boolean setNativeProperty(final int id, final String key, long luaStateMemoryAddress, int index) {
+		CoronaRuntime runtime = myCoronaRuntime;
+		if (runtime == null) {
+			return false;
+		}
+		if (key == null) {
+			return false;
+		}
+		com.naef.jnlua.LuaState luaState = runtime.getLuaState();
+		if (luaState == null || CoronaRuntimeProvider.getLuaStateMemoryAddress(luaState) != luaStateMemoryAddress) {
+			return false;
+		}
+		final com.naef.jnlua.LuaType lt = luaState.type(index);
+		final boolean booleanValue;
+		final String stringValue;
+		final int integerValue;
+		final double doubleValue;
+		switch (lt) {
+			case BOOLEAN:
+				booleanValue = luaState.toBoolean(index);
+				integerValue = 0;
+				doubleValue = 0;
+				stringValue = null;
+				break;
+			case NUMBER:
+				booleanValue = false;
+				integerValue = luaState.toInteger(index);
+				doubleValue = luaState.toNumber(index);
+				stringValue = null;
+				break;
+			case STRING:
+				booleanValue = false;
+				integerValue = 0;
+				doubleValue = 0;
+				stringValue = luaState.toString(index);
+				break;
+			default:
+				booleanValue = false;
+				integerValue = 0;
+				doubleValue = 0;
+				stringValue = null;
+				break;
+		}
+
+		postOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				final Object rootObject = getDisplayObjectById(id);
+				if (rootObject == null) {
+					return;
+				}
+				List<Object> responders = null;
+				java.lang.Runnable action = null;
+				if (rootObject instanceof NativePropertyResponder) {
+					NativePropertyResponder npr = (NativePropertyResponder)rootObject;
+					responders = npr.getNativePropertyResponder();
+					action = npr.getCustomPropertyAction(key, booleanValue, stringValue, integerValue, doubleValue);
+				}
+				if(responders == null) {
+					responders = new LinkedList<Object>();
+					responders.add(rootObject);
+				}
+				for (Object view : responders) {
+					if(action!=null) break;
+					switch (lt) {
+						case BOOLEAN:
+							action = GetTypedViewMethod(view, key, booleanValue);
+							break;
+						case NUMBER:
+							action = GetTypedViewMethod(view, key, integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (long) integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (short) integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (char) integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (byte) integerValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, (float) doubleValue);
+							if (action == null)
+								action = GetTypedViewMethod(view, key, doubleValue);
+							break;
+						case STRING:
+							action = GetTypedViewMethod(view, key, stringValue);
+							break;
+						default:
+							break;
+					}
+				}
+				if (action == null) {
+					Log.e("Corona", "Unable to setNativeProperty " + key);
+					return;
+				}
+				try {
+					action.run();
+				} catch (Throwable ignore) {
+					ignore.printStackTrace();
+				}
+			}
+		});
+		return true;
+	}
+
 	public void setDisplayObjectVisible( final int id, final boolean visible ) {
 		postOnUiThread( new Runnable() {
 			public void run() {
@@ -1141,12 +1312,25 @@ public class ViewManager {
 					if (context != null) {
 						// If the given URL is to a local file within the APK or expansion file,
 						// then create a content URI for it.
+						String path = url;
+						String suffix = "";
 						com.ansca.corona.storage.FileServices fs = new com.ansca.corona.storage.FileServices(context);
-						if (fs.doesAssetFileExist(url)) {
+						try {
+							android.net.Uri uri = android.net.Uri.parse(url);
+							if(uri.getScheme() == null) {
+								path = uri.getPath();
+								int index = url.indexOf(path);
+								if(index>=0) {
+									suffix = url.substring(index+path.length());
+								}
+							}
+						} catch (Throwable ignore) { }
+
+						if (fs.doesAssetFileExist(path)) {
 							android.net.Uri contentProviderUri =
-									com.ansca.corona.storage.FileContentProvider.createContentUriForFile(context, url);
+									com.ansca.corona.storage.FileContentProvider.createContentUriForFile(context, path);
 							if (contentProviderUri != null) {
-								url = contentProviderUri.toString();
+								url = contentProviderUri.toString() + suffix;
 							}
 						}
 					}

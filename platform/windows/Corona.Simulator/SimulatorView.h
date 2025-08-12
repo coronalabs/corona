@@ -11,6 +11,7 @@
 
 #include "Core\Rtt_Build.h"
 #include "Core\Rtt_Array.h"
+#include "Interop\ScopedComInitializer.h"
 #include "Interop\SimulatorRuntimeEnvironment.h"
 #include "Rtt_PlatformSimulator.h"
 #include "Rtt_TargetDevice.h"
@@ -135,6 +136,7 @@ class CSimulatorView : public CView
 		afx_msg void OnBuildForAndroid();
 		afx_msg void OnBuildForWeb();
 		afx_msg void OnBuildForLinux();
+		afx_msg void OnBuildForNxS();
 		afx_msg void OnBuildForWin32();
 		afx_msg void OnFileOpenInEditor();
 		afx_msg void OnFileRelaunch();
@@ -176,6 +178,7 @@ class CSimulatorView : public CView
 		CCoronaControlContainer mCoronaContainerControl;
 		Interop::SimulatorRuntimeEnvironment* mRuntimeEnvironmentPointer;
 		Interop::SimulatorRuntimeEnvironment::LoadedEvent::MethodHandler<CSimulatorView> mRuntimeLoadedEventHandler;
+		Interop::ScopedComInitializer mScopedComInitializer;
 		Rtt::WinSimulatorServices mSimulatorServices;
 		CMessageDlg* mMessageDlgPointer;
 		CProgressWnd* mProgressDlgPointer;

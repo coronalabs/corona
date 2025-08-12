@@ -616,6 +616,13 @@ Java_com_ansca_corona_JavaToNativeShim_nativeVideoViewEnded(
 	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->VideoViewEndedEvent(id);
 }
 
+JNIEXPORT void JNICALL
+Java_com_ansca_corona_JavaToNativeShim_nativeVideoViewFailed(
+		JNIEnv * env, jclass cd, jlong bridgeAddress, jint id)
+{
+	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->VideoViewFailedEvent(id);
+}
+
 JNIEXPORT jobject JNICALL
 Java_com_ansca_corona_JavaToNativeShim_nativeGetCoronaRuntime(
 	JNIEnv * env, jclass cd, jlong bridgeAddress)

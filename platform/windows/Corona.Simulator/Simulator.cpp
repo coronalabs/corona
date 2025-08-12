@@ -95,15 +95,15 @@ CSimulatorApp::CSimulatorApp()
 BOOL CSimulatorApp::InitInstance()
 {
 	// Load the simulator version of the Corona library, which is only used by plugins to link against by name.
-	// This is a thin proxy DLL which forwards Corona's public APIs to this EXE's statically linked Corona APIs.
+	// This is a thin proxy DLL which forwards Solar2D's public APIs to this EXE's statically linked Solar2D APIs.
 	// This ensures that plugins link with the simulator's library and not the non-simulator version of the library.
 	CString coronaLibraryPath = GetApplicationDir() + _T("\\Resources\\CoronaLabs.Corona.Native.dll");
 	if (!Rtt_VERIFY(::LoadLibrary(coronaLibraryPath)))
 	{
 		CString message =
-			_T("Failed to load the Corona Simulator's library.\r\n")
-			_T("This might mean that your Corona installation is corrupted.\r\n")
-			_T("You may be able to fix this by re-installing the Corona.");
+			_T("Failed to load the Solar2D Simulator's library.\r\n")
+			_T("This might mean that your Solar2D installation is corrupted.\r\n")
+			_T("You may be able to fix this by re-installing the Solar2D.");
 		AfxMessageBox(message, MB_OK | MB_ICONEXCLAMATION);
 		return FALSE;
 	}
@@ -140,7 +140,7 @@ BOOL CSimulatorApp::InitInstance()
 		}
 	}
 	// Initialize WinGlobalProperties object which mirrors theApp properties
-	// Make sure this is done before accessing any Corona functions
+	// Make sure this is done before accessing any Solar2D functions
 	WinString strRegistryKey, strRegistryProfile, strResourcesDir;
 	strRegistryKey.SetTCHAR(m_pszRegistryKey);
 	strRegistryProfile.SetTCHAR(m_pszProfileName);
@@ -156,16 +156,16 @@ BOOL CSimulatorApp::InitInstance()
 	if (!lastRunSucceeded)
 	{
 		CString message =
-			_T("Corona Simulator crashed last time it was run\n\n")
+			_T("Solar2D Simulator crashed last time it was run\n\n")
 			_T("This can happen because Windows or the video driver need to be updated.  ")
 			_T("If it crashes again, make sure the software for your video card is up to date (you ")
 			_T("may need to visit the manufacturer's web site to check this) and ensure that all ")
 			_T("available Windows updates have been installed.\n\n")
-			_T("If the problem persists, contact support@coronalabs.com including as much detail as possible.");
+			_T("If the problem persists, contact support@solar2d.com including as much detail as possible.");
 
 		SHMessageBoxCheck(NULL,
 			message,
-			TEXT("Corona Simulator"),
+			TEXT("Solar2D Simulator"),
 			MB_OK | MB_ICONEXCLAMATION,
 			IDOK,
 			L"CoronaShowCrashWarning");
@@ -225,7 +225,7 @@ BOOL CSimulatorApp::InitInstance()
 				{
 					// *** The app is currently displaying a modal dialog. ***
 
-					// Stop the app's currently running Corona project. Avoids file locking issues, like with fonts.
+					// Stop the app's currently running Solar2D project. Avoids file locking issues, like with fonts.
 					::PostMessage(windowHandle, WM_COMMAND, ID_FILE_CLOSE, 0);
 
 					// Send a quit message to exit the app. (Not a clean way to exit an app.)
@@ -266,7 +266,7 @@ BOOL CSimulatorApp::InitInstance()
 	// Display a logging window, if enabled.
 	if (m_isConsoleEnabled)
 	{
-		// Use the following Corona application as our logging window.
+		// Use the following Solar2D application as our logging window.
 		WinString outputViewerFilePath(GetApplicationDir());
 		WinString outputViewerArgs;
 
@@ -334,8 +334,8 @@ BOOL CSimulatorApp::InitInstance()
     m_pDocManager = new CSimDocManager();
 
 	// Register the simulator's document template.
-	// This is used to manage an open Corona project with an MFC SDI document/view interface.
-	// Note: This custom doc template allows the simulator to open Corona projects by directory or "main.lua".
+	// This is used to manage an open Solar2D project with an MFC SDI document/view interface.
+	// Note: This custom doc template allows the simulator to open Solar2D projects by directory or "main.lua".
 	auto pDocTemplate = new CSimulatorDocTemplate();
 	if (!pDocTemplate)
 	{
@@ -344,7 +344,7 @@ BOOL CSimulatorApp::InitInstance()
 	AddDocTemplate(pDocTemplate);
 
     // Do this before any of the ways app can exit (including not authorized)
-	printf("\nCorona Simulator %d.%d (%s %s)\n\n", Rtt_BUILD_YEAR, Rtt_BUILD_REVISION, __DATE__, __TIME__);
+	printf("\nSolar2D Simulator %d.%d (%s %s)\n\n", Rtt_BUILD_YEAR, Rtt_BUILD_REVISION, __DATE__, __TIME__);
 
 	// Load user preferences from registry
     // Initialize member variables used to write out preferences
@@ -377,7 +377,7 @@ BOOL CSimulatorApp::InitInstance()
 		}
 	}
 
-	// If a Corona project directory was provided at the command line, then append a "main.lua" file to the path.
+	// If a Solar2D project directory was provided at the command line, then append a "main.lua" file to the path.
 	if (!cmdInfo.m_strFileName.IsEmpty() && ::PathIsDirectory(cmdInfo.m_strFileName))
 	{
 		TCHAR mainLuaFilePath[2048];
@@ -808,6 +808,11 @@ bool CSimulatorApp::ShouldShowWebBuildDlg()
 bool CSimulatorApp::ShouldShowLinuxBuildDlg()
 {
 	bool show = GetProfileInt(REGISTRY_SECTION, REGISTRY_SHOWLINUXBUILD, REGISTRY_SHOWLINUXBUILD_DEFAULT) ? true : false;
+	return show;
+}
+bool CSimulatorApp::ShouldShowNXBuildDlg()
+{
+	bool show = getenv("NINTENDO_SDK_ROOT") != NULL;
 	return show;
 }
 

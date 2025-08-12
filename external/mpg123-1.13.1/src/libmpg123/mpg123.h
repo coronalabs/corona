@@ -29,7 +29,7 @@
 #endif
 
 #ifndef MPG123_NO_CONFIGURE /* Enable use of this file without configure. */
-#ifdef NINTENDO_LIB
+#ifdef NXS_LIB
 	#include "config.h"
 #else
 	//@INCLUDE_STDLIB_H@

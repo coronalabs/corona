@@ -279,7 +279,7 @@ Rtt_AllocatorCreate( Rtt_ALLOCATOR_CREATE_ARG_DEFN )
 	#ifdef Rtt_USE_GLOBAL_VARIABLES
 		Rtt_Allocator* result = Rtt_Allocator::GetDefault();
 
-		if ( 0 == Rtt_Allocator::RefCount()++ )
+		if ( 0 == Rtt_Allocator::RefCount()++ ) // TODO: there is a four-byte memory leak due to unbalanced counts :)
 		{
 			result = new Rtt::Allocator( Rtt_ALLOCATOR_CREATE_ARG_LIST );
 			Rtt_Allocator::SetDefault( result );

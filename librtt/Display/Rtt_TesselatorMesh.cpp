@@ -31,6 +31,8 @@ TesselatorMesh::TesselatorMesh( Rtt_Allocator *allocator, Geometry::PrimitiveTyp
 ,	fIsMeshValid( false )
 ,	fMeshType(meshType)
 ,   fVertexOffset(kVertexOrigin)
+,	fLowestIndex(0)
+,	fStrokeCount( -1 )
 {
 }
 
@@ -269,6 +271,43 @@ Geometry::PrimitiveType
 TesselatorMesh::GetFillPrimitive() const
 {
 	return fMeshType;
+}
+
+U32
+TesselatorMesh::FillVertexCount() const
+{
+	return fMesh.Length();
+}
+
+U32
+TesselatorMesh::StrokeVertexCount() const
+{
+	if (-1 == fStrokeCount) // TODO: ideal would be to pick apart GenerateStroke() without actually adding indices / vertices or doing the final stroke
+	{
+		ArrayVertex2 verts( fMesh.Allocator() );
+		TesselatorMesh dummy( fMesh.Allocator(), fMeshType );
+
+		dummy.fMesh.Reserve( fMesh.Length() );
+
+		for (int i = 0, iMax = fMesh.Length(); i < iMax; ++i)
+		{
+			dummy.fMesh.Append( fMesh[i] );
+		}
+
+		dummy.fIndices.Reserve( fIndices.Length() );
+
+		for (int i = 0, iMax = fIndices.Length(); i < iMax; ++i)
+		{
+			dummy.fIndices.Append( fIndices[i] );
+		}
+
+		dummy.SetWidth( Rtt_REAL_1 );
+		dummy.GenerateStroke( verts );
+
+		fStrokeCount = S32( verts.Length() );
+	}
+
+	return U32( fStrokeCount );
 }
 
 void

@@ -91,19 +91,21 @@ AppPackagerFactory::CreatePackagerParamsApple(
 				}
 			}
 
-			if ( ! certificatePath )
+			if ( ! certificatePath  && (targetDevice == TargetDevice::kIOSUniversal ||
+										targetDevice == TargetDevice::kIPhone ||
+										targetDevice == TargetDevice::kIPad ))
 			{
 				fprintf( stderr, "ERROR: Missing 'certificatePath' in build params\n" );
 				return NULL;
 			}
 
-			NSString *provisionFile = [NSString stringWithUTF8String:certificatePath];
+			NSString *provisionFile = certificatePath?[NSString stringWithUTF8String:certificatePath]:nil;
 
-			bool isDistributionBuild = [AppleSigningIdentityController hasProvisionedDevices:provisionFile];
+			bool isDistributionBuild = certificatePath?[AppleSigningIdentityController hasProvisionedDevices:provisionFile]:NO;
 
 			IOSAppPackager packager( fServices );
 
-			const char *appBundleId = packager.GetBundleId( certificatePath, appName );
+			const char *appBundleId = certificatePath?packager.GetBundleId( certificatePath, appName ):"com.solar2d.xcodesim";
 
 			if ( ! customBuildId )
 			{
@@ -112,7 +114,7 @@ AppPackagerFactory::CreatePackagerParamsApple(
 			}
 
 			NSString *commonName = nil;
-			NSString *identity = [AppleSigningIdentityController signingIdentity:provisionFile commonName:&commonName];
+			NSString *identity = certificatePath?[AppleSigningIdentityController signingIdentity:provisionFile commonName:&commonName]:nil;
 
 			result = new IOSAppPackagerParams(
 											  appName,
@@ -216,11 +218,25 @@ AppPackagerFactory::CreatePackagerParamsApple(
 			Rtt_ASSERT_NOT_REACHED();
 			break;
 	}
-
+	
 	if ( ! result )
 	{
 		fprintf( stderr, "ERROR: Unsupported platform: %s\n", TargetDevice::StringForPlatform( targetPlatform ) );
 	}
+	
+	lua_getfield(L, index, "customTemplate" );
+	if(lua_type(L, -1) == LUA_TSTRING)
+	{
+		result->SetCustomTemplate(lua_tostring(L, -1));
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "includeStandardResources");
+	if(lua_type(L, -1) == LUA_TBOOLEAN)
+	{
+		result->SetIncludeStandardResources(lua_toboolean(L, -1));
+	}
+	lua_pop(L, 1);
 
 	return result;
 }
@@ -235,7 +251,7 @@ AppPackagerFactory::CreatePackagerParamsApple(
 const char *
 AppPackagerFactory::GetResourceDirectoryOSX() const
 {
-	return [[[NSBundle mainBundle] resourcePath] UTF8String];
+	return [[XcodeToolHelper pathForResources] UTF8String];
 }
 #endif
 

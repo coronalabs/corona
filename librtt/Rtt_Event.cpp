@@ -155,6 +155,41 @@ FrameEvent::Push( lua_State *L ) const
 
 // ----------------------------------------------------------------------------
 
+const RenderEvent&
+RenderEvent::Constant()
+{
+	static const RenderEvent kEvent;
+	return kEvent;
+}
+
+RenderEvent::RenderEvent()
+{
+}
+
+const char*
+RenderEvent::Name() const
+{
+	static const char kName[] = "lateUpdate";
+	return kName;
+}
+
+int
+RenderEvent::Push( lua_State *L ) const
+{
+	if ( Rtt_VERIFY( Super::Push( L ) ) )
+	{
+		Runtime *runtime = LuaContext::GetRuntime( L );
+		lua_pushnumber( L, runtime->GetFrame() );
+		lua_setfield( L, -2, "frame" );
+		lua_pushnumber( L, runtime->GetElapsedMS() );
+		lua_setfield( L, -2, "time" );
+	}
+
+	return 1;
+}
+
+// ----------------------------------------------------------------------------
+
 const char*
 SystemEvent::StringForType( Type type )
 {
@@ -346,6 +381,30 @@ ResizeEvent::Push( lua_State *L ) const
 {
 	return Super::Push( L );
 }
+
+// ----------------------------------------------------------------------------
+
+/// Creates a new event indicating that the main was activated or deactivated
+WindowStateEvent::WindowStateEvent(bool foreground) : fForeground(foreground)
+{
+}
+
+const char*
+WindowStateEvent::Name() const
+{
+	static const char kName[] = "windowState";
+	return kName;
+}
+
+int
+WindowStateEvent::Push( lua_State *L ) const
+{
+	Super::Push( L );
+	lua_pushstring( L, fForeground?"foreground":"background");
+	lua_setfield( L, -2, kPhaseKey );
+	return 1;
+}
+
 
 // ----------------------------------------------------------------------------
 
@@ -1654,7 +1713,7 @@ HitEvent::Test( HitTestObject& hitParent, const Matrix& srcToDstSpace ) const
 		// Only add visible/hitTestable objects
 		// and in the multitouch case, do not have per object focus id set
 		// since we dispatch focused events outside of hit testing.
-		if ( child.ShouldHitTest() && ! child.GetFocusId() )
+		if ( child.ShouldHitTest() && ! child.GetFocusId() && ( !child.SkipsHitTest() && child.CanHitTest()) )
 		{
 			GroupObject* childAsGroup = child.AsGroupObject();
 			if ( ! childAsGroup )
@@ -2998,6 +3057,7 @@ VideoEvent::StringForPhase( Phase type )
 	const char* result = NULL;
 	static const char kReadyString[] = "ready";
 	static const char kEndedString[] = "ended";
+	static const char kFailedString[] = "failed";
 
 	switch( type )
 	{
@@ -3006,6 +3066,9 @@ VideoEvent::StringForPhase( Phase type )
 			break;
 		case kEnded:
 			result = kEndedString;
+			break;
+		case kFailed:
+			result = kFailedString;
 			break;
 		default:
 			break;

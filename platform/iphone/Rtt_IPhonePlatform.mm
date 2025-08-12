@@ -208,7 +208,7 @@ PlatformTimer*
 IPhonePlatform::CreateTimerWithCallback( MCallback& callback ) const
 {
 	AppDelegate* delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-	GLKViewController* viewController = (GLKViewController*)delegate.viewController;
+	Rtt_GLKViewController* viewController = (Rtt_GLKViewController*)delegate.viewController;
 	
 	return Rtt_NEW( fAllocator, IPhoneTimer( callback, viewController ) );
 }
@@ -439,7 +439,8 @@ IPhonePlatform::OpenURL( const char* url ) const
 		NSURL* urlPlatform = [NSURL URLWithString:[NSString stringWithUTF8String:url]];
 		if ( [sharedApplication canOpenURL:urlPlatform] )
 		{
-			result = Rtt_VERIFY( [sharedApplication openURL:urlPlatform] );
+			result = true; // We set to true due the fact we don't know if web link opened
+            [[UIApplication sharedApplication] openURL:urlPlatform options:@{} completionHandler:nil];
 		}
 	}
 

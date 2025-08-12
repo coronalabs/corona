@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -24,13 +25,14 @@
 #include <string.h>
 #include <fcntl.h>
 
-#if defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV ) // || defined( Rtt_NXS_ENV )
 	#include <io.h>
 	#include <sys/stat.h>
 	static const unsigned S_IRUSR = _S_IREAD;     ///< read by user
 	static const unsigned S_IWUSR = _S_IWRITE;    ///< write by user
 #elif defined( Rtt_ANDROID_ENV )
 	#include "NativeToJavaBridge.h"
+	#include <sys/mman.h>
 #else
 	#include <stdlib.h>
 	#include <unistd.h>
@@ -451,7 +453,7 @@ ArchiveReader::Initialize( const void* data, size_t numBytes )
 {
 	const U8 kHeader[] = { 'r', 'a', 'c', ArchiveWriter::kVersion };
 	const size_t kHeaderSize = sizeof( kHeader );
-	bool result = ( numBytes > kHeaderSize && 0 == memcmp( data, kHeader, kHeaderSize ) );
+	bool result = ( data && numBytes > kHeaderSize && 0 == memcmp( data, kHeader, kHeaderSize ) );
 	if ( result )
 	{
 		fPos = ((U8*)data) + kHeaderSize;
@@ -973,7 +975,7 @@ Archive::Archive( Rtt_Allocator& allocator, const char *srcPath )
 #endif
 	fData( NULL )
 {
-#if defined( Rtt_WIN_PHONE_ENV )
+#if defined( Rtt_WIN_PHONE_ENV ) || defined(Rtt_NXS_ENV)
 	FILE* filePointer = Rtt_FileOpen(srcPath, "rb");
 	if (filePointer)
 	{
@@ -1009,19 +1011,6 @@ Archive::Archive( Rtt_Allocator& allocator, const char *srcPath )
 		}
 		Rtt_FileClose(filePointer);
 	}
-#elif defined( Rtt_ANDROID_ENV )
-	bool ok = NativeToJavaBridge::GetRawAsset( srcPath, fBits );
-	if ( ok ) {
-		fData = fBits.Get();
-		fDataLen = fBits.Length();
-	}
-#if Rtt_DEBUG_ARCHIVE
-	else
-	{
-		Rtt_TRACE( ( "[Archive::Archive] NativeToJavaBridge::GetRawAsset failed\n", fDataLen ) );
-	}
-#endif
-
 #else
 	int fileDescriptor = Rtt_FileDescriptorOpen(srcPath, O_RDONLY, S_IRUSR);
 	struct stat statbuf;
@@ -1107,7 +1096,7 @@ Archive::Archive( Rtt_Allocator& allocator, const char *srcPath )
 
 Archive::~Archive()
 {
-#if defined( Rtt_ANDROID_ENV ) || defined( Rtt_EMSCRIPTEN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#if defined( Rtt_EMSCRIPTEN_ENV ) || defined( Rtt_NXS_ENV )
 	// Do nothing.
 #elif defined( Rtt_WIN_PHONE_ENV )
 	Rtt_FREE((void*)fData);

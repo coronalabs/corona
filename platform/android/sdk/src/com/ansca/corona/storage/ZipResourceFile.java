@@ -286,7 +286,9 @@ public class ZipResourceFile {
         ZipEntryRO entry = mHashMap.get(assetPath);
         if (null != entry) {
             if (entry.isUncompressed()) {
-                return entry.getAssetFileDescriptor().createInputStream();
+                AssetFileDescriptor afd = entry.getAssetFileDescriptor();
+                if (null != afd)
+                    return afd.createInputStream();
             } else {
                 ZipFile zf = mZipFiles.get(entry.getZipFile());
                 /** read compressed files **/

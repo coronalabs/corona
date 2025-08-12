@@ -21,6 +21,9 @@
 #include "Rtt_LuaAux.h"
 #include "Rtt_LuaProxyVTable.h"
 #include "Display/Rtt_SpritePlayer.h"
+#include "Display/Rtt_Display.h"
+
+#include "Display/Rtt_LuaLibDisplay.h"
 
 // ----------------------------------------------------------------------------
 
@@ -549,12 +552,21 @@ SpriteObjectSequence::GetEffectiveNumFrames() const
 
 // ----------------------------------------------------------------------------
 
+static SpriteObject *
+NewSprite( Rtt_Allocator * allocator, RectPath * path, const AutoPtr< ImageSheet > & sheet, SpritePlayer & player )
+{
+    return Rtt_NEW( allocator, SpriteObject( path, allocator, sheet, player ) );
+}
+
 SpriteObject*
 SpriteObject::Create(
+    lua_State * L,
 	Rtt_Allocator *pAllocator,
 	const AutoPtr< ImageSheet >& sheet,
-	SpritePlayer& player )
+	SpritePlayer& player,
+	Display& display )
 {
+	auto * spriteFactory = GetObjectFactory( L, &NewSprite, display ); // n.b. done first to ensure factory function is consumed
 	SpriteObject *result = NULL;
 
 	if ( ! sheet->IsEmpty() )
@@ -568,7 +580,7 @@ SpriteObject::Create(
 
 			RectPath *path = RectPath::NewRect( pAllocator, width, height );
 
-			result = Rtt_NEW( pAllocator, SpriteObject( path, pAllocator, sheet, player ) );
+            result = spriteFactory( pAllocator, path, sheet, player );
 		}
 		else
 		{
@@ -584,21 +596,23 @@ SpriteObject::Create(
 }
 
 SpriteObject::SpriteObject(
-	RectPath *path,
-	Rtt_Allocator *pAllocator,
-	const AutoPtr< ImageSheet >& sheet,
-	SpritePlayer& player )
-:	Super( path ),
-	fPaint( NULL ),
-	fSheet( sheet ),
-	fSequences( pAllocator ),
-	fPlayer( player ),
-	fTimeScale( Rtt_REAL_1 ),
-	fCurrentSequence( 0 ), // Default is first sequence
-	fCurrentFrame( 0 ),
-	fStartTime( 0 ),
-	fPlayTime( 0 ),
-	fProperties( 0 )
+		RectPath *path,
+		Rtt_Allocator *pAllocator,
+		const AutoPtr<ImageSheet> &sheet,
+		SpritePlayer &player )
+		: Super(path),
+			fPaint(NULL),
+			fSheet(sheet),
+			fSequences(pAllocator),
+			fPlayer(player),
+			fTimeScale(Rtt_REAL_1),
+			fCurrentSequence(0), // Default is first sequence
+			fCurrentFrame(0),
+			fFrameForAnchors(NULL),
+			fStartTime(0),
+			fPlayTime(0),
+			fTimeScaleIncrement(0),
+			fProperties(0)
 {
 	SetObjectDesc( "SpriteObject" );     // for introspection
 }
@@ -677,6 +691,38 @@ SpriteObject::Translate( Real dx, Real dy )
 }
 */
 
+void
+SpriteObject::GetSelfBoundsForAnchor( Rect& rect ) const
+{
+	if ( NULL != fFrameForAnchors )
+	{
+		// cf. TesselatorRect
+		rect.Initialize( fFrameForAnchors->GetWidth() / 2, fFrameForAnchors->GetHeight() / 2 );
+	}
+	
+	else
+	{
+		Super::GetSelfBoundsForAnchor( rect );
+	}
+}
+
+bool
+SpriteObject::GetTrimmedFrameOffsetForAnchor( Real& deltaX, Real& deltaY ) const
+{
+	if ( NULL != fFrameForAnchors )
+	{
+		deltaX = fFrameForAnchors->IsTrimmed() ? fFrameForAnchors->GetOffsetX() : 0;
+		deltaY = fFrameForAnchors->IsTrimmed() ? fFrameForAnchors->GetOffsetY() : 0;
+
+		return true;
+	}
+
+	else
+	{
+		return Super::GetTrimmedFrameOffsetForAnchor( deltaX, deltaY );
+	}
+}
+
 const LuaProxyVTable&
 SpriteObject::ProxyVTable() const
 {
@@ -728,11 +774,14 @@ SpriteObject::SetBitmapFrame( int frameIndex )
 	if ( isTrimmed || IsProperty( kIsPreviousFrameTrimmed ) )
 	{
 		Invalidate( kTransformFlag );
+		
+		// Any trim correction will change the matrix.
+		if (sheet->CorrectsTrimOffsets()) GetTransform().Invalidate();
 	}
 
 	// Store whether or not the new frame is trimmed or not
 	SetProperty( kIsPreviousFrameTrimmed, isTrimmed );
-
+	
 	// Update texture coords for new frame
 	Invalidate( kGeometryFlag );
 	GetPath().Invalidate( ClosedPath::kFillSourceTexture );
@@ -826,7 +875,7 @@ SpriteObject::Update( lua_State *L, U64 milliseconds )
 		if ( sequence->GetTime() > 0 || sequence->GetTimeArray() != NULL)
 		{
 			// time-based sequence.
-			Real dt = Rtt_IntToReal( (U32) (milliseconds - fStartTime) );
+			Real dt = Rtt_IntToReal((U32)(milliseconds - fStartTime + fTimeScaleIncrement));
 			if ( ! Rtt_RealIsOne( fTimeScale ) )
 			{
 				dt = Rtt_RealMul( dt, fTimeScale );
@@ -1050,6 +1099,16 @@ SpriteObject::SetSequence( const char *name )
 						// Rtt_ASSERT( ! sequence->GetPaint() );
 					}
 
+					// Anchor frame is sequence-related, so invalidate it.
+					if (fFrameForAnchors)
+					{
+						fFrameForAnchors = NULL;
+
+						Invalidate( kTransformFlag );
+						
+						GetTransform().Invalidate();
+					}
+					
 					fCurrentSequence = i;
 					break;
 				}
@@ -1113,9 +1172,36 @@ SpriteObject::SetFrame( int index )
 
 		fCurrentFrame = index;
 		ResetTimeArrayIteratorCache(sequence);
-		
+
 		int frameIndex = sequence->GetEffectiveFrame( index );
 		SetBitmapFrame( frameIndex );
+	}
+}
+
+void
+SpriteObject::UseFrameForAnchors( int index )
+{
+	const SpriteObjectSequence *sequence = GetCurrentSequence();
+
+	if (sequence)
+	{
+		Paint *paint = Super::GetPath().GetFill();
+		Rtt_ASSERT( paint->IsCompatibleType( Paint::kBitmap ) );
+
+		ImageSheetPaint *bitmapPaint = (ImageSheetPaint *)paint->AsPaint(Paint::kImageSheet);
+
+		// Ensure 0 <= frameIndex < sheet->GetNumFrames()
+		int maxFrameIndex = sequence->GetNumFrames() - 1;
+		index = Min( index, maxFrameIndex );
+		index = Max( index, 0 );
+		index = sequence->GetEffectiveFrame( index );
+		
+		const AutoPtr< ImageSheet >& sheet = bitmapPaint->GetSheet();
+		fFrameForAnchors = sheet->GetFrame( index );
+
+		Invalidate( kTransformFlag );
+		
+		GetTransform().Invalidate();
 	}
 }
 
@@ -1235,33 +1321,26 @@ SpriteObject::SetPlaying( bool newValue )
 
 void
 SpriteObject::SetTimeScale( Real newValue ) {
-  // fStartTime = (U64)Rtt_RealDiv(Rtt_RealMul(fStartTime, fTimeScale), newValue);
-
   SpriteObjectSequence *sequence = GetCurrentSequence();
 
   if ( sequence )
   {
-    if ( !IsPlaying() )
-    {
-      Real playTime = sequence->GetTimeForFrame(fCurrentFrame);
-      if ( ! Rtt_RealIsOne( newValue ) )
-      {
-        playTime = Rtt_RealDiv( playTime, newValue );
-      }
-      fPlayTime = Rtt_RealToInt( playTime );
-    }
-    else
-    {
-      U64 curTime = fPlayer.GetAnimationTime();
-      Real timeElapsed = curTime - fStartTime;
-      Real newTimeElapsed = Rtt_RealDiv(Rtt_RealMul(timeElapsed, fTimeScale), newValue);
-      if ( curTime >= Rtt_RealToInt(newTimeElapsed) ) {
-        fStartTime = curTime - Rtt_RealToInt(newTimeElapsed);
-      } else {
-        fStartTime = 0;
-      }
-    }
-  }
+		if (!IsPlaying()) 
+		{
+			Real playTime = sequence->GetTimeForFrame(fCurrentFrame);
+			Real newTimeElapsed = Rtt_RealDiv(playTime, newValue) - Rtt_IntToReal(fPlayTime);
+			fTimeScaleIncrement = newTimeElapsed;
+		} 
+		else 
+		{
+			U64 curTime = fPlayer.GetAnimationTime();
+			Real timeElapsed = curTime - fStartTime;
+
+			Real newTimeElapsed = Rtt_RealDiv(Rtt_RealMul(timeElapsed + Rtt_IntToReal(fTimeScaleIncrement), fTimeScale), newValue);
+			fTimeScaleIncrement = Rtt_RealToInt(newTimeElapsed-timeElapsed);
+		}
+	}
+
 
   fTimeScale = newValue;
 }
@@ -1280,9 +1359,10 @@ SpriteObject::Reset()
 	fCurrentFrame = 0;
 	fStartTime = 0;
 	fPlayTime = 0;
+	fTimeScaleIncrement = 0;
 
-	// Set to initial frame
-	SpriteObjectSequence *sequence = GetCurrentSequence();
+			// Set to initial frame
+			SpriteObjectSequence *sequence = GetCurrentSequence();
 	ResetTimeArrayIteratorCache(sequence);
 	int frameIndex = sequence->GetEffectiveFrame( 0 );
 	SetBitmapFrame( frameIndex );

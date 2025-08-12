@@ -179,7 +179,7 @@ class NativeToJavaBridge
 		bool HasAccelerometer();
 		bool HasGyroscope();
 		bool HasHeadingHardware();
-		void Vibrate();
+		void Vibrate(const char * hapticType = NULL, const char* hapticStyle = NULL);
 		
 		void DisplayObjectDestroy( int id );
 		void DisplayObjectSetVisible( int id, bool visible );
@@ -190,10 +190,12 @@ class NativeToJavaBridge
 		bool DisplayObjectGetBackground( int id );
 		void DisplayObjectSetFocus( int id, bool focus );
 		void DisplayObjectUpdateScreenBounds( int id, int x, int y, int width, int height );
-			
+        bool DisplayObjectSetNativeProperty(int id, const char key[], lua_State *L, int valueIndex);
+
 		int TextFieldCreate( int id, int left, int top, int width, int height, int isSingleLine );
 		void TextFieldSetReturnKey( int id, const char * imeType );
 		void TextFieldSetSelection( int id, int startPosition, int endPosition );
+		bool TextFieldGetSelection(int id, int& startPosition, int& endPosition);
 		void TextFieldSetPlaceholder( int id, const char * placeholder );
 		void TextFieldSetColor( int id, int r, int g, int b, int a );
 		void TextFieldSetText( int id, const char * text );
@@ -302,6 +304,9 @@ class NativeToJavaBridge
 	public:
 		void SetSystemUiVisibility( const char *visibility );
 		void GetSystemUiVisibility( Rtt::String * align );
+
+	public:
+		void SetNavigationBarColor( double red, double green, double blue );
 
 	public:
 		static bool DecodeBase64( const Rtt::Data<const char> & payload, Rtt::Data<char> & data );

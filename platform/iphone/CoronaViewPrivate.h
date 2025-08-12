@@ -13,7 +13,7 @@
 
 #import "CoronaRuntime.h"
 #include "Rtt_DeviceOrientation.h"
-
+#include "Rtt_MetalAngleTypes.h"
 
 // ----------------------------------------------------------------------------
 
@@ -49,10 +49,9 @@ class IPhonePlatformBase;
 
 @property (nonatomic, readonly) Rtt::Runtime *runtime;
 @property (nonatomic, readonly) Rtt::CoronaViewRuntimeDelegate *runtimeDelegate;
-@property (nonatomic, readonly) GLKViewController *viewController;
+@property (nonatomic, readonly) Rtt_GLKViewController *viewController;
 @property (nonatomic, readwrite, getter=inhibitCount, setter=setInhibitCount:) int fInhibitCount;
 @property (nonatomic, readwrite, getter=tapDelay, setter=setTapDelay:) NSTimeInterval fTapDelay;
-@property (nonatomic, readwrite, getter=getForceTouchSupport, setter=setForceTouchSupport:) BOOL fSupportsForceTouch;
 @property (nonatomic, assign) BOOL observeSuspendResume;
 @property (nonatomic, assign) BOOL beginRunLoopManually;
 @property (nonatomic, assign) id< CoronaRuntime > pluginContext; // Weak reference. CoronaViewController has the strong reference.

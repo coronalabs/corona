@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// This file is part of the Corona game engine.
+// This file is part of the Solar2D game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -597,8 +598,8 @@ NativeToJavaBridge::GetRawAsset( const char * assetName, Rtt::Data<char> & data 
 						jbyteArrayResult bytesJ( bridge.getEnv(), (jbyteArray) jo );
 						data.Set( (const char *) bytesJ.getValues(), bytesJ.getLength() );
 						bytesJ.release();
-						result = true;
 						bridge.getEnv()->DeleteLocalRef(jo);
+						result = (data.Get() != nullptr);
 					}
 				}
 			}
@@ -950,6 +951,7 @@ NativeToJavaBridge::RenderText(
 void 
 NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt::Real &bottom, Rtt::Real &right)
 {
+	top = left = bottom = right = 0;
 	NativeTrace trace( "NativeToJavaBridge::GetSafeAreaInsetsPixels" );
 	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
 	if ( bridge.isValid() ) 
@@ -960,6 +962,7 @@ NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt
 		{
 			jobject objArray = bridge.getEnv()->CallStaticObjectMethod( bridge.getClass(), methodId, fCoronaRuntime );
 			jfloatArray * jfArray = reinterpret_cast< jfloatArray* >( & objArray );
+			if(objArray == NULL) return;
 			jsize len = bridge.getEnv()->GetArrayLength( *jfArray );
 			float* data = bridge.getEnv()->GetFloatArrayElements( *jfArray, 0 );
 			if ( len == 4 )
@@ -968,10 +971,6 @@ NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt
 				left 	= data [ 1 ];
 				right 	= data [ 2 ];
 				bottom  = data [ 3 ];
-			}
-			else 
-			{
-				top = left = bottom = right = 0;
 			}
 			bridge.getEnv()->ReleaseFloatArrayElements( *jfArray, data, 0 );
 			bridge.getEnv()->DeleteLocalRef( *jfArray );
@@ -2069,10 +2068,29 @@ NativeToJavaBridge::MakeLowerCase(Rtt::String *stringToConvert)
 }
 
 void
-NativeToJavaBridge::Vibrate()
+NativeToJavaBridge::Vibrate(const char * hapticType, const char* hapticStyle)
 {
-	CallVoidMethod( "callVibrate" );
 	HandleJavaException();
+	NativeTrace trace( "NativeToJavaBridge::Vibrate" );
+
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+
+	if ( bridge.isValid() ) {
+
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(),
+															"callVibrate", "(Lcom/ansca/corona/CoronaRuntime;Ljava/lang/String;Ljava/lang/String;)V" );
+
+		if ( mid != NULL ) {
+			jstringParam hapticTypeJ( bridge.getEnv(), hapticType );
+			jstringParam hapticStyleJ( bridge.getEnv(), hapticStyle );
+
+			bridge.getEnv()->CallStaticVoidMethod(
+					bridge.getClass(), mid, fCoronaRuntime, hapticTypeJ.getValue(), hapticStyleJ.getValue());
+			HandleJavaException();
+
+		}
+	}
 }
 
 void
@@ -2351,6 +2369,35 @@ NativeToJavaBridge::TextFieldSetSelection( int id, int startPosition, int endPos
 			HandleJavaException();
 		}
 	}
+}
+
+bool
+NativeToJavaBridge::TextFieldGetSelection(int id, int& startPosition, int& endPosition)
+{
+	NativeTrace trace("NativeToJavaBridge::TextFieldGetSelection");
+
+	jclassInstance bridge(GetJNIEnv(), kNativeToJavaBridge);
+	startPosition = -1;
+	endPosition = -1;
+
+	if (bridge.isValid()) {
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID(bridge.getClass(),
+			"callTextFieldGetSelection", "(Lcom/ansca/corona/CoronaRuntime;I)[I");
+
+		if (mid != NULL) {
+			jintArray result = (jintArray)bridge.getEnv()->CallStaticObjectMethod(bridge.getClass(), mid, fCoronaRuntime, id);
+			HandleJavaException();
+
+			if (result != NULL) {
+				jint* elements = bridge.getEnv()->GetIntArrayElements(result, 0);
+				startPosition = elements[0];
+				endPosition = elements[1];
+				bridge.getEnv()->ReleaseIntArrayElements(result, elements, 0);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void
@@ -2847,6 +2894,26 @@ NativeToJavaBridge::DisplayObjectUpdateScreenBounds( int id, int x, int y, int w
 			HandleJavaException();
 		}
 	}
+}
+
+bool NativeToJavaBridge::DisplayObjectSetNativeProperty(int id, const char key[], lua_State *L, int valueIndex)
+{
+    bool ret = false;
+	NativeTrace trace( "NativeToJavaBridge::DisplayObjectSetNativeProperty" );
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+
+	if ( bridge.isValid() ) {
+	    jstringParam textJ( bridge.getEnv(), key );
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(),
+			"callDisplayObjectSetNativeProperty", "(Lcom/ansca/corona/CoronaRuntime;ILjava/lang/String;JI)Z" );
+
+		if ( mid != NULL ) {
+			ret = bridge.getEnv()->CallStaticBooleanMethod( bridge.getClass(), mid, fCoronaRuntime, id, textJ.getValue(), (jlong)(uintptr_t)L, valueIndex );
+			HandleJavaException();
+		}
+	}
+	return ret;
 }
 
 bool
@@ -4098,6 +4165,21 @@ NativeToJavaBridge::GetSystemUiVisibility( Rtt::String * visibility )
 			}
 		}
 
+	}
+}
+
+void
+NativeToJavaBridge::SetNavigationBarColor( double red, double green, double blue )
+{
+	NativeTrace trace( "NativeToJavaBridge::SetNavigationBarColor" );
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+	if (bridge.isValid())
+	{
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID(
+								bridge.getClass(), "callSetNavigationBarColor", "(Lcom/ansca/corona/CoronaRuntime;DDD)V");
+		bridge.getEnv()->CallStaticVoidMethod(bridge.getClass(), mid, fCoronaRuntime, (jdouble)red, (jdouble)green, (jdouble)blue);
+		HandleJavaException();
 	}
 }
 

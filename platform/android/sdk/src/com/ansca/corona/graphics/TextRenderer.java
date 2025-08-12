@@ -39,6 +39,27 @@ public class TextRenderer {
 	private static java.util.HashMap<android.graphics.Typeface, android.text.TextPaint> sTextPaintCollection =
 						new java.util.HashMap<android.graphics.Typeface, android.text.TextPaint>();
 
+	private static Boolean _isHighContrastTextRet = null;
+	private boolean isHighContrastTextEnabled() {
+		if(_isHighContrastTextRet == null) {
+			try {
+				android.view.accessibility.AccessibilityManager accessibilityManager = (android.view.accessibility.AccessibilityManager) fContext.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE);
+				java.lang.reflect.Method isHighContrast = accessibilityManager.getClass().getMethod("isHighTextContrastEnabled");
+				Object result = isHighContrast.invoke(accessibilityManager);
+				if (result instanceof Boolean) {
+					_isHighContrastTextRet = (boolean) result;
+				}
+			}
+			catch (Throwable e) {
+				android.util.Log.e("Corona", "Error while determining high contrast text accessibility setting", e);
+			}
+			if(_isHighContrastTextRet == null) {
+				_isHighContrastTextRet = false;
+			}
+		}
+
+		return _isHighContrastTextRet;
+	}
 
 	/**
 	 * Creates a new text renderer.
@@ -295,7 +316,11 @@ public class TextRenderer {
 		// Draw the text to a bitmap.
 		android.graphics.Bitmap bitmap = null;
 		try {
-			bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ALPHA_8);
+			if(!isHighContrastTextEnabled()) {
+				bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ALPHA_8);
+			} else {
+				bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888);
+			}
 			android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
 			layout.draw(canvas);
 			fBaselineOffset = height*0.5f + textPaint.getFontMetrics().top;

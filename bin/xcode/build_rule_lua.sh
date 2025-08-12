@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 # librtt
 # 
@@ -23,10 +23,10 @@ else
 	MODULE_NAME=""
 fi
 
-DST_DIR=$DERIVED_FILE_DIR
+DST_DIR="${TARGET_TEMP_DIR}/${CURRENT_ARCH}"
 if [ ! -d "$DST_DIR" ]; then		
     mkdir "$DST_DIR"
 fi
 
-"$TOOLCHAIN_DIR"/lua $SRCROOT/../../bin/rcc.lua -c "$TOOLCHAIN_DIR" -O$CONFIGURATION -o $DST_DIR/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH
+"$TOOLCHAIN_DIR"/lua $SRCROOT/../../bin/rcc.lua -c "$TOOLCHAIN_DIR" -O$CONFIGURATION -g -o $DST_DIR/$INPUT_FILE_BASE.lu $INPUT_FILE_PATH
 "$TOOLCHAIN_DIR"/lua -epackage.path=[[$SRCROOT/../../external/loop-2.3-beta/lua/?.lua]] $SRCROOT/../../external/loop-2.3-beta/lua/precompiler.constant.lua -d $DST_DIR -o $INPUT_FILE_BASE -l $DST_DIR/?.lu -n -m "$MODULE_NAME" $INPUT_FILE_BASE

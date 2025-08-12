@@ -23,6 +23,7 @@
 #include "Display/Rtt_ShapeObject.h"
 #include "Display/Rtt_ShapePath.h"
 #include "Display/Rtt_TesselatorPolygon.h"
+#include "Display/Rtt_DisplayDefaults.h"
 #include "Renderer/Rtt_Geometry_Renderer.h"
 #include "Rtt_DisplayObjectExtensions.h"
 #include "Rtt_Event.h"
@@ -1306,6 +1307,11 @@ newJoint( lua_State *L )
 
 			b2Vec2 point( px, py );
 			b2Vec2 axis( qx, qy );
+			
+			if(!lua_isnil(L, 8) && lua_isboolean(L, 8) && lua_toboolean(L, 8))
+			{ // normalize Axis
+				axis.Normalize();
+			}
 
 			jointDef.Initialize( body1, body2, point, axis );
 
@@ -2151,6 +2157,69 @@ InitializeFixtureUsing_Shape( lua_State *L,
 }
 
 static bool
+InitializeFixtureUsing_Circle(lua_State* L,
+	int lua_arg_index,
+	int& fixtureIndex,
+	b2Vec2& center_in_pixels,
+	DisplayObject* display_object,
+	b2Body* body,
+	float meter_per_pixels_scale)
+{
+	lua_getfield(L, lua_arg_index, "circle");
+	if (lua_istable(L, -1))
+	{
+		DEBUG_PRINT("%s\n", __FUNCTION__);
+
+		Real pixels_per_meter_scale = (1.0f / meter_per_pixels_scale);
+
+		lua_getfield(L, -1, "radius");
+		Real radius = Rtt_FloatToReal(lua_tonumber(L, -1));
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "x");
+		Real x = luaL_torealphysics(L, -1, pixels_per_meter_scale);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "y");
+		Real y = luaL_torealphysics(L, -1, pixels_per_meter_scale);
+		lua_pop(L, 1);
+
+		b2FixtureDef fixtureDef;
+
+		b2CircleShape circleDef;
+		circleDef.m_radius = Rtt_REAL_16TH; // default to 1/16th of a meter
+
+		radius *= meter_per_pixels_scale; // Convert to meters.
+
+		if (radius < Rtt_REAL_0)
+		{
+			radius = Rtt_REAL_16TH;
+		}
+
+		circleDef.m_radius = Rtt_RealToFloat(radius);
+		
+		center_in_pixels.Set(x, y);
+
+		circleDef.m_p = (center_in_pixels);
+
+		InitializeFixtureFromLua(L,
+			fixtureDef,
+			&circleDef,
+			lua_arg_index);
+
+		_FixtureCreator(body,
+			&fixtureDef,
+			fixtureIndex);
+
+		lua_pop(L, 1);
+		return true;
+	}
+
+	lua_pop(L, 1);
+	return false;
+}
+
+static bool
 add_b2Body_to_DisplayObject( lua_State *L,
 								DisplayObject *display_object,
 								int numArgs )
@@ -2171,6 +2240,25 @@ add_b2Body_to_DisplayObject( lua_State *L,
 		center_in_pixels.SetZero();
 	}
 
+	// Trimming is not per se connected to adjusting the group's center; for
+	// backward compatibility purposes, though, we probably don't want to just
+	// blindly apply this fix. It was identified along with some sprite trimming
+	// issues, thus the check for that default, but something like "correctGroupBody"
+	// might be more appropriate if we wanted fine-grained control.
+	DisplayDefaults & defaults = LuaContext::GetRuntime( L )->GetDisplay().GetDefaults();
+	bool isTrimCorrected = defaults.IsImageSheetFrameTrimCorrected();
+	
+	if ( isTrimCorrected && display_object->AsGroupObject() )
+	{
+		Rect bounds;
+		display_object->GetSelfBounds( bounds );
+
+		Vertex2 center;
+		bounds.GetCenter( center );
+		center_in_pixels.x += center.x;
+		center_in_pixels.y += center.y;
+	}
+	
 	b2World *world = physics.GetWorld();
 	b2Body *body = CreateBody( physics, display_object );
 
@@ -2254,7 +2342,15 @@ add_b2Body_to_DisplayObject( lua_State *L,
 		{
 			// Initialize the first type encountered.
 			// The order of these calls is IMPORTANT.
-			( InitializeFixtureUsing_Shape( L,
+			(
+				InitializeFixtureUsing_Circle(L,
+											lua_arg_index,
+											fixtureIndex,
+											center_in_pixels,
+											display_object,
+											body,
+											meter_per_pixels_scale) ||
+				InitializeFixtureUsing_Shape( L,
 											lua_arg_index,
 											fixtureIndex,
 											center_in_pixels,
@@ -2338,10 +2434,13 @@ add_b2Body_to_DisplayObject( lua_State *L,
 //					- halfWidth (required)
 //					- halfHeight (required)
 //					- x, y, angle (optional)
+//				+ circle: table:
+//					- radius (required)
+//					- x, y (optional)
 //				+ radius: number > 0
 // Note:
 //	* If no shape definition is supplied then the shape defaults to DisplayObject's bounding box.
-//	* If supplied, then the precedence order is: 'shape', 'box', 'radius'
+//	* If supplied, then the precedence order is: 'circle', 'shape', 'box', 'radius'
 //
 static int
 addBody( lua_State *L )
@@ -2707,7 +2806,7 @@ setTimeStep( lua_State *L )
 }
 
 // physics.setTimeScale( dt )
-// Sets time scale of physics sumulator. Default is 1
+// Sets time scale of physics simulator. Default is 1
 static int
 setTimeScale( lua_State *L )
 {
@@ -2725,7 +2824,7 @@ setTimeScale( lua_State *L )
 }
 
 // physics.getTimeScale( )
-// Returns time scale of physics sumulator.
+// Returns time scale of physics simulator.
 static int
 getTimeScale( lua_State *L )
 {

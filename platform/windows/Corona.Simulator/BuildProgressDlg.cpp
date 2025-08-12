@@ -195,18 +195,19 @@ void CBuildProgressDlg::BuildForPlatform()
 		{
 			BuildForWeb();
 		}
-		else
-		if (fProjectSettingsPointer->GetTargetPlatform() == Rtt::TargetDevice::kLinuxPlatform)
+		else if (fProjectSettingsPointer->GetTargetPlatform() == Rtt::TargetDevice::kLinuxPlatform)
 		{
 			BuildForLinux();
+		}
+		else if (fProjectSettingsPointer->GetTargetPlatform() == Rtt::TargetDevice::kNxSPlatform)
+		{
+			BuildForNxS();
 		}
 		else
 		{
 			BuildForAndroid();
 		}
-
 	}
-
 }
 
 /// Build an Android app using the window's given project settings.
@@ -344,6 +345,48 @@ void CBuildProgressDlg::BuildForLinux()
 		fProjectSettingsPointer->GetAndroidVersionCode(),
 		fProjectSettingsPointer->GetUseStandartResources()
 	 );
+
+	PostMessage(WMU_BUILD_COMPLETE, 0, 0);
+}
+
+void CBuildProgressDlg::BuildForNxS()
+{
+	// Do not continue if project settings were not provided.
+	if (!fProjectSettingsPointer)
+	{
+		fBuildResult = CBuildResult(5, CString((LPCSTR)IDS_BUILD_FAILED));
+		CDialog::OnOK();
+		return;
+	}
+
+	// Display a "wait" mouse cursor.
+	CWaitCursor waitCursor;
+
+	// Get copy of string settings.
+	WinString strSrcDir, strName, strVersion, strPackage, strNmetaPath;
+	WinString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
+
+	strSrcDir.SetTCHAR(fProjectSettingsPointer->GetDir());
+	strName.SetTCHAR(fProjectSettingsPointer->GetName());
+	strNmetaPath.SetTCHAR(fProjectSettingsPointer->GetDir() + L"\\build.nmeta");		// it's .nmeta path
+	strSaveDir.SetTCHAR(fProjectSettingsPointer->GetSaveDir());
+	CFrameWnd* pFrameWnd = (CFrameWnd*)AfxGetApp()->GetMainWnd();
+	CSimulatorView* pView = (CSimulatorView*)pFrameWnd->GetActiveView();
+
+	// Build the project. (This is a blocking call.)
+	fBuildResult = appNxSBuild(
+		pView->GetRuntimeEnvironment(), 
+		strSrcDir.GetUTF8(),
+		strNmetaPath.GetUTF8(),
+		strName.GetUTF8(), 
+		strVersion.GetUTF8(),
+		strSaveDir.GetUTF8(),
+		Rtt::TargetDevice::kNxSPlatform,
+		strTargetOS.GetUTF8(),
+		fProjectSettingsPointer->IsDistribution(),
+		fProjectSettingsPointer->GetAndroidVersionCode(),
+		fProjectSettingsPointer->GetUseStandartResources()
+	);
 
 	PostMessage(WMU_BUILD_COMPLETE, 0, 0);
 }

@@ -343,6 +343,15 @@ pl_file.delete( CONFIG_META )
 
 -- Create resource.{car,corona-archive} from *.lu
 -- "$BUILDER_PATH" car "$CORONA_TARGET_EXECUTABLE_DIR/resource.corona-archive" "$CORONA_TARGET_EXECUTABLE_DIR"/*.lu
+
+-- If Mac native we need to fix the compile path
+IS_MAC_NATIVE = os.getenv( "IS_MAC_NATIVE" )
+if IS_MAC_NATIVE then 
+	local newPath = string.sub(CORONA_TARGET_EXECUTABLE_DIR, 1, #CORONA_TARGET_EXECUTABLE_DIR - 6) .. '/Resources'
+	os_execute("mv ", CORONA_TARGET_EXECUTABLE_DIR.."/config.lu", newPath, " 2>/dev/null")	
+	CORONA_TARGET_EXECUTABLE_DIR = newPath
+end
+
 print( 'Archiving ' .. CORONA_TARGET_EXECUTABLE_DIR ..'/*.lu into ' .. CORONA_TARGET_EXECUTABLE_DIR .. '/resource' .. RESOURCE_EXT )
 if PLATFORM == "win" then
 	local result = os_execute(

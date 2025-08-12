@@ -116,8 +116,11 @@ AppPackagerParams::AppPackagerParams( const char* appName,
 	fIdentity.Set(identity);
 	fProvisionFile.Set(provisionFile); 
 	fSrcDir.Set(srcDir); 
+	fDstDir.RTrim(LUA_DIRSEP);
 	fDstDir.Set(dstDir);
+	fDstDir.RTrim(LUA_DIRSEP);
 	fSdkRoot.Set(sdkRoot); 
+	fSdkRoot.RTrim(LUA_DIRSEP);
 	fCustomBuildId.Set( customBuildId );
 	if ( productId )
 	{

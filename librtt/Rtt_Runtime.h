@@ -328,6 +328,11 @@ class Runtime : public MCallback,
 		const PhysicsWorld& GetPhysicsWorld() const { return * fPhysicsWorld; }
 
 	public:
+		void SetBackend( const char * backend, void * backendState) { fBackend = backend; fBackendState = backendState; }
+
+		const char * GetBackend() const { return fBackend; }
+
+	public:
 		// MCallback
 		virtual void operator()();
 
@@ -369,6 +374,8 @@ class Runtime : public MCallback,
 		Scheduler* fScheduler;
 		Archive* fArchive;
 		PhysicsWorld *fPhysicsWorld;
+		const char * fBackend;
+		void * fBackendState;
 	
 #ifdef Rtt_USE_ALMIXER
 		PlatformOpenALPlayer* fOpenALPlayer;
@@ -394,6 +401,11 @@ class Runtime : public MCallback,
 		bool fErrorHandlerRecursionGuard;
 	public:
 		const char* GetBuildId() { return fBuildId.GetString(); }
+
+#ifdef Rtt_USE_ALMIXER
+	public:
+		PlatformOpenALPlayer* getOpenALPlayer() const{ return fOpenALPlayer; }
+#endif
 };
 
 // Use this guard to surround code blocks that call Lua as a side effect of

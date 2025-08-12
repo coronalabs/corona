@@ -19,6 +19,7 @@
 #include "Display/Rtt_ShaderResource.h"
 #include "Rtt_LuaAux.h"
 #include "Rtt_LuaUserdataProxy.h"
+#include "CoronaGraphics.h"
 
 #include <string.h>
 
@@ -32,10 +33,26 @@ namespace Rtt
 ShaderData::ShaderData( const WeakPtr< ShaderResource >& resource )
 :	fProxy( NULL ),
 	fShaderResource( resource ),
+    fExtraSpace( NULL ),
+    fExtraCount( 0U ),
 	fOwner( NULL )
 {
 	memset( fVertexData, 0, sizeof( fVertexData ) );
 	memset( fUniformData, 0, sizeof( fUniformData ) );
+
+    SharedPtr< ShaderResource > res( fShaderResource );
+    if ( res.NotNull() )
+    {
+        const CoronaEffectCallbacks * callbacks = res->GetEffectCallbacks();
+
+        if (callbacks && callbacks->extraSpace)
+        {
+            fExtraSpace = Rtt_CALLOC( NULL, callbacks->extraSpace, 1 );
+            fExtraCount = callbacks->extraSpace;
+
+            memset( fExtraSpace, 0, fExtraCount );
+        }
+    }
 }
 
 ShaderData::~ShaderData()
@@ -44,6 +61,13 @@ ShaderData::~ShaderData()
 	{
 		fProxy->DetachUserdata();
 	}
+
+	for ( int i = 0; i < kNumData; i++ )
+	{
+		Rtt_DELETE( fUniformData[i] );
+	}
+
+    Rtt_FREE( fExtraSpace );
 }
 
 void
@@ -62,6 +86,8 @@ ShaderData::QueueRelease( DisplayObject *observer )
 	for ( int i = 0; i < kNumData; i++ )
 	{
 		observer->QueueRelease( fUniformData[i] );
+
+		fUniformData[i] = NULL;
 	}
 	observer->QueueRelease( fProxy );
 }
@@ -91,6 +117,11 @@ ShaderData::Clone( Rtt_Allocator *allocator )
 			memcpy( result->fVertexData, fVertexData, sizeof( fVertexData ) );
 		}
 	}
+    
+    if (fExtraCount)
+    {
+        memcpy( result->fExtraSpace, fExtraSpace, fExtraCount );
+    }
 
 	return result;
 }
@@ -301,15 +332,21 @@ ShaderData::DidUpdateUniform( DataIndex index )
 	Uniform *uniform = GetUniform( index );
 	uniform->Invalidate();
 
-	Paint *paint = GetPaint();
-	if ( paint )
-	{
-		DisplayObject *observer = paint->GetObserver();
-		if ( observer )
-		{
-			observer->InvalidateDisplay(); // force reblit
-		}
-	}
+    Invalidate();
+}
+
+void
+ShaderData::Invalidate()
+{
+    Paint *paint = GetPaint();
+    if ( paint )
+    {
+        DisplayObject *observer = paint->GetObserver();
+        if ( observer )
+        {
+            observer->InvalidateDisplay(); // force reblit
+        }
+    }
 }
 
 // ----------------------------------------------------------------------------

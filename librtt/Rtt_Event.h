@@ -139,6 +139,25 @@ class FrameEvent : public VirtualEvent
 		virtual int Push( lua_State *L ) const;
 };
 
+// ============================================================================
+
+// Immediately broadcast to "Runtime"
+class RenderEvent : public VirtualEvent
+{
+	public:
+		typedef VirtualEvent Super;
+
+	public:
+		static const RenderEvent& Constant();
+
+	protected:
+		RenderEvent();
+
+	public:
+		virtual const char* Name() const;
+		virtual int Push( lua_State *L ) const;
+};
+
 // ----------------------------------------------------------------------------
 
 // Immediately broadcast to "Runtime"
@@ -257,6 +276,24 @@ class ResizeEvent : public VirtualEvent
 	public:
 		virtual const char* Name() const;
 		virtual int Push( lua_State *L ) const;
+};
+
+// ----------------------------------------------------------------------------
+
+// Immediately broadcast to "Runtime"
+class WindowStateEvent : public VirtualEvent
+{
+	public:
+		typedef VirtualEvent Super;
+
+	public:
+		WindowStateEvent(bool foreground);
+
+	public:
+		virtual const char* Name() const;
+		virtual int Push( lua_State *L ) const;
+	private:
+		bool fForeground;
 };
 
 // ----------------------------------------------------------------------------
@@ -1422,6 +1459,7 @@ class VideoEvent : public VirtualEvent
 		{
 			kReady = 0,
 			kEnded,
+			kFailed,
 
 			kNumPhases
 		}

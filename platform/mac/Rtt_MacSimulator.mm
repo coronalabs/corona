@@ -32,7 +32,7 @@
 #import <AppKit/NSOpenGL.h>
 #import <AppKit/NSScreen.h>
 
-#include "Rtt_MacKeyServices.h"
+#include "Rtt_AppleKeyServices.h"
 #import <Carbon/Carbon.h>
 
 #if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_5)
@@ -326,8 +326,8 @@ MacSimulator::Initialize(
                                                                     viewRect:screenRect
                                                                        title:windowTitleBarName
                                                                  orientation:GetOrientation()
-                                                                       scale:[scalefactor floatValue]];
-        
+                                                                       scale:[scalefactor floatValue]
+															   isTransparent:GetIsTransparent()];
 		[(SkinlessSimulatorWindow*)instanceWindow setPerformCloseBlock:window_close_handler];
 	}
 	else
@@ -337,7 +337,8 @@ MacSimulator::Initialize(
                                                                title:windowTitleBarName
                                                            skinImage:deviceImageFile
                                                          orientation:GetOrientation()
-                                                               scale:[scalefactor floatValue]];
+                                                               scale:[scalefactor floatValue]
+														isTransparent:GetIsTransparent()];
         
 		[(SkinnableWindow*)instanceWindow setPerformCloseBlock:window_close_handler];
 	}
@@ -515,7 +516,7 @@ MacSimulator::Back()
 	{
 		// Simulate the pressing of a virtual "back" button
 		short keyCode = kVK_Back;
-		NSString *keyName = [MacKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
+		NSString *keyName = [AppleKeyServices getNameForKey:[NSNumber numberWithInt:keyCode]];
 
 		KeyEvent eDown(NULL,
 					   KeyEvent::kDown,

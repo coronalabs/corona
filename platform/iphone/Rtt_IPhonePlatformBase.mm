@@ -15,9 +15,9 @@
 
 #include "Core/Rtt_String.h"
 
-#import <GLKit/GLKViewController.h>
 #import <UIKit/UIAlertView.h>
 #import <UIKit/UIAlertController.h>
+#import <UIKit/UIAccessibility.h>
 #import <GameController/GameController.h>
 
 #include "Rtt_IPhonePlatformBase.h"
@@ -262,7 +262,8 @@ IPhonePlatformBase::OpenURL( const char* url ) const
 		NSURL* urlPlatform = [NSURL URLWithString:[NSString stringWithUTF8String:url]];
 		if ( nil != urlPlatform)
 		{
-			result = [[UIApplication sharedApplication] openURL:urlPlatform];
+            result = [[UIApplication sharedApplication] canOpenURL:urlPlatform];// Use this to check if the URL can be opened
+            [[UIApplication sharedApplication] openURL:urlPlatform options:@{} completionHandler:nil];
 		}
 	}
 
@@ -560,6 +561,27 @@ IPhonePlatformBase::PushSystemInfo( lua_State *L, const char *key ) const
 		lua_pushboolean(L, res);
 		pushedValues = 1;
 	}
+    else if ( Rtt_StringCompare( key, "reduceMotion" ) == 0 )
+    {
+        BOOL res = UIAccessibilityIsReduceMotionEnabled();
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
+    else if ( Rtt_StringCompare( key, "reduceTransparency" ) == 0 )
+    {
+        BOOL res = UIAccessibilityIsReduceTransparencyEnabled();
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
+    else if ( Rtt_StringCompare( key, "differentiateWithoutColor" ) == 0 )
+    {
+        BOOL res = NO;
+        if (@available(iOS 13.0, tvOS 13.0, *)) {
+            res = UIAccessibilityShouldDifferentiateWithoutColor();
+        }
+        lua_pushboolean(L, res);
+        pushedValues = 1;
+    }
 	else
 	{
 		// Attempt to fetch the requested system info from the base class.

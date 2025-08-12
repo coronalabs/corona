@@ -45,6 +45,7 @@ class PlatformNotifier
 	public:
 		// Caller must release ownership of event (it will be disposed of by the runtime)
 		void ScheduleDispatch( VirtualEvent *e );
+		void ScheduleDispatch( VirtualEvent *e, int ref );
 
 	public:
 		void SetListenerRef( int index );
@@ -86,6 +87,9 @@ class PlatformNotifierTask : public Task
 	protected:
 		PlatformNotifierTask( PlatformNotifier& notifier, VirtualEvent *e );
 
+	protected:
+		void SetReference( int ref ) { fLuaRef = ref; }
+
 	public:
 		~PlatformNotifierTask();
 
@@ -95,6 +99,7 @@ class PlatformNotifierTask : public Task
 	protected:
 		PlatformNotifier& fNotifier;
 		VirtualEvent *fEvent;
+		int fLuaRef;
 
 	friend class PlatformNotifier;
 };

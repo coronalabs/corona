@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --
 -- This file is part of the Corona game engine.
--- For overview and more information on licensing please refer to README.md 
+-- For overview and more information on licensing please refer to README.md
 -- Home page: https://github.com/coronalabs/corona
 -- Contact: support@coronalabs.com
 --
@@ -20,6 +20,8 @@
 -- luacheck: globals transition
 -- luacheck: globals easing
 -- luacheck: globals Runtime
+-- luacheck: globals graphics
+-- luacheck: globals loadstring
 
 local params = ...
 
@@ -41,8 +43,6 @@ local statusBarNames = {
 
 if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 	-- Status bar
-
-	local isGraphicsV1 = ( 1 == display.getDefault( "graphicsCompatibility" ) )
 
 	appOrientation = system.orientation
 	local isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
@@ -98,7 +98,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 			local screenDressingFilename = statusBarFiles.screenDressing
 
 			if screenDressingFilename then
-				local w, h = display.pixelWidth, display.pixelHeight
+				-- local w, h = display.pixelWidth, display.pixelHeight
 				local cx, cy = display.contentScaleX, display.contentScaleY
 				if not appOrientation then
 					appOrientation = system.orientation
@@ -286,7 +286,6 @@ local PluginSync =
 
 }
 
-local lfs = require("lfs")
 local json = require("json")
 
 -- luacheck: push
@@ -369,13 +368,14 @@ function PluginSync:addPluginToQueueIfRequired( required_plugin )
 
 	-- Find reasons to queue the plugin for download.
 	local should_queue = false
+	local maxAge = (system.getPreference("simulator", "SimPluginCacheMaxAge","number") or 24) * 3600
 
 	local manifest = self.clientCatalog[ key ]
 	should_queue = should_queue or ( not manifest )
 	if type(manifest) == 'table' and type(manifest.lastUpdate) == 'number'  then
 		local age = os.difftime(self.now, manifest.lastUpdate)
-		-- update plugins every 30 minutes or so
-		should_queue = should_queue or ( age > 60*30 )
+		-- update plugins every 24 hours or so
+		should_queue = should_queue or ( age > maxAge and maxAge > 0)
 	else
 		should_queue = true
 	end
@@ -396,10 +396,19 @@ local function collectPlugins(localQueue, extractLocation, platform, continueOnE
 			plugins[pluginInfo.pluginName] = json.decode(pluginInfo.json)
 		end
 		plugins[pluginInfo.pluginName].publisherId = pluginInfo.publisherId
+		if continueOnError and asyncOnComplete then
+			if type(plugins[pluginInfo.pluginName].supportedPlatforms) == 'table' then
+				if not plugins[pluginInfo.pluginName].supportedPlatforms[platform] then
+					if plugins[pluginInfo.pluginName].supportedPlatforms[platform] ~= false then
+						plugins[pluginInfo.pluginName].supportedPlatforms[platform] = true
+					end
+				end
+			end
+		end
 	end
 	local _, sim_build_number = string.match( system.getInfo( "build" ), '(%d+)%.(%d+)' )
 
-	local collectorParams = { 
+	local collectorParams = {
 		pluginPlatform = platform,
 		plugins = plugins,
 		destinationDirectory = system.pathForFile("", system.PluginsDirectory),
@@ -427,7 +436,7 @@ function PluginSync:downloadQueuedPlugins( onComplete )
 		if type(result.result) == 'string' then
 			updateTime = nil
 			local res = result.result:gsub('%[(.-)%]%((https?://.-)%)', '%1 (%2)')
-			print("WARNING: there was an issue whilde downloading simulator plugin placeholders:\n" .. res)
+			print("WARNING: there was an issue while downloading simulator plugin placeholders:\n" .. res)
 		end
 		for i=1,#self.queue do
 			local key = self.queue[i].clientCatalogKey
@@ -452,7 +461,7 @@ local function onInternalRequestUnzipPlugins( event )
 		return true
 	end
 	local result = collectPlugins(params.plugins, destinationPath, event.platform or params.platform, false, nil)
-	if result == nil then	
+	if result == nil then
 		return true
 	else
 		return result
