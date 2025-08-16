@@ -58,7 +58,7 @@
       <CppLanguageStandard>
       </CppLanguageStandard>
       <PreprocessorDefinitions>Rtt_DEVICE_SIMULATOR</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\;..\..\..\..\librtt;..\..\..\..\librtt/Corona;..\..\..\..\external/sqlite3;..\..\..\..\external/lua-5.1.3/src;..\..\..\..\external/rsa;..\..\..\..\external\LuaHashMap;..\..\..\..\external/openal-soft_apportable/jni/OpenAL/include/AL;..\..\..\..\external/ALmixer;..\..\..\..\external/ALmixer/Isolated;..\..\..\..\external/lpng1256;..\..\..\..\external/luasocket/src;..\..\..\..\external/lpeg;..\..\..\..\external/luafilesystem/src;..\..\..\..\plugins/shared;..\..\ndk;..\..\ndk\jni;..\..\..\..\platform/shared;..\..\..\..\external/Box2D;..\..\..\..\external/libjpeg;..\..\..\..\external/b2Separator-cpp;..\..\..\..\external/smoothpolygon;C:\NVPACK\android-ndk-r12b\sources\android\cpufeatures</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\;..\..\..\..\librtt;..\..\..\..\librtt/Corona;..\..\..\..\external/sqlite3;..\..\..\..\external/lua-5.1.3/src;..\..\..\..\external/rsa;..\..\..\..\external\LuaHashMap;..\..\..\..\external/openal-soft_apportable/jni/OpenAL/include/AL;..\..\..\..\external/ALmixer;..\..\..\..\external/ALmixer/Isolated;..\..\..\..\external/libpng;..\..\..\..\external/luasocket/src;..\..\..\..\external/lpeg;..\..\..\..\external/luafilesystem/src;..\..\..\..\plugins/shared;..\..\ndk;..\..\ndk\jni;..\..\..\..\platform/shared;..\..\..\..\external/Box2D;..\..\..\..\external/libjpeg;..\..\..\..\external/b2Separator-cpp;..\..\..\..\external/smoothpolygon;C:\NVPACK\android-ndk-r12b\sources\android\cpufeatures</AdditionalIncludeDirectories>
       <AdditionalOptions>-DANDROID_NDK -DDISABLE_IMPORTGL -DRtt_ANDROID_ENV -DALMIXER_COMPILE_WITHOUT_SDL -DRtt_FEATURES_ALL  -DLUA_USE_POSIX -DLUA_USE_DLOPEN -DOPENAL_FIXED_POINT -DOPENAL_FIXED_POINT_SHIFT=16 -DAVOID_TABLES %(AdditionalOptions)</AdditionalOptions>
       <GccExceptionHandling>true</GccExceptionHandling>
     </ClCompile>
@@ -74,7 +74,7 @@
       <CppLanguageStandard>
       </CppLanguageStandard>
       <PreprocessorDefinitions>Rtt_DEVICE_SIMULATOR</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\;..\..\..\..\librtt;..\..\..\..\librtt/Corona;..\..\..\..\external/sqlite3;..\..\..\..\external/lua-5.1.3/src;..\..\..\..\external/rsa;..\..\..\..\external\LuaHashMap;..\..\..\..\external/openal-soft_apportable/jni/OpenAL/include/AL;..\..\..\..\external/ALmixer;..\..\..\..\external/ALmixer/Isolated;..\..\..\..\external/lpng1256;..\..\..\..\external/luasocket/src;..\..\..\..\external/lpeg;..\..\..\..\external/luafilesystem/src;..\..\..\..\plugins/shared;..\..\ndk;..\..\ndk\jni;..\..\..\..\platform/shared;..\..\..\..\external/Box2D;..\..\..\..\external/libjpeg;..\..\..\..\external/b2Separator-cpp;..\..\..\..\external/smoothpolygon;C:\NVPACK1r6\android-ndk-r12b\sources\android\cpufeatures</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\;..\..\..\..\librtt;..\..\..\..\librtt/Corona;..\..\..\..\external/sqlite3;..\..\..\..\external/lua-5.1.3/src;..\..\..\..\external/rsa;..\..\..\..\external\LuaHashMap;..\..\..\..\external/openal-soft_apportable/jni/OpenAL/include/AL;..\..\..\..\external/ALmixer;..\..\..\..\external/ALmixer/Isolated;..\..\..\..\external/libpng;..\..\..\..\external/luasocket/src;..\..\..\..\external/lpeg;..\..\..\..\external/luafilesystem/src;..\..\..\..\plugins/shared;..\..\ndk;..\..\ndk\jni;..\..\..\..\platform/shared;..\..\..\..\external/Box2D;..\..\..\..\external/libjpeg;..\..\..\..\external/b2Separator-cpp;..\..\..\..\external/smoothpolygon;C:\NVPACK1r6\android-ndk-r12b\sources\android\cpufeatures</AdditionalIncludeDirectories>
       <AdditionalOptions>-DANDROID_NDK -DDISABLE_IMPORTGL -DRtt_ANDROID_ENV -DALMIXER_COMPILE_WITHOUT_SDL -DRtt_FEATURES_ALL  -DLUA_USE_POSIX -DLUA_USE_DLOPEN -DOPENAL_FIXED_POINT -DOPENAL_FIXED_POINT_SHIFT=16 -DAVOID_TABLES %(AdditionalOptions)</AdditionalOptions>
       <GccExceptionHandling>true</GccExceptionHandling>
     </ClCompile>
@@ -243,23 +243,21 @@
     <ClCompile Include="..\..\..\..\external\Box2D\Box2D\Particle/b2VoronoiDiagram.cpp" />
     <ClCompile Include="..\..\..\..\external\sqlite3\sqlite3.c" />
     <ClCompile Include="..\..\..\..\external\lsqlite3-7\lsqlite3.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\png.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngerror.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pnggccrd.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngget.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngmem.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngpread.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngread.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngrio.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngrtran.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngrutil.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngset.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngtrans.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngvcrd.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngwio.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngwrite.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngwtran.c" />
-    <ClCompile Include="..\..\..\..\external\lpng1256\pngwutil.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\png.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngerror.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngget.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngmem.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngpread.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngread.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngrio.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngrtran.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngrutil.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngset.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngtrans.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngwio.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngwrite.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngwtran.c" />
+    <ClCompile Include="..\..\..\..\external\libpng\pngwutil.c" />
     <ClCompile Include="..\..\..\..\external\luafilesystem\src\lfs.c" />
     <ClCompile Include="..\..\..\..\external\luasocket\src\auxiliar.c" />
     <ClCompile Include="..\..\..\..\external\luasocket\src\buffer.c" />
@@ -698,7 +696,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug386|Tegra-Android'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\..\external\lpeg\lpeg.h" />
-    <ClInclude Include="..\..\..\..\external\lpng1256\png.h" />
+    <ClInclude Include="..\..\..\..\external\libpng\png.h" />
     <ClInclude Include="..\..\..\..\external\luafilesystem\src\lfs.h" />
     <ClInclude Include="..\..\..\..\external\LuaHashMap\LuaHashMap.h" />
     <ClInclude Include="..\..\..\..\external\LuaHashMap\lua_hash_map.hpp" />

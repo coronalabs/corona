@@ -1025,55 +1025,49 @@
     <ClCompile Include="..\Rtt_EmscriptenCPluginLoader.cpp">
       <Filter>emscripten</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\png.c">
+    <ClCompile Include="..\..\..\external\libpng\png.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngerror.c">
+    <ClCompile Include="..\..\..\external\libpng\pngerror.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pnggccrd.c">
+    <ClCompile Include="..\..\..\external\libpng\pngget.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngget.c">
+    <ClCompile Include="..\..\..\external\libpng\pngmem.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngmem.c">
+    <ClCompile Include="..\..\..\external\libpng\pngpread.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngpread.c">
+    <ClCompile Include="..\..\..\external\libpng\pngread.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngread.c">
+    <ClCompile Include="..\..\..\external\libpng\pngrio.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngrio.c">
+    <ClCompile Include="..\..\..\external\libpng\pngrtran.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngrtran.c">
+    <ClCompile Include="..\..\..\external\libpng\pngrutil.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngrutil.c">
+    <ClCompile Include="..\..\..\external\libpng\pngset.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngset.c">
+    <ClCompile Include="..\..\..\external\libpng\pngtrans.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngtrans.c">
+    <ClCompile Include="..\..\..\external\libpng\pngwio.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngvcrd.c">
+    <ClCompile Include="..\..\..\external\libpng\pngwrite.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngwio.c">
+    <ClCompile Include="..\..\..\external\libpng\pngwtran.c">
       <Filter>libpng</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngwrite.c">
-      <Filter>libpng</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngwtran.c">
-      <Filter>libpng</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\external\libpng1243b01\pngwutil.c">
+    <ClCompile Include="..\..\..\external\libpng\pngwutil.c">
       <Filter>libpng</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\external\zlib123\deflate.c">
@@ -2746,10 +2740,10 @@
     <ClInclude Include="..\Rtt_EmscriptenJSPluginLoader.h">
       <Filter>emscripten</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\external\libpng1243b01\png.h">
+    <ClInclude Include="..\..\..\external\libpng\png.h">
       <Filter>libpng</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\external\libpng1243b01\pngconf.h">
+    <ClInclude Include="..\..\..\external\libpng\pngconf.h">
       <Filter>libpng</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\external\zlib123\crc32.h">
@@ -3282,6 +3276,15 @@
     </LuaToCpp>
     <LuaToCpp Include="..\..\..\external\lpeg\re.lua">
       <Filter>LuaFiles</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurGaussianLinear_gl.lua">
+      <Filter>LuaFiles\shader</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearHorizontal_gl.lua">
+      <Filter>LuaFiles\shader</Filter>
+    </LuaToCpp>
+    <LuaToCpp Include="..\..\..\librtt\Display\Shader\kernel_filter_blurLinearVertical_gl.lua">
+      <Filter>LuaFiles\shader</Filter>
     </LuaToCpp>
   </ItemGroup>
 </Project>
