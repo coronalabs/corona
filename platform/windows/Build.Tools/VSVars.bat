@@ -11,7 +11,7 @@ for %%V in (
 ) do (
     echo trying %%V
     if exist %%V (
-        echo %%V Exists
+        echo It exists
         call %%V
         where signtool >nul 2>nul
         if %errorlevel% == 0 (
