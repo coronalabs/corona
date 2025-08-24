@@ -569,7 +569,7 @@ jobs:
           mkdir output
           cp -v ./platform/windows/Bin/Corona.SDK.Installer/Corona.msi output/Corona-$BUILD.msi
         shell: bash
-      - name: Upload Widnows Corona artifact
+      - name: Upload Windows Corona artifact
         uses: actions/upload-artifact@v4
         with:
           name: Simulator-Windows
