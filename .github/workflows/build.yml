@@ -476,7 +476,6 @@ jobs:
           name: SourceCode
           path: SourceCode
       - name: Unpack source code
-        continue-on-error: true
         run: |
           7z x -snld SourceCode/corona.tgz
           7z x -snld corona.tar
