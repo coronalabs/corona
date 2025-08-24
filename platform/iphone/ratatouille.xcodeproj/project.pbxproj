@@ -5259,6 +5259,7 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_IOS:default=12.0)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
@@ -5282,6 +5283,7 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "../apple/CoronaResources-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_IOS:default=12.0)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
@@ -5635,7 +5637,7 @@
 					../../external/luasocket/src,
 					"../../external/CoronaBeacon/Beacon-iOS/Release-universal/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_IOS:default=11.0)";
+				IPHONEOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_IOS:default=12.0)";
 				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_CFLAGS[arch=arm64]" = "-fexceptions";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -5703,7 +5705,7 @@
 					../../external/luasocket/src,
 					"../../external/CoronaBeacon/Beacon-iOS/Release-universal/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_IOS:default=11.0)";
+				IPHONEOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_IOS:default=12.0)";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				"OTHER_CFLAGS[arch=arm64]" = (
 					"-fexceptions",
