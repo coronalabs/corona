@@ -835,7 +835,7 @@
     <ProjectGuid>{E72E2B71-DE9D-4EB2-BF3F-36678B7096AE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CoronaRttLibraryWin32</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Simulator|Win32'" Label="Configuration">
