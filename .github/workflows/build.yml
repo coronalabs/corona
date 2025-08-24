@@ -70,8 +70,6 @@ jobs:
         xcode:
           - Xcode_16.4
           - Xcode_16.3
-          - Xcode_16.2
-          - Xcode_16
         target:
           - template
           - template-angle
@@ -130,42 +128,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Collected-ios-templates
-          path: ./output
-
-  webtemplate:
-    needs:
-      - source-code
-    runs-on: macos-15
-    env:
-      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
-    steps:
-      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - name: Set up emsdk
-        run: |
-          wget -q --header='Accept:application/octet-stream' https://github.com/coronalabs/emsdk/releases/download/e2.0.34/emsdk.tar.xz -O emsdk.tar.xz
-          tar -xjf emsdk.tar.xz -C ~/
-          xattr -r -d com.apple.quarantine ~/emsdk || true
-      - name: Get processed code
-        uses: actions/download-artifact@v4
-        with:
-          name: SourceCode
-          path: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build webtemplate
-        working-directory: ./platform/emscripten/gmake
-        run: |
-          source ~/emsdk/emsdk_env.sh
-          ./build_template.sh
-      - name: Copy result to output
-        run: |
-          mkdir -p output
-          cp -v platform/emscripten/webtemplate.zip output
-      - name: Upload webtemplate artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Webtemplate
           path: ./output
 
   linux:
@@ -463,6 +425,43 @@ jobs:
           APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
           APPLE_ISSUER: ${{ secrets.AppleIssuer }}
 
+  webtemplate:
+    needs:
+      - source-code
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Set up emsdk
+        run: |
+          wget -q --header='Accept:application/octet-stream' https://github.com/coronalabs/emsdk/releases/download/e2.0.34/emsdk.tar.xz -O emsdk.tar.xz
+          tar -xjf emsdk.tar.xz -C ~/
+          xattr -r -d com.apple.quarantine ~/emsdk || true
+      - name: Get processed code
+        uses: actions/download-artifact@v4
+        with:
+          name: SourceCode
+          path: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build webtemplate
+        working-directory: ./platform/emscripten/gmake
+        run: |
+          source ~/emsdk/emsdk_env.sh
+          ./build_template.sh
+      - name: Copy result to output
+        run: |
+          mkdir -p output
+          cp -v platform/emscripten/webtemplate.zip output
+      - name: Upload webtemplate artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Webtemplate
+          path: ./output
+
+
   Windows-Simulator:
     needs:
       - source-code
@@ -477,9 +476,11 @@ jobs:
           name: SourceCode
           path: SourceCode
       - name: Unpack source code
+        shell: cmd
         run: |
           7z x -snld SourceCode/corona.tgz
           7z x -snld corona.tar
+          ver > nul     
       - run: ./tools/GHAction/daily_env.sh
         shell: bash
       - run: mkdir -f docs
@@ -550,13 +551,32 @@ jobs:
           choco install dotnet-8.0-runtime --no-progress
           nuget install Microsoft.Windows.SDK.BuildTools -Version 10.0.22621.3233 -x
           nuget install Microsoft.Trusted.Signing.Client -Version 1.0.53 -x
+      - name: Missing VC Components
+        shell: powershell
+        run: |
+          Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+          $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+          $componentsToAdd = @(
+            "Microsoft.VisualStudio.Component.VC.14.29.16.11.MFC"
+          )
+          [string]$workloadArgs = $componentsToAdd | ForEach-Object {" --add " +  $_}
+          $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart')
+          $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+          if ($process.ExitCode -eq 0)
+          {
+              Write-Host "components have been successfully added"
+          }
+          else
+          {
+              Write-Host "components were not installed"
+              exit 1
+          }
       - name: Build Corona Simulator
         shell: cmd
         run: |
           cd platform\windows
           call UpdateFileVersions.bat %BUILD_NUMBER%
           call Build.Tools\VSVars.bat
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
           devenv "Corona.SDK.sln" /rebuild "Release|x86"
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
