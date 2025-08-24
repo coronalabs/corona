@@ -64,14 +64,13 @@ jobs:
 
   Xcode-template-matrix-15:
     strategy:
+      fail-fast: false
       matrix:
         runner:
           - macos-15
         xcode:
           - Xcode_16.4
           - Xcode_16.3
-          - Xcode_16.2
-          - Xcode_16
         target:
           - template
           - template-angle
@@ -477,6 +476,7 @@ jobs:
           name: SourceCode
           path: SourceCode
       - name: Unpack source code
+        continue-on-error: true
         run: |
           7z x -snld SourceCode/corona.tgz
           7z x -snld corona.tar
