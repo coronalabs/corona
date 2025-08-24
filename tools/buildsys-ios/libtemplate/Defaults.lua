@@ -30,8 +30,8 @@ local tableDuplicate = BuilderUtils.tableDuplicate
 -------------------------------------------------------------------------------
 
 -- Lowest version of iOS that Corona supports
-local MIN_VERSION_DEFAULT = "11.0"
-local MIN_VERSION_NEW = "12.0"
+local MIN_VERSION_DEFAULT = "8.0"
+local MIN_VERSION_NEW = "11.0"
 
 -- ============================================================================
 -- Defaults.tools
@@ -89,9 +89,9 @@ function M:setSdkType( sdkType, minVersion )
 	sdkVersion = tonumber(string.match(sdkVersion, '%d+%.?%d*'))
 	assert( sdkVersion, "ERROR: Cannot convert iPhone SDK Version:", sdkVersion )
 
-	if sdkVersion >= 18.5 and tonumber(minVersion) < tonumber(MIN_VERSION_NEW) then
+	if sdkVersion >= 16.4 and tonumber(minVersion) < tonumber(MIN_VERSION_NEW) then
 		minVersion = MIN_VERSION_NEW
-		print("Forcing minVersion to " .. tostring(MIN_VERSION_NEW))
+		print("Forcing minVersion to 11.0")
 	end
 	self.options.minVersion = minVersion
 

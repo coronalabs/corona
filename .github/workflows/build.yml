@@ -71,8 +71,6 @@ jobs:
         xcode:
           - Xcode_16.4
           - Xcode_16.3
-          - Xcode_16.2
-          - Xcode_16
         target:
           - template
           - template-angle

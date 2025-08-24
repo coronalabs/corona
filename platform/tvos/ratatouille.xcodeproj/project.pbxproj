@@ -6685,7 +6685,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=12.0)";
+				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=11.0)";
 			};
 			name = Debug;
 		};
@@ -6730,7 +6730,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=12.0)";
+				TVOS_DEPLOYMENT_TARGET = "$(S2D_MIN_VER_TVOS:default=11.0)";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
