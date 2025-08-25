@@ -607,7 +607,12 @@ common_ray_cast( lua_State *L,
 
 	b2Vec2 from_in_meters( lua_tonumber( L, 1 ), lua_tonumber( L, 2 ) );
 	b2Vec2 to_in_meters( lua_tonumber( L, 3 ), lua_tonumber( L, 4 ) );
+	
+	uint16 maskBits = UINT16_MAX;
 
+	if (lua_isnumber(L, 6)) {
+		maskBits = (uint16)lua_tonumber(L, 6);
+	}
 	// Pixels to meters.
 	float meters_per_pixels = ( 1.0f / physics.GetPixelsPerMeter() );
 	from_in_meters *= meters_per_pixels;
@@ -620,7 +625,7 @@ common_ray_cast( lua_State *L,
 	// Exception: For SortedHitsAlongRay, the results are accumulated
 	// so they can be sorted before they're pushed to the Lua stack.
 	int top_index_before_RayCast = lua_gettop( L );
-	world->RayCast( callback, from_in_meters, to_in_meters );
+	world->RayCast( callback, from_in_meters, to_in_meters, maskBits);
 
 	// Any hits returned by RayCast() are pushed into a table that's
 	// on the stack. We want to return true if we're returning a result.
