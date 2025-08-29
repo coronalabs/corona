@@ -26,8 +26,9 @@
 
 namespace Rtt
 {
-
 // ----------------------------------------------------------------------------
+
+static const char* kCoronaEventPrefix = "JS_";
 
 AndroidWebViewObject::AndroidWebViewObject(
 		const Rect& bounds, AndroidDisplayObjectRegistry *displayObjectRegistry, NativeToJavaBridge *ntjb )
@@ -252,6 +253,85 @@ AndroidWebViewObject::DeleteCookies( lua_State *L )
 }
 
 int
+AndroidWebViewObject::InjectJS( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	AndroidWebViewObject *view = (AndroidWebViewObject *)luaL_todisplayobject(L, 1, table);
+	if ( view )
+	{
+		const char *jsCode = lua_tostring( L, 2 );
+		view->InjectJSCode( jsCode );
+	}
+
+	return 0;
+}
+
+int
+AndroidWebViewObject::RegisterCallback( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	AndroidWebViewObject *view = (AndroidWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( view )
+	{
+		const char *eventName = lua_tostring( L, 2 );
+		String jsEventName(kCoronaEventPrefix);
+		jsEventName.Append( eventName );
+		view->AddEventListener( L, 3, jsEventName.GetString() );
+	}
+
+	return 0;
+}
+
+int
+AndroidWebViewObject::On( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	AndroidWebViewObject *view = (AndroidWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( view )
+	{
+		const char *eventName = lua_tostring( L, 2 );
+		String jsEventName(kCoronaEventPrefix);
+		jsEventName.Append( eventName );
+		view->AddEventListener( L, 3, jsEventName.GetString() );
+	}
+
+	return 0;
+}
+
+int
+AndroidWebViewObject::Send( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	AndroidWebViewObject *view = (AndroidWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( view )
+	{
+		const char* eventName = lua_tostring( L, 2 );
+		const char* jsonContent = "{}";
+		if ( 0 == LuaContext::JsonEncode( L, 3 ) )
+		{
+			jsonContent = lua_tostring( L, -1 );
+		}
+
+		String s( "window.dispatchEvent(new CustomEvent('" );
+		s.Append( kCoronaEventPrefix );
+		s.Append( eventName );
+		s.Append( "', {detail: " );
+		s.Append( jsonContent );
+		s.Append( "}));" );
+
+		view->InjectJSCode( s.GetString() );
+	}
+
+	return 0;
+}
+
+void
+AndroidWebViewObject::InjectJSCode( const char *jsCode )
+{
+	fNativeToJavaBridge->WebViewRequestInjectJS( GetId(), jsCode );
+}
+
+int
 AndroidWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 {
 	Rtt_ASSERT( key );
@@ -262,6 +342,26 @@ AndroidWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 	{
 		lua_pushlightuserdata( L, fNativeToJavaBridge );
 		lua_pushcclosure( L, Request, 1 );
+	}
+	else if ( strcmp( "injectJS", key ) == 0 )
+	{
+		lua_pushlightuserdata( L, fNativeToJavaBridge );
+		lua_pushcclosure( L, InjectJS, 1 );
+	}
+	else if ( strcmp( "registerCallback", key ) == 0 )
+	{
+		lua_pushlightuserdata( L, fNativeToJavaBridge );
+		lua_pushcclosure( L, RegisterCallback, 1 );
+	}
+	else if ( strcmp( "on", key ) == 0 )
+	{
+		lua_pushlightuserdata( L, fNativeToJavaBridge );
+		lua_pushcclosure( L, On, 1 );
+	}
+	else if ( strcmp( "send", key ) == 0 )
+	{
+		lua_pushlightuserdata( L, fNativeToJavaBridge );
+		lua_pushcclosure( L, Send, 1 );
 	}
 	else if ( strcmp( "stop", key ) == 0 )
 	{
