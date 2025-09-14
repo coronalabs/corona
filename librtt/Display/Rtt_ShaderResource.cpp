@@ -27,6 +27,14 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+void
+TimeTransform::Apply( Real& value ) const
+{
+	Rtt_ASSERT( func );
+
+	func( &value, arg1, arg2, arg3 );
+}
+/*
 bool
 TimeTransform::Apply( Uniform *time, Real *old, U32 now )
 {
@@ -53,7 +61,7 @@ TimeTransform::Apply( Uniform *time, Real *old, U32 now )
 
 	return false;
 }
-
+*/
 static void
 Modulo( Real *x, Real range, Real, Real )
 {
@@ -105,7 +113,7 @@ TimeTransform::Push( lua_State *L ) const
             lua_pushnumber( L, (Rtt_REAL_2 * M_PI) / arg2 );
             lua_setfield( L, -2, "period" );
             lua_pushnumber( L, arg3 );
-            lua_setfield( L, -2, "shift" );
+            lua_setfield( L, -2, "phase" );
         }
 
         else
@@ -191,16 +199,16 @@ TimeTransform::SetFunc( lua_State *L, int arg, const char *what, const char *fna
 
     case 's': // sine
         {
-            Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, shift = Rtt_REAL_0;
+            Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, phase = Rtt_REAL_0;
 
             GetNumberArg( L, arg, &amplitude, fname, "amplitude", what );
             GetPositiveNumberArg( L, arg, &period, fname, "period", what );
-            GetNumberArg( L, arg, &shift, fname, "shift", what );
+            GetNumberArg( L, arg, &phase, fname, "phase", what );
 
             func = &Sine;
             arg1 = amplitude;
             arg2 = (Rtt_REAL_2 * M_PI) / period;
-            arg3 = shift;
+            arg3 = phase;
         }
         break;
 
@@ -208,7 +216,7 @@ TimeTransform::SetFunc( lua_State *L, int arg, const char *what, const char *fna
         Rtt_ASSERT_NOT_REACHED();
     }
 }
-
+/*
 bool
 TimeTransform::Matches( const TimeTransform *xform1, const TimeTransform *xform2 )
 {
@@ -227,7 +235,7 @@ TimeTransform::Matches( const TimeTransform *xform1, const TimeTransform *xform2
 		return xform1->func == xform2->func && xform1->arg1 == xform2->arg1 && xform1->arg2 == xform2->arg2 && xform1->arg3 == xform2->arg3;
 	}
 }
-
+*/
 const char*
 TimeTransform::FindFunc( lua_State *L, int arg, const char *what )
 {
@@ -464,6 +472,8 @@ ShaderResource::SetDefaultData( ShaderData *defaultData )
 		fDefaultData = defaultData;
 	}
 }
+
+bool ShaderResource::sAddedUsesTime;
 
 // ----------------------------------------------------------------------------
 

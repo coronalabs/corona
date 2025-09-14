@@ -54,6 +54,7 @@ namespace /*anonymous*/
         kCommandBindProgram,
         kCommandBindInstancing,
         kCommandResolveVertexFormat,
+        kCommandBindTimeTransform,
         kCommandApplyUniformScalar,
         kCommandApplyUniformVec2,
         kCommandApplyUniformVec3,
@@ -936,6 +937,7 @@ GLCommandBuffer::Execute( bool measureGPU )
     Geometry::Vertex* instancingData = NULL;
     U32 currentAttributeCount = 0, instanceCount = 0;
     bool clearingDepth = false, clearingStencil = false;
+    TimeTransform* timeTransform = NULL;
 
     for( U32 i = 0; i < fNumCommands; ++i )
     {
@@ -1032,6 +1034,7 @@ GLCommandBuffer::Execute( bool measureGPU )
             {
                 fCurrentDrawVersion = Read<Program::Version>();
                 GLProgram* program = Read<GLProgram*>();
+
                 program->Bind( fCurrentDrawVersion );
  
                 program->GetExtraUniformsInfo( fCurrentDrawVersion, extraUniforms );
@@ -1119,9 +1122,22 @@ GLCommandBuffer::Execute( bool measureGPU )
                 instancingData = NULL;
                 CHECK_ERROR_AND_BREAK;
             }
+            case kCommandBindTimeTransform:
+            {
+				timeTransform = Read<TimeTransform*>();
+				CHECK_ERROR_AND_BREAK;
+            }
             case kCommandApplyUniformScalar:
             {
                 READ_UNIFORM_DATA( Real );
+                if ( timeTransform )
+                {
+					if ( -1 != location )
+					{
+						timeTransform->Apply( value );
+					}
+					timeTransform = NULL;
+                }
                 glUniform1f( location, value );
                 DEBUG_PRINT( "Set Uniform: value=%f location=%i", value, location );
                 CHECK_ERROR_AND_BREAK;
@@ -1164,6 +1180,14 @@ GLCommandBuffer::Execute( bool measureGPU )
             case kCommandApplyUniformFromPointerScalar:
             {
                 READ_UNIFORM_DATA_WITH_PROGRAM( Real );
+				if ( timeTransform )
+                {
+					if ( -1 != location )
+					{
+						timeTransform->Apply( value );
+					}
+					timeTransform = NULL;
+                }
                 glUniform1f( location, value );
                 DEBUG_PRINT( "Set Uniform: value=%f location=%i", value, location );
                 CHECK_ERROR_AND_BREAK;
@@ -1440,12 +1464,24 @@ GLCommandBuffer::Write( T value )
 void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 {
     GLProgram* glProgram = static_cast<GLProgram*>(resource);
-
+    Uniform* timeUniform = fUniformUpdates[Uniform::kTotalTime].uniform;
+    
+    Rtt_ASSERT( timeUniform );
+    
+    // This is the time value that gets transformed. If we do NOT need it
+    // on this call, that means we want the default transformed time, so
+    // we swap it into the uniform. In either case, the normal logic will
+    // take it from there. It is perfectly possible that another program
+    // WILL want to do a transform, so we restore the raw time at the end.
     Real rawTotalTime;
-    bool transformed = false;
-
-    if (fUsesTime)
-    {
+    
+    timeUniform->GetValue( rawTotalTime );
+// get raw value
+//    bool transformed = false;
+// ^^^ bother with this?
+//    if (fUsesTime)
+// glProgram->fResource;
+/*    {
         const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
         if (fTimeTransform)
         {
@@ -1455,21 +1491,36 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
         {
             fUniformUpdates[Uniform::kTotalTime].timestamp = glProgram->GetUniformTimestamp( Uniform::kTotalTime, fCurrentPrepVersion ) - 1; // force a refresh
         }
-    }
+    }*/
 
     for( U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
     {
         const UniformUpdate& update = fUniformUpdates[i];
         if( update.uniform && update.timestamp != glProgram->GetUniformTimestamp( i, fCurrentPrepVersion ) )
         {
+			if ( Uniform::kTotalTime == i )
+			{
+				if ( fTimeTransform ) // keep the raw time; will be transformed if the uniform is bound
+				{
+					WRITE_COMMAND( kCommandBindTimeTransform );
+					
+					Write<TimeTransform*>( fTimeTransform );
+				}
+				else
+				{
+					update.uniform->SetValue( fDefaultTransformedTime );
+				}
+			}
+        
             ApplyUniform( resource, i );
         }
     }
 
-    if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
+//    if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
     {
         fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
     }
+    // ^^ TODO: just raw...
 }
 
 void GLCommandBuffer::ApplyUniform( GPUResource* resource, U32 index )

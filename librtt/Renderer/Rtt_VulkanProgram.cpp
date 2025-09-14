@@ -44,6 +44,8 @@
 // To reduce memory consumption and startup cost, defer the
 // creation of Vulkan shaders and programs until they're needed.
 // Depending on usage, this could result in framerate dips.
+
+// TODO: verify for updated "uses time" logic, cf. note in Rtt_Scene.cpp
 #define DEFER_VK_CREATION 1
 
 // ----------------------------------------------------------------------------

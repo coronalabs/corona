@@ -29,10 +29,11 @@ CommandBuffer::CommandBuffer( Rtt_Allocator* allocator )
 	fNumCommands( 0 ), 
 	fBytesAllocated( 0 ), 
 	fBytesUsed( 0 ),
-	fTimeTransform( NULL ),
+	fDefaultTransformedTime( -1.f ),
+	fTimeTransform( NULL )/*
     fLastTimeTransform( NULL ),
     fUsesTime( false ),
-	fDefaultTimeTransform( Rtt_NEW( allocator, TimeTransform ) )
+	fDefaultTimeTransform( Rtt_NEW( allocator, TimeTransform ) )*/
 {
 
 }
@@ -44,7 +45,7 @@ CommandBuffer::~CommandBuffer()
         delete [] fBuffer;
     }
 
-	Rtt_DELETE( fDefaultTimeTransform );
+//	Rtt_DELETE( fDefaultTimeTransform );
 }
 
 void
@@ -77,30 +78,36 @@ CommandBuffer::WriteBytes( const void * value, size_t size )
 }
  
 void
-CommandBuffer::PrepareTimeTransforms( const TimeTransform* transform )
-{
-	*fDefaultTimeTransform = *transform;
+CommandBuffer::PrepareTimeTransforms( float rawTime, const TimeTransform* transform )
+{/*
+	*fDefaultTimeTransform = *transform;*/
 
-	fTimeTransform = NULL;
+	fTimeTransform = NULL;/*
 	fLastTimeTransform = NULL;
-	fUsesTime = false;
+	fUsesTime = false;*/
+	fDefaultTransformedTime = rawTime;
+
+	if ( transform->func ) // if absent, really use raw time
+	{
+		transform->Apply( fDefaultTransformedTime );
+	}
 }
 
 void
 CommandBuffer::AcquireTimeTransform( ShaderResource* resource )
-{
+{/*
     fUsesTime = resource->UsesTime();
 
     if (fUsesTime)
     {
-        fLastTimeTransform = fTimeTransform;
+        fLastTimeTransform = fTimeTransform;*/
         fTimeTransform = resource->GetTimeTransform();
-
+/*
 		if ( NULL == fTimeTransform && NULL != fDefaultTimeTransform->func )
 		{
 			fTimeTransform = fDefaultTimeTransform;
 		}
-    }
+    }*/
 }
 
 // ----------------------------------------------------------------------------

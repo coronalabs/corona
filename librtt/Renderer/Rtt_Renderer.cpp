@@ -264,7 +264,7 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTi
     fBackCommandBuffer->BindUniform( fDeltaTime, Uniform::kDeltaTime );
     
     fBackCommandBuffer->ClearUserUniforms();
-    fBackCommandBuffer->PrepareTimeTransforms( defTimeTransform );
+    fBackCommandBuffer->PrepareTimeTransforms( totalTime, defTimeTransform );
     
     fBackCommandBuffer->SetBlendEnabled( fPrevious.fBlendEquation != RenderTypes::kDisabledEquation );
     fBackCommandBuffer->SetBlendFunction( fPrevious.fBlendMode );
@@ -2053,6 +2053,16 @@ Renderer::GetVersionCode( bool addingMask ) const
         
         return count <= 3 ? static_cast<Program::Version>( count ) : -1;
     }
+}
+
+bool
+Renderer::AddedUsesTime()
+{
+	bool addedUsesTime = ShaderResource::GetAddedUsesTime();
+
+	ShaderResource::SetAddedUsesTime( false );
+
+	return addedUsesTime;
 }
 
 void

@@ -73,6 +73,12 @@ class GLProgram : public GPUResource
 			
 			// Metadata
 			int fHeaderNumLines;
+			
+			bool HasTime() const
+			{
+				return -1 != fUniformLocations[Uniform::kTotalTime] ||
+						-1 != fUniformLocations[Uniform::kDeltaTime];
+			}
 		};
 
 		void Create( Program::Version version, VersionData& data );
