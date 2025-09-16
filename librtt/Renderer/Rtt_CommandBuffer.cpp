@@ -79,35 +79,23 @@ CommandBuffer::WriteBytes( const void * value, size_t size )
  
 void
 CommandBuffer::PrepareTimeTransforms( float rawTime, const TimeTransform* transform )
-{/*
-	*fDefaultTimeTransform = *transform;*/
+{
+	fTimeTransform = NULL;
 
-	fTimeTransform = NULL;/*
-	fLastTimeTransform = NULL;
-	fUsesTime = false;*/
-	fDefaultTransformedTime = rawTime;
-
-	if ( transform->func ) // if absent, really use raw time
+	if ( transform->func )
 	{
-		transform->Apply( fDefaultTransformedTime );
+		fDefaultTransformedTime = transform->Apply( rawTime );
+	}
+	else
+	{
+		fDefaultTransformedTime = rawTime;
 	}
 }
 
 void
 CommandBuffer::AcquireTimeTransform( ShaderResource* resource )
-{/*
-    fUsesTime = resource->UsesTime();
-
-    if (fUsesTime)
-    {
-        fLastTimeTransform = fTimeTransform;*/
-        fTimeTransform = resource->GetTimeTransform();
-/*
-		if ( NULL == fTimeTransform && NULL != fDefaultTimeTransform->func )
-		{
-			fTimeTransform = fDefaultTimeTransform;
-		}
-    }*/
+{
+	fTimeTransform = resource->GetTimeTransform();
 }
 
 // ----------------------------------------------------------------------------

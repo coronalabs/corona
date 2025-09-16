@@ -27,66 +27,37 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-void
-TimeTransform::Apply( Real& value ) const
+Real
+TimeTransform::Apply( Real value ) const
 {
 	Rtt_ASSERT( func );
 
-	func( &value, arg1, arg2, arg3 );
-}
-/*
-bool
-TimeTransform::Apply( Uniform *time, Real *old, U32 now )
-{
-	if (NULL != func && NULL != time)
-	{
-		if (timestamp != now)
-		{
-			timestamp = now;
-
-			time->GetValue(cached);
-
-			if (NULL != old)
-			{
-				*old = cached;
-			}
-
-			func( &cached, arg1, arg2, arg3 );
-		}
-
-		time->SetValue(cached);
-
-		return true;
-	}
-
-	return false;
-}
-*/
-static void
-Modulo( Real *x, Real range, Real, Real )
-{
-    *x = fmod( *x, range ); // TODO?: Rtt_RealFmod
+	return func( value, arg1, arg2, arg3 );
 }
 
-static void
-PingPong( Real *x, Real range, Real, Real )
+static Real
+Modulo( Real x, Real range, Real, Real )
 {
-    Real pos = fmod( *x, Rtt_REAL_2 * range ); // TODO?: Rtt_RealFmod
+    return fmod( x, range ); // TODO?: Rtt_RealFmod
+}
+
+static Real
+PingPong( Real x, Real range, Real, Real )
+{
+    Real pos = fmod( x, Rtt_REAL_2 * range ); // TODO?: Rtt_RealFmod
 
     if (pos > range)
     {
         pos = Rtt_REAL_2 * range - pos;
     }
 
-    *x = pos;
+    return pos;
 }
 
-static void
-Sine( Real *x, Real amplitude, Real speed, Real shift )
+static Real
+Sine( Real x, Real amplitude, Real speed, Real shift )
 {
-    Real t = *x;
-
-    *x = amplitude * Rtt_RealSin( speed * t + shift );
+    return amplitude * Rtt_RealSin( speed * x + shift );
 }
 
 int
@@ -216,26 +187,7 @@ TimeTransform::SetFunc( lua_State *L, int arg, const char *what, const char *fna
         Rtt_ASSERT_NOT_REACHED();
     }
 }
-/*
-bool
-TimeTransform::Matches( const TimeTransform *xform1, const TimeTransform *xform2 )
-{
-	if (xform1 == xform2)
-	{
-		return true;
-	}
 
-	else if (NULL == xform1 || NULL == xform2)
-	{
-		return false;
-	}
-
-	else
-	{
-		return xform1->func == xform2->func && xform1->arg1 == xform2->arg1 && xform1->arg2 == xform2->arg2 && xform1->arg3 == xform2->arg3;
-	}
-}
-*/
 const char*
 TimeTransform::FindFunc( lua_State *L, int arg, const char *what )
 {

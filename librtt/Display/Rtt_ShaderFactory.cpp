@@ -762,11 +762,7 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
     BindDetails( L, shaderIndex, resource );
     BindShellTransform( L, shaderIndex, resource );
     BindVertexExtension( L, shaderIndex, resource );
-
-    //if (resource->UsesTime())
-    {
-        BindTimeTransform( L, shaderIndex, resource );
-    }
+	BindTimeTransform( L, shaderIndex, resource );
 
     bool has_vertex_data = BindVertexDataMap( L, shaderIndex, resource );
     if( has_vertex_data )
@@ -1017,12 +1013,7 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 #endif
 
                             if (resource.NotNull())
-                            {/*
-                                lua_getfield( L, tableIndex, "isTimeDependent" );
-                                bool usesTime = lua_toboolean( L, -1 ) ? true : false;
-                                resource->SetUsesTime( usesTime );
-                                lua_pop( L, 1 );*/
-
+                            {
 								Shader *prototype = NULL;
 								prototype = NewShaderPrototype( L, tableIndex, resource );
 								result = (ShaderComposite*)prototype->Clone( fAllocator );

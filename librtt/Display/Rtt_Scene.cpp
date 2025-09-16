@@ -26,7 +26,6 @@
 #include "Rtt_PhysicsWorld.h"
 #include "Rtt_Profiling.h"
 
-#include "Display/Rtt_ShaderResource.h"
 ////
 //
 #define GLM_FORCE_RADIANS

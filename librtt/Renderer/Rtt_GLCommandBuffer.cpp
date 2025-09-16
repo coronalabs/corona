@@ -1134,7 +1134,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                 {
 					if ( -1 != location )
 					{
-						timeTransform->Apply( value );
+						value = timeTransform->Apply( value );
 					}
 					timeTransform = NULL;
                 }
@@ -1184,7 +1184,7 @@ GLCommandBuffer::Execute( bool measureGPU )
                 {
 					if ( -1 != location )
 					{
-						timeTransform->Apply( value );
+						value = timeTransform->Apply( value );
 					}
 					timeTransform = NULL;
                 }
@@ -1476,22 +1476,6 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
     Real rawTotalTime;
     
     timeUniform->GetValue( rawTotalTime );
-// get raw value
-//    bool transformed = false;
-// ^^^ bother with this?
-//    if (fUsesTime)
-// glProgram->fResource;
-/*    {
-        const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
-        if (fTimeTransform)
-        {
-            transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
-        }
-        if (transformed || !TimeTransform::Matches( fTimeTransform, fLastTimeTransform ))
-        {
-            fUniformUpdates[Uniform::kTotalTime].timestamp = glProgram->GetUniformTimestamp( Uniform::kTotalTime, fCurrentPrepVersion ) - 1; // force a refresh
-        }
-    }*/
 
     for( U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
     {
@@ -1516,11 +1500,7 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
         }
     }
 
-//    if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
-    {
-        fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
-    }
-    // ^^ TODO: just raw...
+	timeUniform->SetValue(rawTotalTime);
 }
 
 void GLCommandBuffer::ApplyUniform( GPUResource* resource, U32 index )

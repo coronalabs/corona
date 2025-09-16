@@ -35,24 +35,21 @@ class FormatExtensionList;
 
 struct TimeTransform
 {
-    typedef void (*Func)( Real *time, Real arg1, Real arg2, Real arg3 );
+    typedef Real (*Func)( Real time, Real arg1, Real arg2, Real arg3 );
 
-    TimeTransform() : func( NULL ), arg1( 0 ), arg2( 0 ), arg3( 0 )//, timestamp( ~0 )
+    TimeTransform() : func( NULL ), arg1( 0 ), arg2( 0 ), arg3( 0 )
     {
     }
 
-	void Apply( Real& value ) const;
-//    bool Apply( Uniform *time, Real *old, U32 now );
+	Real Apply( Real value ) const;
     int Push( lua_State *L ) const;
     void SetDefault();
     void SetFunc( lua_State *L, int arg, const char *what, const char *fname );
 
-//    static bool Matches( const TimeTransform *xform1, const TimeTransform *xform2 );
     static const char* FindFunc( lua_State *L, int arg, const char *what );
 
     Func func;
-    Real arg1, arg2, arg3;//, cached;
-//    U32 timestamp;
+    Real arg1, arg2, arg3;
 };
 
 // ----------------------------------------------------------------------------
