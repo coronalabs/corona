@@ -439,9 +439,9 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 			end
 		else
 			if forceLoad then			
-				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load "$(CORONA_ROOT)/Corona/ios/lib/libplayer.a" \n')
+				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load "$(CORONA_ROOT)/Corona/ios/lib/libplayer.a" -Xlinker -undefined -Xlinker dynamic_lookup \n')
 			else
-				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load -lplayer\n')
+				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load -lplayer -Xlinker -undefined -Xlinker dynamic_lookup\n')
 			end
 		end
 		
