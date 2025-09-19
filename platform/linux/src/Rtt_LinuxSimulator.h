@@ -25,6 +25,8 @@ namespace Rtt
 		void OnZoomOut();
 		void OnViewAsChanged(const SkinProperties* skin);
 
+		void OnRotateLeft();
+		void OnRotateRight();
 		void WatchFolder(const std::string& path);
 		bool LoadApp(const std::string& path) override;
 		void SolarEvent(const SDL_Event& e) override;

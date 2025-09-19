@@ -78,6 +78,7 @@ namespace Rtt
 		int GetHeight() const;
 		void SetHeight(int val);
 		DeviceOrientation::Type GetOrientation() const { return fRuntimeDelegate->fOrientation; }
+		void SetOrientation(DeviceOrientation::Type t) { fRuntimeDelegate->fOrientation = t; }
 		void Flush();
 		bool LoadApp(const std::string& appPath);
 		const std::string& GetAppPath() const { return fPathToApp; }
