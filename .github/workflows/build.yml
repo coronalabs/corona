@@ -149,6 +149,7 @@ jobs:
 
   collect-ios-templates:
     needs:
+      - Xcode-template-matrix-26
       - Xcode-template-matrix-15
     runs-on: ubuntu-latest
     if: (! failure() && ! cancelled())
