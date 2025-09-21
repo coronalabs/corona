@@ -57,34 +57,28 @@ public class StoreActivity extends android.app.Activity {
 			return;
 		}
 
-		// Set up this activity as a portrait only window.
-		int orientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-		if (android.os.Build.VERSION.SDK_INT >= 9) {
-			orientation = 7;		// android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-		}
-
-
-		if (android.os.Build.VERSION.SDK_INT <= 34) {
+		// Only lock orientation on devices that don’t support multi-window / resizable
+		if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N) {
+			int orientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			if (android.os.Build.VERSION.SDK_INT >= 9) {
+				orientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+			}
 			setRequestedOrientation(orientation);
 		}
 
-
-		// Display this activity full screen if requested to do so via the intent's extras.
+		// Display this activity full screen if requested
 		boolean isFullScreen = getIntent().getBooleanExtra(EXTRA_FULL_SCREEN, false);
 		if (isFullScreen) {
 			getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-		}
-		else {
+		} else {
 			getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 			getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		}
 
-		// Initialize this flag to false.
-		// We must wait for this activity to be shown onscreen before displaying the Nook store dialog.
+		// Initialize this flag to false
 		fHasShownStore = false;
 	}
-	
 	/** This method is called when this activity can be interacted with. */
 	@Override
 	protected void onResume() {
