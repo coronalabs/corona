@@ -909,7 +909,7 @@ local function generateXcent( options )
 		print("beta_reports_active_setting: ".. tostring(beta_reports_active_setting))
 	end
 
-	if beta_reports_active_setting ~= "" then
+	if beta_reports_active_setting ~= "" and options.settings.tvos.betaReportsEnabled == true then
 		-- set the value appropriately
 		if nil ~= string.find( beta_reports_active_setting, "1", 1, true ) then
 			templateBetaReportsActive, numMatches = string.gsub( templateBetaReportsActive, "{{BETA_REPORTS}}", "true" )
