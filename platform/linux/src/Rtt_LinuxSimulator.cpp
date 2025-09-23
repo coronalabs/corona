@@ -397,7 +397,11 @@ namespace Rtt
 		if (SDL_GetCurrentDisplayMode(0, &screen) == 0)
 		{
 			S32 angleAfterRotation = DeviceOrientation::AngleForOrientation(fContext->GetOrientation()) + 90;
-			fContext->SetOrientation(DeviceOrientation::OrientationForAngle(angleAfterRotation));
+			DeviceOrientation::Type orientationAfterRotation = DeviceOrientation::OrientationForAngle(angleAfterRotation);
+			bool isOrientationSupported = fContext->GetProjectSettings()->IsSupported(orientationAfterRotation);
+
+			fContext->SetOrientation(orientationAfterRotation);
+			fContext->GetRuntime()->WindowDidRotate(orientationAfterRotation, isOrientationSupported);
 
 			int proposedWidth = fContext->GetHeight();
 			int proposedHeight = fContext->GetWidth();
@@ -412,7 +416,11 @@ namespace Rtt
 		if (SDL_GetCurrentDisplayMode(0, &screen) == 0)
 		{
 			S32 angleAfterRotation = DeviceOrientation::AngleForOrientation(fContext->GetOrientation()) - 90;
-			fContext->SetOrientation(DeviceOrientation::OrientationForAngle(angleAfterRotation));
+			DeviceOrientation::Type orientationAfterRotation = DeviceOrientation::OrientationForAngle(angleAfterRotation);
+			bool isOrientationSupported = fContext->GetProjectSettings()->IsSupported(orientationAfterRotation);
+
+			fContext->SetOrientation(orientationAfterRotation);
+			fContext->GetRuntime()->WindowDidRotate(orientationAfterRotation, isOrientationSupported);
 
 			int proposedWidth = fContext->GetHeight();
 			int proposedHeight = fContext->GetWidth();
