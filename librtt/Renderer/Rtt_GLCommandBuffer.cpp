@@ -1492,7 +1492,7 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 				}
 				else
 				{
-					update.uniform->SetValue( fDefaultTransformedTime );
+					timeUniform->SetValue( fDefaultTransformedTime );
 				}
 			}
         
@@ -1500,7 +1500,7 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
         }
     }
 
-	timeUniform->SetValue(rawTotalTime);
+	timeUniform->SetValue( rawTotalTime );
 }
 
 void GLCommandBuffer::ApplyUniform( GPUResource* resource, U32 index )
