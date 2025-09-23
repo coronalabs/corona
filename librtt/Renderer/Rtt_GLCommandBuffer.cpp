@@ -1130,13 +1130,9 @@ GLCommandBuffer::Execute( bool measureGPU )
             case kCommandApplyUniformScalar:
             {
                 READ_UNIFORM_DATA( Real );
-                if ( timeTransform )
-                {
-					if ( -1 != location )
-					{
-						value = timeTransform->Apply( value );
-					}
-					timeTransform = NULL;
+                if ( timeTransform && -1 != location )
+				{
+					value = timeTransform->Apply( value );
                 }
                 glUniform1f( location, value );
                 DEBUG_PRINT( "Set Uniform: value=%f location=%i", value, location );
@@ -1180,14 +1176,10 @@ GLCommandBuffer::Execute( bool measureGPU )
             case kCommandApplyUniformFromPointerScalar:
             {
                 READ_UNIFORM_DATA_WITH_PROGRAM( Real );
-				if ( timeTransform )
-                {
-					if ( -1 != location )
-					{
-						value = timeTransform->Apply( value );
-					}
-					timeTransform = NULL;
-                }
+				if ( timeTransform && -1 != location )
+				{
+					value = timeTransform->Apply( value );
+				}
                 glUniform1f( location, value );
                 DEBUG_PRINT( "Set Uniform: value=%f location=%i", value, location );
                 CHECK_ERROR_AND_BREAK;
@@ -1497,6 +1489,13 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 			}
         
             ApplyUniform( resource, i );
+            
+			if ( Uniform::kTotalTime == i && fTimeTransform ) // uniform might be absent, so unbind here
+			{
+				WRITE_COMMAND( kCommandBindTimeTransform );
+					
+				Write<TimeTransform*>( NULL );
+			}
         }
     }
 

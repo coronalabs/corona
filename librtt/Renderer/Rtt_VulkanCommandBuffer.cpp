@@ -966,7 +966,6 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 					if ( timeTransform )
 					{
 						value = timeTransform->Apply( value );
-						timeTransform = NULL;
 					}
 					pushConstants.Write( offset, &value, sizeof( Real ) );
 					DEBUG_PRINT( "Set Push Constant: value=%f location=%i", value, offset );
@@ -1036,7 +1035,6 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 					if ( timeTransform )
 					{
 						value = timeTransform->Apply( value );
-						timeTransform = NULL;
 					}
 					U8 * data = PointToUniform( index, location.fOffset );
 					memcpy( data, &value, sizeof( Real ) );
@@ -1104,7 +1102,6 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 						}
 						pushConstants.Write( location.fOffset, &value, sizeof( Real ) );
 					}
-					timeTransform = NULL;
 					DEBUG_PRINT( "Set Push Constant: value=%f location=%i", value, location.fOffset );
 					CHECK_ERROR_AND_BREAK;
 				}
@@ -1184,7 +1181,6 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 					if ( timeTransform )
 					{
 						value = timeTransform->Apply( value );
-						timeTransform = NULL;
 					}
 					if (program->HavePushConstantUniforms() && Descriptor::IsPushConstant( index, true ))
 					{
@@ -1838,6 +1834,13 @@ void VulkanCommandBuffer::ApplyUniforms( GPUResource* resource )
 			}
 				
 			ApplyUniform( *vulkanProgram, i );
+			
+			if ( Uniform::kTotalTime == i && fTimeTransform ) // uniform might be absent, so unbind here
+			{
+				WRITE_COMMAND( kCommandBindTimeTransform );
+					
+				Write<TimeTransform*>( NULL );
+			}
 		}
 	}
 
