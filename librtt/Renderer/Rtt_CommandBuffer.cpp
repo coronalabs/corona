@@ -30,10 +30,7 @@ CommandBuffer::CommandBuffer( Rtt_Allocator* allocator )
 	fBytesAllocated( 0 ), 
 	fBytesUsed( 0 ),
 	fDefaultTransformedTime( -1.f ),
-	fTimeTransform( NULL )/*
-    fLastTimeTransform( NULL ),
-    fUsesTime( false ),
-	fDefaultTimeTransform( Rtt_NEW( allocator, TimeTransform ) )*/
+	fTimeTransform( NULL )
 {
 
 }
