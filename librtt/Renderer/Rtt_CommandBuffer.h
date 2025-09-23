@@ -138,11 +138,8 @@ class CommandBuffer
         U8* fOffset;
         U32 fNumCommands;
         U32 fBytesAllocated;
-        U32 fBytesUsed;/*
-        TimeTransform* fDefaultTimeTransform;*/
-		TimeTransform* fTimeTransform;/*
-        TimeTransform* fLastTimeTransform;
-        bool fUsesTime;*/
+        U32 fBytesUsed;
+		TimeTransform* fTimeTransform;
         Real fDefaultTransformedTime;
 };
 

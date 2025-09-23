@@ -1833,7 +1833,7 @@ void VulkanCommandBuffer::ApplyUniforms( GPUResource* resource )
 				}
 				else
 				{
-					update.uniform->SetValue( fDefaultTransformedTime );
+					timeUniform->SetValue( fDefaultTransformedTime );
 				}
 			}
 				
