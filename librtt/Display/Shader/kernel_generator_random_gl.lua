@@ -6,7 +6,8 @@ kernel.category = "generator"
 
 kernel.name = "random"
 
-kernel.isTimeDependent = true
+--kernel.isTimeDependent = true
+kernel.timeTransform = { func = "modulo", range = 1 }
 
 kernel.fragment =
 [[
@@ -23,7 +24,7 @@ P_RANDOM float rand( P_RANDOM vec2 seed )
 P_COLOR vec4 FragmentKernel( P_UV vec2 texCoord )
 {
 #if FRAGMENT_SHADER_SUPPORTS_HIGHP
-	P_RANDOM float time = fract( u_TotalTime );
+	P_RANDOM float time = u_TotalTime;//fract( u_TotalTime );
 
 	P_RANDOM float v0 = rand( vec2( ( time + texCoord.x ),
 									( time + texCoord.y ) ) );
