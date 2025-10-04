@@ -649,7 +649,7 @@ namespace Rtt
 	void CoronaAppContext::Start()
 	{
 #if defined(EMSCRIPTEN)
-		emscripten_set_main_loop_arg(&TimerTickShim, this, 0, 1); // Never returns
+		emscripten_set_main_loop_arg(&TimerTickShim, this, fRuntimeDelegate->fFps, 1); // Never returns
 #else
 		bool closeApp = false;
 		while (closeApp == false)

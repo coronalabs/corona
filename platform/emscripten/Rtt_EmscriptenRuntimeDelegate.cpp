@@ -81,6 +81,13 @@ namespace Rtt
 					fScaleMode = lua_tostring(L, -1);
 				}
 				lua_pop(L, 1);
+
+				lua_getfield(L, -1, "fps");
+				if ((!lua_isnil(L, -1)) && (lua_isnumber(L, -1)))
+				{
+					fFps = lua_tointeger(L, -1);
+				}
+				lua_pop(L, 1);
 			}
 			lua_pop(L, 1);		// remove content
 		}
