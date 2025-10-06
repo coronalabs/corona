@@ -40,7 +40,6 @@ import android.view.DisplayCutout;
 import android.view.ViewTreeObserver;
 
 import androidx.core.view.WindowCompat;
-import androidx.activity.EdgeToEdge;
 
 /**
  * The activity window that hosts the Corona project.
