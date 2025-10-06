@@ -51,22 +51,11 @@ public class StoreActivity extends android.app.Activity {
 	protected void onCreate(android.os.Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Do not continue if a Nook EAN was not provided.
 		if (getIntent().getStringExtra(EXTRA_NOOK_APP_EAN) == null) {
 			finish();
 			return;
 		}
 
-		// Only lock orientation on devices that don’t support multi-window / resizable
-		if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N) {
-			int orientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-			if (android.os.Build.VERSION.SDK_INT >= 9) {
-				orientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-			}
-			setRequestedOrientation(orientation);
-		}
-
-		// Display this activity full screen if requested
 		boolean isFullScreen = getIntent().getBooleanExtra(EXTRA_FULL_SCREEN, false);
 		if (isFullScreen) {
 			getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -76,9 +65,9 @@ public class StoreActivity extends android.app.Activity {
 			getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		}
 
-		// Initialize this flag to false
 		fHasShownStore = false;
 	}
+
 	/** This method is called when this activity can be interacted with. */
 	@Override
 	protected void onResume() {
