@@ -27,6 +27,11 @@ android {
 
 }
 
+// Need for Android
+dependencies {
+    implementation("androidx.activity:activity-ktx:1.9.3")
+}
+
 tasks.create<Copy>("updateWidgetResources") {
     group = "Corona"
     val widgetResLocation = "$buildDirectory/generated/widgetResources"

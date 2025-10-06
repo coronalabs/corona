@@ -96,6 +96,7 @@ local googlePlayGamesAppId = false
 local facebookAppId = false
 local coronaWindowMovesWhenKeyboardAppears = false
 local initialSystemUiVisibility = nil
+local edgeToEdge = false
 local allowAppsReadOnlyAccessToFiles = true
 local strings = {}
 local apkFiles = { "...NONE..." } -- necessary due to the way ant treats empty filelists
@@ -528,6 +529,11 @@ if "table" == type(buildSettings) then
 			initialSystemUiVisibility = buildSettings.android.initialSystemUiVisibility
 		end
 
+		-- Fetch the "enableEdgeToEdge" flag used to set the edge to edge before the splashScreen is shown.
+		if type(buildSettings.android.edgeToEdge) == "boolean" then
+			edgeToEdge = buildSettings.android.edgeToEdge
+		end
+
 		-- Fetch a flag indicating if Corona's FileContentProvider should provide public read-only access to files.
 		if type(buildSettings.android.allowAppsReadOnlyAccessToFiles) == "boolean" then
 			allowAppsReadOnlyAccessToFiles = buildSettings.android.allowAppsReadOnlyAccessToFiles
@@ -713,6 +719,16 @@ if initialSystemUiVisibility then
 	stringBuffer = '<meta-data android:name="initialSystemUiVisibility" android:value="' .. initialSystemUiVisibility .. '" />'
 end
 manifestKeys.USER_INITIAL_SYSTEM_UI_VISIBILITY = stringBuffer
+
+
+-- Create a meta-data tag for the "Edge to Edge" setting, if provided.
+stringBuffer = ""
+if edgeToEdge then
+	stringBuffer = '<meta-data android:name="edgeToEdge" android:value="true" />'
+else
+	stringBuffer = '<meta-data android:name="edgeToEdge" android:value="false" />'
+end
+manifestKeys.USER_EDGE_TO_EDGE = stringBuffer
 
 -- Create a "largeHeap" application tag attribute if set.
 stringBuffer = ""

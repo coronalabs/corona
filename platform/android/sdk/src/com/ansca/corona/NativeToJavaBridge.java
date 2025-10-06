@@ -3303,24 +3303,25 @@ public class NativeToJavaBridge {
 					(int)(255 * blue)
 			);
 
+			Window window = activity.getWindow();
+			View decorView = window.getDecorView();
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) { // Android 15+
-				Window window = activity.getWindow();
-				View decorView = window.getDecorView();
-				// Add bottom insert
-				decorView.setOnApplyWindowInsetsListener((view, insets) -> {
-					Insets navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars());
-					view.setBackgroundColor(color);
-					view.setPadding(0, 0, 0, navBarInsets.bottom);
-					return insets;
-				});
+				decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+					@Override
+					public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+						Insets statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars());
+						view.setBackgroundColor(color);
 
-				window.setNavigationBarColor(color);
-				// Update Insert
-				decorView.post(() -> {
-					decorView.requestApplyInsets();
+						// Adjust padding to avoid overlap
+						view.setPadding(0, statusBarInsets.top, 0, 0);
+						return insets;
+					}
 				});
+			} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				// For Android 14 and below
+				window.setStatusBarColor(color);
 			} else {
-				CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+				Log.i( "Corona", "WARNING: SetNavigationBarColor is not support on this version of Android" );
 			}
 		}
 	}
