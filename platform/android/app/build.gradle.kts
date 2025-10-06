@@ -1150,4 +1150,5 @@ dependencies {
         implementation(project(":plugin"))
     }
     implementation("androidx.multidex:multidex:2.0.1")
+    implementation("androidx.core:core:1.17.0")
 }

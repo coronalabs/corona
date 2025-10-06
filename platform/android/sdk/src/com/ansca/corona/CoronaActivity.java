@@ -39,8 +39,8 @@ import com.ansca.corona.storage.ResourceServices;
 import android.view.DisplayCutout;
 import android.view.ViewTreeObserver;
 
-import androidx.activity.EdgeToEdge;
 import androidx.core.view.WindowCompat;
+import androidx.activity.EdgeToEdge;
 
 /**
  * The activity window that hosts the Corona project.
@@ -291,9 +291,9 @@ public class CoronaActivity extends Activity {
 			android.content.pm.ActivityInfo activityInfo;
 			activityInfo = getPackageManager().getActivityInfo(getComponentName(), android.content.pm.PackageManager.GET_META_DATA);
 			if ((activityInfo != null) && (activityInfo.metaData != null)) {
-				Boolean edgeToEdge = activityInfo.metaData.getBoolean("initialSystemUiVisibility");
+				Boolean edgeToEdge = activityInfo.metaData.getBoolean("edgeToEdge");
 				if (edgeToEdge == true) {
-					WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+					WindowCompat.enableEdgeToEdge(getWindow());
 				}
 			}
 		}

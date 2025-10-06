@@ -27,9 +27,9 @@ android {
 
 }
 
-// Need for Android
+// Need for Android Edge To Edge
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.9.3")
+    implementation("androidx.core:core:1.17.0")
 }
 
 tasks.create<Copy>("updateWidgetResources") {
