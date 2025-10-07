@@ -96,7 +96,7 @@ local googlePlayGamesAppId = false
 local facebookAppId = false
 local coronaWindowMovesWhenKeyboardAppears = false
 local initialSystemUiVisibility = nil
-local edgeToEdge = false
+local edgeToEdge = true
 local allowAppsReadOnlyAccessToFiles = true
 local strings = {}
 local apkFiles = { "...NONE..." } -- necessary due to the way ant treats empty filelists
@@ -529,7 +529,7 @@ if "table" == type(buildSettings) then
 			initialSystemUiVisibility = buildSettings.android.initialSystemUiVisibility
 		end
 
-		-- Fetch the "enableEdgeToEdge" flag used to set the edge to edge before the splashScreen is shown.
+		-- Fetch the "EdgeToEdge" flag used to set the edge to edge before the splashScreen is shown.
 		if type(buildSettings.android.edgeToEdge) == "boolean" then
 			edgeToEdge = buildSettings.android.edgeToEdge
 		end
