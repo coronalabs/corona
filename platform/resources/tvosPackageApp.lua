@@ -885,14 +885,8 @@ local function generateXcent( options )
 		print("get_task_allow_setting: ".. tostring(get_task_allow_setting))
 	end
 	if get_task_allow_setting ~= "" then
-		-- set the value appropriately
-		if get_task_allow_setting == "true" then
-			templateGetTaskAllow, numMatches = string.gsub( templateGetTaskAllow, "{{GET_TASK}}", "true" )
-			assert( numMatches == 1 )
-		else
-			templateGetTaskAllow, numMatches = string.gsub( templateGetTaskAllow, "{{GET_TASK}}", "false" )
-			assert( numMatches == 1 )
-		end
+		templateGetTaskAllow, numMatches = string.gsub( templateGetTaskAllow, "{{GET_TASK}}", get_task_allow_setting )
+		assert( numMatches == 1 )
 		data, numMatches = string.gsub( data, "{{GET_TASK_ALLOW}}", templateGetTaskAllow )
 		assert( numMatches == 1 )
 	else
