@@ -589,7 +589,7 @@ namespace Rtt
 #if defined(EMSCRIPTEN)
 
 	// iOS Web Audio Unlocker
-	int CoronaAppContext::mouseupCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void * userData) 
+	bool CoronaAppContext::mouseupCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void * userData) 
 	{
 		CoronaAppContext* ctx = (CoronaAppContext*) userData;
 		jsContextUnlockAudio();
@@ -602,7 +602,7 @@ namespace Rtt
 			isFirstTime = false;
 			ctx->requestFullscreen(EMSCRIPTEN_FULLSCREEN_SCALE_ASPECT, EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_STDDEF, EMSCRIPTEN_FULLSCREEN_FILTERING_DEFAULT); 
 		}
-	  return 0;
+	  return false;
 	}
 
 	bool CoronaAppContext::touchCallback(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData)
