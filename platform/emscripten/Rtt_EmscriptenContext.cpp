@@ -595,12 +595,12 @@ namespace Rtt
 	  return 0;
 	}
 
-	int CoronaAppContext::touchCallback(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData)
+	bool CoronaAppContext::touchCallback(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData)
 	{
 		return mouseupCallback(0, 0, 0);
 	}
 
-	int CoronaAppContext::blurCallback(int eventType, const EmscriptenFocusEvent *focusEvent, void *userData)
+	bool CoronaAppContext::blurCallback(int eventType, const EmscriptenFocusEvent *focusEvent, void *userData)
 	{
 		// check event target, ingnore all events except #window
 		if (*focusEvent->id == 0)		// event from #window ?
@@ -608,10 +608,10 @@ namespace Rtt
 			CoronaAppContext* ctx = (CoronaAppContext*) userData;
 			ctx->pause();
 		}
-	  return 0;
+	  return false;
 	}
 
-	int CoronaAppContext::focusCallback(int eventType, const EmscriptenFocusEvent *focusEvent, void *userData)
+	bool CoronaAppContext::focusCallback(int eventType, const EmscriptenFocusEvent *focusEvent, void *userData)
 	{
 		// check event target, ingnore all events except #window
 		if (*focusEvent->id == 0)		// event from #window ?
@@ -619,10 +619,10 @@ namespace Rtt
 			CoronaAppContext* ctx = (CoronaAppContext*) userData;
 			ctx->resume();
 		}
-		return 0;
+		return false;
 	}
 
-	int CoronaAppContext::resizeCallback(int eventType, const EmscriptenUiEvent *uiEvent, void *userData)
+	bool CoronaAppContext::resizeCallback(int eventType, const EmscriptenUiEvent *uiEvent, void *userData)
 	{
 		SDL_Event sdlevent;
 		sdlevent.type = SDL_WINDOWEVENT;
@@ -631,7 +631,7 @@ namespace Rtt
 		sdlevent.window.windowID = 0;
 		sdlevent.window.event = SDL_WINDOWEVENT_RESIZED;
 		SDL_PushEvent(&sdlevent);
-		return 0;
+		return false;
 	}
 
 	const char* CoronaAppContext::beforeunloadCallback(int eventType, const void *reserved, void *userData)
