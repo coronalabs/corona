@@ -142,9 +142,18 @@ jobs:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
         run: |
-          wget -q --header='Accept:application/octet-stream' https://github.com/coronalabs/emsdk/releases/download/e2.0.34/emsdk.tar.xz -O emsdk.tar.xz
+          wget -q --header='Accept:application/octet-stream' https://github.com/kan6868/emsdk/releases/download/4.0.10/emsdk.tar.xz -O emsdk.tar.xz
           tar -xjf emsdk.tar.xz -C ~/
           xattr -r -d com.apple.quarantine ~/emsdk || true
+
+          chmod +x ~/emsdk/emsdk
+          
+          # Navigate to emsdk directory
+          cd ~/emsdk
+          
+          # Install and activate latest Emscripten tools
+          ./emsdk install latest
+          ./emsdk activate latest
       - name: Get processed code
         uses: actions/download-artifact@v4
         with:
@@ -156,7 +165,11 @@ jobs:
       - name: Build webtemplate
         working-directory: ./platform/emscripten/gmake
         run: |
+          chmod +x ~/emsdk/emsdk_env.sh
+          
           source ~/emsdk/emsdk_env.sh
+          chmod +x ./build_app.sh  # Add this line
+          chmod +x ./build_template.sh
           ./build_template.sh
       - name: Copy result to output
         run: |
@@ -167,7 +180,7 @@ jobs:
         with:
           name: Webtemplate
           path: ./output
-
+          
   linux:
     if: false
     needs:
