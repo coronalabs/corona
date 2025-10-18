@@ -531,7 +531,7 @@ namespace Rtt
 		flags |= SDL_WINDOW_RESIZABLE;
 		fWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)scaledWidth, (int)scaledHeight, flags);
 		
-		int checkWidth, int checkHeight;
+		int checkWidth, checkHeight;
 
 		SDL_GetWindowSize(fWindow, &checkWidth, &checkHeight);
 
