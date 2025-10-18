@@ -714,19 +714,19 @@ function webPackageApp( options )
 
 	--generate new loadPackaghe for .js
 
-	local loadPackage = 'loadPackage({"files":[';
+	local loadPackage = 'loadPackage({files:[';
 	local pos = 0
 
 	log('.data file map (size/name)');
 	local totalDataSize = 0;
 	for i = 1, #dataFiles do
 		-- {"audio":0,"start":0,"crunched":0,"end":5,"filename":"/main.lua"}
-		loadPackage = loadPackage .. '{"audio":0,';
-		loadPackage = loadPackage .. '"start":' .. pos .. ','; 
+		loadPackage = loadPackage .. '{audio:0,';
+		loadPackage = loadPackage .. 'start:' .. pos .. ','; 
 		pos = pos + dataFiles[i].size
-		loadPackage = loadPackage .. '"crunched":0,';
-		loadPackage = loadPackage .. '"end":' .. pos .. ',';
-		loadPackage = loadPackage .. '"filename":"' .. dataFiles[i].name ..'"}';
+		loadPackage = loadPackage .. 'crunched:0,';
+		loadPackage = loadPackage .. 'end:' .. pos .. ',';
+		loadPackage = loadPackage .. 'filename:"' .. dataFiles[i].name ..'"}';
 		if i == #dataFiles then loadPackage = loadPackage .. ']' else loadPackage = loadPackage .. "," end
 
 		-- print log
@@ -740,10 +740,10 @@ function webPackageApp( options )
 	log('Total data file size = ' .. totalDataSize .. ' = ' .. math.floor(totalDataSize / 1024) .. 'KB = ' .. math.floor(totalDataSize / 1024 / 1024) .. 'MB');
 
 	-- ,"remote_package_size":5,"package_uuid":"134361ad-01a4-42aa-aea6-5b48c05818f7"})
-	loadPackage = loadPackage .. ',"remote_package_size":' .. pos;
+	loadPackage = loadPackage .. ',remote_package_size:' .. pos;
 
 	-- fixme UUID
-	loadPackage = loadPackage .. ',"package_uuid":"134361ad-01a4-42aa-aea6-5b48c05818f7"})';
+	loadPackage = loadPackage .. ',package_uuid:"134361ad-01a4-42aa-aea6-5b48c05818f7"})';
 	--log3('loadPackage:', loadPackage);
 
 	--generate new FS_createPath for .js
@@ -770,12 +770,16 @@ function webPackageApp( options )
 	fi:close()
 
 	-- seek loadPackage({"files":[{"audio":0,"start":0,"crunched":0,"end":359,"filename":"/main.lua"},{"audio":0,"start":359,"crunched":0,"end":718,"filename":"/zzz/main.lua"}],"remote_package_size":718,"package_uuid":"be67bd33-1e30-46ab-85c8-ab4d3f06cf1d"})
-	local count
- 	src, count = src:gsub('loadPackage%b()', loadPackage, 1)
- 	if count < 1 then
-		return 'Source .js file does not contain loadPackage(...)';
- 	end
-
+	local count = 0
+	src = src:gsub("loadPackage%b()", function(m)
+		count = count + 1
+		if count == 2 then
+			return loadPackage
+		else
+			return m
+		end
+	end)
+	
 	-- seek Module["FS_createPath"]("/","CORONA_FOLDER_PLACEHOLDER",true,true);
  	src, count = src:gsub("Module%['FS_createPath']%b();", createPaths, 1)
  	if count < 1 then
