@@ -125,13 +125,15 @@ static size_t ConsoleRepeatLimit = 50;
 
 	[super windowDidLoad];
 
-	self.textFinder = [[NSTextFinder alloc] init];
-	[self.textFinder setClient:(id<NSTextFinderClient>)self.textView];
-	[self.textFinder setFindBarContainer:[self.textView enclosingScrollView]];
-	[self.textView setUsesFindBar:YES];
-	[self.textFinder setIncrementalSearchingEnabled:YES];
-	[self.textFinder setIncrementalSearchingShouldDimContentView:YES];
-	[self.textFinder performAction:NSTextFinderActionShowFindInterface];
+	
+    
+    self.textFinder = [[NSTextFinder alloc] init];
+    [self.textFinder setClient:(id<NSTextFinderClient>)self.textView];
+    [self.textFinder setFindBarContainer:[self.textView enclosingScrollView]];
+    [self.textView setUsesFindBar:YES];
+    [self.textFinder setIncrementalSearchingEnabled:YES];  // Disable incremental search
+    [self.textFinder setIncrementalSearchingShouldDimContentView:NO];
+    //[self.textFinder performAction:NSTextFinderActionShowFindInterface];
 
 	[self setupTextAttributes];
 
@@ -529,12 +531,81 @@ static size_t ConsoleRepeatLimit = 50;
 
 - (IBAction)performFindAction:(id)action
 {
-	NSTextFinderAction finderAction = (NSTextFinderAction) [action tag];
+    NSTextFinderAction finderAction = (NSTextFinderAction) [action tag];
 
-	NSDEBUG(@"- (void)performAction:%@ (%ld)", action, finderAction);
+    NSDEBUG(@"- (void)performAction:%@ (%ld)", action, finderAction);
 
-	[self.textFinder performAction:finderAction];
+    [self.textFinder performAction:finderAction];
+    
+    // Disable the dimming/blur effects on content (but not the find bar itself)
+    [self removeFindBarDimming:[self.textView enclosingScrollView]];
 }
+
+
+
+
+- (void)removeFindBarDimming:(NSView *)view
+{
+    // Recursively find and disable dimming views
+    for (NSView *subview in [view subviews]) {
+        NSString *className = [subview className];
+        
+        // Skip the actual find bar and its children - we want those to look normal
+        if ([className containsString:@"NSTextFinderBarView"] ||
+            [className containsString:@"NSBannerView"]) {
+            continue;  // Don't process the find bar itself
+        }
+        
+        // Only disable dimming views that are NOT inside the find bar
+        if ([className containsString:@"PocketBlur"] ||
+            [className containsString:@"AdditionalDimmingView"] ||
+            [className containsString:@"LuminanceAdjustment"]) {
+            [subview setHidden:YES];
+            [subview setAlphaValue:0.0];
+        }
+        
+        // Disable backdrop layers only outside the find bar
+        if ([subview layer] && ![self isInsideFindBar:subview]) {
+            [self removeBackdropLayers:[subview layer]];
+        }
+        
+        // Recurse into subviews
+        [self removeFindBarDimming:subview];
+    }
+}
+
+- (BOOL)isInsideFindBar:(NSView *)view
+{
+    NSView *parent = [view superview];
+    while (parent != nil) {
+        NSString *className = [parent className];
+        if ([className containsString:@"NSTextFinderBarView"] ||
+            [className containsString:@"NSBannerView"]) {
+            return YES;
+        }
+        parent = [parent superview];
+    }
+    return NO;
+}
+
+- (void)removeBackdropLayers:(CALayer *)layer
+{
+    if (!layer) return;
+    
+    NSString *className = [layer className];
+    
+    if ([className isEqualToString:@"CABackdropLayer"]) {
+        layer.hidden = YES;
+        layer.opacity = 0.0;
+    }
+    
+    // Recurse into sublayers
+    for (CALayer *sublayer in [layer sublayers]) {
+        [self removeBackdropLayers:sublayer];
+    }
+}
+
+
 
 - (IBAction) sendLogViaEmail:(id) sender
 {
