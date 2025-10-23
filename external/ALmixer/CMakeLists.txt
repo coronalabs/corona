@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 project(almixer)
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+
 add_definitions(
 	-DSOUND_SUPPORTS_WAV
 	-DSOUND_SUPPORTS_OGG
@@ -55,4 +55,10 @@ add_library( almixer SHARED
 	../tremor/Tremor/vorbisfile.c
 )
 
+if(ANDROID AND (ANDROID_ABI STREQUAL "arm64-v8a" OR ANDROID_ABI STREQUAL "x86_64"))
+	# NDK version < 28
+	target_link_options(almixer PRIVATE "-Wl,-z,max-page-size=16384")
+	# NDK version <= 22
+	target_link_options(almixer PRIVATE "-Wl,-z,common-page-size=16384")
+endif()
 target_link_libraries ( almixer OpenAL  lua log dl OpenSLES mpg123 )

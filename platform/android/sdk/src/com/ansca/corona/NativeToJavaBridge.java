@@ -60,8 +60,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 
-import dalvik.system.DexClassLoader;
-
 import com.ansca.corona.AudioRecorder.AudioByteBufferHolder;
 import com.ansca.corona.listeners.CoronaSplashScreenApiListener;
 import com.ansca.corona.listeners.CoronaStatusBarApiListener;
@@ -147,8 +145,6 @@ public class NativeToJavaBridge {
 
 		return result;
 	}
-
-	private static DexClassLoader sClassLoader = null;
 
 	protected static int callLoadClass(
 		CoronaRuntime runtime, long luaStateMemoryAddress, String libName, String className )

@@ -1917,7 +1917,7 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
             notifyAll();
         }
 
-        /*
+        /**
          * Tries once to acquire the right to use an EGL
          * context. Does not block. Requires that we are already
          * in the sGLThreadManager monitor when this is called.
