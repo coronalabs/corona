@@ -2,6 +2,7 @@
 --
 -- CoronaIconComposerSupport.lua
 -- Handles Icon Composer .icon files for iOS, tvOS, and macOS builds
+-- iOS now uses actool to compile .icon files with Liquid Glass effects
 --
 ------------------------------------------------------------------------------
 
@@ -17,7 +18,8 @@ local function quoteString( str )
 	return "\"" .. str .. "\""
 end
 
--- Find ictool executable (Icon Composer's command-line tool)
+
+-- Find ictool executable (Icon Composer's command-line tool) - for tvOS/macOS fallback
 local function findIconTool()
 	local paths = {
 		-- Check common Xcode paths (ictool is inside Icon Composer.app)
@@ -53,77 +55,68 @@ local function findIconTool()
 	return nil
 end
 
--- Build ictool command for exporting icons
--- Format: ictool input-document --export-preview platform appearance width height scale output-png-path
+-- Build actool command for compiling .icon file
+local function buildActoolCommand(actool, iconFilePath, outputPath, platform, debugBuildProcess)
+	local plistPath = outputPath .. "/assetcatalog_generated_info.plist"
+	
+	-- Determine platform-specific parameters
+	local targetDevice = "iphone"
+	local platformName = "iphoneos"
+	local minDeployment = "13.0"
+	
+	if platform == "ios" or platform == "iphone" then
+		targetDevice = "iphone"
+		platformName = "iphoneos"
+		minDeployment = "13.0"
+	elseif platform == "tvos" or platform == "appletvos" then
+		targetDevice = "tv"
+		platformName = "appletvos"
+		minDeployment = "13.0"
+	elseif platform == "macos" or platform == "osx" then
+		targetDevice = "mac"
+		platformName = "macosx"
+		minDeployment = "10.15"
+	end
+	
+	-- Build actool command
+	-- actool compiles asset catalogs (.xcassets or .icon) into Assets.car files
+	local cmd =  "xcrun actool " .. quoteString(iconFilePath) ..
+				" --compile " .. quoteString(outputPath) ..
+				" --output-format human-readable-text" ..
+				" --notices --warnings --errors" ..
+				" --output-partial-info-plist " .. quoteString(plistPath) ..
+				" --app-icon AppIcon" ..
+				" --enable-on-demand-resources NO" ..
+				" --development-region en" ..
+				" --target-device " .. targetDevice ..
+				" --minimum-deployment-target " .. minDeployment ..
+				" --platform " .. platformName
+	
+	print("actool command: " .. cmd)
+	
+	return cmd, plistPath
+end
+
+-- Build ictool command for exporting icons (fallback for tvOS/macOS)
 local function buildIconToolCommand(ictool, iconFilePath, outputPath, platform, size, appearanceMode, scale)
 	scale = scale or 1
 	local appearance = appearanceMode or "Light"
 	
-	-- ictool command format (based on official usage)
-	-- ictool input-document --export-preview platform appearance width height scale output-png-path
 	local cmd = quoteString(ictool) .. " " .. quoteString(iconFilePath) ..
 				" --export-preview " .. platform .. " " .. appearance ..
 				" " .. size .. " " .. size .. " " .. scale ..
 				" " .. quoteString(outputPath)
-
+	
 	return cmd
 end
 
--- Detect ictool command format and return command builder function
-local function getIconToolCommandBuilder(ictool, debugBuildProcess)
-	-- Get help output to detect command format
-	local handle = io.popen(quoteString(ictool) .. " --help 2>&1")
-	local helpOutput = ""
-	if handle then
-		helpOutput = handle:read("*a") or ""
-		handle:close()
-	end
-	
-	local usesExportSubcommand = helpOutput:match("export") ~= nil
-	
-	if debugBuildProcess and debugBuildProcess > 1 then
-		print("ictool format: " .. (usesExportSubcommand and "modern (export subcommand)" or "legacy"))
-	end
-	
-	-- Return function that builds commands based on detected format
-	return function(iconFilePath, outputPath, platform, size, appearanceMode)
-		scale = scale or 1
-		local appearance = appearanceMode or "Light"
-		local cmd = quoteString(ictool) .. " " .. quoteString(iconFilePath) ..
-				" --export-preview " .. platform .. " " .. appearance ..
-				" " .. size .. " " .. size .. " " .. scale ..
-				" " .. quoteString(outputPath)
-		return cmd
-	end
-end
-
--- Platform-specific icon specifications
+-- Platform-specific icon specifications (for ictool fallback)
 local function getIconSpecsForPlatform(platform)
 	if platform == "ios" or platform == "iphone" then
 		return {
 			platform = "iOS",
 			sizes = {
-				-- iPhone
-				{name = "Icon-App-20x20@2x", size = 40, idiom = "iphone", scale = "2x", sizeKey = "20x20"},
-				{name = "Icon-App-20x20@3x", size = 60, idiom = "iphone", scale = "3x", sizeKey = "20x20"},
-				{name = "Icon-App-29x29@2x", size = 58, idiom = "iphone", scale = "2x", sizeKey = "29x29"},
-				{name = "Icon-App-29x29@3x", size = 87, idiom = "iphone", scale = "3x", sizeKey = "29x29"},
-				{name = "Icon-App-40x40@2x", size = 80, idiom = "iphone", scale = "2x", sizeKey = "40x40"},
-				{name = "Icon-App-40x40@3x", size = 120, idiom = "iphone", scale = "3x", sizeKey = "40x40"},
-				{name = "Icon-App-60x60@2x", size = 120, idiom = "iphone", scale = "2x", sizeKey = "60x60"},
-				{name = "Icon-App-60x60@3x", size = 180, idiom = "iphone", scale = "3x", sizeKey = "60x60"},
-				-- iPad
-				{name = "Icon-App-20x20@1x", size = 20, idiom = "ipad", scale = "1x", sizeKey = "20x20"},
-				{name = "Icon-App-20x20@2x", size = 40, idiom = "ipad", scale = "2x", sizeKey = "20x20"},
-				{name = "Icon-App-29x29@1x", size = 29, idiom = "ipad", scale = "1x", sizeKey = "29x29"},
-				{name = "Icon-App-29x29@2x", size = 58, idiom = "ipad", scale = "2x", sizeKey = "29x29"},
-				{name = "Icon-App-40x40@1x", size = 40, idiom = "ipad", scale = "1x", sizeKey = "40x40"},
-				{name = "Icon-App-40x40@2x", size = 80, idiom = "ipad", scale = "2x", sizeKey = "40x40"},
-				{name = "Icon-App-76x76@1x", size = 76, idiom = "ipad", scale = "1x", sizeKey = "76x76"},
-				{name = "Icon-App-76x76@2x", size = 152, idiom = "ipad", scale = "2x", sizeKey = "76x76"},
-				{name = "Icon-App-83.5x83.5@2x", size = 167, idiom = "ipad", scale = "2x", sizeKey = "83.5x83.5"},
-				-- App Store
-				{name = "Icon-App-1024x1024@1x", size = 1024, idiom = "ios-marketing", scale = "1x", sizeKey = "1024x1024"}
+				{name = "Icon", size = 1024, idiom = "universal", platform = "ios", sizeKey = "1024x1024", scale = nil}
 			}
 		}
 	elseif platform == "tvos" or platform == "appletvos" then
@@ -200,7 +193,7 @@ local function validateIconFile(iconFilePath)
 end
 
 -- Copy PNG files directly from .icon bundle to xcassets
-local function copyPngBundleToXCAssets(iconFilePath, tempAppIconSet, iconSpecs, debugBuildProcess)
+local function copyPngBundleToXCAssets(iconFilePath, tempAppIconSet, iconSpecs, debugBuildProcess, platform)
 	local contentsImages = {}
 	local copiedFiles = {}
 	
@@ -222,173 +215,191 @@ local function copyPngBundleToXCAssets(iconFilePath, tempAppIconSet, iconSpecs, 
 		end
 	end
 	
-	-- Try to match files to expected icon sizes
-	for _, spec in ipairs(iconSpecs.sizes) do
-		-- Look for matching files
-		local basePattern = spec.size .. "x" .. spec.size
-		local matchedFile = nil
+	-- For iOS universal format, look for 1024x1024 icons
+	if platform == "ios" or platform == "iphone" then
+		-- Look for light, dark, and tinted variants
+		local variants = {
+			{pattern = "1024.*[Ll]ight", appearance = nil, suffix = "Light"},
+			{pattern = "1024.*[Dd]ark", appearance = "dark", suffix = "Dark"},
+			{pattern = "1024.*[Tt]inted", appearance = "tinted", suffix = "Tinted"}
+		}
 		
-		for _, file in ipairs(copiedFiles) do
-			if file:match(basePattern) or file:match(spec.name) then
-				matchedFile = file
-				break
+		for _, variant in ipairs(variants) do
+			local matchedFile = nil
+			for _, file in ipairs(copiedFiles) do
+				if file:match(variant.pattern) then
+					matchedFile = file
+					break
+				end
+			end
+			
+			if matchedFile then
+				local imageEntry = {
+					filename = matchedFile,
+					idiom = "universal",
+					platform = "ios",
+					size = "1024x1024"
+				}
+				
+				if variant.appearance then
+					imageEntry.appearances = {{
+						appearance = "luminosity",
+						value = variant.appearance
+					}}
+				end
+				
+				table.insert(contentsImages, imageEntry)
 			end
 		end
-		
-		if matchedFile then
-			local imageEntry = {
-				filename = matchedFile,
-				idiom = spec.idiom,
-				scale = spec.scale,
-				size = spec.sizeKey
-			}
-			table.insert(contentsImages, imageEntry)
+	else
+		-- For other platforms, use the old matching logic
+		for _, spec in ipairs(iconSpecs.sizes) do
+			local basePattern = spec.size .. "x" .. spec.size
+			local matchedFile = nil
+			
+			for _, file in ipairs(copiedFiles) do
+				if file:match(basePattern) or file:match(spec.name) then
+					matchedFile = file
+					break
+				end
+			end
+			
+			if matchedFile then
+				local imageEntry = {
+					filename = matchedFile,
+					idiom = spec.idiom,
+					scale = spec.scale,
+					size = spec.sizeKey
+				}
+				table.insert(contentsImages, imageEntry)
+			end
 		end
 	end
 	
 	return contentsImages, #copiedFiles
 end
 
--- Export icons from .icon file using ictool
-function CoronaIconComposerSupport.convertIconFileToXCAssets(iconFilePath, tmpDir, platform, debugBuildProcess)
-	-- Validate .icon file and determine its type
-	local isValid, iconType = validateIconFile(iconFilePath)
+-- Compile .icon file using actool (for iOS with Liquid Glass effects)
+local function compileIconWithActool(actool, iconFilePath, tmpDir, platform, debugBuildProcess)
 	
-	if not isValid then
-		return nil, iconType -- iconType contains error message
+		print("Using actool to compile .icon file with Liquid Glass effects...")
+	
+	-- Create output directory for compiled assets
+	local outputPath = tmpDir .. "/CompiledAssets"
+	os.execute("mkdir -p " .. quoteString(outputPath))
+	
+	-- Build and execute actool command
+	local actoolCmd, plistPath = buildActoolCommand(actool, iconFilePath, outputPath, platform, debugBuildProcess)
+	
+	if debugBuildProcess and debugBuildProcess > 1 then
+		print("Executing actool...")
 	end
 	
+	local result = os.execute(actoolCmd .. " 2>&1")
+	
+	-- Check if Assets.car was created
+	local assetsCarPath = outputPath .. "/Assets.car"
+	local testFile = io.open(assetsCarPath, "r")
+	if testFile then
+		testFile:close()
+		
+		
+			print("✓ Successfully compiled Assets.car with actool")
+			print("  Location: " .. assetsCarPath)
+		
+		-- Clean up the generated plist file
+		os.execute("rm -f " .. quoteString(plistPath))
+		
+		return outputPath, assetsCarPath
+	else
+		return nil, "actool failed to compile .icon file. Check that the .icon file is valid."
+	end
+end
+
+-- Export icons from .icon file using ictool (fallback for tvOS/macOS)
+local function exportIconWithIctool(ictool, iconFilePath, tmpDir, platform, iconSpecs, debugBuildProcess)
 	if debugBuildProcess and debugBuildProcess > 0 then
-		print("========================================")
-		print("Converting .icon file to xcassets")
-		print("Source: " .. iconFilePath)
-		print("Type: " .. iconType)
-		print("Platform: " .. platform)
-		print("========================================")
+		print("Using ictool to export icon layers...")
 	end
 	
-	-- Get platform-specific icon sizes
-	local iconSpecs = getIconSpecsForPlatform(platform)
-	if not iconSpecs then
-		return nil, "Unsupported platform for Icon Composer: " .. tostring(platform)
-	end
-	
-	-- Create temporary xcassets structure
-	local tempXCAssets = tmpDir .. "/GeneratedIconAssets.xcassets"
+	local tempXCAssets = tmpDir .. "/TempAssets.xcassets"
 	local tempAppIconSet = tempXCAssets .. "/AppIcon.appiconset"
 	
 	os.execute("mkdir -p " .. quoteString(tempAppIconSet))
 	
+	-- Appearance modes to export
+	local appearances = {
+		{mode = "Light", suffix = "-Light", jsonAppearance = nil},
+		{mode = "Dark", suffix = "-Dark", jsonAppearance = "dark"}
+	}
+	
+	-- Add tinted appearance for iOS (though we prefer actool for iOS)
+	if platform == "ios" or platform == "iphone" then
+		table.insert(appearances, {mode = "Tinted", suffix = "-Tinted", jsonAppearance = "tinted"})
+	end
+	
 	local contentsImages = {}
 	local successCount = 0
+	local failCount = 0
 	
-	-- Handle different .icon file types
-	if iconType == "png_bundle" then
-		-- Simple PNG bundle - just copy files
-		if debugBuildProcess and debugBuildProcess > 0 then
-			print("Processing PNG bundle...")
-		end
-		
-		contentsImages, successCount = copyPngBundleToXCAssets(iconFilePath, tempAppIconSet, iconSpecs, debugBuildProcess)
-		
-	elseif iconType == "asset_catalog" then
-		-- Asset catalog inside .icon - copy the whole structure
-		if debugBuildProcess and debugBuildProcess > 0 then
-			print("Processing asset catalog...")
-		end
-		
-		local copyCmd = "cp -R " .. quoteString(iconFilePath) .. "/* " .. quoteString(tempAppIconSet) .. "/"
-		os.execute(copyCmd)
-		
-		-- The Contents.json already exists, just return success
-		if debugBuildProcess and debugBuildProcess > 0 then
-			print("Copied asset catalog structure")
-		end
-		
-		return tempXCAssets, nil
-		
-	else -- iconType == "icon_composer"
-		-- Icon Composer project - use ictool to render
-		local ictool = findIconTool()
-		
-		if not ictool then
-			return nil, "ictool not found. Icon Composer must be installed with Xcode. Try: xcrun -f ictool"
-		end
-		
-		if debugBuildProcess and debugBuildProcess > 0 then
-			print("Using ictool: " .. ictool)
-		end
-		
-		-- Get command builder
-		local buildCommand = getIconToolCommandBuilder(ictool, debugBuildProcess)
-		-- Get command builder
-		local buildCommand = getIconToolCommandBuilder(ictool, debugBuildProcess)
-		
-		-- Appearance modes to export
-		local appearances = {
-			{mode = "Light", suffix = "", jsonAppearance = nil},
-			{mode = "Dark", suffix = "-dark", jsonAppearance = "dark"}
-		}
-		
-		local failCount = 0
-		
-		-- Export each icon size and appearance using ictool
-		for _, spec in ipairs(iconSpecs.sizes) do
-			for _, appearance in ipairs(appearances) do
-				local filename = spec.name .. appearance.suffix .. ".png"
-				local outputPath = tempAppIconSet .. "/" .. filename
-				
-				-- Build ictool command using detected format
-				local ictoolCmd = buildCommand(iconFilePath, outputPath, iconSpecs.platform, spec.size, appearance.mode)
-				
-				if debugBuildProcess and debugBuildProcess > 1 then
-					print("  Exporting: " .. filename .. " (" .. spec.size .. "x" .. spec.size .. ", " .. appearance.mode .. ")")
-					print("  Command: " .. ictoolCmd)
-				end
-				
-				local result = os.execute(ictoolCmd .. " 2>&1")
-				
-				-- Check if file was created
-				local testFile = io.open(outputPath, "r")
-				if testFile then
-					testFile:close()
-					successCount = successCount + 1
-					
-					-- Build Contents.json entry
-					local imageEntry = {
-						filename = filename,
-						idiom = spec.idiom,
-						scale = spec.scale,
-						size = spec.sizeKey
-					}
-					
-					-- Add appearance info for dark mode
-					if appearance.jsonAppearance then
-						imageEntry.appearances = {{
-							appearance = "luminosity",
-							value = appearance.jsonAppearance
-						}}
-					end
-					
-					table.insert(contentsImages, imageEntry)
-				else
-					failCount = failCount + 1
-					if debugBuildProcess and debugBuildProcess > 1 then
-						print("    WARNING: Failed to export " .. filename)
-					end
-				end
+	-- Export each icon size and appearance using ictool
+	for _, spec in ipairs(iconSpecs.sizes) do
+		for _, appearance in ipairs(appearances) do
+			local filename = spec.name .. appearance.suffix .. "-" .. spec.sizeKey .. ".png"
+			local outputPath = tempAppIconSet .. "/" .. filename
+			
+			-- Build ictool command
+			local ictoolCmd = buildIconToolCommand(ictool, iconFilePath, outputPath, iconSpecs.platform, spec.size, appearance.mode, 1)
+			
+			if debugBuildProcess and debugBuildProcess > 1 then
+				print("  Exporting: " .. filename .. " (" .. spec.size .. "x" .. spec.size .. ", " .. appearance.mode .. ")")
 			end
-		end
-		
-		if debugBuildProcess and debugBuildProcess > 0 then
-			if failCount > 0 then
-				print("WARNING: " .. failCount .. " icon exports failed")
+			
+			os.execute(ictoolCmd .. " 2>&1")
+			
+			-- Check if file was created
+			local testFile = io.open(outputPath, "r")
+			if testFile then
+				testFile:close()
+				successCount = successCount + 1
+				
+				-- Build Contents.json entry
+				local imageEntry = {
+					filename = filename,
+					idiom = spec.idiom,
+					size = spec.sizeKey
+				}
+				
+				-- Add platform for iOS universal format
+				if platform == "ios" or platform == "iphone" then
+					imageEntry.platform = "ios"
+				end
+				
+				-- Add scale for non-iOS platforms
+				if spec.scale then
+					imageEntry.scale = spec.scale
+				end
+				
+				-- Add appearance info for dark and tinted modes
+				if appearance.jsonAppearance then
+					imageEntry.appearances = {{
+						appearance = "luminosity",
+						value = appearance.jsonAppearance
+					}}
+				end
+				
+				table.insert(contentsImages, imageEntry)
+			else
+				failCount = failCount + 1
+				if debugBuildProcess and debugBuildProcess > 1 then
+					print("    WARNING: Failed to export " .. filename)
+				end
 			end
 		end
 	end
 	
 	if successCount == 0 then
-		return nil, "Failed to export any icons from " .. iconFilePath .. ". Check that the .icon file is valid."
+		return nil, "Failed to export any icons with ictool"
 	end
 	
 	-- Generate Contents.json
@@ -397,25 +408,34 @@ function CoronaIconComposerSupport.convertIconFileToXCAssets(iconFilePath, tmpDi
 		return nil, "Failed to create Contents.json"
 	end
 	
-	-- Write Contents.json manually (simple JSON generation)
+	-- Write Contents.json
 	contentsFile:write('{\n  "images" : [\n')
 	for i, img in ipairs(contentsImages) do
 		contentsFile:write('    {\n')
-		contentsFile:write('      "filename" : "' .. img.filename .. '",\n')
-		contentsFile:write('      "idiom" : "' .. img.idiom .. '",\n')
-		contentsFile:write('      "scale" : "' .. img.scale .. '",\n')
-		contentsFile:write('      "size" : "' .. img.size .. '"')
 		
 		if img.appearances then
-			contentsFile:write(',\n      "appearances" : [\n')
+			contentsFile:write('      "appearances" : [\n')
 			contentsFile:write('        {\n')
 			contentsFile:write('          "appearance" : "luminosity",\n')
 			contentsFile:write('          "value" : "' .. img.appearances[1].value .. '"\n')
 			contentsFile:write('        }\n')
-			contentsFile:write('      ]')
+			contentsFile:write('      ],\n')
 		end
 		
+		contentsFile:write('      "filename" : "' .. img.filename .. '",\n')
+		contentsFile:write('      "idiom" : "' .. img.idiom .. '"')
+		
+		if img.platform then
+			contentsFile:write(',\n      "platform" : "' .. img.platform .. '"')
+		end
+		
+		if img.scale then
+			contentsFile:write(',\n      "scale" : "' .. img.scale .. '"')
+		end
+		
+		contentsFile:write(',\n      "size" : "' .. img.size .. '"')
 		contentsFile:write('\n    }')
+		
 		if i < #contentsImages then
 			contentsFile:write(',')
 		end
@@ -434,133 +454,124 @@ function CoronaIconComposerSupport.convertIconFileToXCAssets(iconFilePath, tmpDi
 		if failCount > 0 then
 			print("WARNING: " .. failCount .. " icon exports failed")
 		end
-		print("Generated xcassets: " .. tempXCAssets)
-		print("========================================")
 	end
 	
 	return tempXCAssets, nil
 end
 
--- Export alternate icon from .icon file
-function CoronaIconComposerSupport.convertAlternateIconToXCAssets(iconFilePath, iconName, tmpDir, platform, debugBuildProcess)
-	local ictool = findIconTool()
+-- Main function: Convert .icon file to xcassets or Assets.car
+function CoronaIconComposerSupport.convertIconFileToXCAssets(iconFilePath, tmpDir, platform, debugBuildProcess)
+	-- Validate .icon file and determine its type
+	local isValid, iconType = validateIconFile(iconFilePath)
 	
-	if not ictool then
-		return nil, "ictool not found. Icon Composer must be installed with Xcode. Try: xcrun -f ictool"
-	end
-	
-	-- Verify .icon file exists
-	local iconJson = iconFilePath .. "/icon.json"
-	local hasIconJson = os.execute("test -f " .. quoteString(iconJson)) == 0
-	
-	if not hasIconJson then
-		return nil, "Not a valid Icon Composer .icon file: " .. iconFilePath
+	if not isValid then
+		return nil, iconType -- iconType contains error message
 	end
 	
 	if debugBuildProcess and debugBuildProcess > 0 then
-		print("Converting alternate icon: " .. iconName .. " from " .. iconFilePath)
+		print("========================================")
+		print("Converting .icon file")
+		print("Source: " .. iconFilePath)
+		print("Type: " .. iconType)
+		print("Platform: " .. platform)
+		print("========================================")
 	end
 	
-	-- Get platform-specific icon sizes (only need specific sizes for alternate icons)
+	-- Get platform-specific icon sizes
 	local iconSpecs = getIconSpecsForPlatform(platform)
 	if not iconSpecs then
-		return nil, "Unsupported platform: " .. tostring(platform)
+		return nil, "Unsupported platform for Icon Composer: " .. tostring(platform)
 	end
 	
-	-- Create xcassets structure for this alternate icon
-	local tempXCAssets = tmpDir .. "/AlternateIcons.xcassets"
-	local tempAppIconSet = tempXCAssets .. "/" .. iconName .. ".appiconset"
+	-- Create temporary xcassets structure
+	local tempXCAssets = tmpDir .. "/TempAssets.xcassets"
+	local tempAppIconSet = tempXCAssets .. "/AppIcon.appiconset"
 	
 	os.execute("mkdir -p " .. quoteString(tempAppIconSet))
-	
-	-- Appearance modes
-	local appearances = {
-		{mode = "Light", suffix = "", jsonAppearance = nil},
-		{mode = "Dark", suffix = "-dark", jsonAppearance = "dark"}
-	}
 	
 	local contentsImages = {}
 	local successCount = 0
 	
-	-- Export each icon size
-	for _, spec in ipairs(iconSpecs.sizes) do
-		-- Alternate icons typically don't need all sizes, focus on app icons
-		-- Skip iPad and marketing sizes for alternate icons unless needed
-		local skipSize = false
-		if platform == "ios" or platform == "iphone" then
-			-- Only include iPhone app icons for alternates
-			if spec.idiom ~= "iphone" then
-				skipSize = true
+	-- Handle different .icon file types
+	if iconType == "png_bundle" then
+		-- Simple PNG bundle - just copy files
+		if debugBuildProcess and debugBuildProcess > 0 then
+			print("Processing PNG bundle...")
+		end
+		
+		contentsImages, successCount = copyPngBundleToXCAssets(iconFilePath, tempAppIconSet, iconSpecs, debugBuildProcess, platform)
+		
+	elseif iconType == "asset_catalog" then
+		-- Asset catalog inside .icon - copy the whole structure
+		if debugBuildProcess and debugBuildProcess > 0 then
+			print("Processing asset catalog...")
+		end
+		
+		local copyCmd = "cp -R " .. quoteString(iconFilePath) .. "/* " .. quoteString(tempAppIconSet) .. "/"
+		os.execute(copyCmd)
+		
+		if debugBuildProcess and debugBuildProcess > 0 then
+			print("Copied asset catalog structure")
+		end
+		
+		return tempXCAssets, nil
+		
+	else -- iconType == "icon_composer"
+		-- Icon Composer project - use actool for iOS, ictool for others
+		
+		local outputPath, assetsCarPath = compileIconWithActool("xcrun actool", iconFilePath, tmpDir, platform, debugBuildProcess)
+				
+		if outputPath then
+			print("Generated compiled assets with Liquid Glass effects")
+			print("========================================")
+			return outputPath, assetsCarPath
+		else
+			-- Fall back to ictool if actool fails
+			if debugBuildProcess and debugBuildProcess > 0 then
+				print("WARNING: actool compilation failed, falling back to ictool")
 			end
 		end
 		
-		if not skipSize then
-			for _, appearance in ipairs(appearances) do
-				local filename = spec.name .. appearance.suffix .. ".png"
-				local outputPath = tempAppIconSet .. "/" .. filename
-				
-				-- Build ictool command
-				local ictoolCmd = buildIconToolCommand(ictool, iconFilePath, outputPath, iconSpecs.platform, spec.size, appearance.mode, 1)
-				
-				if debugBuildProcess and debugBuildProcess > 1 then
-					print("  Exporting alternate: " .. filename)
-				end
-				
-				os.execute(ictoolCmd .. " 2>&1")
-				
-				local testFile = io.open(outputPath, "r")
-				if testFile then
-					testFile:close()
-					successCount = successCount + 1
-					
-					local imageEntry = {
-						filename = filename,
-						idiom = spec.idiom,
-						scale = spec.scale,
-						size = spec.sizeKey
-					}
-					
-					if appearance.jsonAppearance then
-						imageEntry.appearances = {{
-							appearance = "luminosity",
-							value = appearance.jsonAppearance
-						}}
-					end
-					
-					table.insert(contentsImages, imageEntry)
-				end
-			end
-		end
+	
 	end
 	
 	if successCount == 0 then
-		return nil, "Failed to export any alternate icons from " .. iconFilePath
+		return nil, "Failed to export any icons from " .. iconFilePath .. ". Check that the .icon file is valid."
 	end
 	
-	-- Generate Contents.json for alternate icon
+	-- Generate Contents.json for PNG bundle
 	local contentsFile = io.open(tempAppIconSet .. "/Contents.json", "w")
 	if not contentsFile then
-		return nil, "Failed to create Contents.json for alternate icon"
+		return nil, "Failed to create Contents.json"
 	end
 	
 	contentsFile:write('{\n  "images" : [\n')
 	for i, img in ipairs(contentsImages) do
 		contentsFile:write('    {\n')
-		contentsFile:write('      "filename" : "' .. img.filename .. '",\n')
-		contentsFile:write('      "idiom" : "' .. img.idiom .. '",\n')
-		contentsFile:write('      "scale" : "' .. img.scale .. '",\n')
-		contentsFile:write('      "size" : "' .. img.size .. '"')
 		
 		if img.appearances then
-			contentsFile:write(',\n      "appearances" : [\n')
+			contentsFile:write('      "appearances" : [\n')
 			contentsFile:write('        {\n')
 			contentsFile:write('          "appearance" : "luminosity",\n')
 			contentsFile:write('          "value" : "' .. img.appearances[1].value .. '"\n')
 			contentsFile:write('        }\n')
-			contentsFile:write('      ]')
+			contentsFile:write('      ],\n')
 		end
 		
+		contentsFile:write('      "filename" : "' .. img.filename .. '",\n')
+		contentsFile:write('      "idiom" : "' .. img.idiom .. '"')
+		
+		if img.platform then
+			contentsFile:write(',\n      "platform" : "' .. img.platform .. '"')
+		end
+		
+		if img.scale then
+			contentsFile:write(',\n      "scale" : "' .. img.scale .. '"')
+		end
+		
+		contentsFile:write(',\n      "size" : "' .. img.size .. '"')
 		contentsFile:write('\n    }')
+		
 		if i < #contentsImages then
 			contentsFile:write(',')
 		end
@@ -575,10 +586,57 @@ function CoronaIconComposerSupport.convertAlternateIconToXCAssets(iconFilePath, 
 	contentsFile:close()
 	
 	if debugBuildProcess and debugBuildProcess > 0 then
-		print("Exported " .. successCount .. " variants for alternate icon: " .. iconName)
+		print("Successfully processed " .. successCount .. " icon variants")
+		print("Generated xcassets: " .. tempXCAssets)
+		print("========================================")
 	end
 	
 	return tempXCAssets, nil
+end
+
+-- Export alternate icon from .icon file
+function CoronaIconComposerSupport.convertAlternateIconToXCAssets(iconFilePath, iconName, tmpDir, platform, debugBuildProcess)
+	-- For iOS, try actool first
+	if platform == "ios" or platform == "iphone" then
+		local actool = findActool()
+		
+		if actool then
+				print("Converting alternate icon: " .. iconName .. " with actool")
+			
+			local outputPath, assetsCarPath = compileIconWithActool(actool, iconFilePath, tmpDir, platform, debugBuildProcess)
+			
+			if outputPath then
+				return outputPath, assetsCarPath
+			end
+		end
+	end
+	
+	-- Fallback to ictool
+	local ictool = findIconTool()
+	
+	if not ictool then
+		return nil, "Neither actool nor ictool found. Xcode must be installed."
+	end
+	
+	-- Verify .icon file exists
+	local iconJson = iconFilePath .. "/icon.json"
+	local hasIconJson = os.execute("test -f " .. quoteString(iconJson)) == 0
+	
+	if not hasIconJson then
+		return nil, "Not a valid Icon Composer .icon file: " .. iconFilePath
+	end
+	
+	if debugBuildProcess and debugBuildProcess > 0 then
+		print("Converting alternate icon: " .. iconName .. " from " .. iconFilePath)
+	end
+	
+	-- Get platform-specific icon sizes
+	local iconSpecs = getIconSpecsForPlatform(platform)
+	if not iconSpecs then
+		return nil, "Unsupported platform: " .. tostring(platform)
+	end
+	
+	return exportIconWithIctool(ictool, iconFilePath, tmpDir, platform, iconSpecs, debugBuildProcess)
 end
 
 -- Process all alternate icons from build.settings
@@ -597,17 +655,11 @@ function CoronaIconComposerSupport.processAlternateIcons(alternateIconsConfig, s
 	local tempXCAssets = tmpDir .. "/AlternateIcons.xcassets"
 	local hasAlternateIcons = false
 	
-	-- alternateIconsConfig can be:
-	-- 1. Array of icon names (existing behavior - looks for .xcassets)
-	-- 2. Table with iconFile paths (new .icon support)
-	
 	for iconName, iconConfig in pairs(alternateIconsConfig) do
-		-- Check if this is a .icon file reference
 		local iconFilePath = nil
 		
 		if type(iconConfig) == "string" then
 			-- Old format: alternateIcons = { "Icon1", "Icon2" }
-			-- This means look in existing xcassets
 			table.insert(alternateIconNames, iconConfig)
 			if debugBuildProcess and debugBuildProcess > 0 then
 				print("Alternate icon (xcassets): " .. iconConfig)
@@ -652,68 +704,6 @@ function CoronaIconComposerSupport.processAlternateIcons(alternateIconsConfig, s
 	return alternateIconNames, (hasAlternateIcons and tempXCAssets or nil)
 end
 
--- Diagnostic function to help troubleshoot icon tool issues
-function CoronaIconComposerSupport.diagnoseIconTool()
-	print("========================================")
-	print("Icon Composer Tool Diagnostics")
-	print("========================================")
-	
-	-- Check for ictool
-	local ictool = findIconTool()
-	if ictool then
-		print("✓ Found ictool: " .. ictool)
-		
-		-- Get version
-		local versionCmd = quoteString(ictool) .. " --version 2>&1"
-		print("\nVersion:")
-		os.execute(versionCmd)
-		
-		-- Show example usage
-		print("\nExample usage:")
-		print("  " .. ictool .. " input.icon --export-preview iOS Light 180 180 1 output.png")
-		
-	else
-		print("✗ ictool not found")
-		print("\nSearched in:")
-		print("  /Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool")
-		print("  /Applications/Xcode_XX.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool")
-		print("\nTo locate manually:")
-		print("  mdfind 'kMDItemFSName == ictool'")
-		print("\nIcon Composer.app should be inside Xcode.app bundle")
-	end
-	
-	print("========================================")
-end
 
--- Test if ictool is available and working
-function CoronaIconComposerSupport.testIconTool()
-	local ictool = findIconTool()
-	
-	if not ictool then
-		print("ERROR: ictool not found")
-		print("Icon Composer must be inside Xcode.app bundle")
-		print("Path should be: /Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool")
-		return false
-	end
-	
-	print("Found ictool at: " .. ictool)
-	
-	-- Test version command
-	local handle = io.popen(quoteString(ictool) .. " --version 2>&1")
-	local versionOutput = ""
-	if handle then
-		versionOutput = handle:read("*a")
-		handle:close()
-	end
-	
-	if versionOutput and versionOutput ~= "" then
-		print("ictool version: " .. versionOutput:gsub("\n", " "))
-		print("ictool is working correctly")
-		return true
-	else
-		print("WARNING: ictool found but --version command failed")
-		return false
-	end
-end
 
 return CoronaIconComposerSupport
