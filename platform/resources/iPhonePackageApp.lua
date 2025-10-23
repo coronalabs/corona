@@ -1702,10 +1702,11 @@ function iPhonePostPackage( params )
 					)
 					
 					if outputPath then
-						print("Converted .icon file to xcassets at: " .. outputPath)
 						local copyCmd = "cp -R -f " .. outputPath .. "/* " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app")
-
                     	runScript(copyCmd)
+
+						local renameCmd = "mv -f " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app" .. "/Assets.car") .. " " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app" .. "/MainAppAsset.car")
+						runScript(renameCmd)
 
 						options.settings.iphone.plist.CFBundleIcons = { CFBundlePrimaryIcon = { CFBundleIconFiles = {"AppIcon60x60"}, CFBundleIconName = "AppIcon" }}
 						options.settings.iphone.plist["CFBundleIcons~ipad"] = { CFBundlePrimaryIcon = { CFBundleIconFiles = {"AppIcon60x60", "AppIcon76x76"}, CFBundleIconName = "AppIcon" }}
@@ -1747,16 +1748,25 @@ function iPhonePostPackage( params )
 					"ios",
 					debugBuildProcess
 				)
-				
-				if alternateIconNames and #alternateIconNames > 0 then
-					local copyCmd = "cp -R -f " .. outputPath .. "/* " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app")
-                    runScript(copyCmd)
 
-					if not options.settings.iphone.plist.CFBundleIcons then
-						options.settings.iphone.plist.CFBundleIcons = {}
+				-- copy alternate icon xcassets into app bundle
+
+				for iconName, data in pairs(altXCAssets) do
+					if data and data.outputPath then
+						local srcPath = data.outputPath
+
+						-- safely handle spaces and copy all contents
+						local copyCmd = 'cp -R -f ' .. quoteString(srcPath) .. '/* ' .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app")
+						print("Copying alternate icon xcassets for " .. iconName .. " from: " .. srcPath)
+						runScript(copyCmd)
+						local renameCmd = "mv -f " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app" .. "/Assets.car") .. " " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app" .. "/"..iconName.."AltAsset.car")
+						runScript(renameCmd)
+					else
+						print("WARNING: missing outputPath for alternate icon " .. tostring(iconName))
 					end
-					
-					-- add alternate icons to CFBundleIcons
+				end
+				if alternateIconNames and #alternateIconNames > 0 then
+
 					if not options.settings.iphone.plist.CFBundleIcons then
 						options.settings.iphone.plist.CFBundleIcons = {}
 					end
@@ -1770,7 +1780,7 @@ function iPhonePostPackage( params )
 					for _, iconName in ipairs(alternateIconNames) do
 						options.settings.iphone.plist.CFBundleIcons.CFBundleAlternateIcons[iconName] = {
 							CFBundleIconFiles = {
-								iconName
+								iconName.."60x60"
 							},
 							UIPrerenderedIcon = false
 						}
@@ -1793,7 +1803,7 @@ function iPhonePostPackage( params )
 					for _, iconName in ipairs(alternateIconNames) do
 						options.settings.iphone.plist["CFBundleIcons~ipad"].CFBundleAlternateIcons[iconName] = {
 							CFBundleIconFiles = {
-								iconName
+								iconName.."60x60", iconName.."76x76"
 							},
 							UIPrerenderedIcon = false
 						}

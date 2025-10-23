@@ -84,13 +84,14 @@ local function buildActoolCommand(iconFilePath, outputPath, platform)
 	end
 	
 	local plistPath = outputPath .. "/assetcatalog_info.plist"
-	
+	local iconBaseName = iconFilePath:match("([^/]+)%.icon/?$") or "AppIcon"
+
 	local cmd = "xcrun actool " .. quoteString(iconFilePath) ..
 				" --compile " .. quoteString(outputPath) ..
 				" --output-format human-readable-text" ..
 				" --notices --warnings --errors" ..
 				" --output-partial-info-plist " .. quoteString(plistPath) ..
-				" --app-icon AppIcon" ..
+				" --app-icon " .. iconBaseName ..
 				" --enable-on-demand-resources NO" ..
 				" --development-region en" ..
 				" --target-device " .. config.targetDevice ..
@@ -150,6 +151,7 @@ local function compileIconWithActool(iconFilePath, tmpDir, platform, debugBuildP
 	local result = os.execute(actoolCmd .. " 2>&1")
 	
 	-- Check if Assets.car was created
+	local iconBaseName = iconFilePath:match("([^/]+)%.icon/?$") or "AppIcon"
 	local assetsCarPath = outputPath .. "/Assets.car"
 	local testFile = io.open(assetsCarPath, "r")
 	
@@ -311,6 +313,8 @@ function CoronaIconComposerSupport.convertIconFileToXCAssets(iconFilePath, tmpDi
 	
 	-- Route to appropriate handler
 	if iconType == "icon_composer" then
+		print("Compiling .icon file with actool...")
+		print(iconFilePath)
 		return compileIconWithActool(iconFilePath, tmpDir, platform, debugBuildProcess)
 	elseif iconType == "asset_catalog" then
 		return copyAssetCatalog(iconFilePath, tmpDir, debugBuildProcess)
