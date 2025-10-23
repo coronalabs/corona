@@ -23,6 +23,7 @@ namespace Rtt {
 int luaload_json(lua_State *L);
 int luaload_dkjson(lua_State *L);
 int luaload_BuilderPluginDownloader(lua_State *L);
+int luaload_CoronaIconComposerSupport(lua_State *L);
 int luaload_CoronaPListSupport(lua_State *L);
 int luaload_CoronaBuilderPluginCollector(lua_State *L);
 int luaload_dkjson(lua_State* L);

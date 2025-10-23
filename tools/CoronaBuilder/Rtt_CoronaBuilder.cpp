@@ -58,6 +58,7 @@ int luaload_json(lua_State *L);
 int luaload_dkjson(lua_State *L);
 int luaload_CoronaBuilder(lua_State *L);
 int luaload_CoronaPListSupport(lua_State *L);
+int luaload_CoronaIconComposerSupport(lua_State *L);
 
 #ifdef Rtt_DEBUG
 	void lua_stackdump(lua_State* L);
@@ -229,6 +230,7 @@ CoronaBuilder::CoronaBuilder(
 
 #if defined(CORONABUILDER_IOS) || defined(CORONABUILDER_TVOS) || defined(CORONABUILDER_OSX)
 	Lua::RegisterModuleLoader( fL, "CoronaPListSupport", Lua::Open< luaload_CoronaPListSupport > );
+    Lua::RegisterModuleLoader( fL, "CoronaIconComposerSupport", Lua::Open< luaload_CoronaIconComposerSupport > );
 #endif
 	Lua::RegisterModuleLoader( fL, "dkjson", Lua::Open< luaload_dkjson >, 0 );
 	Lua::RegisterModuleLoader( fL, "json", Lua::Open< luaload_json >, 0 );

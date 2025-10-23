@@ -18,6 +18,7 @@ local simAvail, simulator = pcall(require, "simulator")
 
 -- defines modifyPlist()
 local CoronaPListSupport = require("CoronaPListSupport")
+local CoronaIconComposerSupport = require("CoronaIconComposerSupport")
 local captureCommandOutput = CoronaPListSupport.captureCommandOutput
 
 local coronaLiveBuildAppDir = "_corona_live_build_app" -- "PackageApp" --
@@ -1687,17 +1688,94 @@ function iPhonePostPackage( params )
 		-- compile Xcode assets for icon
 		if options.settings and options.settings.iphone then
 			setStatus("Compiling Xcode assets catalog")
+			
+			-- Check if using Icon Composer .icon file
+			local iconFile = options.settings.iphone.iconFile
+			local xcassetsPath = srcAssets .. "/Assets.xcassets"
+			local platformName = "ios" -- default
+			local alternateIconsXCAssets = nil
+			
+			-- Determine platform
+			if options.targetPlatform == "tvos" or options.osPlatform == 3 then
+				platformName = "tvos"
+			elseif options.osPlatform == 2 then
+				platformName = "macos"
+			end
+			
+			-- Process primary app icon
+			if iconFile and iconFile:match("%.icon/?$") then
+				local iconPath = srcAssets .. "/" .. iconFile
+				
+				if lfs.attributes(iconPath, "mode") == "directory" then
+					local tempXCAssets, errMsg = CoronaIconComposerSupport.convertIconFileToXCAssets(
+						iconPath,
+						tmpDir,
+						platformName,
+						debugBuildProcess
+					)
+					
+					if tempXCAssets then
+						xcassetsPath = tempXCAssets
+						print("Using Icon Composer generated assets from: " .. iconFile)
+					else
+						print("ERROR: Failed to convert .icon file: " .. tostring(errMsg))
+						return errMsg
+					end
+				else
+					print("WARNING: iconFile specified but not found: " .. iconPath)
+				end
+			end
+			
+			-- Process alternate icons (both .icon and existing xcassets)
+			local alternateIcons = options.settings.iphone.alternateIcons
+			if alternateIcons then
+				local alternateIconNames, altXCAssets = CoronaIconComposerSupport.processAlternateIcons(
+					alternateIcons,
+					srcAssets,
+					tmpDir,
+					platformName,
+					debugBuildProcess
+				)
+				
+				if alternateIconNames and #alternateIconNames > 0 then
+					-- Update the settings with processed alternate icon names
+					options.settings.iphone.alternateIcons = alternateIconNames
+					alternateIconsXCAssets = altXCAssets
+				end
+			end
+			
+			-- Compile primary app icon xcassets
 			local xcassetPlatformOptions = {
 				{ "target-device", "iphone" },
 				{ "target-device", "ipad" },
 				{ "minimum-deployment-target", "8.0" },
 				{ "platform", options.signingIdentity and "iphoneos" or "iphonesimulator" },
-
-				 {"app-icon", "AppIcon"},
+				{"app-icon", "AppIcon"},
 			}
-			err = CoronaPListSupport.compileXcassets(options, tmpDir, srcAssets, xcassetPlatformOptions, options.settings.iphone)
+			
+			err = CoronaPListSupport.compileXcassets(options, tmpDir, xcassetsPath, xcassetPlatformOptions, options.settings.iphone)
 			if err then
 				return err
+			end
+			
+			-- Compile alternate icons xcassets if we generated any from .icon files
+			if alternateIconsXCAssets then
+				if debugBuildProcess and debugBuildProcess > 0 then
+					print("Compiling alternate icons xcassets...")
+				end
+				
+				err = CoronaPListSupport.compileXcassets(options, tmpDir, alternateIconsXCAssets, xcassetPlatformOptions, options.settings.iphone)
+				if err then
+					return err
+				end
+			end
+			
+			-- Clean up temporary xcassets
+			if iconFile and iconFile:match("%.icon/?$") and xcassetsPath ~= (srcAssets .. "/Assets.xcassets") then
+				os.execute("rm -rf " .. quoteString(xcassetsPath))
+			end
+			if alternateIconsXCAssets then
+				os.execute("rm -rf " .. quoteString(alternateIconsXCAssets))
 			end
 		end
 
