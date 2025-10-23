@@ -1688,7 +1688,7 @@ function iPhonePostPackage( params )
 			local xcassetsPath = srcAssets .. "/Assets.xcassets"
 			local alternateIconsXCAssets = nil
 		
-			
+
 			-- Process primary app icon
 			if iconFile and iconFile:match("%.icon/?$") then
 				local iconPath = srcAssets .. "/" .. iconFile
@@ -1705,11 +1705,8 @@ function iPhonePostPackage( params )
 						local copyCmd = "cp -R -f " .. outputPath .. "/* " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app")
                     	runScript(copyCmd)
 
-						local renameCmd = "mv -f " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app" .. "/Assets.car") .. " " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app" .. "/MainAppAsset.car")
-						runScript(renameCmd)
-
-						options.settings.iphone.plist.CFBundleIcons = { CFBundlePrimaryIcon = { CFBundleIconFiles = {"AppIcon60x60"}, CFBundleIconName = "AppIcon" }}
-						options.settings.iphone.plist["CFBundleIcons~ipad"] = { CFBundlePrimaryIcon = { CFBundleIconFiles = {"AppIcon60x60", "AppIcon76x76"}, CFBundleIconName = "AppIcon" }}
+						options.settings.iphone.plist.CFBundleIcons = { CFBundlePrimaryIcon = { CFBundleIconFiles = {"AppIcon60x60"}, CFBundleIconName = "AppIcon", CFBundleIconLiquidGlass = true }}
+						options.settings.iphone.plist["CFBundleIcons~ipad"] = { CFBundlePrimaryIcon = { CFBundleIconFiles = {"AppIcon60x60", "AppIcon76x76"}, CFBundleIconName = "AppIcon", CFBundleIconLiquidGlass = true }}
 						options.settings.iphone.plist.UIPrerenderedIcon = true
 					else
 						print("ERROR: Failed to convert .icon file: " .. tostring(errMsg))
@@ -1734,82 +1731,6 @@ function iPhonePostPackage( params )
 				end
 			end
 				
-			
-			
-			
-
-			-- Process alternate icons (both .icon and existing xcassets)
-			local alternateIcons = options.settings.iphone.alternateIcons
-			if alternateIcons then
-				local alternateIconNames, altXCAssets = CoronaIconComposerSupport.processAlternateIcons(
-					alternateIcons,
-					srcAssets,
-					tmpDir,
-					"ios",
-					debugBuildProcess
-				)
-
-				-- copy alternate icon xcassets into app bundle
-
-				for iconName, data in pairs(altXCAssets) do
-					if data and data.outputPath then
-						local srcPath = data.outputPath
-
-						-- safely handle spaces and copy all contents
-						local copyCmd = 'cp -R -f ' .. quoteString(srcPath) .. '/* ' .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app")
-						print("Copying alternate icon xcassets for " .. iconName .. " from: " .. srcPath)
-						runScript(copyCmd)
-						local renameCmd = "mv -f " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app" .. "/Assets.car") .. " " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app" .. "/"..iconName.."AltAsset.car")
-						runScript(renameCmd)
-					else
-						print("WARNING: missing outputPath for alternate icon " .. tostring(iconName))
-					end
-				end
-				if alternateIconNames and #alternateIconNames > 0 then
-
-					if not options.settings.iphone.plist.CFBundleIcons then
-						options.settings.iphone.plist.CFBundleIcons = {}
-					end
-					
-					-- Add alternate icons to CFBundleIcons
-					if not options.settings.iphone.plist.CFBundleIcons.CFBundleAlternateIcons then
-						options.settings.iphone.plist.CFBundleIcons.CFBundleAlternateIcons = {}
-					end
-					
-					-- Build alternate icons structure
-					for _, iconName in ipairs(alternateIconNames) do
-						options.settings.iphone.plist.CFBundleIcons.CFBundleAlternateIcons[iconName] = {
-							CFBundleIconFiles = {
-								iconName.."60x60"
-							},
-							UIPrerenderedIcon = false
-						}
-						
-						if debugBuildProcess > 0 then
-							print("Added alternate icon to plist: " .. iconName)
-						end
-					end
-					
-					-- Also add for iPad
-					if not options.settings.iphone.plist["CFBundleIcons~ipad"] then
-						options.settings.iphone.plist["CFBundleIcons~ipad"] = {}
-					end
-					
-					if not options.settings.iphone.plist["CFBundleIcons~ipad"].CFBundleAlternateIcons then
-						options.settings.iphone.plist["CFBundleIcons~ipad"].CFBundleAlternateIcons = {}
-					end
-					
-					-- Add same alternate icons for iPad
-					for _, iconName in ipairs(alternateIconNames) do
-						options.settings.iphone.plist["CFBundleIcons~ipad"].CFBundleAlternateIcons[iconName] = {
-							CFBundleIconFiles = {
-								iconName.."60x60", iconName.."76x76"
-							},
-							UIPrerenderedIcon = false
-						}
-					end
-				end
-			end
 			
 		end
 
