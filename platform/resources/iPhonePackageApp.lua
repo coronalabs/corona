@@ -1749,34 +1749,58 @@ function iPhonePostPackage( params )
 				)
 				
 				if alternateIconNames and #alternateIconNames > 0 then
-					-- Update the settings with processed alternate icon names
-					options.settings.iphone.alternateIcons = alternateIconNames
-					options.settings.iphone.xcassets = "TempAssets.xcassets"
-					alternateIconsXCAssets = altXCAssets
-					local copyCmd = "cp -R -f " .. tempXCAssets .. " " .. quoteString(srcAssets .. "/TempAssets.xcassets")
-					runScript(copyCmd)
+					local copyCmd = "cp -R -f " .. outputPath .. "/* " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app")
+                    runScript(copyCmd)
+
+					if not options.settings.iphone.plist.CFBundleIcons then
+						options.settings.iphone.plist.CFBundleIcons = {}
+					end
+					
+					-- add alternate icons to CFBundleIcons
+					if not options.settings.iphone.plist.CFBundleIcons then
+						options.settings.iphone.plist.CFBundleIcons = {}
+					end
+					
+					-- Add alternate icons to CFBundleIcons
+					if not options.settings.iphone.plist.CFBundleIcons.CFBundleAlternateIcons then
+						options.settings.iphone.plist.CFBundleIcons.CFBundleAlternateIcons = {}
+					end
+					
+					-- Build alternate icons structure
+					for _, iconName in ipairs(alternateIconNames) do
+						options.settings.iphone.plist.CFBundleIcons.CFBundleAlternateIcons[iconName] = {
+							CFBundleIconFiles = {
+								iconName
+							},
+							UIPrerenderedIcon = false
+						}
+						
+						if debugBuildProcess > 0 then
+							print("Added alternate icon to plist: " .. iconName)
+						end
+					end
+					
+					-- Also add for iPad
+					if not options.settings.iphone.plist["CFBundleIcons~ipad"] then
+						options.settings.iphone.plist["CFBundleIcons~ipad"] = {}
+					end
+					
+					if not options.settings.iphone.plist["CFBundleIcons~ipad"].CFBundleAlternateIcons then
+						options.settings.iphone.plist["CFBundleIcons~ipad"].CFBundleAlternateIcons = {}
+					end
+					
+					-- Add same alternate icons for iPad
+					for _, iconName in ipairs(alternateIconNames) do
+						options.settings.iphone.plist["CFBundleIcons~ipad"].CFBundleAlternateIcons[iconName] = {
+							CFBundleIconFiles = {
+								iconName
+							},
+							UIPrerenderedIcon = false
+						}
+					end
 				end
 			end
 			
-			-- Compile alternate icons xcassets if we generated any from .icon files
-			if alternateIconsXCAssets then
-				if debugBuildProcess and debugBuildProcess > 0 then
-					print("Compiling alternate icons xcassets...")
-				end
-				
-				err = CoronaPListSupport.compileXcassets(options, tmpDir, srcAssets, xcassetPlatformOptions, options.settings.iphone)
-				if err then
-					return err
-				end
-			end
-			
-			-- Clean up temporary xcassets
-			-- if iconFile and iconFile:match("%.icon/?$") and xcassetsPath ~= (srcAssets .. "/TempAssets.xcassets") then
-			-- 	os.execute("rm -rf " .. quoteString(xcassetsPath))
-			-- end
-			-- if alternateIconsXCAssets then
-			-- 	os.execute("rm -rf " .. quoteString(alternateIconsXCAssets))
-			-- end
 		end
 
 		setStatus("Packaging app")
