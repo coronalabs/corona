@@ -313,8 +313,6 @@ function CoronaIconComposerSupport.convertIconFileToXCAssets(iconFilePath, tmpDi
 	
 	-- Route to appropriate handler
 	if iconType == "icon_composer" then
-		print("Compiling .icon file with actool...")
-		print(iconFilePath)
 		return compileIconWithActool(iconFilePath, tmpDir, platform, debugBuildProcess)
 	elseif iconType == "asset_catalog" then
 		return copyAssetCatalog(iconFilePath, tmpDir, debugBuildProcess)
