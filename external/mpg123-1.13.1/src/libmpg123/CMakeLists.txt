@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 project(mpg123)
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+
 add_definitions(
 	-DMPG123_NO_CONFIGURE
 	-DHAVE_STDLIB_H
@@ -45,4 +45,10 @@ add_library( mpg123 SHARED
 	synth_s32.c
 )
 
+if(ANDROID AND (ANDROID_ABI STREQUAL "arm64-v8a" OR ANDROID_ABI STREQUAL "x86_64"))
+	# NDK version < 28
+	target_link_options(mpg123 PRIVATE "-Wl,-z,max-page-size=16384")
+	# NDK version <= 22
+	target_link_options(mpg123 PRIVATE "-Wl,-z,common-page-size=16384")
+endif()
 target_link_libraries( mpg123 log )
