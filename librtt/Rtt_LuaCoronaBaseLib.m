@@ -55,7 +55,7 @@ int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 		// Lua print separates characters with tabs, so do the same.
 		NSString* outputstring = [stringarray componentsJoinedByString: @"\t"];
 #if Rtt_IPHONE_ENV || defined( Rtt_TVOS_ENV )
-        os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEFAULT, "%{public}s", outputstring);
+        os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEFAULT, "%{public}s", [outputstring UTF8String]);
 		//NSLog(@"%@", outputstring); // NSLog automatically includes a newline
 #else
 		Rtt_LogException("%s", [outputstring UTF8String]);
