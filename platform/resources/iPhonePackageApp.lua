@@ -18,6 +18,7 @@ local simAvail, simulator = pcall(require, "simulator")
 
 -- defines modifyPlist()
 local CoronaPListSupport = require("CoronaPListSupport")
+local CoronaIconComposerSupport = require("CoronaIconComposerSupport")
 local captureCommandOutput = CoronaPListSupport.captureCommandOutput
 
 local coronaLiveBuildAppDir = "_corona_live_build_app" -- "PackageApp" --
@@ -1681,18 +1682,56 @@ function iPhonePostPackage( params )
 		-- compile Xcode assets for icon
 		if options.settings and options.settings.iphone then
 			setStatus("Compiling Xcode assets catalog")
-			local xcassetPlatformOptions = {
-				{ "target-device", "iphone" },
-				{ "target-device", "ipad" },
-				{ "minimum-deployment-target", "8.0" },
-				{ "platform", options.signingIdentity and "iphoneos" or "iphonesimulator" },
+			
+			-- Check if using Icon Composer .icon file
+			local iconFile = options.settings.iphone.iconFile
+			local xcassetsPath = srcAssets .. "/Assets.xcassets"
+			local alternateIconsXCAssets = nil
+		
 
-				 {"app-icon", "AppIcon"},
-			}
-			err = CoronaPListSupport.compileXcassets(options, tmpDir, srcAssets, xcassetPlatformOptions, options.settings.iphone)
-			if err then
-				return err
+			-- Process primary app icon
+			if iconFile and iconFile:match("%.icon/?$") then
+				local iconPath = srcAssets .. "/" .. iconFile
+				
+				if lfs.attributes(iconPath, "mode") == "directory" then
+					local outputPath, assetsCarPath = CoronaIconComposerSupport.convertIconFileToXCAssets(
+						iconPath,
+						tmpDir,
+						"ios",
+						debugBuildProcess
+					)
+					
+					if outputPath then
+						local copyCmd = "cp -R -f " .. outputPath .. "/* " .. quoteString(options.dstDir .. '/' .. options.dstFile .. ".app")
+                    	runScript(copyCmd)
+
+						options.settings.iphone.plist.CFBundleIcons = { CFBundlePrimaryIcon = { CFBundleIconFiles = {"AppIcon60x60"}, CFBundleIconName = "AppIcon", CFBundleIconLiquidGlass = true }}
+						options.settings.iphone.plist["CFBundleIcons~ipad"] = { CFBundlePrimaryIcon = { CFBundleIconFiles = {"AppIcon60x60", "AppIcon76x76"}, CFBundleIconName = "AppIcon", CFBundleIconLiquidGlass = true }}
+						options.settings.iphone.plist.UIPrerenderedIcon = true
+					else
+						print("ERROR: Failed to convert .icon file: " .. tostring(errMsg))
+						return errMsg
+					end
+				else
+					print("WARNING: iconFile specified but not found: " .. iconPath)
+				end
+			else
+				-- Compile primary app icon xcassets
+				local xcassetPlatformOptions = {
+					{ "target-device", "iphone" },
+					{ "target-device", "ipad" },
+					{ "minimum-deployment-target", "8.0" },
+					{ "platform", options.signingIdentity and "iphoneos" or "iphonesimulator" },
+					{"app-icon", "AppIcon"},
+				}
+				
+				err = CoronaPListSupport.compileXcassets(options, tmpDir, srcAssets, xcassetPlatformOptions, options.settings.iphone)
+				if err then
+					return err
+				end
 			end
+				
+			
 		end
 
 		setStatus("Packaging app")
