@@ -141,18 +141,39 @@ function CoronaPListSupport.modifyPlist( options )
 	local tmpJSONFile = os.tmpname()
 	local infoPlist = nil
 
+	local function fileExists(path)
+		print("Checking for file: " .. path)
+		local f = io.open(path, "r")
+		if f then f:close() return true end
+		return false
+	end
+	local function unquote(s)
+		return s:match('^["\'](.-)["\']$') or s
+	end
+
+	local infoPlistFile
+
 	if options.targetPlatform == "OSX" then
-		infoPlistFile = options.appBundleFile .. "/Contents/Info.plist"
+		infoPlistFile = unquote(options.appBundleFile) .. "/Contents/Info.plist"
 	elseif options.targetPlatform == "iOS" or options.targetPlatform == "tvOS" then
-		infoPlistFile = options.appBundleFile .. "/Info.plist"
+		infoPlistFile = unquote(options.appBundleFile) .. "/Info.plist"
 	else
-		print("modifyPlist: unknown platform '"..tostring(options.targetPlatform).."', defaulting to 'iOS'")
-		infoPlistFile = options.appBundleFile .. "/Info.plist"
+		print("modifyPlist: unknown platform '" .. tostring(options.targetPlatform) .. "', defaulting to 'iOS'")
+		infoPlistFile = unquote(options.appBundleFile) .. "/Info.plist"
 		options.targetPlatform = "iOS"
 	end
 
-    print("Creating Info.plist...")
-	print(options.appBundleFile)
+	-- Check if Info.plist exists; if not, use app-info.plist
+	if not fileExists(infoPlistFile) then
+		local altPlist = infoPlistFile:gsub("Info.plist", "App-Info.plist")
+		if fileExists(altPlist) then
+			print("Info.plist not found, using app-info.plist instead.")
+			infoPlistFile = altPlist
+		else
+			error("Neither Info.plist nor App-Info.plist found at expected path: " .. infoPlistFile)
+		end
+	end
+
 	-- Convert the Info.plist to JSON and read it in
 	os.execute( "plutil -convert json -o '"..tmpJSONFile.."' "..infoPlistFile)
 
