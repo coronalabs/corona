@@ -59,6 +59,7 @@ namespace Rtt
 // following function which loads the bytecodes via luaL_loadbuffer.
     int luaload_tvosPackageApp(lua_State* L);
     int luaload_CoronaPListSupport(lua_State* L);
+    int luaload_CoronaIconComposerSupport(lua_State* L);
 	int luaload_CoronaOfflineiOSPackager(lua_State* L);
 
 // ----------------------------------------------------------------------------
@@ -99,6 +100,8 @@ TVOSAppPackager::TVOSAppPackager( const MPlatformServices& services, MacSimulato
 #endif
 
 	Lua::RegisterModuleLoader( L, "CoronaPListSupport", Lua::Open< luaload_CoronaPListSupport > );
+    Lua::RegisterModuleLoader( L, "CoronaIconComposerSupport", Lua::Open< luaload_CoronaIconComposerSupport> );
+    
 	HTTPClient::registerFetcherModuleLoaders(L);
 
 	Lua::DoBuffer( fVM, & luaload_tvosPackageApp, NULL);

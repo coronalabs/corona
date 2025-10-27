@@ -101,6 +101,8 @@
 		C29CB61219525CD800D1F011 /* re.lua in Sources */ = {isa = PBXBuildFile; fileRef = C29CB60219525BFA00D1F011 /* re.lua */; };
 		C2A2E8031EC2637300900729 /* Rtt_LuaLibBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2E8011EC2637300900729 /* Rtt_LuaLibBuilder.cpp */; };
 		C2AD19CE1C40391300217E3E /* CoronaLog.c in Sources */ = {isa = PBXBuildFile; fileRef = C2AD19CD1C40391300217E3E /* CoronaLog.c */; };
+		DBBD8F902EA9A8AA00E890BB /* CoronaIconComposerSupport.lua in Resources */ = {isa = PBXBuildFile; fileRef = DBBD8F8F2EA9A8AA00E890BB /* CoronaIconComposerSupport.lua */; };
+		DBBD8FA92EA9B35700E890BB /* CoronaIconComposerSupport.lua in Sources */ = {isa = PBXBuildFile; fileRef = DBBD8F8F2EA9A8AA00E890BB /* CoronaIconComposerSupport.lua */; };
 		F53C329F2404E30900BC2BED /* CoronaBuilderPluginCollector.lua in Sources */ = {isa = PBXBuildFile; fileRef = F53C328E2404E2C000BC2BED /* CoronaBuilderPluginCollector.lua */; };
 		F547C7F61ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */; };
 		F547C7F71ED28BA600C4ED92 /* BuilderPluginDownloader.lua in Sources */ = {isa = PBXBuildFile; fileRef = F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */; };
@@ -527,6 +529,7 @@
 		C2AD19CD1C40391300217E3E /* CoronaLog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = CoronaLog.c; path = ../../librtt/Corona/CoronaLog.c; sourceTree = "<group>"; };
 		C2F1BAF71EF48EF500D77BD7 /* CoronaShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CoronaShell.xcodeproj; path = CoronaShell/CoronaShell.xcodeproj; sourceTree = "<group>"; };
 		C2F1BAFD1EF48F2F00D77BD7 /* ratatouille.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = ratatouille.xcodeproj; sourceTree = "<group>"; };
+		DBBD8F8F2EA9A8AA00E890BB /* CoronaIconComposerSupport.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = CoronaIconComposerSupport.lua; path = ../resources/CoronaIconComposerSupport.lua; sourceTree = SOURCE_ROOT; };
 		F53C328E2404E2C000BC2BED /* CoronaBuilderPluginCollector.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CoronaBuilderPluginCollector.lua; path = ../resources/CoronaBuilderPluginCollector.lua; sourceTree = "<group>"; };
 		F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BuilderPluginDownloader.lua; path = ../../tools/CoronaBuilder/BuilderPluginDownloader.lua; sourceTree = "<group>"; };
 		F547C7F41ED28A2700C4ED92 /* Rtt_DownloadPluginsMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rtt_DownloadPluginsMain.cpp; path = ../../tools/CoronaBuilder/Rtt_DownloadPluginsMain.cpp; sourceTree = "<group>"; };
@@ -929,6 +932,7 @@
 		C2947E151EB29AC5007AFD48 /* Lua */ = {
 			isa = PBXGroup;
 			children = (
+				DBBD8F8F2EA9A8AA00E890BB /* CoronaIconComposerSupport.lua */,
 				F5DB5B202113701300EC5CBC /* linuxPackageApp.lua */,
 				C205D56E1C7D2204000A8EE1 /* CoronaBuilder.lua */,
 				F547C7ED1ED289EA00C4ED92 /* BuilderPluginDownloader.lua */,
@@ -1231,6 +1235,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C2471D7819882B260076CA1F /* CoronaSimulator.icns in Resources */,
+				DBBD8F902EA9A8AA00E890BB /* CoronaIconComposerSupport.lua in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1264,6 +1269,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBBD8FA92EA9B35700E890BB /* CoronaIconComposerSupport.lua in Sources */,
 				F53C329F2404E30900BC2BED /* CoronaBuilderPluginCollector.lua in Sources */,
 				F5BEA4B823FFE98200206A6A /* CoronaOfflineiOSPackager.lua in Sources */,
 				F5DB5B312113702800EC5CBC /* linuxPackageApp.lua in Sources */,
