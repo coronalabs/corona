@@ -855,6 +855,9 @@ var platformLibrary =
 		var descent = testMetrics.actualBoundingBoxDescent || fontSize * 0.25;
 		var lineHeight = ascent + descent;
 
+		// Anti-aliasing padding
+		var horizontalPadding = Math.ceil(fontSize * 0.15);
+
 		// calculate actual content dimensions first
 		var maxWidth = w;
 		if (w == 0) {
@@ -874,6 +877,9 @@ var platformLibrary =
 			}
 			var metrics = ctx.measureText(line);
 			maxWidth = Math.max(maxWidth, metrics.width);
+		} else {
+			// If fixed width, reduce maxWidth to account for padding
+			maxWidth = w - (horizontalPadding * 2);
 		}
 
 		// count lines to calculate height
@@ -907,7 +913,7 @@ var platformLibrary =
 		// calculate required dimensions with proper padding
 		var topPadding = fontSize * 0.15; // padding to prevent clipping
 		var calculatedHeight = (lineCount * lineHeight) + (descent * 0.5);
-		var calculatedWidth = maxWidth;
+		var calculatedWidth = maxWidth + (horizontalPadding * 2);
 
 		// set canvas to exact required size
 		canva.width = h > 0 ? w : Math.ceil(calculatedWidth);
@@ -923,13 +929,13 @@ var platformLibrary =
 			ctx.fillStyle = 'red';
 		}
 
-		var x = 0;
+		var x = horizontalPadding;
 		var y = ascent + topPadding;
 
 		if (alignment === 'right') {
-			x = maxWidth;
+			x = maxWidth + horizontalPadding;
 		} else if (alignment === 'center') {
-			x = maxWidth / 2;
+			x = (maxWidth / 2) + horizontalPadding;
 		}
 
 		// render text
@@ -969,10 +975,10 @@ var platformLibrary =
 		}
 
 		// last line
-		ctx.fillText(line, x, y);
+		ctx.fillText(line, Math.round(x), Math.round(y));
 
-		var ww = w > 0 ? w : canva.width;
-		var hh = h > 0 ? h : canva.height;
+		var ww = canva.width;
+		var hh = canva.height;
 
 		// make width 4-byte aligned
 		if ((ww & 0x3) != 0) {
@@ -981,7 +987,7 @@ var platformLibrary =
 
 		// console.log('render: ', text, w, h, ww, hh, alignment, fontName, fontSize);
 
-		var myImageData = ctx.getImageData(0, 0, ww, hh);
+		var myImageData = ctx.getImageData(0, 0, canva.width, canva.height);
 		var img = Module.jarray2carray(myImageData.data);
 		_jsEmscriptenBitmapSaveImage(
 			thiz,
