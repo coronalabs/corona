@@ -1,4 +1,4 @@
-# Buld test app & quick setup
+# Build test app & quick setup
 
 ## Setting up
 1. download [emscripten](http://emscripten.org) & unpack it
