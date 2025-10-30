@@ -850,16 +850,21 @@ var platformLibrary =
 		ctx.textBaseline = 'alphabetic'; // safer baseline across browsers
 
 		// measure proper font metrics for vertical alignment
-		var testMetrics = ctx.measureText("Mg");
+		var testMetrics = ctx.measureText("Mg'");
 		var ascent = testMetrics.actualBoundingBoxAscent || fontSize * 0.75;
 		var descent = testMetrics.actualBoundingBoxDescent || fontSize * 0.25;
 		var lineHeight = ascent + descent;
+		
+		// Extra space for punctuation that extends above normal ascent
+		var topExtraPadding = fontSize * 0.2;
 
 		// Anti-aliasing padding
 		var horizontalPadding = Math.ceil(fontSize * 0.15);
 
 		// calculate actual content dimensions first
 		var maxWidth = w;
+		var useFixedWidth = (w > 0);
+		
 		if (w == 0) {
 			// calc width dynamically
 			maxWidth = 0;
@@ -877,14 +882,13 @@ var platformLibrary =
 			}
 			var metrics = ctx.measureText(line);
 			maxWidth = Math.max(maxWidth, metrics.width);
-		} else {
-			// If fixed width, reduce maxWidth to account for padding
-			maxWidth = w - (horizontalPadding * 2);
 		}
 
 		// count lines to calculate height
 		var lineCount = 1;
 		var line = '';
+		var effectiveMaxWidth = useFixedWidth ? (w - (horizontalPadding * 2)) : maxWidth;
+		
 		for (var i = 0; i < text.length; i++) {
 			if (text.charAt(i) == '\n') {
 				lineCount++;
@@ -892,7 +896,7 @@ var platformLibrary =
 			} else {
 				var testLine = line + text.charAt(i);
 				var metrics = ctx.measureText(testLine);
-				if (metrics.width > maxWidth) {
+				if (metrics.width > effectiveMaxWidth) {
 					lineCount++;
 					if (text.charAt(i) === ' ') {
 						line = '';
@@ -911,12 +915,12 @@ var platformLibrary =
 		}
 
 		// calculate required dimensions with proper padding
-		var topPadding = fontSize * 0.15; // padding to prevent clipping
-		var calculatedHeight = (lineCount * lineHeight) + (descent * 0.5);
+		var topPadding = topExtraPadding; // padding to prevent clipping
+		var calculatedHeight = (lineCount * lineHeight) + topPadding;
 		var calculatedWidth = maxWidth + (horizontalPadding * 2);
 
 		// set canvas to exact required size
-		canva.width = h > 0 ? w : Math.ceil(calculatedWidth);
+		canva.width = useFixedWidth ? w : Math.ceil(calculatedWidth);
 		canva.height = h > 0 ? h : Math.ceil(calculatedHeight);
 		canva.style.position = "absolute";
 
@@ -929,13 +933,15 @@ var platformLibrary =
 			ctx.fillStyle = 'red';
 		}
 
-		var x = horizontalPadding;
 		var y = ascent + topPadding;
+		var x = 0;
 
-		if (alignment === 'right') {
-			x = maxWidth + horizontalPadding;
+		if (alignment === 'left') {
+			x = horizontalPadding;
+		} else if (alignment === 'right') {
+			x = canva.width - horizontalPadding;
 		} else if (alignment === 'center') {
-			x = (maxWidth / 2) + horizontalPadding;
+			x = canva.width / 2;
 		}
 
 		// render text
@@ -948,7 +954,7 @@ var platformLibrary =
 			} else {
 				var testLine = line + text.charAt(i);
 				var metrics = ctx.measureText(testLine);
-				if (metrics.width > maxWidth) {
+				if (metrics.width > effectiveMaxWidth) {
 					if (text.charAt(i) === ' ') {
 						// ignore last space
 						ctx.fillText(line, x, y);
@@ -1004,6 +1010,7 @@ var platformLibrary =
 		// body.appendChild(canva);
 		// canva.remove();
 	},
+
 
 
 	jsContextSetClearColor: function(r, g, b, a)
