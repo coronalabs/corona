@@ -222,17 +222,43 @@ IsEnterprise()
 
 @synthesize preferredStatusBarStyle = _preferredStatusBarStyle;
 @synthesize prefersHomeIndicatorAutoHidden;
-@synthesize preferredScreenEdgesDeferringSystemGestures;
 
 
 - (id)initWithNibName:(NSString *)nibName bundle:(NSBundle *)nibBundle
 {
-	self = [super initWithNibName:nibName bundle:nibBundle];
-	if ( self )
-	{
-		fNextResponder = nil;
-	}
-	return self;
+    self = [super initWithNibName:nibName bundle:nibBundle];
+    if ( self )
+    {
+        fNextResponder = nil;
+        scDeferSystemGestures = NO;
+        scDeferEdges = UIRectEdgeTop | UIRectEdgeBottom;  // Start with top|bottom, NOT all
+    }
+    return self;
+}
+
+- (UIRectEdge)preferredScreenEdgesDeferringSystemGestures
+{
+    return scDeferSystemGestures ? scDeferEdges : UIRectEdgeNone;
+}
+
+- (void)setSystemGestureDeferralEnabled:(BOOL)enabled
+{
+    scDeferSystemGestures = enabled;
+}
+
+- (void)setSystemGestureDeferEdges:(UIRectEdge)edges
+{
+    scDeferEdges = edges;
+}
+
+- (BOOL)isSystemGestureDeferralEnabled
+{
+    return scDeferSystemGestures;
+}
+
+- (UIRectEdge)systemGestureDeferEdges
+{
+    return scDeferEdges;
 }
 
 - (void)dealloc
