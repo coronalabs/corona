@@ -133,9 +133,9 @@ static int MPG123_init(void)
     assert(mpg123_mutex == NULL);
     if (mpg123_init() == MPG123_OK)
     {
-        char **supported = mpg123_supported_decoders();
-        print_decoders("ALL MPG123 DECODERS", mpg123_decoders());
-        print_decoders("SUPPORTED MPG123 DECODERS", mpg123_supported_decoders());
+        const char **supported = mpg123_supported_decoders();
+        print_decoders("ALL MPG123 DECODERS", (char **)mpg123_decoders());
+        print_decoders("SUPPORTED MPG123 DECODERS", (char **)mpg123_supported_decoders());
         if ((supported != NULL) && (*supported != NULL))
         {
             mpg123_mutex = SDL_CreateMutex();
