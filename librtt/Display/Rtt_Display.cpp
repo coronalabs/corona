@@ -308,8 +308,6 @@ Display::Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orie
         result = true;
 
 		fShaderFactory = Rtt_NEW( allocator, ShaderFactory( *this, programHeader, backend ) );
-
-        fDefaults->SetTimeTransform(nullptr);
 	}
 
     return result;

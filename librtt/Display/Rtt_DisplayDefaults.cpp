@@ -67,7 +67,7 @@ DisplayDefaults::DisplayDefaults()
 
 	fTimeTransform = &sTransform;
 
-//	SetTimeTransform( NULL );
+	SetTimeTransform( NULL );
 }
 
 const TimeTransform* DisplayDefaults::GetTimeTransform() const
