@@ -166,7 +166,7 @@ void
 TimeTransform::SetDefault()
 {
     func = &PingPong;
-    arg1 = Display::GetGpuSupportsHighPrecisionFragmentShaders() ? 3600 * 5 : 50;
+    arg1 = 50; // 50 should be safe for mediump
     arg2 = arg3 = 0;
 }
 
