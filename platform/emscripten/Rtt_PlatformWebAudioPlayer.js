@@ -16,9 +16,7 @@ var audioLibrary =
 		if (!audioCtx) return false;
 		
 		if (audioCtx.state === 'suspended') {
-			console.log('Resuming suspended audio context...');
 			audioCtx.resume().then(function() {
-				console.log('Audio context resumed successfully');
 				audioContextResumed = true;
 			}).catch(function(err) {
 				console.log('Failed to resume audio context:', err);
@@ -319,7 +317,6 @@ var audioLibrary =
 			audioChannels.push(new audioChannel(i));
 		}
 
-		// Fix up for prefixing
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
 		if (!window.AudioContext) {
 			console.log('Failed to init sound subsystem, browser does not support AudioContext');
@@ -353,13 +350,11 @@ var audioLibrary =
 
 		// Handle state changes
 		audioCtx.onstatechange = function (e) {
-			console.log('audioCtx.onstatechange:', this.state);
 			if (this.state == 'running') {
 				audioContextResumed = true;
 				// Restart any channels that were waiting
 				for (var i = 0; i < audioChannels.length; i++) {
 					if (audioChannels[i].fSoundID >= 0 && !audioChannels[i].getSource()) {
-						console.log('Restarting channel after context resume:', i);
 						audioChannels[i].startSound();
 					}
 				}
@@ -578,9 +573,7 @@ var audioLibrary =
 
 	jsAudioResumePlayer: function () {
 		if (audioCtx && audioCtx.resume) {
-			audioCtx.resume().then(function() {
-				console.log('Audio player resumed');
-			});
+			audioCtx.resume();
 		}
 	},
 
@@ -646,7 +639,6 @@ var audioLibrary =
 			
 			// If sound is playing, refuse to dispose
 			if (activeChannels.length > 0) {
-				console.log('WARNING: Cannot dispose soundID', soundID, '- still playing on channels:', activeChannels);
 				return;
 			}
 
