@@ -1,24 +1,31 @@
-//////////////////////////////////////////////////////////////////////////////
-//
-// This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
-// Home page: https://github.com/coronalabs/corona
-// Contact: support@coronalabs.com
-//
-//////////////////////////////////////////////////////////////////////////////
-
-'use strict';
-
 var audioLibrary =
 {
 	$audioCtx: null,
 	$audioReservedChannels: 0,
 	$audioSounds: [],		// loaded sounds
 	$audioChannels: [],
+	$audioContextResumed: false,
 
 	$clamp: function(a,b,c)
 	{
 		return Math.max(b,Math.min(c,a));
+	},
+
+	// Ensure audio context is running (fixes Firefox/Chrome/Safari autoplay issues)
+	$ensureAudioContext: function() {
+		if (!audioCtx) return false;
+		
+		if (audioCtx.state === 'suspended') {
+			console.log('Resuming suspended audio context...');
+			audioCtx.resume().then(function() {
+				console.log('Audio context resumed successfully');
+				audioContextResumed = true;
+			}).catch(function(err) {
+				console.log('Failed to resume audio context:', err);
+			});
+			return false;
+		}
+		return audioCtx.state === 'running';
 	},
 
 	// channel
@@ -37,85 +44,98 @@ var audioLibrary =
 		this.fLuaCallback = null;
 		this.fMinVolume = 0;
 		this.fMaxVolume = 1;
+		this.fPitch = 1;
+		this.fPaused = false;
+		this.fStopRequested = false;  // NEW: Track if stop was requested
 
 		this.getSource = function () { return this.fSource; }
 
 		this.startSound = function () {
-			if (this.fSoundID < 0 || this.fSoundID >= audioSounds.length || audioSounds[this.fSoundID].buffer == null) {
+			if (this.fSoundID < 0 || this.fSoundID >= audioSounds.length || !audioSounds[this.fSoundID] || audioSounds[this.fSoundID].buffer == null) {
 				return;
 			}
 
-			// delete old sound
+			// Ensure audio context is running
+			if (!ensureAudioContext()) {
+				return;
+			}
+
+			// Stop any existing sound on this channel
 			this.stopSound();
+			
+			// Reset stop flag
+			this.fStopRequested = false;
 
-			this.fSource = audioCtx.createBufferSource();
-			this.fSource.buffer = audioSounds[this.fSoundID].buffer;	
-			this.fSource.parent = this;
+			try {
+				this.fSource = audioCtx.createBufferSource();
+				this.fSource.buffer = audioSounds[this.fSoundID].buffer;	
+				this.fSource.parent = this;
+				this.fSource.channelIndex = this.fChannel;  // Store for debugging
 
-			if (this.fPitch) {
-				this.fSource.playbackRate.value = this.fPitch;
-			}
-
-			var gain = audioCtx.createGain();	// Create a gain node to control channel volume
-			this.fSource.connect(gain);
-
-			gain.connect(audioCtx.gainNode);
-			this.fSource.gainNode = gain;
-			this.fSource.loop = this.fLoops == -1;
-
-			//console.log('sound started: ', this);
-
-			// fade in
-			if (this.fFade1 > 0 || this.Fade2 > 0) {
-				gain.gain.setValueAtTime(clamp(this.fFade1, 0.01, 1), audioCtx.currentTime);		// init volume must start from 0.01
-				gain.gain.linearRampToValueAtTime(clamp(this.fFade2, 0.01, 1), audioCtx.currentTime + this.fFadeDuration);
-			}
-			else
-			{
-				this.setVolume(this.fVolume);
-			}
-			this.fFade1 = 0;
-			this.fFade2 = 0;
-			this.fFadeDuration = 0;
-
-			this.fSource.onended = function () {
-				var ch = this.parent;
-				console.log('channel finished', ch);
-				console.log(ch.fLuaCallback);
-
-				ch.fStartedAt = 0;
-				if (ch.fLoops == 0) {
-					_jsOnSoundEnded(ch.fChannel, ch.fLuaCallback, true);
-
-					// free channel
-					ch.clear();
-				}
-				else {
-//					this.currentTime = 0;
-//					this.play();
-				}
-			}
-
-			var source = this.getSource();
-			if (audioCtx.state == 'running' && (source.playbackState == undefined || source.playbackState === 0)) {
-				var pos = Math.min(this.fStartPosition, source.buffer.duration);
-				var duration = this.fTicks > 0 ? Math.min(this.fTicks, source.buffer.duration) : 0;
-
-				if (duration > 0 && pos > 0) {
-					source.start(0, pos, duration);
-				}
-				else
-					if (pos > 0) {
-					source.start(0, pos);
-				}
-				else {
-					source.start(0);
+				if (this.fPitch) {
+					this.fSource.playbackRate.value = this.fPitch;
 				}
 
-				this.fStartedAt = audioCtx.currentTime;
-			}
-			else {
-				//console.log('failed to start sound, auduo context suspended', this);
+				var gain = audioCtx.createGain();
+				this.fSource.connect(gain);
+				gain.connect(audioCtx.gainNode);
+				this.fSource.gainNode = gain;
+				this.fSource.loop = this.fLoops == -1;
+
+				// Set volume
+				if (this.fFade1 > 0 || this.fFade2 > 0) {
+					gain.gain.setValueAtTime(clamp(this.fFade1, 0.01, 1), audioCtx.currentTime);
+					gain.gain.linearRampToValueAtTime(clamp(this.fFade2, 0.01, 1), audioCtx.currentTime + this.fFadeDuration);
+				} else {
+					this.setVolume(this.fVolume);
+				}
+				
+				this.fFade1 = 0;
+				this.fFade2 = 0;
+				this.fFadeDuration = 0;
+
+				// Handle sound completion
+				this.fSource.onended = function () {
+					var ch = this.parent;
+					if (!ch) return;
+					
+					// If this source is not the current source, ignore (already replaced)
+					if (ch.fSource !== this) {
+						return;
+					}
+					
+					// If stop was requested, don't treat as natural completion
+					if (ch.fStopRequested) {
+						ch.fStopRequested = false;
+						return;
+					}
+
+					ch.fStartedAt = 0;
+					ch.fPaused = false;
+					
+					if (ch.fLoops == 0) {
+						_jsOnSoundEnded(ch.fChannel, ch.fLuaCallback, true);
+						ch.clear();
+					}
+				}
+
+				// Start playback
+				var pos = Math.min(this.fStartPosition, this.fSource.buffer.duration);
+				var duration = this.fTicks > 0 ? Math.min(this.fTicks, this.fSource.buffer.duration) : 0;
+
+				if (audioCtx.state === 'running') {
+					if (duration > 0 && pos > 0) {
+						this.fSource.start(0, pos, duration);
+					} else if (pos > 0) {
+						this.fSource.start(0, pos);
+					} else {
+						this.fSource.start(0);
+					}
+					this.fStartedAt = audioCtx.currentTime;
+				}
+			} catch(e) {
+				console.log('Error starting sound on channel', this.fChannel, ':', e);
+				this.fSource = null;
 			}
 		}
 
@@ -127,31 +147,60 @@ var audioLibrary =
 			this.fTicks = 0;
 			this.fStartPosition = 0;
 			this.fLuaCallback = null;
+			this.fPaused = false;
+			this.fStopRequested = false;
 		}
 		 
 		this.stopSound = function () {
+			this.fStopRequested = true;
 			var source = this.getSource();
+			
 			if (source) {
-				//console.log('stopSound: ', this);
-
-				// stop if it was started
-				// fix for safari bug and old FF
-				if (this.fStartedAt > 0 && (source.playbackState == undefined || source.playbackState === 2)) {
+				try {
+					// Mark as stopped immediately
 					this.fStartedAt = 0;
-					source.stop();
+					
+					// Try to stop the source
+					if (source.stop) {
+						try {
+							source.stop();
+						} catch(e) {
+							// Already stopped or never started - this is OK
+						}
+					}
+					
+					// Disconnect nodes
+					if (source.gainNode) {
+						try {
+							source.gainNode.disconnect();
+						} catch(e) {
+							// Already disconnected
+						}
+					}
+					
+					try {
+						source.disconnect();
+					} catch(e) {
+						// Already disconnected
+					}
+				} catch(e) {
+					// Ignore errors - channel will be cleared anyway
 				}
-				source.gainNode.disconnect();
-				source.disconnect();
 			}
+			
 			this.fSource = null;
+			this.fPaused = false;
+			this.fStartPosition = 0;
 		};
 
 		this.resumeSound = function () {
-			this.startSound();
+			if (this.fPaused && this.fSoundID >= 0) {
+				this.startSound();
+				this.fPaused = false;
+			}
 		}
 
 		this.seekSound = function (position) {
-			//console.log('seek sound: ', this);
 			var source = this.getSource();
 			if (source && source.buffer) {
 				this.fStartPosition = position;
@@ -162,13 +211,15 @@ var audioLibrary =
 
 		this.pauseSound = function () {
 			var source = this.getSource();
-			this.fStartPosition = 0;
-			if (source && source.buffer)
-			{
+			if (!source || !source.buffer) {
+				return;
+			}
+			
+			if (this.fStartedAt > 0) {
 				var playtime = audioCtx.currentTime - this.fStartedAt;
 				var playloops = Math.floor(playtime / source.buffer.duration);
 				this.fStartPosition = playtime - playloops * source.buffer.duration;
-				//console.log('pauseSound: ', playtime, source.buffer.duration, playloops, this.fStartPosition, this);
+				this.fPaused = true;
 			}
 			this.stopSound();
 		}
@@ -176,28 +227,32 @@ var audioLibrary =
 		this.setVolume = function (vol) {
 			this.fVolume = vol;
 			var source = this.getSource();
-			if (source) {
-				source.gainNode.gain.value = this.fVolume;
+			if (source && source.gainNode) {
+				try {
+					source.gainNode.gain.value = this.fVolume;
+				} catch(e) {
+					// Ignore
+				}
 			}
 		}
 
 		this.getVolume = function () {
 			var source = this.getSource();
-			if (source) {
-				this.fVolume = source.gainNode.gain.value;
+			if (source && source.gainNode) {
+				try {
+					this.fVolume = source.gainNode.gain.value;
+				} catch(e) {
+					// Ignore
+				}
 			}
 			return this.fVolume;
 		};
 
 		this.attachSound = function (soundID, loops, ticks, callback, fade_duration) {
-
-			// sanity check
 			if (soundID < 0 || soundID >= audioSounds.length) {
-				//console.log('invalid soundID');
 				return;
 			}
 
-			// remove and stop old sound
 			this.stopSound();
 
 			this.fSoundID = soundID;
@@ -207,7 +262,8 @@ var audioLibrary =
 			this.fFade1 = 0;
 			this.fFade2 = 1;
 			this.fFadeDuration = fade_duration;
-			//console.log('attachSound: ', this, soundID, loops, ticks, callback, ',fade_duration=', fade_duration);
+			this.fStartPosition = 0;
+			this.fPaused = false;
 		};
 
 		this.isUsed = function () {
@@ -215,32 +271,40 @@ var audioLibrary =
 		}
 
 		this.isFree = function () {
-			return this.fSoundID == -1;
+			return this.fSoundID == -1 && this.fSource == null;
 		}
 
 		this.startFading = function (fade_ticks, from_volume, to_volume) {
 			this.fFade1 = clamp(from_volume, 0, 1);
 			this.fFade2 = clamp(to_volume, 0, 1);
 			this.fFadeDuration = fade_ticks;
-			//console.log('startFading: ch=', this.fChannel, from_volume, to_volume, fade_ticks);
+			
 			if (this.fSource && this.fSource.gainNode) {
-				var gain = this.fSource.gainNode;
-				gain.gain.setValueAtTime(clamp(this.fFade1, 0.01, 1), audioCtx.currentTime);
-				gain.gain.linearRampToValueAtTime(clamp(this.fFade2, 0.01, 1), audioCtx.currentTime + fade_ticks);
-				return 1;
+				try {
+					var gain = this.fSource.gainNode;
+					gain.gain.setValueAtTime(clamp(this.fFade1, 0.01, 1), audioCtx.currentTime);
+					gain.gain.linearRampToValueAtTime(clamp(this.fFade2, 0.01, 1), audioCtx.currentTime + fade_ticks);
+					return 1;
+				} catch(e) {
+					console.log('Error fading:', e);
+				}
 			}
 			return 0;
 		}
 
-		this.getMinVolume = function () {	return this.fMinVolume;	}
-		this.getMaxVolume = function () {	return this.fMaxVolume;	}
+		this.getMinVolume = function () { return this.fMinVolume; }
+		this.getMaxVolume = function () { return this.fMaxVolume; }
 		this.setMinVolume = function (val) { this.fMinVolume = val; }
 		this.setMaxVolume = function (val) { this.fMaxVolume = val; }
 		this.setPitch = function (val) {
 			this.fPitch = val;
 			var source = this.getSource();
 			if (source) {
-				source.playbackRate.value = val;
+				try {
+					source.playbackRate.value = val;
+				} catch(e) {
+					// Ignore
+				}
 			}
 		}
 	},
@@ -250,7 +314,6 @@ var audioLibrary =
 	//
 
 	jsAudioInit: function () {
-
 		// create channels
 		for (var i = 0; i < 32; i++) {
 			audioChannels.push(new audioChannel(i));
@@ -258,15 +321,13 @@ var audioLibrary =
 
 		// Fix up for prefixing
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
-		if (!window.AudioContext)
-		{
+		if (!window.AudioContext) {
 			console.log('Failed to init sound subsystem, browser does not support AudioContext');
 			return;
 		}
 
 		audioCtx = new AudioContext();
 		if (audioCtx.state == undefined) {
-			// old Android has no 'state' item
 			audioCtx.state = 'running';
 		}
 
@@ -274,26 +335,42 @@ var audioLibrary =
 		audioCtx.gainNode = audioCtx.createGain();
 		audioCtx.gainNode.connect(audioCtx.destination);
 
-		// suspend/resume player
+		// Try to resume audio context immediately
+		if (audioCtx.state === 'suspended') {
+			ensureAudioContext();
+		}
+
+		// Add user interaction listeners to resume audio context
+		var resumeAudio = function() {
+			if (audioCtx && audioCtx.state === 'suspended') {
+				ensureAudioContext();
+			}
+		};
+		
+		document.addEventListener('click', resumeAudio, { once: false });
+		document.addEventListener('touchstart', resumeAudio, { once: false });
+		document.addEventListener('keydown', resumeAudio, { once: false });
+
+		// Handle state changes
 		audioCtx.onstatechange = function (e) {
-			//console.log('audioCtx.onstatechange: ', this.state, this);
-			if (this.state == 'running')
+			console.log('audioCtx.onstatechange:', this.state);
+			if (this.state == 'running') {
+				audioContextResumed = true;
+				// Restart any channels that were waiting
 				for (var i = 0; i < audioChannels.length; i++) {
-					var source = audioChannels[i].getSource();
-					if (source) {
-					//	audioChannels[i].startSound(source.startPosition > 0 ? source.startPosition : 0);
+					if (audioChannels[i].fSoundID >= 0 && !audioChannels[i].getSource()) {
+						console.log('Restarting channel after context resume:', i);
+						audioChannels[i].startSound();
 					}
 				}
+			}
 		};
-
 	},
 
 	jsAudioGet: function (file) {
 		var file_path = UTF8ToString(file);
-		for (var i = 0; i < audioSounds.length; i++)
-		{
-			if (audioSounds[i] && audioSounds[i].file_path == file_path)
-			{
+		for (var i = 0; i < audioSounds.length; i++) {
+			if (audioSounds[i] && audioSounds[i].file_path == file_path) {
 				return i;
 			}
 		}
@@ -305,88 +382,85 @@ var audioLibrary =
 
 		// get ID
 		var soundID = -1;
-		for (var i = 0; i < audioSounds.length; i++)
-		{
-			if (audioSounds[i] == null)
-			{
+		for (var i = 0; i < audioSounds.length; i++) {
+			if (audioSounds[i] == null) {
 				soundID = i;
 				break;
 			}
 		}
 		if (soundID < 0) {
 			audioSounds.push(null);
-			soundID = audioSounds.length;
+			soundID = audioSounds.length - 1;
 		}
 		audioSounds[soundID] = { buffer: null, file_path: file_path, duration: 0 };
 
-		//console.log('start decoder: id='+ soundID + ', file='+ file_path);
-
-		// fixme.. optimize
+		// Convert to ArrayBuffer
 		var buf = new Uint8Array(size);
 		for (var i = 0; i < size; i++) {
 			buf[i] = getValue(data + i, 'i8');
 		}
-		var audio = buf.buffer;		// convert to ArrayBuffer
+		var audio = buf.buffer;
 
 		audioCtx.decodeAudioData(audio, function (audioBuffer) {
-			//console.log('sound decoded: id= ',  soundID + ', duration=' + audioBuffer.duration + ', file='+ file_path);
-
-			// ensure sound not deleted
 			var snd = audioSounds[soundID];
 			if (snd && snd.buffer == null && snd.file_path == file_path && snd.duration == 0) {
 				snd.buffer = audioBuffer;
 				snd.duration = audioBuffer.duration;
 
-				// reset audio data in all channels assigned to soundID 
+				// Start any channels waiting for this sound
 				for (var i = 0; i < audioChannels.length; i++) {
 					if (audioChannels[i].fSoundID == soundID) {
-						//console.log('decoded sound assigned to channel: ', i);
 						audioChannels[i].startSound();
 					}
 				}
 			}
 		}, function (e) {
-			console.log('Failed to decode audio ', e);
+			console.log('Failed to decode audio', e);
 		});
 
 		return soundID;
-	}, // end of decodeAudio
+	},
 
 	jsAudioPlay: function (channel, soundID, loops, ticks, callback, fade_ticks) {
-		// seek unused item
+		ensureAudioContext();
+
 		var ch = channel;
-		if (ch < 0)
-		{
+		if (ch < 0) {
+			// Auto-select from unreserved channels
 			for (var i = audioReservedChannels; i < audioChannels.length; i++) {
-				if (audioChannels[i].fSoundID == -1)
-				{
+				if (audioChannels[i].isFree()) {
 					ch = i;
 					break;
 				}
 			}
+			
+			if (ch < 0) {
+				return -1;
+			}
+		} else {
+			// Explicit channel - stop whatever is there
+			if (ch >= 0 && ch < audioChannels.length && audioChannels[ch].isUsed()) {
+				audioChannels[ch].stopSound();
+				audioChannels[ch].clear();
+			}
 		}
 
-		if (ch < 0 || ch >= audioChannels.length)
-		{
-			// no available channels
+		if (ch < 0 || ch >= audioChannels.length) {
 			return -1;
 		}
 
 		audioChannels[ch].attachSound(soundID, loops, ticks / 1000, callback, fade_ticks / 1000);
-		audioChannels[ch].startSound(); 
+		audioChannels[ch].startSound();
 
-		//console.log('jsAudioPlay: id=', soundID, ', ch=', ch, ', loops=', loops, ', duration=', ticks, ', callback=', callback);
 		return ch;
 	},
 
 	jsAudioPause: function (channel) {
-		//console.log('jsAudioPause', channel);
 		if (channel == -1) {
 			for (var i = 0; i < audioChannels.length; i++) {
 				audioChannels[i].pauseSound();
 			}
-		}
-		else {
+		} else {
 			if (channel >= 0 && channel < audioChannels.length) {
 				audioChannels[channel].pauseSound();
 			}
@@ -395,13 +469,13 @@ var audioLibrary =
 	},
 
 	jsAudioResume: function (channel) {
-		//console.log('jsAudioResume', channel);
+		ensureAudioContext();
+		
 		if (channel == -1) {
 			for (var i = 0; i < audioChannels.length; i++) {
 				audioChannels[i].resumeSound();
 			}
-		}
-		else {
+		} else {
 			if (channel >= 0 && channel < audioChannels.length) {
 				audioChannels[channel].resumeSound();
 			}
@@ -410,15 +484,16 @@ var audioLibrary =
 	},
 
 	jsAudioStop: function (channel) {
-		//console.log('jsAudioStop', channel);
 		if (channel == -1) {
-			for (var i = 0; i < audioChannels.length; i++) {
+			// Stop all unreserved channels only
+			for (var i = audioReservedChannels; i < audioChannels.length; i++) {
 				audioChannels[i].stopSound();
+				audioChannels[i].clear();
 			}
-		}
-		else {
+		} else {
 			if (channel >= 0 && channel < audioChannels.length) {
 				audioChannels[channel].stopSound();
+				audioChannels[channel].clear();
 			}
 		}
 		return true;
@@ -439,14 +514,17 @@ var audioLibrary =
 	},
 
 	jsAudioIsPlaying: function (channel) {
-		var source = audioChannels[channel].getSource();
-		return source != null;
+		if (channel >= 0 && channel < audioChannels.length) {
+			var source = audioChannels[channel].getSource();
+			return source != null && !audioChannels[channel].fPaused;
+		}
+		return false;
 	},
 
 	jsAudioCountAllFreeChannels: function () {
 		var k = 0;
 		for (var i = 0; i < audioChannels.length; i++) {
-			if (audioChannels[i].fSoundID == -1) {
+			if (audioChannels[i].isFree()) {
 				k++;
 			}
 		}
@@ -460,8 +538,7 @@ var audioLibrary =
 				sum += audioChannels[i].getVolume();
 			}
 			return sum / audioChannels.length;
-		}
-		else {
+		} else {
 			if (channel >= 0 && channel < audioChannels.length) {
 				return audioChannels[channel].getVolume();
 			}
@@ -470,15 +547,12 @@ var audioLibrary =
 	},
 
 	jsAudioSetVolume: function (channel, vol) {
-		if (channel == -1)
-		{
+		if (channel == -1) {
 			for (var i = 0; i < audioChannels.length; i++) {
 				audioChannels[i].setVolume(vol);
 			}
 			return true;
-		}
-		else
-		{
+		} else {
 			if (channel >= 0 && channel < audioChannels.length) {
 				audioChannels[channel].setVolume(vol);
 				return true;
@@ -504,113 +578,109 @@ var audioLibrary =
 
 	jsAudioResumePlayer: function () {
 		if (audioCtx && audioCtx.resume) {
-			audioCtx.resume();
+			audioCtx.resume().then(function() {
+				console.log('Audio player resumed');
+			});
 		}
 	},
 
-	jsAudioGetTotalTime: function(soundID)
-	{
-		if (soundID >= 0 && soundID < audioSounds.length && audioSounds[soundID].buffer != null) {
+	jsAudioGetTotalTime: function(soundID) {
+		if (soundID >= 0 && soundID < audioSounds.length && audioSounds[soundID] && audioSounds[soundID].buffer != null) {
 			return Math.floor(audioSounds[soundID].buffer.duration * 1000);
 		}
 		return 0;
 	},
 
-	jsAudioIsActiveChannel: function(ch)
-	{
-		// Returns true if the specified channel is currently playing or paused, 
-		// or if - 1 is passed the number of channels that are currently playing or paused.
-		if (ch >= 0 && ch < audioChannels.length)
-		{
+	jsAudioIsActiveChannel: function(ch) {
+		if (ch >= 0 && ch < audioChannels.length) {
 			return audioChannels[ch].isUsed();
 		}
 
-		if (ch < 0)
-		{
+		if (ch < 0) {
 			var n = 0;
-			for (var i = 0; i < audioChannels.length; i++) if (audioChannels[i].isUsed())
-			{
-				n++;
+			for (var i = 0; i < audioChannels.length; i++) {
+				if (audioChannels[i].isUsed()) {
+					n++;
+				}
 			}
 			return n;
 		}
 		return 0;
 	},
 
-	jsAudioCountUnreservedFreeChannels: function()
-	{
-		// Returns the number of channels that are currently available for playback (not playing, not paused),
-		// excluding the channels that have been reserved.
-		// ALmixer_CountUnreservedFreeChannels();
-		var ret = jsAudioCountAllFreeChannels() - audioReservedChannels;
+	jsAudioCountUnreservedFreeChannels: function() {
+		var allFree = 0;
+		for (var i = 0; i < audioChannels.length; i++) {
+			if (audioChannels[i].isFree()) {
+				allFree++;
+			}
+		}
+		var ret = allFree - audioReservedChannels;
 		return ret < 0 ? 0 : ret; 
 	},
 
-	jsAudioCountTotalChannels: function()
-	{
+	jsAudioCountTotalChannels: function() {
 		return audioChannels.length;
 	},
 
-	jsAudioCountReservedChannels: function()
-	{
+	jsAudioCountReservedChannels: function() {
 		return audioReservedChannels;
 	},
 
-	jsAudioReserveChannels: function (number_of_reserve_channels)
-	{
-		// Allows you to reserve a certain number of channels so they won't be automatically allocated to play on.
-		// number_of_reserve_channels =	The number of channels / sources to reserve.
-		// Or pass - 1 to find out how many channels are currently reserved.
-		// ALmixer_ReserveChannels(number_of_reserve_channels);
+	jsAudioReserveChannels: function (number_of_reserve_channels) {
 		if (number_of_reserve_channels >= 0) {
 			audioReservedChannels = clamp(number_of_reserve_channels, 0, audioChannels.length);
 		}
 		return audioReservedChannels;
 	},
 
-	jsFreeData: function(soundID)
-	{
+	jsFreeData: function(soundID) {
 		if (soundID >= 0 && soundID < audioSounds.length) {
+			// Check if any channel is actively playing this sound
+			var activeChannels = [];
+			for (var i = 0; i < audioChannels.length; i++) {
+				if (audioChannels[i].fSoundID == soundID && audioChannels[i].getSource() != null) {
+					activeChannels.push(i);
+				}
+			}
+			
+			// If sound is playing, refuse to dispose
+			if (activeChannels.length > 0) {
+				console.log('WARNING: Cannot dispose soundID', soundID, '- still playing on channels:', activeChannels);
+				return;
+			}
 
-			// stop all related playing threads
-			for (var i = 0; i < audioChannels.length; i++)
-			{
-				if (audioChannels[i].fSoundID == soundID)
-				{
+			// Safe to dispose - stop and clear all channels using this sound
+			for (var i = 0; i < audioChannels.length; i++) {
+				if (audioChannels[i].fSoundID == soundID) {
 					audioChannels[i].stopSound();
 					audioChannels[i].clear();
 				}
 			}
+			
 			audioSounds[soundID] = null;
 		}
 	},
 
 	jsAudioFadeChannel: function (ch, fade_ticks, to_volume) {
-		if (ch >= 0 && ch < audioChannels.length)
-		{
+		if (ch >= 0 && ch < audioChannels.length) {
 			return audioChannels[ch].startFading(fade_ticks / 1000, audioChannels[ch].getVolume(), to_volume);
 		}
 
 		var countFadedChannels = 0;
-		if (ch < 0)
-		{
-			for (var i = 0; i < audioChannels.length; i++) if (audioChannels[i].isUsed())
-			{
-				countFadedChannels += audioChannels[i].startFading(fade_ticks / 1000, audioChannels[i].getVolume(), to_volume);
+		if (ch < 0) {
+			for (var i = 0; i < audioChannels.length; i++) {
+				if (audioChannels[i].isUsed()) {
+					countFadedChannels += audioChannels[i].startFading(fade_ticks / 1000, audioChannels[i].getVolume(), to_volume);
+				}
 			}
 		}
 		return countFadedChannels;
 	},
 
-	jsAudioFindFreeChannel: function(start_channel)
-	{
-		// start_channel	The channel number you want to start looking at.
-		// Returns A channel available or -1 if none could be found.
-		// ALmixer_FindFreeChannel(start_channel);
-		for (var i = start_channel; i >= 0 && i < audioChannels.length; i++)
-		{
-			if (audioChannels[i].isFree())
-			{
+	jsAudioFindFreeChannel: function(start_channel) {
+		for (var i = start_channel; i >= 0 && i < audioChannels.length; i++) {
+			if (audioChannels[i].isFree()) {
 				return i;
 			}
 		}
@@ -618,18 +688,13 @@ var audioLibrary =
 	},
 
 	jsAudioSetMaxVolumeChannel: function (ch, val) {
-		// which_channel =	The channel to set the volume to or -1 to set on all channels.
-		//	volume	The new volume to use.Valid values are 0.0 to 1.0.
-		//	Returns	AL_TRUE on success or AL_FALSE on error.
-		if (ch >= 0 && ch < audioChannels.length)
-		{
-			return (audioChannels[ch] && audioChannels[ch].setMaxVolume(val)) ? true : false;
+		if (ch >= 0 && ch < audioChannels.length) {
+			audioChannels[ch].setMaxVolume(val);
+			return true;
 		}
 
-		if (ch < 0)
-		{
-			for (var i = 0; i < audioChannels.length; i++)
-			{
+		if (ch < 0) {
+			for (var i = 0; i < audioChannels.length; i++) {
 				audioChannels[i].setMaxVolume(val);
 			}
 			return true;
@@ -638,19 +703,13 @@ var audioLibrary =
 	},
 
 	jsAudioGetMaxVolumeChannel: function (ch) {
-		// which_channel	= The channel to get the volume from. - 1 will return the average volume set across all channels.
-		// Returns the volume for the specified channel, or the average set volume for all channels, or -1.0 on error.
-		// ALmixer_GetMaxVolumeChannel(which_channel);
-		if (ch >= 0 && ch < audioChannels.length)
-		{
+		if (ch >= 0 && ch < audioChannels.length) {
 			return audioChannels[ch].getMaxVolume();
 		}
 
-		if (ch < 0)
-		{
+		if (ch < 0) {
 			var sum = 0;
-			for (var i = 0; i < audioChannels.length; i++)
-			{
+			for (var i = 0; i < audioChannels.length; i++) {
 				sum += audioChannels[i].getMaxVolume();
 			}
 			return sum / audioChannels.length;
@@ -658,12 +717,10 @@ var audioLibrary =
 		return 0;
 	},
 
-	jsAudioSetMinVolumeChannel: function (which_channel, new_volume) {
-		// which_channel =	The channel to set the volume to or -1 to set on all channels.
-		//	volume	The new volume to use.Valid values are 0.0 to 1.0.
-		//	Returns	AL_TRUE on success or AL_FALSE on error.
+	jsAudioSetMinVolumeChannel: function (ch, val) {
 		if (ch >= 0 && ch < audioChannels.length) {
-			return (audioChannels[ch] && audioChannels[ch].setMinVolume(val)) ? true : false;
+			audioChannels[ch].setMinVolume(val);
+			return true;
 		}
 
 		if (ch < 0) {
@@ -675,10 +732,7 @@ var audioLibrary =
 		return false;
 	},
 
-	jsAudioGetMinVolumeChannel: function (which_channel) {
-		// which_channel	= The channel to get the volume from. - 1 will return the average volume set across all channels.
-		// Returns the volume for the specified channel, or the average set volume for all channels, or -1.0 on error.
-		// ALmixer_GetMaxVolumeChannel(which_channel);
+	jsAudioGetMinVolumeChannel: function (ch) {
 		if (ch >= 0 && ch < audioChannels.length) {
 			return audioChannels[ch].getMinVolume();
 		}
@@ -693,9 +747,7 @@ var audioLibrary =
 		return 0;
 	},
 
-	jsAudioStopWithDelay: function()
-	{
-		// todo
+	jsAudioStopWithDelay: function() {
 		return 1;
 	},
 
@@ -706,7 +758,6 @@ var audioLibrary =
 		}
 		return false;
 	},
-
 }
 
 autoAddDeps(audioLibrary, '$clamp');
@@ -715,4 +766,6 @@ autoAddDeps(audioLibrary, '$audioCtx');
 autoAddDeps(audioLibrary, '$audioSounds');
 autoAddDeps(audioLibrary, '$audioChannel');
 autoAddDeps(audioLibrary, '$audioChannels');
+autoAddDeps(audioLibrary, '$audioContextResumed');
+autoAddDeps(audioLibrary, '$ensureAudioContext');
 mergeInto(LibraryManager.library, audioLibrary);
