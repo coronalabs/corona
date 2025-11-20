@@ -16,7 +16,9 @@ var audioLibrary =
 		if (!audioCtx) return false;
 		
 		if (audioCtx.state === 'suspended') {
+			console.log('Resuming suspended audio context...');
 			audioCtx.resume().then(function() {
+				console.log('Audio context resumed successfully');
 				audioContextResumed = true;
 			}).catch(function(err) {
 				console.log('Failed to resume audio context:', err);
@@ -75,17 +77,33 @@ var audioLibrary =
 				}
 
 				var gain = audioCtx.createGain();
+				// Initialize gain: if fading, start at 0; otherwise use channel volume
+				if (this.fFadeDuration > 0) {
+					gain.gain.value = 0;  // Will fade from 0
+				} else {
+					gain.gain.value = this.fVolume;  // Use channel volume immediately
+				}
+				
 				this.fSource.connect(gain);
 				gain.connect(audioCtx.gainNode);
 				this.fSource.gainNode = gain;
 				this.fSource.loop = this.fLoops == -1;
 
-				// Set volume
-				if (this.fFade1 > 0 || this.fFade2 > 0) {
-					gain.gain.setValueAtTime(clamp(this.fFade1, 0.01, 1), audioCtx.currentTime);
-					gain.gain.linearRampToValueAtTime(clamp(this.fFade2, 0.01, 1), audioCtx.currentTime + this.fFadeDuration);
+				// Set volume BEFORE starting playback
+				var scheduleTime = audioCtx.currentTime + 0.08;  // Tiny delay
+				
+				if (this.fFadeDuration > 0) {
+					// Fade enabled - use fade values (allow 0 volume)
+					var startVol = Math.max(0, Math.min(1, this.fFade1));
+					var endVol = Math.max(0, Math.min(1, this.fFade2));
+					console.log('Channel', this.fChannel, 'starting with FADE from', startVol, 'to', endVol, 'over', this.fFadeDuration, 'seconds');
+					// Schedule the fade
+					gain.gain.setValueAtTime(startVol, scheduleTime);
+					gain.gain.linearRampToValueAtTime(endVol, scheduleTime + this.fFadeDuration);
 				} else {
-					this.setVolume(this.fVolume);
+					// No fade - use current channel volume
+					console.log('Channel', this.fChannel, 'starting with NO FADE, volume:', this.fVolume);
+					gain.gain.setValueAtTime(this.fVolume, scheduleTime);
 				}
 				
 				this.fFade1 = 0;
@@ -117,19 +135,19 @@ var audioLibrary =
 					}
 				}
 
-				// Start playback
+				// Start playback with the same schedule delay
 				var pos = Math.min(this.fStartPosition, this.fSource.buffer.duration);
 				var duration = this.fTicks > 0 ? Math.min(this.fTicks, this.fSource.buffer.duration) : 0;
 
 				if (audioCtx.state === 'running') {
 					if (duration > 0 && pos > 0) {
-						this.fSource.start(0, pos, duration);
+						this.fSource.start(scheduleTime, pos, duration);
 					} else if (pos > 0) {
-						this.fSource.start(0, pos);
+						this.fSource.start(scheduleTime, pos);
 					} else {
-						this.fSource.start(0);
+						this.fSource.start(scheduleTime);
 					}
-					this.fStartedAt = audioCtx.currentTime;
+					this.fStartedAt = scheduleTime;
 				}
 			} catch(e) {
 				console.log('Error starting sound on channel', this.fChannel, ':', e);
@@ -227,9 +245,13 @@ var audioLibrary =
 			var source = this.getSource();
 			if (source && source.gainNode) {
 				try {
-					source.gainNode.gain.value = this.fVolume;
+					// Cancel any active ramps/fades
+					source.gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+					// Set volume immediately
+					source.gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+					console.log('Channel', this.fChannel, 'setVolume:', vol, '(cancelled any active ramps)');
 				} catch(e) {
-					// Ignore
+					console.log('Error setting volume:', e);
 				}
 			}
 		}
@@ -257,9 +279,22 @@ var audioLibrary =
 			this.fLoops = loops;
 			this.fTicks = ticks;
 			this.fLuaCallback = callback;
-			this.fFade1 = 0;
-			this.fFade2 = 1;
-			this.fFadeDuration = fade_duration;
+			
+			// Store the CURRENT volume before any potential Lua setVolume calls
+			var targetVolume = this.fVolume;
+			
+			// If fade_duration provided, fade from 0 to the volume that was set BEFORE play
+			if (fade_duration > 0) {
+				this.fFade1 = 0;
+				this.fFade2 = targetVolume;
+				this.fFadeDuration = fade_duration;
+				console.log('Channel', this.fChannel, 'attachSound with fade:', fade_duration, 'from', this.fFade1, 'to', this.fFade2, 'current fVolume:', this.fVolume);
+			} else {
+				this.fFade1 = 0;
+				this.fFade2 = 0;
+				this.fFadeDuration = 0;
+			}
+			
 			this.fStartPosition = 0;
 			this.fPaused = false;
 		};
@@ -317,6 +352,7 @@ var audioLibrary =
 			audioChannels.push(new audioChannel(i));
 		}
 
+		// Fix up for prefixing
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
 		if (!window.AudioContext) {
 			console.log('Failed to init sound subsystem, browser does not support AudioContext');
@@ -350,11 +386,13 @@ var audioLibrary =
 
 		// Handle state changes
 		audioCtx.onstatechange = function (e) {
+			console.log('audioCtx.onstatechange:', this.state);
 			if (this.state == 'running') {
 				audioContextResumed = true;
 				// Restart any channels that were waiting
 				for (var i = 0; i < audioChannels.length; i++) {
 					if (audioChannels[i].fSoundID >= 0 && !audioChannels[i].getSource()) {
+						console.log('Restarting channel after context resume:', i);
 						audioChannels[i].startSound();
 					}
 				}
@@ -444,7 +482,10 @@ var audioLibrary =
 			return -1;
 		}
 
+		// IMPORTANT: Attach sound FIRST, but don't start yet
 		audioChannels[ch].attachSound(soundID, loops, ticks / 1000, callback, fade_ticks / 1000);
+		
+		// NOW start the sound (after attachSound has set up fade parameters)
 		audioChannels[ch].startSound();
 
 		return ch;
@@ -542,6 +583,7 @@ var audioLibrary =
 	},
 
 	jsAudioSetVolume: function (channel, vol) {
+		console.log('jsAudioSetVolume: channel=', channel, 'vol=', vol);
 		if (channel == -1) {
 			for (var i = 0; i < audioChannels.length; i++) {
 				audioChannels[i].setVolume(vol);
@@ -550,6 +592,7 @@ var audioLibrary =
 		} else {
 			if (channel >= 0 && channel < audioChannels.length) {
 				audioChannels[channel].setVolume(vol);
+				console.log('  Set channel', channel, 'fVolume to', audioChannels[channel].fVolume);
 				return true;
 			}
 		}
@@ -573,7 +616,9 @@ var audioLibrary =
 
 	jsAudioResumePlayer: function () {
 		if (audioCtx && audioCtx.resume) {
-			audioCtx.resume();
+			audioCtx.resume().then(function() {
+				console.log('Audio player resumed');
+			});
 		}
 	},
 
@@ -639,6 +684,7 @@ var audioLibrary =
 			
 			// If sound is playing, refuse to dispose
 			if (activeChannels.length > 0) {
+				console.log('WARNING: Cannot dispose soundID', soundID, '- still playing on channels:', activeChannels);
 				return;
 			}
 
