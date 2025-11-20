@@ -16,9 +16,7 @@ var audioLibrary =
 		if (!audioCtx) return false;
 		
 		if (audioCtx.state === 'suspended') {
-			console.log('Resuming suspended audio context...');
 			audioCtx.resume().then(function() {
-				console.log('Audio context resumed successfully');
 				audioContextResumed = true;
 			}).catch(function(err) {
 				console.log('Failed to resume audio context:', err);
@@ -96,13 +94,11 @@ var audioLibrary =
 					// Fade enabled - use fade values (allow 0 volume)
 					var startVol = Math.max(0, Math.min(1, this.fFade1));
 					var endVol = Math.max(0, Math.min(1, this.fFade2));
-					console.log('Channel', this.fChannel, 'starting with FADE from', startVol, 'to', endVol, 'over', this.fFadeDuration, 'seconds');
 					// Schedule the fade
 					gain.gain.setValueAtTime(startVol, scheduleTime);
 					gain.gain.linearRampToValueAtTime(endVol, scheduleTime + this.fFadeDuration);
 				} else {
 					// No fade - use current channel volume
-					console.log('Channel', this.fChannel, 'starting with NO FADE, volume:', this.fVolume);
 					gain.gain.setValueAtTime(this.fVolume, scheduleTime);
 				}
 				
@@ -249,7 +245,6 @@ var audioLibrary =
 					source.gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
 					// Set volume immediately
 					source.gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
-					console.log('Channel', this.fChannel, 'setVolume:', vol, '(cancelled any active ramps)');
 				} catch(e) {
 					console.log('Error setting volume:', e);
 				}
@@ -288,7 +283,6 @@ var audioLibrary =
 				this.fFade1 = 0;
 				this.fFade2 = targetVolume;
 				this.fFadeDuration = fade_duration;
-				console.log('Channel', this.fChannel, 'attachSound with fade:', fade_duration, 'from', this.fFade1, 'to', this.fFade2, 'current fVolume:', this.fVolume);
 			} else {
 				this.fFade1 = 0;
 				this.fFade2 = 0;
@@ -386,13 +380,11 @@ var audioLibrary =
 
 		// Handle state changes
 		audioCtx.onstatechange = function (e) {
-			console.log('audioCtx.onstatechange:', this.state);
 			if (this.state == 'running') {
 				audioContextResumed = true;
 				// Restart any channels that were waiting
 				for (var i = 0; i < audioChannels.length; i++) {
 					if (audioChannels[i].fSoundID >= 0 && !audioChannels[i].getSource()) {
-						console.log('Restarting channel after context resume:', i);
 						audioChannels[i].startSound();
 					}
 				}
@@ -583,7 +575,6 @@ var audioLibrary =
 	},
 
 	jsAudioSetVolume: function (channel, vol) {
-		console.log('jsAudioSetVolume: channel=', channel, 'vol=', vol);
 		if (channel == -1) {
 			for (var i = 0; i < audioChannels.length; i++) {
 				audioChannels[i].setVolume(vol);
@@ -592,7 +583,6 @@ var audioLibrary =
 		} else {
 			if (channel >= 0 && channel < audioChannels.length) {
 				audioChannels[channel].setVolume(vol);
-				console.log('  Set channel', channel, 'fVolume to', audioChannels[channel].fVolume);
 				return true;
 			}
 		}
@@ -616,9 +606,7 @@ var audioLibrary =
 
 	jsAudioResumePlayer: function () {
 		if (audioCtx && audioCtx.resume) {
-			audioCtx.resume().then(function() {
-				console.log('Audio player resumed');
-			});
+			audioCtx.resume();
 		}
 	},
 
