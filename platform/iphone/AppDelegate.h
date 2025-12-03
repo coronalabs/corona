@@ -40,16 +40,25 @@ namespace Rtt
 @interface AppViewController : CoronaViewController
 {
 	UIResponder *fNextResponder;
+
+    // NEW: Internal flags for gesture deferral
+    BOOL scDeferSystemGestures;   // Enable/disable flag
+    UIRectEdge scDeferEdges;      // Which edges to defer
 }
 
 - (void)setNextResponder:(UIResponder *)responder;
-
 - (BOOL)prefersStatusBarHidden;
+- (UIStatusBarStyle)preferredStatusBarStyle;
 
-- (UIStatusBarStyle) preferredStatusBarStyle;
+- (void)setSystemGestureDeferralEnabled:(BOOL)enabled;
+- (void)setSystemGestureDeferEdges:(UIRectEdge)edges;
+- (BOOL)isSystemGestureDeferralEnabled;
+- (UIRectEdge)systemGestureDeferEdges;
+
+// Override this method instead of using @property
+- (UIRectEdge)preferredScreenEdgesDeferringSystemGestures;
 
 @property (nonatomic, assign) BOOL prefersHomeIndicatorAutoHidden;
-@property (nonatomic, assign) UIRectEdge preferredScreenEdgesDeferringSystemGestures;
 @property (nonatomic, assign) bool prefersStatusBarhidden;
 @property (nonatomic, assign) UIStatusBarStyle preferredStatusBarStyle;
 
