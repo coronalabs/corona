@@ -110,27 +110,36 @@ fi
 
 xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
-# Simulator
+# Simulator (includes arm64 for M1 simulator support)
 xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
-# create universal binary
-lipo -create "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}.a "$SYMROOT"/$CONFIG-iphonesimulator/${XCODE_TARGET}.a -output "$DST_LIB_DIR"/libplayer.a
+# create xcframework (supports both arm64 device and arm64 simulator)
+rm -rf "$DST_LIB_DIR"/libplayer.xcframework
+xcodebuild -create-xcframework \
+    -library "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}.a -headers "$PLATFORM_DIR/iphone/Corona" \
+    -library "$SYMROOT"/$CONFIG-iphonesimulator/${XCODE_TARGET}.a -headers "$PLATFORM_DIR/iphone/Corona" \
+    -output "$DST_LIB_DIR"/libplayer.xcframework
 
 # Angle
 
 xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
-# Simulator
-xcodebuild SYMROOT="$SYMROOT" EXCLUDED_ARCHS=arm64 -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+# Simulator (includes arm64 for M1 simulator support)
+xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
-# create universal binary
-lipo -create "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}-angle.a "$SYMROOT"/$CONFIG-iphonesimulator/${XCODE_TARGET}-angle.a -output "$DST_LIB_DIR"/libplayer-angle.a
+# create xcframework (supports both arm64 device and arm64 simulator)
+rm -rf "$DST_LIB_DIR"/libplayer-angle.xcframework
+xcodebuild -create-xcframework \
+    -library "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}-angle.a -headers "$PLATFORM_DIR/iphone/Corona" \
+    -library "$SYMROOT"/$CONFIG-iphonesimulator/${XCODE_TARGET}-angle.a -headers "$PLATFORM_DIR/iphone/Corona" \
+    -output "$DST_LIB_DIR"/libplayer-angle.xcframework
 
-# Create MetalANGLE universal framewok
-cp -vR  "$SYMROOT"/$CONFIG-iphoneos/MetalANGLE.framework "$DST_LIB_DIR/MetalANGLE.framework"
-lipo -create "$SYMROOT"/$CONFIG-iphoneos/MetalANGLE.framework/MetalANGLE "$SYMROOT"/$CONFIG-iphonesimulator/MetalANGLE.framework/MetalANGLE -output "$DST_LIB_DIR"/MetalANGLE.framework/MetalANGLE.combined
-xcrun bitcode_strip -r "$DST_LIB_DIR"/MetalANGLE.framework/MetalANGLE.combined -o "$DST_LIB_DIR"/MetalANGLE.framework/MetalANGLE
-rm "$DST_LIB_DIR"/MetalANGLE.framework/MetalANGLE.combined
+# Create MetalANGLE xcframework (supports both arm64 device and arm64 simulator)
+rm -rf "$DST_LIB_DIR"/MetalANGLE.xcframework
+xcodebuild -create-xcframework \
+    -framework "$SYMROOT"/$CONFIG-iphoneos/MetalANGLE.framework \
+    -framework "$SYMROOT"/$CONFIG-iphonesimulator/MetalANGLE.framework \
+    -output "$DST_LIB_DIR"/MetalANGLE.xcframework
 
 # copy headers
 cp -v "$PLATFORM_DIR/iphone/Corona/"*.h "$DST_INCLUDE_IOS_DIR/Corona"
