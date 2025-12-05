@@ -17,6 +17,7 @@ var audioLibrary =
 	$audioSounds: [],		// loaded sounds
 	$audioChannels: [],
 	$audioContextResumed: false,
+	$audioSourceIdCounter: 0,  // NEW: Unique ID counter for sources
 
 	$clamp: function(a,b,c)
 	{
@@ -56,9 +57,18 @@ var audioLibrary =
 		this.fMaxVolume = 1;
 		this.fPitch = 1;
 		this.fPaused = false;
-		this.fStopRequested = false;  // NEW: Track if stop was requested
+		this.fStopRequested = false;
+		this.fFallbackTimer = null;  // NEW: Fallback timer for onended
+		this.fSourceId = 0;  // NEW: Track current source ID
 
 		this.getSource = function () { return this.fSource; }
+
+		this.clearFallbackTimer = function() {
+			if (this.fFallbackTimer !== null) {
+				clearTimeout(this.fFallbackTimer);
+				this.fFallbackTimer = null;
+			}
+		};
 
 		this.startSound = function () {
 			if (this.fSoundID < 0 || this.fSoundID >= audioSounds.length || !audioSounds[this.fSoundID] || audioSounds[this.fSoundID].buffer == null) {
@@ -78,9 +88,13 @@ var audioLibrary =
 
 			try {
 				this.fSource = audioCtx.createBufferSource();
-				this.fSource.buffer = audioSounds[this.fSoundID].buffer;	
-				this.fSource.parent = this;
-				this.fSource.channelIndex = this.fChannel;  // Store for debugging
+				this.fSource.buffer = audioSounds[this.fSoundID].buffer;
+				
+				// NEW: Assign unique ID to this source
+				audioSourceIdCounter++;
+				this.fSourceId = audioSourceIdCounter;
+				this.fSource.sourceId = this.fSourceId;
+				this.fSource.channelIndex = this.fChannel;
 
 				if (this.fPitch) {
 					this.fSource.playbackRate.value = this.fPitch;
@@ -99,8 +113,8 @@ var audioLibrary =
 				this.fSource.gainNode = gain;
 				this.fSource.loop = this.fLoops == -1;
 
-				// Set volume BEFORE starting playback
-				var scheduleTime = audioCtx.currentTime + 0.08;  // Tiny delay
+				// Reduced delay for better compatibility with older systems
+				var scheduleTime = audioCtx.currentTime + 0.02;  // Reduced from 0.08 to 0.02
 				
 				if (this.fFadeDuration > 0) {
 					// Fade enabled - use fade values (allow 0 volume)
@@ -118,35 +132,66 @@ var audioLibrary =
 				this.fFade2 = 0;
 				this.fFadeDuration = 0;
 
-				// Handle sound completion
-				this.fSource.onended = function () {
-					var ch = this.parent;
-					if (!ch) return;
+				// Calculate playback parameters
+				var pos = Math.min(this.fStartPosition, this.fSource.buffer.duration);
+				var duration = this.fTicks > 0 ? Math.min(this.fTicks, this.fSource.buffer.duration) : 0;
+				
+				// Calculate expected duration for fallback timer
+				var expectedDuration;
+				if (this.fLoops == -1) {
+					// Looping sound - no fallback needed
+					expectedDuration = -1;
+				} else if (duration > 0) {
+					expectedDuration = duration;
+				} else {
+					expectedDuration = this.fSource.buffer.duration - pos;
+				}
+				
+				// Adjust for pitch
+				if (this.fPitch && this.fPitch > 0) {
+					if (expectedDuration > 0) {
+						expectedDuration = expectedDuration / this.fPitch;
+					}
+				}
+
+				// NEW: Use closure to capture channel reference and source ID
+				// This prevents GC issues on older systems
+				var channelRef = this;
+				var expectedSourceId = this.fSourceId;
+				var channelIndex = this.fChannel;
+				var luaCallback = this.fLuaCallback;
+				var loops = this.fLoops;
+
+				this.fSource.onended = function() {
+					// Verify this is still the current source using ID
+					if (channelRef.fSourceId !== expectedSourceId) {
+						return;
+					}
 					
-					// If this source is not the current source, ignore (already replaced)
-					if (ch.fSource !== this) {
+					// If this source is not the current source object, ignore
+					if (channelRef.fSource !== this) {
 						return;
 					}
 					
 					// If stop was requested, don't treat as natural completion
-					if (ch.fStopRequested) {
-						ch.fStopRequested = false;
+					if (channelRef.fStopRequested) {
+						channelRef.fStopRequested = false;
 						return;
 					}
 
-					ch.fStartedAt = 0;
-					ch.fPaused = false;
+					// Clear the fallback timer since onended fired
+					channelRef.clearFallbackTimer();
+
+					channelRef.fStartedAt = 0;
+					channelRef.fPaused = false;
 					
-					if (ch.fLoops == 0) {
-						_jsOnSoundEnded(ch.fChannel, ch.fLuaCallback, true);
-						ch.clear();
+					if (loops == 0) {
+						_jsOnSoundEnded(channelIndex, luaCallback, true);
+						channelRef.clear();
 					}
-				}
+				};
 
-				// Start playback with the same schedule delay
-				var pos = Math.min(this.fStartPosition, this.fSource.buffer.duration);
-				var duration = this.fTicks > 0 ? Math.min(this.fTicks, this.fSource.buffer.duration) : 0;
-
+				// Start playback
 				if (audioCtx.state === 'running') {
 					if (duration > 0 && pos > 0) {
 						this.fSource.start(scheduleTime, pos, duration);
@@ -156,14 +201,46 @@ var audioLibrary =
 						this.fSource.start(scheduleTime);
 					}
 					this.fStartedAt = scheduleTime;
+
+					// NEW: Set up fallback timer for non-looping sounds
+					// This catches cases where onended doesn't fire on older systems
+					if (expectedDuration > 0 && this.fLoops != -1) {
+						var fallbackDelay = (expectedDuration * 1000) + 500;  // Add 500ms buffer
+						
+						this.fFallbackTimer = setTimeout(function() {
+							// Verify this is still the relevant source
+							if (channelRef.fSourceId !== expectedSourceId) {
+								return;
+							}
+							
+							// Check if sound should have ended but onended didn't fire
+							if (channelRef.fStartedAt > 0 && !channelRef.fPaused && !channelRef.fStopRequested) {
+								var elapsed = audioCtx.currentTime - channelRef.fStartedAt;
+								if (elapsed >= expectedDuration - 0.1) {  // Small tolerance
+									// Manually trigger completion
+									console.log('Fallback: onended did not fire for channel', channelIndex);
+									
+									channelRef.fStartedAt = 0;
+									channelRef.fPaused = false;
+									
+									if (loops == 0) {
+										_jsOnSoundEnded(channelIndex, luaCallback, true);
+										channelRef.clear();
+									}
+								}
+							}
+						}, fallbackDelay);
+					}
 				}
 			} catch(e) {
 				console.log('Error starting sound on channel', this.fChannel, ':', e);
 				this.fSource = null;
+				this.clearFallbackTimer();
 			}
 		}
 
 		this.clear = function () {
+			this.clearFallbackTimer();
 			this.fSource = null;
 			this.fStartedAt = 0;
 			this.fSoundID = -1;
@@ -173,10 +250,12 @@ var audioLibrary =
 			this.fLuaCallback = null;
 			this.fPaused = false;
 			this.fStopRequested = false;
+			// Note: Don't reset fSourceId here, it should persist
 		}
 		 
 		this.stopSound = function () {
 			this.fStopRequested = true;
+			this.clearFallbackTimer();
 			var source = this.getSource();
 			
 			if (source) {
@@ -806,4 +885,5 @@ autoAddDeps(audioLibrary, '$audioChannel');
 autoAddDeps(audioLibrary, '$audioChannels');
 autoAddDeps(audioLibrary, '$audioContextResumed');
 autoAddDeps(audioLibrary, '$ensureAudioContext');
+autoAddDeps(audioLibrary, '$audioSourceIdCounter');
 mergeInto(LibraryManager.library, audioLibrary);
