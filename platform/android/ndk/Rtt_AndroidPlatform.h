@@ -143,6 +143,7 @@ class AndroidPlatform : public MPlatform
 	public:
         virtual bool SaveImageToPhotoLibrary(const char* filePath) const;
 		virtual bool SaveBitmap( PlatformBitmap* bitmap, const char* filePath, float jpegQuality ) const;
+		virtual bool SaveBitmapWithFormat( PlatformBitmap* bitmap, const char* filePath, float jpegQuality, const char* format ) const;
 		virtual bool AddBitmapToPhotoLibrary( PlatformBitmap* bitmap ) const;
 		virtual bool OpenURL( const char* url ) const;
 		virtual int CanOpenURL( const char* url ) const;

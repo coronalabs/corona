@@ -169,6 +169,9 @@ class MPlatform
 		virtual PlatformBitmap* CreateBitmapMask( const char str[], const PlatformFont& font, Real w, Real h, const char alignment[], Real& baselineOffset ) const = 0;
 		virtual bool SaveImageToPhotoLibrary(const char* filePath) const = 0;
 		virtual bool SaveBitmap( PlatformBitmap* bitmap, const char* filePath, float jpegQuality ) const = 0;
+		virtual bool SaveBitmapWithFormat( PlatformBitmap* bitmap, const char* filePath, float jpegQuality, const char* format ) const {
+			return SaveBitmap(bitmap, filePath, jpegQuality);
+		};
 		virtual bool AddBitmapToPhotoLibrary( PlatformBitmap* bitmap ) const = 0;
         virtual bool OpenURL( const char* url ) const = 0;
 		// Return values of CanOpenURL: -1 Unknown; 0 No; 1 Yes

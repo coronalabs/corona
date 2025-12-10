@@ -1216,7 +1216,7 @@ public class NativeToJavaBridge {
 	 * Warning: User must define: android.permission.WRITE_EXTERNAL_STORAGE
 	 * 
 	 */
-	protected static boolean callSaveBitmap( CoronaRuntime runtime, int[] pixels, int width, int height, int quality, String filePathName )
+	protected static boolean callSaveBitmap( CoronaRuntime runtime, int[] pixels, int width, int height, int quality, String filePathName, String imageFormat)
 	{
 		// Validate.
 		if (runtime.getController() == null) {
@@ -1258,7 +1258,7 @@ public class NativeToJavaBridge {
 		}
 		
 		SaveBitmapRequestPermissionsResultHandler resultHandler = new SaveBitmapRequestPermissionsResultHandler(
-			runtime, bitmap, quality, filePathName, addToPhotoLibrary);
+			runtime, bitmap, quality, filePathName, imageFormat, addToPhotoLibrary);
 		return resultHandler.handleSaveMedia();
 	}
 
@@ -1330,15 +1330,17 @@ public class NativeToJavaBridge {
 		private Bitmap fBitmap;
 		private int fQuality;
 		private String fFilePathName;
+		private String fImageFormat;
 		private boolean fAddToPhotoLibrary;
 
 		public SaveBitmapRequestPermissionsResultHandler(
-			CoronaRuntime runtime, Bitmap bitmap, int quality, String filePathName, boolean addToPhotoLibrary) {
+			CoronaRuntime runtime, Bitmap bitmap, int quality, String filePathName, String imageFormat, boolean addToPhotoLibrary) {
 			super(runtime);
 
 			fBitmap = bitmap;
 			fQuality = quality;
 			fFilePathName = filePathName;
+			fImageFormat = imageFormat;
 			fAddToPhotoLibrary = addToPhotoLibrary;
 		}
 
@@ -1382,7 +1384,7 @@ public class NativeToJavaBridge {
 
 		@Override
 		public boolean executeSaveMedia() {
-			boolean wasSaved = fCoronaRuntime.getController().saveBitmap(fBitmap, fQuality, fFilePathName);
+			boolean wasSaved = fCoronaRuntime.getController().saveBitmap(fBitmap, fQuality, fFilePathName, fImageFormat);
 			if (wasSaved && fAddToPhotoLibrary) {
 				fCoronaRuntime.getController().addImageFileToPhotoGallery(fFilePathName);
 			}

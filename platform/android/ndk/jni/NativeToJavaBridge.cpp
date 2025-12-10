@@ -3709,7 +3709,7 @@ NativeToJavaBridge::SaveImageToPhotoLibrary( const char *fileName )
 }
 
 bool
-NativeToJavaBridge::SaveBitmap( const Rtt::PlatformBitmap * bitmap, const char * path, int quality )
+NativeToJavaBridge::SaveBitmap( const Rtt::PlatformBitmap * bitmap, const char * path, int quality, const char * format )
 {
 	NativeTrace trace( "NativeToJavaBridge::SaveBitmap" );
 #ifdef Rtt_DEBUG
@@ -3722,28 +3722,34 @@ NativeToJavaBridge::SaveBitmap( const Rtt::PlatformBitmap * bitmap, const char *
 
 	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
 	bool result = false;
-	
+
 	if ( bridge.isValid() )
 	{
 		jmethodID mid;
-		
-		mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), "callSaveBitmap", "(Lcom/ansca/corona/CoronaRuntime;[IIIILjava/lang/String;)Z" );
-		
+
+		mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), "callSaveBitmap", "(Lcom/ansca/corona/CoronaRuntime;[IIIILjava/lang/String;Ljava/lang/String;)Z" );
+
 		if ( path == NULL )
 		{
 			path = "";
 		}
 
+		if ( format == NULL )
+		{
+			format = "";
+		}
+
 		if ( mid != NULL )
 		{
 			jstringParam pathJ( bridge.getEnv(), path );
-			if ( pathJ.isValid() )
+			jstringParam formatJ( bridge.getEnv(), format );
+			if ( pathJ.isValid() && formatJ.isValid() )
 			{
 				int width = bitmap->Width();
 				int height = bitmap->Height();
-				
+
 				jintArrayParam array( bridge.getEnv(), width * height);
-				
+
 				if ( array.isValid() )
 				{
 					if ( width > 0 )
@@ -3753,7 +3759,7 @@ NativeToJavaBridge::SaveBitmap( const Rtt::PlatformBitmap * bitmap, const char *
 				}
 
 				result = bridge.getEnv()->CallStaticBooleanMethod(
-							bridge.getClass(), mid, fCoronaRuntime, array.getValue(), width, height, quality, pathJ.getValue());
+							bridge.getClass(), mid, fCoronaRuntime, array.getValue(), width, height, quality, pathJ.getValue(), formatJ.getValue());
 				HandleJavaException();
 			}
 		}

@@ -2683,6 +2683,7 @@ DisplayLibrary::save( lua_State *L )
 
     // Default values for options.
     const char* imageName = NULL;
+    const char* format = "";
     MPlatform::Directory baseDir = MPlatform::kDocumentsDir;
     bool cropObjectToScreenBounds = true;
     ColorUnion backgroundColor;
@@ -2742,6 +2743,20 @@ DisplayLibrary::save( lua_State *L )
             jpegQuality = Clamp( lua_tonumber( L, -1 ), 0., 1. );
         }
         lua_pop( L, 1 );
+
+        lua_getfield( L, -1, "format" );
+        if( lua_isstring( L, -1 ) )
+        {
+            format = lua_tostring( L, -1 );
+        }
+        lua_pop( L, 1 );
+
+        lua_getfield( L, -1, "quality" );
+        if( lua_isnumber( L, -1 ) )
+        {
+            jpegQuality = Clamp( lua_tonumber( L, -1 ), 0., 1. );
+        }
+        lua_pop( L, 1 );
     }
     else
     {
@@ -2788,7 +2803,7 @@ DisplayLibrary::save( lua_State *L )
     String bitmapPath( runtime->GetAllocator() );
 
     platform.PathForFile( imageName, baseDir, MPlatform::kDefaultPathFlags, bitmapPath );
-    platform.SaveBitmap( paint->GetBitmap(), bitmapPath.GetString(), jpegQuality );
+    platform.SaveBitmapWithFormat( paint->GetBitmap(), bitmapPath.GetString(), jpegQuality, format );
 
     Rtt_DELETE( paint );
 
@@ -2816,6 +2831,7 @@ DisplayLibrary::saveWithReturn( lua_State *L )
 
     // Default values for options.
     const char* imageName = NULL;
+    const char* format = "";
     MPlatform::Directory baseDir = MPlatform::kDocumentsDir;
     bool cropObjectToScreenBounds = true;
     ColorUnion backgroundColor;
@@ -2876,6 +2892,20 @@ DisplayLibrary::saveWithReturn( lua_State *L )
             jpegQuality = Clamp( lua_tonumber( L, -1 ), 0., 1. );
         }
         lua_pop( L, 1 );
+
+        lua_getfield( L, -1, "format" );
+        if( lua_isstring( L, -1 ) )
+        {
+            format = lua_tostring( L, -1 );
+        }
+        lua_pop( L, 1 );
+
+        lua_getfield( L, -1, "quality" );
+        if( lua_isnumber( L, -1 ) )
+        {
+            jpegQuality = Clamp( lua_tonumber( L, -1 ), 0., 1. );
+        }
+        lua_pop( L, 1 );
     }
     else
     {
@@ -2924,7 +2954,7 @@ DisplayLibrary::saveWithReturn( lua_State *L )
     String bitmapPath( runtime->GetAllocator() );
 
     platform.PathForFile( imageName, baseDir, MPlatform::kDefaultPathFlags, bitmapPath );
-    bool result = platform.SaveBitmap( paint->GetBitmap(), bitmapPath.GetString(), jpegQuality );
+    bool result = platform.SaveBitmapWithFormat( paint->GetBitmap(), bitmapPath.GetString(), jpegQuality, format );
 
     Rtt_DELETE( paint );
 

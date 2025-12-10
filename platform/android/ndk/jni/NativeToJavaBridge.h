@@ -97,7 +97,7 @@ class NativeToJavaBridge
 				const char *filePath, AndroidImageData& imageData, bool convertToGrayscale,
 				int maxWidth, int maxHeight, bool loadImageInfoOnly);
 		bool SaveImageToPhotoLibrary( const char *fileName );
-		bool SaveBitmap( const Rtt::PlatformBitmap * bitmap, const char * path, int quality );
+		bool SaveBitmap( const Rtt::PlatformBitmap * bitmap, const char * path, int quality, const char * format );
 	
 		bool RenderText(
 				const char *text, const char *fontName, float fontSize, bool isBold,

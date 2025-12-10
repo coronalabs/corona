@@ -882,23 +882,32 @@ public class Controller {
 		return result;
 	}
 	
-	public boolean saveBitmap(Bitmap bitmap, int quality, String filePathName) {
+	public boolean saveBitmap(Bitmap bitmap, int quality, String filePathName, String imageFormat) {
 		boolean result = false;
-		
+
 		// Validate.
 		if ((bitmap == null) || (filePathName == null) || (filePathName.length() <= 0)) {
 			return false;
 		}
-		
 		// Determine the format to save as by the file name's extension.
 		Bitmap.CompressFormat format;
-		if (filePathName.toLowerCase().endsWith(".png")) {
+		if ("webp".equalsIgnoreCase(imageFormat)) {
+			format = (quality < 100) ? Bitmap.CompressFormat.WEBP_LOSSY : Bitmap.CompressFormat.WEBP_LOSSLESS;
+		} else if ("webp_lossy".equalsIgnoreCase(imageFormat)) {
+			format = Bitmap.CompressFormat.WEBP_LOSSY;
+		} else if ("png".equalsIgnoreCase(imageFormat)) {
 			format = Bitmap.CompressFormat.PNG;
-		}
-		else {
+		} else if ("jpg".equalsIgnoreCase(imageFormat) || "jpeg".equalsIgnoreCase(imageFormat)) {
 			format = Bitmap.CompressFormat.JPEG;
+		} else {
+			if (filePathName.toLowerCase().endsWith(".png")) {
+				format = Bitmap.CompressFormat.PNG;
+			}
+			else {
+				format = Bitmap.CompressFormat.JPEG;
+			}
 		}
-		
+
 		// Save the given image to file.
 		try {
 			//Work around for Android 10 to save to Photo Folder
@@ -908,10 +917,12 @@ public class Controller {
 				ContentResolver resolver = myContext.getContentResolver();
 				ContentValues contentValues = new ContentValues();
 				contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
-				if(name.toLowerCase().endsWith(".png")){
+				if (format == Bitmap.CompressFormat.PNG) {
 					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
-				}else {
+				} else if (format == Bitmap.CompressFormat.JPEG) {
 					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+				} else if (format == Bitmap.CompressFormat.WEBP_LOSSLESS || format == Bitmap.CompressFormat.WEBP_LOSSY) {
+					contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/webp");
 				}
 				contentValues.put(Images.Media.DATE_ADDED, System.currentTimeMillis());
 				contentValues.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
@@ -930,11 +941,11 @@ public class Controller {
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
+
 		// Returns true if the save was successful.
 		return result;
 	}
-	
+
 	public void addImageFileToPhotoGallery(String imageFilePathName) {
 		// Validate.
 		if ((imageFilePathName == null) || (imageFilePathName.length() <= 0)) {

@@ -587,7 +587,21 @@ AndroidPlatform::SaveBitmap( PlatformBitmap * bitmap, const char * filePath, flo
 	// TODO: This is a horrible, horrible hack, and must die
 	bitmap->SwapRGB();
 
-	bool retflag = fNativeToJavaBridge->SaveBitmap( bitmap, filePath, floor((jpegQuality * 100) + 0.5) );
+	bool retflag = fNativeToJavaBridge->SaveBitmap( bitmap, filePath, floor((jpegQuality * 100) + 0.5), NULL );
+
+	// Swap the bytes back
+	bitmap->SwapRGB();
+
+	return retflag;
+}
+
+bool
+AndroidPlatform::SaveBitmapWithFormat( PlatformBitmap * bitmap, const char * filePath, float jpegQuality, const char * format ) const
+{
+	// TODO: This is a horrible, horrible hack, and must die
+	bitmap->SwapRGB();
+
+	bool retflag = fNativeToJavaBridge->SaveBitmap( bitmap, filePath, floor((jpegQuality * 100) + 0.5), format );
 
 	// Swap the bytes back
 	bitmap->SwapRGB();
