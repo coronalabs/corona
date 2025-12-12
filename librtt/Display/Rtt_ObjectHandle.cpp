@@ -19,6 +19,8 @@
 // ----------------------------------------------------------------------------
 
 AUX_OBJECT_HANDLE_DEFINE_TYPE( Any, void );
+OBJECT_HANDLE_DEFINE_TYPE( DisplayObject );
+OBJECT_HANDLE_DEFINE_TYPE( GroupObject );
 
 // ----------------------------------------------------------------------------
 
