@@ -391,6 +391,29 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
 	end
 end
 
+-- Helper function to find .nss file in code folder
+local function findNssFile(codeFolder)
+	for file in lfs.dir(codeFolder) do
+		if file:match("%.nss$") then
+			return pathJoin(codeFolder, file)
+		end
+	end
+	return nil
+end
+
+-- Helper function to find .nrs files in a folder
+local function findNrsFiles(folder)
+	local nrsFiles = {}
+	if isDir(folder) then
+		for file in lfs.dir(folder) do
+			if file:match("%.nrs$") then
+				nrsFiles[#nrsFiles + 1] = pathJoin(folder, file)
+			end
+		end
+	end
+	return nrsFiles
+end
+
 --
 -- global script to call from C++
 --
@@ -509,6 +532,31 @@ function nxsPackageApp( args )
 	end
 	logd('Unzipped ' .. template .. ' to ' .. templateFolder)
 
+	-- Copy NRO files from template root to appFolder
+	for file in lfs.dir(templateFolder) do
+		if file:match("%.nro$") then
+			local src = pathJoin(templateFolder, file)
+			local dst = pathJoin(appFolder, file)
+			copyFile(src, dst)
+			logd('Copied NRO: ' .. file)
+		end
+	end
+
+	-- Copy NRR files from template .nrr folder to appFolder
+	local templateNrrFolder = pathJoin(templateFolder, '.nrr')
+	if isDir(templateNrrFolder) then
+		local appNrrFolder = pathJoin(appFolder, '.nrr')
+		lfs.mkdir(appNrrFolder)
+		for file in lfs.dir(templateNrrFolder) do
+			if file:match("%.nrr$") then
+				local src = pathJoin(templateNrrFolder, file)
+				local dst = pathJoin(appNrrFolder, file)
+				copyFile(src, dst)
+				logd('Copied NRR: ' .. file)
+			end
+		end
+	end
+
 	-- gather files into appFolder (tmp folder)
 	local ret = copyDir( args.srcDir, appFolder )
 	if ret ~= 0 then
@@ -531,11 +579,11 @@ function nxsPackageApp( args )
 	end
 	logd("Created .car file")
 
-		-- delete .lua, .lu, etc
+	-- delete .lua, .lu, etc
 	deleteUnusedFiles(appFolder, getExcludePredecate())
 
-	-- move *.nrr files to /.nrr folder
-	local nrrFolder =  pathJoin(appFolder, '.nrr')
+	-- move *.nrr files to /.nrr folder (in case any were copied to root)
+	local nrrFolder = pathJoin(appFolder, '.nrr')
 	moveFiles(appFolder, nrrFolder, '*.nrr')
 
 	-- build App 
@@ -558,20 +606,59 @@ function nxsPackageApp( args )
 	cmd = cmd .. ' --desc ' .. nxsRoot .. '\\Resources\\SpecFiles\\Application.desc'
 	cmd = cmd .. ' --meta "' ..  metafile .. '"'
 	cmd = cmd .. ' -o "' ..  solar2Dfile .. '\\main.npdm"'
-	logd('\Creating the NPDM File ... ', cmd)
+	logd('\nCreating the NPDM File ... ', cmd)
 	local rc, stdout = processExecute(cmd, true);
-	log('\MakeMeta retcode ' .. rc)
+	log('\nMakeMeta retcode ' .. rc)
 	if type(stdout) == 'string' and string.len(stdout) > 0 then
-		log('\MakeMeta output\n' .. stdout)
+		log('\nMakeMeta output\n' .. stdout)
+	end
+
+	-- Find .nss file in code folder
+	local nssFile = findNssFile(solar2Dfile)
+	if not nssFile then
+		-- Try default name
+		nssFile = pathJoin(solar2Dfile, 'main.nss')
+	end
+	logd('NSS file: ' .. (nssFile or 'not found'))
+
+	-- Find .nrs files in the nrr folder (for NRO support)
+	local nrsFiles = findNrsFiles(nrrFolder)
+	
+	-- Check if there are any .nro files
+	local hasNroFiles = false
+	for file in lfs.dir(nroFolder) do
+		if file:match("%.nro$") then
+			hasNroFiles = true
+			break
+		end
 	end
 
 	-- create .nsp file
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
 	cmd = cmd .. ' --meta "' ..  metafile .. '"'
-	cmd = cmd .. ' --nro "' ..  nroFolder .. '"'
+	
+	-- Only add --nro if there are actual .nro files
+	if hasNroFiles then
+		cmd = cmd .. ' --nro "' ..  nroFolder .. '"'
+		
+		-- Add --nrs for each .nrs file (required when using --nro)
+		if #nrsFiles > 0 then
+			cmd = cmd .. ' --nrs'
+			for i, nrsFile in ipairs(nrsFiles) do
+				cmd = cmd .. ' "' .. nrsFile .. '"'
+			end
+		end
+	end
+	
 	cmd = cmd .. ' --desc "' ..  descfile .. '"'
 	cmd = cmd .. ' --program "' ..  solar2Dfile .. '"'
+	
+	-- Add --nss option (required for newer SDK versions)
+	if nssFile and isFile(nssFile) then
+		cmd = cmd .. ' --nss "' .. nssFile .. '"'
+	end
+	
 	cmd = cmd .. ' "' .. assets .. '"'
 	cmd = 'cmd /c "'.. cmd .. '"'
 	
