@@ -283,7 +283,9 @@ static VertexAttribDivisorPtr sVertexAttribDivisor;
 static const char * sSuffix;
 
 #if defined( Rtt_EGL ) && !defined( Rtt_NXS_ENV )
-	#define GL_GET_PROC(name, suffix) (name ## Ptr) eglGetProcAddress( "gl" #name #suffix )
+    #define GL_GET_PROC(name, suffix) (name ## Ptr) eglGetProcAddress( "gl" #name #suffix )
+#elif defined( Rtt_OPENGLES ) && !defined( Rtt_EGL )
+    #define GL_GET_PROC(name, suffix) gl ## name ## suffix
 #elif !defined( Rtt_OPENGLES )
     #define GL_GET_PROC(name, suffix) gl ## name ## suffix
 #endif
