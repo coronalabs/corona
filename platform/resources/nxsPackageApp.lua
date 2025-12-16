@@ -532,31 +532,6 @@ function nxsPackageApp( args )
 	end
 	logd('Unzipped ' .. template .. ' to ' .. templateFolder)
 
-	-- Copy NRO files from template root to appFolder
-	for file in lfs.dir(templateFolder) do
-		if file:match("%.nro$") then
-			local src = pathJoin(templateFolder, file)
-			local dst = pathJoin(appFolder, file)
-			copyFile(src, dst)
-			logd('Copied NRO: ' .. file)
-		end
-	end
-
-	-- Copy NRR files from template .nrr folder to appFolder
-	local templateNrrFolder = pathJoin(templateFolder, '.nrr')
-	if isDir(templateNrrFolder) then
-		local appNrrFolder = pathJoin(appFolder, '.nrr')
-		lfs.mkdir(appNrrFolder)
-		for file in lfs.dir(templateNrrFolder) do
-			if file:match("%.nrr$") then
-				local src = pathJoin(templateNrrFolder, file)
-				local dst = pathJoin(appNrrFolder, file)
-				copyFile(src, dst)
-				logd('Copied NRR: ' .. file)
-			end
-		end
-	end
-
 	-- gather files into appFolder (tmp folder)
 	local ret = copyDir( args.srcDir, appFolder )
 	if ret ~= 0 then
@@ -582,8 +557,36 @@ function nxsPackageApp( args )
 	-- delete .lua, .lu, etc
 	deleteUnusedFiles(appFolder, getExcludePredecate())
 
-	-- move *.nrr files to /.nrr folder (in case any were copied to root)
+	-- AFTER deleteUnusedFiles: Copy NRO files from template root to appFolder
+	for file in lfs.dir(templateFolder) do
+		if file:match("%.nro$") then
+			local src = pathJoin(templateFolder, file)
+			local dst = pathJoin(appFolder, file)
+			copyFile(src, dst)
+			log('Copied NRO: ' .. file)
+		end
+	end
+
+	-- AFTER deleteUnusedFiles: Copy NRR files from template .nrr folder to appFolder/.nrr
+	local templateNrrFolder = pathJoin(templateFolder, '.nrr')
+	if isDir(templateNrrFolder) then
+		local appNrrFolder = pathJoin(appFolder, '.nrr')
+		lfs.mkdir(appNrrFolder)
+		for file in lfs.dir(templateNrrFolder) do
+			if file:match("%.nrr$") then
+				local src = pathJoin(templateNrrFolder, file)
+				local dst = pathJoin(appNrrFolder, file)
+				copyFile(src, dst)
+				log('Copied NRR: ' .. file)
+			end
+		end
+	end
+
+	-- move *.nrr files from root to /.nrr folder (in case any were copied to root)
 	local nrrFolder = pathJoin(appFolder, '.nrr')
+	if not isDir(nrrFolder) then
+		lfs.mkdir(nrrFolder)
+	end
 	moveFiles(appFolder, nrrFolder, '*.nrr')
 
 	-- build App 
@@ -621,10 +624,7 @@ function nxsPackageApp( args )
 	end
 	logd('NSS file: ' .. (nssFile or 'not found'))
 
-	-- Find .nrs files in the nrr folder (for NRO support)
-	local nrsFiles = findNrsFiles(nrrFolder)
-	
-	-- Check if there are any .nro files
+	-- Check if there are any .nro files in appFolder
 	local hasNroFiles = false
 	for file in lfs.dir(nroFolder) do
 		if file:match("%.nro$") then
@@ -633,22 +633,31 @@ function nxsPackageApp( args )
 		end
 	end
 
+	-- Check if there are any .nrr files in the .nrr folder
+	local hasNrrFiles = false
+	if isDir(nrrFolder) then
+		for file in lfs.dir(nrrFolder) do
+			if file:match("%.nrr$") then
+				hasNrrFiles = true
+				break
+			end
+		end
+	end
+
+	-- Log what we found
+	log('Has NRO files: ' .. tostring(hasNroFiles))
+	log('Has NRR files: ' .. tostring(hasNrrFiles))
+
 	-- create .nsp file
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
 	cmd = cmd .. ' --meta "' ..  metafile .. '"'
 	
-	-- Only add --nro if there are actual .nro files
-	if hasNroFiles then
+	-- Only add --nro if there are actual .nro files AND .nrr files
+	if hasNroFiles and hasNrrFiles then
 		cmd = cmd .. ' --nro "' ..  nroFolder .. '"'
-		
-		-- Add --nrs for each .nrs file (required when using --nro)
-		if #nrsFiles > 0 then
-			cmd = cmd .. ' --nrs'
-			for i, nrsFile in ipairs(nrsFiles) do
-				cmd = cmd .. ' "' .. nrsFile .. '"'
-			end
-		end
+	elseif hasNroFiles and not hasNrrFiles then
+		log('[WARNING] NRO files found but no NRR files - skipping --nro option')
 	end
 	
 	cmd = cmd .. ' --desc "' ..  descfile .. '"'
@@ -662,7 +671,8 @@ function nxsPackageApp( args )
 	cmd = cmd .. ' "' .. assets .. '"'
 	cmd = 'cmd /c "'.. cmd .. '"'
 	
-	logd('\nBuilding App ... ', cmd)
+	log('\nBuilding App ... ')
+	logd(cmd)
 	local rc, stdout = processExecute(cmd, true);
 	log('\nAuthoringTool retcode ' .. rc)
 	if type(stdout) == 'string' and string.len(stdout) > 0 then
