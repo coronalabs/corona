@@ -3917,7 +3917,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n";
+			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\n# Copy the standard framework for backward compatibility\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n\n# Also copy the XCFramework for M1 simulator support\nXCFRAMEWORK_NAME=\"${TARGETNAME%.framework}.xcframework\"\nif [ -d \"$TARGET_BUILD_DIR\"/$XCFRAMEWORK_NAME ]; then\n    ditto -V \"$TARGET_BUILD_DIR\"/$XCFRAMEWORK_NAME \"$DST_DIR\"/$XCFRAMEWORK_NAME\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		A46935BD169D62DA00723568 /* Script: CopyResources and resource.corona-archive */ = {
@@ -4117,7 +4117,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n";
+			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\n# Copy the standard framework for backward compatibility\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n\n# Also copy the XCFramework for M1 simulator support\nXCFRAMEWORK_NAME=\"${TARGETNAME%.framework}.xcframework\"\nif [ -d \"$TARGET_BUILD_DIR\"/$XCFRAMEWORK_NAME ]; then\n    ditto -V \"$TARGET_BUILD_DIR\"/$XCFRAMEWORK_NAME \"$DST_DIR\"/$XCFRAMEWORK_NAME\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
