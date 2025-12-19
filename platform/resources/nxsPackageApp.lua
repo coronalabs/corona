@@ -401,17 +401,19 @@ local function findNssFile(codeFolder)
 	return nil
 end
 
--- Helper function to find .nrs files in a folder
-local function findNrsFiles(folder)
-	local nrsFiles = {}
+-- Helper function to count files with extension in a folder
+local function countFilesWithExtension(folder, ext)
+	local count = 0
+	local files = {}
 	if isDir(folder) then
 		for file in lfs.dir(folder) do
-			if file:match("%.nrs$") then
-				nrsFiles[#nrsFiles + 1] = pathJoin(folder, file)
+			if file ~= '.' and file ~= '..' and file:match("%." .. ext .. "$") then
+				count = count + 1
+				files[#files + 1] = file
 			end
 		end
 	end
-	return nrsFiles
+	return count, files
 end
 
 --
@@ -558,36 +560,54 @@ function nxsPackageApp( args )
 	deleteUnusedFiles(appFolder, getExcludePredecate())
 
 	-- AFTER deleteUnusedFiles: Copy NRO files from template root to appFolder
+	local nroCount = 0
 	for file in lfs.dir(templateFolder) do
-		if file:match("%.nro$") then
+		if file ~= '.' and file ~= '..' and file:match("%.nro$") then
 			local src = pathJoin(templateFolder, file)
 			local dst = pathJoin(appFolder, file)
 			copyFile(src, dst)
 			log('Copied NRO: ' .. file)
+			nroCount = nroCount + 1
 		end
 	end
+	log('Total NRO files copied: ' .. nroCount)
 
 	-- AFTER deleteUnusedFiles: Copy NRR files from template .nrr folder to appFolder/.nrr
 	local templateNrrFolder = pathJoin(templateFolder, '.nrr')
+	local appNrrFolder = pathJoin(appFolder, '.nrr')
+	local nrrCount = 0
+	
 	if isDir(templateNrrFolder) then
-		local appNrrFolder = pathJoin(appFolder, '.nrr')
+		-- Create the .nrr folder in appFolder
 		lfs.mkdir(appNrrFolder)
+		log('Created .nrr folder: ' .. appNrrFolder)
+		
 		for file in lfs.dir(templateNrrFolder) do
-			if file:match("%.nrr$") then
+			if file ~= '.' and file ~= '..' and file:match("%.nrr$") then
 				local src = pathJoin(templateNrrFolder, file)
 				local dst = pathJoin(appNrrFolder, file)
-				copyFile(src, dst)
-				log('Copied NRR: ' .. file)
+				local success = copyFile(src, dst)
+				if success then
+					log('Copied NRR: ' .. file)
+					nrrCount = nrrCount + 1
+				else
+					log('FAILED to copy NRR: ' .. file)
+				end
 			end
 		end
+	else
+		log('No .nrr folder found in template: ' .. templateNrrFolder)
 	end
+	log('Total NRR files copied: ' .. nrrCount)
 
-	-- move *.nrr files from root to /.nrr folder (in case any were copied to root)
-	local nrrFolder = pathJoin(appFolder, '.nrr')
-	if not isDir(nrrFolder) then
-		lfs.mkdir(nrrFolder)
+	-- Verify the .nrr folder exists and has files
+	if isDir(appNrrFolder) then
+		log('.nrr folder exists: ' .. appNrrFolder)
+		local verifyCount, verifyFiles = countFilesWithExtension(appNrrFolder, 'nrr')
+		log('.nrr folder contains ' .. verifyCount .. ' nrr files: ' .. table.concat(verifyFiles, ', '))
+	else
+		log('.nrr folder DOES NOT EXIST: ' .. appNrrFolder)
 	end
-	moveFiles(appFolder, nrrFolder, '*.nrr')
 
 	-- build App 
 	-- sample: AuthoringTool.exe creatensp -o Rtt.nsp --metartt.nmeta --type Application --nro nrofolder --desc Application.desc--program program0.ncd/code assets2
@@ -618,35 +638,25 @@ function nxsPackageApp( args )
 
 	-- Find .nss file in code folder
 	local nssFile = findNssFile(solar2Dfile)
-	if not nssFile then
+	if nssFile then
+		log('Found NSS file: ' .. nssFile)
+	else
 		-- Try default name
-		nssFile = pathJoin(solar2Dfile, 'main.nss')
-	end
-	logd('NSS file: ' .. (nssFile or 'not found'))
-
-	-- Check if there are any .nro files in appFolder
-	local hasNroFiles = false
-	for file in lfs.dir(nroFolder) do
-		if file:match("%.nro$") then
-			hasNroFiles = true
-			break
+		local defaultNss = pathJoin(solar2Dfile, 'main.nss')
+		if isFile(defaultNss) then
+			nssFile = defaultNss
+			log('Using default NSS file: ' .. nssFile)
+		else
+			log('[WARNING] No NSS file found in: ' .. solar2Dfile)
 		end
 	end
 
-	-- Check if there are any .nrr files in the .nrr folder
-	local hasNrrFiles = false
-	if isDir(nrrFolder) then
-		for file in lfs.dir(nrrFolder) do
-			if file:match("%.nrr$") then
-				hasNrrFiles = true
-				break
-			end
-		end
-	end
+	-- Check for NRO and NRR files using proper counting
+	local hasNroFiles = nroCount > 0
+	local hasNrrFiles = nrrCount > 0
 
-	-- Log what we found
-	log('Has NRO files: ' .. tostring(hasNroFiles))
-	log('Has NRR files: ' .. tostring(hasNrrFiles))
+	log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
+	log('Has NRR files: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
 
 	-- create .nsp file
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
@@ -664,8 +674,10 @@ function nxsPackageApp( args )
 	cmd = cmd .. ' --program "' ..  solar2Dfile .. '"'
 	
 	-- Add --nss option (required for newer SDK versions)
-	if nssFile and isFile(nssFile) then
+	if nssFile then
 		cmd = cmd .. ' --nss "' .. nssFile .. '"'
+	else
+		log('[WARNING] No NSS file found - build may fail on newer SDK versions')
 	end
 	
 	cmd = cmd .. ' "' .. assets .. '"'
