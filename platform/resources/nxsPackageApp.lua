@@ -561,6 +561,7 @@ function nxsPackageApp( args )
 
 	-- AFTER deleteUnusedFiles: Copy NRO files from template root to appFolder
 	local nroCount = 0
+	local nroFiles = {}
 	for file in lfs.dir(templateFolder) do
 		if file ~= '.' and file ~= '..' and file:match("%.nro$") then
 			local src = pathJoin(templateFolder, file)
@@ -568,6 +569,7 @@ function nxsPackageApp( args )
 			copyFile(src, dst)
 			log('Copied NRO: ' .. file)
 			nroCount = nroCount + 1
+			nroFiles[#nroFiles + 1] = file
 		end
 	end
 	log('Total NRO files copied: ' .. nroCount)
@@ -576,6 +578,7 @@ function nxsPackageApp( args )
 	local templateNrrFolder = pathJoin(templateFolder, '.nrr')
 	local appNrrFolder = pathJoin(appFolder, '.nrr')
 	local nrrCount = 0
+	local nrrFiles = {}
 	
 	if isDir(templateNrrFolder) then
 		-- Create the .nrr folder in appFolder
@@ -590,6 +593,7 @@ function nxsPackageApp( args )
 				if success then
 					log('Copied NRR: ' .. file)
 					nrrCount = nrrCount + 1
+					nrrFiles[#nrrFiles + 1] = pathJoin(appNrrFolder, file)
 				else
 					log('FAILED to copy NRR: ' .. file)
 				end
@@ -663,9 +667,16 @@ function nxsPackageApp( args )
 	cmd = cmd .. ' -o "' ..  nspfile .. '"'
 	cmd = cmd .. ' --meta "' ..  metafile .. '"'
 	
-	-- Only add --nro if there are actual .nro files AND .nrr files
+	-- Only add --nro and --nrs if there are actual .nro files AND .nrr files
 	if hasNroFiles and hasNrrFiles then
 		cmd = cmd .. ' --nro "' ..  nroFolder .. '"'
+		
+		-- Add --nrs with explicit paths to each .nrr file
+		cmd = cmd .. ' --nrs'
+		for i, nrrPath in ipairs(nrrFiles) do
+			cmd = cmd .. ' "' .. nrrPath .. '"'
+		end
+		log('Added --nrs with ' .. #nrrFiles .. ' files')
 	elseif hasNroFiles and not hasNrrFiles then
 		log('[WARNING] NRO files found but no NRR files - skipping --nro option')
 	end
@@ -684,7 +695,7 @@ function nxsPackageApp( args )
 	cmd = 'cmd /c "'.. cmd .. '"'
 	
 	log('\nBuilding App ... ')
-	logd(cmd)
+	log(cmd)
 	local rc, stdout = processExecute(cmd, true);
 	log('\nAuthoringTool retcode ' .. rc)
 	if type(stdout) == 'string' and string.len(stdout) > 0 then
