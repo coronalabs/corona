@@ -265,63 +265,62 @@ end
 
 local function getExcludePredecate()
 	local excludes = {
---			"*.nro",
---			"*.nrr",
-			"*.config",
-			"*.lu",
-			"*.lua",
-			"*.bak",
-			"*.orig",
-			"*.swp",
-			"*.DS_Store",
-			"*.apk",
-			"*.obb",
-			"*.obj",
-			"*.o",
-			"*.lnk",
-			"*.class",
-			"*.log",
-			".*",
-			"build.properties",
-		}
+		-- DO NOT EXCLUDE NRO / NRR
+		-- "*.nro",
+		-- "*.nrr",
 
-		-- append 'all:' and 'nx:'
-		if buildSettings and buildSettings.excludeFiles then
-			if buildSettings.excludeFiles.all then
-				-- append excludes from 'all:'
-				local excl = buildSettings.excludeFiles.all		
-				for i = 1, #excl do	
-					excludes[#excludes + 1] = excl[i]
-				end
-			end
-			if buildSettings.excludeFiles.nx then
-				-- append excludes from 'nx:'
-				local excl = buildSettings.excludeFiles.nx
-				for i = 1, #excl do	
-					excludes[#excludes + 1] = excl[i]
-				end
+		"*.config",
+		"*.lu",
+		"*.lua",
+		"*.bak",
+		"*.orig",
+		"*.swp",
+		"*.DS_Store",
+		"*.apk",
+		"*.obb",
+		"*.obj",
+		"*.o",
+		"*.lnk",
+		"*.class",
+		"*.log",
+		".*",
+		"build.properties",
+	}
+
+	-- append build.settings excludes
+	if buildSettings and buildSettings.excludeFiles then
+		if buildSettings.excludeFiles.all then
+			for i = 1, #buildSettings.excludeFiles.all do
+				excludes[#excludes + 1] = buildSettings.excludeFiles.all[i]
 			end
 		end
-
-		-- glob ==> regexp
-		for i = 1, #excludes do
-			excludes[i] = globToPattern(excludes[i])
-		end
-
---		for i = 1, #excludes do
---			logd('Exclude rule: ', excludes[i])
---		end
-
-		return function(fileName)
-			for i = 1, #excludes do
-				local rc = fileName:find(excludes[i])
-				if rc ~= nil then
-					return false
-				end
+		if buildSettings.excludeFiles.nx then
+			for i = 1, #buildSettings.excludeFiles.nx do
+				excludes[#excludes + 1] = buildSettings.excludeFiles.nx[i]
 			end
+		end
+	end
+
+	-- glob ==> regexp
+	for i = 1, #excludes do
+		excludes[i] = globToPattern(excludes[i])
+	end
+
+	return function(fileName)
+		-- NEVER exclude .nrr directory or .nrr files
+		if fileName == ".nrr" or fileName:match("^%.nrr/") or fileName:match("%.nrr$") then
 			return true
 		end
+
+		for i = 1, #excludes do
+			if fileName:find(excludes[i]) then
+				return false
+			end
+		end
+		return true
+	end
 end
+
 
 -- copy all assets except .lua, .lu files into .data
 local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate)
@@ -664,35 +663,36 @@ function nxsPackageApp( args )
 
 	-- create .nsp file
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
-	cmd = cmd .. ' -o "' ..  nspfile .. '"'
-	cmd = cmd .. ' --meta "' ..  metafile .. '"'
-	
-	-- Only add --nro and --nrs if there are actual .nro files AND .nrr files
-	if hasNroFiles and hasNrrFiles then
-		cmd = cmd .. ' --nro "' ..  nroFolder .. '"'
-		
-		-- Add --nrs with explicit paths to each .nrr file
-		cmd = cmd .. ' --nrs'
-		for i, nrrPath in ipairs(nrrFiles) do
-			cmd = cmd .. ' "' .. nrrPath .. '"'
-		end
-		log('Added --nrs with ' .. #nrrFiles .. ' files')
-	elseif hasNroFiles and not hasNrrFiles then
-		log('[WARNING] NRO files found but no NRR files - skipping --nro option')
+	cmd = cmd .. ' -o "' .. nspfile .. '"'
+	cmd = cmd .. ' --meta "' .. metafile .. '"'
+
+	-- Use --nro ONLY
+	if hasNroFiles then
+		cmd = cmd .. ' --nro "' .. appFolder .. '"'
+	else
+		return "No NRO files found – cannot build NSP"
 	end
-	
-	cmd = cmd .. ' --desc "' ..  descfile .. '"'
-	cmd = cmd .. ' --program "' ..  solar2Dfile .. '"'
-	
-	-- Add --nss option (required for newer SDK versions)
+
+	cmd = cmd .. ' --desc "' .. descfile .. '"'
+	cmd = cmd .. ' --program "' .. solar2Dfile .. '"'
+
+	-- NSS (required on newer SDKs)
 	if nssFile then
 		cmd = cmd .. ' --nss "' .. nssFile .. '"'
-	else
-		log('[WARNING] No NSS file found - build may fail on newer SDK versions')
 	end
-	
+
 	cmd = cmd .. ' "' .. assets .. '"'
+	cmd = 'cmd /c "' .. cmd .. '"'
+
 	cmd = 'cmd /c "'.. cmd .. '"'
+	log("FINAL .nrr CHECK:")
+	if isDir(appNrrFolder) then
+		for f in lfs.dir(appNrrFolder) do
+			log("  .nrr -> " .. f)
+		end
+	else
+		log("  ERROR: .nrr folder missing")
+	end
 	
 	log('\nBuilding App ... ')
 	log(cmd)
