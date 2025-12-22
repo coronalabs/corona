@@ -508,7 +508,6 @@ function nxsPackageApp( args )
 
 	-- Define paths
 	local codeFolder = pathJoin(templateFolder, 'code')
-	local solar2Dfile = codeFolder
 	log('Code folder: ' .. codeFolder)
 
 	-- gather files into appFolder (tmp folder)
@@ -600,10 +599,12 @@ function nxsPackageApp( args )
 	local nroFolder = appFolder
 
 	-- Update .npdm file
-	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe"'
-	cmd = cmd .. ' --desc "' .. descfile .. '"'
+	-- Use the same quoting style as the original unzip command which works
+	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe'
+	cmd = cmd .. ' --desc ' .. nxsRoot .. '\\Resources\\SpecFiles\\Application.desc'
 	cmd = cmd .. ' --meta "' .. metafile .. '"'
-	cmd = cmd .. ' -o "' .. pathJoin(solar2Dfile, 'main.npdm') .. '"'
+	cmd = cmd .. ' -o "' .. pathJoin(codeFolder, 'main.npdm') .. '"'
+	cmd = cmd .. '"'
 	log('Creating NPDM file...')
 	logd('MakeMeta command: ' .. cmd)
 	local rc, stdout = processExecute(cmd, true)
@@ -613,16 +614,16 @@ function nxsPackageApp( args )
 	end
 
 	-- Find .nss file in code folder
-	local nssFile = findNssFile(solar2Dfile)
+	local nssFile = findNssFile(codeFolder)
 	if nssFile then
 		log('Found NSS file: ' .. nssFile)
 	else
-		local defaultNss = pathJoin(solar2Dfile, 'main.nss')
+		local defaultNss = pathJoin(codeFolder, 'main.nss')
 		if isFile(defaultNss) then
 			nssFile = defaultNss
 			log('Using default NSS file: ' .. nssFile)
 		else
-			log('WARNING: No NSS file found in: ' .. solar2Dfile)
+			log('WARNING: No NSS file found in: ' .. codeFolder)
 		end
 	end
 
@@ -634,7 +635,8 @@ function nxsPackageApp( args )
 	log('Has NRR files in code/.nrr: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
 
 	-- Create .nsp file
-	cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe"'
+	-- Build command with proper quoting for Windows cmd.exe
+	cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe'
 	cmd = cmd .. ' creatensp --type Application'
 	cmd = cmd .. ' -o "' .. nspfile .. '"'
 	cmd = cmd .. ' --meta "' .. metafile .. '"'
@@ -647,13 +649,14 @@ function nxsPackageApp( args )
 	end
 
 	cmd = cmd .. ' --desc "' .. descfile .. '"'
-	cmd = cmd .. ' --program "' .. solar2Dfile .. '"'
+	cmd = cmd .. ' --program "' .. codeFolder .. '"'
 
 	if nssFile then
 		cmd = cmd .. ' --nss "' .. nssFile .. '"'
 	end
 
 	cmd = cmd .. ' "' .. assets .. '"'
+	cmd = cmd .. '"'
 
 	-- Final verification
 	log('FINAL CHECK - code/.nrr contents:')
