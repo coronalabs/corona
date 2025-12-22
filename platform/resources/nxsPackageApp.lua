@@ -204,10 +204,10 @@ local function copyFile(src, dst)
 			fi:close()
 			return true;
 		end
-		logd('copyFile: Failed to read ' .. src)
+		logd('copyFile: Failed to write ' .. dst)
 		return false;
 	end
-	logd('copyFile: Failed to write ' .. dst)
+	logd('copyFile: Failed to read ' .. src)
 	return false;
 end
 
@@ -265,10 +265,6 @@ end
 
 local function getExcludePredecate()
 	local excludes = {
-		-- DO NOT EXCLUDE NRO / NRR
-		-- "*.nro",
-		-- "*.nrr",
-
 		"*.config",
 		"*.lu",
 		"*.lua",
@@ -307,11 +303,6 @@ local function getExcludePredecate()
 	end
 
 	return function(fileName)
-		-- NEVER exclude .nrr directory or .nrr files
-		if fileName == ".nrr" or fileName:match("^%.nrr/") or fileName:match("%.nrr$") then
-			return true
-		end
-
 		for i = 1, #excludes do
 			if fileName:find(excludes[i]) then
 				return false
@@ -320,7 +311,6 @@ local function getExcludePredecate()
 		return true
 	end
 end
-
 
 -- copy all assets except .lua, .lu files into .data
 local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate)
@@ -332,24 +322,18 @@ local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate
 		if excludePredicate(xf) and excludePredicate(file) then
 			local attr = lfs.attributes (f)
 			if attr.mode == "directory" then
-
-				-- keep, it will be used later to generate .js
 				folders[#folders+1] = { parent=dstDir , name=file };
-
 				pullDir( pathJoin(srcDir, file), dstDir..file..'/', dataFiles, folders, out, excludePredicate)
 			else
-       	-- append the file to out
-       	local fi = io.open(f, 'rb')
+				local fi = io.open(f, 'rb')
 				if (fi) then
-					 local block = 1024000			-- block size, 1mb
-						while true do
-							local bytes = fi:read(block)
-							if not bytes then break end
-							out:write(bytes)
-						end
+					local block = 1024000
+					while true do
+						local bytes = fi:read(block)
+						if not bytes then break end
+						out:write(bytes)
+					end
 					fi:close()
-
-					-- keep, it will be used later to generate .js
 					dataFiles[#dataFiles+1] = { name=dstDir..file, size=attr.size };
 					logd('Added ' .. f .. ' into .data')
 				else
@@ -358,19 +342,17 @@ local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate
 			end
 		else
 			logd('Excluded ' .. f)
-    end
+		end
 	end
 end
 
 local function deleteUnusedFiles(srcDir, excludePredicate)
---	 logd('Deleting unused assets from ' .. srcDir)
 	for file in lfs.dir(srcDir) do
 		local f = pathJoin(srcDir, file)
 		if excludePredicate(file) then
-			local attr = lfs.attributes (f)
-			if attr.mode == "directory" then
-				deleteUnusedFiles( pathJoin(srcDir, file), excludePredicate)
-			else
+			local attr = lfs.attributes(f)
+			if attr and attr.mode == "directory" then
+				deleteUnusedFiles(pathJoin(srcDir, file), excludePredicate)
 			end
 		else
 			if file ~= '..' and file ~= '.' then
@@ -378,12 +360,10 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
 				if isDir(f) then
 					result = removeDir(f)
 				else
-					result, reason = os.remove(f);
+					result = os.remove(f)
 				end
-				if result then
---					logd('Excluded ' .. f)
-				else
-					logd("Failed to exclude" .. f) 
+				if not result then
+					logd("Failed to exclude " .. f)
 				end
 			end
 		end
@@ -392,6 +372,9 @@ end
 
 -- Helper function to find .nss file in code folder
 local function findNssFile(codeFolder)
+	if not isDir(codeFolder) then
+		return nil
+	end
 	for file in lfs.dir(codeFolder) do
 		if file:match("%.nss$") then
 			return pathJoin(codeFolder, file)
@@ -458,11 +441,11 @@ function nxsPackageApp( args )
 	buildSettings = _G['settings']
 	_G['settings'] = oldSettings
 
-	local success = false;
+	local success = false
 
 	-- create app folder if it does not exists
 	local nxsappFolder = pathJoin(args.dstDir, args.applicationName .. '.NX64')
-	removeDir(nxsappFolder)	-- clear
+	removeDir(nxsappFolder)
 	success = lfs.mkdir(nxsappFolder)
 	if not success then
 		return 'Failed to create App folder: ' .. nxsappFolder
@@ -470,17 +453,12 @@ function nxsPackageApp( args )
 	logd('AppFolder: ' .. nxsappFolder)
 
 	local appFolder = pathJoin(args.tmpDir, 'nxsapp')
-	success = removeDir(appFolder)	-- clear
---	if not success then
---		return 'Failed to clear tmp folder: ' .. appFolder
---	end
-
+	removeDir(appFolder)
 	success = lfs.mkdir(appFolder)
 	if not success then
 		return 'Failed to create tmp folder: ' .. appFolder
 	end
 	logd('appFolder: ' .. appFolder)
-
 
 	-- Download plugins
 	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
@@ -494,27 +472,22 @@ function nxsPackageApp( args )
 
 	-- Copy lua plugins over to the app folder
 	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
-	if isDir( luaPluginDir ) then
+	if isDir(luaPluginDir) then
 		copyDir(luaPluginDir, pluginExtractDir)
 		removeDir(pathJoin(pluginExtractDir, 'lua'))
 	end
 	luaPluginDir = pathJoin(pluginExtractDir, 'lua_51')
-	if isDir( luaPluginDir ) then
+	if isDir(luaPluginDir) then
 		copyDir(luaPluginDir, pluginExtractDir)
 		removeDir(pathJoin(pluginExtractDir, 'lua_51'))
 	end
-	if isDir( pluginExtractDir ) then
+	if isDir(pluginExtractDir) then
 		copyDir(pluginExtractDir, appFolder)
 	end
 
 	-- unzip standard template
-
 	local templateFolder = pathJoin(args.tmpDir, 'nxtemplate')
-	success = removeDir(templateFolder)	
---	if not success then
---		return 'Failed to clear template folder: ' .. templateFolder
---	end
-
+	removeDir(templateFolder)
 	success = lfs.mkdir(templateFolder)
 	if not success then
 		return 'Failed to create template folder: ' .. templateFolder
@@ -522,7 +495,7 @@ function nxsPackageApp( args )
 	logd('templateFolder: ' .. templateFolder)
 
 	-- sanity check
-	local archivesize = lfs.attributes (template, "size")
+	local archivesize = lfs.attributes(template, "size")
 	if archivesize == nil or archivesize == 0 then
 		return 'Failed to open template: ' .. template
 	end
@@ -533,19 +506,24 @@ function nxsPackageApp( args )
 	end
 	logd('Unzipped ' .. template .. ' to ' .. templateFolder)
 
+	-- Define paths
+	local codeFolder = pathJoin(templateFolder, 'code')
+	local solar2Dfile = codeFolder
+	log('Code folder: ' .. codeFolder)
+
 	-- gather files into appFolder (tmp folder)
-	local ret = copyDir( args.srcDir, appFolder )
+	ret = copyDir(args.srcDir, appFolder)
 	if ret ~= 0 then
 		return "Failed to copy " .. args.srcDir .. ' to ' .. appFolder
 	end
 	logd("Copied " .. args.srcDir .. ' to ' .. appFolder)
 
 	if args.useStandartResources then
-		local ret = copyDir( pathJoin(templateFolder, 'res_widget'), appFolder )
+		ret = copyDir(pathJoin(templateFolder, 'res_widget'), appFolder)
 		if ret ~= 0 then
 			return "Failed to copy standard resources"
 		end
-		logd("Copied startard resources")
+		logd("Copied standard resources")
 	end
 
 	-- compile .lua
@@ -558,41 +536,39 @@ function nxsPackageApp( args )
 	-- delete .lua, .lu, etc
 	deleteUnusedFiles(appFolder, getExcludePredecate())
 
-	-- AFTER deleteUnusedFiles: Copy NRO files from template root to appFolder
+	-- Copy NRO files from template root to appFolder
 	local nroCount = 0
-	local nroFiles = {}
 	for file in lfs.dir(templateFolder) do
 		if file ~= '.' and file ~= '..' and file:match("%.nro$") then
 			local src = pathJoin(templateFolder, file)
 			local dst = pathJoin(appFolder, file)
-			copyFile(src, dst)
-			log('Copied NRO: ' .. file)
-			nroCount = nroCount + 1
-			nroFiles[#nroFiles + 1] = file
+			if copyFile(src, dst) then
+				log('Copied NRO to appFolder: ' .. file)
+				nroCount = nroCount + 1
+			else
+				log('FAILED to copy NRO: ' .. file)
+			end
 		end
 	end
 	log('Total NRO files copied: ' .. nroCount)
 
-	-- AFTER deleteUnusedFiles: Copy NRR files from template .nrr folder to appFolder/.nrr
+	-- Copy NRR files from template .nrr folder to CODE folder's .nrr
+	-- IMPORTANT: AuthoringTool expects .nrr to be under the --program path (code folder)
 	local templateNrrFolder = pathJoin(templateFolder, '.nrr')
-	local appNrrFolder = pathJoin(appFolder, '.nrr')
+	local codeNrrFolder = pathJoin(codeFolder, '.nrr')
 	local nrrCount = 0
-	local nrrFiles = {}
-	
+
 	if isDir(templateNrrFolder) then
-		-- Create the .nrr folder in appFolder
-		lfs.mkdir(appNrrFolder)
-		log('Created .nrr folder: ' .. appNrrFolder)
-		
+		lfs.mkdir(codeNrrFolder)
+		log('Created .nrr folder under code: ' .. codeNrrFolder)
+
 		for file in lfs.dir(templateNrrFolder) do
 			if file ~= '.' and file ~= '..' and file:match("%.nrr$") then
 				local src = pathJoin(templateNrrFolder, file)
-				local dst = pathJoin(appNrrFolder, file)
-				local success = copyFile(src, dst)
-				if success then
-					log('Copied NRR: ' .. file)
+				local dst = pathJoin(codeNrrFolder, file)
+				if copyFile(src, dst) then
+					log('Copied NRR to code/.nrr: ' .. file)
 					nrrCount = nrrCount + 1
-					nrrFiles[#nrrFiles + 1] = pathJoin(appNrrFolder, file)
 				else
 					log('FAILED to copy NRR: ' .. file)
 				end
@@ -601,42 +577,39 @@ function nxsPackageApp( args )
 	else
 		log('No .nrr folder found in template: ' .. templateNrrFolder)
 	end
-	log('Total NRR files copied: ' .. nrrCount)
+	log('Total NRR files copied to code/.nrr: ' .. nrrCount)
 
-	-- Verify the .nrr folder exists and has files
-	if isDir(appNrrFolder) then
-		log('.nrr folder exists: ' .. appNrrFolder)
-		local verifyCount, verifyFiles = countFilesWithExtension(appNrrFolder, 'nrr')
-		log('.nrr folder contains ' .. verifyCount .. ' nrr files: ' .. table.concat(verifyFiles, ', '))
+	-- Verify the .nrr folder
+	if isDir(codeNrrFolder) then
+		local verifyCount, verifyFiles = countFilesWithExtension(codeNrrFolder, 'nrr')
+		log('code/.nrr contains ' .. verifyCount .. ' nrr files: ' .. table.concat(verifyFiles, ', '))
 	else
-		log('.nrr folder DOES NOT EXIST: ' .. appNrrFolder)
+		log('WARNING: code/.nrr folder does not exist!')
 	end
 
-	-- build App 
-	-- sample: AuthoringTool.exe creatensp -o Rtt.nsp --metartt.nmeta --type Application --nro nrofolder --desc Application.desc--program program0.ncd/code assets2
-
+	-- Build App
 	local metafile = args.nmetaPath
 	if not isFile(metafile) then
 		return 'Missing ' .. metafile .. ' file'
 	end
-	log('Using ' .. metafile)
+	log('Using metafile: ' .. metafile)
 
-	local nspfile = pathJoin(nxsappFolder, args.applicationName ..'.nsp')
-	local descfile = pathJoin(nxsRoot, "\\Resources\\SpecFiles\\Application.desc")
-	local solar2Dfile = pathJoin(args.tmpDir, '\\nxtemplate\\code')
-	local assets = pathJoin(args.tmpDir, '\\nxsapp')
+	local nspfile = pathJoin(nxsappFolder, args.applicationName .. '.nsp')
+	local descfile = pathJoin(nxsRoot, 'Resources', 'SpecFiles', 'Application.desc')
+	local assets = appFolder
 	local nroFolder = appFolder
 
-	-- update .npdm file
-	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe'
-	cmd = cmd .. ' --desc ' .. nxsRoot .. '\\Resources\\SpecFiles\\Application.desc'
-	cmd = cmd .. ' --meta "' ..  metafile .. '"'
-	cmd = cmd .. ' -o "' ..  solar2Dfile .. '\\main.npdm"'
-	logd('\nCreating the NPDM File ... ', cmd)
-	local rc, stdout = processExecute(cmd, true);
-	log('\nMakeMeta retcode ' .. rc)
-	if type(stdout) == 'string' and string.len(stdout) > 0 then
-		log('\nMakeMeta output\n' .. stdout)
+	-- Update .npdm file
+	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe"'
+	cmd = cmd .. ' --desc "' .. descfile .. '"'
+	cmd = cmd .. ' --meta "' .. metafile .. '"'
+	cmd = cmd .. ' -o "' .. pathJoin(solar2Dfile, 'main.npdm') .. '"'
+	log('Creating NPDM file...')
+	logd('MakeMeta command: ' .. cmd)
+	local rc, stdout = processExecute(cmd, true)
+	log('MakeMeta retcode: ' .. rc)
+	if type(stdout) == 'string' and #stdout > 0 then
+		log('MakeMeta output: ' .. stdout)
 	end
 
 	-- Find .nss file in code folder
@@ -644,69 +617,70 @@ function nxsPackageApp( args )
 	if nssFile then
 		log('Found NSS file: ' .. nssFile)
 	else
-		-- Try default name
 		local defaultNss = pathJoin(solar2Dfile, 'main.nss')
 		if isFile(defaultNss) then
 			nssFile = defaultNss
 			log('Using default NSS file: ' .. nssFile)
 		else
-			log('[WARNING] No NSS file found in: ' .. solar2Dfile)
+			log('WARNING: No NSS file found in: ' .. solar2Dfile)
 		end
 	end
 
-	-- Check for NRO and NRR files using proper counting
+	-- Check counts
 	local hasNroFiles = nroCount > 0
 	local hasNrrFiles = nrrCount > 0
 
 	log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
-	log('Has NRR files: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
+	log('Has NRR files in code/.nrr: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
 
-	-- create .nsp file
-	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe" creatensp --type Application'
+	-- Create .nsp file
+	cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe"'
+	cmd = cmd .. ' creatensp --type Application'
 	cmd = cmd .. ' -o "' .. nspfile .. '"'
 	cmd = cmd .. ' --meta "' .. metafile .. '"'
 
-	-- Use --nro ONLY
-	if hasNroFiles then
-		cmd = cmd .. ' --nro "' .. appFolder .. '"'
-	else
-		return "No NRO files found – cannot build NSP"
+	if hasNroFiles and hasNrrFiles then
+		cmd = cmd .. ' --nro "' .. nroFolder .. '"'
+		log('Added --nro: ' .. nroFolder)
+	elseif hasNroFiles and not hasNrrFiles then
+		log('WARNING: NRO files found but no NRR files - skipping --nro')
 	end
 
 	cmd = cmd .. ' --desc "' .. descfile .. '"'
 	cmd = cmd .. ' --program "' .. solar2Dfile .. '"'
 
-	-- NSS (required on newer SDKs)
 	if nssFile then
 		cmd = cmd .. ' --nss "' .. nssFile .. '"'
 	end
 
 	cmd = cmd .. ' "' .. assets .. '"'
-	cmd = 'cmd /c "' .. cmd .. '"'
 
-	cmd = 'cmd /c "'.. cmd .. '"'
-	log("FINAL .nrr CHECK:")
-	if isDir(appNrrFolder) then
-		for f in lfs.dir(appNrrFolder) do
-			log("  .nrr -> " .. f)
+	-- Final verification
+	log('FINAL CHECK - code/.nrr contents:')
+	if isDir(codeNrrFolder) then
+		for f in lfs.dir(codeNrrFolder) do
+			if f ~= '.' and f ~= '..' then
+				log('  ' .. f)
+			end
 		end
 	else
-		log("  ERROR: .nrr folder missing")
+		log('  ERROR: code/.nrr folder missing!')
 	end
-	
-	log('\nBuilding App ... ')
-	log(cmd)
-	local rc, stdout = processExecute(cmd, true);
-	log('\nAuthoringTool retcode ' .. rc)
-	if type(stdout) == 'string' and string.len(stdout) > 0 then
-		log('\nAuthoringTool output\n' .. stdout)
+
+	log('Building App...')
+	log('Command: ' .. cmd)
+
+	rc, stdout = processExecute(cmd, true)
+	log('AuthoringTool retcode: ' .. rc)
+	if type(stdout) == 'string' and #stdout > 0 then
+		log('AuthoringTool output: ' .. stdout)
 	end
 
 	if not isFile(nspfile) then
 		return 'Failed to build NX Switch App'
 	else
-		log('\nBuild succeeded: ' .. nspfile)
+		log('Build succeeded: ' .. nspfile)
 	end
 
-	return nil 
+	return nil
 end
