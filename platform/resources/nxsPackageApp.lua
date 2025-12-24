@@ -551,22 +551,28 @@ function nxsPackageApp( args )
 	end
 	log('Total NRO files copied: ' .. nroCount)
 
-	-- Copy NRR files from template .nrr folder to CODE folder's .nrr
-	-- IMPORTANT: AuthoringTool expects .nrr to be under the --program path (code folder)
+	-- Copy NRR files from template .nrr folder to appFolder/.nrr
+	-- IMPORTANT: AuthoringTool expects .nrr to be in the --nro directory (appFolder)
 	local templateNrrFolder = pathJoin(templateFolder, '.nrr')
-	local codeNrrFolder = pathJoin(codeFolder, '.nrr')
+	local appNrrFolder = pathJoin(appFolder, '.nrr')
 	local nrrCount = 0
 
 	if isDir(templateNrrFolder) then
-		lfs.mkdir(codeNrrFolder)
-		log('Created .nrr folder under code: ' .. codeNrrFolder)
+		-- Use Windows mkdir command to create folder with dot prefix
+		if windows then
+			local mkdirCmd = 'mkdir "' .. appNrrFolder .. '"'
+			processExecute(mkdirCmd)
+		else
+			lfs.mkdir(appNrrFolder)
+		end
+		log('Created .nrr folder in appFolder: ' .. appNrrFolder)
 
 		for file in lfs.dir(templateNrrFolder) do
 			if file ~= '.' and file ~= '..' and file:match("%.nrr$") then
 				local src = pathJoin(templateNrrFolder, file)
-				local dst = pathJoin(codeNrrFolder, file)
+				local dst = pathJoin(appNrrFolder, file)
 				if copyFile(src, dst) then
-					log('Copied NRR to code/.nrr: ' .. file)
+					log('Copied NRR to appFolder/.nrr: ' .. file)
 					nrrCount = nrrCount + 1
 				else
 					log('FAILED to copy NRR: ' .. file)
@@ -576,14 +582,26 @@ function nxsPackageApp( args )
 	else
 		log('No .nrr folder found in template: ' .. templateNrrFolder)
 	end
-	log('Total NRR files copied to code/.nrr: ' .. nrrCount)
+	log('Total NRR files copied to appFolder/.nrr: ' .. nrrCount)
 
-	-- Verify the .nrr folder
-	if isDir(codeNrrFolder) then
-		local verifyCount, verifyFiles = countFilesWithExtension(codeNrrFolder, 'nrr')
-		log('code/.nrr contains ' .. verifyCount .. ' nrr files: ' .. table.concat(verifyFiles, ', '))
+	-- Verify the .nrr folder using Windows dir command
+	log('Verifying .nrr folder with dir command:')
+	if windows then
+		local verifyCmd = 'dir "' .. appNrrFolder .. '" /b'
+		local handle = io.popen(verifyCmd)
+		if handle then
+			local result = handle:read("*a")
+			handle:close()
+			log('DIR output: ' .. result)
+		end
+	end
+
+	-- Also verify with lfs
+	if isDir(appNrrFolder) then
+		local verifyCount, verifyFiles = countFilesWithExtension(appNrrFolder, 'nrr')
+		log('LFS check - appFolder/.nrr contains ' .. verifyCount .. ' nrr files: ' .. table.concat(verifyFiles, ', '))
 	else
-		log('WARNING: code/.nrr folder does not exist!')
+		log('WARNING: appFolder/.nrr folder does not exist according to lfs!')
 	end
 
 	-- Build App
@@ -599,7 +617,6 @@ function nxsPackageApp( args )
 	local nroFolder = appFolder
 
 	-- Update .npdm file
-	-- Use the same quoting style as the original unzip command which works
 	local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe'
 	cmd = cmd .. ' --desc ' .. nxsRoot .. '\\Resources\\SpecFiles\\Application.desc'
 	cmd = cmd .. ' --meta "' .. metafile .. '"'
@@ -632,10 +649,9 @@ function nxsPackageApp( args )
 	local hasNrrFiles = nrrCount > 0
 
 	log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
-	log('Has NRR files in code/.nrr: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
+	log('Has NRR files in appFolder/.nrr: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
 
 	-- Create .nsp file
-	-- Build command with proper quoting for Windows cmd.exe
 	cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe'
 	cmd = cmd .. ' creatensp --type Application'
 	cmd = cmd .. ' -o "' .. nspfile .. '"'
@@ -658,16 +674,19 @@ function nxsPackageApp( args )
 	cmd = cmd .. ' "' .. assets .. '"'
 	cmd = cmd .. '"'
 
-	-- Final verification
-	log('FINAL CHECK - code/.nrr contents:')
-	if isDir(codeNrrFolder) then
-		for f in lfs.dir(codeNrrFolder) do
-			if f ~= '.' and f ~= '..' then
-				log('  ' .. f)
-			end
+	-- Final verification before build
+	log('FINAL CHECK before AuthoringTool:')
+	log('  --nro folder: ' .. nroFolder)
+	log('  Expected .nrr location: ' .. appNrrFolder)
+	
+	-- List contents of nroFolder
+	log('  Contents of --nro folder:')
+	for file in lfs.dir(nroFolder) do
+		if file ~= '.' and file ~= '..' then
+			local fullPath = pathJoin(nroFolder, file)
+			local mode = lfs.attributes(fullPath, 'mode')
+			log('    ' .. file .. ' (' .. (mode or 'unknown') .. ')')
 		end
-	else
-		log('  ERROR: code/.nrr folder missing!')
 	end
 
 	log('Building App...')
