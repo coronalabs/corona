@@ -584,19 +584,7 @@ function nxsPackageApp( args )
 	end
 	log('Total NRR files copied to appFolder/.nrr: ' .. nrrCount)
 
-	-- Verify the .nrr folder using Windows dir command
-	log('Verifying .nrr folder with dir command:')
-	if windows then
-		local verifyCmd = 'dir "' .. appNrrFolder .. '" /b'
-		local handle = io.popen(verifyCmd)
-		if handle then
-			local result = handle:read("*a")
-			handle:close()
-			log('DIR output: ' .. result)
-		end
-	end
-
-	-- Also verify with lfs
+	-- Verify with lfs
 	if isDir(appNrrFolder) then
 		local verifyCount, verifyFiles = countFilesWithExtension(appNrrFolder, 'nrr')
 		log('LFS check - appFolder/.nrr contains ' .. verifyCount .. ' nrr files: ' .. table.concat(verifyFiles, ', '))
