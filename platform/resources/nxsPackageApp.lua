@@ -551,38 +551,35 @@ function nxsPackageApp( args )
 	end
 	log('Total NRO files copied: ' .. nroCount)
 
-	-- Copy NRR files from template .nrr folder to appFolder/.nrr
-	-- IMPORTANT: AuthoringTool expects .nrr to be in the --nro directory (appFolder)
+	-- Copy NRR directory atomically (Nintendo AuthoringTool requirement)
 	local templateNrrFolder = pathJoin(templateFolder, '.nrr')
 	local appNrrFolder = pathJoin(appFolder, '.nrr')
 	local nrrCount = 0
 
 	if isDir(templateNrrFolder) then
-		-- Use Windows mkdir command to create folder with dot prefix
-		if windows then
-			local mkdirCmd = 'mkdir "' .. appNrrFolder .. '"'
-			processExecute(mkdirCmd)
-		else
-			lfs.mkdir(appNrrFolder)
-		end
-		log('Created .nrr folder in appFolder: ' .. appNrrFolder)
+		log('Copying .nrr directory to appFolder')
 
-		for file in lfs.dir(templateNrrFolder) do
-			if file ~= '.' and file ~= '..' and file:match("%.nrr$") then
-				local src = pathJoin(templateNrrFolder, file)
-				local dst = pathJoin(appNrrFolder, file)
-				if copyFile(src, dst) then
-					log('Copied NRR to appFolder/.nrr: ' .. file)
-					nrrCount = nrrCount + 1
-				else
-					log('FAILED to copy NRR: ' .. file)
-				end
-			end
+		-- Remove any existing .nrr to avoid hidden/system flag issues
+		if isDir(appNrrFolder) then
+			removeDir(appNrrFolder)
+		end
+
+		-- Copy directory wholesale (prevents hidden flag bug)
+		copyDir(templateNrrFolder, appNrrFolder)
+
+		-- Count files after copy
+		nrrCount = select(1, countFilesWithExtension(appNrrFolder, 'nrr'))
+
+		-- Windows: explicitly remove hidden/system attributes
+		if windows then
+			processExecute('attrib -h -s "' .. appNrrFolder .. '\\*" /S')
 		end
 	else
-		log('No .nrr folder found in template: ' .. templateNrrFolder)
+		log('No .nrr folder found in template')
 	end
+
 	log('Total NRR files copied to appFolder/.nrr: ' .. nrrCount)
+
 
 	-- Verify with lfs
 	if isDir(appNrrFolder) then
