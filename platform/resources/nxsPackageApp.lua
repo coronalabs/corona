@@ -400,27 +400,6 @@ local function countFilesWithExtension(folder, ext)
 	return count, files
 end
 
--- Copy directory recursively using Lua (works better with dot folders)
-local function copyDirRecursive(src, dst)
-	if not isDir(src) then
-		return false
-	end
-	lfs.mkdir(dst)
-	for file in lfs.dir(src) do
-		if file ~= '.' and file ~= '..' then
-			local srcPath = pathJoin(src, file)
-			local dstPath = pathJoin(dst, file)
-			local mode = lfs.attributes(srcPath, 'mode')
-			if mode == 'file' then
-				copyFile(srcPath, dstPath)
-			elseif mode == 'directory' then
-				copyDirRecursive(srcPath, dstPath)
-			end
-		end
-	end
-	return true
-end
-
 --
 -- global script to call from C++
 --
@@ -576,8 +555,8 @@ function nxsPackageApp( args )
 	end
 	log('Total NRO files copied: ' .. nroCount)
 
-	-- Find and copy NRR files
-	-- Check multiple possible locations in template
+	-- Find and copy NRR files to .nrr folder inside appFolder (same as --nro directory)
+	-- AuthoringTool expects .nrr folder to be INSIDE the --nro directory
 	local nrrCount = 0
 	local nrrFiles = {}
 	local appNrrFolder = pathJoin(appFolder, '.nrr')
@@ -603,7 +582,7 @@ function nxsPackageApp( args )
 	end
 	
 	if foundNrrSource then
-		-- Create .nrr folder in appFolder
+		-- Create .nrr folder in appFolder (same directory as NRO files)
 		lfs.mkdir(appNrrFolder)
 		log('Created .nrr folder: ' .. appNrrFolder)
 		
@@ -623,7 +602,6 @@ function nxsPackageApp( args )
 		end
 	else
 		log('No NRR source folder found in template')
-		-- List what's in template for debugging
 		log('Template contents:')
 		for file in lfs.dir(templateFolder) do
 			if file ~= '.' and file ~= '..' then
@@ -686,30 +664,29 @@ function nxsPackageApp( args )
 	end
 
 	-- Create .nsp file
+	-- NOTE: Do NOT use --nrr flag - it doesn't exist!
+	-- The .nrr folder must be inside the --nro directory and AuthoringTool finds it automatically
 	cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe'
 	cmd = cmd .. ' creatensp --type Application'
 	cmd = cmd .. ' -o "' .. nspfile .. '"'
 	cmd = cmd .. ' --meta "' .. metafile .. '"'
-
-	-- ALWAYS include --nro if we have NRO files (required for NSS to work)
-	-- Also include --nrr if we have NRR files
-	if hasNroFiles then
-		cmd = cmd .. ' --nro "' .. nroFolder .. '"'
-		log('Added --nro: ' .. nroFolder)
-		
-		if hasNrrFiles then
-			cmd = cmd .. ' --nrr "' .. appNrrFolder .. '"'
-			log('Added --nrr: ' .. appNrrFolder)
-		else
-			log('WARNING: No NRR files - NRO plugins may not load at runtime')
-		end
-	end
-
 	cmd = cmd .. ' --desc "' .. descfile .. '"'
 	cmd = cmd .. ' --program "' .. codeFolder .. '"'
 
 	if nssFile then
 		cmd = cmd .. ' --nss "' .. nssFile .. '"'
+	end
+
+	-- Add --nro if we have NRO files
+	-- The .nrr folder should be INSIDE this directory
+	if hasNroFiles then
+		cmd = cmd .. ' --nro "' .. nroFolder .. '"'
+		log('Added --nro: ' .. nroFolder)
+		log('  .nrr folder inside: ' .. appNrrFolder)
+		
+		if not hasNrrFiles then
+			log('WARNING: No NRR files in .nrr folder - build may fail!')
+		end
 	end
 
 	cmd = cmd .. ' "' .. assets .. '"'
@@ -718,9 +695,19 @@ function nxsPackageApp( args )
 	-- Final verification before build
 	log('FINAL CHECK before AuthoringTool:')
 	log('  --nro folder: ' .. nroFolder)
-	log('  --nrr folder: ' .. appNrrFolder)
 	log('  NRO count: ' .. nroCount)
 	log('  NRR count: ' .. nrrCount)
+	log('  .nrr folder exists: ' .. tostring(isDir(appNrrFolder)))
+	
+	-- List .nrr contents
+	if isDir(appNrrFolder) then
+		log('  .nrr contents:')
+		for file in lfs.dir(appNrrFolder) do
+			if file ~= '.' and file ~= '..' then
+				log('    ' .. file)
+			end
+		end
+	end
 
 	log('Building App...')
 	log('Command: ' .. cmd)
