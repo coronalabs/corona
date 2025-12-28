@@ -664,8 +664,11 @@ function nxsPackageApp( args )
 	end
 
 	-- Create .nsp file
-	-- NOTE: Do NOT use --nrr flag - it doesn't exist!
-	-- The .nrr folder must be inside the --nro directory and AuthoringTool finds it automatically
+	-- NOTE:
+	--  * For Application builds, DO NOT pass an extra positional assets path
+	--  * --program already defines code (+ optional data)
+	--  * --nro points to directory containing .nro and .nrr folder
+
 	cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe'
 	cmd = cmd .. ' creatensp --type Application'
 	cmd = cmd .. ' -o "' .. nspfile .. '"'
@@ -673,33 +676,31 @@ function nxsPackageApp( args )
 	cmd = cmd .. ' --desc "' .. descfile .. '"'
 	cmd = cmd .. ' --program "' .. codeFolder .. '"'
 
+	-- NSS is REQUIRED for Application builds
 	if nssFile then
 		cmd = cmd .. ' --nss "' .. nssFile .. '"'
+	else
+		return 'Missing .nss file required for Application build'
 	end
 
-	-- Add --nro if we have NRO files
-	-- The .nrr folder should be INSIDE this directory
+	-- Add NRO directory (contains .nro files and .nrr folder)
 	if hasNroFiles then
 		cmd = cmd .. ' --nro "' .. nroFolder .. '"'
 		log('Added --nro: ' .. nroFolder)
 		log('  .nrr folder inside: ' .. appNrrFolder)
-		
+
 		if not hasNrrFiles then
-			log('WARNING: No NRR files in .nrr folder - build may fail!')
+			log('WARNING: No NRR files in .nrr folder — build may fail')
 		end
 	end
 
-	cmd = cmd .. ' "' .. assets .. '"'
-	cmd = cmd .. '"'
-
-	-- Final verification before build
 	log('FINAL CHECK before AuthoringTool:')
-	log('  --nro folder: ' .. nroFolder)
+	log('  --program: ' .. codeFolder)
+	log('  --nro folder: ' .. tostring(hasNroFiles and nroFolder or 'none'))
 	log('  NRO count: ' .. nroCount)
 	log('  NRR count: ' .. nrrCount)
 	log('  .nrr folder exists: ' .. tostring(isDir(appNrrFolder)))
-	
-	-- List .nrr contents
+
 	if isDir(appNrrFolder) then
 		log('  .nrr contents:')
 		for file in lfs.dir(appNrrFolder) do
@@ -714,6 +715,7 @@ function nxsPackageApp( args )
 
 	rc, stdout = processExecute(cmd, true)
 	log('AuthoringTool retcode: ' .. rc)
+
 	if type(stdout) == 'string' and #stdout > 0 then
 		log('AuthoringTool output: ' .. stdout)
 	end
@@ -724,5 +726,4 @@ function nxsPackageApp( args )
 		log('Build succeeded: ' .. nspfile)
 	end
 
-	return nil
 end
