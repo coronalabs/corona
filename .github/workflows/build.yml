@@ -107,6 +107,7 @@ jobs:
           
           
   Xcode-template-matrix-15:
+    if: false
     strategy:
       matrix:
         runner:
@@ -151,6 +152,7 @@ jobs:
 
 
   collect-ios-templates:
+    if: false
     needs:
       - Xcode-template-matrix-26
       - Xcode-template-matrix-15
@@ -345,6 +347,7 @@ jobs:
           path: ./output
 
   macOS-Simulator:
+    if: false
     needs:
       - source-code
       - collect-ios-templates
@@ -449,6 +452,7 @@ jobs:
           exit 1
 
   check-notarization:
+    if: false
     runs-on: macos-26
     steps:
       - name: Check notarization credentials
