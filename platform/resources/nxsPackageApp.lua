@@ -173,6 +173,11 @@ local function isFile(f)
     return lfs.attributes(f, 'mode') == 'file'
 end
 
+local function getFileSize(f)
+    if not f then return 0 end
+    return lfs.attributes(f, 'size') or 0
+end
+
 local function copyFile(src, dst)
     local fi = io.open(src, "rb")
     if (fi) then
@@ -322,6 +327,44 @@ local function countFilesWithExtension(folder, ext)
         end
     end
     return count, files
+end
+
+-- Validate NSS file by checking if it's a valid ELF file
+-- NSS files are ELF binaries (unstripped NSO source)
+local function isValidNssFile(nssPath)
+    if not isFile(nssPath) then
+        return false, "File does not exist"
+    end
+    
+    local size = getFileSize(nssPath)
+    if size < 64 then
+        return false, "File too small (" .. size .. " bytes)"
+    end
+    
+    -- Check ELF magic number
+    local f = io.open(nssPath, "rb")
+    if not f then
+        return false, "Cannot open file"
+    end
+    
+    local magic = f:read(4)
+    f:close()
+    
+    if not magic then
+        return false, "Cannot read file"
+    end
+    
+    -- ELF magic: 0x7F 'E' 'L' 'F'
+    if magic == "\x7FELF" then
+        return true, "Valid ELF file (" .. size .. " bytes)"
+    else
+        -- Show first bytes for debugging
+        local hexStr = ""
+        for i = 1, #magic do
+            hexStr = hexStr .. string.format("%02X ", magic:byte(i))
+        end
+        return false, "Not an ELF file (magic: " .. hexStr .. ")"
+    end
 end
 
 --
@@ -550,18 +593,24 @@ function nxsPackageApp( args )
         log('MakeMeta output: ' .. stdout)
     end
 
-    -- Find .nss file in code folder
+    -- Find and validate .nss file in code folder
     local nssFile = findNssFile(codeFolder)
+    local useNss = false
+    
     if nssFile then
         log('Found NSS file: ' .. nssFile)
-    else
-        local defaultNss = pathJoin(codeFolder, 'main.nss')
-        if isFile(defaultNss) then
-            nssFile = defaultNss
-            log('Using default NSS file: ' .. defaultNss)
+        local valid, reason = isValidNssFile(nssFile)
+        if valid then
+            log('NSS file validation: ' .. reason)
+            useNss = true
         else
-            log('WARNING: No NSS file found in: ' .. codeFolder)
+            log('WARNING: NSS file is invalid: ' .. reason)
+            log('WARNING: Building without --nss option (symbols will not be available)')
+            useNss = false
         end
+    else
+        log('No NSS file found in code folder')
+        useNss = false
     end
 
     local hasNroFiles = nroCount > 0
@@ -569,6 +618,7 @@ function nxsPackageApp( args )
 
     log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
     log('Has NRR files: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
+    log('Using NSS file: ' .. tostring(useNss))
 
     -- Build AuthoringTool command
     -- From docs:
@@ -578,7 +628,7 @@ function nxsPackageApp( args )
     --   --type Application
     --   --program <code region directory> [<data region directory>]
     --   [--nro <NRO directory>]
-    --   --nss <application's NSS file>
+    --   [--nss <application's NSS file>]  -- Optional if invalid
     
     cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe creatensp'
     cmd = cmd .. ' -o "' .. nspfile .. '"'
@@ -593,10 +643,12 @@ function nxsPackageApp( args )
         log('Added --nro: ' .. appFolder)
     end
 
-    -- NSS is required for Application type (SDK 17.5.0+)
-    if nssFile then
+    -- NSS is optional - only add if valid
+    if useNss and nssFile then
         cmd = cmd .. ' --nss "' .. nssFile .. '"'
         log('Added --nss: ' .. nssFile)
+    else
+        log('Skipping --nss option')
     end
 
     cmd = cmd .. '"'
@@ -608,7 +660,7 @@ function nxsPackageApp( args )
     if hasNroFiles then
         log('  NRO directory (--nro): ' .. appFolder)
     end
-    log('  NSS file (--nss): ' .. (nssFile or 'none'))
+    log('  NSS file (--nss): ' .. (useNss and nssFile or 'SKIPPED'))
     log('  NRO count: ' .. nroCount)
     log('  NRR count: ' .. nrrCount)
     log('  .nrr folder exists: ' .. tostring(isDir(appNrrFolder)))
