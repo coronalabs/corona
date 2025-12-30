@@ -215,6 +215,28 @@ local function removeDir( dir )
     end
 end
 
+-- Convert short 8.3 path to long path on Windows
+local function getLongPath(path)
+    if not windows then
+        return path
+    end
+    
+    -- Use PowerShell to get the long path
+    local cmd = 'powershell -Command "(Get-Item -LiteralPath \'' .. path:gsub("'", "''") .. '\').FullName"'
+    local handle = io.popen(cmd)
+    if handle then
+        local result = handle:read("*a")
+        handle:close()
+        if result and #result > 0 then
+            result = result:gsub("[\r\n]+$", "") -- trim newlines
+            if #result > 0 and isDir(result) or isFile(result) then
+                return result
+            end
+        end
+    end
+    return path
+end
+
 local function nxsDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
     if type(buildSettings) ~= 'table' then
         return nil
@@ -332,7 +354,7 @@ end
 -- Check NSS file and log info for debugging
 local function checkNssFile(nssPath)
     if not isFile(nssPath) then
-        return "File does not exist"
+        return "File does not exist", false
     end
     
     local size = getFileSize(nssPath)
@@ -340,14 +362,14 @@ local function checkNssFile(nssPath)
     -- Read first bytes for debugging
     local f = io.open(nssPath, "rb")
     if not f then
-        return "Cannot open file"
+        return "Cannot open file", false
     end
     
     local header = f:read(16)
     f:close()
     
     if not header then
-        return "Cannot read file"
+        return "Cannot read file", false
     end
     
     -- Show first bytes as hex
@@ -356,10 +378,15 @@ local function checkNssFile(nssPath)
         hexStr = hexStr .. string.format("%02X ", header:byte(i))
     end
     
-    -- Check for ELF magic
-    local isElf = header:sub(1,4) == "\x7FELF"
+    -- Check for ELF magic: 0x7F 'E' 'L' 'F' (bytes: 127, 69, 76, 70)
+    local isElf = false
+    if #header >= 4 then
+        local b1, b2, b3, b4 = header:byte(1, 4)
+        isElf = (b1 == 0x7F and b2 == 0x45 and b3 == 0x4C and b4 == 0x46)
+    end
     
-    return string.format("Size: %d bytes, Magic: %s, IsELF: %s", size, hexStr, tostring(isElf))
+    local info = string.format("Size: %d bytes, Magic: %s, IsELF: %s", size, hexStr, tostring(isElf))
+    return info, isElf
 end
 
 --
@@ -590,11 +617,17 @@ function nxsPackageApp( args )
 
     -- Find .nss file in code folder (REQUIRED by AuthoringTool)
     local nssFile = findNssFile(codeFolder)
+    local nssIsValid = false
     
     if nssFile then
         log('Found NSS file: ' .. nssFile)
-        local nssInfo = checkNssFile(nssFile)
+        local nssInfo
+        nssInfo, nssIsValid = checkNssFile(nssFile)
         log('NSS file info: ' .. nssInfo)
+        
+        if not nssIsValid then
+            log('WARNING: NSS file does not have valid ELF header!')
+        end
     else
         log('WARNING: No NSS file found in code folder!')
         log('AuthoringTool requires --nss option. Build may fail.')
@@ -605,6 +638,19 @@ function nxsPackageApp( args )
 
     log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
     log('Has NRR files: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
+
+    -- Convert paths to long paths (avoid 8.3 short names that can cause issues)
+    local codeFolderLong = getLongPath(codeFolder)
+    local appFolderLong = getLongPath(appFolder)
+    local nssFileLong = nssFile and getLongPath(nssFile) or nil
+    local metafileLong = getLongPath(metafile)
+    
+    log('Using long paths:')
+    log('  codeFolder: ' .. codeFolderLong)
+    log('  appFolder: ' .. appFolderLong)
+    if nssFileLong then
+        log('  nssFile: ' .. nssFileLong)
+    end
 
     -- Build AuthoringTool command
     -- From docs:
@@ -619,20 +665,20 @@ function nxsPackageApp( args )
     cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe creatensp'
     cmd = cmd .. ' -o "' .. nspfile .. '"'
     cmd = cmd .. ' --desc "' .. descfile .. '"'
-    cmd = cmd .. ' --meta "' .. metafile .. '"'
+    cmd = cmd .. ' --meta "' .. metafileLong .. '"'
     cmd = cmd .. ' --type Application'
-    cmd = cmd .. ' --program "' .. codeFolder .. '" "' .. appFolder .. '"'
+    cmd = cmd .. ' --program "' .. codeFolderLong .. '" "' .. appFolderLong .. '"'
     
     -- --nro specifies directory with NRO files
     if hasNroFiles then
-        cmd = cmd .. ' --nro "' .. appFolder .. '"'
-        log('Added --nro: ' .. appFolder)
+        cmd = cmd .. ' --nro "' .. appFolderLong .. '"'
+        log('Added --nro: ' .. appFolderLong)
     end
 
     -- NSS is REQUIRED by AuthoringTool
-    if nssFile then
-        cmd = cmd .. ' --nss "' .. nssFile .. '"'
-        log('Added --nss: ' .. nssFile)
+    if nssFileLong then
+        cmd = cmd .. ' --nss "' .. nssFileLong .. '"'
+        log('Added --nss: ' .. nssFileLong)
     else
         log('ERROR: No NSS file available!')
     end
@@ -641,12 +687,13 @@ function nxsPackageApp( args )
 
     -- Final verification
     log('FINAL CHECK before AuthoringTool:')
-    log('  Code region (--program arg1): ' .. codeFolder)
-    log('  Data region (--program arg2): ' .. appFolder)
+    log('  Code region (--program arg1): ' .. codeFolderLong)
+    log('  Data region (--program arg2): ' .. appFolderLong)
     if hasNroFiles then
-        log('  NRO directory (--nro): ' .. appFolder)
+        log('  NRO directory (--nro): ' .. appFolderLong)
     end
-    log('  NSS file (--nss): ' .. (nssFile or 'MISSING'))
+    log('  NSS file (--nss): ' .. (nssFileLong or 'MISSING'))
+    log('  NSS is valid ELF: ' .. tostring(nssIsValid))
     log('  NRO count: ' .. nroCount)
     log('  NRR count: ' .. nrrCount)
     log('  .nrr folder exists: ' .. tostring(isDir(appNrrFolder)))
