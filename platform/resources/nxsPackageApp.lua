@@ -329,42 +329,37 @@ local function countFilesWithExtension(folder, ext)
     return count, files
 end
 
--- Validate NSS file by checking if it's a valid ELF file
--- NSS files are ELF binaries (unstripped NSO source)
-local function isValidNssFile(nssPath)
+-- Check NSS file and log info for debugging
+local function checkNssFile(nssPath)
     if not isFile(nssPath) then
-        return false, "File does not exist"
+        return "File does not exist"
     end
     
     local size = getFileSize(nssPath)
-    if size < 64 then
-        return false, "File too small (" .. size .. " bytes)"
-    end
     
-    -- Check ELF magic number
+    -- Read first bytes for debugging
     local f = io.open(nssPath, "rb")
     if not f then
-        return false, "Cannot open file"
+        return "Cannot open file"
     end
     
-    local magic = f:read(4)
+    local header = f:read(16)
     f:close()
     
-    if not magic then
-        return false, "Cannot read file"
+    if not header then
+        return "Cannot read file"
     end
     
-    -- ELF magic: 0x7F 'E' 'L' 'F'
-    if magic == "\x7FELF" then
-        return true, "Valid ELF file (" .. size .. " bytes)"
-    else
-        -- Show first bytes for debugging
-        local hexStr = ""
-        for i = 1, #magic do
-            hexStr = hexStr .. string.format("%02X ", magic:byte(i))
-        end
-        return false, "Not an ELF file (magic: " .. hexStr .. ")"
+    -- Show first bytes as hex
+    local hexStr = ""
+    for i = 1, math.min(#header, 16) do
+        hexStr = hexStr .. string.format("%02X ", header:byte(i))
     end
+    
+    -- Check for ELF magic
+    local isElf = header:sub(1,4) == "\x7FELF"
+    
+    return string.format("Size: %d bytes, Magic: %s, IsELF: %s", size, hexStr, tostring(isElf))
 end
 
 --
@@ -593,24 +588,16 @@ function nxsPackageApp( args )
         log('MakeMeta output: ' .. stdout)
     end
 
-    -- Find and validate .nss file in code folder
+    -- Find .nss file in code folder (REQUIRED by AuthoringTool)
     local nssFile = findNssFile(codeFolder)
-    local useNss = false
     
     if nssFile then
         log('Found NSS file: ' .. nssFile)
-        local valid, reason = isValidNssFile(nssFile)
-        if valid then
-            log('NSS file validation: ' .. reason)
-            useNss = true
-        else
-            log('WARNING: NSS file is invalid: ' .. reason)
-            log('WARNING: Building without --nss option (symbols will not be available)')
-            useNss = false
-        end
+        local nssInfo = checkNssFile(nssFile)
+        log('NSS file info: ' .. nssInfo)
     else
-        log('No NSS file found in code folder')
-        useNss = false
+        log('WARNING: No NSS file found in code folder!')
+        log('AuthoringTool requires --nss option. Build may fail.')
     end
 
     local hasNroFiles = nroCount > 0
@@ -618,7 +605,6 @@ function nxsPackageApp( args )
 
     log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
     log('Has NRR files: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
-    log('Using NSS file: ' .. tostring(useNss))
 
     -- Build AuthoringTool command
     -- From docs:
@@ -628,7 +614,7 @@ function nxsPackageApp( args )
     --   --type Application
     --   --program <code region directory> [<data region directory>]
     --   [--nro <NRO directory>]
-    --   [--nss <application's NSS file>]  -- Optional if invalid
+    --   --nss <application's NSS file>  -- REQUIRED
     
     cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe creatensp'
     cmd = cmd .. ' -o "' .. nspfile .. '"'
@@ -643,12 +629,12 @@ function nxsPackageApp( args )
         log('Added --nro: ' .. appFolder)
     end
 
-    -- NSS is optional - only add if valid
-    if useNss and nssFile then
+    -- NSS is REQUIRED by AuthoringTool
+    if nssFile then
         cmd = cmd .. ' --nss "' .. nssFile .. '"'
         log('Added --nss: ' .. nssFile)
     else
-        log('Skipping --nss option')
+        log('ERROR: No NSS file available!')
     end
 
     cmd = cmd .. '"'
@@ -660,7 +646,7 @@ function nxsPackageApp( args )
     if hasNroFiles then
         log('  NRO directory (--nro): ' .. appFolder)
     end
-    log('  NSS file (--nss): ' .. (useNss and nssFile or 'SKIPPED'))
+    log('  NSS file (--nss): ' .. (nssFile or 'MISSING'))
     log('  NRO count: ' .. nroCount)
     log('  NRR count: ' .. nrrCount)
     log('  .nrr folder exists: ' .. tostring(isDir(appNrrFolder)))
