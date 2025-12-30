@@ -480,12 +480,11 @@ function nxsPackageApp( args )
     log('Total NRO files copied: ' .. nroCount)
 
     -- Copy .nrr folder from template to appFolder
-    -- The template should contain a pre-built .nrr folder with corona_plugins.nrr
+    -- Per docs: ".nrr directory must be under the data region directory"
     local nrrCount = 0
     local nrrFiles = {}
     local appNrrFolder = pathJoin(appFolder, '.nrr')
     
-    -- Look for .nrr folder in template (multiple possible locations)
     local nrrSourceLocations = {
         pathJoin(templateFolder, '.nrr'),
         pathJoin(templateFolder, 'nrr'),
@@ -504,11 +503,9 @@ function nxsPackageApp( args )
     end
     
     if foundNrrSource then
-        -- Create .nrr folder in appFolder
         lfs.mkdir(appNrrFolder)
         log('Created .nrr folder: ' .. appNrrFolder)
         
-        -- Copy all .nrr files from template
         for file in lfs.dir(foundNrrSource) do
             if file ~= '.' and file ~= '..' and file:match("%.nrr$") then
                 local src = pathJoin(foundNrrSource, file)
@@ -525,13 +522,6 @@ function nxsPackageApp( args )
         end
     else
         log('WARNING: No .nrr folder found in template!')
-        log('Template contents:')
-        for file in lfs.dir(templateFolder) do
-            if file ~= '.' and file ~= '..' then
-                local ftype = lfs.attributes(pathJoin(templateFolder, file), 'mode')
-                log('  ' .. file .. ' (' .. (ftype or 'unknown') .. ')')
-            end
-        end
     end
     
     log('Total NRR files copied: ' .. nrrCount)
@@ -545,8 +535,6 @@ function nxsPackageApp( args )
 
     local nspfile = pathJoin(nxsappFolder, args.applicationName .. '.nsp')
     local descfile = pathJoin(nxsRoot, 'Resources', 'SpecFiles', 'Application.desc')
-    local assets = appFolder
-    local nroFolder = appFolder
 
     -- Update .npdm file
     local cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\MakeMeta\\MakeMeta.exe'
@@ -576,48 +564,51 @@ function nxsPackageApp( args )
         end
     end
 
-    -- Check counts
     local hasNroFiles = nroCount > 0
     local hasNrrFiles = nrrCount > 0
 
     log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
     log('Has NRR files: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
+
+    -- Build AuthoringTool command
+    -- From docs:
+    -- AuthoringTool creatensp -o <OUTPUT_FILE>
+    --   --desc <desc file>
+    --   --meta <nmeta file>
+    --   --type Application
+    --   --program <code region directory> [<data region directory>]
+    --   [--nro <NRO directory>]
+    --   --nss <application's NSS file>
     
-    if hasNrrFiles then
-        log('NRR files: ' .. table.concat(nrrFiles, ', '))
+    cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe creatensp'
+    cmd = cmd .. ' -o "' .. nspfile .. '"'
+    cmd = cmd .. ' --desc "' .. descfile .. '"'
+    cmd = cmd .. ' --meta "' .. metafile .. '"'
+    cmd = cmd .. ' --type Application'
+    cmd = cmd .. ' --program "' .. codeFolder .. '" "' .. appFolder .. '"'
+    
+    -- --nro specifies directory with NRO files
+    if hasNroFiles then
+        cmd = cmd .. ' --nro "' .. appFolder .. '"'
+        log('Added --nro: ' .. appFolder)
     end
 
-    -- Create .nsp file
-    cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe'
-    cmd = cmd .. ' creatensp --type Application'
-    cmd = cmd .. ' -o "' .. nspfile .. '"'
-    cmd = cmd .. ' --meta "' .. metafile .. '"'
-    cmd = cmd .. ' --desc "' .. descfile .. '"'
-    cmd = cmd .. ' --program "' .. codeFolder .. '"'
-
+    -- NSS is required for Application type (SDK 17.5.0+)
     if nssFile then
         cmd = cmd .. ' --nss "' .. nssFile .. '"'
+        log('Added --nss: ' .. nssFile)
     end
 
-    -- Add NRO directory (must contain .nrr subfolder with valid NRR file)
-    if hasNroFiles then
-        cmd = cmd .. ' --nro "' .. nroFolder .. '"'
-        log('Added --nro: ' .. nroFolder)
-        
-        if not hasNrrFiles then
-            log('ERROR: NRO files present but no valid NRR file!')
-            log('The template must include a .nrr folder with corona_plugins.nrr')
-            return 'Missing NRR file - rebuild template with MakeNrr'
-        end
-    end
-
-    cmd = cmd .. ' "' .. assets .. '"'
     cmd = cmd .. '"'
 
     -- Final verification
     log('FINAL CHECK before AuthoringTool:')
-    log('  --program: ' .. codeFolder)
-    log('  --nro folder: ' .. nroFolder)
+    log('  Code region (--program arg1): ' .. codeFolder)
+    log('  Data region (--program arg2): ' .. appFolder)
+    if hasNroFiles then
+        log('  NRO directory (--nro): ' .. appFolder)
+    end
+    log('  NSS file (--nss): ' .. (nssFile or 'none'))
     log('  NRO count: ' .. nroCount)
     log('  NRR count: ' .. nrrCount)
     log('  .nrr folder exists: ' .. tostring(isDir(appNrrFolder)))
