@@ -14,7 +14,7 @@ local debugBuildProcess = 0
 
 local dirSeparator = package.config:sub(1,1)
 local windows = (dirSeparator == '\\')
-local buildSettings = nil       -- build.settings
+local buildSettings = nil
 
 local function log(...)
     myprint(...)
@@ -33,11 +33,10 @@ local function quoteString( str )
 end
 
 local function globToPattern(g)
-  local p = "^"  -- pattern being built
-  local i = 0    -- index in g
-  local c        -- char at index i in g.
+  local p = "^"
+  local i = 0
+  local c
 
-  -- unescape glob char
   local function unescape()
     if c == '\\' then
       i = i + 1; c = g:sub(i,i)
@@ -49,12 +48,10 @@ local function globToPattern(g)
     return true
   end
 
-  -- escape pattern char
   local function escape(c)
     return c:match("^%w$") and c or '%' .. c
   end
 
-  -- Convert tokens at end of charset.
   local function charset_end()
     while 1 do
       if c == '' then
@@ -87,7 +84,7 @@ local function globToPattern(g)
           break
         else
           p = p .. escape(c1)
-          i = i - 1 -- put back
+          i = i - 1
         end
       end
       i = i + 1; c = g:sub(i,i)
@@ -95,7 +92,6 @@ local function globToPattern(g)
     return true
   end
 
-  -- Convert tokens in charset.
   local function charset()
     i = i + 1; c = g:sub(i,i)
     if c == '' or c == ']' then
@@ -104,7 +100,6 @@ local function globToPattern(g)
     elseif c == '^' or c == '!' then
       i = i + 1; c = g:sub(i,i)
       if c == ']' then
-        -- ignored
       else
         p = p .. '[^'
         if not charset_end() then return false end
@@ -116,7 +111,6 @@ local function globToPattern(g)
     return true
   end
 
-  -- Convert tokens.
   while 1 do
     i = i + 1; c = g:sub(i,i)
     if c == '' then
@@ -179,22 +173,6 @@ local function isFile(f)
     return lfs.attributes(f, 'mode') == 'file'
 end
 
-local function mkdirs(path)
-    local c = ""
-    path:gsub('[^/\\]+', function(dir)
-        if windows and c == '' then
-            c = dir
-        else
-            c = c .. dirSeparator .. dir
-        end
-        if isDir(c) then
-            -- do nothing, directory already exists
-        else
-            lfs.mkdir(c)
-        end
-    end)
-end
-
 local function copyFile(src, dst)
     local fi = io.open(src, "rb")
     if (fi) then
@@ -204,33 +182,18 @@ local function copyFile(src, dst)
         if (fi) then
             fi:write(buf)
             fi:close()
-            return true;
+            return true
         end
         logd('copyFile: Failed to write ' .. dst)
-        return false;
+        return false
     end
     logd('copyFile: Failed to read ' .. src)
-    return false;
-end
-
-local function moveFiles( src, dst, fltr )
-    logd('Moving ' .. fltr .. ' files from ' .. src .. ' to ' .. dst)
-    if windows then
-        local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst .. '" ' .. fltr ..' /mov 2> nul'
-        -- robocopy failed when exit code is > 7... Windows  ¯\_(ツ)_/¯ 
-        return processExecute(cmd)>7 and 1 or 0
-    else
-        local cmd = 'mkdir -p ' .. quoteString(dst)
-        os.execute(cmd)
-        local cmd = 'mv ' .. quoteString(src) .. '/' .. fltr .. ' ' ..  quoteString(dst)
-        return os.execute(cmd)
-    end
+    return false
 end
 
 local function copyDir( src, dst )
     if windows then
         local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst.. '" /e 2> nul'
-        -- robocopy failed when exit code is > 7... Windows  ¯\_(ツ)_/¯ 
         return processExecute(cmd)>7 and 1 or 0
     else
         local cmd = 'cp -R ' .. quoteString(src) .. '/. ' ..  quoteString(dst)
@@ -249,7 +212,6 @@ end
 
 local function nxsDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
     if type(buildSettings) ~= 'table' then
-        -- no build.settings file, so no plugins to download
         return nil
     end
 
@@ -285,7 +247,6 @@ local function getExcludePredecate()
         "build.properties",
     }
 
-    -- append build.settings excludes
     if buildSettings and buildSettings.excludeFiles then
         if buildSettings.excludeFiles.all then
             for i = 1, #buildSettings.excludeFiles.all do
@@ -299,7 +260,6 @@ local function getExcludePredecate()
         end
     end
 
-    -- glob ==> regexp
     for i = 1, #excludes do
         excludes[i] = globToPattern(excludes[i])
     end
@@ -311,40 +271,6 @@ local function getExcludePredecate()
             end
         end
         return true
-    end
-end
-
--- copy all assets except .lua, .lu files into .data
-local function pullDir(srcDir, dstDir, dataFiles, folders, out, excludePredicate)
-    logd('Pulling assets from ' .. srcDir .. ' to ' .. dstDir)
-    for file in lfs.dir(srcDir) do
-        local xf = dstDir .. file
-        xf = xf:sub(2)
-        local f = pathJoin(srcDir, file)
-        if excludePredicate(xf) and excludePredicate(file) then
-            local attr = lfs.attributes (f)
-            if attr.mode == "directory" then
-                folders[#folders+1] = { parent=dstDir , name=file };
-                pullDir( pathJoin(srcDir, file), dstDir..file..'/', dataFiles, folders, out, excludePredicate)
-            else
-                local fi = io.open(f, 'rb')
-                if (fi) then
-                    local block = 1024000
-                    while true do
-                        local bytes = fi:read(block)
-                        if not bytes then break end
-                        out:write(bytes)
-                    end
-                    fi:close()
-                    dataFiles[#dataFiles+1] = { name=dstDir..file, size=attr.size };
-                    logd('Added ' .. f .. ' into .data')
-                else
-                    log('Failed to add ' .. f .. ' into .data')
-                end
-            end
-        else
-            logd('Excluded ' .. f)
-        end
     end
 end
 
@@ -372,7 +298,6 @@ local function deleteUnusedFiles(srcDir, excludePredicate)
     end
 end
 
--- Helper function to find .nss file in code folder
 local function findNssFile(codeFolder)
     if not isDir(codeFolder) then
         return nil
@@ -385,7 +310,6 @@ local function findNssFile(codeFolder)
     return nil
 end
 
--- Helper function to count files with extension in a folder
 local function countFilesWithExtension(folder, ext)
     local count = 0
     local files = {}
@@ -429,7 +353,7 @@ function nxsPackageApp( args )
         end
         template = pathJoin(coronaRoot , 'Resources', 'nxtemplate')
     end
-    logd("template location: " .. template);
+    logd("template location: " .. template)
 
     if not isFile(template) then
         return 'Missing template: ' .. template
@@ -554,127 +478,63 @@ function nxsPackageApp( args )
         end
     end
     log('Total NRO files copied: ' .. nroCount)
-    
-    -- Ensure dummy NRO files exist if none were copied (Critical for NRR generation)
-    if nroCount == 0 then
-        log('WARNING: No NRO files found! Creating dummy NRO files...')
-        local dummyNro1 = pathJoin(appFolder, 'memoryBitmap.nro')
-        local f = io.open(dummyNro1, 'wb')
-        if f then
-            f:write('NRO0')
-            f:write(string.char(0x00, 0x00, 0x00, 0x10))
-            f:close()
-            nroCount = nroCount + 1
-            log('Created dummy memoryBitmap.nro')
-            nroFiles[#nroFiles + 1] = "memoryBitmap.nro"
-        end
-        
-        local dummyNro2 = pathJoin(appFolder, 'utf8.nro')
-        f = io.open(dummyNro2, 'wb')
-        if f then
-            f:write('NRO0')
-            f:write(string.char(0x00, 0x00, 0x00, 0x10))
-            f:close()
-            nroCount = nroCount + 1
-            log('Created dummy utf8.nro')
-            nroFiles[#nroFiles + 1] = "utf8.nro"
-        end
-    end
 
-    -- Prepare .nrr folder structure
+    -- Copy .nrr folder from template to appFolder
+    -- The template should contain a pre-built .nrr folder with corona_plugins.nrr
+    local nrrCount = 0
+    local nrrFiles = {}
     local appNrrFolder = pathJoin(appFolder, '.nrr')
     
-    -- Remove existing .nrr folder to ensure clean state
-    if isDir(appNrrFolder) then
-        removeDir(appNrrFolder)
+    -- Look for .nrr folder in template (multiple possible locations)
+    local nrrSourceLocations = {
+        pathJoin(templateFolder, '.nrr'),
+        pathJoin(templateFolder, 'nrr'),
+    }
+    
+    local foundNrrSource = nil
+    for _, loc in ipairs(nrrSourceLocations) do
+        if isDir(loc) then
+            local count = countFilesWithExtension(loc, 'nrr')
+            if count > 0 then
+                foundNrrSource = loc
+                log('Found NRR source folder: ' .. loc .. ' with ' .. count .. ' file(s)')
+                break
+            end
+        end
     end
     
-    -- Create fresh .nrr folder
-    success = lfs.mkdir(appNrrFolder)
-    if not success then
-        log('WARNING: Failed to create .nrr folder: ' .. appNrrFolder)
-    else
+    if foundNrrSource then
+        -- Create .nrr folder in appFolder
+        lfs.mkdir(appNrrFolder)
         log('Created .nrr folder: ' .. appNrrFolder)
-    end
-    
-    -- Remove hidden attribute on Windows (AuthoringTool can be picky)
-    if windows then
-        local cmd = 'attrib -H "' .. appNrrFolder .. '" 2>nul'
-        processExecute(cmd)
-    end
-
-    -- -----------------------------------------------------------------------
-    -- GENERATE NRR FILE (Running MakeNrr.exe)
-    -- This is required so the NRR matches the specific NROs in the folder
-    -- -----------------------------------------------------------------------
-    local nrrOutput = pathJoin(appNrrFolder, 'corona_plugins.nrr')
-    local makeNrrExe = pathJoin(nxsRoot, 'Tools', 'CommandLineTools', 'MakeNrr', 'MakeNrr.exe')
-    
-    local nrrCount = 0
-    if isFile(makeNrrExe) then
-        log('Generating NRR using MakeNrr.exe...')
         
-        -- Build list of NROs for command line
-        local nroArgs = ""
-        for file in lfs.dir(appFolder) do
-            if file:match("%.nro$") then
-                -- Use quotes for paths
-                local fullPath = pathJoin(appFolder, file)
-                nroArgs = nroArgs .. ' "' .. fullPath .. '"'
+        -- Copy all .nrr files from template
+        for file in lfs.dir(foundNrrSource) do
+            if file ~= '.' and file ~= '..' and file:match("%.nrr$") then
+                local src = pathJoin(foundNrrSource, file)
+                local dst = pathJoin(appNrrFolder, file)
+                if copyFile(src, dst) then
+                    local size = lfs.attributes(dst, 'size') or 0
+                    log('Copied NRR: ' .. file .. ' (' .. size .. ' bytes)')
+                    nrrCount = nrrCount + 1
+                    nrrFiles[#nrrFiles + 1] = file
+                else
+                    log('FAILED to copy NRR: ' .. file)
+                end
             end
-        end
-        
-        if nroArgs ~= "" then
-            local cmd = '"' .. makeNrrExe .. '" ' .. nroArgs .. ' -o "' .. nrrOutput .. '"'
-            log('MakeNrr command: ' .. cmd)
-            local rc, stdout = processExecute(cmd, true)
-            
-            if rc == 0 and isFile(nrrOutput) then
-                log('Successfully generated NRR: ' .. nrrOutput)
-                nrrCount = 1
-            else
-                log('ERROR: MakeNrr failed. Code: ' .. rc)
-                if stdout then log('Output: ' .. stdout) end
-            end
-        else
-            log('WARNING: No NRO files found to generate NRR.')
         end
     else
-        log('WARNING: MakeNrr.exe not found at ' .. makeNrrExe)
-    end
-
-    -- Fallback: If MakeNrr failed or didn't run, create a manual dummy NRR
-    -- (Only useful for very specific debug cases, but prevents crash)
-    if nrrCount == 0 then
-        log('Creating fallback minimal NRR file...')
-        local f = io.open(nrrOutput, 'wb')
-        if f then
-            -- Minimal valid NRR structure
-            -- Fixed \x00 for Lua 5.1 compatibility
-            f:write('NRR\0')  -- Magic + null
-            f:write(string.char(0x00, 0x00, 0x00, 0x01))  -- Version 1
-            f:write(string.char(0x00, 0x00, 0x00, 0x01))  -- 1 file entry
-            
-            -- File entry 1
-            f:write(string.char(0x00, 0x00, 0x00, 0x10))  -- Name offset (16)
-            f:write(string.char(0x00, 0x00, 0x00, 0x20))  -- Data offset (32)
-            f:write(string.char(0x00, 0x00, 0x00, 0x08))  -- Data size (8)
-            
-            -- File name: "corona_plugins.nro" + null terminator + padding
-            f:write('corona_plugins.nro\0\0\0')
-            
-            -- File data (dummy)
-            f:write('DUMMYDATA')
-            
-            f:close()
-            nrrCount = 1
-            log('Created manual fallback NRR')
-        else
-            log('ERROR: Failed to create fallback NRR file')
+        log('WARNING: No .nrr folder found in template!')
+        log('Template contents:')
+        for file in lfs.dir(templateFolder) do
+            if file ~= '.' and file ~= '..' then
+                local ftype = lfs.attributes(pathJoin(templateFolder, file), 'mode')
+                log('  ' .. file .. ' (' .. (ftype or 'unknown') .. ')')
+            end
         end
     end
     
-    log('Total NRR files present: ' .. nrrCount)
+    log('Total NRR files copied: ' .. nrrCount)
 
     -- Build App
     local metafile = args.nmetaPath
@@ -693,9 +553,10 @@ function nxsPackageApp( args )
     cmd = cmd .. ' --desc ' .. nxsRoot .. '\\Resources\\SpecFiles\\Application.desc'
     cmd = cmd .. ' --meta "' .. metafile .. '"'
     cmd = cmd .. ' -o "' .. pathJoin(codeFolder, 'main.npdm') .. '"'
+    cmd = cmd .. '"'
     log('Creating NPDM file...')
     logd('MakeMeta command: ' .. cmd)
-    local rc, stdout = processExecute(cmd, true)
+    rc, stdout = processExecute(cmd, true)
     log('MakeMeta retcode: ' .. rc)
     if type(stdout) == 'string' and #stdout > 0 then
         log('MakeMeta output: ' .. stdout)
@@ -722,6 +583,10 @@ function nxsPackageApp( args )
     log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
     log('Has NRR files: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
     
+    if hasNrrFiles then
+        log('NRR files: ' .. table.concat(nrrFiles, ', '))
+    end
+
     -- Create .nsp file
     cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe'
     cmd = cmd .. ' creatensp --type Application'
@@ -730,34 +595,35 @@ function nxsPackageApp( args )
     cmd = cmd .. ' --desc "' .. descfile .. '"'
     cmd = cmd .. ' --program "' .. codeFolder .. '"'
 
-    -- NSS is REQUIRED for Application builds
     if nssFile then
         cmd = cmd .. ' --nss "' .. nssFile .. '"'
-    else
-        return 'Missing .nss file required for Application build'
     end
 
-    -- Add NRO directory (contains .nro files and .nrr folder)
+    -- Add NRO directory (must contain .nrr subfolder with valid NRR file)
     if hasNroFiles then
         cmd = cmd .. ' --nro "' .. nroFolder .. '"'
         log('Added --nro: ' .. nroFolder)
-        log('  .nrr folder inside: ' .. appNrrFolder)
-
+        
         if not hasNrrFiles then
-            log('WARNING: No NRR files in .nrr folder')
+            log('ERROR: NRO files present but no valid NRR file!')
+            log('The template must include a .nrr folder with corona_plugins.nrr')
+            return 'Missing NRR file - rebuild template with MakeNrr'
         end
     end
+
+    cmd = cmd .. ' "' .. assets .. '"'
+    cmd = cmd .. '"'
 
     -- Final verification
     log('FINAL CHECK before AuthoringTool:')
     log('  --program: ' .. codeFolder)
-    log('  --nro folder: ' .. tostring(hasNroFiles and nroFolder or 'none'))
+    log('  --nro folder: ' .. nroFolder)
     log('  NRO count: ' .. nroCount)
     log('  NRR count: ' .. nrrCount)
     log('  .nrr folder exists: ' .. tostring(isDir(appNrrFolder)))
-
+    
     if isDir(appNrrFolder) then
-        log('  .nrr folder contents:')
+        log('  .nrr contents:')
         for file in lfs.dir(appNrrFolder) do
             if file ~= '.' and file ~= '..' then
                 local fpath = pathJoin(appNrrFolder, file)
@@ -772,7 +638,6 @@ function nxsPackageApp( args )
 
     rc, stdout = processExecute(cmd, true)
     log('AuthoringTool retcode: ' .. rc)
-
     if type(stdout) == 'string' and #stdout > 0 then
         log('AuthoringTool output: ' .. stdout)
     end
@@ -783,4 +648,5 @@ function nxsPackageApp( args )
         log('Build succeeded: ' .. nspfile)
     end
 
+    return nil
 end
