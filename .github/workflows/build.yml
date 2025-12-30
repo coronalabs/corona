@@ -157,7 +157,6 @@ jobs:
       - Xcode-template-matrix-26
       - Xcode-template-matrix-15
     runs-on: ubuntu-latest
-    if: (! failure() && ! cancelled())
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v4
@@ -354,7 +353,6 @@ jobs:
       - native
       - webtemplate
       # - linux
-    if: (! failure() && ! cancelled())
     runs-on: macos-26
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
@@ -636,7 +634,7 @@ jobs:
           mkdir output
           cp -v ./platform/windows/Bin/Corona.SDK.Installer/Corona.msi output/Corona-$BUILD.msi
         shell: bash
-      - name: Upload Widnows Corona artifact
+      - name: Upload Windows Corona artifact
         uses: actions/upload-artifact@v4
         with:
           name: Simulator-Windows
@@ -767,7 +765,7 @@ jobs:
           EOF
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      - name: Notify Disord Builds channel
+      - name: Notify Discord Builds channel
         run: |
           [ -z "$DISCORD_WEBHOOK_BUILDS" ] &&  exit 0
           curl "$DISCORD_WEBHOOK_BUILDS" -X POST -H "Content-type: application/json" -d  @- << EOF
@@ -788,7 +786,7 @@ jobs:
       - release
       - source-code
     runs-on: ubuntu-latest
-    if: (success() || failure()) && !cancelled() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona')
+    if: ${{ (success() || failure()) && !cancelled() && (!contains(github.ref, 'refs/tags/') || github.repository == 'coronalabs/corona') }}
     steps:
       - uses: technote-space/workflow-conclusion-action@v1
       - uses: actions/checkout@v4
