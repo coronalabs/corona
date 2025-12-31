@@ -216,6 +216,7 @@ local function removeDir( dir )
 end
 
 -- Convert short 8.3 path to long path on Windows
+-- This only works for paths that already exist!
 local function getLongPath(path)
     if not windows then
         return path
@@ -239,6 +240,31 @@ local function getLongPath(path)
     end
     
     return path
+end
+
+-- Convert a path containing short names to long names
+-- Works even if the final component doesn't exist yet (converts parent path)
+local function getLongPathParent(path)
+    if not windows then
+        return path
+    end
+    
+    -- Skip if path doesn't contain ~ (not a short path)
+    if not path:find("~") then
+        return path
+    end
+    
+    -- Split into parent and final component
+    local parent = path:match("(.+)\\[^\\]+$")
+    local filename = path:match("\\([^\\]+)$")
+    
+    if parent and filename then
+        -- Convert the parent path (which should exist)
+        local longParent = getLongPath(parent)
+        return longParent .. "\\" .. filename
+    end
+    
+    return getLongPath(path)
 end
 
 local function nxsDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
@@ -438,6 +464,15 @@ function nxsPackageApp( args )
 
     local success = false
 
+    -- Convert tmpDir to long path early, BEFORE creating subdirectories
+    -- This ensures all paths we create use long names
+    local tmpDir = args.tmpDir
+    if windows and tmpDir:find("~") then
+        -- The tmpDir itself may not exist yet, so convert its parent
+        tmpDir = getLongPathParent(tmpDir)
+        log('Converted tmpDir to long path: ' .. tmpDir)
+    end
+
     -- create app folder if it does not exists
     local nxsappFolder = pathJoin(args.dstDir, args.applicationName .. '.NX64')
     removeDir(nxsappFolder)
@@ -447,7 +482,7 @@ function nxsPackageApp( args )
     end
     logd('AppFolder: ' .. nxsappFolder)
 
-    local appFolder = pathJoin(args.tmpDir, 'nxsapp')
+    local appFolder = pathJoin(tmpDir, 'nxsapp')
     removeDir(appFolder)
     success = lfs.mkdir(appFolder)
     if not success then
@@ -456,8 +491,8 @@ function nxsPackageApp( args )
     logd('appFolder: ' .. appFolder)
 
     -- Download plugins
-    local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
-    local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
+    local pluginDownloadDir = pathJoin(tmpDir, "pluginDownloadDir")
+    local pluginExtractDir = pathJoin(tmpDir, "pluginExtractDir")
     lfs.mkdir(pluginDownloadDir)
     lfs.mkdir(pluginExtractDir)
     local msg = nxsDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginExtractDir)
@@ -481,7 +516,7 @@ function nxsPackageApp( args )
     end
 
     -- unzip standard template
-    local templateFolder = pathJoin(args.tmpDir, 'nxtemplate')
+    local templateFolder = pathJoin(tmpDir, 'nxtemplate')
     removeDir(templateFolder)
     success = lfs.mkdir(templateFolder)
     if not success then
@@ -521,7 +556,7 @@ function nxsPackageApp( args )
     end
 
     -- compile .lua
-    local rc = compileScriptsAndMakeCAR(args.nxsParams, appFolder, appFolder, args.tmpDir)
+    local rc = compileScriptsAndMakeCAR(args.nxsParams, appFolder, appFolder, tmpDir)
     if not rc then
         return "Failed to create .car file"
     end
@@ -643,51 +678,45 @@ function nxsPackageApp( args )
     log('Has NRO files: ' .. tostring(hasNroFiles) .. ' (' .. nroCount .. ')')
     log('Has NRR files: ' .. tostring(hasNrrFiles) .. ' (' .. nrrCount .. ')')
 
-    -- Convert paths to long paths (avoid 8.3 short names that can cause issues)
-    local codeFolderLong = getLongPath(codeFolder)
-    local appFolderLong = getLongPath(appFolder)
-    local nssFileLong = nssFile and getLongPath(nssFile) or nil
-    local metafileLong = getLongPath(metafile)
-    
-    log('Using long paths:')
-    log('  codeFolder: ' .. codeFolderLong)
-    log('  appFolder: ' .. appFolderLong)
-    if nssFileLong then
-        log('  nssFile: ' .. nssFileLong)
+    -- Paths should already be long paths since we converted tmpDir early
+    log('Using paths:')
+    log('  codeFolder: ' .. codeFolder)
+    log('  appFolder: ' .. appFolder)
+    if nssFile then
+        log('  nssFile: ' .. nssFile)
     end
 
     -- Build AuthoringTool command
-    -- Note: Don't wrap the entire command in quotes, just quote paths with spaces
     cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe"'
     cmd = cmd .. ' creatensp'
     cmd = cmd .. ' -o "' .. nspfile .. '"'
     cmd = cmd .. ' --desc "' .. descfile .. '"'
-    cmd = cmd .. ' --meta "' .. metafileLong .. '"'
+    cmd = cmd .. ' --meta "' .. metafile .. '"'
     cmd = cmd .. ' --type Application'
-    cmd = cmd .. ' --program "' .. codeFolderLong .. '" "' .. appFolderLong .. '"'
+    cmd = cmd .. ' --program "' .. codeFolder .. '" "' .. appFolder .. '"'
     
     -- --nro specifies directory with NRO files
     if hasNroFiles then
-        cmd = cmd .. ' --nro "' .. appFolderLong .. '"'
-        log('Added --nro: ' .. appFolderLong)
+        cmd = cmd .. ' --nro "' .. appFolder .. '"'
+        log('Added --nro: ' .. appFolder)
     end
 
     -- NSS is REQUIRED by AuthoringTool
-    if nssFileLong then
-        cmd = cmd .. ' --nss "' .. nssFileLong .. '"'
-        log('Added --nss: ' .. nssFileLong)
+    if nssFile then
+        cmd = cmd .. ' --nss "' .. nssFile .. '"'
+        log('Added --nss: ' .. nssFile)
     else
         log('ERROR: No NSS file available!')
     end
 
     -- Final verification
     log('FINAL CHECK before AuthoringTool:')
-    log('  Code region (--program arg1): ' .. codeFolderLong)
-    log('  Data region (--program arg2): ' .. appFolderLong)
+    log('  Code region (--program arg1): ' .. codeFolder)
+    log('  Data region (--program arg2): ' .. appFolder)
     if hasNroFiles then
-        log('  NRO directory (--nro): ' .. appFolderLong)
+        log('  NRO directory (--nro): ' .. appFolder)
     end
-    log('  NSS file (--nss): ' .. (nssFileLong or 'MISSING'))
+    log('  NSS file (--nss): ' .. (nssFile or 'MISSING'))
     log('  NSS is valid ELF: ' .. tostring(nssIsValid))
     log('  NRO count: ' .. nroCount)
     log('  NRR count: ' .. nrrCount)
