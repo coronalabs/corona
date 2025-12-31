@@ -221,19 +221,22 @@ local function getLongPath(path)
         return path
     end
     
-    -- Use PowerShell to get the long path
-    local cmd = 'powershell -Command "(Get-Item -LiteralPath \'' .. path:gsub("'", "''") .. '\').FullName"'
-    local handle = io.popen(cmd)
-    if handle then
-        local result = handle:read("*a")
-        handle:close()
-        if result and #result > 0 then
-            result = result:gsub("[\r\n]+$", "") -- trim newlines
-            if #result > 0 and isDir(result) or isFile(result) then
-                return result
-            end
+    -- Skip if path doesn't contain ~ (not a short path)
+    if not path:find("~") then
+        return path
+    end
+    
+    -- Use cmd /c with for loop to expand short path to long path
+    local cmd = 'cmd /c "for %I in ("' .. path .. '") do @echo %~fI"'
+    local rc, stdout = processExecute(cmd, true)
+    
+    if rc == 0 and type(stdout) == 'string' and #stdout > 0 then
+        local result = stdout:gsub("[\r\n]+$", "") -- trim newlines
+        if #result > 0 then
+            return result
         end
     end
+    
     return path
 end
 
