@@ -226,12 +226,13 @@ local function getLongPath(path)
         return path
     end
     
-    -- Use cmd /c with for loop to expand short path to long path
-    local cmd = 'cmd /c "for %I in ("' .. path .. '") do @echo %~fI"'
+    -- Use PowerShell to get the long path
+    local escapedPath = path:gsub("'", "''")
+    local cmd = 'powershell -Command "(Get-Item -LiteralPath \'' .. escapedPath .. '\').FullName"'
     local rc, stdout = processExecute(cmd, true)
     
     if rc == 0 and type(stdout) == 'string' and #stdout > 0 then
-        local result = stdout:gsub("[\r\n]+$", "") -- trim newlines
+        local result = stdout:gsub("[\r\n]+", "") -- trim newlines
         if #result > 0 then
             return result
         end
@@ -656,16 +657,9 @@ function nxsPackageApp( args )
     end
 
     -- Build AuthoringTool command
-    -- From docs:
-    -- AuthoringTool creatensp -o <OUTPUT_FILE>
-    --   --desc <desc file>
-    --   --meta <nmeta file>
-    --   --type Application
-    --   --program <code region directory> [<data region directory>]
-    --   [--nro <NRO directory>]
-    --   --nss <application's NSS file>  -- REQUIRED
-    
-    cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe creatensp'
+    -- Note: Don't wrap the entire command in quotes, just quote paths with spaces
+    cmd = '"' .. nxsRoot .. '\\Tools\\CommandLineTools\\AuthoringTool\\AuthoringTool.exe"'
+    cmd = cmd .. ' creatensp'
     cmd = cmd .. ' -o "' .. nspfile .. '"'
     cmd = cmd .. ' --desc "' .. descfile .. '"'
     cmd = cmd .. ' --meta "' .. metafileLong .. '"'
@@ -685,8 +679,6 @@ function nxsPackageApp( args )
     else
         log('ERROR: No NSS file available!')
     end
-
-    cmd = cmd .. '"'
 
     -- Final verification
     log('FINAL CHECK before AuthoringTool:')
