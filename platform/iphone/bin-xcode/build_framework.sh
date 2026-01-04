@@ -57,8 +57,18 @@ fi
 # Build the other platform.
 xcodebuild -project "${PROJECT_FILE_PATH}" -target "${TARGET_NAME}" -configuration "${CONFIGURATION}" -sdk "${SF_OTHER_PLATFORM}${SF_SDK_VERSION}" BUILD_DIR="${BUILD_DIR}" OBJROOT="${OBJROOT}/DependantBuilds" BUILD_ROOT="${BUILD_ROOT}" SYMROOT="${SYMROOT}" "$ACTION"
 
-# Smash the two static libraries into one fat binary and store it in the .framework
-lipo -create "${BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" -output "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
+# Copy the static library into each platform's framework bundle
+cp -a "${BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
+cp -a "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
 
-# Copy the binary to the other architecture folder to have a complete framework in both.
-cp -a "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
+# Create XCFramework instead of fat binary (supports M1 simulators where both device and simulator use arm64)
+XCFRAMEWORK_PATH="${BUILT_PRODUCTS_DIR}/${SF_TARGET_NAME}.xcframework"
+rm -rf "${XCFRAMEWORK_PATH}"
+
+xcodebuild -create-xcframework \
+    -framework "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
+    -framework "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
+    -output "${XCFRAMEWORK_PATH}"
+
+# Also create XCFramework in the other build products directory
+cp -a "${XCFRAMEWORK_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_TARGET_NAME}.xcframework"

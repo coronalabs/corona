@@ -432,16 +432,19 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 ]])
 
 		if( platform == 'tvos') then
-			if forceLoad then			
+			if forceLoad then
 				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load \n')
 			else
 				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load \n')
 			end
 		else
-			if forceLoad then			
-				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load "$(CORONA_ROOT)/Corona/ios/lib/libplayer.a" -Xlinker -undefined -Xlinker dynamic_lookup \n')
+			-- Use SDK-conditional paths for xcframework (supports M1 simulator and device)
+			if forceLoad then
+				config:write('OTHER_LDFLAGS[sdk=iphoneos*] = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load "$(CORONA_ROOT)/Corona/ios/lib/libplayer.xcframework/ios-arm64/libplayer.a" -Xlinker -undefined -Xlinker dynamic_lookup \n')
+				config:write('OTHER_LDFLAGS[sdk=iphonesimulator*] = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -force_load "$(CORONA_ROOT)/Corona/ios/lib/libplayer.xcframework/ios-arm64_x86_64-simulator/libplayer.a" -Xlinker -undefined -Xlinker dynamic_lookup \n')
 			else
-				config:write('OTHER_LDFLAGS = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load -lplayer -Xlinker -undefined -Xlinker dynamic_lookup\n')
+				config:write('OTHER_LDFLAGS[sdk=iphoneos*] = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load -Xlinker -undefined -Xlinker dynamic_lookup\n')
+				config:write('OTHER_LDFLAGS[sdk=iphonesimulator*] = $(inherited) $(CORONA_CUSTOM_LDFLAGS) -all_load -Xlinker -undefined -Xlinker dynamic_lookup\n')
 			end
 		end
 		

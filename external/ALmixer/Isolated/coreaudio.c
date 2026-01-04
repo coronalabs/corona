@@ -410,6 +410,15 @@ static int CoreAudio_open(Sound_Sample *sample, const char *ext)
 		}
 	}
 
+    /* Fix for Apple Silicon macOS 26 (Tahoe) regression where mono audio playback fails.
+     * Apple's built-in OpenAL implementation on macOS 26+ has a bug where mono audio buffers
+     */
+#if TARGET_OS_OSX && (defined(__arm64__) || defined(__aarch64__))
+    if (actual_format.mChannelsPerFrame == 1){
+        actual_format.mChannelsPerFrame = 2;
+    }
+#endif
+    
 	sample->flags = SOUND_SAMPLEFLAG_CANSEEK;
 	sample->actual.rate = (UInt32) actual_format.mSampleRate;
 	sample->actual.channels = (UInt8)actual_format.mChannelsPerFrame;

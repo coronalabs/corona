@@ -1128,14 +1128,15 @@ IPhonePlatform::SetNativeProperty( lua_State *L, const char *key, int valueIndex
 			[viewController setNeedsUpdateOfHomeIndicatorAutoHidden];
 		}
 	}
-	else if ([k isEqualToString:@"preferredScreenEdgesDeferringSystemGestures"])
-	{
-		viewController.preferredScreenEdgesDeferringSystemGestures = lua_toboolean( L, valueIndex )?UIRectEdgeAll:UIRectEdgeNone;
-		if (@available(iOS 11.0, *))
-		{
-			[viewController setNeedsUpdateOfScreenEdgesDeferringSystemGestures];
-		}
-	}
+    else if ([k isEqualToString:@"preferredScreenEdgesDeferringSystemGestures"])
+    {
+        [viewController setSystemGestureDeferralEnabled:lua_toboolean(L, valueIndex)];
+        [viewController setSystemGestureDeferEdges:(UIRectEdgeTop | UIRectEdgeBottom)];
+        if (@available(iOS 11.0, *))
+        {
+            [viewController setNeedsUpdateOfScreenEdgesDeferringSystemGestures];
+        }
+    }
 	else
 	{
 		Super::SetNativeProperty(L, key, valueIndex);
@@ -1156,10 +1157,10 @@ IPhonePlatform::PushNativeProperty( lua_State *L, const char *key ) const
 	{
 		lua_pushboolean(L, viewController.prefersHomeIndicatorAutoHidden);
 	}
-	else if ([k isEqualToString:@"preferredScreenEdgesDeferringSystemGestures"])
-	{
-		lua_pushboolean(L, viewController.preferredScreenEdgesDeferringSystemGestures != UIRectEdgeNone);
-	}
+    else if ([k isEqualToString:@"preferredScreenEdgesDeferringSystemGestures"])
+    {
+        lua_pushboolean(L, [viewController isSystemGestureDeferralEnabled]);
+    }
 	else
 	{
 		result = Super::PushNativeProperty(L, key);
