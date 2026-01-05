@@ -58,9 +58,9 @@ static int OGG_init(void);
 static void OGG_quit(void);
 static int OGG_open(Sound_Sample *sample, const char *ext);
 static void OGG_close(Sound_Sample *sample);
-static uint32_t OGG_read(Sound_Sample *sample);
+static size_t OGG_read(Sound_Sample *sample);
 static int OGG_rewind(Sound_Sample *sample);
-static int OGG_seek(Sound_Sample *sample, uint32_t ms);
+static int OGG_seek(Sound_Sample *sample, size_t ms);
 
 static const char *extensions_ogg[] = { "OGG", NULL };
 const Sound_DecoderFunctions __Sound_DecoderFunctions_OGG =
@@ -184,7 +184,7 @@ static int OGG_open(Sound_Sample *sample, const char *ext)
     rc = ov_open_callbacks(internal->rw, vf, NULL, 0, RWops_ogg_callbacks);
     if (rc != 0)
     {
-#if (defined DEBUG_CHATTER)		
+#if (defined DEBUG_CHATTER)
         SNDDBG(("OGG: can't grok data. reason: [%s].\n", ogg_error(rc)));
 #endif
         free(vf);
@@ -200,7 +200,7 @@ static int OGG_open(Sound_Sample *sample, const char *ext)
     } /* if */
 
     output_ogg_comments(vf);
-	
+
     SNDDBG(("OGG: bitstream version == (%d).\n", info->version));
     SNDDBG(("OGG: bitstream channels == (%d).\n", info->channels));
     SNDDBG(("OGG: bitstream sampling rate == (%ld).\n", info->rate));
@@ -249,7 +249,7 @@ static void OGG_close(Sound_Sample *sample)
 } /* OGG_close */
 
 /* Note: According to the Vorbis documentation:
- * "ov_read() will  decode at most one vorbis packet per invocation, 
+ * "ov_read() will  decode at most one vorbis packet per invocation,
  * so the value returned will generally be less than length."
  * Due to this, for buffer sizes like 16384, SDL_Sound was always getting
  * an underfilled buffer and always setting the EAGAIN flag.
@@ -259,20 +259,20 @@ static void OGG_close(Sound_Sample *sample)
  * However, there may still be some corner cases where the buffer
  * cannot be entirely filled. So be aware.
  */
-static uint32_t OGG_read(Sound_Sample *sample)
+static size_t OGG_read(Sound_Sample *sample)
 {
     int rc;
     int bitstream;
 	Sound_SampleInternal *internal = (Sound_SampleInternal *) sample->opaque;
     OggVorbis_File *vf = (OggVorbis_File *) internal->decoder_private;
-    
+
     rc = ov_read(vf, internal->buffer, internal->buffer_size,
             &bitstream);
 
         /* Make sure the read went smoothly... */
     if (rc == 0)
         sample->flags |= SOUND_SAMPLEFLAG_EOF;
-        
+
     else if (rc < 0)
         sample->flags |= SOUND_SAMPLEFLAG_ERROR;
 
@@ -316,12 +316,12 @@ static uint32_t OGG_read(Sound_Sample *sample)
          * is because the requested amount of data was smaller
          * than the minimum packet size.
          * For now, I will be conservative
-         * and not set the EOF flag, and let the next call to 
+         * and not set the EOF flag, and let the next call to
          * this function figure it out.
-         * I think the ERROR flag is safe to set because 
-         * it looks like OGG simply returns 0 if the 
-         * read size is too small. 
-         * And in most cases for sensible buffer sizes, 
+         * I think the ERROR flag is safe to set because
+         * it looks like OGG simply returns 0 if the
+         * read size is too small.
+         * And in most cases for sensible buffer sizes,
          * this fix will fill the buffer,
          * so we can set the EAGAIN flag without worrying
          * that it will always be set.
@@ -363,7 +363,7 @@ static int OGG_rewind(Sound_Sample *sample)
 } /* OGG_rewind */
 
 
-static int OGG_seek(Sound_Sample *sample, uint32_t ms)
+static int OGG_seek(Sound_Sample *sample, size_t ms)
 {
     Sound_SampleInternal *internal = (Sound_SampleInternal *) sample->opaque;
     OggVorbis_File *vf = (OggVorbis_File *) internal->decoder_private;
@@ -376,4 +376,3 @@ static int OGG_seek(Sound_Sample *sample, uint32_t ms)
 
 
 /* end of ogg.c ... */
-

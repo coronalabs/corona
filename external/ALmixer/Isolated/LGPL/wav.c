@@ -68,9 +68,9 @@ static int WAV_init(void);
 static void WAV_quit(void);
 static int WAV_open(Sound_Sample *sample, const char *ext);
 static void WAV_close(Sound_Sample *sample);
-static uint32_t WAV_read(Sound_Sample *sample);
+static size_t WAV_read(Sound_Sample *sample);
 static int WAV_rewind(Sound_Sample *sample);
-static int WAV_seek(Sound_Sample *sample, uint32_t ms);
+static int WAV_seek(Sound_Sample *sample, size_t ms);
 
 static const char *extensions_wav[] = { "WAV", NULL };
 const Sound_DecoderFunctions __Sound_DecoderFunctions_WAV =
@@ -246,7 +246,7 @@ typedef struct
 {
     uint32_t chunkID;
 
-	/* Johnson Lin wanted to clean up compiler warnings on Windows/CodeBlocks. 
+	/* Johnson Lin wanted to clean up compiler warnings on Windows/CodeBlocks.
 	 * This was originally a signed int32_t. The code usage and intent seems to imply that it should be a uint32_t.
 	 */
     /* int32_t chunkSize; */
@@ -818,7 +818,7 @@ static void WAV_close(Sound_Sample *sample)
 } /* WAV_close */
 
 
-static uint32_t WAV_read(Sound_Sample *sample)
+static size_t WAV_read(Sound_Sample *sample)
 {
     Sound_SampleInternal *internal = (Sound_SampleInternal *) sample->opaque;
     wav_t *w = (wav_t *) internal->decoder_private;
@@ -838,7 +838,7 @@ static int WAV_rewind(Sound_Sample *sample)
 } /* WAV_rewind */
 
 
-static int WAV_seek(Sound_Sample *sample, uint32_t ms)
+static int WAV_seek(Sound_Sample *sample, size_t ms)
 {
     Sound_SampleInternal *internal = (Sound_SampleInternal *) sample->opaque;
     wav_t *w = (wav_t *) internal->decoder_private;
@@ -848,4 +848,3 @@ static int WAV_seek(Sound_Sample *sample, uint32_t ms)
 #endif /* SOUND_SUPPORTS_WAV */
 
 /* end of wav.c ... */
-
