@@ -1612,6 +1612,8 @@
 		DB56B4CA284C2E7D00EC8B14 /* Rtt_AppleKeyServices.h in Headers */ = {isa = PBXBuildFile; fileRef = DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */; };
 		DB56B4CB284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */; };
 		DB56B4CC284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm in Sources */ = {isa = PBXBuildFile; fileRef = DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */; };
+		DBBD8FAB2EA9B4AE00E890BB /* CoronaIconComposerSupport.lua in Sources */ = {isa = PBXBuildFile; fileRef = DBBD8FA02EA9A90F00E890BB /* CoronaIconComposerSupport.lua */; };
+		DBBD8FAC2EA9B4BD00E890BB /* CoronaIconComposerSupport.lua in Sources */ = {isa = PBXBuildFile; fileRef = DBBD8FA02EA9A90F00E890BB /* CoronaIconComposerSupport.lua */; };
 		E23CD30D147C725200BC9038 /* BuildSessionState.mm in Sources */ = {isa = PBXBuildFile; fileRef = E23CD30C147C725200BC9038 /* BuildSessionState.mm */; };
 		F500FB401FED5CE20050B28B /* webtemplate.zip in Resources */ = {isa = PBXBuildFile; fileRef = F500FB3F1FED5CE20050B28B /* webtemplate.zip */; };
 		F50F51B81B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50F51B61B700C04006FEF92 /* Rtt_TextureResourceBitmap.cpp */; };
@@ -3362,6 +3364,8 @@
 		C2FCEBA51B701A1800587F1E /* gameoverlayrenderer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = gameoverlayrenderer.dylib; path = /Applications/Steam.app/Contents/MacOS/gameoverlayrenderer.dylib; sourceTree = "<group>"; };
 		DB56B4C8284C2E7C00EC8B14 /* Rtt_AppleKeyServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rtt_AppleKeyServices.h; path = ../apple/Rtt_AppleKeyServices.h; sourceTree = "<group>"; };
 		DB56B4C9284C2E7D00EC8B14 /* Rtt_AppleKeyServices.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Rtt_AppleKeyServices.mm; path = ../apple/Rtt_AppleKeyServices.mm; sourceTree = "<group>"; };
+		DBBD8FA02EA9A90F00E890BB /* CoronaIconComposerSupport.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = CoronaIconComposerSupport.lua; path = ../resources/CoronaIconComposerSupport.lua; sourceTree = SOURCE_ROOT; };
+		DBBD8FAA2EA9B48400E890BB /* CoronaIconComposerSupport.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = CoronaIconComposerSupport.lua; path = ../resources/CoronaIconComposerSupport.lua; sourceTree = "<group>"; };
 		E23CD30B147C725200BC9038 /* BuildSessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildSessionState.h; sourceTree = "<group>"; };
 		E23CD30C147C725200BC9038 /* BuildSessionState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BuildSessionState.mm; sourceTree = "<group>"; };
 		F500FB3F1FED5CE20050B28B /* webtemplate.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = webtemplate.zip; path = ../resources/webtemplate.zip; sourceTree = "<group>"; };
@@ -4136,6 +4140,7 @@
 		00B73BAF12B71BDA0057F594 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DBBD8FA02EA9A90F00E890BB /* CoronaIconComposerSupport.lua */,
 				1F46A96521136B51009CC875 /* linuxPackageApp.lua */,
 				C2AF1E531DA6F0ED00907A65 /* valid_build_settings.lua */,
 				C2AF1E541DA6F0ED00907A65 /* valid_config_lua.lua */,
@@ -4495,6 +4500,7 @@
 		29B97314FDCFA39411CA2CEA /* ratatouille */ = {
 			isa = PBXGroup;
 			children = (
+				DBBD8FAA2EA9B48400E890BB /* CoronaIconComposerSupport.lua */,
 				C21995A81C189E0100E88FD0 /* ios-syslog-helper.xcodeproj */,
 				C26DD10A1BD9508800EC4F44 /* CoronaConsole.xcodeproj */,
 				C2EF85011B336B6300731A45 /* CoronaShell.xcodeproj */,
@@ -6916,6 +6922,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBBD8FAB2EA9B4AE00E890BB /* CoronaIconComposerSupport.lua in Sources */,
 				F53C328C2404E2A300BC2BED /* CoronaBuilderPluginCollector.lua in Sources */,
 				F5FFADBC23FFC7DB004E61A9 /* CoronaOfflineiOSPackager.lua in Sources */,
 				C2AF1E571DA6F24500907A65 /* valid_build_settings.lua in Sources */,
@@ -7524,6 +7531,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBBD8FAC2EA9B4BD00E890BB /* CoronaIconComposerSupport.lua in Sources */,
 				F53C328D2404E2AB00BC2BED /* CoronaBuilderPluginCollector.lua in Sources */,
 				F5FFADBE23FFC80E004E61A9 /* CoronaOfflineiOSPackager.lua in Sources */,
 				F5DB5B1A21136F9D00EC5CBC /* linuxPackageApp.lua in Sources */,
