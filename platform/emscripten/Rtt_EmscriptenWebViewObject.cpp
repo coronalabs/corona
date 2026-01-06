@@ -63,6 +63,22 @@ namespace Rtt
 		{
 			lua_pushcfunction(L, Request);
 		}
+		else if ( strcmp( "injectJS", key ) == 0 )
+		{
+			lua_pushcfunction( L, InjectJS );
+		}
+		else if ( strcmp( "registerCallback", key ) == 0 )
+		{
+			lua_pushcfunction( L, RegisterCallback );
+		}
+		else if ( strcmp( "on", key ) == 0 )
+		{
+			lua_pushcfunction( L, On );
+		}
+		else if ( strcmp( "send", key ) == 0 )
+		{
+			lua_pushcfunction( L, Send );
+		}
 		else if (strcmp("stop", key) == 0)
 		{
 			lua_pushcfunction(L, Stop);
@@ -201,6 +217,26 @@ namespace Rtt
 		{
 			//NativeToJavaBridge::GetInstance()->WebViewRequestReload(view->GetId());
 		}
+		return 0;
+	}
+
+	int EmscriptenWebViewObject::InjectJS(lua_State *L)
+	{
+		return 0;
+	}
+
+	int EmscriptenWebViewObject::RegisterCallback(lua_State *L)
+	{
+		return 0;
+	}
+
+	int EmscriptenWebViewObject::On(lua_State *L)
+	{
+		return 0;
+	}
+
+	int EmscriptenWebViewObject::Send(lua_State *L)
+	{
 		return 0;
 	}
 

@@ -116,6 +116,22 @@ int WinWebViewObject::ValueForKey(lua_State *L, const char key[]) const
 	{
 		lua_pushcfunction(L, OnRequest);
 	}
+	else if ( strcmp( "injectJS", key ) == 0 )
+	{
+		lua_pushcfunction( L, InjectJS );
+	}
+	else if ( strcmp( "registerCallback", key ) == 0 )
+	{
+		lua_pushcfunction( L, RegisterCallback );
+	}
+	else if ( strcmp( "on", key ) == 0 )
+	{
+		lua_pushcfunction( L, On );
+	}
+	else if ( strcmp( "send", key ) == 0 )
+	{
+		lua_pushcfunction( L, Send );
+	}
 	else if (strcmp("stop", key) == 0)
 	{
 		lua_pushcfunction(L, OnStop);
@@ -341,6 +357,30 @@ int WinWebViewObject::OnReload(lua_State *L)
 int WinWebViewObject::OnDeleteCookies(lua_State *L)
 {
 	CoronaLuaWarning(L, "The native WebView:deleteCookies() function is not supported on Windows.");
+	return 0;
+}
+
+int WinWebViewObject::InjectJS(lua_State *L)
+{
+	CoronaLuaWarning(L, "The native WebView:injectJS() function is not supported on Windows.");
+	return 0;
+}
+
+int WinWebViewObject::RegisterCallback(lua_State *L)
+{
+	CoronaLuaWarning(L, "The native WebView:registerCallback() function is not supported on Windows.");
+	return 0;
+}
+
+int WinWebViewObject::On(lua_State *L)
+{
+	CoronaLuaWarning(L, "The native WebView:on() function is not supported on Windows.");
+	return 0;
+}
+
+int WinWebViewObject::Send(lua_State *L)
+{
+	CoronaLuaWarning(L, "The native WebView:send() function is not supported on Windows.");
 	return 0;
 }
 

@@ -51,6 +51,8 @@ class LuaContext
 		static int OpenJson( lua_State *L );
 		static int OpenWidget( lua_State *L );
 		static int OpenStoryboard( lua_State *L );
+		static int JsonEncode( lua_State *L, int index );
+		static int JsonDecode( lua_State *L, const char *json );
 
 	public:
 		// Generic, re-entrant Lua callbacks
