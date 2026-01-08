@@ -7,10 +7,10 @@ val buildDirectory = layout.buildDirectory.asFile.get()
 android {
     namespace = "com.ansca.corona"
     ndkVersion = "18.1.5063045"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
-        minSdk = 15
+        minSdk = 21
         version = 1
     }
     sourceSets["main"].manifest.srcFile(file("AndroidManifest-New.xml"))
@@ -25,6 +25,11 @@ android {
     }
     useLibrary("org.apache.http.legacy")
 
+}
+
+// Need for Android Edge To Edge
+dependencies {
+    implementation("androidx.core:core:1.17.0")
 }
 
 tasks.create<Copy>("updateWidgetResources") {

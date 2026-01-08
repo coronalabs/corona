@@ -38,6 +38,9 @@ import com.ansca.corona.permissions.RequestPermissionsResultData;
 import com.ansca.corona.storage.ResourceServices;
 import android.view.DisplayCutout;
 import android.view.ViewTreeObserver;
+
+import androidx.core.view.WindowCompat;
+
 /**
  * The activity window that hosts the Corona project.
  * @see <a href="http://developer.android.com/reference/android/app/Activity.html">Activity</a>
@@ -190,6 +193,7 @@ public class CoronaActivity extends Activity {
 
 		fStartTime = System.currentTimeMillis();
 
+
 		// Work around FileProvider issue in level 25:
 		// http://stackoverflow.com/questions/38200282/android-os-fileuriexposedexception-file-storage-emulated-0-test-txt-exposed
 		// TODO: Fix this properly by using FileProvider appropriately
@@ -274,6 +278,21 @@ public class CoronaActivity extends Activity {
 					} else {
 						fCoronaRuntime.getController().setSystemUiVisibility(initialSystemUiVisibility);
 					}
+				}
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		// Set edgeToEdge before splashScreen comes up
+		try {
+			android.content.pm.ActivityInfo activityInfo;
+			activityInfo = getPackageManager().getActivityInfo(getComponentName(), android.content.pm.PackageManager.GET_META_DATA);
+			if ((activityInfo != null) && (activityInfo.metaData != null)) {
+				Boolean edgeToEdge = activityInfo.metaData.getBoolean("edgeToEdge");
+				if (edgeToEdge == true) {
+					WindowCompat.enableEdgeToEdge(getWindow());
 				}
 			}
 		}
