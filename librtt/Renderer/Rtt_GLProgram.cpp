@@ -38,6 +38,8 @@
 // To reduce memory consumption and startup cost, defer the
 // creation of GL shaders and programs until they're needed.
 // Depending on usage, this could result in framerate dips.
+
+// TODO: verify for updated "uses time" logic, cf. note in Rtt_Scene.cpp
 #define DEFER_CREATION 1
 
 // ----------------------------------------------------------------------------
@@ -148,11 +150,17 @@ GLProgram::Create( CPUResource* resource )
 
 	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
 	fResource = resource;
-	
+
 	#if !DEFER_CREATION
+		bool usesTime = false;
 		for( U32 i = 0; i < kMaximumMaskCount + 1; ++i )
 		{
 			Create( fData[i], i );
+			
+			if ( !usesTime && fData[i].HasTime() )
+			{
+				usesTime = true;
+			}
 		}
 	#endif
 
@@ -160,6 +168,16 @@ GLProgram::Create( CPUResource* resource )
     
     Program* program = static_cast<Program*>( fResource );
     ShaderResource* shaderResource = program->GetShaderResource();
+    
+    #if !DEFER_CREATION
+		if ( usesTime )
+		{
+			shaderResource->SetUsesTime( true );
+		
+			ShaderResource::SetAddedUsesTime( true );
+		}
+	#endif
+	
     const CoronaShellTransform * transform = shaderResource->GetShellTransform();
 
     if (transform && transform->cleanup)
@@ -218,6 +236,15 @@ GLProgram::Bind( Program::Version version )
         if( !data.fProgram )
         {
             Create( version, data );
+            
+            if ( fData[version].HasTime() )
+            {
+				Program* program = (Program*)fResource;
+				
+				program->GetShaderResource()->SetUsesTime( true );
+				
+				ShaderResource::SetAddedUsesTime( true );
+            }
         }
     #endif
     
