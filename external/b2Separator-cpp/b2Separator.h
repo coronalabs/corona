@@ -46,7 +46,7 @@ public:
 									FixtureCreator_t fixture_creator,
 									b2Vec2Vector &vertices_vec,
 									b2Vec2 &translate,
-									b2Vec2 &scale );
+									b2Vec2 &scale, bool needHull);
 
 		/**
 		 * Checks whether the vertices in <code>verticesVec</code> can be properly distributed into the new fixtures (more specifically, it makes sure there are no overlapping segments and the vertices are in clockwise order).
