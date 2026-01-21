@@ -210,6 +210,8 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, ProfilingEntryRAII*
 
     if ( ! IsValid() )
     {
+		renderer.SetOptInToUnitRegionEncoding( GetDisplay().GetDefaults().IsUnitRegionWantedForBuiltinEffects() );
+    
         const Rtt::Real kMillisecondsPerSecond = 1000.0f;
         Rtt_AbsoluteTime elapsedTime = fOwner.GetElapsedTime();
         Rtt::Real totalTime = Rtt_AbsoluteToMilliseconds( elapsedTime ) / kMillisecondsPerSecond;
@@ -318,6 +320,8 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, DisplayObject& obje
     const StageObject* stage = object.GetStage();
     if ( Rtt_VERIFY( stage == fCurrentStage ) )
     {
+		renderer.SetOptInToUnitRegionEncoding( GetDisplay().GetDefaults().IsUnitRegionWantedForBuiltinEffects() );
+    
         Clear( renderer );
 
         // This function is used to render a specific object in a scene.
