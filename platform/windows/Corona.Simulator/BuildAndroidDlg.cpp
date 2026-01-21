@@ -29,7 +29,9 @@
 #include "Rtt_TargetDevice.h"
 #include "Rtt_TargetAndroidAppStore.h"
 #include <Shlwapi.h>
-
+#include <iostream>
+#include <windows.h>
+#include <fstream>
 
 // CBuildAndroidDlg dialog
 
@@ -67,9 +69,6 @@ BEGIN_MESSAGE_MAP(CBuildAndroidDlg, CDialog)
 	ON_EN_KILLFOCUS(IDC_BUILD_KEYSTORE, &CBuildAndroidDlg::OnKillFocusKeystorePath)
 	ON_CBN_SELCHANGE(IDC_BUILD_KEYALIAS, &CBuildAndroidDlg::OnChangeAliasList)
 	ON_CBN_SETFOCUS(IDC_BUILD_KEYALIAS, &CBuildAndroidDlg::OnSetFocusAliasList)
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-	ON_BN_CLICKED(IDC_ENABLE_MONETIZATION, &CBuildAndroidDlg::OnBnClickedEnableMonetization)
-#endif
 	ON_WM_HELPINFO()
 	ON_WM_SYSCOMMAND()
 	ON_BN_CLICKED(IDC_CREATE_LIVE_BUILD, &CBuildAndroidDlg::OnBnClickedCreateLiveBuild)
@@ -250,32 +249,14 @@ BOOL CBuildAndroidDlg::OnInitDialog()
 	// Set up the "Live Build" checkbox.
 	CheckDlgButton(IDC_CREATE_LIVE_BUILD, m_pProject->GetCreateLiveBuild() ? BST_CHECKED : BST_UNCHECKED);
 
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-	// Initialize the "Enable Monetization" checkbox
-	CButton *enableMonetizationBtn = (CButton *)GetDlgItem(IDC_ENABLE_MONETIZATION);
-	bool debugMonetizationPlugin = AfxGetApp()->GetProfileInt(REGISTRY_SECTION, REGISTRY_DEBUG_MONETIZATION_PLUGIN, 
-		REGISTRY_DEBUG_MONETIZATION_PLUGIN_DEFAULT) ? true : false;
+	// Set up the "Build to Device" Radio Group
+	CButton* pCopyToDevice = (CButton*)GetDlgItem(IDC_COPY_TO_DEVICE);
+	CButton* pShowInFiles = (CButton*)GetDlgItem(IDC_SHOW_IN_FILES);
+	CButton* pDoNothing = (CButton*)GetDlgItem(IDC_DO_NOTHING);
 
-	if (debugMonetizationPlugin)
-	{
-		// Load setting from project
-		enableMonetizationBtn->SetCheck((m_pProject->GetEnableMonetization() ? BST_CHECKED : BST_UNCHECKED));
-	}
-	else
-	{
-		// Hide and disable "Enable Monetization" checkbox
-		enableMonetizationBtn->ShowWindow(SW_HIDE);
-		enableMonetizationBtn->SetCheck(BST_UNCHECKED);
-		m_pProject->SetEnableMonetization(false);
-	}
-
-#else
-	// Disable dialog control
-	CButton *enableMonetizationBtn = (CButton *)GetDlgItem(IDC_ENABLE_MONETIZATION);
-	enableMonetizationBtn->ShowWindow(SW_HIDE);
-	enableMonetizationBtn->SetCheck(BST_UNCHECKED);
-
-#endif // AUTO_INCLUDE_MONETIZATION_PLUGIN
+	pCopyToDevice->SetCheck((m_pProject->GetAfterBuild() == AB_COPY_TO_DEVICE) ? BST_CHECKED : BST_UNCHECKED);
+	pShowInFiles->SetCheck((m_pProject->GetAfterBuild() == AB_SHOW_IN_FILES) ? BST_CHECKED : BST_UNCHECKED);
+	pDoNothing->SetCheck((m_pProject->GetAfterBuild() == AB_DO_NOTHING || m_pProject->GetAfterBuild() == "") ? BST_CHECKED : BST_UNCHECKED); //Default option
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -575,6 +556,19 @@ void CBuildAndroidDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
+
+//This will open and run a command promot window
+void Exec(CString command) { 
+	::ShellExecute(
+		nullptr,
+		_T("open"),
+		_T("cmd"),
+		_T(" /C \"")+command+_T("\""), // params                            
+		nullptr,
+		SW_SHOW);
+}
+
+
 // OnOK - build project
 // Retrieve values from dialog, save to registry, 
 // get key alias password if necessary
@@ -603,7 +597,7 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 		if (ret != IDYES) return;
 		AfxGetApp()->WriteProfileString( REGISTRY_BUILD_ANDROID, _T("AcceptedSDKLicense"), _T("YES") );
 	}
-
+	
 	// Fetch and validate field values.
     GetDlgItemText(IDC_BUILD_APPNAME, sAppName);
 	sAppName.Trim();
@@ -726,6 +720,14 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 	}
 	isLiveBuild = (IsDlgButtonChecked(IDC_CREATE_LIVE_BUILD) == BST_CHECKED);
 	
+	CString afterBuild = _T("0");
+	CButton* pCopyToDevice = (CButton*)GetDlgItem(IDC_COPY_TO_DEVICE);
+	CButton* pShowInFiles = (CButton*)GetDlgItem(IDC_SHOW_IN_FILES);
+	if (pCopyToDevice->GetCheck() == BST_CHECKED)
+		afterBuild = _T("2");
+	else if (pShowInFiles->GetCheck() == BST_CHECKED)
+		afterBuild = _T("1");
+
 	// Store field settings to project.
 	m_pProject->SetName(sAppName);
 	m_pProject->SetAndroidVersionCode(iVersionCode);
@@ -736,6 +738,7 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 	m_pProject->SetSaveDir(sBuildDir);
 	m_pProject->SetTargetOS(_T("Android 2.3.3"));		// <- This string is only used by logging/analytics.
 	m_pProject->SetCreateLiveBuild(isLiveBuild);
+	m_pProject->SetAfterBuild(afterBuild);
 
 	// Update global build settings in registry.
 	stringBuffer.SetUTF8(pTargetStore->GetStringId());
@@ -812,14 +815,30 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 		return;
 	}
 
+	//After Build Options
+	if (afterBuild == AB_COPY_TO_DEVICE) // Copy to Device
+	{
+		CString apkPath = m_pProject->GetSaveDir() + _T("\\") + m_pProject->GetName() + _T(".apk"); // apk path
+		if (PathFileExists(apkPath)) { // check if apk exist (may be aab)
+			Exec(_T("cd C:\\Program Files (x86)\\Corona Labs\\Corona\\adb & adb install -r \"") + apkPath + _T("\" & adb logcat Corona:v *:s")); // install apk and print logs
+		}
+		else { // apk not installed
+			DisplayWarningMessage(IDS_APK_NOT_FOUND);
+		}
+		
+	}
+	else if (afterBuild == AB_SHOW_IN_FILES)
+	{
+		ShellExecute(NULL, _T("open"), m_pProject->GetSaveDir(), NULL, NULL, SW_SHOWNORMAL);
+	}
 	// The build has succeeded. Inform the user.
-    CMessageDlg messageDlg(this);
-    messageDlg.SetText( IDS_BUILD_SUCCEEDED );
-    messageDlg.SetDefaultText( IDS_DONE );
-    messageDlg.SetAltText( IDS_VIEW_EXPLORER );
-    messageDlg.SetFolder( m_pProject->GetSaveDir() );
-    messageDlg.SetIconStyle( MB_ICONINFORMATION );
-    messageDlg.DoModal();
+	CMessageDlg messageDlg(this);
+	messageDlg.SetText(IDS_BUILD_SUCCEEDED);
+	messageDlg.SetDefaultText(IDS_DONE);
+	//messageDlg.SetAltText( IDS_VIEW_EXPLORER ); //Remove because we give user a choice already
+	//messageDlg.SetFolder( m_pProject->GetSaveDir() );
+	messageDlg.SetIconStyle(MB_ICONINFORMATION);
+	messageDlg.DoModal();
 
 	// Add the project to the Corona Live Server list, if enabled.
 	if (isLiveBuild)
@@ -832,6 +851,8 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 		}
 		catch (...) {}
 	}
+
+	
 
 	// Close this window.
 	CDialog::OnOK();
@@ -900,7 +921,7 @@ void CALLBACK CBuildAndroidDlg::HelpCallback(LPHELPINFO lpHelpInfo)
 	catch (...) {}
 }
 
-UINT CBuildAndroidDlg::DisplayWarningMessageWithHelp(UINT nTitleID, UINT nMessageID, CString helpURL)
+UINT CBuildAndroidDlg::DisplayWarningMessageWithHelp(UINT nTitleID, UINT nMessageID, CString helpURL, bool isYesNo)
 {
 	MSGBOXPARAMS mbp;
 	CString title;
@@ -920,8 +941,13 @@ UINT CBuildAndroidDlg::DisplayWarningMessageWithHelp(UINT nTitleID, UINT nMessag
 
 	// if you wanted to specify a different caption, here is where you do it
 	mbp.lpszCaption = title;
-
-	mbp.dwStyle = MB_YESNO | MB_ICONWARNING | MB_HELP;
+	if (isYesNo) { //default YES NO
+		mbp.dwStyle = MB_YESNO | MB_ICONWARNING | MB_HELP;
+	}
+	else {
+		mbp.dwStyle = MB_ICONWARNING | MB_HELP;
+	}
+	
 
 	//  mbp.lpszIcon = ; // note, you could provide your own custom ICON here!
 
@@ -931,36 +957,6 @@ UINT CBuildAndroidDlg::DisplayWarningMessageWithHelp(UINT nTitleID, UINT nMessag
 
 	return ::MessageBoxIndirect(&mbp);
 }
-
-#ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
-// Called when the user changes the "Enable Monetization" checkbox
-void CBuildAndroidDlg::OnBnClickedEnableMonetization()
-{
-	CButton *enableMonetizationBtn = (CButton *) GetDlgItem(IDC_ENABLE_MONETIZATION);
-
-	// If they uncheck the box, ask them if they are sure
-	if (enableMonetizationBtn->GetCheck() == BST_UNCHECKED)
-	{
-		CString title;
-		CString message;
-		DWORD answer = IDNO;
-
-		title.LoadString(IDS_ENABLE_MONETIZATION);
-		message.LoadString(IDS_MONETIZATION_WARNING);
-		//answer = MessageBox(message, title, MB_YESNO | MB_ICONWARNING | MB_HELP);
-		answer = DisplayWarningMessageWithHelp(IDS_ENABLE_MONETIZATION, IDS_MONETIZATION_WARNING, L"https://fusepowered.com/corona");
-
-		// The dialog asks whether they really want to disable monetization so
-		// if they answer "No" we need to re-check the checkbox
-		if (answer == IDNO)
-		{
-			enableMonetizationBtn->SetCheck(BST_CHECKED);
-		}
-	}
-
-	m_pProject->SetEnableMonetization((enableMonetizationBtn->GetCheck() == BST_CHECKED));
-}
-#endif // AUTO_INCLUDE_MONETIZATION_PLUGIN
 
 
 
