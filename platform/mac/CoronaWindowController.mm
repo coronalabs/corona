@@ -26,7 +26,9 @@
 #include "Rtt_LuaContext.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_RuntimeDelegate.h"
+#include "Rtt_MacSimulatorServices.h"
 #include "HomeScreenRuntimeDelegate.h"
+
 
 // ----------------------------------------------------------------------------
 
@@ -780,6 +782,43 @@ RuntimeDelegateWrapper::SetDelegate( RuntimeDelegate *delegate )
 	}
 }
 
+
+//Support Dragging main.lua for Sim Only projects only at the moment
+#if Rtt_AUTHORING_SIMULATOR
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
+    NSPasteboard *pboard;
+    pboard = [sender draggingPasteboard];
+    if (@available(macOS 10.13, *)) {
+        if ( [[pboard types] containsObject:NSPasteboardTypeFileURL] ) {
+            NSString *fileURL = [[NSURL URLFromPasteboard:pboard] path];
+            NSArray *splitPath = [fileURL componentsSeparatedByString:@"/"];
+            if([splitPath.lastObject isEqualToString:@"main.lua"] ){
+                return NSDragOperationLink;
+            }
+            
+        }
+    }
+    return NSDragOperationNone;
+}
+//Support for Drag a main.lua on to Welcome Screen
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+    NSPasteboard *pboard;
+    pboard = [sender draggingPasteboard];
+    if (@available(macOS 10.13, *)) {
+        if ( [[pboard types] containsObject:NSPasteboardTypeFileURL] ) {
+            NSString *fileURL = [[NSURL URLFromPasteboard:pboard] path];
+            NSArray *splitPath = [fileURL componentsSeparatedByString:@"/"];
+            
+                if([splitPath.lastObject isEqualToString:@"main.lua"] ){
+                    AppDelegate * appDelegate = (AppDelegate*)[NSApp delegate];
+                    Rtt::MacSimulatorServices * simulatorServices = new Rtt::MacSimulatorServices(appDelegate, (CoronaWindowController *)self, nil);
+                    simulatorServices->OpenProject( [[fileURL stringByReplacingOccurrencesOfString:@"main.lua" withString:@""] UTF8String] );
+                }
+        }
+    }
+    return YES;
+}
+#endif
 @end
 
 // ----------------------------------------------------------------------------
