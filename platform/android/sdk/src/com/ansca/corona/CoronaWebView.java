@@ -13,6 +13,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebSettings;
+import android.webkit.PermissionRequest;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,7 +96,18 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		// Set up a web chrome client for enabling JavaScript alerts and location/GPS tracking.
 		setWebChromeClient(new android.webkit.WebChromeClient() {
 			View mCustomView;
-
+			@RequiresApi(api = Build.VERSION_CODES.N)
+			@Override
+			public void onPermissionRequest(final PermissionRequest request) 
+			{
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) 
+				{
+				   	request.grant(request.getResources());
+				}
+		   	}
+			/*
+			 This line above is necessary for the camera to work from inside a webview
+   			*/
 			@Override
 			public void onGeolocationPermissionsShowPrompt(
 				String origin, android.webkit.GeolocationPermissions.Callback callback)
