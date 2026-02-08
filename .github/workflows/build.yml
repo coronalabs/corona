@@ -17,7 +17,7 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_26.1.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
@@ -68,8 +68,7 @@ jobs:
         runner:
           - macos-26
         xcode:
-          - Xcode_26.0
-          - Xcode_26.1
+          - Xcode_26.2
         target:
           - template
           - template-angle
@@ -113,7 +112,6 @@ jobs:
           - macos-15
         xcode:
           - Xcode_16.4
-          - Xcode_16.3
         target:
           - template
           - template-angle
@@ -475,7 +473,7 @@ jobs:
       - source-code
     runs-on: macos-26
     env:
-      DEVELOPER_DIR: /Applications/Xcode_26.1.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Set up emsdk
