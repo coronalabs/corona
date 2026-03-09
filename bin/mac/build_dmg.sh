@@ -247,14 +247,15 @@ ICON_Y=$APP_Y
 rm -f "$DMG_FILE"
 
 # If we have a build number and ImageMagick's convert command is available, brand the DMG background
-if [ "$FULL_BUILD_NUM" != "" ] && [ -x "$(which convert)" ]
+if [ "$FULL_BUILD_NUM" != "" ] && [ -x "$(which magick)" ]
 then
+	FONT=/System/Library/Fonts/Monaco.ttf
 	TMPBACKGROUND=/tmp/CoronaBackground$$.png
-	convert sdk/dmg/CoronaBackground.png -pointsize 13 -stroke DarkGrey -fill DarkGrey -draw "text 39,387 '$FULL_BUILD_NUM'" "$TMPBACKGROUND"
+	magick sdk/dmg/CoronaBackground.png -pointsize 13 -stroke DarkGrey -fill DarkGrey -font "$FONT" -draw "text 39,387 '$FULL_BUILD_NUM'" "$TMPBACKGROUND"
 	BACKGROUND_PATH="$TMPBACKGROUND"
 
-	convert sdk/dmg/BG.png    -pointsize 13 -stroke DarkGrey -fill DarkGrey -draw "text 39,387 '$FULL_BUILD_NUM'" sdk/dmg/bgp.png
-	convert sdk/dmg/BG@2x.png -pointsize 26 -stroke DarkGrey -fill DarkGrey -draw "text 78,774 '$FULL_BUILD_NUM'" sdk/dmg/bgp@2x.png
+	magick sdk/dmg/BG.png    -pointsize 13 -stroke DarkGrey -fill DarkGrey -font "$FONT" -draw "text 39,387 '$FULL_BUILD_NUM'" sdk/dmg/bgp.png
+	magick sdk/dmg/BG@2x.png -pointsize 26 -stroke DarkGrey -fill DarkGrey -font "$FONT" -draw "text 78,774 '$FULL_BUILD_NUM'" sdk/dmg/bgp@2x.png
 else
 	cp sdk/dmg/BG.png    sdk/dmg/bgp.png
 	cp sdk/dmg/BG@2x.png sdk/dmg/bgp@2x.png
