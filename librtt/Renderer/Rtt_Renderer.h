@@ -298,7 +298,7 @@ class Renderer
     
     protected:
         void UpdateBatch( bool batch, bool enoughSpace, bool storedOnGPU, U32 verticesRequired );
-        void CopyVertexData( Geometry* geometry, Geometry::Vertex* destination, bool interior );
+        void CopyVertexData( Geometry* geometry, Geometry::Vertex* destination, int extraCount );
         void CopyTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* destination );
         void CopyTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destination );
         void CopyIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
@@ -307,11 +307,11 @@ class Renderer
         void MergeVertexData( Geometry::Vertex** destination, const Geometry::Vertex* mainSrc, const Geometry::Vertex* extensionSrc, int index, int extraCount );
         void MergeVertexDataRange( Geometry::Vertex** destination, Geometry* geometry, int count, int extraCount, int offset = 0 );
 
-        void CopyExtendedVertexData( Geometry* geometry, Geometry::Vertex* destination, bool interior );
-        void CopyExtendedTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* destination );
-        void CopyExtendedTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destination );
-        void CopyExtendedIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
-        void CopyExtendedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination );
+        void CopyExtendedVertexData( Geometry* geometry, Geometry::Vertex* destination, int extraCount );
+        void CopyExtendedTriangleStripsAsLines( Geometry* geometry, Geometry::Vertex* destination, int extraCount );
+        void CopyExtendedTriangleFanAsLines( Geometry* geometry, Geometry::Vertex* destination, int extraCount );
+        void CopyExtendedIndexedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination, int extraCount );
+        void CopyExtendedTrianglesAsLines( Geometry* geometry, Geometry::Vertex* destination, int extraCount );
     
     protected:
         // Returns count at top of the mask count stack
@@ -362,7 +362,6 @@ class Renderer
         RenderData fPrevious;
         U32 fVertexOffset;
         U32 fVertexCount;
-        U32 fVertexExtra;
         U32 fIndexOffset;
         U32 fIndexCount;
         U32 fRenderDataCount;
@@ -371,8 +370,6 @@ class Renderer
         U32 fDegenerateVertexCount;
         U32 fCachedVertexOffset;
         U32 fCachedVertexCount;
-        U32 fCachedVertexExtra;
-		U32 fOffsetCorrection;
         Geometry::PrimitiveType fPreviousPrimitiveType;
         Geometry::Vertex* fCurrentVertex;
         Geometry* fCurrentGeometry;
