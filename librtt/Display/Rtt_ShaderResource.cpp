@@ -27,58 +27,37 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-bool
-TimeTransform::Apply( Uniform *time, Real *old, U32 now )
+Real
+TimeTransform::Apply( Real value ) const
 {
-	if (NULL != func && NULL != time)
-	{
-		if (timestamp != now)
-		{
-			timestamp = now;
+	Rtt_ASSERT( func );
 
-			time->GetValue(cached);
-
-			if (NULL != old)
-			{
-				*old = cached;
-			}
-
-			func( &cached, arg1, arg2, arg3 );
-		}
-
-		time->SetValue(cached);
-
-		return true;
-	}
-
-	return false;
+	return func( value, arg1, arg2, arg3 );
 }
 
-static void
-Modulo( Real *x, Real range, Real, Real )
+static Real
+Modulo( Real x, Real range, Real, Real )
 {
-    *x = fmod( *x, range ); // TODO?: Rtt_RealFmod
+    return fmod( x, range ); // TODO?: Rtt_RealFmod
 }
 
-static void
-PingPong( Real *x, Real range, Real, Real )
+static Real
+PingPong( Real x, Real range, Real, Real )
 {
-    Real pos = fmod( *x, Rtt_REAL_2 * range ); // TODO?: Rtt_RealFmod
+    Real pos = fmod( x, Rtt_REAL_2 * range ); // TODO?: Rtt_RealFmod
 
     if (pos > range)
     {
         pos = Rtt_REAL_2 * range - pos;
     }
 
-    *x = pos;
+    return pos;
 }
 
-static void
-Sine( Real *x, Real amplitude, Real speed, Real shift )
+static Real
+Sine( Real x, Real amplitude, Real speed, Real shift )
 {
-    Real t = *x;
-
-    *x = amplitude * Rtt_RealSin( speed * t + shift );
+    return amplitude * Rtt_RealSin( speed * x + shift );
 }
 
 int
@@ -105,7 +84,7 @@ TimeTransform::Push( lua_State *L ) const
             lua_pushnumber( L, (Rtt_REAL_2 * M_PI) / arg2 );
             lua_setfield( L, -2, "period" );
             lua_pushnumber( L, arg3 );
-            lua_setfield( L, -2, "shift" );
+            lua_setfield( L, -2, "phase" );
         }
 
         else
@@ -191,41 +170,22 @@ TimeTransform::SetFunc( lua_State *L, int arg, const char *what, const char *fna
 
     case 's': // sine
         {
-            Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, shift = Rtt_REAL_0;
+            Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, phase = Rtt_REAL_0;
 
             GetNumberArg( L, arg, &amplitude, fname, "amplitude", what );
             GetPositiveNumberArg( L, arg, &period, fname, "period", what );
-            GetNumberArg( L, arg, &shift, fname, "shift", what );
+            GetNumberArg( L, arg, &phase, fname, "phase", what );
 
             func = &Sine;
             arg1 = amplitude;
             arg2 = (Rtt_REAL_2 * M_PI) / period;
-            arg3 = shift;
+            arg3 = phase;
         }
         break;
 
     default:
         Rtt_ASSERT_NOT_REACHED();
     }
-}
-
-bool
-TimeTransform::Matches( const TimeTransform *xform1, const TimeTransform *xform2 )
-{
-	if (xform1 == xform2)
-	{
-		return true;
-	}
-
-	else if (NULL == xform1 || NULL == xform2)
-	{
-		return false;
-	}
-
-	else
-	{
-		return xform1->func == xform2->func && xform1->arg1 == xform2->arg1 && xform1->arg2 == xform2->arg2 && xform1->arg3 == xform2->arg3;
-	}
 }
 
 const char*
@@ -464,6 +424,8 @@ ShaderResource::SetDefaultData( ShaderData *defaultData )
 		fDefaultData = defaultData;
 	}
 }
+
+bool ShaderResource::sAddedUsesTime;
 
 // ----------------------------------------------------------------------------
 

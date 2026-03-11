@@ -134,6 +134,12 @@ class VulkanProgram : public GPUResource
 			
 			// Metadata
 			int fHeaderNumLines;
+			
+			bool HasTime() const
+			{
+				return fUniformLocations[Uniform::kTotalTime].IsValid() ||
+						fUniformLocations[Uniform::kDeltaTime].IsValid();
+			}
 		};
 
 		void Create( Program::Version version, VersionData& data );
