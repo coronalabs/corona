@@ -49,6 +49,8 @@ namespace Rtt
 // following function which loads the bytecodes via luaL_loadbuffer.
     int luaload_OSXPackageApp(lua_State* L);
 	int luaload_CoronaPListSupport(lua_State* L);
+    int luaload_CoronaIconComposerSupport(lua_State* L);
+
 
 // ----------------------------------------------------------------------------
 
@@ -88,6 +90,7 @@ OSXAppPackager::OSXAppPackager( const MPlatformServices& services, MacSimulatorS
 #endif
 	
 	Lua::RegisterModuleLoader( L, "CoronaPListSupport", Lua::Open< luaload_CoronaPListSupport > );
+    Lua::RegisterModuleLoader( L, "CoronaIconComposerSupport", Lua::Open< luaload_CoronaIconComposerSupport> );
 	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
 	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
 	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
