@@ -1811,42 +1811,44 @@ PlatformAppPackager::EscapeFileName( const char *sourceString, String &targetStr
 		sourceCharacter = sourceString[index];
 		switch (sourceCharacter)
 		{
+#ifndef Rtt_WIN_ENV
 			case '/':   // ∕ DIVISION SLASH; Unicode: U+2215, UTF-8: E2 88 95
 				targetString.Append(unicodeAllowed ? "∕" : placeholderChar);
 				break;
+#endif // Rtt_WIN_ENV
 #ifdef Rtt_WIN_ENV
-				// More characters need to be escaped on Windows
-			case '\'':  // ’ RIGHT SINGLE QUOTATION MARK; Unicode: U+2019, UTF-8: E2 80 99
-                targetString.Append(unicodeAllowed ? "’" : placeholderChar);
-                break;
-			case '"':   // ” RIGHT DOUBLE QUOTATION MARK; Unicode: U+201D, UTF-8: E2 80 9D
-                        // “ LEFT DOUBLE QUOTATION MARK; Unicode: U+201C, UTF-8: E2 80 9C
-                targetString.Append(unicodeAllowed ? (quoteCount++ % 2 ? "“" : "”") : placeholderChar);
-                break;
-			case '\\':  // ⧵  REVERSE SOLIDUS OPERATOR; Unicode: U+29F5, UTF-8: E2 A7 B5
-                targetString.Append(unicodeAllowed ? "⧵" : placeholderChar);
-                break;
-			case '*':   // ﹡ SMALL ASTERISK; Unicode: U+FE61, UTF-8: EF B9 A1
-                targetString.Append(unicodeAllowed ? "﹡" : placeholderChar);
-                break;
-			case '?':   // ？ FULLWIDTH QUESTION MARK; Unicode: U+FF1F, UTF-8: EF BC 9F
-                targetString.Append(unicodeAllowed ? "？" : placeholderChar);
-                break;
-			case '|':   // ｜ FULLWIDTH VERTICAL LINE; Unicode: U+FF5C, UTF-8: EF BD 9C
-                targetString.Append(unicodeAllowed ? "｜" : placeholderChar);
-                break;
-			case '&':   // ＆ FULLWIDTH AMPERSAND; Unicode: U+FF06, UTF-8: EF BC 86
-                targetString.Append(unicodeAllowed ? "＆" : placeholderChar);
-				break;
-			case '<':   // ＜ FULLWIDTH LESS-THAN SIGN; Unicode: U+FF1C, UTF-8: EF BC 9C
-                targetString.Append(unicodeAllowed ? "＜" : placeholderChar);
-				break;
-			case '>':   // ＞ FULLWIDTH GREATER-THAN SIGN; Unicode: U+FF1E, UTF-8: EF BC 9E
-                targetString.Append(unicodeAllowed ? "＞" : placeholderChar);
-                break;
-			case ':':   // ： FULLWIDTH COLON; Unicode: U+FF1A, UTF-8: EF BC 9A
-                targetString.Append(unicodeAllowed ? "：" : placeholderChar);
-				break;
+			// 	// More characters need to be escaped on Windows
+			// case '\'':  // ’ RIGHT SINGLE QUOTATION MARK; Unicode: U+2019, UTF-8: E2 80 99
+            //    targetString.Append(unicodeAllowed ? "’" : placeholderChar);
+            //    break;
+			// case '"':   // ” RIGHT DOUBLE QUOTATION MARK; Unicode: U+201D, UTF-8: E2 80 9D
+            //            // “ LEFT DOUBLE QUOTATION MARK; Unicode: U+201C, UTF-8: E2 80 9C
+            //    targetString.Append(unicodeAllowed ? (quoteCount++ % 2 ? "“" : "”") : placeholderChar);
+            //    break;
+			// case '\\':  // ⧵  REVERSE SOLIDUS OPERATOR; Unicode: U+29F5, UTF-8: E2 A7 B5
+            //    targetString.Append(unicodeAllowed ? "⧵" : placeholderChar);
+            //    break;
+			// case '*':   // ﹡ SMALL ASTERISK; Unicode: U+FE61, UTF-8: EF B9 A1
+            //    targetString.Append(unicodeAllowed ? "﹡" : placeholderChar);
+            //    break;
+			// case '?':   // ？ FULLWIDTH QUESTION MARK; Unicode: U+FF1F, UTF-8: EF BC 9F
+            //    targetString.Append(unicodeAllowed ? "？" : placeholderChar);
+            //    break;
+			// case '|':   // ｜ FULLWIDTH VERTICAL LINE; Unicode: U+FF5C, UTF-8: EF BD 9C
+            //    targetString.Append(unicodeAllowed ? "｜" : placeholderChar);
+            //    break;
+			// case '&':   // ＆ FULLWIDTH AMPERSAND; Unicode: U+FF06, UTF-8: EF BC 86
+            //    targetString.Append(unicodeAllowed ? "＆" : placeholderChar);
+			// 	break;
+			// case '<':   // ＜ FULLWIDTH LESS-THAN SIGN; Unicode: U+FF1C, UTF-8: EF BC 9C
+            //    targetString.Append(unicodeAllowed ? "＜" : placeholderChar);
+			// 	break;
+			// case '>':   // ＞ FULLWIDTH GREATER-THAN SIGN; Unicode: U+FF1E, UTF-8: EF BC 9E
+            //    targetString.Append(unicodeAllowed ? "＞" : placeholderChar);
+            //    break;
+			// case ':':   // ： FULLWIDTH COLON; Unicode: U+FF1A, UTF-8: EF BC 9A
+            //    targetString.Append(unicodeAllowed ? "：" : placeholderChar);
+			// 	break;
             case ' ':   //   EM SPACE; Unicode: U+2003, UTF-8: E2 80 83
                 // targetString.Append(unicodeAllowed ? " " : " ");
                 targetString.Append(" ");
