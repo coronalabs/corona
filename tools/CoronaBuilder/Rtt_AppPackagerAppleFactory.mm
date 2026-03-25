@@ -238,6 +238,13 @@ AppPackagerFactory::CreatePackagerParamsApple(
 	}
 	lua_pop(L, 1);
 
+	lua_getfield(L, index, "liveBuild");
+	if(lua_type(L, -1) == LUA_TBOOLEAN)
+	{
+		result->SetLiveBuild(lua_toboolean(L, -1));
+	}
+	lua_pop(L, 1);
+
 	return result;
 }
 
