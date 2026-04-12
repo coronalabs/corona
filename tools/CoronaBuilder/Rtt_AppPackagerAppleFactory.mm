@@ -194,14 +194,6 @@ AppPackagerFactory::CreatePackagerParamsApple(
 			const char *distributionMethod = lua_tostring( L, -1 );
 			lua_pop( L, 1 );
 
-			lua_getfield( L, index, "itunesConnectUsername" );
-			const char *itcUsername = lua_tostring( L, -1 );
-			lua_pop( L, 1 );
-
-			lua_getfield( L, index, "itunesConnectPassword" );
-			const char *itcPassword = lua_tostring( L, -1 );
-			lua_pop( L, 1 );
-
 			S32 targetDevice = -1;
 			OSXAppPackager packager( fServices );
 			bool isDistributionBuild = false;
@@ -244,8 +236,6 @@ AppPackagerFactory::CreatePackagerParamsApple(
 
 			if ( distributionMethod )
 				osxResult->SetDistributionMethod( distributionMethod );
-			if ( itcUsername || itcPassword )
-				osxResult->SetITCCredentials( itcUsername, itcPassword );
 
 			result = osxResult;
 		}

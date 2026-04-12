@@ -101,16 +101,11 @@ Here's an example for macOS (`fishies.macos.lua`):
 	    -- installerSigningIdentity = 'Developer ID Installer: Your Name (TEAMID)',
 
 	    -- Distribution method (default: 'developer'):
-	    --   'developer'         standard unsigned/developer-signed .app
-	    --   'app-store'         Mac App Store .pkg, built and uploaded
-	    --   'app-store-package' Mac App Store .pkg, built but not uploaded
-	    --   'developer-id'      Developer ID signed .pkg for direct distribution
-	    --   'developer-id-dmg'  Developer ID signed .dmg for direct distribution
+	    --   'developer'        standard unsigned/developer-signed .app
+	    --   'app-store'        Mac App Store .pkg (upload manually via Transporter)
+	    --   'developer-id'     Developer ID signed .pkg for direct distribution
+	    --   'developer-id-dmg' Developer ID signed .dmg for direct distribution
 	    -- distributionMethod = 'developer',
-
-	    -- Required when distributionMethod = 'app-store'.
-	    -- itunesConnectUsername = 'you@example.com',
-	    -- itunesConnectPassword = 'xxxx-xxxx-xxxx-xxxx',  -- app-specific password
 	}
 	return params
 

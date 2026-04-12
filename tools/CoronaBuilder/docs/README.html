@@ -85,16 +85,11 @@ return params</code></pre>
     -- installerSigningIdentity = &#39;Developer ID Installer: Your Name (TEAMID)&#39;,
 
     -- Distribution method (default: &#39;developer&#39;):
-    --   &#39;developer&#39;         standard unsigned/developer-signed .app
-    --   &#39;app-store&#39;         Mac App Store .pkg, built and uploaded
-    --   &#39;app-store-package&#39; Mac App Store .pkg, built but not uploaded
-    --   &#39;developer-id&#39;      Developer ID signed .pkg for direct distribution
-    --   &#39;developer-id-dmg&#39;  Developer ID signed .dmg for direct distribution
+    --   &#39;developer&#39;        standard unsigned/developer-signed .app
+    --   &#39;app-store&#39;        Mac App Store .pkg (upload manually via Transporter)
+    --   &#39;developer-id&#39;     Developer ID signed .pkg for direct distribution
+    --   &#39;developer-id-dmg&#39; Developer ID signed .dmg for direct distribution
     -- distributionMethod = &#39;developer&#39;,
-
-    -- Required when distributionMethod = &#39;app-store&#39;.
-    -- itunesConnectUsername = &#39;you@example.com&#39;,
-    -- itunesConnectPassword = &#39;xxxx-xxxx-xxxx-xxxx&#39;,  -- app-specific password
 }
 return params</code></pre>
 <p>Here&#39;s an example for Windows (<code>fishies.win32.lua</code>):</p>

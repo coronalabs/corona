@@ -54,9 +54,7 @@ class OSXAppPackagerParams : public AppPackagerParams
 							appPackage, isDistributionBuild ),
 		fAppSigningIdentity(appSigningIdentity),
 		fInstallerSigningIdentity(installerSigningIdentity),
-		fDistributionMethod(NULL),
-		fITCUsername(NULL),
-		fITCPassword(NULL)
+		fDistributionMethod(NULL)
 		{
 		}
 
@@ -73,9 +71,7 @@ class OSXAppPackagerParams : public AppPackagerParams
 							"", false ),
 		fAppSigningIdentity(NULL),
 		fInstallerSigningIdentity(NULL),
-		fDistributionMethod(NULL),
-		fITCUsername(NULL),
-		fITCPassword(NULL)
+		fDistributionMethod(NULL)
 		{
 		}
 		
@@ -95,28 +91,22 @@ class OSXAppPackagerParams : public AppPackagerParams
 		const char* GetInstallerSigningIdentity() const { return fInstallerSigningIdentity; }
 
 		// distributionMethod controls which build pipeline CoronaBuilder uses:
-		//   "developer"         — standard .app build, unsigned or developer-signed (default)
-		//   "app-store"         — Mac App Store .pkg, built and uploaded via App Store Connect
-		//   "app-store-package" — Mac App Store .pkg, created but not uploaded
-		//   "developer-id"      — Developer ID .pkg for direct distribution
-		//   "developer-id-dmg"  — Developer ID .dmg for direct distribution
+		//   "developer"        — standard .app build, unsigned or developer-signed (default)
+		//   "app-store"        — Mac App Store .pkg (upload manually via Transporter)
+		//   "developer-id"     — Developer ID signed .pkg for direct distribution
+		//   "developer-id-dmg" — Developer ID signed .dmg for direct distribution
 		const char* GetDistributionMethod() const { return fDistributionMethod ? fDistributionMethod : "developer"; }
-		const char* GetITCUsername() const { return fITCUsername ? fITCUsername : ""; }
-		const char* GetITCPassword() const { return fITCPassword ? fITCPassword : ""; }
 
 		void SetRuntime(Runtime* value) { fRuntime = value; }
 		void SetAppSigningIdentity(const char* v) { fAppSigningIdentity = v; }
 		void SetInstallerSigningIdentity(const char* v) { fInstallerSigningIdentity = v; }
 		void SetDistributionMethod(const char* v) { fDistributionMethod = v; }
-		void SetITCCredentials(const char* user, const char* password) { fITCUsername = user; fITCPassword = password; }
 
 	public:
 		Rtt::Runtime* fRuntime;
 		const char* fAppSigningIdentity;
 		const char* fInstallerSigningIdentity;
 		const char* fDistributionMethod;
-		const char* fITCUsername;
-		const char* fITCPassword;
 };
 
 class OSXAppPackager : public PlatformAppPackager

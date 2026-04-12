@@ -30,21 +30,12 @@ local params =
 
 	-- ── Distribution method ────────────────────────────────────────────────────
 	--
-	-- 'developer'         — (default) standard .app, unsigned or developer-signed
-	-- 'app-store'         — Mac App Store .pkg, created and uploaded to App Store Connect
-	-- 'app-store-package' — Mac App Store .pkg, created but NOT uploaded
-	-- 'developer-id'      — Developer ID signed .pkg for direct distribution
-	-- 'developer-id-dmg'  — Developer ID signed .dmg for direct distribution
+	-- 'developer'        — (default) standard .app, unsigned or developer-signed
+	-- 'app-store'        — Mac App Store .pkg (upload manually via Transporter)
+	-- 'developer-id'     — Developer ID signed .pkg for direct distribution
+	-- 'developer-id-dmg' — Developer ID signed .dmg for direct distribution
 	--
 	-- distributionMethod = 'developer',
-
-	-- ── App Store Connect credentials ──────────────────────────────────────────
-	-- Required when distributionMethod = 'app-store'.
-	-- Use an app-specific password (not your Apple ID password).
-	-- See: https://support.apple.com/en-us/102654
-	--
-	-- itunesConnectUsername = 'you@example.com',
-	-- itunesConnectPassword = 'xxxx-xxxx-xxxx-xxxx',
 }
 
 return params
