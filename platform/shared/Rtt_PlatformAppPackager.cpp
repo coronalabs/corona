@@ -42,6 +42,7 @@
 #   ifdef Rtt_WIN_ENV
 #	    include "Rtt_WinConsolePlatform.h"
 #   endif
+#	include "Rtt_HTTPClient.h"
 #endif
 
 #include "Rtt_MCrypto.h"
@@ -1370,6 +1371,103 @@ PlatformAppPackager::UnzipPlugins( AppPackagerParams *params, Runtime *runtime, 
 	return wasSuccessful;
 }
 #endif
+
+#if defined( Rtt_NO_GUI )
+
+// Forward declaration for the compiled BuilderPluginDownloader.lua bytecode loader.
+// The symbol is provided by the CoronaBuilder link unit (same pattern as Rtt_DownloadPluginsMain.cpp).
+int luaload_BuilderPluginDownloader( lua_State *L );
+
+bool
+PlatformAppPackager::DownloadPluginsHeadless(
+	AppPackagerParams *params,
+	const char *platform,
+	const char *destinationDirectoryPath )
+{
+	lua_State *L = fVM;
+
+	// Register HTTP helpers, socket libraries, lfs, json, and CoronaBuilderPluginCollector
+	// into this Lua VM so that BuilderPluginDownloader.lua can require them.
+	HTTPClient::registerFetcherModuleLoaders( L );
+
+	// Register a minimal 'builder' module exposing fetch + download.
+	// BuilderPluginDownloader.lua does: local builder = require('builder')
+	// and passes builder.fetch / builder.download to the plugin collector.
+	lua_newtable( L );
+	lua_pushcfunction( L, HTTPClient::fetch );
+	lua_setfield( L, -2, "fetch" );
+	lua_pushcfunction( L, HTTPClient::download );
+	lua_setfield( L, -2, "download" );
+	// Store in package.loaded so require('builder') returns it.
+	lua_getglobal( L, "package" );
+	lua_getfield( L, -1, "loaded" );
+	lua_pushvalue( L, -3 );        // duplicate the builder table
+	lua_setfield( L, -2, "builder" );
+	lua_pop( L, 3 );               // pop: package, loaded, builder table
+
+	// Load BuilderPluginDownloader bytecode (defines DownloadPluginsMain global).
+	Lua::DoBuffer( L, &luaload_BuilderPluginDownloader, NULL );
+
+	// Build path to the project's build.settings file.
+	std::string buildSettingsPath( params->GetSrcDir() );
+	buildSettingsPath += LUA_DIRSEP;
+	buildSettingsPath += "build.settings";
+
+	// Ensure destination directory exists.
+	mkdir( destinationDirectoryPath );
+
+	// Call DownloadPluginsMain(args, user, buildYear, buildRevision).
+	// args table layout (1-indexed in Lua):
+	//   [1] = "download"            (subcommand)
+	//   [2] = platform              ("win32" or "osx")
+	//   [3] = buildSettingsPath     (path to build.settings)
+	//   [4] = destinationPath       (where plugin files are extracted)
+	lua_getglobal( L, "DownloadPluginsMain" );
+	if ( !lua_isfunction( L, -1 ) )
+	{
+		lua_pop( L, 1 );
+		params->SetBuildMessage( "DownloadPluginsMain not found — BuilderPluginDownloader failed to load." );
+		return false;
+	}
+
+	lua_newtable( L );
+	lua_pushstring( L, "download" );
+	lua_rawseti( L, -2, 1 );
+	lua_pushstring( L, platform );
+	lua_rawseti( L, -2, 2 );
+	lua_pushstring( L, buildSettingsPath.c_str() );
+	lua_rawseti( L, -2, 3 );
+	lua_pushstring( L, destinationDirectoryPath );
+	lua_rawseti( L, -2, 4 );
+
+	lua_pushnil( L );                           // user (not required for Solar2D free plugins)
+	lua_pushinteger( L, Rtt_BUILD_YEAR );
+	lua_pushinteger( L, Rtt_BUILD_REVISION );
+
+	bool success = false;
+	int callResult = lua_pcall( L, 4, 1, 0 );
+	if ( callResult == 0 )
+	{
+		if ( lua_isnumber( L, -1 ) )
+		{
+			success = ( lua_tointeger( L, -1 ) == 0 );
+		}
+		lua_pop( L, 1 );
+	}
+	else
+	{
+		const char *errorMsg = lua_tostring( L, -1 );
+		if ( errorMsg )
+		{
+			params->SetBuildMessage( errorMsg );
+		}
+		lua_pop( L, 1 );
+	}
+
+	return success;
+}
+
+#endif // Rtt_NO_GUI
 
 int
 PlatformAppPackager::OpenBuildSettings( const char * srcDir )
