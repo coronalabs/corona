@@ -181,7 +181,20 @@ AppPackagerFactory::CreatePackagerParamsApple(
 
 		case TargetDevice::kOSXPlatform:
 		{
-			S32 targetDevice = -1;		// TODO: add OSX/Windows devices
+			// Read macOS-specific optional fields from the Lua params table.
+			lua_getfield( L, index, "appSigningIdentity" );
+			const char *appSigningIdentity = lua_tostring( L, -1 );
+			lua_pop( L, 1 );
+
+			lua_getfield( L, index, "installerSigningIdentity" );
+			const char *installerSigningIdentity = lua_tostring( L, -1 );
+			lua_pop( L, 1 );
+
+			lua_getfield( L, index, "distributionMethod" );
+			const char *distributionMethod = lua_tostring( L, -1 );
+			lua_pop( L, 1 );
+
+			S32 targetDevice = -1;
 			OSXAppPackager packager( fServices );
 			bool isDistributionBuild = false;
 			NSString *identity = nil;
@@ -196,7 +209,14 @@ AppPackagerFactory::CreatePackagerParamsApple(
 				identity = [AppleSigningIdentityController signingIdentity:provisionFile commonName:&commonName];
 			}
 
-			result = new OSXAppPackagerParams(
+			// If no provision file, allow a direct signing identity string (e.g. for Developer ID builds).
+			if ( identity == nil && appSigningIdentity != NULL )
+			{
+				identity = [NSString stringWithUTF8String:appSigningIdentity];
+				isDistributionBuild = true;
+			}
+
+			OSXAppPackagerParams *osxResult = new OSXAppPackagerParams(
 											  appName,
 											  version,
 											  [identity UTF8String],
@@ -210,7 +230,14 @@ AppPackagerFactory::CreatePackagerParamsApple(
 											  customBuildId,
 											  NULL,
 											  appBundleId,
-											  isDistributionBuild );
+											  isDistributionBuild,
+											  appSigningIdentity,
+											  installerSigningIdentity );
+
+			if ( distributionMethod )
+				osxResult->SetDistributionMethod( distributionMethod );
+
+			result = osxResult;
 		}
 		break;
 

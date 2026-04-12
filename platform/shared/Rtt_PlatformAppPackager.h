@@ -256,6 +256,20 @@ class PlatformAppPackager
 		bool UnzipPlugins( AppPackagerParams *params, Runtime *runtime, const char *destinationDirectoryPath );
 #endif
 
+#if defined( Rtt_NO_GUI )
+		/**
+		 * Downloads and extracts project plugins in a headless (CoronaBuilder) context where no Runtime is available.
+		 * Uses BuilderPluginDownloader.lua + CoronaBuilderPluginCollector — the same infrastructure iOS/tvOS builds use.
+		 * All plugin files are extracted flat into destinationDirectoryPath (lua_51/ is merged to root automatically).
+		 * @param params Pointer to the build's package parameters. Cannot be null.
+		 * @param platform Plugin platform string, e.g. "win32" or "osx".
+		 * @param destinationDirectoryPath Directory where plugin files will be extracted. Created if it does not exist.
+		 * @return Returns true on success (including when the project has no plugins to download).
+		 *         Returns false on error; params->GetBuildMessage() will contain a reason.
+		 */
+		bool DownloadPluginsHeadless( AppPackagerParams *params, const char *platform, const char *destinationDirectoryPath );
+#endif
+
 		int OpenBuildSettings( const char * srcDir );
 		virtual void OnReadingBuildSettings( lua_State *L, int index );
         void ReadGlobalCustomBuildId();

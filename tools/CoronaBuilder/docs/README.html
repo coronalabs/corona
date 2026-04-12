@@ -24,7 +24,7 @@
 <pre><code>/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder deauthorize email password</code></pre>
 <h3 id="building">Building</h3>
 <p>To build you must supply a file in Lua or JSON formats that contain the build arguments.</p>
-<p>Here's an example Lua file for iOS (fishies.ios.lua):</p>
+<p>Here&#39;s an example Lua file for iOS (<code>fishies.ios.lua</code>):</p>
 <pre><code>local params =
 {
     platform=&#39;iOS&#39;,
@@ -41,13 +41,13 @@
     --]]
 }
 return params</code></pre>
-<p>And here's an example of a Lua file for Android (fishies.android.lua):</p>
+<p>Here&#39;s an example for Android (<code>fishies.android.lua</code>):</p>
 <pre><code>local params =
 {
     platform=&#39;Android&#39;,
     appName=&#39;Fishies&#39;,
     appVersion=&#39;1.0&#39;,
-    dstPath=&#39;/Users/wluh/Desktop&#39;,
+    dstPath=&#39;/Users/JohnSmith/Desktop&#39;,
     sdkPath=&#39;/Developer&#39;,
     projectPath=&#39;/Applications/CoronaSDK/SampleCode/Graphics/Fishies&#39;,
     androidAppPackage=&#39;com.coronalabs.Fishies&#39;,
@@ -62,17 +62,75 @@ return params</code></pre>
     --]]
 }
 return params</code></pre>
-<p>Note that in both Lua file, the <code>params</code> table is returned at the end of the file.</p>
+<p>Here&#39;s an example for macOS (<code>fishies.macos.lua</code>):</p>
+<pre><code>local params =
+{
+    platform    = &#39;osx&#39;,
+    appName     = &#39;Fishies&#39;,
+    appVersion  = &#39;1.0&#39;,
+    dstPath     = &#39;/Users/JohnSmith/Desktop&#39;,
+    projectPath = &#39;/Applications/CoronaSDK/SampleCode/Graphics/Fishies&#39;,
+
+    -- Optional: Xcode developer tools path (defaults to xcode-select -p).
+    -- sdkPath = &#39;/Applications/Xcode.app/Contents/Developer&#39;,
+
+    -- Optional: override the build number.
+    -- customBuildId = &#39;12345&#39;,
+
+    -- Signing -- Option A: provision file (identity derived automatically).
+    -- certificatePath = &#39;/path/to/App.provisionprofile&#39;,
+
+    -- Signing -- Option B: direct identity strings for Developer ID builds.
+    -- appSigningIdentity       = &#39;Developer ID Application: Your Name (TEAMID)&#39;,
+    -- installerSigningIdentity = &#39;Developer ID Installer: Your Name (TEAMID)&#39;,
+
+    -- Distribution method (default: &#39;developer&#39;):
+    --   &#39;developer&#39;        standard unsigned/developer-signed .app
+    --   &#39;app-store&#39;        Mac App Store .pkg (upload manually via Transporter)
+    --   &#39;developer-id&#39;     Developer ID signed .pkg for direct distribution
+    --   &#39;developer-id-dmg&#39; Developer ID signed .dmg for direct distribution
+    -- distributionMethod = &#39;developer&#39;,
+}
+return params</code></pre>
+<p>Here&#39;s an example for Windows (<code>fishies.win32.lua</code>):</p>
+<pre><code>local params =
+{
+    platform    = &#39;win32&#39;,
+    appName     = &#39;Fishies&#39;,
+    appVersion  = &#39;1.0&#39;,
+    dstPath     = &#39;C:\\Users\\JohnSmith\\Desktop&#39;,
+    projectPath = &#39;C:\\CoronaSDK\\SampleCode\\Graphics\\Fishies&#39;,
+
+    -- Optional: name of the output .exe (defaults to appName + &#39;.exe&#39;).
+    -- exeFileName = &#39;Fishies.exe&#39;,
+
+    -- Optional: Windows VERSIONINFO resource fields embedded in the .exe.
+    -- companyName    = &#39;My Company&#39;,
+    -- copyright      = &#39;Copyright (C) 2024 My Company&#39;,
+    -- appDescription = &#39;A Solar2D application&#39;,
+    -- versionString  = &#39;1.0.0.0&#39;,
+
+    -- Optional: override the build number.
+    -- customBuildId = &#39;12345&#39;,
+}
+return params</code></pre>
+<p>Note that in all Lua files, the <code>params</code> table is returned at the end of the file.</p>
 <p>To kick off the build process using these Lua files, type the following:</p>
 <pre><code>/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.ios.lua
 
-/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.android.lua</code></pre>
+/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.android.lua
+
+/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.macos.lua
+
+/path/to/CoronaBuilder.app/Contents/MacOS/CoronaBuilder build --lua /path/to/fishies.win32.lua</code></pre>
 <h2 id="ssh-sessions">SSH Sessions</h2>
 <h3 id="ios">iOS</h3>
-<p>If you wish to build on iOS and invoke CoronaBuilder in a SSH session, you must unlock the keychain corresponding to the developer certificate. Otherwise your app will not get signed properly. Typically, this is <code>login.keychain</code></p>
-<p>In the SSH session, you can type the following:</p>
-<pre><code>security unlock-keychain -p userpassword /Users/[yourusername]/Library/Keychains/login.keychain. </code></pre>
+<p>If you wish to build for iOS and invoke CoronaBuilder in a SSH session, you must unlock the keychain corresponding to the developer certificate. Otherwise your app will not get signed properly. Typically, this is <code>login.keychain</code>:</p>
+<pre><code>security unlock-keychain -p userpassword /Users/[yourusername]/Library/Keychains/login.keychain</code></pre>
 <p>where <code>userpassword</code> is the password corresponding to the user <code>[yourusername]</code>.</p>
+<h3 id="macos">macOS</h3>
+<p>The same keychain unlock is required for signed macOS builds (<code>distributionMethod</code> other than <code>&#39;developer&#39;</code>):</p>
+<pre><code>security unlock-keychain -p userpassword /Users/[yourusername]/Library/Keychains/login.keychain</code></pre>
 <h2 id="daily-builds">Daily Builds</h2>
 <p>You can build against a specific daily build number by adding the corresponding custom build id string in the <code>build.settings</code> file. A list of custom build ids is available <a href="https://developer.coronalabs.com/downloads/daily-build-ids">here</a>.</p>
 <pre><code>settings =

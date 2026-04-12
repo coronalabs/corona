@@ -384,142 +384,186 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 	WinString binDirectoryPath;
 	binDirectoryPath.SetUTF8(buildSettings.BinDirectoryPath);
 
-#if !defined( Rtt_NO_GUI )
 	// Extract the project's plugins to the "bin" directory.
 	// This must be done before extracting the Win32 app template so that plugins can't overwrite Corona's DLLs.
-	auto runtimePointer = buildSettings.ParamsPointer->GetRuntime();
-	if (runtimePointer && runtimePointer->RequiresDownloadablePlugins())
+	//
+	// In GUI (Simulator) builds we use the running Runtime to unzip pre-downloaded plugins.
+	// In headless (CoronaBuilder) builds we use DownloadPluginsHeadless() which drives
+	// BuilderPluginDownloader.lua + CoronaBuilderPluginCollector — the same infrastructure iOS uses.
 	{
-		// Unzip the project's plugins to an intermediate directory.
 		WinString intermediatePluginDirectoryPath(buildSettings.IntermediateDirectoryPath);
 		intermediatePluginDirectoryPath.Append(L"\\..\\Plugins");
-		bool wasUnzipped = UnzipPlugins(
-				buildSettings.ParamsPointer, buildSettings.ParamsPointer->GetRuntime(),
+		bool hasPlugins = false;
+
+#if !defined( Rtt_NO_GUI )
+		auto runtimePointer = buildSettings.ParamsPointer->GetRuntime();
+		if (runtimePointer && runtimePointer->RequiresDownloadablePlugins())
+		{
+			bool wasUnzipped = UnzipPlugins(
+					buildSettings.ParamsPointer, runtimePointer,
+					intermediatePluginDirectoryPath.GetUTF8());
+			if (!wasUnzipped)
+			{
+				return 3;
+			}
+			hasPlugins = true;
+		}
+#else
+		// Headless path: download and extract plugins via BuilderPluginDownloader.lua.
+		// DownloadPluginsHeadless succeeds even when there are no plugins in build.settings;
+		// we detect whether anything was extracted by checking the directory afterwards.
+		bool wasDownloaded = DownloadPluginsHeadless(
+				buildSettings.ParamsPointer, "win32",
 				intermediatePluginDirectoryPath.GetUTF8());
-		if (!wasUnzipped)
+		if (!wasDownloaded)
 		{
 			return 3;
 		}
-
-		// Compile the Lua plugins to the intermediate directory.
-		// Note: Precompiled *.lu files are copied to the given directory by the below function.
-		Win32AppPackagerParams::CoreSettings pluginParamsSettings{};
-		pluginParamsSettings.AppName = buildSettings.ParamsPointer->GetAppName();
-		pluginParamsSettings.DestinationDirectoryPath = buildSettings.BinDirectoryPath;
-		pluginParamsSettings.SourceDirectoryPath = intermediatePluginDirectoryPath.GetUTF8();
-		pluginParamsSettings.VersionString = buildSettings.ParamsPointer->GetVersion();
-		Win32AppPackagerParams pluginParams(pluginParamsSettings);
-		bool wasCompiled = CompileScripts(&pluginParams, buildSettings.IntermediateDirectoryPath);
-		if (!wasCompiled)
+		// Consider plugins present if the intermediate directory was populated.
 		{
-			if (Rtt_StringIsEmpty(buildSettings.ParamsPointer->GetBuildMessage()))
+			WIN32_FIND_DATAW probeData{};
+			std::wstring probePattern(intermediatePluginDirectoryPath.GetUTF16());
+			probePattern.append(L"\\*.*");
+			auto probeHandle = ::FindFirstFileW(probePattern.c_str(), &probeData);
+			if (probeHandle != INVALID_HANDLE_VALUE)
 			{
-				buildSettings.ParamsPointer->SetBuildMessage("Failed to compile plugin Lua scripts.");
-			}
-			return 5;
-		}
-
-		// Copy the DLL plugins to the "bin" directory.
-		std::wstring pluginPatternMatch(intermediatePluginDirectoryPath.GetUTF16());
-		pluginPatternMatch.append(L"\\*.*");
-		WIN32_FIND_DATAW findData{};
-		auto searchHandle = ::FindFirstFileW(pluginPatternMatch.c_str(), &findData);
-		if (searchHandle != INVALID_HANDLE_VALUE)
-		{
-			do
-			{
-				BOOL wasMoved = false;
-
-				if (_wcsicmp(findData.cFileName, L"plugin") == 0)
+				// Skip '.' and '..' — if there is anything else the directory is non-empty.
+				do
 				{
-					// Handle Lua plugins which are in the "plugin" directory tree.  All we need are the assets as
-					// the code is incorporated into resource.car.  This is done by moving the entire "plugin" tree 
-					// and then deleting any .lua or .lu files in it
-
-					std::wstring utf16SourceFilePath(intermediatePluginDirectoryPath.GetUTF16());
-					utf16SourceFilePath.append(L"\\");
-					utf16SourceFilePath.append(findData.cFileName);
-					std::wstring utf16DestinationFilePath(binDirectoryPath.GetUTF16());
-					utf16DestinationFilePath.append(L"\\corona-plugins");
-					CreateDirectoryW(utf16DestinationFilePath.c_str(), NULL);  // create the \corona-plugins directory if needed
-					utf16DestinationFilePath.append(L"\\plugin");
-					wasMoved = ::MoveFileW(utf16SourceFilePath.c_str(), utf16DestinationFilePath.c_str());
-
-					// Remove .lua and .lu files, we just want the assets
-					std::wstring commandLine(L"cmd /c del /s /q \"");
-					commandLine.append(utf16DestinationFilePath.c_str());
-					commandLine.append(L"\\*.lua\"");
-					commandLine.append(L" \"");
-					commandLine.append(utf16DestinationFilePath.c_str());
-					commandLine.append(L"\\*.lu\"");
-
-					Interop::Ipc::CommandLine::RunUntilExit(commandLine.c_str());
-				}
-				else
-				{
-					// It's a native plugin file
-
-					// Determine if the next plugin file's extension should be copied to the "bin" directory.
-					// This excludes Lua files and other files that might have accidentally been zipped up with the plugin.
-					const wchar_t *kUtf16AllowedExtensions[] = { L".dll", L".exe", L".manifest", nullptr };
-					bool shouldCopy = false;
-					auto fileNameLength = wcslen(findData.cFileName);
-					for (int index = 0; kUtf16AllowedExtensions[index]; index++)
+					if (_wcsicmp(probeData.cFileName, L".") != 0 &&
+					    _wcsicmp(probeData.cFileName, L"..") != 0)
 					{
-						auto allowedExtensionLength = wcslen(kUtf16AllowedExtensions[index]);
-						if (fileNameLength >= allowedExtensionLength)
+						hasPlugins = true;
+						break;
+					}
+				} while (::FindNextFileW(probeHandle, &probeData));
+				::FindClose(probeHandle);
+			}
+		}
+#endif // ! Rtt_NO_GUI
+
+		if (hasPlugins)
+		{
+			// Compile the Lua plugins to the intermediate directory.
+			// Note: Precompiled *.lu files are copied to the given directory by the below function.
+			Win32AppPackagerParams::CoreSettings pluginParamsSettings{};
+			pluginParamsSettings.AppName = buildSettings.ParamsPointer->GetAppName();
+			pluginParamsSettings.DestinationDirectoryPath = buildSettings.BinDirectoryPath;
+			pluginParamsSettings.SourceDirectoryPath = intermediatePluginDirectoryPath.GetUTF8();
+			pluginParamsSettings.VersionString = buildSettings.ParamsPointer->GetVersion();
+			Win32AppPackagerParams pluginParams(pluginParamsSettings);
+			bool wasCompiled = CompileScripts(&pluginParams, buildSettings.IntermediateDirectoryPath);
+			if (!wasCompiled)
+			{
+				if (Rtt_StringIsEmpty(buildSettings.ParamsPointer->GetBuildMessage()))
+				{
+					buildSettings.ParamsPointer->SetBuildMessage("Failed to compile plugin Lua scripts.");
+				}
+				return 5;
+			}
+
+			// Copy the DLL plugins to the "bin" directory.
+			std::wstring pluginPatternMatch(intermediatePluginDirectoryPath.GetUTF16());
+			pluginPatternMatch.append(L"\\*.*");
+			WIN32_FIND_DATAW findData{};
+			auto searchHandle = ::FindFirstFileW(pluginPatternMatch.c_str(), &findData);
+			if (searchHandle != INVALID_HANDLE_VALUE)
+			{
+				do
+				{
+					BOOL wasMoved = false;
+
+					if (_wcsicmp(findData.cFileName, L"plugin") == 0)
+					{
+						// Handle Lua plugins which are in the "plugin" directory tree.  All we need are the assets as
+						// the code is incorporated into resource.car.  This is done by moving the entire "plugin" tree
+						// and then deleting any .lua or .lu files in it
+
+						std::wstring utf16SourceFilePath(intermediatePluginDirectoryPath.GetUTF16());
+						utf16SourceFilePath.append(L"\\");
+						utf16SourceFilePath.append(findData.cFileName);
+						std::wstring utf16DestinationFilePath(binDirectoryPath.GetUTF16());
+						utf16DestinationFilePath.append(L"\\corona-plugins");
+						CreateDirectoryW(utf16DestinationFilePath.c_str(), NULL);  // create the \corona-plugins directory if needed
+						utf16DestinationFilePath.append(L"\\plugin");
+						wasMoved = ::MoveFileW(utf16SourceFilePath.c_str(), utf16DestinationFilePath.c_str());
+
+						// Remove .lua and .lu files, we just want the assets
+						std::wstring commandLine(L"cmd /c del /s /q \"");
+						commandLine.append(utf16DestinationFilePath.c_str());
+						commandLine.append(L"\\*.lua\"");
+						commandLine.append(L" \"");
+						commandLine.append(utf16DestinationFilePath.c_str());
+						commandLine.append(L"\\*.lu\"");
+
+						Interop::Ipc::CommandLine::RunUntilExit(commandLine.c_str());
+					}
+					else
+					{
+						// It's a native plugin file
+
+						// Determine if the next plugin file's extension should be copied to the "bin" directory.
+						// This excludes Lua files and other files that might have accidentally been zipped up with the plugin.
+						const wchar_t *kUtf16AllowedExtensions[] = { L".dll", L".exe", L".manifest", nullptr };
+						bool shouldCopy = false;
+						auto fileNameLength = wcslen(findData.cFileName);
+						for (int index = 0; kUtf16AllowedExtensions[index]; index++)
 						{
-							auto offset = fileNameLength - allowedExtensionLength;
-							if (_wcsicmp(findData.cFileName + offset, kUtf16AllowedExtensions[index]) == 0)
+							auto allowedExtensionLength = wcslen(kUtf16AllowedExtensions[index]);
+							if (fileNameLength >= allowedExtensionLength)
 							{
-								shouldCopy = true;
-								break;
+								auto offset = fileNameLength - allowedExtensionLength;
+								if (_wcsicmp(findData.cFileName + offset, kUtf16AllowedExtensions[index]) == 0)
+								{
+									shouldCopy = true;
+									break;
+								}
 							}
 						}
-					}
-					if (!shouldCopy)
-					{
-						continue;
-					}
-
-					// Copy the DLL plugin related file.
-					std::wstring utf16SourceFilePath(intermediatePluginDirectoryPath.GetUTF16());
-					utf16SourceFilePath.append(L"\\");
-					utf16SourceFilePath.append(findData.cFileName);
-					std::wstring utf16DestinationFilePath(binDirectoryPath.GetUTF16());
-					utf16DestinationFilePath.append(L"\\");
-					utf16DestinationFilePath.append(findData.cFileName);
-					wasMoved = ::MoveFileW(utf16SourceFilePath.c_str(), utf16DestinationFilePath.c_str());
-				}
-
-				if (!wasMoved)
-				{
-					std::string message("Failed to include plugin files.");
-					auto errorCode = ::GetLastError();
-					if (errorCode)
-					{
-						LPWSTR utf16Buffer = nullptr;
-						::FormatMessageW(
-							FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-							nullptr, errorCode,
-							MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-							(LPWSTR)&utf16Buffer, 0, nullptr);
-						if (utf16Buffer)
+						if (!shouldCopy)
 						{
-							WinString stringConverter;
-							stringConverter.SetUTF16(utf16Buffer);
-							message.append("\r\n\r\nReason:\r\n   ");
-							message.append(stringConverter.GetUTF8());
-							::LocalFree(utf16Buffer);
+							continue;
 						}
+
+						// Copy the DLL plugin related file.
+						std::wstring utf16SourceFilePath(intermediatePluginDirectoryPath.GetUTF16());
+						utf16SourceFilePath.append(L"\\");
+						utf16SourceFilePath.append(findData.cFileName);
+						std::wstring utf16DestinationFilePath(binDirectoryPath.GetUTF16());
+						utf16DestinationFilePath.append(L"\\");
+						utf16DestinationFilePath.append(findData.cFileName);
+						wasMoved = ::MoveFileW(utf16SourceFilePath.c_str(), utf16DestinationFilePath.c_str());
 					}
-					buildSettings.ParamsPointer->SetBuildMessage(message.c_str());
-					return 3;
-				}
-			} while (::FindNextFileW(searchHandle, &findData));
+
+					if (!wasMoved)
+					{
+						std::string message("Failed to include plugin files.");
+						auto errorCode = ::GetLastError();
+						if (errorCode)
+						{
+							LPWSTR utf16Buffer = nullptr;
+							::FormatMessageW(
+								FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+								nullptr, errorCode,
+								MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+								(LPWSTR)&utf16Buffer, 0, nullptr);
+							if (utf16Buffer)
+							{
+								WinString stringConverter;
+								stringConverter.SetUTF16(utf16Buffer);
+								message.append("\r\n\r\nReason:\r\n   ");
+								message.append(stringConverter.GetUTF8());
+								::LocalFree(utf16Buffer);
+							}
+						}
+						buildSettings.ParamsPointer->SetBuildMessage(message.c_str());
+						return 3;
+					}
+				} while (::FindNextFileW(searchHandle, &findData));
+				::FindClose(searchHandle);
+			}
 		}
 	}
-#endif // ! Rtt_NO_GUI
 
 	// Unzip the Win32 app template to the "bin" directory.
 	// This app template contains the pre-compiled exe, libraries, widget assets, etc.
