@@ -17,6 +17,7 @@
 #include "Rtt_Lua.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaLibPhysics.h"
+#include "Rtt_LuaAux.h"
 #include "Rtt_PhysicsWorld.h"
 #include "Rtt_Runtime.h"
 
@@ -42,6 +43,25 @@ DisplayObjectExtensions::~DisplayObjectExtensions()
 #ifdef Rtt_PHYSICS
 	if ( fBody )
 	{
+		// Invalidate UserdataWrappers for all joints attached to this body
+		// BEFORE clearing the body's UserData. When StepWorld later calls
+		// DestroyBody, Box2D will destroy these joints internally. Without
+		// pre-invalidation, the Lua GC could trigger PhysicsJoint::Finalizer
+		// on a dangling b2Joint pointer, causing use-after-free (SIGSEGV in
+		// b2Fixture::Destroy).
+		b2JointEdge *je = fBody->GetJointList();
+		while ( je )
+		{
+			b2Joint *joint = je->joint;
+			UserdataWrapper *wrapper = (UserdataWrapper *)joint->GetUserData();
+			if ( wrapper && UserdataWrapper::GetFinalizedValue() != wrapper )
+			{
+				wrapper->Invalidate();
+			}
+			joint->SetUserData( NULL );
+			je = je->next;
+		}
+
 		// Always clear UserData to prevent StepWorld from dereferencing
 		// a freed DisplayObject. GetParent() returns NULL for objects
 		// with IsRenderedOffScreen (snapshot.group, canvas cache), which
