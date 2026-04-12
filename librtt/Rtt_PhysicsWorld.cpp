@@ -181,19 +181,19 @@ PhysicsWorld::StopWorld()
 		SetProperty( kIsWorldRunning, false );
 
 		fWorld->SetContactListener( NULL );
+		fWorld->SetDestructionListener( NULL );
 
-		// The b2World is about to destroy the block allocator that owns
-		// the memory for b2Body objects, so we have to pre-emptively
-		// iterate over bodies and detach from display object
 		const void *groundBodyUserdata = LuaLibPhysics::GetGroundBodyUserdata();
 
-		for ( b2Body *body = fWorld->GetBodyList(), *nextBody = NULL;
+		// Phase 1: Detach display objects from physics bodies.
+		// We do NOT call DestroyBody here — doing so during bulk shutdown
+		// causes use-after-free when DestroyBody(bodyA) calls DestroyJoint
+		// and modifies bodyB which may have already been freed, or when
+		// the block allocator reuses freed joint memory (zeroing the vtable).
+		for ( b2Body *body = fWorld->GetBodyList();
 			  NULL != body;
-			  body = nextBody )
+			  body = body->GetNext() )
 		{
-			// Prefetch next body before we delete body
-			nextBody = body->GetNext();
-
 			if ( body->GetUserData() )
 			{
 				if ( body->GetUserData() != groundBodyUserdata )
@@ -202,10 +202,26 @@ PhysicsWorld::StopWorld()
 					o->RemoveExtensions();
 				}
 			}
-
-			fWorld->DestroyBody( body );
 		}
 
+		// Phase 2: Invalidate any remaining joint wrappers so that
+		// Lua GC finalizers won't access freed b2Joint memory later.
+		void *finalizedUserdata = UserdataWrapper::GetFinalizedValue();
+		for ( b2Joint *joint = fWorld->GetJointList();
+			  NULL != joint;
+			  joint = joint->GetNext() )
+		{
+			UserdataWrapper *wrapper = (UserdataWrapper *)joint->GetUserData();
+			if ( wrapper && finalizedUserdata != wrapper )
+			{
+				wrapper->Invalidate();
+			}
+		}
+
+		// Phase 3: Delete the world. ~b2World cleans up fixture shape
+		// allocations, and ~b2BlockAllocator bulk-frees all body/joint/
+		// fixture memory. This avoids the complex per-body DestroyBody →
+		// DestroyJoint chain that caused joint double-free crashes.
 		Rtt_DELETE( fWorld );
 		fWorld = NULL;
 
