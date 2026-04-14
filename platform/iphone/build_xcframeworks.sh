@@ -115,37 +115,51 @@ find_lib() {
 }
 
 # ── Build: libplayer ──────────────────────────────────────────────────────────
+#
+# iOS device + simulator use the standard OpenGL ES target.
+# Mac Catalyst uses libplayer-angle (MetalANGLE → Metal) because macOS has no
+# OpenGL ES headers.  Xcode builds the MetalANGLE _mac sub-project dependencies
+# automatically when libplayer-angle is the target.
+# ─────────────────────────────────────────────────────────────────────────────
 
 log "——— libplayer ———"
-build_static_lib libplayer iphoneos        ios-arm64
-build_static_lib libplayer iphonesimulator ios-sim
-build_static_lib libplayer macosx          maccatalyst \
+build_static_lib libplayer       iphoneos        ios-arm64
+build_static_lib libplayer       iphonesimulator ios-sim
+build_static_lib libplayer-angle macosx          maccatalyst \
     SUPPORTS_MACCATALYST=YES \
     TARGETED_DEVICE_FAMILY="1,2" \
     IPHONEOS_DEPLOYMENT_TARGET=16.0 \
     ARCHS="arm64 x86_64"
 
-LIBPLAYER_IOS="$(find_lib player      ios-arm64)"
-LIBPLAYER_SIM="$(find_lib player      ios-sim)"
-LIBPLAYER_CAT="$(find_lib player      maccatalyst)"
+LIBPLAYER_IOS="$(find_lib player       ios-arm64)"
+LIBPLAYER_SIM="$(find_lib player       ios-sim)"
+# Angle target produces libplayer-angle.a; rename to libplayer.a so all three
+# slices have the same binary name inside the xcframework.
+_LIBPLAYER_CAT_ANGLE="$(find_lib player-angle maccatalyst)"
+LIBPLAYER_CAT_STAGED="$BUILD_ROOT/staged/libplayer.a"
+mkdir -p "$BUILD_ROOT/staged"
+cp "$_LIBPLAYER_CAT_ANGLE" "$LIBPLAYER_CAT_STAGED"
 ok "iOS device    : $LIBPLAYER_IOS"
 ok "iOS simulator : $LIBPLAYER_SIM"
-ok "Mac Catalyst  : $LIBPLAYER_CAT"
+ok "Mac Catalyst  : $_LIBPLAYER_CAT_ANGLE  →  $LIBPLAYER_CAT_STAGED"
 
 # ── Build: CoronaCards ────────────────────────────────────────────────────────
+#
+# Same rationale: use CoronaCards-angle for Mac Catalyst.
+# ─────────────────────────────────────────────────────────────────────────────
 
 log "——— CoronaCards ———"
-build_static_lib CoronaCards iphoneos        ios-arm64
-build_static_lib CoronaCards iphonesimulator ios-sim
-build_static_lib CoronaCards macosx          maccatalyst \
+build_static_lib CoronaCards       iphoneos        ios-arm64
+build_static_lib CoronaCards       iphonesimulator ios-sim
+build_static_lib CoronaCards-angle macosx          maccatalyst \
     SUPPORTS_MACCATALYST=YES \
     TARGETED_DEVICE_FAMILY="1,2" \
     IPHONEOS_DEPLOYMENT_TARGET=16.0 \
     ARCHS="arm64 x86_64"
 
-LIBCORONA_IOS="$(find_lib CoronaCards ios-arm64)"
-LIBCORONA_SIM="$(find_lib CoronaCards ios-sim)"
-LIBCORONA_CAT="$(find_lib CoronaCards maccatalyst)"
+LIBCORONA_IOS="$(find_lib CoronaCards       ios-arm64)"
+LIBCORONA_SIM="$(find_lib CoronaCards       ios-sim)"
+LIBCORONA_CAT="$(find_lib CoronaCards-angle maccatalyst)"
 ok "iOS device    : $LIBCORONA_IOS"
 ok "iOS simulator : $LIBCORONA_SIM"
 ok "Mac Catalyst  : $LIBCORONA_CAT"
@@ -161,9 +175,9 @@ log "Packaging libplayer.xcframework"
 
 LIBPLAYER_XCF="$OUTPUT_DIR/libplayer.xcframework"
 xcodebuild -create-xcframework \
-    -library "$LIBPLAYER_IOS" -headers "$LIBPLAYER_HEADERS" \
-    -library "$LIBPLAYER_SIM" -headers "$LIBPLAYER_HEADERS" \
-    -library "$LIBPLAYER_CAT" -headers "$LIBPLAYER_HEADERS" \
+    -library "$LIBPLAYER_IOS"        -headers "$LIBPLAYER_HEADERS" \
+    -library "$LIBPLAYER_SIM"        -headers "$LIBPLAYER_HEADERS" \
+    -library "$LIBPLAYER_CAT_STAGED" -headers "$LIBPLAYER_HEADERS" \
     -output  "$LIBPLAYER_XCF"
 
 ok "libplayer.xcframework  →  $LIBPLAYER_XCF"
