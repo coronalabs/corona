@@ -63,6 +63,61 @@ mkdir -p "$OUTPUT_DIR"
 ok "Build root : $BUILD_ROOT"
 ok "Output dir : $OUTPUT_DIR"
 
+# ── METALANGLE_PROJECT ────────────────────────────────────────────────────────
+# ratatouille.xcodeproj embeds OpenGLES.xcodeproj as a sub-project.
+METALANGLE_PROJECT="$(dirname "$PROJECT")/../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj"
+METALANGLE_PROJECT="$(cd "$(dirname "$METALANGLE_PROJECT")" && pwd)/$(basename "$METALANGLE_PROJECT")"
+
+# ── prebuild_metalangle_catalyst ──────────────────────────────────────────────
+# The libplayer-angle target depends on MetalANGLE (dynamic framework).
+# When xcodebuild builds OpenGLES.xcodeproj as a sub-project for macOS, it does
+# NOT inherit SUPPORTS_MACCATALYST from the parent — so UIKit is unavailable and
+# the framework fails to link.
+#
+# Fix: pre-build MetalANGLE.framework from OpenGLES.xcodeproj directly into the
+# same BUILD_DIR using the correct Mac Catalyst settings:
+#   • LLVM_TARGET_TRIPLE_SUFFIX / LLVM_TARGET_TRIPLE_OS_VERSION — force macabi
+#     target triple (x86_64-apple-ios16.0-macabi) rather than macos26
+#   • SYSTEM_FRAMEWORK_SEARCH_PATHS — adds $(SDKROOT)/System/iOSSupport/… so
+#     #include <UIKit/UIKit.h> resolves against the Catalyst UIKit stubs
+#
+# Xcode's incremental build then finds MetalANGLE.framework already present in
+# BUILD_DIR/Release/ and skips re-building it when libplayer-angle is compiled.
+# ─────────────────────────────────────────────────────────────────────────────
+prebuild_metalangle_catalyst() {
+    local DIR="$BUILD_ROOT/maccatalyst"
+    mkdir -p "$DIR"
+
+    log "Pre-building MetalANGLE.framework for Mac Catalyst"
+
+    local MACOS_SDK; MACOS_SDK="$(xcrun --sdk macosx --show-sdk-path)"
+
+    xcodebuild build \
+        -project "$METALANGLE_PROJECT" \
+        -target   MetalANGLE \
+        -configuration Release \
+        -sdk       macosx \
+        SUPPORTS_MACCATALYST=YES \
+        IS_MACCATALYST=YES \
+        TARGETED_DEVICE_FAMILY="1,2" \
+        IPHONEOS_DEPLOYMENT_TARGET=16.0 \
+        MACCATALYST_DEPLOYMENT_TARGET=16.0 \
+        LLVM_TARGET_TRIPLE_SUFFIX="-macabi" \
+        LLVM_TARGET_TRIPLE_OS_VERSION="ios16.0" \
+        ARCHS="arm64 x86_64" \
+        "SYSTEM_FRAMEWORK_SEARCH_PATHS=${MACOS_SDK}/System/iOSSupport/System/Library/Frameworks \$(SDKROOT)/System/Library/Frameworks" \
+        BUILD_DIR="$DIR" \
+        OBJROOT="$DIR/obj" \
+        BUILD_ROOT="$DIR" \
+        SYMROOT="$DIR" \
+        SKIP_INSTALL=YES \
+        DEPLOYMENT_POSTPROCESSING=NO 2>&1 \
+    | grep --line-buffered -E \
+        "(^(error:|warning:)| error:| warning:|BUILD SUCCEEDED|BUILD FAILED)" \
+    | grep -v "note:" \
+    || true
+}
+
 # ── build_static_lib ──────────────────────────────────────────────────────────
 # build_static_lib TARGET SDK SUBDIR [EXTRA_XCODEBUILD_SETTINGS...]
 #
@@ -125,6 +180,10 @@ find_lib() {
 log "——— libplayer ———"
 build_static_lib libplayer       iphoneos        ios-arm64
 build_static_lib libplayer       iphonesimulator ios-sim
+
+# Pre-build MetalANGLE with Catalyst settings so sub-project dependency resolves
+prebuild_metalangle_catalyst
+
 build_static_lib libplayer-angle macosx          maccatalyst \
     SUPPORTS_MACCATALYST=YES \
     TARGETED_DEVICE_FAMILY="1,2" \
