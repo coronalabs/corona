@@ -61,14 +61,72 @@ xcodebuild -project "${PROJECT_FILE_PATH}" -target "${TARGET_NAME}" -configurati
 cp -a "${BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
 cp -a "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
 
+# ── Mac Catalyst slice (added) ──────────────────────────────────────────────
+# Build for Mac Catalyst and add it to the xcframework so the same
+# xcframework works for iOS, iOS Simulator, and Mac Catalyst targets.
+#
+# Guard: only run when we are the *primary* invocation (i.e. building for an
+# iOS SDK), not when we are a recursion triggered by the "other platform" sub-
+# build above.  SF_MASTER_SCRIPT_RUNNING is already exported at line 11 above,
+# so any child xcodebuild that runs build_framework.sh will exit at the top.
+SF_CATALYST_WRAPPER=""
+if [[ "$SF_SDK_PLATFORM" != "macosx" ]]; then
+    # Derive the Catalyst build-products directory from the current one:
+    # e.g.  .../Build/Products/Release-iphoneos  →  .../Release-maccatalyst
+    if [[ "$BUILT_PRODUCTS_DIR" =~ (.*)$SF_SDK_PLATFORM ]]; then
+        SF_CATALYST_BUILT_PRODUCTS_DIR="${BASH_REMATCH[1]}maccatalyst"
+    else
+        SF_CATALYST_BUILT_PRODUCTS_DIR="${BUILD_DIR}/Release-maccatalyst"
+    fi
+    SF_CATALYST_WRAPPER="${SF_CATALYST_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}"
+
+    # Compile for Mac Catalyst.  SF_MASTER_SCRIPT_RUNNING prevents build_framework.sh
+    # from running again inside this xcodebuild invocation.
+    xcodebuild -project "${PROJECT_FILE_PATH}" \
+               -target "${TARGET_NAME}" \
+               -configuration "${CONFIGURATION}" \
+               -sdk macosx \
+               SUPPORTS_MACCATALYST=YES \
+               TARGETED_DEVICE_FAMILY="1,2" \
+               IPHONEOS_DEPLOYMENT_TARGET=16.0 \
+               ARCHS="arm64 x86_64" \
+               BUILD_DIR="${BUILD_DIR}" \
+               OBJROOT="${OBJROOT}/DependantBuilds" \
+               BUILD_ROOT="${BUILD_ROOT}" \
+               SYMROOT="${SYMROOT}" \
+               "$ACTION"
+
+    # The Catalyst build may not have created the .framework wrapper (because
+    # build_framework.sh exited early due to SF_MASTER_SCRIPT_RUNNING).
+    # Seed the wrapper from the iOS device slice and replace the binary.
+    CATALYST_LIB="${SF_CATALYST_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}"
+    if [[ -f "${CATALYST_LIB}" ]]; then
+        cp -a "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" "${SF_CATALYST_WRAPPER}"
+        cp -f "${CATALYST_LIB}" \
+              "${SF_CATALYST_WRAPPER}/Versions/A/${SF_TARGET_NAME}"
+    else
+        echo "Warning: Catalyst lib not found at ${CATALYST_LIB} — skipping Catalyst slice"
+        SF_CATALYST_WRAPPER=""
+    fi
+fi
+# ── end Mac Catalyst ─────────────────────────────────────────────────────────
+
 # Create XCFramework instead of fat binary (supports M1 simulators where both device and simulator use arm64)
 XCFRAMEWORK_PATH="${BUILT_PRODUCTS_DIR}/${SF_TARGET_NAME}.xcframework"
 rm -rf "${XCFRAMEWORK_PATH}"
 
-xcodebuild -create-xcframework \
-    -framework "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
-    -framework "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
-    -output "${XCFRAMEWORK_PATH}"
+if [[ -n "${SF_CATALYST_WRAPPER}" && -d "${SF_CATALYST_WRAPPER}" ]]; then
+    xcodebuild -create-xcframework \
+        -framework "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
+        -framework "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
+        -framework "${SF_CATALYST_WRAPPER}" \
+        -output "${XCFRAMEWORK_PATH}"
+else
+    xcodebuild -create-xcframework \
+        -framework "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
+        -framework "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
+        -output "${XCFRAMEWORK_PATH}"
+fi
 
 # Also create XCFramework in the other build products directory
 cp -a "${XCFRAMEWORK_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_TARGET_NAME}.xcframework"
