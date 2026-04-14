@@ -181,14 +181,22 @@ log "——— libplayer ———"
 build_static_lib libplayer       iphoneos        ios-arm64
 build_static_lib libplayer       iphonesimulator ios-sim
 
-# Pre-build MetalANGLE with Catalyst settings so sub-project dependency resolves
-prebuild_metalangle_catalyst
+# The libplayer-angle target depends on MetalANGLE (dynamic framework) for build
+# ordering.  When Xcode builds MetalANGLE as a sub-project for macOS it links
+# -framework UIKit, which is only available via the iOSSupport overlay path.
+# Passing SYSTEM_FRAMEWORK_SEARCH_PATHS propagates into all sub-project builds
+# in this xcodebuild invocation — MetalANGLE finds UIKit and links successfully.
+# libplayer-angle.a itself is a static archive so it never embeds MetalANGLE;
+# the resulting MetalANGLE.dylib is just a build-order artefact we discard.
+_MACOS_SDK="$(xcrun --sdk macosx --show-sdk-path)"
+_IOSSUPP="${_MACOS_SDK}/System/iOSSupport/System/Library/Frameworks"
 
 build_static_lib libplayer-angle macosx          maccatalyst \
     SUPPORTS_MACCATALYST=YES \
     TARGETED_DEVICE_FAMILY="1,2" \
     IPHONEOS_DEPLOYMENT_TARGET=16.0 \
-    ARCHS="arm64 x86_64"
+    ARCHS="arm64 x86_64" \
+    "SYSTEM_FRAMEWORK_SEARCH_PATHS=${_IOSSUPP} \$(SDKROOT)/System/Library/Frameworks"
 
 LIBPLAYER_IOS="$(find_lib player       ios-arm64)"
 LIBPLAYER_SIM="$(find_lib player       ios-sim)"
@@ -214,7 +222,8 @@ build_static_lib CoronaCards-angle macosx          maccatalyst \
     SUPPORTS_MACCATALYST=YES \
     TARGETED_DEVICE_FAMILY="1,2" \
     IPHONEOS_DEPLOYMENT_TARGET=16.0 \
-    ARCHS="arm64 x86_64"
+    ARCHS="arm64 x86_64" \
+    "SYSTEM_FRAMEWORK_SEARCH_PATHS=${_IOSSUPP} \$(SDKROOT)/System/Library/Frameworks"
 
 LIBCORONA_IOS="$(find_lib CoronaCards       ios-arm64)"
 LIBCORONA_SIM="$(find_lib CoronaCards       ios-sim)"
