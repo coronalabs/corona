@@ -26,6 +26,85 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT="$SCRIPT_DIR/ratatouille.xcodeproj"
 BUILD_ROOT="${TMPDIR:-/tmp}/corona-xcfw-$$"
 
+# iOSSupport framework path — needed for MetalANGLE macCatalyst prebuild
+MACOS_SDK="$(xcrun --sdk macosx --show-sdk-path)"
+IOSSUPP="${MACOS_SDK}/System/iOSSupport/System/Library/Frameworks"
+
+# MetalANGLE include dir (provides GLES2/gl2.h, GLES3/gl3.h, EGL/egl.h, …)
+METALANGLE_INCLUDE="$SCRIPT_DIR/../../external/MetalANGLE/include"
+METALANGLE_INCLUDE="$(cd "$METALANGLE_INCLUDE" && pwd)"
+
+# Where prebuild products land (same BUILD_DIR used for angle library builds)
+METALANGLE_PRODUCTS="$BUILD_ROOT/maccatalyst/Release"
+
+# ── macCatalyst build-setting groups ──────────────────────────────────────────
+#
+# CATALYST_PREBUILD — used only when building OpenGLES.xcodeproj directly.
+#   Includes LLVM_TARGET_TRIPLE_SUFFIX so that EVERY target in OpenGLES.xcodeproj
+#   (static libs AND the framework) is compiled with the arm64-apple-ios16.0-macabi
+#   triple.  Without this, the per-target static libs (libangle_base.a, …) get the
+#   plain macOS triple and the linker rejects them with
+#   "building for macCatalyst but linking object built for macOS".
+#
+# CATALYST_BUILD — used when building libplayer-angle / CoronaCards-angle from
+#   ratatouille.xcodeproj.
+#   • LLVM_TARGET_TRIPLE_SUFFIX="-macabi" is included here (same as PREBUILD) so
+#     that Xcode properly sets up the macCatalyst SDK environment — in particular
+#     adding iOSSupport to SYSTEM_FRAMEWORK_SEARCH_PATHS so <UIKit/UIKit.h> resolves.
+#     Without it Xcode does not recognise the sdk=macosx build as macCatalyst and
+#     UIKit (and other iOS frameworks) are not found.
+#   • MetalANGLE and MetalANGLE_static have been removed from the Xcode target-
+#     dependency lists in ratatouille.xcodeproj, so Xcode will NOT attempt to
+#     rebuild them as sub-projects (the propagation issue that originally required
+#     the split no longer applies).  Xcode uses the pre-built products already in
+#     the shared BUILD_DIR.
+#   • FRAMEWORK_SEARCH_PATHS puts the prebuild output dir first (MetalANGLE.framework),
+#     then iOSSupport (UIKit, Foundation, …), then the macOS frameworks.
+#   • HEADER_SEARCH_PATHS includes opengl-compat (fake <OpenGLES/…> wrappers)
+#     and the MetalANGLE include tree (real GLES2/gl2.h, …).
+# ─────────────────────────────────────────────────────────────────────────────
+
+CATALYST_PREBUILD=(
+    SUPPORTS_MACCATALYST=YES
+    IS_MACCATALYST=YES
+    TARGETED_DEVICE_FAMILY="1,2"
+    IPHONEOS_DEPLOYMENT_TARGET=16.0
+    MACCATALYST_DEPLOYMENT_TARGET=16.0
+    LLVM_TARGET_TRIPLE_SUFFIX="-macabi"
+    LLVM_TARGET_TRIPLE_OS_VERSION="ios16.0"
+    ARCHS="arm64 x86_64"
+    "FRAMEWORK_SEARCH_PATHS=${IOSSUPP} \$(SDKROOT)/System/Library/Frameworks"
+)
+
+# opengl-compat dir is created later (after BUILD_ROOT exists)
+OPENGL_COMPAT="$BUILD_ROOT/opengl-compat"
+
+CATALYST_BUILD=(
+    SUPPORTS_MACCATALYST=YES
+    TARGETED_DEVICE_FAMILY="1,2"
+    IPHONEOS_DEPLOYMENT_TARGET=16.0
+    MACCATALYST_DEPLOYMENT_TARGET=16.0
+    LLVM_TARGET_TRIPLE_SUFFIX="-macabi"
+    LLVM_TARGET_TRIPLE_OS_VERSION="ios16.0"
+    ARCHS="arm64 x86_64"
+    "FRAMEWORK_SEARCH_PATHS=$METALANGLE_PRODUCTS ${IOSSUPP} \$(SDKROOT)/System/Library/Frameworks"
+    "HEADER_SEARCH_PATHS=$OPENGL_COMPAT $METALANGLE_INCLUDE \$(inherited)"
+    # Rtt_EGL: allows #include <EGL/egl.h> in Corona source (Rtt_GLGeometry,
+    #   Rtt_GLFrameBufferObject) so eglGetProcAddress is declared.  MetalANGLE
+    #   provides a full EGL implementation so the calls succeed at runtime.
+    #   Defining Rtt_EGL also causes the anonymous namespace in Rtt_GLGeometry.cpp
+    #   to declare glBindVertexArrayOES / glGenVertexArraysOES as file-scope function
+    #   pointer variables (PFNGL*PROC type), which serve as the sole in-TU declaration
+    #   of those names and are initialised via eglGetProcAddress at runtime.
+    #
+    # NOTE: do NOT add GL_GLEXT_PROTOTYPES here.  MetalANGLE's gl2ext.h guards the
+    #   OES vertex-array prototypes behind #ifdef GL_GLEXT_PROTOTYPES; if that macro
+    #   is defined while Rtt_EGL is also defined the compiler sees both a function-
+    #   pointer variable (anonymous namespace) and a function prototype for the same
+    #   name → "reference to 'glBindVertexArrayOES' is ambiguous".
+    "GCC_PREPROCESSOR_DEFINITIONS=\$(inherited) Rtt_EGL"
+)
+
 OUTPUT_DIR="$SCRIPT_DIR/output-xcframeworks"
 if [[ "${1:-}" == "--output" && -n "${2:-}" ]]; then
     OUTPUT_DIR="$2"
@@ -63,57 +142,126 @@ mkdir -p "$OUTPUT_DIR"
 ok "Build root : $BUILD_ROOT"
 ok "Output dir : $OUTPUT_DIR"
 
+# ── Create <OpenGLES/ES2/gl.h> compatibility shim ────────────────────────────
+#
+# On macOS 15+ iOSSupport no longer ships OpenGLES.framework, so
+# #include <OpenGLES/ES2/gl.h> (used in Rtt_GL.h) would fail to resolve.
+# MetalANGLE provides the equivalent headers under GLES2/*, EGL/*, etc.
+# We create a tiny shim tree that redirects the iOS-style paths to the
+# MetalANGLE ANGLE include tree, then add both dirs to HEADER_SEARCH_PATHS.
+# ─────────────────────────────────────────────────────────────────────────────
+log "Creating <OpenGLES/ES2/gl.h> shim headers"
+mkdir -p \
+    "$OPENGL_COMPAT/OpenGLES/ES2" \
+    "$OPENGL_COMPAT/OpenGLES/ES3"
+
+cat > "$OPENGL_COMPAT/OpenGLES/ES2/gl.h"    <<'SHIM'
+/* OpenGLES shim for macCatalyst — redirects to MetalANGLE GLES2 headers */
+#pragma once
+#include <GLES2/gl2.h>
+SHIM
+
+cat > "$OPENGL_COMPAT/OpenGLES/ES2/glext.h" <<'SHIM'
+/* OpenGLES shim for macCatalyst — redirects to MetalANGLE GLES2 headers */
+#pragma once
+#include <GLES2/gl2ext.h>
+/* iOS SDK defines GL_BGRA (0x80E1) unconditionally; MetalANGLE only has GL_BGRA_EXT */
+#ifndef GL_BGRA
+#  define GL_BGRA GL_BGRA_EXT
+#endif
+SHIM
+
+cat > "$OPENGL_COMPAT/OpenGLES/ES3/gl.h"    <<'SHIM'
+/* OpenGLES shim for macCatalyst — redirects to MetalANGLE GLES3 headers */
+#pragma once
+#include <GLES3/gl3.h>
+SHIM
+
+cat > "$OPENGL_COMPAT/OpenGLES/ES3/gl2.h"   <<'SHIM'
+/* OpenGLES shim for macCatalyst — redirects to MetalANGLE GLES3 headers */
+#pragma once
+#include <GLES3/gl3.h>
+SHIM
+
+mkdir -p "$OPENGL_COMPAT/OpenGLES/ES1"
+
+cat > "$OPENGL_COMPAT/OpenGLES/ES1/gl.h"    <<'SHIM'
+/* OpenGLES ES1 shim for macCatalyst — MetalANGLE does not support ES1.
+   Corona only includes this header for its macro side-effects; none of the
+   actual ES1 symbols are used in the Mac Catalyst code path. */
+#pragma once
+SHIM
+
+cat > "$OPENGL_COMPAT/OpenGLES/ES1/glext.h" <<'SHIM'
+/* OpenGLES ES1 glext shim for macCatalyst — empty intentionally.
+   MetalANGLE's GLES/glext.h uses GLclampx (an ES1 fixed-point type) which
+   is not defined in the ES2+ MetalANGLE headers.  Corona's only use of this
+   header in Rtt_PlatformSurface.cpp is a bare #include with no symbols from
+   it referenced in the Mac Catalyst code path, so an empty shim is correct. */
+#pragma once
+SHIM
+
+ok "Shim headers written to $OPENGL_COMPAT"
+
 # ── METALANGLE_PROJECT ────────────────────────────────────────────────────────
-# ratatouille.xcodeproj embeds OpenGLES.xcodeproj as a sub-project.
-METALANGLE_PROJECT="$(dirname "$PROJECT")/../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj"
+METALANGLE_PROJECT="$SCRIPT_DIR/../../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj"
 METALANGLE_PROJECT="$(cd "$(dirname "$METALANGLE_PROJECT")" && pwd)/$(basename "$METALANGLE_PROJECT")"
 
 # ── prebuild_metalangle_catalyst ──────────────────────────────────────────────
-# The libplayer-angle target depends on MetalANGLE (dynamic framework).
-# When xcodebuild builds OpenGLES.xcodeproj as a sub-project for macOS, it does
-# NOT inherit SUPPORTS_MACCATALYST from the parent — so UIKit is unavailable and
-# the framework fails to link.
 #
-# Fix: pre-build MetalANGLE.framework from OpenGLES.xcodeproj directly into the
-# same BUILD_DIR using the correct Mac Catalyst settings:
-#   • LLVM_TARGET_TRIPLE_SUFFIX / LLVM_TARGET_TRIPLE_OS_VERSION — force macabi
-#     target triple (x86_64-apple-ios16.0-macabi) rather than macos26
-#   • SYSTEM_FRAMEWORK_SEARCH_PATHS — adds $(SDKROOT)/System/iOSSupport/… so
-#     #include <UIKit/UIKit.h> resolves against the Catalyst UIKit stubs
+# Builds MetalANGLE.framework (dynamic) AND libMetalANGLE_static.a from
+# OpenGLES.xcodeproj with full macabi settings.
 #
-# Xcode's incremental build then finds MetalANGLE.framework already present in
-# BUILD_DIR/Release/ and skips re-building it when libplayer-angle is compiled.
+# Why direct invocation instead of letting Xcode handle the sub-project?
+#   When ratatouille.xcodeproj builds libplayer-angle, it triggers a sub-project
+#   build of OpenGLES.xcodeproj.  Command-line overrides passed to the parent
+#   (ratatouille) do NOT propagate to the sub-project's own xcodebuild invocation.
+#   This means the per-target static libs (libangle_base.a, libangle_common.a, …)
+#   get compiled with the plain macOS triple instead of the macabi triple, and the
+#   linker fails with "building for macCatalyst but linking object built for macOS".
+#
+#   By pre-building directly from OpenGLES.xcodeproj with LLVM_TARGET_TRIPLE_SUFFIX
+#   as a command-line override, ALL targets in OpenGLES.xcodeproj (including the
+#   angle static libs) receive the macabi triple.  The same BUILD_DIR is then used
+#   for the ratatouille-based builds so Xcode finds the products already present.
+#
+#   MetalANGLE and MetalANGLE_static have been removed from the Xcode
+#   target-dependency lists in ratatouille.xcodeproj so Xcode does not attempt a
+#   sub-project rebuild during the main build.
 # ─────────────────────────────────────────────────────────────────────────────
 prebuild_metalangle_catalyst() {
     local DIR="$BUILD_ROOT/maccatalyst"
     mkdir -p "$DIR"
 
+    local BUILD_ARGS=(
+        -configuration Release
+        -sdk           macosx
+        "${CATALYST_PREBUILD[@]}"
+        BUILD_DIR="$DIR"
+        OBJROOT="$DIR/obj"
+        BUILD_ROOT="$DIR"
+        SYMROOT="$DIR"
+        SKIP_INSTALL=YES
+        DEPLOYMENT_POSTPROCESSING=NO
+    )
+
     log "Pre-building MetalANGLE.framework for Mac Catalyst"
-
-    local MACOS_SDK; MACOS_SDK="$(xcrun --sdk macosx --show-sdk-path)"
-
     xcodebuild build \
         -project "$METALANGLE_PROJECT" \
         -target   MetalANGLE \
-        -configuration Release \
-        -sdk       macosx \
-        SUPPORTS_MACCATALYST=YES \
-        IS_MACCATALYST=YES \
-        TARGETED_DEVICE_FAMILY="1,2" \
-        IPHONEOS_DEPLOYMENT_TARGET=16.0 \
-        MACCATALYST_DEPLOYMENT_TARGET=16.0 \
-        LLVM_TARGET_TRIPLE_SUFFIX="-macabi" \
-        LLVM_TARGET_TRIPLE_OS_VERSION="ios16.0" \
-        ARCHS="arm64 x86_64" \
-        "SYSTEM_FRAMEWORK_SEARCH_PATHS=${MACOS_SDK}/System/iOSSupport/System/Library/Frameworks \$(SDKROOT)/System/Library/Frameworks" \
-        BUILD_DIR="$DIR" \
-        OBJROOT="$DIR/obj" \
-        BUILD_ROOT="$DIR" \
-        SYMROOT="$DIR" \
-        SKIP_INSTALL=YES \
-        DEPLOYMENT_POSTPROCESSING=NO 2>&1 \
+        "${BUILD_ARGS[@]}" 2>&1 \
     | grep --line-buffered -E \
-        "(^(error:|warning:)| error:| warning:|BUILD SUCCEEDED|BUILD FAILED)" \
+        "(^error:| error:|BUILD SUCCEEDED|BUILD FAILED)" \
+    | grep -v "note:" \
+    || true
+
+    log "Pre-building libMetalANGLE_static.a for Mac Catalyst"
+    xcodebuild build \
+        -project "$METALANGLE_PROJECT" \
+        -target   MetalANGLE_static \
+        "${BUILD_ARGS[@]}" 2>&1 \
+    | grep --line-buffered -E \
+        "(^error:| error:|BUILD SUCCEEDED|BUILD FAILED)" \
     | grep -v "note:" \
     || true
 }
@@ -147,16 +295,12 @@ build_static_lib() {
         DEPLOYMENT_POSTPROCESSING=NO \
         "$@" 2>&1 \
     | grep --line-buffered -E \
-        "(^(error:|warning:)| error:| warning:|BUILD SUCCEEDED|BUILD FAILED)" \
+        "(^error:| error:|BUILD SUCCEEDED|BUILD FAILED)" \
     | grep -v "note:" \
     || true
 }
 
 # ── find_lib ──────────────────────────────────────────────────────────────────
-# Prints the path of the built .a — searches all Xcode output subdirs
-# (Release/, Release-maccatalyst/, etc.) because Xcode names them differently
-# depending on platform.
-# ─────────────────────────────────────────────────────────────────────────────
 find_lib() {
     local NAME="$1" SUBDIR="$2"
     local LIB
@@ -170,38 +314,20 @@ find_lib() {
 }
 
 # ── Build: libplayer ──────────────────────────────────────────────────────────
-#
-# iOS device + simulator use the standard OpenGL ES target.
-# Mac Catalyst uses libplayer-angle (MetalANGLE → Metal) because macOS has no
-# OpenGL ES headers.  Xcode builds the MetalANGLE _mac sub-project dependencies
-# automatically when libplayer-angle is the target.
-# ─────────────────────────────────────────────────────────────────────────────
 
 log "——— libplayer ———"
 build_static_lib libplayer       iphoneos        ios-arm64
 build_static_lib libplayer       iphonesimulator ios-sim
 
-# The libplayer-angle target depends on MetalANGLE (dynamic framework) for build
-# ordering.  When Xcode builds MetalANGLE as a sub-project for macOS it links
-# -framework UIKit, which is only available via the iOSSupport overlay path.
-# Passing SYSTEM_FRAMEWORK_SEARCH_PATHS propagates into all sub-project builds
-# in this xcodebuild invocation — MetalANGLE finds UIKit and links successfully.
-# libplayer-angle.a itself is a static archive so it never embeds MetalANGLE;
-# the resulting MetalANGLE.dylib is just a build-order artefact we discard.
-_MACOS_SDK="$(xcrun --sdk macosx --show-sdk-path)"
-_IOSSUPP="${_MACOS_SDK}/System/iOSSupport/System/Library/Frameworks"
+# Mac Catalyst: pre-build MetalANGLE framework + static lib with macabi triple,
+# then build libplayer-angle using the pre-built products.
+prebuild_metalangle_catalyst
 
 build_static_lib libplayer-angle macosx          maccatalyst \
-    SUPPORTS_MACCATALYST=YES \
-    TARGETED_DEVICE_FAMILY="1,2" \
-    IPHONEOS_DEPLOYMENT_TARGET=16.0 \
-    ARCHS="arm64 x86_64" \
-    "SYSTEM_FRAMEWORK_SEARCH_PATHS=${_IOSSUPP} \$(SDKROOT)/System/Library/Frameworks"
+    "${CATALYST_BUILD[@]}"
 
 LIBPLAYER_IOS="$(find_lib player       ios-arm64)"
 LIBPLAYER_SIM="$(find_lib player       ios-sim)"
-# Angle target produces libplayer-angle.a; rename to libplayer.a so all three
-# slices have the same binary name inside the xcframework.
 _LIBPLAYER_CAT_ANGLE="$(find_lib player-angle maccatalyst)"
 LIBPLAYER_CAT_STAGED="$BUILD_ROOT/staged/libplayer.a"
 mkdir -p "$BUILD_ROOT/staged"
@@ -211,19 +337,12 @@ ok "iOS simulator : $LIBPLAYER_SIM"
 ok "Mac Catalyst  : $_LIBPLAYER_CAT_ANGLE  →  $LIBPLAYER_CAT_STAGED"
 
 # ── Build: CoronaCards ────────────────────────────────────────────────────────
-#
-# Same rationale: use CoronaCards-angle for Mac Catalyst.
-# ─────────────────────────────────────────────────────────────────────────────
 
 log "——— CoronaCards ———"
 build_static_lib CoronaCards       iphoneos        ios-arm64
 build_static_lib CoronaCards       iphonesimulator ios-sim
 build_static_lib CoronaCards-angle macosx          maccatalyst \
-    SUPPORTS_MACCATALYST=YES \
-    TARGETED_DEVICE_FAMILY="1,2" \
-    IPHONEOS_DEPLOYMENT_TARGET=16.0 \
-    ARCHS="arm64 x86_64" \
-    "SYSTEM_FRAMEWORK_SEARCH_PATHS=${_IOSSUPP} \$(SDKROOT)/System/Library/Frameworks"
+    "${CATALYST_BUILD[@]}"
 
 LIBCORONA_IOS="$(find_lib CoronaCards       ios-arm64)"
 LIBCORONA_SIM="$(find_lib CoronaCards       ios-sim)"
@@ -233,11 +352,6 @@ ok "iOS simulator : $LIBCORONA_SIM"
 ok "Mac Catalyst  : $LIBCORONA_CAT"
 
 # ── Package: libplayer.xcframework ───────────────────────────────────────────
-#
-# Uses the -library form (not -framework) because libplayer has always been
-# distributed as a plain static-library xcframework — matches the structure
-# already in App/Resources/libplayer.xcframework.
-# ─────────────────────────────────────────────────────────────────────────────
 
 log "Packaging libplayer.xcframework"
 
@@ -251,17 +365,6 @@ xcodebuild -create-xcframework \
 ok "libplayer.xcframework  →  $LIBPLAYER_XCF"
 
 # ── Package: CoronaCards.xcframework ─────────────────────────────────────────
-#
-# The existing *tvOS* CoronaCards binary is a dynamic framework (mh_dylib).
-# For iOS, the ratatouille.xcodeproj produces a static library (libCoronaCards.a).
-#
-# We wrap each static .a inside a minimal .framework bundle so the xcframework
-# tool can identify the platform correctly from the Mach-O metadata.
-# Mixing static (iOS) and dynamic (tvOS) slices in one xcframework is valid —
-# each slice is consumed independently by the linker for its target platform.
-# Since the user only needs iOS + Mac Catalyst right now, this xcframework
-# contains only those slices.  The tvOS target keeps its own separate framework.
-# ─────────────────────────────────────────────────────────────────────────────
 
 log "Creating CoronaCards.framework slice bundles"
 
@@ -271,13 +374,9 @@ make_static_framework() {
     rm -rf "$FW"
     mkdir -p "$FW/Headers" "$FW/Modules"
 
-    # Binary: static archive renamed to match framework naming convention
     cp "$LIB" "$FW/CoronaCards"
-
-    # Public headers
     cp "$CORONACARDS_HEADERS"/*.h "$FW/Headers/" 2>/dev/null || true
 
-    # Module map (identical to the tvOS version)
     cat > "$FW/Modules/module.modulemap" <<'MODULEMAP'
 framework module CoronaCards {
   umbrella header "CoronaCards.h"
@@ -286,7 +385,6 @@ framework module CoronaCards {
 }
 MODULEMAP
 
-    # Minimal Info.plist
     cat > "$FW/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -323,7 +421,6 @@ xcodebuild -create-xcframework \
 
 ok "CoronaCards.xcframework  →  $CORONACARDS_XCF"
 
-# Summarise slices
 printf '\nSlices built:\n'
 plutil -p "$CORONACARDS_XCF/Info.plist" 2>/dev/null \
     | grep "LibraryIdentifier\|BinaryPath" \
