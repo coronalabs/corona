@@ -145,6 +145,39 @@ build_target() {
 # iOS TEMPLATES
 # --------------------------------------------------------------------------------------------------
 
+# For angle builds, MetalANGLE.framework is no longer a sub-project target dependency
+# (removed to fix macCatalyst propagation issues). Pre-build it here so that it lands
+# in SYMROOT = $path/build, which Xcode implicitly adds to FRAMEWORK_SEARCH_PATHS via
+# BUILT_PRODUCTS_DIR — making <MetalANGLE/MGLKit.h> visible when libplayer-core-angle
+# and CoronaCards-angle are compiled.
+if [ -n "$TEMPLATE_TARGET_SUFFIX" ]
+then
+    METALANGLE_PROJECT="$path/../../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj"
+    echo "Pre-building MetalANGLE.framework for iphoneos (angle build)"
+    xcodebuild build \
+        -project "$METALANGLE_PROJECT" \
+        -target MetalANGLE \
+        -configuration Release \
+        -sdk iphoneos \
+        SYMROOT="$path/build" \
+        SKIP_INSTALL=YES \
+        DEPLOYMENT_POSTPROCESSING=NO \
+        2>&1 | tee -a "$FULL_LOG_FILE" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:)" || true
+    checkError
+
+    echo "Pre-building MetalANGLE.framework for iphonesimulator (angle build)"
+    xcodebuild build \
+        -project "$METALANGLE_PROJECT" \
+        -target MetalANGLE \
+        -configuration Release \
+        -sdk iphonesimulator \
+        SYMROOT="$path/build" \
+        SKIP_INSTALL=YES \
+        DEPLOYMENT_POSTPROCESSING=NO \
+        2>&1 | tee -a "$FULL_LOG_FILE" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:)" || true
+    checkError
+fi
+
 # iPhone basic (i.e. for subscribers)
 build_target "iphone" "device" "$SDK_VERSION" "basic" "$TEMPLATE_TARGET"
 checkError
