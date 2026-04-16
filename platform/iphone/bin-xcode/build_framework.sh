@@ -54,14 +54,48 @@ else
     exit 1
 fi
 
+# ── MetalANGLE pre-build for the other platform ────────────────────────────
+# If MetalANGLE.framework is present in the current BUILT_PRODUCTS_DIR it
+# means this is an angle build.  Pre-build MetalANGLE for the other SDK into
+# the SAME SYMROOT so the sub-build below finds it cached and does not attempt
+# to re-link it in the sub-project context (which would fail without the right
+# OTHER_LDFLAGS environment).
+PROJECT_DIR="$(dirname "${PROJECT_FILE_PATH}")"
+METALANGLE_XCODEPROJ="${PROJECT_DIR}/../../external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj"
+if [[ -d "${BUILT_PRODUCTS_DIR}/MetalANGLE.framework" && -f "${METALANGLE_XCODEPROJ}" ]]; then
+    echo "Pre-building MetalANGLE.framework for ${SF_OTHER_PLATFORM}..."
+    xcodebuild build \
+        -project "${METALANGLE_XCODEPROJ}" \
+        -target MetalANGLE \
+        -configuration "${CONFIGURATION}" \
+        -sdk "${SF_OTHER_PLATFORM}${SF_SDK_VERSION}" \
+        SYMROOT="${SYMROOT}" \
+        SKIP_INSTALL=YES \
+        DEPLOYMENT_POSTPROCESSING=NO \
+        "OTHER_LDFLAGS=-weak_framework OpenGLES \$(inherited)" \
+        || echo "Warning: MetalANGLE pre-build for ${SF_OTHER_PLATFORM} failed — sub-build will attempt it"
+fi
+# ── end MetalANGLE pre-build ────────────────────────────────────────────────
+
 # Build the other platform.
-xcodebuild -project "${PROJECT_FILE_PATH}" -target "${TARGET_NAME}" -configuration "${CONFIGURATION}" -sdk "${SF_OTHER_PLATFORM}${SF_SDK_VERSION}" BUILD_DIR="${BUILD_DIR}" OBJROOT="${OBJROOT}/DependantBuilds" BUILD_ROOT="${BUILD_ROOT}" SYMROOT="${SYMROOT}" "$ACTION"
+# Pass ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES so that angle builds
+# importing MetalANGLE (whose MGLContext.h includes non-modular EGL/egl.h)
+# don't fail here — command-line settings from the outer xcodebuild are not
+# inherited by sub-builds.
+# Non-fatal: if MetalANGLE can't be linked for the simulator in this context
+# (e.g. CI sub-project environment differences), we skip that slice and still
+# produce an iphoneos-only xcframework.
+SF_OTHER_BUILD_OK=1
+xcodebuild -project "${PROJECT_FILE_PATH}" -target "${TARGET_NAME}" -configuration "${CONFIGURATION}" -sdk "${SF_OTHER_PLATFORM}${SF_SDK_VERSION}" BUILD_DIR="${BUILD_DIR}" OBJROOT="${OBJROOT}/DependantBuilds" BUILD_ROOT="${BUILD_ROOT}" SYMROOT="${SYMROOT}" ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES=YES "$ACTION" \
+    || { echo "Warning: ${SF_OTHER_PLATFORM} build failed — skipping ${SF_OTHER_PLATFORM} slice"; SF_OTHER_BUILD_OK=0; }
 
 # Copy the static library into each platform's framework bundle
 cp -a "${BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
-cp -a "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
+if [[ "${SF_OTHER_BUILD_OK}" = "1" && -f "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" ]]; then
+    cp -a "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}"
+fi
 
-# ── Mac Catalyst slice (added) ──────────────────────────────────────────────
+# ── Mac Catalyst slice ──────────────────────────────────────────────────────
 # Build for Mac Catalyst and add it to the xcframework so the same
 # xcframework works for iOS, iOS Simulator, and Mac Catalyst targets.
 #
@@ -82,6 +116,9 @@ if [[ "$SF_SDK_PLATFORM" != "macosx" ]]; then
 
     # Compile for Mac Catalyst.  SF_MASTER_SCRIPT_RUNNING prevents build_framework.sh
     # from running again inside this xcodebuild invocation.
+    # Non-fatal: on macOS 26+ SDK the OpenGLES headers are gone, so non-angle targets
+    # cannot build for maccatalyst. Capture the exit code and skip the Catalyst slice
+    # rather than failing the whole build.
     xcodebuild -project "${PROJECT_FILE_PATH}" \
                -target "${TARGET_NAME}" \
                -configuration "${CONFIGURATION}" \
@@ -94,19 +131,22 @@ if [[ "$SF_SDK_PLATFORM" != "macosx" ]]; then
                OBJROOT="${OBJROOT}/DependantBuilds" \
                BUILD_ROOT="${BUILD_ROOT}" \
                SYMROOT="${SYMROOT}" \
-               "$ACTION"
+               "$ACTION" || { echo "Warning: Mac Catalyst build failed — skipping Catalyst slice"; SF_CATALYST_WRAPPER=""; }
 
     # The Catalyst build may not have created the .framework wrapper (because
-    # build_framework.sh exited early due to SF_MASTER_SCRIPT_RUNNING).
+    # build_framework.sh exited early due to SF_MASTER_SCRIPT_RUNNING, or because
+    # the build was skipped due to failure above).
     # Seed the wrapper from the iOS device slice and replace the binary.
-    CATALYST_LIB="${SF_CATALYST_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}"
-    if [[ -f "${CATALYST_LIB}" ]]; then
-        cp -a "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" "${SF_CATALYST_WRAPPER}"
-        cp -f "${CATALYST_LIB}" \
-              "${SF_CATALYST_WRAPPER}/Versions/A/${SF_TARGET_NAME}"
-    else
-        echo "Warning: Catalyst lib not found at ${CATALYST_LIB} — skipping Catalyst slice"
-        SF_CATALYST_WRAPPER=""
+    if [[ -n "${SF_CATALYST_WRAPPER}" ]]; then
+        CATALYST_LIB="${SF_CATALYST_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}"
+        if [[ -f "${CATALYST_LIB}" ]]; then
+            cp -a "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" "${SF_CATALYST_WRAPPER}"
+            cp -f "${CATALYST_LIB}" \
+                  "${SF_CATALYST_WRAPPER}/Versions/A/${SF_TARGET_NAME}"
+        else
+            echo "Warning: Catalyst lib not found at ${CATALYST_LIB} — skipping Catalyst slice"
+            SF_CATALYST_WRAPPER=""
+        fi
     fi
 fi
 # ── end Mac Catalyst ─────────────────────────────────────────────────────────
@@ -115,18 +155,18 @@ fi
 XCFRAMEWORK_PATH="${BUILT_PRODUCTS_DIR}/${SF_TARGET_NAME}.xcframework"
 rm -rf "${XCFRAMEWORK_PATH}"
 
+# Build the argument list dynamically based on which slices were built successfully.
+XCFRAMEWORK_ARGS=(-framework "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}")
+if [[ "${SF_OTHER_BUILD_OK}" = "1" && -d "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" ]]; then
+    XCFRAMEWORK_ARGS+=(-framework "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}")
+fi
 if [[ -n "${SF_CATALYST_WRAPPER}" && -d "${SF_CATALYST_WRAPPER}" ]]; then
-    xcodebuild -create-xcframework \
-        -framework "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
-        -framework "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
-        -framework "${SF_CATALYST_WRAPPER}" \
-        -output "${XCFRAMEWORK_PATH}"
-else
-    xcodebuild -create-xcframework \
-        -framework "${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
-        -framework "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}" \
-        -output "${XCFRAMEWORK_PATH}"
+    XCFRAMEWORK_ARGS+=(-framework "${SF_CATALYST_WRAPPER}")
 fi
 
+xcodebuild -create-xcframework "${XCFRAMEWORK_ARGS[@]}" -output "${XCFRAMEWORK_PATH}"
+
 # Also create XCFramework in the other build products directory
-cp -a "${XCFRAMEWORK_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_TARGET_NAME}.xcframework"
+if [[ "${SF_OTHER_BUILD_OK}" = "1" && -d "${SF_OTHER_BUILT_PRODUCTS_DIR}" ]]; then
+    cp -a "${XCFRAMEWORK_PATH}" "${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_TARGET_NAME}.xcframework"
+fi

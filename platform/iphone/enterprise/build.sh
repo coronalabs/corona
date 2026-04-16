@@ -125,10 +125,58 @@ cp -v "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}.a "$DST_LIB_DIR"/libplayer.a
 
 # Angle
 
-xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+# Pre-build MetalANGLE.framework so that libplayer-angle and libplayer-core-angle
+# can find <MetalANGLE/MGLKit.h> via FRAMEWORK_SEARCH_PATHS (BUILT_PRODUCTS_DIR).
+# MetalANGLE is no longer a sub-project dependency in ratatouille.xcodeproj
+# (removed to fix macCatalyst propagation issues), so it must be built here first.
+METALANGLE_PROJECT="$ROOT_DIR/external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj"
+METALANGLE_INCLUDE="$ROOT_DIR/external/MetalANGLE/include"
+GLSLANG_DIR="$ROOT_DIR/external/MetalANGLE/third_party/glslang/src"
+
+echo "Pre-building MetalANGLE.framework for iphoneos (angle build)"
+xcodebuild build \
+    -project "$METALANGLE_PROJECT" \
+    -target MetalANGLE \
+    -configuration Release \
+    -sdk iphoneos \
+    SYMROOT="$SYMROOT" \
+    SKIP_INSTALL=YES \
+    DEPLOYMENT_POSTPROCESSING=NO \
+    "OTHER_LDFLAGS=-weak_framework OpenGLES \$(inherited)" \
+    2>&1 | tee -a "$FULL_LOG_FILE" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:|Undefined symbol|ld:)" || true
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
+    echo "=== MetalANGLE iphoneos build failed — last 150 lines of log ==="
+    tail -150 "$FULL_LOG_FILE"
+    echo "Exiting due to errors (above)"; exit 1
+fi
+
+echo "Pre-building MetalANGLE.framework for iphonesimulator (angle build)"
+xcodebuild build \
+    -project "$METALANGLE_PROJECT" \
+    -target MetalANGLE \
+    -configuration Release \
+    -sdk iphonesimulator \
+    SYMROOT="$SYMROOT" \
+    SKIP_INSTALL=YES \
+    DEPLOYMENT_POSTPROCESSING=NO \
+    "OTHER_LDFLAGS=-weak_framework OpenGLES \$(inherited)" \
+    2>&1 | tee -a "$FULL_LOG_FILE" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:|Undefined symbol|ld:)" || true
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
+    echo "=== MetalANGLE iphonesimulator build failed — last 150 lines of log ==="
+    tail -150 "$FULL_LOG_FILE"
+    echo "Exiting due to errors (above)"; exit 1
+fi
+
+ANGLE_BUILD_SETTINGS=(
+    "HEADER_SEARCH_PATHS=$METALANGLE_INCLUDE $GLSLANG_DIR \$(inherited)"
+    "GCC_PREPROCESSOR_DEFINITIONS=\$(inherited) Rtt_EGL"
+    "ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES=YES"
+)
+
+xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphoneos "${ANGLE_BUILD_SETTINGS[@]}" 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # Simulator (includes arm64 for M1 simulator support)
-xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphonesimulator "${ANGLE_BUILD_SETTINGS[@]}" 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # create xcframework (supports both arm64 device and arm64 simulator)
 rm -rf "$DST_LIB_DIR"/libplayer-angle.xcframework
