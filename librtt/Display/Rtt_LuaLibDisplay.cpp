@@ -1143,7 +1143,9 @@ DisplayLibrary::newImage( lua_State *L )
         Runtime& runtime = library->GetDisplay().GetRuntime();
         BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, imageName, baseDir, flags );
 
-        if ( paint && paint->GetBitmap() && paint->GetBitmap()->NumBytes() == 0 )
+        bool isInvalid = paint && paint->GetBitmap() && paint->GetBitmap()->NumBytes() == 0;
+
+        if ( isInvalid )
         {
             CoronaLuaWarning(L, "file '%s' does not contain a valid image", imageName);
         }
@@ -1151,6 +1153,12 @@ DisplayLibrary::newImage( lua_State *L )
         if ( paint )
         {
             result = NULL != PushImage( L, p, paint, display, parent, replacement );
+            if ( result && isInvalid )
+            {
+                lua_pushstring( L, "_isInvalid" );
+                lua_pushboolean( L, 1 );
+                lua_rawset( L, -3 );
+            }
         }
     }
     else if ( lua_isuserdata( L, nextArg ) )
@@ -1257,13 +1265,21 @@ DisplayLibrary::newImageRect( lua_State *L )
             Runtime& runtime = library->GetDisplay().GetRuntime();
             BitmapPaint *paint = BitmapPaint::NewBitmap( runtime, imageName, baseDir, flags );
 
-            if ( paint && paint->GetBitmap() && paint->GetBitmap()->NumBytes() == 0 )
+            bool isInvalid = paint && paint->GetBitmap() && paint->GetBitmap()->NumBytes() == 0;
+
+            if ( isInvalid )
             {
                 CoronaLuaWarning(L, "file '%s' does not contain a valid image", imageName);
             }
             if ( Rtt_VERIFY( paint ) )
             {
                 result = NULL != PushImage( L, NULL, paint, display, parent, w, h, replacement );
+                if ( result && isInvalid )
+                {
+                    lua_pushstring( L, "_isInvalid" );
+                    lua_pushboolean( L, 1 );
+                    lua_rawset( L, -3 );
+                }
             }
         }
         else
