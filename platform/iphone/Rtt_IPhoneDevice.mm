@@ -31,6 +31,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
 #import <CommonCrypto/CommonDigest.h>
+#include <sys/sysctl.h>
 
 #ifdef USE_IOS_AD_SUPPORT
 #import <AdSupport/ASIdentifierManager.h>
@@ -164,7 +165,28 @@ IPhoneDevice::GetManufacturer() const
 const char*
 IPhoneDevice::GetModel() const
 {
+#if TARGET_OS_MACCATALYST
+	// On Mac Catalyst, UIDevice.currentDevice.model returns "iPad", which causes
+	// Lua device detection to treat the app as iOS instead of macOS.
+	// Return the real Mac hardware model identifier (e.g. "MacBookPro18,3") so that
+	// the Lua check `string.sub(model, 1, 3) == "Mac"` correctly sets device.macOS = true.
+	size_t size = 0;
+	sysctlbyname("hw.model", NULL, &size, NULL, 0);
+	if (size > 0)
+	{
+		char *buf = (char *)malloc(size);
+		if (buf)
+		{
+			sysctlbyname("hw.model", buf, &size, NULL, 0);
+			NSString *macModel = [NSString stringWithUTF8String:buf];
+			free(buf);
+			return [macModel UTF8String];
+		}
+	}
+	return [@"Mac" UTF8String]; // safe fallback — still starts with "Mac"
+#else
 	return [[[UIDevice currentDevice] model] UTF8String];
+#endif
 }
 
 MPlatformDevice::EnvironmentType

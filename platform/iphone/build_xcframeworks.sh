@@ -430,8 +430,10 @@ plutil -p "$CORONACARDS_XCF/Info.plist" 2>/dev/null \
 
 if [[ -n "$GAME_RESOURCES" ]]; then
     log "Installing xcframeworks → $GAME_RESOURCES"
-    cp -Rf "$LIBPLAYER_XCF"   "$GAME_RESOURCES/libplayer.xcframework"
-    cp -Rf "$CORONACARDS_XCF" "$GAME_RESOURCES/CoronaCards.xcframework"
+    rm -rf "$GAME_RESOURCES/libplayer.xcframework"
+    cp -R  "$LIBPLAYER_XCF"   "$GAME_RESOURCES/libplayer.xcframework"
+    rm -rf "$GAME_RESOURCES/CoronaCards.xcframework"
+    cp -R  "$CORONACARDS_XCF" "$GAME_RESOURCES/CoronaCards.xcframework"
     ok "libplayer.xcframework installed"
     ok "CoronaCards.xcframework installed"
 else
