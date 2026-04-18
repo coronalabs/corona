@@ -12,7 +12,11 @@
 #include "Rtt_PlatformSurface.h"
 
 #if defined( Rtt_IPHONE_ENV )
-	#include <OpenGLES/ES1/glext.h>
+	// OpenGLES/ES1 header is absent on Mac Catalyst (macOS 26+ dropped OpenGLES)
+	// and not needed for MetalANGLE (angle) builds.
+	#if !defined( Rtt_EGL ) && !(defined( TARGET_OS_MACCATALYST ) && TARGET_OS_MACCATALYST)
+		#include <OpenGLES/ES1/glext.h>
+	#endif
 #endif
 
 // Starting to work on OffscreenGPUSurface for Windows

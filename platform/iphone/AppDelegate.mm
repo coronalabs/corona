@@ -751,6 +751,39 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 
 	[view setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
 
+	// Create window programmatically if not provided by the XIB (e.g. Mac Catalyst,
+	// where ibtool cannot instantiate UIWindow during compilation).
+	if ( window == nil )
+	{
+		// iOS 13+: create a scene-backed window so it registers with UIWindowScene.windows.
+		// Without this, iOS 26 ignores the window in connected scene queries.
+		if (@available(iOS 13.0, *))
+		{
+			UIWindowScene *activeScene = nil;
+			for ( UIScene *scene in UIApplication.sharedApplication.connectedScenes )
+			{
+				if ( [scene isKindOfClass:[UIWindowScene class]] )
+				{
+					UIWindowScene *ws = (UIWindowScene *)scene;
+					if ( ws.activationState == UISceneActivationStateForegroundActive
+					     || ws.activationState == UISceneActivationStateForegroundInactive )
+					{
+						activeScene = ws;
+						break;
+					}
+				}
+			}
+			if ( activeScene )
+			{
+				window = [[UIWindow alloc] initWithWindowScene:activeScene];
+			}
+		}
+		if ( window == nil )
+		{
+			window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+		}
+	}
+
 	// Get warnings in iOS 6 if we don't do this.
 	[window setRootViewController:viewController];
 	[window makeKeyAndVisible];

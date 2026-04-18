@@ -114,19 +114,22 @@ xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodep
 xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # Mac Catalyst (non-fatal: OpenGLES headers removed from macOS 26 SDK)
+# Uses ios16.0-macabi triple + VFS overlay for AppKit/UIKit collision fix.
 echo "Building ${XCODE_TARGET} for Mac Catalyst (non-fatal)"
 xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG \
     -sdk macosx SUPPORTS_MACCATALYST=YES IPHONEOS_DEPLOYMENT_TARGET=16.0 ARCHS="arm64 x86_64" \
+    "${CATALYST_COMMON_SETTINGS[@]}" \
     2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS" || echo "Warning: Mac Catalyst ${XCODE_TARGET} build failed — skipping Catalyst slice"
 
 # create xcframework (device + simulator + catalyst if available)
+# Mac Catalyst builds go to Release/ (not Release-maccatalyst/) when using -sdk macosx
 rm -rf "$DST_LIB_DIR"/libplayer.xcframework
 LIBPLAYER_XCF_ARGS=(
     -library "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}.a         -headers "$PLATFORM_DIR/iphone/Corona"
     -library "$SYMROOT"/$CONFIG-iphonesimulator/${XCODE_TARGET}.a  -headers "$PLATFORM_DIR/iphone/Corona"
 )
-if [ -f "$SYMROOT"/$CONFIG-maccatalyst/${XCODE_TARGET}.a ]; then
-    LIBPLAYER_XCF_ARGS+=(-library "$SYMROOT"/$CONFIG-maccatalyst/${XCODE_TARGET}.a -headers "$PLATFORM_DIR/iphone/Corona")
+if [ -f "$SYMROOT"/$CONFIG/${XCODE_TARGET}.a ]; then
+    LIBPLAYER_XCF_ARGS+=(-library "$SYMROOT"/$CONFIG/${XCODE_TARGET}.a -headers "$PLATFORM_DIR/iphone/Corona")
 fi
 xcodebuild -create-xcframework "${LIBPLAYER_XCF_ARGS[@]}" -output "$DST_LIB_DIR"/libplayer.xcframework
 
@@ -142,6 +145,95 @@ cp -v "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}.a "$DST_LIB_DIR"/libplayer.a
 METALANGLE_PROJECT="$ROOT_DIR/external/MetalANGLE/ios/xcode/OpenGLES.xcodeproj"
 METALANGLE_INCLUDE="$ROOT_DIR/external/MetalANGLE/include"
 GLSLANG_DIR="$ROOT_DIR/external/MetalANGLE/third_party/glslang/src"
+
+# macOS 26 SDK / Mac Catalyst build helpers
+# ---------------------------------------------------------------------------
+# The macOS 26 SDK has a bug: AppKit.h includes headers (NSCollectionViewCompositionalLayout,
+# NSDiffableDataSource, NSLayoutConstraint, etc.) that redefine types already provided by
+# UIKit's iOSSupport overlay, causing "duplicate interface definition" errors on Catalyst.
+# We create a clang VFS overlay that stubs those conflicting headers with empty files,
+# so the real types from UIKit remain in effect.
+#
+# Additionally, the ios16.0-macabi target triple must be used (not macos-macabi) so that
+# TARGET_OS_IPHONE=1, which makes SDK headers (WKWebView.h, MapKit.h, etc.) take the
+# UIKit path instead of the AppKit path.
+MACOS_SDK=$(xcrun --sdk macosx --show-sdk-path)
+IOSUPPORT_FW="$MACOS_SDK/System/iOSSupport/System/Library/Frameworks"
+APPKIT_HEADERS="$MACOS_SDK/System/Library/Frameworks/AppKit.framework/Headers"
+
+# Generate the VFS overlay file (stubs conflicting AppKit headers)
+CATALYST_VFS="$SYMROOT/catalyst-appkit-vfs.yaml"
+CATALYST_STUBS_DIR="$SYMROOT/catalyst-appkit-stubs"
+mkdir -p "$CATALYST_STUBS_DIR"
+CONFLICT_HEADERS=(
+    "NSCollectionViewCompositionalLayout.h"
+    "NSDiffableDataSource.h"
+    "NSLayoutAnchor.h"
+    "NSLayoutConstraint.h"
+    "NSLayoutGuide.h"
+    "NSStackView.h"
+    "NSTextStorage.h"
+    "NSLayoutManager.h"
+)
+for hdr in "${CONFLICT_HEADERS[@]}"; do
+    cat > "$CATALYST_STUBS_DIR/$hdr" << EOF
+/* Mac Catalyst shim: AppKit/${hdr}
+ * Suppressed — UIKit iOSSupport already defines these types.
+ * Redefining them from AppKit causes duplicate definition errors on Mac Catalyst. */
+#pragma once
+EOF
+done
+
+# Also stub the missing AVKit/AVCaptureView.h (macOS-only header absent from iOSSupport)
+AVKIT_STUBS_DIR="$SYMROOT/catalyst-avkit-stubs"
+mkdir -p "$AVKIT_STUBS_DIR"
+cat > "$AVKIT_STUBS_DIR/AVCaptureView.h" << 'EOF'
+/* Mac Catalyst shim: AVKit/AVCaptureView.h
+ * AVCaptureView is a macOS-only NSView-based class, absent from iOSSupport.
+ * This empty shim prevents a fatal "file not found" from iOSSupport AVKit.h. */
+#pragma once
+EOF
+
+python3 - <<PYEOF
+import json
+appkit = "$APPKIT_HEADERS"
+stubs  = "$CATALYST_STUBS_DIR"
+avkit_sdk = "$MACOS_SDK/System/iOSSupport/System/Library/Frameworks/AVKit.framework/Headers"
+avkit_stubs = "$AVKIT_STUBS_DIR"
+conflict = [
+    "NSCollectionViewCompositionalLayout.h","NSDiffableDataSource.h",
+    "NSLayoutAnchor.h","NSLayoutConstraint.h","NSLayoutGuide.h",
+    "NSStackView.h","NSTextStorage.h","NSLayoutManager.h",
+]
+roots = [
+    {"name": appkit, "type": "directory",
+     "contents": [{"name": h, "type": "file",
+                   "external-contents": stubs+"/"+h} for h in conflict]},
+    {"name": avkit_sdk, "type": "directory",
+     "contents": [{"name": "AVCaptureView.h", "type": "file",
+                   "external-contents": avkit_stubs+"/AVCaptureView.h"}]},
+]
+with open("$CATALYST_VFS","w") as f:
+    json.dump({"version":0,"redirecting-with":"fallthrough","roots":roots},f,indent=2)
+print("VFS overlay: $CATALYST_VFS")
+PYEOF
+
+# Also create a metalangle-headers symlink so <MetalANGLE/MGLKit.h> is found on Catalyst
+METALANGLE_HEADERS_DIR="$SYMROOT/metalangle-headers"
+mkdir -p "$METALANGLE_HEADERS_DIR"
+# (symlink is set up after MetalANGLE iphoneos build below)
+
+# Catalyst-specific build settings for libplayer and libplayer-angle
+# - ios16.0-macabi triple: makes TARGET_OS_IPHONE=1 so SDK headers take UIKit path
+# - VFS overlay: stubs conflicting AppKit headers
+# - FRAMEWORK_SEARCH_PATHS: adds iOSSupport so UIKit/WebKit/MapKit are found
+CATALYST_COMMON_SETTINGS=(
+    "FRAMEWORK_SEARCH_PATHS=$IOSUPPORT_FW \$(inherited)"
+    "LLVM_TARGET_TRIPLE_OS_VERSION=ios16.0"
+    "LLVM_TARGET_TRIPLE_SUFFIX=-macabi"
+    "OTHER_CFLAGS=-ivfsoverlay $CATALYST_VFS \$(inherited)"
+    "OTHER_CPLUSPLUSFLAGS=-ivfsoverlay $CATALYST_VFS \$(inherited)"
+)
 
 echo "Pre-building MetalANGLE.framework for iphoneos (angle build)"
 xcodebuild build \
@@ -160,6 +252,12 @@ if [ ${PIPESTATUS[0]} -ne 0 ]; then
     echo "Exiting due to errors (above)"; exit 1
 fi
 
+# Create metalangle-headers symlink so <MetalANGLE/MGLKit.h> is found during Mac Catalyst
+# libplayer-angle build (MetalANGLE.framework is iOS-only, but the headers are reusable).
+rm -rf "$METALANGLE_HEADERS_DIR/MetalANGLE"
+ln -sf "$SYMROOT/Release-iphoneos/MetalANGLE.framework/Headers" "$METALANGLE_HEADERS_DIR/MetalANGLE"
+echo "MetalANGLE headers linked: $METALANGLE_HEADERS_DIR/MetalANGLE"
+
 echo "Pre-building MetalANGLE.framework for iphonesimulator (angle build)"
 xcodebuild build \
     -project "$METALANGLE_PROJECT" \
@@ -177,7 +275,11 @@ if [ ${PIPESTATUS[0]} -ne 0 ]; then
     echo "Exiting due to errors (above)"; exit 1
 fi
 
-# Mac Catalyst MetalANGLE (non-fatal: OpenGLES may be absent from macOS 26 SDK)
+# Mac Catalyst MetalANGLE (non-fatal: OpenGLES absent from macOS 26 SDK)
+# Do NOT pass -weak_framework OpenGLES here: macOS 26 SDK has no OpenGLES.framework
+# at all, so the linker cannot resolve even a weak reference to it.
+# MetalANGLE IS the OpenGLES implementation (Metal-backed), so it doesn't need
+# to link against the system OpenGLES on Mac Catalyst.
 echo "Pre-building MetalANGLE.framework for Mac Catalyst (non-fatal)"
 xcodebuild build \
     -project "$METALANGLE_PROJECT" \
@@ -190,14 +292,19 @@ xcodebuild build \
     SYMROOT="$SYMROOT" \
     SKIP_INSTALL=YES \
     DEPLOYMENT_POSTPROCESSING=NO \
-    "OTHER_LDFLAGS=-weak_framework OpenGLES \$(inherited)" \
+    OTHER_LDFLAGS="\$(inherited)" \
     2>&1 | tee -a "$FULL_LOG_FILE" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:|Undefined symbol|ld:)" || \
     echo "Warning: MetalANGLE Mac Catalyst build failed — skipping Catalyst slice"
 
+# libplayer-angle build settings:
+# - HEADER_SEARCH_PATHS includes metalangle-headers symlink so <MetalANGLE/MGLKit.h> is found
+# - GCC_PREPROCESSOR_DEFINITIONS must include Rtt_MetalANGLE: command-line overrides target-level,
+#   so we must carry it through to prevent GLKit→AppKit fallback in Rtt_MetalAngleTypes.h
 ANGLE_BUILD_SETTINGS=(
-    "HEADER_SEARCH_PATHS=$METALANGLE_INCLUDE $GLSLANG_DIR \$(inherited)"
-    "GCC_PREPROCESSOR_DEFINITIONS=\$(inherited) Rtt_EGL"
+    "HEADER_SEARCH_PATHS=$METALANGLE_HEADERS_DIR $METALANGLE_INCLUDE $GLSLANG_DIR \$(inherited)"
+    "GCC_PREPROCESSOR_DEFINITIONS=\$(inherited) Rtt_EGL Rtt_MetalANGLE"
     "ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES=YES"
+    "EXCLUDED_SOURCE_FILE_NAMES=AutoLinkModules.m"
 )
 
 xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphoneos "${ANGLE_BUILD_SETTINGS[@]}" 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
@@ -205,20 +312,29 @@ xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodep
 # Simulator (includes arm64 for M1 simulator support)
 xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphonesimulator "${ANGLE_BUILD_SETTINGS[@]}" 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
-# Mac Catalyst libplayer-angle (non-fatal: OpenGLES headers removed from macOS 26 SDK)
+# Mac Catalyst libplayer-angle: uses ios16.0-macabi triple + VFS overlay for AppKit fix.
+# - ios16.0-macabi makes TARGET_OS_IPHONE=1 so WKWebView.h/MapKit.h take the UIKit path
+# - VFS overlay stubs conflicting AppKit headers that UIKit iOSSupport already defines
+# - Rtt_MetalANGLE must be explicit (command-line GCC_PREPROCESSOR_DEFINITIONS overrides target)
 echo "Building ${XCODE_TARGET}-angle for Mac Catalyst (non-fatal)"
+CATALYST_ANGLE_SETTINGS=(
+    "${ANGLE_BUILD_SETTINGS[@]}"
+    "${CATALYST_COMMON_SETTINGS[@]}"
+)
 xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG \
-    -sdk macosx SUPPORTS_MACCATALYST=YES IPHONEOS_DEPLOYMENT_TARGET=16.0 ARCHS="arm64 x86_64" "${ANGLE_BUILD_SETTINGS[@]}" \
+    -sdk macosx SUPPORTS_MACCATALYST=YES IPHONEOS_DEPLOYMENT_TARGET=16.0 ARCHS="arm64 x86_64" \
+    "${CATALYST_ANGLE_SETTINGS[@]}" \
     2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS" || echo "Warning: Mac Catalyst ${XCODE_TARGET}-angle build failed — skipping Catalyst slice"
 
 # create xcframework (device + simulator + catalyst if available)
+# Mac Catalyst builds go to Release/ (not Release-maccatalyst/) when using -sdk macosx
 rm -rf "$DST_LIB_DIR"/libplayer-angle.xcframework
 LIBPLAYER_ANGLE_XCF_ARGS=(
     -library "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}-angle.a        -headers "$PLATFORM_DIR/iphone/Corona"
     -library "$SYMROOT"/$CONFIG-iphonesimulator/${XCODE_TARGET}-angle.a -headers "$PLATFORM_DIR/iphone/Corona"
 )
-if [ -f "$SYMROOT"/$CONFIG-maccatalyst/${XCODE_TARGET}-angle.a ]; then
-    LIBPLAYER_ANGLE_XCF_ARGS+=(-library "$SYMROOT"/$CONFIG-maccatalyst/${XCODE_TARGET}-angle.a -headers "$PLATFORM_DIR/iphone/Corona")
+if [ -f "$SYMROOT"/$CONFIG/${XCODE_TARGET}-angle.a ]; then
+    LIBPLAYER_ANGLE_XCF_ARGS+=(-library "$SYMROOT"/$CONFIG/${XCODE_TARGET}-angle.a -headers "$PLATFORM_DIR/iphone/Corona")
 fi
 xcodebuild -create-xcframework "${LIBPLAYER_ANGLE_XCF_ARGS[@]}" -output "$DST_LIB_DIR"/libplayer-angle.xcframework
 

@@ -79,6 +79,20 @@ static bool Verify(const char *data, int dataLen, CFDataRef dataSig, const char 
 
 	if ( publicKeyRef )
 	{
+#if defined(TARGET_OS_MACCATALYST) && TARGET_OS_MACCATALYST
+		// SecKeyRawVerify is removed from macOS 26 Catalyst SDK.
+		// Use the modern SecKeyVerifySignature with the pre-computed SHA1 digest.
+		CFDataRef digestData = CFDataCreate(NULL, hash, CC_SHA1_DIGEST_LENGTH);
+		CFErrorRef verifyError = NULL;
+		result = SecKeyVerifySignature(
+									publicKeyRef,
+									kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1,
+									digestData,
+									dataSig,
+									&verifyError);
+		if (digestData) CFRelease(digestData);
+		if (verifyError) CFRelease(verifyError);
+#else
 		OSStatus status = SecKeyRawVerify(
 									  publicKeyRef,
 									  kSecPaddingPKCS1SHA1,
@@ -86,9 +100,10 @@ static bool Verify(const char *data, int dataLen, CFDataRef dataSig, const char 
 									  CC_SHA1_DIGEST_LENGTH,
 									  CFDataGetBytePtr( dataSig ),
 									 (size_t)CFDataGetLength( dataSig ));
-				
+
 		//0 means no errors, 1 means errors
 		result = (0 == status);
+#endif
 	}
 
 	return result;

@@ -16,6 +16,10 @@ local json = require "json"
 
 local srcAssets = arg[1]
 local appBundleFile = arg[2]
+-- Supported platform values: "iOS", "tvOS", "OSX"
+-- "OSX" is used for both native macOS builds and Mac Catalyst builds
+-- (CreateInfoPlist.sh passes --macOS for Catalyst, which sets PLATFORM=OSX)
+-- In build.settings, use settings.macos.plist for Mac Catalyst / macOS plist entries.
 local deviceType = arg[3] or "iOS"
 
 local function osExecute(...)

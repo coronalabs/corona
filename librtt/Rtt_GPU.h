@@ -14,7 +14,17 @@
 
 #if defined( Rtt_OPENGLES )
 	#if defined( Rtt_IPHONE_ENV ) || defined( Rtt_TVOS_ENV )
-		#include <OpenGLES/ES2/gl.h>
+		#if defined( Rtt_EGL )
+			// MetalANGLE (angle) build: use GLES2 headers from MetalANGLE.
+			// System OpenGLES headers are deprecated/removed on iOS/macOS 26+.
+			#include <GLES2/gl2.h>
+		#elif defined( TARGET_OS_MACCATALYST ) && TARGET_OS_MACCATALYST
+			// Mac Catalyst without MetalANGLE: no OpenGLES headers available.
+			// Classic (non-angle) libplayer cannot render on Mac Catalyst;
+			// skip the include so the TU at least compiles.
+		#else
+			#include <OpenGLES/ES2/gl.h>
+		#endif
 	#elif defined( Rtt_SYMBIAN_ENV )
 		#include <gles/gl.h>
 	#elif defined( Rtt_ANDROID_ENV ) || defined( Rtt_WEBOS_ENV )

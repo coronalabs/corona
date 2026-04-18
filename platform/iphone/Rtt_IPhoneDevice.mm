@@ -557,6 +557,13 @@ IPhoneDevice::SetLocationThreshold( Real meters ) const
 DeviceOrientation::Type
 IPhoneDevice::GetOrientation() const
 {
+#if TARGET_OS_MACCATALYST
+	// Mac Catalyst: the Mac has no physical orientation sensor that maps to
+	// a meaningful UI orientation.  UIDevice.orientation returns FaceUp (Mac
+	// is flat on a desk) which the Lua runtime converts to 'portrait', breaking
+	// landscape game layouts.  Macs are always in landscape, so return that.
+	return DeviceOrientation::kSidewaysRight;
+#else
 	DeviceOrientation::Type result = DeviceOrientation::kUnknown;
 
 	UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
@@ -576,6 +583,7 @@ IPhoneDevice::GetOrientation() const
 	}
 
 	return result;
+#endif
 }
 
 DeviceOrientation::Type

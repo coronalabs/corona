@@ -149,17 +149,32 @@ function CoronaPListSupport.modifyPlist( options )
         options.targetPlatform = "iOS"
     end
 
-    -- Check if Info.plist exists, if so use App-Info.plist instead
     local defaultPlist = basePath .. "Info.plist"
     local altPlist = basePath .. "App-Info.plist"
-    
-    local f = io.open(defaultPlist, "r")
-    if f then
-        f:close()
-        infoPlistFile = altPlist
-        print("Info.plist exists, using App-Info.plist instead")
-    else
+
+    if options.targetPlatform == "OSX" then
+        -- macOS / Mac Catalyst: Info.plist is always at Contents/Info.plist.
+        -- App-Info.plist lives in Contents/Resources/ (not Contents/), so don't
+        -- try to redirect to it here.
         infoPlistFile = defaultPlist
+    else
+        -- iOS / tvOS: if the final Info.plist already exists in the flat bundle,
+        -- the editable source is App-Info.plist sitting beside it.
+        -- Guard: only switch if App-Info.plist actually exists at that path.
+        local f = io.open(defaultPlist, "r")
+        if f then
+            f:close()
+            local fa = io.open(altPlist, "r")
+            if fa then
+                fa:close()
+                infoPlistFile = altPlist
+                print("Info.plist exists, using App-Info.plist instead")
+            else
+                infoPlistFile = defaultPlist
+            end
+        else
+            infoPlistFile = defaultPlist
+        end
     end
 
     print("Creating Info.plist...")
@@ -432,11 +447,14 @@ function CoronaPListSupport.modifyPlist( options )
 
 	elseif options.targetPlatform == "OSX" then
 
-		local settings = options.settings or defaultSettings
+		-- "OSX" is used for both native macOS builds and Mac Catalyst builds
+		-- (Mac Catalyst passes --macOS to CreateInfoPlist.sh which sets platform to OSX).
+		-- Priority: settings.macos.plist > settings.osx.plist
+		local settings = options.settings or {}
 		if settings then
-			-- add'l custom plist settings specific to OS X
+			-- add'l custom plist settings specific to macOS / Mac Catalyst
 			local buildSettingsPlist = settings.osx and settings.osx.plist
-			if(settings.macos) then 
+			if settings.macos then
 				buildSettingsPlist = settings.macos.plist
 			end
 			if buildSettingsPlist then
