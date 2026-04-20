@@ -1028,6 +1028,16 @@ void WinInputDeviceManager::OnReceivedMessage(
 					arguments.SetReturnResult(0);
 					arguments.SetHandled();
 				}
+
+				// Prevent VK_UP/VK_DOWN from reaching DefWindowProc. On this window,
+				// unhandled up/down arrow keys are routed by Win32 keyboard navigation to a
+				// split button control in the UI, triggering BCM_SETDROPDOWNSTATE messages
+				// that disrupt render loop timing. VK_LEFT/VK_RIGHT do not exhibit this behavior.
+				if (keyCode == VK_UP || keyCode == VK_DOWN)
+				{
+					arguments.SetReturnResult(0);
+					arguments.SetHandled();
+				}
 			}
 			break;
 		}
