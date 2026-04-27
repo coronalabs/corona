@@ -34,6 +34,8 @@
 #include <vector>
 #include "Rtt_Profiling.h"
 
+// Include GL header for glGetActiveUniform
+#include "Renderer/Rtt_GL.h"
 
 // To reduce memory consumption and startup cost, defer the
 // creation of GL shaders and programs until they're needed.
@@ -103,7 +105,8 @@ namespace /*anonymous*/
 		"void main()" \
 		"{" \
 			"gl_FragColor = vec4(1.0);" \
-		"}";}
+		"}";
+}
 
 // ----------------------------------------------------------------------------
 
@@ -689,13 +692,13 @@ GLExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
     
     if (*fCache)
     {
-        for (int i = 0; i < (*fCache)->fInfo.size(); ++i)
+        for (size_t i = 0; i < (*fCache)->fInfo.size(); ++i)
         {
             const auto & pos = (*fCache)->fInfo[i];
             
             if (0 == strcmp( pos.fName.c_str(), name ))
             {
-                entryIndex = i;
+                entryIndex = (int)i;
                 
                 if (pos.fLocations[fVersion] >= 0) // version as well?
                 {
@@ -749,13 +752,13 @@ GLExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
         
         for (uniformIndex = 0; uniformIndex < count; ++uniformIndex)
         {
-            glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, GLProgram::kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
+            ::glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, GLProgram::kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
 
             const char * bracket = strchr( nameBuf, '[' );
             
             if (bracket)
             {
-                length = bracket - nameBuf;
+                length = (GLsizei)(bracket - nameBuf);
             }
             
             if (0 == strncmp( name, nameBuf, length ))
