@@ -16,7 +16,7 @@
 #include "Interop\RuntimeEnvironment.h"
 #include "Rtt_PlatformWebPopup.h"
 #include "Rtt_MPlatform.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 #pragma region Forward Declarations
@@ -125,7 +125,7 @@ class WinWebPopup : public PlatformWebPopup
 		///   and will be appended to this base path.
 		///  </para>
 		/// </summary>
-		WinString fBaseUrl;
+		RttString fBaseUrl;
 
 		/// <summary>Set true if the popup's control needs to be resized during Corona's next render pass.</summary>
 		bool fWasResizeRequested;

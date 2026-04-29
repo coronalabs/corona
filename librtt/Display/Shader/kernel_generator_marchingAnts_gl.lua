@@ -6,15 +6,7 @@ kernel.category = "generator"
 
 kernel.name = "marchingAnts"
 
---kernel.isTimeDependent = true
-kernel.timeTransform = {
-	func = "modulo",
-
-	-- the pattern is very regular, thus being able to mod the time
-	-- the range is two bar lengths (on, then off), divided by speed
-	-- the content scaling cancels out
-	range = (6 + 6) / 16
-}
+kernel.isTimeDependent = true
 
 kernel.unsupportedPlatforms =
 {

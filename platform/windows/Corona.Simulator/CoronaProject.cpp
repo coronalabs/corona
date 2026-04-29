@@ -16,7 +16,7 @@
 #include <wincrypt.h>  // CryptProtectData(), CryptUnprotectData()
 
 #include "CoronaInterface.h"    // appAndroidBuild()
-#include "WinString.h"
+#include "RttString.h"
 
 #include "Core/Rtt_Build.h"
 #include "Core/Rtt_String.h"
@@ -73,7 +73,7 @@ CCoronaProject::Init( CString sPath )
 
 	// Build a session ID string for analytics. This is an MD5 hash of the project path without the file name.
 	U8 hash[CryptoPP::Weak1::MD5::DIGESTSIZE];
-	WinString path;
+	RttString path;
 	path.SetTCHAR(sDirectory);
 	CryptoPP::Weak1::MD5 md5;
 	md5.CalculateDigest(hash, (const byte*)path.GetUTF8(), strlen(path.GetUTF8()));
@@ -103,7 +103,7 @@ CCoronaProject::Init( CString sPath )
 	// If an EXE file name is not assigned, then generate one via the application name.
 	if (m_sExeFileName.IsEmpty())
 	{
-		WinString appName;
+		RttString appName;
 		appName.SetTCHAR(m_sName);
 		if (Rtt_StringEndsWithNoCase(appName.GetUTF8(), ".exe") == false)
 		{
@@ -473,11 +473,11 @@ CCoronaProject::isJavaReservedWord( CString string, int start, int end )
 bool CCoronaProject::ValidateKeystoreAliasPassword()
 {
 	ListKeyStore listKeyStore;
-	WinString keystorePathStr = GetKeystorePath(); //  .GetBuffer();
-	WinString keystorePasswordStr = GetKeystorePassword(); //  .GetBuffer() );
-	WinString aliasStr = GetAlias(); // .GetBuffer() );
-	WinString aliasPasswordStr = GetAliasPassword(); // .GetBuffer() );
-	WinString resourcesDirStr = ((CSimulatorApp *)AfxGetApp())->GetResourceDir();
+	RttString keystorePathStr = GetKeystorePath(); //  .GetBuffer();
+	RttString keystorePasswordStr = GetKeystorePassword(); //  .GetBuffer() );
+	RttString aliasStr = GetAlias(); // .GetBuffer() );
+	RttString aliasPasswordStr = GetAliasPassword(); // .GetBuffer() );
+	RttString resourcesDirStr = ((CSimulatorApp *)AfxGetApp())->GetResourceDir();
 
 	return listKeyStore.AreKeyStoreAndAliasPasswordsValid(keystorePathStr.GetUTF8(), keystorePasswordStr.GetUTF8(), aliasStr.GetUTF8(), aliasPasswordStr.GetUTF8(), resourcesDirStr);
 
@@ -489,7 +489,7 @@ bool CCoronaProject::ValidateKeystoreAliasPassword()
 
 	AntHost	antTask;
 
-	WinString resourceDir, kp, ks, ka, ap, tempDir;
+	RttString resourceDir, kp, ks, ka, ap, tempDir;
 	resourceDir.SetTCHAR( ((CSimulatorApp *)AfxGetApp())->GetResourceDir() );
 
 	char buildFilePath[1024];
@@ -517,7 +517,7 @@ bool CCoronaProject::ValidateKeystoreAliasPassword()
 	Rtt_ASSERT( antCode == 1 );
 	if ( antCode == 0 )
 	{
-		WinString mesg;
+		RttString mesg;
 
 		mesg.SetUTF8("ANT failed while checking keystore password:\n  ");
 		mesg.Append(antResult.GetString());

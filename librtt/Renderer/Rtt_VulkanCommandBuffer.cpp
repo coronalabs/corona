@@ -41,7 +41,6 @@ namespace /*anonymous*/
 		kCommandFetchRenderState,
 		kCommandBindTexture,
 		kCommandBindProgram,
-        kCommandBindTimeTransform,
 		kCommandApplyPushConstantScalar,
 		kCommandApplyPushConstantVec2,
 		kCommandApplyPushConstantVec3,
@@ -787,7 +786,6 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		
-		TimeTransform* timeTransform = NULL;
 		VulkanGeometry * geometry = NULL;
 		VulkanFrameBufferObject * fbo = NULL;
 		U32 stages = 0U;
@@ -954,19 +952,10 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 					DEBUG_PRINT( "Bind Program: program=%p version=%i", program, fCurrentDrawVersion );
 					CHECK_ERROR_AND_BREAK;
 				}
-				case kCommandBindTimeTransform:
-				{
-					timeTransform = Read<TimeTransform*>();
-					CHECK_ERROR_AND_BREAK;
-				}
 				case kCommandApplyPushConstantScalar:
 				{
 					U32 offset = Read<U32>();
 					Real value = Read<Real>();
-					if ( timeTransform )
-					{
-						value = timeTransform->Apply( value );
-					}
 					pushConstants.Write( offset, &value, sizeof( Real ) );
 					DEBUG_PRINT( "Set Push Constant: value=%f location=%i", value, offset );
 					CHECK_ERROR_AND_BREAK;
@@ -1032,10 +1021,6 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 				{
 					READ_UNIFORM_DATA( Real );
 					U32 index = Read<U32>();
-					if ( timeTransform )
-					{
-						value = timeTransform->Apply( value );
-					}
 					U8 * data = PointToUniform( index, location.fOffset );
 					memcpy( data, &value, sizeof( Real ) );
 					DEBUG_PRINT( "Set Uniform: value=%f location=%i", value, location.fOffset );
@@ -1096,10 +1081,6 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 					READ_UNIFORM_DATA_WITH_PROGRAM( Real );
 					if (location.IsValid())
 					{
-						if ( timeTransform )
-						{
-							value = timeTransform->Apply( value );
-						}
 						pushConstants.Write( location.fOffset, &value, sizeof( Real ) );
 					}
 					DEBUG_PRINT( "Set Push Constant: value=%f location=%i", value, location.fOffset );
@@ -1178,10 +1159,6 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 				case kCommandApplyUniformFromPointerScalar:
 				{
 					READ_UNIFORM_DATA_WITH_PROGRAM( Real );
-					if ( timeTransform )
-					{
-						value = timeTransform->Apply( value );
-					}
 					if (program->HavePushConstantUniforms() && Descriptor::IsPushConstant( index, true ))
 					{
 						pushConstants.Write( location.fOffset, &value, sizeof( Real ) );
@@ -1804,47 +1781,37 @@ VulkanCommandBuffer::Write( T value )
 
 void VulkanCommandBuffer::ApplyUniforms( GPUResource* resource )
 {
+	Real rawTotalTime;
+	bool transformed = false;
+
 	VulkanProgram* vulkanProgram = static_cast< VulkanProgram * >( resource );
-    Uniform* timeUniform = fUniformUpdates[Uniform::kTotalTime].uniform;
-    
-    Rtt_ASSERT( timeUniform );
-    
-    // See GLCommandBuffer::ApplyUniforms()
-    Real rawTotalTime;
-    
-    timeUniform->GetValue( rawTotalTime );
+
+	if (fUsesTime)
+    {
+        const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
+        if (fTimeTransform)
+        {
+            transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
+        }
+        if (transformed || !TimeTransform::Matches( fTimeTransform, fLastTimeTransform ))
+        {
+            fUniformUpdates[Uniform::kTotalTime].timestamp = vulkanProgram->GetUniformTimestamp( Uniform::kTotalTime, fCurrentPrepVersion ) - 1; // force a refresh
+        }
+    }
 
 	for( U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
 	{
 		const UniformUpdate& update = fUniformUpdates[i];
 		if( update.uniform && update.timestamp != vulkanProgram->GetUniformTimestamp( i, fCurrentPrepVersion ) )
-		{
-			if ( Uniform::kTotalTime == i )
-			{
-				if ( fTimeTransform ) // keep the raw time; will be transformed if the uniform is bound
-				{
-					WRITE_COMMAND( kCommandBindTimeTransform );
-					
-					Write<TimeTransform*>( fTimeTransform );
-				}
-				else
-				{
-					timeUniform->SetValue( fDefaultTransformedTime );
-				}
-			}
-				
+		{		
 			ApplyUniform( *vulkanProgram, i );
-			
-			if ( Uniform::kTotalTime == i && fTimeTransform ) // uniform might be absent, so unbind here
-			{
-				WRITE_COMMAND( kCommandBindTimeTransform );
-					
-				Write<TimeTransform*>( NULL );
-			}
 		}
 	}
 
-	timeUniform->SetValue( rawTotalTime );
+	if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
+	{
+		fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
+	}
 }
 
 void VulkanCommandBuffer::ApplyPushConstant( Uniform * uniform, size_t offset, const size_t * translationOffset, VulkanProgram * program, U32 index )

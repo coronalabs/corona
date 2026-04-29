@@ -20,7 +20,7 @@
 #include "Rtt_WinCrypto.h"
 #include "Rtt_WinConsoleDevice.h"
 #include "Rtt_WinExitCallback.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <windows.h>
 
 
@@ -162,11 +162,11 @@ namespace Rtt
 		const char *GetUtf8PathFor(MPlatform::Directory baseDir) const;
 
 		WinCrypto fCrypto;
-		WinString fDirectoryPaths[MPlatform::kNumDirs];
+		RttString fDirectoryPaths[MPlatform::kNumDirs];
 		WinConsoleDevice *fDevice;
 
 		/*
-		void CopyAppNameTo(WinString& destinationString) const;
+		void CopyAppNameTo(RttString& destinationString) const;
 		int GetEncoderClsid(const WCHAR *format, CLSID *pClsid) const;
 		void OnSetActivityIndicator(bool visible);
 

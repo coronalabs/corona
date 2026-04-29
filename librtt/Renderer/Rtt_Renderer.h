@@ -321,9 +321,6 @@ class Renderer
     public:
         int GetVersionCode( bool addingMask ) const;
 
-	public:
-		bool AddedUsesTime();
-
 	protected:
 		Rtt_Allocator* fAllocator;
 		

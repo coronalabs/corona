@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 #include "TaskDialog.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "XMessageBox.h"
 #include <algorithm>
 #include <CommCtrl.h>
