@@ -258,6 +258,38 @@ GLGeometry::GLGeometry()
 {
 }
 
+// glGetString(GL_EXTENSIONS) returns NULL on OpenGL ES 3.0+ contexts.
+// Use glGetStringi to iterate individual extensions when that happens.
+//
+// glGetStringi / GL_NUM_EXTENSIONS are ES 3.0 additions — not declared in ES2
+// headers.  When glGetString(GL_EXTENSIONS) returns NULL the context IS ES 3.0+
+// at runtime, so the symbols are guaranteed to exist; we just need declarations.
+#ifndef GL_NUM_EXTENSIONS
+#  define GL_NUM_EXTENSIONS 0x821Du
+#endif
+#if defined( Rtt_OPENGLES ) && !defined( GL_ES_VERSION_3_0 )
+// Plain forward declaration — attributes (GL_APICALL/GL_APIENTRY) omitted
+// intentionally; the linker resolves the symbol from the OpenGLES framework.
+extern "C" const GLubyte * glGetStringi( GLenum name, GLuint index );
+#endif
+
+static bool HasGLExtension( const char * extensions, const char * name )
+{
+    if ( extensions )
+    {
+        return strstr( extensions, name ) != NULL;
+    }
+    // ES 3.0+ path: query extensions one by one via glGetStringi.
+    GLint n = 0;
+    glGetIntegerv( GL_NUM_EXTENSIONS, &n );
+    for ( GLint i = 0; i < n; ++i )
+    {
+        const char * ext = (const char *)glGetStringi( GL_EXTENSIONS, (GLuint)i );
+        if ( ext && strcmp( ext, name ) == 0 ) return true;
+    }
+    return false;
+}
+
 #if defined( Rtt_WIN_ENV )
     #define GL_TYPE_PREFIX GLAPIENTRY
 #elif defined( Rtt_IPHONE_ENV )
@@ -315,7 +347,7 @@ GLGeometry::SupportsInstancing()
 		const char * extensions = (const char *)glGetString( GL_EXTENSIONS );
 		
     #if defined( GL_EXT_instanced_arrays )
-        if (strstr( extensions, "GL_EXT_instanced_arrays" ) && !GL_HAS_SUPPORT())
+        if (HasGLExtension( extensions, "GL_EXT_instanced_arrays" ) && !GL_HAS_SUPPORT())
         {
             GL_RESET();
         
@@ -326,7 +358,7 @@ GLGeometry::SupportsInstancing()
     #endif
 
     #if defined( GL_ANGLE_instanced_arrays )
-        if (strstr( extensions, "GL_ANGLE_instanced_arrays" ) && !GL_HAS_SUPPORT())
+        if (HasGLExtension( extensions, "GL_ANGLE_instanced_arrays" ) && !GL_HAS_SUPPORT())
         {
             GL_RESET();
         
@@ -337,7 +369,7 @@ GLGeometry::SupportsInstancing()
     #endif
         
     #if defined( GL_EXT_draw_instanced ) // extension notes suggest not ES-only...
-        if (strstr( extensions, "GL_EXT_draw_instanced" ) && !GL_HAS_SUPPORT())
+        if (HasGLExtension( extensions, "GL_EXT_draw_instanced" ) && !GL_HAS_SUPPORT())
         {
             GL_RESET();
             

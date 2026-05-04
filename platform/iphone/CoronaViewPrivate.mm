@@ -226,6 +226,7 @@ CoronaViewListenerAdapter( lua_State *L )
 	int fInhibitCount; // used by TouchInhibitor
 	int fSuspendCount;
 	int fLastContentHeight;
+	CGSize fLastNotifiedBoundsSize; // {-1,-1} until first notify
 	bool fShouldInvalidate;
 	bool fBeganRunLoop;
 
@@ -330,6 +331,7 @@ CoronaViewListenerAdapter( lua_State *L )
 	fSuspendCount = 0;
 	_observeSuspendResume = YES;
 	fLastContentHeight = -1;
+	fLastNotifiedBoundsSize = CGSizeMake(-1, -1);
 	fShouldInvalidate = false;
 	fLoadOrientation = Rtt::DeviceOrientation::kUpright;
 	fParams = nil;
@@ -363,6 +365,18 @@ CoronaViewListenerAdapter( lua_State *L )
 	_orientationObserver = (id< CoronaOrientationObserver >)_observerProxy;
 	_locationObserver = (id< CLLocationManagerDelegate >)_observerProxy;
 	_gyroscopeObserver = (id< CoronaGyroscopeObserver >)_observerProxy;
+
+#if TARGET_OS_MACCATALYST
+	// Mac Catalyst: dispatch hover (mouse-moved) events into the Corona runtime,
+	// matching the Mac (AppKit) GLView behaviour.
+	if ( @available(macCatalyst 13.0, *) )
+	{
+		UIHoverGestureRecognizer *hover = [[UIHoverGestureRecognizer alloc]
+			initWithTarget:self action:@selector(handleHover:)];
+		[self addGestureRecognizer:hover];
+		[hover release];
+	}
+#endif
 }
 
 - (id)initWithFrame:(CGRect)rect context:(Rtt_EAGLContext *)context
@@ -1208,6 +1222,47 @@ PrintTouches( NSSet *touches, const char *header )
 	}
 }
 
+#if TARGET_OS_MACCATALYST
+- (void)handleHover:(UIHoverGestureRecognizer *)recognizer
+{
+	using namespace Rtt;
+
+	if ( fInhibitCount > 0 ) { return; }
+	if ( ! _runtime || _runtime->IsSuspended() ) { return; }
+
+	// Mirror Mac GLView: only dispatch a MouseEvent on movement. Began/Changed
+	// both carry a valid pointer location; Ended/Cancelled do not produce an
+	// event (Mac's mouseExited: doesn't dispatch one either).
+	UIGestureRecognizerState state = recognizer.state;
+	if ( state != UIGestureRecognizerStateBegan && state != UIGestureRecognizerStateChanged )
+	{
+		return;
+	}
+
+	CGPoint p = [recognizer locationInView:self];
+	CGFloat scale = self.contentScaleFactor;
+	p.x *= scale;
+	p.y *= scale;
+
+	BOOL shift = NO, alt = NO, ctrl = NO, cmd = NO;
+	if ( @available(macCatalyst 13.4, *) )
+	{
+		UIKeyModifierFlags m = recognizer.modifierFlags;
+		shift = (m & UIKeyModifierShift)     != 0;
+		alt   = (m & UIKeyModifierAlternate) != 0;
+		ctrl  = (m & UIKeyModifierControl)   != 0;
+		cmd   = (m & UIKeyModifierCommand)   != 0;
+	}
+
+	// No buttons: hover-without-click is the only signal a UIHoverGestureRecognizer
+	// delivers. Mouse-down/drag still flow through the normal touch path.
+	MouseEvent e( MouseEvent::kMove, p.x, p.y, 0, 0, 0,
+	              false, false, false,
+	              shift, alt, ctrl, cmd );
+	[self dispatchEvent: ( & e )];
+}
+#endif
+
 - (void)pollAndDispatchMotionEvents
 {
 #ifdef Rtt_CORE_MOTION
@@ -1407,13 +1462,49 @@ PrintTouches( NSSet *touches, const char *header )
 {
 	[super setFrame:frame];
 	fShouldInvalidate = true;
+#if TARGET_OS_MACCATALYST
+	[self _maccatNotifyRuntimeOfBoundsSizeIfChanged];
+#endif
 }
 
 - (void)setBounds:(CGRect)bounds
 {
 	[super setBounds:bounds];
 	fShouldInvalidate = true;
+#if TARGET_OS_MACCATALYST
+	[self _maccatNotifyRuntimeOfBoundsSizeIfChanged];
+#endif
 }
+
+#if TARGET_OS_MACCATALYST
+// Mac Catalyst: when the host UIWindow resizes (windowed → fullscreen, manual
+// resize, display change), the view's bounds change but Solar2D's runtime is
+// only wired to fire a `ResizeEvent` from `didOrientationChange:`, which never
+// fires on Catalyst.  Without this, `display.contentWidth/Height/pixelWidth/...`
+// stay frozen at their startup values and Lua content gets rendered with stale
+// dimensions → visible stretching and aspect-ratio distortion.
+//
+// On every bounds-affecting setter, if the size actually changed (skip the
+// no-op layout passes UIKit fires while the view is just being moved):
+//   1. Tell the Display to recompute viewport / content scales / dimensions.
+//   2. Dispatch a `ResizeEvent` so Lua can react via
+//      `Runtime:addEventListener("resize", ...)`.
+- (void)_maccatNotifyRuntimeOfBoundsSizeIfChanged
+{
+	using namespace Rtt;
+
+	if (_runtime == NULL) { return; }
+
+	CGSize newSize = self.bounds.size;
+	if (newSize.width <= 0 || newSize.height <= 0) { return; }
+	if (CGSizeEqualToSize(newSize, fLastNotifiedBoundsSize)) { return; }
+	fLastNotifiedBoundsSize = newSize;
+
+	Display& display = _runtime->GetDisplay();
+	display.WindowSizeChanged();
+	_runtime->DispatchEvent(ResizeEvent());
+}
+#endif
 
 // CoronaOrientationObserver
 // ----------------------------------------------------------------------------

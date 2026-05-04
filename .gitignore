@@ -295,3 +295,6 @@ external/JNLua/.project
 /jre.macos.tgz
 jre.win32.7z
 redist.win32.7z
+
+# Xcode framework build outputs (too large for GitHub)
+platform/iphone/output-xcframeworks/
