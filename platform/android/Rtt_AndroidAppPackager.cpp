@@ -26,7 +26,7 @@
 
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
 #include "stdafx.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "Interop/Ipc/CommandLine.h"
 #if !defined( Rtt_NO_GUI )
 #include "Simulator.h"
@@ -703,7 +703,7 @@ AndroidAppPackager::Prepackage( AppPackagerParams * params, const char * tmpDir 
 #else // Windows
 
 #if !defined( Rtt_NO_GUI )
-		WinString cmdBufStr;
+		RttString cmdBufStr;
 		cmdBufStr.SetUTF8(cmdBuf);
 
 		std::wstring utf16CommandLine(cmdBufStr.GetUTF16());

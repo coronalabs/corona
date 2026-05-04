@@ -141,7 +141,7 @@ int WinTextBoxObject::ValueForKey(lua_State *L, const char key[]) const
 		fTextBoxPointer->CopyTextTo(utf16Text);
 
 		// Convert to UTF-8 and push to Lua. Make sure we never return nil.
-		WinString stringTranscoder(utf16Text.c_str());
+		RttString stringTranscoder(utf16Text.c_str());
 		auto utf8Text = stringTranscoder.GetUTF8();
 		lua_pushstring(L, utf8Text ? utf8Text : "");
 	}
@@ -307,7 +307,7 @@ int WinTextBoxObject::ValueForKey(lua_State *L, const char key[]) const
 		fTextBoxPointer->CopyPlaceholderTextTo(utf16Text);
 
 		// Convert to UTF-8 and push to Lua.
-		WinString stringTranscoder(utf16Text.c_str());
+		RttString stringTranscoder(utf16Text.c_str());
 		auto utf8Text = stringTranscoder.GetUTF8();
 		if (fIsPlaceholderTextNil && Rtt_StringIsEmpty(utf8Text))
 		{
@@ -352,7 +352,7 @@ bool WinTextBoxObject::SetValueForKey(lua_State *L, const char key[], int valueI
 	{
 		if (lua_type(L, valueIndex) == LUA_TSTRING)
 		{
-			WinString stringTranscoder;
+			RttString stringTranscoder;
 			stringTranscoder.SetUTF8(lua_tostring(L, valueIndex));
 			fTextBoxPointer->SetText(stringTranscoder.GetUTF16());
 		}
@@ -560,7 +560,7 @@ bool WinTextBoxObject::SetValueForKey(lua_State *L, const char key[], int valueI
 	{
 		if (lua_type(L, valueIndex) == LUA_TSTRING)
 		{
-			WinString stringTranscoder;
+			RttString stringTranscoder;
 			stringTranscoder.SetUTF8(lua_tostring(L, valueIndex));
 			fTextBoxPointer->SetPlaceholderText(stringTranscoder.GetUTF16());
 			fIsPlaceholderTextNil = false;

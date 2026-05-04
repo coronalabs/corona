@@ -29,7 +29,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='PreRelease|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Corona.Native.Library.Win32\WinFile.cpp" />
-    <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\RttString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Allocator.h" />
@@ -48,7 +48,10 @@
     <ClInclude Include="..\..\..\librtt\Rtt_LuaFile.h" />
     <ClInclude Include="..\..\..\tools\car\Rtt_Car.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\WinFile.h" />
-    <ClInclude Include="..\Corona.Native.Library.Win32\WinString.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\RttString.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>Corona.Archiver</ProjectName>
@@ -183,5 +186,12 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Web.WebView2.1.0.3912.50\build\native\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.3912.50\build\native\Microsoft.Web.WebView2.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.3912.50\build\native\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.3912.50\build\native\Microsoft.Web.WebView2.targets'))" />
+  </Target>
 </Project>

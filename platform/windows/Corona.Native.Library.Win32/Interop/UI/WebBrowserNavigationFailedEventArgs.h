@@ -11,7 +11,7 @@
 
 #include "Interop\EventArgs.h"
 #include "WebBrowserNavigatedEventArgs.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 namespace Interop { namespace UI {
@@ -43,7 +43,7 @@ class WebBrowserNavigationFailedEventArgs : public WebBrowserNavigatedEventArgs
 
 	private:
 		int fErrorCode;
-		WinString fErrorMessage;
+		RttString fErrorMessage;
 };
 
 } }	// namespace Interop::UI
