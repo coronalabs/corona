@@ -170,7 +170,9 @@ GLFrameBufferObject::GetTextureName()
 	return param;
 }
 
-#if defined( Rtt_OPENGLES )
+#if defined( Rtt_NXS_ENV )
+	#define GL_GET_PROC(name, suffix) gl ## name ## suffix
+#elif defined( Rtt_OPENGLES )
 	#define GL_GET_PROC(name, cap, suffix) (PFNGL ## cap ## suffix ## PROC) eglGetProcAddress( "gl" #name #suffix )
 #else
 	#define GL_GET_PROC(name, suffix) gl ## name ## suffix
@@ -186,7 +188,12 @@ GLFrameBufferObject::HasFramebufferBlit( bool * canScale )
 		sIsInitialized = true;
 		sBindFramebuffer = glBindFramebuffer;
 	
-	#if !defined( Rtt_OPENGLES )
+	#if defined( Rtt_NXS_ENV )
+		// Nintendo Switch: glBlitFramebuffer may not be available in OpenGL ES
+		// Set to NULL to indicate framebuffer blit is not supported
+		sBlitFramebuffer = NULL;
+		sCanScale = false;
+	#elif !defined( Rtt_OPENGLES )
 		#if GL_ARB_framebuffer_object 
 			sBlitFramebuffer = glBlitFramebuffer;
 			sDrawBufferBinding = GL_DRAW_FRAMEBUFFER;
